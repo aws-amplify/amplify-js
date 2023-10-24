@@ -143,12 +143,19 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								item: object;
 							}[];
 
+							// operation to take when message(s) arrive.
+							// this operation will be swapped out once initial "sync" is complete
+							// to immediately ingest messsages.
+							let receiveMessages = (...messages: typeof messageQueue) => {
+								return messageQueue.push(...messages);
+							};
+
 							// start subscriptions
 							const onCreateSub = models[name]
 								.onCreate(arg, options)
 								.subscribe({
 									next(item) {
-										messageQueue.push({ item, type: 'create' });
+										receiveMessages({ item, type: 'create' });
 									},
 									error(error) {
 										subscriber.error({ type: 'onCreate', error });
@@ -158,7 +165,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								.onUpdate(arg, options)
 								.subscribe({
 									next(item) {
-										messageQueue.push({ item, type: 'update' });
+										receiveMessages({ item, type: 'update' });
 									},
 									error(error) {
 										subscriber.error({ type: 'onUpdate', error });
@@ -168,7 +175,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								.onDelete(arg, options)
 								.subscribe({
 									next(item) {
-										messageQueue.push({ item, type: 'delete' });
+										receiveMessages({ item, type: 'delete' });
 									},
 									error(error) {
 										subscriber.error({ type: 'onDelete', error });
@@ -248,7 +255,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								}
 
 								// switch the queue to write directly to the items collection
-								messageQueue.push = (...messages: typeof messageQueue) => {
+								receiveMessages = (...messages: typeof messageQueue) => {
 									ingestMessages(messages);
 									return items.length;
 								};

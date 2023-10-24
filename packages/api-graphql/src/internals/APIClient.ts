@@ -515,7 +515,6 @@ export function buildGraphQLVariables(
 				variables.filter = arg.filter;
 			}
 			if (arg?.nextToken) {
-				console.log;
 				variables.nextToken = arg.nextToken;
 			}
 			break;
