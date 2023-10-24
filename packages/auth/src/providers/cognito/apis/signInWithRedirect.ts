@@ -42,6 +42,9 @@ export async function signInWithRedirect(
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	store.setAuthConfig(authConfig);
+	// this ensures to clear oauth data first
+	// in case hostedUI was cancelled.
+	await store.clearOAuthData();
 	await assertUserNotAuthenticated();
 
 	let provider = 'COGNITO'; // Default
@@ -61,9 +64,9 @@ export async function signInWithRedirect(
 	});
 }
 
-const store = new DefaultOAuthStore(defaultStorage);
+export const store = new DefaultOAuthStore(defaultStorage);
 
-async function oauthSignIn({
+export async function oauthSignIn({
 	oauthConfig,
 	provider,
 	clientId,
