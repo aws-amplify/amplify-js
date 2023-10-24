@@ -11,6 +11,7 @@ import {
 } from './APIClient';
 import { ClientGenerationParams } from './types';
 import { V6Client, GraphqlSubscriptionResult } from '../types';
+import { findIndexByFields, resolvePKFields } from '../utils';
 import { Observable, map } from 'rxjs';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
@@ -174,44 +175,10 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 									},
 								});
 
-							// util function (to be moved to utils)
-							function findIndexByKeyFields<T>(
-								needle: T,
-								haystack: T[],
-								keyFields: Array<keyof T>
-							): number {
-								const searchObject = Object.fromEntries(
-									keyFields.map(fieldName => [fieldName, needle[fieldName]])
-								);
-
-								for (let i = 0; i < haystack.length; i++) {
-									if (
-										Object.keys(searchObject).every(
-											k => searchObject[k] === haystack[i][k]
-										)
-									) {
-										return i;
-									}
-								}
-
-								// use -1 to signal "not found" as is the norm for indexOf-like searches
-								return -1;
-							}
-
-							// util function (to be moved to utils)
-							function getPkFields(model: any) {
-								const { primaryKeyFieldName, sortKeyFieldNames } =
-									model.primaryKeyInfo as {
-										primaryKeyFieldName: string;
-										sortKeyFieldNames: string[];
-									};
-								return [primaryKeyFieldName, ...sortKeyFieldNames];
-							}
-
-							// obervable collection collection
+							// consumes a list of messages and sends a snapshot
 							function ingestMessages(messages: typeof messageQueue) {
 								for (const message of messages) {
-									const idx = findIndexByKeyFields(
+									const idx = findIndexByFields(
 										message.item,
 										items,
 										pkFields as any
@@ -239,7 +206,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 								});
 							}
 
-							const pkFields = getPkFields(model);
+							const pkFields = resolvePKFields(model);
 
 							// initial results
 							(async () => {
