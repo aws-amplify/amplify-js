@@ -12,6 +12,7 @@ export {
 	onMessageDismissed,
 	onMessageActionTaken,
 	notifyMessageInteraction,
+	clearMessages,
 } from './apis';
 
 export {

@@ -70,10 +70,7 @@ export const getEventBuffer = ({
 	identityId,
 	userAgentValue,
 }: PersonalizeBufferConfig): EventBuffer<PersonalizeBufferEvent> => {
-	const { sessionToken } = credentials;
-	const sessionIdentityKey = [region, sessionToken, identityId]
-		.filter(x => !!x)
-		.join('-');
+	const sessionIdentityKey = [region, identityId].filter(x => !!x).join('-');
 
 	if (!eventBufferMap[sessionIdentityKey]) {
 		const getClient = (): IAnalyticsClient<PersonalizeBufferEvent> => {
@@ -101,9 +98,11 @@ export const getEventBuffer = ({
 			key => key !== sessionIdentityKey
 		);
 		for (const releaseSessionKey of releaseSessionKeys) {
-			eventBufferMap[releaseSessionKey].release();
-			delete eventBufferMap[releaseSessionKey];
-			delete cachedClients[releaseSessionKey];
+			eventBufferMap[releaseSessionKey].flushAll().finally(() => {
+				eventBufferMap[releaseSessionKey].release();
+				delete eventBufferMap[releaseSessionKey];
+				delete cachedClients[releaseSessionKey];
+			});
 		}
 	}
 
