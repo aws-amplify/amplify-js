@@ -3,10 +3,7 @@
 
 import { uploadData } from '../../../../../src/providers/s3/apis';
 import { MAX_OBJECT_SIZE } from '../../../../../src/providers/s3/utils/constants';
-import {
-	createUploadTask,
-	resolveS3ConfigAndInput,
-} from '../../../../../src/providers/s3/utils';
+import { createUploadTask } from '../../../../../src/providers/s3/utils';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,

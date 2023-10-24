@@ -33,7 +33,6 @@ import {
 	CONTENT_SHA256_HEADER,
 	validateS3RequiredParameter,
 } from './utils';
-import { StorageError } from '../../../../errors/StorageError';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 

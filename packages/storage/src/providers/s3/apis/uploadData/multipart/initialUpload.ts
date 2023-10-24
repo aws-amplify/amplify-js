@@ -11,6 +11,7 @@ import {
 import { ResolvedS3Config } from '../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../types';
 import { Part, createMultipartUpload } from '../../../utils/client';
+import { logger } from '../../../../../utils';
 
 type LoadOrCreateMultipartUploadOptions = {
 	s3Config: ResolvedS3Config;
@@ -62,8 +63,7 @@ export const loadOrCreateMultipartUpload = async ({
 		  }
 		| undefined;
 	if (size === undefined) {
-		// Cannot determine total length of the data source, so we cannot safely cache the upload
-		// TODO: logger message
+		logger.debug('uploaded data size cannot be determined, skipping cache.');
 		cachedUpload = undefined;
 	} else {
 		const uploadCacheKey = getUploadsCacheKey({
@@ -106,8 +106,7 @@ export const loadOrCreateMultipartUpload = async ({
 			}
 		);
 		if (size === undefined) {
-			// Cannot determine total length of the data source, so we cannot safely cache the upload
-			// TODO: logger message
+			logger.debug('uploaded data size cannot be determined, skipping cache.');
 			return {
 				uploadId: UploadId!,
 				cachedParts: [],

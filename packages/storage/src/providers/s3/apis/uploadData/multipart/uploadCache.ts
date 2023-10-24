@@ -10,6 +10,7 @@ import {
 import { UPLOADS_STORAGE_KEY } from '../../../utils/constants';
 import { ResolvedS3Config } from '../../../types/options';
 import { Part, listParts } from '../../../utils/client';
+import { logger } from '../../../../../utils';
 
 const ONE_HOUR = 1000 * 60 * 60;
 
@@ -60,7 +61,7 @@ export const findCachedUploadParts = async ({
 			uploadId: cachedUpload.uploadId,
 		};
 	} catch (e) {
-		// TODO: debug message: failed to list parts. The cached upload will be removed.
+		logger.debug('failed to list cached parts, removing cached upload.');
 		await removeCachedUpload(cacheKey);
 		return null;
 	}
@@ -81,7 +82,7 @@ const listCachedUploadTasks = async (
 	try {
 		return JSON.parse((await kvStorage.getItem(UPLOADS_STORAGE_KEY)) ?? '{}');
 	} catch (e) {
-		// TODO: debug message: cached uploads is not a valid JSON string
+		logger.debug('failed to parse cached uploads record.');
 		return {};
 	}
 };

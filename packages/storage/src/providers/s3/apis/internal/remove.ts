@@ -7,6 +7,7 @@ import { RemoveInput, RemoveOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { deleteObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
+import { logger } from '../../../../utils';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
@@ -18,15 +19,16 @@ export const remove = async (
 		options
 	);
 
-	// TODO(ashwinkumar6) V6-logger: debug `remove ${key} from ${finalKey}`
+	const finalKey = `${keyPrefix}${key}`;
+	logger.debug(`remove "${key}" from "${finalKey}".`);
 	await deleteObject(
 		{
-			...s3Config, 
-			userAgentValue: getStorageUserAgentValue(StorageAction.Remove)
+			...s3Config,
+			userAgentValue: getStorageUserAgentValue(StorageAction.Remove),
 		},
 		{
 			Bucket: bucket,
-			Key: `${keyPrefix}${key}`
+			Key: finalKey,
 		}
 	);
 	return {
