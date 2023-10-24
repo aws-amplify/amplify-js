@@ -544,6 +544,67 @@ const amplifyConfig = {
 					sortKeyFieldNames: [],
 				},
 			},
+			ThingWithCustomPk: {
+				name: 'ThingWithCustomPk',
+				fields: {
+					cpk_cluster_key: {
+						name: 'cpk_cluster_key',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					cpk_sort_key: {
+						name: 'cpk_sort_key',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					otherField: {
+						name: 'otherField',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ThingWithCustomPks',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['cpk_cluster_key', 'cpk_sort_key'],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: true,
+					primaryKeyFieldName: 'cpk_cluster_key',
+					sortKeyFieldNames: ['cpk_sort_key'],
+				},
+			},
 		},
 		enums: {},
 		nonModels: {},
