@@ -20,18 +20,10 @@ const serverManagedFields = {
 	updatedAt: new Date().toISOString(),
 };
 
-/**
- * `generateClient()` is only exported from top-level API category, so we create
- * the equivalent of the generated client below. First we need to create a
- * partial mock of the Amplify core module for the pretend generated client:
- */
-let amplify;
-
 jest.mock('aws-amplify', () => {
 	const originalModule = jest.requireActual('aws-amplify');
 
 	const mockedModule = {
-		__esModule: true,
 		...originalModule,
 		Amplify: {
 			...originalModule.Amplify,
@@ -53,13 +45,11 @@ jest.mock('aws-amplify', () => {
 			},
 		},
 	};
-
-	amplify = mockedModule.Amplify;
 	return mockedModule;
 });
 
 const client = {
-	[__amplify]: amplify,
+	[__amplify]: Amplify,
 	graphql,
 	cancel,
 	isCancelError,

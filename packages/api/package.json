@@ -53,7 +53,7 @@
 	"dependencies": {
 		"@aws-amplify/api-graphql": "4.0.0",
 		"@aws-amplify/api-rest": "4.0.0",
-		"tslib": "^2.6.1"
+		"tslib": "^2.5.0"
 	},
 	"jest": {
 		"globals": {
