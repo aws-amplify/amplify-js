@@ -43,9 +43,6 @@ export async function signInWithRedirect(
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	store.setAuthConfig(authConfig);
-	// this ensures to clear oauth data first
-	// in case hostedUI was cancelled.
-	await store.clearOAuthData();
 	await assertUserNotAuthenticated();
 
 	let provider = 'COGNITO'; // Default
@@ -166,6 +163,7 @@ async function handleCodeFlow({
 	const code = url.searchParams.get('code');
 
 	if (!code) {
+		await store.clearOAuthData();
 		return;
 	}
 
@@ -262,8 +260,11 @@ async function handleImplicitFlow({
 			tokenType: undefined,
 			expiresIn: undefined,
 		});
+	if (!idToken || !accessToken) {
+		await store.clearOAuthData();
+		return;
+	}
 
-	await store.clearOAuthInflightData();
 	try {
 		validateState(state);
 	} catch (error) {
@@ -294,6 +295,7 @@ async function completeFlow({
 	redirectUri: string;
 	state: string;
 }) {
+	await store.clearOAuthData();
 	await store.storeOAuthSignIn(true, preferPrivateSession);
 	if (isCustomState(state)) {
 		Hub.dispatch(
