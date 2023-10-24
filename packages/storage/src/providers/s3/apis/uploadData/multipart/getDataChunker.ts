@@ -18,7 +18,7 @@ export type PartToUpload = {
 export const getDataChunker = (
 	data: StorageUploadDataPayload,
 	totalSize?: number
-) => {
+): Generator<PartToUpload, void, undefined> => {
 	const partSize = calculatePartSize(totalSize);
 
 	if (data instanceof Blob) {
@@ -28,7 +28,8 @@ export const getDataChunker = (
 	} else if (data instanceof ArrayBuffer) {
 		return helper(data, 0, data.byteLength, partSize);
 	} else if (typeof data === 'string') {
-		return helper(data, 0, data.length, partSize);
+		const blob = new Blob([data]);
+		return getDataChunker(blob, blob.size);
 	} else {
 		throw new StorageError({
 			name: StorageValidationErrorCode.InvalidUploadSource,
@@ -37,10 +38,8 @@ export const getDataChunker = (
 	}
 };
 
-// TODO[AllanZhengYP]: the byte length of string is incorrect here which will cause the progress tracking behave
-// incorrectly. We should fix this in the future.
 const helper = function* (
-	buffer: ArrayBuffer | Blob | string,
+	buffer: ArrayBuffer | Blob,
 	byteOffset: number,
 	byteLength: number,
 	partSize: number
