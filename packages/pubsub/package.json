@@ -84,7 +84,6 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
-		"cpx": "^1.5.0",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [
