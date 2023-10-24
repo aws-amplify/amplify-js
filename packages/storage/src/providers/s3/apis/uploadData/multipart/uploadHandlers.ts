@@ -97,7 +97,6 @@ export const getMultipartUploadHandlers = (
 			};
 		}
 
-		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
 		uploadCacheKey = size
 			? getUploadsCacheKey({

@@ -3,7 +3,10 @@
 
 import { uploadData } from '../../../../../src/providers/s3/apis';
 import { MAX_OBJECT_SIZE } from '../../../../../src/providers/s3/utils/constants';
-import { createUploadTask } from '../../../../../src/providers/s3/utils';
+import {
+	createUploadTask,
+	resolveS3ConfigAndInput,
+} from '../../../../../src/providers/s3/utils';
 import {
 	validationErrorMap,
 	StorageValidationErrorCode,
@@ -52,8 +55,6 @@ describe('uploadData', () => {
 			});
 			expect(mockCreateUploadTask).toBeCalled();
 		});
-
-		// TODO[AllanZhengYP]: Make sure common S3 configs and input validation utility is called.
 	});
 
 	describe('use putObject', () => {

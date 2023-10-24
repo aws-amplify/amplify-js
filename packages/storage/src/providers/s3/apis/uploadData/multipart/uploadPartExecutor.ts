@@ -62,8 +62,7 @@ export const uploadPartExecutor = async ({
 					Bucket: bucket,
 					Key: finalKey,
 					UploadId: uploadId,
-					// TODO: The Body type of S3 UploadPart API from AWS SDK does not correctly reflects the supported data types.
-					Body: data as any,
+					Body: data,
 					PartNumber: partNumber,
 					ContentMD5: isObjectLockEnabled
 						? await calculateContentMd5(data)

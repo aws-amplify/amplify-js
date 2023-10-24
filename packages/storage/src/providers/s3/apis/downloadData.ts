@@ -63,7 +63,6 @@ const downloadDataJob =
 			Amplify,
 			downloadDataOptions
 		);
-		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
 
 		const {
@@ -90,10 +89,8 @@ const downloadDataJob =
 			}
 		);
 		return {
-			// Casting with ! as body always exists for getObject API.
-			// TODO[AllanZhengYP]: remove casting when we have better typing for getObject API
 			key,
-			body: body!,
+			body,
 			lastModified,
 			size,
 			contentType,
