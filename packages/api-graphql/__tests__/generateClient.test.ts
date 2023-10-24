@@ -964,7 +964,6 @@ describe('generateClient', () => {
 			});
 		});
 
-		// MOSTLY COPY PASTED ... NOT IMPLEMENTED YET
 		test('can see onCreates that are received prior to fetch completion', async done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
@@ -1046,6 +1045,151 @@ describe('generateClient', () => {
 				},
 			});
 			callSequence.push('onCreate');
+		});
+
+		test('can see onUpdates that are received prior to fetch completion', async done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			// to record which order
+			const callSequence = [] as string[];
+
+			// get an API list response "started", but delayed, so that it returns
+			// *after* we get a subscription messages sent to the client.
+			mockApiResponse(
+				new Promise(resolve => {
+					const result = {
+						data: {
+							listTodos: {
+								items: [
+									{
+										__typename: 'Todo',
+										...serverManagedFields,
+										name: 'initial record',
+										description: 'something something',
+									},
+								],
+								nextToken: null,
+							},
+						},
+					};
+					setTimeout(() => {
+						callSequence.push('list');
+						resolve(result);
+					}, 15);
+				})
+			);
+
+			const { streams, spy } = makeAppSyncStreams();
+
+			let firstSnapshot = true;
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					if (firstSnapshot) {
+						firstSnapshot = false;
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							}),
+						]);
+					} else {
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record - UPDATED',
+								description: 'something something',
+							}),
+						]);
+						expect(callSequence).toEqual(['onUpdate', 'list']);
+						done();
+					}
+				},
+			});
+
+			streams.update?.next({
+				data: {
+					onUpdateTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'some-id',
+						name: 'initial record - UPDATED',
+						description: 'something something',
+					},
+				},
+			});
+			callSequence.push('onUpdate');
+		});
+
+		test('can see onDeletes that are received prior to fetch completion', async done => {
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			// to record which order
+			const callSequence = [] as string[];
+
+			// get an API list response "started", but delayed, so that it returns
+			// *after* we get a subscription messages sent to the client.
+			mockApiResponse(
+				new Promise(resolve => {
+					const result = {
+						data: {
+							listTodos: {
+								items: [
+									{
+										__typename: 'Todo',
+										...serverManagedFields,
+										name: 'initial record',
+										description: 'something something',
+									},
+								],
+								nextToken: null,
+							},
+						},
+					};
+					setTimeout(() => {
+						callSequence.push('list');
+						resolve(result);
+					}, 15);
+				})
+			);
+
+			const { streams, spy } = makeAppSyncStreams();
+
+			let firstSnapshot = true;
+			client.models.Todo.observeQuery().subscribe({
+				next({ items, isSynced }) {
+					if (firstSnapshot) {
+						firstSnapshot = false;
+						expect(items).toEqual([
+							expect.objectContaining({
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'initial record',
+								description: 'something something',
+							}),
+						]);
+					} else {
+						expect(items).toEqual([]);
+						expect(callSequence).toEqual(['onDelete', 'list']);
+						done();
+					}
+				},
+			});
+
+			streams.delete?.next({
+				data: {
+					onDeleteTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'some-id',
+						name: 'initial record',
+						description: 'something something',
+					},
+				},
+			});
+			callSequence.push('onDelete');
 		});
 
 		test('can see updates', async done => {
