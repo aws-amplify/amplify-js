@@ -38,7 +38,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		return super.graphql(amplify, options, additionalHeaders, {
 			category: Category.API,
-			action: ApiAction.GraphQl
+			action: ApiAction.GraphQl,
 		});
 	}
 
