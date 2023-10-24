@@ -245,9 +245,6 @@ export const simplePushMessage: PushNotificationMessage = {
 };
 
 export const pushToken = 'foo-bar';
-export const pushNotificationUrl = 'http://goto.fakeurl';
-export const pushNotificationDeeplinkUrl = 'deeplink://url';
-export const pushNotificationAdhocData = { foo: 'bar' };
 export const pinpointCampaign = {
 	campaign_id: 'campaign-id',
 	campaign_activity_id: 'campaign-activity-id',
@@ -257,42 +254,6 @@ export const pinpointJourney = {
 	journey_activity_id: 'journey-activity-id',
 	journey_run_id: 'journey-run-id',
 	journey_id: 'journey-id',
-};
-
-export const apnsMessagePayload = {
-	alert: {
-		title: 'apns-title',
-		subtitle: 'apns-subtitle',
-		body: 'apns-body',
-	},
-};
-
-export const apnsMessage = {
-	aps: apnsMessagePayload,
-	data: {
-		'media-url': imageUrl,
-		...pushNotificationAdhocData,
-	},
-};
-
-export const fcmMessageOptions = {
-	channelId: 'channel-id',
-	messageId: 'message-id',
-	senderId: 'sender-id',
-	sendTime: 1678840781599,
-};
-
-export const fcmMessagePayload = {
-	title: 'fcm-title',
-	body: 'fcm-body',
-	imageUrl: imageUrl,
-	action: {},
-	rawData: pushNotificationAdhocData,
-};
-
-export const fcmMessage = {
-	...fcmMessagePayload,
-	...fcmMessageOptions,
 };
 
 export const ANDROID_CAMPAIGN_ACTIVITY_ID_KEY =
