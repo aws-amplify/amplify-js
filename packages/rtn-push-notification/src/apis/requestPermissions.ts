@@ -5,9 +5,14 @@ import { nativeModule } from '../nativeModule';
 import { PushNotificationPermissions } from '../types';
 
 export const requestPermissions = async (
-	permissions: PushNotificationPermissions = {
+	{ alert = true, badge = true, sound = true }: PushNotificationPermissions = {
 		alert: true,
 		badge: true,
 		sound: true,
 	}
-): Promise<boolean> => nativeModule.requestPermissions(permissions);
+): Promise<boolean> =>
+	nativeModule.requestPermissions({
+		alert,
+		badge,
+		sound,
+	});

@@ -66,10 +66,7 @@ export const getEventBuffer = ({
 	resendLimit,
 	userAgentValue,
 }: KinesisEventBufferConfig): EventBuffer<KinesisBufferEvent> => {
-	const { sessionToken } = credentials;
-	const sessionIdentityKey = [region, sessionToken, identityId]
-		.filter(x => !!x)
-		.join('-');
+	const sessionIdentityKey = [region, identityId].filter(x => !!x).join('-');
 
 	if (!eventBufferMap[sessionIdentityKey]) {
 		const getKinesisClient = (): IAnalyticsClient<KinesisBufferEvent> => {
@@ -100,9 +97,11 @@ export const getEventBuffer = ({
 			x => x !== sessionIdentityKey
 		);
 		for (const releaseSessionKey of releaseSessionKeys) {
-			eventBufferMap[releaseSessionKey].release();
-			delete eventBufferMap[releaseSessionKey];
-			delete cachedClients[releaseSessionKey];
+			eventBufferMap[releaseSessionKey].flushAll().finally(() => {
+				eventBufferMap[releaseSessionKey].release();
+				delete eventBufferMap[releaseSessionKey];
+				delete cachedClients[releaseSessionKey];
+			});
 		}
 	}
 
