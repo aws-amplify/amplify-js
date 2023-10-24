@@ -28,15 +28,15 @@ describe('Interactions LexV2 API: send', () => {
 
 	it('invokes provider sendMessage API', async () => {
 		const message = uuid();
-		await send(v2BotConfig.name, message);
+		await send({ botName: v2BotConfig.name, message });
 		expect(mockLexProvider).toBeCalledTimes(1);
 		expect(mockLexProvider).toBeCalledWith(v2BotConfig, message);
 	});
 
 	it('rejects when bot config does not exist', async () => {
 		mockResolveBotConfig.mockReturnValue(undefined);
-		await expect(send(v2BotConfig.name, uuid())).rejects.toBeInstanceOf(
-			InteractionsError
-		);
+		await expect(
+			send({ botName: v2BotConfig.name, message: uuid() })
+		).rejects.toBeInstanceOf(InteractionsError);
 	});
 });
