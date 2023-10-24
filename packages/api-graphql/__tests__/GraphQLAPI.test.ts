@@ -12,6 +12,8 @@ import {
 	V6Client,
 } from '../src/types';
 import { GetThreadQuery } from './fixtures/with-types/API';
+import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
+import { Observable, of } from 'rxjs';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -886,196 +888,106 @@ describe('API test', () => {
 		});
 
 		// TODO:
-		// test('authMode on subscription', async () => {
-		// 	expect.assertions(1);
+		test('authMode on subscription', async () => {
+			expect.assertions(1);
 
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// 	const cache_config = {
-		// 		capacityInBytes: 3000,
-		// 		itemMaxSize: 800,
-		// 		defaultTTL: 3000000,
-		// 		defaultPriority: 5,
-		// 		warningThreshold: 0.8,
-		// 		storage: window.localStorage,
-		// 	};
+			const url = 'https://appsync.amazonaws.com',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	Cache.configure(cache_config);
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'id_token' });
+			(
+				client.graphql({
+					query,
+					variables,
+					authMode: 'oidc',
+				}) as any
+			).subscribe();
 
-		// 	const spyon_pubsub = jest
-		// 		.spyOn(InternalPubSub, 'subscribe')
-		// 		.mockImplementation(jest.fn(() => Observable.of({}) as any));
-
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
-
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
-
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
-
-		// 	(
-		// 		api.graphql({
-		// 			query,
-		// 			variables,
-		// 			authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-		// 		}) as any
-		// 	).subscribe();
-
-		// 	expect(spyon_pubsub).toBeCalledWith(
-		// 		'',
-		// 		expect.objectContaining({
-		// 			authenticationType: 'OPENID_CONNECT',
-		// 		}),
-		// 		undefined
-		// 	);
-		// });
+			expect(spyon_appsync_realtime).toBeCalledWith(
+				expect.objectContaining({
+					authenticationType: 'oidc',
+				}),
+				expect.anything()
+			);
+		});
 
 		// TODO:
-		// test('happy-case-subscription', async done => {
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
+		test('happy-case-subscription', async done => {
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	InternalPubSub.subscribe = jest.fn(() => Observable.of({}) as any);
+			const observable = (
+				client.graphql({ query, variables }) as unknown as Observable<object>
+			).subscribe({
+				next: () => {
+					expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
+					const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
+					expect(subscribeOptions?.variables).toBe(variables);
+					done();
+				},
+			});
 
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
-
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
-
-		// 	const observable = (
-		// 		api.graphql(
-		// 			graphqlOperation(query, variables)
-		// 		) as unknown as Observable<object>
-		// 	).subscribe({
-		// 		next: () => {
-		// 			expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
-		// 			const subscribeOptions = (InternalPubSub.subscribe as any).mock
-		// 				.calls[0][1];
-		// 			expect(subscribeOptions.provider).toBe(
-		// 				INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
-		// 			);
-		// 			done();
-		// 		},
-		// 	});
-
-		// 	expect(observable).not.toBe(undefined);
-		// });
+			expect(observable).not.toBe(undefined);
+		});
 
 		// TODO:
-		// test('happy case subscription with additionalHeaders', async done => {
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
+		test('happy case subscription with additionalHeaders', async done => {
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	InternalPubSub.subscribe = jest.fn(() => Observable.of({}) as any);
+			const additionalHeaders = {
+				'x-custom-header': 'value',
+			};
 
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
+			const observable = (
+				client.graphql(
+					{ query, variables },
+					additionalHeaders
+				) as unknown as Observable<object>
+			).subscribe({
+				next: () => {
+					expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
+					const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
+					expect(subscribeOptions?.additionalHeaders).toBe(additionalHeaders);
+					done();
+				},
+			});
 
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
-
-		// 	const additionalHeaders = {
-		// 		'x-custom-header': 'value',
-		// 	};
-
-		// 	const observable = (
-		// 		api.graphql(
-		// 			graphqlOperation(query, variables),
-		// 			additionalHeaders
-		// 		) as unknown as Observable<object>
-		// 	).subscribe({
-		// 		next: () => {
-		// 			expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
-		// 			const subscribeOptions = (InternalPubSub.subscribe as any).mock
-		// 				.calls[0][1];
-		// 			expect(subscribeOptions.additionalHeaders).toBe(additionalHeaders);
-		// 			done();
-		// 		},
-		// 	});
-
-		// 	expect(observable).not.toBe(undefined);
-		// });
+			expect(observable).not.toBe(undefined);
+		});
 
 		// TODO:
 		// test('happy case mutation', async () => {
