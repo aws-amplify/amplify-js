@@ -4,6 +4,8 @@
 import {
 	sessionListener,
 	SessionState,
+	SESSION_START_EVENT,
+	SESSION_STOP_EVENT,
 } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
 import {
@@ -11,9 +13,6 @@ import {
 	TrackerEventRecorder,
 	TrackerInterface,
 } from '../types/trackers';
-
-const SESSION_START_EVENT = '_session.start';
-const SESSION_STOP_EVENT = '_session.stop';
 
 const logger = new ConsoleLogger('SessionTracker');
 
