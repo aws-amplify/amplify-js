@@ -14,6 +14,10 @@ import {
 	uuid,
 } from '../testUtils/data';
 import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/getEventBuffer';
+import {
+	SESSION_START_EVENT,
+	SESSION_STOP_EVENT,
+} from '../../../../src/utils/sessionListener';
 
 jest.mock('uuid');
 jest.mock('../../../../src/awsClients/pinpoint');
@@ -113,10 +117,10 @@ describe('Pinpoint Provider API: record', () => {
 
 	it('should start and stop sessions when appropriate events are received', async () => {
 		const mockStartEvent = {
-			name: '_session.start',
+			name: SESSION_START_EVENT,
 		};
 		const mockEndEvent = {
-			name: '_session.stop',
+			name: SESSION_STOP_EVENT,
 		};
 
 		mockUuid.mockReturnValue('new-uuid');
