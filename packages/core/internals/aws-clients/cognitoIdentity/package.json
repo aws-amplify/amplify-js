@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/core/internals/aws-clients/cognitoIdentity",
+	"types": "../../../lib-esm/awsClients/cognitoIdentity/index.d.ts",
+	"main": "../../../lib/awsClients/cognitoIdentity/index.js",
+	"module": "../../../lib-esm/awsClients/cognitoIdentity/index.js",
+	"react-native": "../../../lib-esm/awsClients/cognitoIdentity/index.js",
+	"sideEffects": false
+}

@@ -7,6 +7,7 @@ import { AmplifyErrorMap, AssertionFunction } from '../../../types';
 export enum AuthConfigurationErrorCode {
 	AuthTokenConfigException = 'AuthTokenConfigException',
 	AuthUserPoolAndIdentityPoolException = 'AuthUserPoolAndIdentityPoolException',
+	AuthUserPoolException = 'AuthUserPoolException',
 	InvalidIdentityPoolIdException = 'InvalidIdentityPoolIdException',
 	OAuthNotConfigureException = 'OAuthNotConfigureException',
 }
@@ -20,6 +21,11 @@ const authConfigurationErrorMap: AmplifyErrorMap<AuthConfigurationErrorCode> = {
 		message: 'Auth UserPool or IdentityPool not configured.',
 		recoverySuggestion:
 			'Make sure to call Amplify.configure in your app with UserPoolId and IdentityPoolId.',
+	},
+	[AuthConfigurationErrorCode.AuthUserPoolException]: {
+		message: 'Auth UserPool not configured.',
+		recoverySuggestion:
+			'Make sure to call Amplify.configure in your app with UserPoolId.',
 	},
 	[AuthConfigurationErrorCode.InvalidIdentityPoolIdException]: {
 		message: 'Invalid identity pool id provided.',
