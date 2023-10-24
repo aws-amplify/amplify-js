@@ -887,7 +887,6 @@ describe('API test', () => {
 			});
 		});
 
-		// TODO:
 		test('authMode on subscription', async () => {
 			expect.assertions(1);
 
@@ -922,7 +921,6 @@ describe('API test', () => {
 			);
 		});
 
-		// TODO:
 		test('happy-case-subscription', async done => {
 			const spyon_appsync_realtime = jest
 				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
@@ -952,7 +950,6 @@ describe('API test', () => {
 			expect(observable).not.toBe(undefined);
 		});
 
-		// TODO:
 		test('happy case subscription with additionalHeaders', async done => {
 			const spyon_appsync_realtime = jest
 				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
