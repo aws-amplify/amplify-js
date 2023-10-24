@@ -43,6 +43,13 @@ const schema = a.schema({
 		id: a.id(),
 		description: a.string(),
 	}),
+	ThingWithCustomPk: a
+		.model({
+			cpk_cluster_key: a.string().required(),
+			cpk_sort_key: a.string().required(),
+			otherField: a.string(),
+		})
+		.identifier(['cpk_cluster_key', 'cpk_sort_key']),
 });
 
 export type Schema = ClientSchema<typeof schema>;
