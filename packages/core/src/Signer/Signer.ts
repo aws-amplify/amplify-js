@@ -13,6 +13,10 @@ const IOT_SERVICE_NAME = 'iotdevicegateway';
 // Best practice regex to parse the service and region from an AWS endpoint
 const AWS_ENDPOINT_REGEX = /([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com(.cn)?$/;
 
+/**
+ * @internal
+ * @deprecated
+ */
 export class Signer {
 	/**
     * Sign a HTTP request, add 'Authorization' header to request param
