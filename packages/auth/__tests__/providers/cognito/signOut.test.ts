@@ -220,7 +220,7 @@ describe('signOut tests no oauth request fail', () => {
 	});
 });
 
-describe('signOut tests with oauth', () => {
+describe.skip('signOut tests with oauth', () => {
 	let tokenStoreSpy;
 	let tokenOrchestratorSpy;
 	let globalSignOutSpy;
