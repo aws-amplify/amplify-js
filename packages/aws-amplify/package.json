@@ -250,13 +250,13 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
-			"limit": "15.87 kB"
+			"limit": "15.91 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./lib-esm/analytics/kinesis/index.js",
 			"import": "{ record }",
-			"limit": "44.01 kB"
+			"limit": "44.05 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
@@ -274,7 +274,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ identifyUser }",
-			"limit": "14.47 kB"
+			"limit": "14.51 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -328,7 +328,7 @@
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ resendSignUpCode }",
-			"limit": "8.87 kB"
+			"limit": "8.9 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -346,13 +346,13 @@
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updateMFAPreference }",
-			"limit": "7.95 kB"
+			"limit": "7.98 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ fetchMFAPreference }",
-			"limit": "7.99 kB"
+			"limit": "8.02 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
@@ -364,7 +364,7 @@
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ updatePassword }",
-			"limit": "8.82 kB"
+			"limit": "8.85 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -382,7 +382,7 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ getCurrentUser }",
-			"limit": "3.88 kB"
+			"limit": "3.91 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
@@ -430,7 +430,7 @@
 			"name": "[Storage] getProperties (S3)",
 			"path": "./lib-esm/storage/index.js",
 			"import": "{ getProperties }",
-			"limit": "12.91 kB"
+			"limit": "12.95 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
