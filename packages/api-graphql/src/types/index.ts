@@ -9,6 +9,7 @@ import {
 	GraphQLAuthMode,
 	DocumentType,
 } from '@aws-amplify/core/internals/utils';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
@@ -358,7 +359,7 @@ export const __amplify = Symbol('amplify');
  */
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
-	graphql: GraphQLClient;
+	graphql: GraphQLMethod;
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
 }>;
@@ -366,12 +367,12 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 export type V6ClientSSR<T extends Record<any, any> = never> =
 	ExcludeNeverFields<{
 		[__amplify]: AmplifyClassV6;
-		graphql: GraphQLClientSSR;
+		graphql: GraphQLMethodSSR;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
 	}>;
 
-type GraphQLClient = <
+export type GraphQLMethod = <
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string
 >(
@@ -383,11 +384,11 @@ type GraphQLClient = <
 		| undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
-export type GraphQLClientSSR = <
+export type GraphQLMethodSSR = <
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string
 >(
-	contextSpec: any,
+	contextSpec: AmplifyServer.ContextSpec,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 	additionalHeaders?:
 		| {

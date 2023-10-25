@@ -2,23 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { generateClient as internalGenerateClient } from '@aws-amplify/api/server';
-import { getAmplifyServerContext } from '@aws-amplify/core/internals/adapter-core';
-
+import {
+	getAmplifyServerContext,
+	AmplifyServerContextError,
+} from '@aws-amplify/core/internals/adapter-core';
 import {
 	V6Client,
 	V6ClientSSR,
-	GraphQLClientSSR,
+	GraphQLMethod,
+	GraphQLMethodSSR,
 	__amplify,
 } from '@aws-amplify/api-graphql';
 
 import { runWithAmplifyServerContext } from './runWithAmplifyServerContext';
 import { getAmplifyConfig } from './utils/getAmplifyConfig';
 import { NextServer } from './types';
-
-export type {
-	GraphQLResult,
-	GraphQLReturnType,
-} from '@aws-amplify/api-graphql';
 
 /**
  * Generates an API client that can be used inside a Next.js Server Component
@@ -38,9 +36,13 @@ export function generateServerClientUsingCookies<
 		!nextServerContext.cookies ||
 		(nextServerContext as any).request !== undefined
 	) {
-		throw new Error(
-			'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components'
-		);
+		throw new AmplifyServerContextError({
+			message:
+				'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components',
+			// TODO: link to docs
+			recoverySuggestion:
+				'use generateServerClient inside of runWithAmplifyServerContext with the `request` object',
+		});
 	}
 
 	// This function reference gets passed down to InternalGraphQLAPI.ts.graphql
@@ -75,13 +77,10 @@ export function generateServerClient<
 		config,
 	});
 
-	const prevGraphql = client.graphql;
+	// TODO: improve this and the next type
+	const prevGraphql = client.graphql as unknown as GraphQLMethod;
 
-	const wrappedGraphql: GraphQLClientSSR = (
-		contextSpec,
-		options,
-		additionalHeaders?
-	) => {
+	const wrappedGraphql = (contextSpec, options, additionalHeaders?) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },
@@ -90,6 +89,6 @@ export function generateServerClient<
 		);
 	};
 
-	client.graphql = wrappedGraphql;
+	client.graphql = wrappedGraphql as unknown as GraphQLMethodSSR;
 	return client;
 }
