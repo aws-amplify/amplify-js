@@ -58,6 +58,20 @@ describe('getRedirectUrl on web', () => {
 			);
 		}
 	);
+	it('should pick the first url that is comming from a different pathname but same domain', async () => {
+		Object.defineProperty(globalThis, 'window', {
+			value: {
+				location: {
+					origin: 'https://example.com',
+					pathname: '/app',
+					hostname: 'example.com',
+				},
+			},
+			writable: true,
+		});
+		const redirect = getRedirectUrl(['https://example.com/another-app']);
+		expect(redirect).toBe('https://example.com/another-app');
+	});
 
 	it('should throw if the url is not comming from the same origin', async () => {
 		Object.defineProperty(globalThis, 'window', {

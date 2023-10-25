@@ -7,23 +7,26 @@ import {
 
 /** @internal */
 export function getRedirectUrl(redirects: string[]): string {
-	const redirectComfingFromTheSameOrigin = redirects?.find(
-		isCurrentWindowLocation
-	);
-	const redirectComingFromDifferentOrigin =
+	const redirectUrlFromTheSameOrigin =
+		redirects?.find(isSameOriginAndPathName) ??
+		redirects?.find(isTheSameDomain);
+	const redirectUrlFromDifferentOrigin =
 		redirects?.find(isHttps) ?? redirects?.find(isHttp);
-	if (redirectComfingFromTheSameOrigin) {
-		return redirectComfingFromTheSameOrigin;
-	} else if (redirectComingFromDifferentOrigin) {
+	if (redirectUrlFromTheSameOrigin) {
+		return redirectUrlFromTheSameOrigin;
+	} else if (redirectUrlFromDifferentOrigin) {
 		throw invalidOriginException;
 	}
 	throw invalidRedirectException;
 }
 
-const isCurrentWindowLocation = (redirect: string) =>
+// origin + pathname => https://example.com/app
+const isSameOriginAndPathName = (redirect: string) =>
 	redirect.startsWith(
 		String(window.location.origin + window.location.pathname ?? '/')
 	);
-
+// domain => outlook.live.com, github.com
+const isTheSameDomain = (redirect: string) =>
+	redirect.includes(String(window.location.hostname));
 const isHttp = (redirect: string) => redirect.startsWith('http://');
 const isHttps = (redirect: string) => redirect.startsWith('https://');
