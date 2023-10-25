@@ -113,5 +113,5 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
 	},
 	"typings": "./lib-esm/index.d.ts",
-	"version": "0.0.1"
+	"version": "1.0.0"
 }
