@@ -180,7 +180,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					Amplify.configure(mockResourceConfig, { ssr: true });
 
 					expect(MockCookieStorage).toHaveBeenCalledWith({
-						sameSite: 'strict',
+						sameSite: 'lax',
 					});
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
