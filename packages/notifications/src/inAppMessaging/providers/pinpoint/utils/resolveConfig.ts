@@ -12,7 +12,7 @@ import {
  */
 export const resolveConfig = () => {
 	const { appId, region } =
-		Amplify.getConfig().Notifications?.InAppMessaging.Pinpoint ?? {};
+		Amplify.getConfig().Notifications?.InAppMessaging?.Pinpoint ?? {};
 	assertValidationError(!!appId, InAppMessagingValidationErrorCode.NoAppId);
 	assertValidationError(!!region, InAppMessagingValidationErrorCode.NoRegion);
 	return { appId, region };

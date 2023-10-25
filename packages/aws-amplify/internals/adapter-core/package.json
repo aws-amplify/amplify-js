@@ -1,8 +1,0 @@
-{
-	"name": "aws-amplify/internals/adapter-core",
-	"types": "../../lib-esm/adapterCore/index.d.ts",
-	"main": "../../lib/adapterCore/index.js",
-	"module": "../../lib-esm/adapterCore/index.js",
-	"react-native": "../../lib-esm/adapterCore/index.js",
-	"sideEffects": false
-}

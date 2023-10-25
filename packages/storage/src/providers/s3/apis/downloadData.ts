@@ -84,6 +84,9 @@ const downloadDataJob =
 			{
 				Bucket: bucket,
 				Key: finalKey,
+				...(downloadDataOptions?.bytesRange && {
+					Range: `bytes=${downloadDataOptions.bytesRange.start}-${downloadDataOptions.bytesRange.end}`,
+				}),
 			}
 		);
 		return {

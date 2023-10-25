@@ -12,6 +12,8 @@ import {
 	V6Client,
 } from '../src/types';
 import { GetThreadQuery } from './fixtures/with-types/API';
+import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
+import { Observable, of } from 'rxjs';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -20,18 +22,17 @@ const serverManagedFields = {
 	updatedAt: new Date().toISOString(),
 };
 
-/**
- * `generateClient()` is only exported from top-level API category, so we create
- * the equivalent of the generated client below. First we need to create a
- * partial mock of the Amplify core module for the pretend generated client:
- */
-let amplify;
+let mockAccessToken: string | null = 'mock-access-token';
+
+let mockCredentials: any = {
+	accessKeyId: 'mock-access-key-id',
+	secretAccessKey: 'mock-secret-access-key',
+};
 
 jest.mock('aws-amplify', () => {
 	const originalModule = jest.requireActual('aws-amplify');
 
 	const mockedModule = {
-		__esModule: true,
 		...originalModule,
 		Amplify: {
 			...originalModule.Amplify,
@@ -41,25 +42,20 @@ jest.mock('aws-amplify', () => {
 					return {
 						tokens: {
 							accessToken: {
-								toString: () => 'mock-access-token',
+								toString: () => mockAccessToken,
 							},
 						},
-						credentials: {
-							accessKeyId: 'mock-access-key-id',
-							secretAccessKey: 'mock-secret-access-key',
-						},
+						credentials: mockCredentials,
 					};
 				}),
 			},
 		},
 	};
-
-	amplify = mockedModule.Amplify;
 	return mockedModule;
 });
 
 const client = {
-	[__amplify]: amplify,
+	[__amplify]: Amplify,
 	graphql,
 	cancel,
 	isCancelError,
@@ -245,91 +241,67 @@ describe('API test', () => {
 			});
 		});
 
-		// TODO:
-		// test('happy-case-query-oidc with auth storage federated token', async () => {
-		// 	const spyonCredentials = jest
-		// 		.spyOn(Credentials, 'get')
-		// 		.mockImplementationOnce(() => {
-		// 			return new Promise((res, rej) => {
-		// 				res('cred');
-		// 			});
-		// 		});
+		test('happy-case-query-oidc with auth storage federated token', async () => {
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'oidc',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
 
-		// 	const cache_config = {
-		// 		capacityInBytes: 3000,
-		// 		itemMaxSize: 800,
-		// 		defaultTTL: 3000000,
-		// 		defaultPriority: 5,
-		// 		warningThreshold: 0.8,
-		// 		storage: window.localStorage,
-		// 	};
+			const threadToGet = {
+				id: 'some-id',
+				topic: 'something reasonably interesting',
+			};
 
-		// 	Cache.configure(cache_config);
+			const graphqlVariables = { id: 'some-id' };
 
-		// 	const spyonCache = jest
-		// 		.spyOn(Cache, 'getItem')
-		// 		.mockImplementationOnce(() => {
-		// 			return null;
-		// 		});
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
 
-		// 	const spyonAuth = jest
-		// 		.spyOn(InternalAuth, 'currentAuthenticatedUser')
-		// 		.mockImplementationOnce(() => {
-		// 			return new Promise((res, rej) => {
-		// 				res({
-		// 					name: 'federated user',
-		// 					token: 'federated_token_from_storage',
-		// 				});
-		// 			});
-		// 		});
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
-		// 	const spyon = jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementationOnce((url, init) => {
-		// 			return new Promise((res, rej) => {
-		// 				res({});
-		// 			});
-		// 		});
+			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
+				query: typedQueries.getThread,
+				variables: graphqlVariables,
+				authMode: 'oidc',
+			});
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'OPENID_CONNECT',
-		// 	});
+			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
+			const errors = result.errors;
 
-		// 	const headers = {
-		// 		Authorization: 'federated_token_from_storage',
-		// 		// 'x-amz-user-agent': expectedUserAgentFrameworkOnly,
-		// 	};
-
-		// 	const body = {
-		// 		query: getEventQuery,
-		// 		variables,
-		// 	};
-
-		// 	const init = {
-		// 		headers,
-		// 		body,
-		// 		signerServiceInfo: {
-		// 			service: 'appsync',
-		// 			region,
-		// 		},
-		// 		cancellableToken: mockCancellableToken,
-		// 	};
-
-		// 	await api.graphql(graphqlOperation(GetEvent, variables));
-
-		// 	expect(spyon).toBeCalledWith(url, init);
-
-		// 	spyonCredentials.mockClear();
-		// 	spyonCache.mockClear();
-		// 	spyonAuth.mockClear();
-		// });
+			expect(errors).toBe(undefined);
+			expect(thread).toEqual(graphqlResponse.data.getThread);
+			expect(spy).toHaveBeenCalledWith({
+				abortController: expect.any(AbortController),
+				url: new URL('https://localhost/graphql'),
+				options: expect.objectContaining({
+					headers: expect.objectContaining({
+						Authorization: 'mock-access-token',
+					}),
+					signingServiceInfo: expect.objectContaining({
+						region: 'local-host-h4x',
+						service: 'appsync',
+					}),
+				}),
+			});
+		});
 
 		test('happy case query with AWS_LAMBDA', async () => {
 			Amplify.configure({
@@ -394,57 +366,72 @@ describe('API test', () => {
 			});
 		});
 
-		// TODO: implement after custom user agent work is complete
-		// test('additional headers with AWS_LAMBDA', async () => {
-		// 	expect.assertions(1);
+		test('additional headers with AWS_LAMBDA', async () => {
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'lambda',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
 
-		// 	const spyon = jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockReturnValue(Promise.resolve({}));
+			const threadToGet = {
+				id: 'some-id',
+				topic: 'something reasonably interesting',
+			};
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com';
-		// 	const region = 'us-east-2';
-		// 	const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			const graphqlVariables = { id: 'some-id' };
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'AWS_LAMBDA',
-		// 	});
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
 
-		// 	const headers = {
-		// 		// 'x-amz-user-agent': expectedUserAgentFrameworkOnly,
-		// 		Authorization: 'myAuthToken',
-		// 	};
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
-		// 	const body = {
-		// 		query: getEventQuery,
-		// 		variables,
-		// 	};
+			const result: GraphQLResult<GetThreadQuery> = await client.graphql(
+				{
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'oidc',
+				},
+				{
+					Authorization: 'additional-header-auth-token',
+				}
+			);
 
-		// 	const init = {
-		// 		headers,
-		// 		body,
-		// 		signerServiceInfo: {
-		// 			service: 'appsync',
-		// 			region,
-		// 		},
-		// 		cancellableToken: mockCancellableToken,
-		// 	};
+			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
+			const errors = result.errors;
 
-		// 	await api.graphql(
-		// 		{
-		// 			query: GetEvent,
-		// 			variables,
-		// 			authToken: 'myAuthToken',
-		// 		},
-		// 		{ Authorization: 'anotherAuthToken' }
-		// 	);
-
-		// 	expect(spyon).toBeCalledWith(url, init);
-		// });
+			expect(errors).toBe(undefined);
+			expect(thread).toEqual(graphqlResponse.data.getThread);
+			expect(spy).toHaveBeenCalledWith({
+				abortController: expect.any(AbortController),
+				url: new URL('https://localhost/graphql'),
+				options: expect.objectContaining({
+					headers: expect.objectContaining({
+						Authorization: 'additional-header-auth-token',
+					}),
+					signingServiceInfo: expect.objectContaining({
+						region: 'local-host-h4x',
+						service: 'appsync',
+					}),
+				}),
+			});
+		});
 
 		test('multi-auth default case AWS_IAM, using API_KEY as auth mode', async () => {
 			Amplify.configure({
@@ -630,7 +617,7 @@ describe('API test', () => {
 			});
 		});
 
-		test('multi-auth default case api-key, using OIDC as auth mode', async () => {
+		test('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
 			Amplify.configure({
 				API: {
 					GraphQL: {
@@ -642,59 +629,22 @@ describe('API test', () => {
 				},
 			});
 
-			const threadToGet = {
-				id: 'some-id',
-				topic: 'something reasonably interesting',
-			};
-
-			const graphqlVariables = { id: 'some-id' };
-
-			const graphqlResponse = {
-				data: {
-					getThread: {
-						__typename: 'Thread',
-						...serverManagedFields,
-						...threadToGet,
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
 					},
 				},
-			};
-
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
-
-			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
-				query: typedQueries.getThread,
-				variables: graphqlVariables,
-				authMode: 'oidc',
-			});
-
-			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
-			const errors = result.errors;
-
-			expect(errors).toBe(undefined);
-			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({
-						Authorization: 'mock-access-token',
-					}),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
-				}),
 			});
 		});
 
-		// TODO: make this fail without `Cache`?
-		test.skip('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
+		test('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
+			const prevMockAccessToken = mockAccessToken;
+			mockAccessToken = null;
+
 			Amplify.configure({
 				API: {
 					GraphQL: {
@@ -723,13 +673,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			jest.spyOn((raw.GraphQLAPI as any)._api, 'post').mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			await expect(
 				client.graphql({
@@ -738,10 +686,15 @@ describe('API test', () => {
 					authMode: 'oidc',
 				})
 			).rejects.toThrowError('No current user');
+
+			// Cleanup:
+			mockAccessToken = prevMockAccessToken;
 		});
 
-		// TODO:
-		test.skip('multi-auth using CUP as auth mode, but no userpool', async () => {
+		test('multi-auth using CUP as auth mode, but no userpool', async () => {
+			const prevMockAccessToken = mockAccessToken;
+			mockAccessToken = null;
+
 			Amplify.configure({
 				API: {
 					GraphQL: {
@@ -752,6 +705,29 @@ describe('API test', () => {
 					},
 				},
 			});
+
+			const threadToGet = {
+				id: 'some-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
 			const graphqlVariables = { id: 'some-id' };
 
@@ -762,6 +738,9 @@ describe('API test', () => {
 					authMode: 'userPool',
 				})
 			).rejects.toThrow();
+
+			// Cleanup:
+			mockAccessToken = prevMockAccessToken;
 		});
 
 		it('AWS_LAMBDA as auth mode, but no auth token specified', async () => {
@@ -808,8 +787,10 @@ describe('API test', () => {
 			).rejects.toThrowError(GraphQLAuthError.NO_API_KEY);
 		});
 
-		// TODO:
-		test.skip('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
+		test('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
+			const prevMockCredentials = mockCredentials;
+			mockCredentials = undefined;
+
 			Amplify.configure({
 				API: {
 					GraphQL: {
@@ -829,7 +810,10 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'iam',
 				})
-			).rejects.toThrowError(GraphQLAuthError.NO_API_KEY);
+			).rejects.toThrowError(GraphQLAuthError.NO_CREDENTIALS);
+
+			// Cleanup:
+			mockCredentials = prevMockCredentials;
 		});
 
 		test('multi-auth default case api-key, using CUP as auth mode', async () => {
@@ -895,267 +879,104 @@ describe('API test', () => {
 			});
 		});
 
-		// TODO:
-		// test('authMode on subscription', async () => {
-		// 	expect.assertions(1);
+		test('authMode on subscription', async () => {
+			expect.assertions(1);
 
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// 	const cache_config = {
-		// 		capacityInBytes: 3000,
-		// 		itemMaxSize: 800,
-		// 		defaultTTL: 3000000,
-		// 		defaultPriority: 5,
-		// 		warningThreshold: 0.8,
-		// 		storage: window.localStorage,
-		// 	};
+			const url = 'https://appsync.amazonaws.com',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	Cache.configure(cache_config);
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'id_token' });
+			(
+				client.graphql({
+					query,
+					variables,
+					authMode: 'oidc',
+				}) as any
+			).subscribe();
 
-		// 	const spyon_pubsub = jest
-		// 		.spyOn(InternalPubSub, 'subscribe')
-		// 		.mockImplementation(jest.fn(() => Observable.of({}) as any));
+			expect(spyon_appsync_realtime).toBeCalledWith(
+				expect.objectContaining({
+					authenticationType: 'oidc',
+				}),
+				expect.anything()
+			);
+		});
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+		test('happy-case-subscription', async done => {
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
+			const observable = (
+				client.graphql({ query, variables }) as unknown as Observable<object>
+			).subscribe({
+				next: () => {
+					expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
+					const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
+					expect(subscribeOptions?.variables).toBe(variables);
+					done();
+				},
+			});
 
-		// 	(
-		// 		api.graphql({
-		// 			query,
-		// 			variables,
-		// 			authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-		// 		}) as any
-		// 	).subscribe();
+			expect(observable).not.toBe(undefined);
+		});
 
-		// 	expect(spyon_pubsub).toBeCalledWith(
-		// 		'',
-		// 		expect.objectContaining({
-		// 			authenticationType: 'OPENID_CONNECT',
-		// 		}),
-		// 		undefined
-		// 	);
-		// });
+		test('happy case subscription with additionalHeaders', async done => {
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// TODO:
-		// test('happy-case-subscription', async done => {
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
+			const additionalHeaders = {
+				'x-custom-header': 'value',
+			};
 
-		// 	InternalPubSub.subscribe = jest.fn(() => Observable.of({}) as any);
+			const observable = (
+				client.graphql(
+					{ query, variables },
+					additionalHeaders
+				) as unknown as Observable<object>
+			).subscribe({
+				next: () => {
+					expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
+					const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
+					expect(subscribeOptions?.additionalHeaders).toBe(additionalHeaders);
+					done();
+				},
+			});
 
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
-
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
-
-		// 	const observable = (
-		// 		api.graphql(
-		// 			graphqlOperation(query, variables)
-		// 		) as unknown as Observable<object>
-		// 	).subscribe({
-		// 		next: () => {
-		// 			expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
-		// 			const subscribeOptions = (InternalPubSub.subscribe as any).mock
-		// 				.calls[0][1];
-		// 			expect(subscribeOptions.provider).toBe(
-		// 				INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
-		// 			);
-		// 			done();
-		// 		},
-		// 	});
-
-		// 	expect(observable).not.toBe(undefined);
-		// });
-
-		// TODO:
-		// test('happy case subscription with additionalHeaders', async done => {
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
-
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
-
-		// 	InternalPubSub.subscribe = jest.fn(() => Observable.of({}) as any);
-
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
-
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
-
-		// 	const additionalHeaders = {
-		// 		'x-custom-header': 'value',
-		// 	};
-
-		// 	const observable = (
-		// 		api.graphql(
-		// 			graphqlOperation(query, variables),
-		// 			additionalHeaders
-		// 		) as unknown as Observable<object>
-		// 	).subscribe({
-		// 		next: () => {
-		// 			expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
-		// 			const subscribeOptions = (InternalPubSub.subscribe as any).mock
-		// 				.calls[0][1];
-		// 			expect(subscribeOptions.additionalHeaders).toBe(additionalHeaders);
-		// 			done();
-		// 		},
-		// 	});
-
-		// 	expect(observable).not.toBe(undefined);
-		// });
-
-		// TODO:
-		// test('happy case mutation', async () => {
-		// 	const spyonAuth = jest
-		// 		.spyOn(Credentials, 'get')
-		// 		.mockImplementationOnce(() => {
-		// 			return new Promise((res, rej) => {
-		// 				res('cred');
-		// 			});
-		// 		});
-
-		// 	const spyon = jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementationOnce((url, init) => {
-		// 			return new Promise((res, rej) => {
-		// 				res({});
-		// 			});
-		// 		});
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = {
-		// 			id: '809392da-ec91-4ef0-b219-5238a8f942b2',
-		// 			content: 'lalala',
-		// 			createdAt: new Date().toISOString(),
-		// 		};
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
-		// 	const AddComment = `mutation AddComment($eventId: ID!, $content: String!, $createdAt: String!) {
-		// 		commentOnEvent(eventId: $eventId, content: $content, createdAt: $createdAt) {
-		// 			eventId
-		// 			content
-		// 			createdAt
-		// 		}
-		// 	}`;
-
-		// 	const doc = parse(AddComment);
-		// 	const query = print(doc);
-
-		// 	const headers = {
-		// 		Authorization: null,
-		// 		'X-Api-Key': apiKey,
-		// 		// 'x-amz-user-agent': expectedUserAgentFrameworkOnly,
-		// 	};
-
-		// 	const body = {
-		// 		query,
-		// 		variables,
-		// 	};
-
-		// 	const init = {
-		// 		headers,
-		// 		body,
-		// 		signerServiceInfo: {
-		// 			service: 'appsync',
-		// 			region,
-		// 		},
-		// 		cancellableToken: mockCancellableToken,
-		// 	};
-
-		// 	await api.graphql(graphqlOperation(AddComment, variables));
-
-		// 	expect(spyon).toBeCalledWith(url, init);
-		// });
+			expect(observable).not.toBe(undefined);
+		});
 
 		test('happy case query with additionalHeaders', async () => {
 			/**
@@ -1250,64 +1071,85 @@ describe('API test', () => {
 			});
 		});
 
-		// TODO:
-		// test('sends cookies with request', async () => {
-		// 	const spyonAuth = jest
-		// 		.spyOn(Credentials, 'get')
-		// 		.mockImplementationOnce(() => {
-		// 			return new Promise((res, rej) => {
-		// 				res('cred');
-		// 			});
-		// 		});
+		test('sends cookies with request', async () => {
+			/**
+			 * Create a new client with unmocked Amplify imported from `core`.
+			 * This is necessary to preserve the `libraryOptions` on the singleton
+			 * (in this test case, headers passed via configuration options).
+			 */
+			const optionsClient = {
+				[__amplify]: AmplifyCore,
+				graphql,
+				cancel,
+			} as V6Client;
 
-		// 	const spyon = jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementationOnce((url, init) => {
-		// 			return new Promise((res, rej) => {
-		// 				res({});
-		// 			});
-		// 		});
+			Amplify.configure(
+				{
+					API: {
+						GraphQL: {
+							defaultAuthMode: 'iam',
+							apiKey: 'FAKE-KEY',
+							endpoint: 'https://localhost/graphql',
+							region: 'local-host-h4x',
+						},
+					},
+				},
+				{
+					API: {
+						GraphQL: {
+							withCredentials: true,
+						},
+					},
+				}
+			);
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 		withCredentials: true,
-		// 	});
+			const threadToGet = {
+				id: 'some-id',
+				topic: 'something reasonably interesting',
+			};
 
-		// 	const headers = {
-		// 		Authorization: null,
-		// 		'X-Api-Key': apiKey,
-		// 		// 'x-amz-user-agent': expectedUserAgentFrameworkOnly,
-		// 	};
+			const graphqlVariables = { id: 'some-id' };
 
-		// 	const body = {
-		// 		query: getEventQuery,
-		// 		variables,
-		// 	};
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
 
-		// 	const init = {
-		// 		headers,
-		// 		body,
-		// 		signerServiceInfo: {
-		// 			service: 'appsync',
-		// 			region,
-		// 		},
-		// 		cancellableToken: mockCancellableToken,
-		// 		withCredentials: true,
-		// 	};
-		// 	let authToken: undefined;
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
 
-		// 	await api.graphql(graphqlOperation(GetEvent, variables, authToken));
+			const result: GraphQLResult<GetThreadQuery> = await optionsClient.graphql(
+				{
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				}
+			);
 
-		// 	expect(spyon).toBeCalledWith(url, init);
-		// });
+			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
+			const errors = result.errors;
+
+			expect(errors).toBe(undefined);
+			expect(thread).toEqual(graphqlResponse.data.getThread);
+			expect(spy).toHaveBeenCalledWith({
+				abortController: expect.any(AbortController),
+				url: new URL('https://localhost/graphql'),
+				options: expect.objectContaining({
+					headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+					signingServiceInfo: null,
+					withCredentials: true,
+				}),
+			});
+		});
 	});
 });

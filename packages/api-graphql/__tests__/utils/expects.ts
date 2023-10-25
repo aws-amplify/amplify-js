@@ -105,6 +105,9 @@ export function expectSub(
 			),
 			variables: expect.objectContaining(item),
 		}),
-		undefined
+		{
+			action: '1',
+			category: 'api',
+		}
 	);
 }

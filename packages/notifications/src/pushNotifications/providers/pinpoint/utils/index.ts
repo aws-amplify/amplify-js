@@ -2,5 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { createMessageEventRecorder } from './createMessageEventRecorder';
+export { getAnalyticsEvent } from './getAnalyticsEvent';
 export { getChannelType } from './getChannelType';
-export { getPushNotificationUserAgentString } from './getPushNotificationUserAgentString';
+export { resolveConfig } from './resolveConfig';

@@ -3,9 +3,12 @@
 
 import {
 	pinpointInAppMessage,
-	simpleInAppMessagingEvent,
-} from '../../../__mocks__/data';
-import { processInAppMessages } from '../../../src/inAppMessaging/providers/pinpoint/utils';
+	simpleInAppMessagingEvent
+} from '../../testUtils/data';
+import {
+	incrementMessageCounts,
+	processInAppMessages,
+} from '../../../src/inAppMessaging/providers/pinpoint/utils';
 import { cloneDeep } from 'lodash';
 import {
 	isBeforeEndDate,
@@ -24,13 +27,22 @@ const mockMatchesAttributes = matchesAttributes as jest.Mock;
 const mockMatchesEventType = matchesEventType as jest.Mock;
 const mockMatchesMetrics = matchesMetrics as jest.Mock;
 
-// TODO(V6): Add tests for session cap etc
 describe('processInAppMessages', () => {
 	const messages = [
 		cloneDeep(pinpointInAppMessage),
 		{ ...cloneDeep(pinpointInAppMessage), CampaignId: 'uuid-2', Priority: 3 },
-		{ ...cloneDeep(pinpointInAppMessage), CampaignId: 'uuid-3', Priority: 1 },
-		{ ...cloneDeep(pinpointInAppMessage), CampaignId: 'uuid-4', Priority: 2 },
+		{
+			...cloneDeep(pinpointInAppMessage),
+			CampaignId: 'uuid-3',
+			Priority: 1,
+			SessionCap: 1,
+		},
+		{
+			...cloneDeep(pinpointInAppMessage),
+			CampaignId: 'uuid-4',
+			Priority: 2,
+			SessionCap: 2,
+		},
 	];
 	beforeAll(() => {
 		initializeInAppMessaging();
@@ -42,7 +54,7 @@ describe('processInAppMessages', () => {
 		mockIsBeforeEndDate.mockReturnValue(true);
 	});
 
-	test('filters in-app messages from Pinpoint by criteria', async () => {
+	it('filters in-app messages from Pinpoint by criteria', async () => {
 		mockMatchesEventType.mockReturnValueOnce(false);
 		mockMatchesAttributes.mockReturnValueOnce(false);
 		mockMatchesMetrics.mockReturnValueOnce(false);
@@ -53,11 +65,24 @@ describe('processInAppMessages', () => {
 		expect(result.id).toBe('uuid-4');
 	});
 
-	test('filters in-app messages from Pinpoint by criteria', async () => {
+	it('filters in-app messages from Pinpoint by priority', async () => {
 		const [result] = await processInAppMessages(
 			messages,
 			simpleInAppMessagingEvent
 		);
 		expect(result.id).toBe('uuid-3');
+	});
+
+	it('filters in-app messages based on session counts', async () => {
+		// simulate incrementing the counts as this happens when a message is displayed
+		// increment it twice to exceed it's session cap
+		await incrementMessageCounts(messages[2].CampaignId!);
+		await incrementMessageCounts(messages[2].CampaignId!);
+
+		const [result] = await processInAppMessages(
+			messages,
+			simpleInAppMessagingEvent
+		);
+		expect(result.id).toBe('uuid-4');
 	});
 });

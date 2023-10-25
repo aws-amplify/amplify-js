@@ -1,14 +1,3 @@
-jest.mock('@aws-amplify/core', () => ({
-	__esModule: true,
-	...jest.requireActual('@aws-amplify/core'),
-	browserOrNode() {
-		return {
-			isBrowser: true,
-			isNode: false,
-		};
-	},
-}));
-
 import { Observable, Observer } from 'rxjs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
@@ -23,7 +12,6 @@ import {
 import { ConnectionState as CS } from '../src/types/PubSub';
 
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
-import { fetchAuthSession } from '@aws-amplify/core';
 
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
@@ -65,6 +53,12 @@ jest.mock('@aws-amplify/core', () => {
 			Auth: {
 				fetchAuthSession: async () => session,
 			},
+		},
+		browserOrNode() {
+			return {
+				isBrowser: true,
+				isNode: false,
+			};
 		},
 	};
 });
@@ -342,7 +336,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
-						'error on bound ',
+						expect.stringContaining('error on bound '),
 						expect.objectContaining({
 							message: expect.stringMatching('Connection handshake error'),
 						})
@@ -450,7 +444,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
-						'error on bound ',
+						expect.stringContaining('error on bound '),
 						expect.objectContaining({
 							message: expect.stringMatching('{"isTrusted":false}'),
 						})
@@ -602,7 +596,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
-						'error on bound ',
+						expect.stringContaining('error on bound '),
 						expect.objectContaining({
 							message: expect.stringMatching('Non-retriable Test'),
 						})
@@ -669,7 +663,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// Watching for raised exception to be caught and logged
 					expect(loggerSpy).toBeCalledWith(
 						'DEBUG',
-						'error on bound ',
+						expect.stringContaining('error on bound '),
 						expect.objectContaining({
 							message: expect.stringMatching('Retriable Test'),
 						})
@@ -923,7 +917,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).not.toBeCalledWith(
 							'DEBUG',
-							'error on bound ',
+							expect.stringContaining('error on bound '),
 							expect.objectContaining({
 								message: expect.stringMatching(
 									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
@@ -958,7 +952,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Watching for raised exception to be caught and logged
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
-							'error on bound ',
+							expect.stringContaining('error on bound '),
 							expect.objectContaining({
 								message: expect.stringMatching(
 									'Connection timeout: ack from AWSAppSyncRealTime was not received after'

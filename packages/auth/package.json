@@ -28,10 +28,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 91.18"
 	},
 	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
+		">=4.2": {
 			"cognito": [
 				"./lib-esm/providers/cognito/index.d.ts"
 			],
@@ -93,8 +90,7 @@
 		"server"
 	],
 	"dependencies": {
-		"tslib": "^2.5.0",
-		"typescript": "5.0.2"
+		"tslib": "^2.5.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"
@@ -102,7 +98,8 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/react-native": "^1.0.0",
-		"@jest/test-sequencer": "^24.9.0"
+		"@jest/test-sequencer": "^24.9.0",
+		"typescript": "5.0.2"
 	},
 	"jest": {
 		"globals": {

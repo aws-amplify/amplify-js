@@ -27,13 +27,15 @@ import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import { generateCodeVerifier, generateState } from '../utils/oauth';
 import { getCurrentUser } from './getCurrentUser';
+import { getRedirectUrl } from '../utils/oauth/getRedirectUrl';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
  *
  * @param input - The SignInWithRedirectInput object, if empty it will redirect to Cognito HostedUI
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the userpool config is invalid.
+ * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
  */
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput
@@ -61,9 +63,9 @@ export async function signInWithRedirect(
 	});
 }
 
-const store = new DefaultOAuthStore(defaultStorage);
+export const store = new DefaultOAuthStore(defaultStorage);
 
-async function oauthSignIn({
+export async function oauthSignIn({
 	oauthConfig,
 	provider,
 	clientId,
@@ -95,7 +97,7 @@ async function oauthSignIn({
 	store.storePKCE(value);
 
 	const queryString = Object.entries({
-		redirect_uri: redirectSignIn[0], // TODO(v6): add logic to identity the correct url
+		redirect_uri: getRedirectUrl(oauthConfig.redirectSignIn),
 		response_type: responseType,
 		client_id: clientId,
 		identity_provider: provider,
@@ -162,6 +164,7 @@ async function handleCodeFlow({
 	const code = url.searchParams.get('code');
 
 	if (!code) {
+		await store.clearOAuthData();
 		return;
 	}
 
@@ -245,21 +248,24 @@ async function handleImplicitFlow({
 
 	const url = new AmplifyUrl(currentUrl);
 
-	const { idToken, accessToken, state, tokenType, expiresIn } = (
+	const { id_token, access_token, state, token_type, expires_in } = (
 		url.hash ?? '#'
 	)
 		.substring(1) // Remove # from returned code
 		.split('&')
 		.map(pairings => pairings.split('='))
 		.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
-			idToken: undefined,
-			accessToken: undefined,
+			id_token: undefined,
+			access_token: undefined,
 			state: undefined,
-			tokenType: undefined,
-			expiresIn: undefined,
+			token_type: undefined,
+			expires_in: undefined,
 		});
+	if (!access_token) {
+		await store.clearOAuthData();
+		return;
+	}
 
-	await store.clearOAuthInflightData();
 	try {
 		validateState(state);
 	} catch (error) {
@@ -268,14 +274,14 @@ async function handleImplicitFlow({
 	}
 
 	const username =
-		(accessToken && decodeJWT(accessToken).payload.username) ?? 'username';
+		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
 
 	await cacheCognitoTokens({
 		username,
-		AccessToken: accessToken,
-		IdToken: idToken,
-		TokenType: tokenType,
-		ExpiresIn: expiresIn,
+		AccessToken: access_token,
+		IdToken: id_token,
+		TokenType: token_type,
+		ExpiresIn: expires_in,
 	});
 
 	return completeFlow({ redirectUri, state, preferPrivateSession });
@@ -290,6 +296,7 @@ async function completeFlow({
 	redirectUri: string;
 	state: string;
 }) {
+	await store.clearOAuthData();
 	await store.storeOAuthSignIn(true, preferPrivateSession);
 	if (isCustomState(state)) {
 		Hub.dispatch(

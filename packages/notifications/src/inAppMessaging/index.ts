@@ -12,6 +12,7 @@ export {
 	onMessageDismissed,
 	onMessageActionTaken,
 	notifyMessageInteraction,
+	clearMessages,
 	IdentifyUserInput,
 	DispatchEventInput,
 	SetConflictHandlerInput,
@@ -25,3 +26,14 @@ export {
 	OnMessageDismissedOutput,
 	OnMessageDisplayedOutput,
 } from './providers/pinpoint';
+
+export {
+	InAppMessage,
+	InAppMessageAction,
+	InAppMessageContent,
+	InAppMessageLayout,
+	InAppMessageTextAlign,
+	InAppMessageButton,
+	InAppMessageImage,
+	InAppMessageStyle,
+} from './types';

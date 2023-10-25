@@ -398,11 +398,11 @@ export async function waitForEmptyOutbox(verbose = false) {
 				message.payload.event === 'outboxStatus' &&
 				message.payload.data.isEmpty
 			) {
-				Hub.remove('datastore', hubCallback);
+				removeListener();
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
 
@@ -419,11 +419,11 @@ export async function waitForDataStoreReady(verbose = false) {
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
 			if (message.payload.event === 'ready') {
-				Hub.remove('datastore', hubCallback);
+				removeListener();
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
 
@@ -440,11 +440,11 @@ export async function waitForSyncQueriesReady(verbose = false) {
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
 			if (message.payload.event === 'syncQueriesReady') {
-				Hub.remove('datastore', hubCallback);
+				removeListener;
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
 

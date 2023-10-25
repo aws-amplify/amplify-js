@@ -27,7 +27,9 @@ export type PinpointServiceOptions = {
 
 export type PinpointSession = {
 	Id: string;
+	Duration?: number;
 	StartTimestamp: string;
+	StopTimestamp?: string;
 };
 
 export type PinpointAnalyticsEvent = {

@@ -28,10 +28,7 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
 	},
 	"typesVersions": {
-		">=4.0": {
-			"*": [
-				"./lib-esm/index.d.ts"
-			],
+		">=4.2": {
 			"s3": [
 				"./lib-esm/providers/s3/index.d.ts"
 			],
@@ -97,11 +94,6 @@
 			"import": "./lib-esm/providers/s3/server.js",
 			"require": "./lib/providers/s3/server.js"
 		},
-		"./s3/utils": {
-			"types": "./lib-esm/providers/s3/utilityApis.d.ts",
-			"import": "./lib-esm/providers/s3/utilityApis.js",
-			"require": "./lib/providers/s3/utilityApis.js"
-		},
 		"./package.json": "./package.json"
 	},
 	"peerDependencies": {
@@ -110,7 +102,6 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/react-native": "^1.0.0",
-		"@types/sinon": "^7.5.1",
 		"typescript": "5.0.2"
 	},
 	"jest": {

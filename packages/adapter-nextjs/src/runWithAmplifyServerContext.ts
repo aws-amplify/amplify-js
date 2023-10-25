@@ -12,7 +12,7 @@ import {
 	createKeyValueStorageFromCookieStorageAdapter,
 	createUserPoolsTokenProvider,
 	runWithAmplifyServerContext as runWithAmplifyServerContextCore,
-} from 'aws-amplify/internals/adapter-core';
+} from 'aws-amplify/adapter-core';
 
 /**
  * Runs the {@link operation} with the the context created from the {@link nextServerContext}.

@@ -391,13 +391,6 @@ tests:
     amplifyjs_dir: true
     timeout_minutes: 45
     retry_count: 10
-  - test_name: integ_next_datastore_owner_auth
-    desc: 'next owner auth'
-    framework: next
-    category: datastore
-    sample_name: [owner-based-default]
-    spec: next-owner-based-default
-    browser: *minimal_browser_list
   - test_name: integ_next_datastore_13_basic
     desc: 'DataStore - Nextjs 13 build with SWC - basic JS app'
     framework: next
@@ -505,7 +498,7 @@ tests:
     category: auth
     sample_name: [auth-ssr]
     spec: auth-ssr
-    browser: *minimal_browser_list
+    browser: [chrome]
   - test_name: integ_next_auth_authenticator_and_rsc_page
     desc: 'Authenticator and RSC page'
     framework: next
@@ -712,22 +705,22 @@ tests:
   #   browser: *minimal_browser_list
 
   # PUBSUB
-  - test_name: integ_react_iot_reconnect
-    desc: 'PubSub - Reconnection for IoT'
-    framework: react
-    category: pubsub
-    sample_name: [reconnection-iot]
-    spec: reconnection
-    # Firefox doesn't support network state management in cypress
-    browser: [chrome]
-  - test_name: integ_react_api_reconnect
-    desc: 'PubSub - Reconnection for API'
-    framework: react
-    category: pubsub
-    sample_name: [reconnection-api]
-    spec: reconnection
-    # Firefox doesn't support network state management in cypress
-    browser: [chrome]
+  # - test_name: integ_react_iot_reconnect
+  #   desc: 'PubSub - Reconnection for IoT'
+  #   framework: react
+  #   category: pubsub
+  #   sample_name: [reconnection-iot]
+  #   spec: reconnection
+  #   # Firefox doesn't support network state management in cypress
+  #   browser: [chrome]
+  # - test_name: integ_react_api_reconnect
+  #   desc: 'PubSub - Reconnection for API'
+  #   framework: react
+  #   category: pubsub
+  #   sample_name: [reconnection-api]
+  #   spec: reconnection
+  #   # Firefox doesn't support network state management in cypress
+  #   browser: [chrome]
 
   # STORAGE
   - test_name: integ_react_storage

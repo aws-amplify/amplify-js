@@ -321,7 +321,7 @@ export class InternalGraphQLAPIClass {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
 			// so that clients can identify the exception correctly.
-			if (this._api.isCancelErrorREST(err)) {
+			if (this.isCancelError(err)) {
 				throw err;
 			}
 
@@ -375,7 +375,7 @@ export class InternalGraphQLAPIClass {
 				variables,
 				appSyncGraphqlEndpoint: config?.endpoint,
 				region: config?.region,
-				authenticationType: config?.defaultAuthMode,
+				authenticationType: authMode ?? config?.defaultAuthMode,
 				apiKey: config?.apiKey,
 				additionalHeaders,
 			},

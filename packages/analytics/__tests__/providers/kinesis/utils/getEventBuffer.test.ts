@@ -43,18 +43,23 @@ describe('Kinesis Provider Util: getEventBuffer', () => {
 		expect(testBuffer1).toBe(testBuffer2);
 	});
 
-	it('release other buffers & creates a new one if credential has changed', () => {
+	it('release other buffers & creates a new one if identity has changed', async () => {
 		const testBuffer1 = getEventBuffer({
 			...mockKinesisConfig,
 			...mockCredentialConfig,
 		});
+		jest.spyOn(testBuffer1, 'flushAll').mockReturnValue(Promise.resolve());
+		jest.spyOn(testBuffer1, 'release');
+
 		const testBuffer2 = getEventBuffer({
 			...mockKinesisConfig,
 			...mockCredentialConfig,
 			identityId: 'identityId2',
 		});
 
-		expect(testBuffer1.release).toHaveBeenCalledTimes(1);
+		await new Promise(process.nextTick);
+		expect(testBuffer1.flushAll).toBeCalledTimes(1);
+		expect(testBuffer1.release).toBeCalledTimes(1);
 		expect(testBuffer1).not.toBe(testBuffer2);
 	});
 });

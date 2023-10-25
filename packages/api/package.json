@@ -5,13 +5,6 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
-	"typesVersions": {
-		"<3.8": {
-			"lib-esm/index.d.ts": [
-				"index.v37.d.ts"
-			]
-		}
-	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},
@@ -60,7 +53,7 @@
 	"dependencies": {
 		"@aws-amplify/api-graphql": "4.0.0",
 		"@aws-amplify/api-rest": "4.0.0",
-		"tslib": "^2.6.1"
+		"tslib": "^2.5.0"
 	},
 	"jest": {
 		"globals": {

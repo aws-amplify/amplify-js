@@ -73,7 +73,7 @@
 			"name": "DataStore (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, DataStore }",
-			"limit": "89.0 kB"
+			"limit": "65.25 kB"
 		}
 	],
 	"jest": {
@@ -104,10 +104,7 @@
 			"__tests__/model.ts",
 			"__tests__/schema.ts",
 			"__tests__/helpers/",
-			"__tests__/commonAdapterTests.ts",
-			"__tests__/DataStore.ts",
-			"__tests__/connectivityHandling.test.ts",
-			"__tests__/mutation.test.ts"
+			"__tests__/commonAdapterTests.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",

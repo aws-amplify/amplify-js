@@ -105,3 +105,7 @@ export { HubInternal } from './Hub';
 // Session listener
 export { sessionListener } from './utils/sessionListener';
 export { SessionState } from './utils/sessionListener/types';
+export {
+	SESSION_START_EVENT,
+	SESSION_STOP_EVENT,
+} from './utils/sessionListener';
