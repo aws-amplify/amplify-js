@@ -14,7 +14,7 @@ export const getAmplifyConfig = (): ResourcesConfig => {
 	// via process.env.<key> at some occasion. Using the following as a fallback
 	// See: https://github.com/vercel/next.js/issues/39299
 	if (!configStr) {
-		const { serverRuntimeConfig } = getConfig();
+		const { serverRuntimeConfig } = getConfig() ?? {};
 		configStr = serverRuntimeConfig?.amplifyConfig;
 	}
 
