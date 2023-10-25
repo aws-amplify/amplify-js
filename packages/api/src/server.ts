@@ -29,7 +29,8 @@ import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 export type ServerClientGenerationParams = {
 	amplify:
 		| null // null expected when used with `generateServerClient`
-		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>); // closure expected with `generateServerClientUsingCookies`
+		// closure expected with `generateServerClientUsingCookies`
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
 };

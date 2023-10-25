@@ -75,13 +75,15 @@ export function generateServerClient<
 		config,
 	});
 
+	const prevGraphql = client.graphql;
+
 	const wrappedGraphql: GraphQLClientSSR = (
 		contextSpec,
 		options,
 		additionalHeaders?
 	) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
-		return client.graphql.call(
+		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },
 			options,
 			additionalHeaders as any
