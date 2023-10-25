@@ -14,50 +14,6 @@ const serverManagedFields = {
 	updatedAt: new Date().toISOString(),
 };
 
-// // Mock all calls to signRequest
-// jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
-// 	const original = jest.requireActual(
-// 		'@aws-amplify/core/internals/aws-client-utils'
-// 	);
-// 	return {
-// 		...original,
-// 		signRequest: (_request, _options) => {
-// 			return {
-// 				method: 'test',
-// 				headers: { test: 'test' },
-// 				url: new URL('http://example/'),
-// 			};
-// 		},
-// 	};
-// });
-
-// // Mock all calls to signRequest
-// jest.mock('@aws-amplify/core', () => {
-// 	const original = jest.requireActual('@aws-amplify/core');
-// 	const session = {
-// 		tokens: {
-// 			accessToken: {
-// 				toString: () => 'test',
-// 			},
-// 		},
-// 		credentials: {
-// 			accessKeyId: 'test',
-// 			secretAccessKey: 'test',
-// 		},
-// 	};
-// 	return {
-// 		...original,
-// 		fetchAuthSession: (_request, _options) => {
-// 			return Promise.resolve(session);
-// 		},
-// 		Amplify: {
-// 			Auth: {
-// 				fetchAuthSession: async () => session,
-// 			},
-// 		},
-// 	};
-// });
-
 /**
  *
  * @param value Value to be returned. Will be `awaited`, and can
