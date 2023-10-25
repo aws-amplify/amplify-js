@@ -11,6 +11,8 @@ import {
 	PubSubContentObserver,
 	PubSubContent,
 	PubSubOptions,
+	PublishInput,
+	SubscribeInput,
 } from '../types/PubSub';
 import { Hub, HubPayload, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
@@ -248,7 +250,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
-	async publish(topics: string[] | string, msg: PubSubContent) {
+	async publish({ topics, msg }: PublishInput) {
 		const targetTopics = ([] as string[]).concat(topics);
 		const message = JSON.stringify(msg);
 
@@ -295,10 +297,10 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		}
 	}
 
-	subscribe(
-		topics: string[] | string,
-		options: MqttOptions = {}
-	): Observable<PubSubContent> {
+	subscribe({
+		topics,
+		options = {},
+	}: SubscribeInput & { options?: MqttOptions }): Observable<PubSubContent> {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 		let reconnectSubscription: Subscription;
