@@ -37,6 +37,11 @@
 			"import": "./lib-esm/withAmplify.js",
 			"require": "./lib/withAmplify.js"
 		},
+		"./api": {
+			"types": "./lib-esm/generateServerClient.d.ts",
+			"import": "./lib-esm/generateServerClient.js",
+			"require": "./lib/generateServerClient.js"
+		},
 		"./internals": {
 			"types": "./lib-esm/internals/index.d.ts",
 			"import": "./lib-esm/internals/index.js",

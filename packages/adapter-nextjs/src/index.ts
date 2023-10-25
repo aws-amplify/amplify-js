@@ -2,7 +2,3 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { runWithAmplifyServerContext } from './runWithAmplifyServerContext';
-export {
-	generateServerClient,
-	generateServerClientUsingCookies,
-} from './generateServerClient';
