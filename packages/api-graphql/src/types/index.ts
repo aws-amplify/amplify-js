@@ -353,16 +353,45 @@ type ExcludeNeverFields<O> = {
 
 export const __amplify = Symbol('amplify');
 
+/**
+ * TODO: Refactor these 2. Pull out `graphQL` into its own type
+ */
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
-	graphql: <FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(
-		options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-		additionalHeaders?:
-			| {
-					[key: string]: string;
-			  }
-			| undefined
-	) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+	graphql: GraphQLClient;
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
 }>;
+
+export type V6ClientSSR<T extends Record<any, any> = never> =
+	ExcludeNeverFields<{
+		[__amplify]: AmplifyClassV6;
+		graphql: GraphQLClientSSR;
+		cancel: (promise: Promise<any>, message?: string) => boolean;
+		isCancelError: (error: any) => boolean;
+	}>;
+
+type GraphQLClient<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+> = (
+	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+	additionalHeaders?:
+		| {
+				[key: string]: string;
+		  }
+		| undefined
+) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+
+export type GraphQLClientSSR<
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+> = (
+	contextSpec: any,
+	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+	additionalHeaders?:
+		| {
+				[key: string]: string;
+		  }
+		| undefined
+) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
