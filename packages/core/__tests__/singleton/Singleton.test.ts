@@ -120,7 +120,13 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		expect(mutateConfig).toThrow(TypeError);
 
 		// Config should be re-generated if it changes
-		Amplify.configure(MOCK_AUTH_CONFIG);
+		Amplify.configure({
+			Auth: {
+				Cognito: {
+					identityPoolId: 'us-east-1:bbbbb',
+				},
+			},
+		});
 
 		const config3 = Amplify.getConfig();
 
