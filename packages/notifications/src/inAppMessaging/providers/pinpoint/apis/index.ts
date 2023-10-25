@@ -11,3 +11,4 @@ export { onMessageDismissed } from './onMessageDismissed';
 export { onMessageDisplayed } from './onMessageDisplayed';
 export { onMessageActionTaken } from './onMessageActionTaken';
 export { notifyMessageInteraction } from './notifyMessageInteraction';
+export { clearMessages } from './clearMessages';

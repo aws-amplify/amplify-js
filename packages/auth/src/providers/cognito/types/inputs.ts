@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AuthVerifiableAttributeKey } from '@aws-amplify/core/internals/utils';
 import {
 	MFAPreference,
 	ConfirmResetPasswordOptions,
@@ -57,7 +58,7 @@ export type ConfirmSignUpInput = AuthConfirmSignUpInput<ConfirmSignUpOptions>;
  * Input type for Cognito confirmUserAttribute API.
  */
 export type ConfirmUserAttributeInput =
-	AuthConfirmUserAttributeInput<UserAttributeKey>;
+	AuthConfirmUserAttributeInput<AuthVerifiableAttributeKey>;
 
 /**
  * Input type for Cognito resendSignUpCode API.

@@ -34,7 +34,6 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 
 	async loadIdentityId(): Promise<Identity | null> {
 		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
-		// TODO(v6): migration logic should be here
 		try {
 			if (!!this._primaryIdentityId) {
 				return {

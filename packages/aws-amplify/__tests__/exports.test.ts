@@ -133,6 +133,7 @@ describe('aws-amplify Exports', () => {
 			  "onMessageDismissed",
 			  "onMessageActionTaken",
 			  "notifyMessageInteraction",
+			  "clearMessages",
 			]
 		`);
 		});
@@ -151,6 +152,7 @@ describe('aws-amplify Exports', () => {
 			  "onMessageDismissed",
 			  "onMessageActionTaken",
 			  "notifyMessageInteraction",
+			  "clearMessages",
 			]
 		`);
 		});

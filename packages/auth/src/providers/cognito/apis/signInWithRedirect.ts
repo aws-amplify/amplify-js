@@ -33,7 +33,8 @@ import { getCurrentUser } from './getCurrentUser';
  *
  * @param input - The SignInWithRedirectInput object, if empty it will redirect to Cognito HostedUI
  *
- * TODO: add config errors
+ * @throws AuthTokenConfigException - Thrown when the userpool config is invalid.
+ * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
  */
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput
@@ -61,9 +62,9 @@ export async function signInWithRedirect(
 	});
 }
 
-const store = new DefaultOAuthStore(defaultStorage);
+export const store = new DefaultOAuthStore(defaultStorage);
 
-async function oauthSignIn({
+export async function oauthSignIn({
 	oauthConfig,
 	provider,
 	clientId,
@@ -162,6 +163,7 @@ async function handleCodeFlow({
 	const code = url.searchParams.get('code');
 
 	if (!code) {
+		await store.clearOAuthData();
 		return;
 	}
 
@@ -258,8 +260,11 @@ async function handleImplicitFlow({
 			tokenType: undefined,
 			expiresIn: undefined,
 		});
+	if (!idToken || !accessToken) {
+		await store.clearOAuthData();
+		return;
+	}
 
-	await store.clearOAuthInflightData();
 	try {
 		validateState(state);
 	} catch (error) {
@@ -290,6 +295,7 @@ async function completeFlow({
 	redirectUri: string;
 	state: string;
 }) {
+	await store.clearOAuthData();
 	await store.storeOAuthSignIn(true, preferPrivateSession);
 	if (isCustomState(state)) {
 		Hub.dispatch(
