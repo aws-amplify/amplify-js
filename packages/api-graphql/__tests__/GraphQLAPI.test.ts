@@ -12,12 +12,21 @@ import {
 	V6Client,
 } from '../src/types';
 import { GetThreadQuery } from './fixtures/with-types/API';
+import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
+import { Observable, of } from 'rxjs';
 
 const serverManagedFields = {
 	id: 'some-id',
 	owner: 'wirejobviously',
 	createdAt: new Date().toISOString(),
 	updatedAt: new Date().toISOString(),
+};
+
+let mockAccessToken: string | null = 'mock-access-token';
+
+let mockCredentials: any = {
+	accessKeyId: 'mock-access-key-id',
+	secretAccessKey: 'mock-secret-access-key',
 };
 
 jest.mock('aws-amplify', () => {
@@ -33,13 +42,10 @@ jest.mock('aws-amplify', () => {
 					return {
 						tokens: {
 							accessToken: {
-								toString: () => 'mock-access-token',
+								toString: () => mockAccessToken,
 							},
 						},
-						credentials: {
-							accessKeyId: 'mock-access-key-id',
-							secretAccessKey: 'mock-secret-access-key',
-						},
+						credentials: mockCredentials,
 					};
 				}),
 			},
@@ -683,8 +689,10 @@ describe('API test', () => {
 			});
 		});
 
-		// TODO: make this fail without `Cache`?
-		test.skip('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
+		test('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
+			const prevMockAccessToken = mockAccessToken;
+			mockAccessToken = null;
+
 			Amplify.configure({
 				API: {
 					GraphQL: {
@@ -713,13 +721,11 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest
-				.spyOn((raw.GraphQLAPI as any)._api, 'post')
-				.mockReturnValue({
-					body: {
-						json: () => graphqlResponse,
-					},
-				});
+			jest.spyOn((raw.GraphQLAPI as any)._api, 'post').mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
 
 			await expect(
 				client.graphql({
@@ -728,10 +734,15 @@ describe('API test', () => {
 					authMode: 'oidc',
 				})
 			).rejects.toThrowError('No current user');
+
+			// Cleanup:
+			mockAccessToken = prevMockAccessToken;
 		});
 
-		// TODO:
-		test.skip('multi-auth using CUP as auth mode, but no userpool', async () => {
+		test('multi-auth using CUP as auth mode, but no userpool', async () => {
+			const prevMockAccessToken = mockAccessToken;
+			mockAccessToken = null;
+
 			Amplify.configure({
 				API: {
 					GraphQL: {
@@ -743,6 +754,29 @@ describe('API test', () => {
 				},
 			});
 
+			const threadToGet = {
+				id: 'some-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
+
 			const graphqlVariables = { id: 'some-id' };
 
 			await expect(
@@ -752,6 +786,9 @@ describe('API test', () => {
 					authMode: 'userPool',
 				})
 			).rejects.toThrow();
+
+			// Cleanup:
+			mockAccessToken = prevMockAccessToken;
 		});
 
 		it('AWS_LAMBDA as auth mode, but no auth token specified', async () => {
@@ -799,7 +836,10 @@ describe('API test', () => {
 		});
 
 		// TODO:
-		test.skip('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
+		test('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
+			const prevMockCredentials = mockCredentials;
+			mockCredentials = undefined;
+
 			Amplify.configure({
 				API: {
 					GraphQL: {
@@ -819,7 +859,10 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'iam',
 				})
-			).rejects.toThrowError(GraphQLAuthError.NO_API_KEY);
+			).rejects.toThrowError(GraphQLAuthError.NO_CREDENTIALS);
+
+			// Cleanup:
+			mockCredentials = prevMockCredentials;
 		});
 
 		test('multi-auth default case api-key, using CUP as auth mode', async () => {
@@ -885,197 +928,104 @@ describe('API test', () => {
 			});
 		});
 
-		// TODO:
-		// test('authMode on subscription', async () => {
-		// 	expect.assertions(1);
+		test('authMode on subscription', async () => {
+			expect.assertions(1);
 
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// 	const cache_config = {
-		// 		capacityInBytes: 3000,
-		// 		itemMaxSize: 800,
-		// 		defaultTTL: 3000000,
-		// 		defaultPriority: 5,
-		// 		warningThreshold: 0.8,
-		// 		storage: window.localStorage,
-		// 	};
+			const url = 'https://appsync.amazonaws.com',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	Cache.configure(cache_config);
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	jest.spyOn(Cache, 'getItem').mockReturnValue({ token: 'id_token' });
+			(
+				client.graphql({
+					query,
+					variables,
+					authMode: 'oidc',
+				}) as any
+			).subscribe();
 
-		// 	const spyon_pubsub = jest
-		// 		.spyOn(InternalPubSub, 'subscribe')
-		// 		.mockImplementation(jest.fn(() => Observable.of({}) as any));
+			expect(spyon_appsync_realtime).toBeCalledWith(
+				expect.objectContaining({
+					authenticationType: 'oidc',
+				}),
+				expect.anything()
+			);
+		});
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+		test('happy-case-subscription', async done => {
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
+			const observable = (
+				client.graphql({ query, variables }) as unknown as Observable<object>
+			).subscribe({
+				next: () => {
+					expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
+					const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
+					expect(subscribeOptions?.variables).toBe(variables);
+					done();
+				},
+			});
 
-		// 	(
-		// 		api.graphql({
-		// 			query,
-		// 			variables,
-		// 			authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-		// 		}) as any
-		// 	).subscribe();
+			expect(observable).not.toBe(undefined);
+		});
 
-		// 	expect(spyon_pubsub).toBeCalledWith(
-		// 		'',
-		// 		expect.objectContaining({
-		// 			authenticationType: 'OPENID_CONNECT',
-		// 		}),
-		// 		undefined
-		// 	);
-		// });
+		test('happy case subscription with additionalHeaders', async done => {
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(jest.fn(() => of({}) as any));
 
-		// TODO:
-		// test('happy-case-subscription', async done => {
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
 
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
 
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
+			const additionalHeaders = {
+				'x-custom-header': 'value',
+			};
 
-		// 	InternalPubSub.subscribe = jest.fn(() => Observable.of({}) as any);
+			const observable = (
+				client.graphql(
+					{ query, variables },
+					additionalHeaders
+				) as unknown as Observable<object>
+			).subscribe({
+				next: () => {
+					expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
+					const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
+					expect(subscribeOptions?.additionalHeaders).toBe(additionalHeaders);
+					done();
+				},
+			});
 
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
-
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
-
-		// 	const observable = (
-		// 		api.graphql(
-		// 			graphqlOperation(query, variables)
-		// 		) as unknown as Observable<object>
-		// 	).subscribe({
-		// 		next: () => {
-		// 			expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
-		// 			const subscribeOptions = (InternalPubSub.subscribe as any).mock
-		// 				.calls[0][1];
-		// 			expect(subscribeOptions.provider).toBe(
-		// 				INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER
-		// 			);
-		// 			done();
-		// 		},
-		// 	});
-
-		// 	expect(observable).not.toBe(undefined);
-		// });
-
-		// TODO:
-		// test('happy case subscription with additionalHeaders', async done => {
-		// 	jest
-		// 		.spyOn(RestClient.prototype, 'post')
-		// 		.mockImplementation(async (url, init) => ({
-		// 			extensions: {
-		// 				subscription: {
-		// 					newSubscriptions: {},
-		// 				},
-		// 			},
-		// 		}));
-
-		// 	// const api = new API(config);
-		// 	const client = generateClient();
-		// 	const url = 'https://appsync.amazonaws.com',
-		// 		region = 'us-east-2',
-		// 		apiKey = 'secret_api_key',
-		// 		variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
-
-		// 	api.configure({
-		// 		aws_appsync_graphqlEndpoint: url,
-		// 		aws_appsync_region: region,
-		// 		aws_appsync_authenticationType: 'API_KEY',
-		// 		aws_appsync_apiKey: apiKey,
-		// 	});
-
-		// 	InternalPubSub.subscribe = jest.fn(() => Observable.of({}) as any);
-
-		// 	const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
-		// 		subscribeToEventComments(eventId: $eventId) {
-		// 			eventId
-		// 			commentId
-		// 			content
-		// 		}
-		// 	}`;
-
-		// 	const doc = parse(SubscribeToEventComments);
-		// 	const query = print(doc);
-
-		// 	const additionalHeaders = {
-		// 		'x-custom-header': 'value',
-		// 	};
-
-		// 	const observable = (
-		// 		api.graphql(
-		// 			graphqlOperation(query, variables),
-		// 			additionalHeaders
-		// 		) as unknown as Observable<object>
-		// 	).subscribe({
-		// 		next: () => {
-		// 			expect(InternalPubSub.subscribe).toHaveBeenCalledTimes(1);
-		// 			const subscribeOptions = (InternalPubSub.subscribe as any).mock
-		// 				.calls[0][1];
-		// 			expect(subscribeOptions.additionalHeaders).toBe(additionalHeaders);
-		// 			done();
-		// 		},
-		// 	});
-
-		// 	expect(observable).not.toBe(undefined);
-		// });
+			expect(observable).not.toBe(undefined);
+		});
 
 		// TODO:
 		// test('happy case mutation', async () => {
