@@ -27,7 +27,7 @@ import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import { generateCodeVerifier, generateState } from '../utils/oauth';
 import { getCurrentUser } from './getCurrentUser';
-import { getSignInRedirect } from '../utils/oauth/getSignInRedirect';
+import { getRedirectUrl } from '../utils/oauth/getRedirectUrl';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -97,7 +97,7 @@ export async function oauthSignIn({
 	store.storePKCE(value);
 
 	const queryString = Object.entries({
-		redirect_uri: getSignInRedirect(oauthConfig.redirectSignIn),
+		redirect_uri: getRedirectUrl(oauthConfig.redirectSignIn),
 		response_type: responseType,
 		client_id: clientId,
 		identity_provider: provider,

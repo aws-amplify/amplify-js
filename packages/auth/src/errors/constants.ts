@@ -12,7 +12,8 @@ export const AUTO_SIGN_IN_EXCEPTION = 'AutoSignInException';
 export const INVALID_REDIRECT_EXCEPTION = 'InvalidRedirectException';
 export const invalidRedirectException = new AuthError({
 	name: INVALID_REDIRECT_EXCEPTION,
-	message: 'signInRedirect or signOutRedirect had an invalid format.',
+	message:
+		'signInRedirect or signOutRedirect had an invalid format or was not found.',
 	recoverySuggestion:
 		'Please make sure the signIn/Out redirect in your oauth config is valid.',
 });
