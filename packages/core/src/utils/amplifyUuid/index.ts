@@ -4,6 +4,6 @@
 import './polyfill';
 import { v4 } from 'uuid';
 
-const amplifyUuid = v4;
+const amplifyUuid: () => string = v4;
 
 export { amplifyUuid };
