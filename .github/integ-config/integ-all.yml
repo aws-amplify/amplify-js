@@ -678,13 +678,13 @@ tests:
   #   browser: [chrome]
 
   # PREDICTIONS
-  - test_name: integ_react_predictions
-    desc: 'React Predictions'
-    framework: react
-    category: predictions
-    sample_name: [multi-user-translation]
-    spec: multiuser-translation
-    browser: *minimal_browser_list
+  # - test_name: integ_react_predictions
+  #   desc: 'React Predictions'
+  #   framework: react
+  #   category: predictions
+  #   sample_name: [multi-user-translation]
+  #   spec: multiuser-translation
+  #   browser: *minimal_browser_list
 
   # PUBSUB
   - test_name: integ_react_iot_reconnect

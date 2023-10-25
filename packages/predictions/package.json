@@ -1,5 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
+	"private": true,
 	"version": "6.0.0",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
