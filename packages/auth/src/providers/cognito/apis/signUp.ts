@@ -5,14 +5,10 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
+	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
 import { AuthDeliveryMedium } from '../../../types';
-import {
-	UserAttributeKey,
-	SignUpInput,
-	SignUpOutput,
-	SignInInput,
-} from '../types';
+import { SignUpInput, SignUpOutput, SignInInput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -125,7 +121,8 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 					deliveryMedium:
 						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
 					destination: CodeDeliveryDetails?.Destination as string,
-					attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
+					attributeName:
+						CodeDeliveryDetails?.AttributeName as AuthVerifiableAttributeKey,
 				},
 			},
 			userId: UserSub,
@@ -140,7 +137,8 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 				deliveryMedium:
 					CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
 				destination: CodeDeliveryDetails?.Destination as string,
-				attributeName: CodeDeliveryDetails?.AttributeName as UserAttributeKey,
+				attributeName:
+					CodeDeliveryDetails?.AttributeName as AuthVerifiableAttributeKey,
 			},
 		},
 		userId: UserSub,
