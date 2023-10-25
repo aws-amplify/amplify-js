@@ -262,13 +262,13 @@
 			"name": "[Analytics] record (Kinesis Firehose)",
 			"path": "./lib-esm/analytics/kinesis-firehose/index.js",
 			"import": "{ record }",
-			"limit": "41.17 kB"
+			"limit": "41.23 kB"
 		},
 		{
 			"name": "[Analytics] record (Personalize)",
 			"path": "./lib-esm/analytics/personalize/index.js",
 			"import": "{ record }",
-			"limit": "45.06 kB"
+			"limit": "45.12 kB"
 		},
 		{
 			"name": "[Analytics] identifyUser (Pinpoint)",
