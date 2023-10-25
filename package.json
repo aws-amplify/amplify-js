@@ -28,7 +28,7 @@
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
 		"publish:preid": "./scripts/preid-env-vars-exist.sh && lerna publish --canary --force-publish --dist-tag=${PREID_PREFIX} --preid=${PREID_PREFIX}${PREID_HASH_SUFFIX} --yes",
-		"publish:main": "lerna publish --canary --force-publish --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --yes",
+		"publish:main": "lerna publish from-package --force-publish --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --yes",
 		"publish:release": "lerna publish from-package --message 'chore(release): Publish [ci skip]' --yes",
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
 		"ts-coverage": "lerna run ts-coverage",
