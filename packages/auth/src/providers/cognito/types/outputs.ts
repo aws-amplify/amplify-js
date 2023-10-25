@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
+import { AuthVerifiableAttributeKey } from '@aws-amplify/core/internals/utils';
 import {
 	AuthMFAType,
 	AuthUserAttributes,
@@ -14,7 +14,7 @@ import {
 	AuthUpdateUserAttributesOutput,
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
-import { AWSAuthDevice, UserAttributeKey, CustomAttribute } from '../types';
+import { AWSAuthDevice, UserAttributeKey } from '../types';
 
 export type FetchMFAPreferenceOutput = {
 	enabled?: AuthMFAType[];
@@ -39,21 +39,19 @@ export type ConfirmSignInOutput = AuthSignInOutput;
 /**
  * Output type for Cognito confirmSignUp API.
  */
-export type ConfirmSignUpOutput = AuthSignUpOutput<
-	AuthStandardAttributeKey | CustomAttribute
->;
+export type ConfirmSignUpOutput = AuthSignUpOutput<AuthVerifiableAttributeKey>;
 
 /**
  * Output type for Cognito resendSignUpCode API.
  */
-export type ResendSignUpCodeOutput = AuthCodeDeliveryDetails<UserAttributeKey>;
+export type ResendSignUpCodeOutput =
+	AuthCodeDeliveryDetails<AuthVerifiableAttributeKey>;
 
 /**
  * Output type for Cognito resetPassword API.
  */
-export type ResetPasswordOutput = AuthResetPasswordOutput<
-	AuthStandardAttributeKey | CustomAttribute
->;
+export type ResetPasswordOutput =
+	AuthResetPasswordOutput<AuthVerifiableAttributeKey>;
 
 /**
  * Output type for Cognito setUpTOTP API.
@@ -88,9 +86,7 @@ export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
 /**
  * Output type for Cognito signUp API.
  */
-export type SignUpOutput = AuthSignUpOutput<
-	AuthStandardAttributeKey | CustomAttribute
->;
+export type SignUpOutput = AuthSignUpOutput<AuthVerifiableAttributeKey>;
 
 /**
  * Output type for Cognito updateUserAttributes API.
@@ -102,7 +98,7 @@ export type UpdateUserAttributesOutput =
  * Output type for Cognito sendUserAttributeVerificationCode API.
  */
 export type SendUserAttributeVerificationCodeOutput =
-	AuthCodeDeliveryDetails<UserAttributeKey>;
+	AuthCodeDeliveryDetails<AuthVerifiableAttributeKey>;
 
 /**
  * Output type for Cognito updateUserAttribute API.
