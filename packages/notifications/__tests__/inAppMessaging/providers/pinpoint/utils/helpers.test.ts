@@ -33,7 +33,7 @@ describe('InAppMessaging Provider Utils', () => {
 		jest.clearAllMocks();
 	});
 
-	test('getStartOfDay returns a date string for the start of day', () => {
+	it('getStartOfDay returns a date string for the start of day', () => {
 		const dateString = getStartOfDay();
 		const date = new Date(dateString);
 
@@ -50,7 +50,7 @@ describe('InAppMessaging Provider Utils', () => {
 			clearMemo();
 		});
 
-		test('checks if an event name matches a Pinpoint message', () => {
+		it('checks if an event name matches a Pinpoint message', () => {
 			const clickEvent: InAppMessagingEvent = { name: 'clicked' };
 			const swipeEvent: InAppMessagingEvent = { name: 'swiped' };
 			const dragEvent: InAppMessagingEvent = { name: 'dragged' };
@@ -60,7 +60,7 @@ describe('InAppMessaging Provider Utils', () => {
 			expect(matchesEventType(message, dragEvent)).toBe(false);
 		});
 
-		test('memoizes matches', () => {
+		it('memoizes matches', () => {
 			const clickEvent: InAppMessagingEvent = { name: 'clicked' };
 			message!.Schedule!.EventFilter!.Dimensions!.EventType!.Values = [
 				'clicked',
@@ -86,7 +86,7 @@ describe('InAppMessaging Provider Utils', () => {
 			clearMemo();
 		});
 
-		test('checks if event attributes matches a Pinpoint message', () => {
+		it('checks if event attributes matches a Pinpoint message', () => {
 			const matchingEvent: InAppMessagingEvent = {
 				name: 'action.taken',
 				attributes: {
@@ -127,7 +127,7 @@ describe('InAppMessaging Provider Utils', () => {
 			expect(matchesAttributes(message, noAttributesEvent)).toBe(false);
 		});
 
-		test('memoizes matches', () => {
+		it('memoizes matches', () => {
 			const event: InAppMessagingEvent = {
 				name: 'action.taken',
 				attributes: { favoriteFood: 'sushi' },
@@ -158,7 +158,7 @@ describe('InAppMessaging Provider Utils', () => {
 			clearMemo();
 		});
 
-		test('checks if event metrics matches a Pinpoint message', () => {
+		it('checks if event metrics matches a Pinpoint message', () => {
 			const matchingEvent: InAppMessagingEvent = {
 				name: 'action.taken',
 				metrics: {
@@ -219,7 +219,7 @@ describe('InAppMessaging Provider Utils', () => {
 			expect(matchesMetrics(message, matchingEvent)).toBe(false);
 		});
 
-		test('memoizes matches', () => {
+		it('memoizes matches', () => {
 			const event: InAppMessagingEvent = {
 				name: 'action.taken',
 				metrics: { lotSize: 2000 },
@@ -243,7 +243,7 @@ describe('InAppMessaging Provider Utils', () => {
 		});
 	});
 
-	test('isBeforeEndDate checks if a message is still not yet at its end', () => {
+	it('isBeforeEndDate checks if a message is still not yet at its end', () => {
 		const message = cloneDeep(pinpointInAppMessage);
 
 		expect(isBeforeEndDate(message)).toBe(false);
@@ -260,13 +260,13 @@ describe('InAppMessaging Provider Utils', () => {
 		expect(isBeforeEndDate(message)).toBe(true);
 	});
 
-	test('extractContent extracts Pinpoint content into a normalized shape', () => {
+	it('extractContent extracts Pinpoint content into a normalized shape', () => {
 		const message = cloneDeep(pinpointInAppMessage);
 
 		expect(extractContent(message)).toStrictEqual(extractedContent);
 	});
 
-	test('extractMetadata extracts Pinpoint metadata into a flat object', () => {
+	it('extractMetadata extracts Pinpoint metadata into a flat object', () => {
 		const message = cloneDeep(pinpointInAppMessage);
 
 		expect(extractMetadata(message)).toStrictEqual(extractedMetadata);
