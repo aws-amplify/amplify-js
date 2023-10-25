@@ -187,7 +187,7 @@ export const autoTrackMedia = async (
 		return;
 	}
 
-	if (typeof domElementId === 'string' && !domElementId) {
+	if (!domElementId) {
 		logger.debug(
 			"Missing domElementId field in 'properties' for MediaAutoTrack event type."
 		);
