@@ -6,6 +6,7 @@ import { Amplify, Identity, ResourcesConfig } from '@aws-amplify/core';
 import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
 import * as cogId from '@aws-amplify/core/internals/aws-clients/cognitoIdentity';
 import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
+import { CognitoIdentityPoolConfig } from '@aws-amplify/core/lib-esm/libraryUtils';
 
 jest.mock('@aws-amplify/core/internals/aws-clients/cognitoIdentity');
 jest.mock('../../../src/providers/cognito/credentialsProvider/IdentityIdStore');
@@ -59,7 +60,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		);
 		expect(
 			await cognitoIdentityIdProvider({
-				authConfig: ampConfig.Auth!.Cognito,
+				authConfig: ampConfig.Auth!.Cognito as CognitoIdentityPoolConfig,
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
 		).toBe(authAPITestParams.GuestIdentityId.id);
@@ -95,7 +96,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		);
 		expect(
 			await cognitoIdentityIdProvider({
-				authConfig: ampConfig.Auth!.Cognito,
+				authConfig: ampConfig.Auth!.Cognito as CognitoIdentityPoolConfig,
 				tokens: authAPITestParams.ValidAuthTokens,
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
