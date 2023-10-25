@@ -27,6 +27,10 @@ export class AmplifyClass {
 	 * Configures Amplify for use with your back-end resources.
 	 *
 	 * @remarks
+	 * This API does not perform any merging of either `resourcesConfig` or `libraryOptions`. The most recently
+	 * provided values will be used after configuration.
+	 *
+	 * @remarks
 	 * `configure` can be used to specify additional library options where available for supported categories.
 	 *
 	 * @param resourceConfig - Back-end resource configuration. Typically provided via the `aws-exports.js` file.
@@ -34,7 +38,7 @@ export class AmplifyClass {
 	 */
 	configure(
 		resourcesConfig: ResourcesConfig | LegacyConfig,
-		libraryOptions: LibraryOptions = {}
+		libraryOptions?: LibraryOptions
 	): void {
 		let resolvedResourceConfig: ResourcesConfig;
 
@@ -45,7 +49,7 @@ export class AmplifyClass {
 		}
 
 		this.resourcesConfig = resolvedResourceConfig;
-		this.libraryOptions = libraryOptions;
+		this.libraryOptions = libraryOptions ?? this.libraryOptions;
 
 		// Make resource config immutable
 		this.resourcesConfig = deepFreeze(this.resourcesConfig);
