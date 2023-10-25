@@ -200,7 +200,7 @@ export class InternalGraphQLAPIClass {
 			case 'mutation':
 				const abortController = new AbortController();
 
-				let responsePromise;
+				let responsePromise: Promise<GraphQLResult<T>>;
 
 				if (isAmplifyInstance(amplify)) {
 					responsePromise = this._graphql<T>(
@@ -220,7 +220,9 @@ export class InternalGraphQLAPIClass {
 							customUserAgentDetails
 						);
 
-					responsePromise = amplify(wrapper);
+					responsePromise = amplify(wrapper) as unknown as Promise<
+						GraphQLResult<T>
+					>;
 				}
 
 				this._api.updateRequestToBeCancellable(

@@ -371,10 +371,10 @@ export type V6ClientSSR<T extends Record<any, any> = never> =
 		isCancelError: (error: any) => boolean;
 	}>;
 
-type GraphQLClient<
+type GraphQLClient = <
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string
-> = (
+>(
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 	additionalHeaders?:
 		| {
@@ -383,10 +383,10 @@ type GraphQLClient<
 		| undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
-export type GraphQLClientSSR<
+export type GraphQLClientSSR = <
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string
-> = (
+>(
 	contextSpec: any,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 	additionalHeaders?:
