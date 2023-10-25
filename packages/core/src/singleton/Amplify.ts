@@ -49,7 +49,10 @@ export class AmplifyClass {
 		}
 
 		this.resourcesConfig = resolvedResourceConfig;
-		this.libraryOptions = libraryOptions ?? this.libraryOptions;
+
+		if (libraryOptions) {
+			this.libraryOptions = libraryOptions;
+		}
 
 		// Make resource config immutable
 		this.resourcesConfig = deepFreeze(this.resourcesConfig);
