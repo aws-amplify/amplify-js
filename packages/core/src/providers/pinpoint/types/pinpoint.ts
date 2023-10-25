@@ -13,7 +13,7 @@ export type SupportedCategory =
 type SupportedChannelType = 'APNS' | 'APNS_SANDBOX' | 'GCM' | 'IN_APP';
 
 export type PinpointProviderConfig = {
-	Pinpoint?: {
+	Pinpoint: {
 		appId: string;
 		region: string;
 	};
