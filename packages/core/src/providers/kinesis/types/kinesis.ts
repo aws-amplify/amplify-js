@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export type KinesisProviderConfig = {
-	Kinesis?: {
+	Kinesis: {
 		region: string;
 		bufferSize?: number;
 		flushSize?: number;
