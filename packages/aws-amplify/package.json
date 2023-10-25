@@ -250,7 +250,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./lib-esm/analytics/index.js",
 			"import": "{ record }",
-			"limit": "15.91 kB"
+			"limit": "16.0 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -292,7 +292,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./lib-esm/api/index.js",
 			"import": "{ generateClient }",
-			"limit": "32.44 kB"
+			"limit": "32.49 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -304,7 +304,7 @@
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signUp }",
-			"limit": "26.27 kB"
+			"limit": "26.32 kB"
 		},
 		{
 			"name": "[Auth] resetPassword (Cognito)",
@@ -394,7 +394,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect }",
-			"limit": "18.89 kB"
+			"limit": "19.0 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -412,7 +412,7 @@
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "19.23 kB"
+			"limit": "19.28 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
