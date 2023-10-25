@@ -28,6 +28,7 @@ import {
 	assertAuthTokens,
 	assertAuthTokensWithRefreshToken,
 } from '../utils/types';
+import { getRedirectUrl } from '../utils/oauth/getRedirectUrl';
 
 /**
  * Signs a user out
@@ -123,10 +124,9 @@ async function oAuthSignOutRedirect(
 	preferPrivateSession: boolean
 ) {
 	assertOAuthConfig(authConfig);
-
 	const { loginWith, userPoolClientId } = authConfig;
 	const { domain, redirectSignOut } = loginWith.oauth;
-	const signoutUri = redirectSignOut[0];
+	const signoutUri = getRedirectUrl(redirectSignOut);
 	const oAuthLogoutEndpoint = `https://${domain}/logout?${Object.entries({
 		client_id: userPoolClientId,
 		logout_uri: encodeURIComponent(signoutUri),
