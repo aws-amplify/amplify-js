@@ -87,7 +87,6 @@ export class InternalGraphQLAPIClass {
 		authMode: GraphQLAuthMode,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
-		const config = amplify.getConfig();
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
@@ -211,14 +210,17 @@ export class InternalGraphQLAPIClass {
 						customUserAgentDetails
 					);
 				} else {
-					const wrapper = amplifyInstance =>
-						this._graphql<T>(
+					const wrapper = getAmpInstance => {
+						const amplifyInstance = getAmpInstance();
+
+						return this._graphql<T>(
 							amplifyInstance,
 							{ query, variables, authMode },
 							headers,
 							abortController,
 							customUserAgentDetails
 						);
+					};
 
 					responsePromise = amplify(wrapper);
 				}

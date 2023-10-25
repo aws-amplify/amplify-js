@@ -2,20 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ModelTypes } from '@aws-amplify/amplify-api-next-types-alpha';
-import { graphQLOperationsInfo, ModelOperation } from './APIClient';
-import { ClientGenerationParams } from './types';
-import { V6Client } from '../types';
+import { graphQLOperationsInfo, ModelOperation } from '../APIClient';
+import { ServerClientGenerationParams } from '../types';
+import { V6Client } from '../../types';
 
-import { listFactory } from './operations/list';
-import { getFactory } from './operations/get';
-import { subscriptionFactory } from './operations/subscription';
+import { listFactory } from '../operations/list';
+import { getFactory } from '../operations/get';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client,
-	params: ClientGenerationParams
+	params: ServerClientGenerationParams
 ): ModelTypes<T> {
 	const models = {} as any;
-	const config = params.amplify.getConfig();
+	const config = params.config;
+	const useContext = client === null;
 
 	if (!config) {
 		// TODO: improve
@@ -37,25 +37,23 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 			([key, { operationPrefix }]) => {
 				const operation = key as ModelOperation;
 
+				// subscriptions are not supported in SSR
+				if (SUBSCRIPTION_OPS.includes(operation)) return;
+
 				if (operation === 'LIST') {
 					models[name][operationPrefix] = listFactory(
 						client,
 						modelIntrospection,
-						model
-					);
-				} else if (SUBSCRIPTION_OPS.includes(operation)) {
-					models[name][operationPrefix] = subscriptionFactory(
-						client,
-						modelIntrospection,
 						model,
-						operation
+						useContext
 					);
 				} else {
 					models[name][operationPrefix] = getFactory(
 						client,
 						modelIntrospection,
 						model,
-						operation
+						operation,
+						useContext
 					);
 				}
 			}
