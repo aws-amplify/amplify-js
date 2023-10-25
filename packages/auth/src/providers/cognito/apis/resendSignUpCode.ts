@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
-	AuthStandardAttributeKey,
+	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
 import { AuthDeliveryMedium } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -63,7 +63,7 @@ export async function resendSignUpCode(
 		destination: Destination as string,
 		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
 		attributeName: AttributeName
-			? (AttributeName as AuthStandardAttributeKey)
+			? (AttributeName as AuthVerifiableAttributeKey)
 			: undefined,
 	};
 }
