@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
-	AuthStandardAttributeKey,
+	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -69,7 +69,7 @@ export async function resetPassword(
 					codeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
 				destination: codeDeliveryDetails?.Destination as string,
 				attributeName:
-					codeDeliveryDetails?.AttributeName as AuthStandardAttributeKey,
+					codeDeliveryDetails?.AttributeName as AuthVerifiableAttributeKey,
 			},
 		},
 	};
