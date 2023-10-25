@@ -617,7 +617,7 @@ describe('API test', () => {
 			});
 		});
 
-		test('multi-auth default case api-key, using OIDC as auth mode', async () => {
+		test('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
 			Amplify.configure({
 				API: {
 					GraphQL: {
