@@ -17,3 +17,10 @@ export const invalidRedirectException = new AuthError({
 	recoverySuggestion:
 		'Please make sure the signIn/Out redirect in your oauth config is valid.',
 });
+export const INVALID_ORIGIN_EXCEPTION = 'InvalidOriginException';
+export const invalidOriginException = new AuthError({
+	name: INVALID_ORIGIN_EXCEPTION,
+	message:
+		'redirect is coming from a different origin. The oauth flow needs to be initiated from the same origin',
+	recoverySuggestion: 'Please call signInWithRedirect from the same origin.',
+});

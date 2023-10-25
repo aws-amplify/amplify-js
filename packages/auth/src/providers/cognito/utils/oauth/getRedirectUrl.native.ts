@@ -4,8 +4,8 @@
 import { invalidRedirectException } from '../../../../errors/constants';
 
 /** @internal */
-export function getRedirectURL(redirects: string[]): string {
-	const redirect = redirects.find(
+export function getRedirectUrl(redirects: string[]): string {
+	const redirect = redirects?.find(
 		redirect =>
 			!redirect.startsWith('http://') && !redirect.startsWith('https://')
 	);

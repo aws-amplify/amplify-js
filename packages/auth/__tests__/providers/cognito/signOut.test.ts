@@ -220,7 +220,7 @@ describe('signOut tests no oauth request fail', () => {
 	});
 });
 
-describe.skip('signOut tests with oauth', () => {
+describe('signOut tests with oauth', () => {
 	let tokenStoreSpy;
 	let tokenOrchestratorSpy;
 	let globalSignOutSpy;
@@ -228,8 +228,12 @@ describe.skip('signOut tests with oauth', () => {
 	let clearCredentialsSpy;
 	let oauthStoreSpy;
 	const mockOpenAuthSession = openAuthSession as jest.Mock;
-
+	const originalWindowLocation = window.location;
 	beforeEach(() => {
+		Object.defineProperty(globalThis, 'window', {
+			value: { location: { origin: 'http://localhost:3000', pathname: '/' } },
+			writable: true,
+		});
 		Amplify.configure(
 			{
 				Auth: {
@@ -300,6 +304,12 @@ describe.skip('signOut tests with oauth', () => {
 				};
 			});
 	});
+	afterEach(() => {
+		Object.defineProperty(globalThis, 'window', {
+			value: originalWindowLocation,
+		});
+	});
+
 	test('test client signOut with oauth', async () => {
 		await signOut({ global: false });
 
