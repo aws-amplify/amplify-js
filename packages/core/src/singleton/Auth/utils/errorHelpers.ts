@@ -25,7 +25,7 @@ const authConfigurationErrorMap: AmplifyErrorMap<AuthConfigurationErrorCode> = {
 	[AuthConfigurationErrorCode.AuthUserPoolException]: {
 		message: 'Auth UserPool not configured.',
 		recoverySuggestion:
-			'Make sure to call Amplify.configure in your app with UserPoolId.',
+			'Make sure to call Amplify.configure in your app with userPoolId and userPoolClientId.',
 	},
 	[AuthConfigurationErrorCode.InvalidIdentityPoolIdException]: {
 		message: 'Invalid identity pool id provided.',

@@ -6,7 +6,7 @@ import { Amplify, Identity, ResourcesConfig } from '@aws-amplify/core';
 import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
 import * as cogId from '@aws-amplify/core/internals/aws-clients/cognitoIdentity';
 import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
-import { CognitoIdentityPoolConfig } from '@aws-amplify/core/lib-esm/libraryUtils';
+import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 jest.mock('@aws-amplify/core/internals/aws-clients/cognitoIdentity');
 jest.mock('../../../src/providers/cognito/credentialsProvider/IdentityIdStore');
