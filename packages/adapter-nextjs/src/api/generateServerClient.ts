@@ -14,9 +14,9 @@ import {
 	__amplify,
 } from '@aws-amplify/api-graphql';
 
-import { runWithAmplifyServerContext } from './runWithAmplifyServerContext';
-import { getAmplifyConfig } from './utils/getAmplifyConfig';
-import { NextServer } from './types';
+import { runWithAmplifyServerContext } from '../runWithAmplifyServerContext';
+import { getAmplifyConfig } from '../utils/getAmplifyConfig';
+import { NextServer } from '../types';
 
 /**
  * Generates an API client that can be used inside a Next.js Server Component

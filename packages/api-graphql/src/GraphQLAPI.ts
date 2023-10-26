@@ -33,7 +33,6 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	 */
 	graphql<T = any>(
 		amplify: AmplifyClassV6 | (() => Promise<AmplifyClassV6>),
-		// amplify: AmplifyClassV6 | (() => Promise<AmplifyClassV6>),
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {

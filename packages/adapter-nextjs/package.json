@@ -38,9 +38,9 @@
 			"require": "./lib/withAmplify.js"
 		},
 		"./api": {
-			"types": "./lib-esm/generateServerClient.d.ts",
-			"import": "./lib-esm/generateServerClient.js",
-			"require": "./lib/generateServerClient.js"
+			"types": "./lib-esm/api/generateServerClient.d.ts",
+			"import": "./lib-esm/api/generateServerClient.js",
+			"require": "./lib/api/generateServerClient.js"
 		},
 		"./internals": {
 			"types": "./lib-esm/internals/index.d.ts",
