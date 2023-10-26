@@ -61,6 +61,11 @@ describe('generateServerClientUsingCookies', () => {
 });
 
 describe('generateServerClient', () => {
+	afterAll(() => {
+		jest.resetAllMocks();
+		jest.clearAllMocks();
+	});
+
 	it('should call getAmlifyConfig', async () => {
 		generateServerClient();
 		expect(mockGetAmplifyConfig).toHaveBeenCalled();
