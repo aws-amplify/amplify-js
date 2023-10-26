@@ -15,7 +15,7 @@ import {
 } from '@aws-amplify/api-graphql';
 
 import { runWithAmplifyServerContext } from '../runWithAmplifyServerContext';
-import { getAmplifyConfig } from '../utils/getAmplifyConfig';
+import { getAmplifyConfig } from '../utils';
 import { NextServer } from '../types';
 
 /**
@@ -99,7 +99,9 @@ export function generateServerClient<
 	const prevGraphql = client.graphql as unknown as GraphQLMethod;
 
 	const wrappedGraphql = (contextSpec, options, additionalHeaders?) => {
+		console.log('inside wrapped');
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
+		console.log('instance', amplifyInstance);
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },
 			options,

@@ -66,10 +66,10 @@
 		],
 		"coverageThreshold": {
 			"global": {
-				"branches": 90,
-				"functions": 83,
-				"lines": 88,
-				"statements": 83
+				"branches": 88,
+				"functions": 90,
+				"lines": 92,
+				"statements": 93
 			}
 		},
 		"globals": {
@@ -91,7 +91,8 @@
 		"testPathIgnorePatterns": [
 			"xmlParser-fixture.ts",
 			"testUtils",
-			"cases"
+			"cases",
+			"mocks"
 		],
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testURL": "http://localhost/",
