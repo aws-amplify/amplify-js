@@ -1,5 +1,5 @@
 // TODO: expand these stubs
-describe('generateServerClient', () => {
+describe('generateServerClientUsingCookies', () => {
 	it('should work', () => {
 		expect(true).toBeTruthy();
 	});

@@ -12,28 +12,17 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 
-import { __amplify, V6Client, V6ClientSSR } from '@aws-amplify/api-graphql';
+import {
+	__amplify,
+	V6Client,
+	V6ClientSSR,
+	ServerClientGenerationParams,
+} from '@aws-amplify/api-graphql';
 
 export type {
 	GraphQLResult,
 	GraphQLReturnType,
 } from '@aws-amplify/api-graphql';
-
-// move this import and ServerClientGenerationParams into `api-graphql`
-import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
-/**
- * @private
- *
- * The knobs available for configuring `server/generateClient` internally.
- */
-export type ServerClientGenerationParams = {
-	amplify:
-		| null // null expected when used with `generateServerClient`
-		// closure expected with `generateServerClientUsingCookies`
-		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>);
-	// global env-sourced config use for retrieving modelIntro
-	config: ResourcesConfig;
-};
 
 /**
  * @private

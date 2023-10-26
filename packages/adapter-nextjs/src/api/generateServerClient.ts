@@ -19,14 +19,14 @@ import { getAmplifyConfig } from '../utils/getAmplifyConfig';
 import { NextServer } from '../types';
 
 /**
- * Generates an API client that can be used inside a Next.js Server Component
+ * Generates an API client that can be used inside a Next.js Server Component with Dynamic Rendering
  *
  * @example
  * ```ts
- * import { cookies } from "next/headers";
+ * import { cookies } from "next/headers"
  *
  * const client = generateServerClientUsingCookies({ cookies })
- * client.graphql()
+ * const result = await client.graphql({query: listPosts})
  * ```
  */
 export function generateServerClientUsingCookies<
@@ -41,12 +41,12 @@ export function generateServerClientUsingCookies<
 				'generateServerClientUsingCookies is only compatible with the `cookies` Dynamic Function available in Server Components',
 			// TODO: link to docs
 			recoverySuggestion:
-				'use generateServerClient inside of runWithAmplifyServerContext with the `request` object',
+				'use `generateServerClient` inside of runWithAmplifyServerContext with the `request` object',
 		});
 	}
 
 	// This function reference gets passed down to InternalGraphQLAPI.ts.graphql
-	// where this._graphql is passed through as the `fn` argument
+	// where this._graphql is passed in as the `fn` argument
 	// causing it to always get invoked inside `runWithAmplifyServerContext`
 	const getAmplify = (fn: (amplify: any) => Promise<any>) =>
 		runWithAmplifyServerContext({
@@ -65,6 +65,24 @@ export function generateServerClientUsingCookies<
 	});
 }
 
+/**
+ * Generates an API client that can be used with both Pages Router and App Router
+ *
+ * @example
+ * ```ts
+ *
+ * const client = generateServerClient()
+ * 
+ * result = await runWithAmplifyServerContext({
+      nextServerContext: { request, response },
+      operation: async (contextSpec) => {
+        return await client.graphql(contextSpec, {
+          query: listPosts,
+        })
+      },
+    })
+ * ```
+ */
 export function generateServerClient<
 	T extends Record<any, any> = never
 >(): V6ClientSSR<T> {

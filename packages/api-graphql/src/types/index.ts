@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -10,6 +10,7 @@ import {
 	DocumentType,
 } from '@aws-amplify/core/internals/utils';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
@@ -354,9 +355,6 @@ type ExcludeNeverFields<O> = {
 
 export const __amplify = Symbol('amplify');
 
-/**
- * TODO: Refactor these 2. Pull out `graphQL` into its own type
- */
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
 	graphql: GraphQLMethod;
@@ -396,3 +394,17 @@ export type GraphQLMethodSSR = <
 		  }
 		| undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+
+/**
+ * @private
+ *
+ * The knobs available for configuring `server/generateClient` internally.
+ */
+export type ServerClientGenerationParams = {
+	amplify:
+		| null // null expected when used with `generateServerClient`
+		// closure expected with `generateServerClientUsingCookies`
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>);
+	// global env-sourced config use for retrieving modelIntro
+	config: ResourcesConfig;
+};
