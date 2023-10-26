@@ -5,6 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
+	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '../../..';
 import { AuthDeliveryMedium } from '../../../types';
@@ -54,6 +55,6 @@ export const sendUserAttributeVerificationCode = async (
 	return {
 		destination: Destination,
 		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
-		attributeName: AttributeName,
+		attributeName: AttributeName as AuthVerifiableAttributeKey,
 	};
 };

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getBytesFromHex } from './getBytesFromHex';
-import WordArray from './WordArray';
+import { WordArray } from '@aws-amplify/core/internals/utils';
 
 /**
  * Returns a Uint8Array with a sequence of random nBytes

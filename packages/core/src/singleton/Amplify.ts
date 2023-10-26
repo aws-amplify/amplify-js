@@ -27,6 +27,10 @@ export class AmplifyClass {
 	 * Configures Amplify for use with your back-end resources.
 	 *
 	 * @remarks
+	 * This API does not perform any merging of either `resourcesConfig` or `libraryOptions`. The most recently
+	 * provided values will be used after configuration.
+	 *
+	 * @remarks
 	 * `configure` can be used to specify additional library options where available for supported categories.
 	 *
 	 * @param resourceConfig - Back-end resource configuration. Typically provided via the `aws-exports.js` file.
@@ -34,7 +38,7 @@ export class AmplifyClass {
 	 */
 	configure(
 		resourcesConfig: ResourcesConfig | LegacyConfig,
-		libraryOptions: LibraryOptions = {}
+		libraryOptions?: LibraryOptions
 	): void {
 		let resolvedResourceConfig: ResourcesConfig;
 
@@ -44,15 +48,11 @@ export class AmplifyClass {
 			resolvedResourceConfig = resourcesConfig as ResourcesConfig;
 		}
 
-		this.resourcesConfig = mergeResourceConfig(
-			this.resourcesConfig,
-			resolvedResourceConfig
-		);
+		this.resourcesConfig = resolvedResourceConfig;
 
-		this.libraryOptions = mergeLibraryOptions(
-			this.libraryOptions,
-			libraryOptions
-		);
+		if (libraryOptions) {
+			this.libraryOptions = libraryOptions;
+		}
 
 		// Make resource config immutable
 		this.resourcesConfig = deepFreeze(this.resourcesConfig);
@@ -87,46 +87,3 @@ export class AmplifyClass {
  * `Amplify` is responsible for orchestrating cross-category communication within the library.
  */
 export const Amplify = new AmplifyClass();
-
-// TODO(v6): validate until which level this will nested, during Amplify.configure API review.
-function mergeResourceConfig(
-	existingConfig: ResourcesConfig,
-	newConfig: ResourcesConfig
-): ResourcesConfig {
-	const resultConfig: Record<string, any> = {};
-
-	for (const category of Object.keys(existingConfig)) {
-		resultConfig[category] = existingConfig[category as keyof ResourcesConfig];
-	}
-
-	for (const key of Object.keys(newConfig)) {
-		resultConfig[key] = {
-			...resultConfig[key],
-			...newConfig[key as keyof ResourcesConfig],
-		};
-	}
-
-	return resultConfig;
-}
-
-function mergeLibraryOptions(
-	existingConfig: LibraryOptions,
-	newConfig: LibraryOptions
-): LibraryOptions {
-	const resultConfig: Record<string, any> = {};
-
-	for (const category of Object.keys(existingConfig)) {
-		resultConfig[category] = existingConfig[category as keyof LibraryOptions];
-	}
-
-	for (const key of Object.keys(newConfig).filter(key => key !== 'ssr')) {
-		resultConfig[key] = {
-			...resultConfig[key],
-			...newConfig[key as Exclude<keyof LibraryOptions, 'ssr'>],
-		};
-	}
-
-	resultConfig.ssr = newConfig.ssr;
-
-	return resultConfig;
-}
