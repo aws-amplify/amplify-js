@@ -48,7 +48,7 @@ export function initializeModel(
 	modelName: string,
 	result: any[],
 	modelIntrospection: any,
-	authMode: GraphQLAuthMode,
+	authMode: GraphQLAuthMode | undefined,
 	authToken: string | undefined
 ): any[] {
 	const introModel = modelIntrospection.models[modelName];
