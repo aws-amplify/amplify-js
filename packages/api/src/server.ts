@@ -14,9 +14,12 @@ import {
 
 import {
 	__amplify,
+	__authMode,
+	__authToken,
 	V6Client,
 	V6ClientSSR,
 	ServerClientGenerationParams,
+	CommonPublicClientOptions,
 } from '@aws-amplify/api-graphql';
 
 export type {
@@ -36,9 +39,13 @@ export type {
 export function generateClient<
 	T extends Record<any, any> = never,
 	ClientType extends V6ClientSSR<T> | V6Client<T> = V6ClientSSR<T>
->(params: ServerClientGenerationParams): ClientType {
+>(
+	params: ServerClientGenerationParams & CommonPublicClientOptions
+): ClientType {
 	const client = {
 		[__amplify]: params.amplify,
+		[__authMode]: params.authMode,
+		[__authToken]: params.authToken,
 		graphql,
 		cancel,
 		isCancelError,
