@@ -9,6 +9,8 @@ export {
 	VerifiableUserAttributeKey,
 	MFAPreference,
 	AWSAuthDevice,
+	CognitoAuthUser,
+	CognitoAuthSignInDetails,
 } from './models';
 
 export {

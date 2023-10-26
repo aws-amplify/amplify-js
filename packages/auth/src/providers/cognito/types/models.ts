@@ -5,9 +5,9 @@ import {
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
-import { AuthUserAttribute, AuthDevice } from '../../../types';
+import { AuthUserAttribute, AuthDevice, AuthUser } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
-import { SignInOutput, SignUpOutput } from './outputs';
+import { SignUpOutput } from './outputs';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
@@ -80,3 +80,18 @@ export type AWSAuthDevice = AuthDevice & {
 	lastAuthenticatedDate?: Date;
 	lastModifiedDate?: Date;
 };
+
+/**
+ * Holds the sign in details of the user.
+ */
+export type CognitoAuthSignInDetails = {
+	loginId?: string;
+	authFlowType?: AuthFlowType;
+};
+
+/**
+ * Holds the user information along with the sign in details.
+ */
+export interface CognitoAuthUser extends AuthUser {
+	signInDetails?: CognitoAuthSignInDetails;
+}

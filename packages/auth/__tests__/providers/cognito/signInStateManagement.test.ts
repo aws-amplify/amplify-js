@@ -59,6 +59,10 @@ describe('local sign-in state management tests', () => {
 			challengeName,
 			signInSession: session,
 			username,
+			signInDetails: {
+				loginId: username,
+				authFlowType: 'USER_SRP_AUTH',
+			},
 		});
 
 		handleUserSRPAuthflowSpy.mockClear();
