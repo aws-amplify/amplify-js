@@ -304,7 +304,7 @@
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signUp }",
-			"limit": "26.45 kB"
+			"limit": "26.51 kB"
 		},
 		{
 			"name": "[Auth] resetPassword (Cognito)",
@@ -322,7 +322,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn }",
-			"limit": "25.61 kB"
+			"limit": "25.70 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -334,7 +334,7 @@
 			"name": "[Auth] confirmSignUp (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ confirmSignUp }",
-			"limit": "26.16 kB"
+			"limit": "26.24 kB"
 		},
 		{
 			"name": "[Auth] confirmSignIn (Cognito)",
@@ -406,7 +406,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./lib-esm/auth/index.js",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "27.3 kB"
+			"limit": "27.40 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
