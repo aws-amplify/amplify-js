@@ -25,14 +25,15 @@ export const getCurrentUser = async (
 		username: username as string,
 		userId: sub as string,
 	};
-	if (isTokensWithSignInDetails(tokens)) {
-		authUser.signInDetails = tokens.signInDetails;
+	const signInDetails = getSignInDetailsFromTokens(tokens);
+	if (signInDetails) {
+		authUser.signInDetails = signInDetails;
 	}
 	return authUser;
 };
 
-function isTokensWithSignInDetails(
-	tokens: Record<string, unknown>
-): tokens is AuthTokens & { signInDetails: CognitoAuthSignInDetails } {
-	return !!tokens && !!(tokens as any).signInDetails;
+function getSignInDetailsFromTokens(
+	tokens: AuthTokens & { signInDetails?: CognitoAuthSignInDetails }
+): CognitoAuthSignInDetails | undefined {
+	return tokens?.signInDetails;
 }
