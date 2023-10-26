@@ -21,6 +21,7 @@ import {
 	RespondToAuthChallengeException,
 } from '../types/errors';
 import {
+	CognitoAuthSignInDetails,
 	SignInWithCustomSRPAuthInput,
 	SignInWithCustomSRPAuthOutput,
 } from '../types';
@@ -51,6 +52,10 @@ export async function signInWithCustomSRPAuth(
 	input: SignInWithCustomSRPAuthInput
 ): Promise<SignInWithCustomSRPAuthOutput> {
 	const { username, password, options } = input;
+	const signInDetails: CognitoAuthSignInDetails = {
+		loginId: username,
+		authFlow: 'CUSTOM_WITH_SRP',
+	};
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const metadata = options?.clientMetadata;
@@ -83,6 +88,7 @@ export async function signInWithCustomSRPAuth(
 			signInSession: Session,
 			username: activeUsername,
 			challengeName: ChallengeName as ChallengeName,
+			signInDetails,
 		});
 		if (AuthenticationResult) {
 			await cacheCognitoTokens({
@@ -93,6 +99,7 @@ export async function signInWithCustomSRPAuth(
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),
+				signInDetails,
 			});
 			cleanActiveSignInState();
 			Hub.dispatch(

@@ -65,7 +65,10 @@ export class DefaultTokenStore implements AuthTokenStore {
 				(await this.getKeyValueStorage().getItem(authKeys.clockDrift)) ?? '0';
 			const clockDrift = Number.parseInt(clockDriftString);
 
-			return {
+			const signInDetails = await this.getKeyValueStorage().getItem(
+				authKeys.signInDetails
+			);
+			const tokens: CognitoAuthTokens = {
 				accessToken,
 				idToken,
 				refreshToken,
@@ -73,6 +76,11 @@ export class DefaultTokenStore implements AuthTokenStore {
 				clockDrift,
 				username: await this.getLastAuthUser(),
 			};
+
+			if (signInDetails) {
+				tokens.signInDetails = JSON.parse(signInDetails);
+			}
+			return tokens;
 		} catch (err) {
 			return null;
 		}
@@ -125,6 +133,12 @@ export class DefaultTokenStore implements AuthTokenStore {
 				tokens.deviceMetadata.randomPassword
 			);
 		}
+		if (!!tokens.signInDetails) {
+			await this.getKeyValueStorage().setItem(
+				authKeys.signInDetails,
+				JSON.stringify(tokens.signInDetails)
+			);
+		}
 
 		await this.getKeyValueStorage().setItem(
 			authKeys.clockDrift,
@@ -140,6 +154,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.getKeyValueStorage().removeItem(authKeys.idToken),
 			this.getKeyValueStorage().removeItem(authKeys.clockDrift),
 			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
+			this.getKeyValueStorage().removeItem(authKeys.signInDetails),
 			this.getKeyValueStorage().removeItem(this.getLastAuthUserKey()),
 		]);
 	}
