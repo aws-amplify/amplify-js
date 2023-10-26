@@ -44,8 +44,9 @@ export const DefaultAmplify = {
 
 			CognitoUserPoolsTokenProvider.setKeyValueStorage(
 				libraryOptions?.ssr
-					? new CookieStorage({
-							sameSite: 'strict',
+					? // TODO: allow configure with a public interface
+					  new CookieStorage({
+							sameSite: 'lax',
 					  })
 					: defaultStorage
 			);
