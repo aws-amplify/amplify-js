@@ -55,7 +55,8 @@ export async function confirmSignIn(
 	input: ConfirmSignInInput
 ): Promise<ConfirmSignInOutput> {
 	const { challengeResponse, options } = input;
-	const { username, challengeName, signInSession } = signInStore.getState();
+	const { username, challengeName, signInSession, signInDetails } =
+		signInStore.getState();
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -106,6 +107,7 @@ export async function confirmSignIn(
 			signInSession: Session,
 			username,
 			challengeName: ChallengeName as ChallengeName,
+			signInDetails,
 		});
 
 		if (AuthenticationResult) {
@@ -118,6 +120,7 @@ export async function confirmSignIn(
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),
+				signInDetails,
 			});
 			Hub.dispatch(
 				'auth',
