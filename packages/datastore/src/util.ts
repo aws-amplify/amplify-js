@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { monotonicFactory, ULID } from 'ulid';
-import { amplifyUuid, AmplifyUrl } from '@aws-amplify/core/internals/utils';
+import {
+	amplifyUuid,
+	AmplifyUrl,
+	WordArray,
+} from '@aws-amplify/core/internals/utils';
 import { produce, applyPatches, Patch } from 'immer';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
@@ -373,11 +377,45 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 	return safariCompatabilityModeResult;
 };
 
-// TODO(v6): refactor this random number logic  auth -> core
-// const randomBytes = (nBytes: number): Buffer => {
-// 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
-// };
-const prng = () => 10 / 0xff;
+const HEX_TO_SHORT: Record<string, number> = {};
+
+for (let i = 0; i < 256; i++) {
+	let encodedByte = i.toString(16).toLowerCase();
+	if (encodedByte.length === 1) {
+		encodedByte = `0${encodedByte}`;
+	}
+
+	HEX_TO_SHORT[encodedByte] = i;
+}
+
+const getBytesFromHex = (encoded: string): Uint8Array => {
+	if (encoded.length % 2 !== 0) {
+		throw new Error('Hex encoded strings must have an even number length');
+	}
+
+	const out = new Uint8Array(encoded.length / 2);
+	for (let i = 0; i < encoded.length; i += 2) {
+		const encodedByte = encoded.slice(i, i + 2).toLowerCase();
+		if (encodedByte in HEX_TO_SHORT) {
+			out[i / 2] = HEX_TO_SHORT[encodedByte];
+		} else {
+			throw new Error(
+				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`
+			);
+		}
+	}
+
+	return out;
+};
+
+const randomBytes = (nBytes: number): Uint8Array => {
+	const str = new WordArray().random(nBytes).toString();
+
+	return getBytesFromHex(str);
+};
+
+const prng = () => randomBytes(1)[0] / 0xff;
+
 export function monotonicUlidFactory(seed?: number): ULID {
 	const ulid = monotonicFactory(prng);
 
