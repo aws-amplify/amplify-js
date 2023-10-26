@@ -53,7 +53,12 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						);
 
 						try {
+							const options: Record<string, any> = {};
+							if (args?.authMode) options.authMode = args?.authMode;
+							if (args?.authToken) options.authToken = args?.authToken;
+
 							const { data, extensions } = (await client.graphql({
+								...options,
 								query,
 								variables,
 							})) as any;
@@ -77,7 +82,9 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 											client,
 											name,
 											flattenedResult,
-											modelIntrospection
+											modelIntrospection,
+											options.authMode,
+											options.authToken
 										);
 
 										return {
@@ -105,7 +112,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						}
 					};
 				} else if (['ONCREATE', 'ONUPDATE', 'ONDELETE'].includes(operation)) {
-					models[name][operationPrefix] = (arg?: any, options?: any) => {
+					models[name][operationPrefix] = (args?: any) => {
 						const query = generateGraphQLDocument(
 							modelIntrospection.models,
 							name,
@@ -114,11 +121,16 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						const variables = buildGraphQLVariables(
 							model,
 							operation,
-							arg,
+							args,
 							modelIntrospection
 						);
 
+						const options: Record<string, any> = {};
+						if (args?.authMode) options.authMode = args?.authMode;
+						if (args?.authToken) options.authToken = args?.authToken;
+
 						const observable = client.graphql({
+							...options,
 							query,
 							variables,
 						}) as GraphqlSubscriptionResult<object>;
@@ -126,12 +138,20 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						return observable.pipe(
 							map(value => {
 								const [key] = Object.keys(value.data);
-								return value.data[key];
+								const [initialized] = initializeModel(
+									client,
+									name,
+									[value.data[key]],
+									modelIntrospection,
+									options?.authMode,
+									options?.authToken
+								);
+								return initialized;
 							})
 						);
 					};
 				} else if (operation === 'OBSERVE_QUERY') {
-					models[name][operationPrefix] = (arg?: any, options?: any) =>
+					models[name][operationPrefix] = (arg?: any) =>
 						new Observable(subscriber => {
 							// what we'll be sending to our subscribers
 							const items: object[] = [];
@@ -151,36 +171,30 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							};
 
 							// start subscriptions
-							const onCreateSub = models[name]
-								.onCreate(arg, options)
-								.subscribe({
-									next(item) {
-										receiveMessages({ item, type: 'create' });
-									},
-									error(error) {
-										subscriber.error({ type: 'onCreate', error });
-									},
-								});
-							const onUpdateSub = models[name]
-								.onUpdate(arg, options)
-								.subscribe({
-									next(item) {
-										receiveMessages({ item, type: 'update' });
-									},
-									error(error) {
-										subscriber.error({ type: 'onUpdate', error });
-									},
-								});
-							const onDeleteSub = models[name]
-								.onDelete(arg, options)
-								.subscribe({
-									next(item) {
-										receiveMessages({ item, type: 'delete' });
-									},
-									error(error) {
-										subscriber.error({ type: 'onDelete', error });
-									},
-								});
+							const onCreateSub = models[name].onCreate(arg).subscribe({
+								next(item) {
+									receiveMessages({ item, type: 'create' });
+								},
+								error(error) {
+									subscriber.error({ type: 'onCreate', error });
+								},
+							});
+							const onUpdateSub = models[name].onUpdate(arg).subscribe({
+								next(item) {
+									receiveMessages({ item, type: 'update' });
+								},
+								error(error) {
+									subscriber.error({ type: 'onUpdate', error });
+								},
+							});
+							const onDeleteSub = models[name].onDelete(arg).subscribe({
+								next(item) {
+									receiveMessages({ item, type: 'delete' });
+								},
+								error(error) {
+									subscriber.error({ type: 'onDelete', error });
+								},
+							});
 
 							// consumes a list of messages and sends a snapshot
 							function ingestMessages(messages: typeof messageQueue) {
@@ -226,7 +240,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 										data: page,
 										errors,
 										nextToken: _nextToken,
-									} = await models[name].list({ ...arg, nextToken }, options);
+									} = await models[name].list({ ...arg, nextToken });
 									nextToken = _nextToken;
 
 									items.push(...page);
@@ -289,6 +303,7 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 
 						try {
 							const { data, extensions } = (await client.graphql({
+								...options,
 								query,
 								variables,
 							})) as any;
@@ -306,7 +321,9 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 										client,
 										name,
 										[flattenedResult],
-										modelIntrospection
+										modelIntrospection,
+										options?.authMode,
+										options?.authToken
 									);
 
 									return { data: initialized, extensions };
