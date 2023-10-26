@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export type PersonalizeProviderConfig = {
-	Personalize?: {
+	Personalize: {
 		trackingId: string;
 		region: string;
 		flushSize?: number;
