@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/adapter-nextjs/api",
+	"main": "../lib/api/generateServerClient.js",
+	"browser": "../lib-esm/api/generateServerClient.js",
+	"module": "../lib-esm/api/generateServerClient.js",
+	"typings": "../lib-esm/api/generateServerClient.d.ts"
+}

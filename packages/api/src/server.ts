@@ -12,7 +12,12 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 
-import { __amplify, V6Client } from '@aws-amplify/api-graphql';
+import {
+	__amplify,
+	V6Client,
+	V6ClientSSR,
+	ServerClientGenerationParams,
+} from '@aws-amplify/api-graphql';
 
 export type {
 	GraphQLResult,
@@ -20,17 +25,27 @@ export type {
 } from '@aws-amplify/api-graphql';
 
 /**
- * Generates an API client that can work with models or raw GraphQL
+ * @private
+ *
+ * Creates a client that can be used to make GraphQL requests, using a provided `AmplifyClassV6`
+ * compatible context object for config and auth fetching.
+ *
+ * @param params
+ * @returns
  */
-export function generateClient<T extends Record<any, any> = never>(
-	contextSpec: AmplifyServer.ContextSpec
-): V6Client<T> {
-	return {
-		[__amplify]: getAmplifyServerContext(contextSpec).amplify,
+export function generateClient<
+	T extends Record<any, any> = never,
+	ClientType extends V6ClientSSR<T> | V6Client<T> = V6ClientSSR<T>
+>(params: ServerClientGenerationParams): ClientType {
+	const client = {
+		[__amplify]: params.amplify,
 		graphql,
 		cancel,
 		isCancelError,
-	};
+		models: {},
+	} as any;
+
+	return client as ClientType;
 }
 
 export {
