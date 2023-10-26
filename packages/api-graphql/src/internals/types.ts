@@ -10,6 +10,12 @@ import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
  */
 export type ClientGenerationParams = {
 	amplify: AmplifyClassV6;
+} & CommonPublicClientOptions;
+
+/**
+ * Common options that can be used on public `generateClient()` interfaces.
+ */
+export type CommonPublicClientOptions = {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
 };
