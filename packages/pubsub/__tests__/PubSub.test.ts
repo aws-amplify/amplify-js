@@ -90,7 +90,7 @@ const testPubSubAsync = (
 		await hubConnectionListener.waitUntilConnectionStateIn([
 			ConnectionState.Connected,
 		]);
-		pubsub.publish({ topics: topic, msg: message, options });
+		pubsub.publish({ topics: topic, message: message, options });
 	});
 
 beforeEach(() => {
@@ -166,7 +166,10 @@ describe('PubSub', () => {
 				ConnectionState.Connected,
 			]);
 
-			await pubsub.publish({ topics: 'topicA', msg: { value: 'my message' } });
+			await pubsub.publish({
+				topics: 'topicA',
+				message: { value: 'my message' },
+			});
 		});
 
 		test('subscriber is matching MQTT topic wildcards', () => {
@@ -192,7 +195,7 @@ describe('PubSub', () => {
 
 			newPubsubClient.publish({
 				topics: 'someTopic',
-				msg: { msg: 'published Message' },
+				message: { msg: 'published Message' },
 			});
 
 			expect(pubsubClient.publish).not.toHaveBeenCalled();
@@ -267,7 +270,7 @@ describe('PubSub', () => {
 
 			newPubsubClient.publish({
 				topics: 'someTopic',
-				msg: { msg: 'published Message' },
+				message: { msg: 'published Message' },
 			});
 
 			expect(pubsubClient.publish).not.toHaveBeenCalled();
@@ -480,7 +483,7 @@ describe('PubSub', () => {
 			expect(
 				iotClient.publish({
 					topics: 'topicA',
-					msg: { msg: 'my message AWSIoTProvider' },
+					message: { msg: 'my message AWSIoTProvider' },
 				})
 			).rejects.toMatch('Failed to publish');
 		});

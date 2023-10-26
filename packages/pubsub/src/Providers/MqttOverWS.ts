@@ -250,15 +250,15 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 	}
 
-	async publish({ topics, msg }: PublishInput) {
+	async publish({ topics, message }: PublishInput) {
 		const targetTopics = ([] as string[]).concat(topics);
-		const message = JSON.stringify(msg);
+		const msg = JSON.stringify(message);
 
 		const client = await this.clientsQueue.get(this.clientId);
 
 		if (client) {
 			logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
-			targetTopics.forEach(topic => client.send(topic, message));
+			targetTopics.forEach(topic => client.send(topic, msg));
 		} else {
 			logger.debug(
 				'Publishing to topic(s) failed',

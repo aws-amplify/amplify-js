@@ -71,7 +71,7 @@ export interface PubSubBase {
 
 export type PublishInput = {
 	topics: string[] | string;
-	msg: PubSubContent;
+	message: PubSubContent;
 	options?: PubSubOptions;
 };
 
