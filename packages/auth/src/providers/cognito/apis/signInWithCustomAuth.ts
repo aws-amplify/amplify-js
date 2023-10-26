@@ -19,6 +19,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import {
+	CognitoAuthSignInDetails,
 	SignInWithCustomAuthInput,
 	SignInWithCustomAuthOutput,
 } from '../types';
@@ -50,6 +51,10 @@ export async function signInWithCustomAuth(
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { username, password, options } = input;
+	const signInDetails: CognitoAuthSignInDetails = {
+		loginId: username,
+		authFlowType: 'CUSTOM_WITHOUT_SRP',
+	};
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -78,6 +83,7 @@ export async function signInWithCustomAuth(
 			signInSession: Session,
 			username: activeUsername,
 			challengeName: ChallengeName as ChallengeName,
+			signInDetails,
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
@@ -90,6 +96,7 @@ export async function signInWithCustomAuth(
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),
+				signInDetails,
 			});
 			Hub.dispatch(
 				'auth',
