@@ -687,22 +687,22 @@ tests:
     browser: *minimal_browser_list
 
   # PUBSUB
-  # - test_name: integ_react_iot_reconnect
-  #   desc: 'PubSub - Reconnection for IoT'
-  #   framework: react
-  #   category: pubsub
-  #   sample_name: [reconnection-iot]
-  #   spec: reconnection
-  #   # Firefox doesn't support network state management in cypress
-  #   browser: [chrome]
-  # - test_name: integ_react_api_reconnect
-  #   desc: 'PubSub - Reconnection for API'
-  #   framework: react
-  #   category: pubsub
-  #   sample_name: [reconnection-api]
-  #   spec: reconnection
-  #   # Firefox doesn't support network state management in cypress
-  #   browser: [chrome]
+  - test_name: integ_react_iot_reconnect
+    desc: 'PubSub - Reconnection for IoT'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-iot]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
+  - test_name: integ_react_api_reconnect
+    desc: 'PubSub - Reconnection for API'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-api]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
 
   # STORAGE
   - test_name: integ_react_storage
