@@ -6,7 +6,12 @@ import { KinesisProviderConfig } from '../../providers/kinesis/types';
 import { KinesisFirehoseProviderConfig } from '../../providers/kinesis-firehose/types';
 import { PersonalizeProviderConfig } from '../../providers/personalize/types';
 
-export type AnalyticsConfig = PinpointProviderConfig &
-	KinesisProviderConfig &
-	KinesisFirehoseProviderConfig &
-	PersonalizeProviderConfig;
+type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
+	U[keyof U];
+
+export type AnalyticsConfig = AtLeastOne<
+	PinpointProviderConfig &
+		KinesisProviderConfig &
+		KinesisFirehoseProviderConfig &
+		PersonalizeProviderConfig
+>;
