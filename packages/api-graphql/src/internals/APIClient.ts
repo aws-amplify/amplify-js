@@ -1,8 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { resolveOwnerFields } from '../utils/resolveOwnerFields';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 type ListArgs = { selectionSet?: string[]; filter?: {} };
+
+type LazyLoadOptions = {
+	authMode?: GraphQLAuthMode;
+	authToken?: string | undefined;
+};
 
 const connectionType = {
 	HAS_ONE: 'HAS_ONE',
@@ -41,7 +47,9 @@ export function initializeModel(
 	client: any,
 	modelName: string,
 	result: any[],
-	modelIntrospection: any
+	modelIntrospection: any,
+	authMode: GraphQLAuthMode,
+	authToken: string | undefined
 ): any[] {
 	const introModel = modelIntrospection.models[modelName];
 	const introModelFields = introModel.fields;
@@ -83,12 +91,18 @@ export function initializeModel(
 						{}
 					);
 
-					initializedRelationalFields[field] = () => {
+					initializedRelationalFields[field] = (options?: LazyLoadOptions) => {
 						if (record[targetNames[0]]) {
-							return client.models[relatedModelName].get({
-								[relatedModelPKFieldName]: record[targetNames[0]],
-								...sortKeyValues,
-							});
+							return client.models[relatedModelName].get(
+								{
+									[relatedModelPKFieldName]: record[targetNames[0]],
+									...sortKeyValues,
+								},
+								{
+									authMode: options?.authMode || authMode,
+									authToken: options?.authToken || authToken,
+								}
+							);
 						}
 						return undefined;
 					};
@@ -111,10 +125,14 @@ export function initializeModel(
 							return { [field]: { eq: record[parentSK[idx - 1]] } };
 						});
 
-						initializedRelationalFields[field] = () => {
+						initializedRelationalFields[field] = (
+							options?: LazyLoadOptions
+						) => {
 							if (record[parentPk]) {
 								return client.models[relatedModelName].list({
 									filter: { and: hasManyFilter },
+									authMode: options?.authMode || authMode,
+									authToken: options?.authToken || authToken,
 								});
 							}
 							return [];
@@ -130,10 +148,12 @@ export function initializeModel(
 						return { [field]: { eq: record[parentSK[idx - 1]] } };
 					});
 
-					initializedRelationalFields[field] = () => {
+					initializedRelationalFields[field] = (options?: LazyLoadOptions) => {
 						if (record[parentPk]) {
 							return client.models[relatedModelName].list({
 								filter: { and: hasManyFilter },
+								authMode: options?.authMode || authMode,
+								authToken: options?.authToken || authToken,
 							});
 						}
 						return [];
