@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 /**
  * @private
@@ -9,4 +10,12 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
  */
 export type ClientGenerationParams = {
 	amplify: AmplifyClassV6;
+} & CommonPublicClientOptions;
+
+/**
+ * Common options that can be used on public `generateClient()` interfaces.
+ */
+export type CommonPublicClientOptions = {
+	authMode?: GraphQLAuthMode;
+	authToken?: string;
 };
