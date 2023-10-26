@@ -78,7 +78,7 @@ const testPubSubAsync = (
 		if (hubConnectionListener === undefined) {
 			hubConnectionListener = new HubConnectionListener('pubsub');
 		}
-		const obs = pubsub.subscribe(topic, options).subscribe({
+		const obs = pubsub.subscribe({ topics: topic, options }).subscribe({
 			next: data => {
 				expect(data).toEqual(message);
 				obs.unsubscribe();
@@ -90,7 +90,7 @@ const testPubSubAsync = (
 		await hubConnectionListener.waitUntilConnectionStateIn([
 			ConnectionState.Connected,
 		]);
-		pubsub.publish(topic, message, options);
+		pubsub.publish({ topics: topic, message: message, options });
 	});
 
 beforeEach(() => {
@@ -153,7 +153,7 @@ describe('PubSub', () => {
 				value: 'my message',
 			};
 
-			const obs = pubsub.subscribe('topicA').subscribe({
+			const obs = pubsub.subscribe({ topics: 'topicA' }).subscribe({
 				next: data => {
 					expect(data).toMatchObject(expectedData);
 					done();
@@ -166,7 +166,10 @@ describe('PubSub', () => {
 				ConnectionState.Connected,
 			]);
 
-			await pubsub.publish('topicA', { value: 'my message' });
+			await pubsub.publish({
+				topics: 'topicA',
+				message: { value: 'my message' },
+			});
 		});
 
 		test('subscriber is matching MQTT topic wildcards', () => {
@@ -190,7 +193,10 @@ describe('PubSub', () => {
 			});
 			jest.spyOn(newPubsubClient, 'publish');
 
-			newPubsubClient.publish('someTopic', { msg: 'published Message' });
+			newPubsubClient.publish({
+				topics: 'someTopic',
+				message: { msg: 'published Message' },
+			});
 
 			expect(pubsubClient.publish).not.toHaveBeenCalled();
 			expect(newPubsubClient.publish).toHaveBeenCalled();
@@ -226,7 +232,9 @@ describe('PubSub', () => {
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
-			pubsub.subscribe('topic', { clientId: '123' }).subscribe({});
+			pubsub
+				.subscribe({ topics: 'topic', options: { clientId: '123' } })
+				.subscribe({});
 			await hubConnectionListener.waitUntilConnectionStateIn([
 				ConnectionState.Connected,
 			]);
@@ -260,7 +268,10 @@ describe('PubSub', () => {
 			});
 			jest.spyOn(newPubsubClient, 'publish');
 
-			newPubsubClient.publish('someTopic', { msg: 'published Message' });
+			newPubsubClient.publish({
+				topics: 'someTopic',
+				message: { msg: 'published Message' },
+			});
 
 			expect(pubsubClient.publish).not.toHaveBeenCalled();
 			expect(newPubsubClient.publish).toHaveBeenCalled();
@@ -303,9 +314,11 @@ describe('PubSub', () => {
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
 
-				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
-					error: () => {},
-				});
+				const sub = pubsub
+					.subscribe({ topics: 'topic', options: { clientId: '123' } })
+					.subscribe({
+						error: () => {},
+					});
 
 				await hubConnectionListener.waitUntilConnectionStateIn([
 					ConnectionState.Connected,
@@ -330,9 +343,11 @@ describe('PubSub', () => {
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
 
-				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
-					error: () => {},
-				});
+				const sub = pubsub
+					.subscribe({ topics: 'topic', options: { clientId: '123' } })
+					.subscribe({
+						error: () => {},
+					});
 
 				await hubConnectionListener.waitUntilConnectionStateIn([
 					ConnectionState.Connected,
@@ -363,9 +378,11 @@ describe('PubSub', () => {
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
 
-				const sub = pubsub.subscribe('topic', { clientId: '123' }).subscribe({
-					error: () => {},
-				});
+				const sub = pubsub
+					.subscribe({ topics: 'topic', options: { clientId: '123' } })
+					.subscribe({
+						error: () => {},
+					});
 
 				await hubConnectionListener.waitUntilConnectionStateIn([
 					ConnectionState.Connected,
@@ -464,7 +481,10 @@ describe('PubSub', () => {
 			});
 
 			expect(
-				iotClient.publish('topicA', { msg: 'my message AWSIoTProvider' })
+				iotClient.publish({
+					topics: 'topicA',
+					message: { msg: 'my message AWSIoTProvider' },
+				})
 			).rejects.toMatch('Failed to publish');
 		});
 
@@ -481,7 +501,7 @@ describe('PubSub', () => {
 			);
 
 			const subscription1 = mqttClient
-				.subscribe(['topic1', 'topic2'])
+				.subscribe({ topics: ['topic1', 'topic2'] })
 				.subscribe({
 					next: _data => {
 						console.log({ _data });
@@ -519,21 +539,25 @@ describe('PubSub', () => {
 					'disconnect'
 				);
 
-				const subscription1 = pubsub.subscribe(['topic1', 'topic2']).subscribe({
-					next: _data => {
-						console.log({ _data });
-					},
-					complete: () => console.log('done'),
-					error: error => console.log('error', error),
-				});
+				const subscription1 = pubsub
+					.subscribe({ topics: ['topic1', 'topic2'] })
+					.subscribe({
+						next: _data => {
+							console.log({ _data });
+						},
+						complete: () => console.log('done'),
+						error: error => console.log('error', error),
+					});
 
-				const subscription2 = pubsub.subscribe(['topic3', 'topic4']).subscribe({
-					next: _data => {
-						console.log({ _data });
-					},
-					complete: () => console.log('done'),
-					error: error => console.log('error', error),
-				});
+				const subscription2 = pubsub
+					.subscribe({ topics: ['topic3', 'topic4'] })
+					.subscribe({
+						next: _data => {
+							console.log({ _data });
+						},
+						complete: () => console.log('done'),
+						error: error => console.log('error', error),
+					});
 
 				// TODO: we should now when the connection is established to wait for that first
 				await (() => {

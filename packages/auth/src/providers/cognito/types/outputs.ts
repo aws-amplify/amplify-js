@@ -14,7 +14,7 @@ import {
 	AuthUpdateUserAttributesOutput,
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
-import { AWSAuthDevice, UserAttributeKey } from '../types';
+import { AWSAuthDevice, CognitoAuthUser, UserAttributeKey } from '../types';
 
 export type FetchMFAPreferenceOutput = {
 	enabled?: AuthMFAType[];
@@ -29,7 +29,7 @@ export type FetchUserAttributesOutput = AuthUserAttributes<UserAttributeKey>;
 /**
  * Output type for Cognito getCurrentUser API.
  */
-export type GetCurrentUserOutput = AuthUser;
+export type GetCurrentUserOutput = CognitoAuthUser;
 
 /**
  * Output type for Cognito confirmSignIn API.

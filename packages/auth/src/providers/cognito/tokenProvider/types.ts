@@ -7,6 +7,7 @@ import {
 	KeyValueStorageInterface,
 	TokenProvider,
 } from '@aws-amplify/core';
+import { CognitoAuthSignInDetails } from '../types';
 
 export type TokenRefresher = ({
 	tokens,
@@ -31,6 +32,7 @@ export const AuthTokenStorageKeys = {
 	deviceKey: 'deviceKey',
 	randomPasswordKey: 'randomPasswordKey',
 	deviceGroupKey: 'deviceGroupKey',
+	signInDetails: 'signInDetails',
 };
 
 export interface AuthTokenStore {
@@ -46,7 +48,11 @@ export interface AuthTokenStore {
 export interface AuthTokenOrchestrator {
 	setTokenRefresher(tokenRefresher: TokenRefresher): void;
 	setAuthTokenStore(tokenStore: AuthTokenStore): void;
-	getTokens: (options?: FetchAuthSessionOptions) => Promise<AuthTokens | null>;
+	getTokens: (
+		options?: FetchAuthSessionOptions
+	) => Promise<
+		(AuthTokens & { signInDetails?: CognitoAuthSignInDetails }) | null
+	>;
 	setTokens: ({ tokens }: { tokens: CognitoAuthTokens }) => Promise<void>;
 	clearTokens: () => Promise<void>;
 	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null>;
@@ -63,6 +69,7 @@ export type CognitoAuthTokens = AuthTokens & {
 	deviceMetadata?: DeviceMetadata;
 	clockDrift: number;
 	username: string;
+	signInDetails?: CognitoAuthSignInDetails;
 };
 
 export type DeviceMetadata = {
