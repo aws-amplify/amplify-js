@@ -7,8 +7,6 @@
  * @see https://github.com/aws/aws-sdk-js/blob/6edf586dcc1de7fe8fbfbbd9a0d2b1847921e6e1/lib/util.js#L262
  */
 
-// Comment - TODO: remove
-
 const FIVE_MINUTES_IN_MS = 1000 * 60 * 5;
 type DateUtils = {
 	clockOffset: number;
@@ -20,6 +18,16 @@ type DateUtils = {
 	isClockSkewError: (error: any) => boolean;
 	setClockOffset: (offset: number) => void;
 };
+
+/**
+ * This utility is intended to be deprecated and replaced by `signRequest` and `presignUrl` functions from
+ * `clients/middleware/signing/signer/signatureV4`.
+ *
+ * TODO: refactor the logics here into `signRequest` and `presignUrl` functions and remove this class.
+ *
+ * @internal
+ * @deprecated
+ */
 export const DateUtils: DateUtils = {
 	/**
 	 * Milliseconds to offset the date to compensate for clock skew between device & services
