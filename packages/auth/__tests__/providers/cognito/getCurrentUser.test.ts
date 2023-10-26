@@ -34,6 +34,10 @@ describe('getUser API happy path cases', () => {
 					'cognito:username': mockedUsername,
 				},
 			},
+			signInDetails: {
+				loginId: mockedUsername,
+				authFlowType: 'USER_SRP_AUTH',
+			},
 		});
 	});
 
@@ -43,7 +47,14 @@ describe('getUser API happy path cases', () => {
 
 	test('get current user', async () => {
 		const result = await getCurrentUser();
-		expect(result).toEqual({ username: mockedUsername, userId: mockedSub });
+		expect(result).toEqual({
+			username: mockedUsername,
+			userId: mockedSub,
+			signInDetails: {
+				loginId: mockedUsername,
+				authFlowType: 'USER_SRP_AUTH',
+			},
+		});
 	});
 });
 

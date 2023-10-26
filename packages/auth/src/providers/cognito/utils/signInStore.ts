@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { CognitoAuthSignInDetails } from '../types';
 import { ChallengeName } from './clients/CognitoIdentityProvider/types';
 
 // TODO: replace all of this implementation with state machines
@@ -8,6 +9,7 @@ type SignInState = {
 	username?: string;
 	challengeName?: ChallengeName;
 	signInSession?: string;
+	signInDetails?: CognitoAuthSignInDetails;
 };
 
 type SignInAction =

@@ -24,7 +24,11 @@ import {
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
 } from '../utils/signInHelpers';
-import { SignInWithSRPInput, SignInWithSRPOutput } from '../types';
+import {
+	CognitoAuthSignInDetails,
+	SignInWithSRPInput,
+	SignInWithSRPOutput,
+} from '../types';
 import {
 	setActiveSignInState,
 	cleanActiveSignInState,
@@ -49,6 +53,10 @@ export async function signInWithSRP(
 ): Promise<SignInWithSRPOutput> {
 	const { username, password } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const signInDetails: CognitoAuthSignInDetails = {
+		loginId: username,
+		authFlowType: 'USER_SRP_AUTH',
+	};
 	assertTokenProviderConfig(authConfig);
 	const clientMetaData = input.options?.clientMetadata;
 	assertValidationError(
@@ -80,6 +88,7 @@ export async function signInWithSRP(
 			signInSession: Session,
 			username: activeUsername,
 			challengeName: ChallengeName as ChallengeName,
+			signInDetails,
 		});
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
@@ -91,6 +100,7 @@ export async function signInWithSRP(
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),
+				signInDetails,
 			});
 			Hub.dispatch(
 				'auth',

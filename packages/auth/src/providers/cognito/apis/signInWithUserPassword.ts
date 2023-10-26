@@ -23,6 +23,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import {
+	CognitoAuthSignInDetails,
 	SignInWithUserPasswordInput,
 	SignInWithUserPasswordOutput,
 } from '../types';
@@ -49,6 +50,10 @@ export async function signInWithUserPassword(
 ): Promise<SignInWithUserPasswordOutput> {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const signInDetails: CognitoAuthSignInDetails = {
+		loginId: username,
+		authFlowType: 'USER_PASSWORD_AUTH',
+	};
 	assertTokenProviderConfig(authConfig);
 	const metadata = options?.clientMetadata;
 	assertValidationError(
@@ -78,6 +83,7 @@ export async function signInWithUserPassword(
 			signInSession: Session,
 			username: activeUsername,
 			challengeName: ChallengeName as ChallengeName,
+			signInDetails,
 		});
 		if (AuthenticationResult) {
 			await cacheCognitoTokens({
@@ -88,6 +94,7 @@ export async function signInWithUserPassword(
 					AuthenticationResult.NewDeviceMetadata,
 					AuthenticationResult.AccessToken
 				),
+				signInDetails,
 			});
 			cleanActiveSignInState();
 			Hub.dispatch(
