@@ -29,15 +29,15 @@ describe('Interactions LexV1 API: onComplete', () => {
 	it('invokes provider onComplete API', () => {
 		const message = uuid();
 		const mockCallback = jest.fn();
-		onComplete(v1BotConfig.name, mockCallback);
+		onComplete({ botName: v1BotConfig.name, callback: mockCallback });
 		expect(mockLexProvider).toBeCalledTimes(1);
 		expect(mockLexProvider).toBeCalledWith(v1BotConfig, mockCallback);
 	});
 
 	it('rejects when bot config does not exist', async () => {
 		mockResolveBotConfig.mockReturnValue(undefined);
-		expect(() => onComplete(v1BotConfig.name, jest.fn)).toThrow(
-			InteractionsError
-		);
+		expect(() =>
+			onComplete({ botName: v1BotConfig.name, callback: jest.fn })
+		).toThrow(InteractionsError);
 	});
 });
