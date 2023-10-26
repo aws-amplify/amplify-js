@@ -3,6 +3,7 @@
 
 export {
 	getBadgeCount,
+	GetBadgeCountOutput,
 	getLaunchNotification,
 	GetLaunchNotificationOutput,
 	getPermissionStatus,
