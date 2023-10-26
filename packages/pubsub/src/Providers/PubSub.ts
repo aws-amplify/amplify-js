@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
-import { PubSubBase, PubSubOptions, PubSubContent } from '../types/PubSub';
-import { CustomUserAgentDetails } from '@aws-amplify/core/internals/utils';
+import {
+	PubSubBase,
+	PubSubOptions,
+	PubSubContent,
+	PublishInput,
+	SubscribeInput,
+} from '../types/PubSub';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('AbstractPubSubProvider');
 
@@ -29,15 +34,7 @@ export abstract class AbstractPubSub<T extends PubSubOptions>
 
 	public abstract newClient(clientOptions: T): Promise<any>;
 
-	public abstract publish(
-		topics: string[] | string,
-		msg: PubSubContent,
-		options?: T
-	): void;
+	public abstract publish(input: PublishInput): void;
 
-	public abstract subscribe(
-		topics: string[] | string,
-		options?: T,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Observable<PubSubContent>;
+	public abstract subscribe(input: SubscribeInput): Observable<PubSubContent>;
 }
