@@ -79,6 +79,7 @@ describe('getAmplifyConfig', () => {
 	});
 
 	it('should throw error when amplifyConfig is not found from env vars', () => {
+		mockGetConfig.mockReturnValueOnce(undefined);
 		expect(() => getAmplifyConfig()).toThrow();
 	});
 });
