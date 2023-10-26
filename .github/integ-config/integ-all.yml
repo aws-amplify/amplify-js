@@ -641,20 +641,20 @@ tests:
   #   sample_name: [chatbot-component]
   #   spec: chatbot-component
   #   browser: *minimal_browser_list
-  # - test_name: integ_react_interactions_chatbot_v1
-  #   desc: 'Chatbot V1'
-  #   framework: react
-  #   category: interactions
-  #   sample_name: [lex-test-component]
-  #   spec: chatbot-v1
-  #   browser: *minimal_browser_list
-  # - test_name: integ_react_interactions_chatbot_v2
-  #   desc: 'Chatbot V2'
-  #   framework: react
-  #   category: interactions
-  #   sample_name: [lex-test-component]
-  #   spec: chatbot-v2
-  #   browser: *minimal_browser_list
+  - test_name: integ_react_interactions_chatbot_v1
+    desc: 'Chatbot V1'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v1
+    browser: *minimal_browser_list
+  - test_name: integ_react_interactions_chatbot_v2
+    desc: 'Chatbot V2'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v2
+    browser: *minimal_browser_list
   # - test_name: integ_angular_interactions
   #   desc: 'Angular Interactions'
   #   framework: angular
@@ -678,31 +678,31 @@ tests:
   #   browser: [chrome]
 
   # PREDICTIONS
-  # - test_name: integ_react_predictions
-  #   desc: 'React Predictions'
-  #   framework: react
-  #   category: predictions
-  #   sample_name: [multi-user-translation]
-  #   spec: multiuser-translation
-  #   browser: *minimal_browser_list
+  - test_name: integ_react_predictions
+    desc: 'React Predictions'
+    framework: react
+    category: predictions
+    sample_name: [multi-user-translation]
+    spec: multiuser-translation
+    browser: *minimal_browser_list
 
   # PUBSUB
-  # - test_name: integ_react_iot_reconnect
-  #   desc: 'PubSub - Reconnection for IoT'
-  #   framework: react
-  #   category: pubsub
-  #   sample_name: [reconnection-iot]
-  #   spec: reconnection
-  #   # Firefox doesn't support network state management in cypress
-  #   browser: [chrome]
-  # - test_name: integ_react_api_reconnect
-  #   desc: 'PubSub - Reconnection for API'
-  #   framework: react
-  #   category: pubsub
-  #   sample_name: [reconnection-api]
-  #   spec: reconnection
-  #   # Firefox doesn't support network state management in cypress
-  #   browser: [chrome]
+  - test_name: integ_react_iot_reconnect
+    desc: 'PubSub - Reconnection for IoT'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-iot]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
+  - test_name: integ_react_api_reconnect
+    desc: 'PubSub - Reconnection for API'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-api]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
 
   # STORAGE
   - test_name: integ_react_storage
