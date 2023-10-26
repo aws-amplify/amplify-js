@@ -45,6 +45,10 @@ export const graphqlOperation = (
 	authToken,
 });
 
+const isAmplifyInstance = (amplify): amplify is AmplifyClassV6 => {
+	return typeof amplify !== 'function';
+};
+
 /**
  * Export Cloud Logic APIs
  */
@@ -163,7 +167,9 @@ export class InternalGraphQLAPIClass {
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
-		amplify: AmplifyClassV6,
+		amplify:
+			| AmplifyClassV6
+			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
@@ -190,13 +196,32 @@ export class InternalGraphQLAPIClass {
 			case 'query':
 			case 'mutation':
 				const abortController = new AbortController();
-				const responsePromise = this._graphql<T>(
-					amplify,
-					{ query, variables, authMode },
-					headers,
-					abortController,
-					customUserAgentDetails
-				);
+
+				let responsePromise: Promise<GraphQLResult<T>>;
+
+				if (isAmplifyInstance(amplify)) {
+					responsePromise = this._graphql<T>(
+						amplify,
+						{ query, variables, authMode },
+						headers,
+						abortController,
+						customUserAgentDetails
+					);
+				} else {
+					const wrapper = amplifyInstance =>
+						this._graphql<T>(
+							amplifyInstance,
+							{ query, variables, authMode },
+							headers,
+							abortController,
+							customUserAgentDetails
+						);
+
+					responsePromise = amplify(wrapper) as unknown as Promise<
+						GraphQLResult<T>
+					>;
+				}
+
 				this._api.updateRequestToBeCancellable(
 					responsePromise,
 					abortController
@@ -204,7 +229,7 @@ export class InternalGraphQLAPIClass {
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe(
-					amplify,
+					amplify as AmplifyClassV6,
 					{ query, variables, authMode },
 					headers,
 					customUserAgentDetails
@@ -375,7 +400,7 @@ export class InternalGraphQLAPIClass {
 				variables,
 				appSyncGraphqlEndpoint: config?.endpoint,
 				region: config?.region,
-				authenticationType: config?.defaultAuthMode,
+				authenticationType: authMode ?? config?.defaultAuthMode,
 				apiKey: config?.apiKey,
 				additionalHeaders,
 			},

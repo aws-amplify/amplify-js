@@ -1927,7 +1927,7 @@ describe('Model behavior', () => {
 	});
 
 	// ref: https://github.com/aws-amplify/amplify-js/issues/11101
-	test.skip('returns fresh snapshot when sorting by descending', async done => {
+	test('returns fresh snapshot when sorting by descending', async done => {
 		const { DataStore, Post } = getDataStore();
 
 		const expectedTitles = ['create', 'update', 'update2'];
@@ -1942,7 +1942,7 @@ describe('Model behavior', () => {
 
 		const sub = DataStore.observeQuery(Post, Predicates.ALL, {
 			sort: s => s.updatedAt(SortDirection.DESCENDING),
-		}).subscribe(({ items }) => {
+		}).subscribe(async ({ items }) => {
 			if (items.length === 0) {
 				return;
 			}
@@ -1954,6 +1954,7 @@ describe('Model behavior', () => {
 
 			if (expectedTitles.length === 0) {
 				sub.unsubscribe();
+				await DataStore.clear();
 				done();
 			}
 		});
@@ -1974,7 +1975,6 @@ describe('Model behavior', () => {
 				updated.updatedAt = new Date().toISOString();
 			})
 		);
-		await DataStore.clear();
 	});
 });
 

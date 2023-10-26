@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
+import WordArray from './utils/WordArray';
 /*
 This file maps top-level exports from `@aws-amplify/core/internals/utils`. These are intended to be internal
 utils for use throughout the library.
@@ -98,6 +98,8 @@ export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
 export { base64Decoder, base64Encoder } from './utils/convert';
 export { getCrypto } from './utils/globalHelpers';
+export { cryptoSecureRandomInt } from './utils/cryptoSecureRandomInt';
+export { WordArray };
 
 // Hub
 export { HubInternal } from './Hub';
@@ -105,3 +107,7 @@ export { HubInternal } from './Hub';
 // Session listener
 export { sessionListener } from './utils/sessionListener';
 export { SessionState } from './utils/sessionListener/types';
+export {
+	SESSION_START_EVENT,
+	SESSION_STOP_EVENT,
+} from './utils/sessionListener';

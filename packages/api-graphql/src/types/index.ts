@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AmplifyClassV6 } from '@aws-amplify/core';
+import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -9,6 +9,8 @@ import {
 	GraphQLAuthMode,
 	DocumentType,
 } from '@aws-amplify/core/internals/utils';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
@@ -355,14 +357,54 @@ export const __amplify = Symbol('amplify');
 
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
-	graphql: <FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(
-		options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-		additionalHeaders?:
-			| {
-					[key: string]: string;
-			  }
-			| undefined
-	) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+	graphql: GraphQLMethod;
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
 }>;
+
+export type V6ClientSSR<T extends Record<any, any> = never> =
+	ExcludeNeverFields<{
+		[__amplify]: AmplifyClassV6;
+		graphql: GraphQLMethodSSR;
+		cancel: (promise: Promise<any>, message?: string) => boolean;
+		isCancelError: (error: any) => boolean;
+	}>;
+
+export type GraphQLMethod = <
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+>(
+	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+	additionalHeaders?:
+		| {
+				[key: string]: string;
+		  }
+		| undefined
+) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+
+export type GraphQLMethodSSR = <
+	FALLBACK_TYPES = unknown,
+	TYPED_GQL_STRING extends string = string
+>(
+	contextSpec: AmplifyServer.ContextSpec,
+	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
+	additionalHeaders?:
+		| {
+				[key: string]: string;
+		  }
+		| undefined
+) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
+
+/**
+ * @private
+ *
+ * The knobs available for configuring `server/generateClient` internally.
+ */
+export type ServerClientGenerationParams = {
+	amplify:
+		| null // null expected when used with `generateServerClient`
+		// closure expected with `generateServerClientUsingCookies`
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>);
+	// global env-sourced config use for retrieving modelIntro
+	config: ResourcesConfig;
+};
