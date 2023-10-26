@@ -1,0 +1,77 @@
+{
+  "name": "amazon-cognito-identity-js",
+  "description": "Amazon Cognito Identity Provider JavaScript SDK",
+  "version": "6.3.6",
+  "author": {
+    "name": "Amazon Web Services",
+    "email": "aws@amazon.com",
+    "url": "http://aws.amazon.com"
+  },
+  "homepage": "http://aws.amazon.com/cognito",
+  "contributors": [
+    "Simon Buchan with Skilitics",
+    "Jonathan Goldwasser",
+    "Matt Durant",
+    "John Ferlito",
+    "Michael Hart",
+    "Tylor Steinberger",
+    "Paul Watts",
+    "Gleb Promokhov",
+    "Min Bi",
+    "Michael Labieniec",
+    "Chetan Mehta <chetam@amazon.com>",
+    "Ionut Trestian <trestian@amazon.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-js.git"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "amazon",
+    "aws",
+    "cognito",
+    "identity",
+    "react-native",
+    "reactnative"
+  ],
+  "scripts": {
+    "clean": "rimraf lib es dist",
+    "build:cjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:cjs:watch": "cross-env BABEL_ENV=commonjs babel src --out-dir lib --watch",
+    "build:esm": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "build:esm:watch": "cross-env BABEL_ENV=es babel src --out-dir es --watch",
+    "build:umd": "webpack",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd",
+    "generate-version": "genversion src/Platform/version.ts --es6 --semi",
+    "test": "jest --config ./jest.config.js",
+    "format": "echo \"Not implemented\"",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json"
+  },
+  "main": "lib/index.js",
+  "react-native": {
+    "lib/index.js": "./enhance-rn.js",
+    "./src/StorageHelper": "./src/StorageHelper-rn.js"
+  },
+  "browser": {
+    "crypto": false
+  },
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "@aws-crypto/sha256-js": "1.2.2",
+    "buffer": "4.9.2",
+    "fast-base64-decode": "^1.0.0",
+    "isomorphic-unfetch": "^3.0.0",
+    "js-cookie": "^2.2.1"
+  },
+  "devDependencies": {
+    "@react-native-async-storage/async-storage": "^1.17.12",
+    "compression-webpack-plugin": "^10.0.0",
+    "cross-env": "^3.1.4",
+    "genversion": "^2.2.0",
+    "react": "^16.0.0",
+    "rimraf": "^2.5.4"
+  }
+}

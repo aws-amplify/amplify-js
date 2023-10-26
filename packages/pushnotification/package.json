@@ -1,0 +1,90 @@
+{
+  "name": "@aws-amplify/pushnotification",
+  "version": "5.0.45",
+  "description": "Push notifications category of aws-amplify",
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "npm run lint && jest -w 1 --coverage",
+    "build-with-test": "npm test && npm run build",
+    "build": "npm run clean && tsc",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "echo \"ES Modules are not exported in react-native. Use target build:cjs:watch\"",
+    "clean": "rimraf lib lib-esm dist",
+    "format": "echo \"Not implemented\"",
+    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 55"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-js.git"
+  },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/aws/aws-amplify/issues"
+  },
+  "homepage": "https://aws-amplify.github.io/",
+  "devDependencies": {
+    "@types/jest": "^20.0.8",
+    "@types/node": "^8.10.15",
+    "find": "^0.2.7",
+    "rimraf": "^2.6.2"
+  },
+  "files": [
+    "lib",
+    "lib-esm",
+    "src",
+    "android"
+  ],
+  "dependencies": {
+    "@aws-amplify/core": "5.8.5",
+    "@react-native-community/push-notification-ios": "1.0.3"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false,
+        "tsConfig": {
+          "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+          ],
+          "allowJs": true
+        }
+      }
+    },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ],
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "lib"
+    ]
+  }
+}
