@@ -64,14 +64,18 @@ export interface PubSubBase {
 	// configure your provider
 	configure(config: Record<string, unknown>): Record<string, unknown>;
 
-	publish(
-		topics: string[] | string,
-		msg: PubSubContent,
-		options?: PubSubOptions
-	): void;
+	publish(input: PublishInput): void;
 
-	subscribe(
-		topics: string[] | string,
-		options?: PubSubOptions
-	): Observable<PubSubContent>;
+	subscribe(input: SubscribeInput): Observable<PubSubContent>;
 }
+
+export type PublishInput = {
+	topics: string[] | string;
+	message: PubSubContent;
+	options?: PubSubOptions;
+};
+
+export type SubscribeInput = {
+	topics: string[] | string;
+	options?: PubSubOptions;
+};
