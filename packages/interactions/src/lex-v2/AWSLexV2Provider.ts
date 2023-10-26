@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	CompletionCallback,
+	InteractionsOnCompleteCallback,
 	InteractionsMessage,
 	InteractionsResponse,
-} from '../types';
+} from '../types/Interactions';
 import {
 	IntentState,
 	LexRuntimeV2Client,
@@ -51,8 +51,10 @@ type lexV2BaseReqParams = {
 };
 
 class AWSLexV2Provider {
-	private readonly _botsCompleteCallback: Record<string, CompletionCallback> =
-		{};
+	private readonly _botsCompleteCallback: Record<
+		string,
+		InteractionsOnCompleteCallback
+	> = {};
 	private defaultSessionId: string = uuid();
 
 	/**
@@ -113,11 +115,11 @@ class AWSLexV2Provider {
 	 * Attach a onComplete callback function to a bot.
 	 * The callback is called once the bot's intent is fulfilled
 	 * @param {AWSLexV2ProviderOption} botConfig - Bot configuration to attach the onComplete callback
-	 * @param {CompletionCallback} callback - called when Intent Fulfilled
+	 * @param {InteractionsOnCompleteCallback} callback - called when Intent Fulfilled
 	 */
 	public onComplete(
 		{ name }: AWSLexV2ProviderOption,
-		callback: CompletionCallback
+		callback: InteractionsOnCompleteCallback
 	) {
 		this._botsCompleteCallback[name] = callback;
 	}
