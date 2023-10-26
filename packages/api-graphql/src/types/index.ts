@@ -14,6 +14,8 @@ export { CONTROL_MSG, ConnectionState } from './PubSub';
 
 export { SelectionSet } from '@aws-amplify/amplify-api-next-types-alpha';
 
+export { CommonPublicClientOptions } from '../internals/types';
+
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
  */
@@ -357,9 +359,13 @@ type ExcludeNeverFields<O> = {
 };
 
 export const __amplify = Symbol('amplify');
+export const __authMode = Symbol('authMode');
+export const __authToken = Symbol('authToken');
 
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
+	[__authMode]?: GraphQLAuthMode;
+	[__authToken]?: string;
 	graphql: <FALLBACK_TYPES = unknown, TYPED_GQL_STRING extends string = string>(
 		options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 		additionalHeaders?:

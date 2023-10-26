@@ -3,7 +3,7 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { graphql, cancel, isCancelError } from './v6';
 import { generateModelsProperty } from './generateModelsProperty';
-import { V6Client, __amplify } from '../types';
+import { V6Client, __amplify, __authMode, __authToken } from '../types';
 import { ClientGenerationParams } from './types';
 
 /**
@@ -20,6 +20,8 @@ export function generateClient<T extends Record<any, any> = never>(
 ): V6Client<T> {
 	const client = {
 		[__amplify]: params.amplify,
+		[__authMode]: params.authMode,
+		[__authToken]: params.authToken,
 		graphql,
 		cancel,
 		isCancelError,

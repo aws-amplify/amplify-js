@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ModelTypes } from '@aws-amplify/amplify-api-next-types-alpha';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 import {
 	initializeModel,
 	generateGraphQLDocument,
@@ -10,9 +11,38 @@ import {
 	flattenItems,
 } from './APIClient';
 import { ClientGenerationParams } from './types';
-import { V6Client, GraphqlSubscriptionResult } from '../types';
+import {
+	V6Client,
+	GraphqlSubscriptionResult,
+	__authMode,
+	__authToken,
+} from '../types';
 import { findIndexByFields, resolvePKFields } from '../utils';
 import { Observable, map } from 'rxjs';
+
+type AuthModeParams = {
+	authMode?: GraphQLAuthMode;
+	authToken?: string;
+};
+
+/**
+ * Produces a parameter object that can contains auth mode/token overrides
+ * only if present in either `options` (first) or configured on the `client`
+ * as a fallback.
+ *
+ * @param client Configured client from `generateClient`
+ * @param options Args/Options obect from call site.
+ * @returns
+ */
+function authModeParams(
+	client: V6Client,
+	options: AuthModeParams = {}
+): AuthModeParams {
+	return {
+		authMode: options.authMode || client[__authMode],
+		authToken: options.authToken || client[__authToken],
+	};
+}
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client,
@@ -53,12 +83,10 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						);
 
 						try {
-							const options: Record<string, any> = {};
-							if (args?.authMode) options.authMode = args?.authMode;
-							if (args?.authToken) options.authToken = args?.authToken;
+							const auth = authModeParams(client, args);
 
 							const { data, extensions } = (await client.graphql({
-								...options,
+								...auth,
 								query,
 								variables,
 							})) as any;
@@ -83,8 +111,8 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 											name,
 											flattenedResult,
 											modelIntrospection,
-											options.authMode,
-											options.authToken
+											auth.authMode,
+											auth.authToken
 										);
 
 										return {
@@ -125,12 +153,10 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 							modelIntrospection
 						);
 
-						const options: Record<string, any> = {};
-						if (args?.authMode) options.authMode = args?.authMode;
-						if (args?.authToken) options.authToken = args?.authToken;
+						const auth = authModeParams(client, args);
 
 						const observable = client.graphql({
-							...options,
+							...auth,
 							query,
 							variables,
 						}) as GraphqlSubscriptionResult<object>;
@@ -143,8 +169,8 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 									name,
 									[value.data[key]],
 									modelIntrospection,
-									options?.authMode,
-									options?.authToken
+									auth.authMode,
+									auth.authToken
 								);
 								return initialized;
 							})
@@ -302,8 +328,9 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						);
 
 						try {
+							const auth = authModeParams(client, options);
 							const { data, extensions } = (await client.graphql({
-								...options,
+								...auth,
 								query,
 								variables,
 							})) as any;
@@ -322,8 +349,8 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 										name,
 										[flattenedResult],
 										modelIntrospection,
-										options?.authMode,
-										options?.authToken
+										auth.authMode,
+										auth.authToken
 									);
 
 									return { data: initialized, extensions };

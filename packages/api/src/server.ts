@@ -8,7 +8,7 @@ import {
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
 
-import { V6Client } from '@aws-amplify/api-graphql';
+import { V6Client, CommonPublicClientOptions } from '@aws-amplify/api-graphql';
 
 export type {
 	GraphQLResult,
@@ -19,9 +19,11 @@ export type {
  * Generates an API client that can work with models or raw GraphQL
  */
 export function generateClient<T extends Record<any, any> = never>(
-	contextSpec: AmplifyServer.ContextSpec
+	contextSpec: AmplifyServer.ContextSpec,
+	options: CommonPublicClientOptions = {}
 ): V6Client<T> {
 	return internalGenerateClient({
+		...options,
 		amplify: getAmplifyServerContext(contextSpec).amplify,
 	});
 }
