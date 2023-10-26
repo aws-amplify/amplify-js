@@ -84,13 +84,9 @@ export type AWSAuthDevice = AuthDevice & {
 /**
  * Holds the sign in details of the user.
  */
-export type CognitoAuthSignInDetails = CognitoSignInDetailsApiBased;
-/**
- * Holds the API based sign-in details for the user.
- */
-export type CognitoSignInDetailsApiBased = {
-	loginId: string;
-	authFlow: AuthFlowType;
+export type CognitoAuthSignInDetails = {
+	loginId?: string;
+	authFlowType?: AuthFlowType;
 };
 
 /**

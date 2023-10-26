@@ -55,7 +55,7 @@ export async function signInWithSRP(
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
-		authFlow: 'USER_SRP_AUTH',
+		authFlowType: 'USER_SRP_AUTH',
 	};
 	assertTokenProviderConfig(authConfig);
 	const clientMetaData = input.options?.clientMetadata;

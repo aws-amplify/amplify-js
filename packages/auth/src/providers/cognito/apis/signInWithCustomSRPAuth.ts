@@ -54,7 +54,7 @@ export async function signInWithCustomSRPAuth(
 	const { username, password, options } = input;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
-		authFlow: 'CUSTOM_WITH_SRP',
+		authFlowType: 'CUSTOM_WITH_SRP',
 	};
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

@@ -3,7 +3,7 @@
 import { AmplifyError, decodeJWT } from '@aws-amplify/core/internals/utils';
 import { tokenOrchestrator } from '.';
 import { AuthenticationResultType } from '../utils/clients/CognitoIdentityProvider/types';
-import { DeviceMetadata } from './types';
+import { CognitoAuthTokens, DeviceMetadata } from './types';
 import { CognitoAuthSignInDetails } from '../types';
 
 export async function cacheCognitoTokens(
@@ -37,16 +37,21 @@ export async function cacheCognitoTokens(
 			deviceMetadata = AuthenticationResult.NewDeviceMetadata;
 		}
 
+		const tokens: CognitoAuthTokens = {
+			accessToken,
+			idToken,
+			refreshToken,
+			clockDrift,
+			deviceMetadata,
+			username: AuthenticationResult.username,
+		};
+
+		if (AuthenticationResult?.signInDetails) {
+			tokens.signInDetails = AuthenticationResult.signInDetails;
+		}
+
 		await tokenOrchestrator.setTokens({
-			tokens: {
-				accessToken,
-				idToken,
-				refreshToken,
-				clockDrift,
-				deviceMetadata,
-				username: AuthenticationResult.username,
-				signInDetails: AuthenticationResult?.signInDetails,
-			},
+			tokens,
 		});
 	} else {
 		// This would be a service error

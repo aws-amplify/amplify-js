@@ -52,7 +52,7 @@ export async function signInWithUserPassword(
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
-		authFlow: 'USER_PASSWORD_AUTH',
+		authFlowType: 'USER_PASSWORD_AUTH',
 	};
 	assertTokenProviderConfig(authConfig);
 	const metadata = options?.clientMetadata;

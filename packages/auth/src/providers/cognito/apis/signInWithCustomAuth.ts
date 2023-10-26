@@ -53,7 +53,7 @@ export async function signInWithCustomAuth(
 	const { username, password, options } = input;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
-		authFlow: 'CUSTOM_WITHOUT_SRP',
+		authFlowType: 'CUSTOM_WITHOUT_SRP',
 	};
 	const metadata = options?.clientMetadata;
 	assertValidationError(
