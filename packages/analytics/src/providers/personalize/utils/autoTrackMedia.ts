@@ -201,6 +201,7 @@ export const autoTrackMedia = async (
 				"domElementId field in 'properties' for MediaAutoTrack event is expected to be of type 'string'",
 		});
 	}
+
 	const elementId = domElementId as string;
 	const isElementLoaded = await checkElementLoaded(500, 5)(elementId);
 	if (isElementLoaded) {
