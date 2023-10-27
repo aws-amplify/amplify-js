@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.7](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.3.6...amazon-cognito-identity-js@6.3.7) (2023-10-27)
+
+### Bug Fixes
+
+- **acij:** make the android module compatible with AGP 8 ([5b5391f](https://github.com/aws-amplify/amplify-js/commit/5b5391f930975f536b137eab1d5b34dda8e90f6b))
+- **rtn-pn:** corret the namespace ([7a4ef01](https://github.com/aws-amplify/amplify-js/commit/7a4ef011d3e296db2352415b0939d17c1b4e1884))
+
 ## 6.3.6 (2023-09-14)
 
 **Note:** Version bump only for package amazon-cognito-identity-js
