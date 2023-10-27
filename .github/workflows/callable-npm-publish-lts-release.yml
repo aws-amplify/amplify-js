@@ -46,5 +46,7 @@ jobs:
 
       - name: Push post release changes
         working-directory: ./amplify-js
+        env:
+          TARGET_BRANCH: ${{ inputs.target }}
         run: |
-          git push origin ${{ inputs.target }}
+          git push origin $TARGET_BRANCH
