@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { GraphQLAuthError } from '@aws-amplify/api';
-import { Logger } from '@aws-amplify/core';
+import type { GraphQLError } from 'graphql';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -39,8 +39,9 @@ import {
 	IDENTIFIER_KEY_SEPARATOR,
 } from '../util';
 import { MutationEvent } from './';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 enum GraphQLOperationType {
 	LIST = 'query',
@@ -821,16 +822,16 @@ export async function getModelAuthModes({
 	schema,
 }: {
 	authModeStrategy: AuthModeStrategy;
-	defaultAuthMode: GRAPHQL_AUTH_MODE;
+	defaultAuthMode: GraphQLAuthMode;
 	modelName: string;
 	schema: InternalSchema;
 }): Promise<{
-	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	[key in ModelOperation]: GraphQLAuthMode[];
 }> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+		[key in ModelOperation]: GraphQLAuthMode[];
 	} = {
 		CREATE: [],
 		READ: [],
@@ -864,23 +865,37 @@ export async function getModelAuthModes({
 }
 
 export function getForbiddenError(error) {
-	const forbiddenErrorMessages = [
-		'Request failed with status code 401',
-		'Request failed with status code 403',
-	];
+	const forbiddenErrorCodes = [401, 403];
 	let forbiddenError;
 	if (error && error.errors) {
 		forbiddenError = (error.errors as [any]).find(err =>
-			forbiddenErrorMessages.includes(err.message)
+			forbiddenErrorCodes.includes(resolveServiceErrorStatusCode(err))
 		);
 	} else if (error && error.message) {
 		forbiddenError = error;
 	}
 
 	if (forbiddenError) {
-		return forbiddenError.message;
+		return (
+			forbiddenError.message ??
+			`Request failed with status code ${resolveServiceErrorStatusCode(
+				forbiddenError
+			)}`
+		);
 	}
 	return null;
+}
+
+export function resolveServiceErrorStatusCode(error: unknown): number | null {
+	if (error?.['$metadata']?.['httpStatusCode']) {
+		return Number(error?.['$metadata']?.['httpStatusCode']);
+	} else if ((error as GraphQLError)?.originalError) {
+		return resolveServiceErrorStatusCode(
+			(error as GraphQLError)?.originalError
+		);
+	} else {
+		return null;
+	}
 }
 
 export function getClientSideAuthError(error) {
@@ -895,10 +910,10 @@ export function getClientSideAuthError(error) {
 }
 
 export async function getTokenForCustomAuth(
-	authMode: GRAPHQL_AUTH_MODE,
+	authMode: GraphQLAuthMode,
 	amplifyConfig: Record<string, any> = {}
 ): Promise<string | undefined> {
-	if (authMode === GRAPHQL_AUTH_MODE.AWS_LAMBDA) {
+	if (authMode === 'lambda') {
 		const {
 			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
 		} = amplifyConfig;
@@ -914,7 +929,7 @@ export async function getTokenForCustomAuth(
 		} else {
 			// TODO: add docs link once available
 			throw new Error(
-				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using ${GRAPHQL_AUTH_MODE.AWS_LAMBDA}`
+				'You must provide a `functionAuthProvider` function to `DataStore.configure` when using lambda'
 			);
 		}
 	}

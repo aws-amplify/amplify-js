@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Adapter } from './index';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ModelPredicateCreator } from '../../predicates';
@@ -31,8 +30,9 @@ import {
 import type { IDBPDatabase, IDBPObjectStore } from 'idb';
 import type AsyncStorageDatabase from './AsyncStorageDatabase';
 import { ModelRelationship } from '../relationship';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 const DB_NAME = 'amplify-datastore';
 
 export abstract class StorageAdapterBase implements Adapter {

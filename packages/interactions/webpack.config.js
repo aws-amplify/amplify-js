@@ -2,7 +2,10 @@ module.exports = {
 	entry: {
 		'aws-amplify-interactions.min': './lib-esm/index.js',
 	},
-	externals: ['aws-sdk/clients/lexruntime', { '@aws-amplify/core': 'aws_amplify_core' }],
+	externals: [
+		'aws-sdk/clients/lexruntime',
+		{ '@aws-amplify/core': 'aws_amplify_core' },
+	],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
@@ -21,8 +24,6 @@ module.exports = {
 	mode: 'production',
 	module: {
 		rules: [
-			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,

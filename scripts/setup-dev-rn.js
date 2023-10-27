@@ -35,10 +35,7 @@ const IN_FRONT_WINDOW = `in front window'${WHITE_SPACE}`;
 const EXCLUDED_PACKAGES = [];
 
 // List of CJS identified packages
-const CJS_PACKAGES_PRESET = [
-	'aws-amplify-react-native',
-	'@aws-amplify/pushnotification',
-];
+const CJS_PACKAGES_PRESET = [];
 
 // Utility functions for string manipulation
 // Explicit functions as they are important in an osaScript

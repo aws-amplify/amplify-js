@@ -56,9 +56,9 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 		context: MiddlewareContext
 	) =>
 		async function retryMiddleware(request: TInput) {
-			let error: Error;
-			let attemptsCount = context.attemptsCount ?? 0;
-			let response: TOutput;
+			let error: unknown;
+			let attemptsCount: number = context.attemptsCount ?? 0;
+			let response: TOutput | undefined;
 
 			// When retry is not needed or max attempts is reached, either error or response will be set. This function handles either cases.
 			const handleTerminalErrorOrResponse = () => {
@@ -66,7 +66,7 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 					addOrIncrementMetadataAttempts(response, attemptsCount);
 					return response;
 				} else {
-					addOrIncrementMetadataAttempts(error, attemptsCount);
+					addOrIncrementMetadataAttempts(error as object, attemptsCount);
 					throw error;
 				}
 			};
@@ -81,8 +81,8 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 				}
 				// context.attemptsCount may be updated after calling next handler which may retry the request by itself.
 				attemptsCount =
-					context.attemptsCount > attemptsCount
-						? context.attemptsCount
+					(context.attemptsCount ?? 0) > attemptsCount
+						? context.attemptsCount ?? 0
 						: attemptsCount + 1;
 				context.attemptsCount = attemptsCount;
 				if (await retryDecider(response, error)) {
@@ -109,8 +109,8 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	if (abortSignal?.aborted) {
 		return Promise.resolve();
 	}
-	let timeoutId;
-	let sleepPromiseResolveFn;
+	let timeoutId: number;
+	let sleepPromiseResolveFn: Function;
 	const sleepPromise = new Promise<void>(resolve => {
 		sleepPromiseResolveFn = resolve;
 		timeoutId = setTimeout(resolve, timeoutMs);
@@ -124,7 +124,7 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 };
 
 const addOrIncrementMetadataAttempts = (
-	nextHandlerOutput: Object,
+	nextHandlerOutput: Record<string, any>,
 	attempts: number
 ) => {
 	if (Object.prototype.toString.call(nextHandlerOutput) !== '[object Object]') {

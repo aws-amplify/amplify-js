@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import Observable, { ZenObservable } from 'zen-observable-ts';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Observable, Observer, SubscriptionLike } from 'rxjs';
 import { ReachabilityMonitor } from './datastoreReachability';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 const RECONNECTING_IN = 5000; // 5s this may be configurable in the future
 
@@ -15,8 +15,8 @@ type ConnectionStatus = {
 
 export default class DataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
-	private observer!: ZenObservable.SubscriptionObserver<ConnectionStatus>;
-	private subscription!: ZenObservable.Subscription;
+	private observer!: Observer<ConnectionStatus>;
+	private subscription!: SubscriptionLike;
 	private timeout!: ReturnType<typeof setTimeout>;
 	constructor() {
 		this.connectionStatus = {
@@ -28,7 +28,7 @@ export default class DataStoreConnectivity {
 		if (this.observer) {
 			throw new Error('Subscriber already exists');
 		}
-		return new Observable((observer) => {
+		return new Observable(observer => {
 			this.observer = observer;
 			// Will be used to forward socket connection changes, enhancing Reachability
 

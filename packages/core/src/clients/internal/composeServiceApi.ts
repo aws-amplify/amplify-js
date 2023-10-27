@@ -9,7 +9,7 @@ export const composeServiceApi = <
 	TransferHandlerOptions,
 	Input,
 	Output,
-	DefaultConfig extends Partial<TransferHandlerOptions & ServiceClientOptions>
+	DefaultConfig
 >(
 	transferHandler: TransferHandler<
 		HttpRequest,
@@ -21,12 +21,15 @@ export const composeServiceApi = <
 		endpoint: Endpoint
 	) => Promise<HttpRequest> | HttpRequest,
 	deserializer: (output: HttpResponse) => Promise<Output>,
-	defaultConfig: DefaultConfig
+	defaultConfig: Partial<DefaultConfig>
 ) => {
 	return async (
 		config: OptionalizeKey<
-			TransferHandlerOptions & ServiceClientOptions & DefaultConfig,
-			keyof DefaultConfig
+			TransferHandlerOptions &
+				ServiceClientOptions &
+				Partial<DefaultConfig> &
+				InferEndpointResolverOptionType<DefaultConfig>,
+			DefaultConfig
 		>,
 		input: Input
 	) => {
@@ -51,6 +54,19 @@ export const composeServiceApi = <
 	};
 };
 
-type OptionalizeKey<T, K> = Omit<T, K & keyof T> & {
-	[P in K & keyof T]?: T[P];
+type OptionalizeKey<InputType, InputDefaultsType> = {
+	[KeyWithDefaultValue in keyof InputDefaultsType]?: KeyWithDefaultValue extends keyof InputType
+		? InputType[KeyWithDefaultValue]
+		: never;
+} & {
+	[KeyWithoutDefaultValue in keyof Omit<
+		InputType,
+		keyof InputDefaultsType
+	>]: InputType[KeyWithoutDefaultValue];
 };
+
+type InferEndpointResolverOptionType<T> = T extends {
+	endpointResolver: (options: infer EndpointOptions) => any;
+}
+	? EndpointOptions
+	: never;

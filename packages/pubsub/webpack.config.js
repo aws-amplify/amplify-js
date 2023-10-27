@@ -6,9 +6,8 @@ module.exports = {
 		'graphql',
 		{
 			'@aws-amplify/auth': 'aws_amplify_auth',
-			'@aws-amplify/cache': 'aws_amplify_cache',
-			'@aws-amplify/core': 'aws_amplify_core'
-		}
+			'@aws-amplify/core': 'aws_amplify_core',
+		},
 	],
 	output: {
 		filename: '[name].js',
@@ -28,8 +27,6 @@ module.exports = {
 	mode: 'production',
 	module: {
 		rules: [
-			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,

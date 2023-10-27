@@ -7,11 +7,12 @@
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
 		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
-		"test": "lerna run test --stream && yarn test:license && yarn test:github-actions",
+		"test": "lerna run test --stream && yarn test:license && yarn test:github-actions && yarn test:tsc-compliance",
 		"test:size": "lerna run test:size --no-bail",
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
 		"test:license": "license-check-and-add check -f license_config.json",
 		"test:github-actions": "node ./scripts/test-github-actions.js",
+		"test:tsc-compliance": "yarn workspace tsc-compliance-test test:compliance:ts4.2",
 		"coverage": "codecov || exit 0",
 		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/ --readme README.md",
 		"build": "lerna run build --stream && yarn test:duplicates",
@@ -26,12 +27,12 @@
 		"lint:license": "license-check-and-add add -f license_config.json",
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
-		"publish:preid": "./scripts/preid-env-vars-exist.sh && lerna publish --canary --force-publish \"*\" --yes --dist-tag=${PREID_PREFIX} --preid=${PREID_PREFIX}${PREID_HASH_SUFFIX} --exact --no-verify-access",
-		"publish:main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --exact --no-verify-access",
-		"publish:next": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=next --preid=next${PREID_HASH_SUFFIX} --exact --no-verify-access",
-		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
-		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
-		"ts-coverage": "lerna run ts-coverage"
+		"publish:preid": "./scripts/preid-env-vars-exist.sh && lerna publish --canary --force-publish --dist-tag=${PREID_PREFIX} --preid=${PREID_PREFIX}${PREID_HASH_SUFFIX} --yes",
+		"publish:main": "lerna publish --canary --force-publish --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --yes",
+		"publish:release": "lerna publish from-package --dist-tag=v6 --message 'chore(release): Publish [ci skip]' --yes",
+		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
+		"ts-coverage": "lerna run ts-coverage",
+		"prepare": "./scripts/set-preid-versions.sh"
 	},
 	"husky": {
 		"hooks": {
@@ -40,13 +41,31 @@
 	},
 	"workspaces": {
 		"packages": [
-			"packages/*"
+			"packages/core",
+			"packages/auth",
+			"packages/analytics",
+			"packages/predictions",
+			"packages/storage",
+			"packages/adapter-nextjs",
+			"packages/geo",
+			"packages/api-rest",
+			"packages/api-graphql",
+			"packages/api",
+			"packages/datastore",
+			"packages/datastore-storage-adapter",
+			"packages/interactions",
+			"packages/pubsub",
+			"packages/notifications",
+			"packages/rtn-push-notification",
+			"packages/aws-amplify",
+			"packages/rtn-web-browser",
+			"packages/react-native",
+			"packages/react-native/example",
+			"scripts/tsc-compliance-test"
 		],
 		"nohoist": [
 			"**/@types/react-native",
-			"**/@types/react-native/**",
-			"aws-amplify-react-native/prettier",
-			"aws-amplify-react-native/eslint-plugin-prettier"
+			"**/@types/react-native/**"
 		]
 	},
 	"repository": {
@@ -91,7 +110,6 @@
 		"rollup-plugin-sourcemaps": "^0.4.2",
 		"rollup-plugin-typescript": "^1.0.0",
 		"size-limit": "^8.1.0",
-		"source-map-loader": "^3.0.2",
 		"terser-webpack-plugin": "^5.3.6",
 		"ts-jest": "^24.x.x",
 		"ts-loader": "^9.4.3",
@@ -110,7 +128,8 @@
 	"resolutions": {
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
-		"**/glob/minipass": "6.0.2"
+		"**/glob/minipass": "6.0.2",
+		"nx": "16.7.0"
 	},
 	"jest": {
 		"resetMocks": true,

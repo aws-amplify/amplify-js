@@ -1,4 +1,4 @@
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, Subscriber } from 'rxjs';
 import { parse } from 'graphql';
 import {
 	Schema,
@@ -55,10 +55,7 @@ export class FakeGraphQLService {
 		string,
 		{ createdAt: string; updatedAt: string }
 	>();
-	public observers = new Map<
-		string,
-		ZenObservable.SubscriptionObserver<any>[]
-	>();
+	public observers = new Map<string, Subscriber<any>[]>();
 	/**
 	 * All in-flight mutations. Used solely for observability in tests.
 	 * When dealing with concurrent mutations or increased latency,
@@ -491,10 +488,8 @@ export class FakeGraphQLService {
 		const observerMessageName = `on${typeName}${tableName}`;
 		observers.forEach(observer => {
 			const message = {
-				value: {
-					data: {
-						[observerMessageName]: data[selection],
-					},
+				data: {
+					[observerMessageName]: data[selection],
 				},
 			};
 			if (!this.stopSubscriptionMessages) {

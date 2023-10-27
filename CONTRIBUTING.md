@@ -153,7 +153,7 @@ Optionally, you can use the shorthands flags `-p` and `-t` for packages and targ
 To develop multiple/all packages, provide the package names separated by a comma or the flag `--all` or `-a`:
 
 ```
-npm run setup-dev:react-native -- --packages @aws-amplify/auth,aws-amplify-react-native --target ~/path/to/your/rn/app/root
+npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
 npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
 ```
 
@@ -177,7 +177,7 @@ To publish in Verdaccio, start a Verdaccio instance and then,
 
 ```
 yarn config set registry http://localhost:4873/
-yarn lerna publish --no-git-tag-version --no-push --force-publish
+yarn publish:verdaccio
 ```
 
 To publish a local version of a specific package,

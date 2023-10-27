@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { decodeTime } from 'ulid';
 import uuidValidate from 'uuid-validate';
-import Observable from 'zen-observable-ts';
+import { Observable, from, of } from 'rxjs';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
@@ -45,7 +45,6 @@ let initSchema: typeof initSchemaType;
 let { DataStore } = getDataStore() as {
 	DataStore: typeof DataStoreType;
 };
-
 const nameOf = <T>(name: keyof T) => name;
 
 /**
@@ -89,7 +88,8 @@ describe('DataStore sanity testing checks', () => {
 
 	// HAS_MANY does not contain a FK. no constraint to validate.
 	test('maintains integrity when attempting to save BELONGS_TO FK at non-existent record', async () => {
-		const { DataStore, Post, Comment } = getDataStore();
+		const { DataStore: datastore, Post, Comment } = getDataStore();
+		DataStore = datastore;
 
 		await expect(
 			DataStore.save(
@@ -1695,6 +1695,8 @@ describe('Model behavior', () => {
 			comment.defaultPKParentChildrenId
 		);
 		expect(await detachedComment.parent).toBeUndefined();
+
+		await DataStore.clear();
 	});
 
 	test('newly instantiated models do not lazy load hasMany', async () => {
@@ -1720,7 +1722,10 @@ describe('Model behavior', () => {
 		});
 
 		expect(detachedParent.id).toEqual(parent.id);
+
 		expect(await detachedParent.children.toArray()).toEqual([]);
+
+		await DataStore.clear();
 	});
 
 	test('newly instantiated models do not lazy load hasOne', async () => {
@@ -1741,6 +1746,8 @@ describe('Model behavior', () => {
 		expect(disconnectedParent.id).toEqual(parent.id);
 		expect(disconnectedParent.hasOneParentChildId).toEqual(child.id);
 		expect(await disconnectedParent.child).toBeUndefined();
+
+		await DataStore.clear();
 	});
 
 	[null, undefined].forEach(value => {
@@ -1767,6 +1774,8 @@ describe('Model behavior', () => {
 			expect(
 				(await DataStore.query(HasOneParent, parent.id))!.hasOneParentChildId
 			).toBeNull();
+
+			await DataStore.clear();
 		});
 
 		test(`model field can be set to ${value} to remove connection on child hasMany`, async () => {
@@ -1803,6 +1812,8 @@ describe('Model behavior', () => {
 					content: parent.content,
 				}).then(c => c!.children.toArray())
 			).toEqual([]);
+
+			await DataStore.clear();
 		});
 	});
 
@@ -1824,7 +1835,7 @@ describe('Model behavior', () => {
 
 				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
 					m.boolField.eq(true)
-				).subscribe(({ items, isSynced }) => {
+				).subscribe(async ({ items, isSynced }) => {
 					// we don't actually expect 0 records in our snapshots after our list runs out.
 					// we just want to make TS happy.
 					const expected = expecteds.shift() || 0;
@@ -1836,6 +1847,7 @@ describe('Model behavior', () => {
 
 					if (expecteds.length === 0) {
 						sub.unsubscribe();
+						await DataStore.clear();
 						done();
 					}
 				});
@@ -1851,7 +1863,10 @@ describe('Model behavior', () => {
 
 				// advance time to trigger another snapshot.
 				await pause(2000);
+				await DataStore.clear();
 			} catch (error) {
+				await DataStore.clear();
+
 				done(error);
 			}
 		})();
@@ -1902,7 +1917,10 @@ describe('Model behavior', () => {
 
 				// advance time to trigger another snapshot.
 				await pause(2000);
+				await DataStore.clear();
 			} catch (error) {
+				await DataStore.clear();
+
 				done(error);
 			}
 		})();
@@ -1924,7 +1942,7 @@ describe('Model behavior', () => {
 
 		const sub = DataStore.observeQuery(Post, Predicates.ALL, {
 			sort: s => s.updatedAt(SortDirection.DESCENDING),
-		}).subscribe(({ items }) => {
+		}).subscribe(async ({ items }) => {
 			if (items.length === 0) {
 				return;
 			}
@@ -1936,6 +1954,7 @@ describe('Model behavior', () => {
 
 			if (expectedTitles.length === 0) {
 				sub.unsubscribe();
+				await DataStore.clear();
 				done();
 			}
 		});
@@ -1969,7 +1988,7 @@ describe('DataStore tests', () => {
 				runExclusive: jest.fn(),
 				query: jest.fn(() => []),
 				save: jest.fn(() => []),
-				observe: jest.fn(() => Observable.of()),
+				observe: jest.fn(() => of()),
 				clear: jest.fn(),
 			}));
 
@@ -2494,7 +2513,7 @@ describe('DataStore tests', () => {
 					init: jest.fn(),
 					runExclusive: jest.fn(() => []),
 					query: jest.fn(() => []),
-					observe: jest.fn(() => Observable.from([])),
+					observe: jest.fn(() => from([])),
 					clear: jest.fn(),
 				}));
 
@@ -3594,7 +3613,7 @@ describe('DataStore tests', () => {
 					init: jest.fn(),
 					runExclusive: jest.fn(() => [model]),
 					query: jest.fn(() => [model]),
-					observe: jest.fn(() => Observable.from([])),
+					observe: jest.fn(() => from([])),
 					clear: jest.fn(),
 				}));
 
@@ -4024,7 +4043,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						runExclusive: jest.fn(() => []),
 						query: jest.fn(() => []),
-						observe: jest.fn(() => Observable.from([])),
+						observe: jest.fn(() => from([])),
 						clear: jest.fn(),
 					}));
 
@@ -4639,7 +4658,7 @@ describe('DataStore tests', () => {
 							init: jest.fn(),
 							runExclusive: jest.fn(() => [model]),
 							query: jest.fn(() => [model]),
-							observe: jest.fn(() => Observable.from([])),
+							observe: jest.fn(() => from([])),
 							clear: jest.fn(),
 						}));
 

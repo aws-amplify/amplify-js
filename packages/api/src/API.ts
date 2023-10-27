@@ -1,48 +1,23 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AWSAppSyncRealTimeProvider } from '@aws-amplify/pubsub';
-import { GraphQLOptions, GraphQLResult } from '@aws-amplify/api-graphql';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
-import { GraphQLQuery, GraphQLSubscription } from './types';
-import { InternalAPIClass } from './internals/InternalAPI';
+import { __amplify, V6Client } from '@aws-amplify/api-graphql';
+import {
+	graphql as v6graphql,
+	cancel as v6cancel,
+	isCancelError as v6isCancelError,
+} from '@aws-amplify/api-graphql/internals';
+import { Amplify } from '@aws-amplify/core';
 
-const logger = new Logger('API');
 /**
- * @deprecated
- * Use RestApi or GraphQLAPI to reduce your application bundle size
- * Export Cloud Logic APIs
+ * Generates an API client that can work with models or raw GraphQL
  */
-export class APIClass extends InternalAPIClass {
-	public getModuleName() {
-		return 'API';
-	}
-
-	/**
-	 * Executes a GraphQL operation
-	 *
-	 * @param options - GraphQL Options
-	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
-	 * @returns An Observable if queryType is 'subscription', else a promise of the graphql result from the query.
-	 */
-	graphql<T>(
-		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string }
-	): T extends GraphQLQuery<T>
-		? Promise<GraphQLResult<T>>
-		: T extends GraphQLSubscription<T>
-		? Observable<{
-				provider: AWSAppSyncRealTimeProvider;
-				value: GraphQLResult<T>;
-		  }>
-		: Promise<GraphQLResult<any>> | Observable<object>;
-	graphql<T = any>(
-		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string }
-	): Promise<GraphQLResult<any>> | Observable<object> {
-		return super.graphql(options, additionalHeaders);
-	}
+export function generateClient<
+	T extends Record<any, any> = never
+>(): V6Client<T> {
+	return {
+		[__amplify]: Amplify,
+		graphql: v6graphql,
+		cancel: v6cancel,
+		isCancelError: v6isCancelError,
+	};
 }
-
-export const API = new APIClass(null);
-Amplify.register(API);

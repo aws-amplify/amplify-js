@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/rtn-push-notification",
-	"version": "1.1.7",
+	"version": "1.2.0",
 	"description": "React Native module for aws-amplify push notifications",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -10,18 +10,22 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "tslint 'src/**/*.ts'",
+		"test": "npm run lint && jest -w 1 --coverage",
 		"test:android": "./android/gradlew test -p ./android",
 		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
+		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 99"
+	},
+	"devDependencies": {
+		"@types/react-native": "0.70.0",
+		"typescript": "5.0.2"
 	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
@@ -43,5 +47,46 @@
 		"lib",
 		"lib-esm",
 		"src"
-	]
+	],
+	"jest": {
+		"globals": {
+			"ts-jest": {
+				"diagnostics": false,
+				"tsConfig": {
+					"allowJs": true,
+					"noEmitOnError": false
+				}
+			}
+		},
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testPathIgnorePatterns": [
+			"/testUtils/"
+		],
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "jsdom",
+		"testURL": "http://localhost/",
+		"coverageThreshold": {
+			"global": {
+				"branches": 0,
+				"functions": 0,
+				"lines": 0,
+				"statements": 0
+			}
+		},
+		"coveragePathIgnorePatterns": [
+			"node_modules",
+			"dist",
+			"lib",
+			"lib-esm"
+		]
+	}
 }

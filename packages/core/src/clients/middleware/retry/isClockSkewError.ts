@@ -21,4 +21,4 @@ const CLOCK_SKEW_ERROR_CODES = [
  * @internal
  */
 export const isClockSkewError = (errorCode?: string) =>
-	CLOCK_SKEW_ERROR_CODES.includes(errorCode);
+	!!errorCode && CLOCK_SKEW_ERROR_CODES.includes(errorCode);

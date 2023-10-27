@@ -1,16 +1,8 @@
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 let mockObservable = new Observable(() => {});
 const mockGraphQL = jest.fn(() => mockObservable);
 
-import { Amplify } from 'aws-amplify';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import {
-	Category,
-	CustomUserAgentDetails,
-	DataStoreAction,
-	getAmplifyUserAgentObject,
-} from '@aws-amplify/core';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/api-graphql';
 import {
 	SubscriptionProcessor,
 	USER_CREDENTIALS,
@@ -25,6 +17,7 @@ import {
 	InternalSchema,
 	PersistentModelConstructor,
 } from '../src/types';
+import { Category, DataStoreAction } from '@aws-amplify/core/internals/utils';
 
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api/internals', () => {
@@ -56,7 +49,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: true,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -67,10 +60,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				accessTokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -87,7 +79,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: true,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -98,10 +90,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				accessTokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -118,7 +109,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: false,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -129,10 +120,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				accessTokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -156,7 +146,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules, modelProperties);
 
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: false,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -167,10 +157,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				accessTokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -196,7 +185,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: true,
 			ownerField: 'customOwner',
 			ownerValue: 'user1',
@@ -207,10 +196,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				accessTokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -232,7 +220,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AWS_IAM',
+			authMode: 'iam',
 			isOwner: false,
 		};
 
@@ -241,10 +229,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS, // default auth mode
+				'userPool', // default auth mode
 				accessTokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AWS_IAM
+				'iam'
 			)
 		).toEqual(authInfo);
 	});
@@ -262,7 +249,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: false,
 		};
 
@@ -271,10 +258,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				accessTokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -297,7 +283,7 @@ describe('sync engine subscription module', () => {
 			'custom:groups': '["mygroup"]',
 		};
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: false,
 		};
 
@@ -306,10 +292,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				tokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -332,7 +317,7 @@ describe('sync engine subscription module', () => {
 			'custom:group': '"mygroup"',
 		};
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: false,
 		};
 
@@ -341,10 +326,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				tokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -367,7 +351,7 @@ describe('sync engine subscription module', () => {
 			'custom:group': 'mygroup',
 		};
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: false,
 		};
 
@@ -376,10 +360,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				tokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -394,7 +377,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AWS_IAM',
+			authMode: 'iam',
 			isOwner: false,
 		};
 
@@ -403,10 +386,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.unauth,
-				GRAPHQL_AUTH_MODE.AWS_IAM,
+				'iam',
 				undefined, // No Cognito token
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AWS_IAM
+				'iam'
 			)
 		).toEqual(authInfo);
 	});
@@ -421,7 +403,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AWS_IAM',
+			authMode: 'iam',
 			isOwner: false,
 		};
 
@@ -430,10 +412,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.unauth,
-				GRAPHQL_AUTH_MODE.AWS_IAM,
+				'iam',
 				undefined, // No Cognito token
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AWS_IAM
+				'iam'
 			)
 		).toEqual(null);
 	});
@@ -448,7 +429,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AWS_IAM',
+			authMode: 'iam',
 			isOwner: false,
 		};
 
@@ -457,10 +438,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AWS_IAM,
-				undefined, // No Cognito token
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AWS_IAM
+				'iam',
+				undefined,
+				'iam' // No Cognito token
 			)
 		).toEqual(authInfo);
 	});
@@ -475,7 +455,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'API_KEY',
+			authMode: 'apiKey',
 			isOwner: false,
 		};
 
@@ -484,10 +464,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.none,
-				GRAPHQL_AUTH_MODE.API_KEY,
-				undefined, // No Cognito token
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.API_KEY
+				'apiKey',
+				undefined,
+				'apiKey' // No Cognito token
 			)
 		).toEqual(authInfo);
 	});
@@ -517,7 +496,7 @@ describe('sync engine subscription module', () => {
 			email: 'user1@user.com',
 		};
 		const authInfo = {
-			authMode: 'OPENID_CONNECT',
+			authMode: 'oidc',
 			isOwner: true,
 			ownerField: 'sub',
 			ownerValue: 'user1',
@@ -528,10 +507,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-				undefined, // No Cognito token
-				oidcTokenPayload,
-				GRAPHQL_AUTH_MODE.OPENID_CONNECT
+				'oidc',
+				oidcTokenPayload, // No Cognito token,
+				'oidc'
 			)
 		).toEqual(authInfo);
 	});
@@ -555,7 +533,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			authMode: 'userPool',
 			isOwner: true,
 			ownerField: 'owner',
 			ownerValue: 'user1',
@@ -566,10 +544,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				'userPool',
 				accessTokenPayload,
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				'userPool'
 			)
 		).toEqual(authInfo);
 	});
@@ -585,7 +562,7 @@ describe('sync engine subscription module', () => {
 		const model = generateModelWithAuth(authRules);
 
 		const authInfo = {
-			authMode: 'AWS_LAMBDA',
+			authMode: 'lambda',
 			isOwner: false,
 		};
 
@@ -594,10 +571,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.none,
-				GRAPHQL_AUTH_MODE.AWS_LAMBDA,
-				undefined, // No Cognito token
-				undefined, // No OIDC token
-				GRAPHQL_AUTH_MODE.AWS_LAMBDA
+				'lambda',
+				undefined,
+				'lambda' // No Cognito token
 			)
 		).toEqual(authInfo);
 	});
@@ -616,18 +592,16 @@ describe('error handler', () => {
 	});
 
 	test('error handler once after all retires have failed', done => {
-		Amplify.Logger.LOG_LEVEL = 'DEBUG';
+		window['LOG_LEVEL'] = 'DEBUG';
 		const debugLog = jest.spyOn(console, 'log');
 		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
 		mockObservable = new Observable(observer => {
 			observer.error({
-				error: {
-					errors: [
-						{
-							message,
-						},
-					],
-				},
+				errors: [
+					{
+						message,
+					},
+				],
 			});
 		});
 
@@ -654,14 +628,14 @@ describe('error handler', () => {
 					expect(debugLog).toHaveBeenCalledWith(
 						expect.stringMatching(
 							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: API_KEY`
+								`[DEBUG].*${operation} subscription failed with authMode: apiKey`
 							)
 						)
 					);
 					expect(debugLog).toHaveBeenCalledWith(
 						expect.stringMatching(
 							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: AMAZON_COGNITO_USER_POOLS`
+								`[DEBUG].*${operation} subscription failed with authMode: userPool`
 							)
 						)
 					);
@@ -712,10 +686,7 @@ describe('error handler', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 			},
-			() => [
-				GRAPHQL_AUTH_MODE.API_KEY,
-				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-			],
+			() => ['apiKey', 'userPool'],
 			errorHandler
 		);
 
