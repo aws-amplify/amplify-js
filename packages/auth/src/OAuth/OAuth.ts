@@ -302,8 +302,9 @@ export default class OAuth {
 		let i = length;
 		const chars =
 			'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		for (; i > 0; --i)
-			result += chars[Math.round(Math.random() * (chars.length - 1))];
+		for (; i > 0; --i) {
+			result += chars[(Math.random() * chars.length) | 0];
+		}
 		return result;
 	}
 
