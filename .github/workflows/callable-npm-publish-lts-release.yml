@@ -37,14 +37,6 @@ jobs:
           git config --global user.email $GITHUB_EMAIL
           git config --global user.name $GITHUB_USER
 
-      - name: Update roll-back infrastructure
-        working-directory: ./amplify-js
-        run: |
-          git pull origin ${{ inputs.target }}
-          PUBLISH_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
-          RELEASE_COMMIT_MESSAGE=$(git log -n 1 --skip 1 --pretty=oneline)
-          if [[ $RELEASE_COMMIT_MESSAGE = *release\(required\)* ]]; then git tag -f required-release-${{ inputs.target }} $PUBLISH_COMMIT_HASH; fi
-
       - name: Update API documentation
         working-directory: ./amplify-js
         run: |
@@ -56,4 +48,3 @@ jobs:
         working-directory: ./amplify-js
         run: |
           git push origin ${{ inputs.target }}
-          git push -f origin required-release-${{ inputs.target }}
