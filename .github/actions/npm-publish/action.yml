@@ -30,18 +30,18 @@ runs:
         git config --global user.email $GITHUB_EMAIL
         git config --global user.name $GITHUB_USER
 
-    - name: Run npm publish
-      if: github.repository_owner == 'aws-amplify'
-      shell: bash
-      working-directory: ./amplify-js
-      env:
-        NPM_TOKEN: ${{ inputs.npm_token }}
-        GH_SHA: ${{ github.sha }}
-        TARGET: ${{ inputs.target }}
-        PREID_PREFIX: ${{ inputs.preid || '' }}
-      run: |
-        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-        export PREID_HASH_SUFFIX=$(echo $GH_SHA | cut -c -7 | sed 's/^/\./')
-        git status
-        git --no-pager diff
-        yarn publish:$TARGET
+    #- name: Run npm publish
+    #  if: github.repository_owner == 'aws-amplify'
+    #  shell: bash
+    #  working-directory: ./amplify-js
+    #  env:
+    #    NPM_TOKEN: ${{ inputs.npm_token }}
+    #    GH_SHA: ${{ github.sha }}
+    #    TARGET: ${{ inputs.target }}
+    #    PREID_PREFIX: ${{ inputs.preid || '' }}
+    #  run: |
+    #    echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+    #    export PREID_HASH_SUFFIX=$(echo $GH_SHA | cut -c -7 | sed 's/^/\./')
+    #    git status
+    #    git --no-pager diff
+    #    yarn publish:$TARGET

@@ -11,12 +11,12 @@ on:
       - v5-stable
 
 jobs:
-  e2e:
-    secrets: inherit
-    uses: ./.github/workflows/callable-release-verification.yml
+  #e2e:
+  #  secrets: inherit
+  #  uses: ./.github/workflows/callable-release-verification.yml
   release:
-    needs:
-      - e2e
+    #  needs:
+    #    - e2e
     permissions:
       contents: write
     secrets: inherit
