@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CompletionCallback } from '../../types';
+import { OnCompleteInput } from '../types';
 import { resolveBotConfig } from '../utils';
 import { lexProvider } from '../AWSLexV2Provider';
 import {
@@ -9,10 +9,8 @@ import {
 	InteractionsValidationErrorCode,
 } from '../../errors';
 
-export const onComplete = (
-	botName: string,
-	callback: CompletionCallback
-): void => {
+export const onComplete = (input: OnCompleteInput): void => {
+	const { botName, callback } = input;
 	const botConfig = resolveBotConfig(botName);
 	assertValidationError(
 		!!botConfig,

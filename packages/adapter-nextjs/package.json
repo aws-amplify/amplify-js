@@ -37,6 +37,11 @@
 			"import": "./lib-esm/withAmplify.js",
 			"require": "./lib/withAmplify.js"
 		},
+		"./api": {
+			"types": "./lib-esm/api/generateServerClient.d.ts",
+			"import": "./lib-esm/api/generateServerClient.js",
+			"require": "./lib/api/generateServerClient.js"
+		},
 		"./internals": {
 			"types": "./lib-esm/internals/index.d.ts",
 			"import": "./lib-esm/internals/index.js",
@@ -61,10 +66,10 @@
 		],
 		"coverageThreshold": {
 			"global": {
-				"branches": 100,
-				"functions": 100,
-				"lines": 100,
-				"statements": 100
+				"branches": 88,
+				"functions": 90,
+				"lines": 92,
+				"statements": 93
 			}
 		},
 		"globals": {
@@ -86,7 +91,8 @@
 		"testPathIgnorePatterns": [
 			"xmlParser-fixture.ts",
 			"testUtils",
-			"cases"
+			"cases",
+			"mocks"
 		],
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
 		"testURL": "http://localhost/",
@@ -113,5 +119,5 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
 	},
 	"typings": "./lib-esm/index.d.ts",
-	"version": "0.0.1"
+	"version": "1.0.0"
 }

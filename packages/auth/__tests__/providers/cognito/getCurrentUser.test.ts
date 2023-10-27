@@ -5,9 +5,6 @@ import { Amplify } from 'aws-amplify';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { getCurrentUser } from '../../../src/providers/cognito';
-import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { Amplify as AmplifyV6 } from '@aws-amplify/core';
 import { USER_UNAUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
 jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
@@ -37,6 +34,10 @@ describe('getUser API happy path cases', () => {
 					'cognito:username': mockedUsername,
 				},
 			},
+			signInDetails: {
+				loginId: mockedUsername,
+				authFlowType: 'USER_SRP_AUTH',
+			},
 		});
 	});
 
@@ -46,7 +47,14 @@ describe('getUser API happy path cases', () => {
 
 	test('get current user', async () => {
 		const result = await getCurrentUser();
-		expect(result).toEqual({ username: mockedUsername, userId: mockedSub });
+		expect(result).toEqual({
+			username: mockedUsername,
+			userId: mockedSub,
+			signInDetails: {
+				loginId: mockedUsername,
+				authFlowType: 'USER_SRP_AUTH',
+			},
+		});
 	});
 });
 

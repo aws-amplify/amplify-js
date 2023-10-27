@@ -24,6 +24,7 @@ export {
 	SetBadgeCountInput,
 } from './types/inputs';
 export {
+	GetBadgeCountOutput,
 	GetLaunchNotificationOutput,
 	GetPermissionStatusOutput,
 	OnNotificationOpenedOutput,

@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	CompletionCallback,
+	InteractionsOnCompleteCallback,
 	InteractionsMessage,
 	InteractionsResponse,
-} from '../types';
+} from '../types/Interactions';
 import {
 	DialogState,
 	LexRuntimeServiceClient,
@@ -32,8 +32,10 @@ type AWSLexProviderSendResponse =
 	| PostContentCommandOutputFormatted;
 
 class AWSLexProvider {
-	private readonly _botsCompleteCallback: Record<string, CompletionCallback> =
-		{};
+	private readonly _botsCompleteCallback: Record<
+		string,
+		InteractionsOnCompleteCallback
+	> = {};
 
 	/**
 	 * @deprecated
@@ -154,7 +156,10 @@ class AWSLexProvider {
 		}
 	}
 
-	onComplete({ name }: AWSLexProviderOption, callback: CompletionCallback) {
+	onComplete(
+		{ name }: AWSLexProviderOption,
+		callback: InteractionsOnCompleteCallback
+	) {
 		this._botsCompleteCallback[name] = callback;
 	}
 }
