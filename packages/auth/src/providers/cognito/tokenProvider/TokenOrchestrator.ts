@@ -20,6 +20,7 @@ import {
 } from './types';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
+import { CognitoAuthSignInDetails } from '../types';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
@@ -62,7 +63,9 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	async getTokens(
 		options?: FetchAuthSessionOptions
-	): Promise<AuthTokens | null> {
+	): Promise<
+		(AuthTokens & { signInDetails?: CognitoAuthSignInDetails }) | null
+	> {
 		let tokens: CognitoAuthTokens | null;
 
 		try {
@@ -103,6 +106,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		return {
 			accessToken: tokens?.accessToken,
 			idToken: tokens?.idToken,
+			signInDetails: tokens?.signInDetails,
 		};
 	}
 

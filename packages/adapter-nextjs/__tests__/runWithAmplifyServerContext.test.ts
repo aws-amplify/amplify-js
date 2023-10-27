@@ -37,6 +37,7 @@ jest.mock('aws-amplify/adapter-core');
 const mockGetAmplifyConfig = getAmplifyConfig as jest.Mock;
 const mockRunWithAmplifyServerContextCore =
 	runWithAmplifyServerContextCore as jest.Mock;
+
 const mockCreateAWSCredentialsAndIdentityIdProvider =
 	createAWSCredentialsAndIdentityIdProvider as jest.Mock;
 const mockCreateKeyValueStorageFromCookieStorageAdapter =

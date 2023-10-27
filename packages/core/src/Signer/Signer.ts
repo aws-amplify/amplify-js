@@ -13,6 +13,15 @@ const IOT_SERVICE_NAME = 'iotdevicegateway';
 // Best practice regex to parse the service and region from an AWS endpoint
 const AWS_ENDPOINT_REGEX = /([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com(.cn)?$/;
 
+/**
+ * This class is intended to be deprecated and replaced by `signRequest` and `presignUrl` functions from
+ * `clients/middleware/signing/signer/signatureV4`.
+ *
+ * TODO: refactor the logics here into `signRequest` and `presignUrl` functions and remove this class.
+ *
+ * @internal
+ * @deprecated
+ */
 export class Signer {
 	/**
     * Sign a HTTP request, add 'Authorization' header to request param
@@ -172,7 +181,6 @@ const getOptions = (
 	};
 };
 
-// TODO: V6 investigate whether add to custom clients' general signer implementation.
 const parseServiceInfo = (url: URL) => {
 	const host = url.host;
 	const matched = host.match(AWS_ENDPOINT_REGEX) ?? [];
@@ -191,6 +199,5 @@ const parseServiceInfo = (url: URL) => {
 
 // IoT service does not allow the session token in the canonical request
 // https://docs.aws.amazon.com/general/latest/gr/sigv4-add-signature-to-request.html
-// TODO: V6 investigate whether add to custom clients' general signer implementation.
 const sessionTokenRequiredInSigning = (service: string) =>
 	service !== IOT_SERVICE_NAME;
