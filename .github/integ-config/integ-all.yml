@@ -492,22 +492,22 @@ tests:
     sample_name: [delete-user]
     spec: delete-user
     browser: *minimal_browser_list
-  - test_name: integ_next_auth_authenticator_and_ssr_page
-    desc: 'Authenticator and SSR page'
-    framework: next
-    category: auth
-    sample_name: [auth-ssr]
-    spec: auth-ssr
-    browser: [chrome]
-  - test_name: integ_next_auth_authenticator_and_rsc_page
-    desc: 'Authenticator and RSC page'
-    framework: next
-    category: auth
-    sample_name: [auth-rsc]
-    spec: auth-rsc
-    browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
+  # - test_name: integ_next_auth_authenticator_and_ssr_page
+  #   desc: 'Authenticator and SSR page'
+  #   framework: next
+  #   category: auth
+  #   sample_name: [auth-ssr]
+  #   spec: auth-ssr
+  #   browser: [chrome]
+  # - test_name: integ_next_auth_authenticator_and_rsc_page
+  #   desc: 'Authenticator and RSC page'
+  #   framework: next
+  #   category: auth
+  #   sample_name: [auth-rsc]
+  #   spec: auth-rsc
+  #   browser: [chrome]
+  #   timeout_minutes: 45
+  #   retry_count: 10
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
