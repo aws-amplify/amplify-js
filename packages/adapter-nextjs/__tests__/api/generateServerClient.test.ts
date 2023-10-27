@@ -1,7 +1,7 @@
 import { ResourcesConfig } from '@aws-amplify/core';
 import {
 	generateServerClientUsingCookies,
-	generateServerClient,
+	generateServerClientUsingReqRes,
 } from '../../src/api';
 import {
 	getAmplifyConfig,
@@ -75,7 +75,7 @@ describe('generateServerClient', () => {
 	});
 
 	it('should call getAmlifyConfig', async () => {
-		generateServerClient({ config: mockAmplifyConfig });
+		generateServerClientUsingReqRes({ config: mockAmplifyConfig });
 		expect(mockGetAmplifyConfig).toHaveBeenCalled();
 	});
 
@@ -97,7 +97,9 @@ describe('generateServerClient', () => {
 			getAmplifyServerContext: () => {},
 		}));
 
-		const client = generateServerClient({ config: mockAmplifyConfig });
+		const client = generateServerClientUsingReqRes({
+			config: mockAmplifyConfig,
+		});
 
 		await runWithAmplifyServerContext({
 			nextServerContext: {

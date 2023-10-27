@@ -82,9 +82,9 @@ export function generateServerClientUsingCookies<
     })
  * ```
  */
-export function generateServerClient<T extends Record<any, any> = never>({
-	config,
-}: NextServer.CreateServerRunnerInput): V6ClientSSR<T> {
+export function generateServerClientUsingReqRes<
+	T extends Record<any, any> = never
+>({ config }: NextServer.CreateServerRunnerInput): V6ClientSSR<T> {
 	const amplifyConfig = getAmplifyConfig(config);
 	// passing `null` instance because each (future model) method must retrieve a valid instance
 	// from server context
