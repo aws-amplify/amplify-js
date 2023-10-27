@@ -4,7 +4,7 @@
 // TODO: V6 update to different crypto dependency?
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { SourceData } from '@aws-sdk/types';
-import { toHex } from '@aws-sdk/util-hex-encoding';
+import { toHex } from '@smithy/util-hex-encoding';
 
 /**
  * Returns the hashed data a `Uint8Array`.
@@ -17,7 +17,7 @@ export const getHashedData = (
 	key: SourceData | null,
 	data: SourceData
 ): Uint8Array => {
-	const sha256 = new Sha256(key);
+	const sha256 = new Sha256(key ?? undefined);
 	sha256.update(data);
 	// TODO: V6 flip to async digest
 	const hashedData = sha256.digestSync();

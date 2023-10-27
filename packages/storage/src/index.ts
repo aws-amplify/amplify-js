@@ -1,8 +1,40 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Storage, StorageInstance } from './Storage';
+export {
+	uploadData,
+	downloadData,
+	remove,
+	list,
+	getProperties,
+	copy,
+	getUrl,
+} from './providers/s3';
 
-export { Storage as StorageClass, StorageInstance as Storage };
-export { AWSS3Provider } from './providers';
-export * from './types';
+export {
+	UploadDataInput,
+	DownloadDataInput,
+	RemoveInput,
+	ListAllInput,
+	ListPaginateInput,
+	GetPropertiesInput,
+	CopyInput,
+	GetUrlInput,
+} from './providers/s3/types/inputs';
+
+export {
+	UploadDataOutput,
+	DownloadDataOutput,
+	RemoveOutput,
+	ListAllOutput,
+	ListPaginateOutput,
+	GetPropertiesOutput,
+	CopyOutput,
+	GetUrlOutput,
+} from './providers/s3/types/outputs';
+
+export { TransferProgressEvent } from './types';
+
+// TODO[AllanZhengYP]: support isCancelError in Node.js with node-fetch
+export { isCancelError } from './errors/CanceledError';
+export { StorageError } from './errors/StorageError';

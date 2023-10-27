@@ -1,8 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-export interface InteractionsOptions {
-	[key: string]: any;
-}
 
 export type InteractionsTextMessage = {
 	content: string;
@@ -21,3 +18,12 @@ export type InteractionsVoiceMessage = {
 export type InteractionsMessage =
 	| InteractionsTextMessage
 	| InteractionsVoiceMessage;
+
+export type InteractionsOnCompleteCallback = (
+	error?: Error,
+	completion?: InteractionsResponse
+) => void;
+
+export type InteractionsResponse = {
+	[key: string]: any;
+};

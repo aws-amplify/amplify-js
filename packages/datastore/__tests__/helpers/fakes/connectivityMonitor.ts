@@ -1,4 +1,4 @@
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, Subscriber } from 'rxjs';
 
 type ConnectionStatus = {
 	online: boolean;
@@ -10,7 +10,7 @@ type ConnectionStatus = {
  */
 export class FakeDataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
-	private observer?: ZenObservable.SubscriptionObserver<ConnectionStatus>;
+	private observer?: Subscriber<ConnectionStatus>;
 
 	constructor() {
 		this.connectionStatus = {

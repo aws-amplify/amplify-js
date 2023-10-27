@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	ICookieStorageData,
-	ICognitoStorage,
-} from 'amazon-cognito-identity-js';
-
 /**
  * Parameters for user sign up
  */
@@ -18,31 +13,25 @@ export interface SignUpParams {
 	autoSignIn?: AutoSignInOptions;
 }
 
-export interface AuthCache {
-	setItem();
-	getItem();
-	removeItem();
-}
-
 /**
  * Auth instance options
  */
-export interface AuthOptions {
-	userPoolId?: string;
-	userPoolWebClientId?: string;
-	identityPoolId?: string;
-	region?: string;
-	mandatorySignIn?: boolean;
-	cookieStorage?: ICookieStorageData;
-	oauth?: OAuthOpts;
-	refreshHandlers?: object;
-	storage?: ICognitoStorage;
-	authenticationFlowType?: string;
-	identityPoolRegion?: string;
-	clientMetadata?: any;
-	endpoint?: string;
-	signUpVerificationMethod?: 'code' | 'link';
-}
+// export interface AuthOptions {
+// 	userPoolId?: string;
+// 	userPoolWebClientId?: string;
+// 	identityPoolId?: string;
+// 	region?: string;
+// 	mandatorySignIn?: boolean;
+// 	cookieStorage?: ICookieStorageData;
+// 	oauth?: OAuthOpts;
+// 	refreshHandlers?: object;
+// 	storage?: ICognitoStorage;
+// 	authenticationFlowType?: string;
+// 	identityPoolRegion?: string;
+// 	clientMetadata?: any;
+// 	endpoint?: string;
+// 	signUpVerificationMethod?: 'code' | 'link';
+// }
 
 export enum CognitoHostedUIIdentityProvider {
 	Cognito = 'COGNITO',
@@ -127,7 +116,6 @@ export interface AwsCognitoOAuthOpts {
 	redirectSignOut: string;
 	responseType: string;
 	options?: object;
-	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 }
 
 export function isCognitoHostedOpts(
@@ -144,7 +132,6 @@ export interface Auth0OAuthOpts {
 	audience: string;
 	responseType: string;
 	returnTo: string;
-	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 }
 
 // Replacing to fix typings
@@ -194,6 +181,7 @@ export enum AuthErrorTypes {
 	DeviceConfig = 'deviceConfig',
 	NetworkError = 'networkError',
 	AutoSignInError = 'autoSignInError',
+	OAuthSignInError = 'oauthSignInError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };

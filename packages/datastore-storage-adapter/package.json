@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore-storage-adapter",
-	"version": "2.0.48",
+	"version": "2.1.0",
 	"description": "SQLite storage adapter for Amplify DataStore ",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -34,9 +34,12 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
+	},
 	"devDependencies": {
-		"@aws-amplify/core": "5.8.5",
-		"@aws-amplify/datastore": "4.7.5",
+		"@aws-amplify/core": "6.0.0",
+		"@aws-amplify/datastore": "5.0.0",
 		"@types/react-native-sqlite-storage": "5.0.1",
 		"expo-file-system": "13.1.4",
 		"expo-sqlite": "10.1.0",
@@ -93,6 +96,9 @@
 			"lib",
 			"lib-esm",
 			"../datastore"
+		],
+		"setupFilesAfterEnv": [
+			"<rootDir>/jest.setup.js"
 		]
 	}
 }

@@ -3,10 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## 1.6.5 (2023-09-14)
-
-**Note:** Version bump only for package @aws-amplify/notifications
-
 ## 1.6.4 (2023-08-23)
 
 **Note:** Version bump only for package @aws-amplify/notifications

@@ -1,8 +1,10 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
-import { Category, DataStoreAction } from '@aws-amplify/core';
+import {
+	AmplifyError,
+	Category,
+	DataStoreAction,
+} from '@aws-amplify/core/internals/utils';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
-
 let mockGraphQl;
 
 const sessionStorageMock = (() => {
@@ -44,7 +46,7 @@ const defaultQuery = `query {
 const defaultVariables = {};
 const defaultOpName = 'syncPosts';
 const defaultModelDefinition = { name: 'Post' };
-const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
+const defaultAuthMode = 'userPool';
 
 describe('Sync', () => {
 	describe('jitteredRetry', () => {
@@ -178,6 +180,7 @@ describe('Sync', () => {
 			});
 		});
 
+		// TODO(v6) Re-enable test
 		it('should throw error if no data is returned', async () => {
 			const rejectResponse = {
 				data: null,
@@ -210,7 +213,11 @@ describe('Sync', () => {
 				data: null,
 				errors: [
 					{
-						message: 'Request failed with status code 403',
+						originalError: {
+							$metadata: {
+								httpStatusCode: 403,
+							},
+						},
 					},
 				],
 			};
@@ -389,7 +396,11 @@ describe('Sync', () => {
 					data,
 					errors: [
 						{
-							message: 'Error: Request failed with status code 500',
+							originalError: {
+								$metadata: {
+									httpStatusCode: 500,
+								},
+							},
 						},
 					],
 				},
@@ -450,11 +461,15 @@ function jitteredRetrySyncProcessorSetup({
 		};
 	});
 
-	jest.mock('@aws-amplify/core', () => ({
-		...jest.requireActual('@aws-amplify/core'),
+	jest.mock('@aws-amplify/core/internals/utils', () => ({
+		...jest.requireActual('@aws-amplify/core/internals/utils'),
 		// No need to retry any thrown errors right now,
 		// so we're overriding jitteredExponentialRetry
 		jitteredExponentialRetry: (fn, args) => fn(...args),
+	}));
+
+	jest.mock('@aws-amplify/core', () => ({
+		...jest.requireActual('@aws-amplify/core'),
 		...coreMocks,
 	}));
 

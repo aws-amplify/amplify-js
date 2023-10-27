@@ -12,12 +12,13 @@
 			"es2020.promise"
 		],
 		"downlevelIteration": true,
-		"target": "es5",
+		"target": "es2020",
 		"moduleResolution": "node",
 		"declaration": true,
 		"noEmitOnError": true,
 		"incremental": true,
 		"importHelpers": true,
+		"skipLibCheck": true,
 		"types": ["node"]
 	}
 }

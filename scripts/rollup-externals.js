@@ -3,7 +3,6 @@
 const core_externals = ['aws-sdk', 'aws-sdk/global', 'react-native', 'url'];
 
 const analytics_externals = [
-	'@aws-amplify/cache',
 	'@aws-amplify/core',
 	'uuid',
 	'aws-sdk/clients/pinpoint',
@@ -19,16 +18,10 @@ const api_externals = [
 	'graphql/language/printer',
 	'uuid',
 	'zen-observable',
-	'@aws-amplify/cache',
 	'@aws-amplify/core',
 ];
 
-const auth_externals = [
-	'@aws-amplify/cache',
-	'@aws-amplify/core',
-	'amazon-cognito-auth-js',
-	'amazon-cognito-identity-js',
-];
+const auth_externals = ['@aws-amplify/core', 'amazon-cognito-auth-js'];
 
 const cache_externals = ['@aws-amplify/core'];
 
@@ -54,7 +47,6 @@ const amplify_externals = [
 	'@aws-amplify/analytics',
 	'@aws-amplify/api',
 	'@aws-amplify/auth',
-	'@aws-amplify/cache',
 	'@aws-amplify/core',
 	'@aws-amplify/interactions',
 	'@aws-amplify/pubsub',
@@ -81,7 +73,6 @@ const rollup_externals = {
 	'@aws-amplify/auth': auth_externals,
 	'aws-amplify': amplify_externals,
 	'aws-amplify-react': aws_amplify_react,
-	'@aws-amplify/cache': cache_externals,
 	'@aws-amplify/core': core_externals,
 	'@aws-amplify/interactions': interactions_externals,
 	'@aws-amplify/pubsub': pubsub_externals,

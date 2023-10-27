@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"noEmit": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"strict": true,
+		"target": "ESNext",
+		"lib": ["DOM", "ESNext.AsyncIterable", "ES2018.AsyncGenerator"],
+		"moduleResolution": "node",
+		"types": ["node"]
+	},
+	"include": ["ts4_2.ts"]
+}

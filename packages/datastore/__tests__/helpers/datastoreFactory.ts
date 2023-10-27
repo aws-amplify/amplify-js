@@ -1,9 +1,9 @@
-import { Observable, ZenObservable } from 'zen-observable-ts';
+import { Observable, Observer } from 'rxjs';
 import {
 	CONTROL_MSG as PUBSUB_CONTROL_MSG,
 	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
 	ConnectionState,
-} from '@aws-amplify/pubsub';
+} from '@aws-amplify/api-graphql';
 import { PersistentModelConstructor } from '../../src';
 import {
 	initSchema as _initSchema,
@@ -181,22 +181,11 @@ export function getDataStore({
 		if (log) console.log('done simulated disruption end.');
 	}
 
-	jest.mock('@aws-amplify/core', () => {
-		const actual = jest.requireActual('@aws-amplify/core');
+	jest.mock('@aws-amplify/core/internals/utils', () => {
+		const actual = jest.requireActual('@aws-amplify/core/internals/utils');
 		return {
 			...actual,
-			browserOrNode: () => ({
-				isBrowser: !isNode,
-				isNode,
-			}),
-			JS: {
-				...actual.JS,
-				browserOrNode: () => {
-					throw new Error(
-						'amplify/core::JS.browserOrNode() does not exist anymore'
-					);
-				},
-			},
+			isBrowser: () => !isNode,
 		};
 	});
 
@@ -208,9 +197,7 @@ export function getDataStore({
 		DataStore: DataStoreType;
 	} = require('../../src/datastore/datastore');
 
-	let errorHandlerSubscriber: ZenObservable.SubscriptionObserver<
-		SyncError<any>
-	> | null = null;
+	let errorHandlerSubscriber: Observer<SyncError<any>> | null = null;
 
 	const errorHandler = new Observable<SyncError<any>>(subscriber => {
 		errorHandlerSubscriber = subscriber;

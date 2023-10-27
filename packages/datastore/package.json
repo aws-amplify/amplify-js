@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "4.7.5",
+	"version": "5.0.0",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -19,10 +19,10 @@
 		"test": "npm run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
+		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
 		"build": "yarn clean && yarn build:esm && npm run build:cjs",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
@@ -40,14 +40,6 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"devDependencies": {
-		"@react-native-community/netinfo": "4.7.0",
-		"@types/uuid": "3.4.6",
-		"@types/uuid-validate": "^0.0.1",
-		"dexie": "3.2.2",
-		"dexie-export-import": "1.0.3",
-		"fake-indexeddb": "3.0.0"
-	},
 	"files": [
 		"lib",
 		"lib-esm",
@@ -55,25 +47,33 @@
 		"ssr"
 	],
 	"dependencies": {
-		"@aws-amplify/api": "5.4.5",
-		"@aws-amplify/auth": "5.6.5",
-		"@aws-amplify/core": "5.8.5",
-		"@aws-amplify/pubsub": "5.5.5",
-		"amazon-cognito-identity-js": "6.3.6",
+		"@aws-amplify/api": "6.0.0",
+		"@aws-amplify/auth": "6.0.0",
 		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
-		"ulid": "2.3.0",
-		"uuid": "3.4.0",
-		"zen-observable-ts": "0.8.19",
-		"zen-push": "0.2.1"
+		"ulid": "^2.3.0",
+		"rxjs": "^7.8.1"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/core": "6.0.0",
+		"@aws-amplify/react-native": "^1.0.0",
+		"@types/uuid-validate": "^0.0.1",
+		"dexie": "3.2.2",
+		"dexie-export-import": "1.0.3",
+		"fake-indexeddb": "3.0.0",
+		"graphql": "15.8.0",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
 			"name": "DataStore (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, DataStore }",
-			"limit": "137 kB"
+			"limit": "65.25 kB"
 		}
 	],
 	"jest": {
@@ -91,8 +91,8 @@
 					"target": "es5",
 					"allowJs": true,
 					"esModuleInterop": true,
-					"downlevelIteration": true,
-					"strictNullChecks": true
+					"strictNullChecks": false,
+					"types": ["@types/jest"]
 				}
 			}
 		},
@@ -128,6 +128,9 @@
 			"dist",
 			"lib",
 			"lib-esm"
+		],
+		"setupFilesAfterEnv": [
+			"<rootDir>/jest.setup.js"
 		]
 	}
 }

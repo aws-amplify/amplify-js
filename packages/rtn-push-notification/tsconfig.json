@@ -1,21 +1,11 @@
-//WARNING: If you are manually specifying files to compile then the tsconfig.json is completely ignored, you must use command line flags
 {
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"allowSyntheticDefaultImports": true,
-		"outDir": "./lib/",
-		"target": "es5",
-		"noImplicitAny": false,
-		"lib": ["dom", "es2019", "esnext.asynciterable"],
-		"sourceMap": true,
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"allowJs": false,
-		"declaration": true,
-		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
-		"types": ["node"],
-		"esModuleInterop": true,
-		"resolveJsonModule": true
+		"target": "esnext",
+		"lib": ["dom", "es2019", "esnext.asynciterable", "esnext"],
+		"importHelpers": false,
+		"strict": true,
+		"noImplicitAny": true
 	},
-	"include": ["src/**/*"],
-	"exclude": ["src/setupTests.ts"]
+	"include": ["./src"]
 }

@@ -237,6 +237,13 @@ tests:
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-one-rule
     browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_one_rule_oidc_v2
+    desc: 'React DataStore Multi-Auth OIDC - One Rule CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-oidc-v2]
+    spec: multi-auth-one-rule-oidc
+    browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_two_rules
     desc: 'React DataStore Multi-Auth - Two Rules'
     framework: react
@@ -250,6 +257,13 @@ tests:
     category: datastore
     sample_name: [v2/multi-auth-v2]
     spec: multi-auth-two-rules
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_two_rules_oidc_v2
+    desc: 'React DataStore Multi-Auth OIDC - Two Rules CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-oidc-v2]
+    spec: multi-auth-two-rules-oidc
     browser: *minimal_browser_list
   - test_name: integ_react_datastore_multi_auth_three_plus_rules
     desc: 'React DataStore Multi-Auth - Three Plus Rules'
@@ -377,13 +391,6 @@ tests:
     amplifyjs_dir: true
     timeout_minutes: 45
     retry_count: 10
-  - test_name: integ_next_datastore_owner_auth
-    desc: 'next owner auth'
-    framework: next
-    category: datastore
-    sample_name: [owner-based-default]
-    spec: next-owner-based-default
-    browser: *minimal_browser_list
   - test_name: integ_next_datastore_13_basic
     desc: 'DataStore - Nextjs 13 build with SWC - basic JS app'
     framework: next
@@ -427,14 +434,21 @@ tests:
     sample_name: [graphql]
     spec: graphql
     browser: *minimal_browser_list
+  - test_name: integ_react_api_optimistic_ui
+    desc: React GraphQL API Optimistic UI with Tan/ReactQuery
+    framework: react
+    category: api
+    sample_name: [optimistic-ui]
+    spec: optimistic-ui
+    browser: *minimal_browser_list
 
   # AUTH
-  - test_name: integ_react_auth_1_react_authenticator
-    desc: 'React Authenticator'
+  - test_name: integ_react_javascript_authentication
+    desc: 'React Authentication'
     framework: react
     category: auth
-    sample_name: [amplify-authenticator]
-    spec: new-ui-authenticator
+    sample_name: [javascript-auth]
+    spec: functional-auth
     browser: *minimal_browser_list
   - test_name: integ_react_auth_1_guest_to_authenticated_user
     desc: 'Guest to Authenticated User'
@@ -443,33 +457,19 @@ tests:
     sample_name: [guest-to-auth-user]
     spec: guest-to-auth-user
     browser: *minimal_browser_list
-  - test_name: integ_react_auth_1_react_typescript_authenticator
-    desc: 'React Typescript Authenticator'
+  - test_name: integ_react_typescript_authentication
+    desc: 'React Typescript Authentication'
     framework: react
     category: auth
-    sample_name: [typescript-amplify-authenticator]
-    spec: new-ui-authenticator
+    sample_name: [typescript-auth]
+    spec: functional-auth
     browser: *minimal_browser_list
-  - test_name: integ_react_auth_2_react_credentials_different_region
+  - test_name: integ_react_credentials_different_region
     desc: 'React Credentials Different Region'
     framework: react
     category: auth
     sample_name: [credentials-auth]
     spec: credentials-auth
-    browser: *minimal_browser_list
-  - test_name: integ_react_auth_2_react_custom_authenticator
-    desc: 'React Custom Authenticator'
-    framework: react
-    category: auth
-    sample_name: [amplify-authenticator]
-    spec: new-ui-custom-authenticator
-    browser: *minimal_browser_list
-  - test_name: integ_react_auth_2_react_authenticator
-    desc: 'React Custom Authenticator'
-    framework: react
-    category: auth
-    sample_name: [with-authenticator]
-    spec: new-ui-authenticator
     browser: *minimal_browser_list
   - test_name: integ_react_auth_2_sign_in_after_sign_up
     desc: 'Sign In after Sign Up'
@@ -477,20 +477,6 @@ tests:
     category: auth
     sample_name: [auto-signin-after-signup]
     spec: auto-signin-after-signup
-    browser: *minimal_browser_list
-  - test_name: integ_react_amazon_cognito_identity_js_cookie_storage
-    desc: 'amazon-cognito-identity-js-cookie-storage'
-    framework: react
-    category: auth
-    sample_name: [amazon-cognito-identity-js-cookie-storage]
-    spec: amazon-cognito-identity-js-cookie-storage
-    browser: *minimal_browser_list
-  - test_name: integ_react_amazon_cognito_identity_js
-    desc: 'amazon-cognito-identity-js'
-    framework: react
-    category: auth
-    sample_name: [amazon-cognito-identity-js]
-    spec: amazon-cognito-identity-js
     browser: *minimal_browser_list
   - test_name: integ_react_device_tracking
     desc: 'cognito-device-tracking'
@@ -506,56 +492,13 @@ tests:
     sample_name: [delete-user]
     spec: delete-user
     browser: *minimal_browser_list
-  - test_name: integ_angular_auth_angular_authenticator
-    desc: 'Angular Authenticator'
-    framework: angular
-    category: auth
-    sample_name: [amplify-authenticator]
-    spec: ui-amplify-authenticator
-    browser: *minimal_browser_list
-  - test_name: integ_angular_auth_angular_custom_authenticator
-    desc: 'Angular Custom Authenticator'
-    framework: angular
-    category: auth
-    sample_name: [amplify-authenticator]
-    spec: custom-authenticator
-    browser: *minimal_browser_list
-  - test_name: integ_javascript_auth
-    desc: 'JavaScript Auth CDN'
-    framework: javascript
-    category: auth
-    sample_name: [auth-cdn]
-    spec: auth-cdn
-    browser: *minimal_browser_list
-    amplifyjs_dir: true
-  - test_name: integ_vue_auth_legacy_vue_authenticator
-    desc: 'Legacy Vue Authenticator'
-    framework: vue
-    category: auth
-    sample_name: [amplify-authenticator-legacy]
-    spec: authenticator
-    browser: *minimal_browser_list
-  - test_name: integ_vue_auth_vue_3_authenticator
-    desc: 'Vue 3 Authenticator'
-    framework: vue
-    category: auth
-    sample_name: [authenticator-vue3]
-    spec: new-ui-authenticator
-    browser: *minimal_browser_list
-  - test_name: integ_vue_auth_vue_custom_authenticator
-    desc: 'Vue Custom Authenticator'
-    framework: vue
-    category: auth
-    sample_name: [amplify-authenticator]
-    spec: custom-authenticator
-    browser: *minimal_browser_list
   - test_name: integ_next_auth_authenticator_and_ssr_page
     desc: 'Authenticator and SSR page'
     framework: next
     category: auth
     sample_name: [auth-ssr]
     spec: auth-ssr
-    browser: *minimal_browser_list
+    browser: [chrome]
   - test_name: integ_next_auth_authenticator_and_rsc_page
     desc: 'Authenticator and RSC page'
     framework: next
@@ -565,19 +508,96 @@ tests:
     browser: [chrome]
     timeout_minutes: 45
     retry_count: 10
-  - test_name: integ_next_auth_nextjs_auth_custom_implementation_with_ssr
-    desc: 'NextJS Auth Custom Implementation with SSR'
-    framework: next
-    category: auth
-    sample_name: [custom-auth-ssr]
-    spec: authenticator
+
+  # DISABLED Angular/Vue tests:
+  # TODO: delete tests or add custom ui logic to support them.
+
+  # - test_name: integ_angular_auth_angular_authenticator
+  #   desc: 'Angular Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: ui-amplify-authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_angular_auth_angular_custom_authenticator
+  #   desc: 'Angular Custom Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: custom-authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_auth_legacy_vue_authenticator
+  #   desc: 'Legacy Vue Authenticator'
+  #   framework: vue
+  #   category: auth
+  #   sample_name: [amplify-authenticator-legacy]
+  #   spec: authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_auth_vue_3_authenticator
+  #   desc: 'Vue 3 Authenticator'
+  #   framework: vue
+  #   category: auth
+  #   sample_name: [authenticator-vue3]
+  #   spec: new-ui-authenticator
+  #   browser: *minimal_browser_list
+
+  # DISABLED CDN test:
+  # TODO: delete this test after making sure CDN won't be supported
+
+  # - test_name: integ_javascript_auth
+  #   desc: 'JavaScript Auth CDN'
+  #   framework: javascript
+  #   category: auth
+  #   sample_name: [auth-cdn]
+  #   spec: auth-cdn
+  #   browser: *minimal_browser_list
+  #   amplifyjs_dir: true
+
+  # ANALYTICS
+  - test_name: integ_react_analytics_pinpoint
+    desc: 'Test record and identifyUser calls for pinpoint'
+    framework: react
+    category: analytics
+    sample_name: [pinpoint-test]
+    spec: pinpoint
+    # Temp fix:
     browser: *minimal_browser_list
-  - test_name: integ_node_amazon_cognito_identity_js
-    desc: 'amazon-cognito-identity-js'
-    framework: node
-    category: auth
-    sample_name: [amazon-cognito-identity-js]
-    build_type: dev
+
+  - test_name: integ_react_analytics_personalize_auth
+    desc: 'Test record API for Personalize with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_personalize_unauth
+    desc: 'Test record API for Personalize with guest user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_kinesis_data_firehose_auth
+    desc: 'Test record API for KDF with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-firehose-test]
+    spec: kinesis-firehose
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_kinesis_data_firehose_unauth
+    desc: 'Test record API for KDF with guest user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-firehose-test]
+    spec: kinesis-firehose-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
 
   # GEO
   - test_name: integ_react_geo_display_map
@@ -614,13 +634,13 @@ tests:
   #   amplifyjs_dir: true
 
   # INTERACTIONS
-  - test_name: integ_react_interactions_react_interactions
-    desc: 'React Interactions'
-    framework: react
-    category: interactions
-    sample_name: [chatbot-component]
-    spec: chatbot-component
-    browser: *minimal_browser_list
+  # - test_name: integ_react_interactions_react_interactions
+  #   desc: 'React Interactions'
+  #   framework: react
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: *minimal_browser_list
   - test_name: integ_react_interactions_chatbot_v1
     desc: 'Chatbot V1'
     framework: react
@@ -635,27 +655,27 @@ tests:
     sample_name: [lex-test-component]
     spec: chatbot-v2
     browser: *minimal_browser_list
-  - test_name: integ_angular_interactions
-    desc: 'Angular Interactions'
-    framework: angular
-    category: interactions
-    sample_name: [chatbot-component]
-    spec: chatbot-component
-    browser: *minimal_browser_list
-  - test_name: integ_vue_interactions_vue_2_interactions
-    desc: 'Vue 2 Interactions'
-    framework: vue
-    category: interactions
-    sample_name: [chatbot-component]
-    spec: chatbot-component
-    browser: [chrome]
-  - test_name: integ_vue_interactionsvue_3_interactions
-    desc: 'Vue 3 Interactions'
-    framework: vue
-    category: interactions
-    sample_name: [chatbot-component-vue3]
-    spec: chatbot-component
-    browser: [chrome]
+  # - test_name: integ_angular_interactions
+  #   desc: 'Angular Interactions'
+  #   framework: angular
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_interactions_vue_2_interactions
+  #   desc: 'Vue 2 Interactions'
+  #   framework: vue
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: [chrome]
+  # - test_name: integ_vue_interactionsvue_3_interactions
+  #   desc: 'Vue 3 Interactions'
+  #   framework: vue
+  #   category: interactions
+  #   sample_name: [chatbot-component-vue3]
+  #   spec: chatbot-component
+  #   browser: [chrome]
 
   # PREDICTIONS
   - test_name: integ_react_predictions
@@ -703,8 +723,8 @@ tests:
     desc: 'React Storage Copy'
     framework: react
     category: storage
-    sample_name: [multi-part-copy-with-progress]
-    spec: multi-part-copy-with-progress
+    sample_name: [multi-part-copy]
+    spec: multi-part-copy
     browser: *minimal_browser_list
 
   # - test_name: integ_duplicate_packages

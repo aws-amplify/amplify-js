@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/auth/cognito/server",
+	"main": "../../../lib/auth/cognito/server/index.js",
+	"browser": "../../../lib-esm/auth/cognito/server/index.js",
+	"module": "../../../lib-esm/auth/cognito/server/index.js",
+	"typings": "../../../lib-esm/auth/cognito/server/index.d.ts"
+}

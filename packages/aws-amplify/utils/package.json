@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/utils",
+	"main": "../lib/utils/index.js",
+	"browser": "../lib-esm/utils/index.js",
+	"module": "../lib-esm/utils/index.js",
+	"typings": "../lib-esm/utils/index.d.ts"
+}

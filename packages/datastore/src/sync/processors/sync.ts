@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import {
 	InternalSchema,
 	ModelInstanceMetadata,
@@ -26,13 +26,16 @@ import {
 import {
 	jitteredExponentialRetry,
 	Category,
-	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	Hub,
 	NonRetryableError,
 	BackgroundProcessManager,
-} from '@aws-amplify/core';
+	GraphQLAuthMode,
+	AmplifyError,
+} from '@aws-amplify/core/internals/utils';
+
+import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
+
 import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
 const opResultDefaults = {
@@ -41,7 +44,7 @@ const opResultDefaults = {
 	startedAt: null,
 };
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
@@ -200,7 +203,7 @@ class SyncProcessor {
 		variables: { limit: number; lastSync: number; nextToken: string };
 		opName: string;
 		modelDefinition: SchemaModel;
-		authMode: GRAPHQL_AUTH_MODE;
+		authMode: GraphQLAuthMode;
 		onTerminate: Promise<void>;
 	}): Promise<
 		GraphQLResult<{
@@ -338,7 +341,7 @@ class SyncProcessor {
 						throw new NonRetryableError(error);
 					}
 
-					if (result.data?.[opName].items?.length) {
+					if (result.data?.[opName]?.items?.length) {
 						return result;
 					}
 

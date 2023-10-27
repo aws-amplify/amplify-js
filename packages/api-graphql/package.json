@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-graphql",
-  "version": "3.4.11",
+  "version": "4.0.0",
   "description": "Api-graphql category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -16,19 +16,19 @@
     "access": "public"
   },
   "scripts": {
-    "test": "npm run lint && jest --coverage",
-    "test:size": "size-limit",
-    "build-with-test": "npm test && npm run build",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
-    "build:cjs:watch": "node ./build es5 --watch",
-    "build:esm:watch": "node ./build es6 --watch",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "npm run clean:size && rimraf lib-esm lib dist",
-    "clean:size": "rimraf dual-publish-tmp tmp*",
-    "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 75.62"
+	"test": "npm run lint && jest -w 1 --coverage",
+	"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
+	"build-with-test": "npm run clean && npm test && tsc && webpack",
+	"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+	"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+	"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+	"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
+	"build": "npm run clean && npm run build:esm && npm run build:cjs",
+	"clean": "npm run clean:size && rimraf lib-esm lib dist",
+	"clean:size": "rimraf dual-publish-tmp tmp*",
+	"format": "echo \"Not implemented\"",
+	"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+	"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 70.0"
   },
   "repository": {
     "type": "git",
@@ -41,7 +41,6 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/zen-observable": "^0.8.0"
   },
   "files": [
     "lib",
@@ -50,66 +49,75 @@
     "internals"
   ],
   "dependencies": {
-    "@aws-amplify/api-rest": "3.5.5",
-    "@aws-amplify/auth": "5.6.5",
-    "@aws-amplify/cache": "5.1.11",
-    "@aws-amplify/core": "5.8.5",
-    "@aws-amplify/pubsub": "5.5.5",
+    "@aws-amplify/api-rest": "4.0.0",
+    "@aws-amplify/auth": "6.0.0",
+    "@aws-amplify/core": "6.0.0",
+    "@aws-sdk/types": "3.387.0",
     "graphql": "15.8.0",
-    "tslib": "^1.8.0",
-    "uuid": "^3.2.1",
-    "zen-observable-ts": "0.8.19"
+    "tslib": "^2.5.0",
+    "rxjs": "^7.8.1"
   },
   "size-limit": [
     {
       "name": "API (GraphQL client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, GraphQLAPI }",
-      "limit": "89.52 kB"
+      "limit": "91.7 kB"
     }
   ],
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
-        }
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "dist",
-      "lib",
-      "lib-esm"
-    ]
-  }
+	"jest": {
+		"globals": {
+			"ts-jest": {
+				"diagnostics": {
+					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
+				},
+				"tsConfig": {
+					"lib": [
+						"es5",
+						"es2015",
+						"dom",
+						"esnext.asynciterable",
+						"es2017.object"
+					],
+					"allowJs": true,
+					"noEmitOnError": false,
+					"strictNullChecks": true,
+					"types": ["@types/jest"]
+				}
+			}
+		},
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testPathIgnorePatterns": [
+			"<rootDir>/__tests__/helpers.ts",
+			"<rootDir>/__tests__/fixtures/",
+			"<rootDir>/__tests__/utils/"
+		],
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "jsdom",
+		"testURL": "http://localhost/",
+		"coverageThreshold": {
+			"global": {
+				"branches": 0,
+				"functions": 0,
+				"lines": 0,
+				"statements": 0
+			}
+		},
+		"coveragePathIgnorePatterns": [
+			"<rootDir>/node_modules/",
+			"<rootDir>/dist",
+			"<rootDir>/lib",
+			"<rootDir>/lib-esm",
+			"<rootDir>/__tests__"
+		]
+	}
 }
