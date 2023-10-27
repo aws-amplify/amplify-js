@@ -1,4 +1,4 @@
-name: Release v5 to npm and update repository
+name: Release LTS version to npm and update repository
 
 on:
   workflow_call:
