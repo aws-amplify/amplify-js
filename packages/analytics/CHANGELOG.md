@@ -3,10 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [6.5.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@6.5.5...@aws-amplify/analytics@6.5.6) (2023-10-27)
-
-**Note:** Version bump only for package @aws-amplify/analytics
-
 ## 6.5.5 (2023-09-14)
 
 **Note:** Version bump only for package @aws-amplify/analytics

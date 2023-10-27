@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "5.8.6",
+	"version": "5.8.5",
 	"description": "Core category of aws-amplify test",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
