@@ -10,6 +10,7 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
+import { logger } from '../../../utils';
 
 /**
  * Download S3 object data to memory
@@ -64,6 +65,8 @@ const downloadDataJob =
 			downloadDataOptions
 		);
 		const finalKey = keyPrefix + key;
+
+		logger.debug(`download ${key} from ${finalKey}.`);
 
 		const {
 			Body: body,
