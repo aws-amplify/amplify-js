@@ -3,13 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.1.7...@aws-amplify/rtn-push-notification@1.1.8) (2023-10-27)
-
-### Bug Fixes
-
-- **rtn-pn:** corret the namespace ([7a4ef01](https://github.com/aws-amplify/amplify-js/commit/7a4ef011d3e296db2352415b0939d17c1b4e1884))
-- **rtn-pn:** make android module compatible with AGP 8 ([76ca2e8](https://github.com/aws-amplify/amplify-js/commit/76ca2e899eb54809163ba08b99689c7acae2d838))
-
 ## 1.1.7 (2023-09-14)
 
 **Note:** Version bump only for package @aws-amplify/rtn-push-notification
