@@ -3,8 +3,9 @@
 
 import { EventBuffer } from '../../../utils';
 import { PersonalizeBufferEvent, PersonalizeEvent } from '../types';
-import { AmplifyError, isBrowser } from '@aws-amplify/core/internals/utils';
+import { isBrowser } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
+import { AnalyticsError } from '../../../errors';
 
 enum HTML5_MEDIA_EVENT {
 	'PLAY' = 'play',
@@ -195,7 +196,7 @@ export const autoTrackMedia = async (
 	}
 
 	if (typeof domElementId !== 'string') {
-		throw new AmplifyError({
+		throw new AnalyticsError({
 			name: 'TypeMissMatch',
 			message:
 				"domElementId field in 'properties' for MediaAutoTrack event is expected to be of type 'string'",
