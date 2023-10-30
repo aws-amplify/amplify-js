@@ -22,7 +22,7 @@ jobs:
           ALLOW_PROTECTED_PREIDS: ${{ inputs.allow-protected-preid }}
           PREID: ${{ inputs.preid }}
           FORBIDDEN_PREIDS: latest
-          PROTECTED_PREIDS: next unstable
+          PROTECTED_PREIDS: next unstable stable-5 stable-4
         run: |
           echo "Testing to see if $PREID is in the forbidden list ($FORBIDDEN_PREIDS)"
           for e in $FORBIDDEN_PREIDS; do [[ $PREID == $e ]] && echo "$PREID is forbidden from preid release" && exit 1; done
