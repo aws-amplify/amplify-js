@@ -33,15 +33,10 @@
 			"import": "./lib-esm/index.js",
 			"require": "./lib/index.js"
 		},
-		"./with-amplify": {
-			"types": "./lib-esm/withAmplify.d.ts",
-			"import": "./lib-esm/withAmplify.js",
-			"require": "./lib/withAmplify.js"
-		},
 		"./api": {
-			"types": "./lib-esm/api/generateServerClient.d.ts",
-			"import": "./lib-esm/api/generateServerClient.js",
-			"require": "./lib/api/generateServerClient.js"
+			"types": "./lib-esm/api/index.d.ts",
+			"import": "./lib-esm/api/index.js",
+			"require": "./lib/api/index.js"
 		},
 		"./internals": {
 			"types": "./lib-esm/internals/index.d.ts",
@@ -63,7 +58,8 @@
 			"/node_modules/",
 			"dist",
 			"lib",
-			"lib-esm"
+			"lib-esm",
+			"__tests__/mocks"
 		],
 		"coverageThreshold": {
 			"global": {

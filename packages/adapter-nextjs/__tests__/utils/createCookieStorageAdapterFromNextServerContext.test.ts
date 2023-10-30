@@ -8,7 +8,7 @@ enableFetchMocks();
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { createCookieStorageAdapterFromNextServerContext } from '../../src/utils';
+import { createCookieStorageAdapterFromNextServerContext } from '../../src/utils/createCookieStorageAdapterFromNextServerContext';
 import { DATE_IN_THE_PAST } from '../../src/utils/createCookieStorageAdapterFromNextServerContext';
 import { IncomingMessage, ServerResponse } from 'http';
 import { Socket } from 'net';
