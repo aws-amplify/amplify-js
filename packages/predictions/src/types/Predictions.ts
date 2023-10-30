@@ -284,10 +284,25 @@ export type EntityAgeRange = {
 	low?: Number;
 	high?: Number;
 };
+
 export type EntityLandmark = {
 	type?: string;
 	x?: number;
 	y?: number;
+};
+
+export type EntityMetadata = {
+	id?: string;
+	name?: string;
+	pose?: {
+		roll?: number;
+		yaw?: number;
+		pitch?: number;
+	};
+	urls?: string[];
+	externalImageId?: string;
+	similarity?: number;
+	confidence?: number;
 };
 
 export type IdentifyEntity = {
@@ -295,12 +310,7 @@ export type IdentifyEntity = {
 	ageRange?: EntityAgeRange;
 	landmarks?: (EntityLandmark | undefined)[];
 	attributes?: FaceAttributes;
-	metadata?: {
-		id?: string;
-		name?: string;
-		urls?: string[];
-		externalImageId?: string;
-	};
+	metadata?: EntityMetadata;
 };
 
 export interface IdentifyEntitiesOutput {
