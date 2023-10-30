@@ -21,12 +21,10 @@ import { getAmplifyConfig } from '../utils';
  * Generates an API client that can be used inside a Next.js Server Component with Dynamic Rendering
  *
  * @example
- * ```ts
  * import { cookies } from "next/headers"
  *
- * const client = generateServerClientUsingCookies({ cookies })
- * const result = await client.graphql({query: listPosts})
- * ```
+ * const client = generateServerClientUsingCookies({ cookies });
+ * const result = await client.graphql({ query: listPosts });
  */
 export function generateServerClientUsingCookies<
 	T extends Record<any, any> = never
@@ -68,19 +66,17 @@ export function generateServerClientUsingCookies<
  * Generates an API client that can be used with both Pages Router and App Router
  *
  * @example
- * ```ts
+ * import config from './amplifyconfiguration.json';
+ * import { listPosts } from './graphql/queries';
  *
- * const client = generateServerClient()
- * 
+ * const client = generateServerClientUsingReqRes();
+ *
  * result = await runWithAmplifyServerContext({
-      nextServerContext: { request, response },
-      operation: async (contextSpec) => {
-        return await client.graphql(contextSpec, {
-          query: listPosts,
-        })
-      },
-    })
- * ```
+ *   nextServerContext: { request, response },
+ *   operation: (contextSpec) => client.graphql(contextSpec, {
+ *     query: listPosts,
+ *   }),
+ * });
  */
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never
