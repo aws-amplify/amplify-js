@@ -1,15 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import getConfig from 'next/config';
-import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 import { getAmplifyConfig } from '../../src/utils/getAmplifyConfig';
-
-jest.mock('next/config');
-jest.mock('@aws-amplify/core/internals/utils');
-
-const mockGetConfig = getConfig as jest.Mock;
-const mockParseAWSExports = parseAWSExports as jest.Mock;
 
 describe('getAmplifyConfig', () => {
 	const mockLegacyConfig = {
@@ -48,38 +40,7 @@ describe('getAmplifyConfig', () => {
 		},
 	};
 
-	beforeEach(() => {
-		mockGetConfig.mockReturnValue({});
-		delete process.env.amplifyConfig;
-	});
-
-	it('should return amplifyConfig from env vars', () => {
-		process.env.amplifyConfig = JSON.stringify(mockAmplifyConfig);
-
-		const result = getAmplifyConfig();
-		expect(result).toEqual(mockAmplifyConfig);
-	});
-
-	it('should invoke parseAWSConfig when using the legacy shaped config', () => {
-		process.env.amplifyConfig = JSON.stringify(mockLegacyConfig);
-
-		getAmplifyConfig();
-		expect(mockParseAWSExports).toHaveBeenCalledWith(mockLegacyConfig);
-	});
-
-	it('should attempt to get amplifyConfig via getConfig provided by Next.js as a fallback', () => {
-		mockGetConfig.mockReturnValueOnce({
-			serverRuntimeConfig: {
-				amplifyConfig: JSON.stringify(mockAmplifyConfig),
-			},
-		});
-
-		const result = getAmplifyConfig();
-		expect(result).toEqual(mockAmplifyConfig);
-	});
-
-	it('should throw error when amplifyConfig is not found from env vars', () => {
-		mockGetConfig.mockReturnValueOnce(undefined);
-		expect(() => getAmplifyConfig()).toThrow();
+	it('returns config object that conforms to ResourcesConfig', () => {
+		expect(getAmplifyConfig(mockLegacyConfig)).toMatchObject(mockAmplifyConfig);
 	});
 });
