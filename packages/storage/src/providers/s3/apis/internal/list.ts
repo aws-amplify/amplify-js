@@ -18,6 +18,7 @@ import {
 	ListObjectsV2Output,
 } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
+import { logger } from '../../../../utils';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -37,12 +38,22 @@ export const list = async (
 		bucket,
 		keyPrefix: prefix,
 	} = await resolveS3ConfigAndInput(amplify, options);
+	// @ts-expect-error pageSize and nextToken should not coexist with listAll
+	if (options?.listAll && (options?.pageSize || options?.nextToken)) {
+		const anyOptions = options as any;
+		logger.debug(
+			`listAll is set to true, ignoring ${
+				anyOptions?.pageSize ? `pageSize: ${anyOptions?.pageSize}` : ''
+			} ${anyOptions?.nextToken ? `nextToken: ${anyOptions?.nextToken}` : ''}.`
+		);
+	}
 	const listParams = {
 		Bucket: bucket,
 		Prefix: `${prefix}${path}`,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
+	logger.debug(`listing items from "${listParams.Prefix}"`);
 	return options.listAll
 		? await _listAll({ s3Config, listParams, prefix })
 		: await _list({ s3Config, listParams, prefix });
@@ -53,7 +64,6 @@ const _listAll = async ({
 	listParams,
 	prefix,
 }: ListInputArgs): Promise<ListAllOutput> => {
-	// TODO(ashwinkumar6) V6-logger: pageSize and nextToken aren't required when listing all items
 	const listResult: ListOutputItem[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
@@ -82,14 +92,14 @@ const _list = async ({
 }: ListInputArgs): Promise<ListPaginateOutput> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
+		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
-		// TODO(ashwinkumar6) V6-logger: defaulting pageSize to ${MAX_PAGE_SIZE}.
 	}
 
 	const response: ListObjectsV2Output = await listObjectsV2(
 		{
-			...s3Config, 
-			userAgentValue: getStorageUserAgentValue(StorageAction.List)
+			...s3Config,
+			userAgentValue: getStorageUserAgentValue(StorageAction.List),
 		},
 		listParamsClone
 	);

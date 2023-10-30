@@ -7,6 +7,7 @@ import { GetPropertiesInput, GetPropertiesOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { headObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
+import { logger } from '../../../../utils';
 
 export const getProperties = async function (
 	amplify: AmplifyClassV6,
@@ -18,15 +19,19 @@ export const getProperties = async function (
 		amplify,
 		options
 	);
+	const finalKey = `${keyPrefix}${key}`;
 
+	logger.debug(`get properties of ${key} from ${finalKey}`);
 	const response = await headObject(
 		{
-			...s3Config, 
-			userAgentValue: getStorageUserAgentValue(action ?? StorageAction.GetProperties)
-		}, 
+			...s3Config,
+			userAgentValue: getStorageUserAgentValue(
+				action ?? StorageAction.GetProperties
+			),
+		},
 		{
 			Bucket: bucket,
-			Key: `${keyPrefix}${key}`,
+			Key: finalKey,
 		}
 	);
 	return {

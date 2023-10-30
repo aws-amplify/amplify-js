@@ -65,8 +65,6 @@ const getObjectDeserializer = async (
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
 		throw buildStorageServiceError(error, response.statusCode);
-	} else if (!response.body) {
-		throw new Error('Got empty response body.');
 	} else {
 		return {
 			...map(response.headers, {
@@ -147,7 +145,7 @@ export const getPresignedGetObjectUrl = async (
 	const endpoint = defaultConfig.endpointResolver(config, input);
 	const { url, headers, method } = await getObjectSerializer(input, endpoint);
 
-	// TODO: set content sha256 query parameter with value of UNSIGNED-PAYLOAD.
+	// TODO: set content sha256 query parameter with value of UNSIGNED-PAYLOAD instead of empty hash.
 	// It requires changes in presignUrl. Without this change, the generated url still works,
 	// but not the same as other tools like AWS SDK and CLI.
 	url.searchParams.append(CONTENT_SHA256_HEADER, EMPTY_SHA256_HASH);

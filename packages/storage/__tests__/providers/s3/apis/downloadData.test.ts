@@ -11,7 +11,9 @@ import { DownloadDataOptions } from '../../../../src/providers/s3/types';
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
 jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn(),
+	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
+		return { debug: jest.fn() };
+	}),
 	Amplify: {
 		getConfig: jest.fn(),
 		Auth: {
@@ -34,8 +36,6 @@ const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockCreateDownloadTask = createDownloadTask as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
-// TODO: test validation errors
-// TODO: test downloadData from guest, private, protected access level respectively.
 describe('downloadData', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
