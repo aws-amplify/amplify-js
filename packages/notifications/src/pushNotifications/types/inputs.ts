@@ -3,10 +3,10 @@
 
 import { UserProfile } from '@aws-amplify/core';
 import { PushNotificationServiceOptions } from './options';
+import { PushNotificationPermissions } from './module';
 import {
 	OnPushNotificationMessageHandler,
 	OnTokenReceivedHandler,
-	PushNotificationPermissions,
 } from './pushNotifications';
 
 export type PushNotificationIdentifyUserInput<
