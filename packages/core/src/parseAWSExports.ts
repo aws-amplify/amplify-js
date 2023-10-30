@@ -276,7 +276,7 @@ export const parseAWSExports = (
 };
 
 const getRedirectUrl = (redirectStr: string): string[] =>
-	redirectStr.split(',');
+	redirectStr?.split(',') ?? [];
 
 const getOAuthConfig = ({
 	domain,
