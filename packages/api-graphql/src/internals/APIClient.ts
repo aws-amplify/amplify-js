@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { resolveOwnerFields } from '../utils/resolveOwnerFields';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { V6Client, __authMode, __authToken } from '../types';
 
 type ListArgs = { selectionSet?: string[]; filter?: {} };
 
@@ -49,7 +50,8 @@ export function initializeModel(
 	result: any[],
 	modelIntrospection: any,
 	authMode: GraphQLAuthMode | undefined,
-	authToken: string | undefined
+	authToken: string | undefined,
+	context = false
 ): any[] {
 	const introModel = modelIntrospection.models[modelName];
 	const introModelFields = introModel.fields;
@@ -91,21 +93,45 @@ export function initializeModel(
 						{}
 					);
 
-					initializedRelationalFields[field] = (options?: LazyLoadOptions) => {
-						if (record[targetNames[0]]) {
-							return client.models[relatedModelName].get(
-								{
-									[relatedModelPKFieldName]: record[targetNames[0]],
-									...sortKeyValues,
-								},
-								{
-									authMode: options?.authMode || authMode,
-									authToken: options?.authToken || authToken,
-								}
-							);
-						}
-						return undefined;
-					};
+					if (context) {
+						initializedRelationalFields[field] = (
+							contextSpec: any,
+							options?: LazyLoadOptions
+						) => {
+							if (record[targetNames[0]]) {
+								return client.models[relatedModelName].get(
+									contextSpec,
+									{
+										[relatedModelPKFieldName]: record[targetNames[0]],
+										...sortKeyValues,
+									},
+									{
+										authMode: options?.authMode || authMode,
+										authToken: options?.authToken || authToken,
+									}
+								);
+							}
+							return undefined;
+						};
+					} else {
+						initializedRelationalFields[field] = (
+							options?: LazyLoadOptions
+						) => {
+							if (record[targetNames[0]]) {
+								return client.models[relatedModelName].get(
+									{
+										[relatedModelPKFieldName]: record[targetNames[0]],
+										...sortKeyValues,
+									},
+									{
+										authMode: options?.authMode || authMode,
+										authToken: options?.authToken || authToken,
+									}
+								);
+							}
+							return undefined;
+						};
+					}
 
 					break;
 				case connectionType.HAS_MANY:
@@ -125,6 +151,61 @@ export function initializeModel(
 							return { [field]: { eq: record[parentSK[idx - 1]] } };
 						});
 
+						if (context) {
+							initializedRelationalFields[field] = (
+								contextSpec?: any,
+								options?: LazyLoadOptions
+							) => {
+								if (record[parentPk]) {
+									return client.models[relatedModelName].list(contextSpec, {
+										filter: { and: hasManyFilter },
+										authMode: options?.authMode || authMode,
+										authToken: options?.authToken || authToken,
+									});
+								}
+								return [];
+							};
+						} else {
+							initializedRelationalFields[field] = (
+								options?: LazyLoadOptions
+							) => {
+								if (record[parentPk]) {
+									return client.models[relatedModelName].list({
+										filter: { and: hasManyFilter },
+										authMode: options?.authMode || authMode,
+										authToken: options?.authToken || authToken,
+									});
+								}
+								return [];
+							};
+						}
+
+						break;
+					}
+
+					const hasManyFilter = connectionFields.map((field, idx) => {
+						if (idx === 0) {
+							return { [field]: { eq: record[parentPk] } };
+						}
+
+						return { [field]: { eq: record[parentSK[idx - 1]] } };
+					});
+
+					if (context) {
+						initializedRelationalFields[field] = (
+							contextSpec: any,
+							options?: LazyLoadOptions
+						) => {
+							if (record[parentPk]) {
+								return client.models[relatedModelName].list(contextSpec, {
+									filter: { and: hasManyFilter },
+									authMode: options?.authMode || authMode,
+									authToken: options?.authToken || authToken,
+								});
+							}
+							return [];
+						};
+					} else {
 						initializedRelationalFields[field] = (
 							options?: LazyLoadOptions
 						) => {
@@ -137,27 +218,8 @@ export function initializeModel(
 							}
 							return [];
 						};
-						break;
 					}
 
-					const hasManyFilter = connectionFields.map((field, idx) => {
-						if (idx === 0) {
-							return { [field]: { eq: record[parentPk] } };
-						}
-
-						return { [field]: { eq: record[parentSK[idx - 1]] } };
-					});
-
-					initializedRelationalFields[field] = (options?: LazyLoadOptions) => {
-						if (record[parentPk]) {
-							return client.models[relatedModelName].list({
-								filter: { and: hasManyFilter },
-								authMode: options?.authMode || authMode,
-								authToken: options?.authToken || authToken,
-							});
-						}
-						return [];
-					};
 					break;
 				default:
 					break;
@@ -621,4 +683,28 @@ export function normalizeMutationInput(
 	});
 
 	return normalized;
+}
+
+type AuthModeParams = {
+	authMode?: GraphQLAuthMode;
+	authToken?: string;
+};
+
+/**
+ * Produces a parameter object that can contains auth mode/token overrides
+ * only if present in either `options` (first) or configured on the `client`
+ * as a fallback.
+ *
+ * @param client Configured client from `generateClient`
+ * @param options Args/Options obect from call site.
+ * @returns
+ */
+export function authModeParams(
+	client: V6Client,
+	options: AuthModeParams = {}
+): AuthModeParams {
+	return {
+		authMode: options.authMode || client[__authMode],
+		authToken: options.authToken || client[__authToken],
+	};
 }

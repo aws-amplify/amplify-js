@@ -8,7 +8,8 @@ import {
 } from '@aws-amplify/core/internals/adapter-core';
 import {
 	V6Client,
-	V6ClientSSR,
+	V6ClientSSRRequest,
+	V6ClientSSRCookies,
 	GraphQLMethod,
 	GraphQLMethodSSR,
 	__amplify,
@@ -88,7 +89,7 @@ export function generateServerClientUsingReqRes<
 	const amplifyConfig = getAmplifyConfig(config);
 	// passing `null` instance because each (future model) method must retrieve a valid instance
 	// from server context
-	const client = internalGenerateClient<T, V6ClientSSR<T>>({
+	const client = internalGenerateClient<T, V6ClientSSRRequest<T>>({
 		amplify: null,
 		config: amplifyConfig,
 	});

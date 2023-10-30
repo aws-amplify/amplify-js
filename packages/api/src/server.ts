@@ -7,20 +7,18 @@ import {
 	cancel,
 	isCancelError,
 } from '@aws-amplify/api-graphql/internals';
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
 
 import {
 	__amplify,
 	__authMode,
 	__authToken,
-	V6Client,
-	V6ClientSSR,
+	V6ClientSSRRequest,
+	V6ClientSSRCookies,
 	ServerClientGenerationParams,
 	CommonPublicClientOptions,
 } from '@aws-amplify/api-graphql';
+
+import { generateModelsProperty } from '@aws-amplify/api-graphql/internals/server';
 
 export type {
 	GraphQLResult,
@@ -38,7 +36,9 @@ export type {
  */
 export function generateClient<
 	T extends Record<any, any> = never,
-	ClientType extends V6ClientSSR<T> | V6Client<T> = V6ClientSSR<T>
+	ClientType extends
+		| V6ClientSSRRequest<T>
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
 >(
 	params: ServerClientGenerationParams & CommonPublicClientOptions
 ): ClientType {
@@ -49,8 +49,9 @@ export function generateClient<
 		graphql,
 		cancel,
 		isCancelError,
-		models: {},
 	} as any;
+
+	client.models = generateModelsProperty(client, params);
 
 	return client as ClientType;
 }

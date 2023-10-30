@@ -374,12 +374,26 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	models: ModelTypes<T>;
 }>;
 
-export type V6ClientSSR<T extends Record<any, any> = never> =
+export type V6ClientSSRRequest<T extends Record<any, any> = never> =
 	ExcludeNeverFields<{
 		[__amplify]: AmplifyClassV6;
+		[__authMode]?: GraphQLAuthMode;
+		[__authToken]?: string;
 		graphql: GraphQLMethodSSR;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
+		models: ModelTypes<T, 'REQUEST'>;
+	}>;
+
+export type V6ClientSSRCookies<T extends Record<any, any> = never> =
+	ExcludeNeverFields<{
+		[__amplify]: AmplifyClassV6;
+		[__authMode]?: GraphQLAuthMode;
+		[__authToken]?: string;
+		graphql: GraphQLMethod;
+		cancel: (promise: Promise<any>, message?: string) => boolean;
+		isCancelError: (error: any) => boolean;
+		models: ModelTypes<T, 'COOKIES'>;
 	}>;
 
 export type GraphQLMethod = <
