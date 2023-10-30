@@ -295,7 +295,12 @@ export type IdentifyEntity = {
 	ageRange?: EntityAgeRange;
 	landmarks?: (EntityLandmark | undefined)[];
 	attributes?: FaceAttributes;
-	metadata?: object;
+	metadata?: {
+		id?: string;
+		name?: string;
+		urls?: string[];
+		externalImageId?: string;
+	};
 };
 
 export interface IdentifyEntitiesOutput {
