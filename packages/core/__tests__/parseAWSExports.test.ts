@@ -236,4 +236,42 @@ describe('Parser', () => {
 			},
 		});
 	});
+
+	it('should handle missing `redirectSignIn` or `redirectSignOut` configuration', () => {
+		expect(
+			parseAWSExports({
+				aws_user_pools_id: userPoolId,
+				oauth: {
+					domain: oAuthDomain,
+					scope: oAuthScopes,
+					responseType: oAuthResponseType,
+				},
+			})
+		).toStrictEqual({
+			Auth: {
+				Cognito: {
+					allowGuestAccess: true,
+					identityPoolId: undefined,
+					loginWith: {
+						email: false,
+						oauth: {
+							domain: oAuthDomain,
+							redirectSignIn: [],
+							redirectSignOut: [],
+							responseType: oAuthResponseType,
+							scopes: oAuthScopes,
+						},
+						phone: false,
+						username: true,
+					},
+					mfa: undefined,
+					passwordFormat: undefined,
+					signUpVerificationMethod: undefined,
+					userAttributes: [],
+					userPoolClientId: undefined,
+					userPoolId: userPoolId,
+				},
+			},
+		});
+	});
 });
