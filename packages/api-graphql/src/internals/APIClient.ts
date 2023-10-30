@@ -3,6 +3,7 @@
 import { resolveOwnerFields } from '../utils/resolveOwnerFields';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 import { V6Client, __authMode, __authToken } from '../types';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 type ListArgs = { selectionSet?: string[]; filter?: {} };
 
@@ -95,7 +96,7 @@ export function initializeModel(
 
 					if (context) {
 						initializedRelationalFields[field] = (
-							contextSpec: any,
+							contextSpec: AmplifyServer.ContextSpec,
 							options?: LazyLoadOptions
 						) => {
 							if (record[targetNames[0]]) {
@@ -153,7 +154,7 @@ export function initializeModel(
 
 						if (context) {
 							initializedRelationalFields[field] = (
-								contextSpec?: any,
+								contextSpec: AmplifyServer.ContextSpec,
 								options?: LazyLoadOptions
 							) => {
 								if (record[parentPk]) {
@@ -193,7 +194,7 @@ export function initializeModel(
 
 					if (context) {
 						initializedRelationalFields[field] = (
-							contextSpec: any,
+							contextSpec: AmplifyServer.ContextSpec,
 							options?: LazyLoadOptions
 						) => {
 							if (record[parentPk]) {

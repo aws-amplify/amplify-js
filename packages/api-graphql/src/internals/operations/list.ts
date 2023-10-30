@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
 	initializeModel,
 	generateGraphQLDocument,
@@ -15,7 +15,10 @@ export function listFactory(
 	model,
 	context = false
 ) {
-	const listWithContext = async (contextSpec, args?: any) => {
+	const listWithContext = async (
+		contextSpec: AmplifyServer.ContextSpec,
+		args?: any
+	) => {
 		return _list(client, modelIntrospection, model, args, contextSpec);
 	};
 
