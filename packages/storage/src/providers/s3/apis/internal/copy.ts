@@ -9,6 +9,7 @@ import { StorageValidationErrorCode } from '../../../../errors/types/validation'
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import { copyObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
+import { logger } from '../../../../utils';
 
 export const copy = async (
 	amplify: AmplifyClassV6,
@@ -36,16 +37,18 @@ export const copy = async (
 	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
-	// TODO(ashwinkumar6) V6-logger: debug `copying ${finalSrcKey} to ${finalDestKey}`
+	const finalCopySource = `${bucket}/${sourceKeyPrefix}${sourceKey}`;
+	const finalCopyDestination = `${destinationKeyPrefix}${destinationKey}`;
+	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
 	await copyObject(
 		{
-			...s3Config, 
-			userAgentValue: getStorageUserAgentValue(StorageAction.Copy)
-		}, 
+			...s3Config,
+			userAgentValue: getStorageUserAgentValue(StorageAction.Copy),
+		},
 		{
 			Bucket: bucket,
-			CopySource: `${bucket}/${sourceKeyPrefix}${sourceKey}`,
-			Key: `${destinationKeyPrefix}${destinationKey}`,
+			CopySource: finalCopySource,
+			Key: finalCopyDestination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
 		}
 	);

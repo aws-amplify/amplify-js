@@ -49,7 +49,6 @@ describe('Platform test', () => {
 			]);
 		});
 
-		/* TODO: test with actual API action */
 		test('with customUserAgentDetails', () => {
 			expect(
 				getAmplifyUserAgentObject({

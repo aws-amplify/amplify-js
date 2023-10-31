@@ -26,6 +26,7 @@ import {
 	headObject,
 } from '../../../utils/client';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
+import { logger } from '../../../../../utils';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -97,7 +98,6 @@ export const getMultipartUploadHandlers = (
 			};
 		}
 
-		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
 		uploadCacheKey = size
 			? getUploadsCacheKey({
@@ -195,7 +195,7 @@ export const getMultipartUploadHandlers = (
 			.catch(error => {
 				const abortSignal = abortController?.signal;
 				if (abortSignal?.aborted && isAbortSignalFromPause) {
-					// TODO: debug message: upload paused
+					logger.debug('upload paused.');
 				} else {
 					// Uncaught errors should be exposed to the users.
 					rejectCallback!(error);
@@ -232,7 +232,7 @@ export const getMultipartUploadHandlers = (
 			});
 		};
 		cancelUpload().catch(e => {
-			// TODO: debug message: Error cancelling upload task.
+			logger.debug('error when cancelling upload task.', e);
 		});
 
 		rejectCallback!(
