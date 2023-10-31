@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { Observable, map } from 'rxjs';
 import { findIndexByFields, resolvePKFields } from '../../utils';
 
