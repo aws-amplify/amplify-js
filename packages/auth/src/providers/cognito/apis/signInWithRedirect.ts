@@ -461,23 +461,26 @@ function urlListener() {
 isBrowser() && urlListener();
 
 // This has a reference for listeners that requires to be notified, TokenOrchestrator use this for load tokens
-let inflightPromiseResolver = () => {};
+let inflightPromiseResolvers = [() => {}];
 
 const invokeAndClearPromise = () => {
-	inflightPromiseResolver();
-	inflightPromiseResolver = () => {};
+	inflightPromiseResolvers.forEach(promiseResolver => {
+		promiseResolver();
+	});
+	inflightPromiseResolvers = [() => {}];
 };
 
 isBrowser() &&
 	CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
-		new Promise(async (res, _rej) => {
-			if (!(await store.loadOAuthInFlight())) {
-				res();
-			} else {
-				inflightPromiseResolver = res;
-			}
-			return;
-		})
+		() =>
+			new Promise(async (res, _rej) => {
+				if (!(await store.loadOAuthInFlight())) {
+					res();
+				} else {
+					inflightPromiseResolvers.push(res);
+				}
+				return;
+			})
 	);
 
 function clearHistory(redirectUri: string) {

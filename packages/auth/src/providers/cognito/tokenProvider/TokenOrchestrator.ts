@@ -26,7 +26,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
-	waitForInflightOAuth: Promise<void> = Promise.resolve();
+	waitForInflightOAuth: () => Promise<void> = async () => {};
 
 	setAuthConfig(authConfig: AuthConfig) {
 		this.authConfig = authConfig;
@@ -37,7 +37,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
 	}
-	setWaitForInflightOAuth(waitForInflightOAuth: Promise<void>) {
+	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>) {
 		this.waitForInflightOAuth = waitForInflightOAuth;
 	}
 
@@ -74,7 +74,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			// Token provider not configured
 			return null;
 		}
-		await this.waitForInflightOAuth;
+		await this.waitForInflightOAuth();
 		tokens = await this.getTokenStore().loadTokens();
 		const username = await this.getTokenStore().getLastAuthUser();
 
