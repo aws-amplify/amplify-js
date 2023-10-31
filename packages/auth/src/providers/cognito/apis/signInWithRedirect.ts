@@ -165,6 +165,7 @@ async function handleCodeFlow({
 
 	if (!code) {
 		await store.clearOAuthData();
+		invokeAndClearPromise();
 		return;
 	}
 
@@ -263,6 +264,7 @@ async function handleImplicitFlow({
 		});
 	if (!access_token) {
 		await store.clearOAuthData();
+		invokeAndClearPromise();
 		return;
 	}
 
