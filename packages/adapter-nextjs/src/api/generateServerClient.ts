@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { generateClient as internalGenerateClient } from '@aws-amplify/api/server';
+import { generateServerClient } from '@aws-amplify/api/internals';
 import {
 	getAmplifyServerContext,
 	AmplifyServerContextError,
@@ -56,7 +56,7 @@ export function generateServerClientUsingCookies<
 				fn(getAmplifyServerContext(contextSpec).amplify),
 		});
 
-	return internalGenerateClient<T, V6Client<T>>({
+	return generateServerClient<T, V6Client<T>>({
 		amplify: getAmplify,
 		config: resourcesConfig,
 	});
@@ -84,7 +84,7 @@ export function generateServerClientUsingReqRes<
 	const amplifyConfig = getAmplifyConfig(config);
 	// passing `null` instance because each (future model) method must retrieve a valid instance
 	// from server context
-	const client = internalGenerateClient<T, V6ClientSSR<T>>({
+	const client = generateServerClient<T, V6ClientSSR<T>>({
 		amplify: null,
 		config: amplifyConfig,
 	});
