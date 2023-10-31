@@ -2,58 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { GraphQLQuery, GraphQLSubscription } from './types';
-import {
-	graphql,
-	cancel,
-	isCancelError,
-} from '@aws-amplify/api-graphql/internals';
-import {
-	AmplifyServer,
-	getAmplifyServerContext,
-} from '@aws-amplify/core/internals/adapter-core';
 
-import {
-	__amplify,
-	__authMode,
-	__authToken,
-	V6Client,
-	V6ClientSSR,
-	ServerClientGenerationParams,
-	CommonPublicClientOptions,
-} from '@aws-amplify/api-graphql';
+export { generateClient } from '@aws-amplify/api-graphql/internals/server';
 
 export type {
 	GraphQLResult,
 	GraphQLReturnType,
 } from '@aws-amplify/api-graphql';
-
-/**
- * @private
- *
- * Creates a client that can be used to make GraphQL requests, using a provided `AmplifyClassV6`
- * compatible context object for config and auth fetching.
- *
- * @param params
- * @returns
- */
-export function generateClient<
-	T extends Record<any, any> = never,
-	ClientType extends V6ClientSSR<T> | V6Client<T> = V6ClientSSR<T>
->(
-	params: ServerClientGenerationParams & CommonPublicClientOptions
-): ClientType {
-	const client = {
-		[__amplify]: params.amplify,
-		[__authMode]: params.authMode,
-		[__authToken]: params.authToken,
-		graphql,
-		cancel,
-		isCancelError,
-		models: {},
-	} as any;
-
-	return client as ClientType;
-}
 
 export {
 	get,

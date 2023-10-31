@@ -5,7 +5,6 @@ import configFixture from './fixtures/modeled/amplifyconfiguration';
 import { Schema } from './fixtures/modeled/schema';
 import { expectSub } from './utils/expects';
 import { Observable, from } from 'rxjs';
-import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -55,6 +54,11 @@ function makeAppSyncStreams() {
 	(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
 	return { streams, spy };
 }
+
+const USER_AGENT_DETAILS = {
+	action: '1',
+	category: 'api',
+};
 
 describe('generateClient', () => {
 	test('can produce a client bound to an arbitrary amplify object for getConfig()', async () => {
@@ -966,7 +970,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -1003,7 +1007,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -1040,7 +1044,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -1630,7 +1634,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -1668,7 +1672,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -1706,7 +1710,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -2296,7 +2300,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -2334,7 +2338,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -2372,7 +2376,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -2958,7 +2962,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -2997,7 +3001,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -3036,7 +3040,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						undefined
+						USER_AGENT_DETAILS
 					);
 					done();
 				},
@@ -3999,7 +4003,7 @@ describe('generateClient', () => {
 									// configured fixture value is expected be `apiKey` for this test
 									authenticationType: 'apiKey',
 								}),
-								undefined
+								USER_AGENT_DETAILS
 							);
 						}
 						done();
@@ -4026,7 +4030,7 @@ describe('generateClient', () => {
 									query: expect.stringContaining(op),
 									authenticationType: 'userPool',
 								}),
-								undefined
+								USER_AGENT_DETAILS
 							);
 						}
 						done();
@@ -4059,7 +4063,7 @@ describe('generateClient', () => {
 										Authorization: 'some-token',
 									}),
 								}),
-								undefined
+								USER_AGENT_DETAILS
 							);
 						}
 						done();
@@ -4089,7 +4093,7 @@ describe('generateClient', () => {
 									query: expect.stringContaining(op),
 									authenticationType: 'userPool',
 								}),
-								undefined
+								USER_AGENT_DETAILS
 							);
 						}
 						done();
@@ -4123,7 +4127,7 @@ describe('generateClient', () => {
 										Authorization: 'some-token',
 									}),
 								}),
-								undefined
+								USER_AGENT_DETAILS
 							);
 						}
 						done();

@@ -49,9 +49,8 @@ describe('generateServerClientUsingCookies', () => {
 		const mockedRes = NextApiResponseMock;
 
 		expect(() => {
-			// as any here to avoid type error from passing invalid input.
-			// this tests runtime exception
-			(generateServerClientUsingCookies as any)({
+			generateServerClientUsingCookies({
+				// @ts-expect-error
 				request: mockedReq,
 				response: mockedRes,
 			});
