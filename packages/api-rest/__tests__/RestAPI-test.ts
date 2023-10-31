@@ -28,6 +28,9 @@ const config = {
 	},
 };
 
+const expectSimilarNumbers = (value1: number, value2: number, margin = 0) =>
+	expect(Math.abs(value1 - value2) <= margin);
+
 afterEach(() => {
 	jest.restoreAllMocks();
 	mockAxios.mockClear();
@@ -488,15 +491,14 @@ describe('Rest API test', () => {
 
 			const normalError = new Error('Response Error');
 
-			// Server is always "correct"
-			const serverDate = new Date();
-			const requestDate = new Date();
-
 			// Local machine is behind by 1 hour
 			// It's important to change the _server_ time in this test,
 			// because the local time "looks correct" to the user & DateUtils
 			// compares the server response to local time.
-			serverDate.setHours(serverDate.getHours() + 1);
+			const now = new Date();
+			// Server is always "correct"
+			const serverDate = new Date(now.setHours(now.getHours() + 1));
+			const requestDate = now;
 
 			const clockSkewError: any = new Error('BadRequestException');
 			const init = {
@@ -524,7 +526,8 @@ describe('Rest API test', () => {
 				.mockImplementation(() => 'endpoint');
 
 			jest.spyOn(Credentials, 'get').mockResolvedValue('creds');
-			jest.spyOn(RestClient.prototype as any, '_sign').mockReturnValue({
+			const signSpy = jest.spyOn(RestClient.prototype as any, '_sign');
+			signSpy.mockReturnValue({
 				...init,
 				headers: { ...init.headers, Authorization: 'signed' },
 			});
@@ -558,6 +561,32 @@ describe('Rest API test', () => {
 			expect(DateUtils.getClockOffset()).toBe(
 				serverDate.getTime() - requestDate.getTime()
 			);
+
+			// When client clock back and forth. Fixes: https://github.com/aws-amplify/amplify-js/issues/12450#issuecomment-1787945008
+			// Mock a consequent clock skew error when client and server clock are in sync but offset is still applied
+			mockAxios.mockClear();
+			const clockSkewError2: any = new Error('BadRequestException');
+			clockSkewError2.response = {
+				headers: {
+					'x-amzn-errortype': 'BadRequestException',
+					date: requestDate.toString(),
+				},
+			};
+			mockAxios
+				.mockImplementationOnce(() => {
+					return new Promise((_, rej) => {
+						rej(clockSkewError2);
+					});
+				})
+				.mockResolvedValueOnce({
+					data: [{ name: 'Bob' }],
+				});
+
+			await expect(api.post('url', 'path', {})).resolves.toEqual([
+				{ name: 'Bob' },
+			]);
+			// Validate incorrectly applied offset is reset.
+			expect(DateUtils.getClockOffset()).toBe(0);
 		});
 
 		test('cancel request', async () => {
