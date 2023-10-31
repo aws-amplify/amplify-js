@@ -24,11 +24,7 @@ export class AuthClass {
 	private authConfig?: AuthConfig;
 	private authOptions?: LibraryAuthOptions;
 
-	constructor() {
-		this.fetchAuthSession = this.fetchAuthSession.bind(this);
-		this.clearCredentials = this.clearCredentials.bind(this);
-		this.getTokens = this.getTokens.bind(this);
-	}
+	constructor() {}
 
 	/**
 	 * Configure Auth category
