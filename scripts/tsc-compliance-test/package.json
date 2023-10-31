@@ -9,6 +9,8 @@
 		"typescript": "4.2.x"
 	},
 	"scripts": {
-		"test:compliance:ts4.2": "tsc -p tsconfig.json"
+		"test:compliance": "yarn test:compliance:ts4.2 && yarn test:compliance:skipLibCheck",
+		"test:compliance:ts4.2": "tsc -p tsconfig.ts4_2.json",
+		"test:compliance:skipLibCheck": "tsc -p tsconfig.skipLibCheck.json"
 	}
 }
