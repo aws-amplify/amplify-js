@@ -37,6 +37,11 @@
 			"import": "./lib-esm/api/index.js",
 			"require": "./lib/api/index.js"
 		},
+		"./data": {
+			"types": "./lib-esm/api/index.d.ts",
+			"import": "./lib-esm/api/index.js",
+			"require": "./lib/api/index.js"
+		},
 		"./internals": {
 			"types": "./lib-esm/internals/index.d.ts",
 			"import": "./lib-esm/internals/index.js",
