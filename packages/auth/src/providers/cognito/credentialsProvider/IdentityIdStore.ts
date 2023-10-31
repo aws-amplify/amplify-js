@@ -3,6 +3,7 @@
 
 import {
 	AuthConfig,
+	ConsoleLogger,
 	Identity,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
@@ -10,6 +11,8 @@ import { assertIdentityPoolIdConfig } from '@aws-amplify/core/internals/utils';
 import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { AuthKeys } from '../tokenProvider/types';
+
+const logger = new ConsoleLogger('DefaultIdentityIdStore');
 
 export class DefaultIdentityIdStore implements IdentityIdStore {
 	keyValueStorage: KeyValueStorageInterface;
@@ -53,7 +56,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 				return null;
 			}
 		} catch (err) {
-			// TODO(v6): validate partial results with mobile implementation
+			logger.log('Error getting stored IdentityId.', err);
 			return null;
 		}
 	}
