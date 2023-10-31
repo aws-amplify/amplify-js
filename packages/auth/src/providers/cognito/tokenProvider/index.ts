@@ -33,7 +33,7 @@ class CognitoUserPoolsTokenProviderClass
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void {
 		this.authTokenStore.setKeyValueStorage(keyValueStorage);
 	}
-	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>): void {
+	setWaitForInflightOAuth(waitForInflightOAuth: Promise<void>): void {
 		this.tokenOrchestrator.setWaitForInflightOAuth(waitForInflightOAuth);
 	}
 	setAuthConfig(authConfig: AuthConfig) {
