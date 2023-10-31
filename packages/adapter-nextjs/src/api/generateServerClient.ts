@@ -7,8 +7,8 @@ import {
 	AmplifyServerContextError,
 } from '@aws-amplify/core/internals/adapter-core';
 import {
-	V6Client,
-	V6ClientSSR,
+	V6ClientSSRRequest,
+	V6ClientSSRCookies,
 	GraphQLMethod,
 	GraphQLMethodSSR,
 	__amplify,
@@ -32,7 +32,7 @@ export function generateServerClientUsingCookies<
 	config,
 	cookies,
 }: NextServer.ServerComponentContext &
-	NextServer.CreateServerRunnerInput): V6Client<T> {
+	NextServer.CreateServerRunnerInput): V6ClientSSRCookies<T> {
 	if (typeof cookies !== 'function') {
 		throw new AmplifyServerContextError({
 			message:
@@ -56,7 +56,7 @@ export function generateServerClientUsingCookies<
 				fn(getAmplifyServerContext(contextSpec).amplify),
 		});
 
-	return generateServerClient<T, V6Client<T>>({
+	return generateServerClient<T, V6ClientSSRCookies<T>>({
 		amplify: getAmplify,
 		config: resourcesConfig,
 	});
@@ -80,11 +80,11 @@ export function generateServerClientUsingCookies<
  */
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never
->({ config }: NextServer.CreateServerRunnerInput): V6ClientSSR<T> {
+>({ config }: NextServer.CreateServerRunnerInput): V6ClientSSRRequest<T> {
 	const amplifyConfig = getAmplifyConfig(config);
 	// passing `null` instance because each (future model) method must retrieve a valid instance
 	// from server context
-	const client = generateServerClient<T, V6ClientSSR<T>>({
+	const client = generateServerClient<T, V6ClientSSRRequest<T>>({
 		amplify: null,
 		config: amplifyConfig,
 	});
