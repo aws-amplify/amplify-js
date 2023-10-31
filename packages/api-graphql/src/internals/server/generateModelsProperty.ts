@@ -1,18 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ModelTypes } from '@aws-amplify/amplify-api-next-types-alpha';
 import { graphQLOperationsInfo, ModelOperation } from '../APIClient';
 import { ServerClientGenerationParams } from '../../types/';
-import { V6Client } from '../../types';
+import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../types';
 
 import { listFactory } from '../operations/list';
 import { getFactory } from '../operations/get';
 
-export function generateModelsProperty<T extends Record<any, any> = never>(
-	client: V6Client,
-	params: ServerClientGenerationParams
-): ModelTypes<T> {
+export function generateModelsProperty<
+	T extends Record<any, any> = never,
+	ClientType extends
+		| V6ClientSSRRequest<T>
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
+>(client: ClientType, params: ServerClientGenerationParams): ClientType {
 	const models = {} as any;
 	const config = params.config;
 	const useContext = client === null;

@@ -430,7 +430,7 @@ export type ServerClientGenerationParams = {
 	amplify:
 		| null // null expected when used with `generateServerClient`
 		// closure expected with `generateServerClientUsingCookies`
-		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>);
+		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
 };
