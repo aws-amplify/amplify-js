@@ -55,6 +55,9 @@
     "tslib": "^2.0.0"
   },
   "jest": {
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs"
+    },
     "globals": {
       "ts-jest": {
         "diagnostics": false,
