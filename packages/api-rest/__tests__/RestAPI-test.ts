@@ -28,9 +28,6 @@ const config = {
 	},
 };
 
-const expectSimilarNumbers = (value1: number, value2: number, margin = 0) =>
-	expect(Math.abs(value1 - value2) <= margin);
-
 afterEach(() => {
 	jest.restoreAllMocks();
 	mockAxios.mockClear();
@@ -478,7 +475,7 @@ describe('Rest API test', () => {
 			expect(spyon4).toBeCalled();
 		});
 
-		test('clock skew', async () => {
+		describe('clock skew', () => {
 			const api = new API({});
 			api.configure({
 				endpoints: [
@@ -489,104 +486,116 @@ describe('Rest API test', () => {
 				],
 			});
 
-			const normalError = new Error('Response Error');
+			const signSpy = jest.spyOn(RestClient.prototype as any, '_sign');
+			signSpy.mockImplementation(() => ({
+				headers: {
+					'x-amz-date': DateUtils.getHeaderStringFromDate(
+						DateUtils.getDateWithClockOffset()
+					),
+					Authorization: 'signed',
+				},
+			}));
 
+			const now = new Date();
+			// Server is always "correct"
+			let serverDate = new Date(now.getTime() + 60 * 60 * 1000);
 			// Local machine is behind by 1 hour
 			// It's important to change the _server_ time in this test,
 			// because the local time "looks correct" to the user & DateUtils
 			// compares the server response to local time.
-			const now = new Date();
-			// Server is always "correct"
-			const serverDate = new Date(now.setHours(now.getHours() + 1));
-			const requestDate = now;
+			const clientDate = now;
 
-			const clockSkewError: any = new Error('BadRequestException');
-			const init = {
-				headers: {
-					'x-amz-date': DateUtils.getHeaderStringFromDate(requestDate),
-				},
+			const clockSkewErrorMockImplementation = async (req: any) => {
+				const requestDate = DateUtils.getDateFromHeaderString(
+					req.headers['x-amz-date']
+				);
+
+				const FIVE_MINUTES_IN_MS = 1000 * 60 * 5;
+				if (
+					Math.abs(serverDate.getTime() - requestDate.getTime()) >
+					FIVE_MINUTES_IN_MS
+				) {
+					const clockSkewError: any = new Error('BadRequestException');
+
+					clockSkewError.response = {
+						headers: {
+							'x-amzn-errortype': 'BadRequestException',
+							date: serverDate.toString(),
+						},
+					};
+					throw clockSkewError;
+				} else {
+					return {
+						data: [{ name: 'Bob' }],
+					};
+				}
 			};
 
-			clockSkewError.response = {
-				headers: {
-					'x-amzn-errortype': 'BadRequestException',
-					date: serverDate.toString(),
-				},
-			};
+			beforeEach(() => {
+				jest.clearAllMocks();
+				jest
+					.spyOn(RestClient.prototype as any, 'endpoint')
+					.mockImplementation(() => 'endpoint');
 
-			// Clock should not be skewed yet
-			expect(DateUtils.getClockOffset()).toBe(0);
-			// Ensure the errors are the correct type for gating
-			expect(DateUtils.isClockSkewError(normalError)).toBe(false);
-			expect(DateUtils.isClockSkewError(clockSkewError)).toBe(true);
-			expect(DateUtils.isClockSkewed(serverDate)).toBe(true);
-
-			jest
-				.spyOn(RestClient.prototype as any, 'endpoint')
-				.mockImplementation(() => 'endpoint');
-
-			jest.spyOn(Credentials, 'get').mockResolvedValue('creds');
-			const signSpy = jest.spyOn(RestClient.prototype as any, '_sign');
-			signSpy.mockReturnValue({
-				...init,
-				headers: { ...init.headers, Authorization: 'signed' },
-			});
-			mockAxios.mockImplementationOnce(() => {
-				return new Promise((_, rej) => {
-					rej(normalError);
-				});
+				jest.spyOn(Credentials, 'get').mockResolvedValue('creds');
+				DateUtils.setClockOffset(0);
 			});
 
-			await expect(api.post('url', 'path', init)).rejects.toThrow(normalError);
+			test('should not apply offset for normal errors', async () => {
+				const normalError = new Error('Response Error');
+				// Clock should not be skewed yet
+				expect(DateUtils.getClockOffset()).toBe(0);
 
-			// Clock should not be skewed from normal errors
-			expect(DateUtils.getClockOffset()).toBe(0);
-
-			// mock clock skew error response and successful response after retry
-			mockAxios
-				.mockImplementationOnce(() => {
+				const signSpy = jest.spyOn(RestClient.prototype as any, '_sign');
+				signSpy.mockReturnValue({
+					// ...init,
+					headers: {
+						'x-amz-date': DateUtils.getHeaderStringFromDate(clientDate),
+						Authorization: 'signed',
+					},
+				});
+				mockAxios.mockImplementationOnce(() => {
 					return new Promise((_, rej) => {
-						rej(clockSkewError);
+						rej(normalError);
 					});
-				})
-				.mockResolvedValue({
-					data: [{ name: 'Bob' }],
 				});
 
-			await expect(api.post('url', 'path', init)).resolves.toEqual([
-				{ name: 'Bob' },
-			]);
+				await expect(api.post('url', 'path', {})).rejects.toThrow(normalError);
+				expect(mockAxios).toBeCalledTimes(1);
+			});
 
-			// With a clock skew error, the clock will get offset with the difference
-			expect(DateUtils.getClockOffset()).toBe(
-				serverDate.getTime() - requestDate.getTime()
-			);
+			test('should apply clock skew offset if client clock is skewed', async () => {
+				mockAxios.mockImplementation(clockSkewErrorMockImplementation);
 
-			// When client clock back and forth. Fixes: https://github.com/aws-amplify/amplify-js/issues/12450#issuecomment-1787945008
-			// Mock a consequent clock skew error when client and server clock are in sync but offset is still applied
-			mockAxios.mockClear();
-			const clockSkewError2: any = new Error('BadRequestException');
-			clockSkewError2.response = {
-				headers: {
-					'x-amzn-errortype': 'BadRequestException',
-					date: requestDate.toString(),
-				},
-			};
-			mockAxios
-				.mockImplementationOnce(() => {
-					return new Promise((_, rej) => {
-						rej(clockSkewError2);
-					});
-				})
-				.mockResolvedValueOnce({
-					data: [{ name: 'Bob' }],
-				});
+				await expect(api.post('url', 'path', {})).resolves.toEqual([
+					{ name: 'Bob' },
+				]);
 
-			await expect(api.post('url', 'path', {})).resolves.toEqual([
-				{ name: 'Bob' },
-			]);
-			// Validate incorrectly applied offset is reset.
-			expect(DateUtils.getClockOffset()).toBe(0);
+				// With a clock skew error, the clock will get offset with the difference
+				expect(DateUtils.getClockOffset()).toBe(
+					serverDate.getTime() - clientDate.getTime()
+				);
+				expect(mockAxios).toBeCalledTimes(2);
+			});
+
+			test('should update clock skew offset when client clock is back and forth', async () => {
+				mockAxios.mockImplementation(clockSkewErrorMockImplementation);
+				await expect(api.post('url', 'path', {})).resolves.toEqual([
+					{ name: 'Bob' },
+				]);
+
+				// clock skew of 1 hour should be applied
+				expect(DateUtils.getClockOffset()).toBe(
+					serverDate.getTime() - clientDate.getTime()
+				);
+
+				// Mock a consequent clock skew error when client and server clock are in sync but offset is still applied,
+				// We cannot change client clock, so changing server clock is equivalent to change client clock.
+				serverDate = now;
+				await expect(api.post('url', 'path', {})).resolves.toEqual([
+					{ name: 'Bob' },
+				]);
+			});
 		});
 
 		test('cancel request', async () => {
