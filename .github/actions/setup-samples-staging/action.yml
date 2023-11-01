@@ -34,7 +34,7 @@ runs:
       env:
         BRANCH: ${{ github.ref_name }}
       run: |
-        if git ls-remote origin $BRANCH | grep -q refs/heads/next/$BRANCH$; then
+        if git ls-remote origin $BRANCH | grep -q refs/heads/$BRANCH$; then
             # Branch exists, checkout and echo success message
             git fetch origin $BRANCH
             git checkout $BRANCH
