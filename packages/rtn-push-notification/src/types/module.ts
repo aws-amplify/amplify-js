@@ -1,6 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+/**
+ * Types here are duplicated to the push notificaiton category within Amplify as it is not possible to share a
+ * source of truth with a package that may conditionally not exist for developers not using push notifications.
+ * Modifications made to these types should be reflected in the Amplify library and vice-versa!
+ */
+
 export interface PushNotificationPermissions
 	extends Partial<Record<string, boolean>> {
 	alert?: boolean;
