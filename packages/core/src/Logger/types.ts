@@ -22,3 +22,19 @@ export interface LoggingProvider {
 	// take logs and push to provider
 	pushLogs(logs: InputLogEvent[]): void;
 }
+
+export interface Logger {
+	debug(msg: string): void;
+	info(msg: string): void;
+	warn(msg: string): void;
+	error(msg: string): void;
+	addPluggable(pluggable: LoggingProvider): void;
+}
+
+export enum LogType {
+	DEBUG = 'DEBUG',
+	ERROR = 'ERROR',
+	INFO = 'INFO',
+	WARN = 'WARN',
+	VERBOSE = 'VERBOSE',
+}

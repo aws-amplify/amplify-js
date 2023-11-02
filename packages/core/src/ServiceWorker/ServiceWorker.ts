@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '../Logger';
+import { ConsoleLogger } from '../Logger';
 import { isBrowser } from '../utils';
 import { AmplifyError } from '../errors';
 import { assert, ServiceWorkerErrorCode } from './errorHelpers';
@@ -35,7 +35,7 @@ export class ServiceWorkerClass {
 	private _subscription?: PushSubscription;
 
 	// The AWS Amplify logger
-	private _logger: Logger = new Logger('ServiceWorker');
+	private _logger: ConsoleLogger = new ConsoleLogger('ServiceWorker');
 
 	constructor() {}
 

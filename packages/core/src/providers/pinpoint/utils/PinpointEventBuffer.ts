@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '../../../Logger';
+import { ConsoleLogger } from '../../../Logger';
 import {
 	EventsBatch,
 	putEvents,
@@ -17,7 +17,7 @@ import {
 import { AuthSession } from '../../../singleton/Auth/types';
 import { isAppInForeground } from './isAppInForeground';
 
-const logger = new Logger('PinpointEventBuffer');
+const logger = new ConsoleLogger('PinpointEventBuffer');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
 
