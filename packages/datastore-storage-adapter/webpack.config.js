@@ -1,8 +1,8 @@
 module.exports = {
 	entry: {
-		'aws-amplify-datastore-storage-adapter.min': './lib-esm/index.js',
+		'aws-amplify-datastore-storage-adapter.min': './dist/esm/index.mjs',
 		'aws-amplify-datastore-sqlite-adapter-expo.min':
-			'./lib-esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.js',
+			'./dist/esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.mjs',
 	},
 	externals: [
 		'@aws-amplify/datastore',
@@ -13,7 +13,7 @@ module.exports = {
 	],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws-amplify-datastore-storage-adapter',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,

@@ -1,7 +1,7 @@
 //WARNING: If you are manually specifying files to compile then the tsconfig.json is completely ignored, you must use command line flags
 {
 	"compilerOptions": {
-		"outDir": "./lib/",
+		"outDir": "./dist/cjs/",
 		"target": "es2020",
 		"noImplicitAny": false,
 		"downlevelIteration": true,
