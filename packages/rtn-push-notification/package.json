@@ -2,8 +2,9 @@
 	"name": "@aws-amplify/rtn-push-notification",
 	"version": "1.2.0",
 	"description": "React Native module for aws-amplify push notifications",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./dist/cjs/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {
@@ -12,23 +13,21 @@
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
 		"test:android": "./android/gradlew test -p ./android",
-		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
-		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
-		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"build-with-test": "npm run clean && npm test && tsc",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 99"
 	},
 	"devDependencies": {
+		"@rollup/plugin-typescript": "11.1.5",
 		"@types/react-native": "0.70.0",
+		"rollup": "3.29.4",
 		"typescript": "5.0.2"
-	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
 	},
 	"repository": {
 		"type": "git",
@@ -44,8 +43,8 @@
 		"Amplify*.podspec",
 		"android",
 		"ios",
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
 		"src"
 	],
 	"jest": {
@@ -84,9 +83,7 @@
 		},
 		"coveragePathIgnorePatterns": [
 			"node_modules",
-			"dist",
-			"lib",
-			"lib-esm"
+			"dist"
 		]
 	}
 }
