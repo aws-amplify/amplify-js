@@ -5,7 +5,7 @@ module.exports = {
 	externals: ['aws-sdk/global'],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist/webpack',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify_core',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
