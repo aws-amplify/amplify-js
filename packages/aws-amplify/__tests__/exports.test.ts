@@ -89,8 +89,8 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "record",
 			  "identifyUser",
-			  "flushEvents",
 			  "configureAutoTrack",
+			  "flushEvents",
 			]
 		`);
 		});
@@ -193,7 +193,6 @@ describe('aws-amplify Exports', () => {
 			  "forgetDevice",
 			  "fetchDevices",
 			  "autoSignIn",
-			  "AuthError",
 			  "fetchAuthSession",
 			  "decodeJWT",
 			]
@@ -230,9 +229,9 @@ describe('aws-amplify Exports', () => {
 			  "fetchDevices",
 			  "autoSignIn",
 			  "cognitoCredentialsProvider",
+			  "CognitoUserPoolsTokenProvider",
 			  "CognitoAWSCredentialsAndIdentityIdProvider",
 			  "DefaultIdentityIdStore",
-			  "CognitoUserPoolsTokenProvider",
 			  "TokenOrchestrator",
 			  "DefaultTokenStore",
 			  "refreshAuthTokens",
