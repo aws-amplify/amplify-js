@@ -10,6 +10,8 @@ type ListArgs = { selectionSet?: string[]; filter?: {} };
 type LazyLoadOptions = {
 	authMode?: GraphQLAuthMode;
 	authToken?: string | undefined;
+	limit?: number | undefined;
+	nextToken?: string | undefined | null;
 };
 
 const connectionType = {
@@ -160,6 +162,8 @@ export function initializeModel(
 								if (record[parentPk]) {
 									return client.models[relatedModelName].list(contextSpec, {
 										filter: { and: hasManyFilter },
+										limit: options?.limit,
+										nextToken: options?.nextToken,
 										authMode: options?.authMode || authMode,
 										authToken: options?.authToken || authToken,
 									});
@@ -173,6 +177,8 @@ export function initializeModel(
 								if (record[parentPk]) {
 									return client.models[relatedModelName].list({
 										filter: { and: hasManyFilter },
+										limit: options?.limit,
+										nextToken: options?.nextToken,
 										authMode: options?.authMode || authMode,
 										authToken: options?.authToken || authToken,
 									});
@@ -200,6 +206,8 @@ export function initializeModel(
 							if (record[parentPk]) {
 								return client.models[relatedModelName].list(contextSpec, {
 									filter: { and: hasManyFilter },
+									limit: options?.limit,
+									nextToken: options?.nextToken,
 									authMode: options?.authMode || authMode,
 									authToken: options?.authToken || authToken,
 								});
@@ -213,6 +221,8 @@ export function initializeModel(
 							if (record[parentPk]) {
 								return client.models[relatedModelName].list({
 									filter: { and: hasManyFilter },
+									limit: options?.limit,
+									nextToken: options?.nextToken,
 									authMode: options?.authMode || authMode,
 									authToken: options?.authToken || authToken,
 								});
@@ -599,6 +609,9 @@ export function buildGraphQLVariables(
 			}
 			if (arg?.nextToken) {
 				variables.nextToken = arg.nextToken;
+			}
+			if (arg?.limit) {
+				variables.limit = arg.limit;
 			}
 			break;
 		case 'ONCREATE':

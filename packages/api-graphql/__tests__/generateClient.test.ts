@@ -318,7 +318,8 @@ describe('generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
-							query: expect.stringContaining('nextToken'),
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
 				})
@@ -332,6 +333,120 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
+				})
+			);
+		});
+
+		test('can list() with nextToken', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+				nextToken: 'some-token',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									name: {
+										contains: 'name',
+									},
+								},
+								nextToken: 'some-token',
+							},
+						},
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
+						}),
+					}),
+				})
+			);
+		});
+
+		test('can list() with limit', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+				limit: 5,
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									name: {
+										contains: 'name',
+									},
+								},
+								limit: 5,
+							},
+						},
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
+						}),
+					}),
 				})
 			);
 		});
@@ -594,6 +709,136 @@ describe('generateClient', () => {
 								filter: {
 									and: [{ todoNotesId: { eq: 'todo-id' } }],
 								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(notes!.length).toBe(1);
+			expect(notes![0]).toEqual(
+				expect.objectContaining({
+					__typename: 'Note',
+					id: 'note-id',
+					owner: 'wirejobviously',
+					body: 'some body',
+				})
+			);
+		});
+
+		test('can lazy load @hasMany with nextToken', async () => {
+			mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'todo-id',
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data } = await client.models.Todo.get({ id: 'todo-id' });
+
+			const getChildNotesSpy = mockApiResponse({
+				data: {
+					listNotes: {
+						items: [
+							{
+								__typename: 'Note',
+								...serverManagedFields,
+								id: 'note-id',
+								body: 'some body',
+							},
+						],
+					},
+				},
+			});
+
+			const { data: notes } = await data.notes({ nextToken: 'some-token' });
+
+			expect(getChildNotesSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									and: [{ todoNotesId: { eq: 'todo-id' } }],
+								},
+								nextToken: 'some-token',
+							},
+						},
+					}),
+				})
+			);
+
+			expect(notes!.length).toBe(1);
+			expect(notes![0]).toEqual(
+				expect.objectContaining({
+					__typename: 'Note',
+					id: 'note-id',
+					owner: 'wirejobviously',
+					body: 'some body',
+				})
+			);
+		});
+
+		test('can lazy load @hasMany with limit', async () => {
+			mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						id: 'todo-id',
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data } = await client.models.Todo.get({ id: 'todo-id' });
+
+			const getChildNotesSpy = mockApiResponse({
+				data: {
+					listNotes: {
+						items: [
+							{
+								__typename: 'Note',
+								...serverManagedFields,
+								id: 'note-id',
+								body: 'some body',
+							},
+						],
+					},
+				},
+			});
+
+			const { data: notes } = await data.notes({ limit: 5 });
+
+			expect(getChildNotesSpy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									and: [{ todoNotesId: { eq: 'todo-id' } }],
+								},
+								limit: 5,
 							},
 						},
 					}),
