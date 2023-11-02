@@ -21,8 +21,8 @@ export const DefaultAmplify = {
 	 * Configures Amplify with the {@link resourceConfig} and {@link libraryOptions}.
 	 *
 	 * @param resourceConfig The {@link ResourcesConfig} object that is typically imported from the
-	 * `amplifyconfiguration.json` file. It can also be an object literal created inline by calling `Amplify.configure`.
-	 * @param libraryOptions The {@link LibraryOptions} object contains configuration for the library of each category.
+	 * `amplifyconfiguration.json` file. It can also be an object literal created inline when calling `Amplify.configure`.
+	 * @param libraryOptions The {@link LibraryOptions} additional options for the library.
 	 *
 	 * @example
 	 * import config from './amplifyconfiguration.json';
@@ -94,7 +94,7 @@ export const DefaultAmplify = {
 		Amplify.configure(resolvedResourceConfig);
 	},
 	/**
-	 * Returns the {@link ResourcesConfig} object passed in as the `libraryOptions` parameter of calling
+	 * Returns the {@link ResourcesConfig} object passed in as the `resourceConfig` parameter when calling
 	 * `Amplify.configure`.
 	 *
 	 * @returns An {@link ResourcesConfig} object.
