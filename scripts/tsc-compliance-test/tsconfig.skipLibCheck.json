@@ -1,0 +1,7 @@
+{
+	"extends": "./tsconfig.ts4_2.json",
+	"compilerOptions": {
+		"skipLibCheck": false
+	},
+	"include": ["publicPaths.ts"]
+}

@@ -33,7 +33,7 @@ export function assertTokenProviderConfig(
 
 	return assert(
 		assertionValid,
-		AuthConfigurationErrorCode.AuthTokenConfigException
+		AuthConfigurationErrorCode.AuthUserPoolException
 	);
 }
 

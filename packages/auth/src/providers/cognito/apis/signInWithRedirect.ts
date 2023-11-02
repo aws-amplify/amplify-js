@@ -461,11 +461,14 @@ function urlListener() {
 isBrowser() && urlListener();
 
 // This has a reference for listeners that requires to be notified, TokenOrchestrator use this for load tokens
-let resolveInflightPromise = () => {};
+let inflightPromiseResolvers: ((value: void | PromiseLike<void>) => void)[] =
+	[];
 
 const invokeAndClearPromise = () => {
-	resolveInflightPromise();
-	resolveInflightPromise = () => {};
+	for (const promiseResolver of inflightPromiseResolvers) {
+		promiseResolver();
+	}
+	inflightPromiseResolvers = [];
 };
 
 isBrowser() &&
@@ -475,7 +478,7 @@ isBrowser() &&
 				if (!(await store.loadOAuthInFlight())) {
 					res();
 				} else {
-					resolveInflightPromise = res;
+					inflightPromiseResolvers.push(res);
 				}
 				return;
 			})
