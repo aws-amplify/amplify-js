@@ -1,8 +1,8 @@
 {
 	"name": "@aws-amplify/pubsub/internals",
-	"types": "../lib-esm/internals/index.d.ts",
-	"main": "../lib/internals/index.js",
-	"module": "../lib-esm/internals/index.js",
-	"react-native": "../lib-esm/internals/index.js",
+	"types": "../dist/esm/internals/index.d.ts",
+	"main": "../dist/cjs/internals/index.js",
+	"module": "../dist/esm/internals/index.mjs",
+	"react-native": "../dist/cjs/internals/index.js",
 	"sideEffects": false
 }

@@ -1,7 +1,8 @@
 {
 	"name": "@aws-amplify/pubsub/iot",
-	"main": "../lib/clients/iot.js",
-	"browser": "../lib-esm/clients/iot.js",
-	"module": "../lib-esm/clients/iot.js",
-	"typings": "../lib-esm/clients/iot.d.ts"
+	"main": "../dist/cjs/clients/iot.js",
+	"browser": "../dist/esm/clients/iot.mjs",
+	"module": "../dist/esm/clients/iot.mjs",
+	"typings": "../dist/esm/clients/iot.d.ts",
+	"react-native": "../dist/cjs/clients/iot.js"
 }
