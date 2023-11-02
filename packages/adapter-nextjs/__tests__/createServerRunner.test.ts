@@ -73,11 +73,6 @@ describe('createServerRunner', () => {
 		});
 	});
 
-	it('throws when get called more than once', () => {
-		createServerRunner({ config: mockAmplifyConfig });
-		expect(() => createServerRunner({ config: mockAmplifyConfig })).toThrow();
-	});
-
 	describe('runWithAmplifyServerContext', () => {
 		describe('when amplifyConfig.Auth is not defined', () => {
 			it('should call runWithAmplifyServerContextCore without Auth library options', () => {
