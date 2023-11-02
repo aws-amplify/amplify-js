@@ -10,7 +10,7 @@ import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
@@ -60,9 +60,9 @@ describe('setUpTOTP API happy path cases', () => {
 	test('setUpTOTP API should call the UserPoolClient and should return a TOTPSetupDetails', async () => {
 		const result = await setUpTOTP();
 		expect(associateSoftwareTokenClientSpy).toHaveBeenCalledWith(
-			{ 
+			{
 				region: 'us-west-2',
-				userAgentValue: expect.any(String)
+				userAgentValue: expect.any(String),
 			},
 			{
 				AccessToken: mockedAccessToken,

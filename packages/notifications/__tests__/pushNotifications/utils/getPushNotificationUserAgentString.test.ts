@@ -9,7 +9,10 @@ import {
 import { getPushNotificationUserAgentString } from '../../../src/pushNotifications/utils/getPushNotificationUserAgentString';
 import { userAgentValue } from '../../testUtils/data';
 
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	getAmplifyUserAgent: jest.fn(),
+}));
 
 describe('getPushNotificationUserAgentString', () => {
 	// assert mocks

@@ -11,7 +11,7 @@ import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { Amplify } from 'aws-amplify';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import * as authUtils from '../../../src';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
@@ -63,9 +63,9 @@ describe('fetchMFAPreference Happy Path Cases:', () => {
 		expect(resp).toEqual({ preferred: 'SMS', enabled: ['SMS', 'TOTP'] });
 		expect(getUserClientSpy).toHaveBeenCalledTimes(1);
 		expect(getUserClientSpy).toHaveBeenCalledWith(
-			{ 
+			{
 				region: 'us-west-2',
-				userAgentValue: expect.any(String)
+				userAgentValue: expect.any(String),
 			},
 			{
 				AccessToken: mockedAccessToken,

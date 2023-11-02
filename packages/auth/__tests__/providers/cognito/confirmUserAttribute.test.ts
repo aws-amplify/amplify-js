@@ -12,7 +12,7 @@ import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-uti
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { VerifyUserAttributeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {

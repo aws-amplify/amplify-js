@@ -9,7 +9,7 @@ import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cogn
 import { Amplify } from 'aws-amplify';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
