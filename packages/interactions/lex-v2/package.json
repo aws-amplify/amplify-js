@@ -1,7 +1,8 @@
 {
 	"name": "@aws-amplify/interactions/lex-v2",
-	"main": "../lib/lex-v2/index.js",
-	"browser": "../lib-esm/lex-v2/index.js",
-	"module": "../lib-esm/lex-v2/index.js",
-	"typings": "../lib-esm/lex-v2/index.d.ts"
+	"main": "../dist/cjs/lex-v2/index.js",
+	"browser": "../dist/esm/lex-v2/index.mjs",
+	"module": "../dist/esm/lex-v2/index.mjs",
+	"react-native": "../dist/cjs/lex-v2/index.js",
+	"typings": "../dist/esm/lex-v2/index.d.ts"
 }
