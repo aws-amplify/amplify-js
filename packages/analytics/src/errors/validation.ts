@@ -8,10 +8,11 @@ export enum AnalyticsValidationErrorCode {
 	NoCredentials = 'NoCredentials',
 	NoEventName = 'NoEventName',
 	NoRegion = 'NoRegion',
+	NoTrackingId = 'NoTrackingId',
+	InvalidFlushInterval = 'InvalidFlushInterval',
+	InvalidFlushSize = 'InvalidFlushSize',
 	InvalidTracker = 'InvalidTracker',
 	UnsupportedPlatform = 'UnsupportedPlatform',
-	NoTrackingId = 'NoTrackingId',
-	InvalidFlushSize = 'InvalidFlushSize',
 }
 
 export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
@@ -28,16 +29,19 @@ export const validationErrorMap: AmplifyErrorMap<AnalyticsValidationErrorCode> =
 		[AnalyticsValidationErrorCode.NoRegion]: {
 			message: 'Missing region.',
 		},
+		[AnalyticsValidationErrorCode.NoTrackingId]: {
+			message: 'A trackingId is required to use Amazon Personalize.',
+		},
+		[AnalyticsValidationErrorCode.InvalidFlushInterval]: {
+			message: 'Invalid FlushInterval.',
+		},
+		[AnalyticsValidationErrorCode.InvalidFlushSize]: {
+			message: 'Invalid FlushSize, it should be smaller than BufferSize.',
+		},
 		[AnalyticsValidationErrorCode.InvalidTracker]: {
 			message: 'Invalid tracker type specified.',
 		},
 		[AnalyticsValidationErrorCode.UnsupportedPlatform]: {
 			message: 'Only session tracking is supported on React Native.',
-		},
-		[AnalyticsValidationErrorCode.InvalidFlushSize]: {
-			message: 'Invalid FlushSize, it should be smaller than BufferSize',
-		},
-		[AnalyticsValidationErrorCode.NoTrackingId]: {
-			message: 'A trackingId is required to use Amazon Personalize',
 		},
 	};

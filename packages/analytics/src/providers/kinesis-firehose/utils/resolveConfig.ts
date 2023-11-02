@@ -7,6 +7,7 @@ import {
 	assertValidationError,
 } from '../../../errors';
 import { DEFAULT_KINESIS_FIREHOSE_CONFIG } from './constants';
+import { FLUSH_INTERVAL_MIN } from '../../../utils/constants';
 
 export const resolveConfig = () => {
 	const config = Amplify.getConfig().Analytics?.KinesisFirehose;
@@ -26,6 +27,12 @@ export const resolveConfig = () => {
 		flushSize < bufferSize,
 		AnalyticsValidationErrorCode.InvalidFlushSize
 	);
+	assertValidationError(
+		flushInterval >= FLUSH_INTERVAL_MIN,
+		AnalyticsValidationErrorCode.InvalidFlushInterval,
+		`FlushInterval should be greater than or equal to ${FLUSH_INTERVAL_MIN} milliseconds`
+	);
+
 	return {
 		region,
 		bufferSize,

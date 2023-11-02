@@ -4,6 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 import { resolveConfig } from '../../../../src/providers/kinesis-firehose/utils';
 import { DEFAULT_KINESIS_FIREHOSE_CONFIG } from '../../../../src/providers/kinesis-firehose/utils/constants';
+import { FLUSH_INTERVAL_MIN } from '../../../../src/utils/constants';
 
 describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 	const providedConfig = {
@@ -59,6 +60,19 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 				KinesisFirehose: {
 					...providedConfig,
 					flushSize: providedConfig.bufferSize + 1,
+				},
+			},
+		});
+
+		expect(resolveConfig).toThrow();
+	});
+
+	it('throws if flushInterval is smaller than min', () => {
+		getConfigSpy.mockReturnValue({
+			Analytics: {
+				KinesisFirehose: {
+					...providedConfig,
+					flushInterval: FLUSH_INTERVAL_MIN - 1,
 				},
 			},
 		});
