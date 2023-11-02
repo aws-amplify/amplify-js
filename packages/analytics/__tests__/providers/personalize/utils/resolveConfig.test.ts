@@ -7,6 +7,7 @@ import {
 	DEFAULT_PERSONALIZE_CONFIG,
 	PERSONALIZE_FLUSH_SIZE_MAX,
 } from '../../../../src/providers/personalize/utils';
+import { FLUSH_INTERVAL_MIN } from '../../../../src/utils/constants';
 
 describe('Analytics Personalize Provider Util: resolveConfig', () => {
 	const providedConfig = {
@@ -64,6 +65,19 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 				Personalize: {
 					...providedConfig,
 					flushSize: PERSONALIZE_FLUSH_SIZE_MAX + 1,
+				},
+			},
+		});
+
+		expect(resolveConfig).toThrow();
+	});
+
+	it('throws if flushInterval is smaller than min', () => {
+		getConfigSpy.mockReturnValue({
+			Analytics: {
+				Personalize: {
+					...providedConfig,
+					flushInterval: FLUSH_INTERVAL_MIN - 1,
 				},
 			},
 		});

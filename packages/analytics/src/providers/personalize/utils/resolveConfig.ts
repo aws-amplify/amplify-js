@@ -7,6 +7,7 @@ import {
 	assertValidationError,
 } from '../../../errors';
 import { DEFAULT_PERSONALIZE_CONFIG, PERSONALIZE_FLUSH_SIZE_MAX } from './';
+import { FLUSH_INTERVAL_MIN } from '../../../utils/constants';
 
 export const resolveConfig = () => {
 	const config = Amplify.getConfig().Analytics?.Personalize;
@@ -29,6 +30,11 @@ export const resolveConfig = () => {
 		flushSize <= PERSONALIZE_FLUSH_SIZE_MAX,
 		AnalyticsValidationErrorCode.InvalidFlushSize,
 		`FlushSize for Personalize should be less or equal than ${PERSONALIZE_FLUSH_SIZE_MAX}`
+	);
+	assertValidationError(
+		flushInterval >= FLUSH_INTERVAL_MIN,
+		AnalyticsValidationErrorCode.InvalidFlushInterval,
+		`FlushInterval should be greater than or equal to ${FLUSH_INTERVAL_MIN} milliseconds`
 	);
 
 	return {
