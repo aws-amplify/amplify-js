@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/geo/location-service",
-  "main": "../lib/providers/location-service/AmazonLocationServiceProvider.js",
-  "browser": "../lib-esm/providers/location-service/AmazonLocationServiceProvider.js",
-  "module": "../lib-esm/providers/location-service/AmazonLocationServiceProvider.js",
-  "typings": "../lib-esm/providers/location-service/AmazonLocationServiceProvider.d.ts"
+  "main": "../dist/cjs/providers/location-service/AmazonLocationServiceProvider.js",
+  "browser": "../dist/esm/providers/location-service/AmazonLocationServiceProvider.mjs",
+  "module": "../dist/esm/providers/location-service/AmazonLocationServiceProvider.mjs",
+  "typings": "../dist/esm/providers/location-service/AmazonLocationServiceProvider.d.ts"
 }
