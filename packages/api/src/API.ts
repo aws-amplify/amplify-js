@@ -13,5 +13,5 @@ export function generateClient<T extends Record<any, any> = never>(
 	return internalGenerateClient({
 		...options,
 		amplify: Amplify,
-	});
+	}) as unknown as V6Client<T>;
 }
