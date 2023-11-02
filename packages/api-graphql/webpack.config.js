@@ -1,6 +1,6 @@
 module.exports = {
 	entry: {
-		'aws-amplify-api-graphql.min': './lib-esm/index.js',
+		'aws-amplify-api-graphql.min': './dist/esm/index.mjs',
 	},
 	externals: [
 		'graphql',
@@ -14,7 +14,7 @@ module.exports = {
 	],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify_api-graphql',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
