@@ -63,3 +63,6 @@ coverage-ts/
 **/example/ios/Podfile.lock
 **/example/.bundle
 **/example/yarn.lock
+
+# rollup
+**/.rollup.cache

@@ -1,11 +1,11 @@
 module.exports = {
 	entry: {
-		'aws-amplify-core.min': './lib-esm/index.js',
+		'aws-amplify-core.min': './dist/esm/index.mjs',
 	},
 	externals: ['aws-sdk/global'],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/webpack',
 		library: 'aws_amplify_core',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
