@@ -5,7 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"react-native": "./dist/cjs/index.js",
-	"typings": "./lib-esm/index.d.ts",
+	"typings": "./dist/esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
