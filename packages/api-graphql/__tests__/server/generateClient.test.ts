@@ -116,7 +116,8 @@ describe('server generateClient', () => {
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
-							query: expect.stringContaining('nextToken'),
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
 				})
@@ -133,8 +134,139 @@ describe('server generateClient', () => {
 				})
 			);
 		});
-	});
 
+		test('can list with nextToken', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const getAmplify = async fn => await fn(Amplify);
+
+			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
+				amplify: getAmplify,
+				config: config,
+			});
+
+			const { data } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+				nextToken: 'some-token',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									name: {
+										contains: 'name',
+									},
+								},
+								nextToken: 'some-token',
+							},
+						},
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
+						}),
+					}),
+				})
+			);
+		});
+
+		test('can list with limit', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const getAmplify = async fn => await fn(Amplify);
+
+			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
+				amplify: getAmplify,
+				config: config,
+			});
+
+			const { data } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+				limit: 5,
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									name: {
+										contains: 'name',
+									},
+								},
+								limit: 5,
+							},
+						},
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
+						}),
+					}),
+				})
+			);
+		});
+	});
 	describe('with request', () => {
 		test('subscriptions are disabled', () => {
 			const client = generateClient<Schema, V6ClientSSRRequest<Schema>>({
