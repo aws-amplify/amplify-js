@@ -41,6 +41,10 @@ describe('aws-amplify Exports', () => {
 			  "Cache",
 			  "ConsoleLogger",
 			  "ServiceWorker",
+			  "CookieStorage",
+			  "defaultStorage",
+			  "sessionStorage",
+			  "sharedInMemoryStorage",
 			]
 		`);
 		});
