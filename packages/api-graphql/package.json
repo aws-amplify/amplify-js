@@ -40,7 +40,8 @@
 		"import": "./dist/esm/internals/index.mjs",
 		"require": "./dist/cjs/internals/index.js",
 		"react-native": "./dist/cjs/internals/index.js"
-	}
+	},
+	"./package.json": "./package.json"
   },
   "typesVersions": {
 	">=4.2": {

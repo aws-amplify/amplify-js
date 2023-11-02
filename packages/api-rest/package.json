@@ -53,7 +53,8 @@
 			"import": "./dist/esm/internals/server.mjs",
 			"require": "./dist/cjs/internals/server.js",
 			"react-native": "./dist/cjs/internals/server.js"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"typesVersions": {
 		">=4.2": {

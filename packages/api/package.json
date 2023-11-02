@@ -45,7 +45,8 @@
 			"import": "./dist/esm/server.mjs",
 			"require": "./dist/cjs/server.js",
 			"react-native": "./dist/cjs/server.js"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"typesVersions": {
 		">=4.2": {
