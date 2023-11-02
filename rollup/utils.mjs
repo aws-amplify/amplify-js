@@ -7,13 +7,14 @@ import * as glob from 'glob';
 /**
  * Return a map that contains relative file path <-> absolute file path.
  * @param {string} matcher The glob matcher
+ * @param {{ ignore?: string[] }?} options The glob options
  * @returns {object} A key value object.
  */
-export const getInputForGlob = matcher =>
+export const getInputForGlob = (matcher, { ignore } = {}) =>
 	Object.fromEntries(
 		glob
 			.sync(matcher, {
-				ignore: 'src/**/global.d.ts',
+				ignore: ['src/**/global.d.ts', ...(ignore ?? [])],
 			})
 			.map(file => [
 				// This remove `src/` as well as the file extension from each
