@@ -90,19 +90,19 @@
 		{
 			"name": "Interactions (default to Lex v2)",
 			"path": "./dist/esm/index.mjs",
-			"import": "{ Amplify, Interactions }",
+			"import": "{ Interactions }",
 			"limit": "52.00 kB"
 		},
 		{
 			"name": "Interactions (Lex v2)",
 			"path": "./dist/esm/lex-v2/index.mjs",
-			"import": "{ Amplify, Interactions }",
+			"import": "{ Interactions }",
 			"limit": "52.00 kB"
 		},
 		{
 			"name": "Interactions (Lex v1)",
 			"path": "./dist/esm/lex-v1/index.mjs",
-			"import": "{ Amplify, Interactions }",
+			"import": "{ Interactions }",
 			"limit": "47.00 kB"
 		}
 	],
