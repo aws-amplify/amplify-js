@@ -17,10 +17,10 @@
   dependencies:
     "@aws-amplify/amplify-api-next-types-alpha" "*"
 
-"@aws-amplify/amplify-api-next-types-alpha@*", "@aws-amplify/amplify-api-next-types-alpha@^0.2.5":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.2.5.tgz#5f7e9475e1a15488bbc89e841968a2cafe393426"
-  integrity sha512-KkL/y5VuGajpxcxEtwaMNBNyHWy/ZtfUUBGwTzh1YdgxEWYW9MCGBt+InB9KH64CHuD0dp/eJgG5qGjneNzr4Q==
+"@aws-amplify/amplify-api-next-types-alpha@*", "@aws-amplify/amplify-api-next-types-alpha@^0.2.8":
+  version "0.2.8"
+  resolved "https://registry.npmjs.org/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.2.8.tgz#a72c70bd5b26fd0ff43c659701f7c9593f4baee6"
+  integrity sha512-FmRaSUfLk7ydXeS3DkFf4WnP9hKUJtQHvlELMwYnRb3Pw8e7XujaaawhKZWA2JiIAqwWt7KJr5vskC+3yYUrUw==
   dependencies:
     rxjs "^7.8.1"
 
