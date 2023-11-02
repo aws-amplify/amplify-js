@@ -1,7 +1,8 @@
 {
 	"name": "aws-amplify/datastore",
-	"main": "../lib/datastore/index.js",
-	"browser": "../lib-esm/datastore/index.js",
-	"module": "../lib-esm/datastore/index.js",
-	"typings": "../lib-esm/datastore/index.d.ts"
+	"main": "../dist/cjs/datastore/index.js",
+	"react-native": "../dist/cjs/datastore/index.js",
+	"browser": "../dist/esm/datastore/index.mjs",
+	"module": "../dist/esm/datastore/index.mjs",
+	"typings": "../dist/esm/datastore/index.d.ts"
 }

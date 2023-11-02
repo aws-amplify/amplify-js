@@ -1,7 +1,8 @@
 {
 	"name": "aws-amplify/auth",
-	"main": "../lib/auth/index.js",
-	"browser": "../lib-esm/auth/index.js",
-	"module": "../lib-esm/auth/index.js",
-	"typings": "../lib-esm/auth/index.d.ts"
+	"main": "../dist/cjs/auth/index.js",
+	"react-native": "../dist/cjs/auth/index.js",
+	"browser": "../dist/esm/auth/index.mjs",
+	"module": "../dist/esm/auth/index.mjs",
+	"typings": "../dist/esm/auth/index.d.ts"
 }
