@@ -17,6 +17,7 @@ export const cjsTSOptions = {
 	declaration: false, // declarations are handled by the ESM build
 	sourceMap: false,
 	tsconfig: defaultTSConfigPath,
+	tsBuildInfoFile: 'buildMeta/cjs.tsbuildinfo',
 };
 
 /** @type {import("rollup").OutputOptions}*/
@@ -33,4 +34,5 @@ export const emsTSOptions = {
 	declaration: true,
 	sourceMap: false,
 	tsconfig: defaultTSConfigPath,
+	tsBuildInfoFile: 'buildMeta/esm.tsbuildinfo',
 };
