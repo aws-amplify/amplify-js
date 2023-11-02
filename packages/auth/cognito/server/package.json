@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/auth/cognito/server",
-	"main": "../../lib/providers/cognito/apis/server/index.js",
-	"browser": "../../lib-esm/providers/cognito/apis/server/index.js",
-	"module": "../../lib-esm/providers/cognito/apis/server/index.js",
-	"typings": "../../lib-esm/providers/cognito/apis/server/index.d.ts"
+	"main": "../../dist/cjs/providers/cognito/apis/server/index.js",
+	"browser": "../../dist/esm/providers/cognito/apis/server/index.mjs",
+	"module": "../../dist/esm/providers/cognito/apis/server/index.mjs",
+	"typings": "../../dist/esm/providers/cognito/apis/server/index.d.ts"
 }

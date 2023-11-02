@@ -2,13 +2,13 @@
 	"name": "@aws-amplify/auth",
 	"version": "6.0.0",
 	"description": "Auth category of aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"react-native": "./lib-esm/index.js",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./dist/cjs/index.js",
 	"sideEffects": [
-		"./lib/providers/cognito/apis/signInWithRedirect.js",
-		"./lib-esm/providers/cognito/apis/signInWithRedirect.js"
+		"./dist/cjs/providers/cognito/apis/signInWithRedirect.js",
+		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -16,11 +16,11 @@
 	"scripts": {
 		"test": "yarn lint --fix && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
-		"build:cjs:watch": "tsc -m commonjs --outDir lib --watch",
-		"build:esm:watch": "tsc -m esnext --outDir lib-esm --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
@@ -30,44 +30,49 @@
 	"typesVersions": {
 		">=4.2": {
 			"cognito": [
-				"./lib-esm/providers/cognito/index.d.ts"
+				"./dist/esm/providers/cognito/index.d.ts"
 			],
 			"cognito/server": [
-				"./lib-esm/providers/cognito/apis/server/index.d.ts"
+				"./dist/esm/providers/cognito/apis/server/index.d.ts"
 			],
 			"server": [
-				"./lib-esm/server.d.ts"
+				"./dist/esm/server.d.ts"
 			],
 			"internals": [
-				"./lib-esm/lib-esm/internals/index.d.ts"
+				"./dist/esm/dist/esm/internals/index.d.ts"
 			]
 		}
 	},
 	"exports": {
 		".": {
-			"types": "./lib-esm/index.d.ts",
-			"import": "./lib-esm/index.js",
-			"require": "./lib/index.js"
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./dist/cjs/index.js"
 		},
 		"./cognito": {
-			"types": "./lib-esm/providers/cognito/index.d.ts",
-			"import": "./lib-esm/providers/cognito/index.js",
-			"require": "./lib/providers/cognito/index.js"
+			"types": "./dist/esm/providers/cognito/index.d.ts",
+			"import": "./dist/esm/providers/cognito/index.mjs",
+			"require": "./dist/cjs/providers/cognito/index.js",
+			"react-native": "./dist/cjs/providers/cognito/index.js"
 		},
 		"./cognito/server": {
-			"types": "./lib-esm/providers/cognito/apis/server/index.d.ts",
-			"import": "./lib-esm/providers/cognito/apis/server/index.js",
-			"require": "./lib/providers/cognito/apis/server/index.js"
+			"types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
+			"import": "./dist/esm/providers/cognito/apis/server/index.mjs",
+			"require": "./dist/cjs/providers/cognito/apis/server/index.js",
+			"react-native": "./dist/cjs/providers/cognito/apis/server/index.js"
 		},
 		"./server": {
-			"types": "./lib-esm/server.d.ts",
-			"import": "./lib-esm/server.js",
-			"require": "./lib/server.js"
+			"types": "./dist/esm/server.d.ts",
+			"import": "./dist/esm/server.mjs",
+			"require": "./dist/cjs/server.js",
+			"react-native": "./dist/cjs/server.js"
 		},
 		"./internals": {
-			"types": "./lib-esm/lib-esm/internals/index.d.ts",
-			"import": "./lib-esm/internals/index.js",
-			"require": "./lib/internals/index.js"
+			"types": "./dist/esm/dist/esm/internals/index.d.ts",
+			"import": "./dist/esm/internals/index.mjs",
+			"require": "./dist/cjs/internals/index.js",
+			"react-native": "./dist/cjs/internals/index.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -82,8 +87,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"files": [
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
 		"src",
 		"internals",
 		"cognito",
@@ -98,7 +103,9 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/react-native": "^1.0.0",
+		"@rollup/plugin-typescript": "11.1.5",
 		"@jest/test-sequencer": "^24.9.0",
+		"rollup": "3.29.4",
 		"typescript": "5.0.2"
 	},
 	"jest": {
