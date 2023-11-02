@@ -11,7 +11,7 @@ export class EventBuffer<T> {
 	private readonly config: EventBufferConfig;
 	private getAnalyticsClient: () => IAnalyticsClient<T>;
 
-	private timer?: ReturnType<typeof setInterval>;
+	private timer?: ReturnType<typeof setTimeout>;
 
 	constructor(
 		config: EventBufferConfig,
@@ -60,13 +60,16 @@ export class EventBuffer<T> {
 
 	private startEventLoop() {
 		if (this.timer) {
-			clearInterval(this.timer);
+			clearTimeout(this.timer);
 		}
 
 		const { flushSize, flushInterval } = this.config;
-		setInterval(() => {
-			this.submitEvents(flushSize);
-		}, flushInterval);
+		const submit = () => {
+			this.timer = setTimeout(() => {
+				this.submitEvents(flushSize).finally(() => submit());
+			}, flushInterval);
+		};
+		submit();
 	}
 
 	private submitEvents(count: number): Promise<void> {
