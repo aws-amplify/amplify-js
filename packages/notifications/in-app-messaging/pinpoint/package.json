@@ -1,7 +1,8 @@
 {
 	"name": "@aws-amplify/notifications/in-app-messaging/pinpoint",
-	"main": "../../lib/inAppMessaging/providers/pinpoint/index.js",
-	"browser": "../../lib-esm/inAppMessaging/providers/pinpoint/index.js",
-	"module": "../../lib-esm/inAppMessaging/providers/pinpoint/index.js",
-	"typings": "../../lib-esm/inAppMessaging/providers/pinpoint/index.d.ts"
+	"main": "../../dist/cjs/inAppMessaging/providers/pinpoint/index.js",
+	"browser": "../../dist/esm/inAppMessaging/providers/pinpoint/index.mjs",
+	"module": "../../dist/esm/inAppMessaging/providers/pinpoint/index.mjs",
+	"react-native": "../../dist/cjs/inAppMessaging/providers/pinpoint/index.js",
+	"typings": "../../dist/esm/inAppMessaging/providers/pinpoint/index.d.ts"
 }

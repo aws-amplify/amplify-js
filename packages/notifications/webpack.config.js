@@ -1,6 +1,6 @@
 module.exports = {
 	entry: {
-		'aws-amplify-notifications.min': './lib-esm/index.js',
+		'aws-amplify-notifications.min': './dist/esm/index.mjs',
 	},
 	externals: [
 		'react-native',
@@ -11,7 +11,7 @@ module.exports = {
 	],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify_notifications',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
