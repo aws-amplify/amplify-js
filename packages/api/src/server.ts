@@ -3,8 +3,6 @@
 
 export { GraphQLQuery, GraphQLSubscription } from './types';
 
-export { generateClient } from '@aws-amplify/api-graphql/internals/server';
-
 export type {
 	GraphQLResult,
 	GraphQLReturnType,
