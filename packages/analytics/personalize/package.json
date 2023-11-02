@@ -1,7 +1,8 @@
 {
   "name": "@aws-amplify/analytics/personalize",
-  "main": "../lib/providers/personalize/index.js",
-  "browser": "../lib-esm/providers/personalize/index.js",
-  "module": "../lib-esm/providers/personalize/index.js",
-  "typings": "../lib-esm/providers/personalize/index.d.ts"
+  "main": "../dist/cjs/providers/personalize/index.js",
+  "browser": "../dist/esm/providers/personalize/index.mjs",
+  "module": "../dist/esm/providers/personalize/index.mjs",
+  "react-native": "../dist/cjs/providers/personalize/index.js",
+  "typings": "../dist/esm/providers/personalize/index.d.ts"
 }
