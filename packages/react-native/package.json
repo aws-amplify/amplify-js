@@ -3,8 +3,9 @@
 	"version": "1.0.0",
 	"description": "React Native core module for aws-amplify",
 	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./lib/index.js",
+	"typings": "./dist/esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
@@ -13,11 +14,10 @@
 		"test": "tslint 'src/**/*.ts'",
 		"test:android": "./android/gradlew test -p ./android",
 		"build-with-test": "npm run clean && npm test && tsc",
-		"build:cjs": "rimraf lib && tsc -p ./tsconfig.build.json -m commonjs --outDir lib",
-		"build:esm": "rimraf lib-esm && tsc -p ./tsconfig.build.json -m esnext --outDir lib-esm",
-		"build:cjs:watch": "rimraf lib && tsc -p ./tsconfig.build.json -m commonjs --outDir lib --watch",
-		"build:esm:watch": "rimraf lib-esm && tsc -p ./tsconfig.build.json -m esnext --outDir lib-esm --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -p ./tsconfig.build.json -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -p ./tsconfig.build.json -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
@@ -37,14 +37,13 @@
 		"@aws-amplify/rtn-web-browser": "^1.0.0",
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
+		"@rollup/plugin-typescript": "11.1.5",
 		"@types/base-64": "1.0.0",
 		"@types/react-native": "0.70.0",
 		"react-native": "0.70.0",
 		"react-native-get-random-values": "1.9.0",
+		"rollup": "3.29.4",
 		"typescript": "5.1.6"
-	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
 	},
 	"repository": {
 		"type": "git",
@@ -60,8 +59,8 @@
 		"Amplify*.podspec",
 		"android",
 		"ios",
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
 		"src"
 	],
 	"source": "src/index"
