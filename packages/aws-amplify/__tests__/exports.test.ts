@@ -194,6 +194,7 @@ describe('aws-amplify Exports', () => {
 			  "autoSignIn",
 			  "AuthError",
 			  "fetchAuthSession",
+			  "decodeJWT",
 			]
 		`);
 		});
