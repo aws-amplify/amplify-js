@@ -259,9 +259,9 @@ export type AuthNextUpdateAttributeStep<
 };
 
 /**
- * The AuthUser object contains username and userId from the idToken.
+ * The AWSAuthUser object contains username and userId from the idToken.
  */
-export type AuthUser = {
+export type AWSAuthUser = {
 	username: string;
 	userId: string;
 };

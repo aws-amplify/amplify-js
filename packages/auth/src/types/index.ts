@@ -15,7 +15,7 @@ export {
 	AuthNextUpdateAttributeStep,
 	AuthMFAType,
 	AuthAllowedMFATypes,
-	AuthUser,
+	AWSAuthUser,
 	AuthTOTPSetupDetails,
 	AuthResetPasswordStep,
 	AuthUpdateAttributeStep,
