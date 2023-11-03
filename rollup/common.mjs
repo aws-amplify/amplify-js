@@ -8,6 +8,7 @@ export const cjsOutput = {
 	dir: 'dist/cjs',
 	format: 'cjs',
 	entryFileNames: '[name].js',
+	preserveModules: true,
 	preserveModulesRoot: 'src',
 	sourcemap: true,
 };
@@ -25,6 +26,7 @@ export const emsOutput = {
 	dir: 'dist/esm',
 	format: 'es',
 	entryFileNames: '[name].mjs',
+	preserveModules: true,
 	preserveModulesRoot: 'src',
 	sourcemap: true,
 };
