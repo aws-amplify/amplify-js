@@ -16,6 +16,7 @@ export const cjsOutput = {
 export const cjsTSOptions = {
 	outDir: 'dist/cjs',
 	declaration: false, // declarations are handled by the ESM build
+	module: 'CommonJS',
 	sourceMap: false,
 	tsconfig: defaultTSConfigPath,
 	tsBuildInfoFile: 'dist/meta/cjs.tsbuildinfo',
