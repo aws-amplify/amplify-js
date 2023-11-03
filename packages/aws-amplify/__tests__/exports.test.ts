@@ -56,6 +56,7 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "generateClient",
 			  "GraphQLAuthError",
+			  "ConnectionState",
 			  "get",
 			  "put",
 			  "post",
