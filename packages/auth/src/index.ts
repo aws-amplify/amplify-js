@@ -29,6 +29,7 @@ export {
 	forgetDevice,
 	fetchDevices,
 	autoSignIn,
+	AuthUser,
 	CodeDeliveryDetails,
 	UserAttributeKey,
 	VerifiableUserAttributeKey,

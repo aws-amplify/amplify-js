@@ -65,7 +65,7 @@ export {
 	FetchDevicesOutput,
 } from './types/outputs';
 export {
-	CognitoAuthUser,
+	AuthUser,
 	CodeDeliveryDetails,
 	UserAttributeKey,
 	VerifiableUserAttributeKey,

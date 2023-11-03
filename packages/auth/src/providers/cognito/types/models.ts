@@ -8,7 +8,7 @@ import {
 import {
 	AuthUserAttribute,
 	AuthDevice,
-	AuthUser,
+	AWSAuthUser,
 	AuthCodeDeliveryDetails,
 } from '../../../types';
 import { AuthProvider } from '../../../types/inputs';
@@ -97,7 +97,7 @@ export type CognitoAuthSignInDetails = {
 /**
  * Holds the user information along with the sign in details.
  */
-export interface CognitoAuthUser extends AuthUser {
+export interface AuthUser extends AWSAuthUser {
 	signInDetails?: CognitoAuthSignInDetails;
 }
 
