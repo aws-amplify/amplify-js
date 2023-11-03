@@ -47,7 +47,6 @@ export {
 	DeleteUserAttributesInput,
 	ForgetDeviceInput,
 } from './types/inputs';
-
 export {
 	FetchUserAttributesOutput,
 	GetCurrentUserOutput,

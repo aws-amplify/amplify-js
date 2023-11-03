@@ -5,12 +5,14 @@ import {
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
+
 import {
 	AuthUserAttribute,
 	AuthDevice,
 	AWSAuthUser,
 	AuthCodeDeliveryDetails,
 } from '../../../types';
+
 import { AuthProvider } from '../../../types/inputs';
 import { SignUpOutput } from './outputs';
 
