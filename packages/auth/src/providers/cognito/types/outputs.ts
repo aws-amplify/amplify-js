@@ -5,7 +5,6 @@ import { AuthVerifiableAttributeKey } from '@aws-amplify/core/internals/utils';
 import {
 	AuthMFAType,
 	AuthUserAttributes,
-	AuthUser,
 	AuthCodeDeliveryDetails,
 	AuthTOTPSetupDetails,
 	AuthSignInOutput,
@@ -14,7 +13,7 @@ import {
 	AuthUpdateUserAttributesOutput,
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
-import { AWSAuthDevice, CognitoAuthUser, UserAttributeKey } from '../types';
+import { AWSAuthDevice, AuthUser, UserAttributeKey } from '../types';
 
 export type FetchMFAPreferenceOutput = {
 	enabled?: AuthMFAType[];
@@ -29,7 +28,7 @@ export type FetchUserAttributesOutput = AuthUserAttributes<UserAttributeKey>;
 /**
  * Output type for Cognito getCurrentUser API.
  */
-export type GetCurrentUserOutput = CognitoAuthUser;
+export type GetCurrentUserOutput = AuthUser;
 
 /**
  * Output type for Cognito confirmSignIn API.
