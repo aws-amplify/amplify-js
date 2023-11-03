@@ -11,6 +11,7 @@
 	},
 	"typings": "./dist/esm/index.d.ts",
 	"browser": {
+		"./dist/esm/providers/s3/utils/client/runtime/base64/index.native.mjs": "./dist/esm/providers/s3/utils/client/runtime/base64/index.browser.mjs",
 		"./dist/esm/providers/s3/utils/client/runtime/s3TransferHandler/fetch.mjs": "./dist/esm/providers/s3/utils/client/runtime/s3TransferHandler/xhr.mjs",
 		"./dist/esm/providers/s3/utils/client/runtime/xmlParser/pureJs.mjs": "./dist/esm/providers/s3/utils/client/runtime/xmlParser/dom.mjs",
 		"fast-xml-parser": false,
