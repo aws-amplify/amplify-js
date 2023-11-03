@@ -24,251 +24,232 @@ import * as storageS3Exports from '../src/storage/s3';
 describe('aws-amplify Exports', () => {
 	describe('Top-level exports', () => {
 		it('should only export expected symbols', () => {
-			expect(Object.keys(topLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "Amplify",
-			]
-		`);
+			expect(Object.keys(topLevelExports).sort()).toEqual(['Amplify'].sort());
 		});
 	});
 
 	describe('Utils exports', () => {
 		it('should only export expected symbols', () => {
-			expect(Object.keys(utilsExports)).toMatchInlineSnapshot(`
-			Array [
-			  "Hub",
-			  "I18n",
-			  "Cache",
-			  "ConsoleLogger",
-			  "ServiceWorker",
-			  "CookieStorage",
-			  "defaultStorage",
-			  "sessionStorage",
-			  "sharedInMemoryStorage",
-			]
-		`);
+			expect(Object.keys(utilsExports).sort()).toEqual(
+				[
+					'Hub',
+					'I18n',
+					'Cache',
+					'ConsoleLogger',
+					'ServiceWorker',
+					'CookieStorage',
+					'defaultStorage',
+					'sessionStorage',
+					'sharedInMemoryStorage',
+				].sort()
+			);
 		});
 	});
 
 	describe('API exports', () => {
 		it('should only export expected symbols from the top level', () => {
-			expect(Object.keys(apiTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "generateClient",
-			  "GraphQLAuthError",
-			  "ConnectionState",
-			  "del",
-			  "get",
-			  "head",
-			  "isCancelError",
-			  "patch",
-			  "post",
-			  "put",
-			]
-		`);
+			expect(Object.keys(apiTopLevelExports).sort()).toEqual(
+				[
+					'ConnectionState',
+					'GraphQLAuthError',
+					'del',
+					'generateClient',
+					'get',
+					'head',
+					'isCancelError',
+					'patch',
+					'post',
+					'put',
+				].sort()
+			);
 		});
 	});
 
 	describe('Analytics exports', () => {
 		it('should only export expected symbols from the top-level', () => {
-			expect(Object.keys(analyticsTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "record",
-			  "identifyUser",
-			  "configureAutoTrack",
-			  "flushEvents",
-			  "enable",
-			  "disable",
-			  "AnalyticsError",
-			]
-		`);
+			expect(Object.keys(analyticsTopLevelExports).sort()).toEqual(
+				[
+					'record',
+					'identifyUser',
+					'configureAutoTrack',
+					'flushEvents',
+					'enable',
+					'disable',
+					'AnalyticsError',
+				].sort()
+			);
 		});
 
 		it('should only export expected symbols from the Pinpoint provider', () => {
-			expect(Object.keys(analyticsPinpointExports)).toMatchInlineSnapshot(`
-			Array [
-			  "record",
-			  "identifyUser",
-			  "configureAutoTrack",
-			  "flushEvents",
-			]
-		`);
+			expect(Object.keys(analyticsPinpointExports).sort()).toEqual(
+				['record', 'identifyUser', 'configureAutoTrack', 'flushEvents'].sort()
+			);
 		});
 
 		it('should only export expected symbols from the Kinesis provider', () => {
-			expect(Object.keys(analyticsKinesisExports)).toMatchInlineSnapshot(`
-			Array [
-			  "record",
-			  "flushEvents",
-			]
-			`);
+			expect(Object.keys(analyticsKinesisExports).sort()).toEqual(
+				['record', 'flushEvents'].sort()
+			);
 		});
 
 		it('should only export expected symbols from the Kinesis Firehose provider', () => {
-			expect(Object.keys(analyticsKinesisFirehoseExports))
-				.toMatchInlineSnapshot(`
-			Array [
-			  "record",
-			  "flushEvents",
-			]
-			`);
+			expect(Object.keys(analyticsKinesisFirehoseExports).sort()).toEqual(
+				['record', 'flushEvents'].sort()
+			);
 		});
 
 		it('should only export expected symbols from the Personalize provider', () => {
-			expect(Object.keys(analyticsPersonalizeExports)).toMatchInlineSnapshot(`
-			Array [
-			  "record",
-			  "flushEvents",
-			]
-			`);
+			expect(Object.keys(analyticsPersonalizeExports).sort()).toEqual(
+				['record', 'flushEvents'].sort()
+			);
 		});
 	});
 
 	describe('InAppMessaging exports', () => {
 		it('should only export expected symbols from the top-level', () => {
-			expect(Object.keys(inAppMessagingTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "identifyUser",
-			  "syncMessages",
-			  "dispatchEvent",
-			  "setConflictHandler",
-			  "initializeInAppMessaging",
-			  "onMessageReceived",
-			  "onMessageDismissed",
-			  "onMessageDisplayed",
-			  "onMessageActionTaken",
-			  "notifyMessageInteraction",
-			  "clearMessages",
-			]
-		`);
+			expect(Object.keys(inAppMessagingTopLevelExports).sort()).toEqual(
+				[
+					'identifyUser',
+					'syncMessages',
+					'dispatchEvent',
+					'setConflictHandler',
+					'initializeInAppMessaging',
+					'onMessageReceived',
+					'onMessageDismissed',
+					'onMessageDisplayed',
+					'onMessageActionTaken',
+					'notifyMessageInteraction',
+					'clearMessages',
+				].sort()
+			);
 		});
 
 		it('should only export expected symbols from the Pinpoint provider', () => {
-			expect(Object.keys(inAppMessagingPinpointTopLevelExports))
-				.toMatchInlineSnapshot(`
-			Array [
-			  "identifyUser",
-			  "syncMessages",
-			  "dispatchEvent",
-			  "setConflictHandler",
-			  "initializeInAppMessaging",
-			  "onMessageReceived",
-			  "onMessageDismissed",
-			  "onMessageDisplayed",
-			  "onMessageActionTaken",
-			  "notifyMessageInteraction",
-			  "clearMessages",
-			]
-		`);
+			expect(Object.keys(inAppMessagingPinpointTopLevelExports).sort()).toEqual(
+				[
+					'identifyUser',
+					'syncMessages',
+					'dispatchEvent',
+					'setConflictHandler',
+					'initializeInAppMessaging',
+					'onMessageReceived',
+					'onMessageDismissed',
+					'onMessageDisplayed',
+					'onMessageActionTaken',
+					'notifyMessageInteraction',
+					'clearMessages',
+				].sort()
+			);
 		});
 	});
 
 	describe('Auth exports', () => {
 		it('should only export expected symbols from the top-level', () => {
-			expect(Object.keys(authTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "signUp",
-			  "resetPassword",
-			  "confirmResetPassword",
-			  "signIn",
-			  "resendSignUpCode",
-			  "confirmSignUp",
-			  "confirmSignIn",
-			  "updateMFAPreference",
-			  "fetchMFAPreference",
-			  "verifyTOTPSetup",
-			  "updatePassword",
-			  "setUpTOTP",
-			  "updateUserAttributes",
-			  "updateUserAttribute",
-			  "getCurrentUser",
-			  "confirmUserAttribute",
-			  "signInWithRedirect",
-			  "fetchUserAttributes",
-			  "signOut",
-			  "sendUserAttributeVerificationCode",
-			  "deleteUserAttributes",
-			  "deleteUser",
-			  "rememberDevice",
-			  "forgetDevice",
-			  "fetchDevices",
-			  "autoSignIn",
-			  "fetchAuthSession",
-			  "decodeJWT",
-			]
-		`);
+			expect(Object.keys(authTopLevelExports).sort()).toEqual(
+				[
+					'AuthError',
+					'signUp',
+					'resetPassword',
+					'confirmResetPassword',
+					'signIn',
+					'resendSignUpCode',
+					'confirmSignUp',
+					'confirmSignIn',
+					'updateMFAPreference',
+					'fetchMFAPreference',
+					'verifyTOTPSetup',
+					'updatePassword',
+					'setUpTOTP',
+					'updateUserAttributes',
+					'updateUserAttribute',
+					'getCurrentUser',
+					'confirmUserAttribute',
+					'signInWithRedirect',
+					'fetchUserAttributes',
+					'signOut',
+					'sendUserAttributeVerificationCode',
+					'deleteUserAttributes',
+					'deleteUser',
+					'rememberDevice',
+					'forgetDevice',
+					'fetchDevices',
+					'autoSignIn',
+					'fetchAuthSession',
+					'decodeJWT',
+				].sort()
+			);
 		});
 
 		it('should only export expected symbols from the Cognito provider', () => {
-			expect(Object.keys(authCognitoExports)).toMatchInlineSnapshot(`
-			Array [
-			  "signUp",
-			  "resetPassword",
-			  "confirmResetPassword",
-			  "signIn",
-			  "resendSignUpCode",
-			  "confirmSignUp",
-			  "confirmSignIn",
-			  "updateMFAPreference",
-			  "fetchMFAPreference",
-			  "verifyTOTPSetup",
-			  "updatePassword",
-			  "setUpTOTP",
-			  "updateUserAttributes",
-			  "updateUserAttribute",
-			  "getCurrentUser",
-			  "confirmUserAttribute",
-			  "signInWithRedirect",
-			  "fetchUserAttributes",
-			  "signOut",
-			  "sendUserAttributeVerificationCode",
-			  "deleteUserAttributes",
-			  "deleteUser",
-			  "rememberDevice",
-			  "forgetDevice",
-			  "fetchDevices",
-			  "autoSignIn",
-			  "cognitoCredentialsProvider",
-			  "CognitoUserPoolsTokenProvider",
-			  "CognitoAWSCredentialsAndIdentityIdProvider",
-			  "DefaultIdentityIdStore",
-			  "TokenOrchestrator",
-			  "DefaultTokenStore",
-			  "refreshAuthTokens",
-			]
-		`);
+			expect(Object.keys(authCognitoExports).sort()).toEqual(
+				[
+					'signUp',
+					'resetPassword',
+					'confirmResetPassword',
+					'signIn',
+					'resendSignUpCode',
+					'confirmSignUp',
+					'confirmSignIn',
+					'updateMFAPreference',
+					'fetchMFAPreference',
+					'verifyTOTPSetup',
+					'updatePassword',
+					'setUpTOTP',
+					'updateUserAttributes',
+					'updateUserAttribute',
+					'getCurrentUser',
+					'confirmUserAttribute',
+					'signInWithRedirect',
+					'fetchUserAttributes',
+					'signOut',
+					'sendUserAttributeVerificationCode',
+					'deleteUserAttributes',
+					'deleteUser',
+					'rememberDevice',
+					'forgetDevice',
+					'fetchDevices',
+					'autoSignIn',
+					'cognitoCredentialsProvider',
+					'CognitoUserPoolsTokenProvider',
+					'CognitoAWSCredentialsAndIdentityIdProvider',
+					'DefaultIdentityIdStore',
+					'TokenOrchestrator',
+					'DefaultTokenStore',
+					'refreshAuthTokens',
+				].sort()
+			);
 		});
 	});
 
 	describe('Storage exports', () => {
 		it('should only export expected symbols from the top-level', () => {
-			expect(Object.keys(storageTopLevelExports)).toMatchInlineSnapshot(`
-			Array [
-			  "uploadData",
-			  "downloadData",
-			  "remove",
-			  "list",
-			  "getProperties",
-			  "copy",
-			  "getUrl",
-			  "isCancelError",
-			  "StorageError",
-			]
-		`);
+			expect(Object.keys(storageTopLevelExports).sort()).toEqual(
+				[
+					'uploadData',
+					'downloadData',
+					'remove',
+					'list',
+					'getProperties',
+					'copy',
+					'getUrl',
+					'isCancelError',
+					'StorageError',
+				].sort()
+			);
 		});
 
 		it('should only export expected symbols from the S3 provider', () => {
-			expect(Object.keys(storageS3Exports)).toMatchInlineSnapshot(`
-			Array [
-			  "uploadData",
-			  "downloadData",
-			  "remove",
-			  "list",
-			  "getProperties",
-			  "copy",
-			  "getUrl",
-			]
-		`);
+			expect(Object.keys(storageS3Exports).sort()).toEqual(
+				[
+					'uploadData',
+					'downloadData',
+					'remove',
+					'list',
+					'getProperties',
+					'copy',
+					'getUrl',
+				].sort()
+			);
 		});
 	});
 });
