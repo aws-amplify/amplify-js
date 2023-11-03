@@ -32,7 +32,7 @@ def getExtOrDefault(prop) {
 
 android {
     if (agpVersion >= 7) {
-        namespace 'com.amazonaws.amplify'
+        namespace 'com.amazonaws.amplify.pushnotification'
     }
 
     compileSdkVersion getExtOrDefault('compileSdkVersion')
