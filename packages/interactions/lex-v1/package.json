@@ -3,6 +3,6 @@
 	"main": "../dist/cjs/lex-v1/index.js",
 	"browser": "../dist/esm/lex-v1/index.mjs",
 	"module": "../dist/esm/lex-v1/index.mjs",
-	"react-native": "../dist/cjs/lex-v1/index.js",
+	"react-native": "../src/lex-v1/index.ts",
 	"typings": "../dist/esm/lex-v1/index.d.ts"
 }

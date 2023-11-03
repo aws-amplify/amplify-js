@@ -5,7 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./dist/cjs/index.js",
+	"react-native": "./src/index.ts",
 	"sideEffects": [
 		"./dist/cjs/providers/cognito/apis/signInWithRedirect.js",
 		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs"
@@ -48,31 +48,30 @@
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
-			"react-native": "./dist/cjs/index.js"
+			"react-native": "./src/index.ts"
 		},
 		"./cognito": {
 			"types": "./dist/esm/providers/cognito/index.d.ts",
 			"import": "./dist/esm/providers/cognito/index.mjs",
 			"require": "./dist/cjs/providers/cognito/index.js",
-			"react-native": "./dist/cjs/providers/cognito/index.js"
+			"react-native": "./src/providers/cognito/index.ts"
 		},
 		"./cognito/server": {
 			"types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
 			"import": "./dist/esm/providers/cognito/apis/server/index.mjs",
 			"require": "./dist/cjs/providers/cognito/apis/server/index.js",
-			"react-native": "./dist/cjs/providers/cognito/apis/server/index.js"
+			"react-native": "./src/providers/cognito/apis/server/index.ts"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
 			"import": "./dist/esm/server.mjs",
-			"require": "./dist/cjs/server.js",
-			"react-native": "./dist/cjs/server.js"
+			"require": "./dist/cjs/server.js"
 		},
 		"./internals": {
 			"types": "./dist/esm/dist/esm/internals/index.d.ts",
 			"import": "./dist/esm/internals/index.mjs",
 			"require": "./dist/cjs/internals/index.js",
-			"react-native": "./dist/cjs/internals/index.js"
+			"react-native": "./src/internals/index.ts"
 		},
 		"./package.json": "./package.json"
 	},

@@ -4,7 +4,7 @@
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
-	"react-native": "./dist/cjs/index.js",
+	"react-native": "./src/index.ts",
 	"typings": "./dist/esm/index.d.ts",
 	"publishConfig": {
 		"access": "public"
@@ -116,55 +116,53 @@
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
-			"react-native": "./dist/cjs/index.js"
+			"react-native": "./src/index.ts"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
 			"import": "./dist/esm/server.mjs",
-			"require": "./dist/cjs/server.js",
-			"react-native": "./dist/cjs/server.js"
+			"require": "./dist/cjs/server.js"
 		},
 		"./internals/adapter-core": {
 			"types": "./dist/esm/adapterCore/index.d.ts",
 			"import": "./dist/esm/adapterCore/index.mjs",
-			"require": "./dist/cjs/adapterCore/index.js",
-			"react-native": "./dist/cjs/adapterCore/index.js"
+			"require": "./dist/cjs/adapterCore/index.js"
 		},
 		"./internals/aws-client-utils": {
 			"types": "./dist/esm/clients/index.d.ts",
 			"import": "./dist/esm/clients/index.mjs",
 			"require": "./dist/cjs/clients/index.js",
-			"react-native": "./dist/cjs/clients/index.js"
+			"react-native": "./src/clients/index.ts"
 		},
 		"./internals/aws-client-utils/composers": {
 			"types": "./dist/esm/clients/internal/index.d.ts",
 			"import": "./dist/esm/clients/internal/index.mjs",
 			"require": "./dist/cjs/clients/internal/index.js",
-			"react-native": "./dist/cjs/clients/internal/index.js"
+			"react-native": "./src/clients/internal/index.ts"
 		},
 		"./internals/aws-clients/cognitoIdentity": {
 			"types": "./dist/esm/awsClients/cognitoIdentity/index.d.ts",
 			"import": "./dist/esm/awsClients/cognitoIdentity/index.mjs",
 			"require": "./dist/cjs/awsClients/cognitoIdentity/index.js",
-			"react-native": "./dist/cjs/awsClients/cognitoIdentity/index.js"
+			"react-native": "./src/awsClients/cognitoIdentity/index.ts"
 		},
 		"./internals/aws-clients/pinpoint": {
 			"types": "./dist/esm/awsClients/pinpoint/index.d.ts",
 			"import": "./dist/esm/awsClients/pinpoint/index.mjs",
 			"require": "./dist/cjs/awsClients/pinpoint/index.js",
-			"react-native": "./dist/cjs/awsClients/pinpoint/index.js"
+			"react-native": "./src/awsClients/pinpoint/index.ts"
 		},
 		"./internals/providers/pinpoint": {
 			"types": "./dist/esm/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/providers/pinpoint/index.mjs",
 			"require": "./dist/cjs/providers/pinpoint/index.js",
-			"react-native": "./dist/cjs/providers/pinpoint/index.js"
+			"react-native": "./src/providers/pinpoint/index.ts"
 		},
 		"./internals/utils": {
 			"types": "./dist/esm/libraryUtils.d.ts",
 			"import": "./dist/esm/libraryUtils.mjs",
 			"require": "./dist/cjs/libraryUtils.js",
-			"react-native": "./dist/cjs/libraryUtils.js"
+			"react-native": "./src/libraryUtils.ts"
 		},
 		"./package.json": "./package.json"
 	},

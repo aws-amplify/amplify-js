@@ -5,7 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./dist/cjs/index.js",
+	"react-native": "./src/index.ts",
 	"sideEffects": [
 		"./dist/cjs/API.js",
 		"./dist/esm/API.mjs"
@@ -32,19 +32,18 @@
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
-			"react-native": "./dist/cjs/index.js"
+			"react-native": "./src/index.ts"
 		},
 		"./internals": {
 			"types": "./dist/esm/internals/index.d.ts",
 			"import": "./dist/esm/internals/index.mjs",
 			"require": "./dist/cjs/internals/index.js",
-			"react-native": "./dist/cjs/internals/index.js"
+			"react-native": "./src/internals/index.ts"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
 			"import": "./dist/esm/server.mjs",
-			"require": "./dist/cjs/server.js",
-			"react-native": "./dist/cjs/server.js"
+			"require": "./dist/cjs/server.js"
 		},
 		"./package.json": "./package.json"
 	},

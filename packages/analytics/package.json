@@ -4,7 +4,7 @@
 	"description": "Analytics category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
-	"react-native": "./dist/cjs/index.js",
+	"react-native": "./src/index.ts",
 	"typings": "./dist/esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {
@@ -46,31 +46,31 @@
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
-			"react-native": "./dist/cjs/index.js"
+			"react-native": "./src/index.ts"
 		},
 		"./pinpoint": {
 			"types": "./dist/esm/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/providers/pinpoint/index.mjs",
 			"require": "./dist/cjs/providers/pinpoint/index.js",
-			"react-native": "./dist/cjs/providers/pinpoint/index.js"
+			"react-native": "./src/providers/pinpoint/index.ts"
 		},
 		"./kinesis": {
 			"types": "./dist/esm/providers/kinesis/index.d.ts",
 			"import": "./dist/esm/providers/kinesis/index.mjs",
 			"require": "./dist/cjs/providers/kinesis/index.js",
-			"react-native": "./dist/cjs/providers/kinesis/index.js"
+			"react-native": "./src/providers/kinesis/index.ts"
 		},
 		"./kinesis-firehose": {
 			"types": "./dist/esm/providers/kinesis-firehose/index.d.ts",
 			"import": "./dist/esm/providers/kinesis-firehose/index.mjs",
 			"require": "./dist/cjs/providers/kinesis-firehose/index.js",
-			"react-native": "./dist/cjs/providers/kinesis-firehose/index.js"
+			"react-native": "./src/providers/kinesis-firehose/index.ts"
 		},
 		"./personalize": {
 			"types": "./dist/esm/providers/personalize/index.d.ts",
 			"import": "./dist/esm/providers/personalize/index.mjs",
 			"require": "./dist/cjs/providers/personalize/index.js",
-			"react-native": "./dist/cjs/providers/personalize/index.js"
+			"react-native": "./src/providers/personalize/index.ts"
 		},
 		"./package.json": "./package.json"
 	},

@@ -3,6 +3,6 @@
 	"types": "../../../dist/esm/awsClients/cognitoIdentity/index.d.ts",
 	"main": "../../../dist/cjs/awsClients/cognitoIdentity/index.js",
 	"module": "../../../dist/esm/awsClients/cognitoIdentity/index.mjs",
-	"react-native": "../../../dist/cjs/awsClients/cognitoIdentity/index.js",
+	"react-native": "../../../src/awsClients/cognitoIdentity/index.ts",
 	"sideEffects": false
 }

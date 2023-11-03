@@ -4,7 +4,7 @@
 	"description": "React Native module for aws-amplify push notifications",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
-	"react-native": "./dist/cjs/index.js",
+	"react-native": "./src/index.ts",
 	"typings": "./dist/esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {

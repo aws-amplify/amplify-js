@@ -3,6 +3,6 @@
   "main": "../dist/cjs/providers/kinesis/index.js",
   "browser": "../dist/esm/providers/kinesis/index.mjs",
   "module": "../dist/esm/providers/kinesis/index.mjs",
-  "react-native": "../dist/cjs/providers/kinesis/index.js",
+  "react-native": "../src/providers/kinesis/index.ts",
   "typings": "../dist/esm/providers/kinesis/index.d.ts"
 }

@@ -3,6 +3,6 @@
 	"main": "../dist/cjs/pushNotifications/index.js",
 	"browser": "../dist/esm/pushNotifications/index.mjs",
 	"module": "../dist/esm/pushNotifications/index.mjs",
-	"react-native": "../dist/cjs/pushNotifications/index.js",
+	"react-native": "../src/pushNotifications/index.ts",
 	"typings": "../dist/esm/pushNotifications/index.d.ts"
 }

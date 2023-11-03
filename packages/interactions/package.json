@@ -5,7 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
-	"react-native": "./dist/cjs/index.js",
+	"react-native": "./src/index.ts",
 	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
@@ -45,13 +45,13 @@
 			"types": "./dist/esm/lex-v1/index.d.ts",
 			"import": "./dist/esm/lex-v1/index.mjs",
 			"require": "./dist/cjs/lex-v1/index.js",
-			"react-native": "./dist/cjs/lex-v1/index.js"
+			"react-native": "./src/lex-v1/index.ts"
 		},
 		"./lex-v2": {
 			"types": "./dist/esm/lex-v2/index.d.ts",
 			"import": "./dist/esm/lex-v2/index.mjs",
 			"require": "./dist/cjs/lex-v2/index.js",
-			"react-native": "./dist/cjs/lex-v2/index.js"
+			"react-native": "./src/lex-v2/index.ts"
 		}
 	},
 	"repository": {

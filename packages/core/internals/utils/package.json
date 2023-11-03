@@ -3,5 +3,5 @@
 	"types": "../../dist/esm/libraryUtils.d.ts",
 	"main": "../../dist/cjs/libraryUtils.js",
 	"module": "../../dist/esm/libraryUtils.mjs",
-	"react-native": "../../dist/cjs/libraryUtils.js"
+	"react-native": "../../src/libraryUtils.ts"
 }

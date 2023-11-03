@@ -3,6 +3,6 @@
 	"main": "../dist/cjs/inAppMessaging/index.js",
 	"browser": "../dist/esm/inAppMessaging/index.mjs",
 	"module": "../dist/esm/inAppMessaging/index.mjs",
-	"react-native": "../dist/cjs/inAppMessaging/index.js",
+	"react-native": "../src/inAppMessaging/index.ts",
 	"typings": "../dist/esm/inAppMessaging/index.d.ts"
 }

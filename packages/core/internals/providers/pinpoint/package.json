@@ -3,6 +3,6 @@
 	"types": "../../../dist/esm/providers/pinpoint/index.d.ts",
 	"main": "../../../dist/cjs/providers/pinpoint/index.js",
 	"module": "../../../dist/esm/providers/pinpoint/index.mjs",
-	"react-native": "../../../dist/cjs/providers/pinpoint/index.js",
+	"react-native": "../../../src/providers/pinpoint/index.ts",
 	"sideEffects": false
 }

@@ -4,7 +4,7 @@
 	"description": "Notifications category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
-	"react-native": "./dist/cjs/index.js",
+	"react-native": "./src/index.ts",
 	"typings": "./dist/esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {
@@ -46,31 +46,31 @@
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
-			"react-native": "./dist/cjs/index.js"
+			"react-native": "./src/index.ts"
 		},
 		"./in-app-messaging": {
 			"types": "./dist/esm/inAppMessaging/index.d.ts",
 			"import": "./dist/esm/inAppMessaging/index.mjs",
 			"require": "./dist/cjs/inAppMessaging/index.js",
-			"react-native": "./dist/cjs/inAppMessaging/index.js"
+			"react-native": "./src/inAppMessaging/index.ts"
 		},
 		"./push-notifications": {
 			"types": "./dist/esm/pushNotifications/index.d.ts",
 			"import": "./dist/esm/pushNotifications/index.mjs",
 			"require": "./dist/cjs/pushNotifications/index.js",
-			"react-native": "./dist/cjs/pushNotifications/index.js"
+			"react-native": "./src/pushNotifications/index.ts"
 		},
 		"./in-app-messaging/pinpoint": {
 			"types": "./dist/esm/inAppMessaging/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/inAppMessaging/providers/pinpoint/index.mjs",
 			"require": "./dist/cjs/inAppMessaging/providers/pinpoint/index.js",
-			"react-native": "./dist/cjs/inAppMessaging/providers/pinpoint/index.js"
+			"react-native": "./src/inAppMessaging/providers/pinpoint/index.ts"
 		},
 		"./push-notifications/pinpoint": {
 			"types": "./dist/esm/pushNotifications/providers/pinpoint/index.d.ts",
 			"import": "./dist/esm/pushNotifications/providers/pinpoint/index.mjs",
 			"require": "./dist/cjs/pushNotifications/providers/pinpoint/index.js",
-			"react-native": "./dist/cjs/pushNotifications/providers/pinpoint/index.js"
+			"react-native": "./src/pushNotifications/providers/pinpoint/index.ts"
 		},
 		"./package.json": "./package.json"
 	},

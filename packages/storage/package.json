@@ -5,8 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"react-native": {
-		"./index": "./dist/cjs/index.js",
-		"./dist/cjs/providers/s3/utils/client/runtime/index": "./dist/cjs/providers/s3/utils/client/runtime/index.native.js",
+		"./dist/cjs/index": "./src/index.ts",
 		"fast-xml-parser": "fast-xml-parser",
 		"buffer": "buffer"
 	},
@@ -82,7 +81,7 @@
 			"types": "./dist/esm/index.d.ts",
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
-			"react-native": "./dist/cjs/index.js"
+			"react-native": "./src/index.ts"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
@@ -93,13 +92,13 @@
 			"types": "./dist/esm/internals/index.d.ts",
 			"import": "./dist/esm/internals/index.mjs",
 			"require": "./dist/cjs/internals/index.js",
-			"react-native": "./dist/cjs/internals/index.js"
+			"react-native": "./src/internals/index.ts"
 		},
 		"./s3": {
 			"types": "./dist/esm/providers/s3/index.d.ts",
 			"import": "./dist/esm/providers/s3/index.mjs",
 			"require": "./dist/cjs/providers/s3/index.js",
-			"react-native": "./dist/cjs/providers/s3/index.js"
+			"react-native": "./src/providers/s3/index.ts"
 		},
 		"./s3/server": {
 			"types": "./dist/esm/providers/s3/server.d.ts",

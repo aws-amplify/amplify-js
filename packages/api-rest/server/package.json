@@ -3,6 +3,5 @@
 	"types": "../dist/esm/server.d.ts",
 	"main": "../dist/cjs/server.js",
 	"module": "../dist/esm/server.mjs",
-	"react-native": "../dist/cjs/server.js",
 	"sideEffects": false
 }
