@@ -64,7 +64,12 @@ export {
 	SendUserAttributeVerificationCodeOutput,
 	FetchDevicesOutput,
 } from './types/outputs';
-export { CognitoAuthUser } from './types/models';
+export {
+	CognitoAuthUser,
+	CodeDeliveryDetails,
+	UserAttributeKey,
+	VerifiableUserAttributeKey,
+} from './types/models';
 export {
 	cognitoCredentialsProvider,
 	CognitoAWSCredentialsAndIdentityIdProvider,
