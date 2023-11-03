@@ -2,8 +2,9 @@ import { Amplify } from '../../src/singleton';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { AWSCredentialsAndIdentityId } from '../../src/singleton/Auth/types';
-import { TextEncoder, TextDecoder } from 'util';
-import { fetchAuthSession } from '../../src';
+import { TextDecoder, TextEncoder } from 'util';
+import { fetchAuthSession, ResourcesConfig } from '../../src';
+
 Object.assign(global, { TextDecoder, TextEncoder });
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
@@ -16,6 +17,74 @@ const MOCK_AUTH_CONFIG = {
 		},
 	},
 };
+
+describe('Partial configure', () => {
+	it('should update partial config', () => {
+		const mockConfig: ResourcesConfig = {
+			Auth: {
+				Cognito: {
+					allowGuestAccess: true,
+					identityPoolId: 'aws_cognito_identity_pool_id',
+					userPoolClientId: 'aws_user_pools_web_client_id',
+					userPoolId: 'aws_user_pools_id',
+					passwordFormat: {
+						minLength: 8,
+						requireLowercase: false,
+						requireNumbers: false,
+						requireSpecialCharacters: false,
+						requireUppercase: false,
+					},
+				},
+			},
+		};
+
+		Amplify.configure(mockConfig);
+		Amplify.updateConfig(
+			config =>
+				config
+					.atKey('Auth')
+					.atKey('Cognito')
+					.atKey('passwordFormat')
+					.atKey('minLength'),
+			12
+		);
+		expect(Amplify.getConfig()).toStrictEqual({
+			Auth: {
+				Cognito: {
+					allowGuestAccess: true,
+					identityPoolId: 'aws_cognito_identity_pool_id',
+					userPoolClientId: 'aws_user_pools_web_client_id',
+					userPoolId: 'aws_user_pools_id',
+					passwordFormat: {
+						minLength: 12,
+						requireLowercase: false,
+						requireNumbers: false,
+						requireSpecialCharacters: false,
+						requireUppercase: false,
+					},
+				},
+			},
+		});
+	});
+
+	it('should fail if update non existing field', () => {
+		const mockConfig: ResourcesConfig = {
+			Analytics: {
+				Pinpoint: {
+					appId: '123',
+					region: 'us-east-1',
+				},
+			},
+		};
+		Amplify.configure(mockConfig);
+		expect(() =>
+			Amplify.updateConfig(
+				config => config.atKey('Auth').atKey('Cognito').atKey('identityPoolId'),
+				'0000'
+			)
+		).toThrow();
+	});
+});
 
 describe('Amplify.configure() and Amplify.getConfig()', () => {
 	it('should take the legacy CLI shaped config object for configuring and return it from getConfig()', () => {

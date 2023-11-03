@@ -5,6 +5,7 @@ import { Hub, AMPLIFY_SYMBOL } from '../Hub';
 import { LegacyConfig, LibraryOptions, ResourcesConfig } from './types';
 import { parseAWSExports } from '../parseAWSExports';
 import { deepFreeze } from '../utils';
+import { Lens } from '../utils/Lens';
 
 export class AmplifyClass {
 	resourcesConfig: ResourcesConfig;
@@ -77,6 +78,23 @@ export class AmplifyClass {
 	 */
 	getConfig(): Readonly<ResourcesConfig> {
 		return this.resourcesConfig;
+	}
+
+	/**
+	 * Partially update the configuration
+	 *
+	 * @param selector Selector to define which field to set.
+	 * @param value The value to set.
+	 * */
+	updateConfig<T>(
+		selector: (
+			config: Lens<ResourcesConfig, ResourcesConfig>
+		) => Lens<ResourcesConfig, T>,
+		value: T
+	): void {
+		Amplify.configure(
+			selector(Lens.of<ResourcesConfig>()).set(value)(this.resourcesConfig)
+		);
 	}
 }
 
