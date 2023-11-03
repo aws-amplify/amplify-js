@@ -11,6 +11,7 @@ export {
 	AWSAuthDevice,
 	AuthUser,
 	CognitoAuthSignInDetails,
+	CodeDeliveryDetails,
 } from './models';
 
 export {

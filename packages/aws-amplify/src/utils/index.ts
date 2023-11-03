@@ -6,6 +6,7 @@ This file maps exports from `aws-amplify/utils`.
 */
 export {
 	Hub,
+	HubCapsule,
 	I18n,
 	Cache,
 	ConsoleLogger,
