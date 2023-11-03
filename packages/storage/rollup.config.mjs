@@ -3,8 +3,6 @@
 
 import { defineConfig } from 'rollup';
 import typescript from '@rollup/plugin-typescript';
-import json from '@rollup/plugin-json';
-import copy from 'rollup-plugin-copy';
 import { getInputForGlob } from '../../rollup/utils.mjs';
 import {
 	cjsOutput,
@@ -20,37 +18,13 @@ const config = defineConfig([
 	{
 		input: input,
 		output: cjsOutput,
-		plugins: [
-			json(),
-			typescript(cjsTSOptions),
-			copy({
-				targets: [
-					{
-						src: 'src/providers/s3/utils/client/runtime/package-cjs.json',
-						dest: 'dist/cjs/providers/s3/utils/client/runtime',
-						rename: 'package.json',
-					},
-				],
-			}),
-		],
+		plugins: [typescript(cjsTSOptions)],
 	},
 	// ESM config
 	{
 		input: input,
 		output: emsOutput,
-		plugins: [
-			json(),
-			typescript(emsTSOptions),
-			copy({
-				targets: [
-					{
-						src: 'src/providers/s3/utils/client/runtime/package-esm.json',
-						dest: 'dist/esm/providers/s3/utils/client/runtime',
-						rename: 'package.json',
-					},
-				],
-			}),
-		],
+		plugins: [typescript(emsTSOptions)],
 	},
 ]);
 

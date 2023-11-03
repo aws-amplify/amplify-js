@@ -4,10 +4,18 @@
 	"description": "Storage category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
-	"react-native": "./dist/esm/index.mjs",
+	"react-native": {
+		"./index": "./dist/cjs/index.js",
+		"./dist/cjs/providers/s3/utils/client/runtime/index": "./dist/cjs/providers/s3/utils/client/runtime/index.native.js",
+		"fast-xml-parser": "fast-xml-parser",
+		"buffer": "buffer"
+	},
 	"typings": "./dist/esm/index.d.ts",
 	"browser": {
-		"./dist/esm/providers/s3/utils/client/runtime/index": "./dist/esm/providers/s3/utils/client/runtime/index.browser.mjs"
+		"./dist/esm/providers/s3/utils/client/runtime/index": "./dist/esm/providers/s3/utils/client/runtime/index.browser.mjs",
+		"./dist/cjs/providers/s3/utils/client/runtime/index": "./dist/cjs/providers/s3/utils/client/runtime/index.browser.js",
+		"fast-xml-parser": false,
+		"buffer": false
 	},
 	"sideEffects": false,
 	"publishConfig": {
@@ -108,7 +116,6 @@
 		"@rollup/plugin-json": "6.0.1",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
-		"rollup-plugin-copy": "3.5.0",
 		"typescript": "5.0.2"
 	},
 	"jest": {
