@@ -18,7 +18,9 @@ export {
 	Identity,
 	OAuthConfig,
 	CognitoUserPoolConfig,
+	JWT,
 } from './singleton/Auth/types';
+export { decodeJWT } from './singleton/Auth/utils';
 export {
 	AuthConfig,
 	AuthUserPoolConfig,
