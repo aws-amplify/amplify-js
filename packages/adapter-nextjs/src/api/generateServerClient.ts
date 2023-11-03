@@ -16,6 +16,20 @@ import {
 import { NextServer } from '../types';
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 import { getAmplifyConfig } from '../utils';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+
+type CookiesClientParams = {
+	cookies: NextServer.ServerComponentContext['cookies'];
+	config: NextServer.CreateServerRunnerInput['config'];
+	authMode?: GraphQLAuthMode;
+	authToken?: string;
+};
+
+type ReqClientParams = {
+	config: NextServer.CreateServerRunnerInput['config'];
+	authMode?: GraphQLAuthMode;
+	authToken?: string;
+};
 
 /**
  * Generates an API client that can be used inside a Next.js Server Component with Dynamic Rendering
@@ -31,8 +45,9 @@ export function generateServerClientUsingCookies<
 >({
 	config,
 	cookies,
-}: NextServer.ServerComponentContext &
-	NextServer.CreateServerRunnerInput): V6ClientSSRCookies<T> {
+	authMode,
+	authToken,
+}: CookiesClientParams): V6ClientSSRCookies<T> {
 	if (typeof cookies !== 'function') {
 		throw new AmplifyServerContextError({
 			message:
@@ -59,6 +74,8 @@ export function generateServerClientUsingCookies<
 	return generateServerClient<T, V6ClientSSRCookies<T>>({
 		amplify: getAmplify,
 		config: resourcesConfig,
+		authMode,
+		authToken,
 	});
 }
 
@@ -80,13 +97,15 @@ export function generateServerClientUsingCookies<
  */
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never
->({ config }: NextServer.CreateServerRunnerInput): V6ClientSSRRequest<T> {
+>({ config, authMode, authToken }: ReqClientParams): V6ClientSSRRequest<T> {
 	const amplifyConfig = getAmplifyConfig(config);
 	// passing `null` instance because each (future model) method must retrieve a valid instance
 	// from server context
 	const client = generateServerClient<T, V6ClientSSRRequest<T>>({
 		amplify: null,
 		config: amplifyConfig,
+		authMode,
+		authToken,
 	});
 
 	// TODO: improve this and the next type
