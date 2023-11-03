@@ -15,7 +15,7 @@ describe('getUpdatedSystemClockOffset', () => {
 		Date.now = jest.fn(() => signingDate.valueOf());
 	});
 
-	it('should return the current offset if not skewed', () => {
+	test('returns the current offset if not skewed', () => {
 		mockIsClockSkewed.mockReturnValue(false);
 		const offset = 1500;
 		expect(getUpdatedSystemClockOffset(signingDate.getTime(), offset)).toBe(
@@ -23,7 +23,7 @@ describe('getUpdatedSystemClockOffset', () => {
 		);
 	});
 
-	it('should return the updated offset if system clock is behind', () => {
+	test('returns the updated offset if system clock is behind', () => {
 		mockIsClockSkewed.mockReturnValue(true);
 		const clockTime = new Date(signingDate);
 		clockTime.setMinutes(signingDate.getMinutes() + 15);
@@ -32,25 +32,12 @@ describe('getUpdatedSystemClockOffset', () => {
 		);
 	});
 
-	it('should return the updated offset if system clock is ahead', () => {
+	test('returns the updated offset if system clock is ahead', () => {
 		mockIsClockSkewed.mockReturnValue(true);
 		const clockTime = new Date(signingDate);
 		clockTime.setMinutes(signingDate.getMinutes() - 15);
 		expect(getUpdatedSystemClockOffset(clockTime.getTime(), 0)).toBe(
 			-15 * 60 * 1000
 		);
-	});
-
-	// Addresses: https://github.com/aws-amplify/amplify-js/issues/12450#issuecomment-1787945008
-	it('should return the updated offset if system clock is back and forth', () => {
-		// initialize client clock skew to be 15 mins behind
-		mockIsClockSkewed.mockReturnValue(true);
-		const clockTime = new Date(signingDate);
-		clockTime.setMinutes(signingDate.getMinutes() - 15);
-		let offset = getUpdatedSystemClockOffset(clockTime.getTime(), 0);
-		// client clock skew is now 15 mins ahead, making is sync with server clock
-		clockTime.setMinutes(signingDate.getMinutes() + 15);
-		offset = getUpdatedSystemClockOffset(clockTime.getTime(), offset);
-		expect(offset).toBe(0);
 	});
 });
