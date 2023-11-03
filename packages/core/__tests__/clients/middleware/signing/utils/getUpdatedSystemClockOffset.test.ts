@@ -48,8 +48,8 @@ describe('getUpdatedSystemClockOffset', () => {
 		const clockTime = new Date(signingDate);
 		clockTime.setMinutes(signingDate.getMinutes() - 15);
 		let offset = getUpdatedSystemClockOffset(clockTime.getTime(), 0);
-		// client clock skew is now 15 mins ahead, making is sync with server clock
-		clockTime.setMinutes(signingDate.getMinutes() + 15);
+		// client clock skew is now 15 mins ahead, making it sync with server clock
+		clockTime.setMinutes(clockTime.getMinutes() + 15);
 		offset = getUpdatedSystemClockOffset(clockTime.getTime(), offset);
 		expect(offset).toBe(0);
 	});
