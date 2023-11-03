@@ -93,7 +93,10 @@
 				"diagnostics": {
 					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
 				},
-				"tsConfig": false
+				"tsConfig": {
+					"allowJs": true,
+					"types": ["@types/jest"]
+				}
 			}
 		},
 		"moduleFileExtensions": [
