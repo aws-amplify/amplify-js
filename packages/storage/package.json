@@ -14,6 +14,7 @@
 	"browser": {
 		"./dist/esm/providers/s3/utils/client/runtime/index": "./dist/esm/providers/s3/utils/client/runtime/index.browser.mjs",
 		"./dist/cjs/providers/s3/utils/client/runtime/index": "./dist/cjs/providers/s3/utils/client/runtime/index.browser.js",
+		"./dist/esm/providers/s3/utils/client/runtime/xmlParser/pureJs.mjs": "./dist/esm/providers/s3/utils/client/runtime/xmlParser/dom.mjs",
 		"fast-xml-parser": false,
 		"buffer": false
 	},
