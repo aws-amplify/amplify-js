@@ -78,9 +78,9 @@ export { AuthError } from './errors/AuthError';
 export {
 	fetchAuthSession,
 	decodeJWT,
-	AWSCredentialsAndIdentityIdProvider,
+	CredentialsAndIdentityIdProvider,
 	GetCredentialsOptions,
-	AWSCredentialsAndIdentityId,
+	CredentialsAndIdentityId,
 	TokenProvider,
 	AuthTokens,
 	JWT,
