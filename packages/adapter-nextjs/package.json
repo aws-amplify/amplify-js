@@ -39,18 +39,12 @@
 			"import": "./dist/esm/api/index.mjs",
 			"require": "./dist/cjs/api/index.js"
 		},
-		"./internals": {
-			"types": "./dist/esm/internals/index.d.ts",
-			"import": "./dist/esm/internals/index.mjs",
-			"require": "./dist/cjs/internals/index.js"
-		},
 		"./package.json": "./package.json"
 	},
 	"files": [
 		"dist/cjs",
 		"dist/esm",
 		"src",
-		"internals",
 		"api"
 	],
 	"homepage": "https://aws-amplify.github.io/",

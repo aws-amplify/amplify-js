@@ -37,9 +37,6 @@
 			],
 			"server": [
 				"./dist/esm/server.d.ts"
-			],
-			"internals": [
-				"./dist/esm/dist/esm/internals/index.d.ts"
 			]
 		}
 	},
@@ -67,12 +64,6 @@
 			"import": "./dist/esm/server.mjs",
 			"require": "./dist/cjs/server.js"
 		},
-		"./internals": {
-			"types": "./dist/esm/dist/esm/internals/index.d.ts",
-			"import": "./dist/esm/internals/index.mjs",
-			"require": "./dist/cjs/internals/index.js",
-			"react-native": "./src/internals/index.ts"
-		},
 		"./package.json": "./package.json"
 	},
 	"repository": {
@@ -89,7 +80,6 @@
 		"dist/cjs",
 		"dist/esm",
 		"src",
-		"internals",
 		"cognito",
 		"server"
 	],
