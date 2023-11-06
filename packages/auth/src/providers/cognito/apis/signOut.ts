@@ -40,12 +40,19 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
+	const completedOAuthSignOut = await handleOAuthSignOut(cognitoConfig);
+	if (!completedOAuthSignOut) {
+		return;
+	}
+
 	if (input?.global) {
 		await globalSignOut(cognitoConfig);
 	} else {
 		await clientSignOut(cognitoConfig);
 	}
 
+	tokenOrchestrator.clearTokens();
+	await clearCredentials();
 	Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
 }
 
@@ -65,14 +72,9 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 				}
 			);
 		}
-
-		await handleOAuthSignOut(cognitoConfig);
 	} catch (err) {
 		// this shouldn't throw
 		// TODO(v6): add logger message
-	} finally {
-		tokenOrchestrator.clearTokens();
-		await clearCredentials();
 	}
 }
 
@@ -89,14 +91,9 @@ async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 				AccessToken: tokens.accessToken.toString(),
 			}
 		);
-
-		await handleOAuthSignOut(cognitoConfig);
 	} catch (err) {
 		// it should not throw
 		// TODO(v6): add logger
-	} finally {
-		tokenOrchestrator.clearTokens();
-		await clearCredentials();
 	}
 }
 
@@ -105,18 +102,26 @@ async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
 		assertOAuthConfig(cognitoConfig);
 	} catch (err) {
 		// all good no oauth handling
-		return;
+		return true;
 	}
 
 	const oauthStore = new DefaultOAuthStore(defaultStorage);
 	oauthStore.setAuthConfig(cognitoConfig);
 	const { isOAuthSignIn, preferPrivateSession } =
 		await oauthStore.loadOAuthSignIn();
-	await oauthStore.clearOAuthData();
 
 	if (isOAuthSignIn) {
-		oAuthSignOutRedirect(cognitoConfig, preferPrivateSession);
+		const completedOAuthSignOut = await oAuthSignOutRedirect(
+			cognitoConfig,
+			preferPrivateSession
+		);
+		if (completedOAuthSignOut) {
+			await oauthStore.clearOAuthData();
+		}
+		return completedOAuthSignOut;
 	}
+	await oauthStore.clearOAuthData();
+	return true;
 }
 
 async function oAuthSignOutRedirect(
@@ -134,29 +139,14 @@ async function oAuthSignOutRedirect(
 		.map(([k, v]) => `${k}=${v}`)
 		.join('&')}`;
 
-	// dispatchAuthEvent(
-	// 	'oAuthSignOut',
-	// 	{ oAuth: 'signOut' },
-	// 	`Signing out from ${oAuthLogoutEndpoint}`
-	// );
-	// logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
+	const { type } =
+		(await openAuthSession(
+			oAuthLogoutEndpoint,
+			redirectSignOut,
+			preferPrivateSession
+		)) ?? {};
 
-	await openAuthSession(
-		oAuthLogoutEndpoint,
-		redirectSignOut,
-		preferPrivateSession
-	);
+	return !type || type === 'success';
 }
 
-function isSessionRevocable(token: JWT) {
-	if (token) {
-		try {
-			const { origin_jti } = token.payload;
-			return !!origin_jti;
-		} catch (err) {
-			// Nothing to do, token doesnt have origin_jti claim
-		}
-	}
-
-	return false;
-}
+const isSessionRevocable = (token: JWT) => !!token?.payload?.origin_jti;
