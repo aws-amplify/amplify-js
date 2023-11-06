@@ -26,10 +26,10 @@
 		"test": "npm run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
+		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
 		"build": "npm run clean && npm run build:esm && npm run build:cjs",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
@@ -48,7 +48,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@types/zen-observable": "^0.8.0"
+		"@types/zen-observable": "^0.8.0",
+		"typescript": "5.0.2"
 	},
 	"files": [
 		"lib",
@@ -67,29 +68,26 @@
 			"name": "API (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, API }",
-			"limit": "90.28 kB"
+			"limit": "96.05 kB"
 		}
 	],
 	"jest": {
+		"moduleNameMapper": {
+			"axios": "axios/dist/node/axios.cjs"
+		},
 		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
+				"ts-jest": {
+					"diagnostics": false,
+					"tsConfig": false
 				}
-			}
 		},
 		"transform": {
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testPathIgnorePatterns": [
+			"/testUtils/"
+		],
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",
@@ -98,7 +96,6 @@
 			"jsx"
 		],
 		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
 		"coverageThreshold": {
 			"global": {
 				"branches": 0,
@@ -107,6 +104,7 @@
 				"statements": 0
 			}
 		},
+		"testURL": "http://localhost/",
 		"coveragePathIgnorePatterns": [
 			"/node_modules/",
 			"dist",
@@ -114,4 +112,5 @@
 			"lib-esm"
 		]
 	}
+   
 }

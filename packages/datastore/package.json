@@ -73,10 +73,13 @@
 			"name": "DataStore (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, DataStore }",
-			"limit": "137 kB"
+			"limit": "144.06 kB"
 		}
 	],
 	"jest": {
+		"moduleNameMapper": {
+			"axios": "axios/dist/node/axios.cjs"
+		},
 		"globals": {
 			"ts-jest": {
 				"diagnostics": true,
