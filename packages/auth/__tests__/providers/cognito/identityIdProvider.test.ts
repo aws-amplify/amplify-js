@@ -4,16 +4,13 @@
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { Amplify, Identity, ResourcesConfig } from '@aws-amplify/core';
 import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
-
-// TODO(V6): import these from top level core/ and not lib/
-import * as cogId from '@aws-amplify/core/lib/awsClients/cognitoIdentity';
+import * as cogId from '@aws-amplify/core/internals/aws-clients/cognitoIdentity';
 import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
-jest.mock('@aws-amplify/core/lib/awsClients/cognitoIdentity');
+import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
+
+jest.mock('@aws-amplify/core/internals/aws-clients/cognitoIdentity');
 jest.mock('../../../src/providers/cognito/credentialsProvider/IdentityIdStore');
 
-type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
-	? A
-	: never;
 const ampConfig: ResourcesConfig = {
 	Auth: {
 		Cognito: {
@@ -63,6 +60,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		);
 		expect(
 			await cognitoIdentityIdProvider({
+				authConfig: ampConfig.Auth!.Cognito as CognitoIdentityPoolConfig,
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
 		).toBe(authAPITestParams.GuestIdentityId.id);
@@ -98,6 +96,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		);
 		expect(
 			await cognitoIdentityIdProvider({
+				authConfig: ampConfig.Auth!.Cognito as CognitoIdentityPoolConfig,
 				tokens: authAPITestParams.ValidAuthTokens,
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})

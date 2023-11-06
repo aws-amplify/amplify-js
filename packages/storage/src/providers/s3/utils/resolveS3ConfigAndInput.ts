@@ -31,8 +31,6 @@ type ResolvedS3ConfigAndInput = {
  * @throws A {@link StorageError} with `error.name` from {@link StorageValidationErrorCode} indicating invalid
  *   configurations or Amplify library options.
  *
- * TODO: add config errors
- *
  * @internal
  */
 export const resolveS3ConfigAndInput = async (

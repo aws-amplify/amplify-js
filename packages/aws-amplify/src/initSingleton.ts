@@ -32,7 +32,11 @@ export const DefaultAmplify = {
 
 		// When Auth config is provided but no custom Auth provider defined
 		// use the default Auth Providers
-		if (resolvedResourceConfig.Auth && !libraryOptions?.Auth) {
+		if (
+			resolvedResourceConfig.Auth &&
+			!libraryOptions?.Auth &&
+			!Amplify.libraryOptions.Auth
+		) {
 			CognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
 
 			const libraryOptionsWithDefaultAuthProviders: LibraryOptions = {

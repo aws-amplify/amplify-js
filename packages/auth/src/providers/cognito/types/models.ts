@@ -5,7 +5,14 @@ import {
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
-import { AuthUserAttribute, AuthDevice, AuthUser } from '../../../types';
+
+import {
+	AuthUserAttribute,
+	AuthDevice,
+	AWSAuthUser,
+	AuthCodeDeliveryDetails,
+} from '../../../types';
+
 import { AuthProvider } from '../../../types/inputs';
 import { SignUpOutput } from './outputs';
 
@@ -92,6 +99,13 @@ export type CognitoAuthSignInDetails = {
 /**
  * Holds the user information along with the sign in details.
  */
-export interface CognitoAuthUser extends AuthUser {
+export interface AuthUser extends AWSAuthUser {
 	signInDetails?: CognitoAuthSignInDetails;
 }
+
+/**
+ * Holds data describing the dispatch of a confirmation code.
+ */
+export type CodeDeliveryDetails<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey
+> = AuthCodeDeliveryDetails<CognitoUserAttributeKey>;

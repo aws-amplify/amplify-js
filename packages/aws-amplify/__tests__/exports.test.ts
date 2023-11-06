@@ -41,6 +41,10 @@ describe('aws-amplify Exports', () => {
 			  "Cache",
 			  "ConsoleLogger",
 			  "ServiceWorker",
+			  "CookieStorage",
+			  "defaultStorage",
+			  "sessionStorage",
+			  "sharedInMemoryStorage",
 			]
 		`);
 		});
@@ -52,6 +56,7 @@ describe('aws-amplify Exports', () => {
 			Array [
 			  "generateClient",
 			  "GraphQLAuthError",
+			  "ConnectionState",
 			  "get",
 			  "put",
 			  "post",

@@ -29,6 +29,10 @@ export {
 	forgetDevice,
 	fetchDevices,
 	autoSignIn,
+	AuthUser,
+	CodeDeliveryDetails,
+	UserAttributeKey,
+	VerifiableUserAttributeKey,
 } from './providers/cognito';
 
 export {

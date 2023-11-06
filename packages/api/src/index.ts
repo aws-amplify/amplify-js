@@ -6,11 +6,12 @@
 export { GraphQLQuery, GraphQLSubscription } from './types';
 export { generateClient } from './API';
 
-export { GraphQLAuthError } from '@aws-amplify/api-graphql';
+export { GraphQLAuthError, ConnectionState } from '@aws-amplify/api-graphql';
 
 export type {
 	GraphQLResult,
 	GraphQLReturnType,
+	CONNECTION_STATE_CHANGE,
 } from '@aws-amplify/api-graphql';
 
 export {

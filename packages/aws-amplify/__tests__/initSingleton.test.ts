@@ -53,6 +53,13 @@ describe('initSingleton (DefaultAmplify)', () => {
 		mockCognitoUserPoolsTokenProviderSetKeyValueStorage.mockReset();
 		mockAmplifySingletonConfigure.mockReset();
 		mockAmplifySingletonGetConfig.mockReset();
+
+		mockAmplifySingletonConfigure.mockImplementation((_, libraryOptions) => {
+			AmplifySingleton.libraryOptions =
+				libraryOptions ?? AmplifySingleton.libraryOptions;
+		});
+		// reset to its initial state
+		AmplifySingleton.libraryOptions = {};
 	});
 
 	describe('DefaultAmplify.configure()', () => {
@@ -134,6 +141,39 @@ describe('initSingleton (DefaultAmplify)', () => {
 								credentialsProvider: cognitoCredentialsProvider,
 							},
 						}
+					);
+				});
+
+				it('should preserve the default auth providers when Amplify.configure is called again without custom auth provider', () => {
+					mockAmplifySingletonGetConfig.mockReturnValueOnce(mockResourceConfig);
+
+					Amplify.configure(mockResourceConfig);
+					const defaultAuthProvidersHaveBeenConfigured =
+						AmplifySingleton.libraryOptions;
+
+					Amplify.configure({
+						...Amplify.getConfig(),
+						Analytics: {
+							Kinesis: {
+								region: 'us-west-2',
+							},
+						},
+					});
+					expect(AmplifySingleton.libraryOptions).toStrictEqual(
+						defaultAuthProvidersHaveBeenConfigured
+					);
+
+					Amplify.configure({
+						...Amplify.getConfig(),
+						Analytics: {
+							Personalize: {
+								trackingId: 'f1b2d240-f7e7-416a-af88-759d7e258994',
+								region: 'us-west-2',
+							},
+						},
+					});
+					expect(AmplifySingleton.libraryOptions).toStrictEqual(
+						defaultAuthProvidersHaveBeenConfigured
 					);
 				});
 

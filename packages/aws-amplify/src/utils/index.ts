@@ -6,8 +6,14 @@ This file maps exports from `aws-amplify/utils`.
 */
 export {
 	Hub,
+	HubCapsule,
 	I18n,
 	Cache,
 	ConsoleLogger,
 	ServiceWorker,
+	CookieStorage,
+	defaultStorage,
+	sessionStorage,
+	sharedInMemoryStorage,
+	KeyValueStorageInterface,
 } from '@aws-amplify/core';

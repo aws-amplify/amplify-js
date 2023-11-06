@@ -233,7 +233,7 @@ const cases = [
 		</SimpleScalarPropertiesInputOutput>`,
 		expected: expect.objectContaining({
 			stringValue: 'string',
-		}), // TODO: non-browser parser from AWS SDK populates extra property. It won'd affect service handler.
+		}), // Non-browser parser from AWS SDK populates extra property. It won'd affect service handler.
 	},
 	{
 		spec: '',

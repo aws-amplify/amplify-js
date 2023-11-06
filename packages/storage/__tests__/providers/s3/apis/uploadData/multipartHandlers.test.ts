@@ -176,7 +176,7 @@ describe('getMultipartUploadHandlers', () => {
 			it.each([
 				['file', new File([getBlob(8 * MB)], 'someName')],
 				['blob', getBlob(8 * MB)],
-				['string', '1'.repeat(8 * MB)],
+				['string', 'Ü'.repeat(4 * MB)],
 				['arrayBuffer', new ArrayBuffer(8 * MB)],
 				['arrayBufferView', new Uint8Array(8 * MB)],
 			])(

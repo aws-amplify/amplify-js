@@ -1,15 +1,13 @@
 {
 	"author": "Amazon Web Services",
-	"private": true,
 	"name": "@aws-amplify/adapter-nextjs",
 	"description": "The adapter for the supporting of using Amplify APIs in Next.js.",
 	"peerDependencies": {
 		"aws-amplify": "^6.0.0",
-		"next": ">=13.4.0 <14.0.0"
+		"next": ">=13.5.0 <15.0.0"
 	},
 	"dependencies": {
-		"cookie": "0.5.0",
-		"server-only": "^0.0.1"
+		"cookie": "0.5.0"
 	},
 	"devDependencies": {
 		"@types/cookie": "0.5.1",
@@ -18,7 +16,7 @@
 		"@types/react-dom": "^18.2.6",
 		"aws-amplify": "6.0.0",
 		"jest-fetch-mock": "3.0.3",
-		"next": ">= 13.4.0 < 14.0.0",
+		"next": ">= 13.5.0 < 15.0.0",
 		"typescript": "5.1.6"
 	},
 	"publishConfig": {
@@ -33,15 +31,10 @@
 			"import": "./lib-esm/index.js",
 			"require": "./lib/index.js"
 		},
-		"./with-amplify": {
-			"types": "./lib-esm/withAmplify.d.ts",
-			"import": "./lib-esm/withAmplify.js",
-			"require": "./lib/withAmplify.js"
-		},
 		"./api": {
-			"types": "./lib-esm/api/generateServerClient.d.ts",
-			"import": "./lib-esm/api/generateServerClient.js",
-			"require": "./lib/api/generateServerClient.js"
+			"types": "./lib-esm/api/index.d.ts",
+			"import": "./lib-esm/api/index.js",
+			"require": "./lib/api/index.js"
 		},
 		"./internals": {
 			"types": "./lib-esm/internals/index.d.ts",
@@ -55,7 +48,8 @@
 		"lib-esm",
 		"src",
 		"with-amplify",
-		"internals"
+		"internals",
+		"api"
 	],
 	"homepage": "https://aws-amplify.github.io/",
 	"jest": {
@@ -63,7 +57,8 @@
 			"/node_modules/",
 			"dist",
 			"lib",
-			"lib-esm"
+			"lib-esm",
+			"__tests__/mocks"
 		],
 		"coverageThreshold": {
 			"global": {
