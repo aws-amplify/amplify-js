@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.3.7 (2023-11-06)
+
+### Bug Fixes
+
+- **api-rest:** infinite retry when clock skew go back and forth ([#12488](https://github.com/aws-amplify/amplify-js/issues/12488)) ([095efac](https://github.com/aws-amplify/amplify-js/commit/095efac51abc14a4e805ccb71d1fa9f46fde4065))
+
 ## 6.3.6 (2023-09-14)
 
 **Note:** Version bump only for package amazon-cognito-identity-js
