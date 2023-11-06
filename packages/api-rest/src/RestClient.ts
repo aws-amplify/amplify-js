@@ -198,9 +198,9 @@ export class RestClient {
 
 				// Compare local clock to the server clock
 				if (DateUtils.isClockSkewed(responseDate)) {
-					DateUtils.setClockOffset(
-						responseDate.getTime() - requestDate.getTime()
-					);
+					const rawClientDate =
+						requestDate.getTime() - DateUtils.getClockOffset();
+					DateUtils.setClockOffset(responseDate.getTime() - rawClientDate);
 
 					return this.ajax(urlOrApiInfo, method, init);
 				}
