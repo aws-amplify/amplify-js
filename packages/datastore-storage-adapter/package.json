@@ -44,6 +44,9 @@
 		"sqlite3": "^5.0.2"
 	},
 	"jest": {
+		"moduleNameMapper": {
+			"axios": "axios/dist/node/axios.cjs"
+		},
 		"globals": {
 			"ts-jest": {
 				"diagnostics": true,

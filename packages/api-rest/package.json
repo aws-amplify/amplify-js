@@ -19,10 +19,10 @@
     "test": "npm run lint && jest --coverage",
     "test:size": "size-limit",
     "build-with-test": "npm test && npm run build",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
-    "build:cjs:watch": "node ./build es5 --watch",
-    "build:esm:watch": "node ./build es6 --watch",
+    "build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
+	  "build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
+	  "build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
+	  "build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "npm run clean:size && rimraf lib-esm lib dist",
     "clean:size": "rimraf dual-publish-tmp tmp*",
@@ -47,60 +47,60 @@
   ],
   "dependencies": {
     "@aws-amplify/core": "5.8.5",
-    "axios": "0.26.0",
+    "axios": "1.6.0",
     "tslib": "^1.8.0",
     "url": "0.11.0"
+  },
+  "devDependencies": {
+    "typescript": "5.0.2"
   },
   "size-limit": [
     {
       "name": "API (rest client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, RestAPI }",
-      "limit": "31.3 kB"
+      "limit": "36.68 kB"
     }
   ],
   "jest": {
+    "moduleNameMapper": {
+      "axios": "axios/dist/node/axios.cjs"
+    },
     "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
-        }
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "dist",
-      "lib",
-      "lib-esm"
-    ]
-  }
+			"ts-jest": {
+				"diagnostics": false,
+				"tsConfig": false
+			}
+		},
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testPathIgnorePatterns": [
+			"/testUtils/"
+		],
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "jsdom",
+		"coverageThreshold": {
+			"global": {
+				"branches": 0,
+				"functions": 0,
+				"lines": 0,
+				"statements": 0
+			}
+		},
+		"testURL": "http://localhost/",
+		"coveragePathIgnorePatterns": [
+			"/node_modules/",
+			"dist",
+			"lib",
+			"lib-esm"
+		]
+	}
 }
