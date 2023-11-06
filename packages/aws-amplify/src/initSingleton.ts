@@ -10,6 +10,7 @@ import {
 import {
 	LegacyConfig,
 	parseAWSExports,
+	Lens,
 } from '@aws-amplify/core/internals/utils';
 import {
 	CognitoUserPoolsTokenProvider,
@@ -61,5 +62,13 @@ export const DefaultAmplify = {
 	},
 	getConfig(): ResourcesConfig {
 		return Amplify.getConfig();
+	},
+	updateConfig<T>(
+		selector: (
+			config: Lens<ResourcesConfig, ResourcesConfig>
+		) => Lens<ResourcesConfig, T>,
+		value: T
+	) {
+		Amplify.updateConfig(selector, value);
 	},
 };

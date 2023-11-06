@@ -22,14 +22,22 @@ export class Lens<W, P> {
 		this.set = set;
 	}
 
+	private compose<Q>(next: Lens<P, Q>): Lens<W, Q> {
+		return new Lens<W, Q>(
+			w => next.get(this.get(w)),
+			q => w => this.set(next.set(q)(this.get(w)))(w)
+		);
+	}
+
 	atKey<Q extends keyof P>(key: Q): Lens<W, P[Q]> {
-		return new Lens<W, P[Q]>(
-			w => this.get(w)[key],
-			pq => w =>
-				this.set({
-					...this.get(w),
+		return this.compose(
+			new Lens<P, P[Q]>(
+				p => p[key],
+				pq => p => ({
+					...p,
 					[key]: pq,
-				})(w)
+				})
+			)
 		);
 	}
 }
