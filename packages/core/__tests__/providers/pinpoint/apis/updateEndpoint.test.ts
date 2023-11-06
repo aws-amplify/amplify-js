@@ -4,10 +4,8 @@
 import { v4 } from 'uuid';
 import { getClientInfo } from '../../../../src/utils/getClientInfo';
 import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/awsClients/pinpoint';
-import {
-	cacheEndpointId,
-	getEndpointId,
-} from '../../../../src/providers/pinpoint/utils';
+import { cacheEndpointId } from '../../../../src/providers/pinpoint/utils/cacheEndpointId';
+import { getEndpointId } from '../../../../src/providers/pinpoint/utils/getEndpointId';
 import { updateEndpoint } from '../../../../src/providers/pinpoint/apis';
 import {
 	appId,
@@ -24,7 +22,8 @@ import { getExpectedInput } from './testUtils/getExpectedInput';
 
 jest.mock('uuid');
 jest.mock('../../../../src/awsClients/pinpoint');
-jest.mock('../../../../src/providers/pinpoint/utils');
+jest.mock('../../../../src/providers/pinpoint/utils/cacheEndpointId');
+jest.mock('../../../../src/providers/pinpoint/utils/getEndpointId');
 jest.mock('../../../../src/utils/getClientInfo');
 
 describe('Pinpoint Provider API: updateEndpoint', () => {

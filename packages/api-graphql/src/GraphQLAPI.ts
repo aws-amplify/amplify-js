@@ -3,7 +3,7 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { Category, ApiAction } from '@aws-amplify/core/internals/utils';
 import { GraphQLOptions, GraphQLResult } from './types';
-import { InternalGraphQLAPIClass } from './internals';
+import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
 import { Observable } from 'rxjs';
 
 export const graphqlOperation = (
