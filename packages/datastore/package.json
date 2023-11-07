@@ -41,8 +41,7 @@
 	"files": [
 		"dist/cjs",
 		"dist/esm",
-		"src",
-		"ssr"
+		"src"
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.0.0",

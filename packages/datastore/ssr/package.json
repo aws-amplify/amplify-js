@@ -1,5 +1,0 @@
-{
-	"main": "../dist/cjs/ssr/index.js",
-	"module": "../dist/esm/ssr/index.js",
-	"typings": "../dist/esm/ssr/index.d.ts"
-}
