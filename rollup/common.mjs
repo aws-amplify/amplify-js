@@ -23,7 +23,7 @@ export const cjsTSOptions = {
 };
 
 /** @type {import("rollup").OutputOptions}*/
-export const emsOutput = {
+export const esmOutput = {
 	dir: 'dist/esm',
 	format: 'es',
 	entryFileNames: '[name].mjs',
@@ -32,7 +32,7 @@ export const emsOutput = {
 	sourcemap: true,
 };
 
-export const emsTSOptions = {
+export const esmTSOptions = {
 	outDir: 'dist/esm',
 	declaration: true,
 	sourceMap: false,

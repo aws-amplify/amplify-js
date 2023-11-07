@@ -8,8 +8,8 @@ import { getInputForGlob } from '../../rollup/utils.mjs';
 import {
 	cjsOutput,
 	cjsTSOptions,
-	emsOutput,
-	emsTSOptions,
+	esmOutput,
+	esmTSOptions,
 } from '../../rollup/common.mjs';
 
 const input = getInputForGlob('src/**/*.ts');
@@ -30,8 +30,8 @@ const config = defineConfig([
 		external: [
 			fileURLToPath(new URL('src/vendor/paho-mqtt.js', import.meta.url)),
 		],
-		output: emsOutput,
-		plugins: [typescript(emsTSOptions)],
+		output: esmOutput,
+		plugins: [typescript(esmTSOptions)],
 	},
 ]);
 

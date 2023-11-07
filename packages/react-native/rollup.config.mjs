@@ -7,8 +7,8 @@ import { getInputForGlob } from '../../rollup/utils.mjs';
 import {
 	cjsOutput,
 	cjsTSOptions,
-	emsOutput,
-	emsTSOptions,
+	esmOutput,
+	esmTSOptions,
 } from '../../rollup/common.mjs';
 
 const input = getInputForGlob('src/**/*.ts');
@@ -28,10 +28,10 @@ const config = defineConfig([
 	// ESM config
 	{
 		input: input,
-		output: emsOutput,
+		output: esmOutput,
 		plugins: [
 			typescript({
-				...emsTSOptions,
+				...esmTSOptions,
 				tsconfig: 'tsconfig.build.json',
 			}),
 		],
