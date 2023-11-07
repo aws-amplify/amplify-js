@@ -1,7 +1,6 @@
 //WARNING: If you are manually specifying files to compile then the tsconfig.json is completely ignored, you must use command line flags
 {
 	"compilerOptions": {
-		"outDir": "./dist/cjs/",
 		"target": "es2020",
 		"noImplicitAny": false,
 		"downlevelIteration": true,
@@ -16,7 +15,6 @@
 			"es2020.promise"
 		],
 		"sourceMap": true,
-		"module": "commonjs",
 		"moduleResolution": "node",
 		"allowJs": false,
 		"declaration": true,
