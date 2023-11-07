@@ -2,38 +2,51 @@
 	"name": "@aws-amplify/geo",
 	"version": "3.0.0",
 	"description": "Geo category for aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
-	},
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./src/index.ts",
 	"publishConfig": {
 		"access": "public"
 	},
 	"sideEffects": [
-		"./lib/geo/geo.js",
-		"./lib-esm/geo/geo.js"
+		"./dist/cjs/geo/geo.js",
+		"./dist/esm/geo/geo.mjs"
 	],
 	"scripts": {
 		"test": "yarn run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
-		"build-with-test": "yarn test && yarn run build",
-		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
-		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
-		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
-		"build": "yarn clean && yarn build:esm && yarn run build:cjs",
-		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"build-with-test": "npm test && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 84.00"
 	},
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
+		},
+		"./location-service": {
+			"types": "./dist/esm/providers/location-service/AmazonLocationServiceProvider.d.ts",
+			"import": "./dist/esm/providers/location-service/AmazonLocationServiceProvider.mjs",
+			"require": "./dist/cjs/providers/location-service/AmazonLocationServiceProvider.js",
+			"react-native": "./src/providers/location-service/AmazonLocationServiceProvider.ts"
+		},
+		"./package.json": "./package.json"
+	},
 	"typesVersions": {
 		">=4.2": {
-			"pinpoint": [
-				"./lib-esm/providers/pinpoint/AmazonLocationServiceProvider.d.ts"
+			"location-service": [
+				"./dist/esm/providers/location-service/AmazonLocationServiceProvider.d.ts"
 			]
 		}
 	},
@@ -48,8 +61,9 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"files": [
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
+		"location-service",
 		"src"
 	],
 	"dependencies": {
@@ -63,12 +77,14 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
+		"@rollup/plugin-typescript": "11.1.5",
+		"rollup": "3.29.4",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
 			"name": "Geo (top-level class)",
-			"path": "./lib-esm/index.js",
+			"path": "./dist/esm/index.mjs",
 			"import": "{ Amplify, Geo }",
 			"limit": "43.9 kB"
 		}
@@ -122,9 +138,7 @@
 		},
 		"coveragePathIgnorePatterns": [
 			"node_modules",
-			"dist",
-			"lib",
-			"lib-esm"
+			"dist"
 		]
 	}
 }

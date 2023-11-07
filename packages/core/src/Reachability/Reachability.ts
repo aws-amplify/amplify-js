@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CompletionObserver, Observable, from } from 'rxjs';
-import { isWebWorker } from '../libraryUtils';
 import { NetworkStatus } from './types';
+import { isWebWorker } from '../utils';
 
 export class Reachability {
 	private static _observers: Array<CompletionObserver<NetworkStatus>> = [];

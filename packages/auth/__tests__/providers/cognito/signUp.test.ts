@@ -11,7 +11,7 @@ import { SignUpCommandOutput } from '../../../src/providers/cognito/utils/client
 import { Amplify } from 'aws-amplify';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
@@ -55,9 +55,9 @@ describe('SignUp API Happy Path Cases:', () => {
 			userId: '1234567890',
 		});
 		expect(signUpSpy).toHaveBeenCalledWith(
-			{ 
+			{
 				region: 'us-west-2',
-				userAgentValue: expect.any(String)
+				userAgentValue: expect.any(String),
 			},
 			{
 				ClientMetadata: undefined,

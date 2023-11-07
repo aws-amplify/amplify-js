@@ -19,6 +19,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { IdentityIdStore } from './types';
 import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertIdTokenInAuthTokens } from '../utils/types';
+import { formLoginsMap } from './utils';
 
 const logger = new ConsoleLogger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
@@ -240,19 +241,4 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 				this._credentialsAndIdentityId.associatedIdToken
 		);
 	}
-}
-
-export function formLoginsMap(idToken: string) {
-	const issuer = decodeJWT(idToken).payload.iss;
-	const res: Record<string, string> = {};
-	if (!issuer) {
-		throw new AuthError({
-			name: 'InvalidIdTokenException',
-			message: 'Invalid Idtoken.',
-		});
-	}
-	let domainName: string = issuer.replace(/(^\w+:|^)\/\//, '');
-
-	res[domainName] = idToken;
-	return res;
 }
