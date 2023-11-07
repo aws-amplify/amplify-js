@@ -1,12 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { openAuthSessionAsync } from './apis/openAuthSessionAsync';
-import { nativeModule } from './nativeModule';
+import { openAuthSessionAsync } from './apis';
 
-const mergedModule = {
-	...nativeModule,
-	openAuthSessionAsync,
-};
+const module = { openAuthSessionAsync };
 
-export { mergedModule as AmplifyRTNWebBrowser };
+export type WebBrowserModule = typeof module;
+export { module };

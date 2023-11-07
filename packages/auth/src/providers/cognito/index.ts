@@ -47,7 +47,6 @@ export {
 	DeleteUserAttributesInput,
 	ForgetDeviceInput,
 } from './types/inputs';
-
 export {
 	FetchUserAttributesOutput,
 	GetCurrentUserOutput,
@@ -64,7 +63,12 @@ export {
 	SendUserAttributeVerificationCodeOutput,
 	FetchDevicesOutput,
 } from './types/outputs';
-export { AuthUser } from './types/models';
+export {
+	AuthUser,
+	CodeDeliveryDetails,
+	UserAttributeKey,
+	VerifiableUserAttributeKey,
+} from './types/models';
 export {
 	cognitoCredentialsProvider,
 	CognitoAWSCredentialsAndIdentityIdProvider,
