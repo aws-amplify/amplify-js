@@ -55,7 +55,7 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     if: always() # always run, so we never skip the check
-    name: Unit and Bundle tests have passed - ci
+    name: ci - Unit and Bundle tests have passed
     needs: all-unit-tests-pass
     env:
       PASSED: ${{ needs.all-unit-tests-pass.outputs.success }}
