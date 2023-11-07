@@ -45,9 +45,29 @@ jobs:
       - github-actions-test
       - tsc-compliance-test
     runs-on: ubuntu-latest
-    # This is a bit of a hack - Branch protections depend upon selected
-    #   workflows that run on hardware, not parents of many callable workflows.
-    #   Adding this so that unit and bundle checks can be a single protection line.
+    if: success() # only run when all checks have passed
+    # store success output flag for ci job
+    outputs:
+      success: ${{ steps.setoutput.outputs.success }}
     steps:
-      - name: All tests passed
-        run: echo "All tests passed"
+      - id: setoutput
+        run: echo "::set-output name=success::true"
+  ci:
+    runs-on: ubuntu-latest
+    if: always() # always run, so we never skip the check
+    name: Unit and Bundle tests have passed - ci
+    needs: all-unit-tests-pass
+    env:
+      PASSED: ${{ needs.all-unit-tests-pass.outputs.success }}
+    steps:
+      # this job passes only when output of all-unit-tests-pass job is set
+      # in case at least one of the checks fails, all-unit-tests-pass is skipped
+      # and the output will not be set, which will then cause the ci job to fail
+      - run: |
+          if [[ $PASSED == "true" ]]; then
+          echo "All checks have passed"
+          exit 0
+          else
+          echo "One or more checks have failed"
+          exit 1
+          fi
