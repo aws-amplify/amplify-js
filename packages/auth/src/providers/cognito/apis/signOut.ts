@@ -3,14 +3,14 @@
 
 import {
 	Amplify,
-	CognitoUserPoolConfig,
-	Hub,
 	clearCredentials,
+	CognitoUserPoolConfig,
 	defaultStorage,
+	Hub,
 } from '@aws-amplify/core';
-import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
+
+import { getAuthUserAgentValue } from '../../../utils';
 import { SignOutInput } from '../types';
-import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
 import {
 	AuthAction,
@@ -28,7 +28,10 @@ import {
 	assertAuthTokens,
 	assertAuthTokensWithRefreshToken,
 } from '../utils/types';
-import { getRedirectUrl } from '../utils/oauth/getRedirectUrl';
+import { handleOAuthSignOut } from '../utils/oauth';
+import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
+import { AuthError } from '../../../errors/AuthError';
+import { OAUTH_SIGNOUT_EXCEPTION } from '../../../errors/constants';
 
 /**
  * Signs a user out
@@ -40,20 +43,39 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 	const cognitoConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(cognitoConfig);
 
-	const completedOAuthSignOut = await handleOAuthSignOut(cognitoConfig);
-	if (!completedOAuthSignOut) {
-		return;
-	}
-
 	if (input?.global) {
 		await globalSignOut(cognitoConfig);
 	} else {
 		await clientSignOut(cognitoConfig);
 	}
 
-	tokenOrchestrator.clearTokens();
-	await clearCredentials();
-	Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
+	let hasOAuthConfig;
+
+	try {
+		assertOAuthConfig(cognitoConfig);
+		hasOAuthConfig = true;
+	} catch (err) {
+		hasOAuthConfig = false;
+	}
+
+	if (hasOAuthConfig) {
+		const oAuthStore = new DefaultOAuthStore(defaultStorage);
+		oAuthStore.setAuthConfig(cognitoConfig);
+		const { type } =
+			(await handleOAuthSignOut(cognitoConfig, oAuthStore)) ?? {};
+		if (type === 'error') {
+			throw new AuthError({
+				name: OAUTH_SIGNOUT_EXCEPTION,
+				message:
+					'An error occurred when attempting to log out from OAuth provider.',
+			});
+		}
+	} else {
+		// complete sign out
+		tokenOrchestrator.clearTokens();
+		await clearCredentials();
+		Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
+	}
 }
 
 async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
@@ -95,62 +117,6 @@ async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 		// it should not throw
 		// TODO(v6): add logger
 	}
-}
-
-async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
-	try {
-		assertOAuthConfig(cognitoConfig);
-	} catch (err) {
-		// all good no oauth handling - proceed with normal signout
-		return true;
-	}
-
-	const oauthStore = new DefaultOAuthStore(defaultStorage);
-	oauthStore.setAuthConfig(cognitoConfig);
-	const { isOAuthSignIn, preferPrivateSession } =
-		await oauthStore.loadOAuthSignIn();
-
-	if (isOAuthSignIn) {
-		const completedOAuthSignOut = await oAuthSignOutRedirect(
-			cognitoConfig,
-			preferPrivateSession
-		);
-		// If this was a private session, clear data and tokens regardless of what happened with logout
-		// endpoint. Otherwise, only do so if the logout endpoint was succesfully visited.
-		const shouldClearDataAndTokens =
-			preferPrivateSession || completedOAuthSignOut;
-		if (shouldClearDataAndTokens) {
-			await oauthStore.clearOAuthData();
-		}
-		return shouldClearDataAndTokens;
-	}
-	await oauthStore.clearOAuthData();
-	return true;
-}
-
-async function oAuthSignOutRedirect(
-	authConfig: CognitoUserPoolConfig,
-	preferPrivateSession: boolean
-) {
-	assertOAuthConfig(authConfig);
-	const { loginWith, userPoolClientId } = authConfig;
-	const { domain, redirectSignOut } = loginWith.oauth;
-	const signoutUri = getRedirectUrl(redirectSignOut);
-	const oAuthLogoutEndpoint = `https://${domain}/logout?${Object.entries({
-		client_id: userPoolClientId,
-		logout_uri: encodeURIComponent(signoutUri),
-	})
-		.map(([k, v]) => `${k}=${v}`)
-		.join('&')}`;
-
-	const { type } =
-		(await openAuthSession(
-			oAuthLogoutEndpoint,
-			redirectSignOut,
-			preferPrivateSession
-		)) ?? {};
-
-	return !type || type === 'success';
 }
 
 const isSessionRevocable = (token: JWT) => !!token?.payload?.origin_jti;
