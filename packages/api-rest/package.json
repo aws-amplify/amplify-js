@@ -7,10 +7,6 @@
 	"module": "./dist/esm/index.mjs",
 	"typings": "./dist/esm/index.d.ts",
 	"react-native": "./src/index.ts",
-	"sideEffects": [
-		"./dist/cjs/RestAPI.js",
-		"./dist/esm/RestAPI.mjs"
-	],
 	"publishConfig": {
 		"access": "public"
 	},
