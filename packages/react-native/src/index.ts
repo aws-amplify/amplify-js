@@ -4,6 +4,7 @@
 export { computeModPow, computeS, getOperatingSystem } from './apis';
 export {
 	loadAmplifyPushNotification,
+	loadAmplifyWebBrowser,
 	loadAsyncStorage,
 	loadNetInfo,
 	loadBuffer,
