@@ -101,7 +101,7 @@ async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	try {
 		assertOAuthConfig(cognitoConfig);
 	} catch (err) {
-		// all good no oauth handling
+		// all good no oauth handling - proceed with normal signout
 		return true;
 	}
 
@@ -115,10 +115,14 @@ async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
 			cognitoConfig,
 			preferPrivateSession
 		);
-		if (completedOAuthSignOut) {
+		// If this was a private session, clear data and tokens regardless of what happened with logout
+		// endpoint. Otherwise, only do so if the logout endpoint was succesfully visited.
+		const shouldClearDataAndTokens =
+			preferPrivateSession || completedOAuthSignOut;
+		if (shouldClearDataAndTokens) {
 			await oauthStore.clearOAuthData();
 		}
-		return completedOAuthSignOut;
+		return shouldClearDataAndTokens;
 	}
 	await oauthStore.clearOAuthData();
 	return true;
