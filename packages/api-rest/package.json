@@ -39,8 +39,7 @@
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
 			"import": "./dist/esm/server.mjs",
-			"require": "./dist/cjs/server.js",
-			"react-native": "./src/server.ts"
+			"require": "./dist/cjs/server.js"
 		},
 		"./internals": {
 			"types": "./dist/esm/internals/index.d.ts",

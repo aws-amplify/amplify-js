@@ -56,8 +56,7 @@
 		"./cognito/server": {
 			"types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
 			"import": "./dist/esm/providers/cognito/apis/server/index.mjs",
-			"require": "./dist/cjs/providers/cognito/apis/server/index.js",
-			"react-native": "./src/providers/cognito/apis/server/index.ts"
+			"require": "./dist/cjs/providers/cognito/apis/server/index.js"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
