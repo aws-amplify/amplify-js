@@ -4,5 +4,5 @@
 	"browser": "../dist/esm/clients/iot.mjs",
 	"module": "../dist/esm/clients/iot.mjs",
 	"typings": "../dist/esm/clients/iot.d.ts",
-	"react-native": "../dist/cjs/clients/iot.js"
+	"react-native": "../src/clients/iot.ts"
 }
