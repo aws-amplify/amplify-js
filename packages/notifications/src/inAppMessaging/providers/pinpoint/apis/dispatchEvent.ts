@@ -7,7 +7,7 @@ import {
 	processInAppMessages,
 } from '../utils';
 import { InAppMessage } from '../../../types';
-import flatten from 'lodash/flatten';
+import flatten from 'lodash/flatten.js';
 import { defaultStorage } from '@aws-amplify/core';
 import { notifyEventListeners } from '../../../../eventListeners';
 import { assertServiceError } from '../../../errors';

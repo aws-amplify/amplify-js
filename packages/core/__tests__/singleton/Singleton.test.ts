@@ -1,7 +1,7 @@
 import { Amplify } from '../../src/singleton';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
-import { AWSCredentialsAndIdentityId } from '../../src/singleton/Auth/types';
+import { CredentialsAndIdentityId } from '../../src/singleton/Auth/types';
 import { TextEncoder, TextDecoder } from 'util';
 import { fetchAuthSession } from '../../src';
 Object.assign(global, { TextDecoder, TextEncoder });
@@ -246,7 +246,7 @@ describe('Session tests', () => {
 				tokens,
 				authConfig,
 				identityId,
-			}): Promise<AWSCredentialsAndIdentityId> => {
+			}): Promise<CredentialsAndIdentityId> => {
 				return {
 					credentials: {
 						accessKeyId: 'accessKeyIdValue',
@@ -341,7 +341,7 @@ describe('Session tests', () => {
 				tokens,
 				authConfig,
 				identityId,
-			}): Promise<AWSCredentialsAndIdentityId> => {
+			}): Promise<CredentialsAndIdentityId> => {
 				return {
 					credentials: {
 						accessKeyId: 'accessKeyIdValue',

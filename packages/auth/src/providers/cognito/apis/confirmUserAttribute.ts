@@ -1,13 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { verifyUserAttribute } from '../utils/clients/CognitoIdentityProvider';
 import { VerifyUserAttributeException } from '../types/errors';
-import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { ConfirmUserAttributeInput } from '../types';
@@ -37,7 +39,7 @@ export async function confirmUserAttribute(
 	await verifyUserAttribute(
 		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmUserAttribute)
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmUserAttribute),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),

@@ -11,7 +11,7 @@ import { Amplify } from '@aws-amplify/core';
 import { ConfirmSignUpCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 const authConfig = {
 	Cognito: {

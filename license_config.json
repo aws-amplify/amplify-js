@@ -35,7 +35,10 @@
 		"**/vendor",
 		"**/__tests__",
 		"**/__mocks__",
-		"**/Gemfile"
+		"**/Gemfile",
+		"**/.rollup.cache",
+		"**/rollup.config.mjs",
+		"rollup"
 	],
 	"ignoreFile": ".gitignore",
 	"license": "license_header.txt",

@@ -5,7 +5,7 @@ import {
 	CognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
 } from '../../../src/providers/cognito';
-import { decodeJWT } from '@aws-amplify/core/lib-esm/libraryUtils';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 describe('fetchAuthSession behavior for IdentityPools only', () => {
 	let credentialsProviderSpy;

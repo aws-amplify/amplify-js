@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { forgetDevice as serviceForgetDevice } from '../utils/clients/CognitoIdentityProvider';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
 } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { tokenOrchestrator } from '../tokenProvider';
 import { ForgetDeviceInput } from '../types';
