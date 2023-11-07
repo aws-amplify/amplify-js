@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	AWSCredentialsAndIdentityId,
+	CredentialsAndIdentityId,
 	AuthConfig,
 	AuthSession,
 	AuthTokens,
@@ -48,7 +48,7 @@ export class AuthClass {
 		options: FetchAuthSessionOptions = {}
 	): Promise<AuthSession> {
 		let tokens: AuthTokens | undefined;
-		let credentialsAndIdentityId: AWSCredentialsAndIdentityId | undefined;
+		let credentialsAndIdentityId: CredentialsAndIdentityId | undefined;
 		let userSub: string | undefined;
 
 		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available

@@ -4,8 +4,8 @@
 import { cognitoIdentityIdProvider } from './IdentityIdProvider';
 import {
 	AuthTokens,
-	AWSCredentialsAndIdentityIdProvider,
-	AWSCredentialsAndIdentityId,
+	CredentialsAndIdentityIdProvider,
+	CredentialsAndIdentityId,
 	getCredentialsForIdentity,
 	GetCredentialsOptions,
 	ConsoleLogger,
@@ -23,7 +23,7 @@ import { assertIdTokenInAuthTokens } from '../utils/types';
 const logger = new ConsoleLogger('CognitoCredentialsProvider');
 const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 export class CognitoAWSCredentialsAndIdentityIdProvider
-	implements AWSCredentialsAndIdentityIdProvider
+	implements CredentialsAndIdentityIdProvider
 {
 	constructor(identityIdStore: IdentityIdStore) {
 		this._identityIdStore = identityIdStore;
@@ -31,7 +31,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 	private _identityIdStore: IdentityIdStore;
 
-	private _credentialsAndIdentityId?: AWSCredentialsAndIdentityId & {
+	private _credentialsAndIdentityId?: CredentialsAndIdentityId & {
 		isAuthenticatedCreds: boolean;
 		associatedIdToken?: string;
 	};
@@ -50,7 +50,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 	async getCredentialsAndIdentityId(
 		getCredentialsOptions: GetCredentialsOptions
-	): Promise<AWSCredentialsAndIdentityId | undefined> {
+	): Promise<CredentialsAndIdentityId | undefined> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
 		const authConfig = getCredentialsOptions.authConfig;
@@ -89,7 +89,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	private async getGuestCredentials(
 		identityId: string,
 		authConfig: CognitoIdentityPoolConfig
-	): Promise<AWSCredentialsAndIdentityId> {
+	): Promise<CredentialsAndIdentityId> {
 		// Return existing in-memory cached credentials only if it exists, is not past it's lifetime and is unauthenticated credentials
 		if (
 			this._credentialsAndIdentityId &&
@@ -124,7 +124,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			clientResult.Credentials.SecretKey
 		) {
 			this._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
-			const res: AWSCredentialsAndIdentityId = {
+			const res: CredentialsAndIdentityId = {
 				credentials: {
 					accessKeyId: clientResult.Credentials.AccessKeyId,
 					secretAccessKey: clientResult.Credentials.SecretKey,
@@ -159,7 +159,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		authConfig: CognitoIdentityPoolConfig,
 		authTokens: AuthTokens,
 		identityId: string
-	): Promise<AWSCredentialsAndIdentityId> {
+	): Promise<CredentialsAndIdentityId> {
 		if (
 			this._credentialsAndIdentityId &&
 			!this.isPastTTL() &&
@@ -193,7 +193,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			clientResult.Credentials.AccessKeyId &&
 			clientResult.Credentials.SecretKey
 		) {
-			const res: AWSCredentialsAndIdentityId = {
+			const res: CredentialsAndIdentityId = {
 				credentials: {
 					accessKeyId: clientResult.Credentials.AccessKeyId,
 					secretAccessKey: clientResult.Credentials.SecretKey,

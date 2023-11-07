@@ -75,4 +75,13 @@ export {
 
 export { AuthError } from './errors/AuthError';
 
-export { fetchAuthSession } from '@aws-amplify/core';
+export {
+	fetchAuthSession,
+	decodeJWT,
+	CredentialsAndIdentityIdProvider,
+	GetCredentialsOptions,
+	CredentialsAndIdentityId,
+	TokenProvider,
+	AuthTokens,
+	JWT,
+} from '@aws-amplify/core';
