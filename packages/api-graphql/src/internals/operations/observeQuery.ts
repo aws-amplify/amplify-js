@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { findIndexByFields, resolvePKFields } from '../../utils';
 
 export function observeQueryFactory(models, model) {
@@ -9,6 +9,13 @@ export function observeQueryFactory(models, model) {
 
 	const observeQuery = (arg?: any) =>
 		new Observable(subscriber => {
+			// if we have initial values, send them immediately
+			if (arg?.initialValues) {
+				subscriber.next({
+					items: arg.initialValues,
+					isSynced: false,
+				});
+			}
 			// what we'll be sending to our subscribers
 			const items: object[] = [];
 
