@@ -110,11 +110,6 @@
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"<rootDir>/__tests__/helpers.ts",
-			"<rootDir>/__tests__/fixtures/",
-			"<rootDir>/__tests__/utils/"
-		],
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",
@@ -133,9 +128,9 @@
 			}
 		},
 		"coveragePathIgnorePatterns": [
-			"<rootDir>/node_modules/",
-			"<rootDir>/dist",
-			"<rootDir>/__tests__"
+			"node_modules",
+			"dist",
+			"__tests__"
 		]
 	}
 }
