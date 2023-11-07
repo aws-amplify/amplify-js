@@ -9,7 +9,7 @@ export function observeQueryFactory(models, model) {
 
 	const observeQuery = (arg?: any) =>
 		new Observable(subscriber => {
-			// if we have initial values, send them immediately
+			// If we have initial values, send them immediately
 			if (arg?.initialValues) {
 				subscriber.next({
 					items: arg.initialValues,
@@ -107,10 +107,17 @@ export function observeQueryFactory(models, model) {
 						messageQueue.length === 0 &&
 						(nextToken === null || nextToken === undefined);
 
-					subscriber.next({
-						items,
-						isSynced,
-					});
+					/**
+					 * If we don't have initial values, return paged results.
+					 * If we do have initial values, we wait until all remote 
+					 * data is received before sending the remote data.
+					 */
+					if (!arg?.initialValues || (arg?.initialValues && isSynced)) {
+						subscriber.next({
+							items,
+							isSynced,
+						});
+					}
 
 					if (Array.isArray(errors)) {
 						for (const error of errors) {
