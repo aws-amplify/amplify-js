@@ -499,6 +499,7 @@
 			"jsx"
 		],
 		"testEnvironment": "jsdom",
+		"testPathIgnorePatterns": ["dual-publish-tmp"],
 		"testURL": "http://localhost/",
 		"coverageThreshold": {
 			"global": {
@@ -510,7 +511,8 @@
 		},
 		"coveragePathIgnorePatterns": [
 			"node_modules",
-			"dist"
+			"dist",
+			"dual-publish-tmp"
 		]
 	}
 }
