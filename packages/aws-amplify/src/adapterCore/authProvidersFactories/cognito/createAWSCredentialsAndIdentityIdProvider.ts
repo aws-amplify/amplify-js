@@ -6,7 +6,7 @@ import {
 	DefaultIdentityIdStore,
 } from '@aws-amplify/auth/cognito';
 import {
-	AWSCredentialsAndIdentityIdProvider,
+	CredentialsAndIdentityIdProvider,
 	AuthConfig,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
@@ -21,7 +21,7 @@ import {
 export const createAWSCredentialsAndIdentityIdProvider = (
 	authConfig: AuthConfig,
 	keyValueStorage: KeyValueStorageInterface
-): AWSCredentialsAndIdentityIdProvider => {
+): CredentialsAndIdentityIdProvider => {
 	const credentialsProvider = new CognitoAWSCredentialsAndIdentityIdProvider(
 		new DefaultIdentityIdStore(keyValueStorage)
 	);

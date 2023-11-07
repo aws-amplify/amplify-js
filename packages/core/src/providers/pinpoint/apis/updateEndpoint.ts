@@ -8,7 +8,8 @@ import {
 	UpdateEndpointInput,
 } from '../../../awsClients/pinpoint';
 import { PinpointUpdateEndpointInput } from '../types';
-import { cacheEndpointId, getEndpointId } from '../utils';
+import { cacheEndpointId } from '../utils/cacheEndpointId';
+import { getEndpointId } from '../utils/getEndpointId';
 
 /**
  * @internal

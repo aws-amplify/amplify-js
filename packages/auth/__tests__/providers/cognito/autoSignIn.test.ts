@@ -12,7 +12,7 @@ import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cogn
 import { Amplify } from 'aws-amplify';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { AuthError } from '../../../src/errors/AuthError';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 const authConfig = {
 	Cognito: {

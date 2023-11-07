@@ -6,7 +6,7 @@ import {
 	DefaultIdentityIdStore,
 } from '@aws-amplify/auth/cognito';
 import {
-	AWSCredentialsAndIdentityIdProvider,
+	CredentialsAndIdentityIdProvider,
 	AuthConfig,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';

@@ -6,7 +6,7 @@ import * as clients from '../../../src/providers/cognito/utils/clients/CognitoId
 import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
 import { openAuthSession } from '../../../src/utils';
 
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 jest.mock('../../../src/utils');
 
 const mockedAccessToken =
