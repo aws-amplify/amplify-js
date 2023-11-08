@@ -37,16 +37,16 @@ const validAuthConfig: ResourcesConfig = {
 describe('TokenOrchestrator', () => {
 	const tokenOrchestrator = new TokenOrchestrator();
 	describe('Happy Path Cases:', () => {
-		beforeEach(() => {
+		beforeAll(() => {
 			tokenOrchestrator.setAuthConfig(validAuthConfig.Auth!);
 			tokenOrchestrator.setAuthTokenStore(mockAuthTokenStore);
 			tokenOrchestrator.setTokenRefresher(mockTokenRefresher);
+			mockAuthTokenStore.getLastAuthUser.mockResolvedValue('test-username');
 		});
 		it('Should get tokens', async () => {
 			mockAuthTokenStore.loadTokens.mockResolvedValue(
 				authAPITestParams.ValidAuthTokens
 			);
-			mockAuthTokenStore.getLastAuthUser.mockResolvedValue('test-username');
 
 			const tokensRes = await tokenOrchestrator.getTokens();
 			expect(tokensRes).toEqual({
@@ -59,7 +59,6 @@ describe('TokenOrchestrator', () => {
 			mockAuthTokenStore.loadTokens.mockResolvedValue(
 				authAPITestParams.ExpiredAuthTokens
 			);
-			mockAuthTokenStore.getLastAuthUser.mockResolvedValue('test-username');
 			mockTokenRefresher.mockResolvedValue(authAPITestParams.ValidAuthTokens);
 			const tokensRes = await tokenOrchestrator.getTokens();
 			expect(tokensRes).toEqual({
