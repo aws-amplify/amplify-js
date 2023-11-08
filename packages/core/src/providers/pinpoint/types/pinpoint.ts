@@ -3,6 +3,7 @@
 
 import { AuthSession } from '../../../singleton/Auth/types';
 import { UserProfile } from '../../../types';
+import { EventBufferConfig } from './buffer';
 
 export type SupportedCategory =
 	| 'Analytics'
@@ -13,7 +14,7 @@ export type SupportedCategory =
 type SupportedChannelType = 'APNS' | 'APNS_SANDBOX' | 'GCM' | 'IN_APP';
 
 export type PinpointProviderConfig = {
-	Pinpoint: {
+	Pinpoint: Partial<EventBufferConfig> & {
 		appId: string;
 		region: string;
 	};
@@ -55,6 +56,7 @@ export type PinpointUpdateEndpointInput = PinpointCommonParameters &
 		userProfile?: UserProfile;
 	};
 
-export type PinpointRecordInput = PinpointCommonParameters & {
-	event: PinpointAnalyticsEvent;
-};
+export type PinpointRecordInput = Partial<EventBufferConfig> &
+	PinpointCommonParameters & {
+		event: PinpointAnalyticsEvent;
+	};

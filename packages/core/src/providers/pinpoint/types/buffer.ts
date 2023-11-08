@@ -5,14 +5,17 @@ import { AuthSession } from '../../../singleton/Auth/types';
 import { PinpointAnalyticsEvent, PinpointSession } from './pinpoint';
 
 export type EventBufferConfig = {
-	appId: string;
 	bufferSize: number;
-	credentials: Required<AuthSession>['credentials'];
-	identityId: AuthSession['identityId'];
 	flushInterval: number;
 	flushSize: number;
-	region: string;
 	resendLimit: number;
+};
+
+export type PinpointEventBufferConfig = EventBufferConfig & {
+	appId: string;
+	region: string;
+	credentials: Required<AuthSession>['credentials'];
+	identityId: AuthSession['identityId'];
 	userAgentValue?: string;
 };
 
