@@ -24,3 +24,4 @@ export const invalidOriginException = new AuthError({
 		'redirect is coming from a different origin. The oauth flow needs to be initiated from the same origin',
 	recoverySuggestion: 'Please call signInWithRedirect from the same origin.',
 });
+export const OAUTH_SIGNOUT_EXCEPTION = 'OAuthSignOutException';
