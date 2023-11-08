@@ -4379,6 +4379,63 @@ describe('generateClient', () => {
 					},
 				});
 			});
+
+			test('initial values - returns initial values, then remote data', done => {
+				const client = generateClient<Schema>({ amplify: Amplify });
+
+				let isInitialValuesResponse = true;
+
+				client.models.Todo.observeQuery({
+					initialValues: [
+						{
+							...serverManagedFields,
+							name: 'initial value todo name',
+							description: 'initial value todo description',
+						} as any, // TODO: remove any
+					],
+				}).subscribe({
+					next({ items, isSynced }) {
+						if (isInitialValuesResponse) {
+							isInitialValuesResponse = false;
+							expect(isSynced).toBe(false);
+							expect(items).toEqual([
+								expect.objectContaining({
+									...serverManagedFields,
+									name: 'initial value todo name',
+									description: 'initial value todo description',
+								}),
+							]);
+							const spy = mockApiResponse({
+								data: {
+									listTodos: {
+										items: [
+											{
+												__typename: 'Todo',
+												...serverManagedFields,
+												name: 'remote todo name',
+												description: 'remote todo description',
+											},
+										],
+										nextToken: undefined,
+									},
+								},
+							});
+						} else {
+							expect(isSynced).toBe(true);
+							expect(items).toEqual([
+								expect.objectContaining({
+									__typename: 'Todo',
+									...serverManagedFields,
+									name: 'remote todo name',
+									description: 'remote todo description',
+								}),
+							]);
+
+							done();
+						}
+					},
+				});
+			});
 		});
 	});
 });
