@@ -32,6 +32,27 @@ function mockApiResponse(value: any) {
 		});
 }
 
+function mockApiThreeResponses(value1: any, value2: any, value3: any) {
+	return jest
+		.spyOn((raw.GraphQLAPI as any)._api, 'post')
+		.mockImplementation()
+		.mockReturnValueOnce({
+			body: {
+				json: () => value1,
+			},
+		})
+		.mockReturnValueOnce({
+			body: {
+				json: () => value2,
+			},
+		})
+		.mockReturnValueOnce({
+			body: {
+				json: () => value3,
+			},
+		});
+}
+
 function makeAppSyncStreams() {
 	const streams = {} as Partial<
 		Record<
@@ -4391,7 +4412,7 @@ describe('generateClient', () => {
 							...serverManagedFields,
 							name: 'initial value todo name',
 							description: 'initial value todo description',
-						} as any, // TODO: remove any
+						} as any, // TODO: remove `any`
 					],
 				}).subscribe({
 					next({ items, isSynced }) {
@@ -4430,6 +4451,144 @@ describe('generateClient', () => {
 									description: 'remote todo description',
 								}),
 							]);
+
+							done();
+						}
+					},
+				});
+			});
+
+			test('initial values - waits for sync to complete before returning remote data', done => {
+				const client = generateClient<Schema>({ amplify: Amplify });
+
+				let spy;
+
+				// Initial values passed to observeQuery:
+				let isInitialValuesResponse = true;
+
+				client.models.Todo.observeQuery({
+					initialValues: [
+						{
+							...serverManagedFields,
+							name: 'initial value todo name',
+							description: 'initial value todo description',
+						} as any, // TODO: remove `any`
+					],
+				}).subscribe({
+					next({ items, isSynced }) {
+						// Initial values passed to observeQuery:
+						if (isInitialValuesResponse) {
+							isInitialValuesResponse = false;
+							expect(isSynced).toBe(false);
+							expect(items).toEqual([
+								expect.objectContaining({
+									...serverManagedFields,
+									name: 'initial value todo name',
+									description: 'initial value todo description',
+								}),
+							]);
+							/**
+							 * The first two responses from the API include next
+							 * tokens, and the third response will be the completed
+							 * 'sync'.
+							 * If we did not pass initial values, this test would
+							 * fail, as we'd expect the paginated data to be returned
+							 * in the next snapshot after the initial values.
+							 */
+							spy = mockApiThreeResponses(
+								{
+									data: {
+										listTodos: {
+											items: [
+												{
+													__typename: 'Todo',
+													...serverManagedFields,
+													name: 'first remote todo name',
+													description: 'first remote todo description',
+												},
+											],
+											nextToken: 'sometoken1',
+										},
+									},
+								},
+								{
+									data: {
+										listTodos: {
+											items: [
+												{
+													__typename: 'Todo',
+													...serverManagedFields,
+													name: 'second remote todo name',
+													description: 'second remote todo description',
+												},
+											],
+											nextToken: 'sometoken2',
+										},
+									},
+								},
+								{
+									data: {
+										listTodos: {
+											items: [
+												{
+													__typename: 'Todo',
+													...serverManagedFields,
+													name: 'third remote todo name',
+													description: 'third remote todo description',
+												},
+											],
+										},
+									},
+								}
+							);
+						} else {
+							expect(isSynced).toBe(true);
+							expect(items).toEqual([
+								expect.objectContaining({
+									__typename: 'Todo',
+									...serverManagedFields,
+									name: 'first remote todo name',
+									description: 'first remote todo description',
+								}),
+								expect.objectContaining({
+									__typename: 'Todo',
+									...serverManagedFields,
+									name: 'second remote todo name',
+									description: 'second remote todo description',
+								}),
+								expect.objectContaining({
+									__typename: 'Todo',
+									...serverManagedFields,
+									name: 'third remote todo name',
+									description: 'third remote todo description',
+								}),
+							]);
+
+							// Ensure we actually got a request that included the first next token
+							expect(spy).toHaveBeenCalledWith(
+								expect.objectContaining({
+									options: expect.objectContaining({
+										body: expect.objectContaining({
+											variables: expect.objectContaining({
+												nextToken: 'sometoken1',
+											}),
+										}),
+									}),
+								})
+							);
+
+							// Ensure we actually got a request that included the second next token
+							expect(spy).toHaveBeenCalledWith(
+								expect.objectContaining({
+									options: expect.objectContaining({
+										body: expect.objectContaining({
+											variables: expect.objectContaining({
+												nextToken: 'sometoken2',
+											}),
+										}),
+									}),
+								})
+							);
 
 							done();
 						}
