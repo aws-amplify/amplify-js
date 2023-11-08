@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '../../..';
 import { AuthDeliveryMedium } from '../../../types';
 import {
 	SendUserAttributeVerificationCodeInput,

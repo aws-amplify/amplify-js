@@ -1,11 +1,11 @@
 module.exports = {
 	entry: {
-		'aws-amplify-geo.min': './lib-esm/index.js',
+		'aws-amplify-geo.min': './dist/esm/index.mjs',
 	},
 	externals: ['react-native', { '@aws-amplify/core': 'aws_amplify_core' }],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify_geo',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,

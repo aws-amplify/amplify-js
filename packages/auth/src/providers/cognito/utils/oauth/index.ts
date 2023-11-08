@@ -3,3 +3,4 @@
 
 export { generateCodeVerifier } from './generateCodeVerifier';
 export { generateState } from './generateState';
+export { handleOAuthSignOut } from './handleOAuthSignOut';

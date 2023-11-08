@@ -5,8 +5,7 @@
 		"strict": false,
 		"noImplicitAny": false,
 		"strictNullChecks": true,
-		"skipLibCheck": true,
-		"allowJs": true
+		"skipLibCheck": true
 	},
-	"include": ["lib*/**/*.ts", "src"]
+	"include": ["./src"]
 }

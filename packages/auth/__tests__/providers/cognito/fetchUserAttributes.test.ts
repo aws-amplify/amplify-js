@@ -11,7 +11,7 @@ import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-uti
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { fetchUserAttributes } from '../../../src/providers/cognito/apis/fetchUserAttributes';
 
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	fetchAuthSession: jest.fn(),
@@ -67,9 +67,9 @@ describe('fetchUserAttributes Happy Path Cases:', () => {
 		});
 		expect(getUserClientSpy).toHaveBeenCalledTimes(1);
 		expect(getUserClientSpy).toHaveBeenCalledWith(
-			{ 
+			{
 				region: 'us-west-2',
-				userAgentValue: expect.any(String)
+				userAgentValue: expect.any(String),
 			},
 			{
 				AccessToken: mockedAccessToken,

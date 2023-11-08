@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty.js';
 import {
 	ApnsMessage,
 	FcmMessage,

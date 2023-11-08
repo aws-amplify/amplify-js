@@ -1,10 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { deleteUserAttributes as deleteUserAttributesClient } from '../utils/clients/CognitoIdentityProvider';
-import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { DeleteUserAttributesInput } from '../types';
@@ -29,7 +31,7 @@ export async function deleteUserAttributes(
 	await deleteUserAttributesClient(
 		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.DeleteUserAttributes)
+			userAgentValue: getAuthUserAgentValue(AuthAction.DeleteUserAttributes),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),

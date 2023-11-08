@@ -6,7 +6,7 @@ import {
 	AssertionFunction,
 	createAssertionFunction,
 } from '@aws-amplify/core/internals/utils';
-import { isInitialized } from '../utils';
+import { isInitialized } from '../utils/initializationManager';
 import { PushNotificationError } from './PushNotificationError';
 
 export enum PushNotificationValidationErrorCode {

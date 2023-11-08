@@ -4,3 +4,8 @@
 import { loadUrlPolyfill } from '@aws-amplify/react-native';
 
 loadUrlPolyfill();
+
+const AmplifyUrl = URL;
+const AmplifyUrlSearchParams = URLSearchParams;
+
+export { AmplifyUrl, AmplifyUrlSearchParams };

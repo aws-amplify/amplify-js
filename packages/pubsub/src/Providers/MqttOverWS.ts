@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // @ts-ignore
-import * as Paho from '../vendor/paho-mqtt';
+import * as Paho from '../vendor/paho-mqtt.js';
 import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
 
 import { AbstractPubSub } from './PubSub';

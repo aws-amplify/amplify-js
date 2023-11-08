@@ -5,7 +5,7 @@ import { refreshAuthTokens } from '../../../src/providers/cognito/utils/refreshA
 import { CognitoAuthTokens } from '../../../src/providers/cognito/tokenProvider/types';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 describe('refresh token tests', () => {
 	const mockedUsername = 'mockedUsername';

@@ -17,16 +17,21 @@ const logger = new ConsoleLogger('Analytics');
  * this API may not be included in the flush.
  */
 export const flushEvents = () => {
-	const { appId, region } = resolveConfig();
+	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =
+		resolveConfig();
 	resolveCredentials()
 		.then(({ credentials, identityId }) =>
-			flushEventsCore(
+			flushEventsCore({
 				appId,
 				region,
 				credentials,
 				identityId,
-				getAnalyticsUserAgentString(AnalyticsAction.Record)
-			)
+				bufferSize,
+				flushSize,
+				flushInterval,
+				resendLimit,
+				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+			})
 		)
 		.catch(e => logger.warn('Failed to flush events', e));
 };
