@@ -54,7 +54,7 @@
     "@aws-amplify/api-rest": "4.0.0",
     "@aws-amplify/auth": "6.0.0",
     "@aws-amplify/core": "6.0.0",
-    "@aws-amplify/amplify-api-next-types-alpha": "^0.2.8",
+    "@aws-amplify/amplify-api-next-types-alpha": "^0.3.0",
     "@aws-sdk/types": "3.387.0",
     "graphql": "15.8.0",
     "tslib": "^2.6.1",
