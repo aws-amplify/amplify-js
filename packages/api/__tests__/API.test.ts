@@ -2,6 +2,7 @@ import { ResourcesConfig } from 'aws-amplify';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
 import { generateClient } from '@aws-amplify/api';
 import { generateClient as generateClientSSR } from '@aws-amplify/api/server';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 // import { runWithAmplifyServerContext } from 'aws-amplify/internals/adapter-core';
 
 const serverManagedFields = {
@@ -17,6 +18,11 @@ describe('API generateClient', () => {
 	});
 
 	test('client-side client.graphql', async () => {
+		jest.spyOn(AmplifyClassV6.prototype, 'getConfig').mockImplementation(() => {
+			return {
+				API: { GraphQL: { endpoint: 'test', defaultAuthMode: 'none' } },
+			};
+		});
 		const spy = jest
 			.spyOn(InternalGraphQLAPIClass.prototype, 'graphql')
 			.mockResolvedValue('grapqhqlResponse' as any);
