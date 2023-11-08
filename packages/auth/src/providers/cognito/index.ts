@@ -75,7 +75,7 @@ export {
 	DefaultIdentityIdStore,
 } from './credentialsProvider';
 export {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	CognitoUserPoolTokenProviderType,
 	TokenOrchestrator,
 	DefaultTokenStore,
