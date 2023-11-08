@@ -62,6 +62,15 @@ export const DefaultAmplify = {
 		// At this point, Auth libraryOptions would have been previously configured and no overriding
 		// Auth options were given, so we should preserve the currently configured Auth libraryOptions.
 		if (libraryOptions) {
+			// If ssr is provided through libraryOptions, we should respect the intentional reconfiguration.
+			if (libraryOptions.ssr !== undefined) {
+				CognitoUserPoolsTokenProvider.setKeyValueStorage(
+					// TODO: allow configure with a public interface
+					libraryOptions.ssr
+						? new CookieStorage({ sameSite: 'lax' })
+						: defaultStorage
+				);
+			}
 			return Amplify.configure(resolvedResourceConfig, {
 				Auth: Amplify.libraryOptions.Auth,
 				...libraryOptions,
