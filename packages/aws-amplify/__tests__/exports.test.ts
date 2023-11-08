@@ -210,7 +210,7 @@ describe('aws-amplify Exports', () => {
 					'fetchDevices',
 					'autoSignIn',
 					'cognitoCredentialsProvider',
-					'CognitoUserPoolsTokenProvider',
+					'cognitoUserPoolsTokenProvider',
 					'CognitoAWSCredentialsAndIdentityIdProvider',
 					'DefaultIdentityIdStore',
 					'TokenOrchestrator',

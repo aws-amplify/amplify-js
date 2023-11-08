@@ -7,7 +7,7 @@ import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpe
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
 import { Amplify } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { CognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
+import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
@@ -26,7 +26,7 @@ describe('local sign-in state management tests', () => {
 	};
 
 	beforeEach(() => {
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 	});
 
 	test('local state management should return state after signIn returns a ChallengeName', async () => {

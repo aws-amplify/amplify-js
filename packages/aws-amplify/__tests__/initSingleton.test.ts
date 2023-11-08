@@ -9,7 +9,7 @@ import {
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
 } from '../src/auth/cognito';
 
@@ -17,7 +17,7 @@ import { Amplify } from '../src';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../src/auth/cognito', () => ({
-	CognitoUserPoolsTokenProvider: {
+	cognitoUserPoolsTokenProvider: {
 		setAuthConfig: jest.fn(),
 		setKeyValueStorage: jest.fn(),
 	},
@@ -25,9 +25,9 @@ jest.mock('../src/auth/cognito', () => ({
 }));
 
 const mockCognitoUserPoolsTokenProviderSetAuthConfig =
-	CognitoUserPoolsTokenProvider.setAuthConfig as jest.Mock;
+	cognitoUserPoolsTokenProvider.setAuthConfig as jest.Mock;
 const mockCognitoUserPoolsTokenProviderSetKeyValueStorage =
-	CognitoUserPoolsTokenProvider.setKeyValueStorage as jest.Mock;
+	cognitoUserPoolsTokenProvider.setKeyValueStorage as jest.Mock;
 const mockAmplifySingletonConfigure = AmplifySingleton.configure as jest.Mock;
 const mockAmplifySingletonGetConfig = AmplifySingleton.getConfig as jest.Mock;
 const MockCookieStorage = CookieStorage as jest.Mock;
@@ -137,7 +137,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 						mockResourceConfig,
 						{
 							Auth: {
-								tokenProvider: CognitoUserPoolsTokenProvider,
+								tokenProvider: cognitoUserPoolsTokenProvider,
 								credentialsProvider: cognitoCredentialsProvider,
 							},
 						}
@@ -200,7 +200,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 						mockResourceConfig,
 						{
 							Auth: {
-								tokenProvider: CognitoUserPoolsTokenProvider,
+								tokenProvider: cognitoUserPoolsTokenProvider,
 								credentialsProvider: cognitoCredentialsProvider,
 							},
 							...libraryOptionsWithStorage,

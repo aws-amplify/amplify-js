@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	signUp,
 } from '../../../src/providers/cognito';
 import { autoSignIn } from '../../../src/providers/cognito/apis/autoSignIn';
@@ -20,7 +20,7 @@ const authConfig = {
 		userPoolId: 'us-west-2_zzzzz',
 	},
 };
-CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({
 	Auth: authConfig,
 });

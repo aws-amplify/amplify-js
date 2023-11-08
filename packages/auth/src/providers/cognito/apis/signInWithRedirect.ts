@@ -15,7 +15,7 @@ import {
 	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { CognitoUserPoolsTokenProvider } from '../tokenProvider';
+import { cognitoUserPoolsTokenProvider } from '../tokenProvider';
 import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { AuthError } from '../../../errors/AuthError';
@@ -472,7 +472,7 @@ const invokeAndClearPromise = () => {
 };
 
 isBrowser() &&
-	CognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
+	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
 		() =>
 			new Promise(async (res, _rej) => {
 				if (!(await store.loadOAuthInFlight())) {
