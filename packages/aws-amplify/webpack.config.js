@@ -1,17 +1,17 @@
 module.exports = {
 	entry: {
 		'aws-amplify.min': [
-			'./lib-esm/index.js',
-			'./lib-esm/utils/index.js',
-			'./lib-esm/auth/index.js',
-			'./lib-esm/auth/cognito/index.js',
-			'./lib-esm/storage/index.js',
-			'./lib-esm/storage/s3/index.js',
+			'./dist/esm/index.mjs',
+			'./dist/esm/utils/index.mjs',
+			'./dist/esm/auth/index.mjs',
+			'./dist/esm/auth/cognito/index.mjs',
+			'./dist/esm/storage/index.mjs',
+			'./dist/esm/storage/s3/index.mjs',
 		],
 	},
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,

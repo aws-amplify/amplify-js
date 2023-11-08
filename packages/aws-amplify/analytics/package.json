@@ -1,7 +1,8 @@
 {
 	"name": "aws-amplify/analytics",
-	"main": "../lib/analytics/index.js",
-	"browser": "../lib-esm/analytics/index.js",
-	"module": "../lib-esm/analytics/index.js",
-	"typings": "../lib-esm/analytics/index.d.ts"
+	"main": "../dist/cjs/analytics/index.js",
+	"react-native": "../src/analytics/index.ts",
+	"browser": "../dist/esm/analytics/index.mjs",
+	"module": "../dist/esm/analytics/index.mjs",
+	"typings": "../dist/esm/analytics/index.d.ts"
 }
