@@ -10,7 +10,7 @@ import {
 import { NextApiRequestMock, NextApiResponseMock } from '../mocks/headers';
 import { createServerRunnerForAPI } from '../../src/api/createServerRunnerForAPI';
 
-const headers = import('next/headers');
+const headers = import('next/headers.js');
 (global as any).Headers = jest.requireActual('node-fetch').Headers;
 
 const mockAmplifyConfig: ResourcesConfig = {

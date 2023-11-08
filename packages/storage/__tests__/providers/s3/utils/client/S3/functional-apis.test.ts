@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
-import { fetchTransferHandler } from '@aws-amplify/core/lib/clients/handlers/fetch';
+import { fetchTransferHandler } from '@aws-amplify/core/dist/cjs/clients/handlers/fetch';
 
 import cases from './cases';
 import { StorageError } from '../../../../../../src/errors/StorageError';
 
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 const mockFetchTransferHandler = fetchTransferHandler as jest.Mock;
 const mockBinaryResponse = ({

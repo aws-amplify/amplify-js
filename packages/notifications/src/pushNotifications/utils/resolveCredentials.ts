@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetchAuthSession } from '@aws-amplify/core';
-import { assert, PushNotificationValidationErrorCode } from '../errors';
+import {
+	assert,
+	PushNotificationValidationErrorCode,
+} from '../errors/errorHelpers';
 
 /**
  * @internal

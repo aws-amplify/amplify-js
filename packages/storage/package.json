@@ -2,12 +2,20 @@
 	"name": "@aws-amplify/storage",
 	"version": "6.0.0",
 	"description": "Storage category of aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"react-native": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": {
+		"./dist/cjs/index": "./src/index.ts",
+		"fast-xml-parser": "fast-xml-parser",
+		"buffer": "buffer"
+	},
+	"typings": "./dist/esm/index.d.ts",
 	"browser": {
-		"./lib-esm/lib-esm/providers/s3/utils/client/runtime/index": "./lib-esm/providers/s3/utils/client/runtime/index.browser.js"
+		"./dist/esm/providers/s3/utils/client/runtime/base64/index.native.mjs": "./dist/esm/providers/s3/utils/client/runtime/base64/index.browser.mjs",
+		"./dist/esm/providers/s3/utils/client/runtime/s3TransferHandler/fetch.mjs": "./dist/esm/providers/s3/utils/client/runtime/s3TransferHandler/xhr.mjs",
+		"./dist/esm/providers/s3/utils/client/runtime/xmlParser/pureJs.mjs": "./dist/esm/providers/s3/utils/client/runtime/xmlParser/dom.mjs",
+		"fast-xml-parser": false,
+		"buffer": false
 	},
 	"sideEffects": false,
 	"publishConfig": {
@@ -16,11 +24,11 @@
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
-		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
-		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
@@ -30,16 +38,13 @@
 	"typesVersions": {
 		">=4.2": {
 			"s3": [
-				"./lib-esm/providers/s3/index.d.ts"
+				"./dist/esm/providers/s3/index.d.ts"
 			],
 			"server": [
-				"./lib-esm/server.d.ts"
-			],
-			"internals": [
-				"./lib-esm/lib-esm/internals/index.d.ts"
+				"./dist/esm/server.d.ts"
 			],
 			"s3/server": [
-				"./lib-esm/providers/s3/server.d.ts"
+				"./dist/esm/providers/s3/server.d.ts"
 			]
 		}
 	},
@@ -54,45 +59,41 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"files": [
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
 		"src",
-		"internals",
 		"server",
 		"s3"
 	],
 	"dependencies": {
-		"@smithy/md5-js": "2.0.7",
 		"@aws-sdk/types": "3.398.0",
-		"fast-xml-parser": "^4.2.5",
+		"@smithy/md5-js": "2.0.7",
 		"buffer": "4.9.2",
+		"fast-xml-parser": "^4.2.5",
 		"tslib": "^2.5.0"
 	},
 	"exports": {
 		".": {
-			"types": "./lib-esm/index.d.ts",
-			"import": "./lib-esm/index.js",
-			"require": "./lib/index.js"
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
 		},
 		"./server": {
-			"types": "./lib-esm/server.d.ts",
-			"import": "./lib-esm/server.js",
-			"require": "./lib/server.js"
-		},
-		"./internals": {
-			"types": "./lib-esm/lib-esm/internals/index.d.ts",
-			"import": "./lib-esm/internals/index.js",
-			"require": "./lib/internals/index.js"
+			"types": "./dist/esm/server.d.ts",
+			"import": "./dist/esm/server.mjs",
+			"require": "./dist/cjs/server.js"
 		},
 		"./s3": {
-			"types": "./lib-esm/providers/s3/index.d.ts",
-			"import": "./lib-esm/providers/s3/index.js",
-			"require": "./lib/providers/s3/index.js"
+			"types": "./dist/esm/providers/s3/index.d.ts",
+			"import": "./dist/esm/providers/s3/index.mjs",
+			"require": "./dist/cjs/providers/s3/index.js",
+			"react-native": "./src/providers/s3/index.ts"
 		},
 		"./s3/server": {
-			"types": "./lib-esm/providers/s3/server.d.ts",
-			"import": "./lib-esm/providers/s3/server.js",
-			"require": "./lib/providers/s3/server.js"
+			"types": "./dist/esm/providers/s3/server.d.ts",
+			"import": "./dist/esm/providers/s3/server.mjs",
+			"require": "./dist/cjs/providers/s3/server.js"
 		},
 		"./package.json": "./package.json"
 	},
@@ -102,6 +103,9 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.0",
 		"@aws-amplify/react-native": "^1.0.0",
+		"@rollup/plugin-json": "6.0.1",
+		"@rollup/plugin-typescript": "11.1.5",
+		"rollup": "3.29.4",
 		"typescript": "5.0.2"
 	},
 	"jest": {
@@ -113,7 +117,9 @@
 				"tsConfig": {
 					"downlevelIteration": true,
 					"allowJs": true,
-					"types": ["@types/jest"],
+					"types": [
+						"@types/jest"
+					],
 					"outDir": "./tsconfig.json",
 					"noEmitOnError": false,
 					"noImplicitAny": false,
@@ -131,9 +137,7 @@
 			"cases"
 		],
 		"modulePathIgnorePatterns": [
-			"dist",
-			"lib",
-			"lib-esm"
+			"dist"
 		],
 		"moduleFileExtensions": [
 			"ts",
@@ -154,9 +158,7 @@
 		},
 		"coveragePathIgnorePatterns": [
 			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
+			"dist"
 		]
 	}
 }

@@ -4,7 +4,7 @@
 import { ConsoleLogger } from '@aws-amplify/core';
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import isEmpty from 'lodash/isEmpty';
+import isEmpty from 'lodash/isEmpty.js';
 import {
 	InAppMessage,
 	InAppMessageAction,
