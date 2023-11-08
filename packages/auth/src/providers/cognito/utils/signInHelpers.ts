@@ -26,7 +26,7 @@ import {
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
-	AuthUser,
+	AWSAuthUser,
 	AuthUserAttributes,
 	AuthMFAType,
 	AuthTOTPSetupDetails,
@@ -1001,7 +1001,7 @@ export function isMFATypeEnabled(
 }
 
 export async function assertUserNotAuthenticated() {
-	let authUser: AuthUser | undefined;
+	let authUser: AWSAuthUser | undefined;
 	try {
 		authUser = await getCurrentUser();
 	} catch (error) {}

@@ -6,12 +6,11 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { VerifyTOTPSetupInput } from '../types';
 import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
 } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';

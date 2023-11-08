@@ -8,6 +8,10 @@ describe('Analytics Pinpoint Provider Util: resolveConfig', () => {
 	const pinpointConfig = {
 		appId: 'app-id',
 		region: 'region',
+		bufferSize: 100,
+		flushSize: 10,
+		flushInterval: 50,
+		resendLimit: 3,
 	};
 	// create spies
 	const getConfigSpy = jest.spyOn(Amplify, 'getConfig');

@@ -49,7 +49,8 @@ const logger = new ConsoleLogger('Analytics');
  * ```
  */
 export const record = (input: RecordInput): void => {
-	const { appId, region } = resolveConfig();
+	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =
+		resolveConfig();
 
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
@@ -74,6 +75,10 @@ export const record = (input: RecordInput): void => {
 				identityId,
 				region,
 				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+				bufferSize,
+				flushSize,
+				flushInterval,
+				resendLimit,
 			});
 		})
 		.catch(e => {

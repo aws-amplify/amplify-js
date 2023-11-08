@@ -3,32 +3,40 @@
 
 import { EventBufferConfig } from '../types/buffer';
 import { PinpointEventBuffer } from './PinpointEventBuffer';
-import { BUFFER_SIZE, FLUSH_INTERVAL, FLUSH_SIZE, RESEND_LIMIT } from './constants';
+import { AuthSession } from '../../../singleton/Auth/types';
 
 // Map of buffers by region -> appId
 const eventBufferMap: Record<string, Record<string, PinpointEventBuffer>> = {};
 
+export type GetEventBufferInput = EventBufferConfig & {
+	appId: string;
+	region: string;
+	credentials: Required<AuthSession>['credentials'];
+	identityId?: AuthSession['identityId'];
+	userAgentValue?: string;
+};
+
 /**
  * Returns a PinpointEventBuffer instance for the specified region & app ID, creating one if it does not yet exist.
- * 
+ *
  * @internal
  */
 export const getEventBuffer = ({
 	appId,
-	bufferSize = BUFFER_SIZE,
-	credentials,
-	flushInterval = FLUSH_INTERVAL,
-	flushSize = FLUSH_SIZE,
-	identityId,
 	region,
-	resendLimit = RESEND_LIMIT,
-	userAgentValue
-}: EventBufferConfig): PinpointEventBuffer => {
+	credentials,
+	bufferSize,
+	flushInterval,
+	flushSize,
+	resendLimit,
+	identityId,
+	userAgentValue,
+}: GetEventBufferInput): PinpointEventBuffer => {
 	if (eventBufferMap[region]?.[appId]) {
 		const buffer = eventBufferMap[region][appId];
 
 		/*
-		If the identity has changed flush out the buffer and create a new instance. The old instance will be garbage 
+		If the identity has changed flush out the buffer and create a new instance. The old instance will be garbage
 		collected.
 		*/
 		if (buffer.identityHasChanged(identityId)) {
@@ -47,7 +55,7 @@ export const getEventBuffer = ({
 		identityId,
 		region,
 		resendLimit,
-		userAgentValue
+		userAgentValue,
 	});
 
 	if (!eventBufferMap[region]) {

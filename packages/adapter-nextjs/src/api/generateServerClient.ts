@@ -5,6 +5,7 @@ import { generateServerClient } from '@aws-amplify/api/internals';
 import {
 	getAmplifyServerContext,
 	AmplifyServerContextError,
+	AmplifyServer,
 } from '@aws-amplify/core/internals/adapter-core';
 import {
 	V6ClientSSRRequest,
@@ -12,6 +13,7 @@ import {
 	GraphQLMethod,
 	GraphQLMethodSSR,
 	__amplify,
+	GraphQLOptionsV6,
 } from '@aws-amplify/api-graphql';
 import { NextServer } from '../types';
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
@@ -111,7 +113,11 @@ export function generateServerClientUsingReqRes<
 	// TODO: improve this and the next type
 	const prevGraphql = client.graphql as unknown as GraphQLMethod;
 
-	const wrappedGraphql = (contextSpec, options, additionalHeaders?) => {
+	const wrappedGraphql = (
+		contextSpec: AmplifyServer.ContextSpec,
+		options: GraphQLOptionsV6,
+		additionalHeaders?: { [key: string]: string }
+	) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },

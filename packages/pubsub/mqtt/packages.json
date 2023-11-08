@@ -1,7 +1,8 @@
 {
 	"name": "@aws-amplify/pubsub/mqtt",
-	"main": "../lib/clients/mqtt.js",
-	"browser": "../lib-esm/clients/mqtt.js",
-	"module": "../lib-esm/clients/mqtt.js",
-	"typings": "../lib-esm/clients/mqtt.d.ts"
+	"main": "../dist/cjs/clients/mqtt.js",
+	"browser": "../dist/esm/clients/mqtt.mjs",
+	"module": "../dist/esm/clients/mqtt.mjs",
+	"typings": "../dist/esm/clients/mqtt.d.ts",
+	"react-native": "../src/clients/mqtt.ts"
 }

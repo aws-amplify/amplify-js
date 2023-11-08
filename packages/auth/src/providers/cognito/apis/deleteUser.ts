@@ -1,18 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	AuthAction,
 } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '../../../';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { deleteUser as serviceDeleteUser } from '../utils/clients/CognitoIdentityProvider';
 import { DeleteUserException } from '../types/errors';
 import { tokenOrchestrator } from '../tokenProvider';
-import { signOut } from '..';
+import { signOut } from './signOut';
 import { getAuthUserAgentValue } from '../../../utils';
 
 /**

@@ -7,7 +7,7 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { getCurrentUser } from '../../../src/providers/cognito';
 import { Amplify as AmplifyV6 } from '@aws-amplify/core';
 import { USER_UNAUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 Amplify.configure({
 	Auth: {
