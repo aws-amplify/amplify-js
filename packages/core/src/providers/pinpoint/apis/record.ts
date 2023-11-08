@@ -30,6 +30,10 @@ export const record = async ({
 	identityId,
 	region,
 	userAgentValue,
+	bufferSize,
+	flushInterval,
+	flushSize,
+	resendLimit,
 }: PinpointRecordInput): Promise<void> => {
 	let eventSession = session;
 	const currentTime = new Date();
@@ -39,13 +43,13 @@ export const record = async ({
 	// Prepare event buffer if required
 	const buffer = getEventBuffer({
 		appId,
-		bufferSize: BUFFER_SIZE,
-		credentials,
-		flushInterval: FLUSH_INTERVAL,
-		flushSize: FLUSH_SIZE,
-		identityId,
 		region,
-		resendLimit: RESEND_LIMIT,
+		credentials,
+		bufferSize: bufferSize ?? BUFFER_SIZE,
+		flushInterval: flushInterval ?? FLUSH_INTERVAL,
+		flushSize: flushSize ?? FLUSH_SIZE,
+		resendLimit: resendLimit ?? RESEND_LIMIT,
+		identityId,
 		userAgentValue,
 	});
 
@@ -88,6 +92,6 @@ export const record = async ({
 		event,
 		session: eventSession!,
 		timestamp: timestampISOString,
-		resendLimit: RESEND_LIMIT,
+		resendLimit: resendLimit ?? RESEND_LIMIT,
 	});
 };
