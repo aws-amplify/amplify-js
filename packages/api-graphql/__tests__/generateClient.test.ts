@@ -61,6 +61,16 @@ const USER_AGENT_DETAILS = {
 };
 
 describe('generateClient', () => {
+	test('raises clear error when API GraphQL isnt configured', () => {
+		const getConfig = jest.fn().mockReturnValue({});
+		const amplify = {
+			getConfig,
+		} as unknown as AmplifyClassV6;
+		expect(() => generateClient({ amplify })).toThrow(
+			'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient()'
+		);
+	});
+
 	test('can produce a client bound to an arbitrary amplify object for getConfig()', async () => {
 		// TS lies: We don't care what `amplify` is or does. We want want to make sure
 		// it shows up in the client in the right spot.

@@ -17,6 +17,12 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 	const models = {} as any;
 	const config = params.amplify.getConfig();
 
+	if (!config.API?.GraphQL) {
+		throw new Error(
+			'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient().'
+		);
+	}
+
 	const modelIntrospection = config.API?.GraphQL?.modelIntrospection;
 	if (!modelIntrospection) {
 		return {} as any;
