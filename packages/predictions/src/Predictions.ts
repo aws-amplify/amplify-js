@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
@@ -23,7 +23,7 @@ import {
 	TranslateTextOutput,
 } from './types';
 
-const logger = new Logger('Predictions');
+const logger = new ConsoleLogger('Predictions');
 
 export class PredictionsClass {
 	private convertProvider = new AmazonAIConvertPredictionsProvider();
