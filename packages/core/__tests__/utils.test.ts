@@ -8,10 +8,10 @@ import {
 } from '../src/utils';
 import { Reachability as ReachabilityNative } from '../src/Reachability/Reachability.native';
 import { Reachability } from '../src/Reachability/Reachability';
-import { ConsoleLogger as Logger } from '../src/Logger';
+import { ConsoleLogger } from '../src/Logger';
 import { DateUtils } from '../src/Signer/DateUtils';
 
-Logger.LOG_LEVEL = 'DEBUG';
+ConsoleLogger.LOG_LEVEL = 'DEBUG';
 
 describe('Util', () => {
 	beforeEach(() => {});

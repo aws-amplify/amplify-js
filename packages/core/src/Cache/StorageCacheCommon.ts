@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '../Logger';
+import { ConsoleLogger } from '../Logger';
 import { KeyValueStorageInterface } from '../types';
 import { currentSizeKey, defaultConfig } from './constants';
 import { CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { getCurrentSizeKey, getCurrentTime, getByteLength } from './utils';
 import { assert, CacheErrorCode } from './utils/errorHelpers';
 
-const logger = new Logger('StorageCache');
+const logger = new ConsoleLogger('StorageCache');
 
 /**
  * Initialization of the cache

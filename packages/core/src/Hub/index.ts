@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '../Logger';
+import { ConsoleLogger } from '../Logger';
 import { NO_HUBCALLBACK_PROVIDED_EXCEPTION } from '../constants';
 import { AmplifyError } from '../errors';
 import {
@@ -21,7 +21,7 @@ export const AMPLIFY_SYMBOL = (
 		: '@@amplify_default'
 ) as Symbol;
 
-const logger = new Logger('Hub');
+const logger = new ConsoleLogger('Hub');
 
 export class HubClass {
 	name: string;
