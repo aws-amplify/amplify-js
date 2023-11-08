@@ -1,6 +1,6 @@
 module.exports = {
 	entry: {
-		'aws-amplify-interactions.min': './lib-esm/index.js',
+		'aws-amplify-interactions.min': './dist/esm/index.mjs',
 	},
 	externals: [
 		'aws-sdk/clients/lexruntime',
@@ -8,7 +8,7 @@ module.exports = {
 	],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify_interactions',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,

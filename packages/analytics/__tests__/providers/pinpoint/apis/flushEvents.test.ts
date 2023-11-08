@@ -6,7 +6,7 @@ import {
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
 import { config, credentials, identityId } from './testUtils/data';
-import { flushEvents } from '../../../../src/providers/pinpoint';
+import { flushEvents } from '../../../../src';
 import { flushEvents as pinpointFlushEvents } from '@aws-amplify/core/internals/providers/pinpoint';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
@@ -44,13 +44,12 @@ describe('Pinpoint API: flushEvents', () => {
 		expect(mockResolveCredentials).toBeCalledTimes(1);
 
 		await new Promise(process.nextTick);
-		expect(mockPinpointFlushEvents).toBeCalledWith(
-			config.appId,
-			config.region,
+		expect(mockPinpointFlushEvents).toBeCalledWith({
+			...config,
 			credentials,
 			identityId,
-			getAnalyticsUserAgentString(AnalyticsAction.Record)
-		);
+			userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
+		});
 	});
 
 	it('logs an error when credentials can not be fetched', async () => {

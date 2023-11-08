@@ -6,7 +6,10 @@ import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
 } from '../../../errors';
-import { DEFAULT_PERSONALIZE_CONFIG, PERSONALIZE_FLUSH_SIZE_MAX } from './';
+import {
+	DEFAULT_PERSONALIZE_CONFIG,
+	PERSONALIZE_FLUSH_SIZE_MAX,
+} from './constants';
 
 export const resolveConfig = () => {
 	const config = Amplify.getConfig().Analytics?.Personalize;

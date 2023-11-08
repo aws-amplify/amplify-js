@@ -211,7 +211,14 @@ export class ServiceWorkerClass {
 			const currentState = this.serviceWorker.state;
 			this._logger.debug(`ServiceWorker statechange: ${currentState}`);
 
-			const { appId, region } = Amplify.getConfig().Analytics?.Pinpoint ?? {};
+			const {
+				appId,
+				region,
+				bufferSize,
+				flushInterval,
+				flushSize,
+				resendLimit,
+			} = Amplify.getConfig().Analytics?.Pinpoint ?? {};
 			const { credentials } = await fetchAuthSession();
 
 			if (appId && region && credentials) {
@@ -221,6 +228,10 @@ export class ServiceWorkerClass {
 					region,
 					category: 'Core',
 					credentials,
+					bufferSize,
+					flushInterval,
+					flushSize,
+					resendLimit,
 					event: {
 						name: 'ServiceWorker',
 						attributes: {

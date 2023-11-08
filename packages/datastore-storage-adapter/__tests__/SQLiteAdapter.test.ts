@@ -14,7 +14,7 @@ import {
 	testSchema,
 	InnerSQLiteDatabase,
 } from './helpers';
-import { SyncEngine } from '@aws-amplify/datastore/lib-esm/sync';
+import { SyncEngine } from '@aws-amplify/datastore/dist/esm/sync';
 import { Observable } from 'rxjs';
 import {
 	pause,

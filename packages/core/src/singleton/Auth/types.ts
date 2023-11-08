@@ -38,7 +38,7 @@ export type AuthSession = {
 
 export type LibraryAuthOptions = {
 	tokenProvider?: TokenProvider;
-	credentialsProvider?: AWSCredentialsAndIdentityIdProvider;
+	credentialsProvider?: CredentialsAndIdentityIdProvider;
 };
 
 export type Identity = {
@@ -46,10 +46,10 @@ export type Identity = {
 	type: 'guest' | 'primary';
 };
 
-export interface AWSCredentialsAndIdentityIdProvider {
+export interface CredentialsAndIdentityIdProvider {
 	getCredentialsAndIdentityId: (
 		getCredentialsOptions: GetCredentialsOptions
-	) => Promise<AWSCredentialsAndIdentityId | undefined>;
+	) => Promise<CredentialsAndIdentityId | undefined>;
 	clearCredentialsAndIdentityId: () => void;
 }
 
@@ -212,7 +212,7 @@ type GetCredentialsUnauthenticatedUser = {
 	tokens?: never;
 };
 
-export type AWSCredentialsAndIdentityId = {
+export type CredentialsAndIdentityId = {
 	credentials: AWSCredentials;
 	identityId?: string;
 };

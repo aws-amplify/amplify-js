@@ -11,8 +11,10 @@ import {
  * @internal
  */
 export const resolveConfig = () => {
-	const { appId, region } = Amplify.getConfig().Analytics?.Pinpoint ?? {};
+	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =
+		Amplify.getConfig().Analytics?.Pinpoint ?? {};
 	assertValidationError(!!appId, AnalyticsValidationErrorCode.NoAppId);
 	assertValidationError(!!region, AnalyticsValidationErrorCode.NoRegion);
-	return { appId, region };
+
+	return { appId, region, bufferSize, flushSize, flushInterval, resendLimit };
 };

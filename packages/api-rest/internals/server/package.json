@@ -1,8 +1,7 @@
 {
 	"name": "@aws-amplify/api-rest/internals/server",
-	"types": "../../lib-esm/internals/server.d.ts",
-	"main": "../../lib/internals/server.js",
-	"module": "../../lib-esm/internals/server.js",
-	"react-native": "../../lib-esm/internals/server.js",
+	"types": "../../dist/esm/internals/server.d.ts",
+	"main": "../../dist/cjs/internals/server.js",
+	"module": "../../dist/esm/internals/server.mjs",
 	"sideEffects": false
 }

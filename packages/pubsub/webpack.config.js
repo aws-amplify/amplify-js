@@ -1,6 +1,6 @@
 module.exports = {
 	entry: {
-		'aws-amplify-pubsub.min': './lib-esm/index.js',
+		'aws-amplify-pubsub.min': './dist/esm/index.mjs',
 	},
 	externals: [
 		'graphql',
@@ -11,7 +11,7 @@ module.exports = {
 	],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify_pubsub',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,

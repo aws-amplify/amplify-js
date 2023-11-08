@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Cache } from '../../..';
+import { Cache } from '../../../Cache';
 import { SupportedCategory } from '../types';
 import { getCacheKey } from './getCacheKey';
 

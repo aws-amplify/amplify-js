@@ -3,7 +3,7 @@
 
 import { UpdateUserAttributeInput, UpdateUserAttributeOutput } from '../types';
 import { UpdateUserAttributesException } from '../types/errors';
-import { updateUserAttributes } from '..';
+import { updateUserAttributes } from './updateUserAttributes';
 
 /**
  * Updates user's attribute while authenticated.
