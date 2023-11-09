@@ -124,7 +124,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				username,
 			});
 
-			this.setTokens({ tokens: newTokens });
+			await this.setTokens({ tokens: newTokens });
 			Hub.dispatch('auth', { event: 'tokenRefresh' }, 'Auth', AMPLIFY_SYMBOL);
 
 			return newTokens;
