@@ -20,8 +20,6 @@ jest.mock('@aws-amplify/core', () => ({
 	getCredentialsForIdentity: jest.fn(),
 }));
 
-jest.mock('@aws-amplify/core/lib/awsClients/cognitoIdentity');
-
 jest.mock(
 	'./../../../src/providers/cognito/credentialsProvider/IdentityIdProvider',
 	() => ({
@@ -51,7 +49,7 @@ const validAuthConfig: ResourcesConfig = {
 	},
 };
 const inValidAuthConfig: ResourcesConfig = {
-	Auth: {},
+	Auth: undefined,
 };
 const disallowGuestAccessConfig: ResourcesConfig = {
 	Auth: {

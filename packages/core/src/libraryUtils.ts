@@ -90,10 +90,7 @@ export {
 export { BackgroundProcessManager } from './BackgroundProcessManager';
 export { Mutex } from './Mutex';
 export { Reachability } from './Reachability';
-export {
-	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-	USER_AGENT_HEADER,
-} from './constants';
+export { USER_AGENT_HEADER } from './constants';
 export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
 export { base64Decoder, base64Encoder } from './utils/convert';

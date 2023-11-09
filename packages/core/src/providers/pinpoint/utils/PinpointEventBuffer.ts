@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '../../../Logger';
+import { ConsoleLogger } from '../../../Logger';
 import {
 	EventsBatch,
 	putEvents,
@@ -9,7 +9,7 @@ import {
 	PutEventsOutput,
 } from '../../../awsClients/pinpoint';
 import {
-	EventBufferConfig,
+	PinpointEventBufferConfig,
 	BufferedEvent,
 	BufferedEventMap,
 	EventBuffer,
@@ -17,18 +17,18 @@ import {
 import { AuthSession } from '../../../singleton/Auth/types';
 import { isAppInForeground } from './isAppInForeground';
 
-const logger = new Logger('PinpointEventBuffer');
+const logger = new ConsoleLogger('PinpointEventBuffer');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
 
 export class PinpointEventBuffer {
-	private _config: EventBufferConfig;
+	private _config: PinpointEventBufferConfig;
 	private _interval: ReturnType<typeof setInterval> | undefined = undefined;
 	private _buffer: EventBuffer;
 	private _pause = false;
 	private _flush = false;
 
-	constructor(config: EventBufferConfig) {
+	constructor(config: PinpointEventBufferConfig) {
 		this._buffer = [];
 		this._config = config;
 

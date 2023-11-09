@@ -8,7 +8,7 @@ import { signInWithCustomSRPAuth } from '../../../src/providers/cognito/apis/sig
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { Amplify } from 'aws-amplify';
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
@@ -19,7 +19,7 @@ const authConfig = {
 		userPoolId: 'us-west-2_zzzzz',
 	},
 };
-CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({
 	Auth: authConfig,
 });

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	signUp,
 } from '../../../src/providers/cognito';
 import { autoSignIn } from '../../../src/providers/cognito/apis/autoSignIn';
@@ -12,7 +12,7 @@ import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cogn
 import { Amplify } from 'aws-amplify';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { AuthError } from '../../../src/errors/AuthError';
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 const authConfig = {
 	Cognito: {
@@ -20,7 +20,7 @@ const authConfig = {
 		userPoolId: 'us-west-2_zzzzz',
 	},
 };
-CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({
 	Auth: authConfig,
 });

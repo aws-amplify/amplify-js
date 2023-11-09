@@ -9,7 +9,7 @@ import {
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
 } from '../src/auth/cognito';
 
@@ -17,7 +17,7 @@ import { Amplify } from '../src';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../src/auth/cognito', () => ({
-	CognitoUserPoolsTokenProvider: {
+	cognitoUserPoolsTokenProvider: {
 		setAuthConfig: jest.fn(),
 		setKeyValueStorage: jest.fn(),
 	},
@@ -25,9 +25,9 @@ jest.mock('../src/auth/cognito', () => ({
 }));
 
 const mockCognitoUserPoolsTokenProviderSetAuthConfig =
-	CognitoUserPoolsTokenProvider.setAuthConfig as jest.Mock;
+	cognitoUserPoolsTokenProvider.setAuthConfig as jest.Mock;
 const mockCognitoUserPoolsTokenProviderSetKeyValueStorage =
-	CognitoUserPoolsTokenProvider.setKeyValueStorage as jest.Mock;
+	cognitoUserPoolsTokenProvider.setKeyValueStorage as jest.Mock;
 const mockAmplifySingletonConfigure = AmplifySingleton.configure as jest.Mock;
 const mockAmplifySingletonGetConfig = AmplifySingleton.getConfig as jest.Mock;
 const MockCookieStorage = CookieStorage as jest.Mock;
@@ -53,6 +53,13 @@ describe('initSingleton (DefaultAmplify)', () => {
 		mockCognitoUserPoolsTokenProviderSetKeyValueStorage.mockReset();
 		mockAmplifySingletonConfigure.mockReset();
 		mockAmplifySingletonGetConfig.mockReset();
+
+		mockAmplifySingletonConfigure.mockImplementation((_, libraryOptions) => {
+			AmplifySingleton.libraryOptions =
+				libraryOptions ?? AmplifySingleton.libraryOptions;
+		});
+		// reset to its initial state
+		AmplifySingleton.libraryOptions = {};
 	});
 
 	describe('DefaultAmplify.configure()', () => {
@@ -130,10 +137,43 @@ describe('initSingleton (DefaultAmplify)', () => {
 						mockResourceConfig,
 						{
 							Auth: {
-								tokenProvider: CognitoUserPoolsTokenProvider,
+								tokenProvider: cognitoUserPoolsTokenProvider,
 								credentialsProvider: cognitoCredentialsProvider,
 							},
 						}
+					);
+				});
+
+				it('should preserve the default auth providers when Amplify.configure is called again without custom auth provider', () => {
+					mockAmplifySingletonGetConfig.mockReturnValueOnce(mockResourceConfig);
+
+					Amplify.configure(mockResourceConfig);
+					const defaultAuthProvidersHaveBeenConfigured =
+						AmplifySingleton.libraryOptions;
+
+					Amplify.configure({
+						...Amplify.getConfig(),
+						Analytics: {
+							Kinesis: {
+								region: 'us-west-2',
+							},
+						},
+					});
+					expect(AmplifySingleton.libraryOptions).toStrictEqual(
+						defaultAuthProvidersHaveBeenConfigured
+					);
+
+					Amplify.configure({
+						...Amplify.getConfig(),
+						Analytics: {
+							Personalize: {
+								trackingId: 'f1b2d240-f7e7-416a-af88-759d7e258994',
+								region: 'us-west-2',
+							},
+						},
+					});
+					expect(AmplifySingleton.libraryOptions).toStrictEqual(
+						defaultAuthProvidersHaveBeenConfigured
 					);
 				});
 
@@ -160,7 +200,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 						mockResourceConfig,
 						{
 							Auth: {
-								tokenProvider: CognitoUserPoolsTokenProvider,
+								tokenProvider: cognitoUserPoolsTokenProvider,
 								credentialsProvider: cognitoCredentialsProvider,
 							},
 							...libraryOptionsWithStorage,

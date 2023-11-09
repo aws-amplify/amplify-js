@@ -1,24 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyWebBrowser,
-	OpenAuthSession,
-	OpenAuthSessionResult,
-} from './types';
-
-const RTN_MODULE = '@aws-amplify/rtn-web-browser';
-
-let webBrowser: AmplifyWebBrowser;
-
-try {
-	webBrowser = require(RTN_MODULE)?.AmplifyRTNWebBrowser;
-	if (!webBrowser) {
-		throw new Error();
-	}
-} catch (err) {
-	throw new Error(`Unable to find ${RTN_MODULE}. Did you install it?`);
-}
+import { loadAmplifyWebBrowser } from '@aws-amplify/react-native';
+import { OpenAuthSession, OpenAuthSessionResult } from './types';
 
 export const openAuthSession: OpenAuthSession = async (
 	url: string,
@@ -26,7 +10,7 @@ export const openAuthSession: OpenAuthSession = async (
 	prefersEphemeralSession?: boolean
 ): Promise<OpenAuthSessionResult> => {
 	try {
-		const redirectUrl = await webBrowser.openAuthSessionAsync(
+		const redirectUrl = await loadAmplifyWebBrowser().openAuthSessionAsync(
 			url,
 			redirectUrls,
 			prefersEphemeralSession

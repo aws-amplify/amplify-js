@@ -25,7 +25,6 @@ export const putObjectJob =
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
 
-		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
 		const {
 			contentDisposition,
@@ -40,13 +39,12 @@ export const putObjectJob =
 				...s3Config,
 				abortSignal,
 				onUploadProgress: onProgress,
-				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData)
+				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData),
 			},
 			{
 				Bucket: bucket,
 				Key: finalKey,
-				// TODO: The Body type of S3 PutObject API from AWS SDK does not correctly reflects the supported data types.
-				Body: data as any,
+				Body: data,
 				ContentType: contentType,
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,

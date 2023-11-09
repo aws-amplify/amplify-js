@@ -10,6 +10,7 @@ import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
+import { logger } from '../../../utils';
 
 /**
  * Download S3 object data to memory
@@ -63,8 +64,9 @@ const downloadDataJob =
 			Amplify,
 			downloadDataOptions
 		);
-		// TODO[AllanZhengYP]: support excludeSubPaths option to exclude sub paths
 		const finalKey = keyPrefix + key;
+
+		logger.debug(`download ${key} from ${finalKey}.`);
 
 		const {
 			Body: body,
@@ -90,10 +92,8 @@ const downloadDataJob =
 			}
 		);
 		return {
-			// Casting with ! as body always exists for getObject API.
-			// TODO[AllanZhengYP]: remove casting when we have better typing for getObject API
 			key,
-			body: body!,
+			body,
 			lastModified,
 			size,
 			contentType,
