@@ -10,19 +10,26 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-amplify/amplify-api-next-alpha@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-alpha/-/amplify-api-next-alpha-0.6.0.tgz#5560136c259df68732c975e834dd5610cd0e12f2"
-  integrity sha512-SNE5ervGKabSkHV21NDPg7yyMfL2wSt7+aPmR27yAM87dGXG21QfeCNOme16prpk1fmbDU0/xQO1tc9NQMw3iw==
-  dependencies:
-    "@aws-amplify/amplify-api-next-types-alpha" "*"
-
-"@aws-amplify/amplify-api-next-types-alpha@*", "@aws-amplify/amplify-api-next-types-alpha@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.3.0.tgz#11397f9604a31fd9452865e5c813b1d61f0f49ca"
-  integrity sha512-f78/sN8H7tlwyp3Bp46a9X6fo23rchR4pihH37qgbCPPqK+UHSq+hCL9Zo6aNDmM3g5xVzZZqC2ccPSeaOhRQw==
+"@aws-amplify/amplify-api-next-types-alpha@^0.3.0":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.3.1.tgz#0cc850f19735e8ccc3ce69ec2d1eb5184cfc1020"
+  integrity sha512-hzuRYtu6lMy2UG4EhwpQA59RlmIEGWQW5pOfJQPZUcOGgkfXg5qAYKWqFNcJLjid/dx9Yu09N5No1RcjYM/QvA==
   dependencies:
     rxjs "^7.8.1"
+
+"@aws-amplify/core@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/core/-/core-6.0.0.tgz#7d8bd5f501600b277cbf9e97cf29037216da8587"
+  integrity sha512-gVoNGHRso6GOxKwFiVo+K70Io5GTGTsjNBkZPpYeZZdqZy3FcXX0j63WeqpxkMddlUDnFxe//hTKapLUgQwK0w==
+  dependencies:
+    "@aws-crypto/sha256-js" "5.2.0"
+    "@aws-sdk/types" "3.398.0"
+    "@smithy/util-hex-encoding" "2.0.0"
+    "@types/uuid" "^9.0.0"
+    js-cookie "^3.0.5"
+    rxjs "^7.8.1"
+    tslib "^2.5.0"
+    uuid "^9.0.0"
 
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"
@@ -15480,6 +15487,11 @@ typescript-coverage-report@^0.6.4:
     semantic-ui-react "^0.88.2"
     type-coverage-core "^2.17.2"
 
+typescript@4.2.x:
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.4.tgz#8610b59747de028fda898a8aef0e103f156d0961"
+  integrity sha512-V+evlYHZnQkaz8TRBuxTA92yZBPotr5H+WhQ7bD3hZUndx5tGOa1fuCgeSjxAzM1RiN5IzvadIXTVefuuwZCRg==
+
 typescript@5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.2.tgz#891e1a90c5189d8506af64b9ef929fca99ba1ee5"
@@ -15490,15 +15502,15 @@ typescript@5.1.6:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.1.6.tgz#02f8ac202b6dad2c0dd5e0913745b47a37998274"
   integrity sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==
 
-typescript@5.x.x, typescript@^5.0.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
-  integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
-
 "typescript@^3 || ^4":
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+
+typescript@^5.0.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
+  integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
 
 typescript@~3.8.3:
   version "3.8.3"

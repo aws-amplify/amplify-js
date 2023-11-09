@@ -8,7 +8,7 @@ import { signInWithCustomAuth } from '../../../src/providers/cognito/apis/signIn
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { InitiateAuthCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
@@ -23,7 +23,7 @@ const authConfig = {
 Amplify.configure({
 	Auth: authConfig,
 });
-CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 describe('signIn API happy path cases', () => {
 	let handleCustomAuthFlowWithoutSRPSpy;
 

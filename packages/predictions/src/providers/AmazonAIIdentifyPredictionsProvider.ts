@@ -1,10 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	fetchAuthSession,
-} from '@aws-amplify/core';
+import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
 import {
 	Category,
 	PredictionsAction,
@@ -66,7 +62,7 @@ import {
 } from './IdentifyTextUtils';
 import { blobToArrayBuffer, makeCamelCase, makeCamelCaseArray } from './Utils';
 
-const logger = new Logger('AmazonAIIdentifyPredictionsProvider');
+const logger = new ConsoleLogger('AmazonAIIdentifyPredictionsProvider');
 
 export class AmazonAIIdentifyPredictionsProvider {
 	private rekognitionClient?: RekognitionClient;

@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ConsoleLogger as Logger } from '../../Logger';
+import { ConsoleLogger } from '../../Logger';
 
-const logger = new Logger('ClientDevice_Browser');
+const logger = new ConsoleLogger('getClientInfo');
 
 export function getClientInfo() {
 	if (typeof window === 'undefined') {
