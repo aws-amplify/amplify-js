@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import { NativeModules } from 'react-native';
 import { LINKING_ERROR } from './constants';
 import { WebBrowserNativeModule } from './types';
 
@@ -16,5 +16,3 @@ export const nativeModule: WebBrowserNativeModule =
 					},
 				}
 		  );
-
-export const nativeEventEmitter = new NativeEventEmitter(nativeModule);
