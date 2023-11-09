@@ -1,11 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { resolveOwnerFields } from '../utils/resolveOwnerFields';
-import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { V6Client, __authMode, __authToken } from '../types';
+import {
+	GraphQLAuthMode,
+	ModelIntrospectionSchema,
+	SchemaModel,
+} from '@aws-amplify/core/internals/utils';
+import {
+	ListArgs,
+	QueryArgs,
+	V6Client,
+	__authMode,
+	__authToken,
+} from '../types';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
-
-type ListArgs = { selectionSet?: string[]; filter?: {} };
 
 type LazyLoadOptions = {
 	authMode?: GraphQLAuthMode;
@@ -548,10 +556,10 @@ export function generateGraphQLDocument(
 }
 
 export function buildGraphQLVariables(
-	modelDefinition: any,
+	modelDefinition: SchemaModel,
 	operation: ModelOperation,
-	arg: any,
-	modelIntrospection
+	arg: QueryArgs | undefined,
+	modelIntrospection: ModelIntrospectionSchema
 ): object {
 	const {
 		fields,
@@ -652,7 +660,7 @@ export function normalizeMutationInput(
 	mutationInput: any,
 	model: any,
 	modelDefinition: any
-): Record<string, unknown> {
+): QueryArgs {
 	const { fields } = model;
 
 	const normalized = {};

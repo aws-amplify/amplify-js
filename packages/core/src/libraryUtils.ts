@@ -31,7 +31,12 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
-export { GraphQLAuthMode, DocumentType } from './singleton/API/types';
+export {
+	GraphQLAuthMode,
+	DocumentType,
+	ModelIntrospectionSchema,
+	SchemaModel,
+} from './singleton/API/types';
 export { Signer } from './Signer';
 export {
 	JWT,

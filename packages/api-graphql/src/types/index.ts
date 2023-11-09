@@ -434,3 +434,7 @@ export type ServerClientGenerationParams = {
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
 };
+
+export type QueryArgs = Record<string, unknown>;
+
+export type ListArgs = { selectionSet?: string[]; filter?: {} };

@@ -68,7 +68,7 @@
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
 	"@aws-amplify/amplify-api-next-alpha": "^0.6.0",
-	"typescript": "5.1.6",
+	"typescript": "5.0.2",
     "@rollup/plugin-typescript": "11.1.5",
     "rollup": "3.29.4"
   },

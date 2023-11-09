@@ -7,13 +7,29 @@ import {
 	buildGraphQLVariables,
 	flattenItems,
 	authModeParams,
+	ModelOperation,
 } from '../APIClient';
+import {
+	QueryArgs,
+	V6Client,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
+} from '../../types';
+import {
+	ModelIntrospectionSchema,
+	SchemaModel,
+} from '@aws-amplify/core/internals/utils';
 
-export function getFactory(
-	client,
-	modelIntrospection,
-	model,
-	operation,
+export function getFactory<
+	T extends Record<any, any> = never,
+	ClientType extends
+		| V6ClientSSRRequest<T>
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
+>(
+	client: V6Client | ClientType,
+	modelIntrospection: ModelIntrospectionSchema,
+	model: SchemaModel,
+	operation: ModelOperation,
 	context = false
 ) {
 	const getWithContext = async (
@@ -21,7 +37,7 @@ export function getFactory(
 		arg?: any,
 		options?: any
 	) => {
-		return _get(
+		return _get<T, ClientType>(
 			client,
 			modelIntrospection,
 			model,
@@ -33,7 +49,7 @@ export function getFactory(
 	};
 
 	const get = async (arg?: any, options?: any) => {
-		return _get(
+		return _get<T, ClientType>(
 			client,
 			modelIntrospection,
 			model,
@@ -47,11 +63,16 @@ export function getFactory(
 	return context ? getWithContext : get;
 }
 
-async function _get(
-	client,
-	modelIntrospection,
-	model,
-	arg,
+async function _get<
+	T extends Record<any, any> = never,
+	ClientType extends
+		| V6ClientSSRRequest<T>
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
+>(
+	client: V6Client | ClientType,
+	modelIntrospection: ModelIntrospectionSchema,
+	model: SchemaModel,
+	arg: QueryArgs,
 	options,
 	operation,
 	context

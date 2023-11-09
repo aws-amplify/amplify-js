@@ -8,28 +8,60 @@ import {
 	flattenItems,
 	authModeParams,
 } from '../APIClient';
+import {
+	ListArgs,
+	V6Client,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
+} from '../../types';
+import {
+	ModelIntrospectionSchema,
+	SchemaModel,
+} from '@aws-amplify/core/internals/utils';
 
-export function listFactory(
-	client,
-	modelIntrospection,
-	model,
+export function listFactory<
+	T extends Record<any, any> = never,
+	ClientType extends
+		| V6ClientSSRRequest<T>
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
+>(
+	client: V6Client | ClientType,
+	modelIntrospection: ModelIntrospectionSchema,
+	model: SchemaModel,
 	context = false
 ) {
 	const listWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec,
-		args?: any
+		args?: ListArgs
 	) => {
-		return _list(client, modelIntrospection, model, args, contextSpec);
+		return _list<T, ClientType>(
+			client,
+			modelIntrospection,
+			model,
+			args,
+			contextSpec
+		);
 	};
 
 	const list = async (args?: any) => {
-		return _list(client, modelIntrospection, model, args, context);
+		return _list<T, ClientType>(client, modelIntrospection, model, args);
 	};
 
 	return context ? listWithContext : list;
 }
 
-async function _list(client, modelIntrospection, model, args, context) {
+async function _list<
+	T extends Record<any, any> = never,
+	ClientType extends
+		| V6ClientSSRRequest<T>
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
+>(
+	client: V6Client | ClientType,
+	modelIntrospection: ModelIntrospectionSchema,
+	model: SchemaModel,
+	args: ListArgs | undefined,
+	contextSpec?: AmplifyServer.ContextSpec
+) {
 	const { name } = model as any;
 
 	const query = generateGraphQLDocument(
@@ -48,8 +80,8 @@ async function _list(client, modelIntrospection, model, args, context) {
 	try {
 		const auth = authModeParams(client, args);
 
-		const { data, extensions } = context
-			? ((await client.graphql(context, {
+		const { data, extensions } = !!contextSpec
+			? ((await client.graphql(contextSpec, {
 					...auth,
 					query,
 					variables,
@@ -82,7 +114,7 @@ async function _list(client, modelIntrospection, model, args, context) {
 						modelIntrospection,
 						auth.authMode,
 						auth.authToken,
-						context
+						contextSpec
 					);
 
 					return {
