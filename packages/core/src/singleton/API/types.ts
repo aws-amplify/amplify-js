@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Headers } from '../../clients';
+import { AtLeastOne } from '../types';
 
 export type LibraryAPIOptions = {
 	GraphQL?: {
@@ -65,10 +66,15 @@ type APIRestConfig = {
 	service?: string;
 };
 
-export type APIConfig = {
-	REST?: Record<string, APIRestConfig>;
-	GraphQL?: APIGraphQLConfig;
+export type RESTProviderConfig = {
+	REST: Record<string, APIRestConfig>;
 };
+
+export type GraphQLProviderConfig = {
+	GraphQL: APIGraphQLConfig;
+};
+
+export type APIConfig = AtLeastOne<RESTProviderConfig & GraphQLProviderConfig>;
 
 export type GraphQLAuthMode =
 	| 'apiKey'
