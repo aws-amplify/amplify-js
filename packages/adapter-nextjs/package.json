@@ -1,7 +1,7 @@
 {
 	"author": "Amazon Web Services",
 	"name": "@aws-amplify/adapter-nextjs",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "The adapter for the supporting of using Amplify APIs in Next.js.",
 	"peerDependencies": {
 		"aws-amplify": "^6.0.0",
@@ -16,7 +16,7 @@
 		"@types/node": "^20.3.1",
 		"@types/react": "^18.2.13",
 		"@types/react-dom": "^18.2.6",
-		"aws-amplify": "6.0.0",
+		"aws-amplify": "6.0.1",
 		"jest-fetch-mock": "3.0.3",
 		"next": ">= 13.5.0 < 15.0.0",
 		"rollup": "3.29.4",
@@ -89,7 +89,9 @@
 				},
 				"tsConfig": {
 					"allowJs": true,
-					"types": ["@types/jest"]
+					"types": [
+						"@types/jest"
+					]
 				}
 			}
 		},

@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "6.0.0",
+	"version": "6.0.1",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -43,7 +43,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/storage": "6.0.0",
+		"@aws-amplify/storage": "6.0.1",
 		"@aws-sdk/client-comprehend": "3.398.0",
 		"@aws-sdk/client-polly": "3.398.0",
 		"@aws-sdk/client-rekognition": "3.398.0",
@@ -59,7 +59,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.0",
+		"@aws-amplify/core": "6.0.1",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
@@ -81,7 +81,9 @@
 				"tsConfig": {
 					"downlevelIteration": true,
 					"allowJs": true,
-					"types": ["@types/jest"],
+					"types": [
+						"@types/jest"
+					],
 					"outDir": "./tsconfig.json",
 					"noEmitOnError": false,
 					"noImplicitAny": false,
