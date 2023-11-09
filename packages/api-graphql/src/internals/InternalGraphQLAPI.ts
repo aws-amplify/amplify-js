@@ -56,7 +56,6 @@ export class InternalGraphQLAPIClass {
 	/**
 	 * @private
 	 */
-	private _options;
 	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
 
 	private _api = {
@@ -65,15 +64,6 @@ export class InternalGraphQLAPIClass {
 		isCancelErrorREST,
 		updateRequestToBeCancellable,
 	};
-
-	/**
-	 * Initialize GraphQL API with AWS configuration
-	 * @param {Object} options - Configuration object for API
-	 */
-	constructor(options) {
-		this._options = options;
-		logger.debug('API Options', this._options);
-	}
 
 	public getModuleName() {
 		return 'InternalGraphQLAPI';
