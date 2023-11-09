@@ -45,7 +45,6 @@
 	],
 	"dependencies": {
 		"@aws-amplify/api": "6.0.1",
-		"@aws-amplify/auth": "6.0.1",
 		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
