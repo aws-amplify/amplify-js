@@ -10,26 +10,12 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-amplify/amplify-api-next-types-alpha@^0.3.0":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/amplify-api-next-types-alpha/-/amplify-api-next-types-alpha-0.3.1.tgz#0cc850f19735e8ccc3ce69ec2d1eb5184cfc1020"
-  integrity sha512-hzuRYtu6lMy2UG4EhwpQA59RlmIEGWQW5pOfJQPZUcOGgkfXg5qAYKWqFNcJLjid/dx9Yu09N5No1RcjYM/QvA==
+"@aws-amplify/data-schema-types@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.4.0.tgz#b5d87e0fc8f041a45977d51d8e0bf2899d2783b3"
+  integrity sha512-w9bnzh3pXQnr8TyFYERL8Ttp8OmS/5WPDuJplL1FvbXh3/JrhU2T1Wds0D07sEKICn/sFu0g7QCFNJlsP0uEbQ==
   dependencies:
     rxjs "^7.8.1"
-
-"@aws-amplify/core@6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/core/-/core-6.0.0.tgz#7d8bd5f501600b277cbf9e97cf29037216da8587"
-  integrity sha512-gVoNGHRso6GOxKwFiVo+K70Io5GTGTsjNBkZPpYeZZdqZy3FcXX0j63WeqpxkMddlUDnFxe//hTKapLUgQwK0w==
-  dependencies:
-    "@aws-crypto/sha256-js" "5.2.0"
-    "@aws-sdk/types" "3.398.0"
-    "@smithy/util-hex-encoding" "2.0.0"
-    "@types/uuid" "^9.0.0"
-    js-cookie "^3.0.5"
-    rxjs "^7.8.1"
-    tslib "^2.5.0"
-    uuid "^9.0.0"
 
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"

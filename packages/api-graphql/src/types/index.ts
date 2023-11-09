@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
-import { ModelTypes } from '@aws-amplify/amplify-api-next-types-alpha';
+import { ModelTypes } from '@aws-amplify/data-schema-types';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -14,7 +14,7 @@ import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 
-export { SelectionSet } from '@aws-amplify/amplify-api-next-types-alpha';
+export { SelectionSet } from '@aws-amplify/data-schema-types';
 
 export { CommonPublicClientOptions } from '../internals/types';
 
