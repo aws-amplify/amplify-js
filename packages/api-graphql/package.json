@@ -66,11 +66,7 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"peerDependencies": {
-		"@aws-amplify/core": "^6.0.0"
-	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.1",
 		"typescript": "5.1.6",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4"
@@ -82,6 +78,7 @@
 		"internals"
 	],
 	"dependencies": {
+		"@aws-amplify/core": "6.0.1",
 		"@aws-amplify/api-rest": "4.0.1",
 		"@aws-amplify/data-schema-types": "^0.4.0",
 		"@aws-sdk/types": "3.387.0",

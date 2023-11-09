@@ -7,10 +7,9 @@ export const loadAmplifyPushNotification = () => {
 	try {
 		// metro bundler requires static string for loading module.
 		// See: https://facebook.github.io/metro/docs/configuration/#dynamicdepsinpackages
-		const module = require('@aws-amplify/rtn-push-notification')
-			?.module as PushNotificationModule;
+		const module = require('@aws-amplify/rtn-push-notification')?.module;
 		if (module) {
-			return module;
+			return module as PushNotificationModule;
 		}
 
 		throw new Error(
