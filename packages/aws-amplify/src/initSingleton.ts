@@ -12,7 +12,7 @@ import {
 	parseAWSExports,
 } from '@aws-amplify/core/internals/utils';
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
 } from './auth/cognito';
 
@@ -36,17 +36,17 @@ export const DefaultAmplify = {
 			!libraryOptions?.Auth &&
 			!Amplify.libraryOptions.Auth
 		) {
-			CognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
+			cognitoUserPoolsTokenProvider.setAuthConfig(resolvedResourceConfig.Auth);
 
 			const libraryOptionsWithDefaultAuthProviders: LibraryOptions = {
 				...libraryOptions,
 				Auth: {
-					tokenProvider: CognitoUserPoolsTokenProvider,
+					tokenProvider: cognitoUserPoolsTokenProvider,
 					credentialsProvider: cognitoCredentialsProvider,
 				},
 			};
 
-			CognitoUserPoolsTokenProvider.setKeyValueStorage(
+			cognitoUserPoolsTokenProvider.setKeyValueStorage(
 				libraryOptions?.ssr
 					? // TODO: allow configure with a public interface
 					  new CookieStorage({
