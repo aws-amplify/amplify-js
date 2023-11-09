@@ -1,92 +1,92 @@
 {
-  "name": "@aws-amplify/api-graphql",
-  "version": "4.0.0",
-  "description": "Api-graphql category of aws-amplify",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.mjs",
-  "typings": "./dist/esm/index.d.ts",
-  "react-native": "./src/index.ts",
-  "sideEffects": [
-    "./dist/cjs/GraphQLAPI.js",
-    "./dist/esm/GraphQLAPI.mjs"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-	"test": "npm run lint && jest -w 1 --coverage",
-	"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
-	"build-with-test": "npm test && npm build",
-	"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-	"build:esm-cjs": "rollup -c rollup.config.mjs",
-	"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
-	"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
-	"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
-	"clean": "npm run clean:size && rimraf dist lib lib-esm",
-	"clean:size": "rimraf dual-publish-tmp tmp*",
-	"format": "echo \"Not implemented\"",
-	"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-	"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 70.0"
-  },
-  "exports": {
-	".": {
-		"types": "./dist/esm/index.d.ts",
-		"import": "./dist/esm/index.mjs",
-		"require": "./dist/cjs/index.js",
-		"react-native": "./src/index.ts"
+	"name": "@aws-amplify/api-graphql",
+	"version": "4.0.1",
+	"description": "Api-graphql category of aws-amplify",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./src/index.ts",
+	"sideEffects": [
+		"./dist/cjs/GraphQLAPI.js",
+		"./dist/esm/GraphQLAPI.mjs"
+	],
+	"publishConfig": {
+		"access": "public"
 	},
-	"./internals": {
-		"types": "./dist/esm/internals/index.d.ts",
-		"import": "./dist/esm/internals/index.mjs",
-		"require": "./dist/cjs/internals/index.js",
-		"react-native": "./src/internals/index.ts"
+	"scripts": {
+		"test": "npm run lint && jest -w 1 --coverage",
+		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
+		"build-with-test": "npm test && npm build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf dist lib lib-esm",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 70.0"
 	},
-	"./package.json": "./package.json"
-  },
-  "typesVersions": {
-	">=4.2": {
-		"internals": [
-			"./dist/esm/internals/index.d.ts"
-		]
-	}
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
-  },
-  "homepage": "https://aws-amplify.github.io/",
-  "devDependencies": {
-    "@rollup/plugin-typescript": "11.1.5",
-    "rollup": "3.29.4"
-  },
-  "files": [
-    "dist/cjs",
-    "dist/esm",
-    "src",
-    "internals"
-  ],
-  "dependencies": {
-    "@aws-amplify/api-rest": "4.0.0",
-    "@aws-amplify/auth": "6.0.0",
-    "@aws-amplify/core": "6.0.0",
-    "@aws-sdk/types": "3.387.0",
-    "graphql": "15.8.0",
-    "tslib": "^2.5.0",
-    "rxjs": "^7.8.1"
-  },
-  "size-limit": [
-    {
-      "name": "API (GraphQL client)",
-      "path": "./dist/esm/index.mjs",
-      "import": "{ Amplify, GraphQLAPI }",
-      "limit": "91.7 kB"
-    }
-  ],
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
+		},
+		"./internals": {
+			"types": "./dist/esm/internals/index.d.ts",
+			"import": "./dist/esm/internals/index.mjs",
+			"require": "./dist/cjs/internals/index.js",
+			"react-native": "./src/internals/index.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"typesVersions": {
+		">=4.2": {
+			"internals": [
+				"./dist/esm/internals/index.d.ts"
+			]
+		}
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"devDependencies": {
+		"@rollup/plugin-typescript": "11.1.5",
+		"rollup": "3.29.4"
+	},
+	"files": [
+		"dist/cjs",
+		"dist/esm",
+		"src",
+		"internals"
+	],
+	"dependencies": {
+		"@aws-amplify/api-rest": "4.0.1",
+		"@aws-amplify/auth": "6.0.1",
+		"@aws-amplify/core": "6.0.1",
+		"@aws-sdk/types": "3.387.0",
+		"graphql": "15.8.0",
+		"rxjs": "^7.8.1",
+		"tslib": "^2.5.0"
+	},
+	"size-limit": [
+		{
+			"name": "API (GraphQL client)",
+			"path": "./dist/esm/index.mjs",
+			"import": "{ Amplify, GraphQLAPI }",
+			"limit": "91.7 kB"
+		}
+	],
 	"jest": {
 		"globals": {
 			"ts-jest": {
@@ -104,7 +104,9 @@
 					"allowJs": true,
 					"noEmitOnError": false,
 					"strictNullChecks": true,
-					"types": ["@types/jest"]
+					"types": [
+						"@types/jest"
+					]
 				}
 			}
 		},
