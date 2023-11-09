@@ -1,10 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	fetchAuthSession,
-} from '@aws-amplify/core';
+import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
 import {
 	AWSCredentials,
 	Category,
@@ -40,7 +36,7 @@ import {
 	isValidConvertInput,
 } from '../types';
 
-const logger = new Logger('AmazonAIConvertPredictionsProvider');
+const logger = new ConsoleLogger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamCodec(toUtf8, fromUtf8);
 
 const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];

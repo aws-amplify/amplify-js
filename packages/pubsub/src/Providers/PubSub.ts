@@ -8,8 +8,8 @@ import {
 	PublishInput,
 	SubscribeInput,
 } from '../types/PubSub';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
-const logger = new Logger('AbstractPubSubProvider');
+import { ConsoleLogger } from '@aws-amplify/core';
+const logger = new ConsoleLogger('AbstractPubSubProvider');
 
 export abstract class AbstractPubSub<T extends PubSubOptions>
 	implements PubSubBase

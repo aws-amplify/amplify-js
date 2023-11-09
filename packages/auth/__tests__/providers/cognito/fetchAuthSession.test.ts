@@ -2,7 +2,7 @@ import { Amplify } from '@aws-amplify/core';
 import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	CognitoAWSCredentialsAndIdentityIdProvider,
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
 } from '../../../src/providers/cognito';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
@@ -43,7 +43,7 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 			{
 				Auth: {
 					credentialsProvider: cognitoCredentialsProvider,
-					tokenProvider: CognitoUserPoolsTokenProvider,
+					tokenProvider: cognitoUserPoolsTokenProvider,
 				},
 			}
 		);
@@ -78,7 +78,7 @@ describe.only('fetchAuthSession behavior for UserPools only', () => {
 	let tokenProviderSpy;
 	beforeEach(() => {
 		tokenProviderSpy = jest
-			.spyOn(CognitoUserPoolsTokenProvider, 'getTokens')
+			.spyOn(cognitoUserPoolsTokenProvider, 'getTokens')
 			.mockImplementation(async () => {
 				return {
 					accessToken: decodeJWT(
@@ -104,7 +104,7 @@ describe.only('fetchAuthSession behavior for UserPools only', () => {
 			{
 				Auth: {
 					credentialsProvider: cognitoCredentialsProvider,
-					tokenProvider: CognitoUserPoolsTokenProvider,
+					tokenProvider: cognitoUserPoolsTokenProvider,
 				},
 			}
 		);

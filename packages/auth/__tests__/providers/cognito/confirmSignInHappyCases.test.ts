@@ -11,7 +11,7 @@ import {
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
@@ -34,7 +34,7 @@ describe('confirmSignIn API happy path cases', () => {
 	const password = authAPITestParams.user1.password;
 
 	beforeEach(async () => {
-		CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 
 		handleChallengeNameSpy = jest
 			.spyOn(signInHelpers, 'handleChallengeName')
