@@ -4,10 +4,7 @@ import { ModelTypes } from '@aws-amplify/data-schema-types';
 import { graphQLOperationsInfo, ModelOperation } from '../APIClient';
 import { ServerClientGenerationParams } from '../../types/';
 import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../types';
-import {
-	ModelIntrospectionSchema,
-	SchemaModel,
-} from '@aws-amplify/core/internals/utils';
+import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
 
 import { listFactory } from '../operations/list';
 import { getFactory } from '../operations/get';

@@ -9,10 +9,7 @@ import { listFactory } from './operations/list';
 import { getFactory } from './operations/get';
 import { subscriptionFactory } from './operations/subscription';
 import { observeQueryFactory } from './operations/observeQuery';
-import {
-	ModelIntrospectionSchema,
-	SchemaModel,
-} from '@aws-amplify/core/internals/utils';
+import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client<Record<string, any>>,
