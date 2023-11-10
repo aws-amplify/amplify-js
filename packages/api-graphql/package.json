@@ -83,9 +83,8 @@
 		"@aws-amplify/data-schema-types": "^0.4.1",
 		"@aws-sdk/types": "3.387.0",
 		"graphql": "15.8.0",
-		"tslib": "^2.6.1",
-		"url": "0.11.0",
-		"uuid": "^3.2.1",
+		"tslib": "^2.5.0",
+		"uuid": "^9.0.0",
 		"rxjs": "^7.8.1"
 	},
 	"size-limit": [

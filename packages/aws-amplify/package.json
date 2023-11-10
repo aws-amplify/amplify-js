@@ -157,6 +157,9 @@
 			"api": [
 				"./dist/esm/api/index.d.ts"
 			],
+			"data": [
+				"./dist/esm/api/index.d.ts"
+			],
 			"api/server": [
 				"./dist/esm/api/server.d.ts"
 			],

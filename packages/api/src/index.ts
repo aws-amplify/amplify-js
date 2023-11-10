@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO(v6): revisit exports
-
 export { GraphQLQuery, GraphQLSubscription, SelectionSet } from './types';
 export { generateClient } from './API';
 
