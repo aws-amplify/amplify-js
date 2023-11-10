@@ -32,11 +32,11 @@ export class GeoClass {
 	/**
 	 * @private
 	 */
-	private _config: GeoConfig;
+	private _config?: GeoConfig;
 	private _pluggables: GeoProvider[];
 
 	constructor() {
-		this._config = {};
+		this._config = undefined;
 		this._pluggables = [];
 
 		const amplifyConfig = Amplify.getConfig() ?? {};

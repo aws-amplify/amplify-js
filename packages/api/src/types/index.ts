@@ -12,4 +12,5 @@ export {
 	GraphQLResult,
 	GraphQLQuery,
 	GraphQLSubscription,
+	SelectionSet,
 } from '@aws-amplify/api-graphql';

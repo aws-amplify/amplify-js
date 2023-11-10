@@ -100,9 +100,8 @@ export function expectSub(
 			authenticationType: 'apiKey',
 			apiKey: 'FAKE-KEY',
 			appSyncGraphqlEndpoint: 'https://localhost/graphql',
-			query: expect.stringContaining(
-				`${opName}(filter: $filter, owner: $owner)`
-			),
+			// Code-gen'd queries have an owner param; TypeBeast queries don't:
+			query: expect.stringContaining(`${opName}(filter: $filter`),
 			variables: expect.objectContaining(item),
 		}),
 		{

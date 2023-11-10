@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.0.0",
+	"version": "6.0.1",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -32,6 +32,17 @@
 			"react-native": "./src/api/index.ts"
 		},
 		"./api/server": {
+			"types": "./dist/esm/api/server.d.ts",
+			"import": "./dist/esm/api/server.mjs",
+			"require": "./dist/cjs/api/server.js"
+		},
+		"./data": {
+			"types": "./dist/esm/api/index.d.ts",
+			"import": "./dist/esm/api/index.mjs",
+			"require": "./dist/cjs/api/index.js",
+			"react-native": "./src/api/index.ts"
+		},
+		"./data/server": {
 			"types": "./dist/esm/api/server.d.ts",
 			"import": "./dist/esm/api/server.mjs",
 			"require": "./dist/cjs/api/server.js"
@@ -146,6 +157,9 @@
 			"api": [
 				"./dist/esm/api/index.d.ts"
 			],
+			"data": [
+				"./dist/esm/api/index.d.ts"
+			],
 			"api/server": [
 				"./dist/esm/api/server.d.ts"
 			],
@@ -250,13 +264,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/api": "6.0.0",
-		"@aws-amplify/analytics": "7.0.0",
-		"@aws-amplify/auth": "6.0.0",
-		"@aws-amplify/core": "6.0.0",
-		"@aws-amplify/storage": "6.0.0",
-		"@aws-amplify/datastore": "5.0.0",
-		"@aws-amplify/notifications": "2.0.0",
+		"@aws-amplify/analytics": "7.0.1",
+		"@aws-amplify/api": "6.0.1",
+		"@aws-amplify/auth": "6.0.1",
+		"@aws-amplify/core": "6.0.1",
+		"@aws-amplify/datastore": "5.0.1",
+		"@aws-amplify/notifications": "2.0.1",
+		"@aws-amplify/storage": "6.0.1",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -311,19 +325,19 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "32.49 kB"
+			"limit": "35.89 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ get, post, put, del, patch, head, isCancelError }",
-			"limit": "9.65 kB"
+			"limit": "15.0 kB"
 		},
 		{
 			"name": "[Auth] signUp (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signUp }",
-			"limit": "26.51 kB"
+			"limit": "31.00 kB"
 		},
 		{
 			"name": "[Auth] resetPassword (Cognito)",
@@ -341,7 +355,7 @@
 			"name": "[Auth] signIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn }",
-			"limit": "25.70 kB"
+			"limit": "30.00 kB"
 		},
 		{
 			"name": "[Auth] resendSignUpCode (Cognito)",
@@ -353,7 +367,7 @@
 			"name": "[Auth] confirmSignUp (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignUp }",
-			"limit": "26.24 kB"
+			"limit": "31.00 kB"
 		},
 		{
 			"name": "[Auth] confirmSignIn (Cognito)",
@@ -389,7 +403,7 @@
 			"name": "[Auth] setUpTOTP (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ setUpTOTP }",
-			"limit": "9.18 kB"
+			"limit": "13.50 kB"
 		},
 		{
 			"name": "[Auth] updateUserAttributes (Cognito)",
@@ -498,7 +512,9 @@
 			"jsx"
 		],
 		"testEnvironment": "jsdom",
-		"testPathIgnorePatterns": ["dual-publish-tmp"],
+		"testPathIgnorePatterns": [
+			"dual-publish-tmp"
+		],
 		"testURL": "http://localhost/",
 		"coverageThreshold": {
 			"global": {

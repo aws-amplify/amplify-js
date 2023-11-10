@@ -7,7 +7,7 @@ import { authAPITestParams } from './testUtils/authApiTestParams';
 import {
 	signIn,
 	getCurrentUser,
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 } from '../../../src/providers/cognito';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { Amplify } from 'aws-amplify';
@@ -27,7 +27,7 @@ const authConfig = {
 Amplify.configure({
 	Auth: authConfig,
 });
-CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 
 describe('signIn API error path cases:', () => {
 	test('signIn API should throw a validation AuthError when a user is already signed-in', async () => {
