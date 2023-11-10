@@ -45,10 +45,6 @@ export function subscriptionFactory(
 			headers
 		) as GraphqlSubscriptionResult<object>;
 
-		// TODO:
-		// need to pass to `initializeModel`?
-		debugger;
-
 		return observable.pipe(
 			map(value => {
 				const [key] = Object.keys(value.data);
