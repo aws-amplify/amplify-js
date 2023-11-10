@@ -39,6 +39,11 @@
 			"import": "./dist/esm/api/index.mjs",
 			"require": "./dist/cjs/api/index.js"
 		},
+		"./data": {
+			"types": "./dist/esm/api/index.d.ts",
+			"import": "./dist/esm/api/index.mjs",
+			"require": "./dist/cjs/api/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"files": [

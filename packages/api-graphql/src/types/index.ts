@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
+import { ModelTypes } from '@aws-amplify/data-schema-types';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -12,6 +13,11 @@ import {
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 export { CONTROL_MSG, ConnectionState } from './PubSub';
+
+export { SelectionSet } from '@aws-amplify/data-schema-types';
+
+export { CommonPublicClientOptions } from '../internals/types';
+
 /**
  * Loose/Unknown options for raw GraphQLAPICategory `graphql()`.
  */
@@ -349,25 +355,45 @@ export type GeneratedSubscription<InputType, OutputType> = string & {
 type FilteredKeys<T> = {
 	[P in keyof T]: T[P] extends never ? never : P;
 }[keyof T];
+
 type ExcludeNeverFields<O> = {
 	[K in FilteredKeys<O>]: O[K];
 };
 
 export const __amplify = Symbol('amplify');
+export const __authMode = Symbol('authMode');
+export const __authToken = Symbol('authToken');
 
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
+	[__authMode]?: GraphQLAuthMode;
+	[__authToken]?: string;
 	graphql: GraphQLMethod;
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
+	models: ModelTypes<T>;
 }>;
 
-export type V6ClientSSR<T extends Record<any, any> = never> =
+export type V6ClientSSRRequest<T extends Record<any, any> = never> =
 	ExcludeNeverFields<{
 		[__amplify]: AmplifyClassV6;
+		[__authMode]?: GraphQLAuthMode;
+		[__authToken]?: string;
 		graphql: GraphQLMethodSSR;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
+		models: ModelTypes<T, 'REQUEST'>;
+	}>;
+
+export type V6ClientSSRCookies<T extends Record<any, any> = never> =
+	ExcludeNeverFields<{
+		[__amplify]: AmplifyClassV6;
+		[__authMode]?: GraphQLAuthMode;
+		[__authToken]?: string;
+		graphql: GraphQLMethod;
+		cancel: (promise: Promise<any>, message?: string) => boolean;
+		isCancelError: (error: any) => boolean;
+		models: ModelTypes<T, 'COOKIES'>;
 	}>;
 
 export type GraphQLMethod = <
@@ -404,7 +430,7 @@ export type ServerClientGenerationParams = {
 	amplify:
 		| null // null expected when used with `generateServerClient`
 		// closure expected with `generateServerClientUsingCookies`
-		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>);
+		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
 };
