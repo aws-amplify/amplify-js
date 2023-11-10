@@ -20,10 +20,16 @@ export function listFactory(
 		contextSpec: AmplifyServer.ContextSpec,
 		args?: any
 	) => {
+		// headers?
+		console.log(args);
+		debugger;
 		return _list(client, modelIntrospection, model, args, contextSpec);
 	};
 
 	const list = async (args?: any) => {
+		// headers?
+		console.log(args);
+		debugger;
 		return _list(client, modelIntrospection, model, args, context);
 	};
 
@@ -49,10 +55,14 @@ async function _list(client, modelIntrospection, model, args, context) {
 	try {
 		const auth = authModeParams(client, args);
 
-		const headers = getAdditionalHeadersFromClient(client);
-
-		// TODO: client headers
+		let headers = getAdditionalHeadersFromClient(client);
 		debugger;
+
+		// individual request headers should take precedence over client headers:
+		if (args?.headers) {
+			debugger;
+			headers = args?.headers;
+		}
 
 		const { data, extensions } = context
 			? ((await client.graphql(

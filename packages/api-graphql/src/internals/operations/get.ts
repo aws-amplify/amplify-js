@@ -22,6 +22,9 @@ export function getFactory(
 		arg?: any,
 		options?: any
 	) => {
+		console.log(arg);
+		console.log(options);
+		debugger;
 		return _get(
 			client,
 			modelIntrospection,
@@ -34,6 +37,9 @@ export function getFactory(
 	};
 
 	const get = async (arg?: any, options?: any) => {
+		console.log(arg);
+		console.log(options);
+		debugger;
 		return _get(
 			client,
 			modelIntrospection,
@@ -57,6 +63,9 @@ async function _get(
 	operation,
 	context
 ) {
+	console.log(arg);
+	console.log(options);
+	debugger;
 	const { name } = model as any;
 
 	const query = generateGraphQLDocument(
@@ -74,10 +83,15 @@ async function _get(
 
 	try {
 		const auth = authModeParams(client, options);
-		const headers = getAdditionalHeadersFromClient(client);
-		// TODO:
-		console.log('client custom headers:', headers);
+
+		let headers = getAdditionalHeadersFromClient(client);
 		debugger;
+
+		// individual request headers should take precedence over client headers:
+		if (arg?.headers) {
+			debugger;
+			headers = arg?.headers;
+		}
 
 		const { data, extensions } = context
 			? ((await client.graphql(
