@@ -35,17 +35,11 @@ const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new ConsoleLogger('GraphQLAPI');
 
-export const graphqlOperation = (
-	query,
-	variables = {},
-	authToken?: string
-) => ({
-	query,
-	variables,
-	authToken,
-});
-
-const isAmplifyInstance = (amplify): amplify is AmplifyClassV6 => {
+const isAmplifyInstance = (
+	amplify:
+		| AmplifyClassV6
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>)
+): amplify is AmplifyClassV6 => {
 	return typeof amplify !== 'function';
 };
 
@@ -56,7 +50,7 @@ export class InternalGraphQLAPIClass {
 	/**
 	 * @private
 	 */
-	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
+	private appSyncRealTime = new AWSAppSyncRealTimeProvider();
 
 	private _api = {
 		post,
@@ -198,7 +192,7 @@ export class InternalGraphQLAPIClass {
 						customUserAgentDetails
 					);
 				} else {
-					const wrapper = amplifyInstance =>
+					const wrapper = (amplifyInstance: AmplifyClassV6) =>
 						this._graphql<T>(
 							amplifyInstance,
 							{ query, variables, authMode },
@@ -297,7 +291,7 @@ export class InternalGraphQLAPIClass {
 				authMode !== 'iam' &&
 				authMode !== 'lambda')
 		) {
-			signingServiceInfo = null;
+			signingServiceInfo = undefined;
 		} else {
 			signingServiceInfo = {
 				service: !customEndpointRegion ? 'appsync' : 'execute-api',
@@ -316,7 +310,7 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		let response;
+		let response: any;
 		try {
 			const { body: responseBody } = await this._api.post({
 				url: new AmplifyUrl(endpoint),
@@ -332,7 +326,7 @@ export class InternalGraphQLAPIClass {
 			const result = await responseBody.json();
 
 			response = result;
-		} catch (err) {
+		} catch (err: any) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
 			// so that clients can identify the exception correctly.
@@ -381,9 +375,6 @@ export class InternalGraphQLAPIClass {
 	): Observable<any> {
 		const config = resolveConfig(amplify);
 
-		if (!this.appSyncRealTime) {
-			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
-		}
 		return this.appSyncRealTime.subscribe(
 			{
 				query: print(query as DocumentNode),
@@ -399,4 +390,4 @@ export class InternalGraphQLAPIClass {
 	}
 }
 
-export const InternalGraphQLAPI = new InternalGraphQLAPIClass(null);
+export const InternalGraphQLAPI = new InternalGraphQLAPIClass();
