@@ -99,9 +99,9 @@ export type AuthConfigUserAttributes = Partial<
 	Record<AuthStandardAttributeKey, { required: boolean }>
 >;
 
-export type AuthConfig = AtLeastOne<cognitoProviderConfig>;
+export type AuthConfig = AtLeastOne<CognitoProviderConfig>;
 
-export type cognitoProviderConfig = StrictUnion<
+export type CognitoProviderConfig = StrictUnion<
 	| AuthIdentityPoolConfig
 	| AuthUserPoolConfig
 	| AuthUserPoolAndIdentityPoolConfig
