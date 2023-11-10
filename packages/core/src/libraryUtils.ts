@@ -32,10 +32,15 @@ export {
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
 export {
-	GraphQLAuthMode,
+	AssociationBelongsTo,
+	AssociationHasMany,
+	AssociationHasOne,
 	DocumentType,
+	GraphQLAuthMode,
+	ModelFieldType,
 	ModelIntrospectionSchema,
 	SchemaModel,
+	SchemaModels,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {

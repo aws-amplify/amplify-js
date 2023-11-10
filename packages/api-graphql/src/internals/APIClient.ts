@@ -4,12 +4,18 @@ import { resolveOwnerFields } from '../utils/resolveOwnerFields';
 import {
 	GraphQLAuthMode,
 	ModelIntrospectionSchema,
+	ModelFieldType,
 	SchemaModel,
+	SchemaModels,
+	AssociationHasOne,
+	AssociationBelongsTo,
 } from '@aws-amplify/core/internals/utils';
 import {
 	ListArgs,
 	QueryArgs,
 	V6Client,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
 	__authMode,
 	__authToken,
 } from '../types';
@@ -55,11 +61,11 @@ export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
 };
 
 // TODO: this should accept single result to support CRUD methods; create helper for array/list
-export function initializeModel(
-	client: any,
+export function initializeModel<T extends Record<any, any>>(
+	client: V6Client<T>,
 	modelName: string,
 	result: any[],
-	modelIntrospection: any,
+	modelIntrospection: ModelIntrospectionSchema,
 	authMode: GraphQLAuthMode | undefined,
 	authToken: string | undefined,
 	context = false
@@ -72,12 +78,14 @@ export function initializeModel(
 		.map(([fieldName]) => fieldName);
 
 	return result.map(record => {
-		const initializedRelationalFields = {};
+		const initializedRelationalFields: Record<string, any> = {};
 
-		for (const field of modelFields) {
-			const relatedModelName = introModelFields[field].type.model;
+		for (const fieldName of modelFields) {
+			const modelField = introModelFields[fieldName];
+			const modelFieldType = modelField?.type as ModelFieldType;
 
-			const relatedModel = modelIntrospection.models[relatedModelName];
+			const relatedModelName = modelFieldType.model;
+			const relatedModel = modelIntrospection.models[relatedModelName!];
 
 			const relatedModelPKFieldName =
 				relatedModel.primaryKeyInfo.primaryKeyFieldName;
@@ -85,18 +93,26 @@ export function initializeModel(
 			const relatedModelSKFieldNames =
 				relatedModel.primaryKeyInfo.sortKeyFieldNames;
 
-			const relationType = introModelFields[field].association.connectionType;
-			const connectionFields =
-				introModelFields[field].association.associatedWith;
+			const relationType = modelField.association?.connectionType;
 
-			const targetNames =
-				introModelFields[field].association?.targetNames || [];
+			let connectionFields: string[] = [];
+			if (
+				modelField.association &&
+				'associatedWith' in modelField.association
+			) {
+				connectionFields = modelField.association.associatedWith;
+			}
+
+			let targetNames: string[] = [];
+			if (modelField.association && 'targetNames' in modelField.association) {
+				targetNames = modelField.association.targetNames;
+			}
 
 			switch (relationType) {
 				case connectionType.HAS_ONE:
 				case connectionType.BELONGS_TO:
 					const sortKeyValues = relatedModelSKFieldNames.reduce(
-						(acc, curVal) => {
+						(acc: Record<string, any>, curVal) => {
 							if (record[curVal]) {
 								return (acc[curVal] = record[curVal]);
 							}
@@ -105,12 +121,14 @@ export function initializeModel(
 					);
 
 					if (context) {
-						initializedRelationalFields[field] = (
+						initializedRelationalFields[fieldName] = (
 							contextSpec: AmplifyServer.ContextSpec,
 							options?: LazyLoadOptions
 						) => {
-							if (record[targetNames[0]]) {
-								return client.models[relatedModelName].get(
+							if (record[targetNames[0]] && 'models' in client) {
+								const models: any = client.models;
+
+								return models[relatedModelName].get(
 									contextSpec,
 									{
 										[relatedModelPKFieldName]: record[targetNames[0]],
@@ -125,11 +143,12 @@ export function initializeModel(
 							return undefined;
 						};
 					} else {
-						initializedRelationalFields[field] = (
+						initializedRelationalFields[fieldName] = (
 							options?: LazyLoadOptions
 						) => {
-							if (record[targetNames[0]]) {
-								return client.models[relatedModelName].get(
+							if (record[targetNames[0]] && 'models' in client) {
+								const models: any = client.models;
+								return models[relatedModelName].get(
 									{
 										[relatedModelPKFieldName]: record[targetNames[0]],
 										...sortKeyValues,
@@ -150,9 +169,17 @@ export function initializeModel(
 					const parentSK = introModel.primaryKeyInfo.sortKeyFieldNames;
 
 					// M:N check - TODO: refactor
-					if (relatedModel.fields[connectionFields[0]]?.type.model) {
-						const relatedTargetNames =
-							relatedModel.fields[connectionFields[0]].association.targetNames;
+					const relatedModelField = relatedModel.fields[connectionFields[0]];
+					const relatedModelFieldType =
+						relatedModelField.type as ModelFieldType;
+					if (relatedModelFieldType.model) {
+						let relatedTargetNames: string[] = [];
+						if (
+							relatedModelField.association &&
+							'targetNames' in relatedModelField.association
+						) {
+							relatedTargetNames = relatedModelField.association?.targetNames;
+						}
 
 						const hasManyFilter = relatedTargetNames.map((field, idx) => {
 							if (idx === 0) {
@@ -163,12 +190,13 @@ export function initializeModel(
 						});
 
 						if (context) {
-							initializedRelationalFields[field] = (
+							initializedRelationalFields[fieldName] = (
 								contextSpec: AmplifyServer.ContextSpec,
 								options?: LazyLoadOptions
 							) => {
-								if (record[parentPk]) {
-									return client.models[relatedModelName].list(contextSpec, {
+								if (record[parentPk] && 'models' in client) {
+									const models: any = client.models;
+									return models[relatedModelName].list(contextSpec, {
 										filter: { and: hasManyFilter },
 										limit: options?.limit,
 										nextToken: options?.nextToken,
@@ -179,11 +207,12 @@ export function initializeModel(
 								return [];
 							};
 						} else {
-							initializedRelationalFields[field] = (
+							initializedRelationalFields[fieldName] = (
 								options?: LazyLoadOptions
 							) => {
-								if (record[parentPk]) {
-									return client.models[relatedModelName].list({
+								if (record[parentPk] && 'models' in client) {
+									const models: any = client.models;
+									return models[relatedModelName].list({
 										filter: { and: hasManyFilter },
 										limit: options?.limit,
 										nextToken: options?.nextToken,
@@ -207,12 +236,13 @@ export function initializeModel(
 					});
 
 					if (context) {
-						initializedRelationalFields[field] = (
+						initializedRelationalFields[fieldName] = (
 							contextSpec: AmplifyServer.ContextSpec,
 							options?: LazyLoadOptions
 						) => {
-							if (record[parentPk]) {
-								return client.models[relatedModelName].list(contextSpec, {
+							if (record[parentPk] && 'models' in client) {
+								const models: any = client.models;
+								return models[relatedModelName].list(contextSpec, {
 									filter: { and: hasManyFilter },
 									limit: options?.limit,
 									nextToken: options?.nextToken,
@@ -223,11 +253,12 @@ export function initializeModel(
 							return [];
 						};
 					} else {
-						initializedRelationalFields[field] = (
+						initializedRelationalFields[fieldName] = (
 							options?: LazyLoadOptions
 						) => {
-							if (record[parentPk]) {
-								return client.models[relatedModelName].list({
+							if (record[parentPk] && 'models' in client) {
+								const models: any = client.models;
+								return models[relatedModelName].list({
 									filter: { and: hasManyFilter },
 									limit: options?.limit,
 									nextToken: options?.nextToken,
@@ -268,7 +299,7 @@ type OperationPrefix =
 const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
 const SELECTION_SET_WILDCARD = '*';
 
-function defaultSelectionSetForModel(modelDefinition: any): string[] {
+function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
 	// fields that are explicitly part of the graphql schema; not
 	// inferred from owner auth rules.
 	const { fields } = modelDefinition;
@@ -288,7 +319,7 @@ const FIELD_IR = '';
 /**
  * Generates nested Custom Selection Set IR from path
  *
- * @param modelIntrospection
+ * @param modelDefinitions
  * @param modelName
  * @param selectionSet - array of object paths
  * @example
@@ -305,31 +336,32 @@ const FIELD_IR = '';
  * ```
  */
 export function customSelectionSetToIR(
-	modelIntrospection: any,
+	modelDefinitions: SchemaModels,
 	modelName: string,
 	selectionSet: string[]
 ): Record<string, string | object> {
-	const modelDefinition = modelIntrospection[modelName];
+	const modelDefinition = modelDefinitions[modelName];
 	const { fields: modelFields } = modelDefinition;
 
-	return selectionSet.reduce((resultObj, path) => {
+	return selectionSet.reduce((resultObj: Record<string, any>, path) => {
 		const [fieldName, nested, ...rest] = path.split('.');
 
 		if (nested) {
-			const relatedModel = modelFields[fieldName]?.type?.model;
+			const fieldType = modelFields[fieldName]?.type as ModelFieldType;
+			const relatedModel = fieldType.model;
 
 			if (!relatedModel) {
 				// TODO: may need to change this to support custom types
 				throw Error(`${fieldName} is not a model field`);
 			}
 
-			const relatedModelDefinition = modelIntrospection[relatedModel];
+			const relatedModelDefinition = modelDefinitions[relatedModel];
 
 			const selectionSet =
 				nested === SELECTION_SET_WILDCARD
 					? defaultSelectionSetIR(relatedModelDefinition)
 					: // if we have a path like 'field.anotherField' recursively build up selection set IR
-					  customSelectionSetToIR(modelIntrospection, relatedModel, [
+					  customSelectionSetToIR(modelDefinitions, relatedModel, [
 							[nested, ...rest].join('.'),
 					  ]);
 
@@ -361,15 +393,18 @@ export function customSelectionSetToIR(
 	}, {});
 }
 
-const defaultSelectionSetIR = relatedModelDefinition => {
+const defaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 	const defaultSelectionSet = defaultSelectionSetForModel(
 		relatedModelDefinition
 	);
 
-	const reduced = defaultSelectionSet.reduce((acc, curVal) => {
-		acc[curVal] = FIELD_IR;
-		return acc;
-	}, {});
+	const reduced = defaultSelectionSet.reduce(
+		(acc: Record<string, any>, curVal) => {
+			acc[curVal] = FIELD_IR;
+			return acc;
+		},
+		{}
+	);
 
 	return reduced;
 };
@@ -418,18 +453,18 @@ export function selectionSetIRToString(
 }
 
 export function generateSelectionSet(
-	modelIntrospection: any,
+	modelDefinitions: SchemaModels,
 	modelName: string,
 	selectionSet?: string[]
 ) {
-	const modelDefinition = modelIntrospection[modelName];
+	const modelDefinition = modelDefinitions[modelName];
 
 	if (!selectionSet) {
 		return defaultSelectionSetForModel(modelDefinition).join(' ');
 	}
 
 	const selSetIr = customSelectionSetToIR(
-		modelIntrospection,
+		modelDefinitions,
 		modelName,
 		selectionSet
 	);
@@ -439,12 +474,12 @@ export function generateSelectionSet(
 }
 
 export function generateGraphQLDocument(
-	modelIntrospection: any,
+	modelDefinitions: SchemaModels,
 	modelName: string,
 	modelOperation: ModelOperation,
 	listArgs?: ListArgs
 ): string {
-	const modelDefinition = modelIntrospection[modelName];
+	const modelDefinition = modelDefinitions[modelName];
 
 	const {
 		name,
@@ -477,7 +512,7 @@ export function generateGraphQLDocument(
 	let graphQLArguments: Record<string, any> | undefined;
 
 	const selectionSetFields = generateSelectionSet(
-		modelIntrospection,
+		modelDefinitions,
 		modelName,
 		selectionSet
 	);
@@ -498,7 +533,7 @@ export function generateGraphQLDocument(
 			graphQLArguments ??
 				(graphQLArguments = isCustomPrimaryKey
 					? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-							(acc, fieldName) => {
+							(acc: Record<string, any>, fieldName) => {
 								acc[fieldName] = fields[fieldName].type;
 
 								return acc;
@@ -576,36 +611,42 @@ export function buildGraphQLVariables(
 	switch (operation) {
 		case 'CREATE':
 			variables = {
-				input: normalizeMutationInput(arg, modelDefinition, modelIntrospection),
+				input: arg
+					? normalizeMutationInput(arg, modelDefinition, modelIntrospection)
+					: {},
 			};
 			break;
 		case 'UPDATE':
 			// readonly fields are not  updated
 			variables = {
-				input: Object.fromEntries(
-					Object.entries(
-						normalizeMutationInput(arg, modelDefinition, modelIntrospection)
-					).filter(([fieldName]) => {
-						const { isReadOnly } = fields[fieldName];
+				input: arg
+					? Object.fromEntries(
+							Object.entries(
+								normalizeMutationInput(arg, modelDefinition, modelIntrospection)
+							).filter(([fieldName]) => {
+								const { isReadOnly } = fields[fieldName];
 
-						return !isReadOnly;
-					})
-				),
+								return !isReadOnly;
+							})
+					  )
+					: {},
 			};
 			break;
 		case 'READ':
 		case 'DELETE':
 			// only identifiers are sent
-			variables = isCustomPrimaryKey
-				? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-						(acc, fieldName) => {
-							acc[fieldName] = arg[fieldName];
+			if (arg) {
+				variables = isCustomPrimaryKey
+					? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
+							(acc: Record<string, any>, fieldName) => {
+								acc[fieldName] = arg[fieldName];
 
-							return acc;
-						},
-						{}
-				  )
-				: { [primaryKeyFieldName]: arg[primaryKeyFieldName] };
+								return acc;
+							},
+							{}
+					  )
+					: { [primaryKeyFieldName]: arg[primaryKeyFieldName] };
+			}
 
 			if (operation === 'DELETE') {
 				variables = { input: variables };
@@ -657,34 +698,36 @@ export function buildGraphQLVariables(
  *
  */
 export function normalizeMutationInput(
-	mutationInput: any,
-	model: any,
-	modelDefinition: any
+	mutationInput: QueryArgs,
+	model: SchemaModel,
+	modelIntrospection: ModelIntrospectionSchema
 ): QueryArgs {
 	const { fields } = model;
 
-	const normalized = {};
+	const normalized: Record<string, unknown> = {};
 
 	Object.entries(mutationInput).forEach(([inputFieldName, inputValue]) => {
-		const relatedModelName: string | undefined =
-			fields[inputFieldName]?.type?.model;
+		const fieldType = fields[inputFieldName]?.type as ModelFieldType;
+		const relatedModelName = fieldType?.model;
 
 		if (relatedModelName) {
 			const association = fields[inputFieldName]?.association;
-			const relatedModelDef = modelDefinition.models[relatedModelName];
+			const relatedModelDef = modelIntrospection.models[relatedModelName];
 			const relatedModelPkInfo = relatedModelDef.primaryKeyInfo;
 
-			if (association.connectionType === connectionType.HAS_ONE) {
-				association.targetNames.forEach((targetName, idx) => {
-					const associatedFieldName = association.associatedWith[idx];
+			if (association?.connectionType === connectionType.HAS_ONE) {
+				const associationHasOne = association as AssociationHasOne;
+				associationHasOne.targetNames.forEach((targetName, idx) => {
+					const associatedFieldName = associationHasOne.associatedWith[idx];
 					normalized[targetName] = (inputValue as Record<string, unknown>)[
 						associatedFieldName
 					];
 				});
 			}
 
-			if (association.connectionType === connectionType.BELONGS_TO) {
-				association.targetNames.forEach((targetName, idx) => {
+			if (association?.connectionType === connectionType.BELONGS_TO) {
+				const associationBelongsTo = association as AssociationBelongsTo;
+				associationBelongsTo.targetNames.forEach((targetName, idx) => {
 					if (idx === 0) {
 						const associatedFieldName = relatedModelPkInfo.primaryKeyFieldName;
 						normalized[targetName] = (inputValue as Record<string, unknown>)[
@@ -721,10 +764,12 @@ type AuthModeParams = {
  * @param options Args/Options obect from call site.
  * @returns
  */
-export function authModeParams(
-	client: V6Client,
-	options: AuthModeParams = {}
-): AuthModeParams {
+export function authModeParams<
+	T extends Record<any, any> = never,
+	ClientType extends
+		| V6ClientSSRRequest<T>
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
+>(client: V6Client | ClientType, options: AuthModeParams = {}): AuthModeParams {
 	return {
 		authMode: options.authMode || client[__authMode],
 		authToken: options.authToken || client[__authToken],

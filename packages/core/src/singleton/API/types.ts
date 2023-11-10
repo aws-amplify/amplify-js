@@ -145,6 +145,9 @@ export type Field = {
 	attributes?: FieldAttribute[];
 	association?: AssociationType;
 };
+
+export type ModelFieldType = { model: string };
+
 export type FieldType =
 	| 'ID'
 	| 'String'
@@ -161,7 +164,7 @@ export type FieldType =
 	| 'AWSJSON'
 	| 'AWSPhone'
 	| { enum: string }
-	| { model: string }
+	| ModelFieldType
 	| { nonModel: string };
 export type FieldAttribute = ModelAttribute;
 
