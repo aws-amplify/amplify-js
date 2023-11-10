@@ -2,14 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { resolveOwnerFields } from '../utils/resolveOwnerFields';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import {
-	V6Client,
-	__authMode,
-	__authToken,
-	__headers,
-	CustomHeaders,
-} from '../types';
+import { V6Client, __authMode, __authToken, __headers } from '../types';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 type ListArgs = { selectionSet?: string[]; filter?: {} };
 
