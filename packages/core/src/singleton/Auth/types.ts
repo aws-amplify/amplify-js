@@ -1,8 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { AtLeastOne } from '../types';
+
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
-
 interface JwtPayloadStandardFields {
 	exp?: number; // expires: https://tools.ietf.org/html/rfc7519#section-4.1.4
 	iss?: string; // issuer: https://tools.ietf.org/html/rfc7519#section-4.1.1
@@ -97,7 +99,9 @@ export type AuthConfigUserAttributes = Partial<
 	Record<AuthStandardAttributeKey, { required: boolean }>
 >;
 
-export type AuthConfig = StrictUnion<
+export type AuthConfig = AtLeastOne<cognitoProviderConfig>;
+
+export type cognitoProviderConfig = StrictUnion<
 	| AuthIdentityPoolConfig
 	| AuthUserPoolConfig
 	| AuthUserPoolAndIdentityPoolConfig
