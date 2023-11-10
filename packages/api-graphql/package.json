@@ -98,7 +98,9 @@
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"diagnostics": false,
+				"diagnostics": {
+					"ignoreCodes": [7016]
+				},
 				"tsConfig": {
 					"lib": [
 						"es5",
