@@ -77,22 +77,25 @@ export const parseAWSExports = (
 	// Notifications
 	const { InAppMessaging, Push } = Notifications ?? {};
 	if (InAppMessaging?.AWSPinpoint || Push?.AWSPinpoint) {
-		amplifyConfig.Notifications = {};
 		if (InAppMessaging?.AWSPinpoint) {
 			const { appId, region } = InAppMessaging.AWSPinpoint;
-			amplifyConfig.Notifications.InAppMessaging = {
-				Pinpoint: {
-					appId,
-					region,
+			amplifyConfig.Notifications = {
+				InAppMessaging: {
+					Pinpoint: {
+						appId,
+						region,
+					},
 				},
 			};
 		}
 		if (Push?.AWSPinpoint) {
 			const { appId, region } = Push.AWSPinpoint;
-			amplifyConfig.Notifications.PushNotification = {
-				Pinpoint: {
-					appId,
-					region,
+			amplifyConfig.Notifications = {
+				PushNotification: {
+					Pinpoint: {
+						appId,
+						region,
+					},
 				},
 			};
 		}
