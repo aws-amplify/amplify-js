@@ -98,20 +98,16 @@
 	"jest": {
 		"globals": {
 			"ts-jest": {
-				"diagnostics": {
-					"ignoreCodes": [7016]
-				},
+				"diagnostics": false,
 				"tsConfig": {
 					"lib": [
-						"es5",
-						"es2015",
 						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
+						"es2020"
 					],
 					"allowJs": true,
 					"noEmitOnError": false,
 					"strictNullChecks": true,
+					"skipLibCheck": true,
 					"types": [
 						"@types/jest"
 					]

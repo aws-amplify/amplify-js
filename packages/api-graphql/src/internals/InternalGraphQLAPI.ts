@@ -326,7 +326,7 @@ export class InternalGraphQLAPIClass {
 			const result = await responseBody.json();
 
 			response = result;
-		} catch (err: any) {
+		} catch (err) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
 			// so that clients can identify the exception correctly.
@@ -336,7 +336,16 @@ export class InternalGraphQLAPIClass {
 
 			response = {
 				data: {},
-				errors: [new GraphQLError(err.message, null, null, null, null, err)],
+				errors: [
+					new GraphQLError(
+						(err as any).message,
+						null,
+						null,
+						null,
+						null,
+						err as any
+					),
+				],
 			};
 		}
 
