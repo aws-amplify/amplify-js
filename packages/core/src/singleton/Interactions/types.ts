@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AtLeastOne } from '../types';
+
 interface LexV1BotConfig {
 	alias: string;
 	region: string;
@@ -20,9 +22,6 @@ type InteractionsLexV1Config = {
 type InteractionsLexV2Config = {
 	LexV2: Record<string, LexV2BotConfig>;
 };
-
-type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
-	U[keyof U];
 
 export type InteractionsConfig = AtLeastOne<
 	InteractionsLexV1Config & InteractionsLexV2Config

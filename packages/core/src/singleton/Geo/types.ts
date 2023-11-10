@@ -1,8 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export interface GeoConfig {
-	LocationService?: {
+import { AtLeastOne } from '../types';
+
+export type LocationServiceConfig = {
+	LocationService: {
 		region: string;
 		maps?: {
 			items: {};
@@ -17,4 +19,6 @@ export interface GeoConfig {
 			default: string;
 		};
 	};
-}
+};
+
+export type GeoConfig = AtLeastOne<LocationServiceConfig>;
