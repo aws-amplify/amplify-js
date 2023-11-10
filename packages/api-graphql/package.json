@@ -108,7 +108,6 @@
 					"allowJs": true,
 					"noEmitOnError": false,
 					"strictNullChecks": true,
-					"skipLibCheck": true,
 					"types": [
 						"@types/jest"
 					]
