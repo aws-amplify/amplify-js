@@ -47,14 +47,14 @@ export function generateModelsProperty<
 				if (SSR_UNSUPORTED_OPS.includes(operation)) return;
 
 				if (operation === 'LIST') {
-					models[name][operationPrefix] = listFactory<T, ClientType>(
+					models[name][operationPrefix] = listFactory(
 						client,
 						modelIntrospection,
 						model,
 						useContext
 					);
 				} else {
-					models[name][operationPrefix] = getFactory<T, ClientType>(
+					models[name][operationPrefix] = getFactory(
 						client,
 						modelIntrospection,
 						model,

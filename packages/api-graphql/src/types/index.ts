@@ -364,6 +364,11 @@ export const __amplify = Symbol('amplify');
 export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
 
+export type ClientWithoutModels<T extends Record<any, any> = never> =
+	| V6Client<T>
+	| V6ClientSSRRequest<T>
+	| V6ClientSSRCookies<T>;
+
 export type ClientWithModels =
 	| V6Client<Record<string, any>>
 	| V6ClientSSRRequest<Record<string, any>>

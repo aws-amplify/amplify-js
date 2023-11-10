@@ -13,6 +13,7 @@ import {
 import {
 	AuthModeParams,
 	ClientWithModels,
+	ClientWithoutModels,
 	ListArgs,
 	QueryArgs,
 	V6Client,

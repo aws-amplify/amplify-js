@@ -10,9 +10,12 @@ import {
 	ModelOperation,
 } from '../APIClient';
 import {
+	AuthModeParams,
+	ClientWithModels,
+	GraphQLOptionsV6,
+	ListArgs,
 	QueryArgs,
 	V6Client,
-	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 } from '../../types';
 import {
@@ -20,24 +23,19 @@ import {
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
 
-export function getFactory<
-	T extends Record<any, any> = never,
-	ClientType extends
-		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
->(
-	client: V6Client | ClientType,
+export function getFactory(
+	client: any,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	operation: ModelOperation,
-	context = false
+	useContext = false
 ) {
 	const getWithContext = async (
-		contextSpec: AmplifyServer.ContextSpec,
+		contextSpec: AmplifyServer.ContextSpec & GraphQLOptionsV6<unknown, string>,
 		arg?: any,
 		options?: any
 	) => {
-		return _get<T, ClientType>(
+		return _get(
 			client,
 			modelIntrospection,
 			model,
@@ -49,33 +47,20 @@ export function getFactory<
 	};
 
 	const get = async (arg?: any, options?: any) => {
-		return _get<T, ClientType>(
-			client,
-			modelIntrospection,
-			model,
-			arg,
-			options,
-			operation,
-			context
-		);
+		return _get(client, modelIntrospection, model, arg, options, operation);
 	};
 
-	return context ? getWithContext : get;
+	return useContext ? getWithContext : get;
 }
 
-async function _get<
-	T extends Record<any, any> = never,
-	ClientType extends
-		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
->(
-	client: V6Client | ClientType,
+async function _get(
+	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	arg: QueryArgs,
-	options,
-	operation,
-	context
+	options: AuthModeParams & ListArgs,
+	operation: ModelOperation,
+	context?: AmplifyServer.ContextSpec
 ) {
 	const { name } = model as any;
 
@@ -95,19 +80,22 @@ async function _get<
 	try {
 		const auth = authModeParams(client, options);
 		const { data, extensions } = context
-			? ((await client.graphql(context, {
-					...auth,
-					query,
-					variables,
-			  })) as any)
-			: ((await client.graphql({
+			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
+					context,
+					{
+						...auth,
+						query,
+						variables,
+					}
+			  )) as any)
+			: ((await (client as V6Client<Record<string, any>>).graphql({
 					...auth,
 					query,
 					variables,
 			  })) as any);
 
 		// flatten response
-		if (data !== undefined) {
+		if (data) {
 			const [key] = Object.keys(data);
 			const flattenedResult = flattenItems(data)[key];
 
@@ -122,7 +110,7 @@ async function _get<
 					modelIntrospection,
 					auth.authMode,
 					auth.authToken,
-					context
+					!!context
 				);
 
 				return { data: initialized, extensions };
@@ -130,7 +118,7 @@ async function _get<
 		} else {
 			return { data: null, extensions };
 		}
-	} catch (error) {
+	} catch (error: any) {
 		if (error.errors) {
 			// graphql errors pass through
 			return error as any;

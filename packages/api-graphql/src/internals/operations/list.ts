@@ -9,9 +9,10 @@ import {
 	authModeParams,
 } from '../APIClient';
 import {
+	AuthModeParams,
+	ClientWithModels,
 	ListArgs,
 	V6Client,
-	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 } from '../../types';
 import {
@@ -19,13 +20,8 @@ import {
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
 
-export function listFactory<
-	T extends Record<any, any> = never,
-	ClientType extends
-		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
->(
-	client: V6Client | ClientType,
+export function listFactory(
+	client: any,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	context = false
@@ -34,32 +30,21 @@ export function listFactory<
 		contextSpec: AmplifyServer.ContextSpec,
 		args?: ListArgs
 	) => {
-		return _list<T, ClientType>(
-			client,
-			modelIntrospection,
-			model,
-			args,
-			contextSpec
-		);
+		return _list(client, modelIntrospection, model, args, contextSpec);
 	};
 
 	const list = async (args?: any) => {
-		return _list<T, ClientType>(client, modelIntrospection, model, args);
+		return _list(client, modelIntrospection, model, args);
 	};
 
 	return context ? listWithContext : list;
 }
 
-async function _list<
-	T extends Record<any, any> = never,
-	ClientType extends
-		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
->(
-	client: V6Client | ClientType,
+async function _list(
+	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
-	args: ListArgs | undefined,
+	args?: ListArgs & AuthModeParams,
 	contextSpec?: AmplifyServer.ContextSpec
 ) {
 	const { name } = model as any;
@@ -81,12 +66,15 @@ async function _list<
 		const auth = authModeParams(client, args);
 
 		const { data, extensions } = !!contextSpec
-			? ((await client.graphql(contextSpec, {
-					...auth,
-					query,
-					variables,
-			  })) as any)
-			: ((await client.graphql({
+			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
+					contextSpec,
+					{
+						...auth,
+						query,
+						variables,
+					}
+			  )) as any)
+			: ((await (client as V6Client<Record<string, any>>).graphql({
 					...auth,
 					query,
 					variables,
@@ -114,7 +102,7 @@ async function _list<
 						modelIntrospection,
 						auth.authMode,
 						auth.authToken,
-						contextSpec
+						!!contextSpec
 					);
 
 					return {
@@ -131,7 +119,7 @@ async function _list<
 				extensions,
 			};
 		}
-	} catch (error) {
+	} catch (error: any) {
 		if (error.errors) {
 			// graphql errors pass through
 			return error as any;
