@@ -7,6 +7,7 @@ import {
 	buildGraphQLVariables,
 	flattenItems,
 	authModeParams,
+	getAdditionalHeadersFromClient,
 } from '../APIClient';
 
 export function listFactory(
@@ -48,17 +49,29 @@ async function _list(client, modelIntrospection, model, args, context) {
 	try {
 		const auth = authModeParams(client, args);
 
+		const headers = getAdditionalHeadersFromClient(client);
+
+		// TODO: client headers
+		debugger;
+
 		const { data, extensions } = context
-			? ((await client.graphql(context, {
-					...auth,
-					query,
-					variables,
-			  })) as any)
-			: ((await client.graphql({
-					...auth,
-					query,
-					variables,
-			  })) as any);
+			? ((await client.graphql(
+					context,
+					{
+						...auth,
+						query,
+						variables,
+					},
+					headers
+			  )) as any)
+			: ((await client.graphql(
+					{
+						...auth,
+						query,
+						variables,
+					},
+					headers
+			  )) as any);
 
 		// flatten response
 		if (data !== undefined) {

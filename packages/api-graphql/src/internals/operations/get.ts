@@ -7,6 +7,7 @@ import {
 	buildGraphQLVariables,
 	flattenItems,
 	authModeParams,
+	getAdditionalHeadersFromClient,
 } from '../APIClient';
 
 export function getFactory(
@@ -73,17 +74,29 @@ async function _get(
 
 	try {
 		const auth = authModeParams(client, options);
+		const headers = getAdditionalHeadersFromClient(client);
+		// TODO:
+		console.log('client custom headers:', headers);
+		debugger;
+
 		const { data, extensions } = context
-			? ((await client.graphql(context, {
-					...auth,
-					query,
-					variables,
-			  })) as any)
-			: ((await client.graphql({
-					...auth,
-					query,
-					variables,
-			  })) as any);
+			? ((await client.graphql(
+					context,
+					{
+						...auth,
+						query,
+						variables,
+					},
+					headers
+			  )) as any)
+			: ((await client.graphql(
+					{
+						...auth,
+						query,
+						variables,
+					},
+					headers
+			  )) as any);
 
 		// flatten response
 		if (data !== undefined) {

@@ -84,6 +84,9 @@ export class InternalGraphQLAPIClass {
 		authMode: GraphQLAuthMode,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
+		// additional headers?
+		debugger;
+		// TODO: not read:
 		const config = amplify.getConfig();
 		const {
 			region: region,
@@ -174,6 +177,8 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
+		// additional headers?
+		debugger;
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)

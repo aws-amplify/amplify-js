@@ -9,6 +9,8 @@ export function observeQueryFactory(models, model) {
 
 	const observeQuery = (arg?: any) =>
 		new Observable(subscriber => {
+			// arg?.headers?
+			debugger;
 			// what we'll be sending to our subscribers
 			const items: object[] = [];
 

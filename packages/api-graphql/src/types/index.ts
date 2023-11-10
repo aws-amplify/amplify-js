@@ -363,11 +363,13 @@ type ExcludeNeverFields<O> = {
 export const __amplify = Symbol('amplify');
 export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
+export const __headers = Symbol('headers');
 
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
 	[__authMode]?: GraphQLAuthMode;
 	[__authToken]?: string;
+	[__headers]?: Record<string, string>;
 	graphql: GraphQLMethod;
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
@@ -379,6 +381,7 @@ export type V6ClientSSRRequest<T extends Record<any, any> = never> =
 		[__amplify]: AmplifyClassV6;
 		[__authMode]?: GraphQLAuthMode;
 		[__authToken]?: string;
+		[__headers]?: Record<string, string>;
 		graphql: GraphQLMethodSSR;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
@@ -390,6 +393,7 @@ export type V6ClientSSRCookies<T extends Record<any, any> = never> =
 		[__amplify]: AmplifyClassV6;
 		[__authMode]?: GraphQLAuthMode;
 		[__authToken]?: string;
+		[__headers]?: Record<string, string>;
 		graphql: GraphQLMethod;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
@@ -434,3 +438,17 @@ export type ServerClientGenerationParams = {
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
 };
+
+// TODO: rename:
+// TODO: combine with function type below
+export type AdditionalHeaders = Record<string, string>;
+
+// Waiting on feedback, but if we're supporting non-AppSync endpoints, we need
+// to do this:
+// export type AdditionalHeadersFunction = (options: {
+// 	query: string;
+// 	variables?: Record<string, DocumentType>;
+// }) => Promise<Headers>;
+
+// TODO: rename:
+export type AdditionalHeadersFunction = () => Promise<Headers>;

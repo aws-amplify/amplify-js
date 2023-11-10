@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { AdditionalHeaders, AdditionalHeadersFunction } from '../types';
 
 /**
  * @private
@@ -18,4 +19,5 @@ export type ClientGenerationParams = {
 export type CommonPublicClientOptions = {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
+	headers?: AdditionalHeaders | AdditionalHeadersFunction;
 };

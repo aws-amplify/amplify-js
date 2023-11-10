@@ -2,7 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { graphql, cancel, isCancelError } from './v6';
 import { generateModelsProperty } from './generateModelsProperty';
-import { V6Client, __amplify, __authMode, __authToken } from '../types';
+import {
+	V6Client,
+	__amplify,
+	__authMode,
+	__authToken,
+	__headers,
+} from '../types';
 import { ClientGenerationParams } from './types';
 
 /**
@@ -21,6 +27,7 @@ export function generateClient<T extends Record<any, any> = never>(
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
 		[__authToken]: params.authToken,
+		[__headers]: params.headers,
 		graphql,
 		cancel,
 		isCancelError,

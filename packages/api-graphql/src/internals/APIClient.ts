@@ -2,7 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { resolveOwnerFields } from '../utils/resolveOwnerFields';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { V6Client, __authMode, __authToken } from '../types';
+import {
+	V6Client,
+	__authMode,
+	__authToken,
+	__headers,
+	AdditionalHeaders,
+	AdditionalHeadersFunction,
+} from '../types';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
 type ListArgs = { selectionSet?: string[]; filter?: {} };
@@ -12,6 +19,7 @@ type LazyLoadOptions = {
 	authToken?: string | undefined;
 	limit?: number | undefined;
 	nextToken?: string | undefined | null;
+	headers?: AdditionalHeaders | AdditionalHeadersFunction;
 };
 
 const connectionType = {
@@ -721,4 +729,16 @@ export function authModeParams(
 		authMode: options.authMode || client[__authMode],
 		authToken: options.authToken || client[__authToken],
 	};
+}
+
+/**
+ * TODO: name may change - using this for my own sanity:
+ * Today, `additionalHeaders` === this use-case, and
+ * `customHeaders` === headers for non-AppSync endpoints that come from
+ * Amplify.configure.
+ */
+export function getAdditionalHeadersFromClient(
+	client: V6Client
+): AdditionalHeaders | AdditionalHeadersFunction {
+	return client[__headers] || {};
 }
