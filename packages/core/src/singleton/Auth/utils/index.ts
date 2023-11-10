@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AuthConfigurationErrorCode, assert } from './errorHelpers';
 import { base64Decoder } from '../../../utils/convert';
-import { OAuthConfig } from '../types';
-
 import {
 	AuthConfig,
 	JWT,
@@ -13,6 +11,7 @@ import {
 	CognitoUserPoolAndIdentityPoolConfig,
 	CognitoIdentityPoolConfig,
 	StrictUnion,
+	OAuthConfig,
 } from '../types';
 
 export function assertTokenProviderConfig(
