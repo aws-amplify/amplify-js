@@ -3626,7 +3626,12 @@ describe('generateClient', () => {
 		});
 	});
 
-	describe('basic model operations', () => {
+	/**
+	 * The following tests ensure that custom headers can be included with both
+	 * API client instantiation and individual model operations. These tests
+	 * also validate that request headers will overwrite client headers.
+	 */
+	describe('basic model operations - custom client and request headers', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 			Amplify.configure(configFixture as any);
