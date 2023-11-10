@@ -400,7 +400,7 @@ export class InternalGraphQLAPIClass {
 				variables,
 				appSyncGraphqlEndpoint: config?.endpoint,
 				region: config?.region,
-				authenticationType: authMode ?? config?.defaultAuthMode,
+				authenticationType: authMode || config?.defaultAuthMode,
 				apiKey: config?.apiKey,
 				additionalHeaders,
 			},

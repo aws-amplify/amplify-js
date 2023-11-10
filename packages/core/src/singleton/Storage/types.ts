@@ -1,9 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AtLeastOne } from '../types';
+
 export type StorageAccessLevel = 'guest' | 'protected' | 'private';
 
-export interface StorageConfig {
+export type S3ProviderConfig = {
 	S3: {
 		bucket?: string;
 		region?: string;
@@ -14,7 +16,9 @@ export interface StorageConfig {
 		 */
 		dangerouslyConnectToHttpEndpointForTesting?: string;
 	};
-}
+};
+
+export type StorageConfig = AtLeastOne<S3ProviderConfig>;
 
 type StoragePrefixResolver = (params: {
 	accessLevel: StorageAccessLevel;
