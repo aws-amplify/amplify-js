@@ -38,8 +38,8 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.1",
 		"@aws-amplify/datastore": "5.0.1",
-		"@rollup/plugin-typescript": "11.1.5",
 		"@types/react-native-sqlite-storage": "5.0.1",
+		"@rollup/plugin-typescript": "11.1.5",
 		"expo-file-system": "13.1.4",
 		"expo-sqlite": "10.1.0",
 		"react-native-sqlite-storage": "5.0.0",
