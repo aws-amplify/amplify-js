@@ -41,6 +41,12 @@
 			"require": "./dist/cjs/internals/index.js",
 			"react-native": "./src/internals/index.ts"
 		},
+		"./internals/server": {
+			"types": "./dist/esm/internals/server/index.d.ts",
+			"import": "./dist/esm/internals/server/index.mjs",
+			"require": "./dist/cjs/internals/server/index.js",
+			"react-native": "./src/internals/server/index.ts"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -60,11 +66,8 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"peerDependencies": {
-		"@aws-amplify/core": "^6.0.0"
-	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.1",
+		"typescript": "5.1.6",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4"
 	},
@@ -75,11 +78,14 @@
 		"internals"
 	],
 	"dependencies": {
+		"@aws-amplify/core": "6.0.1",
 		"@aws-amplify/api-rest": "4.0.1",
+		"@aws-amplify/data-schema-types": "^0.4.1",
 		"@aws-sdk/types": "3.387.0",
 		"graphql": "15.8.0",
-		"rxjs": "^7.8.1",
-		"tslib": "^2.5.0"
+		"tslib": "^2.5.0",
+		"uuid": "^9.0.0",
+		"rxjs": "^7.8.1"
 	},
 	"size-limit": [
 		{
