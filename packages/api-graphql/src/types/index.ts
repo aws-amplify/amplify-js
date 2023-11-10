@@ -365,6 +365,11 @@ export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
 export const __headers = Symbol('headers');
 
+export type ClientWithModels =
+	| V6Client<Record<string, any>>
+	| V6ClientSSRRequest<Record<string, any>>
+	| V6ClientSSRCookies<Record<string, any>>;
+
 export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
 	[__authMode]?: GraphQLAuthMode;
@@ -437,4 +442,13 @@ export type ServerClientGenerationParams = {
 		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
+};
+
+export type QueryArgs = Record<string, unknown>;
+
+export type ListArgs = { selectionSet?: string[]; filter?: {} };
+
+export type AuthModeParams = {
+	authMode?: GraphQLAuthMode;
+	authToken?: string;
 };

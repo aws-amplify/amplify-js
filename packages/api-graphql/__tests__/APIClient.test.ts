@@ -1,4 +1,8 @@
 import {
+	SchemaModel,
+	ModelIntrospectionSchema,
+} from '@aws-amplify/core/internals/utils';
+import {
 	normalizeMutationInput,
 	flattenItems,
 	generateSelectionSet,
@@ -6,8 +10,8 @@ import {
 } from '../src/internals/APIClient';
 
 import config from './fixtures/modeled/amplifyconfiguration';
-const modelIntroSchema = config.modelIntrospection;
-//
+const modelIntroSchema = config.modelIntrospection as ModelIntrospectionSchema;
+
 describe('APIClient', () => {
 	describe('normalizeMutationInput', () => {
 		// TODO: test all relationship combinations
@@ -29,7 +33,7 @@ describe('APIClient', () => {
 				todoNotesId: todo.id,
 			};
 
-			const noteModelDef = modelIntroSchema.models.Note;
+			const noteModelDef = modelIntroSchema.models.Note as SchemaModel;
 
 			const normalized = normalizeMutationInput(
 				note,

@@ -9,29 +9,47 @@ import {
 	authModeParams,
 	getCustomHeaders,
 } from '../APIClient';
+import {
+	AuthModeParams,
+	ClientWithModels,
+	ListArgs,
+	V6Client,
+	V6ClientSSRRequest,
+	GraphQLResult,
+} from '../../types';
+import {
+	ModelIntrospectionSchema,
+	SchemaModel,
+} from '@aws-amplify/core/internals/utils';
 
 export function listFactory(
-	client,
-	modelIntrospection,
-	model,
+	client: ClientWithModels,
+	modelIntrospection: ModelIntrospectionSchema,
+	model: SchemaModel,
 	context = false
 ) {
 	const listWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec,
-		args?: any
+		args?: ListArgs
 	) => {
 		return _list(client, modelIntrospection, model, args, contextSpec);
 	};
 
 	const list = async (args?: any) => {
-		return _list(client, modelIntrospection, model, args, context);
+		return _list(client, modelIntrospection, model, args);
 	};
 
 	return context ? listWithContext : list;
 }
 
-async function _list(client, modelIntrospection, model, args, context) {
-	const { name } = model as any;
+async function _list(
+	client: ClientWithModels,
+	modelIntrospection: ModelIntrospectionSchema,
+	model: SchemaModel,
+	args?: ListArgs & AuthModeParams,
+	contextSpec?: AmplifyServer.ContextSpec
+) {
+	const { name } = model;
 
 	const query = generateGraphQLDocument(
 		modelIntrospection.models,
@@ -51,24 +69,24 @@ async function _list(client, modelIntrospection, model, args, context) {
 
 		const headers = getCustomHeaders(client, args?.headers);
 
-		const { data, extensions } = context
-			? ((await client.graphql(
-					context,
+		const { data, extensions } = !!contextSpec
+			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
+					contextSpec,
 					{
 						...auth,
 						query,
 						variables,
 					},
 					headers
-			  )) as any)
-			: ((await client.graphql(
+			  )) as GraphQLResult<any>)
+			: ((await (client as V6Client<Record<string, any>>).graphql(
 					{
 						...auth,
 						query,
 						variables,
 					},
 					headers
-			  )) as any);
+			  )) as GraphQLResult<any>);
 
 		// flatten response
 		if (data !== undefined) {
@@ -92,7 +110,7 @@ async function _list(client, modelIntrospection, model, args, context) {
 						modelIntrospection,
 						auth.authMode,
 						auth.authToken,
-						context
+						!!contextSpec
 					);
 
 					return {
@@ -109,7 +127,7 @@ async function _list(client, modelIntrospection, model, args, context) {
 				extensions,
 			};
 		}
-	} catch (error) {
+	} catch (error: any) {
 		if (error.errors) {
 			// graphql errors pass through
 			return error as any;

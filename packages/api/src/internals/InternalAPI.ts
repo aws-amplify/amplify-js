@@ -34,23 +34,15 @@ const logger = new ConsoleLogger('API');
  * Export Cloud Logic APIs
  */
 export class InternalAPIClass {
-	/**
-	 * Initialize API with AWS configuration
-	 * @param {Object} options - Configuration object for API
-	 */
-	private _options;
 	private _graphqlApi: InternalGraphQLAPIClass;
 
 	Cache = Cache;
 
 	/**
-	 * Initialize API with AWS configuration
-	 * @param {Object} options - Configuration object for API
+	 * Initialize API
 	 */
-	constructor(options) {
-		this._options = options;
-		this._graphqlApi = new InternalGraphQLAPIClass(options);
-		logger.debug('API Options', this._options);
+	constructor() {
+		this._graphqlApi = new InternalGraphQLAPIClass();
 	}
 
 	public getModuleName() {
@@ -104,4 +96,4 @@ export class InternalAPIClass {
 	}
 }
 
-export const InternalAPI = new InternalAPIClass(null);
+export const InternalAPI = new InternalAPIClass();

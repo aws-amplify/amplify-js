@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { findIndexByFields, resolvePKFields } from '../../utils';
+import { SchemaModel } from '@aws-amplify/core/internals/utils';
 
-export function observeQueryFactory(models, model) {
-	const { name } = model as any;
+export function observeQueryFactory(models: any, model: SchemaModel) {
+	const { name } = model;
 
 	const observeQuery = (arg?: any) =>
 		new Observable(subscriber => {
@@ -28,26 +28,26 @@ export function observeQueryFactory(models, model) {
 
 			// start subscriptions
 			const onCreateSub = models[name].onCreate(arg).subscribe({
-				next(item) {
+				next(item: object) {
 					receiveMessages({ item, type: 'create' });
 				},
-				error(error) {
+				error(error: any) {
 					subscriber.error({ type: 'onCreate', error });
 				},
 			});
 			const onUpdateSub = models[name].onUpdate(arg).subscribe({
-				next(item) {
+				next(item: object) {
 					receiveMessages({ item, type: 'update' });
 				},
-				error(error) {
+				error(error: any) {
 					subscriber.error({ type: 'onUpdate', error });
 				},
 			});
 			const onDeleteSub = models[name].onDelete(arg).subscribe({
-				next(item) {
+				next(item: object) {
 					receiveMessages({ item, type: 'delete' });
 				},
-				error(error) {
+				error(error: any) {
 					subscriber.error({ type: 'onDelete', error });
 				},
 			});
@@ -89,6 +89,10 @@ export function observeQueryFactory(models, model) {
 						data: page,
 						errors,
 						nextToken: _nextToken,
+					}: {
+						data: any;
+						errors: any;
+						nextToken: string | null;
 					} = await models[name].list({ ...arg, nextToken });
 					nextToken = _nextToken;
 
