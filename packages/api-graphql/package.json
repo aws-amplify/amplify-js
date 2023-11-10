@@ -69,7 +69,8 @@
 	"devDependencies": {
 		"typescript": "5.0.2",
 		"@rollup/plugin-typescript": "11.1.5",
-		"rollup": "3.29.4"
+		"rollup": "3.29.4",
+		"@aws-amplify/data-schema": "^0.11.0"
 	},
 	"files": [
 		"dist/cjs",

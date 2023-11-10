@@ -1,4 +1,4 @@
-import { type ClientSchema, a } from '@aws-amplify/amplify-api-next-alpha';
+import { type ClientSchema, a } from '@aws-amplify/data-schema';
 
 const schema = a.schema({
 	Todo: a
