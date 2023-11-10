@@ -114,6 +114,7 @@ export function expectSub(
 /**
  * Performs an `expect()` on a jest spy with some basic nested argument checks
  * based on the given subscription `opName` and `item`.
+ * Used specifically for testing subscriptions with additional headers.
  *
  * @param spy The jest spy to check.
  * @param opName The name of the graphql operation. E.g., `onCreateTodo`.
