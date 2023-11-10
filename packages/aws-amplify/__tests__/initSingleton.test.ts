@@ -66,13 +66,6 @@ describe('initSingleton (DefaultAmplify)', () => {
 		mockCognitoUserPoolsTokenProviderSetKeyValueStorage.mockReset();
 		mockAmplifySingletonConfigure.mockReset();
 		mockAmplifySingletonGetConfig.mockReset();
-
-		mockAmplifySingletonConfigure.mockImplementation((_, libraryOptions) => {
-			AmplifySingleton.libraryOptions =
-				libraryOptions ?? AmplifySingleton.libraryOptions;
-		});
-		// reset to its initial state
-		AmplifySingleton.libraryOptions = {};
 	});
 
 	describe('DefaultAmplify.configure()', () => {
