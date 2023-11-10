@@ -439,16 +439,8 @@ export type ServerClientGenerationParams = {
 	config: ResourcesConfig;
 };
 
-// TODO: rename:
-// TODO: combine with function type below
-export type AdditionalHeaders = Record<string, string>;
-
-// Waiting on feedback, but if we're supporting non-AppSync endpoints, we need
-// to do this:
-// export type AdditionalHeadersFunction = (options: {
-// 	query: string;
-// 	variables?: Record<string, DocumentType>;
-// }) => Promise<Headers>;
-
-// TODO: rename:
-export type AdditionalHeadersFunction = () => Promise<Headers>;
+/**
+ * Custom headers that can be passed either to the client or to individual
+ * calls, either as a static object or a function that returns a promise.
+ */
+export type CustomHeaders = Record<string, string> | (() => Promise<Headers>);

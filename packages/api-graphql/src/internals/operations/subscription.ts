@@ -8,7 +8,7 @@ import {
 	generateGraphQLDocument,
 	buildGraphQLVariables,
 	authModeParams,
-	getAdditionalHeadersFromClient,
+	getCustomHeaders,
 } from '../APIClient';
 
 export function subscriptionFactory(
@@ -34,10 +34,7 @@ export function subscriptionFactory(
 
 		const auth = authModeParams(client, args);
 
-		const headers = getAdditionalHeadersFromClient(client);
-
-		// TODO: client headers
-		debugger;
+		const headers = getCustomHeaders(client, args?.headers);
 
 		const observable = client.graphql(
 			{

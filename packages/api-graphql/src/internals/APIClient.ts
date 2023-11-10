@@ -7,8 +7,7 @@ import {
 	__authMode,
 	__authToken,
 	__headers,
-	AdditionalHeaders,
-	AdditionalHeadersFunction,
+	CustomHeaders,
 } from '../types';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 
@@ -19,7 +18,7 @@ type LazyLoadOptions = {
 	authToken?: string | undefined;
 	limit?: number | undefined;
 	nextToken?: string | undefined | null;
-	headers?: AdditionalHeaders | AdditionalHeadersFunction;
+	headers?: CustomHeaders | undefined;
 };
 
 const connectionType = {
@@ -732,13 +731,22 @@ export function authModeParams(
 }
 
 /**
- * TODO: name may change - using this for my own sanity:
- * Today, `additionalHeaders` === this use-case, and
- * `customHeaders` === headers for non-AppSync endpoints that come from
- * Amplify.configure.
+ * Retrieves custom headers from either the client or request options.
+ * @param {client} V6Client - for extracting client headers
+ * @param {requestHeaders} [CustomHeaders] - request headers
+ * @returns {CustomHeaders} - custom headers
  */
-export function getAdditionalHeadersFromClient(
-	client: V6Client
-): AdditionalHeaders | AdditionalHeadersFunction {
-	return client[__headers] || {};
+export function getCustomHeaders(
+	client: V6Client,
+	requestHeaders?: CustomHeaders
+): CustomHeaders {
+	let headers: CustomHeaders = client[__headers] || {};
+
+	// Individual request headers will take precedence over client headers.
+	// We intentionally do *not* merge client and request headers.
+	if (requestHeaders) {
+		headers = requestHeaders;
+	}
+
+	return headers;
 }

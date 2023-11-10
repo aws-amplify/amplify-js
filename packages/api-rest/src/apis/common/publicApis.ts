@@ -32,6 +32,8 @@ const publicHandler = (
 	method: string
 ) =>
 	createCancellableOperation(async abortSignal => {
+		// DO WE GET HEADERS?
+		debugger;
 		const { apiName, options: apiOptions = {}, path: apiPath } = options;
 		const url = resolveApiUrl(
 			amplify,

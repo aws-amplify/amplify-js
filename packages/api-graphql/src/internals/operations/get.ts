@@ -7,7 +7,7 @@ import {
 	buildGraphQLVariables,
 	flattenItems,
 	authModeParams,
-	getAdditionalHeadersFromClient,
+	getCustomHeaders,
 } from '../APIClient';
 
 export function getFactory(
@@ -22,9 +22,6 @@ export function getFactory(
 		arg?: any,
 		options?: any
 	) => {
-		console.log(arg);
-		console.log(options);
-		debugger;
 		return _get(
 			client,
 			modelIntrospection,
@@ -37,9 +34,6 @@ export function getFactory(
 	};
 
 	const get = async (arg?: any, options?: any) => {
-		console.log(arg);
-		console.log(options);
-		debugger;
 		return _get(
 			client,
 			modelIntrospection,
@@ -63,9 +57,6 @@ async function _get(
 	operation,
 	context
 ) {
-	console.log(arg);
-	console.log(options);
-	debugger;
 	const { name } = model as any;
 
 	const query = generateGraphQLDocument(
@@ -84,14 +75,7 @@ async function _get(
 	try {
 		const auth = authModeParams(client, options);
 
-		let headers = getAdditionalHeadersFromClient(client);
-		debugger;
-
-		// individual request headers should take precedence over client headers:
-		if (arg?.headers) {
-			debugger;
-			headers = arg?.headers;
-		}
+		const headers = getCustomHeaders(client, options?.headers);
 
 		const { data, extensions } = context
 			? ((await client.graphql(

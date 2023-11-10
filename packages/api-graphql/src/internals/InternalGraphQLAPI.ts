@@ -84,10 +84,6 @@ export class InternalGraphQLAPIClass {
 		authMode: GraphQLAuthMode,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
-		// additional headers?
-		debugger;
-		// TODO: not read:
-		const config = amplify.getConfig();
 		const {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
@@ -177,8 +173,6 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string },
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		// additional headers?
-		debugger;
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -258,7 +252,14 @@ export class InternalGraphQLAPIClass {
 			customEndpointRegion,
 		} = resolveConfig(amplify);
 
-		// Retrieve library options from Amplify configuration
+		/**
+		 * Retrieve library options from Amplify configuration.
+		 * `customHeaders` here are from the Amplify configuration options,
+		 * and are for non-AppSync endpoints only. These are *not* the same as
+		 * `additionalHeaders`, which are custom headers that are either 1)
+		 * included when configuring the API client or 2) passed along with
+		 * individual requests.
+		 */
 		const { headers: customHeaders, withCredentials } =
 			resolveLibraryOptions(amplify);
 
@@ -283,7 +284,7 @@ export class InternalGraphQLAPIClass {
 					query: print(query as DocumentNode),
 					variables,
 				}))),
-			// Headers from individual calls to `graphql`:
+			// Custom headers from individual requests or API client configuration:
 			...additionalHeaders,
 			// User agent headers:
 			...(!customEndpoint && {

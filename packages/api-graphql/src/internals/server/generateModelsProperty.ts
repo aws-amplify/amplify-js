@@ -14,9 +14,6 @@ export function generateModelsProperty<
 		| V6ClientSSRRequest<T>
 		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
 >(client: ClientType, params: ServerClientGenerationParams): ClientType {
-	// what about create?
-	console.log(params);
-	debugger;
 	const models = {} as any;
 	const config = params.config;
 	const useContext = client === null;
