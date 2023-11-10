@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { findIndexByFields, resolvePKFields } from '../../utils';
+import { SchemaModel } from '@aws-amplify/core/internals/utils';
 
-export function observeQueryFactory(models: any, model: any) {
-	const { name } = model as any;
+export function observeQueryFactory(models: any, model: SchemaModel) {
+	const { name } = model;
 
 	const observeQuery = (arg?: any) =>
 		new Observable(subscriber => {

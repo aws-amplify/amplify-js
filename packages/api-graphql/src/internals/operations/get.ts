@@ -13,6 +13,7 @@ import {
 	AuthModeParams,
 	ClientWithModels,
 	GraphQLOptionsV6,
+	GraphQLResult,
 	ListArgs,
 	QueryArgs,
 	V6Client,
@@ -24,7 +25,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 export function getFactory(
-	client: any,
+	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	operation: ModelOperation,
@@ -62,7 +63,7 @@ async function _get(
 	operation: ModelOperation,
 	context?: AmplifyServer.ContextSpec
 ) {
-	const { name } = model as any;
+	const { name } = model;
 
 	const query = generateGraphQLDocument(
 		modelIntrospection.models,
@@ -87,12 +88,12 @@ async function _get(
 						query,
 						variables,
 					}
-			  )) as any)
+			  )) as GraphQLResult<any>)
 			: ((await (client as V6Client<Record<string, any>>).graphql({
 					...auth,
 					query,
 					variables,
-			  })) as any);
+			  })) as GraphQLResult<any>);
 
 		// flatten response
 		if (data) {

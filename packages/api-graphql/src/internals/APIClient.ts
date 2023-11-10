@@ -183,13 +183,15 @@ export function initializeModel(
 							relatedTargetNames = relatedModelField.association?.targetNames;
 						}
 
-						const hasManyFilter = relatedTargetNames.map((field, idx) => {
-							if (idx === 0) {
-								return { [field]: { eq: record[parentPk] } };
-							}
+						const hasManyFilter: Record<string, any> = relatedTargetNames.map(
+							(field, idx) => {
+								if (idx === 0) {
+									return { [field]: { eq: record[parentPk] } };
+								}
 
-							return { [field]: { eq: record[parentSK[idx - 1]] } };
-						});
+								return { [field]: { eq: record[parentSK[idx - 1]] } };
+							}
+						);
 
 						if (context) {
 							initializedRelationalFields[fieldName] = (
@@ -231,13 +233,15 @@ export function initializeModel(
 						break;
 					}
 
-					const hasManyFilter = connectionFields.map((field, idx) => {
-						if (idx === 0) {
-							return { [field]: { eq: record[parentPk] } };
-						}
+					const hasManyFilter: Record<string, any> = connectionFields.map(
+						(field, idx) => {
+							if (idx === 0) {
+								return { [field]: { eq: record[parentPk] } };
+							}
 
-						return { [field]: { eq: record[parentSK[idx - 1]] } };
-					});
+							return { [field]: { eq: record[parentSK[idx - 1]] } };
+						}
+					);
 
 					if (context) {
 						initializedRelationalFields[fieldName] = (

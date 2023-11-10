@@ -14,6 +14,7 @@ import {
 	ListArgs,
 	V6Client,
 	V6ClientSSRRequest,
+	GraphQLResult,
 } from '../../types';
 import {
 	ModelIntrospectionSchema,
@@ -21,7 +22,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 export function listFactory(
-	client: any,
+	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	context = false
@@ -47,7 +48,7 @@ async function _list(
 	args?: ListArgs & AuthModeParams,
 	contextSpec?: AmplifyServer.ContextSpec
 ) {
-	const { name } = model as any;
+	const { name } = model;
 
 	const query = generateGraphQLDocument(
 		modelIntrospection.models,
@@ -73,12 +74,12 @@ async function _list(
 						query,
 						variables,
 					}
-			  )) as any)
+			  )) as GraphQLResult<any>)
 			: ((await (client as V6Client<Record<string, any>>).graphql({
 					...auth,
 					query,
 					variables,
-			  })) as any);
+			  })) as GraphQLResult<any>);
 
 		// flatten response
 		if (data !== undefined) {
