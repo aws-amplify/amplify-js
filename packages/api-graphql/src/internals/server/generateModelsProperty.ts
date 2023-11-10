@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
+import { ModelTypes } from '@aws-amplify/data-schema-types';
 import { graphQLOperationsInfo, ModelOperation } from '../APIClient';
 import { ServerClientGenerationParams } from '../../types/';
 import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../types';
+import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
 
 import { listFactory } from '../operations/list';
 import { getFactory } from '../operations/get';
@@ -11,21 +12,30 @@ import { getFactory } from '../operations/get';
 export function generateModelsProperty<
 	T extends Record<any, any> = never,
 	ClientType extends
-		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
+		| V6ClientSSRRequest<Record<string, any>>
+		| V6ClientSSRCookies<Record<string, any>> = V6ClientSSRCookies<
+		Record<string, any>
+	>
 >(client: ClientType, params: ServerClientGenerationParams): ClientType {
 	const models = {} as any;
 	const config = params.config;
 	const useContext = client === null;
 
 	if (!config) {
-		// TODO: improve
 		throw new Error('generateModelsProperty cannot retrieve Amplify config');
 	}
 
-	const modelIntrospection = config.API?.GraphQL?.modelIntrospection;
+	if (!config.API?.GraphQL) {
+		throw new Error(
+			'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient().'
+		);
+	}
+
+	const modelIntrospection: ModelIntrospectionSchema | undefined =
+		config.API.GraphQL.modelIntrospection;
+
 	if (!modelIntrospection) {
-		return {} as any;
+		return {} as ModelTypes<never>;
 	}
 
 	const SSR_UNSUPORTED_OPS = [
@@ -36,8 +46,8 @@ export function generateModelsProperty<
 	];
 
 	for (const model of Object.values(modelIntrospection.models)) {
-		const { name } = model as any;
-		models[name] = {} as any;
+		const { name } = model;
+		models[name] = {} as Record<string, any>;
 
 		Object.entries(graphQLOperationsInfo).forEach(
 			([key, { operationPrefix }]) => {

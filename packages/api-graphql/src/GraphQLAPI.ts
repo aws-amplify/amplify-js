@@ -7,7 +7,7 @@ import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
 import { Observable } from 'rxjs';
 
 export const graphqlOperation = (
-	query,
+	query: any,
 	variables = {},
 	authToken?: string
 ) => ({
@@ -61,4 +61,4 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	}
 }
 
-export const GraphQLAPI = new GraphQLAPIClass(null);
+export const GraphQLAPI = new GraphQLAPIClass();

@@ -35,17 +35,11 @@ const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new ConsoleLogger('GraphQLAPI');
 
-export const graphqlOperation = (
-	query,
-	variables = {},
-	authToken?: string
-) => ({
-	query,
-	variables,
-	authToken,
-});
-
-const isAmplifyInstance = (amplify): amplify is AmplifyClassV6 => {
+const isAmplifyInstance = (
+	amplify:
+		| AmplifyClassV6
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>)
+): amplify is AmplifyClassV6 => {
 	return typeof amplify !== 'function';
 };
 
@@ -56,8 +50,7 @@ export class InternalGraphQLAPIClass {
 	/**
 	 * @private
 	 */
-	private _options;
-	private appSyncRealTime: AWSAppSyncRealTimeProvider | null;
+	private appSyncRealTime = new AWSAppSyncRealTimeProvider();
 
 	private _api = {
 		post,
@@ -65,15 +58,6 @@ export class InternalGraphQLAPIClass {
 		isCancelErrorREST,
 		updateRequestToBeCancellable,
 	};
-
-	/**
-	 * Initialize GraphQL API with AWS configuration
-	 * @param {Object} options - Configuration object for API
-	 */
-	constructor(options) {
-		this._options = options;
-		logger.debug('API Options', this._options);
-	}
 
 	public getModuleName() {
 		return 'InternalGraphQLAPI';
@@ -208,7 +192,7 @@ export class InternalGraphQLAPIClass {
 						customUserAgentDetails
 					);
 				} else {
-					const wrapper = amplifyInstance =>
+					const wrapper = (amplifyInstance: AmplifyClassV6) =>
 						this._graphql<T>(
 							amplifyInstance,
 							{ query, variables, authMode },
@@ -307,7 +291,7 @@ export class InternalGraphQLAPIClass {
 				authMode !== 'iam' &&
 				authMode !== 'lambda')
 		) {
-			signingServiceInfo = null;
+			signingServiceInfo = undefined;
 		} else {
 			signingServiceInfo = {
 				service: !customEndpointRegion ? 'appsync' : 'execute-api',
@@ -326,7 +310,7 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		let response;
+		let response: any;
 		try {
 			const { body: responseBody } = await this._api.post({
 				url: new AmplifyUrl(endpoint),
@@ -352,7 +336,16 @@ export class InternalGraphQLAPIClass {
 
 			response = {
 				data: {},
-				errors: [new GraphQLError(err.message, null, null, null, null, err)],
+				errors: [
+					new GraphQLError(
+						(err as any).message,
+						null,
+						null,
+						null,
+						null,
+						err as any
+					),
+				],
 			};
 		}
 
@@ -391,9 +384,6 @@ export class InternalGraphQLAPIClass {
 	): Observable<any> {
 		const config = resolveConfig(amplify);
 
-		if (!this.appSyncRealTime) {
-			this.appSyncRealTime = new AWSAppSyncRealTimeProvider();
-		}
 		return this.appSyncRealTime.subscribe(
 			{
 				query: print(query as DocumentNode),
@@ -409,4 +399,4 @@ export class InternalGraphQLAPIClass {
 	}
 }
 
-export const InternalGraphQLAPI = new InternalGraphQLAPIClass(null);
+export const InternalGraphQLAPI = new InternalGraphQLAPIClass();

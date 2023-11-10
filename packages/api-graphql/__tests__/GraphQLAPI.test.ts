@@ -486,7 +486,7 @@ describe('API test', () => {
 				url: new URL('https://localhost/graphql'),
 				options: expect.objectContaining({
 					headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
-					signingServiceInfo: null,
+					signingServiceInfo: undefined,
 				}),
 			});
 		});
@@ -1066,7 +1066,7 @@ describe('API test', () => {
 						someHeaderSetAtConfigThatWillBeOverridden: 'expectedValue',
 						someOtherHeaderSetAtConfig: 'expectedValue',
 					}),
-					signingServiceInfo: null,
+					signingServiceInfo: undefined,
 				}),
 			});
 		});
@@ -1146,7 +1146,7 @@ describe('API test', () => {
 				url: new URL('https://localhost/graphql'),
 				options: expect.objectContaining({
 					headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
-					signingServiceInfo: null,
+					signingServiceInfo: undefined,
 					withCredentials: true,
 				}),
 			});
