@@ -7,17 +7,32 @@ import {
 	buildGraphQLVariables,
 	flattenItems,
 	authModeParams,
+	ModelOperation,
 } from '../APIClient';
+import {
+	AuthModeParams,
+	ClientWithModels,
+	GraphQLOptionsV6,
+	GraphQLResult,
+	ListArgs,
+	QueryArgs,
+	V6Client,
+	V6ClientSSRRequest,
+} from '../../types';
+import {
+	ModelIntrospectionSchema,
+	SchemaModel,
+} from '@aws-amplify/core/internals/utils';
 
 export function getFactory(
-	client,
-	modelIntrospection,
-	model,
-	operation,
-	context = false
+	client: ClientWithModels,
+	modelIntrospection: ModelIntrospectionSchema,
+	model: SchemaModel,
+	operation: ModelOperation,
+	useContext = false
 ) {
 	const getWithContext = async (
-		contextSpec: AmplifyServer.ContextSpec,
+		contextSpec: AmplifyServer.ContextSpec & GraphQLOptionsV6<unknown, string>,
 		arg?: any,
 		options?: any
 	) => {
@@ -33,30 +48,22 @@ export function getFactory(
 	};
 
 	const get = async (arg?: any, options?: any) => {
-		return _get(
-			client,
-			modelIntrospection,
-			model,
-			arg,
-			options,
-			operation,
-			context
-		);
+		return _get(client, modelIntrospection, model, arg, options, operation);
 	};
 
-	return context ? getWithContext : get;
+	return useContext ? getWithContext : get;
 }
 
 async function _get(
-	client,
-	modelIntrospection,
-	model,
-	arg,
-	options,
-	operation,
-	context
+	client: ClientWithModels,
+	modelIntrospection: ModelIntrospectionSchema,
+	model: SchemaModel,
+	arg: QueryArgs,
+	options: AuthModeParams & ListArgs,
+	operation: ModelOperation,
+	context?: AmplifyServer.ContextSpec
 ) {
-	const { name } = model as any;
+	const { name } = model;
 
 	const query = generateGraphQLDocument(
 		modelIntrospection.models,
@@ -74,19 +81,22 @@ async function _get(
 	try {
 		const auth = authModeParams(client, options);
 		const { data, extensions } = context
-			? ((await client.graphql(context, {
+			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
+					context,
+					{
+						...auth,
+						query,
+						variables,
+					}
+			  )) as GraphQLResult<any>)
+			: ((await (client as V6Client<Record<string, any>>).graphql({
 					...auth,
 					query,
 					variables,
-			  })) as any)
-			: ((await client.graphql({
-					...auth,
-					query,
-					variables,
-			  })) as any);
+			  })) as GraphQLResult<any>);
 
 		// flatten response
-		if (data !== undefined) {
+		if (data) {
 			const [key] = Object.keys(data);
 			const flattenedResult = flattenItems(data)[key];
 
@@ -101,7 +111,7 @@ async function _get(
 					modelIntrospection,
 					auth.authMode,
 					auth.authToken,
-					context
+					!!context
 				);
 
 				return { data: initialized, extensions };
@@ -109,7 +119,7 @@ async function _get(
 		} else {
 			return { data: null, extensions };
 		}
-	} catch (error) {
+	} catch (error: any) {
 		if (error.errors) {
 			// graphql errors pass through
 			return error as any;

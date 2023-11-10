@@ -2,7 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
-import { Hub, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
+import {
+	Hub,
+	fetchAuthSession,
+	ConsoleLogger,
+	HubPayload,
+} from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	base64Encoder,
@@ -48,7 +53,7 @@ import {
 
 const logger = new ConsoleLogger('AWSAppSyncRealTimeProvider');
 
-const dispatchApiEvent = payload => {
+const dispatchApiEvent = (payload: HubPayload) => {
 	Hub.dispatch('api', payload, 'PubSub', AMPLIFY_SYMBOL);
 };
 
@@ -111,7 +116,7 @@ export class AWSAppSyncRealTimeProvider {
 	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
-	private connectionState: ConnectionState;
+	private connectionState: ConnectionState | undefined;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionStateMonitorSubscription: SubscriptionLike;
@@ -362,7 +367,7 @@ export class AWSAppSyncRealTimeProvider {
 				region,
 				additionalHeaders,
 			});
-		} catch (err) {
+		} catch (err: any) {
 			this._logStartSubscriptionError(subscriptionId, observer, err);
 			return;
 		}

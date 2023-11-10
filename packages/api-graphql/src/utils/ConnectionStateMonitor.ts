@@ -50,7 +50,9 @@ export class ConnectionStateMonitor {
 	 */
 	private _linkedConnectionState: LinkedConnectionStates;
 	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
-	private _linkedConnectionStateObserver: Observer<LinkedConnectionStates>;
+	private _linkedConnectionStateObserver:
+		| Observer<LinkedConnectionStates>
+		| undefined;
 	private _networkMonitoringSubscription?: SubscriptionLike;
 	private _initialNetworkStateSubscription?: SubscriptionLike;
 
