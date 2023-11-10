@@ -29,6 +29,9 @@ export type LegacyConfig = {
 	aws_project_region?: string;
 };
 
+export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
+	U[keyof U];
+
 export type ResourcesConfig = {
 	API?: APIConfig;
 	Analytics?: AnalyticsConfig;

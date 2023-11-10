@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '../Logger';
+import { ConsoleLogger } from '../Logger';
 import { KeyValueStorage } from '../storage/KeyValueStorage';
 import { getLocalStorageWithFallback } from '../storage/utils';
 import { defaultConfig } from './constants';
@@ -9,7 +9,7 @@ import { StorageCacheCommon } from './StorageCacheCommon';
 import { Cache, CacheConfig } from './types';
 import { getCurrentSizeKey, getCurrentTime } from './utils';
 
-const logger = new Logger('Cache');
+const logger = new ConsoleLogger('StorageCache');
 
 /**
  * Customized storage based on the SessionStorage or LocalStorage with LRU implemented

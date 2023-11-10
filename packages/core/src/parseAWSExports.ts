@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ConsoleLogger as Logger } from './Logger';
+import { ConsoleLogger } from './Logger';
 import {
 	OAuthConfig,
 	AuthConfigUserAttributes,
@@ -8,7 +8,7 @@ import {
 } from './singleton/Auth/types';
 import { ResourcesConfig } from './singleton/types';
 
-const logger = new Logger('parseAWSExports');
+const logger = new ConsoleLogger('parseAWSExports');
 
 const authTypeMapping: Record<any, any> = {
 	API_KEY: 'apiKey',
@@ -77,22 +77,25 @@ export const parseAWSExports = (
 	// Notifications
 	const { InAppMessaging, Push } = Notifications ?? {};
 	if (InAppMessaging?.AWSPinpoint || Push?.AWSPinpoint) {
-		amplifyConfig.Notifications = {};
 		if (InAppMessaging?.AWSPinpoint) {
 			const { appId, region } = InAppMessaging.AWSPinpoint;
-			amplifyConfig.Notifications.InAppMessaging = {
-				Pinpoint: {
-					appId,
-					region,
+			amplifyConfig.Notifications = {
+				InAppMessaging: {
+					Pinpoint: {
+						appId,
+						region,
+					},
 				},
 			};
 		}
 		if (Push?.AWSPinpoint) {
 			const { appId, region } = Push.AWSPinpoint;
-			amplifyConfig.Notifications.PushNotification = {
-				Pinpoint: {
-					appId,
-					region,
+			amplifyConfig.Notifications = {
+				PushNotification: {
+					Pinpoint: {
+						appId,
+						region,
+					},
 				},
 			};
 		}

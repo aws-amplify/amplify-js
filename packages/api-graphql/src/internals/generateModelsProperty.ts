@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ModelTypes } from '@aws-amplify/amplify-api-next-types-alpha';
+import { ModelTypes } from '@aws-amplify/data-schema-types';
 import { graphQLOperationsInfo, ModelOperation } from './APIClient';
 import { ClientGenerationParams } from './types';
 import { V6Client, __authMode, __authToken } from '../types';

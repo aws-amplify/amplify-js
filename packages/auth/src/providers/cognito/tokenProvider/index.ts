@@ -42,11 +42,11 @@ class CognitoUserPoolsTokenProviderClass
 	}
 }
 
-export const CognitoUserPoolsTokenProvider =
+export const cognitoUserPoolsTokenProvider =
 	new CognitoUserPoolsTokenProviderClass();
 
 export const tokenOrchestrator =
-	CognitoUserPoolsTokenProvider.tokenOrchestrator;
+	cognitoUserPoolsTokenProvider.tokenOrchestrator;
 
 export {
 	CognitoUserPoolTokenProviderType,

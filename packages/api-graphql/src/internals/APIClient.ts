@@ -13,11 +13,9 @@ import {
 import {
 	AuthModeParams,
 	ClientWithModels,
-	ClientWithoutModels,
 	ListArgs,
 	QueryArgs,
 	V6Client,
-	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 	__authMode,
 	__authToken,

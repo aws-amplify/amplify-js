@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "6.0.0",
+	"version": "6.0.1",
 	"description": "Api category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -81,8 +81,8 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-amplify/api-graphql": "4.0.0",
-		"@aws-amplify/api-rest": "4.0.0",
+		"@aws-amplify/api-graphql": "4.0.1",
+		"@aws-amplify/api-rest": "4.0.1",
 		"tslib": "^2.5.0"
 	},
 	"jest": {
@@ -102,7 +102,9 @@
 					"allowJs": true,
 					"noEmitOnError": false,
 					"strictNullChecks": true,
-					"types": ["@types/jest"]
+					"types": [
+						"@types/jest"
+					]
 				}
 			}
 		},

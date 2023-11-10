@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // @ts-ignore: missing type definition
 import { Platform, Dimensions } from 'react-native';
-import { ConsoleLogger as Logger } from '../../Logger';
+import { ConsoleLogger } from '../../Logger';
 
-const logger = new Logger('DeviceInfo');
+const logger = new ConsoleLogger('getClientInfo');
 
 export const getClientInfo = () => {
 	const dim = Dimensions.get('screen');
