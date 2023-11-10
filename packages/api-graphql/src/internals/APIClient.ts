@@ -11,6 +11,8 @@ import {
 	AssociationBelongsTo,
 } from '@aws-amplify/core/internals/utils';
 import {
+	AuthModeParams,
+	ClientWithModels,
 	ListArgs,
 	QueryArgs,
 	V6Client,
@@ -61,8 +63,8 @@ export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
 };
 
 // TODO: this should accept single result to support CRUD methods; create helper for array/list
-export function initializeModel<T extends Record<any, any>>(
-	client: V6Client<T>,
+export function initializeModel(
+	client: ClientWithModels,
 	modelName: string,
 	result: any[],
 	modelIntrospection: ModelIntrospectionSchema,
@@ -125,10 +127,10 @@ export function initializeModel<T extends Record<any, any>>(
 							contextSpec: AmplifyServer.ContextSpec,
 							options?: LazyLoadOptions
 						) => {
-							if (record[targetNames[0]] && 'models' in client) {
-								const models: any = client.models;
-
-								return models[relatedModelName].get(
+							if (record[targetNames[0]]) {
+								return (
+									client as V6ClientSSRRequest<Record<string, any>>
+								).models[relatedModelName].get(
 									contextSpec,
 									{
 										[relatedModelPKFieldName]: record[targetNames[0]],
@@ -146,9 +148,10 @@ export function initializeModel<T extends Record<any, any>>(
 						initializedRelationalFields[fieldName] = (
 							options?: LazyLoadOptions
 						) => {
-							if (record[targetNames[0]] && 'models' in client) {
-								const models: any = client.models;
-								return models[relatedModelName].get(
+							if (record[targetNames[0]]) {
+								return (client as V6Client<Record<string, any>>).models[
+									relatedModelName
+								].get(
 									{
 										[relatedModelPKFieldName]: record[targetNames[0]],
 										...sortKeyValues,
@@ -194,9 +197,10 @@ export function initializeModel<T extends Record<any, any>>(
 								contextSpec: AmplifyServer.ContextSpec,
 								options?: LazyLoadOptions
 							) => {
-								if (record[parentPk] && 'models' in client) {
-									const models: any = client.models;
-									return models[relatedModelName].list(contextSpec, {
+								if (record[parentPk]) {
+									return (
+										client as V6ClientSSRRequest<Record<string, any>>
+									).models[relatedModelName].list(contextSpec, {
 										filter: { and: hasManyFilter },
 										limit: options?.limit,
 										nextToken: options?.nextToken,
@@ -210,9 +214,10 @@ export function initializeModel<T extends Record<any, any>>(
 							initializedRelationalFields[fieldName] = (
 								options?: LazyLoadOptions
 							) => {
-								if (record[parentPk] && 'models' in client) {
-									const models: any = client.models;
-									return models[relatedModelName].list({
+								if (record[parentPk]) {
+									return (client as V6Client<Record<string, any>>).models[
+										relatedModelName
+									].list({
 										filter: { and: hasManyFilter },
 										limit: options?.limit,
 										nextToken: options?.nextToken,
@@ -240,9 +245,10 @@ export function initializeModel<T extends Record<any, any>>(
 							contextSpec: AmplifyServer.ContextSpec,
 							options?: LazyLoadOptions
 						) => {
-							if (record[parentPk] && 'models' in client) {
-								const models: any = client.models;
-								return models[relatedModelName].list(contextSpec, {
+							if (record[parentPk]) {
+								return (
+									client as V6ClientSSRRequest<Record<string, any>>
+								).models[relatedModelName].list(contextSpec, {
 									filter: { and: hasManyFilter },
 									limit: options?.limit,
 									nextToken: options?.nextToken,
@@ -256,9 +262,10 @@ export function initializeModel<T extends Record<any, any>>(
 						initializedRelationalFields[fieldName] = (
 							options?: LazyLoadOptions
 						) => {
-							if (record[parentPk] && 'models' in client) {
-								const models: any = client.models;
-								return models[relatedModelName].list({
+							if (record[parentPk]) {
+								return (client as V6Client<Record<string, any>>).models[
+									relatedModelName
+								].list({
 									filter: { and: hasManyFilter },
 									limit: options?.limit,
 									nextToken: options?.nextToken,
@@ -750,11 +757,6 @@ export function normalizeMutationInput(
 	return normalized;
 }
 
-type AuthModeParams = {
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
-};
-
 /**
  * Produces a parameter object that can contains auth mode/token overrides
  * only if present in either `options` (first) or configured on the `client`
@@ -764,12 +766,10 @@ type AuthModeParams = {
  * @param options Args/Options obect from call site.
  * @returns
  */
-export function authModeParams<
-	T extends Record<any, any> = never,
-	ClientType extends
-		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
->(client: V6Client | ClientType, options: AuthModeParams = {}): AuthModeParams {
+export function authModeParams(
+	client: ClientWithModels,
+	options: AuthModeParams = {}
+): AuthModeParams {
 	return {
 		authMode: options.authMode || client[__authMode],
 		authToken: options.authToken || client[__authToken],
