@@ -247,6 +247,14 @@ export class InternalGraphQLAPIClass {
 		const { headers: customHeaders, withCredentials } =
 			resolveLibraryOptions(amplify);
 
+		/**
+		 * Client or request-specific custom headers that may or may not be
+		 * returned by a function:
+		 */
+		if (typeof additionalHeaders === 'function') {
+			additionalHeaders = await additionalHeaders();
+		}
+
 		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
 			...(!customEndpoint &&

@@ -1,3 +1,5 @@
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
+
 /**
  * Performs an `expect()` on a jest spy with some basic nested argument checks
  * based on the given mutation `opName` and `item`.
@@ -125,7 +127,7 @@ export function expectSubWithHeaders(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
-	headers?: Record<string, string>
+	headers?: CustomHeaders
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
