@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.0.2 (2023-11-13)
+
+**Note:** Version bump only for package @aws-amplify/core
+
 ## 5.8.4 (2023-08-23)
 
 **Note:** Version bump only for package @aws-amplify/core
