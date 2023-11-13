@@ -47,7 +47,7 @@ function mockApiResponse(value: any) {
 describe('server generateClient', () => {
 	describe('with cookies', () => {
 		test('subscriptions are disabled', () => {
-			const getAmplify = async fn => await fn(Amplify);
+			const getAmplify = async (fn: any) => await fn(Amplify);
 
 			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
 				amplify: getAmplify,
@@ -79,7 +79,7 @@ describe('server generateClient', () => {
 				},
 			});
 
-			const getAmplify = async fn => await fn(Amplify);
+			const getAmplify = async (fn: any) => await fn(Amplify);
 
 			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
 				amplify: getAmplify,
@@ -154,7 +154,7 @@ describe('server generateClient', () => {
 				},
 			});
 
-			const getAmplify = async fn => await fn(Amplify);
+			const getAmplify = async (fn: any) => await fn(Amplify);
 
 			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
 				amplify: getAmplify,
@@ -220,7 +220,7 @@ describe('server generateClient', () => {
 				},
 			});
 
-			const getAmplify = async fn => await fn(Amplify);
+			const getAmplify = async (fn: any) => await fn(Amplify);
 
 			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
 				amplify: getAmplify,

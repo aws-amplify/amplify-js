@@ -28,7 +28,7 @@ jest.mock(
 );
 
 describe('createServerRunner', () => {
-	let createServerRunner;
+	let createServerRunner: any;
 
 	const mockParseAWSExports = jest.fn();
 	const mockCreateAWSCredentialsAndIdentityIdProvider = jest.fn();
