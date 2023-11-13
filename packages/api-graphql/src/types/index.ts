@@ -176,7 +176,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
-	additionalHeaders?: { [key: string]: string };
+	additionalHeaders?: CustomHeaders;
 }
 
 export type AWSAppSyncRealTimeProvider = {
@@ -410,11 +410,7 @@ export type GraphQLMethod = <
 	TYPED_GQL_STRING extends string = string
 >(
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?:
-		| {
-				[key: string]: string;
-		  }
-		| undefined
+	additionalHeaders?: CustomHeaders | undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 export type GraphQLMethodSSR = <
@@ -423,11 +419,7 @@ export type GraphQLMethodSSR = <
 >(
 	contextSpec: AmplifyServer.ContextSpec,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?:
-		| {
-				[key: string]: string;
-		  }
-		| undefined
+	additionalHeaders?: CustomHeaders | undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 /**
@@ -446,7 +438,11 @@ export type ServerClientGenerationParams = {
 
 export type QueryArgs = Record<string, unknown>;
 
-export type ListArgs = { selectionSet?: string[]; filter?: {} };
+export type ListArgs = {
+	selectionSet?: string[];
+	filter?: {};
+	headers?: CustomHeaders;
+};
 
 export type AuthModeParams = {
 	authMode?: GraphQLAuthMode;

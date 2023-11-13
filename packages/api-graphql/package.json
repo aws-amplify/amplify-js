@@ -70,7 +70,7 @@
 		"typescript": "5.0.2",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
-		"@aws-amplify/data-schema": "^0.11.1"
+		"@aws-amplify/data-schema": "^0.12.0"
 	},
 	"files": [
 		"dist/cjs",
@@ -81,7 +81,7 @@
 	"dependencies": {
 		"@aws-amplify/core": "6.0.1",
 		"@aws-amplify/api-rest": "4.0.1",
-		"@aws-amplify/data-schema-types": "^0.5.0",
+		"@aws-amplify/data-schema-types": "^0.6.0",
 		"@aws-sdk/types": "3.387.0",
 		"graphql": "15.8.0",
 		"tslib": "^2.5.0",

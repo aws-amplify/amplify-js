@@ -29,6 +29,7 @@ import {
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -66,7 +67,7 @@ export class InternalGraphQLAPIClass {
 	private async _headerBasedAuth(
 		amplify: AmplifyClassV6,
 		authMode: GraphQLAuthMode,
-		additionalHeaders: { [key: string]: string } = {}
+		additionalHeaders: Record<string, string> | Headers = {}
 	) {
 		const {
 			region: region,
@@ -113,11 +114,19 @@ export class InternalGraphQLAPIClass {
 				}
 				break;
 			case 'lambda':
-				if (!additionalHeaders.Authorization) {
+				if (
+					(typeof additionalHeaders === 'object' &&
+					!(additionalHeaders instanceof Headers) &&
+					!additionalHeaders.Authorization) || additionalHeaders instanceof Headers && !(additionalHeaders.get('Authorization')))
+				{
 					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
 				}
+				
 				headers = {
-					Authorization: additionalHeaders.Authorization,
+					Authorization:
+						additionalHeaders instanceof Headers
+							? additionalHeaders.get('Authorization')
+							: additionalHeaders.Authorization,
 				};
 				break;
 			case 'none':
@@ -154,7 +163,7 @@ export class InternalGraphQLAPIClass {
 			| AmplifyClassV6
 			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string },
+		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
@@ -168,11 +177,18 @@ export class InternalGraphQLAPIClass {
 		const { operation: operationType } =
 			operationDef as OperationDefinitionNode;
 
-		const headers = additionalHeaders || {};
+		let headers = additionalHeaders || {};
 
 		// if an authorization header is set, have the explicit authToken take precedence
 		if (authToken) {
-			headers.Authorization = authToken;
+			if (headers instanceof Headers) {
+				headers.set('Authorization', authToken);
+			} else if (typeof headers === 'object') {
+				headers = {
+					...headers,
+					Authorization: authToken,
+				};
+			}
 		}
 
 		switch (operationType) {
@@ -225,7 +241,7 @@ export class InternalGraphQLAPIClass {
 	private async _graphql<T = any>(
 		amplify: AmplifyClassV6,
 		{ query, variables, authMode }: GraphQLOptions,
-		additionalHeaders = {},
+		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<T>> {
@@ -251,14 +267,22 @@ export class InternalGraphQLAPIClass {
 		 * Client or request-specific custom headers that may or may not be
 		 * returned by a function:
 		 */
+		let additionalCustomHeaders: Record<string, string> | Headers;
+
 		if (typeof additionalHeaders === 'function') {
-			additionalHeaders = await additionalHeaders();
+			additionalCustomHeaders = await additionalHeaders();
+		} else {
+			additionalCustomHeaders = additionalHeaders;
 		}
 
 		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
 			...(!customEndpoint &&
-				(await this._headerBasedAuth(amplify, authMode!, additionalHeaders))),
+				(await this._headerBasedAuth(
+					amplify,
+					authMode!,
+					additionalCustomHeaders
+				))),
 			/**
 			 * Custom endpoint headers.
 			 * If there is both a custom endpoint and custom region present, we get the headers.
@@ -267,7 +291,11 @@ export class InternalGraphQLAPIClass {
 			 */
 			...((customEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(amplify, authMode!, additionalHeaders)
+					? await this._headerBasedAuth(
+							amplify,
+							authMode!,
+							additionalCustomHeaders
+					  )
 					: {})) ||
 				{}),
 			// Custom headers included in Amplify configuration options:

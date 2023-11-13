@@ -16,6 +16,7 @@ import {
 	ListArgs,
 	QueryArgs,
 	V6Client,
+	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 	__authMode,
 	__authToken,
@@ -784,12 +785,12 @@ export function authModeParams(
 
 /**
  * Retrieves custom headers from either the client or request options.
- * @param {client} V6Client - for extracting client headers
+ * @param {client} V6Client | V6ClientSSRRequest | V6ClientSSRCookies - for extracting client headers
  * @param {requestHeaders} [CustomHeaders] - request headers
  * @returns {CustomHeaders} - custom headers
  */
 export function getCustomHeaders(
-	client: V6Client,
+	client: V6Client | ClientWithModels,
 	requestHeaders?: CustomHeaders
 ): CustomHeaders {
 	let headers: CustomHeaders = client[__headers] || {};
