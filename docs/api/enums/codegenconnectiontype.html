@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>GeoConfig | amplify-js</title>
+	<title>CodeGenConnectionType | amplify-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" type="image/x-icon" href="https://aws-amplify.github.io/amplify-js/images/layout/favicon.ico">
@@ -916,11 +916,17 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 <ul>
-	<li class="current tsd-kind-interface">
-		<a href="geoconfig.html" class="tsd-kind-icon">Geo<wbr>Config</a>
+	<li class="current tsd-kind-enum">
+		<a href="codegenconnectiontype.html" class="tsd-kind-icon">Code<wbr>Gen<wbr>Connection<wbr>Type</a>
 		<ul>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
-				<a href="geoconfig.html#locationservice" class="tsd-kind-icon">Location<wbr>Service</a>
+			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+				<a href="codegenconnectiontype.html#belongs_to" class="tsd-kind-icon">BELONGS_<wbr>TO</a>
+			</li>
+			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+				<a href="codegenconnectiontype.html#has_many" class="tsd-kind-icon">HAS_<wbr>MANY</a>
+			</li>
+			<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+				<a href="codegenconnectiontype.html#has_one" class="tsd-kind-icon">HAS_<wbr>ONE</a>
 			</li>
 		</ul>
 	</li>
@@ -928,81 +934,59 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 <div class="content-wrap">
-	<section class="tsd-panel tsd-hierarchy">
-		<h3>Hierarchy</h3>
-		<ul class="tsd-hierarchy">
-			<li>
-				<span class="target">GeoConfig</span>
-			</li>
-		</ul>
+	<section class="tsd-panel tsd-comment">
+		<div class="tsd-comment tsd-typography">
+			<div class="lead">
+				<p>Field-level Relationship Definitions</p>
+			</div>
+		</div>
 	</section>
 	<section class="tsd-panel-group tsd-index-group">
 		<h2>Index</h2>
 		<section class="tsd-panel tsd-index-panel">
 			<div class="tsd-index-content">
 				<section class="tsd-index-section ">
-					<h3>Properties</h3>
+					<h3>Enumeration members</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="geoconfig.html#locationservice" class="tsd-kind-icon">Location<wbr>Service</a></li>
+						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="codegenconnectiontype.html#belongs_to" class="tsd-kind-icon">BELONGS_<wbr>TO</a></li>
+						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="codegenconnectiontype.html#has_many" class="tsd-kind-icon">HAS_<wbr>MANY</a></li>
+						<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="codegenconnectiontype.html#has_one" class="tsd-kind-icon">HAS_<wbr>ONE</a></li>
 					</ul>
 				</section>
 			</div>
 		</section>
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
-		<h2>Properties</h2>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-			<a name="locationservice" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagOptional">Optional</span> Location<wbr>Service</h3>
-			<div class="tsd-signature tsd-kind-icon">Location<wbr>Service<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+		<h2>Enumeration members</h2>
+		<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+			<a name="belongs_to" class="tsd-anchor"></a>
+			<h3>BELONGS_<wbr>TO</h3>
+			<div class="tsd-signature tsd-kind-icon">BELONGS_<wbr>TO<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;BELONGS_TO&quot;</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/singleton/Geo/types.ts#L5">packages/core/src/singleton/Geo/types.ts:5</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e9c04a6d2/packages/core/src/singleton/API/types.ts#L182">packages/core/src/singleton/API/types.ts:182</a></li>
 				</ul>
 			</aside>
-			<div class="tsd-type-declaration">
-				<h4>Type declaration</h4>
-				<ul class="tsd-parameters">
-					<li class="tsd-parameter">
-						<h5><span class="tsd-flag ts-flagOptional">Optional</span> geofence<wbr>Collections<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span></h5>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>default<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>items<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-							</li>
-						</ul>
-					</li>
-					<li class="tsd-parameter">
-						<h5><span class="tsd-flag ts-flagOptional">Optional</span> maps<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span></h5>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>default<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>items<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h5>
-								<ul class="tsd-parameters">
-								</ul>
-							</li>
-						</ul>
-					</li>
-					<li class="tsd-parameter">
-						<h5>region<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-					</li>
-					<li class="tsd-parameter">
-						<h5><span class="tsd-flag ts-flagOptional">Optional</span> search<wbr>Indices<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span></h5>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>default<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>items<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-							</li>
-						</ul>
-					</li>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+			<a name="has_many" class="tsd-anchor"></a>
+			<h3>HAS_<wbr>MANY</h3>
+			<div class="tsd-signature tsd-kind-icon">HAS_<wbr>MANY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;HAS_MANY&quot;</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e9c04a6d2/packages/core/src/singleton/API/types.ts#L183">packages/core/src/singleton/API/types.ts:183</a></li>
 				</ul>
-			</div>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+			<a name="has_one" class="tsd-anchor"></a>
+			<h3>HAS_<wbr>ONE</h3>
+			<div class="tsd-signature tsd-kind-icon">HAS_<wbr>ONE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;HAS_ONE&quot;</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/e9c04a6d2/packages/core/src/singleton/API/types.ts#L181">packages/core/src/singleton/API/types.ts:181</a></li>
+				</ul>
+			</aside>
 		</section>
 	</section>
 	<footer>
