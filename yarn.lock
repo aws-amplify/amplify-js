@@ -10,6 +10,20 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-amplify/data-schema-types@*", "@aws-amplify/data-schema-types@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.4.2.tgz#42a63fbc97922e5f74ff5b2780145d1bdc35d80e"
+  integrity sha512-ip5U1FisKxCAgIupo5FxoJVsWedKOl1UIJrUOpMWBtSnhCeVDJerNyaH7Su5YxmOX4ZpG7SAMF9qwF5C1zIKgg==
+  dependencies:
+    rxjs "^7.8.1"
+
+"@aws-amplify/data-schema@^0.11.0":
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.11.0.tgz#3c214d8a90d49b3867619eaa7e80681fabb28d46"
+  integrity sha512-fNofD5n6p++fMjqwli9vyHlXc+SPVNXummtLnT7BnGn9YG8FypSLVuEO3ZifzKWyJsUKqkNn4rxHKCQBggK/cA==
+  dependencies:
+    "@aws-amplify/data-schema-types" "*"
+
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@aws-crypto/crc32/-/crc32-3.0.0.tgz#07300eca214409c33e3ff769cd5697b57fdd38fa"

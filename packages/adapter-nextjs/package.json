@@ -20,7 +20,7 @@
 		"jest-fetch-mock": "3.0.3",
 		"next": ">= 13.5.0 < 15.0.0",
 		"rollup": "3.29.4",
-		"typescript": "5.1.6"
+		"typescript": "5.0.2"
 	},
 	"publishConfig": {
 		"access": "public"
@@ -35,6 +35,11 @@
 			"require": "./dist/cjs/index.js"
 		},
 		"./api": {
+			"types": "./dist/esm/api/index.d.ts",
+			"import": "./dist/esm/api/index.mjs",
+			"require": "./dist/cjs/api/index.js"
+		},
+		"./data": {
 			"types": "./dist/esm/api/index.d.ts",
 			"import": "./dist/esm/api/index.mjs",
 			"require": "./dist/cjs/api/index.js"
