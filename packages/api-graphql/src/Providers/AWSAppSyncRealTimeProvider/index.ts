@@ -98,7 +98,9 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
-	additionalHeaders?: { [key: string]: string };
+	additionalHeaders?:
+		| Record<string, string>
+		| (() => Promise<Record<string, string>>);
 }
 
 type AWSAppSyncRealTimeAuthInput =
@@ -300,7 +302,7 @@ export class AWSAppSyncRealTimeProvider {
 		subscriptionId: string;
 		customUserAgentDetails: CustomUserAgentDetails | undefined;
 	}) {
-		const {
+		let {
 			appSyncGraphqlEndpoint,
 			authenticationType,
 			query,
@@ -310,6 +312,12 @@ export class AWSAppSyncRealTimeProvider {
 			graphql_headers = () => ({}),
 			additionalHeaders = {},
 		} = options;
+
+		if (typeof additionalHeaders === 'function') {
+			debugger;
+			additionalHeaders = await additionalHeaders();
+			debugger;
+		}
 
 		const subscriptionState: SUBSCRIPTION_STATUS = SUBSCRIPTION_STATUS.PENDING;
 		const data = {

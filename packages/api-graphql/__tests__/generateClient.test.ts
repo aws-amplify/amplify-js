@@ -3,7 +3,11 @@ import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../src/internals';
 import configFixture from './fixtures/modeled/amplifyconfiguration';
 import { Schema } from './fixtures/modeled/schema';
-import { expectSub, expectSubWithHeaders } from './utils/expects';
+import {
+	expectSub,
+	expectSubWithHeaders,
+	expectSubWithHeadersFn,
+} from './utils/expects';
 import { Observable, from } from 'rxjs';
 
 const serverManagedFields = {
@@ -4492,12 +4496,7 @@ describe('generateClient', () => {
 				headers: async () => customHeaders,
 			}).subscribe({
 				next(value) {
-					expectSubWithHeaders(
-						spy,
-						'onCreateNote',
-						graphqlVariables,
-						customHeaders
-					);
+					expectSubWithHeadersFn(spy, 'onCreateNote', graphqlVariables);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
 				},

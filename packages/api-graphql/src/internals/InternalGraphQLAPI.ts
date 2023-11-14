@@ -415,7 +415,7 @@ export class InternalGraphQLAPIClass {
 	private _graphqlSubscribe(
 		amplify: AmplifyClassV6,
 		{ query, variables, authMode }: GraphQLOptions,
-		additionalHeaders = {},
+		additionalHeaders: CustomHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<any> {
 		const config = resolveConfig(amplify);
