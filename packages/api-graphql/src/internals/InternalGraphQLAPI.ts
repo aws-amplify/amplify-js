@@ -264,9 +264,7 @@ export class InternalGraphQLAPIClass {
 		let additionalCustomHeaders: Record<string, string>;
 
 		if (typeof additionalHeaders === 'function') {
-			// debugger;
 			additionalCustomHeaders = await additionalHeaders();
-			// debugger;
 		} else {
 			additionalCustomHeaders = additionalHeaders;
 		}
