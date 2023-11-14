@@ -21,7 +21,7 @@ describe('getAuthUserAgentValue', () => {
 		const action = AuthAction.FederatedSignIn;
 		getAuthUserAgentValue(action);
 
-		expect(mockGetAmplifyUserAgent).toBeCalledWith({
+		expect(mockGetAmplifyUserAgent).toHaveBeenCalledWith({
 			category: Category.Auth,
 			action,
 		});

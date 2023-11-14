@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
 	getId,
@@ -63,7 +59,7 @@ describe('CognitoIdentity - getId', () => {
 		);
 		const response = await getId(cognitoIdentityHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
-		expect(fetchTransferHandler).toBeCalledWith(
+		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
 			expect.anything()
 		);

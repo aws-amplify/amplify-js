@@ -31,7 +31,7 @@ describe('calculateS', () => {
 				U,
 			})
 		).toBeDefined();
-		expect(modPowSpy).toBeCalledWith(x, N, expect.any(Function));
+		expect(modPowSpy).toHaveBeenCalledWith(x, N, expect.any(Function));
 	});
 
 	it('should throw an error if outer modPow fails', async () => {

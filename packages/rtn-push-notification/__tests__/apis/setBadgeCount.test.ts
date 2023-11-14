@@ -21,6 +21,6 @@ describe('setBadgeCount', () => {
 	it('calls the native setBadgeCount', () => {
 		setBadgeCount(42);
 
-		expect(mockSetBadgeCountNative).toBeCalledWith(42);
+		expect(mockSetBadgeCountNative).toHaveBeenCalledWith(42);
 	});
 });

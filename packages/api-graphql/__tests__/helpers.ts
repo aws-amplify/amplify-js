@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Hub } from '@aws-amplify/core';
 import { Observable, Observer } from 'rxjs';
 import { CONNECTION_STATE_CHANGE } from '../src/Providers/constants';

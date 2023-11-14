@@ -33,7 +33,7 @@ describe('serverContext', () => {
 				},
 			});
 
-			expect(mockConfigure).toBeCalledWith(mockAmplifyConfig, {
+			expect(mockConfigure).toHaveBeenCalledWith(mockAmplifyConfig, {
 				Auth: {
 					tokenProvider: mockTokenProvider,
 					credentialsProvider: mockCredentialAndIdentityProvider,
@@ -69,7 +69,7 @@ describe('serverContext', () => {
 		it('should throw an error if the context is not found', () => {
 			expect(() =>
 				getAmplifyServerContext({ token: { value: Symbol('test') } })
-			).toThrowError(
+			).toThrow(
 				'Attempted to get the Amplify Server Context that may have been destroyed.'
 			);
 		});
@@ -86,7 +86,7 @@ describe('serverContext', () => {
 
 			destroyAmplifyServerContext(contextSpec);
 
-			expect(() => getAmplifyServerContext(contextSpec)).toThrowError(
+			expect(() => getAmplifyServerContext(contextSpec)).toThrow(
 				'Attempted to get the Amplify Server Context that may have been destroyed.'
 			);
 		});

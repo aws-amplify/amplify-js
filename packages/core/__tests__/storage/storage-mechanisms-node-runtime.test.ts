@@ -12,7 +12,7 @@ describe('test mechanisms', () => {
 	test('test defaultStorage operations in node environment', async () => {
 		try {
 			await defaultStorage.setItem(key, value);
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AmplifyError);
 			expect(error.name).toBe(AmplifyErrorCode.PlatformNotSupported);
 		}
@@ -21,7 +21,7 @@ describe('test mechanisms', () => {
 	test('test sessionStorage operations in node environment', async () => {
 		try {
 			await sessionStorage.setItem(key, value);
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AmplifyError);
 			expect(error.name).toBe(AmplifyErrorCode.PlatformNotSupported);
 		}

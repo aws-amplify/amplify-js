@@ -38,7 +38,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 				...defaultRetryOptions,
 				maxAttempts: 6,
 			});
-			expect(nextHandler).toBeCalledTimes(6);
+			expect(nextHandler).toHaveBeenCalledTimes(6);
 			expect(resp).toEqual({ ...defaultResponse, $metadata: { attempts: 6 } });
 		} catch (error) {
 			fail('this test should succeed');
@@ -59,8 +59,8 @@ describe(`${retryMiddleware.name} middleware`, () => {
 				maxAttempts: 6,
 			});
 			fail('this test should fail');
-		} catch (error) {
-			expect(nextHandler).toBeCalledTimes(6);
+		} catch (error: any) {
+			expect(nextHandler).toHaveBeenCalledTimes(6);
 			expect(error.message).toEqual('Error 6');
 		}
 	});
@@ -76,8 +76,8 @@ describe(`${retryMiddleware.name} middleware`, () => {
 			retryDecider,
 		});
 		expect.assertions(3);
-		expect(nextHandler).toBeCalledTimes(1);
-		expect(retryDecider).toBeCalledTimes(1);
+		expect(nextHandler).toHaveBeenCalledTimes(1);
+		expect(retryDecider).toHaveBeenCalledTimes(1);
 		expect(resp).toEqual({ ...defaultResponse, $metadata: { attempts: 1 } });
 	});
 
@@ -97,11 +97,11 @@ describe(`${retryMiddleware.name} middleware`, () => {
 				retryDecider,
 			});
 			fail('this test should fail');
-		} catch (e) {
+		} catch (e: any) {
 			expect(e.message).toBe('UnretryableError');
-			expect(nextHandler).toBeCalledTimes(1);
-			expect(retryDecider).toBeCalledTimes(1);
-			expect(retryDecider).toBeCalledWith(undefined, expect.any(Error));
+			expect(nextHandler).toHaveBeenCalledTimes(1);
+			expect(retryDecider).toHaveBeenCalledTimes(1);
+			expect(retryDecider).toHaveBeenCalledWith(undefined, expect.any(Error));
 		}
 		expect.assertions(4);
 	});
@@ -119,8 +119,8 @@ describe(`${retryMiddleware.name} middleware`, () => {
 			expect(res).toEqual(
 				expect.objectContaining({ $metadata: { attempts: 6 } })
 			);
-			expect(nextHandler).toBeCalledTimes(6);
-			expect(computeDelay).toBeCalledTimes(5); // no interval after last attempt
+			expect(nextHandler).toHaveBeenCalledTimes(6);
+			expect(computeDelay).toHaveBeenCalledTimes(5); // no interval after last attempt
 		} catch (error) {
 			fail('this test should fail');
 		}
@@ -138,9 +138,9 @@ describe(`${retryMiddleware.name} middleware`, () => {
 				abortSignal: controller.signal,
 			});
 			fail('this test should fail');
-		} catch (error) {
+		} catch (error: any) {
 			expect(error.message).toBe('Request aborted.');
-			expect(nextHandler).toBeCalledTimes(0);
+			expect(nextHandler).toHaveBeenCalledTimes(0);
 		}
 		expect.assertions(2);
 	});
@@ -165,10 +165,10 @@ describe(`${retryMiddleware.name} middleware`, () => {
 				retryDecider,
 			});
 			fail('this test should fail');
-		} catch (error) {
+		} catch (error: any) {
 			expect(error.message).toBe('Request aborted.');
-			expect(setTimeout).toBeCalledTimes(2); // 1st attempt + mock back-off strategy
-			expect(clearTimeout).toBeCalledTimes(1); // cancel 2nd attempt
+			expect(setTimeout).toHaveBeenCalledTimes(2); // 1st attempt + mock back-off strategy
+			expect(clearTimeout).toHaveBeenCalledTimes(1); // cancel 2nd attempt
 		}
 	});
 
@@ -208,9 +208,9 @@ describe(`${retryMiddleware.name} middleware`, () => {
 			...defaultResponse,
 			$metadata: { attempts: 3 },
 		});
-		expect(coreHandler).toBeCalledTimes(2);
-		expect(betweenRetryFunction).toBeCalledTimes(2);
-		expect(retryDecider).toBeCalledTimes(4);
+		expect(coreHandler).toHaveBeenCalledTimes(2);
+		expect(betweenRetryFunction).toHaveBeenCalledTimes(2);
+		expect(retryDecider).toHaveBeenCalledTimes(4);
 		// computeDelay is called by 2 retry middleware with continuous attempts count.
 		expect(computeDelay).toHaveBeenNthCalledWith(1, 1);
 		expect(computeDelay).toHaveBeenNthCalledWith(2, 2);

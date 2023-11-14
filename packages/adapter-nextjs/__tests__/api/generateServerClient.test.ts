@@ -55,7 +55,7 @@ describe('generateServerClientUsingCookies', () => {
 				request: mockedReq,
 				response: mockedRes,
 			});
-		}).toThrowError();
+		}).toThrow();
 	});
 
 	it('should call createRunWithAmplifyServerContext to create runWithAmplifyServerContext function', async () => {

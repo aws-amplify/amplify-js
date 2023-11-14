@@ -25,7 +25,7 @@ import {
 let db: idb.IDBPDatabase;
 const DB_VERSION = 3;
 
-const indexedDB = require('fake-indexeddb');
+const { indexedDB } = require('fake-indexeddb');
 const IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 Dexie.dependencies.indexedDB = indexedDB;
 Dexie.dependencies.IDBKeyRange = IDBKeyRange;
@@ -317,7 +317,7 @@ describe('Indexed db storage test', () => {
 		expect(q1Post!.id).toEqual(p.id);
 	});
 
-	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async done => {
+	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async () => {
 		const team1 = new Team({ name: 'team' });
 		const savedTeam = await DataStore.save(team1);
 		const project1 = new Project({
@@ -329,10 +329,8 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(project1);
 
 		const q1 = (await DataStore.query(Project, project1.id))!;
-		q1.team.then(value => {
-			expect(value!.id).toEqual(team1.id);
-			done();
-		});
+		const value = await q1.team;
+		expect(value!.id).toEqual(team1.id);
 	});
 
 	test('query lazily HAS_MANY, setting FK', async () => {
@@ -756,7 +754,7 @@ describe('AsyncCollection toArray Test', () => {
 				expected: [0, 1, 2],
 			},
 		].forEach(Parameter => {
-			test(`Testing input of ${Parameter.input}`, async done => {
+			test(`Testing input of ${Parameter.input}`, async () => {
 				const { input, expected } = Parameter;
 				const album1 = new Album({
 					name: "Lupe Fiasco's The Cool",
@@ -789,10 +787,8 @@ describe('AsyncCollection toArray Test', () => {
 				for (const num of expected) {
 					expectedValues.push(songsArray[num]);
 				}
-				songs.toArray(input).then(value => {
-					expect(value).toStrictEqual(expectedValues);
-					done();
-				});
+				const value = await songs.toArray(input);
+				expect(value).toStrictEqual(expectedValues);
 			});
 		});
 	});
@@ -809,7 +805,7 @@ describe('DB versions migration', () => {
 
 		const blob = new Blob([JSON.stringify(v1Data)], {
 			type: 'application/json',
-		});
+		} as any);
 
 		// Import V1
 		(await Dexie.import(blob)).close();

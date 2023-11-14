@@ -57,7 +57,7 @@ describe('server generateClient', () => {
 			expect(() => {
 				// @ts-expect-error
 				client.models.Note.onCreate().subscribe();
-			}).toThrowError();
+			}).toThrow();
 		});
 
 		test('can list', async () => {
@@ -277,7 +277,7 @@ describe('server generateClient', () => {
 			expect(() => {
 				// @ts-expect-error
 				client.models.Note.onCreate().subscribe();
-			}).toThrowError();
+			}).toThrow();
 		});
 
 		test('contextSpec param gets passed through to client.graphql', async () => {

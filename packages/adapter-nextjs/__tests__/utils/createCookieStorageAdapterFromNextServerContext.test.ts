@@ -397,6 +397,6 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				request: undefined,
 				response: new ServerResponse({} as any),
 			} as any)
-		).toThrowError();
+		).toThrow();
 	});
 });

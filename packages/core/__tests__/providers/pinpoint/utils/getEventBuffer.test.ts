@@ -42,7 +42,7 @@ describe('Pinpoint Provider Util: bufferManager', () => {
 	it('creates a buffer if one doesn\'t exist', async () => {
 		const testBuffer = getEventBuffer(mockConfig);
 
-		expect(mockPinpointEventBuffer).toBeCalledWith(mockConfig);
+		expect(mockPinpointEventBuffer).toHaveBeenCalledWith(mockConfig);
 		expect(testBuffer).toBeInstanceOf(Object);
 	});
 

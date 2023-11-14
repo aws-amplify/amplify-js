@@ -45,10 +45,10 @@ describe('oAuthSignOutRedirect', () => {
 	it('should construct the OAuth logout endpoint and open an auth session to it', async () => {
 		await oAuthSignOutRedirect(authConfig);
 
-		expect(mockGetRedirectUrl).toBeCalledWith(
+		expect(mockGetRedirectUrl).toHaveBeenCalledWith(
 			authConfig.loginWith.oauth.redirectSignOut
 		);
-		expect(mockOpenAuthSession).toBeCalledWith(
+		expect(mockOpenAuthSession).toHaveBeenCalledWith(
 			`https://${domain}/logout?client_id=${userPoolClientId}&logout_uri=${encodedSignOutRedirectUrl}`,
 			authConfig.loginWith.oauth.redirectSignOut,
 			false
@@ -58,7 +58,7 @@ describe('oAuthSignOutRedirect', () => {
 	it('should allow preferPrivateSession to be set', async () => {
 		await oAuthSignOutRedirect(authConfig, true);
 
-		expect(mockOpenAuthSession).toBeCalledWith(
+		expect(mockOpenAuthSession).toHaveBeenCalledWith(
 			`https://${domain}/logout?client_id=${userPoolClientId}&logout_uri=${encodedSignOutRedirectUrl}`,
 			authConfig.loginWith.oauth.redirectSignOut,
 			true

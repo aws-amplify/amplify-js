@@ -19,7 +19,6 @@ import {
 describe('Legacy - backwards compatibility', () => {
 	test(`LegacyNoMetadata`, async () => {
 		expectType<ModelInit<LegacyNoMetadata>>({
-			// @ts-expect-error
 			// id: '234',
 			name: '',
 			description: '',
@@ -28,7 +27,6 @@ describe('Legacy - backwards compatibility', () => {
 		expectType<ModelInit<LegacyNoMetadata>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
@@ -40,7 +38,6 @@ describe('Legacy - backwards compatibility', () => {
 
 		LegacyNoMetadata.copyOf({} as LegacyNoMetadata, d => {
 			d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.name = '';
@@ -139,7 +136,6 @@ describe('Legacy - backwards compatibility', () => {
 
 	test(`LegacyDefaultRO`, async () => {
 		expectType<ModelInit<LegacyDefaultRO>>({
-			// @ts-expect-error
 			// id: '234',
 			name: '',
 			description: '',
@@ -148,24 +144,20 @@ describe('Legacy - backwards compatibility', () => {
 		expectType<ModelInit<LegacyDefaultRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		LegacyDefaultRO.copyOf({} as LegacyDefaultRO, d => {
 			d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
 			// d.updatedAt = '';
 		});
 
@@ -246,7 +238,6 @@ describe('Legacy - backwards compatibility', () => {
 
 	test(`LegacyCustomRO`, async () => {
 		expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
-			// @ts-expect-error
 			// id: '234',
 			name: '',
 			description: '',
@@ -255,37 +246,30 @@ describe('Legacy - backwards compatibility', () => {
 		expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// createdOn: '',
 		});
 
 		expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// createdAt: '',
 		});
 
 		LegacyCustomRO.copyOf({} as LegacyCustomRO, d => {
 			d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
-			// @ts-expect-error
 			// d.createdAt;
 
-			// @ts-expect-error
 			// d.updatedAt;
 
 			d.createdOn;
-			// @ts-expect-error
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
 			// d.updatedOn = '';
 		});
 
@@ -366,7 +350,6 @@ describe('Legacy - backwards compatibility', () => {
 
 	test(`CustomIdentifierNoRO`, async () => {
 		expectType<ModelInit<CustomIdentifierNoRO>>({
-			// @ts-expect-error
 			// id: '234',
 			myId: '23342',
 			name: '',
@@ -389,7 +372,6 @@ describe('Legacy - backwards compatibility', () => {
 
 		CustomIdentifierNoRO.copyOf({} as CustomIdentifierNoRO, d => {
 			d.myId;
-			// @ts-expect-error
 			// d.myId = '';
 
 			d.name = '';
@@ -401,10 +383,8 @@ describe('Legacy - backwards compatibility', () => {
 			d.updatedAt;
 			d.updatedAt = '';
 
-			// @ts-expect-error
 			// d.createdOn;
 
-			// @ts-expect-error
 			// d.updatedOn;
 		});
 

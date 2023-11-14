@@ -62,7 +62,7 @@ describe('internal post', () => {
 				},
 			},
 		});
-		expect(mockAuthenticatedHandler).toBeCalledWith(
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 			{
 				url: apiGatewayUrl,
 				method: 'POST',
@@ -81,7 +81,7 @@ describe('internal post', () => {
 				},
 			},
 		});
-		expect(mockAuthenticatedHandler).toBeCalledWith(
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 			{
 				url: apiGatewayUrl,
 				method: 'POST',
@@ -97,7 +97,7 @@ describe('internal post', () => {
 				signingServiceInfo: {},
 			},
 		});
-		expect(mockAuthenticatedHandler).toBeCalledWith(
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 			{
 				url: apiGatewayUrl,
 				method: 'POST',
@@ -115,7 +115,7 @@ describe('internal post', () => {
 				signingServiceInfo: {},
 			},
 		});
-		expect(mockAuthenticatedHandler).toBeCalledWith(
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 			{
 				url: apiGatewayUrl,
 				method: 'POST',
@@ -137,7 +137,7 @@ describe('internal post', () => {
 				signingServiceInfo: {},
 			},
 		});
-		expect(mockAuthenticatedHandler).toBeCalledWith(
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 			{
 				url: apiGatewayUrl,
 				method: 'POST',
@@ -154,7 +154,7 @@ describe('internal post', () => {
 		await post(mockAmplifyInstance, {
 			url: apiGatewayUrl,
 		});
-		expect(mockUnauthenticatedHandler).toBeCalledWith(
+		expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
 			{
 				url: apiGatewayUrl,
 				method: 'POST',
@@ -174,7 +174,7 @@ describe('internal post', () => {
 				signingServiceInfo: {},
 			},
 		});
-		expect(mockUnauthenticatedHandler).toBeCalledWith(
+		expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
 			expect.objectContaining({
 				headers: {
 					'x-api-key': '123',
@@ -182,7 +182,7 @@ describe('internal post', () => {
 			}),
 			expect.anything()
 		);
-		expect(mockAuthenticatedHandler).not.toBeCalled();
+		expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 	});
 
 	it('should call unauthenticatedHandler with custom authorization header and signingServiceInfo', async () => {
@@ -195,7 +195,7 @@ describe('internal post', () => {
 				signingServiceInfo: {},
 			},
 		});
-		expect(mockUnauthenticatedHandler).toBeCalledWith(
+		expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
 			expect.objectContaining({
 				headers: {
 					authorization: '123',
@@ -203,7 +203,7 @@ describe('internal post', () => {
 			}),
 			expect.anything()
 		);
-		expect(mockAuthenticatedHandler).not.toBeCalled();
+		expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 	});
 
 	it('should abort request when cancel is called', async () => {
@@ -236,7 +236,7 @@ describe('internal post', () => {
 		try {
 			await promise;
 			fail('should throw cancel error');
-		} catch (error) {
+		} catch (error: any) {
 			expect(abortSignal.aborted).toBe(true);
 			expect(isCancelError(error)).toBe(true);
 			expect(error.message).toBe(cancelMessage);
@@ -264,7 +264,7 @@ describe('internal post', () => {
 			});
 			fail('should throw RestApiError');
 		} catch (error) {
-			expect(mockParseJsonError).toBeCalledWith(errorResponse);
+			expect(mockParseJsonError).toHaveBeenCalledWith(errorResponse);
 			expect(error).toEqual(expect.any(RestApiError));
 		}
 	});

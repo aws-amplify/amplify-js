@@ -32,39 +32,30 @@ describe('Composite Identifier', () => {
 			dob: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
-			// @ts-expect-error
 			// d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.tenant;
-			// @ts-expect-error
 			// d.tenant = '';
 			d.dob;
-			// @ts-expect-error
 			// d.dob = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
 			// d.updatedAt = '';
 		});
 
 		// Query
-		// @ts-expect-error
 		// await DataStore.query(CompositeDefaultRO, 'someid');
-		// @ts-expect-error
 		// await DataStore.query(CompositeDefaultRO, { id: 'someid' });
 
 		expectType<CompositeDefaultRO | undefined>(
@@ -90,7 +81,6 @@ describe('Composite Identifier', () => {
 
 		// Delete
 
-		// @ts-expect-error
 		// await DataStore.delete(CompositeDefaultRO, '')
 
 		expectType<CompositeDefaultRO[]>(
@@ -158,32 +148,25 @@ describe('Composite Identifier', () => {
 			dob: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
 			// x: 234,
 		});
 
 		CompositeCustomRO.copyOf({} as CompositeCustomRO, d => {
-			// @ts-expect-error
 			// d.id;
-			// @ts-expect-error
 			// d.id = '';
 
 			d.tenant;
-			// @ts-expect-error
 			// d.tenant = '';
 			d.dob;
-			// @ts-expect-error
 			// d.dob = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
 			// d.updatedOn = '';
 		});
 	});

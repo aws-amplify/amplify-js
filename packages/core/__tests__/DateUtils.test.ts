@@ -29,9 +29,11 @@ describe('DateUtils', () => {
 		});
 
 		describe('getDateWithClockOffset()', () => {
-			expect(DateUtils.getDateWithClockOffset()).toEqual(
-				new Date(new Date().getTime() + 1000)
-			);
+			it('should return a new Date()', () => {
+				expect(DateUtils.getDateWithClockOffset()).toEqual(
+					new Date(new Date().getTime() + 1000)
+				);
+			});
 		});
 	});
 
