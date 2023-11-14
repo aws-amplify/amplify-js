@@ -5,7 +5,8 @@
 		"strict": true,
 		"noImplicitAny": true,
 		"strictNullChecks": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"lib": ["dom", "es2019", "esnext.asynciterable"]
 	},
 	"include": ["./src"]
 }
