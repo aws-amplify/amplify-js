@@ -116,12 +116,14 @@ export class InternalGraphQLAPIClass {
 			case 'lambda':
 				if (
 					(typeof additionalHeaders === 'object' &&
-					!(additionalHeaders instanceof Headers) &&
-					!additionalHeaders.Authorization) || additionalHeaders instanceof Headers && !(additionalHeaders.get('Authorization')))
-				{
+						!(additionalHeaders instanceof Headers) &&
+						!additionalHeaders.Authorization) ||
+					(additionalHeaders instanceof Headers &&
+						!additionalHeaders.get('Authorization'))
+				) {
 					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
 				}
-				
+
 				headers = {
 					Authorization:
 						additionalHeaders instanceof Headers
