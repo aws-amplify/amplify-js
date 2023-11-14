@@ -1,357 +1,238 @@
-import { Amplify } from '@aws-amplify/core';
-import { signOut } from '../../../src/providers/cognito';
-import * as TokenProvider from '../../../src/providers/cognito/tokenProvider';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
-import { openAuthSession } from '../../../src/utils';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+import {
+	Amplify,
+	clearCredentials,
+	ConsoleLogger,
+	Hub,
+} from '@aws-amplify/core';
+import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+import { signOut } from '../../../src/providers/cognito/apis/signOut';
+import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
+import {
+	globalSignOut,
+	revokeToken,
+} from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getRegion } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
+import { handleOAuthSignOut } from '../../../src/providers/cognito/utils/oauth';
+import { AuthTokenStore } from '../../../src/providers/cognito/tokenProvider/types';
+
+jest.mock('@aws-amplify/core', () => {
+	return {
+		...(jest.genMockFromModule('@aws-amplify/core') as object),
+		// must do this as auth tests import `signInWithRedirect`
+		Amplify: {
+			getConfig: jest.fn().mockReturnValue({}),
+		},
+	};
+});
+jest.mock('../../../src/providers/cognito/tokenProvider');
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/utils'
+);
+jest.mock('../../../src/providers/cognito/utils/oauth');
+jest.mock('../../../src/providers/cognito/utils/signInWithRedirectStore');
 jest.mock('../../../src/utils');
 
-const mockedAccessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJvcmlnaW5fanRpIjoiYXNjIn0.4X9nPnldRthcZwi9b0y3rvNn1jvzHnkgJjeEmzmq5VQ';
-const mockRefreshToken = 'abcdefghijk';
-
-describe('signOut tests no oauth happy path', () => {
-	let tokenStoreSpy;
-	let tokenOrchestratorSpy;
-	let globalSignOutSpy;
-	let revokeTokenSpy;
-
-	beforeEach(() => {
-		Amplify.configure(
-			{
-				Auth: {
-					Cognito: {
-						userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-						userPoolId: 'us-west-2_zzzzz',
-						identityPoolId: 'us-west-2:xxxxxx',
-					},
-				},
+describe('signOut', () => {
+	const accessToken = { payload: { origin_jti: 'revocation-id' } };
+	const region = 'us-west-2';
+	const cognitoConfig = {
+		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+		userPoolId: `${region}_zzzzz`,
+		identityPoolId: `${region}:xxxxxx`,
+	};
+	const refreshToken = 'refresh-token';
+	const cognitoAuthTokens = {
+		username: 'username',
+		clockDrift: 0,
+		accessToken,
+		refreshToken,
+	};
+	// assert mocks
+	const mockAmplify = Amplify as jest.Mocked<typeof Amplify>;
+	const mockClearCredentials = clearCredentials as jest.Mock;
+	const mockGetRegion = getRegion as jest.Mock;
+	const mockGlobalSignOut = globalSignOut as jest.Mock;
+	const mockHandleOAuthSignOut = handleOAuthSignOut as jest.Mock;
+	const mockHub = Hub as jest.Mocked<typeof Hub>;
+	const mockRevokeToken = revokeToken as jest.Mock;
+	const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
+		typeof tokenOrchestrator
+	>;
+	const MockDefaultOAuthStore = DefaultOAuthStore as jest.Mock;
+	// create mocks
+	const mockLoadTokens = jest.fn();
+	const mockAuthTokenStore = {
+		loadTokens: mockLoadTokens,
+	} as unknown as AuthTokenStore;
+	const mockDefaultOAuthStoreInstance = {
+		setAuthConfig: jest.fn(),
+	};
+	// create spies
+	const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
+	// create test helpers
+	const expectSignOut = () => ({
+		toComplete: () => {
+			expect(mockTokenOrchestrator.clearTokens).toBeCalledTimes(1);
+			expect(mockClearCredentials).toBeCalledTimes(1);
+			expect(mockHub.dispatch).toBeCalledWith(
+				'auth',
+				{ event: 'signedOut' },
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
+		},
+		not: {
+			toComplete: () => {
+				expect(mockTokenOrchestrator.clearTokens).not.toBeCalled();
+				expect(mockClearCredentials).not.toBeCalled();
+				expect(mockHub.dispatch).not.toBeCalled();
 			},
-			{
-				Auth: {
-					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
-				},
-			}
-		);
-
-		revokeTokenSpy = jest
-			.spyOn(clients, 'revokeToken')
-			.mockImplementation(async () => {
-				return {};
-			});
-
-		tokenStoreSpy = jest
-			.spyOn(TokenProvider.DefaultTokenStore.prototype, 'loadTokens')
-			.mockImplementation(async () => {
-				return {
-					accessToken: decodeJWT(mockedAccessToken),
-					refreshToken: mockRefreshToken,
-					clockDrift: 0,
-				};
-			});
-
-		tokenOrchestratorSpy = jest
-			.spyOn(TokenProvider.tokenOrchestrator, 'clearTokens')
-			.mockImplementation(async () => {});
-
-		globalSignOutSpy = jest
-			.spyOn(clients, 'globalSignOut')
-			.mockImplementationOnce(async () => {
-				return {
-					$metadata: {},
-				};
-			});
-	});
-	test('test client signOut no oauth', async () => {
-		await signOut({ global: false });
-
-		expect(revokeTokenSpy).toBeCalledWith(
-			{
-				region: 'us-west-2',
-			},
-			{
-				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				Token: 'abcdefghijk',
-			}
-		);
-		expect(globalSignOutSpy).not.toHaveBeenCalled();
-		expect(tokenOrchestratorSpy).toBeCalled();
-		expect(tokenStoreSpy).toBeCalled();
-	});
-
-	test('global sign out no oauth', async () => {
-		await signOut({ global: true });
-
-		expect(globalSignOutSpy).toBeCalledWith(
-			{
-				region: 'us-west-2',
-			},
-			{
-				AccessToken: mockedAccessToken,
-			}
-		);
-
-		expect(tokenOrchestratorSpy).toBeCalled();
-		expect(tokenStoreSpy).toBeCalled();
+		},
 	});
 
 	beforeAll(() => {
-		jest.resetAllMocks();
-	});
-
-	afterEach(() => {
-		jest.resetAllMocks();
-	});
-});
-
-describe('signOut tests no oauth request fail', () => {
-	let tokenStoreSpy;
-	let tokenOrchestratorSpy;
-	let globalSignOutSpy;
-	let revokeTokenSpy;
-	let clearCredentialsSpy;
-	beforeAll(() => {
-		jest.resetAllMocks();
-	});
-
-	afterEach(() => {
-		jest.resetAllMocks();
+		mockGetRegion.mockReturnValue(region);
+		MockDefaultOAuthStore.mockImplementation(
+			() => mockDefaultOAuthStoreInstance
+		);
 	});
 
 	beforeEach(() => {
-		Amplify.configure(
-			{
-				Auth: {
-					Cognito: {
-						userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-						userPoolId: 'us-west-2_zzzzz',
-						identityPoolId: 'us-west-2:xxxxxx',
-					},
-				},
-			},
-			{
-				Auth: {
-					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
-					credentialsProvider: {
-						clearCredentialsAndIdentityId() {
-							clearCredentialsSpy();
-						},
-						getCredentialsAndIdentityId(getCredentialsOptions) {
-							throw new Error('not implemented');
-						},
-					},
-				},
-			}
-		);
-
-		clearCredentialsSpy = jest.fn(() => {});
-
-		revokeTokenSpy = jest
-			.spyOn(clients, 'revokeToken')
-			.mockImplementation(async () => {
-				throw new Error('fail!!!');
-			});
-
-		tokenStoreSpy = jest
-			.spyOn(TokenProvider.DefaultTokenStore.prototype, 'loadTokens')
-			.mockImplementation(async () => {
-				return {
-					accessToken: decodeJWT(mockedAccessToken),
-					refreshToken: mockRefreshToken,
-					clockDrift: 0,
-				};
-			});
-
-		tokenOrchestratorSpy = jest
-			.spyOn(TokenProvider.tokenOrchestrator, 'clearTokens')
-			.mockImplementation(async () => {});
-
-		globalSignOutSpy = jest
-			.spyOn(clients, 'globalSignOut')
-			.mockImplementation(async () => {
-				throw new Error('fail!!!');
-			});
+		mockAmplify.getConfig.mockReturnValue({ Auth: { Cognito: cognitoConfig } });
+		mockGlobalSignOut.mockResolvedValue({ $metadata: {} });
+		mockRevokeToken.mockResolvedValue({});
+		mockTokenOrchestrator.getTokenStore.mockReturnValue(mockAuthTokenStore);
+		mockLoadTokens.mockResolvedValue(cognitoAuthTokens);
 	});
 
-	test('test client signOut no oauth', async () => {
-		try {
-			await signOut({ global: false });
-		} catch (err) {
-			fail('this shouldnt happen');
-		}
-
-		expect(revokeTokenSpy).toBeCalledWith(
-			{
-				region: 'us-west-2',
-			},
-			{
-				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				Token: 'abcdefghijk',
-			}
-		);
-
-		expect(globalSignOutSpy).not.toHaveBeenCalled();
-		expect(tokenOrchestratorSpy).toBeCalled();
-		expect(tokenStoreSpy).toBeCalled();
-		expect(clearCredentialsSpy).toBeCalled();
+	afterEach(() => {
+		mockAmplify.getConfig.mockReset();
+		mockGlobalSignOut.mockReset();
+		mockRevokeToken.mockReset();
+		mockClearCredentials.mockClear();
+		mockGetRegion.mockClear();
+		mockHub.dispatch.mockClear();
+		mockTokenOrchestrator.clearTokens.mockClear();
+		loggerDebugSpy.mockClear();
 	});
 
-	test('global sign out no oauth', async () => {
-		try {
+	describe('Without OAuth configured', () => {
+		it('should perform client sign out on a revocable session', async () => {
+			await signOut();
+
+			expect(mockRevokeToken).toBeCalledWith(
+				{ region },
+				{ ClientId: cognitoConfig.userPoolClientId, Token: refreshToken }
+			);
+			expect(mockGetRegion).toBeCalledTimes(1);
+			expect(mockGlobalSignOut).not.toBeCalled();
+			expectSignOut().toComplete();
+		});
+
+		it('should perform client sign out on an irrevocable session', async () => {
+			mockLoadTokens.mockResolvedValue({
+				...cognitoAuthTokens,
+				accessToken: {},
+			});
+
+			await signOut();
+
+			expect(mockRevokeToken).not.toBeCalled();
+			expect(mockGlobalSignOut).not.toBeCalled();
+			expect(mockGetRegion).not.toBeCalled();
+			expectSignOut().toComplete();
+		});
+
+		it('should perform global sign out', async () => {
 			await signOut({ global: true });
-		} catch (err) {
-			fail('this shouldnt happen');
-		}
 
-		expect(globalSignOutSpy).toBeCalledWith(
-			{
-				region: 'us-west-2',
-			},
-			{
-				AccessToken: mockedAccessToken,
-			}
-		);
-
-		expect(tokenOrchestratorSpy).toBeCalled();
-		expect(tokenStoreSpy).toBeCalled();
-	});
-});
-
-describe('signOut tests with oauth', () => {
-	let tokenStoreSpy;
-	let tokenOrchestratorSpy;
-	let globalSignOutSpy;
-	let revokeTokenSpy;
-	let clearCredentialsSpy;
-	let oauthStoreSpy;
-	const mockOpenAuthSession = openAuthSession as jest.Mock;
-	const originalWindowLocation = window.location;
-	beforeEach(() => {
-		Object.defineProperty(globalThis, 'window', {
-			value: { location: { origin: 'http://localhost:3000', pathname: '/' } },
-			writable: true,
+			expect(mockGlobalSignOut).toBeCalledWith(
+				{ region: 'us-west-2' },
+				{ AccessToken: accessToken.toString() }
+			);
+			expect(mockGetRegion).toBeCalledTimes(1);
+			expect(mockRevokeToken).not.toBeCalled();
+			expectSignOut().toComplete();
 		});
-		Amplify.configure(
-			{
-				Auth: {
-					Cognito: {
-						userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-						userPoolId: 'us-west-2_zzzzz',
-						identityPoolId: 'us-west-2:xxxxxx',
-						loginWith: {
-							oauth: {
-								domain: 'https://amazonaws.com',
-								redirectSignIn: ['http://localhost:3000/'],
-								redirectSignOut: ['http://localhost:3000/'],
-								responseType: 'code',
-								scopes: ['admin'],
-							},
-						},
-					},
-				},
-			},
-			{
-				Auth: {
-					tokenProvider: TokenProvider.CognitoUserPoolsTokenProvider,
-					credentialsProvider: {
-						clearCredentialsAndIdentityId() {
-							clearCredentialsSpy();
-						},
-						getCredentialsAndIdentityId(getCredentialsOptions) {
-							throw new Error('not implemented');
-						},
-					},
-				},
-			}
-		);
-		oauthStoreSpy = jest
-			.spyOn(DefaultOAuthStore.prototype, 'loadOAuthSignIn')
-			.mockImplementation(async () => ({
-				isOAuthSignIn: true,
-				preferPrivateSession: false,
-			}));
 
-		revokeTokenSpy = jest
-			.spyOn(clients, 'revokeToken')
-			.mockImplementation(async () => {
-				return {};
-			});
+		it('should still perform client sign out if token revoke fails', async () => {
+			mockRevokeToken.mockRejectedValue(new Error());
 
-		tokenStoreSpy = jest
-			.spyOn(TokenProvider.DefaultTokenStore.prototype, 'loadTokens')
-			.mockImplementation(async () => {
-				return {
-					accessToken: decodeJWT(mockedAccessToken),
-					refreshToken: mockRefreshToken,
-					clockDrift: 0,
-				};
-			});
+			await signOut();
 
-		clearCredentialsSpy = jest.fn(() => {});
+			expect(loggerDebugSpy).toBeCalledWith(
+				expect.stringContaining('Client signOut error caught')
+			);
+			expect(mockGetRegion).toBeCalledTimes(1);
+			expectSignOut().toComplete();
+		});
 
-		tokenOrchestratorSpy = jest
-			.spyOn(TokenProvider.tokenOrchestrator, 'clearTokens')
-			.mockImplementation(async () => {});
+		it('should still perform global sign out if token revoke fails', async () => {
+			mockGlobalSignOut.mockRejectedValue(new Error());
 
-		globalSignOutSpy = jest
-			.spyOn(clients, 'globalSignOut')
-			.mockImplementationOnce(async () => {
-				return {
-					$metadata: {},
-				};
-			});
-	});
-	afterEach(() => {
-		Object.defineProperty(globalThis, 'window', {
-			value: originalWindowLocation,
+			await signOut({ global: true });
+
+			expect(loggerDebugSpy).toBeCalledWith(
+				expect.stringContaining('Global signOut error caught')
+			);
+			expect(mockGetRegion).toBeCalledTimes(1);
+			expectSignOut().toComplete();
 		});
 	});
 
-	test('test client signOut with oauth', async () => {
-		await signOut({ global: false });
-
-		expect(revokeTokenSpy).toBeCalledWith(
-			{
-				region: 'us-west-2',
+	describe('With OAuth configured', () => {
+		const cognitoConfigWithOauth = {
+			...cognitoConfig,
+			loginWith: {
+				oauth: {
+					domain: 'hosted-ui.test',
+					redirectSignIn: ['https://myapp.test/completeSignIn/'],
+					redirectSignOut: ['https://myapp.test/completeSignOut/'],
+					responseType: 'code' as 'code', // assert string union instead of string type
+					scopes: [],
+				},
 			},
-			{
-				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-				Token: 'abcdefghijk',
-			}
-		);
-		expect(globalSignOutSpy).not.toHaveBeenCalled();
-		expect(tokenOrchestratorSpy).toBeCalled();
-		expect(tokenStoreSpy).toBeCalled();
-		expect(mockOpenAuthSession).toBeCalledWith(
-			'https://https://amazonaws.com/logout?client_id=111111-aaaaa-42d8-891d-ee81a1549398&logout_uri=http%3A%2F%2Flocalhost%3A3000%2F',
-			['http://localhost:3000/'],
-			false
-		);
-		expect(clearCredentialsSpy).toBeCalled();
-	});
+		};
 
-	test('global sign out with oauth', async () => {
-		await signOut({ global: true });
+		beforeEach(() => {
+			mockAmplify.getConfig.mockReturnValue({
+				Auth: { Cognito: cognitoConfigWithOauth },
+			});
+			mockHandleOAuthSignOut.mockResolvedValue({ type: 'success' });
+		});
 
-		expect(globalSignOutSpy).toBeCalledWith(
-			{
-				region: 'us-west-2',
-			},
-			{
-				AccessToken: mockedAccessToken,
-			}
-		);
+		afterEach(() => {
+			mockAmplify.getConfig.mockReset();
+			mockHandleOAuthSignOut.mockReset();
+		});
 
-		expect(tokenOrchestratorSpy).toBeCalled();
-		expect(tokenStoreSpy).toBeCalled();
-		expect(mockOpenAuthSession).toBeCalledWith(
-			'https://https://amazonaws.com/logout?client_id=111111-aaaaa-42d8-891d-ee81a1549398&logout_uri=http%3A%2F%2Flocalhost%3A3000%2F',
-			['http://localhost:3000/'],
-			false
-		);
-		expect(clearCredentialsSpy).toBeCalled();
+		it('should perform OAuth sign out', async () => {
+			await signOut();
+
+			expect(MockDefaultOAuthStore).toBeCalledTimes(1);
+			expect(mockDefaultOAuthStoreInstance.setAuthConfig).toBeCalledWith(
+				cognitoConfigWithOauth
+			);
+			expect(mockHandleOAuthSignOut).toBeCalledWith(
+				cognitoConfigWithOauth,
+				mockDefaultOAuthStoreInstance
+			);
+			// In cases of OAuth, token removal and Hub dispatch should be performed by the OAuth handling since
+			// these actions can be deferred or canceled out of altogether.
+			expectSignOut().not.toComplete();
+		});
+
+		it('should throw an error on OAuth failure', async () => {
+			mockHandleOAuthSignOut.mockResolvedValue({ type: 'error' });
+
+			await expect(signOut()).rejects.toThrow();
+		});
 	});
 });

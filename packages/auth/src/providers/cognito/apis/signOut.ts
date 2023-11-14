@@ -5,6 +5,7 @@ import {
 	Amplify,
 	clearCredentials,
 	CognitoUserPoolConfig,
+	ConsoleLogger,
 	defaultStorage,
 	Hub,
 } from '@aws-amplify/core';
@@ -32,6 +33,8 @@ import { handleOAuthSignOut } from '../utils/oauth';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { AuthError } from '../../../errors/AuthError';
 import { OAUTH_SIGNOUT_EXCEPTION } from '../../../errors/constants';
+
+const logger = new ConsoleLogger('Auth');
 
 /**
  * Signs a user out
@@ -96,26 +99,30 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 		}
 	} catch (err) {
 		// this shouldn't throw
-		// TODO(v6): add logger message
+		logger.debug(
+			'Client signOut error caught but will proceed with token removal'
+		);
 	}
 }
 
 async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	try {
-		const tokens = await tokenOrchestrator.getTokenStore().loadTokens();
-		assertAuthTokens(tokens);
+		const authTokens = await tokenOrchestrator.getTokenStore().loadTokens();
+		assertAuthTokens(authTokens);
 		await globalSignOutClient(
 			{
 				region: getRegion(cognitoConfig.userPoolId),
 				userAgentValue: getAuthUserAgentValue(AuthAction.SignOut),
 			},
 			{
-				AccessToken: tokens.accessToken.toString(),
+				AccessToken: authTokens.accessToken.toString(),
 			}
 		);
 	} catch (err) {
 		// it should not throw
-		// TODO(v6): add logger
+		logger.debug(
+			'Global signOut error caught but will proceed with token removal'
+		);
 	}
 }
 
