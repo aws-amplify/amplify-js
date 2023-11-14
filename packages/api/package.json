@@ -69,8 +69,7 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
 		"@rollup/plugin-typescript": "11.1.5",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"rollup": "3.29.4"
 	},
 	"files": [
 		"dist/cjs",

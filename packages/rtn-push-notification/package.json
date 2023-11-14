@@ -26,8 +26,7 @@
 	"devDependencies": {
 		"@rollup/plugin-typescript": "11.1.5",
 		"@types/react-native": "0.70.0",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"rollup": "3.29.4"
 	},
 	"repository": {
 		"type": "git",

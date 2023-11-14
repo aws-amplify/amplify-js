@@ -86,8 +86,7 @@
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.8",
 		"@rollup/plugin-typescript": "11.1.5",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"rollup": "3.29.4"
 	},
 	"size-limit": [
 		{

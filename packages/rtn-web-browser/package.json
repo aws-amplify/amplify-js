@@ -27,8 +27,7 @@
 		"@rollup/plugin-typescript": "11.1.5",
 		"@types/react-native": "0.70.0",
 		"react-native": "0.72.3",
-		"rollup": "3.29.4",
-		"typescript": "5.1.6"
+		"rollup": "3.29.4"
 	},
 	"repository": {
 		"type": "git",
