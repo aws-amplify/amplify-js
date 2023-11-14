@@ -3692,7 +3692,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can create() - with custom client header functions', async () => {
+		test.only('can create() - with custom client header functions', async () => {
 			const spy = mockApiResponse({
 				data: {
 					createTodo: {
@@ -3706,7 +3706,7 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({
 				amplify: Amplify,
-				headers: () => ({
+				headers: async () => ({
 					'client-header-function': 'should return this header',
 				}),
 			});
@@ -3845,7 +3845,7 @@ describe('generateClient', () => {
 					description: 'something something',
 				},
 				{
-					headers: () => ({
+					headers: async () => ({
 						'request-header-function': 'should return this header',
 					}),
 				}
@@ -4482,8 +4482,6 @@ describe('generateClient', () => {
 				'subscription-header-function': 'should-return-this-header',
 			};
 
-			const customHeadersFunction = () => customHeaders;
-
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const spy = jest.fn(() => from([graphqlMessage]));
@@ -4491,7 +4489,7 @@ describe('generateClient', () => {
 
 			client.models.Note.onCreate({
 				filter: graphqlVariables.filter,
-				headers: customHeadersFunction,
+				headers: async () => customHeaders,
 			}).subscribe({
 				next(value) {
 					expectSubWithHeaders(

@@ -177,12 +177,12 @@ export class InternalGraphQLAPIClass {
 
 		// if an authorization header is set, have the explicit authToken take precedence
 		if (authToken) {
-			// if (typeof headers === 'object') {
-			headers = {
-				...headers,
-				Authorization: authToken,
-			};
-			// }
+			if (typeof headers === 'object') {
+				headers = {
+					...headers,
+					Authorization: authToken,
+				};
+			}
 		}
 
 		switch (operationType) {
@@ -264,7 +264,9 @@ export class InternalGraphQLAPIClass {
 		let additionalCustomHeaders: Record<string, string>;
 
 		if (typeof additionalHeaders === 'function') {
+			// debugger;
 			additionalCustomHeaders = await additionalHeaders();
+			// debugger;
 		} else {
 			additionalCustomHeaders = additionalHeaders;
 		}
@@ -299,7 +301,7 @@ export class InternalGraphQLAPIClass {
 					variables,
 				}))),
 			// Custom headers from individual requests or API client configuration:
-			...additionalHeaders,
+			...additionalCustomHeaders,
 			// User agent headers:
 			...(!customEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
