@@ -67,7 +67,7 @@ export class InternalGraphQLAPIClass {
 	private async _headerBasedAuth(
 		amplify: AmplifyClassV6,
 		authMode: GraphQLAuthMode,
-		additionalHeaders: Record<string, string> | Headers = {}
+		additionalHeaders: Record<string, string> = {}
 	) {
 		const {
 			region: region,
@@ -115,20 +115,14 @@ export class InternalGraphQLAPIClass {
 				break;
 			case 'lambda':
 				if (
-					(typeof additionalHeaders === 'object' &&
-						!(additionalHeaders instanceof Headers) &&
-						!additionalHeaders.Authorization) ||
-					(additionalHeaders instanceof Headers &&
-						!additionalHeaders.get('Authorization'))
+					typeof additionalHeaders === 'object' &&
+					!additionalHeaders.Authorization
 				) {
 					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
 				}
 
 				headers = {
-					Authorization:
-						additionalHeaders instanceof Headers
-							? additionalHeaders.get('Authorization')
-							: additionalHeaders.Authorization,
+					Authorization: additionalHeaders.Authorization,
 				};
 				break;
 			case 'none':
@@ -183,14 +177,12 @@ export class InternalGraphQLAPIClass {
 
 		// if an authorization header is set, have the explicit authToken take precedence
 		if (authToken) {
-			if (headers instanceof Headers) {
-				headers.set('Authorization', authToken);
-			} else if (typeof headers === 'object') {
-				headers = {
-					...headers,
-					Authorization: authToken,
-				};
-			}
+			// if (typeof headers === 'object') {
+			headers = {
+				...headers,
+				Authorization: authToken,
+			};
+			// }
 		}
 
 		switch (operationType) {
@@ -269,7 +261,7 @@ export class InternalGraphQLAPIClass {
 		 * Client or request-specific custom headers that may or may not be
 		 * returned by a function:
 		 */
-		let additionalCustomHeaders: Record<string, string> | Headers;
+		let additionalCustomHeaders: Record<string, string>;
 
 		if (typeof additionalHeaders === 'function') {
 			additionalCustomHeaders = await additionalHeaders();
