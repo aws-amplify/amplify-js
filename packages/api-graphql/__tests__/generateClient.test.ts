@@ -3692,7 +3692,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test.only('can create() - with custom client header functions', async () => {
+		test('can create() - with custom client header functions', async () => {
 			const spy = mockApiResponse({
 				data: {
 					createTodo: {
