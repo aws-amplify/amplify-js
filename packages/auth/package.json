@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/auth",
-	"version": "6.0.1",
+	"version": "6.0.2",
 	"description": "Auth category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -89,8 +89,8 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.1",
-		"@aws-amplify/react-native": "1.0.1",
+		"@aws-amplify/core": "6.0.2",
+		"@aws-amplify/react-native": "1.0.2",
 		"@jest/test-sequencer": "^24.9.0",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
