@@ -29,6 +29,10 @@ export {
 	forgetDevice,
 	fetchDevices,
 	autoSignIn,
+	AuthUser,
+	CodeDeliveryDetails,
+	UserAttributeKey,
+	VerifiableUserAttributeKey,
 } from './providers/cognito';
 
 export {
@@ -71,4 +75,13 @@ export {
 
 export { AuthError } from './errors/AuthError';
 
-export { fetchAuthSession } from '@aws-amplify/core';
+export {
+	fetchAuthSession,
+	decodeJWT,
+	CredentialsAndIdentityIdProvider,
+	GetCredentialsOptions,
+	CredentialsAndIdentityId,
+	TokenProvider,
+	AuthTokens,
+	JWT,
+} from '@aws-amplify/core';

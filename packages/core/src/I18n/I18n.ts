@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger as Logger } from '../Logger';
-import { Amplify } from '../singleton';
+import { ConsoleLogger } from '../Logger';
 import { I18nConfig } from './types';
 
-const logger = new Logger('I18n');
+const logger = new ConsoleLogger('I18n');
 
 /**
  * Language translation utility.

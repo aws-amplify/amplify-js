@@ -7,7 +7,7 @@ import { authAPITestParams } from './testUtils/authApiTestParams';
 import {
 	signIn,
 	getCurrentUser,
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 } from '../../../src/providers/cognito';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { Amplify } from 'aws-amplify';
@@ -15,7 +15,7 @@ import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-uti
 import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
-jest.mock('@aws-amplify/core/lib/clients/handlers/fetch');
+jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 const authConfig = {
 	Cognito: {
@@ -27,7 +27,7 @@ const authConfig = {
 Amplify.configure({
 	Auth: authConfig,
 });
-CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 
 describe('signIn API error path cases:', () => {
 	test('signIn API should throw a validation AuthError when a user is already signed-in', async () => {

@@ -2,6 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export {
-	generateServerClient,
+	generateServerClientUsingReqRes,
 	generateServerClientUsingCookies,
 } from './generateServerClient';

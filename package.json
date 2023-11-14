@@ -12,7 +12,7 @@
 		"test:duplicates": "./scripts/duplicates-yarn.sh",
 		"test:license": "license-check-and-add check -f license_config.json",
 		"test:github-actions": "node ./scripts/test-github-actions.js",
-		"test:tsc-compliance": "yarn workspace tsc-compliance-test test:compliance:ts4.2",
+		"test:tsc-compliance": "yarn workspace tsc-compliance-test test:compliance",
 		"coverage": "codecov || exit 0",
 		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/ --readme README.md",
 		"build": "lerna run build --stream && yarn test:duplicates",
@@ -29,7 +29,8 @@
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
 		"publish:preid": "./scripts/preid-env-vars-exist.sh && lerna publish --canary --force-publish --dist-tag=${PREID_PREFIX} --preid=${PREID_PREFIX}${PREID_HASH_SUFFIX} --yes",
 		"publish:main": "lerna publish --canary --force-publish --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --yes",
-		"publish:release": "lerna publish from-package --dist-tag=v6 --message 'chore(release): Publish [ci skip]' --yes",
+		"publish:release": "lerna publish --conventional-commits --dist-tag=v6 --message 'chore(release): Publish [ci skip]' --yes",
+		"publish:v5-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-5 --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
 		"ts-coverage": "lerna run ts-coverage",
 		"prepare": "./scripts/set-preid-versions.sh"
@@ -94,6 +95,7 @@
 		"babel-jest": "^24.9.0",
 		"babel-loader": "^8.3.0",
 		"codecov": "^3.6.5",
+		"glob": "^10.3.10",
 		"husky": "^3.0.5",
 		"jest": "^24.x.x",
 		"jest-config": "24.8.0",
@@ -129,7 +131,8 @@
 		"@types/babel__traverse": "7.20.0",
 		"path-scurry": "1.10.0",
 		"**/glob/minipass": "6.0.2",
-		"nx": "16.7.0"
+		"nx": "16.7.0",
+		"next": "13.5.6"
 	},
 	"jest": {
 		"resetMocks": true,

@@ -31,7 +31,17 @@ export {
 	assertOAuthConfig,
 } from './singleton/Auth/utils';
 export { isTokenExpired } from './singleton/Auth';
-export { GraphQLAuthMode, DocumentType } from './singleton/API/types';
+export {
+	AssociationBelongsTo,
+	AssociationHasMany,
+	AssociationHasOne,
+	DocumentType,
+	GraphQLAuthMode,
+	ModelFieldType,
+	ModelIntrospectionSchema,
+	SchemaModel,
+	SchemaModels,
+} from './singleton/API/types';
 export { Signer } from './Signer';
 export {
 	JWT,
@@ -90,10 +100,7 @@ export {
 export { BackgroundProcessManager } from './BackgroundProcessManager';
 export { Mutex } from './Mutex';
 export { Reachability } from './Reachability';
-export {
-	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-	USER_AGENT_HEADER,
-} from './constants';
+export { USER_AGENT_HEADER } from './constants';
 export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
 export { base64Decoder, base64Encoder } from './utils/convert';

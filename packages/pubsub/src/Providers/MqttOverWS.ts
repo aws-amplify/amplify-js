@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // @ts-ignore
-import * as Paho from '../vendor/paho-mqtt';
+import * as Paho from '../vendor/paho-mqtt.js';
 import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
 
 import { AbstractPubSub } from './PubSub';
@@ -14,7 +14,7 @@ import {
 	PublishInput,
 	SubscribeInput,
 } from '../types/PubSub';
-import { Hub, HubPayload, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Hub, HubPayload, ConsoleLogger } from '@aws-amplify/core';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import {
 	ConnectionStateMonitor,
@@ -26,7 +26,7 @@ import {
 } from '../utils/ReconnectionMonitor';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
-const logger = new Logger('MqttOverWS');
+const logger = new ConsoleLogger('MqttOverWS');
 
 export function mqttTopicMatch(filter: string, topic: string) {
 	const filterArray = filter.split('/');

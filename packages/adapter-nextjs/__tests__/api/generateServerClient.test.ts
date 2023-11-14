@@ -1,13 +1,16 @@
 import { ResourcesConfig } from '@aws-amplify/core';
 import {
 	generateServerClientUsingCookies,
-	generateServerClient,
+	generateServerClientUsingReqRes,
 } from '../../src/api';
-import { runWithAmplifyServerContext } from './../../src';
-import { getAmplifyConfig } from '../../src/utils';
+import {
+	getAmplifyConfig,
+	createRunWithAmplifyServerContext,
+} from '../../src/utils';
 import { NextApiRequestMock, NextApiResponseMock } from '../mocks/headers';
+import { createServerRunnerForAPI } from '../../src/api/createServerRunnerForAPI';
 
-const headers = import('next/headers');
+const headers = import('next/headers.js');
 (global as any).Headers = jest.requireActual('node-fetch').Headers;
 
 const mockAmplifyConfig: ResourcesConfig = {
@@ -29,6 +32,7 @@ const mockAmplifyConfig: ResourcesConfig = {
 };
 
 jest.mock('../../src/utils', () => ({
+	createRunWithAmplifyServerContext: jest.fn(() => jest.fn()),
 	getAmplifyConfig: jest.fn(() => mockAmplifyConfig),
 	createCookieStorageAdapterFromNextServerContext: jest.fn(),
 }));
@@ -36,6 +40,8 @@ jest.mock('../../src/utils', () => ({
 jest.mock('aws-amplify/adapter-core');
 
 const mockGetAmplifyConfig = getAmplifyConfig as jest.Mock;
+const mockCreateRunWithAmplifyServerContext =
+	createRunWithAmplifyServerContext as jest.Mock;
 
 describe('generateServerClientUsingCookies', () => {
 	it('should throw error when used with req/res', async () => {
@@ -52,11 +58,13 @@ describe('generateServerClientUsingCookies', () => {
 		}).toThrowError();
 	});
 
-	it('should call getAmlifyConfig', async () => {
+	it('should call createRunWithAmplifyServerContext to create runWithAmplifyServerContext function', async () => {
 		const cookies = (await headers).cookies;
 
-		generateServerClientUsingCookies({ cookies });
-		expect(mockGetAmplifyConfig).toHaveBeenCalled();
+		generateServerClientUsingCookies({ config: mockAmplifyConfig, cookies });
+		expect(mockCreateRunWithAmplifyServerContext).toHaveBeenCalledWith({
+			config: mockAmplifyConfig,
+		});
 	});
 });
 
@@ -67,12 +75,15 @@ describe('generateServerClient', () => {
 	});
 
 	it('should call getAmlifyConfig', async () => {
-		generateServerClient();
+		generateServerClientUsingReqRes({ config: mockAmplifyConfig });
 		expect(mockGetAmplifyConfig).toHaveBeenCalled();
 	});
 
 	// TODO: figure out proper mocks and unskip
 	it.skip('wrapped client.graphql should pass context through', async () => {
+		const { runWithAmplifyServerContext } = createServerRunnerForAPI({
+			config: mockAmplifyConfig,
+		});
 		const mockedReq = new NextApiRequestMock();
 		const mockedRes = NextApiResponseMock;
 
@@ -86,7 +97,9 @@ describe('generateServerClient', () => {
 			getAmplifyServerContext: () => {},
 		}));
 
-		const client = generateServerClient();
+		const client = generateServerClientUsingReqRes({
+			config: mockAmplifyConfig,
+		});
 
 		await runWithAmplifyServerContext({
 			nextServerContext: {

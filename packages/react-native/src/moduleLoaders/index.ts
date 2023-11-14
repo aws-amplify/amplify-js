@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { loadAmplifyPushNotification } from './loadAmplifyPushNotification';
+export { loadAmplifyWebBrowser } from './loadAmplifyWebBrowser';
 export { loadAsyncStorage } from './loadAsyncStorage';
 export { loadNetInfo } from './loadNetInfo';
 export { loadBuffer } from './loadBuffer';

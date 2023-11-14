@@ -6,7 +6,7 @@ import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { assertAuthTokens } from '../../utils/types';
 import {
 	CognitoAuthSignInDetails,
-	CognitoAuthUser,
+	AuthUser,
 	GetCurrentUserOutput,
 } from '../../types';
 
@@ -21,7 +21,7 @@ export const getCurrentUser = async (
 	assertAuthTokens(tokens);
 	const { 'cognito:username': username, sub } = tokens.idToken?.payload ?? {};
 
-	const authUser: CognitoAuthUser = {
+	const authUser: AuthUser = {
 		username: username as string,
 		userId: sub as string,
 	};

@@ -922,6 +922,12 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="httptransferoptions.html#abortsignal" class="tsd-kind-icon">abort<wbr>Signal</a>
 			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="httptransferoptions.html#cache" class="tsd-kind-icon">cache</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="httptransferoptions.html#withcrossdomaincredentials" class="tsd-kind-icon">with<wbr>Cross<wbr>Domain<wbr>Credentials</a>
+			</li>
 		</ul>
 	</li>
 </ul>
@@ -944,6 +950,8 @@ img { max-width: 100%; }
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="httptransferoptions.html#abortsignal" class="tsd-kind-icon">abort<wbr>Signal</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="httptransferoptions.html#cache" class="tsd-kind-icon">cache</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="httptransferoptions.html#withcrossdomaincredentials" class="tsd-kind-icon">with<wbr>Cross<wbr>Domain<wbr>Credentials</a></li>
 					</ul>
 				</section>
 			</div>
@@ -957,9 +965,68 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">abort<wbr>Signal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AbortSignal</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/clients/types/http.ts#L36">packages/core/src/clients/types/http.ts:36</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/clients/types/http.ts#L37">packages/core/src/clients/types/http.ts:37</a></li>
 				</ul>
 			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="cache" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> cache</h3>
+			<div class="tsd-signature tsd-kind-icon">cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RequestCache</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/clients/types/http.ts#L45">packages/core/src/clients/types/http.ts:45</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Cache mode for the request. Note that this is only effective when the underlying HTTP handler is fetch.
+						For XHR handler, or Node.js <code>&quot;http(s)&quot;</code> module or running on React Native, this option is ignored.
+					Instead, you can configure the <code>Cache-Control</code> headers to achieve similar effects.</p>
+				</div>
+				<dl class="tsd-comment-tags">
+					<dt>default</dt>
+					<dd><p>&#39;default&#39;</p>
+					</dd>
+					<dt>see</dt>
+					<dd><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Request/cache" class="external">https://developer.mozilla.org/en-US/docs/Web/API/Request/cache</a></p>
+					</dd>
+				</dl>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="withcrossdomaincredentials" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> with<wbr>Cross<wbr>Domain<wbr>Credentials</h3>
+			<div class="tsd-signature tsd-kind-icon">with<wbr>Cross<wbr>Domain<wbr>Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/clients/types/http.ts#L62">packages/core/src/clients/types/http.ts:62</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Internal-only option controls whether or not cross-site Access-Control requests should be made using credentials
+						such as cookies, authorization headers or TLS client certificates. It has no effect on same-origin requests.
+						If set to <code>true</code>, the request will include credentials such as cookies, authorization headers, TLS
+						client certificates, and so on. Moreover the response cookies will also be set.
+						If set to <code>false</code>, the cross-site request will not include credentials, and the response cookies from a different
+					domain will be ignored.</p>
+				</div>
+				<p>This option is only conformed by <a href="../globals.html#fetchtransferhandler">fetchTransferHandler</a></p>
+				<dl class="tsd-comment-tags">
+					<dt>default</dt>
+					<dd><p>&#39;same-origin&#39;</p>
+					</dd>
+					<dt>see</dt>
+					<dd><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials" class="external">https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials</a></p>
+					</dd>
+					<dt>see</dt>
+					<dd><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials" class="external">https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials</a></p>
+					</dd>
+					<dt>internal</dt>
+					<dd></dd>
+				</dl>
+			</div>
 		</section>
 	</section>
 	<footer>

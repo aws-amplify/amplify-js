@@ -1,8 +1,8 @@
 {
 	"name": "@aws-amplify/core/internals/providers/pinpoint",
-	"types": "../../../lib-esm/providers/pinpoint/index.d.ts",
-	"main": "../../../lib/providers/pinpoint/index.js",
-	"module": "../../../lib-esm/providers/pinpoint/index.js",
-	"react-native": "../../../lib-esm/providers/pinpoint/index.js",
+	"types": "../../../dist/esm/providers/pinpoint/index.d.ts",
+	"main": "../../../dist/cjs/providers/pinpoint/index.js",
+	"module": "../../../dist/esm/providers/pinpoint/index.mjs",
+	"react-native": "../../../src/providers/pinpoint/index.ts",
 	"sideEffects": false
 }

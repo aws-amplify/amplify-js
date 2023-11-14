@@ -7,6 +7,7 @@ import {
 	TransferTaskState,
 	UploadTask,
 } from '../../../types/common';
+import { logger } from '../../../utils';
 
 type CreateCancellableTaskOptions<Result> = {
 	job: () => Promise<Result>;
@@ -25,6 +26,7 @@ const createCancellableTask = <Result>({
 		cancel: (message?: string) => {
 			const { state } = cancelableTask;
 			if (state === 'CANCELED' || state === 'ERROR' || state === 'SUCCESS') {
+				logger.debug(`This task cannot be canceled. State: ${state}`);
 				return;
 			}
 			cancelableTask.state = 'CANCELED';
@@ -80,6 +82,7 @@ export const createUploadTask = <Result>({
 		pause: () => {
 			const { state } = uploadTask;
 			if (!isMultipartUpload || state !== 'IN_PROGRESS') {
+				logger.debug(`This task cannot be paused. State: ${state}`);
 				return;
 			}
 			// @ts-ignore
@@ -89,6 +92,7 @@ export const createUploadTask = <Result>({
 		resume: () => {
 			const { state } = uploadTask;
 			if (!isMultipartUpload || state !== 'PAUSED') {
+				logger.debug(`This task cannot be resumed. State: ${state}`);
 				return;
 			}
 			// @ts-ignore

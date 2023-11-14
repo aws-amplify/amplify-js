@@ -923,7 +923,10 @@ img { max-width: 100%; }
 				<a href="xhrtransferhandleroptions.html#abortsignal" class="tsd-kind-icon">abort<wbr>Signal</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
-				<a href="xhrtransferhandleroptions.html#emitter" class="tsd-kind-icon">emitter</a>
+				<a href="xhrtransferhandleroptions.html#ondownloadprogress" class="tsd-kind-icon">on<wbr>Download<wbr>Progress</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-interface">
+				<a href="xhrtransferhandleroptions.html#onuploadprogress" class="tsd-kind-icon">on<wbr>Upload<wbr>Progress</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="xhrtransferhandleroptions.html#responsetype" class="tsd-kind-icon">response<wbr>Type</a>
@@ -958,7 +961,8 @@ img { max-width: 100%; }
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="xhrtransferhandleroptions.html#abortsignal" class="tsd-kind-icon">abort<wbr>Signal</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="xhrtransferhandleroptions.html#emitter" class="tsd-kind-icon">emitter</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="xhrtransferhandleroptions.html#ondownloadprogress" class="tsd-kind-icon">on<wbr>Download<wbr>Progress</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="xhrtransferhandleroptions.html#onuploadprogress" class="tsd-kind-icon">on<wbr>Upload<wbr>Progress</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="xhrtransferhandleroptions.html#responsetype" class="tsd-kind-icon">response<wbr>Type</a></li>
 					</ul>
 				</section>
@@ -973,19 +977,71 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">abort<wbr>Signal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AbortSignal</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/AwsClients/S3/runtime/xhrTransferHandler.ts#L33">packages/storage/src/AwsClients/S3/runtime/xhrTransferHandler.ts:33</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/storage/src/providers/s3/utils/client/runtime/xhrTransferHandler.ts#L32">packages/storage/src/providers/s3/utils/client/runtime/xhrTransferHandler.ts:32</a></li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-			<a name="emitter" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagOptional">Optional</span> emitter</h3>
-			<div class="tsd-signature tsd-kind-icon">emitter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">EventEmitter</span></div>
+			<a name="ondownloadprogress" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Download<wbr>Progress</h3>
+			<div class="tsd-signature tsd-kind-icon">on<wbr>Download<wbr>Progress<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/AwsClients/S3/runtime/xhrTransferHandler.ts#L34">packages/storage/src/AwsClients/S3/runtime/xhrTransferHandler.ts:34</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/storage/src/providers/s3/utils/client/runtime/xhrTransferHandler.ts#L33">packages/storage/src/providers/s3/utils/client/runtime/xhrTransferHandler.ts:33</a></li>
 				</ul>
 			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="../globals.html#transferprogressevent" class="tsd-signature-type">TransferProgressEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>event: <a href="../globals.html#transferprogressevent" class="tsd-signature-type">TransferProgressEvent</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+			<a name="onuploadprogress" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Upload<wbr>Progress</h3>
+			<div class="tsd-signature tsd-kind-icon">on<wbr>Upload<wbr>Progress<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/storage/src/providers/s3/utils/client/runtime/xhrTransferHandler.ts#L34">packages/storage/src/providers/s3/utils/client/runtime/xhrTransferHandler.ts:34</a></li>
+				</ul>
+			</aside>
+			<div class="tsd-type-declaration">
+				<h4>Type declaration</h4>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><a href="../globals.html#transferprogressevent" class="tsd-signature-type">TransferProgressEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>event: <a href="../globals.html#transferprogressevent" class="tsd-signature-type">TransferProgressEvent</a></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="responsetype" class="tsd-anchor"></a>
@@ -993,7 +1049,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">response<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"text"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"blob"</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/storage/src/AwsClients/S3/runtime/xhrTransferHandler.ts#L32">packages/storage/src/AwsClients/S3/runtime/xhrTransferHandler.ts:32</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/storage/src/providers/s3/utils/client/runtime/xhrTransferHandler.ts#L31">packages/storage/src/providers/s3/utils/client/runtime/xhrTransferHandler.ts:31</a></li>
 				</ul>
 			</aside>
 		</section>

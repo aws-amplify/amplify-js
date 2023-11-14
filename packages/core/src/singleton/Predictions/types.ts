@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AtLeastOne } from '../types';
+
 // Defaults for ConvertConfig
 type SpeechGeneratorDefaults = {
 	voiceId?: string;
@@ -54,8 +56,18 @@ export type PredictionsProviderConfig<T> = {
 	defaults?: T;
 };
 
-export type PredictionsConfig = {
-	convert?: ConvertConfig;
-	identify?: IdentifyConfig;
-	interpret?: InterpretConfig;
+export type PredictionsConvertConfig = {
+	convert: ConvertConfig;
 };
+export type PredictionsIdentifyConfig = {
+	identify: IdentifyConfig;
+};
+export type PredictionsInterpretConfig = {
+	interpret: InterpretConfig;
+};
+
+export type PredictionsConfig = AtLeastOne<
+	PredictionsConvertConfig &
+		PredictionsIdentifyConfig &
+		PredictionsInterpretConfig
+>;

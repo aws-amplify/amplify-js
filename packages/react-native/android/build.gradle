@@ -43,7 +43,7 @@ def getExtOrIntegerDefault(name) {
 
 android {
     if (agpVersion >= 7) {
-        namespace 'com.amazonaws.amplify'
+        namespace 'com.amazonaws.amplify.rtncore'
     }
 
     compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")

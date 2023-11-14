@@ -1,9 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '../../../';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../errors/AuthError';
 import {
 	SETUP_TOTP_EXCEPTION,
@@ -31,9 +33,9 @@ export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
 	assertAuthTokens(tokens);
 	const username = tokens.idToken?.payload['cognito:username'] ?? '';
 	const { SecretCode } = await associateSoftwareToken(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.SetUpTOTP)
+			userAgentValue: getAuthUserAgentValue(AuthAction.SetUpTOTP),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),

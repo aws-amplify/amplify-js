@@ -22,7 +22,6 @@ import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
 

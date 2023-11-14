@@ -52,8 +52,6 @@ describe('uploadData', () => {
 			});
 			expect(mockCreateUploadTask).toBeCalled();
 		});
-
-		// TODO[AllanZhengYP]: Make sure common S3 configs and input validation utility is called.
 	});
 
 	describe('use putObject', () => {

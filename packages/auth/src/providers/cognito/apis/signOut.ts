@@ -3,14 +3,14 @@
 
 import {
 	Amplify,
-	CognitoUserPoolConfig,
-	Hub,
 	clearCredentials,
+	CognitoUserPoolConfig,
 	defaultStorage,
+	Hub,
 } from '@aws-amplify/core';
-import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
+
+import { getAuthUserAgentValue } from '../../../utils';
 import { SignOutInput } from '../types';
-import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { tokenOrchestrator } from '../tokenProvider';
 import {
 	AuthAction,
@@ -28,7 +28,10 @@ import {
 	assertAuthTokens,
 	assertAuthTokensWithRefreshToken,
 } from '../utils/types';
-import { getRedirectUrl } from '../utils/oauth/getRedirectUrl';
+import { handleOAuthSignOut } from '../utils/oauth';
+import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
+import { AuthError } from '../../../errors/AuthError';
+import { OAUTH_SIGNOUT_EXCEPTION } from '../../../errors/constants';
 
 /**
  * Signs a user out
@@ -46,7 +49,33 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 		await clientSignOut(cognitoConfig);
 	}
 
-	Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
+	let hasOAuthConfig;
+
+	try {
+		assertOAuthConfig(cognitoConfig);
+		hasOAuthConfig = true;
+	} catch (err) {
+		hasOAuthConfig = false;
+	}
+
+	if (hasOAuthConfig) {
+		const oAuthStore = new DefaultOAuthStore(defaultStorage);
+		oAuthStore.setAuthConfig(cognitoConfig);
+		const { type } =
+			(await handleOAuthSignOut(cognitoConfig, oAuthStore)) ?? {};
+		if (type === 'error') {
+			throw new AuthError({
+				name: OAUTH_SIGNOUT_EXCEPTION,
+				message:
+					'An error occurred when attempting to log out from OAuth provider.',
+			});
+		}
+	} else {
+		// complete sign out
+		tokenOrchestrator.clearTokens();
+		await clearCredentials();
+		Hub.dispatch('auth', { event: 'signedOut' }, 'Auth', AMPLIFY_SYMBOL);
+	}
 }
 
 async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
@@ -65,14 +94,9 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 				}
 			);
 		}
-
-		await handleOAuthSignOut(cognitoConfig);
 	} catch (err) {
 		// this shouldn't throw
 		// TODO(v6): add logger message
-	} finally {
-		tokenOrchestrator.clearTokens();
-		await clearCredentials();
 	}
 }
 
@@ -89,74 +113,10 @@ async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 				AccessToken: tokens.accessToken.toString(),
 			}
 		);
-
-		await handleOAuthSignOut(cognitoConfig);
 	} catch (err) {
 		// it should not throw
 		// TODO(v6): add logger
-	} finally {
-		tokenOrchestrator.clearTokens();
-		await clearCredentials();
 	}
 }
 
-async function handleOAuthSignOut(cognitoConfig: CognitoUserPoolConfig) {
-	try {
-		assertOAuthConfig(cognitoConfig);
-	} catch (err) {
-		// all good no oauth handling
-		return;
-	}
-
-	const oauthStore = new DefaultOAuthStore(defaultStorage);
-	oauthStore.setAuthConfig(cognitoConfig);
-	const { isOAuthSignIn, preferPrivateSession } =
-		await oauthStore.loadOAuthSignIn();
-	await oauthStore.clearOAuthData();
-
-	if (isOAuthSignIn) {
-		oAuthSignOutRedirect(cognitoConfig, preferPrivateSession);
-	}
-}
-
-async function oAuthSignOutRedirect(
-	authConfig: CognitoUserPoolConfig,
-	preferPrivateSession: boolean
-) {
-	assertOAuthConfig(authConfig);
-	const { loginWith, userPoolClientId } = authConfig;
-	const { domain, redirectSignOut } = loginWith.oauth;
-	const signoutUri = getRedirectUrl(redirectSignOut);
-	const oAuthLogoutEndpoint = `https://${domain}/logout?${Object.entries({
-		client_id: userPoolClientId,
-		logout_uri: encodeURIComponent(signoutUri),
-	})
-		.map(([k, v]) => `${k}=${v}`)
-		.join('&')}`;
-
-	// dispatchAuthEvent(
-	// 	'oAuthSignOut',
-	// 	{ oAuth: 'signOut' },
-	// 	`Signing out from ${oAuthLogoutEndpoint}`
-	// );
-	// logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
-
-	await openAuthSession(
-		oAuthLogoutEndpoint,
-		redirectSignOut,
-		preferPrivateSession
-	);
-}
-
-function isSessionRevocable(token: JWT) {
-	if (token) {
-		try {
-			const { origin_jti } = token.payload;
-			return !!origin_jti;
-		} catch (err) {
-			// Nothing to do, token doesnt have origin_jti claim
-		}
-	}
-
-	return false;
-}
+const isSessionRevocable = (token: JWT) => !!token?.payload?.origin_jti;

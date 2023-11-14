@@ -1,8 +1,7 @@
 {
 	"name": "@aws-amplify/api/server",
-	"types": "../lib-esm/server.d.ts",
-	"main": "../lib/server.js",
-	"module": "../lib-esm/server.js",
-	"react-native": "../lib-esm/server.js",
+	"types": "../dist/esm/server.d.ts",
+	"main": "../dist/cjs/server.js",
+	"module": "../dist/esm/server.mjs",
 	"sideEffects": false
 }

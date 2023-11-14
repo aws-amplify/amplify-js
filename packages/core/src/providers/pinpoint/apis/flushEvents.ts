@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '../../../libraryUtils';
 import { getEventBuffer } from '../utils/getEventBuffer';
+import { EventBufferConfig } from '../types/buffer';
+import { AuthSession } from '../../../singleton/Auth/types';
 import {
 	BUFFER_SIZE,
 	FLUSH_INTERVAL,
@@ -10,22 +11,34 @@ import {
 	RESEND_LIMIT,
 } from '../utils/constants';
 
-export const flushEvents = (
-	appId: string,
-	region: string,
-	credentials: AWSCredentials,
-	identityId?: string,
-	userAgentValue?: string
-) => {
+export type PinpointFlushEventsInput = Partial<EventBufferConfig> & {
+	appId: string;
+	region: string;
+	credentials: Required<AuthSession>['credentials'];
+	identityId?: AuthSession['identityId'];
+	userAgentValue?: string;
+};
+
+export const flushEvents = ({
+	appId,
+	region,
+	credentials,
+	bufferSize,
+	flushInterval,
+	flushSize,
+	resendLimit,
+	identityId,
+	userAgentValue,
+}: PinpointFlushEventsInput) => {
 	getEventBuffer({
 		appId,
-		bufferSize: BUFFER_SIZE,
-		credentials,
-		flushInterval: FLUSH_INTERVAL,
-		flushSize: FLUSH_SIZE,
-		identityId,
 		region,
-		resendLimit: RESEND_LIMIT,
+		credentials,
+		bufferSize: bufferSize ?? BUFFER_SIZE,
+		flushInterval: flushInterval ?? FLUSH_INTERVAL,
+		flushSize: flushSize ?? FLUSH_SIZE,
+		resendLimit: resendLimit ?? RESEND_LIMIT,
+		identityId,
 		userAgentValue,
 	}).flushAll();
 };

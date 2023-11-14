@@ -6,6 +6,7 @@ import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
 import { calculateContentMd5 } from '../../../utils';
 import { uploadPart } from '../../../utils/client';
+import { logger } from '../../../../../utils';
 
 type UploadPartExecutorOptions = {
 	dataChunkerGenerator: Generator<PartToUpload, void, undefined>;
@@ -35,12 +36,12 @@ export const uploadPartExecutor = async ({
 	let transferredBytes = 0;
 	for (const { data, partNumber, size } of dataChunkerGenerator) {
 		if (abortSignal.aborted) {
-			// TODO: debug message: upload executor aborted
+			logger.debug('upload executor aborted.');
 			break;
 		}
 
 		if (completedPartNumberSet.has(partNumber)) {
-			// TODO: debug message: part already uploaded
+			logger.debug(`part ${partNumber} already uploaded.`);
 			transferredBytes += size;
 			onProgress?.({
 				transferredBytes,
@@ -62,8 +63,7 @@ export const uploadPartExecutor = async ({
 					Bucket: bucket,
 					Key: finalKey,
 					UploadId: uploadId,
-					// TODO: The Body type of S3 UploadPart API from AWS SDK does not correctly reflects the supported data types.
-					Body: data as any,
+					Body: data,
 					PartNumber: partNumber,
 					ContentMD5: isObjectLockEnabled
 						? await calculateContentMd5(data)

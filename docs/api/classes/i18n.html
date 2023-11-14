@@ -935,6 +935,9 @@ img { max-width: 100%; }
 				<a href="i18n.html#putvocabulariesforlanguage" class="tsd-kind-icon">put<wbr>Vocabularies<wbr>For<wbr>Language</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="i18n.html#setdefaultlanguage" class="tsd-kind-icon">set<wbr>Default<wbr>Language</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="i18n.html#setlanguage" class="tsd-kind-icon">set<wbr>Language</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -970,7 +973,7 @@ img { max-width: 100%; }
 	<section class="tsd-panel tsd-comment">
 		<div class="tsd-comment tsd-typography">
 			<div class="lead">
-				<p>Language transition class
+				<p>Language translation utility.
 				Export I18n APIs</p>
 			</div>
 		</div>
@@ -1000,6 +1003,7 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="i18n.html#getbylanguage" class="tsd-kind-icon">get<wbr>ByLanguage</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="i18n.html#putvocabularies" class="tsd-kind-icon">put<wbr>Vocabularies</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="i18n.html#putvocabulariesforlanguage" class="tsd-kind-icon">put<wbr>Vocabularies<wbr>For<wbr>Language</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="i18n.html#setdefaultlanguage" class="tsd-kind-icon">set<wbr>Default<wbr>Language</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="i18n.html#setlanguage" class="tsd-kind-icon">set<wbr>Language</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="i18n.html#checkconfig" class="tsd-kind-icon">check<wbr>Config</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="i18n.html#configure" class="tsd-kind-icon">configure</a></li>
@@ -1020,27 +1024,17 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>I18n<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="i18noptions.html" class="tsd-signature-type">I18nOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="i18n.html" class="tsd-signature-type">I18n</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>I18n<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="i18n.html" class="tsd-signature-type">I18n</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/I18n.ts#L26">packages/core/src/I18n/I18n.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/I18n.ts#L26">packages/core/src/I18n/I18n.ts:26</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 					</div>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>options: <a href="i18noptions.html" class="tsd-signature-type">I18nOptions</a></h5>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-								</div>
-							</div>
-						</li>
-					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="i18n.html" class="tsd-signature-type">I18n</a></h4>
 				</li>
 			</ul>
@@ -1052,13 +1046,13 @@ img { max-width: 100%; }
 			<a name="get" class="tsd-anchor"></a>
 			<h3>get</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, defVal<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, defVal<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/I18n.ts#L64">packages/core/src/I18n/I18n.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/I18n.ts#L67">packages/core/src/I18n/I18n.ts:67</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1071,10 +1065,10 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>key: <span class="tsd-signature-type">any</span></h5>
+							<h5>key: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> defVal: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = undefined</span></h5>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> defVal: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> = undefined</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Default value</p>
 							</div>
@@ -1088,13 +1082,13 @@ img { max-width: 100%; }
 			<a name="getbylanguage" class="tsd-anchor"></a>
 			<h3>get<wbr>ByLanguage</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>ByLanguage<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, language<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, defVal<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>ByLanguage<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, language<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, defVal<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/I18n.ts#L92">packages/core/src/I18n/I18n.ts:92</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/I18n.ts#L95">packages/core/src/I18n/I18n.ts:95</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1107,16 +1101,16 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>key: <span class="tsd-signature-type">any</span></h5>
+							<h5>key: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5>language: <span class="tsd-signature-type">any</span></h5>
+							<h5>language: <span class="tsd-signature-type">string</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Specified langurage to be used</p>
 							</div>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> defVal: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = null</span></h5>
+							<h5><span class="tsd-flag ts-flagDefault value">Default value</span> defVal: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Default value</p>
 							</div>
@@ -1130,13 +1124,13 @@ img { max-width: 100%; }
 			<a name="putvocabularies" class="tsd-anchor"></a>
 			<h3>put<wbr>Vocabularies</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">put<wbr>Vocabularies<span class="tsd-signature-symbol">(</span>vocabularies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">put<wbr>Vocabularies<span class="tsd-signature-symbol">(</span>vocabularies<span class="tsd-signature-symbol">: </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/I18n.ts#L125">packages/core/src/I18n/I18n.ts:125</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/I18n.ts#L131">packages/core/src/I18n/I18n.ts:131</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1149,7 +1143,7 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>vocabularies: <span class="tsd-signature-type">any</span></h5>
+							<h5>vocabularies: <a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Object that has language as key,
 								vocabularies of each language as value</p>
@@ -1164,13 +1158,13 @@ img { max-width: 100%; }
 			<a name="putvocabulariesforlanguage" class="tsd-anchor"></a>
 			<h3>put<wbr>Vocabularies<wbr>For<wbr>Language</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">put<wbr>Vocabularies<wbr>For<wbr>Language<span class="tsd-signature-symbol">(</span>language<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, vocabularies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				<li class="tsd-signature tsd-kind-icon">put<wbr>Vocabularies<wbr>For<wbr>Language<span class="tsd-signature-symbol">(</span>language<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, vocabularies<span class="tsd-signature-symbol">: </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/I18n.ts#L111">packages/core/src/I18n/I18n.ts:111</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/I18n.ts#L114">packages/core/src/I18n/I18n.ts:114</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1183,18 +1177,40 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>language: <span class="tsd-signature-type">any</span></h5>
+							<h5>language: <span class="tsd-signature-type">string</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Language of the dictionary</p>
 							</div>
 						</li>
 						<li>
-							<h5>vocabularies: <span class="tsd-signature-type">any</span></h5>
+							<h5>vocabularies: <a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Object that has key-value as dictionary entry</p>
 							</div>
 						</li>
 					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="setdefaultlanguage" class="tsd-anchor"></a>
+			<h3>set<wbr>Default<wbr>Language</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">set<wbr>Default<wbr>Language<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/I18n.ts#L38">packages/core/src/I18n/I18n.ts:38</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Sets the default language from the configuration when required.</p>
+						</div>
+					</div>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
@@ -1209,7 +1225,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/I18n.ts#L54">packages/core/src/I18n/I18n.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/I18n.ts#L57">packages/core/src/I18n/I18n.ts:57</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1241,7 +1257,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/index.ts#L105">packages/core/src/I18n/index.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/index.ts#L113">packages/core/src/I18n/index.ts:113</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1252,13 +1268,13 @@ img { max-width: 100%; }
 			<a name="configure" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagStatic">Static</span> configure</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="i18nconfig.html" class="tsd-signature-type">I18nConfig</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/index.ts#L24">packages/core/src/I18n/index.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/index.ts#L25">packages/core/src/I18n/index.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1273,13 +1289,13 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>config: <span class="tsd-signature-type">any</span></h5>
+							<h5>config: <a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Configuration of the I18n</p>
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<h4 class="tsd-returns-title">Returns <a href="i18nconfig.html" class="tsd-signature-type">I18nConfig</a></h4>
 				</li>
 			</ul>
 		</section>
@@ -1293,7 +1309,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/index.ts#L46">packages/core/src/I18n/index.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/index.ts#L47">packages/core/src/I18n/index.ts:47</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1313,13 +1329,13 @@ img { max-width: 100%; }
 			<a name="get-1" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagStatic">Static</span> get</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-				<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, defVal<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, defVal<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/index.ts#L71">packages/core/src/I18n/index.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/index.ts#L73">packages/core/src/I18n/index.ts:73</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1333,10 +1349,10 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>key: <span class="tsd-signature-type">any</span></h5>
+							<h5>key: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> defVal: <span class="tsd-signature-type">any</span></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> defVal: <span class="tsd-signature-type">string</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Default value</p>
 							</div>
@@ -1356,7 +1372,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/index.ts#L37">packages/core/src/I18n/index.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/index.ts#L38">packages/core/src/I18n/index.ts:38</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1367,13 +1383,13 @@ img { max-width: 100%; }
 			<a name="putvocabularies-1" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagStatic">Static</span> put<wbr>Vocabularies</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-				<li class="tsd-signature tsd-kind-icon">put<wbr>Vocabularies<span class="tsd-signature-symbol">(</span>vocabularies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">put<wbr>Vocabularies<span class="tsd-signature-symbol">(</span>vocabularies<span class="tsd-signature-symbol">: </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/index.ts#L99">packages/core/src/I18n/index.ts:99</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/index.ts#L106">packages/core/src/I18n/index.ts:106</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1388,14 +1404,14 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>vocabularies: <span class="tsd-signature-type">any</span></h5>
+							<h5>vocabularies: <a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Object that has language as key,
 								vocabularies of each language as value</p>
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1403,13 +1419,13 @@ img { max-width: 100%; }
 			<a name="putvocabulariesforlanguage-1" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagStatic">Static</span> put<wbr>Vocabularies<wbr>For<wbr>Language</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-				<li class="tsd-signature tsd-kind-icon">put<wbr>Vocabularies<wbr>For<wbr>Language<span class="tsd-signature-symbol">(</span>language<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, vocabularies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">put<wbr>Vocabularies<wbr>For<wbr>Language<span class="tsd-signature-symbol">(</span>language<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, vocabularies<span class="tsd-signature-symbol">: </span><a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/index.ts#L86">packages/core/src/I18n/index.ts:86</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/index.ts#L89">packages/core/src/I18n/index.ts:89</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1424,16 +1440,16 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>language: <span class="tsd-signature-type">any</span></h5>
+							<h5>language: <span class="tsd-signature-type">string</span></h5>
 						</li>
 						<li>
-							<h5>vocabularies: <span class="tsd-signature-type">any</span></h5>
+							<h5>vocabularies: <a href="../enums/analyticsaction.html#record" class="tsd-signature-type">Record</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<p>Object that has key-value as dictionary entry</p>
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
 		</section>
@@ -1441,13 +1457,13 @@ img { max-width: 100%; }
 			<a name="setlanguage-1" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagStatic">Static</span> set<wbr>Language</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-				<li class="tsd-signature tsd-kind-icon">set<wbr>Language<span class="tsd-signature-symbol">(</span>lang<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+				<li class="tsd-signature tsd-kind-icon">set<wbr>Language<span class="tsd-signature-symbol">(</span>lang<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f0df916a9/packages/core/src/I18n/index.ts#L59">packages/core/src/I18n/index.ts:59</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/f1408db/packages/core/src/I18n/index.ts#L60">packages/core/src/I18n/index.ts:60</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1461,12 +1477,12 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>lang: <span class="tsd-signature-type">any</span></h5>
+							<h5>lang: <span class="tsd-signature-type">string</span></h5>
 							<div class="tsd-comment tsd-typography">
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
 		</section>

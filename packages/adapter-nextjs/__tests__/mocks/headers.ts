@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next/index.js';
 import {
 	NextApiRequestCookies,
 	NextApiRequestQuery,
-} from 'next/dist/server/api-utils';
+} from 'next/dist/server/api-utils/index.js';
 import { Socket } from 'net';
 import { IncomingMessage } from 'http';
 

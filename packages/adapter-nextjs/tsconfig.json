@@ -2,11 +2,9 @@
 {
 	"compilerOptions": {
 		"allowSyntheticDefaultImports": true,
-		"outDir": "./lib/",
 		"target": "es2020",
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"lib": ["dom", "es2019", "esnext.asynciterable"],
-		"sourceMap": true,
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"allowJs": true,

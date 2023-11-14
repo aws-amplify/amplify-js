@@ -8,7 +8,7 @@ import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signI
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { Amplify } from 'aws-amplify';
 import {
-	CognitoUserPoolsTokenProvider,
+	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
 import { AuthError } from '../../../src';
@@ -22,7 +22,7 @@ const authConfig = {
 	},
 };
 
-CognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 Amplify.configure({
 	Auth: authConfig,
 });

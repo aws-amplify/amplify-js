@@ -1,8 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { AtLeastOne } from '../types';
+
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/jwt-model.ts
-
 interface JwtPayloadStandardFields {
 	exp?: number; // expires: https://tools.ietf.org/html/rfc7519#section-4.1.4
 	iss?: string; // issuer: https://tools.ietf.org/html/rfc7519#section-4.1.1
@@ -38,7 +40,7 @@ export type AuthSession = {
 
 export type LibraryAuthOptions = {
 	tokenProvider?: TokenProvider;
-	credentialsProvider?: AWSCredentialsAndIdentityIdProvider;
+	credentialsProvider?: CredentialsAndIdentityIdProvider;
 };
 
 export type Identity = {
@@ -46,10 +48,10 @@ export type Identity = {
 	type: 'guest' | 'primary';
 };
 
-export interface AWSCredentialsAndIdentityIdProvider {
+export interface CredentialsAndIdentityIdProvider {
 	getCredentialsAndIdentityId: (
 		getCredentialsOptions: GetCredentialsOptions
-	) => Promise<AWSCredentialsAndIdentityId | undefined>;
+	) => Promise<CredentialsAndIdentityId | undefined>;
 	clearCredentialsAndIdentityId: () => void;
 }
 
@@ -97,7 +99,9 @@ export type AuthConfigUserAttributes = Partial<
 	Record<AuthStandardAttributeKey, { required: boolean }>
 >;
 
-export type AuthConfig = StrictUnion<
+export type AuthConfig = AtLeastOne<CognitoProviderConfig>;
+
+export type CognitoProviderConfig = StrictUnion<
 	| AuthIdentityPoolConfig
 	| AuthUserPoolConfig
 	| AuthUserPoolAndIdentityPoolConfig
@@ -212,7 +216,7 @@ type GetCredentialsUnauthenticatedUser = {
 	tokens?: never;
 };
 
-export type AWSCredentialsAndIdentityId = {
+export type CredentialsAndIdentityId = {
 	credentials: AWSCredentials;
 	identityId?: string;
 };

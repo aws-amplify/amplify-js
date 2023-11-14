@@ -8,7 +8,10 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { getAuthUserAgentValue } from '../../src/utils';
 
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	getAmplifyUserAgent: jest.fn(),
+}));
 
 describe('getAuthUserAgentValue', () => {
 	// assert mocks

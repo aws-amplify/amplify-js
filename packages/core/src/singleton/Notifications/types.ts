@@ -3,8 +3,16 @@
 
 import { InAppMessagingConfig } from './InAppMessaging/types';
 import { PushNotificationConfig } from './PushNotification/types';
+import { AtLeastOne } from '../types';
 
-export type NotificationsConfig = {
-	InAppMessaging?: InAppMessagingConfig;
-	PushNotification?: PushNotificationConfig;
+export type InAppMessagingProviderConfig = {
+	InAppMessaging: InAppMessagingConfig;
 };
+
+export type PushNotificationProviderConfig = {
+	PushNotification: PushNotificationConfig;
+};
+
+export type NotificationsConfig = AtLeastOne<
+	InAppMessagingProviderConfig & PushNotificationProviderConfig
+>;

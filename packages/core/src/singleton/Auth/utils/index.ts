@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AuthConfigurationErrorCode, assert } from './errorHelpers';
 import { base64Decoder } from '../../../utils/convert';
-
 import {
 	AuthConfig,
 	JWT,
@@ -12,6 +11,7 @@ import {
 	CognitoUserPoolAndIdentityPoolConfig,
 	CognitoIdentityPoolConfig,
 	StrictUnion,
+	OAuthConfig,
 } from '../types';
 
 export function assertTokenProviderConfig(
@@ -33,25 +33,27 @@ export function assertTokenProviderConfig(
 
 	return assert(
 		assertionValid,
-		AuthConfigurationErrorCode.AuthTokenConfigException
+		AuthConfigurationErrorCode.AuthUserPoolException
 	);
 }
 
 export function assertOAuthConfig(
-	cognitoConfig?: CognitoUserPoolConfig | CognitoUserPoolAndIdentityPoolConfig
-): asserts cognitoConfig is CognitoUserPoolWithOAuthConfig {
+	cognitoConfig?: AuthConfig['Cognito']
+): asserts cognitoConfig is AuthConfig['Cognito'] & {
+	loginWith: {
+		oauth: OAuthConfig;
+	};
+} {
 	const validOAuthConfig =
 		!!cognitoConfig?.loginWith?.oauth?.domain &&
 		!!cognitoConfig?.loginWith?.oauth?.redirectSignOut &&
 		!!cognitoConfig?.loginWith?.oauth?.redirectSignIn &&
 		!!cognitoConfig?.loginWith?.oauth?.responseType;
-
 	return assert(
 		validOAuthConfig,
 		AuthConfigurationErrorCode.OAuthNotConfigureException
 	);
 }
-
 export function assertIdentityPoolIdConfig(
 	cognitoConfig?: StrictUnion<
 		| CognitoUserPoolConfig

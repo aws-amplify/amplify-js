@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { updateDeviceStatus } from '../utils/clients/CognitoIdentityProvider';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
-import { assertTokenProviderConfig, AuthAction } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '../../../';
+import {
+	assertTokenProviderConfig,
+	AuthAction,
+} from '@aws-amplify/core/internals/utils';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { tokenOrchestrator } from '../tokenProvider';
 import { UpdateDeviceStatusException } from '../../cognito/types/errors';
@@ -29,9 +31,9 @@ export async function rememberDevice(): Promise<void> {
 	assertDeviceMetadata(deviceMetadata);
 
 	await updateDeviceStatus(
-		{ 
+		{
 			region: getRegion(authConfig.userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.RememberDevice)
+			userAgentValue: getAuthUserAgentValue(AuthAction.RememberDevice),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
