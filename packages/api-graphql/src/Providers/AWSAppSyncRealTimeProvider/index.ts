@@ -98,9 +98,6 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
-	// additionalHeaders?:
-	// 	| Record<string, string>
-	// 	| (() => Promise<Record<string, string>>);
 	additionalHeaders?:
 		| Record<string, string>
 		| (() => Promise<Record<string, string>>);
@@ -111,6 +108,7 @@ type AWSAppSyncRealTimeAuthInput =
 		canonicalUri: string;
 		payload: string;
 		host?: string | undefined;
+		additionalHeaders?: Record<string, string>;
 	};
 
 export class AWSAppSyncRealTimeProvider {
@@ -305,7 +303,7 @@ export class AWSAppSyncRealTimeProvider {
 		subscriptionId: string;
 		customUserAgentDetails: CustomUserAgentDetails | undefined;
 	}) {
-		let {
+		const {
 			appSyncGraphqlEndpoint,
 			authenticationType,
 			query,
@@ -1002,19 +1000,14 @@ export class AWSAppSyncRealTimeProvider {
 		host,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeAuthInput) {
-		if (
-			typeof additionalHeaders === 'object' &&
-			!additionalHeaders?.['Authorization']
-		) {
+		if (!additionalHeaders?.['Authorization']) {
 			throw new Error('No auth token specified');
 		}
 
 		// This check also isn't necessary, the function will already have been called.
 		// Type needs to be updated:
 		return {
-			Authorization:
-				typeof additionalHeaders === 'object' &&
-				additionalHeaders.Authorization,
+			Authorization: additionalHeaders.Authorization,
 			host,
 		};
 	}
