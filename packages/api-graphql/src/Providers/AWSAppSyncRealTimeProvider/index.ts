@@ -318,6 +318,8 @@ export class AWSAppSyncRealTimeProvider {
 
 		if (typeof additionalHeaders === 'function') {
 			additionalCustomHeaders = await additionalHeaders();
+		} else {
+			additionalCustomHeaders = additionalHeaders;
 		}
 
 		const subscriptionState: SUBSCRIPTION_STATUS = SUBSCRIPTION_STATUS.PENDING;
