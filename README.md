@@ -65,8 +65,7 @@ To get started pick your platform from our [**Getting Started** home page](https
 
 ## Notice:
 
-### Amplify 6.x.x has breaking changes. Please see the breaking changes on our [migration guide](https://docs.amplify.aws/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/):
-
+### Amplify 6.x.x has breaking changes. Please see the breaking changes on our [migration guide](https://docs.amplify.aws/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/)
 
 ### Amplify 5.x.x has breaking changes. Please see the breaking changes below:
 
