@@ -8,6 +8,7 @@ import {
 	flattenItems,
 	authModeParams,
 	ModelOperation,
+	getCustomHeaders,
 } from '../APIClient';
 import {
 	AuthModeParams,
@@ -80,6 +81,9 @@ async function _get(
 
 	try {
 		const auth = authModeParams(client, options);
+
+		const headers = getCustomHeaders(client, options?.headers);
+
 		const { data, extensions } = context
 			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
 					context,
@@ -87,13 +91,17 @@ async function _get(
 						...auth,
 						query,
 						variables,
-					}
+					},
+					headers
 			  )) as GraphQLResult<any>)
-			: ((await (client as V6Client<Record<string, any>>).graphql({
-					...auth,
-					query,
-					variables,
-			  })) as GraphQLResult<any>);
+			: ((await (client as V6Client<Record<string, any>>).graphql(
+					{
+						...auth,
+						query,
+						variables,
+					},
+					headers
+			  )) as GraphQLResult<any>);
 
 		// flatten response
 		if (data) {

@@ -7,6 +7,7 @@ import {
 	GraphQLOptionsV6,
 	GraphQLResponseV6,
 } from '../types';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 /**
  * Invokes graphql operations against a graphql service, providing correct input and
@@ -98,7 +99,7 @@ export function graphql<
 >(
 	this: V6Client,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?: { [key: string]: string }
+	additionalHeaders?: CustomHeaders
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	/**
 	 * The correctness of these typings depends on correct string branding or overrides.
