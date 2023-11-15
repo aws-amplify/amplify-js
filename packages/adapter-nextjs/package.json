@@ -61,9 +61,9 @@
 	"scripts": {
 		"build": "npm run clean && npm run build:esm-cjs",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -p tsconfig.watch.json -m commonjs --outDir dist/cjs --watch",
 		"build:esm-cjs": "rollup -c rollup.config.mjs",
-		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -p tsconfig.watch.json -m esnext --outDir dist/esm --watch",
 		"clean": "npm run clean:size && rimraf dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",

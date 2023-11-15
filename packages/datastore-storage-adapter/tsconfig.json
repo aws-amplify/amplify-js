@@ -23,7 +23,12 @@
 		"esModuleInterop": true,
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
 		// temporary fix
-		"types": ["jest", "node", "lodash"]
+		"types": ["jest", "node", "lodash"],
+		"rootDirs": ["src"],
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["./*"]
+		}
 	},
 	"include": ["src/**/*"]
 }

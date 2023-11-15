@@ -1,10 +1,14 @@
 {
-	"extends": "../tsconfig.base.json",
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"importHelpers": false,
 		"strict": false,
 		"noImplicitAny": false,
-		"skipLibCheck": true
+		"rootDirs": ["src"],
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["./*"]
+		}
 	},
-	"include": ["./src"]
+	"include": ["./src", "__tests__"]
 }

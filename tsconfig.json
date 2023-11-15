@@ -1,0 +1,36 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"downlevelIteration": true,
+		"esModuleInterop": true,
+		"importHelpers": true,
+		"incremental": true,
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"es2017",
+			"esnext.asynciterable",
+			"es2018.asyncgenerator",
+			"es2019",
+			"es2020.promise"
+		],
+		"moduleResolution": "node",
+		"noEmitOnError": true,
+		"noImplicitAny": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"sourceMap": true,
+		"resolveJsonModule": true,
+		"target": "es2020",
+		"types": ["node", "jest"],
+		"plugins": [
+			{ "transform": "typescript-transform-paths", "useRootDirs": true },
+			{
+				"transform": "typescript-transform-paths",
+				"useRootDirs": true,
+				"afterDeclarations": true
+			}
+		]
+	},
+	"exclude": ["node_modules", "dist"]
+}

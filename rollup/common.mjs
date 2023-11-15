@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const defaultTSConfigPath = './tsconfig.json';
+import tsCompiler from 'ts-patch/compiler/typescript.js';
+const defaultTSConfigPath = './tsconfig.build.json';
 
 /** @type {import("rollup").OutputOptions}*/
 export const cjsOutput = {
@@ -20,6 +21,9 @@ export const cjsTSOptions = {
 	sourceMap: false,
 	tsconfig: defaultTSConfigPath,
 	tsBuildInfoFile: 'dist/meta/cjs.tsbuildinfo',
+	// Use ts-patch to transform ts files to leverage the tsconfig plugins
+	// programmatically.
+	typescript: tsCompiler,
 };
 
 /** @type {import("rollup").OutputOptions}*/
@@ -38,4 +42,7 @@ export const esmTSOptions = {
 	sourceMap: false,
 	tsconfig: defaultTSConfigPath,
 	tsBuildInfoFile: 'dist/meta/cjs.tsbuildinfo',
+	// Use ts-patch to transform ts files to leverage the tsconfig plugins
+	// programmatically.
+	typescript: tsCompiler,
 };

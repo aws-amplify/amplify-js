@@ -1,10 +1,12 @@
 {
-	"extends": "../tsconfig.base.json",
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"importHelpers": true,
-		"strict": true,
-		"noImplicitAny": true,
-		"resolveJsonModule": true
+		"rootDirs": ["src"],
+		"rootDirs": ["src"],
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["./*"]
+		}
 	},
-	"include": ["./src"]
+	"include": ["./src", "__tests__"]
 }
