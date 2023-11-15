@@ -101,6 +101,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	additionalHeaders?:
 		| Record<string, string>
 		| (() => Promise<Record<string, string>>);
+	additionalCustomHeaders?: Record<string, string>;
 }
 
 type AWSAppSyncRealTimeAuthInput =
@@ -108,7 +109,6 @@ type AWSAppSyncRealTimeAuthInput =
 		canonicalUri: string;
 		payload: string;
 		host?: string | undefined;
-		additionalHeaders?: Record<string, string>;
 	};
 
 export class AWSAppSyncRealTimeProvider {
@@ -345,7 +345,7 @@ export class AWSAppSyncRealTimeProvider {
 				payload: dataString,
 				canonicalUri: '',
 				region,
-				additionalHeaders: additionalCustomHeaders,
+				additionalCustomHeaders,
 			})),
 			...(await graphql_headers()),
 			...additionalCustomHeaders,
@@ -374,7 +374,7 @@ export class AWSAppSyncRealTimeProvider {
 				appSyncGraphqlEndpoint,
 				authenticationType,
 				region,
-				additionalHeaders: additionalCustomHeaders,
+				additionalCustomHeaders,
 			});
 		} catch (err: any) {
 			this._logStartSubscriptionError(subscriptionId, observer, err);
@@ -688,7 +688,7 @@ export class AWSAppSyncRealTimeProvider {
 		authenticationType,
 		apiKey,
 		region,
-		additionalHeaders,
+		additionalCustomHeaders,
 	}: AWSAppSyncRealTimeProviderOptions) {
 		if (this.socketStatus === SOCKET_STATUS.READY) {
 			return;
@@ -709,7 +709,7 @@ export class AWSAppSyncRealTimeProvider {
 						apiKey,
 						appSyncGraphqlEndpoint,
 						region,
-						additionalHeaders,
+						additionalCustomHeaders,
 					});
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
@@ -892,7 +892,7 @@ export class AWSAppSyncRealTimeProvider {
 		canonicalUri,
 		appSyncGraphqlEndpoint,
 		region,
-		additionalHeaders,
+		additionalCustomHeaders,
 	}: AWSAppSyncRealTimeAuthInput): Promise<
 		Record<string, unknown> | undefined
 	> {
@@ -929,7 +929,7 @@ export class AWSAppSyncRealTimeProvider {
 				apiKey: resolvedApiKey,
 				region,
 				host,
-				additionalHeaders,
+				additionalCustomHeaders,
 			});
 
 			return result;
@@ -998,19 +998,19 @@ export class AWSAppSyncRealTimeProvider {
 
 	private _customAuthHeader({
 		host,
-		additionalHeaders,
+		additionalCustomHeaders,
 	}: AWSAppSyncRealTimeAuthInput) {
 		/**
 		 * If `additionalHeaders` was provided to the subscription as a function,
 		 * the headers that are returned by that function will already have been
 		 * provided before this function is called.
 		 */
-		if (!additionalHeaders?.['Authorization']) {
+		if (!additionalCustomHeaders?.['Authorization']) {
 			throw new Error('No auth token specified');
 		}
 
 		return {
-			Authorization: additionalHeaders.Authorization,
+			Authorization: additionalCustomHeaders.Authorization,
 			host,
 		};
 	}
