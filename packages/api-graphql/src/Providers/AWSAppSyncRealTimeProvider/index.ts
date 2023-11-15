@@ -98,6 +98,9 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
+	// additionalHeaders?:
+	// 	| Record<string, string>
+	// 	| (() => Promise<Record<string, string>>);
 	additionalHeaders?:
 		| Record<string, string>
 		| (() => Promise<Record<string, string>>);
@@ -313,10 +316,10 @@ export class AWSAppSyncRealTimeProvider {
 			additionalHeaders = {},
 		} = options;
 
+		let additionalCustomHeaders: Record<string, string> = {};
+
 		if (typeof additionalHeaders === 'function') {
-			debugger;
-			additionalHeaders = await additionalHeaders();
-			debugger;
+			additionalCustomHeaders = await additionalHeaders();
 		}
 
 		const subscriptionState: SUBSCRIPTION_STATUS = SUBSCRIPTION_STATUS.PENDING;
@@ -344,10 +347,10 @@ export class AWSAppSyncRealTimeProvider {
 				payload: dataString,
 				canonicalUri: '',
 				region,
-				additionalHeaders,
+				additionalHeaders: additionalCustomHeaders,
 			})),
 			...(await graphql_headers()),
-			...additionalHeaders,
+			...additionalCustomHeaders,
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
 
@@ -373,7 +376,7 @@ export class AWSAppSyncRealTimeProvider {
 				appSyncGraphqlEndpoint,
 				authenticationType,
 				region,
-				additionalHeaders,
+				additionalHeaders: additionalCustomHeaders,
 			});
 		} catch (err: any) {
 			this._logStartSubscriptionError(subscriptionId, observer, err);
@@ -999,12 +1002,19 @@ export class AWSAppSyncRealTimeProvider {
 		host,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeAuthInput) {
-		if (!additionalHeaders?.['Authorization']) {
+		if (
+			typeof additionalHeaders === 'object' &&
+			!additionalHeaders?.['Authorization']
+		) {
 			throw new Error('No auth token specified');
 		}
 
+		// This check also isn't necessary, the function will already have been called.
+		// Type needs to be updated:
 		return {
-			Authorization: additionalHeaders.Authorization,
+			Authorization:
+				typeof additionalHeaders === 'object' &&
+				additionalHeaders.Authorization,
 			host,
 		};
 	}
