@@ -26,7 +26,7 @@ type Context = {
 
 export function withSSRContext(context: Context = {}) {
 	const { modules = defaultModules, req } = context;
-	if (modules.includes(DataStore)) {
+	if (modules.includes(DataStore) && !modules.includes(InternalAPI)) {
 		modules.push(InternalAPI);
 	}
 	const previousConfig = Amplify.configure();
