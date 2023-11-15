@@ -5294,9 +5294,7 @@ describe('generateClient', () => {
 								expect.objectContaining({
 									query: expect.stringContaining(op),
 									authenticationType: 'lambda',
-									additionalHeaders: expect.objectContaining({
-										Authorization: 'some-token',
-									}),
+									authToken: 'some-token',
 								}),
 								USER_AGENT_DETAILS
 							);
@@ -5358,9 +5356,7 @@ describe('generateClient', () => {
 								expect.objectContaining({
 									query: expect.stringContaining(op),
 									authenticationType: 'lambda',
-									additionalHeaders: expect.objectContaining({
-										Authorization: 'some-token',
-									}),
+									authToken: 'some-token',
 								}),
 								USER_AGENT_DETAILS
 							);

@@ -173,17 +173,7 @@ export class InternalGraphQLAPIClass {
 		const { operation: operationType } =
 			operationDef as OperationDefinitionNode;
 
-		let headers = additionalHeaders || {};
-
-		// if an authorization header is set, have the explicit authToken take precedence
-		if (authToken) {
-			if (typeof headers === 'object') {
-				headers = {
-					...headers,
-					Authorization: authToken,
-				};
-			}
-		}
+		const headers = additionalHeaders || {};
 
 		switch (operationType) {
 			case 'query':
@@ -198,7 +188,8 @@ export class InternalGraphQLAPIClass {
 						{ query, variables, authMode },
 						headers,
 						abortController,
-						customUserAgentDetails
+						customUserAgentDetails,
+						authToken
 					);
 				} else {
 					const wrapper = (amplifyInstance: AmplifyClassV6) =>
@@ -207,7 +198,8 @@ export class InternalGraphQLAPIClass {
 							{ query, variables, authMode },
 							headers,
 							abortController,
-							customUserAgentDetails
+							customUserAgentDetails,
+							authToken
 						);
 
 					responsePromise = amplify(wrapper) as unknown as Promise<
@@ -225,7 +217,8 @@ export class InternalGraphQLAPIClass {
 					amplify as AmplifyClassV6,
 					{ query, variables, authMode },
 					headers,
-					customUserAgentDetails
+					customUserAgentDetails,
+					authToken
 				);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
@@ -237,7 +230,8 @@ export class InternalGraphQLAPIClass {
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
-		customUserAgentDetails?: CustomUserAgentDetails
+		customUserAgentDetails?: CustomUserAgentDetails,
+		authToken?: string
 	): Promise<GraphQLResult<T>> {
 		const {
 			region: region,
@@ -267,6 +261,14 @@ export class InternalGraphQLAPIClass {
 			additionalCustomHeaders = await additionalHeaders();
 		} else {
 			additionalCustomHeaders = additionalHeaders;
+		}
+
+		// if an authorization header is set, have the explicit authToken take precedence
+		if (authToken) {
+			additionalCustomHeaders = {
+				...additionalCustomHeaders,
+				Authorization: authToken,
+			};
 		}
 
 		// TODO: Figure what we need to do to remove `!`'s.
@@ -416,7 +418,8 @@ export class InternalGraphQLAPIClass {
 		amplify: AmplifyClassV6,
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
-		customUserAgentDetails?: CustomUserAgentDetails
+		customUserAgentDetails?: CustomUserAgentDetails,
+		authToken?: string
 	): Observable<any> {
 		const config = resolveConfig(amplify);
 
@@ -429,6 +432,7 @@ export class InternalGraphQLAPIClass {
 				authenticationType: authMode || config?.defaultAuthMode,
 				apiKey: config?.apiKey,
 				additionalHeaders,
+				authToken,
 			},
 			customUserAgentDetails
 		);

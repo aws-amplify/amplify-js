@@ -1036,7 +1036,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 
 					test('authenticating with AWS_LAMBDA/custom', async () => {
-						// expect.assertions(1);
+						expect.assertions(1);
 
 						provider
 							.subscribe({
