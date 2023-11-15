@@ -1000,12 +1000,15 @@ export class AWSAppSyncRealTimeProvider {
 		host,
 		additionalHeaders,
 	}: AWSAppSyncRealTimeAuthInput) {
+		/**
+		 * If `additionalHeaders` was provided to the subscription as a function,
+		 * the headers that are returned by that function will already have been
+		 * provided before this function is called.
+		 */
 		if (!additionalHeaders?.['Authorization']) {
 			throw new Error('No auth token specified');
 		}
 
-		// This check also isn't necessary, the function will already have been called.
-		// Type needs to be updated:
 		return {
 			Authorization: additionalHeaders.Authorization,
 			host,
