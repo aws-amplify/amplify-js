@@ -19,7 +19,9 @@ export function findIndexByFields<T>(
 
 	for (let i = 0; i < haystack.length; i++) {
 		if (
-			Object.keys(searchObject).every(k => searchObject[k] === haystack[i][k])
+			Object.keys(searchObject).every(
+				k => searchObject[k] === (haystack[i] as any)[k]
+			)
 		) {
 			return i;
 		}

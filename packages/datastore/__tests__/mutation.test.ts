@@ -200,7 +200,7 @@ describe('MutationProcessor', () => {
 								datastoreUserAgentDetails
 							),
 						}),
-						signingServiceInfo: null,
+						signingServiceInfo: undefined,
 						withCredentials: undefined,
 					}),
 				})

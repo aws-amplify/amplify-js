@@ -17,6 +17,7 @@ import {
 	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
 import { Observable } from 'rxjs';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 /**
  * NOTE!
@@ -34,23 +35,15 @@ const logger = new ConsoleLogger('API');
  * Export Cloud Logic APIs
  */
 export class InternalAPIClass {
-	/**
-	 * Initialize API with AWS configuration
-	 * @param {Object} options - Configuration object for API
-	 */
-	private _options;
 	private _graphqlApi: InternalGraphQLAPIClass;
 
 	Cache = Cache;
 
 	/**
-	 * Initialize API with AWS configuration
-	 * @param {Object} options - Configuration object for API
+	 * Initialize API
 	 */
-	constructor(options) {
-		this._options = options;
-		this._graphqlApi = new InternalGraphQLAPIClass(options);
-		logger.debug('API Options', this._options);
+	constructor() {
+		this._graphqlApi = new InternalGraphQLAPIClass();
 	}
 
 	public getModuleName() {
@@ -74,7 +67,7 @@ export class InternalAPIClass {
 	 */
 	graphql<T>(
 		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string },
+		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
@@ -86,7 +79,7 @@ export class InternalAPIClass {
 		: Promise<GraphQLResult<any>> | Observable<object>;
 	graphql<T = any>(
 		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string },
+		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<any>> | Observable<object> {
 		const apiUserAgentDetails: CustomUserAgentDetails = {
@@ -104,4 +97,4 @@ export class InternalAPIClass {
 	}
 }
 
-export const InternalAPI = new InternalAPIClass(null);
+export const InternalAPI = new InternalAPIClass();

@@ -39,7 +39,7 @@ export function generateClient<
 		isCancelError,
 	} as any;
 
-	client.models = generateModelsProperty<T, ClientType>(client, params);
+	client.models = generateModelsProperty<T>(client, params);
 
 	return client as ClientType;
 }

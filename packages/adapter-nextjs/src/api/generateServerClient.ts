@@ -19,6 +19,7 @@ import { NextServer } from '../types';
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 import { getAmplifyConfig } from '../utils';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 type CookiesClientParams = {
 	cookies: NextServer.ServerComponentContext['cookies'];
@@ -116,7 +117,7 @@ export function generateServerClientUsingReqRes<
 	const wrappedGraphql = (
 		contextSpec: AmplifyServer.ContextSpec,
 		options: GraphQLOptionsV6,
-		additionalHeaders?: { [key: string]: string }
+		additionalHeaders?: CustomHeaders
 	) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
 		return prevGraphql.call(

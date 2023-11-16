@@ -9,31 +9,39 @@ import { listFactory } from './operations/list';
 import { getFactory } from './operations/get';
 import { subscriptionFactory } from './operations/subscription';
 import { observeQueryFactory } from './operations/observeQuery';
+import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
-	client: V6Client,
+	client: V6Client<Record<string, any>>,
 	params: ClientGenerationParams
 ): ModelTypes<T> {
 	const models = {} as any;
 	const config = params.amplify.getConfig();
 
 	if (!config.API?.GraphQL) {
-		throw new Error(
-			'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient().'
-		);
+		// breaks compatibility with certain bundler, e.g. Vite where component files are evaluated before
+		// the entry point causing false positive errors. Revisit how to better handle this post-launch
+
+		// throw new Error(
+		// 	'The API configuration is missing. This is likely due to Amplify.configure() not being called
+		// prior to generateClient().'
+		// );
+		return {} as ModelTypes<never>;
 	}
 
-	const modelIntrospection = config.API?.GraphQL?.modelIntrospection;
+	const modelIntrospection: ModelIntrospectionSchema | undefined =
+		config.API.GraphQL.modelIntrospection;
+
 	if (!modelIntrospection) {
-		return {} as any;
+		return {} as ModelTypes<never>;
 	}
 
 	const SUBSCRIPTION_OPS = ['ONCREATE', 'ONUPDATE', 'ONDELETE'];
 
 	for (const model of Object.values(modelIntrospection.models)) {
-		const { name } = model as any;
+		const { name } = model;
 
-		models[name] = {} as any;
+		models[name] = {} as Record<string, any>;
 
 		Object.entries(graphQLOperationsInfo).forEach(
 			([key, { operationPrefix }]) => {

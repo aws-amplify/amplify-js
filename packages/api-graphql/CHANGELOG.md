@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.0.3 (2023-11-16)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.2 (2023-11-13)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
 ## 3.4.10 (2023-08-23)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql
