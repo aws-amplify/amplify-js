@@ -26,10 +26,6 @@ export function generateModelsProperty<
 	}
 
 	if (!config.API?.GraphQL) {
-		// throw new Error(
-		// 	'The API configuration is missing. This is likely due to Amplify.configure()
-		// not being called prior to generateClient().'
-		// );
 		return {} as ModelTypes<never>;
 	}
 
