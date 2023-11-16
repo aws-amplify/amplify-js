@@ -4,7 +4,7 @@
 import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
 import { APIValidationErrorCode, assertValidationError } from './errors';
 
-const logger = new ConsoleLogger('GraphQLAPI resovleConfig');
+const logger = new ConsoleLogger('GraphQLAPI resolveConfig');
 
 /**
  * @internal
