@@ -16,7 +16,6 @@ export const resolveConfig = (amplify: AmplifyClassV6) => {
 		logger.warn(
 			'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient().'
 		);
-		return {};
 	}
 
 	const {
@@ -26,7 +25,7 @@ export const resolveConfig = (amplify: AmplifyClassV6) => {
 		defaultAuthMode,
 		endpoint,
 		region,
-	} = config.API.GraphQL;
+	} = config.API?.GraphQL ?? {};
 
 	// TODO: re-enable when working in all test environments:
 	// assertValidationError(!!endpoint, APIValidationErrorCode.NoEndpoint);
