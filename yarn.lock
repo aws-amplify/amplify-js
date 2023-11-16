@@ -10,14 +10,7 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-amplify/data-schema-types@*":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.6.2.tgz#5ca7ae0383341fe693ba491dbb72437e2cede902"
-  integrity sha512-7MbIInUHQcL0pSp/1O+gRhUFJ+0igEbTbVvprIXQLjVAqv0d3dfWZRpOE/VmxdYoUoljM4BeMvsyx1FVN68UQQ==
-  dependencies:
-    rxjs "^7.8.1"
-
-"@aws-amplify/data-schema-types@^0.6.4":
+"@aws-amplify/data-schema-types@*", "@aws-amplify/data-schema-types@^0.6.4":
   version "0.6.4"
   resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.6.4.tgz#a618cf4a9f989f2b9dafcab921012d7cded42a54"
   integrity sha512-NyHYinr5OZXGlRzvYZoqFvFYf2J2zBhxAqjrTVdC/+3EKHRu0wnjeLhe0214qKydGdkHj4ehQDy5sPfdCh/cHg==
