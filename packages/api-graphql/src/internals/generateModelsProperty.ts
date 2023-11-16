@@ -19,11 +19,12 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 	const config = params.amplify.getConfig();
 
 	if (!config.API?.GraphQL) {
-		// breaks compatibility with certain bundler, e.g. Vite where component files are evaluated before the entry point
-		// causing false positive errors. Revisit how to better handle this post-launch
+		// breaks compatibility with certain bundler, e.g. Vite where component files are evaluated before
+		// the entry point causing false positive errors. Revisit how to better handle this post-launch
 
 		// throw new Error(
-		// 	'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient().'
+		// 	'The API configuration is missing. This is likely due to Amplify.configure() not being called
+		// prior to generateClient().'
 		// );
 		return {} as ModelTypes<never>;
 	}
