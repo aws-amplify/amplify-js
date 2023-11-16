@@ -1,3 +1,5 @@
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
+
 /**
  * Performs an `expect()` on a jest spy with some basic nested argument checks
  * based on the given mutation `opName` and `item`.
@@ -103,6 +105,70 @@ export function expectSub(
 			// Code-gen'd queries have an owner param; TypeBeast queries don't:
 			query: expect.stringContaining(`${opName}(filter: $filter`),
 			variables: expect.objectContaining(item),
+		}),
+		{
+			action: '1',
+			category: 'api',
+		}
+	);
+}
+
+/**
+ * Performs an `expect()` on a jest spy with some basic nested argument checks
+ * based on the given subscription `opName` and `item`.
+ * Used specifically for testing subscriptions with additional headers.
+ *
+ * @param spy The jest spy to check.
+ * @param opName The name of the graphql operation. E.g., `onCreateTodo`.
+ * @param item The item we expect to have been in the `variables`
+ * @param headers Any additional headers we expect to have been in the `additionalHeaders`
+ */
+export function expectSubWithHeaders(
+	spy: jest.SpyInstance<any, any>,
+	opName: string,
+	item: Record<string, any>,
+	headers?: CustomHeaders
+) {
+	expect(spy).toHaveBeenCalledWith(
+		expect.objectContaining({
+			authenticationType: 'apiKey',
+			apiKey: 'FAKE-KEY',
+			appSyncGraphqlEndpoint: 'https://localhost/graphql',
+			// Code-gen'd queries have an owner param; TypeBeast queries don't:
+			query: expect.stringContaining(`${opName}(filter: $filter`),
+			variables: expect.objectContaining(item),
+			additionalHeaders: expect.objectContaining(headers),
+		}),
+		{
+			action: '1',
+			category: 'api',
+		}
+	);
+}
+
+/**
+ * Performs an `expect()` on a jest spy with some basic nested argument checks
+ * based on the given subscription `opName` and `item`.
+ * Used specifically for testing subscriptions with additional headers.
+ *
+ * @param spy The jest spy to check.
+ * @param opName The name of the graphql operation. E.g., `onCreateTodo`.
+ * @param item The item we expect to have been in the `variables`
+ */
+export function expectSubWithHeadersFn(
+	spy: jest.SpyInstance<any, any>,
+	opName: string,
+	item: Record<string, any>
+) {
+	expect(spy).toHaveBeenCalledWith(
+		expect.objectContaining({
+			authenticationType: 'apiKey',
+			apiKey: 'FAKE-KEY',
+			appSyncGraphqlEndpoint: 'https://localhost/graphql',
+			// Code-gen'd queries have an owner param; TypeBeast queries don't:
+			query: expect.stringContaining(`${opName}(filter: $filter`),
+			variables: expect.objectContaining(item),
+			additionalHeaders: expect.any(Function),
 		}),
 		{
 			action: '1',

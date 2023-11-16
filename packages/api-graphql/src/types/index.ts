@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
-import { ModelTypes } from '@aws-amplify/data-schema-types';
+import { ModelTypes, CustomHeaders } from '@aws-amplify/data-schema-types';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -176,7 +176,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
-	additionalHeaders?: { [key: string]: string };
+	additionalHeaders?: CustomHeaders;
 }
 
 export type AWSAppSyncRealTimeProvider = {
@@ -363,6 +363,7 @@ type ExcludeNeverFields<O> = {
 export const __amplify = Symbol('amplify');
 export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
+export const __headers = Symbol('headers');
 
 export type ClientWithModels =
 	| V6Client<Record<string, any>>
@@ -373,6 +374,7 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
 	[__authMode]?: GraphQLAuthMode;
 	[__authToken]?: string;
+	[__headers]?: CustomHeaders;
 	graphql: GraphQLMethod;
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
@@ -384,6 +386,7 @@ export type V6ClientSSRRequest<T extends Record<any, any> = never> =
 		[__amplify]: AmplifyClassV6;
 		[__authMode]?: GraphQLAuthMode;
 		[__authToken]?: string;
+		[__headers]?: CustomHeaders;
 		graphql: GraphQLMethodSSR;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
@@ -395,6 +398,7 @@ export type V6ClientSSRCookies<T extends Record<any, any> = never> =
 		[__amplify]: AmplifyClassV6;
 		[__authMode]?: GraphQLAuthMode;
 		[__authToken]?: string;
+		[__headers]?: CustomHeaders;
 		graphql: GraphQLMethod;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
@@ -406,11 +410,7 @@ export type GraphQLMethod = <
 	TYPED_GQL_STRING extends string = string
 >(
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?:
-		| {
-				[key: string]: string;
-		  }
-		| undefined
+	additionalHeaders?: CustomHeaders | undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 export type GraphQLMethodSSR = <
@@ -419,11 +419,7 @@ export type GraphQLMethodSSR = <
 >(
 	contextSpec: AmplifyServer.ContextSpec,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?:
-		| {
-				[key: string]: string;
-		  }
-		| undefined
+	additionalHeaders?: CustomHeaders | undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 /**
@@ -442,7 +438,11 @@ export type ServerClientGenerationParams = {
 
 export type QueryArgs = Record<string, unknown>;
 
-export type ListArgs = { selectionSet?: string[]; filter?: {} };
+export type ListArgs = {
+	selectionSet?: string[];
+	filter?: {};
+	headers?: CustomHeaders;
+};
 
 export type AuthModeParams = {
 	authMode?: GraphQLAuthMode;

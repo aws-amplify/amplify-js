@@ -16,17 +16,21 @@ import {
 	ListArgs,
 	QueryArgs,
 	V6Client,
+	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 	__authMode,
 	__authToken,
+	__headers,
 } from '../types';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 type LazyLoadOptions = {
 	authMode?: GraphQLAuthMode;
 	authToken?: string | undefined;
 	limit?: number | undefined;
 	nextToken?: string | undefined | null;
+	headers?: CustomHeaders | undefined;
 };
 
 const connectionType = {
@@ -777,4 +781,25 @@ export function authModeParams(
 		authMode: options.authMode || client[__authMode],
 		authToken: options.authToken || client[__authToken],
 	};
+}
+
+/**
+ * Retrieves custom headers from either the client or request options.
+ * @param {client} V6Client | V6ClientSSRRequest | V6ClientSSRCookies - for extracting client headers
+ * @param {requestHeaders} [CustomHeaders] - request headers
+ * @returns {CustomHeaders} - custom headers
+ */
+export function getCustomHeaders(
+	client: V6Client | ClientWithModels,
+	requestHeaders?: CustomHeaders
+): CustomHeaders {
+	let headers: CustomHeaders = client[__headers] || {};
+
+	// Individual request headers will take precedence over client headers.
+	// We intentionally do *not* merge client and request headers.
+	if (requestHeaders) {
+		headers = requestHeaders;
+	}
+
+	return headers;
 }
