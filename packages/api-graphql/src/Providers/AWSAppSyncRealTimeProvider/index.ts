@@ -326,6 +326,16 @@ export class AWSAppSyncRealTimeProvider {
 			additionalCustomHeaders = additionalHeaders;
 		}
 
+		/**
+		 * requestOptions?: {
+		 *   headers?: Record<string, string>;
+		 *   method: string;
+		 *   url: string;
+		 *   queryString: string;
+		 * }
+		 */
+		debugger;
+
 		// if an authorization header is set, have the explicit authToken take precedence
 		if (authToken) {
 			additionalCustomHeaders = {

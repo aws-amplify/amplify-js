@@ -308,8 +308,10 @@ export class InternalGraphQLAPIClass {
 			}),
 		};
 
+		const queryString = print(query as DocumentNode);
+
 		const body = {
-			query: print(query as DocumentNode),
+			query: queryString,
 			variables: variables || null,
 		};
 
@@ -348,10 +350,31 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
+		const url = new AmplifyUrl(endpoint);
+
+		/**
+		 * TODO: add type to `amplify-api-next/data-schema-types`:
+		 *
+		 * requestOptions?: {
+		 *   headers?: Record<string, string>;
+		 *   method: string;
+		 *   url: string;
+		 *   queryString: string;
+		 * }
+		 */
+		// TODO - add type:
+		const requestOptions: any = {
+			headers,
+			method: 'POST',
+			url: url.toString(),
+			queryString,
+		};
+		debugger;
+
 		let response: any;
 		try {
 			const { body: responseBody } = await this._api.post({
-				url: new AmplifyUrl(endpoint),
+				url: url,
 				options: {
 					headers,
 					body,
