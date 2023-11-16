@@ -67,8 +67,9 @@
 		"clean": "npm run clean:size && rimraf dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' -c ../../.eslintrc.scoped.js && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' -c ../../.eslintrc.scoped.js --fix",
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
+		"ts-coverage": "rimraf coverage-ts && typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
 	}
 }

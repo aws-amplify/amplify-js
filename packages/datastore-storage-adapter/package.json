@@ -19,8 +19,9 @@
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf dist lib lib-esm",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint '{__tests__,src}/**/*.ts'  && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 94.16"
+		"lint": "eslint '**/*.{ts,tsx}' -c ../../.eslintrc.scoped.js && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' -c ../../.eslintrc.scoped.js --fix",
+		"ts-coverage": "rimraf coverage-ts && typescript-coverage-report -p ./tsconfig.build.json -t 94.16"
 	},
 	"repository": {
 		"type": "git",

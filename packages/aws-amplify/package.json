@@ -234,10 +234,11 @@
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' -c ../../.eslintrc.scoped.js && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' -c ../../.eslintrc.scoped.js --fix",
 		"generate-docs-local": "typedoc --out docs src",
 		"generate-docs-root": "typedoc --out ../../docs src",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 93.26"
+		"ts-coverage": "rimraf coverage-ts && typescript-coverage-report -p ./tsconfig.build.json -t 93.26"
 	},
 	"repository": {
 		"type": "git",
