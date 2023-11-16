@@ -12,6 +12,8 @@ export type {
 	CONNECTION_STATE_CHANGE,
 } from '@aws-amplify/api-graphql';
 
+export type { V6Client as Client } from '@aws-amplify/api-graphql';
+
 export {
 	get,
 	put,
