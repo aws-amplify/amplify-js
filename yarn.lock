@@ -17,17 +17,17 @@
   dependencies:
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema-types@^0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.6.3.tgz#7741d943e70b4b1b53dda7b63b2c5a77d725624b"
-  integrity sha512-Zxal0UGNK4BEE6YeDg48FQ0obtKq1KCxr09pyFZR/ml0SLF5zJA5c2d+EWATpifWIFCB0QfpoDmXZFaYuEjmcA==
+"@aws-amplify/data-schema-types@^0.6.4":
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.6.4.tgz#a618cf4a9f989f2b9dafcab921012d7cded42a54"
+  integrity sha512-NyHYinr5OZXGlRzvYZoqFvFYf2J2zBhxAqjrTVdC/+3EKHRu0wnjeLhe0214qKydGdkHj4ehQDy5sPfdCh/cHg==
   dependencies:
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema@^0.12.5":
-  version "0.12.5"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.12.5.tgz#0241883e1058512f07b7367c354e56e122d03b88"
-  integrity sha512-cpUHG4kCmpfToTe2iARXdDOePIPoTlPWqbhYsEewtDKGiCyhBmDu3nwWaEgj3uoHn8Xfk3Qyq4WaaykHYGM1WQ==
+"@aws-amplify/data-schema@^0.12.6":
+  version "0.12.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.12.6.tgz#7cdaa8f68bd3dd6da86e59433e9f0646176ca50e"
+  integrity sha512-ZNpEHxIbNHbNvsKmKO8+X0+wdyoI+sGqzEN44zd8k9zvFqs60cnkLt2ayhcb0h7ew+ytf7+ESkos+ccM8+HkaA==
   dependencies:
     "@aws-amplify/data-schema-types" "*"
 
