@@ -12,7 +12,13 @@ export type {
 	CONNECTION_STATE_CHANGE,
 } from '@aws-amplify/api-graphql';
 
-export type { V6Client as Client } from '@aws-amplify/api-graphql';
+import type { V6Client } from '@aws-amplify/api-graphql';
+
+// explicitly defaulting to `never` here resolves
+// TS2589: Type instantiation is excessively deep and possibly infinite.
+// When this type is used without a generic type arg, i.e. `let client: Client`
+type Client<T extends Record<any, any> = never> = V6Client<T>;
+export { Client };
 
 export {
 	get,
