@@ -4,9 +4,8 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-
-import { post as internalPost } from '../apis/common/internalPost';
-import { InternalPostInput } from '../types';
+import { InternalPostInput } from '~/src/types';
+import { post as internalPost } from '~/src/apis/common/internalPost';
 
 /**
  * Internal-only REST POST handler to send GraphQL request to given endpoint. By default, it will use IAM to authorize
@@ -26,7 +25,7 @@ import { InternalPostInput } from '../types';
  */
 export const post = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: InternalPostInput
+	input: InternalPostInput,
 ) => {
 	return internalPost(getAmplifyServerContext(contextSpec).amplify, input);
 };

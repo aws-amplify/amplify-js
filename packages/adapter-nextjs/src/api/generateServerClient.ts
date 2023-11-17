@@ -12,6 +12,8 @@ import {
 	V6ClientSSRRequest,
 } from '@aws-amplify/api-graphql';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { NextServer } from '~/src/types';
+import { getAmplifyConfig } from '~/src/utils';
 
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 

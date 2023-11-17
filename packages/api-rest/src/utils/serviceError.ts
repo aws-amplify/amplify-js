@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { MetadataBearer } from '@aws-sdk/types';
 import {
 	HttpResponse,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { RestApiError } from '../errors';
+import { MetadataBearer } from '@aws-sdk/types';
+import { RestApiError } from '~/src/errors';
 
 /**
  * Internal-only method to create a new RestApiError from a service error.
@@ -18,17 +18,19 @@ export const buildRestApiServiceError = (error: Error): RestApiError => {
 		message: error.message,
 		underlyingError: error,
 	});
+
 	return restApiError;
 };
 
 export const parseRestApiServiceError = async (
-	response?: HttpResponse
+	response?: HttpResponse,
 ): Promise<(RestApiError & MetadataBearer) | undefined> => {
 	const parsedError = await parseJsonError(response);
 	if (!parsedError) {
 		// Response is not an error.
 		return;
 	}
+
 	return Object.assign(buildRestApiServiceError(parsedError), {
 		$metadata: parsedError.$metadata,
 	});

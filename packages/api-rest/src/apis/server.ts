@@ -5,14 +5,7 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import {
-	get as commonGet,
-	post as commonPost,
-	put as commonPut,
-	del as commonDel,
-	head as commonHead,
-	patch as commonPatch,
-} from './common/publicApis';
+import { RestApiError } from '~/src/errors';
 import {
 	DeleteInput,
 	DeleteOperation,
@@ -26,8 +19,16 @@ import {
 	PostOperation,
 	PutInput,
 	PutOperation,
-} from '../types';
-import { RestApiError } from '../errors';
+} from '~/src/types';
+
+import {
+	del as commonDel,
+	get as commonGet,
+	head as commonHead,
+	patch as commonPatch,
+	post as commonPost,
+	put as commonPut,
+} from './common/publicApis';
 
 /**
  * GET HTTP request (server-side)
@@ -52,11 +53,10 @@ import { RestApiError } from '../errors';
  *   },
  * });
  * ```
- * @see {@link clientGet}
  */
 export const get = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: GetInput
+	input: GetInput,
 ): GetOperation =>
 	commonGet(getAmplifyServerContext(contextSpec).amplify, input);
 
@@ -86,7 +86,7 @@ export const get = (
  */
 export const post = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: PostInput
+	input: PostInput,
 ): PostOperation =>
 	commonPost(getAmplifyServerContext(contextSpec).amplify, input);
 
@@ -116,7 +116,7 @@ export const post = (
  */
 export const put = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: PutInput
+	input: PutInput,
 ): PutOperation =>
 	commonPut(getAmplifyServerContext(contextSpec).amplify, input);
 
@@ -145,7 +145,7 @@ export const put = (
  */
 export const del = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: DeleteInput
+	input: DeleteInput,
 ): DeleteOperation =>
 	commonDel(getAmplifyServerContext(contextSpec).amplify, input);
 
@@ -174,7 +174,7 @@ export const del = (
  */
 export const head = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: HeadInput
+	input: HeadInput,
 ): HeadOperation =>
 	commonHead(getAmplifyServerContext(contextSpec).amplify, input);
 
@@ -204,6 +204,6 @@ export const head = (
  */
 export const patch = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: PatchInput
+	input: PatchInput,
 ): PatchOperation =>
 	commonPatch(getAmplifyServerContext(contextSpec).amplify, input);

@@ -102,7 +102,7 @@ describe('public APIs', () => {
 				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					{
 						url: new URL(
-							'https://123.execute-api.us-west-2.amazonaws.com/development/items'
+							'https://123.execute-api.us-west-2.amazonaws.com/development/items',
 						),
 						method,
 						headers: {},
@@ -112,7 +112,7 @@ describe('public APIs', () => {
 						region: 'us-west-2',
 						service: 'execute-api',
 						withCrossDomainCredentials: true,
-					})
+					}),
 				);
 				expect(response.headers).toEqual({
 					'response-header': 'response-header-value',
@@ -135,7 +135,7 @@ describe('public APIs', () => {
 				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					{
 						url: new URL(
-							'https://123.execute-api.us-west-2.amazonaws.com/development/items'
+							'https://123.execute-api.us-west-2.amazonaws.com/development/items',
 						),
 						method,
 						headers: {
@@ -146,7 +146,7 @@ describe('public APIs', () => {
 					expect.objectContaining({
 						region: 'us-west-2',
 						service: 'execute-api',
-					})
+					}),
 				);
 			});
 
@@ -163,7 +163,7 @@ describe('public APIs', () => {
 				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					{
 						url: new URL(
-							'https://123.execute-api.us-west-2.amazonaws.com/development/items'
+							'https://123.execute-api.us-west-2.amazonaws.com/development/items',
 						),
 						method,
 						headers: {
@@ -174,7 +174,7 @@ describe('public APIs', () => {
 					expect.objectContaining({
 						region: 'us-west-2',
 						service: 'execute-api',
-					})
+					}),
 				);
 			});
 
@@ -186,10 +186,10 @@ describe('public APIs', () => {
 				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					expect.objectContaining({
 						url: new URL(
-							'https://123.execute-api.us-west-2.amazonaws.com/development/items/123'
+							'https://123.execute-api.us-west-2.amazonaws.com/development/items/123',
 						),
 					}),
-					expect.anything()
+					expect.anything(),
 				);
 			});
 
@@ -209,7 +209,7 @@ describe('public APIs', () => {
 							href: 'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1',
 						}),
 					}),
-					expect.anything()
+					expect.anything(),
 				);
 			});
 
@@ -229,7 +229,7 @@ describe('public APIs', () => {
 							href: 'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1&foo=bar',
 						}),
 					}),
-					expect.anything()
+					expect.anything(),
 				);
 			});
 
@@ -243,7 +243,7 @@ describe('public APIs', () => {
 				} catch (error) {
 					expect(error).toBeInstanceOf(RestApiError);
 					expect(error).toMatchObject(
-						validationErrorMap[RestApiValidationErrorCode.InvalidApiName]
+						validationErrorMap[RestApiValidationErrorCode.InvalidApiName],
 					);
 				}
 			});
@@ -260,7 +260,7 @@ describe('public APIs', () => {
 					expect(error).toMatchObject({
 						...validationErrorMap[RestApiValidationErrorCode.InvalidApiName],
 						recoverySuggestion: expect.stringContaining(
-							'Please make sure the REST endpoint URL is a valid URL string.'
+							'Please make sure the REST endpoint URL is a valid URL string.',
 						),
 					});
 				}
@@ -277,7 +277,7 @@ describe('public APIs', () => {
 				} catch (error) {
 					expect(error).toBeInstanceOf(RestApiError);
 					expect(error).toMatchObject(
-						validationErrorMap[RestApiValidationErrorCode.NoCredentials]
+						validationErrorMap[RestApiValidationErrorCode.NoCredentials],
 					);
 				}
 			});
@@ -294,7 +294,7 @@ describe('public APIs', () => {
 					},
 				};
 				mockParseJsonError.mockResolvedValueOnce(
-					new RestApiError({ message: 'fooMessage', name: 'badRequest' })
+					new RestApiError({ message: 'fooMessage', name: 'badRequest' }),
 				);
 				mockAuthenticatedHandler.mockResolvedValueOnce(errorResponse);
 				try {
@@ -312,12 +312,12 @@ describe('public APIs', () => {
 			it('should support cancel', async () => {
 				expect.assertions(2);
 				const abortSpy = jest.spyOn(AbortController.prototype, 'abort');
-				let underLyingHandlerReject;
+				let underLyingHandlerReject: (reason?: any) => void;
 				mockAuthenticatedHandler.mockReset();
 				mockAuthenticatedHandler.mockReturnValue(
 					new Promise((_, reject) => {
 						underLyingHandlerReject = reject;
-					})
+					}),
 				);
 				abortSpy.mockImplementation(() => {
 					const mockAbortError = new Error('AbortError');

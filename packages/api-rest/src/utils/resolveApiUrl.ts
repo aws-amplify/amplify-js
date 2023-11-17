@@ -11,7 +11,7 @@ import {
 	RestApiValidationErrorCode,
 	assertValidationError,
 	validationErrorMap,
-} from '../errors';
+} from '~/src/errors';
 
 /**
  * Resolve the REST API request URL by:
@@ -27,7 +27,7 @@ export const resolveApiUrl = (
 	amplify: AmplifyClassV6,
 	apiName: string,
 	path: string,
-	queryParams?: Record<string, string>
+	queryParams?: Record<string, string>,
 ): URL => {
 	const urlStr = amplify.getConfig()?.API?.REST?.[apiName]?.endpoint;
 	assertValidationError(!!urlStr, RestApiValidationErrorCode.InvalidApiName);
@@ -40,6 +40,7 @@ export const resolveApiUrl = (
 			});
 			url.search = new AmplifyUrlSearchParams(mergedQueryParams).toString();
 		}
+
 		return url;
 	} catch (error) {
 		throw new RestApiError({

@@ -2,14 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import {
-	get as commonGet,
-	post as commonPost,
-	put as commonPut,
-	del as commonDel,
-	head as commonHead,
-	patch as commonPatch,
-} from './common/publicApis';
+import { RestApiError } from '~/src/errors';
 import {
 	DeleteInput,
 	DeleteOperation,
@@ -23,8 +16,16 @@ import {
 	PostOperation,
 	PutInput,
 	PutOperation,
-} from '../types';
-import { RestApiError } from '../errors';
+} from '~/src/types';
+
+import {
+	del as commonDel,
+	get as commonGet,
+	head as commonHead,
+	patch as commonPatch,
+	post as commonPost,
+	put as commonPut,
+} from './common/publicApis';
 
 /**
  * GET HTTP request
