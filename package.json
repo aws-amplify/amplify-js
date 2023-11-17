@@ -117,6 +117,7 @@
 		"ts-loader": "^9.4.3",
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
+		"typedoc": "^0.17.0",
 		"typescript": "~3.8.3",
 		"typescript-coverage-report": "^0.6.4",
 		"uuid-validate": "^0.0.3",
@@ -124,8 +125,7 @@
 		"webpack-bundle-analyzer": "^4.7.0",
 		"webpack-cli": "^5.0.0",
 		"winston": "^3.2.1",
-		"wml": "0.0.83",
-		"typedoc": "^0.17.0"
+		"wml": "0.0.83"
 	},
 	"resolutions": {
 		"@types/babel__traverse": "7.20.0",
@@ -137,5 +137,8 @@
 	"jest": {
 		"resetMocks": true,
 		"verbose": true
+	},
+	"dependencies": {
+		"coldbox-elixir": "^3.1.6"
 	}
 }
