@@ -4,13 +4,13 @@ import {
 	AWSAppSyncRealTimeProvider,
 	GraphQLOperation,
 	GraphQLOptions,
-	GraphQLResult,
-	OperationTypeNode,
 	GraphQLQuery,
+	GraphQLResult,
 	GraphQLSubscription,
+	OperationTypeNode,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { Amplify, Cache, ConsoleLogger } from '@aws-amplify/core';
+import { Amplify, Cache } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
@@ -28,7 +28,6 @@ import { CustomHeaders } from '@aws-amplify/data-schema-types';
  * state as possible for V6 to reduce number of potentially impactful changes to DataStore.
  */
 
-const logger = new ConsoleLogger('API');
 /**
  * @deprecated
  * Use RestApi or GraphQLAPI to reduce your application bundle size
@@ -68,7 +67,7 @@ export class InternalAPIClass {
 	graphql<T>(
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
-		customUserAgentDetails?: CustomUserAgentDetails
+		customUserAgentDetails?: CustomUserAgentDetails,
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
 		: T extends GraphQLSubscription<T>
@@ -77,10 +76,11 @@ export class InternalAPIClass {
 					value: GraphQLResult<T>;
 		    }>
 		  : Promise<GraphQLResult<any>> | Observable<object>;
-	graphql<T = any>(
+
+	graphql(
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
-		customUserAgentDetails?: CustomUserAgentDetails
+		customUserAgentDetails?: CustomUserAgentDetails,
 	): Promise<GraphQLResult<any>> | Observable<object> {
 		const apiUserAgentDetails: CustomUserAgentDetails = {
 			category: Category.API,
@@ -92,7 +92,7 @@ export class InternalAPIClass {
 			Amplify,
 			options,
 			additionalHeaders,
-			apiUserAgentDetails
+			apiUserAgentDetails,
 		);
 	}
 }
