@@ -601,9 +601,8 @@ describe('AmazonLocationServiceProvider', () => {
 				awsConfigGeoV4
 			);
 
-			const results = await locationProvider.searchByCoordinates(
-				testCoordinates
-			);
+			const results =
+				await locationProvider.searchByCoordinates(testCoordinates);
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');

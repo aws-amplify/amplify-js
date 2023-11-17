@@ -1,12 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { 
-	appId,
-	credentials,
-	identityId,
-	region,
-} from '../testUtils/data';
+import { appId, credentials, identityId, region } from '../testUtils/data';
 import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/getEventBuffer';
 import { PinpointEventBuffer } from '../../../../src/providers/pinpoint/utils/PinpointEventBuffer';
 
@@ -21,8 +16,8 @@ const mockConfig = {
 	flushSize: 50,
 	identityId,
 	region,
-	resendLimit: 5
-}
+	resendLimit: 5,
+};
 
 describe('Pinpoint Provider Util: bufferManager', () => {
 	const mockPinpointEventBuffer = PinpointEventBuffer as jest.Mock;
@@ -35,11 +30,11 @@ describe('Pinpoint Provider Util: bufferManager', () => {
 		mockPinpointEventBuffer.mockReset();
 		mockPinpointEventBuffer.mockImplementation(() => ({
 			identityHasChanged: mockIdentityHasChanged,
-			flush: mockFlush
-		}))
+			flush: mockFlush,
+		}));
 	});
 
-	it('creates a buffer if one doesn\'t exist', async () => {
+	it("creates a buffer if one doesn't exist", async () => {
 		const testBuffer = getEventBuffer(mockConfig);
 
 		expect(mockPinpointEventBuffer).toBeCalledWith(mockConfig);

@@ -4729,9 +4729,8 @@ describe('DataStore tests', () => {
 
 				describe('Query with generic type', () => {
 					test('all', async () => {
-						const allPostCustomPKs = await DataStore.query<PostCustomPKType>(
-							PostCustomPK
-						);
+						const allPostCustomPKs =
+							await DataStore.query<PostCustomPKType>(PostCustomPK);
 
 						expectType<PostCustomPKType[]>(allPostCustomPKs);
 
