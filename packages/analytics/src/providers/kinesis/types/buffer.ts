@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { EventBufferConfig } from '../../../utils';
-import { KinesisShard } from '../../../types';
+import { EventBufferConfig } from '~/src/utils';
+import { KinesisShard } from '~/src/types';
 
 export type KinesisBufferEvent = KinesisShard & {
 	event: Uint8Array;

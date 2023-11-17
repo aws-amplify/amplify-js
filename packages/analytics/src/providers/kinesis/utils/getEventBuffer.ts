@@ -1,9 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KinesisBufferEvent, KinesisEventBufferConfig } from '../types';
-import { EventBuffer, groupBy, IAnalyticsClient } from '../../../utils';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
+import {
+	KinesisBufferEvent,
+	KinesisEventBufferConfig,
+} from '~/src/providers/kinesis/types';
+import { EventBuffer, IAnalyticsClient, groupBy } from '~/src/utils';
 
 /**
  * These Records hold cached event buffers and AWS clients.
@@ -18,7 +21,7 @@ const cachedClients: Record<string, KinesisClient> = {};
 
 const createKinesisPutRecordsCommand = (
 	streamName: string,
-	events: KinesisBufferEvent[]
+	events: KinesisBufferEvent[],
 ): PutRecordsCommand =>
 	new PutRecordsCommand({
 		StreamName: streamName,
@@ -31,23 +34,24 @@ const createKinesisPutRecordsCommand = (
 const submitEvents = async (
 	events: KinesisBufferEvent[],
 	client: KinesisClient,
-	resendLimit?: number
+	resendLimit?: number,
 ): Promise<KinesisBufferEvent[]> => {
 	const groupedByStreamName = Object.entries(
-		groupBy(event => event.streamName, events)
+		groupBy(event => event.streamName, events),
 	);
 	const requests = groupedByStreamName
-		.map(([streamName, events]) =>
-			createKinesisPutRecordsCommand(streamName, events)
+		.map(([streamName, streamEvents]) =>
+			createKinesisPutRecordsCommand(streamName, streamEvents),
 		)
 		.map(command => client.send(command));
 
 	const responses = await Promise.allSettled(requests);
 	const failedEvents = responses
 		.map((response, i) =>
-			response.status === 'rejected' ? groupedByStreamName[i][1] : []
+			response.status === 'rejected' ? groupedByStreamName[i][1] : [],
 		)
 		.flat();
+
 	return resendLimit
 		? failedEvents
 				.filter(event => event.retryCount < resendLimit)
@@ -89,12 +93,12 @@ export const getEventBuffer = ({
 				flushSize,
 				bufferSize,
 			},
-			getKinesisClient
+			getKinesisClient,
 		);
 
 		// release other sessions
 		const releaseSessionKeys = Object.keys(eventBufferMap).filter(
-			x => x !== sessionIdentityKey
+			x => x !== sessionIdentityKey,
 		);
 		for (const releaseSessionKey of releaseSessionKeys) {
 			eventBufferMap[releaseSessionKey].flushAll().finally(() => {

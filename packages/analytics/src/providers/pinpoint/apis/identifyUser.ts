@@ -1,22 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import {
-	updateEndpoint,
 	UpdateEndpointException,
+	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
-import { AnalyticsValidationErrorCode } from '../../../errors';
-import { getAnalyticsUserAgentString } from '../../../utils';
-import { IdentifyUserInput } from '../types';
-import { resolveConfig, resolveCredentials } from '../utils';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { getAnalyticsUserAgentString } from '~/src/utils';
+import {
+	resolveConfig,
+	resolveCredentials,
+} from '~/src/providers/pinpoint/utils';
+import { AnalyticsValidationErrorCode } from '~/src/errors';
+import { IdentifyUserInput } from '~/src/providers/pinpoint/types';
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
  *
- * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
+ * @param {IdentifyUserInput} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
  *
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.

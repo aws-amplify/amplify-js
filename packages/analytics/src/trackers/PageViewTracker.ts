@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ConsoleLogger } from '@aws-amplify/core';
+import { isBrowser } from '@aws-amplify/core/internals/utils';
 import {
 	PageViewTrackingOptions,
 	TrackerEventRecorder,
 	TrackerInterface,
-} from '../types/trackers';
-import { ConsoleLogger } from '@aws-amplify/core';
-import { isBrowser } from '@aws-amplify/core/internals/utils';
+} from '~/src/types/trackers';
 
 const logger = new ConsoleLogger('PageViewTracker');
 
@@ -32,7 +32,7 @@ export class PageViewTracker implements TrackerInterface {
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
-		options?: PageViewTrackingOptions
+		options?: PageViewTrackingOptions,
 	) {
 		this.options = {};
 		this.trackerActive = true;
@@ -45,7 +45,7 @@ export class PageViewTracker implements TrackerInterface {
 
 	public configure(
 		eventRecorder: TrackerEventRecorder,
-		options?: PageViewTrackingOptions
+		options?: PageViewTrackingOptions,
 	) {
 		this.eventRecorder = eventRecorder;
 
@@ -95,20 +95,14 @@ export class PageViewTracker implements TrackerInterface {
 			// Configure proxies on History APIs
 			this.pushStateProxy = Proxy.revocable(window.history.pushState, {
 				apply: (target, thisArg, args) => {
-					const proxiedResult = target.apply(thisArg, args as any);
-
+					target.apply(thisArg, args as any);
 					this.handleLocationChange();
-
-					return proxiedResult;
 				},
 			});
 			this.replaceStateProxy = Proxy.revocable(window.history.replaceState, {
 				apply: (target, thisArg, args) => {
-					const proxiedResult = target.apply(thisArg, args as any);
-
+					target.apply(thisArg, args as any);
 					this.handleLocationChange();
-
-					return proxiedResult;
 				},
 			});
 
@@ -139,7 +133,7 @@ export class PageViewTracker implements TrackerInterface {
 				{
 					url: currentUrl,
 				},
-				this.options.attributes
+				this.options.attributes,
 			);
 
 			logger.debug('Recording automatically tracked page view event', {

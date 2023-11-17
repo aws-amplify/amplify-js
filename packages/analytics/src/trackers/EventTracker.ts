@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	EventTrackingOptions,
-	DOMEvent,
-	TrackerEventRecorder,
-	TrackerInterface,
-} from '../types/trackers';
 import { ConsoleLogger } from '@aws-amplify/core';
 import { isBrowser } from '@aws-amplify/core/internals/utils';
+import {
+	DOMEvent,
+	EventTrackingOptions,
+	TrackerEventRecorder,
+	TrackerInterface,
+} from '~/src/types/trackers';
 
 const DEFAULT_EVENTS = ['click'] as DOMEvent[];
 const DEFAULT_SELECTOR_PREFIX = 'data-amplify-analytics-';
@@ -23,7 +23,7 @@ export class EventTracker implements TrackerInterface {
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
-		options?: EventTrackingOptions
+		options?: EventTrackingOptions,
 	) {
 		this.options = {};
 		this.trackerActive = false;
@@ -35,7 +35,7 @@ export class EventTracker implements TrackerInterface {
 
 	public configure(
 		eventRecorder: TrackerEventRecorder,
-		options?: EventTrackingOptions
+		options?: EventTrackingOptions,
 	) {
 		this.eventRecorder = eventRecorder;
 
@@ -120,7 +120,7 @@ export class EventTracker implements TrackerInterface {
 						target: `${target.localName} with id ${target.id}`,
 					},
 					this.options.attributes,
-					elementAttributes
+					elementAttributes,
 				);
 
 				logger.debug('Recording automatically tracked DOM event', {

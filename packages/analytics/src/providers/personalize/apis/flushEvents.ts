@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getEventBuffer, resolveConfig } from '../utils';
-import {
-	getAnalyticsUserAgentString,
-	resolveCredentials,
-} from '../../../utils';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
+import {
+	getEventBuffer,
+	resolveConfig,
+} from '~/src/providers/personalize/utils';
+import { getAnalyticsUserAgentString, resolveCredentials } from '~/src/utils';
 
 const logger = new ConsoleLogger('Personalize');
 
@@ -30,8 +30,10 @@ export const flushEvents = () => {
 				credentials,
 				identityId,
 				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
-			})
+			}),
 		)
 		.then(eventBuffer => eventBuffer.flushAll())
-		.catch(e => logger.warn('Failed to flush events', e));
+		.catch(e => {
+			logger.warn('Failed to flush events', e);
+		});
 };

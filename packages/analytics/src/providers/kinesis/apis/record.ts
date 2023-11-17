@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RecordInput } from '../types';
-import { getEventBuffer } from '../utils/getEventBuffer';
-import { resolveConfig } from '../utils/resolveConfig';
+import { fromUtf8 } from '@smithy/util-utf8';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
+import { RecordInput } from '~/src/providers/kinesis/types';
+import { getEventBuffer } from '~/src/providers/kinesis/utils/getEventBuffer';
+import { resolveConfig } from '~/src/providers/kinesis/utils/resolveConfig';
 import {
 	getAnalyticsUserAgentString,
 	isAnalyticsEnabled,
 	resolveCredentials,
-} from '../../../utils';
-import { fromUtf8 } from '@smithy/util-utf8';
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+} from '~/src/utils';
 
 const logger = new ConsoleLogger('Kinesis');
 
@@ -22,6 +22,7 @@ export const record = ({
 }: RecordInput): void => {
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
+
 		return;
 	}
 

@@ -3,13 +3,11 @@
 
 export const groupBy = <T>(
 	getGroupId: (x: T) => string,
-	list: T[]
+	list: T[],
 ): Record<string, T[]> => {
-	return list.reduce(
-		(result, current) => {
-			const groupId = getGroupId(current);
-			return { ...result, [groupId]: [...(result[groupId] ?? []), current] };
-		},
-		{} as Record<string, T[]>
-	);
+	return list.reduce((result, current) => {
+		const groupId = getGroupId(current);
+
+		return { ...result, [groupId]: [...(result[groupId] ?? []), current] };
+	}, {} as Record<string, T[]>);
 };

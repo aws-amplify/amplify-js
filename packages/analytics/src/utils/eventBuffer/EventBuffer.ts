@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
-import { EventBufferConfig, IAnalyticsClient } from './';
+
+import { EventBufferConfig, IAnalyticsClient } from './types';
 
 const logger = new ConsoleLogger('EventBuffer');
 
@@ -15,7 +16,7 @@ export class EventBuffer<T> {
 
 	constructor(
 		config: EventBufferConfig,
-		getAnalyticsClient: () => IAnalyticsClient<T>
+		getAnalyticsClient: () => IAnalyticsClient<T>,
 	) {
 		this.list = [];
 		this.config = config;
@@ -27,7 +28,7 @@ export class EventBuffer<T> {
 		for (const event of events) {
 			if (this.list.length + 1 > this.config.bufferSize) {
 				logger.debug(
-					`Exceed ${typeof event} event buffer limits, event dropped`
+					`Exceed ${typeof event} event buffer limits, event dropped`,
 				);
 				continue;
 			}
@@ -69,16 +70,15 @@ export class EventBuffer<T> {
 		}, flushInterval);
 	}
 
-	private submitEvents(count: number): Promise<void> {
+	private async submitEvents(count: number): Promise<void> {
 		const events = this.head(count);
 		if (events.length === 0) {
 			return Promise.resolve();
 		}
 
-		return this.getAnalyticsClient()(events).then(result => {
-			if (result.length > 0) {
-				this.insertAtBeginning(...result);
-			}
-		});
+		const result = await this.getAnalyticsClient()(events);
+		if (result.length > 0) {
+			this.insertAtBeginning(...result);
+		}
 	}
 }

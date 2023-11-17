@@ -1,22 +1,26 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RecordInput } from '../types';
-import { getEventBuffer, resolveConfig } from '../utils';
+import { fromUtf8 } from '@smithy/util-utf8';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
+import { RecordInput } from '~/src/providers/kinesis-firehose/types';
+import {
+	getEventBuffer,
+	resolveConfig,
+} from '~/src/providers/kinesis-firehose/utils';
 import {
 	getAnalyticsUserAgentString,
 	isAnalyticsEnabled,
 	resolveCredentials,
-} from '../../../utils';
-import { fromUtf8 } from '@smithy/util-utf8';
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+} from '~/src/utils';
 
 const logger = new ConsoleLogger('KinesisFirehose');
 
 export const record = ({ streamName, data }: RecordInput): void => {
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
+
 		return;
 	}
 

@@ -1,25 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { RecordInput } from '../types';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
+import { RecordInput } from '~/src/providers/personalize/types';
 import {
 	autoTrackMedia,
 	getEventBuffer,
 	resolveCachedSession,
 	resolveConfig,
 	updateCachedSession,
-} from '../utils';
+} from '~/src/providers/personalize/utils';
 import {
 	getAnalyticsUserAgentString,
 	isAnalyticsEnabled,
 	resolveCredentials,
-} from '../../../utils';
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
+} from '~/src/utils';
 import {
 	IDENTIFY_EVENT_TYPE,
 	MEDIA_AUTO_TRACK_EVENT_TYPE,
-} from '../utils/constants';
+} from '~/src/providers/personalize/utils/constants';
 
 const logger = new ConsoleLogger('Personalize');
 
@@ -31,6 +31,7 @@ export const record = ({
 }: RecordInput): void => {
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
+
 		return;
 	}
 
@@ -45,9 +46,9 @@ export const record = ({
 				updateCachedSession(
 					typeof properties.userId === 'string' ? properties.userId : '',
 					cachedSessionId,
-					cachedUserId
+					cachedUserId,
 				);
-			} else if (!!userId) {
+			} else if (userId) {
 				updateCachedSession(userId, cachedSessionId, cachedUserId);
 			}
 
@@ -76,7 +77,7 @@ export const record = ({
 							properties,
 						},
 					},
-					eventBuffer
+					eventBuffer,
 				);
 			} else {
 				eventBuffer.append({

@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
-import { IdentifyUserOptions } from './options';
 import {
 	AnalyticsConfigureAutoTrackInput,
 	AnalyticsIdentifyUserInput,
-} from '../../../types';
+} from '~/src/types';
+
+import { IdentifyUserOptions } from './options';
 
 /**
  * Input type for Pinpoint record API.

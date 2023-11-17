@@ -5,7 +5,7 @@ import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
-} from '../../../errors';
+} from '~/src/errors';
 
 /**
  * @internal
@@ -14,7 +14,8 @@ export const resolveCredentials = async () => {
 	const { credentials, identityId } = await fetchAuthSession();
 	assertValidationError(
 		!!credentials,
-		AnalyticsValidationErrorCode.NoCredentials
+		AnalyticsValidationErrorCode.NoCredentials,
 	);
+
 	return { credentials, identityId };
 };

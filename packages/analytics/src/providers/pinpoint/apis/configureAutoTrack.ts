@@ -1,17 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AnalyticsValidationErrorCode } from '../../../errors';
+import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
+import { AnalyticsValidationErrorCode } from '~/src/errors';
 import {
-	TrackerType,
 	TrackerAttributes,
 	TrackerInterface,
-} from '../../../types/trackers';
+	TrackerType,
+} from '~/src/types/trackers';
 import {
 	updateProviderTrackers,
 	validateTrackerConfiguration,
-} from '../../../utils';
-import { ConfigureAutoTrackInput } from '../types';
+} from '~/src/utils';
+import { ConfigureAutoTrackInput } from '~/src/providers/pinpoint/types';
+
 import { record } from './record';
 
 // Configured Tracker instances for Pinpoint
@@ -20,7 +22,7 @@ const configuredTrackers: Partial<Record<TrackerType, TrackerInterface>> = {};
 // Callback that will emit an appropriate event to Pinpoint when required by the Tracker
 const emitTrackingEvent = (
 	eventName: string,
-	attributes: TrackerAttributes
+	attributes: TrackerAttributes,
 ) => {
 	record({
 		name: eventName,

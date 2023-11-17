@@ -25,13 +25,15 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 		userId: 'userId0',
 	};
 
-	const mockCachedStorage = {
+	const mockCachedStorage: Record<string, string> = {
 		[userIdCacheKey]: mockSession.userId,
 		[sessionIdCacheKey]: mockSession.sessionId,
 	};
 
 	beforeEach(() => {
-		mockCache.getItem.mockImplementation(key => mockCachedStorage[key]);
+		mockCache.getItem.mockImplementation(key =>
+			Promise.resolve(mockCachedStorage[key]),
+		);
 		mockIsBrowser.mockReturnValue(false);
 		mockAmplifyUuid.mockReturnValue(mockUuid);
 	});
@@ -62,13 +64,13 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 			1,
 			sessionIdCacheKey,
 			expect.any(String),
-			expect.any(Object)
+			expect.any(Object),
 		);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			2,
 			userIdCacheKey,
 			'newUserId',
-			expect.any(Object)
+			expect.any(Object),
 		);
 	});
 
@@ -79,13 +81,13 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 			1,
 			sessionIdCacheKey,
 			expect.any(String),
-			expect.any(Object)
+			expect.any(Object),
 		);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			2,
 			userIdCacheKey,
 			undefined,
-			expect.any(Object)
+			expect.any(Object),
 		);
 	});
 
@@ -96,13 +98,13 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 			1,
 			sessionIdCacheKey,
 			expect.any(String),
-			expect.any(Object)
+			expect.any(Object),
 		);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			2,
 			userIdCacheKey,
 			'newUserId',
-			expect.any(Object)
+			expect.any(Object),
 		);
 	});
 
@@ -113,7 +115,7 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 			1,
 			userIdCacheKey,
 			'newUserId',
-			expect.any(Object)
+			expect.any(Object),
 		);
 	});
 });

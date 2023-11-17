@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub, ConsoleLogger } from '@aws-amplify/core';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	AnalyticsAction,
@@ -10,13 +10,13 @@ import { record as recordCore } from '@aws-amplify/core/internals/providers/pinp
 import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
-} from '../../../errors';
+} from '~/src/errors';
+import { getAnalyticsUserAgentString, isAnalyticsEnabled } from '~/src/utils';
+import { RecordInput } from '~/src/providers/pinpoint/types';
 import {
-	getAnalyticsUserAgentString,
-	isAnalyticsEnabled,
-} from '../../../utils';
-import { RecordInput } from '../types';
-import { resolveConfig, resolveCredentials } from '../utils';
+	resolveConfig,
+	resolveCredentials,
+} from '~/src/providers/pinpoint/utils';
 
 const logger = new ConsoleLogger('Analytics');
 
@@ -54,6 +54,7 @@ export const record = (input: RecordInput): void => {
 
 	if (!isAnalyticsEnabled()) {
 		logger.debug('Analytics is disabled, event will not be recorded.');
+
 		return;
 	}
 
@@ -65,7 +66,7 @@ export const record = (input: RecordInput): void => {
 				'analytics',
 				{ event: 'record', data: input, message: 'Recording Analytics event' },
 				'Analytics',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
 			recordCore({
 				appId,

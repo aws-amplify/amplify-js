@@ -1,11 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { resolveConfig, resolveCredentials } from '../utils';
 import { flushEvents as flushEventsCore } from '@aws-amplify/core/internals/providers/pinpoint';
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
-import { getAnalyticsUserAgentString } from '../../../utils';
+import {
+	resolveConfig,
+	resolveCredentials,
+} from '~/src/providers/pinpoint/utils';
+import { getAnalyticsUserAgentString } from '~/src/utils';
 
 const logger = new ConsoleLogger('Analytics');
 
@@ -20,7 +23,7 @@ export const flushEvents = () => {
 	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =
 		resolveConfig();
 	resolveCredentials()
-		.then(({ credentials, identityId }) =>
+		.then(({ credentials, identityId }) => {
 			flushEventsCore({
 				appId,
 				region,
@@ -31,7 +34,9 @@ export const flushEvents = () => {
 				flushInterval,
 				resendLimit,
 				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
-			})
-		)
-		.catch(e => logger.warn('Failed to flush events', e));
+			});
+		})
+		.catch(e => {
+			logger.warn('Failed to flush events', e);
+		});
 };

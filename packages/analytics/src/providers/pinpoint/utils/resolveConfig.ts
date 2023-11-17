@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
-} from '../../../errors';
+} from '~/src/errors';
 
 /**
  * @internal

@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KinesisEventData } from '../../../types';
+import { KinesisEventData } from '~/src/types';
 
-export type RecordInput = {
+export interface RecordInput {
 	streamName: string;
 	partitionKey: string;
 	data: KinesisEventData;
-};
+}

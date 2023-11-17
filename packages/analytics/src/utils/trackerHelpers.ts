@@ -2,13 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	TrackerAttributes,
 	TrackerEventRecorder,
 	TrackerInterface,
 	TrackerType,
-} from '../types/trackers';
-import { EventTracker, PageViewTracker, SessionTracker } from '../trackers';
-import { ConfigureAutoTrackInput } from '../providers/pinpoint';
+} from '~/src/types/trackers';
+import { EventTracker, PageViewTracker, SessionTracker } from '~/src/trackers';
+import { ConfigureAutoTrackInput } from '~/src/providers/pinpoint/types';
 
 /**
  * Updates a provider's trackers as appropriate for the provided auto-track configuration.
@@ -19,7 +18,7 @@ import { ConfigureAutoTrackInput } from '../providers/pinpoint';
 export const updateProviderTrackers = (
 	input: ConfigureAutoTrackInput,
 	providerEventRecorder: TrackerEventRecorder,
-	providerTrackers: Partial<Record<TrackerType, TrackerInterface>>
+	providerTrackers: Partial<Record<TrackerType, TrackerInterface>>,
 ) => {
 	let trackerInstance;
 	const trackerType = input.type;

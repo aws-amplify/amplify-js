@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventBuffer, groupBy, IAnalyticsClient } from '../../../utils';
 import {
 	FirehoseClient,
 	PutRecordBatchCommand,
 } from '@aws-sdk/client-firehose';
+import { EventBuffer, IAnalyticsClient, groupBy } from '~/src/utils';
 import {
 	KinesisFirehoseBufferEvent,
 	KinesisFirehoseEventBufferConfig,
-} from '../types';
+} from '~/src/providers/kinesis-firehose/types';
 
 /**
  * These Records hold cached event buffers and AWS clients.
@@ -27,7 +27,7 @@ const cachedClients: Record<string, FirehoseClient> = {};
 
 const createPutRecordsBatchCommand = (
 	streamName: string,
-	events: KinesisFirehoseBufferEvent[]
+	events: KinesisFirehoseBufferEvent[],
 ): PutRecordBatchCommand =>
 	new PutRecordBatchCommand({
 		DeliveryStreamName: streamName,
@@ -39,24 +39,25 @@ const createPutRecordsBatchCommand = (
 const submitEvents = async (
 	events: KinesisFirehoseBufferEvent[],
 	client: FirehoseClient,
-	resendLimit?: number
+	resendLimit?: number,
 ): Promise<KinesisFirehoseBufferEvent[]> => {
 	const groupedByStreamName = Object.entries(
-		groupBy(event => event.streamName, events)
+		groupBy(event => event.streamName, events),
 	);
 
 	const requests = groupedByStreamName
-		.map(([streamName, events]) =>
-			createPutRecordsBatchCommand(streamName, events)
+		.map(([streamName, streamEvents]) =>
+			createPutRecordsBatchCommand(streamName, streamEvents),
 		)
 		.map(command => client.send(command));
 
 	const responses = await Promise.allSettled(requests);
 	const failedEvents = responses
 		.map((response, i) =>
-			response.status === 'rejected' ? groupedByStreamName[i][1] : []
+			response.status === 'rejected' ? groupedByStreamName[i][1] : [],
 		)
 		.flat();
+
 	return resendLimit
 		? failedEvents
 				.filter(event => event.retryCount < resendLimit)
@@ -88,6 +89,7 @@ export const getEventBuffer = ({
 			}
 
 			const firehoseClient = cachedClients[sessionIdentityKey];
+
 			return events => submitEvents(events, firehoseClient, resendLimit);
 		};
 
@@ -98,11 +100,11 @@ export const getEventBuffer = ({
 					flushSize,
 					flushInterval,
 				},
-				getClient
+				getClient,
 			);
 
 		const releaseSessionKeys = Object.keys(eventBufferMap).filter(
-			key => key !== sessionIdentityKey
+			key => key !== sessionIdentityKey,
 		);
 		for (const releaseSessionKey of releaseSessionKeys) {
 			eventBufferMap[releaseSessionKey].flushAll().finally(() => {

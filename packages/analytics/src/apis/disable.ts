@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { disableAnalytics } from '../utils';
+import { disableAnalytics } from '~/src/utils';
 
 /**
  * Disables the Analytics category.
