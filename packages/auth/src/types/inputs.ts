@@ -66,9 +66,9 @@ export type AuthSignInWithRedirectInput = {
 		 */
 		preferPrivateSession?: boolean;
 		/**
-		 * Setting this to false will allow you to sign in even when a user is authenticated.
+		 * Setting this to true will allow you to sign in even when a user is authenticated.
 		 */
-		assertUserNotAuthenticated?: boolean;
+		skipAssertUserNotAuthenticated?: boolean;
 	};
 };
 

@@ -44,7 +44,7 @@ export async function signInWithRedirect(
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	store.setAuthConfig(authConfig);
-	if (input?.options?.assertUserNotAuthenticated !== false) {
+	if (input?.options?.skipAssertUserNotAuthenticated !== true) {
 		await assertUserNotAuthenticated();
 	}
 
