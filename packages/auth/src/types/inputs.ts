@@ -65,6 +65,10 @@ export type AuthSignInWithRedirectInput = {
 		 * On all other platforms, this flag is ignored.
 		 */
 		preferPrivateSession?: boolean;
+		/**
+		 * Setting this to false will allow you to sign in even when a user is authenticated.
+		 */
+		assertUserNotAuthenticated?: boolean;
 	};
 };
 
