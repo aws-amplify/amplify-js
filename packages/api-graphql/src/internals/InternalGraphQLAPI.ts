@@ -227,7 +227,7 @@ export class InternalGraphQLAPIClass {
 
 	private async _graphql<T = any>(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode }: GraphQLOptions,
+		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails,
@@ -238,7 +238,10 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
+			defaultAuthMode
 		} = resolveConfig(amplify);
+
+		const authMode = explicitAuthMode ?? defaultAuthMode;
 
 		/**
 		 * Retrieve library options from Amplify configuration.
