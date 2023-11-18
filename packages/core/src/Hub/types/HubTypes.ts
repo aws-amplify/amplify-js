@@ -5,7 +5,7 @@ import { AuthHubEventData } from './AuthTypes';
 
 export type IListener<
 	Channel extends string = AmplifyChannel | string,
-	EventData extends EventDataMap = EventDataMap
+	EventData extends EventDataMap = EventDataMap,
 > = {
 	name: string;
 	callback: HubCallback<Channel, EventData>;
@@ -23,7 +23,7 @@ export type StopListenerCallback = () => void;
 
 export type HubCapsule<
 	Channel extends string,
-	EventData extends EventDataMap
+	EventData extends EventDataMap,
 > = {
 	channel: Channel;
 	payload: HubPayload<EventData>;
@@ -33,7 +33,7 @@ export type HubCapsule<
 
 export type HubCallback<
 	Channel extends string = string,
-	EventData extends EventDataMap = EventDataMap
+	EventData extends EventDataMap = EventDataMap,
 > = (capsule: HubCapsule<Channel, EventData>) => void;
 
 export type HubPayload<EventData extends EventDataMap = EventDataMap> =
