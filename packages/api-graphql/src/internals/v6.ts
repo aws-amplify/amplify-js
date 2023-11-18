@@ -105,7 +105,7 @@ export function graphql<
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	// inject client-level auth 
 	options.authMode = options.authMode || this[__authMode];
-	options.authToken = options.authMode || this[__authToken];
+	options.authToken = options.authToken || this[__authToken];
 	
 	/**
 	 * The correctness of these typings depends on correct string branding or overrides.
