@@ -72,11 +72,11 @@ export class InternalAPIClass {
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
 		: T extends GraphQLSubscription<T>
-		? Observable<{
-				provider: AWSAppSyncRealTimeProvider;
-				value: GraphQLResult<T>;
-		  }>
-		: Promise<GraphQLResult<any>> | Observable<object>;
+		  ? Observable<{
+					provider: AWSAppSyncRealTimeProvider;
+					value: GraphQLResult<T>;
+		    }>
+		  : Promise<GraphQLResult<any>> | Observable<object>;
 	graphql<T = any>(
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,

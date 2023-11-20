@@ -3,6 +3,8 @@
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
 	__amplify,
+	__authMode,
+	__authToken,
 	V6Client,
 	GraphQLOptionsV6,
 	GraphQLResponseV6,
@@ -95,12 +97,16 @@ import { CustomHeaders } from '@aws-amplify/data-schema-types';
  */
 export function graphql<
 	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string
+	TYPED_GQL_STRING extends string = string,
 >(
 	this: V6Client,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 	additionalHeaders?: CustomHeaders
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
+	// inject client-level auth 
+	options.authMode = options.authMode || this[__authMode];
+	options.authToken = options.authToken || this[__authToken];
+	
 	/**
 	 * The correctness of these typings depends on correct string branding or overrides.
 	 * Neither of these can actually be validated at runtime. Hence, we don't perform

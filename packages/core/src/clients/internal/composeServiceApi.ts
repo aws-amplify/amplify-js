@@ -9,7 +9,7 @@ export const composeServiceApi = <
 	TransferHandlerOptions,
 	Input,
 	Output,
-	DefaultConfig
+	DefaultConfig,
 >(
 	transferHandler: TransferHandler<
 		HttpRequest,

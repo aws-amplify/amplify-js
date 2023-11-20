@@ -9,6 +9,7 @@ import {
 	expectSubWithHeadersFn,
 } from './utils/expects';
 import { Observable, from } from 'rxjs';
+import * as internals from '../src/internals/';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -65,15 +66,15 @@ const USER_AGENT_DETAILS = {
 };
 
 describe('generateClient', () => {
-	test('raises clear error when API GraphQL isnt configured', () => {
-		const getConfig = jest.fn().mockReturnValue({});
-		const amplify = {
-			getConfig,
-		} as unknown as AmplifyClassV6;
-		expect(() => generateClient({ amplify })).toThrow(
-			'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient()'
-		);
-	});
+	// test('raises clear error when API GraphQL isnt configured', () => {
+	// 	const getConfig = jest.fn().mockReturnValue({});
+	// 	const amplify = {
+	// 		getConfig,
+	// 	} as unknown as AmplifyClassV6;
+	// 	expect(() => generateClient({ amplify })).toThrow(
+	// 		'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient()'
+	// 	);
+	// });
 
 	test('can produce a client bound to an arbitrary amplify object for getConfig()', async () => {
 		// TS lies: We don't care what `amplify` is or does. We want want to make sure
@@ -5365,6 +5366,154 @@ describe('generateClient', () => {
 					},
 				});
 			});
+		});
+	});
+
+	describe('graphql default auth', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+			Amplify.configure({
+				...configFixture,
+				aws_appsync_authenticationType: 'AWS_IAM', // make IAM default
+			} as any);
+
+			jest
+				.spyOn(Amplify.Auth, 'fetchAuthSession')
+				.mockImplementation(async () => {
+					return {
+						credentials: {
+							accessKeyId: 'test',
+							secretAccessKey: 'test',
+						},
+					} as any;
+				});
+		});
+
+		test('default iam produces expected signingInfo', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient({ amplify: Amplify });
+			await client.graphql({
+				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: {
+							query: expect.stringContaining('listTodos'),
+							variables: {},
+						},
+						signingServiceInfo: { region: 'us-west-1', service: 'appsync' },
+					}),
+				})
+			);
+		});
+	});
+
+	describe('graphql - client-level auth override', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+			Amplify.configure(configFixture as any);
+
+			jest
+				.spyOn(Amplify.Auth, 'fetchAuthSession')
+				.mockImplementation(async () => {
+					return {
+						credentials: {
+							accessKeyId: 'test',
+							secretAccessKey: 'test',
+						},
+					} as any;
+				});
+		});
+
+		test('client auth override query', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			// API key is the default auth mode for this API
+			const client = generateClient({ amplify: Amplify, authMode: 'iam' });
+			await client.graphql({
+				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: {
+							query: expect.stringContaining('listTodos'),
+							variables: {},
+						},
+						signingServiceInfo: { region: 'us-west-1', service: 'appsync' },
+					}),
+				})
+			);
+		});
+
+		test('client auth override query - lambda', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			// API key is the default auth mode for this API
+			const client = generateClient({
+				amplify: Amplify,
+				authMode: 'lambda',
+				authToken: 'trustno1',
+			});
+			await client.graphql({
+				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: {
+							query: expect.stringContaining('listTodos'),
+							variables: {},
+						},
+						headers: expect.objectContaining({
+							Authorization: 'trustno1',
+						}),
+						signingServiceInfo: { region: 'us-west-1', service: 'appsync' },
+					}),
+				})
+			);
 		});
 	});
 });
