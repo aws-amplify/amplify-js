@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "7.0.3",
+	"version": "7.0.4",
 	"description": "Analytics category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -104,7 +104,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.3",
+		"@aws-amplify/core": "6.0.4",
 		"@aws-amplify/react-native": "1.0.3",
 		"@aws-sdk/types": "3.398.0",
 		"@rollup/plugin-typescript": "11.1.5",
