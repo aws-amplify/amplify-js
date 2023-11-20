@@ -97,7 +97,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema-types';
  */
 export function graphql<
 	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string,
+	TYPED_GQL_STRING extends string = string
 >(
 	this: V6Client,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,

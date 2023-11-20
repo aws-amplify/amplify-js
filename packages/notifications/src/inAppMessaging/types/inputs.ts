@@ -8,8 +8,7 @@ import { InAppMessagingServiceOptions } from '.';
  * Input type for `identifyUser`.
  */
 export type InAppMessagingIdentifyUserInput<
-	ServiceOptions extends
-		InAppMessagingServiceOptions = InAppMessagingServiceOptions,
+	ServiceOptions extends InAppMessagingServiceOptions = InAppMessagingServiceOptions
 > = {
 	/**
 	 * A User ID associated to the current device.
