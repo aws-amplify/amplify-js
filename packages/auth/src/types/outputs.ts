@@ -10,14 +10,14 @@ import {
 } from './models';
 
 export type AuthSignInOutput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	isSignedIn: boolean;
 	nextStep: AuthNextSignInStep<UserAttributeKey>;
 };
 
 export type AuthSignUpOutput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	isSignUpComplete: boolean;
 	userId?: string;
@@ -25,21 +25,21 @@ export type AuthSignUpOutput<
 };
 
 export type AuthResetPasswordOutput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	isPasswordReset: boolean;
 	nextStep: AuthNextResetPasswordStep<UserAttributeKey>;
 };
 
 export type AuthUpdateUserAttributeOutput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	isUpdated: boolean;
 	nextStep: AuthNextUpdateAttributeStep<UserAttributeKey>;
 };
 
 export type AuthUpdateUserAttributesOutput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	[authKey in UserAttributeKey]: AuthUpdateUserAttributeOutput<UserAttributeKey>;
 };

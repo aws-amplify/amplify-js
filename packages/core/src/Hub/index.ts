@@ -51,7 +51,7 @@ export class HubClass {
 	 */
 	private _remove<
 		Channel extends AmplifyChannel | string = string,
-		EventData extends EventDataMap = EventDataMap
+		EventData extends EventDataMap = EventDataMap,
 	>(channel: Channel, listener: HubCallback<Channel, EventData>) {
 		const holder = this.listeners.get(channel);
 		if (!holder) {
@@ -89,7 +89,7 @@ export class HubClass {
 
 	dispatch<
 		Channel extends AmplifyChannel | string,
-		EventData extends EventDataMap = EventDataMap
+		EventData extends EventDataMap = EventDataMap,
 	>(
 		channel: Channel | string,
 		payload: HubPayload<EventData>,
@@ -134,7 +134,7 @@ export class HubClass {
 	 */
 	listen<
 		Channel extends AmplifyChannel,
-		EventData extends EventDataMap = EventDataMap
+		EventData extends EventDataMap = EventDataMap,
 	>(
 		channel: Channel,
 		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
@@ -149,7 +149,7 @@ export class HubClass {
 
 	listen<
 		Channel extends AmplifyChannel | string = string,
-		EventData extends EventDataMap = EventDataMap
+		EventData extends EventDataMap = EventDataMap,
 	>(
 		channel: Channel,
 		callback: HubCallback<Channel, EventData>,
