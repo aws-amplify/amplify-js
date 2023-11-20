@@ -12,7 +12,7 @@ describe('openAuthSession', () => {
 	// create mocks
 
 	beforeAll(() => {
-		windowSpy.mockImplementation(() => ({ location }) as any);
+		windowSpy.mockImplementation(() => ({ location } as any));
 	});
 
 	beforeEach(() => {

@@ -13,7 +13,7 @@ import {
  * Input type for `identifyUser`.
  */
 export type AnalyticsIdentifyUserInput<
-	ServiceOptions extends AnalyticsServiceOptions = AnalyticsServiceOptions,
+	ServiceOptions extends AnalyticsServiceOptions = AnalyticsServiceOptions
 > = {
 	/**
 	 * A User ID associated to the current device.

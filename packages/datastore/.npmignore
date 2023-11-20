@@ -6,6 +6,7 @@ node_modules/**
 .vscode/**
 .DS_Store
 *.log
+prettier.config.json
 tsconfig.json
 tsfmt.json
 tslint.json
