@@ -7,9 +7,6 @@
 name: 'Dependency Review'
 on: [pull_request]
 
-permissions:
-  contents: read
-
 jobs:
   dependency-review:
     runs-on: ubuntu-latest
