@@ -170,8 +170,9 @@ class AsyncStorageDatabase {
 			}
 		}
 
-		const existingRecordsMap: [string, string][] =
-			await this.storage.multiGet(allItemsKeys);
+		const existingRecordsMap: [string, string][] = await this.storage.multiGet(
+			allItemsKeys
+		);
 		const existingRecordsKeys = existingRecordsMap
 			.filter(([, v]) => !!v)
 			.reduce((set, [k]) => set.add(k), new Set<string>());

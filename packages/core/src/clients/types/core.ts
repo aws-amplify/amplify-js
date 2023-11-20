@@ -16,7 +16,7 @@ export interface Response {
 export interface TransferHandler<
 	Input extends Request,
 	Output extends Response,
-	TransferOptions,
+	TransferOptions
 > {
 	(request: Input, options: TransferOptions): Promise<Output>;
 }
@@ -49,7 +49,7 @@ type ConfiguredMiddleware<Input extends Request, Output extends Response> = (
 export type Middleware<
 	Input extends Request,
 	Output extends Response,
-	MiddlewareOptions,
+	MiddlewareOptions
 > = (options: MiddlewareOptions) => ConfiguredMiddleware<Input, Output>;
 
 export interface Endpoint {
