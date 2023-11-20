@@ -73,13 +73,11 @@ export class InternalGraphQLAPIClass {
 			region: region,
 			endpoint: appSyncGraphqlEndpoint,
 			apiKey,
-			defaultAuthMode,
 		} = resolveConfig(amplify);
 
-		const authenticationType = authMode || defaultAuthMode || 'iam';
 		let headers = {};
 
-		switch (authenticationType) {
+		switch (authMode) {
 			case 'apiKey':
 				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
@@ -227,7 +225,7 @@ export class InternalGraphQLAPIClass {
 
 	private async _graphql<T = any>(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode }: GraphQLOptions,
+		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails,
@@ -238,7 +236,10 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
+			defaultAuthMode
 		} = resolveConfig(amplify);
+
+		const authMode = explicitAuthMode || defaultAuthMode || 'iam';
 
 		/**
 		 * Retrieve library options from Amplify configuration.
