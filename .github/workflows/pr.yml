@@ -55,7 +55,7 @@ jobs:
       success: ${{ steps.setoutput.outputs.success }}
     steps:
       - id: setoutput
-        run: echo "::set-output name=success::true"
+        run: echo "success=true" >> $GITHUB_OUTPUT
   ci:
     runs-on: ubuntu-latest
     if: always() # always run, so we never skip the check
