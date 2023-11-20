@@ -35,11 +35,6 @@
 		"ts-coverage": "lerna run ts-coverage",
 		"prepare": "./scripts/set-preid-versions.sh"
 	},
-	"husky": {
-		"hooks": {
-			"pre-commit": "pretty-quick --staged"
-		}
-	},
 	"workspaces": {
 		"packages": [
 			"packages/core",
@@ -96,14 +91,12 @@
 		"babel-loader": "^8.3.0",
 		"codecov": "^3.6.5",
 		"glob": "^10.3.10",
-		"husky": "^3.0.5",
 		"jest": "^24.x.x",
 		"jest-config": "24.8.0",
 		"json-loader": "^0.5.7",
-		"lerna": "^6.6.1",
+		"lerna": "^7.4.2",
 		"license-check-and-add": "^4.0.5",
 		"prettier": "^3.1.0",
-		"pretty-quick": "^1.11.1",
 		"rimraf": "^2.6.2",
 		"rollup": "^0.67.4",
 		"rollup-plugin-commonjs": "^9.2.0",
