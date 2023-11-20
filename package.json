@@ -102,7 +102,7 @@
 		"json-loader": "^0.5.7",
 		"lerna": "^6.6.1",
 		"license-check-and-add": "^4.0.5",
-		"prettier": "^2.4.1",
+		"prettier": "^3.1.0",
 		"pretty-quick": "^1.11.1",
 		"rimraf": "^2.6.2",
 		"rollup": "^0.67.4",
