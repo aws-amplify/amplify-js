@@ -15,7 +15,7 @@ export type AuthServiceOptions = Record<string, unknown>;
  * Particular services may require some of these parameters.
  */
 export type AuthSignUpOptions<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
 > = {
 	userAttributes: AuthUserAttributes<UserAttributeKey>;
 };
