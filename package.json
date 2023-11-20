@@ -100,7 +100,7 @@
 		"jest": "^24.x.x",
 		"jest-config": "24.8.0",
 		"json-loader": "^0.5.7",
-		"lerna": "^6.6.1",
+		"lerna": "^7.4.2",
 		"license-check-and-add": "^4.0.5",
 		"prettier": "^3.1.0",
 		"pretty-quick": "^1.11.1",
