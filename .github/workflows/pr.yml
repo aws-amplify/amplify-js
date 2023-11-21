@@ -36,6 +36,9 @@ jobs:
   tsc-compliance-test:
     needs: prebuild
     uses: ./.github/workflows/callable-test-tsc-compliance.yml
+  dependency-review:
+    needs: prebuild
+    uses: ./.github/workflows/callable-dependency-review.yml
   all-unit-tests-pass:
     name: Unit and Bundle tests have passed
     needs:
@@ -44,6 +47,7 @@ jobs:
       - license-test
       - github-actions-test
       - tsc-compliance-test
+      - dependency-review
     runs-on: ubuntu-latest
     if: success() # only run when all checks have passed
     # store success output flag for ci job
