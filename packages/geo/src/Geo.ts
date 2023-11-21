@@ -1,26 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
-
 import { validateCoordinates } from './util';
-
 import {
-	Place,
-	GeoConfig,
 	Coordinates,
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
+	DeleteGeofencesResults,
+	GeoConfig,
 	GeoProvider,
-	MapStyle,
+	Geofence,
 	GeofenceId,
 	GeofenceInput,
 	GeofenceOptions,
-	SaveGeofencesResults,
-	Geofence,
 	ListGeofenceOptions,
 	ListGeofenceResults,
-	DeleteGeofencesResults,
+	MapStyle,
+	Place,
+	SaveGeofencesResults,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
 	searchByPlaceIdOptions,
 } from './types';
 
@@ -43,7 +42,7 @@ export class GeoClass {
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo);
 
 		const locationProvider = new AmazonLocationServiceProvider(
-			amplifyConfig.Geo
+			amplifyConfig.Geo,
 		);
 		this._pluggables.push(locationProvider);
 
@@ -74,7 +73,7 @@ export class GeoClass {
 	 */
 	public getPluggable(providerName: string) {
 		const pluggable = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
+			_pluggable => _pluggable.getProviderName() === providerName,
 		);
 		if (pluggable === undefined) {
 			logger.debug('No plugin found with providerName', providerName);
@@ -88,9 +87,8 @@ export class GeoClass {
 	 */
 	public removePluggable(providerName: string) {
 		this._pluggables = this._pluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
+			pluggable => pluggable.getProviderName() !== providerName,
 		);
-		return;
 	}
 
 	/**
@@ -123,7 +121,7 @@ export class GeoClass {
 	 */
 	public async searchByText(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
 	): Promise<Place[]> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -144,7 +142,7 @@ export class GeoClass {
 	 */
 	public async searchForSuggestions(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
 	) {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -165,7 +163,7 @@ export class GeoClass {
 	 */
 	public async searchByPlaceId(
 		placeId: string,
-		options?: searchByPlaceIdOptions
+		options?: searchByPlaceIdOptions,
 	) {
 		const providerName = DEFAULT_PROVIDER;
 		const prov = this.getPluggable(providerName);
@@ -186,7 +184,7 @@ export class GeoClass {
 	 */
 	public async searchByCoordinates(
 		coordinates: Coordinates,
-		options?: SearchByCoordinatesOptions
+		options?: SearchByCoordinatesOptions,
 	): Promise<Place> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -194,6 +192,7 @@ export class GeoClass {
 		const [lng, lat] = coordinates;
 		try {
 			validateCoordinates(lng, lat);
+
 			return await prov.searchByCoordinates(coordinates, options);
 		} catch (error) {
 			logger.debug(error);
@@ -211,7 +210,7 @@ export class GeoClass {
 	 */
 	public async saveGeofences(
 		geofences: GeofenceInput | GeofenceInput[],
-		options?: GeofenceOptions
+		options?: GeofenceOptions,
 	): Promise<SaveGeofencesResults> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -240,7 +239,7 @@ export class GeoClass {
 	 */
 	public async getGeofence(
 		geofenceId: GeofenceId,
-		options?: GeofenceOptions
+		options?: GeofenceOptions,
 	): Promise<Geofence> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -261,7 +260,7 @@ export class GeoClass {
 	 *   nextToken: token for next page of geofences
 	 */
 	public async listGeofences(
-		options?: ListGeofenceOptions
+		options?: ListGeofenceOptions,
 	): Promise<ListGeofenceResults> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
@@ -284,7 +283,7 @@ export class GeoClass {
 	 */
 	public async deleteGeofences(
 		geofenceIds: string | string[],
-		options?: GeofenceOptions
+		options?: GeofenceOptions,
 	): Promise<DeleteGeofencesResults> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);

@@ -1,65 +1,62 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
-
-import { Amplify, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
 import { GeoAction } from '@aws-amplify/core/internals/utils';
 import {
-	Place as PlaceResult,
-	LocationClient,
-	SearchPlaceIndexForTextCommand,
-	SearchPlaceIndexForTextCommandInput,
-	SearchPlaceIndexForSuggestionsCommand,
-	SearchPlaceIndexForSuggestionsCommandInput,
-	SearchPlaceIndexForPositionCommand,
-	SearchPlaceIndexForPositionCommandInput,
-	BatchPutGeofenceCommand,
-	BatchPutGeofenceCommandInput,
-	BatchPutGeofenceRequestEntry,
-	BatchPutGeofenceCommandOutput,
-	GetPlaceCommand,
-	GetPlaceCommandInput,
-	GetPlaceCommandOutput,
-	GetGeofenceCommand,
-	GetGeofenceCommandInput,
-	GetGeofenceCommandOutput,
-	ListGeofencesCommand,
-	ListGeofencesCommandInput,
-	ListGeofencesCommandOutput,
 	BatchDeleteGeofenceCommand,
 	BatchDeleteGeofenceCommandInput,
 	BatchDeleteGeofenceCommandOutput,
+	BatchPutGeofenceCommand,
+	BatchPutGeofenceCommandInput,
+	BatchPutGeofenceCommandOutput,
+	BatchPutGeofenceRequestEntry,
+	GetGeofenceCommand,
+	GetGeofenceCommandInput,
+	GetGeofenceCommandOutput,
+	GetPlaceCommand,
+	GetPlaceCommandInput,
+	GetPlaceCommandOutput,
+	ListGeofencesCommand,
+	ListGeofencesCommandInput,
+	ListGeofencesCommandOutput,
+	LocationClient,
+	Place as PlaceResult,
+	SearchPlaceIndexForPositionCommand,
+	SearchPlaceIndexForPositionCommandInput,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForSuggestionsCommandInput,
+	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForTextCommandInput,
 } from '@aws-sdk/client-location';
-
 import {
 	getGeoUserAgent,
 	mapSearchOptions,
 	validateGeofenceId,
 	validateGeofencesInput,
-} from '../../util';
-
+} from '~/src/util';
 import {
-	GeoConfig,
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
-	GeoProvider,
-	Place,
+	AmazonLocationServiceBatchGeofenceErrorMessages,
+	AmazonLocationServiceDeleteGeofencesResults,
+	AmazonLocationServiceGeofence,
+	AmazonLocationServiceGeofenceOptions,
+	AmazonLocationServiceGeofenceStatus,
+	AmazonLocationServiceListGeofenceOptions,
 	AmazonLocationServiceMapStyle,
 	Coordinates,
-	SearchForSuggestionsResults,
+	GeoConfig,
+	GeoProvider,
 	GeofenceId,
 	GeofenceInput,
-	AmazonLocationServiceGeofenceOptions,
-	AmazonLocationServiceListGeofenceOptions,
-	ListGeofenceResults,
-	AmazonLocationServiceGeofenceStatus,
-	SaveGeofencesResults,
-	AmazonLocationServiceGeofence,
 	GeofencePolygon,
-	AmazonLocationServiceDeleteGeofencesResults,
+	ListGeofenceResults,
+	Place,
+	SaveGeofencesResults,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
+	SearchForSuggestionsResults,
 	searchByPlaceIdOptions,
-	AmazonLocationServiceBatchGeofenceErrorMessages,
-} from '../../types';
+} from '~/src/types';
 
 const logger = new ConsoleLogger('AmazonLocationServiceProvider');
 
@@ -78,7 +75,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * @param {Object} config - Configuration object for Geo
 	 */
 	constructor(config?: GeoConfig) {
-		this._config = config ? config : {};
+		this._config = config || {};
 		logger.debug('Geo Options', this._config);
 	}
 
@@ -107,10 +104,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		const mapStyles: AmazonLocationServiceMapStyle[] = [];
 		const availableMaps = this._config.maps.items;
-		const region = this._config.region;
+		const { region } = this._config;
 
 		for (const mapName in availableMaps) {
-			const style = availableMaps[mapName].style;
+			const { style } = availableMaps[mapName];
 			mapStyles.push({ mapName, style, region });
 		}
 
@@ -125,8 +122,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		this._verifyMapResources();
 
 		const mapName = this._config.maps.default;
-		const style = this._config.maps.items[mapName].style;
-		const region = this._config.region;
+		const { style } = this._config.maps.items[mapName];
+		const { region } = this._config;
 
 		return { mapName, style, region };
 	}
@@ -139,7 +136,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async searchByText(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
 	): Promise<Place[]> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -187,7 +184,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
 		const PascalResults: PlaceResult[] = response.Results.map(
-			result => result.Place
+			result => result.Place,
 		);
 		const results: Place[] = camelcaseKeys(PascalResults, {
 			deep: true,
@@ -205,7 +202,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	public async searchForSuggestions(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
 	): Promise<SearchForSuggestionsResults> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -238,7 +235,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			customUserAgent: getGeoUserAgent(GeoAction.SearchForSuggestions),
 		});
 		const command = new SearchPlaceIndexForSuggestionsCommand(
-			locationServiceInput
+			locationServiceInput,
 		);
 
 		let response;
@@ -270,7 +267,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	public async searchByPlaceId(
 		placeId: string,
-		options?: searchByPlaceIdOptions
+		options?: searchByPlaceIdOptions,
 	): Promise<Place | undefined> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -306,7 +303,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		if (place) {
 			return camelcaseKeys(place, { deep: true }) as unknown as Place;
 		}
-		return;
 	}
 
 	/**
@@ -317,7 +313,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async searchByCoordinates(
 		coordinates: Coordinates,
-		options?: SearchByCoordinatesOptions
+		options?: SearchByCoordinatesOptions,
 	): Promise<Place> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -344,7 +340,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			customUserAgent: getGeoUserAgent(GeoAction.SearchByCoordinates),
 		});
 		const command = new SearchPlaceIndexForPositionCommand(
-			locationServiceInput
+			locationServiceInput,
 		);
 
 		let response;
@@ -378,7 +374,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async saveGeofences(
 		geofences: GeofenceInput[],
-		options?: AmazonLocationServiceGeofenceOptions
+		options?: AmazonLocationServiceGeofenceOptions,
 	): Promise<SaveGeofencesResults> {
 		if (geofences.length < 1) {
 			throw new Error('Geofence input array is empty');
@@ -408,7 +404,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 						Polygon: polygon,
 					},
 				};
-			}
+			},
 		);
 		const results: SaveGeofencesResults = {
 			successes: [],
@@ -430,7 +426,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				try {
 					response = await this._AmazonLocationServiceBatchPutGeofenceCall(
 						batch,
-						options?.collectionName || this._config.geofenceCollections.default
+						options?.collectionName || this._config.geofenceCollections.default,
 					);
 				} catch (error) {
 					// If the API call fails, add the geofences to the errors array and move to next batch
@@ -443,14 +439,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 							},
 						});
 					});
+
 					return;
 				}
 
 				// Push all successes to results
 				response.Successes?.forEach(success => {
-					const { GeofenceId, CreateTime, UpdateTime } = success;
+					const { GeofenceId: geofenceId, CreateTime, UpdateTime } = success;
 					results.successes.push({
-						geofenceId: GeofenceId!,
+						geofenceId: geofenceId!,
 						createTime: CreateTime,
 						updateTime: UpdateTime,
 					});
@@ -458,17 +455,17 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 				// Push all errors to results
 				response.Errors?.forEach(error => {
-					const { Error, GeofenceId } = error;
+					const { Error, GeofenceId: geofenceId } = error;
 					const { Code, Message } = Error!;
 					results.errors.push({
 						error: {
 							code: Code!,
 							message: Message!,
 						},
-						geofenceId: GeofenceId!,
+						geofenceId: geofenceId!,
 					});
 				});
-			})
+			}),
 		);
 
 		return results;
@@ -482,7 +479,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async getGeofence(
 		geofenceId: GeofenceId,
-		options?: AmazonLocationServiceGeofenceOptions
+		options?: AmazonLocationServiceGeofenceOptions,
 	): Promise<AmazonLocationServiceGeofence> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -524,10 +521,16 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 
 		// Convert response to camelCase for return
-		const { GeofenceId, CreateTime, UpdateTime, Status, Geometry } = response;
+		const {
+			GeofenceId: responseGeofenceId,
+			CreateTime,
+			UpdateTime,
+			Status,
+			Geometry,
+		} = response;
 		const geofence: AmazonLocationServiceGeofence = {
 			createTime: CreateTime,
-			geofenceId: GeofenceId!,
+			geofenceId: responseGeofenceId!,
 			geometry: {
 				polygon: Geometry!.Polygon as GeofencePolygon,
 			},
@@ -546,7 +549,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 *   nextToken: token for next page of geofences
 	 */
 	public async listGeofences(
-		options?: AmazonLocationServiceListGeofenceOptions
+		options?: AmazonLocationServiceListGeofenceOptions,
 	): Promise<ListGeofenceResults> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -577,7 +580,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		// Create Amazon Location Service command
 		const command: ListGeofencesCommand = new ListGeofencesCommand(
-			listGeofencesInput
+			listGeofencesInput,
 		);
 
 		// Make API call
@@ -594,9 +597,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		const results: ListGeofenceResults = {
 			entries: Entries!.map(
-				({ GeofenceId, CreateTime, UpdateTime, Status, Geometry }) => {
+				({
+					GeofenceId: entryGeofenceId,
+					CreateTime,
+					UpdateTime,
+					Status,
+					Geometry,
+				}) => {
 					return {
-						geofenceId: GeofenceId!,
+						geofenceId: entryGeofenceId!,
 						createTime: CreateTime,
 						updateTime: UpdateTime,
 						status: Status,
@@ -604,7 +613,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 							polygon: Geometry!.Polygon as GeofencePolygon,
 						},
 					};
-				}
+				},
 			),
 			nextToken: NextToken,
 		};
@@ -622,7 +631,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async deleteGeofences(
 		geofenceIds: string[],
-		options?: AmazonLocationServiceGeofenceOptions
+		options?: AmazonLocationServiceGeofenceOptions,
 	): Promise<AmazonLocationServiceDeleteGeofencesResults> {
 		if (geofenceIds.length < 1) {
 			throw new Error('GeofenceId input array is empty');
@@ -642,6 +651,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			} catch (error) {
 				return true;
 			}
+
+			return false;
 		});
 		if (badGeofenceIds.length > 0) {
 			throw new Error(`Invalid geofence ids: ${badGeofenceIds.join(', ')}`);
@@ -665,7 +676,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				try {
 					response = await this._AmazonLocationServiceBatchDeleteGeofenceCall(
 						batch,
-						options?.collectionName || this._config.geofenceCollections.default
+						options?.collectionName || this._config.geofenceCollections.default,
 					);
 				} catch (error) {
 					// If the API call fails, add the geofences to the errors array and move to next batch
@@ -681,17 +692,19 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 						};
 						results.errors.push(errorObject);
 					});
+
 					return;
 				}
 
-				const badGeofenceIds = response.Errors.map(
-					({ geofenceId }) => geofenceId
+				const badGeofenceIdsFromResponseError = response.Errors.map(
+					({ geofenceId }) => geofenceId,
 				);
 				results.successes.push(
-					...batch.filter(Id => !badGeofenceIds.includes(Id))
+					...batch.filter(Id => !badGeofenceIdsFromResponseError.includes(Id)),
 				);
-			})
+			}),
 		);
+
 		return results;
 	}
 
@@ -700,16 +713,18 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
 		try {
-			const credentials = (await fetchAuthSession()).credentials;
+			const { credentials } = await fetchAuthSession();
 			if (!credentials) return false;
 			logger.debug(
 				'Set credentials for storage. Credentials are:',
-				credentials
+				credentials,
 			);
 			this._credentials = credentials;
+
 			return true;
 		} catch (error) {
 			logger.debug('Ensure credentials error. Credentials are:', error);
+
 			return false;
 		}
 	}
@@ -769,7 +784,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	private async _AmazonLocationServiceBatchPutGeofenceCall(
 		PascalGeofences: BatchPutGeofenceRequestEntry[],
-		collectionName?: string
+		collectionName?: string,
 	) {
 		// Create the BatchPutGeofence input
 		const geofenceInput: BatchPutGeofenceCommandInput = {
@@ -785,18 +800,12 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		});
 		const command = new BatchPutGeofenceCommand(geofenceInput);
 
-		let response: BatchPutGeofenceCommandOutput;
-		try {
-			response = await client.send(command);
-		} catch (error) {
-			throw error;
-		}
-		return response;
+		return client.send(command);
 	}
 
 	private async _AmazonLocationServiceBatchDeleteGeofenceCall(
 		geofenceIds: string[],
-		collectionName?: string
+		collectionName?: string,
 	): Promise<BatchDeleteGeofenceCommandOutput> {
 		// Create the BatchDeleteGeofence input
 		const deleteGeofencesInput: BatchDeleteGeofenceCommandInput = {
@@ -812,12 +821,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		});
 		const command = new BatchDeleteGeofenceCommand(deleteGeofencesInput);
 
-		let response: BatchDeleteGeofenceCommandOutput;
-		try {
-			response = await client.send(command);
-		} catch (error) {
-			throw error;
-		}
-		return response;
+		return client.send(command);
 	}
 }
