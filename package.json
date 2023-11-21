@@ -51,7 +51,6 @@
 			"packages/datastore-storage-adapter",
 			"packages/interactions",
 			"packages/pubsub",
-			"packages/rtn-web-browser",
 			"packages/notifications",
 			"packages/rtn-push-notification",
 			"packages/aws-amplify",
