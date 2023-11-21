@@ -1,36 +1,38 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+// TODO(eslint): remove this linter suppression.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import * as Paho from '../vendor/paho-mqtt.js';
-import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
-
-import { AbstractPubSub } from './PubSub';
+import * as Paho from '~/src/vendor/paho-mqtt.js';
+import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
 import {
 	ConnectionState,
-	PubSubContentObserver,
 	PubSubContent,
+	PubSubContentObserver,
 	PubSubOptions,
 	PublishInput,
 	SubscribeInput,
-} from '../types/PubSub';
-import { Hub, HubPayload, ConsoleLogger } from '@aws-amplify/core';
+} from '~/src/types/PubSub';
+import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 import {
-	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
-} from '../utils/ConnectionStateMonitor';
+	ConnectionStateMonitor,
+} from '~/src/utils/ConnectionStateMonitor';
 import {
 	ReconnectEvent,
 	ReconnectionMonitor,
-} from '../utils/ReconnectionMonitor';
+} from '~/src/utils/ReconnectionMonitor';
+
+import { AbstractPubSub } from './PubSub';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
 const logger = new ConsoleLogger('MqttOverWS');
 
 export function mqttTopicMatch(filter: string, topic: string) {
 	const filterArray = filter.split('/');
-	const length = filterArray.length;
+	const { length } = filterArray;
 	const topicArray = topic.split('/');
 
 	for (let i = 0; i < length; ++i) {
@@ -39,6 +41,7 @@ export function mqttTopicMatch(filter: string, topic: string) {
 		if (left === '#') return topicArray.length >= length;
 		if (left !== '+' && left !== right) return false;
 	}
+
 	return length === topicArray.length;
 }
 
@@ -49,27 +52,27 @@ export interface MqttOptions extends PubSubOptions {
 }
 
 interface PahoClient {
-	onMessageArrived: (params: {
+	onMessageArrived(params: {
 		destinationName: string;
 		payloadString: string;
-	}) => void;
-	onConnectionLost: (params: { errorCode: number }) => void;
-	connect: (params: {
-		[k: string]: string | number | boolean | (() => void);
-	}) => void;
-	disconnect: () => void;
-	isConnected: () => boolean;
-	subscribe: (topic: string) => void;
-	unsubscribe: (topic: string) => void;
+	}): void;
+	onConnectionLost(params: { errorCode: number }): void;
+	connect(
+		params: Record<string, string | number | boolean | (() => void)>,
+	): void;
+	disconnect(): void;
+	isConnected(): boolean;
+	subscribe(topic: string): void;
+	unsubscribe(topic: string): void;
 	send(topic: string, message: string): void;
 }
 
 class ClientsQueue {
-	private promises: Map<string, Promise<PahoClient | undefined>> = new Map();
+	private promises = new Map<string, Promise<PahoClient | undefined>>();
 
 	async get(
 		clientId: string,
-		clientFactory?: (input: string) => Promise<PahoClient | undefined>
+		clientFactory?: (input: string) => Promise<PahoClient | undefined>,
 	) {
 		const cachedPromise = this.promises.get(clientId);
 		if (cachedPromise) return cachedPromise;
@@ -78,6 +81,7 @@ class ClientsQueue {
 			const newPromise = clientFactory(clientId);
 			this.promises.set(clientId, newPromise);
 			newPromise.catch(() => this.promises.delete(clientId));
+
 			return newPromise;
 		}
 
@@ -129,7 +133,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 					// Trigger connected to halt reconnection attempts
 					this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
 				}
-			}
+			},
 		);
 	}
 
@@ -146,9 +150,8 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 	}
 
 	protected get isSSLEnabled() {
-		return !this.options[
-			'aws_appsync_dangerously_connect_to_http_endpoint_for_testing'
-		];
+		return !this.options
+			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
 	}
 
 	public onDisconnect({
@@ -177,7 +180,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
-		// @ts-ignore
+
 		const client = new Paho.Client(url, clientId) as PahoClient;
 
 		client.onMessageArrived = ({
@@ -199,11 +202,13 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		};
 
-		const connected = await new Promise((resolve, reject) => {
+		const connected = await new Promise(resolve => {
 			client.connect({
 				useSSL: this.isSSLEnabled,
 				mqttVersion: 3,
-				onSuccess: () => resolve(true),
+				onSuccess: () => {
+					resolve(true);
+				},
 				onFailure: () => {
 					if (clientId) this._clientsQueue.remove(clientId);
 					this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
@@ -214,7 +219,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 
 		if (connected) {
 			this.connectionStateMonitor.record(
-				CONNECTION_CHANGE.CONNECTION_ESTABLISHED
+				CONNECTION_CHANGE.CONNECTION_ESTABLISHED,
 			);
 		}
 
@@ -223,19 +228,23 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 
 	protected async connect(
 		clientId: string,
-		options: MqttOptions = {}
+		options: MqttOptions = {},
 	): Promise<PahoClient | undefined> {
-		return await this.clientsQueue.get(clientId, async clientId => {
-			const client = await this.newClient({ ...options, clientId });
+		return this.clientsQueue.get(clientId, async clientIdForNewClient => {
+			const client = await this.newClient({
+				...options,
+				clientId: clientIdForNewClient,
+			});
 
 			if (client) {
 				// Once connected, subscribe to all topics registered observers
 				this._topicObservers.forEach(
 					(_value: Set<PubSubContentObserver>, key: string) => {
 						client.subscribe(key);
-					}
+					},
 				);
 			}
+
 			return client;
 		});
 	}
@@ -258,21 +267,21 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 
 		if (client) {
 			logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
-			targetTopics.forEach(topic => client.send(topic, msg));
+			targetTopics.forEach(topic => {
+				client.send(topic, msg);
+			});
 		} else {
 			logger.debug(
 				'Publishing to topic(s) failed',
 				targetTopics.join(','),
-				message
+				message,
 			);
 		}
 	}
 
-	protected _topicObservers: Map<string, Set<PubSubContentObserver>> =
-		new Map();
+	protected _topicObservers = new Map<string, Set<PubSubContentObserver>>();
 
-	protected _clientIdObservers: Map<string, Set<PubSubContentObserver>> =
-		new Map();
+	protected _clientIdObservers = new Map<string, Set<PubSubContentObserver>>();
 
 	private _onMessage(topic: string, msg: string) {
 		try {
@@ -285,12 +294,13 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 			const parsedMessage: PubSubContent = JSON.parse(msg);
 
 			if (typeof parsedMessage === 'object') {
-				// @ts-ignore
 				parsedMessage[topicSymbol] = topic;
 			}
 
 			matchedTopicObservers.forEach(observersForTopic => {
-				observersForTopic.forEach(observer => observer.next(parsedMessage));
+				observersForTopic.forEach(observer => {
+					observer.next(parsedMessage);
+				});
 			});
 		} catch (error) {
 			logger.warn('Error handling message', error, msg);
@@ -350,8 +360,8 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 				await getClient();
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
-				reconnectSubscription = new Observable(observer => {
-					this.reconnectionMonitor.addObserver(observer);
+				reconnectSubscription = new Observable(reconnectionObserver => {
+					this.reconnectionMonitor.addObserver(reconnectionObserver);
 				}).subscribe(() => {
 					getClient();
 				});
@@ -368,7 +378,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 					if (this._clientIdObservers.get(clientId)?.size === 0) {
 						this.disconnect(clientId);
 						this.connectionStateMonitor.record(
-							CONNECTION_CHANGE.CLOSING_CONNECTION
+							CONNECTION_CHANGE.CLOSING_CONNECTION,
 						);
 						this._clientIdObservers.delete(clientId);
 					}

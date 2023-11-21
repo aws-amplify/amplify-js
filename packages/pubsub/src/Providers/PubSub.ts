@@ -3,12 +3,13 @@
 import { Observable } from 'rxjs';
 import {
 	PubSubBase,
-	PubSubOptions,
 	PubSubContent,
+	PubSubOptions,
 	PublishInput,
 	SubscribeInput,
-} from '../types/PubSub';
+} from '~/src/types/PubSub';
 import { ConsoleLogger } from '@aws-amplify/core';
+
 const logger = new ConsoleLogger('AbstractPubSubProvider');
 
 export abstract class AbstractPubSub<T extends PubSubOptions>

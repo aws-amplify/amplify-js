@@ -11,4 +11,7 @@ module.exports = {
 			},
 		],
 	},
+	settings: {
+		'import/ignore': ['*/paho-mqtt.js'],
+	},
 };

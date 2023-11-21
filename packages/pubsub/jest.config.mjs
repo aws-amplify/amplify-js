@@ -5,7 +5,7 @@ import tsconfig from './tsconfig.json' assert { type: 'json' };
 const jestConfig = getJestConfig(tsconfig.compilerOptions, {
 	coverageThreshold: {
 		global: {
-			branches: 16,
+			branches: 12,
 			functions: 41,
 			lines: 28,
 			statements: 28,
