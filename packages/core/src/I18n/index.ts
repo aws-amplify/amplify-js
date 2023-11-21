@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { I18n as I18nClass } from './I18n';
+import { ConsoleLogger } from '~/src/Logger';
 
-import { ConsoleLogger } from '../Logger';
+import { I18n as I18nClass } from './I18n';
 import { I18nConfig } from './types';
-import { assert, I18nErrorCode } from './errorHelpers';
+import { I18nErrorCode, assert } from './errorHelpers';
 
 const logger = new ConsoleLogger('I18n');
 
@@ -61,7 +61,7 @@ export class I18n {
 		I18n.checkConfig();
 		assert(!!_i18n, I18nErrorCode.NotConfigured);
 
-		return _i18n.setLanguage(lang);
+		_i18n.setLanguage(lang);
 	}
 
 	/**
@@ -88,12 +88,12 @@ export class I18n {
 	 */
 	static putVocabulariesForLanguage(
 		language: string,
-		vocabularies: Record<string, string>
+		vocabularies: Record<string, string>,
 	) {
 		I18n.checkConfig();
 		assert(!!_i18n, I18nErrorCode.NotConfigured);
 
-		return _i18n.putVocabulariesForLanguage(language, vocabularies);
+		_i18n.putVocabulariesForLanguage(language, vocabularies);
 	}
 
 	/**
@@ -107,7 +107,7 @@ export class I18n {
 		I18n.checkConfig();
 		assert(!!_i18n, I18nErrorCode.NotConfigured);
 
-		return _i18n.putVocabularies(vocabularies);
+		_i18n.putVocabularies(vocabularies);
 	}
 
 	public static checkConfig() {

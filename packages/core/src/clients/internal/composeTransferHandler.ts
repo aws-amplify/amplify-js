@@ -4,10 +4,10 @@
 import {
 	Middleware,
 	MiddlewareHandler,
-	TransferHandler,
 	Request as RequestBase,
 	Response as ResponseBase,
-} from '../types';
+	TransferHandler,
+} from '~/src/clients/types';
 
 /**
  * Compose a transfer handler with a core transfer handler and a list of middleware.
@@ -26,26 +26,27 @@ export const composeTransferHandler =
 			Request,
 			Response,
 			any
-		> = TransferHandler<Request, Response, {}>,
+		> = TransferHandler<Request, Response, object>,
 	>(
 		coreHandler: CoreHandler,
-		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>
+		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>,
 	) =>
 	(
 		request: Request,
 		options: MergeNoConflictKeys<
 			[...MiddlewareOptionsArr, InferOptionTypeFromTransferHandler<CoreHandler>]
-		>
+		>,
 	) => {
 		const context = {};
 		let composedHandler: MiddlewareHandler<Request, Response> = (
-			request: Request
-		) => coreHandler(request, options);
+			composedHandlerRequest: Request,
+		) => coreHandler(composedHandlerRequest, options);
 		for (let i = middleware.length - 1; i >= 0; i--) {
 			const m = middleware[i];
 			const resolvedMiddleware = m(options);
 			composedHandler = resolvedMiddleware(composedHandler, context);
 		}
+
 		return composedHandler(request);
 	};
 

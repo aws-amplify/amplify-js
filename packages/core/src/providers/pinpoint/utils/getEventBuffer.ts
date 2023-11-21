@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventBufferConfig } from '../types/buffer';
+import { EventBufferConfig } from '~/src/providers/pinpoint/types/buffer';
+import { AuthSession } from '~/src/singleton/Auth/types';
+
 import { PinpointEventBuffer } from './PinpointEventBuffer';
-import { AuthSession } from '../../../singleton/Auth/types';
 
 // Map of buffers by region -> appId
 const eventBufferMap: Record<string, Record<string, PinpointEventBuffer>> = {};

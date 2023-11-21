@@ -5,7 +5,7 @@ import { ConsoleLogger } from '../src';
 describe('Symbol undefined before load Hub', () => {
 	test('Symbol not supported', () => {
 		const listener = jest.fn(() => {});
-		const amplifySymbol = '@@amplify_default' as unknown as Symbol;
+		const amplifySymbol = '@@amplify_default' as unknown as symbol;
 		const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
 
 		Hub.listen('auth', listener);
@@ -18,13 +18,13 @@ describe('Symbol undefined before load Hub', () => {
 				message: 'User signout has taken place',
 			},
 			'Auth',
-			amplifySymbol
+			amplifySymbol,
 		);
 
 		expect(listener).toHaveBeenCalled();
 		expect(loggerSpy).not.toHaveBeenCalledWith(
 			'WARN',
-			'WARNING: auth is protected and dispatching on it can have unintended consequences'
+			'WARNING: auth is protected and dispatching on it can have unintended consequences',
 		);
 	});
 });

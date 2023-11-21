@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpRequest } from '../../../../types';
+import { HttpRequest } from '~/src/clients/types';
+
 import { SignRequestOptions } from './types/signer';
 import { getSignedHeaders } from './utils/getSignedHeaders';
 import { getSigningValues } from './utils/getSigningValues';
@@ -23,7 +24,7 @@ import { getSignature } from './utils/getSignature';
  */
 export const signRequest = (
 	request: HttpRequest,
-	options: SignRequestOptions
+	options: SignRequestOptions,
 ): HttpRequest => {
 	const signingValues = getSigningValues(options);
 	const { accessKeyId, credentialScope, longDate, sessionToken } =

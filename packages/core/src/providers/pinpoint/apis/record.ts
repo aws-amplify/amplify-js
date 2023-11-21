@@ -1,20 +1,23 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { amplifyUuid } from '../../../utils/amplifyUuid';
-import { PinpointRecordInput, PinpointSession } from '../types';
-import { resolveEndpointId } from '../utils';
+import { amplifyUuid } from '~/src/utils/amplifyUuid';
+import {
+	PinpointRecordInput,
+	PinpointSession,
+} from '~/src/providers/pinpoint/types';
+import { resolveEndpointId } from '~/src/providers/pinpoint/utils';
 import {
 	SESSION_START_EVENT,
 	SESSION_STOP_EVENT,
-} from '../../../utils/sessionListener';
+} from '~/src/utils/sessionListener';
 import {
 	BUFFER_SIZE,
 	FLUSH_INTERVAL,
 	FLUSH_SIZE,
 	RESEND_LIMIT,
-} from '../utils/constants';
-import { getEventBuffer } from '../utils/getEventBuffer';
+} from '~/src/providers/pinpoint/utils/constants';
+import { getEventBuffer } from '~/src/providers/pinpoint/utils/getEventBuffer';
 
 let session: PinpointSession | undefined;
 

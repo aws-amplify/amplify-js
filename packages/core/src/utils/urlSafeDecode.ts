@@ -3,5 +3,6 @@
 
 export function urlSafeDecode(hex: string) {
 	const matchArr = hex.match(/.{2}/g) || [];
+
 	return matchArr.map(char => String.fromCharCode(parseInt(char, 16))).join('');
 }

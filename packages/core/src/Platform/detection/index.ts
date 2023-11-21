@@ -1,22 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Framework } from '../types';
+import { Framework } from '~/src/Platform/types';
 
-import { reactWebDetect, reactSSRDetect } from './React';
-import { vueWebDetect, vueSSRDetect } from './Vue';
-import { svelteWebDetect, svelteSSRDetect } from './Svelte';
-import { nextWebDetect, nextSSRDetect } from './Next';
-import { nuxtWebDetect, nuxtSSRDetect } from './Nuxt';
-import { angularWebDetect, angularSSRDetect } from './Angular';
+import { reactSSRDetect, reactWebDetect } from './React';
+import { vueSSRDetect, vueWebDetect } from './Vue';
+import { svelteSSRDetect, svelteWebDetect } from './Svelte';
+import { nextSSRDetect, nextWebDetect } from './Next';
+import { nuxtSSRDetect, nuxtWebDetect } from './Nuxt';
+import { angularSSRDetect, angularWebDetect } from './Angular';
 import { reactNativeDetect } from './ReactNative';
 import { expoDetect } from './Expo';
 import { webDetect } from './Web';
 
-type PlatformDetectionEntry = {
+interface PlatformDetectionEntry {
 	platform: Framework;
-	detectionMethod: () => boolean;
-};
+	detectionMethod(): boolean;
+}
 
 // These are in the order of detection where when both are detectable, the early Framework will be reported
 const detectionMap: PlatformDetectionEntry[] = [

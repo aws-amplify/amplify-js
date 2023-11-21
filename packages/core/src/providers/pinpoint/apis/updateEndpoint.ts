@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { amplifyUuid } from '../../../utils/amplifyUuid';
-import { getClientInfo } from '../../../utils/getClientInfo';
+import { amplifyUuid } from '~/src/utils/amplifyUuid';
+import { getClientInfo } from '~/src/utils/getClientInfo';
 import {
-	updateEndpoint as clientUpdateEndpoint,
 	UpdateEndpointInput,
-} from '../../../awsClients/pinpoint';
-import { PinpointUpdateEndpointInput } from '../types';
-import { cacheEndpointId } from '../utils/cacheEndpointId';
-import { getEndpointId } from '../utils/getEndpointId';
+	updateEndpoint as clientUpdateEndpoint,
+} from '~/src/awsClients/pinpoint';
+import { PinpointUpdateEndpointInput } from '~/src/providers/pinpoint/types';
+import { cacheEndpointId } from '~/src/providers/pinpoint/utils/cacheEndpointId';
+import { getEndpointId } from '~/src/providers/pinpoint/utils/getEndpointId';
 
 /**
  * @internal
@@ -93,7 +93,7 @@ export const updateEndpoint = async ({
 	};
 	await clientUpdateEndpoint({ credentials, region, userAgentValue }, input);
 	// if we had to create an endpoint id, we need to now cache it
-	if (!!createdEndpointId) {
+	if (createdEndpointId) {
 		return cacheEndpointId(appId, category, createdEndpointId);
 	}
 };

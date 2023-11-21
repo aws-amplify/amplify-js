@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SHA256_ALGORITHM_IDENTIFIER } from '../constants';
+import { SHA256_ALGORITHM_IDENTIFIER } from '~/src/clients/middleware/signing/signer/signatureV4/constants';
 
 /**
  * Returns a string to be signed.
@@ -21,8 +21,8 @@ import { SHA256_ALGORITHM_IDENTIFIER } from '../constants';
 export const getStringToSign = (
 	date: string,
 	credentialScope: string,
-	hashedRequest: string
+	hashedRequest: string,
 ): string =>
 	[SHA256_ALGORITHM_IDENTIFIER, date, credentialScope, hashedRequest].join(
-		'\n'
+		'\n',
 	);

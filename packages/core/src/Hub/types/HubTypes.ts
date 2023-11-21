@@ -11,25 +11,25 @@ export type IListener<
 	callback: HubCallback<Channel, EventData>;
 }[];
 
-export type EventDataMap = { event: string; data?: unknown };
+export interface EventDataMap { event: string; data?: unknown }
 
-export type AmplifyEventData = {
+export interface AmplifyEventData {
 	auth: AuthHubEventData;
 	[key: string]: EventDataMap;
-};
+}
 export type AmplifyChannel = 'auth';
 
 export type StopListenerCallback = () => void;
 
-export type HubCapsule<
+export interface HubCapsule<
 	Channel extends string,
 	EventData extends EventDataMap,
-> = {
+> {
 	channel: Channel;
 	payload: HubPayload<EventData>;
 	source?: string;
 	patternInfo?: string[];
-};
+}
 
 export type HubCallback<
 	Channel extends string = string,
@@ -41,6 +41,6 @@ export type HubPayload<EventData extends EventDataMap = EventDataMap> =
 		message?: string;
 	};
 
-export type AmplifyHubCallbackMap<Channel extends AmplifyChannel> = {
+export interface AmplifyHubCallbackMap<Channel extends AmplifyChannel> {
 	auth: HubCallback<Channel>;
-};
+}

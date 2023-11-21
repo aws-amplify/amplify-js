@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpRequest } from '../../../../../types';
+import { HttpRequest } from '~/src/clients/types';
+
 import { getCanonicalHeaders } from './getCanonicalHeaders';
 import { getCanonicalQueryString } from './getCanonicalQueryString';
 import { getCanonicalUri } from './getCanonicalUri';
@@ -26,7 +27,7 @@ import { getSignedHeaders } from './getSignedHeaders';
  */
 export const getCanonicalRequest = (
 	{ body, headers, method, url }: HttpRequest,
-	uriEscapePath = true
+	uriEscapePath = true,
 ): string =>
 	[
 		method,

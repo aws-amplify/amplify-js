@@ -1,17 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { DateUtils } from './DateUtils';
 import {
+	TOKEN_QUERY_PARAM,
 	presignUrl,
 	signRequest,
-	TOKEN_QUERY_PARAM,
-} from '../clients/middleware/signing/signer/signatureV4';
-import { AmplifyUrl } from '../utils/amplifyUrl';
+} from '~/src/clients/middleware/signing/signer/signatureV4';
+import { AmplifyUrl } from '~/src/utils/amplifyUrl';
+
+// TODO(eslint): update usage of deprecated API.
+import { DateUtils } from './DateUtils';
 
 const IOT_SERVICE_NAME = 'iotdevicegateway';
 // Best practice regex to parse the service and region from an AWS endpoint
-const AWS_ENDPOINT_REGEX = /([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com(.cn)?$/;
+const AWS_ENDPOINT_REGEX = /([^.]+)\.(?:([^.]*)\.)?amazonaws\.com(.cn)?$/;
 
 /**
  * This class is intended to be deprecated and replaced by `signRequest` and `presignUrl` functions from
@@ -72,13 +74,13 @@ export class Signer {
 			secret_key: string;
 			session_token: string;
 		},
-		serviceInfo: { service: string; region: string }
+		serviceInfo: { service: string; region: string },
 	) {
 		request.headers = request.headers || {};
 
 		if (request.body && !request.data) {
 			throw new Error(
-				'The attribute "body" was found on the request object. Please use the attribute "data" instead.'
+				'The attribute "body" was found on the request object. Please use the attribute "data" instead.',
 			);
 		}
 
@@ -100,6 +102,7 @@ export class Signer {
 			signedRequest.headers['x-amz-security-token'];
 		delete signedRequest.headers.authorization;
 		delete signedRequest.headers['x-amz-security-token'];
+
 		return signedRequest;
 	}
 
@@ -107,19 +110,21 @@ export class Signer {
 		urlToSign: string,
 		accessInfo: any,
 		serviceInfo?: any,
-		expiration?: number
+		expiration?: number,
 	): string;
+
 	static signUrl(
 		request: any,
 		accessInfo: any,
 		serviceInfo?: any,
-		expiration?: number
+		expiration?: number,
 	): string;
+
 	static signUrl(
 		urlOrRequest: string | any,
 		accessInfo: any,
 		serviceInfo?: any,
-		expiration?: number
+		expiration?: number,
 	): string {
 		const urlToSign: string =
 			typeof urlOrRequest === 'object' ? urlOrRequest.url : urlOrRequest;
@@ -138,7 +143,7 @@ export class Signer {
 			presignable,
 			accessInfo,
 			serviceInfo,
-			expiration
+			expiration,
 		);
 		const signedUrl = presignUrl(presignable, options);
 		if (
@@ -147,9 +152,10 @@ export class Signer {
 		) {
 			signedUrl.searchParams.append(
 				TOKEN_QUERY_PARAM,
-				accessInfo.session_token
+				accessInfo.session_token,
 			);
 		}
+
 		return signedUrl.toString();
 	}
 }
@@ -158,11 +164,11 @@ const getOptions = (
 	request: { url: URL } & Record<string, any>,
 	accessInfo: { access_key: string; secret_key: string; session_token: string },
 	serviceInfo: { service: string; region: string },
-	expiration?: number
+	expiration?: number,
 ) => {
 	const { access_key, secret_key, session_token } = accessInfo ?? {};
 	const { region: urlRegion, service: urlService } = parseServiceInfo(
-		request.url
+		request.url,
 	);
 	const { region = urlRegion, service = urlService } = serviceInfo ?? {};
 	const credentials = {
@@ -172,8 +178,10 @@ const getOptions = (
 			? { sessionToken: session_token }
 			: {}),
 	};
+
 	return {
 		credentials,
+		// TODO(eslint): update usage of deprecated API.
 		signingDate: DateUtils.getDateWithClockOffset(),
 		signingRegion: region,
 		signingService: service,
@@ -182,7 +190,7 @@ const getOptions = (
 };
 
 const parseServiceInfo = (url: URL) => {
-	const host = url.host;
+	const { host } = url;
 	const matched = host.match(AWS_ENDPOINT_REGEX) ?? [];
 	let parsed = matched.slice(1, 3);
 

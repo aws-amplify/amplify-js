@@ -1,4 +1,3 @@
-/* tslint:disable:max-line-length */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -377,7 +376,7 @@ export interface EventsResponse {
  *
  * The input for {@link GetInAppMessagesCommand}.
  */
-export interface GetInAppMessagesCommandInput extends GetInAppMessagesRequest {}
+export type GetInAppMessagesCommandInput = GetInAppMessagesRequest
 /**
  * @public
  *
@@ -691,7 +690,7 @@ export interface PublicEndpoint {
  *
  * The input for {@link PutEventsCommand}.
  */
-export interface PutEventsCommandInput extends PutEventsRequest {}
+export type PutEventsCommandInput = PutEventsRequest
 /**
  * @public
  *
@@ -777,7 +776,7 @@ export interface SetDimension {
  *
  * The input for {@link UpdateEndpointCommand}.
  */
-export interface UpdateEndpointCommandInput extends UpdateEndpointRequest {}
+export type UpdateEndpointCommandInput = UpdateEndpointRequest
 /**
  * @public
  *

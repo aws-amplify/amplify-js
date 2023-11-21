@@ -7,12 +7,12 @@ export enum AmplifyErrorCode {
 	Unknown = 'Unknown',
 }
 
-export type AmplifyErrorParams<ErrorCode extends string = string> = {
+export interface AmplifyErrorParams<ErrorCode extends string = string> {
 	message: string;
 	name: ErrorCode;
 	recoverySuggestion?: string;
 	underlyingError?: Error | unknown;
-};
+}
 
 export type AmplifyErrorMap<ErrorCode extends string = string> = {
 	[name in ErrorCode]: {
@@ -21,10 +21,10 @@ export type AmplifyErrorMap<ErrorCode extends string = string> = {
 	};
 };
 
-export type ServiceError = {
+export interface ServiceError {
 	name: string;
 	message: string;
-};
+}
 
 export type AssertionFunction<ErrorCode extends string = string> = (
 	assertion: boolean,

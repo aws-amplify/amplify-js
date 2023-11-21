@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '../Logger';
-import { KeyValueStorage } from '../storage/KeyValueStorage';
-import { getLocalStorageWithFallback } from '../storage/utils';
+import { ConsoleLogger } from '~/src/Logger';
+import { KeyValueStorage } from '~/src/storage/KeyValueStorage';
+import { getLocalStorageWithFallback } from '~/src/storage/utils';
+
 import { defaultConfig } from './constants';
 import { StorageCacheCommon } from './StorageCacheCommon';
 import { Cache, CacheConfig } from './types';
@@ -42,6 +43,7 @@ export class StorageCache extends StorageCacheCommon implements Cache {
 				keys.push(key.substring(this.config.keyPrefix.length));
 			}
 		}
+
 		return keys;
 	}
 

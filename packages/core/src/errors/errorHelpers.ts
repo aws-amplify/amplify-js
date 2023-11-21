@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+	AmplifyErrorCode,
+	AmplifyErrorMap,
+	AssertionFunction,
+} from '~/src/types';
+
 import { createAssertionFunction } from './createAssertionFunction';
-import { AmplifyErrorCode, AmplifyErrorMap, AssertionFunction } from '../types';
 
 const amplifyErrorMap: AmplifyErrorMap<AmplifyErrorCode> = {
 	[AmplifyErrorCode.NoEndpointId]: {

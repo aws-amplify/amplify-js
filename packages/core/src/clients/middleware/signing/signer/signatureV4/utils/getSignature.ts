@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpRequest } from '../../../../../types';
-import { SigningValues } from '../types/signer';
+import { HttpRequest } from '~/src/clients/types';
+import { SigningValues } from '~/src/clients/middleware/signing/signer/signatureV4/types/signer';
+
 import { getHashedDataAsHex } from './dataHashHelpers';
 import { getCanonicalRequest } from './getCanonicalRequest';
 import { getSigningKey } from './getSigningKey';
@@ -28,7 +29,7 @@ export const getSignature = (
 		signingRegion,
 		signingService,
 		uriEscapePath,
-	}: SigningValues
+	}: SigningValues,
 ): string => {
 	// step 1: create a canonical request
 	const canonicalRequest = getCanonicalRequest(request, uriEscapePath);
@@ -40,13 +41,13 @@ export const getSignature = (
 	const stringToSign = getStringToSign(
 		longDate,
 		credentialScope,
-		hashedRequest
+		hashedRequest,
 	);
 
 	// step 4: calculate the signature
 	const signature = getHashedDataAsHex(
 		getSigningKey(secretAccessKey, shortDate, signingRegion, signingService),
-		stringToSign
+		stringToSign,
 	);
 
 	return signature;

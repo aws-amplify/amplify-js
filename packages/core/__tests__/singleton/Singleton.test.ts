@@ -264,10 +264,10 @@ describe('Session tests', () => {
 								credentials: mockCredentials,
 							};
 						},
-						clearCredentialsAndIdentityId: () => {},
+						clearCredentialsAndIdentityId: jest.fn(),
 					},
 				},
-			}
+			},
 		);
 
 		const session = await fetchAuthSession();
@@ -344,7 +344,7 @@ describe('Session tests', () => {
 					},
 					identityId: 'identityIdValue',
 				};
-			}
+			},
 		);
 		const token =
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
@@ -360,7 +360,7 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentialsAndIdentityId: () => {},
+					clearCredentialsAndIdentityId: jest.fn(),
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,
@@ -439,7 +439,7 @@ describe('Session tests', () => {
 					},
 					identityId: 'identityIdValue',
 				};
-			}
+			},
 		);
 
 		const spyTokenProvider = jest.fn(async () => {
@@ -450,7 +450,7 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentialsAndIdentityId: () => {},
+					clearCredentialsAndIdentityId: jest.fn(),
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,
@@ -509,7 +509,7 @@ describe('Session tests', () => {
 				tokenProvider: {
 					getTokens: tokenProvider,
 				},
-			}
+			},
 		);
 
 		await auth.fetchAuthSession({ forceRefresh: true });
@@ -537,7 +537,7 @@ describe('Session tests', () => {
 				tokenProvider: {
 					getTokens: tokenProvider,
 				},
-			}
+			},
 		);
 
 		const action = async () =>

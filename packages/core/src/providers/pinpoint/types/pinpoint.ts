@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthSession } from '../../../singleton/Auth/types';
-import { UserProfile } from '../../../types';
+import { AuthSession } from '~/src/singleton/Auth/types';
+import { UserProfile } from '~/src/types';
+
 import { EventBufferConfig } from './buffer';
 
 export type SupportedCategory =
@@ -13,34 +14,34 @@ export type SupportedCategory =
 
 type SupportedChannelType = 'APNS' | 'APNS_SANDBOX' | 'GCM' | 'IN_APP';
 
-export type PinpointProviderConfig = {
+export interface PinpointProviderConfig {
 	Pinpoint: Partial<EventBufferConfig> & {
 		appId: string;
 		region: string;
 	};
-};
+}
 
-export type PinpointServiceOptions = {
+export interface PinpointServiceOptions {
 	address?: string;
 	optOut?: 'ALL' | 'NONE';
 	userAttributes?: Record<string, string[]>;
-};
+}
 
-export type PinpointSession = {
+export interface PinpointSession {
 	Id: string;
 	Duration?: number;
 	StartTimestamp: string;
 	StopTimestamp?: string;
-};
+}
 
-export type PinpointAnalyticsEvent = {
+export interface PinpointAnalyticsEvent {
 	name: string;
 	attributes?: Record<string, string>;
 	metrics?: Record<string, number>;
-};
+}
 
 // Common type that is required for operations that may trigger an endpoint update
-type PinpointCommonParameters = {
+interface PinpointCommonParameters {
 	appId: string;
 	category: SupportedCategory;
 	channelType?: SupportedChannelType;
@@ -48,7 +49,7 @@ type PinpointCommonParameters = {
 	identityId?: AuthSession['identityId'];
 	region: string;
 	userAgentValue?: string;
-};
+}
 
 export type PinpointUpdateEndpointInput = PinpointCommonParameters &
 	PinpointServiceOptions & {

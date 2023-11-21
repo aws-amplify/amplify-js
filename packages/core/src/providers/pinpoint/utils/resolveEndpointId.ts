@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { assert } from '../../../errors';
-import { AmplifyErrorCode } from '../../../types';
-import { updateEndpoint } from '../apis/updateEndpoint';
-import { PinpointUpdateEndpointInput } from '../types';
+import { assert } from '~/src/errors';
+import { AmplifyErrorCode } from '~/src/types';
+import { updateEndpoint } from '~/src/providers/pinpoint/apis/updateEndpoint';
+import { PinpointUpdateEndpointInput } from '~/src/providers/pinpoint/types';
+
 import { getEndpointId } from './getEndpointId';
 
 /**

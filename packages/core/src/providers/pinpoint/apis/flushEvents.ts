@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getEventBuffer } from '../utils/getEventBuffer';
-import { EventBufferConfig } from '../types/buffer';
-import { AuthSession } from '../../../singleton/Auth/types';
+import { getEventBuffer } from '~/src/providers/pinpoint/utils/getEventBuffer';
+import { EventBufferConfig } from '~/src/providers/pinpoint/types/buffer';
+import { AuthSession } from '~/src/singleton/Auth/types';
 import {
 	BUFFER_SIZE,
 	FLUSH_INTERVAL,
 	FLUSH_SIZE,
 	RESEND_LIMIT,
-} from '../utils/constants';
+} from '~/src/providers/pinpoint/utils/constants';
 
 export type PinpointFlushEventsInput = Partial<EventBufferConfig> & {
 	appId: string;

@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SignRequestOptions } from '../types';
-import { SigningValues } from '../types/signer';
+import { SignRequestOptions } from '~/src/clients/middleware/signing/signer/signatureV4/types';
+import { SigningValues } from '~/src/clients/middleware/signing/signer/signatureV4/types/signer';
+
 import { getCredentialScope } from './getCredentialScope';
 import { getFormattedDates } from './getFormattedDates';
 
@@ -29,8 +30,9 @@ export const getSigningValues = ({
 	const credentialScope = getCredentialScope(
 		shortDate,
 		signingRegion,
-		signingService
+		signingService,
 	);
+
 	return {
 		accessKeyId,
 		credentialScope,

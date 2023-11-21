@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PlatformNotSupportedError } from '../errors';
-import { KeyValueStorageInterface } from '../types';
+import { PlatformNotSupportedError } from '~/src/errors';
+import { KeyValueStorageInterface } from '~/src/types';
 
 /**
  * @internal
@@ -33,6 +33,7 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	 */
 	async getItem(key: string) {
 		if (!this.storage) throw new PlatformNotSupportedError();
+
 		return this.storage.getItem(key);
 	}
 

@@ -1,12 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+// TODO(eslint): update usage of deprecated API.
 import { CompletionObserver, Observable, from } from 'rxjs';
+import { isWebWorker } from '~/src/utils';
+
 import { NetworkStatus } from './types';
-import { isWebWorker } from '../utils';
 
 export class Reachability {
-	private static _observers: Array<CompletionObserver<NetworkStatus>> = [];
+	private static _observers: CompletionObserver<NetworkStatus>[] = [];
 
 	networkMonitor(_?: unknown): Observable<NetworkStatus> {
 		const globalObj = isWebWorker()
@@ -20,8 +22,12 @@ export class Reachability {
 		return new Observable(observer => {
 			observer.next({ online: globalObj.navigator.onLine });
 
-			const notifyOnline = () => observer.next({ online: true });
-			const notifyOffline = () => observer.next({ online: false });
+			const notifyOnline = () => {
+				observer.next({ online: true });
+			};
+			const notifyOffline = () => {
+				observer.next({ online: false });
+			};
 
 			globalObj.addEventListener('online', notifyOnline);
 			globalObj.addEventListener('offline', notifyOffline);
@@ -33,7 +39,7 @@ export class Reachability {
 				globalObj.removeEventListener('offline', notifyOffline);
 
 				Reachability._observers = Reachability._observers.filter(
-					_observer => _observer !== observer
+					_observer => _observer !== observer,
 				);
 			};
 		});
@@ -44,7 +50,7 @@ export class Reachability {
 		for (const observer of this._observers) {
 			if (observer.closed) {
 				this._observers = this._observers.filter(
-					_observer => _observer !== observer
+					_observer => _observer !== observer,
 				);
 				continue;
 			}

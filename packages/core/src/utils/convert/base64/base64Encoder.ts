@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getBtoa } from '../../globalHelpers';
-import { Base64Encoder } from '../types';
+import { getBtoa } from '~/src/utils/globalHelpers';
+import { Base64Encoder } from '~/src/utils/convert/types';
+
 import { bytesToString } from './bytesToString';
 
 export const base64Encoder: Base64Encoder = {

@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getDnsSuffix } from '../../clients/endpoints';
+import { getDnsSuffix } from '~/src/clients/endpoints';
 import {
-	jitteredBackoff,
 	getRetryDecider,
-} from '../../clients/middleware/retry';
-import { parseJsonError } from '../../clients/serde/json';
-import type { EndpointResolverOptions, Headers } from '../../clients/types';
-import { getAmplifyUserAgent } from '../../Platform';
-import { AmplifyUrl } from '../../utils/amplifyUrl';
+	jitteredBackoff,
+} from '~/src/clients/middleware/retry';
+import { parseJsonError } from '~/src/clients/serde/json';
+import { getAmplifyUserAgent } from '~/src/Platform';
+import { AmplifyUrl } from '~/src/utils/amplifyUrl';
+import type { EndpointResolverOptions, Headers } from '~/src/clients/types';
 
 /**
  * The service name used to sign requests if the API requires authentication.

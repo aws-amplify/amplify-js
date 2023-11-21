@@ -1,20 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '../../../Logger';
+import { ConsoleLogger } from '~/src/Logger';
 import {
 	EventsBatch,
-	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
-} from '../../../awsClients/pinpoint';
+	putEvents,
+} from '~/src/awsClients/pinpoint';
 import {
-	PinpointEventBufferConfig,
 	BufferedEvent,
 	BufferedEventMap,
 	EventBuffer,
-} from '../types/buffer';
-import { AuthSession } from '../../../singleton/Auth/types';
+	PinpointEventBufferConfig,
+} from '~/src/providers/pinpoint/types/buffer';
+import { AuthSession } from '~/src/singleton/Auth/types';
+
 import { isAppInForeground } from './isAppInForeground';
 
 const logger = new ConsoleLogger('PinpointEventBuffer');
@@ -110,16 +111,16 @@ export class PinpointEventBuffer {
 					region,
 					userAgentValue,
 				},
-				batchEventParams
+				batchEventParams,
 			);
 			this._processPutEventsSuccessResponse(data, eventMap);
 		} catch (err) {
-			return this._handlePutEventsFailure(err, eventMap);
+			this._handlePutEventsFailure(err, eventMap);
 		}
 	}
 
 	private _generateBatchEventParams(
-		eventMap: BufferedEventMap
+		eventMap: BufferedEventMap,
 	): PutEventsInput {
 		const batchItem: Record<string, EventsBatch> = {};
 
@@ -159,18 +160,17 @@ export class PinpointEventBuffer {
 		if (RETRYABLE_CODES.includes(statusCode)) {
 			const retryableEvents = Object.values(eventMap);
 			this._retry(retryableEvents);
-			return;
 		}
 	}
 
 	private _processPutEventsSuccessResponse(
 		data: PutEventsOutput,
-		eventMap: BufferedEventMap
+		eventMap: BufferedEventMap,
 	) {
 		const { Results = {} } = data.EventsResponse ?? {};
 		const retryableEvents: BufferedEvent[] = [];
 
-		Object.entries(Results).forEach(([endpointId, endpointValues]) => {
+		Object.entries(Results).forEach(([_, endpointValues]) => {
 			const responses = endpointValues.EventsItemResponse ?? {};
 
 			Object.entries(responses).forEach(([eventId, eventValues]) => {
@@ -181,25 +181,13 @@ export class PinpointEventBuffer {
 
 				const { StatusCode, Message } = eventValues ?? {};
 
-				// manually crafting handlers response to keep API consistant
-				const response = {
-					EventsResponse: {
-						Results: {
-							[endpointId]: {
-								EventsItemResponse: {
-									[eventId]: { StatusCode, Message },
-								},
-							},
-						},
-					},
-				};
-
 				if (StatusCode && ACCEPTED_CODES.includes(StatusCode)) {
 					return;
 				}
 
 				if (StatusCode && RETRYABLE_CODES.includes(StatusCode)) {
 					retryableEvents.push(eventObject);
+
 					return;
 				}
 
@@ -233,6 +221,7 @@ export class PinpointEventBuffer {
 					remainingAttempts: bufferedEvent.resendLimit,
 				});
 				eligibleEvents.push({ [eventId!]: bufferedEvent });
+
 				return;
 			}
 
@@ -250,6 +239,7 @@ export class PinpointEventBuffer {
 		return buffer.reduce((acc, curVal) => {
 			const [[key, value]] = Object.entries(curVal);
 			acc[key] = value;
+
 			return acc;
 		}, {});
 	}

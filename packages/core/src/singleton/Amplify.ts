@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AuthClass } from './Auth';
-import { Hub, AMPLIFY_SYMBOL } from '../Hub';
+import { AMPLIFY_SYMBOL, Hub } from '~/src/Hub';
+import { parseAWSExports } from '~/src/parseAWSExports';
+import { deepFreeze } from '~/src/utils';
+
 import { LegacyConfig, LibraryOptions, ResourcesConfig } from './types';
-import { parseAWSExports } from '../parseAWSExports';
-import { deepFreeze } from '../utils';
+import { AuthClass } from './Auth';
 
 export class AmplifyClass {
 	resourcesConfig: ResourcesConfig;
@@ -38,7 +39,7 @@ export class AmplifyClass {
 	 */
 	configure(
 		resourcesConfig: ResourcesConfig | LegacyConfig,
-		libraryOptions?: LibraryOptions
+		libraryOptions?: LibraryOptions,
 	): void {
 		let resolvedResourceConfig: ResourcesConfig;
 
@@ -66,7 +67,7 @@ export class AmplifyClass {
 				data: resourcesConfig,
 			},
 			'Configure',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
 	}
 

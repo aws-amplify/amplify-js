@@ -10,5 +10,6 @@ import { getCrypto } from './globalHelpers';
 export function cryptoSecureRandomInt() {
 	const crypto = getCrypto();
 	const randomResult = crypto.getRandomValues(new Uint32Array(1))[0];
+
 	return randomResult;
 }

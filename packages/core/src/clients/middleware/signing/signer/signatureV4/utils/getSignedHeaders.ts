@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpRequest } from '../../../../../types';
+import { HttpRequest } from '~/src/clients/types';
 
 /**
  * Returns signed headers.

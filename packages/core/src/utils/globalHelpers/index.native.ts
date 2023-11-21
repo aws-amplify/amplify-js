@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadGetRandomValues, loadBase64 } from '@aws-amplify/react-native';
-import { AmplifyError } from '../../errors';
+import { loadBase64, loadGetRandomValues } from '@aws-amplify/react-native';
+import { AmplifyError } from '~/src/errors';
 
 loadGetRandomValues();
 const { encode, decode } = loadBase64();

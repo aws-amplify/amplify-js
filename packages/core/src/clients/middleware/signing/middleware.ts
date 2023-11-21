@@ -6,7 +6,8 @@ import {
 	HttpRequest,
 	HttpResponse,
 	MiddlewareHandler,
-} from '../../types';
+} from '~/src/clients/types';
+
 import { signRequest } from './signer/signatureV4';
 import { getSkewCorrectedDate } from './utils/getSkewCorrectedDate';
 import { getUpdatedSystemClockOffset } from './utils/getUpdatedSystemClockOffset';
@@ -39,8 +40,9 @@ export const signingMiddleware = ({
 	uriEscapePath = true,
 }: SigningOptions) => {
 	let currentSystemClockOffset: number;
+
 	return (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
-		async function signingMiddleware(request: HttpRequest) {
+		async (request: HttpRequest) => {
 			currentSystemClockOffset = currentSystemClockOffset ?? 0;
 			const signRequestOptions = {
 				credentials:
@@ -59,9 +61,10 @@ export const signingMiddleware = ({
 			if (dateString) {
 				currentSystemClockOffset = getUpdatedSystemClockOffset(
 					Date.parse(dateString),
-					currentSystemClockOffset
+					currentSystemClockOffset,
 				);
 			}
+
 			return response;
 		};
 };

@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyErrorMap, AssertionFunction } from '../types';
+import { AmplifyErrorMap, AssertionFunction } from '~/src/types';
+
 import { AmplifyError } from './AmplifyError';
 
 export const createAssertionFunction =
 	(
 		errorMap: AmplifyErrorMap,
-		AssertionError = AmplifyError
+		AssertionError = AmplifyError,
 	): AssertionFunction =>
 	(assertion, name, additionalContext) => {
 		const { message, recoverySuggestion } = errorMap[name];

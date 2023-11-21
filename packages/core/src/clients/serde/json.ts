@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ErrorParser, HttpResponse } from '../types';
+import { ErrorParser, HttpResponse } from '~/src/clients/types';
+
 import { parseMetadata } from './responseInfo';
 
 /**
@@ -17,20 +18,22 @@ export const parseJsonError: ErrorParser = async (response?: HttpResponse) => {
 	}
 	const body = await parseJsonBody(response);
 	const sanitizeErrorCode = (rawValue: string | number): string => {
-		const [cleanValue] = rawValue.toString().split(/[\,\:]+/);
+		const [cleanValue] = rawValue.toString().split(/[,:]+/);
 		if (cleanValue.includes('#')) {
 			return cleanValue.split('#')[1];
 		}
+
 		return cleanValue;
 	};
 	const code = sanitizeErrorCode(
 		response.headers['x-amzn-errortype'] ??
 			body.code ??
 			body.__type ??
-			'UnknownError'
+			'UnknownError',
 	);
 	const message = body.message ?? body.Message ?? 'Unknown error';
 	const error = new Error(message);
+
 	return Object.assign(error, {
 		name: code,
 		$metadata: parseMetadata(response),
@@ -45,6 +48,7 @@ export const parseJsonBody = async (response: HttpResponse): Promise<any> => {
 		throw new Error('Missing response payload');
 	}
 	const output = await response.body.json();
+
 	return Object.assign(output, {
 		$metadata: parseMetadata(response),
 	});

@@ -1,45 +1,49 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { authenticatedHandler } from '../../clients/handlers/authenticated';
-import { composeServiceApi } from '../../clients/internal/composeServiceApi';
-import { extendedEncodeURIComponent } from '../../clients/middleware/signing/utils/extendedEncodeURIComponent';
+import { authenticatedHandler } from '~/src/clients/handlers/authenticated';
+import { composeServiceApi } from '~/src/clients/internal/composeServiceApi';
+import { extendedEncodeURIComponent } from '~/src/clients/middleware/signing/utils/extendedEncodeURIComponent';
 import {
 	parseJsonBody,
 	parseJsonError,
 	parseMetadata,
-} from '../../clients/serde';
-import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
+} from '~/src/clients/serde';
+import { Endpoint, HttpRequest, HttpResponse } from '~/src/clients/types';
+import { AmplifyUrl } from '~/src/utils/amplifyUrl';
+
 import { defaultConfig, getSharedHeaders } from './base';
+
 import type {
 	UpdateEndpointCommandInput as UpdateEndpointInput,
 	UpdateEndpointCommandOutput as UpdateEndpointOutput,
 } from './types';
-import { AmplifyUrl } from '../../utils/amplifyUrl';
 
 export type { UpdateEndpointInput, UpdateEndpointOutput };
 
 const updateEndpointSerializer = (
 	{ ApplicationId = '', EndpointId = '', EndpointRequest }: UpdateEndpointInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): HttpRequest => {
 	const headers = getSharedHeaders();
 	const url = new AmplifyUrl(endpoint.url);
 	url.pathname = `v1/apps/${extendedEncodeURIComponent(
-		ApplicationId
+		ApplicationId,
 	)}/endpoints/${extendedEncodeURIComponent(EndpointId)}`;
 	const body = JSON.stringify(EndpointRequest);
+
 	return { method: 'PUT', headers, url, body };
 };
 
 const updateEndpointDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<UpdateEndpointOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseJsonError(response);
 		throw error;
 	} else {
 		const { Message, RequestID } = await parseJsonBody(response);
+
 		return {
 			MessageBody: {
 				Message,
@@ -57,5 +61,5 @@ export const updateEndpoint = composeServiceApi(
 	authenticatedHandler,
 	updateEndpointSerializer,
 	updateEndpointDeserializer,
-	defaultConfig
+	defaultConfig,
 );

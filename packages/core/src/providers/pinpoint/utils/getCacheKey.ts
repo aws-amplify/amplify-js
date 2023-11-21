@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SupportedCategory } from '../types';
+import { SupportedCategory } from '~/src/providers/pinpoint/types';
 
 const PROVIDER_NAME = 'pinpoint';
 
@@ -12,5 +12,5 @@ const PROVIDER_NAME = 'pinpoint';
  */
 export const getCacheKey = (
 	appId: string,
-	category: SupportedCategory
+	category: SupportedCategory,
 ): string => `${category}:${PROVIDER_NAME}:${appId}`;

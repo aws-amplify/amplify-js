@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CacheConfig } from '../../singleton/Cache/types';
+import { CacheConfig } from '~/src/singleton/Cache/types';
+
 export { CacheConfig };
 
 /**
@@ -47,5 +48,5 @@ export interface CacheItem {
 export interface CacheItemOptions {
 	priority?: number;
 	expires?: number;
-	callback?: Function;
+	callback?(): unknown;
 }

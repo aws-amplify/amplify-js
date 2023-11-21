@@ -2,8 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SourceData } from '@aws-sdk/types';
-import { HttpRequest } from '../../../../../types';
-import { EMPTY_HASH, UNSIGNED_PAYLOAD } from '../constants';
+import { HttpRequest } from '~/src/clients/types';
+import {
+	EMPTY_HASH,
+	UNSIGNED_PAYLOAD,
+} from '~/src/clients/middleware/signing/signer/signatureV4/constants';
+
 import { getHashedDataAsHex } from './dataHashHelpers';
 
 /**
@@ -23,6 +27,7 @@ export const getHashedPayload = (body: HttpRequest['body']): string => {
 
 	if (isSourceData(body)) {
 		const hashedData = getHashedDataAsHex(null, body);
+
 		return hashedData;
 	}
 

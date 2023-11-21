@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyError } from '../../errors';
+import { AmplifyError } from '~/src/errors';
 
 export class AmplifyServerContextError extends AmplifyError {
 	constructor({

@@ -30,13 +30,6 @@ export class BackgroundProcessManager {
 	private jobs = new Set<JobEntry>();
 
 	/**
-	 * Creates a new manager for promises, observables, and other types
-	 * of work that may be running in the background. This manager provides
-	 * a centralized mechanism to request termination and await completion.
-	 */
-	constructor() {}
-
-	/**
 	 * Executes an async `job` function, passing the return value through to
 	 * the caller, registering it as a running job in the manager. When the
 	 * manager *closes*, it will `await` the job.
@@ -61,7 +54,7 @@ export class BackgroundProcessManager {
 	 */
 	add<T>(
 		job: (onTerminate: Promise<void>) => Promise<T>,
-		description?: string
+		description?: string,
 	): Promise<T>;
 
 	/**
@@ -76,8 +69,8 @@ export class BackgroundProcessManager {
 	 * @returns Job promise hooks + onTerminate signaling promise
 	 */
 	add(description?: string): {
-		resolve: (value?: unknown) => void;
-		reject: (reason?: any) => void;
+		resolve(value?: unknown): void;
+		reject(reason?: any): void;
 		onTerminate: Promise<void>;
 	};
 
@@ -96,7 +89,7 @@ export class BackgroundProcessManager {
 			| string
 			| BackgroundProcessManager
 			| ((...args: any) => Promise<T>),
-		optionalDescription?: string
+		optionalDescription?: string,
 	) {
 		let job:
 			| BackgroundProcessManager
@@ -120,10 +113,10 @@ export class BackgroundProcessManager {
 		} else if (typeof job === 'function') {
 			return this.addFunction(job, description);
 		} else if (job instanceof BackgroundProcessManager) {
-			return this.addManager(job, description);
+			this.addManager(job, description);
 		} else {
 			throw new Error(
-				'If `job` is provided, it must be an Observable, Function, or BackgroundProcessManager.'
+				'If `job` is provided, it must be an Observable, Function, or BackgroundProcessManager.',
 			);
 		}
 	}
@@ -140,7 +133,7 @@ export class BackgroundProcessManager {
 	 */
 	addCleaner<T>(
 		clean: () => Promise<T>,
-		description?: string
+		description?: string,
 	): () => Promise<void> {
 		const { resolve, onTerminate } = this.addHook(description);
 
@@ -156,15 +149,17 @@ export class BackgroundProcessManager {
 
 	private addFunction<T>(
 		job: () => Promise<T>,
-		description?: string
+		description?: string,
 	): Promise<T>;
+
 	private addFunction<T>(
 		job: (onTerminate: Promise<void>) => Promise<T>,
-		description?: string
+		description?: string,
 	): Promise<T>;
+
 	private addFunction<T>(
 		job: (() => Promise<T>) | ((onTerminate: Promise<void>) => Promise<T>),
-		description?: string
+		description?: string,
 	) {
 		// the function we call when we want to try to terminate this job.
 		let terminate;
@@ -183,7 +178,7 @@ export class BackgroundProcessManager {
 			this.registerPromise(
 				jobResult,
 				terminate as unknown as () => void,
-				description
+				description,
 			);
 		}
 
@@ -194,7 +189,7 @@ export class BackgroundProcessManager {
 	}
 
 	private addManager(manager: BackgroundProcessManager, description?: string) {
-		this.addCleaner(async () => await manager.close(), description);
+		this.addCleaner(async () => manager.close(), description);
 	}
 
 	/**
@@ -210,33 +205,33 @@ export class BackgroundProcessManager {
 	private addHook(description?: string) {
 		// the resolve/reject functions we'll provide to the caller to signal
 		// the state of the job.
-		let resolve!: (value?: unknown) => void;
-		let reject!: (reason?: any) => void;
+		let hookResolve!: (value?: unknown) => void;
+		let hookReject!: (reason?: any) => void;
 
 		// the underlying promise we'll use to manage it, pretty much like
 		// any other promise.
-		const promise = new Promise((res, rej) => {
-			resolve = res;
-			reject = rej;
+		const promise = new Promise((resolve, reject) => {
+			hookResolve = resolve;
+			hookReject = reject;
 		});
 
 		// the function we call when we want to try to terminate this job.
 		let terminate;
 
 		// the promise the job can opt into listening to for termination.
-		const onTerminate = new Promise(resolveTerminate => {
-			terminate = resolveTerminate;
+		const onTerminate = new Promise(resolve => {
+			terminate = resolve;
 		});
 
 		this.registerPromise(
 			promise,
 			terminate as unknown as () => void,
-			description
+			description,
 		);
 
 		return {
-			resolve,
-			reject,
+			resolve: hookResolve,
+			reject: hookReject,
 			onTerminate,
 		};
 	}
@@ -255,7 +250,7 @@ export class BackgroundProcessManager {
 	private registerPromise<T extends Promise<any>>(
 		promise: T,
 		terminate: () => void,
-		description?: string
+		description?: string,
 	) {
 		const jobEntry = { promise, terminate, description };
 		this.jobs.add(jobEntry);
@@ -345,8 +340,8 @@ export class BackgroundProcessManager {
 						`Pending jobs: [\n${this.pending
 							.map(t => '    ' + t)
 							.join(',\n')}\n]`,
-					].join('\n')
-				)
+					].join('\n'),
+				),
 			);
 		}
 	}
@@ -382,7 +377,7 @@ export class BackgroundProcessManager {
 						`Failed to send termination signal to job. Error: ${
 							(error as Error).message
 						}`,
-						job
+						job,
 					);
 				}
 			}
@@ -390,7 +385,7 @@ export class BackgroundProcessManager {
 			// Use `allSettled()` because we want to wait for all to finish. We do
 			// not want to stop waiting if there is a failure.
 			this._closingPromise = Promise.allSettled(
-				Array.from(this.jobs).map(j => j.promise)
+				Array.from(this.jobs).map(j => j.promise),
 			);
 
 			await this._closingPromise;

@@ -30,13 +30,14 @@ export const detectFramework = (): Framework => {
 		} else {
 			// The first run of detectFramework:
 			// Every time we update the cache, call each observer function
-			frameworkChangeObservers.forEach(fcn => fcn());
+			frameworkChangeObservers.forEach(fcn => { fcn(); });
 		}
 
 		// Retry once for either Unknown type after a delay (explained below)
 		resetTimeout(Framework.ServerSideUnknown, SSR_RESET_TIMEOUT);
 		resetTimeout(Framework.WebUnknown, WEB_RESET_TIMEOUT);
 	}
+
 	return frameworkCache;
 };
 

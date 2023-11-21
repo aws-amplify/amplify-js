@@ -1,9 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpRequest, HttpResponse, HttpTransferOptions } from '../types/http';
-import { TransferHandler } from '../types/core';
-import { withMemoization } from '../utils/memoization';
+import {
+	HttpRequest,
+	HttpResponse,
+	HttpTransferOptions,
+} from '~/src/clients/types/http';
+import { TransferHandler } from '~/src/clients/types/core';
+import { withMemoization } from '~/src/clients/utils/memoization';
 
 const shouldSendBody = (method: string) =>
 	!['HEAD', 'GET', 'DELETE'].includes(method.toUpperCase());
@@ -15,7 +19,7 @@ export const fetchTransferHandler: TransferHandler<
 	HttpTransferOptions
 > = async (
 	{ url, method, headers, body },
-	{ abortSignal, cache, withCrossDomainCredentials }
+	{ abortSignal, cache, withCrossDomainCredentials },
 ) => {
 	let resp: Response;
 	try {

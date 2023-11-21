@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { FormattedDates } from '../types/signer';
+import { FormattedDates } from '~/src/clients/middleware/signing/signer/signatureV4/types/signer';
 
 /**
  * Returns expected date strings to be used in signing.
@@ -14,7 +14,8 @@ import { FormattedDates } from '../types/signer';
  * @internal
  */
 export const getFormattedDates = (date: Date): FormattedDates => {
-	const longDate = date.toISOString().replace(/[:\-]|\.\d{3}/g, '');
+	const longDate = date.toISOString().replace(/[:-]|\.\d{3}/g, '');
+
 	return {
 		longDate,
 		shortDate: longDate.slice(0, 8),
