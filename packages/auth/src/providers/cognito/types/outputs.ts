@@ -14,6 +14,7 @@ import {
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
 import { AWSAuthDevice, AuthUser, UserAttributeKey } from '../types';
+import { SignInWithOTPNextStep } from './models';
 
 export type FetchMFAPreferenceOutput = {
 	enabled?: AuthMFAType[];
@@ -109,3 +110,8 @@ export type UpdateUserAttributeOutput =
  * Output type for Cognito fetchDevices API.
  */
 export type FetchDevicesOutput = AWSAuthDevice[];
+
+export type SignInWithOTPOutput = {
+	isSignedIn: boolean;
+	nextStep: SignInWithOTPNextStep;
+};

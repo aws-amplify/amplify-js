@@ -37,6 +37,11 @@ import {
 	AuthDeleteUserAttributesInput,
 	AuthForgetDeviceInput,
 } from '../../../types';
+import {
+	AuthPasswordlessFlow,
+	AuthPasswordlessDeliveryDestination,
+	GetOptions,
+} from './models';
 
 /**
  * Input type for Cognito confirmResetPassword API.
@@ -165,3 +170,12 @@ export type DeleteUserAttributesInput =
  * Input type for Cognito forgetDevice API.
  */
 export type ForgetDeviceInput = AuthForgetDeviceInput;
+
+export type SignInWithOTPInput<
+	T extends AuthPasswordlessFlow = AuthPasswordlessFlow,
+> = {
+	username: string;
+	flow: T;
+	destination: AuthPasswordlessDeliveryDestination;
+	options?: GetOptions<T>;
+};

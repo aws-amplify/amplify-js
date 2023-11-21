@@ -29,6 +29,8 @@ export {
 	forgetDevice,
 	fetchDevices,
 	autoSignIn,
+	signInWithOTP,
+	confirmSignInWithOTP,
 	AuthUser,
 	CodeDeliveryDetails,
 	UserAttributeKey,
