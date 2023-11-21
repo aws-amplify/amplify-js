@@ -4,14 +4,15 @@
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
-} from '../types/errors';
+} from '~/src/providers/cognito/types/errors';
+import { assertUserNotAuthenticated } from '~/src/providers/cognito/utils/signInHelpers';
+import { SignInInput, SignInOutput } from '~/src/providers/cognito/types';
+
 import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
-import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 
-import { SignInInput, SignInOutput } from '../types';
 /**
  * Signs a user in
  *

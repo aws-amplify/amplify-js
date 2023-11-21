@@ -1,18 +1,24 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthError } from '../../../../../errors/AuthError';
-import { textEncoder } from '../../textEncoder';
-import { AuthBigInteger, BigInteger } from '../BigInteger';
-import { calculateS, calculateU } from '../calculate';
-import { getBytesFromHex } from '../getBytesFromHex';
-import { getHashFromData } from '../getHashFromData';
-import { getHashFromHex } from '../getHashFromHex';
-import { getHexFromBytes } from '../getHexFromBytes';
-import { getHkdfKey } from '../getHkdfKey';
-import { getPaddedHex } from '../getPaddedHex';
-import { getRandomBytes } from '../getRandomBytes';
-import { getRandomString } from '../getRandomString';
+import { AuthError } from '~/src/errors/AuthError';
+import { textEncoder } from '~/src/providers/cognito/utils/textEncoder';
+import {
+	AuthBigInteger,
+	BigInteger,
+} from '~/src/providers/cognito/utils/srp/BigInteger';
+import {
+	calculateS,
+	calculateU,
+} from '~/src/providers/cognito/utils/srp/calculate';
+import { getBytesFromHex } from '~/src/providers/cognito/utils/srp/getBytesFromHex';
+import { getHashFromData } from '~/src/providers/cognito/utils/srp/getHashFromData';
+import { getHashFromHex } from '~/src/providers/cognito/utils/srp/getHashFromHex';
+import { getHexFromBytes } from '~/src/providers/cognito/utils/srp/getHexFromBytes';
+import { getHkdfKey } from '~/src/providers/cognito/utils/srp/getHkdfKey';
+import { getPaddedHex } from '~/src/providers/cognito/utils/srp/getPaddedHex';
+import { getRandomBytes } from '~/src/providers/cognito/utils/srp/getRandomBytes';
+import { getRandomString } from '~/src/providers/cognito/utils/srp/getRandomString';
 
 /** @class */
 export default class AuthenticationHelper {
@@ -48,7 +54,7 @@ export default class AuthenticationHelper {
 		this.N = N;
 		this.k = new BigInteger(
 			getHashFromHex(`${getPaddedHex(N)}${getPaddedHex(g)}`),
-			16
+			16,
 		);
 	}
 
@@ -62,6 +68,7 @@ export default class AuthenticationHelper {
 				message: 'random password is empty',
 			});
 		}
+
 		return this.randomPassword;
 	}
 
@@ -75,6 +82,7 @@ export default class AuthenticationHelper {
 				message: 'saltToHashDevices is empty',
 			});
 		}
+
 		return this.saltToHashDevices;
 	}
 
@@ -88,6 +96,7 @@ export default class AuthenticationHelper {
 				message: 'verifyDevices is empty',
 			});
 		}
+
 		return this.verifierDevices;
 	}
 
@@ -101,7 +110,7 @@ export default class AuthenticationHelper {
 	 */
 	async generateHashDevice(
 		deviceGroupKey: string,
-		username: string
+		username: string,
 	): Promise<void> {
 		this.randomPassword = getRandomString();
 		const combinedString = `${deviceGroupKey}${username}:${this.randomPassword}`;
@@ -116,18 +125,19 @@ export default class AuthenticationHelper {
 			this.g.modPow(
 				new BigInteger(
 					getHashFromHex(this.saltToHashDevices + hashedString),
-					16
+					16,
 				),
 				this.N,
 				(err: unknown, result: AuthBigInteger) => {
 					if (err) {
 						reject(err);
+
 						return;
 					}
 
 					this.verifierDevices = getPaddedHex(result);
 					resolve();
-				}
+				},
 			);
 		});
 	}
@@ -165,7 +175,7 @@ export default class AuthenticationHelper {
 
 		const x = new BigInteger(
 			getHashFromHex(getPaddedHex(salt) + usernamePasswordHash),
-			16
+			16,
 		);
 
 		const S = await calculateS({
@@ -186,8 +196,9 @@ export default class AuthenticationHelper {
 		const hkdfKey = getHkdfKey(
 			getBytesFromHex(getPaddedHex(S)),
 			getBytesFromHex(getPaddedHex(U)),
-			info
+			info,
 		);
+
 		return hkdfKey;
 	}
 }

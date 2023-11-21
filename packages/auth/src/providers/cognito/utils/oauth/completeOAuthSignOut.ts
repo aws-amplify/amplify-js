@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { clearCredentials, Hub } from '@aws-amplify/core';
+import { Hub, clearCredentials } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
-import { DefaultOAuthStore } from '../../utils/signInWithRedirectStore';
-import { tokenOrchestrator } from '../../tokenProvider';
+import { DefaultOAuthStore } from '~/src/providers/cognito/utils/signInWithRedirectStore';
+import { tokenOrchestrator } from '~/src/providers/cognito/tokenProvider';
 
 export const completeOAuthSignOut = async (store: DefaultOAuthStore) => {
 	await store.clearOAuthData();

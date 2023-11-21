@@ -2,38 +2,42 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	VerifySoftwareTokenException,
-	RespondToAuthChallengeException,
 	AssociateSoftwareTokenException,
-} from '../types/errors';
-import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
+	RespondToAuthChallengeException,
+	VerifySoftwareTokenException,
+} from '~/src/providers/cognito/types/errors';
+import {
+	ConfirmSignInInput,
+	ConfirmSignInOutput,
+} from '~/src/providers/cognito/types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
-} from '../utils/signInStore';
-import { AuthError } from '../../../errors/AuthError';
+} from '~/src/providers/cognito/utils/signInStore';
+import { AuthError } from '~/src/errors/AuthError';
 import {
 	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
 	handleChallengeName,
-} from '../utils/signInHelpers';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
+} from '~/src/providers/cognito/utils/signInHelpers';
+import { assertServiceError } from '~/src/errors/utils/assertServiceError';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { AuthErrorCodes } from '~/src/common/AuthErrorStrings';
 import { Amplify, Hub } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+import { cacheCognitoTokens } from '~/src/providers/cognito/tokenProvider/cacheTokens';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
-import { tokenOrchestrator } from '../tokenProvider';
+} from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '~/src/providers/cognito/tokenProvider';
+
 import { getCurrentUser } from './getCurrentUser';
 
 /**
@@ -52,7 +56,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignIn(
-	input: ConfirmSignInInput
+	input: ConfirmSignInInput,
 ): Promise<ConfirmSignInOutput> {
 	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession, signInDetails } =
@@ -65,7 +69,7 @@ export async function confirmSignIn(
 
 	assertValidationError(
 		!!challengeResponse,
-		AuthValidationErrorCode.EmptyChallengeResponse
+		AuthValidationErrorCode.EmptyChallengeResponse,
 	);
 
 	if (!username || !challengeName || !signInSession)
@@ -88,9 +92,9 @@ export async function confirmSignIn(
 	try {
 		const {
 			Session,
-			ChallengeName,
+			ChallengeName: handledChallengeName,
 			AuthenticationResult,
-			ChallengeParameters,
+			ChallengeParameters: handledChallengeParameters,
 		} = await handleChallengeName(
 			username,
 			challengeName as ChallengeName,
@@ -99,14 +103,14 @@ export async function confirmSignIn(
 			authConfig,
 			tokenOrchestrator,
 			clientMetaData,
-			options
+			options,
 		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
 			signInSession: Session,
 			username,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 
@@ -118,7 +122,7 @@ export async function confirmSignIn(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
@@ -129,8 +133,9 @@ export async function confirmSignIn(
 					data: await getCurrentUser(),
 				},
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -138,8 +143,8 @@ export async function confirmSignIn(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		assertServiceError(error);

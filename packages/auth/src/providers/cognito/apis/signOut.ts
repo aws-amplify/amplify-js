@@ -3,36 +3,35 @@
 
 import {
 	Amplify,
-	clearCredentials,
 	CognitoUserPoolConfig,
 	ConsoleLogger,
-	defaultStorage,
 	Hub,
+	clearCredentials,
+	defaultStorage,
 } from '@aws-amplify/core';
-
-import { getAuthUserAgentValue } from '../../../utils';
-import { SignOutInput } from '../types';
-import { tokenOrchestrator } from '../tokenProvider';
+import { getAuthUserAgentValue } from '~/src/utils';
+import { SignOutInput } from '~/src/providers/cognito/types';
+import { tokenOrchestrator } from '~/src/providers/cognito/tokenProvider';
 import {
-	AuthAction,
 	AMPLIFY_SYMBOL,
+	AuthAction,
+	JWT,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
-	JWT,
 } from '@aws-amplify/core/internals/utils';
 import {
 	globalSignOut as globalSignOutClient,
 	revokeToken,
-} from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+} from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
 import {
 	assertAuthTokens,
 	assertAuthTokensWithRefreshToken,
-} from '../utils/types';
-import { handleOAuthSignOut } from '../utils/oauth';
-import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
-import { AuthError } from '../../../errors/AuthError';
-import { OAUTH_SIGNOUT_EXCEPTION } from '../../../errors/constants';
+} from '~/src/providers/cognito/utils/types';
+import { handleOAuthSignOut } from '~/src/providers/cognito/utils/oauth';
+import { DefaultOAuthStore } from '~/src/providers/cognito/utils/signInWithRedirectStore';
+import { AuthError } from '~/src/errors/AuthError';
+import { OAUTH_SIGNOUT_EXCEPTION } from '~/src/errors/constants';
 
 const logger = new ConsoleLogger('Auth');
 
@@ -94,13 +93,13 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 				{
 					ClientId: cognitoConfig.userPoolClientId,
 					Token: authTokens.refreshToken,
-				}
+				},
 			);
 		}
 	} catch (err) {
 		// this shouldn't throw
 		logger.debug(
-			'Client signOut error caught but will proceed with token removal'
+			'Client signOut error caught but will proceed with token removal',
 		);
 	}
 }
@@ -116,12 +115,12 @@ async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 			},
 			{
 				AccessToken: authTokens.accessToken.toString(),
-			}
+			},
 		);
 	} catch (err) {
 		// it should not throw
 		logger.debug(
-			'Global signOut error caught but will proceed with token removal'
+			'Global signOut error caught but will proceed with token removal',
 		);
 	}
 }

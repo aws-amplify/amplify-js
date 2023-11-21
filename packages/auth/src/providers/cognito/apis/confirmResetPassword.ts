@@ -3,17 +3,17 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { ConfirmResetPasswordInput } from '../types';
-import { confirmForgotPassword } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { ConfirmForgotPasswordException } from '../../cognito/types/errors';
-import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from '../utils/userContextData';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { ConfirmResetPasswordInput } from '~/src/providers/cognito/types';
+import { confirmForgotPassword } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { ConfirmForgotPasswordException } from '~/src/providers/cognito/types/errors';
+import { getAuthUserAgentValue } from '~/src/utils';
+import { getUserContextData } from '~/src/providers/cognito/utils/userContextData';
 /**
  * Confirms the new password and verification code to reset the password.
  *
@@ -25,7 +25,7 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmResetPassword(
-	input: ConfirmResetPasswordInput
+	input: ConfirmResetPasswordInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -33,17 +33,17 @@ export async function confirmResetPassword(
 	const { username, newPassword } = input;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptyConfirmResetPasswordUsername
+		AuthValidationErrorCode.EmptyConfirmResetPasswordUsername,
 	);
 
 	assertValidationError(
 		!!newPassword,
-		AuthValidationErrorCode.EmptyConfirmResetPasswordNewPassword
+		AuthValidationErrorCode.EmptyConfirmResetPasswordNewPassword,
 	);
 	const code = input.confirmationCode;
 	assertValidationError(
 		!!code,
-		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
+		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode,
 	);
 	const metadata = input.options?.clientMetadata;
 
@@ -64,7 +64,7 @@ export async function confirmResetPassword(
 			Password: newPassword,
 			ClientMetadata: metadata,
 			ClientId: authConfig.userPoolClientId,
-			UserContextData: UserContextData,
-		}
+			UserContextData,
+		},
 	);
 }

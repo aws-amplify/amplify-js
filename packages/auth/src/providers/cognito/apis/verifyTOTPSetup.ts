@@ -1,19 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { VerifyTOTPSetupInput } from '../types';
-import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
-import { VerifySoftwareTokenException } from '../types/errors';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { VerifyTOTPSetupInput } from '~/src/providers/cognito/types';
+import { verifySoftwareToken } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { VerifySoftwareTokenException } from '~/src/providers/cognito/types/errors';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { assertAuthTokens } from '../utils/types';
-import { getAuthUserAgentValue } from '../../../utils';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '~/src/providers/cognito/utils/types';
+import { getAuthUserAgentValue } from '~/src/utils';
 
 /**
  * Verifies an OTP code retrieved from an associated authentication app.
@@ -26,14 +26,14 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function verifyTOTPSetup(
-	input: VerifyTOTPSetupInput
+	input: VerifyTOTPSetupInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { code, options } = input;
 	assertValidationError(
 		!!code,
-		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode
+		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode,
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
@@ -46,6 +46,6 @@ export async function verifyTOTPSetup(
 			AccessToken: tokens.accessToken.toString(),
 			UserCode: code,
 			FriendlyDeviceName: options?.friendlyDeviceName,
-		}
+		},
 	);
 }

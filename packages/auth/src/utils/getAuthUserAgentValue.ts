@@ -10,7 +10,7 @@ import {
 
 export const getAuthUserAgentValue = (
 	action: AuthAction,
-	customUserAgentDetails?: CustomUserAgentDetails
+	customUserAgentDetails?: CustomUserAgentDetails,
 ) =>
 	getAmplifyUserAgent({
 		category: Category.Auth,

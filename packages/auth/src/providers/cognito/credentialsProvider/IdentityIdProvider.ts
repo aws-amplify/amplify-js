@@ -1,12 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthTokens, getId, ConsoleLogger } from '@aws-amplify/core';
+import { AuthTokens, ConsoleLogger, Identity, getId } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
-import { AuthError } from '../../../errors/AuthError';
+import { AuthError } from '~/src/errors/AuthError';
+import { getRegionFromIdentityPoolId } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { GetIdInput } from '@aws-amplify/core/internals/aws-clients/cognitoIdentity';
+
 import { IdentityIdStore } from './types';
-import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
-import { Identity } from '@aws-amplify/core';
 import { formLoginsMap } from './utils';
 
 const logger = new ConsoleLogger('CognitoIdentityIdProvider');
@@ -48,7 +49,7 @@ export async function cognitoIdentityIdProvider({
 
 			if (identityId && identityId.id === generatedIdentityId) {
 				logger.debug(
-					`The guest identity ${identityId.id} has become the primary identity.`
+					`The guest identity ${identityId.id} has become the primary identity.`,
 				);
 			}
 			identityId = {
@@ -70,12 +71,13 @@ export async function cognitoIdentityIdProvider({
 
 	// Store in-memory or local storage depending on guest or primary identityId
 	identityIdStore.storeIdentityId(identityId);
+
 	return identityId.id;
 }
 
 async function generateIdentityId(
-	logins: {},
-	authConfig: CognitoIdentityPoolConfig
+	logins: GetIdInput['Logins'],
+	authConfig: CognitoIdentityPoolConfig,
 ): Promise<string> {
 	const identityPoolId = authConfig?.identityPoolId;
 	const region = getRegionFromIdentityPoolId(identityPoolId);
@@ -92,7 +94,7 @@ async function generateIdentityId(
 				{
 					IdentityPoolId: identityPoolId,
 					Logins: logins,
-				}
+				},
 			)
 		).IdentityId;
 	if (!idResult) {
@@ -103,5 +105,6 @@ async function generateIdentityId(
 				'Make sure to pass a valid identityPoolId in the configuration.',
 		});
 	}
+
 	return idResult;
 }

@@ -7,16 +7,18 @@ import {
 	AuthUserPoolConfig,
 	CognitoUserPoolConfig,
 } from '@aws-amplify/core';
-
-import { AuthError } from '../../../errors/AuthError';
-import { CognitoAuthTokens, DeviceMetadata } from '../tokenProvider/types';
+import { AuthError } from '~/src/errors/AuthError';
+import {
+	CognitoAuthTokens,
+	DeviceMetadata,
+} from '~/src/providers/cognito/tokenProvider/types';
 import {
 	DEVICE_METADATA_NOT_FOUND_EXCEPTION,
 	USER_UNAUTHENTICATED_EXCEPTION,
-} from '../../../errors/constants';
+} from '~/src/errors/constants';
 
 export function isTypeUserPoolConfig(
-	authConfig?: AuthConfig
+	authConfig?: AuthConfig,
 ): authConfig is AuthUserPoolConfig {
 	if (
 		authConfig &&
@@ -30,7 +32,7 @@ export function isTypeUserPoolConfig(
 }
 
 export function assertAuthTokens(
-	tokens?: AuthTokens | null
+	tokens?: AuthTokens | null,
 ): asserts tokens is AuthTokens {
 	if (!tokens || !tokens.accessToken) {
 		throw new AuthError({
@@ -42,7 +44,7 @@ export function assertAuthTokens(
 }
 
 export function assertIdTokenInAuthTokens(
-	tokens?: AuthTokens
+	tokens?: AuthTokens,
 ): asserts tokens is AuthTokens {
 	if (!tokens || !tokens.idToken) {
 		throw new AuthError({
@@ -54,7 +56,7 @@ export function assertIdTokenInAuthTokens(
 }
 
 export function assertAuthTokensWithRefreshToken(
-	tokens?: CognitoAuthTokens | null
+	tokens?: CognitoAuthTokens | null,
 ): asserts tokens is CognitoAuthTokens & { refreshToken: string } {
 	if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
 		throw new AuthError({
@@ -69,7 +71,7 @@ type NonNullableDeviceMetadata = DeviceMetadata & {
 	deviceGroupKey: string;
 };
 export function assertDeviceMetadata(
-	deviceMetadata?: DeviceMetadata | null
+	deviceMetadata?: DeviceMetadata | null,
 ): asserts deviceMetadata is NonNullableDeviceMetadata {
 	if (
 		!deviceMetadata ||
@@ -104,7 +106,7 @@ export interface OAuthStore {
 	}>;
 	storeOAuthSignIn(
 		oauthSignIn: boolean,
-		preferPrivateSession: boolean
+		preferPrivateSession: boolean,
 	): Promise<void>;
 	loadOAuthState(): Promise<string | null>;
 	storeOAuthState(state: string): Promise<void>;

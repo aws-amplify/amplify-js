@@ -1,24 +1,24 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cognitoIdentityIdProvider } from './IdentityIdProvider';
 import {
 	AuthTokens,
-	CredentialsAndIdentityIdProvider,
-	CredentialsAndIdentityId,
-	getCredentialsForIdentity,
-	GetCredentialsOptions,
 	ConsoleLogger,
+	CredentialsAndIdentityId,
+	CredentialsAndIdentityIdProvider,
+	GetCredentialsOptions,
+	getCredentialsForIdentity,
 } from '@aws-amplify/core';
 import {
-	assertIdentityPoolIdConfig,
-	decodeJWT,
 	CognitoIdentityPoolConfig,
+	assertIdentityPoolIdConfig,
 } from '@aws-amplify/core/internals/utils';
-import { AuthError } from '../../../errors/AuthError';
+import { AuthError } from '~/src/errors/AuthError';
+import { getRegionFromIdentityPoolId } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { assertIdTokenInAuthTokens } from '~/src/providers/cognito/utils/types';
+
 import { IdentityIdStore } from './types';
-import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
-import { assertIdTokenInAuthTokens } from '../utils/types';
+import { cognitoIdentityIdProvider } from './IdentityIdProvider';
 import { formLoginsMap } from './utils';
 
 const logger = new ConsoleLogger('CognitoCredentialsProvider');
@@ -36,7 +36,8 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 		isAuthenticatedCreds: boolean;
 		associatedIdToken?: string;
 	};
-	private _nextCredentialsRefresh: number = 0;
+
+	private _nextCredentialsRefresh = 0;
 
 	async clearCredentialsAndIdentityId(): Promise<void> {
 		logger.debug('Clearing out credentials and identityId');
@@ -50,11 +51,11 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	}
 
 	async getCredentialsAndIdentityId(
-		getCredentialsOptions: GetCredentialsOptions
+		getCredentialsOptions: GetCredentialsOptions,
 	): Promise<CredentialsAndIdentityId | undefined> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
-		const tokens = getCredentialsOptions.tokens;
-		const authConfig = getCredentialsOptions.authConfig;
+		const { tokens } = getCredentialsOptions;
+		const { authConfig } = getCredentialsOptions;
 		try {
 			assertIdentityPoolIdConfig(authConfig?.Cognito);
 		} catch {
@@ -67,7 +68,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			return;
 		}
 
-		const forceRefresh = getCredentialsOptions.forceRefresh;
+		const { forceRefresh } = getCredentialsOptions;
 		const tokenHasChanged = this.hasTokenChanged(tokens);
 		const identityId = await cognitoIdentityIdProvider({
 			tokens,
@@ -83,13 +84,14 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			return this.getGuestCredentials(identityId, authConfig.Cognito);
 		} else {
 			assertIdTokenInAuthTokens(tokens);
+
 			return this.credsForOIDCTokens(authConfig.Cognito, tokens, identityId);
 		}
 	}
 
 	private async getGuestCredentials(
 		identityId: string,
-		authConfig: CognitoIdentityPoolConfig
+		authConfig: CognitoIdentityPoolConfig,
 	): Promise<CredentialsAndIdentityId> {
 		// Return existing in-memory cached credentials only if it exists, is not past it's lifetime and is unauthenticated credentials
 		if (
@@ -98,8 +100,9 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId.isAuthenticatedCreds === false
 		) {
 			logger.info(
-				'returning stored credentials as they neither past TTL nor expired.'
+				'returning stored credentials as they neither past TTL nor expired.',
 			);
+
 			return this._credentialsAndIdentityId;
 		}
 
@@ -116,7 +119,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			{ region },
 			{
 				IdentityId: identityId,
-			}
+			},
 		);
 
 		if (
@@ -159,7 +162,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	private async credsForOIDCTokens(
 		authConfig: CognitoIdentityPoolConfig,
 		authTokens: AuthTokens,
-		identityId: string
+		identityId: string,
 	): Promise<CredentialsAndIdentityId> {
 		if (
 			this._credentialsAndIdentityId &&
@@ -167,8 +170,9 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId.isAuthenticatedCreds === true
 		) {
 			logger.debug(
-				'returning stored credentials as they neither past TTL nor expired.'
+				'returning stored credentials as they neither past TTL nor expired.',
 			);
+
 			return this._credentialsAndIdentityId;
 		}
 
@@ -186,7 +190,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			{
 				IdentityId: identityId,
 				Logins: logins,
-			}
+			},
 		);
 
 		if (
@@ -219,6 +223,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 					type: 'primary',
 				});
 			}
+
 			return res;
 		} else {
 			throw new AuthError({
@@ -233,6 +238,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			? true
 			: this._nextCredentialsRefresh <= Date.now();
 	}
+
 	private hasTokenChanged(tokens?: AuthTokens): boolean {
 		return (
 			!!tokens &&

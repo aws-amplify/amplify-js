@@ -5,15 +5,14 @@ import {
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
-
 import {
-	AuthUserAttribute,
-	AuthDevice,
 	AWSAuthUser,
 	AuthCodeDeliveryDetails,
-} from '../../../types';
+	AuthDevice,
+	AuthUserAttribute,
+} from '~/src/types';
+import { AuthProvider } from '~/src/types/inputs';
 
-import { AuthProvider } from '../../../types/inputs';
 import { SignUpOutput } from './outputs';
 
 /**
@@ -36,9 +35,7 @@ export const cognitoHostedUIIdentityProviderMap: Record<AuthProvider, string> =
 /**
  * Arbitrary key/value pairs that may be passed as part of certain Cognito requests
  */
-export type ClientMetadata = {
-	[key: string]: string;
-};
+export type ClientMetadata = Record<string, string>;
 
 /**
  * The user attribute types available for Cognito.
@@ -54,12 +51,12 @@ export type VerifiableUserAttributeKey = AuthVerifiableAttributeKey;
  * Cognito custom attribute type
  */
 // TODO(V6): replace by `custom:${string}` once categories that use auth have upgraded TS
-export type CustomAttribute = string & {};
+export type CustomAttribute = string;
 
 /**
  * One or more name-value pairs containing the validation data in the request to register a user.
  */
-export type ValidationData = { [key: string]: string };
+export type ValidationData = Record<string, string>;
 
 /**
  * Cognito supported MFAPreference values that may be passed as part of the UpdateMFAPreferenceRequest.
@@ -91,10 +88,10 @@ export type AWSAuthDevice = AuthDevice & {
 /**
  * Holds the sign in details of the user.
  */
-export type CognitoAuthSignInDetails = {
+export interface CognitoAuthSignInDetails {
 	loginId?: string;
 	authFlowType?: AuthFlowType;
-};
+}
 
 /**
  * Holds the user information along with the sign in details.

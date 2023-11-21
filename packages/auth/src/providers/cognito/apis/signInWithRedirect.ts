@@ -1,33 +1,37 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Hub, defaultStorage, OAuthConfig } from '@aws-amplify/core';
+import { Amplify, Hub, OAuthConfig, defaultStorage } from '@aws-amplify/core';
 import {
-	AuthAction,
 	AMPLIFY_SYMBOL,
+	AmplifyUrl,
+	AuthAction,
+	USER_AGENT_HEADER,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
-	isBrowser,
-	urlSafeEncode,
-	USER_AGENT_HEADER,
-	urlSafeDecode,
 	decodeJWT,
-	AmplifyUrl,
+	isBrowser,
+	urlSafeDecode,
+	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
-import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { cognitoUserPoolsTokenProvider } from '../tokenProvider';
-import { cognitoHostedUIIdentityProviderMap } from '../types/models';
-import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
-import { AuthError } from '../../../errors/AuthError';
-import { AuthErrorTypes } from '../../../types/Auth';
-import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { authErrorMessages } from '../../../Errors';
-import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
-import { assertUserNotAuthenticated } from '../utils/signInHelpers';
-import { SignInWithRedirectInput } from '../types';
-import { generateCodeVerifier, generateState } from '../utils/oauth';
+import { cacheCognitoTokens } from '~/src/providers/cognito/tokenProvider/cacheTokens';
+import { cognitoUserPoolsTokenProvider } from '~/src/providers/cognito/tokenProvider';
+import { cognitoHostedUIIdentityProviderMap } from '~/src/providers/cognito/types/models';
+import { DefaultOAuthStore } from '~/src/providers/cognito/utils/signInWithRedirectStore';
+import { AuthError } from '~/src/errors/AuthError';
+import { AuthErrorTypes } from '~/src/types/Auth';
+import { AuthErrorCodes } from '~/src/common/AuthErrorStrings';
+import { authErrorMessages } from '~/src/Errors';
+import { getAuthUserAgentValue, openAuthSession } from '~/src/utils';
+import { assertUserNotAuthenticated } from '~/src/providers/cognito/utils/signInHelpers';
+import { SignInWithRedirectInput } from '~/src/providers/cognito/types';
+import {
+	generateCodeVerifier,
+	generateState,
+} from '~/src/providers/cognito/utils/oauth';
+import { getRedirectUrl } from '~/src/providers/cognito/utils/oauth/getRedirectUrl';
+
 import { getCurrentUser } from './getCurrentUser';
-import { getRedirectUrl } from '../utils/oauth/getRedirectUrl';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -38,7 +42,7 @@ import { getRedirectUrl } from '../utils/oauth/getRedirectUrl';
  * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
  */
 export async function signInWithRedirect(
-	input?: SignInWithRedirectInput
+	input?: SignInWithRedirectInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -81,11 +85,11 @@ export async function oauthSignIn({
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const randomState = generateState();
 
-	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito 
+	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito
 	single-encodes/decodes url on first sign in and double-encodes/decodes url
-	when user already signed in. Using encodeURIComponent, Base32, Base64 add 
-	characters % or = which on further encoding becomes unsafe. '=' create issue 
-	for parsing query params. 
+	when user already signed in. Using encodeURIComponent, Base32, Base64 add
+	characters % or = which on further encoding becomes unsafe. '=' create issue
+	for parsing query params.
 	Refer: https://github.com/aws-amplify/amplify-js/issues/5218 */
 	const state = customState
 		? `${randomState}-${urlSafeEncode(customState)}`
@@ -93,13 +97,13 @@ export async function oauthSignIn({
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
 
 	const redirectUri = getRedirectUrl(oauthConfig.redirectSignIn);
-	
+
 	store.storeOAuthInFlight(true);
 	store.storeOAuthState(state);
 	store.storePKCE(value);
 
 	const queryString = Object.entries({
-		redirect_uri: redirectUri ,
+		redirect_uri: redirectUri,
 		response_type: responseType,
 		client_id: clientId,
 		identity_provider: provider,
@@ -165,8 +169,9 @@ async function handleCodeFlow({
 		invokeAndClearPromise();
 		// validateState method will always throw an AuthError when the state is not valid. The if statement is making TS happy.
 		if (err instanceof AuthError) {
-			await handleFailure(err.message);
+			await handleFailure((err as AuthError).message);
 		}
+
 		return;
 	}
 	const code = url.searchParams.get('code');
@@ -174,6 +179,7 @@ async function handleCodeFlow({
 	if (!code) {
 		await store.clearOAuthData();
 		invokeAndClearPromise();
+
 		return;
 	}
 
@@ -201,13 +207,13 @@ async function handleCodeFlow({
 		.join('&');
 
 	const {
-		access_token,
-		refresh_token,
-		id_token,
+		access_token: accessToken,
+		refresh_token: refreshToken,
+		id_token: idToken,
 		error,
-		error_message,
-		token_type,
-		expires_in,
+		error_message: errorMessage,
+		token_type: tokenType,
+		expires_in: expiresIn,
 	} = await (
 		await fetch(oAuthTokenEndpoint, {
 			method: 'POST',
@@ -221,21 +227,21 @@ async function handleCodeFlow({
 
 	if (error) {
 		invokeAndClearPromise();
-		await handleFailure(error_message ?? error);
+		await handleFailure(errorMessage ?? error);
 	}
 
 	await store.clearOAuthInflightData();
 
 	const username =
-		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
+		(accessToken && decodeJWT(accessToken).payload.username) ?? 'username';
 
 	await cacheCognitoTokens({
 		username,
-		AccessToken: access_token,
-		IdToken: id_token,
-		RefreshToken: refresh_token,
-		TokenType: token_type,
-		ExpiresIn: expires_in,
+		AccessToken: accessToken,
+		IdToken: idToken,
+		RefreshToken: refreshToken,
+		TokenType: tokenType,
+		ExpiresIn: expiresIn,
 	});
 
 	return completeFlow({
@@ -288,17 +294,19 @@ async function handleImplicitFlow({
 	if (!access_token) {
 		await store.clearOAuthData();
 		invokeAndClearPromise();
+
 		return;
 	}
 	let validatedState;
 	try {
 		validatedState = await validateState(state);
-	} catch (error) {
+	} catch (err) {
 		invokeAndClearPromise();
 		// validateState method will always throw an AuthError when the state is not valid. The if statement is making TS happy.
-		if (error instanceof AuthError) {
-			await handleFailure(error.message);
+		if (err instanceof AuthError) {
+			await handleFailure((err as AuthError).message);
 		}
+
 		return;
 	}
 
@@ -339,7 +347,7 @@ async function completeFlow({
 				data: urlSafeDecode(getCustomState(state)),
 			},
 			'Auth',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
@@ -347,7 +355,7 @@ async function completeFlow({
 		'auth',
 		{ event: 'signedIn', data: await getCurrentUser() },
 		'Auth',
-		AMPLIFY_SYMBOL
+		AMPLIFY_SYMBOL,
 	);
 	clearHistory(redirectUri);
 	invokeAndClearPromise();
@@ -370,33 +378,29 @@ async function handleAuthResponse({
 	domain: string;
 	preferPrivateSession?: boolean;
 }) {
-	try {
-		const urlParams = new AmplifyUrl(currentUrl);
-		const error = urlParams.searchParams.get('error');
-		const errorMessage = urlParams.searchParams.get('error_description');
+	const urlParams = new AmplifyUrl(currentUrl);
+	const error = urlParams.searchParams.get('error');
+	const errorMessage = urlParams.searchParams.get('error_description');
 
-		if (error) {
-			await handleFailure(errorMessage);
-		}
+	if (error) {
+		await handleFailure(errorMessage);
+	}
 
-		if (responseType === 'code') {
-			return await handleCodeFlow({
-				currentUrl,
-				userAgentValue,
-				clientId,
-				redirectUri,
-				domain,
-				preferPrivateSession,
-			});
-		} else {
-			return await handleImplicitFlow({
-				currentUrl,
-				redirectUri,
-				preferPrivateSession,
-			});
-		}
-	} catch (e) {
-		throw e;
+	if (responseType === 'code') {
+		await handleCodeFlow({
+			currentUrl,
+			userAgentValue,
+			clientId,
+			redirectUri,
+			domain,
+			preferPrivateSession,
+		});
+	} else {
+		await handleImplicitFlow({
+			currentUrl,
+			redirectUri,
+			preferPrivateSession,
+		});
 	}
 }
 
@@ -416,6 +420,7 @@ async function validateState(state?: string | null): Promise<string> {
 			recoverySuggestion: 'Try to initiate an OAuth flow from Amplify',
 		});
 	}
+
 	return validatedState;
 }
 
@@ -430,7 +435,7 @@ async function handleFailure(errorMessage: string | null) {
 		'auth',
 		{ event: 'signInWithRedirect_failure', data: { error } },
 		'Auth',
-		AMPLIFY_SYMBOL
+		AMPLIFY_SYMBOL,
 	);
 	throw new AuthError({
 		message: errorMessage ?? '',
@@ -504,14 +509,15 @@ const invokeAndClearPromise = () => {
 isBrowser() &&
 	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
 		() =>
-			new Promise(async (res, _rej) => {
+			// TODO(eslint): remove this linter suppression.
+			// eslint-disable-next-line no-async-promise-executor
+			new Promise<void>(async resolve => {
 				if (!(await store.loadOAuthInFlight())) {
-					res();
+					resolve();
 				} else {
-					inflightPromiseResolvers.push(res);
+					inflightPromiseResolvers.push(resolve);
 				}
-				return;
-			})
+			}),
 	);
 
 function clearHistory(redirectUri: string) {
@@ -520,7 +526,7 @@ function clearHistory(redirectUri: string) {
 	}
 }
 
-function isCustomState(state: string): Boolean {
+function isCustomState(state: string): boolean {
 	return /-/.test(state);
 }
 

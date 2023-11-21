@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import { AuthError } from '../../../errors/AuthError';
+import { AuthError } from '~/src/errors/AuthError';
 
 export function formLoginsMap(idToken: string) {
 	const issuer = decodeJWT(idToken).payload.iss;
@@ -13,8 +13,9 @@ export function formLoginsMap(idToken: string) {
 			message: 'Invalid Idtoken.',
 		});
 	}
-	let domainName: string = issuer.replace(/(^\w+:|^)\/\//, '');
+	const domainName: string = issuer.replace(/(^\w+:|^)\/\//, '');
 
 	res[domainName] = idToken;
+
 	return res;
 }

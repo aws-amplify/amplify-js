@@ -1,17 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { updateDeviceStatus } from '../utils/clients/CognitoIdentityProvider';
+import { updateDeviceStatus } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
 import {
-	assertTokenProviderConfig,
+	assertAuthTokens,
+	assertDeviceMetadata,
+} from '~/src/providers/cognito/utils/types';
+import {
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { tokenOrchestrator } from '../tokenProvider';
-import { UpdateDeviceStatusException } from '../../cognito/types/errors';
-import { getAuthUserAgentValue } from '../../../utils';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { tokenOrchestrator } from '~/src/providers/cognito/tokenProvider';
+import { UpdateDeviceStatusException } from '~/src/providers/cognito/types/errors';
+import { getAuthUserAgentValue } from '~/src/utils';
 
 /**
  * Marks device as remembered while authenticated.
@@ -39,6 +42,6 @@ export async function rememberDevice(): Promise<void> {
 			AccessToken: tokens.accessToken.toString(),
 			DeviceKey: deviceMetadata.deviceKey,
 			DeviceRememberedStatus: 'remembered',
-		}
+		},
 	);
 }

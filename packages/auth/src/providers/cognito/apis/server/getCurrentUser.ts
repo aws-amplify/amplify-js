@@ -5,8 +5,8 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import { GetCurrentUserOutput } from '../../types';
-import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrentUser';
+import { GetCurrentUserOutput } from '~/src/providers/cognito/types';
+import { getCurrentUser as getCurrentUserInternal } from '~/src/providers/cognito/apis/internal/getCurrentUser';
 
 /**
  * Gets the current user from the idToken.
@@ -16,7 +16,7 @@ import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrent
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const getCurrentUser = async (
-	contextSpec: AmplifyServer.ContextSpec
+	contextSpec: AmplifyServer.ContextSpec,
 ): Promise<GetCurrentUserOutput> => {
 	return getCurrentUserInternal(getAmplifyServerContext(contextSpec).amplify);
 };

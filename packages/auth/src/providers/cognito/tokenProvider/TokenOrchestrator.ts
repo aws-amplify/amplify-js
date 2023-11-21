@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	AuthConfig,
 	AuthTokens,
 	FetchAuthSessionOptions,
-	AuthConfig,
 	Hub,
 } from '@aws-amplify/core';
 import {
@@ -11,6 +11,10 @@ import {
 	assertTokenProviderConfig,
 	isTokenExpired,
 } from '@aws-amplify/core/internals/utils';
+import { assertServiceError } from '~/src/errors/utils/assertServiceError';
+import { AuthError } from '~/src/errors/AuthError';
+import { CognitoAuthSignInDetails } from '~/src/providers/cognito/types';
+
 import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,
@@ -18,25 +22,27 @@ import {
 	DeviceMetadata,
 	TokenRefresher,
 } from './types';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import { AuthError } from '../../../errors/AuthError';
-import { CognitoAuthSignInDetails } from '../types';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
-	waitForInflightOAuth: () => Promise<void> = async () => {};
+	waitForInflightOAuth: () => Promise<void> = async () => {
+		// no-op
+	};
 
 	setAuthConfig(authConfig: AuthConfig) {
 		this.authConfig = authConfig;
 	}
+
 	setTokenRefresher(tokenRefresher: TokenRefresher) {
 		this.tokenRefresher = tokenRefresher;
 	}
+
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
 	}
+
 	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>) {
 		this.waitForInflightOAuth = waitForInflightOAuth;
 	}
@@ -48,6 +54,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				message: 'TokenStore not set',
 			});
 		}
+
 		return this.tokenStore;
 	}
 
@@ -58,11 +65,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				message: 'TokenRefresher not set',
 			});
 		}
+
 		return this.tokenRefresher;
 	}
 
 	async getTokens(
-		options?: FetchAuthSessionOptions
+		options?: FetchAuthSessionOptions,
 	): Promise<
 		(AuthTokens & { signInDetails?: CognitoAuthSignInDetails }) | null
 	> {
@@ -146,11 +154,12 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				'auth',
 				{ event: 'tokenRefresh_failure' },
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
 			throw err;
 		}
 	}
+
 	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
 		return this.getTokenStore().storeTokens(tokens);
 	}
@@ -162,6 +171,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
 		return this.getTokenStore().getDeviceMetadata(username);
 	}
+
 	clearDeviceMetadata(username?: string): Promise<void> {
 		return this.getTokenStore().clearDeviceMetadata(username);
 	}

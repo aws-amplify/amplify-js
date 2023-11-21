@@ -3,20 +3,20 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { AuthError } from '../../../errors/AuthError';
+import { AuthError } from '~/src/errors/AuthError';
 import {
-	SETUP_TOTP_EXCEPTION,
 	AssociateSoftwareTokenException,
-} from '../types/errors';
-import { SetUpTOTPOutput } from '../types';
-import { getTOTPSetupDetails } from '../utils/signInHelpers';
-import { associateSoftwareToken } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { assertAuthTokens } from '../utils/types';
-import { getAuthUserAgentValue } from '../../../utils';
+	SETUP_TOTP_EXCEPTION,
+} from '~/src/providers/cognito/types/errors';
+import { SetUpTOTPOutput } from '~/src/providers/cognito/types';
+import { getTOTPSetupDetails } from '~/src/providers/cognito/utils/signInHelpers';
+import { associateSoftwareToken } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '~/src/providers/cognito/utils/types';
+import { getAuthUserAgentValue } from '~/src/utils';
 
 /**
  * Sets up TOTP for the user.
@@ -39,7 +39,7 @@ export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 
 	if (!SecretCode) {
@@ -49,5 +49,6 @@ export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
 			message: 'Failed to set up TOTP.',
 		});
 	}
+
 	return getTOTPSetupDetails(SecretCode, JSON.stringify(username));
 }

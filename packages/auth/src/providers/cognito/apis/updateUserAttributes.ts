@@ -3,25 +3,25 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 import {
-	AuthUserAttributes,
-	AuthUpdateUserAttributesOutput,
 	AuthDeliveryMedium,
-} from '../../../types';
+	AuthUpdateUserAttributesOutput,
+	AuthUserAttributes,
+} from '~/src/types';
 import {
 	UpdateUserAttributesInput,
 	UpdateUserAttributesOutput,
-} from '../types';
-import { updateUserAttributes as updateUserAttributesClient } from '../utils/clients/CognitoIdentityProvider';
-import { assertAuthTokens } from '../utils/types';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { toAttributeType } from '../utils/apiHelpers';
-import { CodeDeliveryDetailsType } from '../utils/clients/CognitoIdentityProvider/types';
-import { UpdateUserAttributesException } from '../types/errors';
-import { getAuthUserAgentValue } from '../../../utils';
+} from '~/src/providers/cognito/types';
+import { updateUserAttributes as updateUserAttributesClient } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { assertAuthTokens } from '~/src/providers/cognito/utils/types';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { toAttributeType } from '~/src/providers/cognito/utils/apiHelpers';
+import { CodeDeliveryDetailsType } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { UpdateUserAttributesException } from '~/src/providers/cognito/types/errors';
+import { getAuthUserAgentValue } from '~/src/utils';
 
 /**
  * Updates user's attributes while authenticated.
@@ -32,7 +32,7 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const updateUserAttributes = async (
-	input: UpdateUserAttributesInput
+	input: UpdateUserAttributesInput,
 ): Promise<UpdateUserAttributesOutput> => {
 	const { userAttributes, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -49,7 +49,7 @@ export const updateUserAttributes = async (
 			AccessToken: tokens.accessToken.toString(),
 			ClientMetadata: clientMetadata,
 			UserAttributes: toAttributeType(userAttributes),
-		}
+		},
 	);
 
 	return {
@@ -59,7 +59,7 @@ export const updateUserAttributes = async (
 };
 
 function getConfirmedAttributes(
-	attributes: AuthUserAttributes
+	attributes: AuthUserAttributes,
 ): AuthUpdateUserAttributesOutput {
 	const confirmedAttributes = {} as AuthUpdateUserAttributesOutput;
 	Object.keys(attributes)?.forEach(key => {
@@ -75,7 +75,7 @@ function getConfirmedAttributes(
 }
 
 function getUnConfirmedAttributes(
-	codeDeliveryDetailsList?: CodeDeliveryDetailsType[]
+	codeDeliveryDetailsList?: CodeDeliveryDetailsType[],
 ): AuthUpdateUserAttributesOutput {
 	const unConfirmedAttributes = {} as AuthUpdateUserAttributesOutput;
 	codeDeliveryDetailsList?.forEach(codeDeliveryDetails => {
@@ -93,5 +93,6 @@ function getUnConfirmedAttributes(
 				},
 			};
 	});
+
 	return unConfirmedAttributes;
 }

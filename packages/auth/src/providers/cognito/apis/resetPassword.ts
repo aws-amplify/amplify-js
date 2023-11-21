@@ -3,19 +3,22 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthDeliveryMedium } from '../../../types';
-import { ResetPasswordInput, ResetPasswordOutput } from '../types';
-import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { ForgotPasswordException } from '../../cognito/types/errors';
-import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from '../utils/userContextData';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { AuthDeliveryMedium } from '~/src/types';
+import {
+	ResetPasswordInput,
+	ResetPasswordOutput,
+} from '~/src/providers/cognito/types';
+import { forgotPassword } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { ForgotPasswordException } from '~/src/providers/cognito/types/errors';
+import { getAuthUserAgentValue } from '~/src/utils';
+import { getUserContextData } from '~/src/providers/cognito/utils/userContextData';
 
 /**
  * Resets a user's password.
@@ -29,12 +32,12 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  **/
 export async function resetPassword(
-	input: ResetPasswordInput
+	input: ResetPasswordInput,
 ): Promise<ResetPasswordOutput> {
-	const username = input.username;
+	const { username } = input;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptyResetPasswordUsername
+		AuthValidationErrorCode.EmptyResetPasswordUsername,
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -57,9 +60,10 @@ export async function resetPassword(
 			ClientMetadata: clientMetadata,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
-		}
+		},
 	);
 	const codeDeliveryDetails = res.CodeDeliveryDetails;
+
 	return {
 		isPasswordReset: false,
 		nextStep: {

@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { assertServiceError } from '~/src/errors/utils/assertServiceError';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
+} from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import {
 	getActiveSignInUsername,
 	getNewDeviceMetatada,
@@ -15,24 +15,25 @@ import {
 	getSignInResultFromError,
 	handleUserPasswordAuthFlow,
 	retryOnResourceNotFoundException,
-} from '../utils/signInHelpers';
+} from '~/src/providers/cognito/utils/signInHelpers';
 import { Amplify, Hub } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { InitiateAuthException } from '../types/errors';
+import { InitiateAuthException } from '~/src/providers/cognito/types/errors';
 import {
 	CognitoAuthSignInDetails,
 	SignInWithUserPasswordInput,
 	SignInWithUserPasswordOutput,
-} from '../types';
+} from '~/src/providers/cognito/types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
-import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+} from '~/src/providers/cognito/utils/signInStore';
+import { cacheCognitoTokens } from '~/src/providers/cognito/tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '~/src/providers/cognito/tokenProvider';
+
 import { getCurrentUser } from './getCurrentUser';
 
 /**
@@ -46,7 +47,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithUserPassword(
-	input: SignInWithUserPasswordInput
+	input: SignInWithUserPasswordInput,
 ): Promise<SignInWithUserPasswordOutput> {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -58,31 +59,31 @@ export async function signInWithUserPassword(
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignInPassword
+		AuthValidationErrorCode.EmptySignInPassword,
 	);
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: retryChallengeName,
+			ChallengeParameters: retryChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await retryOnResourceNotFoundException(
 			handleUserPasswordAuthFlow,
 			[username, password, metadata, authConfig, tokenOrchestrator],
 			username,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 		const activeUsername = getActiveSignInUsername(username);
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: retryChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -92,7 +93,7 @@ export async function signInWithUserPassword(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
@@ -104,8 +105,9 @@ export async function signInWithUserPassword(
 					data: await getCurrentUser(),
 				},
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -113,8 +115,8 @@ export async function signInWithUserPassword(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: retryChallengeName as ChallengeName,
+			challengeParameters: retryChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

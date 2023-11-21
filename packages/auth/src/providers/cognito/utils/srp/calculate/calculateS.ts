@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthBigInteger } from '../BigInteger';
+import { AuthBigInteger } from '~/src/providers/cognito/utils/srp/BigInteger';
 
 /**
  * @internal
@@ -27,6 +27,7 @@ export const calculateS = async ({
 		g.modPow(x, N, (outerErr: unknown, outerResult: AuthBigInteger) => {
 			if (outerErr) {
 				reject(outerErr);
+
 				return;
 			}
 
@@ -36,10 +37,11 @@ export const calculateS = async ({
 				(innerErr: unknown, innerResult: AuthBigInteger) => {
 					if (innerErr) {
 						reject(innerErr);
+
 						return;
 					}
 					resolve(innerResult.mod(N));
-				}
+				},
 			);
 		});
 	});

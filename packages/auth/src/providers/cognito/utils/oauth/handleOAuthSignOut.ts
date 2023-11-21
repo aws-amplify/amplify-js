@@ -2,14 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CognitoUserPoolConfig } from '@aws-amplify/core';
-import { OpenAuthSessionResult } from '../../../../utils/types';
-import { DefaultOAuthStore } from '../../utils/signInWithRedirectStore';
+import { OpenAuthSessionResult } from '~/src/utils/types';
+import { DefaultOAuthStore } from '~/src/providers/cognito/utils/signInWithRedirectStore';
+
 import { completeOAuthSignOut } from './completeOAuthSignOut';
 import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 
 export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
-	store: DefaultOAuthStore
+	store: DefaultOAuthStore,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn } = await store.loadOAuthSignIn();
 

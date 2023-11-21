@@ -3,17 +3,17 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { UpdateMFAPreferenceInput } from '../types';
-import { SetUserMFAPreferenceException } from '../types/errors';
-import { MFAPreference } from '../types/models';
-import { setUserMFAPreference } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { CognitoMFASettings } from '../utils/clients/CognitoIdentityProvider/types';
-import { assertAuthTokens } from '../utils/types';
-import { getAuthUserAgentValue } from '../../../utils';
+import { UpdateMFAPreferenceInput } from '~/src/providers/cognito/types';
+import { SetUserMFAPreferenceException } from '~/src/providers/cognito/types/errors';
+import { MFAPreference } from '~/src/providers/cognito/types/models';
+import { setUserMFAPreference } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { CognitoMFASettings } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { assertAuthTokens } from '~/src/providers/cognito/utils/types';
+import { getAuthUserAgentValue } from '~/src/utils';
 
 /**
  * Updates the MFA preference of the user.
@@ -23,7 +23,7 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateMFAPreference(
-	input: UpdateMFAPreferenceInput
+	input: UpdateMFAPreferenceInput,
 ): Promise<void> {
 	const { sms, totp } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -39,12 +39,12 @@ export async function updateMFAPreference(
 			AccessToken: tokens.accessToken.toString(),
 			SMSMfaSettings: getMFASettings(sms),
 			SoftwareTokenMfaSettings: getMFASettings(totp),
-		}
+		},
 	);
 }
 
 export function getMFASettings(
-	mfaPreference?: MFAPreference
+	mfaPreference?: MFAPreference,
 ): CognitoMFASettings | undefined {
 	if (mfaPreference === 'DISABLED') {
 		return {

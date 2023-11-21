@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { validationErrorMap } from '../../common/AuthErrorStrings';
-import { AuthError } from '../AuthError';
-import { AuthValidationErrorCode } from '../types/validation';
+import { validationErrorMap } from '~/src/common/AuthErrorStrings';
+import { AuthError } from '~/src/errors/AuthError';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
 
 export function assertValidationError(
 	assertion: boolean,
-	name: AuthValidationErrorCode
+	name: AuthValidationErrorCode,
 ): asserts assertion {
 	const { message, recoverySuggestion } = validationErrorMap[name];
 

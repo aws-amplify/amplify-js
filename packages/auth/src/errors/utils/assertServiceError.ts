@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthError } from '../AuthError';
+import { AuthError } from '~/src/errors/AuthError';
 import {
 	AmplifyErrorCode,
 	ServiceError,
 } from '@aws-amplify/core/internals/utils';
 
 export function assertServiceError(
-	error: unknown
+	error: unknown,
 ): asserts error is ServiceError {
 	if (
 		!error ||

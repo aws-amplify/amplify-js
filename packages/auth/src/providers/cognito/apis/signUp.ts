@@ -3,29 +3,34 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { AuthDeliveryMedium } from '../../../types';
-import { SignUpInput, SignUpOutput, SignInInput } from '../types';
-import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { SignUpException } from '../types/errors';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { toAttributeType } from '../utils/apiHelpers';
+import { AuthDeliveryMedium } from '~/src/types';
 import {
-	handleCodeAutoSignIn,
-	isAutoSignInStarted,
-	setAutoSignInStarted,
-	isSignUpComplete,
+	SignInInput,
+	SignUpInput,
+	SignUpOutput,
+} from '~/src/providers/cognito/types';
+import { signUp as signUpClient } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { SignUpException } from '~/src/providers/cognito/types/errors';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { toAttributeType } from '~/src/providers/cognito/utils/apiHelpers';
+import {
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
+	handleCodeAutoSignIn,
+	isAutoSignInStarted,
+	isSignUpComplete,
+	setAutoSignInStarted,
 	setUsernameUsedForAutoSignIn,
-} from '../utils/signUpHelpers';
+} from '~/src/providers/cognito/utils/signUpHelpers';
+import { getAuthUserAgentValue } from '~/src/utils';
+
 import { setAutoSignIn } from './autoSignIn';
-import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Creates a user
@@ -46,11 +51,11 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignUpUsername
+		AuthValidationErrorCode.EmptySignUpUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignUpPassword
+		AuthValidationErrorCode.EmptySignUpPassword,
 	);
 
 	const signInServiceOptions =
@@ -63,7 +68,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 
 	// if the authFlowType is 'CUSTOM_WITHOUT_SRP' then we don't include the password
 	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
-		signInInput['password'] = password;
+		signInInput.password = password;
 	}
 	if (signInServiceOptions || autoSignIn === true) {
 		setUsernameUsedForAutoSignIn(username);
@@ -82,12 +87,13 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			ClientMetadata: clientMetadata,
 			ValidationData: validationData && toAttributeType(validationData),
 			ClientId: authConfig.userPoolClientId,
-		}
+		},
 	);
 	const { UserSub, CodeDeliveryDetails } = clientOutput;
 
 	if (isSignUpComplete(clientOutput) && isAutoSignInStarted()) {
 		setAutoSignIn(autoSignInUserConfirmed(signInInput));
+
 		return {
 			isSignUpComplete: true,
 			nextStep: {
@@ -113,6 +119,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		signUpVerificationMethod === 'link'
 	) {
 		setAutoSignIn(autoSignInWhenUserIsConfirmedWithLink(signInInput));
+
 		return {
 			isSignUpComplete: false,
 			nextStep: {

@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable */
 
 import { computeModPow } from '@aws-amplify/react-native';
 
@@ -9,7 +10,7 @@ import { AuthBigInteger } from './types';
 BigInteger.prototype.modPow = function modPow(
 	e: AuthBigInteger,
 	m: AuthBigInteger,
-	callback: Function
+	callback: Function,
 ) {
 	computeModPow({
 		base: (this as unknown as AuthBigInteger).toString(16),

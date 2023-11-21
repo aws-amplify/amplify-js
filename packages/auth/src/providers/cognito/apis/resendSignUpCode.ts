@@ -3,18 +3,21 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { AuthDeliveryMedium } from '../../../types';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { ResendSignUpCodeInput, ResendSignUpCodeOutput } from '../types';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { resendConfirmationCode } from '../utils/clients/CognitoIdentityProvider';
-import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from '../utils/userContextData';
+import { AuthDeliveryMedium } from '~/src/types';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import {
+	ResendSignUpCodeInput,
+	ResendSignUpCodeOutput,
+} from '~/src/providers/cognito/types';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { resendConfirmationCode } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getAuthUserAgentValue } from '~/src/utils';
+import { getUserContextData } from '~/src/providers/cognito/utils/userContextData';
 
 /**
  * Resend the confirmation code while signing up
@@ -26,12 +29,12 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function resendSignUpCode(
-	input: ResendSignUpCodeInput
+	input: ResendSignUpCodeInput,
 ): Promise<ResendSignUpCodeOutput> {
-	const username = input.username;
+	const { username } = input;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignUpUsername
+		AuthValidationErrorCode.EmptySignUpUsername,
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -54,11 +57,12 @@ export async function resendSignUpCode(
 			ClientMetadata: clientMetadata,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
-		}
+		},
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,
 	};
+
 	return {
 		destination: Destination as string,
 		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,

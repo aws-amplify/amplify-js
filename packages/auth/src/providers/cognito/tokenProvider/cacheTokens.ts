@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyError, decodeJWT } from '@aws-amplify/core/internals/utils';
-import { CognitoAuthSignInDetails } from '../types';
-import { AuthenticationResultType } from '../utils/clients/CognitoIdentityProvider/types';
-import { tokenOrchestrator } from './tokenProvider';
+import { AuthenticationResultType } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { CognitoAuthSignInDetails } from '~/src/providers/cognito/types';
+
 import { CognitoAuthTokens, DeviceMetadata } from './types';
+import { tokenOrchestrator } from './tokenProvider';
 
 export async function cacheCognitoTokens(
 	AuthenticationResult: AuthenticationResultType & {
 		NewDeviceMetadata?: DeviceMetadata;
 		username: string;
 		signInDetails?: CognitoAuthSignInDetails;
-	}
+	},
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
 		const accessToken = decodeJWT(AuthenticationResult.AccessToken);

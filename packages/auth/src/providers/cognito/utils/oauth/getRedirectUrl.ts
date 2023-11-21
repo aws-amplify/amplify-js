@@ -3,7 +3,7 @@
 import {
 	invalidOriginException,
 	invalidRedirectException,
-} from '../../../../errors/constants';
+} from '~/src/errors/constants';
 
 /** @internal */
 export function getRedirectUrl(redirects: string[]): string {
@@ -23,7 +23,7 @@ export function getRedirectUrl(redirects: string[]): string {
 // origin + pathname => https://example.com/app
 const isSameOriginAndPathName = (redirect: string) =>
 	redirect.startsWith(
-		String(window.location.origin + window.location.pathname ?? '/')
+		String(window.location.origin + window.location.pathname ?? '/'),
 	);
 // domain => outlook.live.com, github.com
 const isTheSameDomain = (redirect: string) =>

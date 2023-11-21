@@ -4,10 +4,11 @@
 import {
 	AuthServiceOptions,
 	AuthSignUpOptions,
-	AuthUserAttributes,
 	AuthUserAttributeKey,
-} from '../../../types';
-import { ClientMetadata, AuthFlowType, ValidationData } from './models';
+	AuthUserAttributes,
+} from '~/src/types';
+
+import { AuthFlowType, ClientMetadata, ValidationData } from './models';
 
 /**
  * Options specific to Cognito Confirm Reset Password.

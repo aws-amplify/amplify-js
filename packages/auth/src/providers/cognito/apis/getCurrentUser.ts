@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { GetCurrentUserOutput } from '../types';
+import { GetCurrentUserOutput } from '~/src/providers/cognito/types';
+
 import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentUser';
 
 /**

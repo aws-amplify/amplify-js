@@ -3,16 +3,16 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { FetchDevicesOutput } from '../types';
-import { listDevices } from '../utils/clients/CognitoIdentityProvider';
-import { DeviceType } from '../utils/clients/CognitoIdentityProvider/types';
-import { assertAuthTokens } from '../utils/types';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { FetchDevicesOutput } from '~/src/providers/cognito/types';
+import { listDevices } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { DeviceType } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { assertAuthTokens } from '~/src/providers/cognito/utils/types';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
 import { rememberDevice } from '..';
-import { getAuthUserAgentValue } from '../../../utils';
+import { getAuthUserAgentValue } from '~/src/utils';
 
 // Cognito Documentation for max device
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
@@ -41,13 +41,14 @@ export async function fetchDevices(): Promise<FetchDevicesOutput> {
 		{
 			AccessToken: tokens.accessToken.toString(),
 			Limit: MAX_DEVICES,
-		}
+		},
 	);
+
 	return parseDevicesResponse(response.Devices ?? []);
 }
 
 const parseDevicesResponse = async (
-	devices: DeviceType[]
+	devices: DeviceType[],
 ): Promise<FetchDevicesOutput> => {
 	return devices.map(
 		({
@@ -62,10 +63,12 @@ const parseDevicesResponse = async (
 					if (Name && Value) {
 						attrs[Name] = Value;
 					}
+
 					return attrs;
 				},
-				{}
+				{},
 			);
+
 			return {
 				id,
 				attributes,
@@ -79,6 +82,6 @@ const parseDevicesResponse = async (
 					? new Date(DeviceLastAuthenticatedDate * 1000)
 					: undefined,
 			};
-		}
+		},
 	);
 };

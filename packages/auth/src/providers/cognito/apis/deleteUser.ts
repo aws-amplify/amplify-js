@@ -3,16 +3,17 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { assertAuthTokens } from '../utils/types';
-import { deleteUser as serviceDeleteUser } from '../utils/clients/CognitoIdentityProvider';
-import { DeleteUserException } from '../types/errors';
-import { tokenOrchestrator } from '../tokenProvider';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '~/src/providers/cognito/utils/types';
+import { deleteUser as serviceDeleteUser } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { DeleteUserException } from '~/src/providers/cognito/types/errors';
+import { tokenOrchestrator } from '~/src/providers/cognito/tokenProvider';
+import { getAuthUserAgentValue } from '~/src/utils';
+
 import { signOut } from './signOut';
-import { getAuthUserAgentValue } from '../../../utils';
 
 /**
  * Deletes a user from the user pool while authenticated.
@@ -34,7 +35,7 @@ export async function deleteUser(): Promise<void> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 	await tokenOrchestrator.clearDeviceMetadata();
 	await signOut();

@@ -9,16 +9,16 @@ export type OpenAuthSession = (
 
 type OpenAuthSessionResultType = 'canceled' | 'success' | 'error';
 
-export type OpenAuthSessionResult = {
+export interface OpenAuthSessionResult {
 	type: OpenAuthSessionResultType;
 	error?: unknown;
 	url?: string;
-};
+}
 
-export type AmplifyWebBrowser = {
-	openAuthSessionAsync: (
+export interface AmplifyWebBrowser {
+	openAuthSessionAsync(
 		url: string,
 		redirectUrls: string[],
 		prefersEphemeralSession?: boolean
-	) => Promise<string | null>;
-};
+	): Promise<string | null>;
+}

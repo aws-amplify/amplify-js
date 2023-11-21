@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { assertServiceError } from '~/src/errors/utils/assertServiceError';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
+} from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
-} from '../types/errors';
+} from '~/src/providers/cognito/types/errors';
 import { Amplify, Hub } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
@@ -23,18 +23,19 @@ import {
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
-} from '../utils/signInHelpers';
+} from '~/src/providers/cognito/utils/signInHelpers';
 import {
 	CognitoAuthSignInDetails,
 	SignInWithSRPInput,
 	SignInWithSRPOutput,
-} from '../types';
+} from '~/src/providers/cognito/types';
 import {
-	setActiveSignInState,
 	cleanActiveSignInState,
-} from '../utils/signInStore';
-import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
-import { tokenOrchestrator } from '../tokenProvider';
+	setActiveSignInState,
+} from '~/src/providers/cognito/utils/signInStore';
+import { cacheCognitoTokens } from '~/src/providers/cognito/tokenProvider/cacheTokens';
+import { tokenOrchestrator } from '~/src/providers/cognito/tokenProvider';
+
 import { getCurrentUser } from './getCurrentUser';
 
 /**
@@ -49,7 +50,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithSRP(
-	input: SignInWithSRPInput
+	input: SignInWithSRPInput,
 ): Promise<SignInWithSRPOutput> {
 	const { username, password } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -61,17 +62,17 @@ export async function signInWithSRP(
 	const clientMetaData = input.options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignInPassword
+		AuthValidationErrorCode.EmptySignInPassword,
 	);
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: handledChallengeName,
+			ChallengeParameters: handledChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await handleUserSRPAuthFlow(
@@ -79,7 +80,7 @@ export async function signInWithSRP(
 			password,
 			clientMetaData,
 			authConfig,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 
 		const activeUsername = getActiveSignInUsername(username);
@@ -87,7 +88,7 @@ export async function signInWithSRP(
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -98,7 +99,7 @@ export async function signInWithSRP(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
@@ -109,8 +110,9 @@ export async function signInWithSRP(
 					data: await getCurrentUser(),
 				},
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -118,8 +120,8 @@ export async function signInWithSRP(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

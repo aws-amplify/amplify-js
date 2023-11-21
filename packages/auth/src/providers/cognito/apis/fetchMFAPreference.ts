@@ -1,18 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { FetchMFAPreferenceOutput } from '../types';
-import { getMFAType, getMFATypes } from '../utils/signInHelpers';
-import { GetUserException } from '../types/errors';
-import { getUser } from '../utils/clients/CognitoIdentityProvider';
+import { FetchMFAPreferenceOutput } from '~/src/providers/cognito/types';
+import {
+	getMFAType,
+	getMFATypes,
+} from '~/src/providers/cognito/utils/signInHelpers';
+import { GetUserException } from '~/src/providers/cognito/types/errors';
+import { getUser } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { assertAuthTokens } from '../utils/types';
-import { getAuthUserAgentValue } from '../../../utils';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { assertAuthTokens } from '~/src/providers/cognito/utils/types';
+import { getAuthUserAgentValue } from '~/src/utils';
 
 /**
  * Fetches the preferred MFA setting and enabled MFA settings for the user.
@@ -34,7 +37,7 @@ export async function fetchMFAPreference(): Promise<FetchMFAPreferenceOutput> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 
 	return {

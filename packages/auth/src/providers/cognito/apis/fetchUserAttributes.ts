@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { FetchUserAttributesOutput } from '../types';
+import { FetchUserAttributesOutput } from '~/src/providers/cognito/types';
+
 import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/fetchUserAttributes';
 
 /**

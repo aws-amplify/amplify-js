@@ -56,13 +56,14 @@ export const getPaddedHex = (bigInt: AuthBigInteger): string => {
 			.split('')
 			.map((x: string) => {
 				const invertedNibble = ~parseInt(x, 16) & 0xf;
+
 				return '0123456789ABCDEF'.charAt(invertedNibble);
 			})
 			.join('');
 
 		/* After flipping the bits, add one to get the 2's complement representation */
 		const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(
-			BigInteger.ONE
+			BigInteger.ONE,
 		);
 
 		hexStr = flippedBitsBI.toString(16);

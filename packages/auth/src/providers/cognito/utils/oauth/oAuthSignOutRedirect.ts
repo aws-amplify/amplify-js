@@ -3,13 +3,14 @@
 
 import { CognitoUserPoolConfig } from '@aws-amplify/core';
 import { assertOAuthConfig } from '@aws-amplify/core/internals/utils';
-import { openAuthSession } from '../../../../utils';
-import { OpenAuthSessionResult } from '../../../../utils/types';
+import { openAuthSession } from '~/src/utils';
+import { OpenAuthSessionResult } from '~/src/utils/types';
+
 import { getRedirectUrl } from './getRedirectUrl';
 
 export const oAuthSignOutRedirect = async (
 	authConfig: CognitoUserPoolConfig,
-	preferPrivateSession: boolean = false
+	preferPrivateSession = false,
 ): Promise<void | OpenAuthSessionResult> => {
 	assertOAuthConfig(authConfig);
 	const { loginWith, userPoolClientId } = authConfig;
@@ -25,6 +26,6 @@ export const oAuthSignOutRedirect = async (
 	return openAuthSession(
 		oAuthLogoutEndpoint,
 		redirectSignOut,
-		preferPrivateSession
+		preferPrivateSession,
 	);
 };

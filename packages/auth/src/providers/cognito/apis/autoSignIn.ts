@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthError } from '../../../errors/AuthError';
-import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
-import { AutoSignInCallback } from '../../../types/models';
-import { SignInOutput } from '../types';
+import { AuthError } from '~/src/errors/AuthError';
+import { AUTO_SIGN_IN_EXCEPTION } from '~/src/errors/constants';
+import { AutoSignInCallback } from '~/src/types/models';
+import { SignInOutput } from '~/src/providers/cognito/types';
 
 const initialAutoSignIn: AutoSignInCallback =
 	async (): Promise<SignInOutput> => {
@@ -97,6 +97,8 @@ const initialAutoSignIn: AutoSignInCallback =
  *
  * ```
  */
+// TODO(eslint): remove this linter suppression by refactoring.
+// eslint-disable-next-line import/no-mutable-exports
 export let autoSignIn: AutoSignInCallback = initialAutoSignIn;
 
 /**

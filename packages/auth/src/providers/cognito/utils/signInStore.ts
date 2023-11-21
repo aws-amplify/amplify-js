@@ -1,16 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CognitoAuthSignInDetails } from '../types';
+import { CognitoAuthSignInDetails } from '~/src/providers/cognito/types';
+
 import { ChallengeName } from './clients/CognitoIdentityProvider/types';
 
 // TODO: replace all of this implementation with state machines
-type SignInState = {
+interface SignInState {
 	username?: string;
 	challengeName?: ChallengeName;
 	signInSession?: string;
 	signInDetails?: CognitoAuthSignInDetails;
-};
+}
 
 type SignInAction =
 	| { type: 'SET_INITIAL_STATE' }
@@ -20,7 +21,7 @@ type SignInAction =
 	| { type: 'SET_SIGN_IN_SESSION'; value?: string };
 
 type Store<State, Action> = (reducer: Reducer<State, Action>) => {
-	getState: () => ReturnType<Reducer<State, Action>>;
+	getState(): ReturnType<Reducer<State, Action>>;
 	dispatch(action: Action): void;
 };
 

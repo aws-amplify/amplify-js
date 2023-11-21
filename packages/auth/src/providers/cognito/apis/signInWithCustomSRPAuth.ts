@@ -6,35 +6,36 @@ import {
 	AMPLIFY_SYMBOL,
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { assertServiceError } from '~/src/errors/utils/assertServiceError';
 import {
-	handleCustomSRPAuthFlow,
+	getActiveSignInUsername,
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
-	getNewDeviceMetatada,
-	getActiveSignInUsername,
-} from '../utils/signInHelpers';
+	handleCustomSRPAuthFlow,
+} from '~/src/providers/cognito/utils/signInHelpers';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
-} from '../types/errors';
+} from '~/src/providers/cognito/types/errors';
 import {
 	CognitoAuthSignInDetails,
 	SignInWithCustomSRPAuthInput,
 	SignInWithCustomSRPAuthOutput,
-} from '../types';
+} from '~/src/providers/cognito/types';
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
-import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
+} from '~/src/providers/cognito/utils/signInStore';
+import { cacheCognitoTokens } from '~/src/providers/cognito/tokenProvider/cacheTokens';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
-import { tokenOrchestrator } from '../tokenProvider';
+} from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { tokenOrchestrator } from '~/src/providers/cognito/tokenProvider';
+
 import { getCurrentUser } from './getCurrentUser';
 
 /**
@@ -49,7 +50,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomSRPAuth(
-	input: SignInWithCustomSRPAuthInput
+	input: SignInWithCustomSRPAuthInput,
 ): Promise<SignInWithCustomSRPAuthOutput> {
 	const { username, password, options } = input;
 	const signInDetails: CognitoAuthSignInDetails = {
@@ -61,17 +62,17 @@ export async function signInWithCustomSRPAuth(
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignInPassword
+		AuthValidationErrorCode.EmptySignInPassword,
 	);
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: handledChallengeName,
+			ChallengeParameters: handledChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await handleCustomSRPAuthFlow(
@@ -79,7 +80,7 @@ export async function signInWithCustomSRPAuth(
 			password,
 			metadata,
 			authConfig,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 
 		const activeUsername = getActiveSignInUsername(username);
@@ -87,7 +88,7 @@ export async function signInWithCustomSRPAuth(
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -97,7 +98,7 @@ export async function signInWithCustomSRPAuth(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
@@ -109,8 +110,9 @@ export async function signInWithCustomSRPAuth(
 					data: await getCurrentUser(),
 				},
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -118,8 +120,8 @@ export async function signInWithCustomSRPAuth(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

@@ -3,24 +3,27 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	HubInternal,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
-import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
-import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { ConfirmSignUpException } from '../types/errors';
-import { confirmSignUp as confirmSignUpClient } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { AutoSignInEventData } from '../types/models';
+import {
+	ConfirmSignUpInput,
+	ConfirmSignUpOutput,
+} from '~/src/providers/cognito/types';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { AuthValidationErrorCode } from '~/src/errors/types/validation';
+import { ConfirmSignUpException } from '~/src/providers/cognito/types/errors';
+import { confirmSignUp as confirmSignUpClient } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getRegion } from '~/src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
+import { AutoSignInEventData } from '~/src/providers/cognito/types/models';
 import {
 	isAutoSignInStarted,
 	isAutoSignInUserUsingConfirmSignUp,
 	setAutoSignInStarted,
-} from '../utils/signUpHelpers';
-import { getAuthUserAgentValue } from '../../../utils';
-import { getUserContextData } from '../utils/userContextData';
+} from '~/src/providers/cognito/utils/signUpHelpers';
+import { getAuthUserAgentValue } from '~/src/utils';
+import { getUserContextData } from '~/src/providers/cognito/utils/userContextData';
 
 /**
  * Confirms a new user account.
@@ -34,7 +37,7 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignUp(
-	input: ConfirmSignUpInput
+	input: ConfirmSignUpInput,
 ): Promise<ConfirmSignUpOutput> {
 	const { username, confirmationCode, options } = input;
 
@@ -44,11 +47,11 @@ export async function confirmSignUp(
 	const clientMetadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptyConfirmSignUpUsername
+		AuthValidationErrorCode.EmptyConfirmSignUpUsername,
 	);
 	assertValidationError(
 		!!confirmationCode,
-		AuthValidationErrorCode.EmptyConfirmSignUpCode
+		AuthValidationErrorCode.EmptyConfirmSignUpCode,
 	);
 
 	const UserContextData = getUserContextData({
@@ -69,7 +72,7 @@ export async function confirmSignUp(
 			ForceAliasCreation: options?.forceAliasCreation,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
-		}
+		},
 	);
 
 	return new Promise((resolve, reject) => {
@@ -85,7 +88,9 @@ export async function confirmSignUp(
 				!isAutoSignInStarted() ||
 				!isAutoSignInUserUsingConfirmSignUp(username)
 			) {
-				return resolve(signUpOut);
+				resolve(signUpOut);
+
+				return;
 			}
 
 			const stopListener = HubInternal.listen<AutoSignInEventData>(
@@ -102,7 +107,7 @@ export async function confirmSignUp(
 							setAutoSignInStarted(false);
 							stopListener();
 					}
-				}
+				},
 			);
 
 			HubInternal.dispatch('auth-internal', {
