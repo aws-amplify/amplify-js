@@ -26,7 +26,7 @@ export function generateClient<
 	T extends Record<any, any> = never,
 	ClientType extends
 		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>,
+		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>
 >(
 	params: ServerClientGenerationParams & CommonPublicClientOptions
 ): ClientType {

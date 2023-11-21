@@ -593,7 +593,7 @@ describe('AsyncStorage tests', () => {
 
 			const oldData: [
 				string,
-				string[],
+				string[]
 			] = require('./AsyncStorage.migration.data.json');
 
 			inmemoryMap.clear();

@@ -98,8 +98,8 @@ export const matchesAttributes = (
 	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
 		eventAttributesMemo[memoKey] =
 			!Attributes ||
-			Object.entries(Attributes).every(
-				([key, { Values }]) => Values?.includes(attributes[key])
+			Object.entries(Attributes).every(([key, { Values }]) =>
+				Values?.includes(attributes[key])
 			);
 	}
 	return eventAttributesMemo[memoKey];
