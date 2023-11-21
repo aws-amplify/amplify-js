@@ -35,11 +35,6 @@
 		"ts-coverage": "lerna run ts-coverage",
 		"prepare": "./scripts/set-preid-versions.sh"
 	},
-	"husky": {
-		"hooks": {
-			"pre-commit": "pretty-quick --staged"
-		}
-	},
 	"workspaces": {
 		"packages": [
 			"packages/core",
@@ -47,19 +42,19 @@
 			"packages/analytics",
 			"packages/predictions",
 			"packages/storage",
+			"packages/aws-amplify",
 			"packages/adapter-nextjs",
 			"packages/geo",
+			"packages/api",
 			"packages/api-rest",
 			"packages/api-graphql",
-			"packages/api",
 			"packages/datastore",
 			"packages/datastore-storage-adapter",
 			"packages/interactions",
 			"packages/pubsub",
+			"packages/rtn-web-browser",
 			"packages/notifications",
 			"packages/rtn-push-notification",
-			"packages/aws-amplify",
-			"packages/rtn-web-browser",
 			"packages/react-native",
 			"packages/react-native/example",
 			"scripts/tsc-compliance-test"
@@ -84,6 +79,7 @@
 		"@babel/core": "7.17.2",
 		"@babel/preset-env": "^7.0.0",
 		"@babel/preset-react": "^7.0.0",
+		"@lerna/legacy-package-management": "^7.4.2",
 		"@size-limit/dual-publish": "^8.1.0",
 		"@size-limit/file": "^8.1.0",
 		"@size-limit/webpack": "^8.1.0",
@@ -96,14 +92,12 @@
 		"babel-loader": "^8.3.0",
 		"codecov": "^3.6.5",
 		"glob": "^10.3.10",
-		"husky": "^3.0.5",
 		"jest": "^24.x.x",
 		"jest-config": "24.8.0",
 		"json-loader": "^0.5.7",
-		"lerna": "^6.6.1",
+		"lerna": "^7.4.2",
 		"license-check-and-add": "^4.0.5",
 		"prettier": "^2.4.1",
-		"pretty-quick": "^1.11.1",
 		"rimraf": "^2.6.2",
 		"rollup": "^0.67.4",
 		"rollup-plugin-commonjs": "^9.2.0",
