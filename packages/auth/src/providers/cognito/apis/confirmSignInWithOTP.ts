@@ -55,6 +55,7 @@ export const confirmSignInWithOTP = async (
 		ChallengeName: 'CUSTOM_CHALLENGE',
 		ChallengeResponses: {
 			USERNAME: username,
+			ANSWER: challengeResponse,
 		},
 		Session: signInSession,
 		ClientMetadata: {
@@ -63,14 +64,13 @@ export const confirmSignInWithOTP = async (
 		},
 		ClientId: userPoolClientId,
 	};
-	const { AuthenticationResult, ChallengeName, ChallengeParameters } =
-		await respondToAuthChallenge(
-			{
-				region: getRegion(userPoolId),
-				userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
-			},
-			jsonReqRespondToAuthChallenge
-		);
+	const { AuthenticationResult, ChallengeName } = await respondToAuthChallenge(
+		{
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+		},
+		jsonReqRespondToAuthChallenge
+	);
 	if (AuthenticationResult) {
 		cleanActiveSignInState();
 		await cacheCognitoTokens({

@@ -24,6 +24,10 @@ import {
 import { SignInWithOTPInput } from '../types/inputs';
 import { SignInWithOTPOutput } from '../types/outputs';
 import { setActiveSignInState } from '../utils/signInStore';
+import {
+	getActiveSignInUsername,
+	setActiveSignInUsername,
+} from '../utils/signInHelpers';
 
 export const signInWithOTP = async <
 	T extends AuthPasswordlessFlow = AuthPasswordlessFlow,
@@ -48,12 +52,12 @@ export const signInWithOTP = async <
 		case 'SIGN_IN':
 			const { ChallengeParameters, Session } = await handlePasswordlessSignIn(
 				input,
-				authConfig as unknown as AuthConfig
+				authConfig as AuthConfig['Cognito']
 			);
 			// sets up local state used during the sign-in process
 			setActiveSignInState({
 				signInSession: Session,
-				username,
+				username: getActiveSignInUsername(username),
 				signInDetails,
 			});
 
@@ -64,8 +68,8 @@ export const signInWithOTP = async <
 					additionalInfo: ChallengeParameters as AuthAdditionalInfo,
 					codeDeliveryDetails: {
 						deliveryMedium:
-							ChallengeParameters?.CODE_DELIVERY_DELIVERY_MEDIUM as AuthDeliveryMedium,
-						destination: ChallengeParameters?.CODE_DELIVERY_DESTINATION,
+							ChallengeParameters?.deliveryMedium as AuthDeliveryMedium,
+						destination: ChallengeParameters?.destination,
 					},
 				},
 			};
@@ -79,9 +83,9 @@ export const signInWithOTP = async <
 
 async function handlePasswordlessSignIn(
 	input: SignInWithOTPInput,
-	authConfig: AuthConfig
+	authConfig: AuthConfig['Cognito']
 ) {
-	const { userPoolId, userPoolClientId } = authConfig.Cognito;
+	const { userPoolId, userPoolClientId } = authConfig;
 	const { username, options, destination } = input;
 	const { clientMetadata } = options ?? {};
 	const authParameters: Record<string, string> = {
@@ -94,17 +98,24 @@ async function handlePasswordlessSignIn(
 		ClientId: userPoolClientId,
 	};
 
-	const { Session } = await initiateAuth(
+	const { Session, ChallengeParameters } = await initiateAuth(
 		{
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
 		jsonReqInitiateAuth
 	);
+	const activeUsername = ChallengeParameters?.USERNAME ?? username;
+
+	setActiveSignInUsername(activeUsername);
+
+	// The answer is not used by the service. It is just a placeholder to make the request happy.
+	const dummyAnswer = 'dummyAnswer';
 	const jsonReqRespondToAuthChallenge: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
 		ChallengeResponses: {
-			USERNAME: username,
+			USERNAME: activeUsername,
+			ANSWER: dummyAnswer,
 		},
 		Session,
 		ClientMetadata: {
