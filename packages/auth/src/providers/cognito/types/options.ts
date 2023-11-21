@@ -92,3 +92,11 @@ export type SendUserAttributeVerificationCodeOptions = AuthServiceOptions & {
 export type UpdateUserAttributeOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
 };
+
+export type AuthPasswordlessSignInOptions = {
+	clientMetadata?: ClientMetadata;
+};
+export type AuthPasswordlessSignInAndSignUpOptions = {
+	clientMetadata?: ClientMetadata;
+	userAttributes?: AuthUserAttributes;
+};
