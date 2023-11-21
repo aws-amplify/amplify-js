@@ -2,20 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { EmitterSubscription } from 'react-native';
-import { nativeEventEmitter } from '../nativeModule';
-import { NativeMessage, PushNotificationMessage } from '../types';
-import { normalizeNativeMessage } from '../utils';
+import { nativeEventEmitter } from '~/src/nativeModule';
+import { NativeMessage, PushNotificationMessage } from '~/src/types';
+import { normalizeNativeMessage } from '~/src/utils';
 
 export const addMessageEventListener = (
 	event: string,
 	listener: (
 		message: PushNotificationMessage | null,
-		completionHandlerId?: string
-	) => void
+		completionHandlerId?: string,
+	) => void,
 ): EmitterSubscription =>
 	nativeEventEmitter.addListener(event, (nativeMessage: NativeMessage) => {
 		listener(
 			normalizeNativeMessage(nativeMessage),
-			nativeMessage.completionHandlerId
+			nativeMessage.completionHandlerId,
 		);
 	});

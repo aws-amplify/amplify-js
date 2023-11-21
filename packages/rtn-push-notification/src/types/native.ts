@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NativeModule } from 'react-native';
+
 import { PushNotificationMessage, PushNotificationPermissions } from './module';
 
 export interface PushNotificationNativeModule extends NativeModule {
-	completeNotification?: (completionHandlerId: string) => void;
-	getConstants: () => {
+	completeNotification?(completionHandlerId: string): void;
+	getConstants(): {
 		NativeEvent: {
 			BACKGROUND_MESSAGE_RECEIVED?: string;
 			FOREGROUND_MESSAGE_RECEIVED: string;
@@ -16,19 +17,19 @@ export interface PushNotificationNativeModule extends NativeModule {
 		};
 		NativeHeadlessTaskKey?: string;
 	};
-	getLaunchNotification: () => Promise<NativeMessage | null>;
-	getBadgeCount?: () => Promise<number>;
-	setBadgeCount?: (count: number) => void;
-	getPermissionStatus: () => Promise<NativePermissionStatus>;
-	requestPermissions: (
+	getLaunchNotification(): Promise<NativeMessage | null>;
+	getBadgeCount?(): Promise<number>;
+	setBadgeCount?(count: number): void;
+	getPermissionStatus(): Promise<NativePermissionStatus>;
+	requestPermissions(
 		permissions: PushNotificationPermissions
-	) => Promise<boolean>;
+	): Promise<boolean>;
 }
 
-export type NativeAction = {
+export interface NativeAction {
 	deeplink?: string;
 	url?: string;
-};
+}
 
 export type NativeMessage = (ApnsMessage | FcmMessage) & {
 	token?: never;
@@ -48,7 +49,7 @@ export interface NormalizedValues {
 }
 
 // iOS
-export type ApnsMessage = {
+export interface ApnsMessage {
 	aps: {
 		alert?: {
 			body?: string;
@@ -62,12 +63,12 @@ export type ApnsMessage = {
 	};
 	rawData?: never;
 	completionHandlerId?: string;
-};
+}
 
 export type IosPermissionStatus = 'NotDetermined' | 'Authorized' | 'Denied';
 
 // Android
-export type FcmMessage = {
+export interface FcmMessage {
 	action?: NativeAction;
 	aps?: never;
 	body?: string;
@@ -79,7 +80,7 @@ export type FcmMessage = {
 	senderId?: string;
 	sendTime?: number;
 	completionHandlerId?: never;
-};
+}
 
 export type AndroidPermissionStatus =
 	| 'ShouldRequest'
@@ -87,6 +88,6 @@ export type AndroidPermissionStatus =
 	| 'Granted'
 	| 'Denied';
 
-export type TokenPayload = {
+export interface TokenPayload {
 	token: string;
-};
+}

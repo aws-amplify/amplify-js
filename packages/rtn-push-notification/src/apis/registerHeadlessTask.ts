@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AppRegistry } from 'react-native';
+import { NativeMessage, PushNotificationMessage } from '~/src/types';
+import { normalizeNativeMessage } from '~/src/utils';
+
 import { getConstants } from './getConstants';
-import { NativeMessage, PushNotificationMessage } from '../types';
-import { normalizeNativeMessage } from '../utils';
 
 export const registerHeadlessTask = (
-	task: (message: PushNotificationMessage | null) => Promise<void>
+	task: (message: PushNotificationMessage | null) => Promise<void>,
 ): void => {
 	const { NativeHeadlessTaskKey } = getConstants();
 	if (NativeHeadlessTaskKey) {
@@ -15,7 +16,7 @@ export const registerHeadlessTask = (
 			NativeHeadlessTaskKey,
 			() => async (nativeMessage: NativeMessage) => {
 				await task(normalizeNativeMessage(nativeMessage));
-			}
+			},
 		);
 	}
 };

@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { EmitterSubscription } from 'react-native';
-import { nativeEventEmitter } from '../nativeModule';
-import { TokenPayload } from '../types';
+import { nativeEventEmitter } from '~/src/nativeModule';
+import { TokenPayload } from '~/src/types';
 
 export const addTokenEventListener = (
 	event: string,
-	listener: (token: string) => void
+	listener: (token: string) => void,
 ): EmitterSubscription =>
 	nativeEventEmitter.addListener(event, ({ token }: TokenPayload) => {
 		listener(token);
