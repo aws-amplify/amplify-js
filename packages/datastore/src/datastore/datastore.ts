@@ -835,8 +835,8 @@ const createModelClass = <T extends PersistentModel>(
 						const id = isInternalModel
 							? _id
 							: modelDefinition.syncable
-							  ? amplifyUuid()
-							  : ulid();
+							? amplifyUuid()
+							: ulid();
 
 						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					} else if (isIdOptionallyManaged(modelDefinition)) {
@@ -1740,7 +1740,7 @@ class DataStore {
 				const initPatchesTuple = initPatches.has(model)
 					? ([initPatches.get(model)!, {}] as [
 							Patch[],
-							Readonly<Record<string, any>>,
+							Readonly<Record<string, any>>
 					  ])
 					: undefined;
 
