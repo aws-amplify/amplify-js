@@ -3,45 +3,44 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-
-import { TransferProgressEvent } from '../../../types';
+import { TransferProgressEvent } from '~/src/types';
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
-} from '../../../types/options';
+} from '~/src/types/options';
 
-type CommonOptions = {
+interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
 	 */
 	useAccelerateEndpoint?: boolean;
-};
+}
 
 type ReadOptions =
 	| { accessLevel?: 'guest' | 'private' }
 	| { accessLevel: 'protected'; targetIdentityId?: string };
 
-type WriteOptions = {
+interface WriteOptions {
 	accessLevel?: StorageAccessLevel;
-};
+}
 
-type BytesRangeOptions = {
+interface BytesRangeOptions {
 	bytesRange?: {
 		start: number;
 		end: number;
 	};
-};
+}
 
 /**
  * Transfer-related options type for S3 downloadData, uploadData APIs.
  */
-type TransferOptions = {
+interface TransferOptions {
 	/**
 	 * Callback function tracking the upload/download progress.
 	 */
-	onProgress?: (event: TransferProgressEvent) => void;
-};
+	onProgress?(event: TransferProgressEvent): void;
+}
 
 /**
  * Input options type for S3 getProperties API.
@@ -130,10 +129,10 @@ export type CopyDestinationOptions = WriteOptions & {
  *
  * @internal
  */
-export type ResolvedS3Config = {
+export interface ResolvedS3Config {
 	region: string;
 	credentials: AWSCredentials;
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
-};
+}

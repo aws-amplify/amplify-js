@@ -3,17 +3,17 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
-import { CopyInput, CopyOutput } from '../../types';
-import { resolveS3ConfigAndInput } from '../../utils';
-import { StorageValidationErrorCode } from '../../../../errors/types/validation';
-import { assertValidationError } from '../../../../errors/utils/assertValidationError';
-import { copyObject } from '../../utils/client';
-import { getStorageUserAgentValue } from '../../utils/userAgent';
-import { logger } from '../../../../utils';
+import { CopyInput, CopyOutput } from '~/src/providers/s3/types';
+import { resolveS3ConfigAndInput } from '~/src/providers/s3/utils';
+import { StorageValidationErrorCode } from '~/src/errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { copyObject } from '~/src/providers/s3/utils/client';
+import { getStorageUserAgentValue } from '~/src/providers/s3/utils/userAgent';
+import { logger } from '~/src/utils';
 
 export const copy = async (
 	amplify: AmplifyClassV6,
-	input: CopyInput
+	input: CopyInput,
 ): Promise<CopyOutput> => {
 	const {
 		source: { key: sourceKey },
@@ -23,7 +23,7 @@ export const copy = async (
 	assertValidationError(!!sourceKey, StorageValidationErrorCode.NoSourceKey);
 	assertValidationError(
 		!!destinationKey,
-		StorageValidationErrorCode.NoDestinationKey
+		StorageValidationErrorCode.NoDestinationKey,
 	);
 
 	const {
@@ -33,7 +33,7 @@ export const copy = async (
 	} = await resolveS3ConfigAndInput(amplify, input.source);
 	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput(
 		amplify,
-		input.destination
+		input.destination,
 	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
@@ -50,7 +50,7 @@ export const copy = async (
 			CopySource: finalCopySource,
 			Key: finalCopyDestination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
-		}
+		},
 	);
 
 	return {

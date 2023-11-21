@@ -2,19 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	retryMiddleware,
-	RetryOptions,
-	signingMiddleware,
-	SigningOptions,
-	userAgentMiddleware,
-	UserAgentOptions,
 	HttpRequest,
 	HttpResponse,
+	RetryOptions,
+	SigningOptions,
+	UserAgentOptions,
+	retryMiddleware,
+	signingMiddleware,
+	userAgentMiddleware,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
-
-import { contentSha256Middleware } from '../contentSha256middleware';
-import { xhrTransferHandler } from '../xhrTransferHandler';
+import { contentSha256Middleware } from '~/src/providers/s3/utils/client/runtime/contentSha256middleware';
+import { xhrTransferHandler } from '~/src/providers/s3/utils/client/runtime/xhrTransferHandler';
 
 /**
  * S3 transfer handler for browser and React Native based on XHR. On top of basic transfer handler, it also supports
@@ -23,7 +22,7 @@ import { xhrTransferHandler } from '../xhrTransferHandler';
  * @internal
  */
 export const s3TransferHandler = composeTransferHandler<
-	[{}, UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
+	[object, UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
 	HttpRequest,
 	HttpResponse,
 	typeof xhrTransferHandler

@@ -3,14 +3,17 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
-
-import { DownloadDataInput, DownloadDataOutput, S3Exception } from '../types';
-import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { createDownloadTask } from '../utils';
-import { getObject } from '../utils/client';
-import { getStorageUserAgentValue } from '../utils/userAgent';
-import { logger } from '../../../utils';
+import {
+	DownloadDataInput,
+	DownloadDataOutput,
+	S3Exception,
+} from '~/src/providers/s3/types';
+import { resolveS3ConfigAndInput } from '~/src/providers/s3/utils/resolveS3ConfigAndInput';
+import { StorageValidationErrorCode } from '~/src/errors/types/validation';
+import { createDownloadTask } from '~/src/providers/s3/utils';
+import { getObject } from '~/src/providers/s3/utils/client';
+import { getStorageUserAgentValue } from '~/src/providers/s3/utils/userAgent';
+import { logger } from '~/src/utils';
 
 /**
  * Download S3 object data to memory
@@ -51,18 +54,19 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 			abortController.abort(message);
 		},
 	});
+
 	return downloadTask;
 };
 
 const downloadDataJob =
 	(
 		{ options: downloadDataOptions, key }: DownloadDataInput,
-		abortSignal: AbortSignal
+		abortSignal: AbortSignal,
 	) =>
 	async () => {
 		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
 			Amplify,
-			downloadDataOptions
+			downloadDataOptions,
 		);
 		const finalKey = keyPrefix + key;
 
@@ -89,8 +93,9 @@ const downloadDataJob =
 				...(downloadDataOptions?.bytesRange && {
 					Range: `bytes=${downloadDataOptions.bytesRange.start}-${downloadDataOptions.bytesRange.end}`,
 				}),
-			}
+			},
 		);
+
 		return {
 			key,
 			body,

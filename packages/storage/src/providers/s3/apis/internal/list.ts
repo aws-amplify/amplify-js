@@ -5,32 +5,32 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 import {
 	ListAllInput,
-	ListPaginateInput,
 	ListAllOutput,
-	ListPaginateOutput,
 	ListOutputItem,
-} from '../../types';
-import { resolveS3ConfigAndInput } from '../../utils';
-import { ResolvedS3Config } from '../../types/options';
+	ListPaginateInput,
+	ListPaginateOutput,
+} from '~/src/providers/s3/types';
+import { resolveS3ConfigAndInput } from '~/src/providers/s3/utils';
+import { ResolvedS3Config } from '~/src/providers/s3/types/options';
 import {
-	listObjectsV2,
 	ListObjectsV2Input,
 	ListObjectsV2Output,
-} from '../../utils/client';
-import { getStorageUserAgentValue } from '../../utils/userAgent';
-import { logger } from '../../../../utils';
+	listObjectsV2,
+} from '~/src/providers/s3/utils/client';
+import { getStorageUserAgentValue } from '~/src/providers/s3/utils/userAgent';
+import { logger } from '~/src/utils';
 
 const MAX_PAGE_SIZE = 1000;
 
-type ListInputArgs = {
+interface ListInputArgs {
 	s3Config: ResolvedS3Config;
 	listParams: ListObjectsV2Input;
 	prefix: string;
-};
+}
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input?: ListAllInput | ListPaginateInput
+	input?: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	const { options = {}, prefix: path = '' } = input ?? {};
 	const {
@@ -44,7 +44,7 @@ export const list = async (
 		logger.debug(
 			`listAll is set to true, ignoring ${
 				anyOptions?.pageSize ? `pageSize: ${anyOptions?.pageSize}` : ''
-			} ${anyOptions?.nextToken ? `nextToken: ${anyOptions?.nextToken}` : ''}.`
+			} ${anyOptions?.nextToken ? `nextToken: ${anyOptions?.nextToken}` : ''}.`,
 		);
 	}
 	const listParams = {
@@ -54,9 +54,10 @@ export const list = async (
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
+
 	return options.listAll
-		? await _listAll({ s3Config, listParams, prefix })
-		: await _list({ s3Config, listParams, prefix });
+		? _listAll({ s3Config, listParams, prefix })
+		: _list({ s3Config, listParams, prefix });
 };
 
 const _listAll = async ({
@@ -101,7 +102,7 @@ const _list = async ({
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
 		},
-		listParamsClone
+		listParamsClone,
 	);
 
 	if (!response?.Contents) {
@@ -116,6 +117,7 @@ const _list = async ({
 		lastModified: item.LastModified,
 		size: item.Size,
 	}));
+
 	return {
 		items: listResult,
 		nextToken: response.NextContinuationToken,

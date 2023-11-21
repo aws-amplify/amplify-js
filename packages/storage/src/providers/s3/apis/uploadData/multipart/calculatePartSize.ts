@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { DEFAULT_PART_SIZE, MAX_PARTS_COUNT } from '../../../utils/constants';
+import {
+	DEFAULT_PART_SIZE,
+	MAX_PARTS_COUNT,
+} from '~/src/providers/s3/utils/constants';
 
 export const calculatePartSize = (totalSize?: number): number => {
 	if (!totalSize) {
@@ -13,5 +16,6 @@ export const calculatePartSize = (totalSize?: number): number => {
 		partSize *= 2;
 		partsCount = Math.ceil(totalSize / partSize);
 	}
+
 	return partSize;
 };

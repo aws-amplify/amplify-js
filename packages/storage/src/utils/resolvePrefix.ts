@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAccessLevel } from '@aws-amplify/core';
-import { assertValidationError } from '../errors/utils/assertValidationError';
-import { StorageValidationErrorCode } from '../errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '~/src/errors/types/validation';
 
-type ResolvePrefixOptions = {
+interface ResolvePrefixOptions {
 	accessLevel: StorageAccessLevel;
 	targetIdentityId?: string;
-};
+}
 
 export const resolvePrefix = ({
 	accessLevel,
@@ -17,14 +17,16 @@ export const resolvePrefix = ({
 	if (accessLevel === 'private') {
 		assertValidationError(
 			!!targetIdentityId,
-			StorageValidationErrorCode.NoIdentityId
+			StorageValidationErrorCode.NoIdentityId,
 		);
+
 		return `private/${targetIdentityId}/`;
 	} else if (accessLevel === 'protected') {
 		assertValidationError(
 			!!targetIdentityId,
-			StorageValidationErrorCode.NoIdentityId
+			StorageValidationErrorCode.NoIdentityId,
 		);
+
 		return `protected/${targetIdentityId}/`;
 	} else {
 		return 'public/';

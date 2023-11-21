@@ -3,21 +3,24 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
-import { GetPropertiesInput, GetPropertiesOutput } from '../../types';
-import { resolveS3ConfigAndInput } from '../../utils';
-import { headObject } from '../../utils/client';
-import { getStorageUserAgentValue } from '../../utils/userAgent';
-import { logger } from '../../../../utils';
+import {
+	GetPropertiesInput,
+	GetPropertiesOutput,
+} from '~/src/providers/s3/types';
+import { resolveS3ConfigAndInput } from '~/src/providers/s3/utils';
+import { headObject } from '~/src/providers/s3/utils/client';
+import { getStorageUserAgentValue } from '~/src/providers/s3/utils/userAgent';
+import { logger } from '~/src/utils';
 
-export const getProperties = async function (
+export const getProperties = async (
 	amplify: AmplifyClassV6,
 	input: GetPropertiesInput,
-	action?: StorageAction
-): Promise<GetPropertiesOutput> {
+	action?: StorageAction,
+): Promise<GetPropertiesOutput> => {
 	const { key, options } = input;
 	const { s3Config, bucket, keyPrefix } = await resolveS3ConfigAndInput(
 		amplify,
-		options
+		options,
 	);
 	const finalKey = `${keyPrefix}${key}`;
 
@@ -26,14 +29,15 @@ export const getProperties = async function (
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(
-				action ?? StorageAction.GetProperties
+				action ?? StorageAction.GetProperties,
 			),
 		},
 		{
 			Bucket: bucket,
 			Key: finalKey,
-		}
+		},
 	);
+
 	return {
 		key,
 		contentType: response.ContentType,

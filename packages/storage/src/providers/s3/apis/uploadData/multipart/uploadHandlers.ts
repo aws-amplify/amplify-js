@@ -3,30 +3,32 @@
 
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
-
-import { getDataChunker } from './getDataChunker';
-import { UploadDataInput } from '../../../types';
-import { resolveS3ConfigAndInput } from '../../../utils';
-import { Item as S3Item } from '../../../types/outputs';
+import { UploadDataInput } from '~/src/providers/s3/types';
+import {
+	ResolvedS3ConfigAndInput,
+	resolveS3ConfigAndInput,
+} from '~/src/providers/s3/utils/resolveS3ConfigAndInput';
+import { Item as S3Item } from '~/src/providers/s3/types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
-} from '../../../utils/constants';
-import { loadOrCreateMultipartUpload } from './initialUpload';
-import { ResolvedS3Config } from '../../../types/options';
-import { getConcurrentUploadsProgressTracker } from './progressTracker';
-import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
-import { uploadPartExecutor } from './uploadPartExecutor';
-import { StorageError } from '../../../../../errors/StorageError';
-import { CanceledError } from '../../../../../errors/CanceledError';
+} from '~/src/providers/s3/utils/constants';
+import { StorageError } from '~/src/errors/StorageError';
+import { CanceledError } from '~/src/errors/CanceledError';
 import {
 	Part,
 	abortMultipartUpload,
 	completeMultipartUpload,
 	headObject,
-} from '../../../utils/client';
-import { getStorageUserAgentValue } from '../../../utils/userAgent';
-import { logger } from '../../../../../utils';
+} from '~/src/providers/s3/utils/client';
+import { getStorageUserAgentValue } from '~/src/providers/s3/utils/userAgent';
+import { logger } from '~/src/utils';
+
+import { uploadPartExecutor } from './uploadPartExecutor';
+import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
+import { getConcurrentUploadsProgressTracker } from './progressTracker';
+import { loadOrCreateMultipartUpload } from './initialUpload';
+import { getDataChunker } from './getDataChunker';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -36,7 +38,7 @@ import { logger } from '../../../../../utils';
  */
 export const getMultipartUploadHandlers = (
 	{ options: uploadDataOptions, key, data }: UploadDataInput,
-	size?: number
+	size?: number,
 ) => {
 	let resolveCallback: ((value: S3Item) => void) | undefined;
 	let rejectCallback: ((reason?: any) => void) | undefined;
@@ -46,24 +48,21 @@ export const getMultipartUploadHandlers = (
 				completedParts: Part[];
 		  }
 		| undefined;
-	let s3Config: ResolvedS3Config | undefined;
+	let resolvedS3ConfigAndInput: ResolvedS3ConfigAndInput;
 	let abortController: AbortController | undefined;
-	let bucket: string | undefined;
-	let keyPrefix: string | undefined;
 	let uploadCacheKey: string | undefined;
 	// Special flag that differentiates HTTP requests abort error caused by pause() from ones caused by cancel().
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
-	let isAbortSignalFromPause: boolean = false;
+	let isAbortSignalFromPause = false;
 
 	const startUpload = async (): Promise<S3Item> => {
-		const resolvedS3Options = await resolveS3ConfigAndInput(
+		resolvedS3ConfigAndInput = await resolveS3ConfigAndInput(
 			Amplify,
-			uploadDataOptions
+			uploadDataOptions,
 		);
-		s3Config = resolvedS3Options.s3Config;
-		bucket = resolvedS3Options.bucket;
-		keyPrefix = resolvedS3Options.keyPrefix;
+
+		const { s3Config, bucket, keyPrefix } = resolvedS3ConfigAndInput;
 
 		abortController = new AbortController();
 		isAbortSignalFromPause = false;
@@ -112,7 +111,7 @@ export const getMultipartUploadHandlers = (
 
 		const dataChunker = getDataChunker(data, size);
 		const completedPartNumberSet = new Set<number>(
-			inProgressUpload.completedParts.map(({ PartNumber }) => PartNumber!)
+			inProgressUpload.completedParts.map(({ PartNumber }) => PartNumber!),
 		);
 		const onPartUploadCompletion = (partNumber: number, eTag: string) => {
 			inProgressUpload?.completedParts.push({
@@ -139,8 +138,8 @@ export const getMultipartUploadHandlers = (
 					uploadId: inProgressUpload.uploadId,
 					onPartUploadCompletion,
 					onProgress: concurrentUploadsProgressTracker.getOnProgressListener(),
-					isObjectLockEnabled: resolvedS3Options.isObjectLockEnabled,
-				})
+					isObjectLockEnabled: resolvedS3ConfigAndInput.isObjectLockEnabled,
+				}),
 			);
 		}
 
@@ -158,10 +157,10 @@ export const getMultipartUploadHandlers = (
 				UploadId: inProgressUpload.uploadId,
 				MultipartUpload: {
 					Parts: inProgressUpload.completedParts.sort(
-						(partA, partB) => partA.PartNumber! - partB.PartNumber!
+						(partA, partB) => partA.PartNumber! - partB.PartNumber!,
 					),
 				},
-			}
+			},
 		);
 
 		if (size) {
@@ -225,6 +224,9 @@ export const getMultipartUploadHandlers = (
 				await removeCachedUpload(uploadCacheKey);
 			}
 			// 3. clear multipart upload on server side.
+			// resolvedS3ConfigAndInput has been assigned within `startUpload`
+			// which ensures it's available at this point.
+			const { s3Config, bucket, keyPrefix } = resolvedS3ConfigAndInput!;
 			await abortMultipartUpload(s3Config!, {
 				Bucket: bucket,
 				Key: keyPrefix! + key,
@@ -238,9 +240,10 @@ export const getMultipartUploadHandlers = (
 		rejectCallback!(
 			// Internal error that should not be exposed to the users. They should use isCancelError() to check if
 			// the error is caused by cancel().
-			new CanceledError(message ? { message } : undefined)
+			new CanceledError(message ? { message } : undefined),
 		);
 	};
+
 	return {
 		multipartUploadJob,
 		onPause,

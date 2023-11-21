@@ -9,9 +9,8 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { defaultConfig } from './base';
-import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 
+import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
 	deserializeMetadata,
@@ -23,7 +22,9 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from './utils';
-import { StorageError } from '../../../../errors/StorageError';
+
+import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
+
 
 export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
 
@@ -40,11 +41,12 @@ export type HeadObjectOutput = Pick<
 
 const headObjectSerializer = async (
 	input: HeadObjectInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+
 	return {
 		method: 'HEAD',
 		headers: {},
@@ -53,7 +55,7 @@ const headObjectSerializer = async (
 };
 
 const headObjectDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
@@ -70,6 +72,7 @@ const headObjectDeserializer = async (
 			}),
 			Metadata: deserializeMetadata(response.headers),
 		};
+
 		return {
 			$metadata: parseMetadata(response),
 			...contents,
@@ -81,5 +84,5 @@ export const headObject = composeServiceApi(
 	s3TransferHandler,
 	headObjectSerializer,
 	headObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

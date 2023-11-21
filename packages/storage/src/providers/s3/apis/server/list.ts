@@ -7,13 +7,15 @@ import {
 } from '@aws-amplify/core/internals/adapter-core';
 import {
 	ListAllInput,
-	ListPaginateInput,
 	ListAllOutput,
+	ListPaginateInput,
 	ListPaginateOutput,
-} from '../../types';
-import { list as listInternal } from '../internal/list';
+	S3Exception,
+} from '~/src/providers/s3/types';
+import { list as listInternal } from '~/src/providers/s3/apis/internal/list';
+import { StorageValidationErrorCode } from '~/src/errors/types/validation';
 
-type ListApi = {
+interface ListApi {
 	/**
 	 * Lists bucket objects with pagination.
 	 * @param {ListPaginateInput} The input object
@@ -24,7 +26,7 @@ type ListApi = {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListPaginateInput
+		input?: ListPaginateInput,
 	): Promise<ListPaginateOutput>;
 	/**
 	 * Lists all bucket objects.
@@ -35,16 +37,16 @@ type ListApi = {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListAllInput
+		input?: ListAllInput,
 	): Promise<ListAllOutput>;
-};
+}
 
 export const list: ListApi = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input?: ListAllInput | ListPaginateInput
+	input?: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	return listInternal(
 		getAmplifyServerContext(contextSpec).amplify,
-		input ?? {}
+		input ?? {},
 	);
 };

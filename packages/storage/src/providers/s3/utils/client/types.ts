@@ -112,8 +112,7 @@ declare const TaggingDirective: {
  *
  * The input for {@link AbortMultipartUploadCommand}.
  */
-export interface AbortMultipartUploadCommandInput
-	extends AbortMultipartUploadRequest {}
+export type AbortMultipartUploadCommandInput = AbortMultipartUploadRequest
 /**
  * @public
  *
@@ -183,8 +182,7 @@ export interface CommonPrefix {
  *
  * The input for {@link CompleteMultipartUploadCommand}.
  */
-export interface CompleteMultipartUploadCommandInput
-	extends CompleteMultipartUploadRequest {}
+export type CompleteMultipartUploadCommandInput = CompleteMultipartUploadRequest
 /**
  * @public
  *
@@ -429,7 +427,7 @@ export interface CompletedPart {
  *
  * The input for {@link CopyObjectCommand}.
  */
-export interface CopyObjectCommandInput extends CopyObjectRequest {}
+export type CopyObjectCommandInput = CopyObjectRequest
 /**
  * @public
  *
@@ -787,8 +785,7 @@ export interface CopyObjectResult {
  *
  * The input for {@link CreateMultipartUploadCommand}.
  */
-export interface CreateMultipartUploadCommandInput
-	extends CreateMultipartUploadRequest {}
+export type CreateMultipartUploadCommandInput = CreateMultipartUploadRequest
 /**
  * @public
  *
@@ -1045,7 +1042,7 @@ export interface CreateMultipartUploadRequest {
  *
  * The input for {@link DeleteObjectCommand}.
  */
-export interface DeleteObjectCommandInput extends DeleteObjectRequest {}
+export type DeleteObjectCommandInput = DeleteObjectRequest
 /**
  * @public
  *
@@ -1124,7 +1121,7 @@ export interface DeleteObjectRequest {
  *
  * The input for {@link GetObjectCommand}.
  */
-export interface GetObjectCommandInput extends GetObjectRequest {}
+export type GetObjectCommandInput = GetObjectRequest
 /**
  * @public
  *
@@ -1441,7 +1438,7 @@ export interface GetObjectRequest {
  *
  * The input for {@link HeadObjectCommand}.
  */
-export interface HeadObjectCommandInput extends HeadObjectRequest {}
+export type HeadObjectCommandInput = HeadObjectRequest
 /**
  * @public
  *
@@ -1790,7 +1787,7 @@ export interface Initiator {
  *
  * The input for {@link ListObjectsV2Command}.
  */
-export interface ListObjectsV2CommandInput extends ListObjectsV2Request {}
+export type ListObjectsV2CommandInput = ListObjectsV2Request
 /**
  * @public
  *
@@ -1948,7 +1945,7 @@ export interface ListObjectsV2Request {
  *
  * The input for {@link ListPartsCommand}.
  */
-export interface ListPartsCommandInput extends ListPartsRequest {}
+export type ListPartsCommandInput = ListPartsRequest
 /**
  * @public
  *
@@ -2202,7 +2199,7 @@ export interface Part {
 /**
  * This interface extends from `PutObjectRequest` interface. There are more parameters than `Body` defined in {@link PutObjectRequest}
  */
-export interface PutObjectCommandInput extends PutObjectCommandInputType {}
+export type PutObjectCommandInput = PutObjectCommandInputType
 /**
  * @public
  *
@@ -2540,7 +2537,7 @@ export interface PutObjectRequest {
 /**
  * This interface extends from `UploadPartRequest` interface. There are more parameters than `Body` defined in {@link UploadPartRequest}
  */
-export interface UploadPartCommandInput extends UploadPartCommandInputType {}
+export type UploadPartCommandInput = UploadPartCommandInputType
 /**
  * @public
  *

@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Md5 } from '@smithy/md5-js';
+
 import { toBase64 } from './client/utils';
 
 export const calculateContentMd5 = async (
-	content: Blob | string | ArrayBuffer | ArrayBufferView
+	content: Blob | string | ArrayBuffer | ArrayBufferView,
 ): Promise<string> => {
 	const hasher = new Md5();
 	if (typeof content === 'string') {
@@ -19,6 +20,7 @@ export const calculateContentMd5 = async (
 		hasher.update(buffer);
 	}
 	const digest = await hasher.digest();
+
 	return toBase64(digest);
 };
 
@@ -29,8 +31,8 @@ const readFile = (file: Blob): Promise<ArrayBuffer> => {
 			if (reader.result) {
 				resolve(reader.result as ArrayBuffer);
 			}
-			reader.onabort = () => reject(new Error('Read aborted'));
-			reader.onerror = () => reject(reader.error);
+			reader.onabort = () => { reject(new Error('Read aborted')); };
+			reader.onerror = () => { reject(reader.error); };
 		};
 		if (file !== undefined) reader.readAsArrayBuffer(file);
 	});

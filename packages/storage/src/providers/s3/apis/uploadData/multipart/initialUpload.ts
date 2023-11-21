@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAccessLevel } from '@aws-amplify/core';
+import { ResolvedS3Config } from '~/src/providers/s3/types/options';
+import { StorageUploadDataPayload } from '~/src/types';
+import { Part, createMultipartUpload } from '~/src/providers/s3/utils/client';
+import { logger } from '~/src/utils';
 
 import {
 	cacheMultipartUpload,
 	findCachedUploadParts,
 	getUploadsCacheKey,
 } from './uploadCache';
-import { ResolvedS3Config } from '../../../types/options';
-import { StorageUploadDataPayload } from '../../../../../types';
-import { Part, createMultipartUpload } from '../../../utils/client';
-import { logger } from '../../../../../utils';
 
-type LoadOrCreateMultipartUploadOptions = {
+interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
 	data: StorageUploadDataPayload;
 	bucket: string;
@@ -26,12 +26,12 @@ type LoadOrCreateMultipartUploadOptions = {
 	metadata?: Record<string, string>;
 	size?: number;
 	abortSignal?: AbortSignal;
-};
+}
 
-type LoadOrCreateMultipartUploadResult = {
+interface LoadOrCreateMultipartUploadResult {
 	uploadId: string;
 	cachedParts: Part[];
-};
+}
 
 /**
  * Load the in-progress multipart upload from local storage or async storage(RN) if it exists, or create a new multipart
@@ -103,10 +103,11 @@ export const loadOrCreateMultipartUpload = async ({
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
-			}
+			},
 		);
 		if (size === undefined) {
 			logger.debug('uploaded data size cannot be determined, skipping cache.');
+
 			return {
 				uploadId: UploadId!,
 				cachedParts: [],
@@ -126,6 +127,7 @@ export const loadOrCreateMultipartUpload = async ({
 			key,
 			fileName: data instanceof File ? data.name : '',
 		});
+
 		return {
 			uploadId: UploadId!,
 			cachedParts: [],

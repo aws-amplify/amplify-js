@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PartToUpload } from './getDataChunker';
-import { TransferProgressEvent } from '../../../../../types';
-import { ResolvedS3Config } from '../../../types/options';
-import { calculateContentMd5 } from '../../../utils';
-import { uploadPart } from '../../../utils/client';
-import { logger } from '../../../../../utils';
+import { TransferProgressEvent } from '~/src/types';
+import { ResolvedS3Config } from '~/src/providers/s3/types/options';
+import { calculateContentMd5 } from '~/src/providers/s3/utils';
+import { uploadPart } from '~/src/providers/s3/utils/client';
+import { logger } from '~/src/utils';
 
-type UploadPartExecutorOptions = {
+import { PartToUpload } from './getDataChunker';
+
+interface UploadPartExecutorOptions {
 	dataChunkerGenerator: Generator<PartToUpload, void, undefined>;
 	completedPartNumberSet: Set<number>;
 	s3Config: ResolvedS3Config;
@@ -17,9 +18,9 @@ type UploadPartExecutorOptions = {
 	finalKey: string;
 	uploadId: string;
 	isObjectLockEnabled?: boolean;
-	onPartUploadCompletion: (partNumber: number, eTag: string) => void;
-	onProgress?: (event: TransferProgressEvent) => void;
-};
+	onPartUploadCompletion(partNumber: number, eTag: string): void;
+	onProgress?(event: TransferProgressEvent): void;
+}
 
 export const uploadPartExecutor = async ({
 	dataChunkerGenerator,
@@ -68,7 +69,7 @@ export const uploadPartExecutor = async ({
 					ContentMD5: isObjectLockEnabled
 						? await calculateContentMd5(data)
 						: undefined,
-				}
+				},
 			);
 			transferredBytes += size;
 			// eTag will always be set even the S3 model interface marks it as optional.

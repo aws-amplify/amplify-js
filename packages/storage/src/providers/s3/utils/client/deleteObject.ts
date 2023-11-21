@@ -9,10 +9,6 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import type {
-	DeleteObjectCommandInput,
-	DeleteObjectCommandOutput,
-} from './types';
 
 import { defaultConfig } from './base';
 import {
@@ -24,7 +20,13 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from './utils';
-import { StorageError } from '../../../../errors/StorageError';
+
+import type {
+	DeleteObjectCommandInput,
+	DeleteObjectCommandOutput,
+} from './types';
+
+
 
 export type DeleteObjectInput = Pick<
 	DeleteObjectCommandInput,
@@ -35,11 +37,12 @@ export type DeleteObjectOutput = DeleteObjectCommandOutput;
 
 const deleteObjectSerializer = (
 	input: DeleteObjectInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): HttpRequest => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+
 	return {
 		method: 'DELETE',
 		headers: {},
@@ -48,7 +51,7 @@ const deleteObjectSerializer = (
 };
 
 const deleteObjectDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
@@ -60,6 +63,7 @@ const deleteObjectDeserializer = async (
 			VersionId: 'x-amz-version-id',
 			RequestCharged: 'x-amz-request-charged',
 		});
+
 		return {
 			...content,
 			$metadata: parseMetadata(response),
@@ -71,5 +75,5 @@ export const deleteObject = composeServiceApi(
 	s3TransferHandler,
 	deleteObjectSerializer,
 	deleteObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

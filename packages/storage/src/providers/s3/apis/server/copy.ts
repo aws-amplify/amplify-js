@@ -5,12 +5,12 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import { CopyInput, CopyOutput } from '../../types';
-import { copy as copyInternal } from '../internal/copy';
+import { CopyInput, CopyOutput } from '~/src/providers/s3/types';
+import { copy as copyInternal } from '~/src/providers/s3/apis/internal/copy';
 
 export const copy = async (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: CopyInput
+	input: CopyInput,
 ): Promise<CopyOutput> => {
 	return copyInternal(getAmplifyServerContext(contextSpec).amplify, input);
 };

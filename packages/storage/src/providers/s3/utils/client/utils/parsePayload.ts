@@ -6,8 +6,7 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
-
-import { parser } from '../runtime';
+import { parser } from '~/src/providers/s3/utils/client/runtime';
 
 export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 	if (!response || response.statusCode < 300) {
@@ -15,13 +14,14 @@ export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 	}
 	const { statusCode } = response;
 	const body = await parseXmlBody(response);
-	const code = body?.['Code']
+	const code = body?.Code
 		? (body.Code as string)
 		: statusCode === 404
 		  ? 'NotFound'
 		  : statusCode.toString();
-	const message = body?.['message'] ?? body?.['Message'] ?? code;
+	const message = body?.message ?? body?.Message ?? code;
 	const error = new Error(message);
+
 	return Object.assign(error, {
 		name: code,
 		$metadata: parseMetadata(response),
@@ -41,5 +41,6 @@ export const parseXmlBody = async (response: HttpResponse): Promise<any> => {
 			throw new Error('Failed to parse XML response.');
 		}
 	}
+
 	return {};
 };

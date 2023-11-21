@@ -4,13 +4,16 @@
 import { Amplify } from '@aws-amplify/core';
 import {
 	ListAllInput,
-	ListPaginateInput,
 	ListAllOutput,
+	ListPaginateInput,
 	ListPaginateOutput,
-} from '../types';
+	S3Exception,
+} from '~/src/providers/s3/types';
+import { StorageValidationErrorCode } from '~/src/errors/types/validation';
+
 import { list as listInternal } from './internal/list';
 
-type ListApi = {
+interface ListApi {
 	/**
 	 * List files with given prefix in pages
 	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
@@ -28,10 +31,10 @@ type ListApi = {
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
 	(input?: ListAllInput): Promise<ListAllOutput>;
-};
+}
 
 export const list: ListApi = (
-	input?: ListAllInput | ListPaginateInput
+	input?: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	return listInternal(Amplify, input ?? {});
 };

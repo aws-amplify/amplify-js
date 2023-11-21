@@ -2,25 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	EMPTY_SHA256_HASH,
 	Endpoint,
 	HttpRequest,
+	HttpResponse,
+	PresignUrlOptions,
+	UserAgentOptions,
 	parseMetadata,
 	presignUrl,
-	UserAgentOptions,
-	PresignUrlOptions,
-	EMPTY_SHA256_HASH,
-	HttpResponse,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import { S3EndpointResolverOptions, defaultConfig } from './base';
-import type {
-	CompatibleHttpResponse,
-	GetObjectCommandInput,
-	GetObjectCommandOutput,
-} from './types';
 import {
+	CONTENT_SHA256_HEADER,
 	buildStorageServiceError,
 	deserializeBoolean,
 	deserializeMetadata,
@@ -30,9 +26,14 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
-	CONTENT_SHA256_HEADER,
 	validateS3RequiredParameter,
 } from './utils';
+
+import type {
+	CompatibleHttpResponse,
+	GetObjectCommandInput,
+	GetObjectCommandOutput,
+} from './types';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -45,11 +46,12 @@ export type GetObjectOutput = GetObjectCommandOutput;
 
 const getObjectSerializer = async (
 	input: GetObjectInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+
 	return {
 		method: 'GET',
 		headers: {
@@ -60,7 +62,7 @@ const getObjectSerializer = async (
 };
 
 const getObjectDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<GetObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -122,7 +124,7 @@ export const getObject = composeServiceApi(
 	s3TransferHandler,
 	getObjectSerializer,
 	getObjectDeserializer,
-	{ ...defaultConfig, responseType: 'blob' }
+	{ ...defaultConfig, responseType: 'blob' },
 );
 
 type S3GetObjectPresignedUrlConfig = Omit<
@@ -140,7 +142,7 @@ type S3GetObjectPresignedUrlConfig = Omit<
  */
 export const getPresignedGetObjectUrl = async (
 	config: S3GetObjectPresignedUrlConfig,
-	input: GetObjectInput
+	input: GetObjectInput,
 ): Promise<URL> => {
 	const endpoint = defaultConfig.endpointResolver(config, input);
 	const { url, headers, method } = await getObjectSerializer(input, endpoint);
@@ -152,15 +154,16 @@ export const getPresignedGetObjectUrl = async (
 	if (config.userAgentValue) {
 		url.searchParams.append(
 			config.userAgentHeader ?? USER_AGENT_HEADER,
-			config.userAgentValue
+			config.userAgentValue,
 		);
 	}
 
 	for (const [headerName, value] of Object.entries(headers).sort(
-		([key1], [key2]) => key1.localeCompare(key2)
+		([key1], [key2]) => key1.localeCompare(key2),
 	)) {
 		url.searchParams.append(headerName, value);
 	}
+
 	return presignUrl(
 		{ method, url, body: undefined },
 		{
@@ -168,6 +171,6 @@ export const getPresignedGetObjectUrl = async (
 			signingRegion: config.region,
 			...defaultConfig,
 			...config,
-		}
+		},
 	);
 };

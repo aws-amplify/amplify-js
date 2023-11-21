@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { CopyInput, CopyOutput, S3Exception } from '../types';
+import { CopyInput, CopyOutput, S3Exception } from '~/src/providers/s3/types';
+import { StorageValidationErrorCode } from '~/src/errors/types/validation';
+
 import { copy as copyInternal } from './internal/copy';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 /**
  * Copy an object from a source object to a new object within the same bucket. Can optionally copy files across

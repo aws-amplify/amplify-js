@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TransferProgressEvent } from '../../../../../types';
+import { TransferProgressEvent } from '~/src/types';
 
-type ConcurrentUploadsProgressTrackerOptions = {
+interface ConcurrentUploadsProgressTrackerOptions {
 	size?: number;
-	onProgress?: (event: TransferProgressEvent) => void;
-};
+	onProgress?(event: TransferProgressEvent): void;
+}
 
 /**
  * Track the progress from multiple concurrent uploads, and invoke the onProgress callback.
@@ -22,13 +22,14 @@ export const getConcurrentUploadsProgressTracker = ({
 	const getTransferredBytes = () =>
 		transferredBytesPerListener.reduce(
 			(acc, transferredBytes) => acc + transferredBytes,
-			0
+			0,
 		);
 
 	return {
 		getOnProgressListener: () => {
 			transferredBytesPerListener.push(0);
 			const listenerIndex = transferredBytesPerListener.length - 1;
+
 			return (event: TransferProgressEvent) => {
 				const { transferredBytes } = event;
 				transferredBytesPerListener[listenerIndex] = transferredBytes;

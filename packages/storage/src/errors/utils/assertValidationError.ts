@@ -4,12 +4,12 @@
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
-} from '../types/validation';
-import { StorageError } from '../StorageError';
+} from '~/src/errors/types/validation';
+import { StorageError } from '~/src/errors/StorageError';
 
 export function assertValidationError(
 	assertion: boolean,
-	name: StorageValidationErrorCode
+	name: StorageValidationErrorCode,
 ): asserts assertion {
 	const { message, recoverySuggestion } = validationErrorMap[name];
 

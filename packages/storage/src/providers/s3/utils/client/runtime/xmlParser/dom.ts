@@ -12,6 +12,7 @@ export const parser = {
 		const xml = domParser.parseFromString(xmlStr, 'text/xml');
 		const parsedObj = parseXmlNode(xml);
 		const rootKey = Object.keys(parsedObj)[0];
+
 		return parsedObj[rootKey];
 	},
 };
@@ -31,13 +32,12 @@ const parseXmlNode = (node: Node): any => {
 		// Node like <Location>foo</Location> will be converted to { Location: 'foo' }
 		// instead of { Location: { '#text': 'foo' } }.
 		if (isTextOnlyElementNode(node)) {
-			return node.childNodes[0]?.nodeValue!;
+			return node.childNodes[0].nodeValue!;
 		}
 
 		const nodeValue: Record<string, any> = {};
 		// convert attributes
-		for (let i = 0; i < node.attributes.length; i++) {
-			const attr = node.attributes[i];
+		for (const attr of node.attributes) {
 			if (!isNamespaceAttributeName(attr.nodeName)) {
 				nodeValue[attr.nodeName] = attr.nodeValue!;
 			}
@@ -45,8 +45,7 @@ const parseXmlNode = (node: Node): any => {
 
 		// convert child nodes
 		if (node.children.length > 0) {
-			for (let i = 0; i < node.children.length; i++) {
-				const child = node.children[i];
+			for (const child of node.children) {
 				const childValue = parseXmlNode(child);
 				if (childValue === undefined) {
 					continue;
@@ -79,12 +78,12 @@ const isTextOnlyElementNode = (node: Element): boolean =>
 	node.firstChild?.nodeType === Node.TEXT_NODE;
 
 const hasOnlyNamespaceAttributes = (node: Element): boolean => {
-	for (let i = 0; i < node.attributes.length; i++) {
-		const attr = node.attributes[i];
+	for (const attr of node.attributes) {
 		if (!isNamespaceAttributeName(attr.nodeName)) {
 			return false;
 		}
 	}
+
 	return true;
 };
 

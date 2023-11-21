@@ -1,23 +1,24 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageUploadDataPayload } from '../../../../../types';
+import { StorageUploadDataPayload } from '~/src/types';
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
-} from '../../../../../errors/types/validation';
-import { StorageError } from '../../../../../errors/StorageError';
+} from '~/src/errors/types/validation';
+import { StorageError } from '~/src/errors/StorageError';
+
 import { calculatePartSize } from './calculatePartSize';
 
-export type PartToUpload = {
+export interface PartToUpload {
 	partNumber: number;
 	data: Blob | ArrayBuffer | string;
 	size: number;
-};
+}
 
 export const getDataChunker = (
 	data: StorageUploadDataPayload,
-	totalSize?: number
+	totalSize?: number,
 ): Generator<PartToUpload, void, undefined> => {
 	const partSize = calculatePartSize(totalSize);
 
@@ -29,6 +30,7 @@ export const getDataChunker = (
 		return helper(data, 0, data.byteLength, partSize);
 	} else if (typeof data === 'string') {
 		const blob = new Blob([data]);
+
 		return getDataChunker(blob, blob.size);
 	} else {
 		throw new StorageError({
@@ -42,7 +44,7 @@ const helper = function* (
 	buffer: ArrayBuffer | Blob,
 	byteOffset: number,
 	byteLength: number,
-	partSize: number
+	partSize: number,
 ): Generator<PartToUpload, void, undefined> {
 	let partNumber = 1;
 	let startByte = byteOffset;

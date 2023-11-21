@@ -3,12 +3,14 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
-
-import { UploadDataInput } from '../../types';
-import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
-import { Item as S3Item } from '../../types/outputs';
-import { putObject } from '../../utils/client';
-import { getStorageUserAgentValue } from '../../utils/userAgent';
+import { UploadDataInput } from '~/src/providers/s3/types';
+import {
+	calculateContentMd5,
+	resolveS3ConfigAndInput,
+} from '~/src/providers/s3/utils';
+import { Item as S3Item } from '~/src/providers/s3/types/outputs';
+import { putObject } from '~/src/providers/s3/utils/client';
+import { getStorageUserAgentValue } from '~/src/providers/s3/utils/userAgent';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -19,7 +21,7 @@ export const putObjectJob =
 	(
 		{ options: uploadDataOptions, key, data }: UploadDataInput,
 		abortSignal: AbortSignal,
-		totalLength?: number
+		totalLength?: number,
 	) =>
 	async (): Promise<S3Item> => {
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled } =
@@ -52,7 +54,7 @@ export const putObjectJob =
 				ContentMD5: isObjectLockEnabled
 					? await calculateContentMd5(data)
 					: undefined,
-			}
+			},
 		);
 
 		return {

@@ -9,23 +9,25 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import type {
-	CreateMultipartUploadCommandInput,
-	CreateMultipartUploadCommandOutput,
-} from './types';
-import type { PutObjectInput } from './putObject';
 
 import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
-	validateS3RequiredParameter,
 	map,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
+
+import type {
+	CreateMultipartUploadCommandInput,
+	CreateMultipartUploadCommandOutput,
+} from './types';
+import type { PutObjectInput } from './putObject';
+
 
 export type CreateMultipartUploadInput = Extract<
 	CreateMultipartUploadCommandInput,
@@ -39,13 +41,14 @@ export type CreateMultipartUploadOutput = Pick<
 
 const createMultipartUploadSerializer = async (
 	input: CreateMultipartUploadInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = await serializeObjectConfigsToHeaders(input);
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = 'uploads';
+
 	return {
 		method: 'POST',
 		headers,
@@ -54,7 +57,7 @@ const createMultipartUploadSerializer = async (
 };
 
 const createMultipartUploadDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<CreateMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -64,6 +67,7 @@ const createMultipartUploadDeserializer = async (
 		const contents = map(parsed, {
 			UploadId: 'UploadId',
 		});
+
 		return {
 			$metadata: parseMetadata(response),
 			...contents,
@@ -75,5 +79,5 @@ export const createMultipartUpload = composeServiceApi(
 	s3TransferHandler,
 	createMultipartUploadSerializer,
 	createMultipartUploadDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

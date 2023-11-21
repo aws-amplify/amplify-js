@@ -13,7 +13,7 @@ import {
 	AmplifyUrlSearchParams,
 } from '@aws-amplify/core/internals/utils';
 import { MetadataBearer } from '@aws-sdk/types';
-import type { AbortMultipartUploadCommandInput } from './types';
+
 
 import { defaultConfig } from './base';
 import {
@@ -24,6 +24,8 @@ import {
 	validateS3RequiredParameter,
 } from './utils';
 
+import type { AbortMultipartUploadCommandInput } from './types';
+
 export type AbortMultipartUploadInput = Pick<
 	AbortMultipartUploadCommandInput,
 	'Bucket' | 'Key' | 'UploadId'
@@ -33,7 +35,7 @@ export type AbortMultipartUploadOutput = MetadataBearer;
 
 const abortMultipartUploadSerializer = (
 	input: AbortMultipartUploadInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): HttpRequest => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
@@ -42,6 +44,7 @@ const abortMultipartUploadSerializer = (
 	url.search = new AmplifyUrlSearchParams({
 		uploadId: input.UploadId,
 	}).toString();
+
 	return {
 		method: 'DELETE',
 		headers: {},
@@ -50,7 +53,7 @@ const abortMultipartUploadSerializer = (
 };
 
 const abortMultipartUploadDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<AbortMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -66,5 +69,5 @@ export const abortMultipartUpload = composeServiceApi(
 	s3TransferHandler,
 	abortMultipartUploadSerializer,
 	abortMultipartUploadDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

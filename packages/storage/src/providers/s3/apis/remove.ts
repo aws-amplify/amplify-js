@@ -2,7 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { RemoveInput, RemoveOutput } from '../types';
+import {
+	RemoveInput,
+	RemoveOutput,
+	S3Exception,
+} from '~/src/providers/s3/types';
+import { StorageValidationErrorCode } from '~/src/errors/types/validation';
+
 import { remove as removeInternal } from './internal/remove';
 
 /**
