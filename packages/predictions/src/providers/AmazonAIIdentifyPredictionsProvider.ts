@@ -26,8 +26,8 @@ import {
 	DetectDocumentTextCommandInput,
 	TextractClient,
 } from '@aws-sdk/client-textract';
-import { PredictionsValidationErrorCode } from '../errors/types/validation';
-import { assertValidationError } from '../errors/utils/assertValidationError';
+import { PredictionsValidationErrorCode } from '~/src/errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
 import {
 	BoundingBox,
 	FaceAttributes,
@@ -49,13 +49,9 @@ import {
 	isIdentifyTextInput,
 	isStorageSource,
 	isValidIdentifyInput,
-} from '../types';
-import {
-	BlockList,
-	Document,
-	Image,
-	TextDetectionList,
-} from '../types/AWSTypes';
+} from '~/src/types';
+import { BlockList, Image, TextDetectionList } from '~/src/types/AWSTypes';
+
 import {
 	categorizeRekognitionBlocks,
 	categorizeTextractBlocks,
@@ -73,23 +69,26 @@ export class AmazonAIIdentifyPredictionsProvider {
 	}
 
 	identify(
-		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
+		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput,
 	): Promise<
 		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
 	> {
 		assertValidationError(
 			isValidIdentifyInput(input),
-			PredictionsValidationErrorCode.InvalidInput
+			PredictionsValidationErrorCode.InvalidInput,
 		);
 
 		if (isIdentifyTextInput(input)) {
 			logger.debug('identifyText');
+
 			return this.identifyText(input);
 		} else if (isIdentifyLabelsInput(input)) {
 			logger.debug('identifyLabels');
+
 			return this.identifyLabels(input);
 		} else {
 			logger.debug('identifyEntities');
+
 			return this.identifyEntities(input);
 		}
 	}
@@ -102,7 +101,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<Image>} - Promise resolving to the converted source object.
 	 */
 	private configureSource(source: IdentifySource): Promise<Image> {
-		return new Promise((res, rej) => {
+		return new Promise((resolve, reject) => {
 			if (isStorageSource(source)) {
 				const storageConfig = {
 					accessLevel: source.level,
@@ -112,39 +111,46 @@ export class AmazonAIIdentifyPredictionsProvider {
 				getUrl({ key: source.key, options: storageConfig })
 					.then(value => {
 						const parser =
-							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/]+)\?/;
+							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/src/]+)\?/;
 						const parsedURL = value.url.toString().match(parser) ?? '';
-						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
-						res({
+						if (parsedURL.length < 3)
+							reject(new Error('Invalid S3 key was given.'));
+						resolve({
 							S3Object: {
 								Bucket: parsedURL[1],
 								Name: decodeURIComponent(parsedURL[2]),
 							},
 						});
 					})
-					.catch(err => rej(err));
+					.catch(err => {
+						reject(err);
+					});
 			} else if (isFileSource(source)) {
 				blobToArrayBuffer(source.file)
 					.then(buffer => {
-						res({ Bytes: new Uint8Array(buffer) });
+						resolve({ Bytes: new Uint8Array(buffer) });
 					})
-					.catch(err => rej(err));
+					.catch(err => {
+						reject(err);
+					});
 			} else if (isIdentifyBytesSource(source)) {
-				const bytes = source.bytes;
+				const { bytes } = source;
 				if (bytes instanceof Blob) {
 					blobToArrayBuffer(bytes)
 						.then(buffer => {
-							res({ Bytes: new Uint8Array(buffer) });
+							resolve({ Bytes: new Uint8Array(buffer) });
 						})
-						.catch(err => rej(err));
+						.catch(err => {
+							reject(err);
+						});
 				}
 				if (bytes instanceof ArrayBuffer || bytes instanceof Buffer) {
-					res({ Bytes: new Uint8Array(bytes) } as Image);
+					resolve({ Bytes: new Uint8Array(bytes) } as Image);
 				}
 				// everything else can be directly passed to Rekognition / Textract.
-				res({ Bytes: bytes } as Image);
+				resolve({ Bytes: bytes } as Image);
 			} else {
-				rej('Input source is not configured correctly.');
+				reject(new Error('Input source is not configured correctly.'));
 			}
 		});
 	}
@@ -156,12 +162,12 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<IdentifyTextOutput>} - Promise resolving to object containing identified texts.
 	 */
 	protected async identifyText(
-		input: IdentifyTextInput
+		input: IdentifyTextInput,
 	): Promise<IdentifyTextOutput> {
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyText = {} } =
@@ -179,9 +185,8 @@ export class AmazonAIIdentifyPredictionsProvider {
 			credentials,
 			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
-		let inputDocument: Document;
 
-		inputDocument = await this.configureSource(input.text?.source);
+		const inputDocument = await this.configureSource(input.text?.source);
 
 		// get default value if format isn't specified in the input.
 		const format = input.text?.format ?? configFormat;
@@ -207,7 +212,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 				await this.rekognitionClient.send(detectTextCommand);
 
 			const rekognitionResponse = categorizeRekognitionBlocks(
-				rekognitionData.TextDetections as TextDetectionList
+				rekognitionData.TextDetections as TextDetectionList,
 			);
 			if (rekognitionResponse.text.words.length < 50) {
 				// did not hit the word limit, return the data
@@ -215,11 +220,11 @@ export class AmazonAIIdentifyPredictionsProvider {
 			}
 
 			const detectDocumentTextCommand = new DetectDocumentTextCommand(
-				textractParam
+				textractParam,
 			);
 
 			const { Blocks } = await this.textractClient.send(
-				detectDocumentTextCommand
+				detectDocumentTextCommand,
 			);
 
 			if (
@@ -237,6 +242,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 
 			const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
 			const { Blocks } = await this.textractClient.send(analyzeDocumentCommand);
+
 			return categorizeTextractBlocks(Blocks as BlockList);
 		}
 	}
@@ -247,12 +253,12 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to an array of identified entities.
 	 */
 	protected async identifyLabels(
-		input: IdentifyLabelsInput
+		input: IdentifyLabelsInput,
 	): Promise<IdentifyLabelsOutput> {
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyLabels = {} } =
@@ -285,17 +291,18 @@ export class AmazonAIIdentifyPredictionsProvider {
 			data.forEach(val => {
 				identifyResult = { ...identifyResult, ...val };
 			});
+
 			return identifyResult;
 		});
 	}
 
 	/**
 	 * Calls Rekognition.detectLabels and organizes the returned data.
-	 * @param {DetectLabelsInput} param - parameter to be passed onto Rekognition
+	 * @param {DetectLabelsCommandInput} param - parameter to be passed onto Rekognition
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectLabels response.
 	 */
 	private async detectLabels(
-		param: DetectLabelsCommandInput
+		param: DetectLabelsCommandInput,
 	): Promise<IdentifyLabelsOutput> {
 		const detectLabelsCommand = new DetectLabelsCommand(param);
 		const data = await this.rekognitionClient!.send(detectLabelsCommand);
@@ -304,8 +311,9 @@ export class AmazonAIIdentifyPredictionsProvider {
 			const boxes =
 				label.Instances?.map(
 					instance =>
-						makeCamelCase(instance.BoundingBox) as BoundingBox | undefined
+						makeCamelCase(instance.BoundingBox) as BoundingBox | undefined,
 				) || [];
+
 			return {
 				name: label.Name,
 				boundingBoxes: boxes,
@@ -315,22 +323,23 @@ export class AmazonAIIdentifyPredictionsProvider {
 				},
 			};
 		});
+
 		return { labels: detectLabelData };
 	}
 
 	/**
 	 * Calls Rekognition.detectModerationLabels and organizes the returned data.
-	 * @param {Rekognition.DetectLabelsRequest} param - Parameter to be passed onto Rekognition
+	 * @param {DetectModerationLabelsCommandInput} param - Parameter to be passed onto Rekognition
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectModerationLabels response.
 	 */
 	private async detectModerationLabels(
-		param: DetectModerationLabelsCommandInput
+		param: DetectModerationLabelsCommandInput,
 	): Promise<IdentifyLabelsOutput> {
 		const detectModerationLabelsCommand = new DetectModerationLabelsCommand(
-			param
+			param,
 		);
 		const data = await this.rekognitionClient!.send(
-			detectModerationLabelsCommand
+			detectModerationLabelsCommand,
 		);
 		if (data.ModerationLabels?.length !== 0) {
 			return { unsafe: 'YES' };
@@ -342,16 +351,16 @@ export class AmazonAIIdentifyPredictionsProvider {
 	/**
 	 * Identify faces within an image that is provided as input, and match faces from a collection
 	 * or identify celebrities.
-	 * @param {IdentifyEntityInput} input - object containing the source image and face match options.
-	 * @return {Promise<IdentifyEntityOutput>} Promise resolving to identify results.
+	 * @param {IdentifyEntitiesInput} input - object containing the source image and face match options.
+	 * @return {Promise<IdentifyEntitiesOutput>} Promise resolving to identify results.
 	 */
 	protected async identifyEntities(
-		input: IdentifyEntitiesInput
+		input: IdentifyEntitiesInput,
 	): Promise<IdentifyEntitiesOutput> {
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyEntities = {} } =
@@ -381,13 +390,13 @@ export class AmazonAIIdentifyPredictionsProvider {
 		) {
 			assertValidationError(
 				celebrityDetectionEnabled,
-				PredictionsValidationErrorCode.CelebrityDetectionNotEnabled
+				PredictionsValidationErrorCode.CelebrityDetectionNotEnabled,
 			);
 			const recognizeCelebritiesCommand = new RecognizeCelebritiesCommand(
-				param
+				param,
 			);
 			const data = await this.rekognitionClient.send(
-				recognizeCelebritiesCommand
+				recognizeCelebritiesCommand,
 			);
 			const faces =
 				data.CelebrityFaces?.map(
@@ -399,8 +408,9 @@ export class AmazonAIIdentifyPredictionsProvider {
 								...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
 								pose: makeCamelCase(celebrity.Face?.Pose),
 							},
-						}) as IdentifyEntity
+						}) as IdentifyEntity,
 				) ?? [];
+
 			return { entities: faces };
 		} else if (
 			isIdentifyFromCollection(input.entities) &&
@@ -417,7 +427,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 				MaxFaces: maxFaces,
 			};
 			const searchFacesByImageCommand = new SearchFacesByImageCommand(
-				updatedParam
+				updatedParam,
 			);
 			const data = await this.rekognitionClient.send(searchFacesByImageCommand);
 			const faces =
@@ -425,6 +435,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 					const externalImageId = match.Face?.ExternalImageId
 						? this.decodeExternalImageId(match.Face.ExternalImageId)
 						: undefined;
+
 					return {
 						boundingBox: makeCamelCase(match.Face?.BoundingBox),
 						metadata: {
@@ -433,6 +444,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 						},
 					} as IdentifyEntity;
 				}) ?? [];
+
 			return { entities: faces };
 		} else {
 			const detectFacesCommand = new DetectFacesCommand(param);
@@ -452,12 +464,13 @@ export class AmazonAIIdentifyPredictionsProvider {
 					];
 					const faceAttributes = makeCamelCase(
 						detail,
-						attributeKeys
+						attributeKeys,
 					) as FaceAttributes;
 
 					faceAttributes.emotions = detail.Emotions?.map(
-						emotion => emotion.Type
+						emotion => emotion.Type,
 					);
+
 					return {
 						boundingBox: makeCamelCase(detail.BoundingBox),
 						landmarks: makeCamelCaseArray(detail.Landmarks),
@@ -469,6 +482,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 						},
 					} as IdentifyEntity;
 				}) ?? [];
+
 			return { entities: faces };
 		}
 	}

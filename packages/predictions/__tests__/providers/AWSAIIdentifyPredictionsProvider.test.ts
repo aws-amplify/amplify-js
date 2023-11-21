@@ -287,20 +287,20 @@ mockGetUrl.mockImplementation(({ key, options }) => {
 	let url: URL;
 	if (level === 'guest') {
 		url = new URL(
-			`https://bucket-name.s3.us-west-2.amazonaws.com/public/${key}?X-Amz-Algorithm=AWS4-HMAC-SHA256`
+			`https://bucket-name.s3.us-west-2.amazonaws.com/public/${key}?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	} else {
 		const identityId = options?.targetIdentityId || 'identityId';
 		// tslint:disable-next-line: max-line-length
 		url = new URL(
-			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityId}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`
+			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityId}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	}
 	return Promise.resolve({ url });
 });
 
 describe('Predictions identify provider test', () => {
-	let predictionsProvider;
+	let predictionsProvider: AmazonAIIdentifyPredictionsProvider;
 
 	beforeAll(() => {
 		predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
@@ -320,17 +320,19 @@ describe('Predictions identify provider test', () => {
 					},
 				};
 				expect(
-					predictionsProvider.identify(detectTextInput)
+					predictionsProvider.identify(detectTextInput),
 				).resolves.toMatchObject(expected);
 			});
 
 			test('error case no credentials', () => {
 				mockFetchAuthSession.mockResolvedValueOnce({});
 
-				expect(predictionsProvider.identify(detectTextInput)).rejects.toThrow(
+				expect(() =>
+					predictionsProvider.identify(detectTextInput),
+				).rejects.toThrow(
 					expect.objectContaining(
-						validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
-					)
+						validationErrorMap[PredictionsValidationErrorCode.NoCredentials],
+					),
 				);
 			});
 
@@ -387,7 +389,7 @@ describe('Predictions identify provider test', () => {
 					},
 				};
 				expect(
-					predictionsProvider.identify(detectTextInput)
+					predictionsProvider.identify(detectTextInput),
 				).resolves.toMatchObject(expected);
 			});
 		});
@@ -408,7 +410,7 @@ describe('Predictions identify provider test', () => {
 					],
 				};
 				expect(
-					predictionsProvider.identify(detectLabelInput)
+					predictionsProvider.identify(detectLabelInput),
 				).resolves.toMatchObject(expected);
 			});
 			test('error case credentials do not exist', () => {
@@ -416,19 +418,19 @@ describe('Predictions identify provider test', () => {
 
 				expect(predictionsProvider.identify(detectLabelInput)).rejects.toThrow(
 					expect.objectContaining(
-						validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
-					)
+						validationErrorMap[PredictionsValidationErrorCode.NoCredentials],
+					),
 				);
 			});
 			test('error case credentials exist but service fails', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						return Promise.reject('error');
+						return Promise.reject(new Error('error'));
 					});
-				expect(predictionsProvider.identify(detectLabelInput)).rejects.toMatch(
-					'error'
-				);
+				expect(() =>
+					predictionsProvider.identify(detectLabelInput),
+				).rejects.toThrow('error');
 			});
 		});
 
@@ -440,7 +442,7 @@ describe('Predictions identify provider test', () => {
 			test('happy case credentials exist, unsafe image', () => {
 				const expected: IdentifyLabelsOutput = { unsafe: 'YES' };
 				expect(
-					predictionsProvider.identify(detectModerationInput)
+					predictionsProvider.identify(detectModerationInput),
 				).resolves.toMatchObject(expected);
 			});
 
@@ -448,11 +450,11 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						return Promise.reject('error');
+						return Promise.reject(new Error('error'));
 					});
-				expect(
-					predictionsProvider.identify(detectModerationInput)
-				).rejects.toMatch('error');
+				expect(() =>
+					predictionsProvider.identify(detectModerationInput),
+				).rejects.toThrow('error');
 			});
 		});
 
@@ -472,7 +474,7 @@ describe('Predictions identify provider test', () => {
 					unsafe: 'YES',
 				};
 				expect(
-					predictionsProvider.identify(detectModerationInput)
+					predictionsProvider.identify(detectModerationInput),
 				).resolves.toMatchObject(expected);
 			});
 
@@ -480,11 +482,11 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						return Promise.reject('error');
+						return Promise.reject(new Error('error'));
 					});
-				expect(
-					predictionsProvider.identify(detectModerationInput)
-				).rejects.toMatch('error');
+				expect(() =>
+					predictionsProvider.identify(detectModerationInput),
+				).rejects.toThrow('error');
 			});
 		});
 	});
@@ -514,7 +516,7 @@ describe('Predictions identify provider test', () => {
 					],
 				};
 				expect(
-					predictionsProvider.identify(detectFacesInput)
+					predictionsProvider.identify(detectFacesInput),
 				).resolves.toMatchObject(expected);
 			});
 
@@ -523,8 +525,8 @@ describe('Predictions identify provider test', () => {
 
 				expect(predictionsProvider.identify(detectFacesInput)).rejects.toThrow(
 					expect.objectContaining(
-						validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
-					)
+						validationErrorMap[PredictionsValidationErrorCode.NoCredentials],
+					),
 				);
 			});
 
@@ -532,10 +534,10 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						return Promise.reject('error');
+						return Promise.reject(new Error('error'));
 					});
-				expect(predictionsProvider.identify(detectFacesInput)).rejects.toMatch(
-					'error'
+				expect(predictionsProvider.identify(detectFacesInput)).rejects.toThrow(
+					'error',
 				);
 			});
 		});
@@ -553,7 +555,7 @@ describe('Predictions identify provider test', () => {
 					entities: [{ boundingBox: { left: 0, top: 0, height: 0, width: 0 } }],
 				};
 				expect(
-					predictionsProvider.identify(recognizeCelebritiesInput)
+					predictionsProvider.identify(recognizeCelebritiesInput),
 				).resolves.toMatchObject(expected);
 			});
 
@@ -561,11 +563,11 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						return Promise.reject('error');
+						return Promise.reject(new Error('error'));
 					});
 				expect(
-					predictionsProvider.identify(recognizeCelebritiesInput)
-				).rejects.toMatch('error');
+					predictionsProvider.identify(recognizeCelebritiesInput),
+				).rejects.toThrow('error');
 			});
 		});
 
@@ -584,7 +586,7 @@ describe('Predictions identify provider test', () => {
 					entities: [{ boundingBox: { left: 0, top: 0, height: 0, width: 0 } }],
 				};
 				expect(
-					predictionsProvider.identify(searchByFacesInput)
+					predictionsProvider.identify(searchByFacesInput),
 				).resolves.toMatchObject(expected);
 			});
 
@@ -592,11 +594,11 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						return Promise.reject('error');
+						return Promise.reject(new Error('error'));
 					});
 				expect(
-					predictionsProvider.identify(searchByFacesInput)
-				).rejects.toMatch('error');
+					predictionsProvider.identify(searchByFacesInput),
+				).rejects.toThrow('error');
 			});
 		});
 	});
@@ -622,7 +624,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image?.S3Object?.Name
+						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('public/key');
 					return Promise.resolve(detectlabelsResponse);
 				});
@@ -637,7 +639,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image?.S3Object?.Name
+						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('private/identityId/key');
 					return {};
 				});
@@ -659,7 +661,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image?.S3Object?.Name
+						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('protected/identityId/key');
 					return Promise.resolve(detectlabelsResponse);
 				});
@@ -674,7 +676,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect((command as DetectLabelsCommand).input.Image?.Bytes).toMatch(
-						'bytes'
+						'bytes',
 					);
 					return Promise.resolve(detectlabelsResponse);
 				});
@@ -690,7 +692,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image?.Bytes
+						(command as DetectLabelsCommand).input.Image?.Bytes,
 					).toStrictEqual(fileInput);
 					return {};
 				});
@@ -707,7 +709,7 @@ describe('Predictions identify provider test', () => {
 				.spyOn(RekognitionClient.prototype, 'send')
 				.mockImplementationOnce(command => {
 					expect(
-						(command as DetectLabelsCommand).input.Image?.Bytes
+						(command as DetectLabelsCommand).input.Image?.Bytes,
 					).toMatchObject(fileInput);
 					return {};
 				});
@@ -718,9 +720,9 @@ describe('Predictions identify provider test', () => {
 			const detectLabelInput = {
 				labels: { source: null, type: 'LABELS' },
 			};
-			expect(predictionsProvider.identify(detectLabelInput)).rejects.toMatch(
-				'not configured correctly'
-			);
+			expect(
+				predictionsProvider.identify(detectLabelInput as any),
+			).rejects.toThrow('not configured correctly');
 		});
 	});
 
@@ -736,12 +738,12 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectLabelInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent
+				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
-				})
+				}),
 			);
 		});
 		test('identify for entities initializes a client with the correct custom user agent', async () => {
@@ -759,12 +761,12 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectFacesInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent
+				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
-				})
+				}),
 			);
 		});
 		test('identify for text initializes a client with the correct custom user agent', async () => {
@@ -777,19 +779,21 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectTextInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent
+				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
-				})
+				}),
 			);
 
-			expect(predictionsProvider.textractClient.config.customUserAgent).toEqual(
+			expect(
+				(predictionsProvider as any).textractClient.config.customUserAgent,
+			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
-				})
+				}),
 			);
 		});
 	});

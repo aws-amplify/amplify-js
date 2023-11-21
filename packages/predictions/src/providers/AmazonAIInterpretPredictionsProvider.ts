@@ -6,7 +6,6 @@ import {
 	PredictionsAction,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-
 import {
 	ComprehendClient,
 	DetectDominantLanguageCommand,
@@ -17,8 +16,8 @@ import {
 	Entity,
 	SyntaxToken,
 } from '@aws-sdk/client-comprehend';
-import { PredictionsValidationErrorCode } from '../errors/types/validation';
-import { assertValidationError } from '../errors/utils/assertValidationError';
+import { PredictionsValidationErrorCode } from '~/src/errors/types/validation';
+import { assertValidationError } from '~/src/errors/utils/assertValidationError';
 import {
 	DetectParams,
 	InterpretTextInput,
@@ -30,7 +29,7 @@ import {
 	TextSyntax,
 	isInterpretTextOthers,
 	isValidInterpretInput,
-} from '../types';
+} from '~/src/types';
 
 export class AmazonAIInterpretPredictionsProvider {
 	private comprehendClient?: ComprehendClient;
@@ -42,7 +41,7 @@ export class AmazonAIInterpretPredictionsProvider {
 	interpret(input: InterpretTextInput): Promise<InterpretTextOutput> {
 		assertValidationError(
 			isValidInterpretInput(input),
-			PredictionsValidationErrorCode.InvalidInput
+			PredictionsValidationErrorCode.InvalidInput,
 		);
 
 		return this.interpretText(input);
@@ -52,7 +51,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { interpretText = {} } =
@@ -65,7 +64,10 @@ export class AmazonAIInterpretPredictionsProvider {
 		const { text } = source;
 		let language;
 		if (isInterpretTextOthers(textSource)) {
-			language = (textSource as InterpretTextOthers).source.language;
+			const {
+				source: { language: sourceLanguage },
+			} = textSource as InterpretTextOthers;
+			language = sourceLanguage;
 		}
 
 		this.comprehendClient = new ComprehendClient({
@@ -87,11 +89,11 @@ export class AmazonAIInterpretPredictionsProvider {
 			languageCode = await this.detectLanguage(languageDetectionParams);
 		}
 
-		let entitiesPromise: Promise<Array<TextEntities>> | undefined;
+		let entitiesPromise: Promise<TextEntities[]> | undefined;
 		if (doAll || type === 'entities') {
 			assertValidationError(
 				!!languageCode,
-				PredictionsValidationErrorCode.NoLanguage
+				PredictionsValidationErrorCode.NoLanguage,
 			);
 			const entitiesDetectionParams = {
 				Text: text,
@@ -104,7 +106,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		if (doAll || type === 'sentiment') {
 			assertValidationError(
 				!!languageCode,
-				PredictionsValidationErrorCode.NoLanguage
+				PredictionsValidationErrorCode.NoLanguage,
 			);
 			const sentimentParams = {
 				Text: text,
@@ -113,11 +115,11 @@ export class AmazonAIInterpretPredictionsProvider {
 			sentimentPromise = this.detectSentiment(sentimentParams);
 		}
 
-		let syntaxPromise: Promise<Array<TextSyntax>> | undefined;
+		let syntaxPromise: Promise<TextSyntax[]> | undefined;
 		if (doAll || type === 'syntax') {
 			assertValidationError(
 				!!languageCode,
-				PredictionsValidationErrorCode.NoLanguage
+				PredictionsValidationErrorCode.NoLanguage,
 			);
 			const syntaxParams = {
 				Text: text,
@@ -130,7 +132,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		if (doAll || type === 'keyPhrases') {
 			assertValidationError(
 				!!languageCode,
-				PredictionsValidationErrorCode.NoLanguage
+				PredictionsValidationErrorCode.NoLanguage,
 			);
 
 			const keyPhrasesParams = {
@@ -145,6 +147,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			syntaxPromise,
 			keyPhrasesPromise,
 		]);
+
 		return {
 			textInterpretation: {
 				keyPhrases,
@@ -160,15 +163,16 @@ export class AmazonAIInterpretPredictionsProvider {
 		try {
 			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
 			const data = await this.comprehendClient!.send(detectKeyPhrasesCommand);
-			const { KeyPhrases = [] } = data || {};
-			return KeyPhrases.map(({ Text: text }) => {
+			const { KeyPhrases: keyPhrases = [] } = data || {};
+
+			return keyPhrases.map(({ Text: text }) => {
 				return { text };
 			});
 		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-						'amplify predictions add'
+						'amplify predictions add',
 				);
 			} else {
 				throw err;
@@ -176,17 +180,18 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private async detectSyntax(params: DetectParams): Promise<Array<TextSyntax>> {
+	private async detectSyntax(params: DetectParams): Promise<TextSyntax[]> {
 		try {
 			const detectSyntaxCommand = new DetectSyntaxCommand(params);
 			const data = await this.comprehendClient!.send(detectSyntaxCommand);
 			const { SyntaxTokens = [] } = data || {};
+
 			return this.serializeSyntaxFromComprehend(SyntaxTokens);
 		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-						'amplify predictions add'
+						'amplify predictions add',
 				);
 			} else {
 				throw err;
@@ -194,17 +199,16 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private serializeSyntaxFromComprehend(
-		tokens: SyntaxToken[]
-	): Array<TextSyntax> {
+	private serializeSyntaxFromComprehend(tokens: SyntaxToken[]): TextSyntax[] {
 		let response: TextSyntax[] = [];
 		if (tokens && Array.isArray(tokens)) {
 			response = tokens.map(
 				({ Text: text = '', PartOfSpeech: { Tag: syntax = '' } = {} }) => {
 					return { text, syntax };
-				}
+				},
 			);
 		}
+
 		return response;
 	}
 
@@ -220,13 +224,14 @@ export class AmazonAIInterpretPredictionsProvider {
 					Neutral: neutral = 0,
 					Mixed: mixed = 0,
 				} = {},
-			} = ({} = data);
+			} = data ?? {};
+
 			return { predominant, positive, negative, neutral, mixed };
 		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-						'amplify predictions add'
+						'amplify predictions add',
 				);
 			} else {
 				throw err;
@@ -234,19 +239,18 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private async detectEntities(
-		params: DetectParams
-	): Promise<Array<TextEntities>> {
+	private async detectEntities(params: DetectParams): Promise<TextEntities[]> {
 		try {
 			const detectEntitiesCommand = new DetectEntitiesCommand(params);
 			const data = await this.comprehendClient!.send(detectEntitiesCommand);
 			const { Entities = [] } = data || {};
+
 			return this.serializeEntitiesFromComprehend(Entities);
 		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-						'amplify predictions add'
+						'amplify predictions add',
 				);
 			} else {
 				throw err;
@@ -254,28 +258,30 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private serializeEntitiesFromComprehend(data: Entity[]): Array<TextEntities> {
+	private serializeEntitiesFromComprehend(data: Entity[]): TextEntities[] {
 		let response: TextEntities[] = [];
 		if (data && Array.isArray(data)) {
 			response = data.map(({ Type: type, Text: text }) => {
 				return { type, text };
 			});
 		}
+
 		return response;
 	}
 
 	private async detectLanguage(params: { Text: string }): Promise<string> {
 		try {
 			const detectDominantLanguageCommand = new DetectDominantLanguageCommand(
-				params
+				params,
 			);
 			const data = await this.comprehendClient!.send(
-				detectDominantLanguageCommand
+				detectDominantLanguageCommand,
 			);
-			const { Languages: [{ LanguageCode }] = [{}] } = ({} = data || {});
+			const { Languages: [{ LanguageCode }] = [{ LanguageCode: undefined }] } =
+				data ?? {};
 			assertValidationError(
 				!!LanguageCode,
-				PredictionsValidationErrorCode.NoLanguage
+				PredictionsValidationErrorCode.NoLanguage,
 			);
 
 			return LanguageCode;
@@ -283,7 +289,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			if (err.code === 'AccessDeniedException') {
 				throw new Error(
 					'Not authorized, did you enable Interpret Text on predictions category Amplify CLI? try: ' +
-						'amplify predictions add'
+						'amplify predictions add',
 				);
 			} else {
 				throw err;
