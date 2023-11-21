@@ -3,8 +3,11 @@
 
 import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-import { PushNotificationValidationErrorCode } from '../../../errors';
-import { IdentifyUser, IdentifyUserInput } from '../types';
+import { PushNotificationValidationErrorCode } from '~/src/pushNotifications/errors';
+import {
+	IdentifyUser,
+	IdentifyUserInput,
+} from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user

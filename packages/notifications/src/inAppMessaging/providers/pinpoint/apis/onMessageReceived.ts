@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { addEventListener } from '../../../../eventListeners';
-import { assertIsInitialized } from '../../../utils';
-import { OnMessageReceivedInput } from '../types/inputs';
-import { OnMessageReceivedOutput } from '../types/outputs';
+import { addEventListener } from '~/src/eventListeners';
+import { assertIsInitialized } from '~/src/inAppMessaging/utils';
+import { OnMessageReceivedInput } from '~/src/inAppMessaging/providers/pinpoint/types/inputs';
+import { OnMessageReceivedOutput } from '~/src/inAppMessaging/providers/pinpoint/types/outputs';
+import { InAppMessagingValidationErrorCode } from '~/src/inAppMessaging/errors';
 
 /**
  * Registers a callback that will be invoked on `messageReceived` events.
@@ -22,8 +23,9 @@ import { OnMessageReceivedOutput } from '../types/outputs';
  * ```
  */
 export function onMessageReceived(
-	input: OnMessageReceivedInput
+	input: OnMessageReceivedInput,
 ): OnMessageReceivedOutput {
 	assertIsInitialized();
+
 	return addEventListener('messageReceived', input);
 }

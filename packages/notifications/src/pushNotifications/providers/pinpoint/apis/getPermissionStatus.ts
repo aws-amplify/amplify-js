@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-import { GetPermissionStatus, GetPermissionStatusOutput } from '../types';
+import {
+	GetPermissionStatus,
+	GetPermissionStatusOutput,
+} from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Returns a string representing the current status of user permissions to display push notifications. The possible

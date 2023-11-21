@@ -3,7 +3,10 @@
 
 import { EventListener, EventListenerRemover, EventType } from './types';
 
-const eventListeners: Record<string, Set<EventListener<Function>>> = {};
+const eventListeners: Record<
+	string,
+	Set<EventListener<(...args: any[]) => unknown>>
+> = {};
 
 export const notifyEventListeners = (type: EventType, ...args: any[]): void => {
 	eventListeners[type]?.forEach(listener => {
@@ -17,17 +20,15 @@ export const notifyEventListenersAndAwaitHandlers = (
 ): Promise<void[]> =>
 	Promise.all<void>(
 		Array.from(eventListeners[type] ?? []).map(async listener => {
-			try {
-				await listener.handleEvent(...args);
-			} catch (err) {
-				throw err;
-			}
-		})
+			await listener.handleEvent(...args);
+		}),
 	);
 
-export const addEventListener = <EventHandler extends Function>(
+export const addEventListener = <
+	EventHandler extends (...args: any[]) => unknown,
+>(
 	type: EventType,
-	handler: EventHandler
+	handler: EventHandler,
 ): EventListenerRemover => {
 	// If there is no listener set for the event type, just create it
 	if (!eventListeners[type]) {
@@ -40,7 +41,10 @@ export const addEventListener = <EventHandler extends Function>(
 		},
 	};
 	eventListeners[type].add(listener);
+
 	return {
-		remove: () => listener.remove(),
+		remove: () => {
+			listener.remove();
+		},
 	};
 };

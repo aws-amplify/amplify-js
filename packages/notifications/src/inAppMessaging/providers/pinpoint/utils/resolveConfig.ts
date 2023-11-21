@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	InAppMessagingValidationErrorCode,
 	assertValidationError,
-} from '../../../errors';
+} from '~/src/inAppMessaging/errors';
 
 /**
  * @internal
@@ -15,5 +15,6 @@ export const resolveConfig = () => {
 		Amplify.getConfig().Notifications?.InAppMessaging?.Pinpoint ?? {};
 	assertValidationError(!!appId, InAppMessagingValidationErrorCode.NoAppId);
 	assertValidationError(!!region, InAppMessagingValidationErrorCode.NoRegion);
+
 	return { appId, region };
 };

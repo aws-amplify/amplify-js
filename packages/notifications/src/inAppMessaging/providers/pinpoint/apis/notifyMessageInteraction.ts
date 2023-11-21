@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { notifyEventListeners } from '../../../../eventListeners';
-import { assertIsInitialized } from '../../../utils';
-import { NotifyMessageInteractionInput } from '../types/inputs';
+import { notifyEventListeners } from '~/src/eventListeners';
+import { assertIsInitialized } from '~/src/inAppMessaging/utils';
+import { NotifyMessageInteractionInput } from '~/src/inAppMessaging/providers/pinpoint/types/inputs';
+import { InAppMessagingValidationErrorCode } from '~/src/inAppMessaging/errors';
 
 /**
  * Notifies the respective listener of the specified type with the message given.

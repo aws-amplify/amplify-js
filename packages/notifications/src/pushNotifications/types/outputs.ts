@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventListenerRemover } from '../../eventListeners';
+import { EventListenerRemover } from '~/src/eventListeners';
 import {
 	PushNotificationMessage,
 	PushNotificationPermissionStatus,
-} from '../types';
+} from '~/src/pushNotifications/types';
 
 export type PushNotificationGetBadgeCountOutput = number | null;
 

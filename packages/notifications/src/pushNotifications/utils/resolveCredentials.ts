@@ -3,9 +3,9 @@
 
 import { fetchAuthSession } from '@aws-amplify/core';
 import {
-	assert,
 	PushNotificationValidationErrorCode,
-} from '../errors/errorHelpers';
+	assert,
+} from '~/src/pushNotifications/errors/errorHelpers';
 
 /**
  * @internal
@@ -13,5 +13,6 @@ import {
 export const resolveCredentials = async () => {
 	const { credentials, identityId } = await fetchAuthSession();
 	assert(!!credentials, PushNotificationValidationErrorCode.NoCredentials);
+
 	return { credentials, identityId };
 };

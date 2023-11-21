@@ -4,7 +4,7 @@
 import {
 	InAppMessagingValidationErrorCode,
 	assertValidationError,
-} from '../errors';
+} from '~/src/inAppMessaging/errors';
 
 let initialized = false;
 
@@ -27,6 +27,6 @@ export const isInitialized = () => initialized;
 export function assertIsInitialized() {
 	assertValidationError(
 		isInitialized(),
-		InAppMessagingValidationErrorCode.NotInitialized
+		InAppMessagingValidationErrorCode.NotInitialized,
 	);
 }

@@ -45,10 +45,12 @@ module.exports = {
 			{
 				allow: [
 					'graphql_headers',
+					// exceptions for the legacy config
 					/^(aws_|amazon_)/,
 					'access_key',
 					'secret_key',
 					'session_token',
+					// exceptions for the auth package
 					'redirect_uri',
 					'response_type',
 					'client_id',
@@ -63,6 +65,11 @@ module.exports = {
 					'token_type',
 					'expires_in',
 					'error_description',
+					// exceptions for the notifications package
+					'campaign_id',
+					'delivery_type',
+					'treatment_id',
+					'campaign_activity_id',
 				],
 			},
 		],

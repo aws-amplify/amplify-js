@@ -10,7 +10,7 @@ import {
 	PushNotificationOnNotificationReceivedInForegroundOutput,
 	PushNotificationOnTokenReceivedOutput,
 	PushNotificationRequestPermissionsOutput,
-} from '../../../types';
+} from '~/src/pushNotifications/types';
 
 export type GetBadgeCountOutput = PushNotificationGetBadgeCountOutput;
 

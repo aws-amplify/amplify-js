@@ -2,14 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { sessionListener } from '@aws-amplify/core/internals/utils';
-import { InAppMessage, InAppMessagingEvent } from '../../../types';
-import { addEventListener } from '../../../../eventListeners';
-import { recordAnalyticsEvent } from '../utils/helpers';
-import { PinpointMessageEvent } from '../types';
+import { InAppMessage, InAppMessagingEvent } from '~/src/inAppMessaging/types';
+import { addEventListener } from '~/src/eventListeners';
+import { recordAnalyticsEvent } from '~/src/inAppMessaging/providers/pinpoint/utils/helpers';
+import { PinpointMessageEvent } from '~/src/inAppMessaging/providers/pinpoint/types';
 import { Hub, HubCapsule } from '@aws-amplify/core';
+import {
+	incrementMessageCounts,
+	sessionStateChangeHandler,
+} from '~/src/inAppMessaging/providers/pinpoint/utils';
+import { initialize, isInitialized } from '~/src/inAppMessaging/utils';
+
 import { dispatchEvent } from './dispatchEvent';
-import { incrementMessageCounts, sessionStateChangeHandler } from '../utils';
-import { isInitialized, initialize } from '../../../utils';
 
 /**
  * Initialize and set up in-app messaging category. This API needs to be called to enable other InAppMessaging APIs.

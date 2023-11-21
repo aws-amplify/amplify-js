@@ -5,7 +5,7 @@ import { fetchAuthSession } from '@aws-amplify/core';
 import {
 	InAppMessagingValidationErrorCode,
 	assertValidationError,
-} from '../../../errors';
+} from '~/src/inAppMessaging/errors';
 
 /**
  * @internal
@@ -14,7 +14,8 @@ export const resolveCredentials = async () => {
 	const { credentials, identityId } = await fetchAuthSession();
 	assertValidationError(
 		!!credentials,
-		InAppMessagingValidationErrorCode.NoCredentials
+		InAppMessagingValidationErrorCode.NoCredentials,
 	);
+
 	return { credentials, identityId };
 };

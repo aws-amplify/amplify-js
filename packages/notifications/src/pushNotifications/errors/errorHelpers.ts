@@ -6,7 +6,8 @@ import {
 	AssertionFunction,
 	createAssertionFunction,
 } from '@aws-amplify/core/internals/utils';
-import { isInitialized } from '../utils/initializationManager';
+import { isInitialized } from '~/src/pushNotifications/utils/initializationManager';
+
 import { PushNotificationError } from './PushNotificationError';
 
 export enum PushNotificationValidationErrorCode {
@@ -37,7 +38,7 @@ const pushNotificationValidationErrorMap: AmplifyErrorMap<PushNotificationValida
 export const assert: AssertionFunction<PushNotificationValidationErrorCode> =
 	createAssertionFunction(
 		pushNotificationValidationErrorMap,
-		PushNotificationError
+		PushNotificationError,
 	);
 
 export const assertIsInitialized = () => {

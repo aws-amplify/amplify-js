@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-import { GetBadgeCount } from '../types';
+import { GetBadgeCount } from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Returns the current badge count (the number next to your app's icon). This function is safe to call (but will be

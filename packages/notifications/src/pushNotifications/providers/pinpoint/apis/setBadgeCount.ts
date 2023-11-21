@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-import { SetBadgeCount } from '../types';
+import { SetBadgeCount } from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Sets the current badge count (the number on the top right corner of your app's icon). Setting the badge count

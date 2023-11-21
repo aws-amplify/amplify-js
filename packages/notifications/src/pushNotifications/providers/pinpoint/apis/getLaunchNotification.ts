@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-import { PushNotificationMessage } from '../../../types';
-import { GetLaunchNotification, GetLaunchNotificationOutput } from '../types';
+import { PushNotificationMessage } from '~/src/pushNotifications/types';
+import {
+	GetLaunchNotification,
+	GetLaunchNotificationOutput,
+} from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Returns the notification which launched your app from a terminated state. The launch notification is consumed by

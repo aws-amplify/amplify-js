@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-import { PushNotificationMessage } from '../../../types';
+import { PushNotificationMessage } from '~/src/pushNotifications/types';
 import {
 	OnNotificationReceivedInForeground,
 	OnNotificationReceivedInForegroundInput,
 	OnNotificationReceivedInForegroundOutput,
-} from '../types';
+} from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Registers a listener that will be triggered when a notification is received while app is in a foreground state.

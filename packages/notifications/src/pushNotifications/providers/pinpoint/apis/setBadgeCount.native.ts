@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
-import { assertIsInitialized } from '../../../errors/errorHelpers';
-import { SetBadgeCount } from '../types';
+import { assertIsInitialized } from '~/src/pushNotifications/errors/errorHelpers';
+import { SetBadgeCount } from '~/src/pushNotifications/providers/pinpoint/types';
 
 const { setBadgeCount: setBadgeCountNative } = loadAmplifyPushNotification();
 

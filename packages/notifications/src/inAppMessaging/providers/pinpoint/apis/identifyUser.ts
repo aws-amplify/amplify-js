@@ -3,26 +3,26 @@
 
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import {
-	updateEndpoint,
 	UpdateEndpointException,
+	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
-import { InAppMessagingValidationErrorCode } from '../../../errors';
+import { InAppMessagingValidationErrorCode } from '~/src/inAppMessaging/errors';
 import {
 	CATEGORY,
 	CHANNEL_TYPE,
 	getInAppMessagingUserAgentString,
 	resolveConfig,
 	resolveCredentials,
-} from '../utils';
-import { IdentifyUserInput } from '../types';
-import { assertIsInitialized } from '../../../utils';
+} from '~/src/inAppMessaging/providers/pinpoint/utils';
+import { IdentifyUserInput } from '~/src/inAppMessaging/providers/pinpoint/types';
+import { assertIsInitialized } from '~/src/inAppMessaging/utils';
 
 /**
  * Sends information about a user to Pinpoint. Sending user information allows you to associate a user to their user
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
  *
- * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
+ * @param {IdentifyUserInput} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.
  * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
@@ -88,7 +88,7 @@ export const identifyUser = async ({
 		userId,
 		userProfile,
 		userAgentValue: getInAppMessagingUserAgentString(
-			InAppMessagingAction.IdentifyUser
+			InAppMessagingAction.IdentifyUser,
 		),
 	});
 };

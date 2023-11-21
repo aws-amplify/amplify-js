@@ -3,13 +3,16 @@
 
 import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
-import { assertIsInitialized } from '../../../errors/errorHelpers';
+import { assertIsInitialized } from '~/src/pushNotifications/errors/errorHelpers';
 import {
 	getPushNotificationUserAgentString,
 	resolveCredentials,
-} from '../../../utils';
-import { getChannelType, resolveConfig } from '../utils';
-import { IdentifyUser } from '../types';
+} from '~/src/pushNotifications/utils';
+import {
+	getChannelType,
+	resolveConfig,
+} from '~/src/pushNotifications/providers/pinpoint/utils';
+import { IdentifyUser } from '~/src/pushNotifications/providers/pinpoint/types';
 
 export const identifyUser: IdentifyUser = async ({
 	userId,
@@ -33,7 +36,7 @@ export const identifyUser: IdentifyUser = async ({
 		userId,
 		userProfile,
 		userAgentValue: getPushNotificationUserAgentString(
-			PushNotificationAction.IdentifyUser
+			PushNotificationAction.IdentifyUser,
 		),
 	});
 };

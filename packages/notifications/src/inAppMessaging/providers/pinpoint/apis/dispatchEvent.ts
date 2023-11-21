@@ -5,16 +5,20 @@ import {
 	PINPOINT_KEY_PREFIX,
 	STORAGE_KEY_SUFFIX,
 	processInAppMessages,
-} from '../utils';
-import { InAppMessage } from '../../../types';
+} from '~/src/inAppMessaging/providers/pinpoint/utils';
+import { InAppMessage } from '~/src/inAppMessaging/types';
 import flatten from 'lodash/flatten.js';
 import { defaultStorage } from '@aws-amplify/core';
-import { notifyEventListeners } from '../../../../eventListeners';
-import { assertServiceError } from '../../../errors';
-import { DispatchEventInput } from '../types';
+import { notifyEventListeners } from '~/src/eventListeners';
+import {
+	InAppMessagingValidationErrorCode,
+	assertServiceError,
+} from '~/src/inAppMessaging/errors';
+import { DispatchEventInput } from '~/src/inAppMessaging/providers/pinpoint/types';
+import { assertIsInitialized } from '~/src/inAppMessaging/utils';
+
 import { syncMessages } from './syncMessages';
 import { conflictHandler, setConflictHandler } from './setConflictHandler';
-import { assertIsInitialized } from '../../../utils';
 
 /**
  * Triggers an In-App message to be displayed. Use this after your campaigns have been synced to the device using
@@ -47,13 +51,13 @@ export async function dispatchEvent(input: DispatchEventInput): Promise<void> {
 		const cachedMessages = await defaultStorage.getItem(key);
 		const messages: InAppMessage[] = await processInAppMessages(
 			cachedMessages ? JSON.parse(cachedMessages) : [],
-			input
+			input,
 		);
 		const flattenedMessages = flatten(messages);
 		if (flattenedMessages.length > 0) {
 			notifyEventListeners(
 				'messageReceived',
-				conflictHandler(flattenedMessages)
+				conflictHandler(flattenedMessages),
 			);
 		}
 	} catch (error) {

@@ -5,24 +5,24 @@ import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import { resolveEndpointId } from '@aws-amplify/core/internals/providers/pinpoint';
 import { defaultStorage } from '@aws-amplify/core';
 import {
-	resolveConfig,
-	resolveCredentials,
-	getInAppMessagingUserAgentString,
-	STORAGE_KEY_SUFFIX,
-	PINPOINT_KEY_PREFIX,
 	CATEGORY,
 	CHANNEL_TYPE,
-} from '../utils';
+	PINPOINT_KEY_PREFIX,
+	STORAGE_KEY_SUFFIX,
+	getInAppMessagingUserAgentString,
+	resolveConfig,
+	resolveCredentials,
+} from '~/src/inAppMessaging/providers/pinpoint/utils';
 import {
-	getInAppMessages,
 	GetInAppMessagesInput,
 	GetInAppMessagesOutput,
+	getInAppMessages,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import {
 	InAppMessagingValidationErrorCode,
 	assertServiceError,
-} from '../../../errors';
-import { assertIsInitialized } from '../../../utils';
+} from '~/src/inAppMessaging/errors';
+import { assertIsInitialized } from '~/src/inAppMessaging/utils';
 
 /**
  * Fetch and persist messages from Pinpoint campaigns.
@@ -66,7 +66,7 @@ async function fetchInAppMessages() {
 			identityId,
 			region,
 			userAgentValue: getInAppMessagingUserAgentString(
-				InAppMessagingAction.SyncMessages
+				InAppMessagingAction.SyncMessages,
 			),
 		});
 
@@ -76,10 +76,11 @@ async function fetchInAppMessages() {
 		};
 		const response: GetInAppMessagesOutput = await getInAppMessages(
 			{ credentials, region },
-			input
+			input,
 		);
 		const { InAppMessageCampaigns: messages } =
 			response.InAppMessagesResponse ?? {};
+
 		return messages;
 	} catch (error) {
 		assertServiceError(error);

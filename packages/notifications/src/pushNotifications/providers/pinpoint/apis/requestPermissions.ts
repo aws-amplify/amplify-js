@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-import { RequestPermissions } from '../types';
+import { RequestPermissions } from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Requests notification permissions from your user. By default, Amplify requests all supported permissions but you can

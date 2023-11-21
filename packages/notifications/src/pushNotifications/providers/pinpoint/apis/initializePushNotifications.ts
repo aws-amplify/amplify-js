@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-import { InitializePushNotifications } from '../types';
+import { InitializePushNotifications } from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Initialize and set up the push notification category. The category must be first initialized before all other

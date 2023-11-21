@@ -1,24 +1,24 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InAppMessage } from '../../../types';
+import { InAppMessage } from '~/src/inAppMessaging/types';
 
 export type InAppMessageCountMap = Record<string, number>;
 
-export type DailyInAppMessageCounter = {
+export interface DailyInAppMessageCounter {
 	count: number;
 	lastCountTimestamp: string;
-};
+}
 
-export type InAppMessageCounts = {
+export interface InAppMessageCounts {
 	sessionCount: number;
 	dailyCount: number;
 	totalCount: number;
-};
+}
 
 export type MetricsComparator = (
 	metricsVal: number,
-	eventVal: number
+	eventVal: number,
 ) => boolean;
 
 export enum PinpointMessageEvent {
@@ -28,7 +28,7 @@ export enum PinpointMessageEvent {
 }
 
 export type InAppMessageConflictHandler = (
-	messages: InAppMessage[]
+	messages: InAppMessage[],
 ) => InAppMessage;
 
 export type OnMessageInteractionEventHandler = (message: InAppMessage) => void;

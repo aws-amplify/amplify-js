@@ -6,7 +6,7 @@ import {
 	OnTokenReceived,
 	OnTokenReceivedInput,
 	OnTokenReceivedOutput,
-} from '../types';
+} from '~/src/pushNotifications/providers/pinpoint/types';
 
 /**
  * Registers a listener that will be triggered when a token is received. A token will be received:

@@ -1,13 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InAppMessage } from '../../../types';
-import { assertIsInitialized } from '../../../utils';
-import { InAppMessageConflictHandler, SetConflictHandlerInput } from '../types';
+import { InAppMessage } from '~/src/inAppMessaging/types';
+import { assertIsInitialized } from '~/src/inAppMessaging/utils';
+import {
+	InAppMessageConflictHandler,
+	SetConflictHandlerInput,
+} from '~/src/inAppMessaging/providers/pinpoint/types';
+import { InAppMessagingValidationErrorCode } from '~/src/inAppMessaging/errors';
 
+// TODO(eslint): remove this linter suppression with refactoring.
+// eslint-disable-next-line import/no-mutable-exports
 export let conflictHandler: InAppMessageConflictHandler =
 	defaultConflictHandler;
-
 /**
  * Set a conflict handler that will be used to resolve conflicts that may emerge
  * when matching events with synced messages.
@@ -60,9 +65,11 @@ function defaultConflictHandler(messages: InAppMessage[]): InAppMessage {
 		if (!endDateA && endDateB) {
 			return 1;
 		}
+
 		// otherwise, compare them
 		return new Date(endDateA) < new Date(endDateB) ? -1 : 1;
 	});
+
 	// always return the top sorted
 	return sorted[0];
 }

@@ -3,7 +3,7 @@
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 import { getOperatingSystem } from '@aws-amplify/react-native';
-import { ChannelType } from '../types';
+import { ChannelType } from '~/src/pushNotifications/providers/pinpoint/types';
 
 const operatingSystem = getOperatingSystem();
 const isAndroid = operatingSystem === 'android';
