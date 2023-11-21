@@ -3,8 +3,11 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
-import { DB_NAME } from '../common/constants';
-import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
+import { DB_NAME } from '~/src/common/constants';
+import {
+	CommonSQLiteDatabase,
+	ParameterizedStatement,
+} from '~/src/common/types';
 
 const logger = new ConsoleLogger('SQLiteDatabase');
 
@@ -16,7 +19,7 @@ if (ConsoleLogger.LOG_LEVEL === 'DEBUG') {
 
 /*
 
-Note: 
+Note:
 I purposely avoided using arrow functions () => {} in this class,
 Because I ran into issues with them in some of the SQLite method callbacks
 
@@ -41,7 +44,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	public async createSchema(statements: string[]): Promise<void> {
-		return await this.executeStatements(statements);
+		await this.executeStatements(statements);
 	}
 
 	public async clear(): Promise<void> {
@@ -53,15 +56,16 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 
 	public async get<T extends PersistentModel>(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<T> {
 		const results: T[] = await this.getAll(statement, params);
+
 		return results[0];
 	}
 
 	public async getAll<T extends PersistentModel>(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<T[]> {
 		const [resultSet] = await this.db.executeSql(statement, params);
 		const result =
@@ -76,13 +80,13 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 
 	public async save(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<void> {
 		await this.db.executeSql(statement, params);
 	}
 
 	public async batchQuery<T = any>(
-		queryParameterizedStatements: Set<ParameterizedStatement>
+		queryParameterizedStatements: Set<ParameterizedStatement>,
 	): Promise<T[]> {
 		const results = [];
 
@@ -94,7 +98,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 					(_, res) => {
 						results.push(res.rows.raw()[0]);
 					},
-					logger.warn
+					logger.warn,
 				);
 			}
 		});
@@ -104,7 +108,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 
 	public async batchSave(
 		saveParameterizedStatements: Set<ParameterizedStatement>,
-		deleteParameterizedStatements?: Set<ParameterizedStatement>
+		deleteParameterizedStatements?: Set<ParameterizedStatement>,
 	): Promise<void> {
 		await this.db.transaction(tx => {
 			for (const [statement, params] of saveParameterizedStatements) {
@@ -122,7 +126,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 
 	public async selectAndDelete<T = any>(
 		queryParameterizedStatement: ParameterizedStatement,
-		deleteParameterizedStatement: ParameterizedStatement
+		deleteParameterizedStatement: ParameterizedStatement,
 	): Promise<T[]> {
 		let results: T[] = [];
 
@@ -136,9 +140,16 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 				(_, res) => {
 					results = res.rows.raw();
 				},
-				logger.warn
+				logger.warn,
 			);
-			tx.executeSql(deleteStatement, deleteParams, () => {}, logger.warn);
+			tx.executeSql(
+				deleteStatement,
+				deleteParams,
+				() => {
+					// no-op
+				},
+				logger.warn,
+			);
 		});
 
 		return results;

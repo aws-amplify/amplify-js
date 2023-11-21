@@ -3,17 +3,20 @@
 import { ConsoleLogger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
 import { deleteAsync, documentDirectory } from 'expo-file-system';
-import { openDatabase, WebSQLDatabase } from 'expo-sqlite';
-import { DB_NAME } from '../common/constants';
-import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
+import { WebSQLDatabase, openDatabase } from 'expo-sqlite';
+import { DB_NAME } from '~/src/common/constants';
+import {
+	CommonSQLiteDatabase,
+	ParameterizedStatement,
+} from '~/src/common/types';
 
 const logger = new ConsoleLogger('ExpoSQLiteDatabase');
 
 /*
 
-Note: 
-ExpoSQLite transaction error callbacks require returning a boolean value to indicate whether the 
-error was handled or not. Returning a true value indicates the error was handled and does not 
+Note:
+ExpoSQLite transaction error callbacks require returning a boolean value to indicate whether the
+error was handled or not. Returning a true value indicates the error was handled and does not
 rollback the whole transaction.
 
 */
@@ -53,15 +56,16 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 
 	public async get<T extends PersistentModel>(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<T> {
 		const results: T[] = await this.getAll(statement, params);
+
 		return results[0];
 	}
 
 	public getAll<T extends PersistentModel>(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			this.db.readTransaction(transaction => {
@@ -74,8 +78,9 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					(_, error) => {
 						reject(error);
 						logger.warn(error);
+
 						return true;
-					}
+					},
 				);
 			});
 		});
@@ -93,41 +98,43 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					(_, error) => {
 						reject(error);
 						logger.warn(error);
+
 						return true;
-					}
+					},
 				);
 			});
 		});
 	}
 
 	public batchQuery<T = any>(
-		queryParameterizedStatements: Set<ParameterizedStatement> = new Set()
+		queryParameterizedStatements = new Set<ParameterizedStatement>(),
 	): Promise<T[]> {
-		return new Promise((resolveTransaction, rejectTransaction) => {
+		return new Promise((resolve, reject) => {
 			this.db.transaction(async transaction => {
 				try {
 					const results: any[] = await Promise.all(
 						[...queryParameterizedStatements].map(
 							([statement, params]) =>
-								new Promise((resolve, reject) => {
+								new Promise((_resolve, _reject) => {
 									transaction.executeSql(
 										statement,
 										params,
 										(_, result) => {
-											resolve(result.rows._array[0]);
+											_resolve(result.rows._array[0]);
 										},
 										(_, error) => {
-											reject(error);
+											_reject(error);
 											logger.warn(error);
+
 											return true;
-										}
+										},
 									);
-								})
-						)
+								}),
+						),
 					);
-					resolveTransaction(results);
+					resolve(results);
 				} catch (error) {
-					rejectTransaction(error);
+					reject(error);
 					logger.warn(error);
 				}
 			});
@@ -135,56 +142,58 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	public batchSave(
-		saveParameterizedStatements: Set<ParameterizedStatement> = new Set(),
-		deleteParameterizedStatements?: Set<ParameterizedStatement>
+		saveParameterizedStatements = new Set<ParameterizedStatement>(),
+		deleteParameterizedStatements?: Set<ParameterizedStatement>,
 	): Promise<void> {
-		return new Promise((resolveTransaction, rejectTransaction) => {
+		return new Promise((resolve, reject) => {
 			this.db.transaction(async transaction => {
 				try {
 					// await for all sql statements promises to resolve
 					await Promise.all(
 						[...saveParameterizedStatements].map(
 							([statement, params]) =>
-								new Promise((resolve, reject) => {
+								new Promise((_resolve, _reject) => {
 									transaction.executeSql(
 										statement,
 										params,
 										() => {
-											resolve(null);
+											_resolve(null);
 										},
 										(_, error) => {
-											reject(error);
+											_reject(error);
 											logger.warn(error);
+
 											return true;
-										}
+										},
 									);
-								})
-						)
+								}),
+						),
 					);
 					if (deleteParameterizedStatements) {
 						await Promise.all(
 							[...deleteParameterizedStatements].map(
 								([statement, params]) =>
-									new Promise((resolve, reject) =>
+									new Promise((_resolve, _reject) => {
 										transaction.executeSql(
 											statement,
 											params,
 											() => {
-												resolve(null);
+												_resolve(null);
 											},
 											(_, error) => {
-												reject(error);
+												_reject(error);
 												logger.warn(error);
+
 												return true;
-											}
-										)
-									)
-							)
+											},
+										);
+									}),
+							),
 						);
 					}
-					resolveTransaction(null);
+					resolve(null);
 				} catch (error) {
-					rejectTransaction(error);
+					reject(error);
 					logger.warn(error);
 				}
 			});
@@ -193,45 +202,47 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 
 	public selectAndDelete<T = any>(
 		queryParameterizedStatement: ParameterizedStatement,
-		deleteParameterizedStatement: ParameterizedStatement
+		deleteParameterizedStatement: ParameterizedStatement,
 	): Promise<T[]> {
 		const [queryStatement, queryParams] = queryParameterizedStatement;
 		const [deleteStatement, deleteParams] = deleteParameterizedStatement;
 
-		return new Promise((resolveTransaction, rejectTransaction) => {
+		return new Promise((resolve, reject) => {
 			this.db.transaction(async transaction => {
 				try {
-					const result: T[] = await new Promise((resolve, reject) => {
+					const result: T[] = await new Promise((_resolve, _reject) => {
 						transaction.executeSql(
 							queryStatement,
 							queryParams,
-							(_, result) => {
-								resolve(result.rows._array || []);
+							(_, executeSqlResult) => {
+								_resolve(executeSqlResult.rows._array || []);
 							},
 							(_, error) => {
-								reject(error);
+								_reject(error);
 								logger.warn(error);
+
 								return true;
-							}
+							},
 						);
 					});
-					await new Promise((resolve, reject) => {
+					await new Promise((_resolve, _reject) => {
 						transaction.executeSql(
 							deleteStatement,
 							deleteParams,
 							() => {
-								resolve(null);
+								_resolve(null);
 							},
 							(_, error) => {
-								reject(error);
+								_reject(error);
 								logger.warn(error);
+
 								return true;
-							}
+							},
 						);
 					});
-					resolveTransaction(result);
+					resolve(result);
 				} catch (error) {
-					rejectTransaction(error);
+					reject(error);
 					logger.warn(error);
 				}
 			});
@@ -239,30 +250,31 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	private executeStatements(statements: string[]): Promise<void> {
-		return new Promise((resolveTransaction, rejectTransaction) => {
+		return new Promise((resolve, reject) => {
 			this.db.transaction(async transaction => {
 				try {
 					await Promise.all(
 						statements.map(
 							statement =>
-								new Promise((resolve, reject) => {
+								new Promise((_resolve, _reject) => {
 									transaction.executeSql(
 										statement,
 										[],
 										() => {
-											resolve(null);
+											_resolve(null);
 										},
 										(_, error) => {
-											reject(error);
+											_reject(error);
+
 											return true;
-										}
+										},
 									);
-								})
-						)
+								}),
+						),
 					);
-					resolveTransaction(null);
+					resolve(null);
 				} catch (error) {
-					rejectTransaction(error);
+					reject(error);
 					logger.warn(error);
 				}
 			});

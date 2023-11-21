@@ -23,6 +23,7 @@ import {
 
 let innerSQLiteDatabase;
 
+jest.mock('../../datastore/src/storage/relationship.ts');
 jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 	return {
 		status: () => of(false) as any,
@@ -168,7 +169,7 @@ describe('SQLiteAdapter', () => {
 						null!,
 						null!,
 						null!,
-					]
+					],
 				);
 
 				const queries = new Set<ParameterizedStatement>();
