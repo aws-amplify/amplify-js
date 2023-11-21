@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as React from 'react';
-
-import { StyleSheet, View, Text, Platform } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { computeModPow, computeS } from '@aws-amplify/react-native';
 
 const computeModPowPayload = {
@@ -31,10 +30,10 @@ export default function App() {
 
 	React.useEffect(() => {
 		async function calc() {
-			const computeModPowResult = await computeModPow(computeModPowPayload);
-			setComputeModPowResult(computeModPowResult);
-			const computeSResult = await computeS(computeSPayload);
-			setComputeSResult(computeSResult);
+			const newComputeModPowResult = await computeModPow(computeModPowPayload);
+			setComputeModPowResult(newComputeModPowResult);
+			const newComputeSResult = await computeS(computeSPayload);
+			setComputeSResult(newComputeSResult);
 		}
 		calc();
 	}, []);

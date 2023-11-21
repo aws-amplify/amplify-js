@@ -13,7 +13,7 @@ export const loadAmplifyPushNotification = () => {
 		}
 
 		throw new Error(
-			'Ensure `@aws-amplify/rtn-push-notification` is installed and linked.'
+			'Ensure `@aws-amplify/rtn-push-notification` is installed and linked.',
 		);
 	} catch (e) {
 		// The error parsing logic cannot be extracted with metro as the `require`
@@ -21,7 +21,7 @@ export const loadAmplifyPushNotification = () => {
 		// another module and that causes an error
 		const message = (e as Error).message.replace(
 			/undefined/g,
-			'@aws-amplify/rtn-push-notification'
+			'@aws-amplify/rtn-push-notification',
 		);
 		throw new Error(message);
 	}
