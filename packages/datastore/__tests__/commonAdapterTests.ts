@@ -1,4 +1,4 @@
-import { ulid } from 'ulid';
+import { v4 as uuid } from 'uuid';
 
 import {
 	DataStore as DataStoreType,
@@ -1060,10 +1060,10 @@ export function addCommonQueryTests({
 				if (fkFields.has(field)) continue;
 				switch (def.type) {
 					case 'ID':
-						initializer[field] = ulid();
+						initializer[field] = uuid();
 						break;
 					case 'String':
-						initializer[field] = `some random content ${ulid()}`;
+						initializer[field] = `some random content ${uuid()}`;
 						break;
 					case 'Int':
 						initializer[field] =
