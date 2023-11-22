@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { graphql, cancel, isCancelError } from '..';
-import { generateModelsProperty } from './generateModelsProperty';
+import { cancel, graphql, isCancelError } from '~/src/internals';
 import {
+	CommonPublicClientOptions,
+	ServerClientGenerationParams,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
 	__amplify,
 	__authMode,
 	__authToken,
-	V6ClientSSRRequest,
-	V6ClientSSRCookies,
-	ServerClientGenerationParams,
-	CommonPublicClientOptions,
-} from '../../types';
+} from '~/src/types';
+
+import { generateModelsProperty } from './generateModelsProperty';
 
 /**
  * @private
@@ -30,7 +31,7 @@ export function generateClientWithAmplifyInstance<
 		| V6ClientSSRRequest<T>
 		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>,
 >(
-	params: ServerClientGenerationParams & CommonPublicClientOptions
+	params: ServerClientGenerationParams & CommonPublicClientOptions,
 ): ClientType {
 	const client = {
 		[__amplify]: params.amplify,

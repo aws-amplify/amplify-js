@@ -9,5 +9,6 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 export const resolveLibraryOptions = (amplify: AmplifyClassV6) => {
 	const headers = amplify.libraryOptions?.API?.GraphQL?.headers;
 	const withCredentials = amplify.libraryOptions?.API?.GraphQL?.withCredentials;
+
 	return { headers, withCredentials };
 };

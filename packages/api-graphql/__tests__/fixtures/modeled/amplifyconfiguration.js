@@ -633,4 +633,4 @@ const amplifyConfig = {
 		nonModels: {},
 	},
 };
-export default amplifyConfig;
+module.exports = amplifyConfig;

@@ -9,20 +9,20 @@ type ModelIntrospectionSchema = Exclude<
 >;
 type Model = ModelIntrospectionSchema['models'][string];
 
-type AuthAttribute = {
+interface AuthAttribute {
 	type: 'auth';
 	properties: {
 		rules: AuthRule[];
 	};
-};
+}
 
 /**
  * Only the portions of an Auth rule we care about.
  */
-type AuthRule = {
+interface AuthRule {
 	allow: string;
 	ownerField?: string;
-};
+}
 
 /**
  * Given an introspection schema model, returns all owner fields.
@@ -41,6 +41,7 @@ export function resolveOwnerFields(model: Model): string[] {
 			}
 		}
 	}
+
 	return Array.from(ownerFields);
 }
 
@@ -55,11 +56,12 @@ function isAuthAttribute(attribute: any): attribute is AuthAttribute {
 	if (attribute?.type === 'auth') {
 		if (typeof attribute?.properties === 'object') {
 			if (Array.isArray(attribute?.properties?.rules)) {
-				return (attribute?.properties?.rules as Array<any>).every(
-					rule => !!rule.allow
+				return (attribute?.properties?.rules as any[]).every(
+					rule => !!rule.allow,
 				);
 			}
 		}
 	}
+
 	return false;
 }

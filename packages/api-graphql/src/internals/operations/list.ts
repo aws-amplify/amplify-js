@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
-	initializeModel,
-	generateGraphQLDocument,
+	authModeParams,
 	buildGraphQLVariables,
 	flattenItems,
-	authModeParams,
+	generateGraphQLDocument,
 	getCustomHeaders,
-} from '../APIClient';
+	initializeModel,
+} from '~/src/internals/APIClient';
 import {
 	AuthModeParams,
 	ClientWithModels,
+	GraphQLResult,
 	ListArgs,
 	V6Client,
 	V6ClientSSRRequest,
-	GraphQLResult,
-} from '../../types';
+} from '~/src/types';
 import {
 	ModelIntrospectionSchema,
 	SchemaModel,
@@ -26,11 +26,11 @@ export function listFactory(
 	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
-	context = false
+	context = false,
 ) {
 	const listWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec,
-		args?: ListArgs
+		args?: ListArgs,
 	) => {
 		return _list(client, modelIntrospection, model, args, contextSpec);
 	};
@@ -47,7 +47,7 @@ async function _list(
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	args?: ListArgs & AuthModeParams,
-	contextSpec?: AmplifyServer.ContextSpec
+	contextSpec?: AmplifyServer.ContextSpec,
 ) {
 	const { name } = model;
 
@@ -55,13 +55,13 @@ async function _list(
 		modelIntrospection.models,
 		name,
 		'LIST',
-		args
+		args,
 	);
 	const variables = buildGraphQLVariables(
 		model,
 		'LIST',
 		args,
-		modelIntrospection
+		modelIntrospection,
 	);
 
 	try {
@@ -69,7 +69,7 @@ async function _list(
 
 		const headers = getCustomHeaders(client, args?.headers);
 
-		const { data, extensions } = !!contextSpec
+		const { data, extensions } = contextSpec
 			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
 					contextSpec,
 					{
@@ -77,7 +77,7 @@ async function _list(
 						query,
 						variables,
 					},
-					headers
+					headers,
 			  )) as GraphQLResult<any>)
 			: ((await (client as V6Client<Record<string, any>>).graphql(
 					{
@@ -85,7 +85,7 @@ async function _list(
 						query,
 						variables,
 					},
-					headers
+					headers,
 			  )) as GraphQLResult<any>);
 
 		// flatten response
@@ -110,7 +110,7 @@ async function _list(
 						modelIntrospection,
 						auth.authMode,
 						auth.authToken,
-						!!contextSpec
+						!!contextSpec,
 					);
 
 					return {

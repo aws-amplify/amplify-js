@@ -2,45 +2,43 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	DocumentNode,
-	OperationDefinitionNode,
-	print,
-	parse,
 	GraphQLError,
+	OperationDefinitionNode,
 	OperationTypeNode,
+	parse,
+	print,
 } from 'graphql';
 import { Observable, catchError } from 'rxjs';
-import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
-	GraphQLAuthMode,
-	CustomUserAgentDetails,
-	getAmplifyUserAgent,
 	AmplifyUrl,
+	CustomUserAgentDetails,
+	GraphQLAuthMode,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 import {
 	GraphQLAuthError,
-	GraphQLResult,
 	GraphQLOperation,
 	GraphQLOptions,
-} from '../types';
+	GraphQLResult,
+} from '~/src/types';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
 import {
-	post,
 	cancel as cancelREST,
+	post,
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
-import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
-import { resolveConfig, resolveLibraryOptions } from '../utils';
-import { repackageUnauthError } from '../utils/errors/repackageAuthError';
+import { AWSAppSyncRealTimeProvider } from '~/src/Providers/AWSAppSyncRealTimeProvider';
+import { resolveConfig, resolveLibraryOptions } from '~/src/utils';
+import { repackageUnauthError } from '~/src/utils/errors/repackageAuthError';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
-
-const logger = new ConsoleLogger('GraphQLAPI');
 
 const isAmplifyInstance = (
 	amplify:
 		| AmplifyClassV6
-		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>)
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
 ): amplify is AmplifyClassV6 => {
 	return typeof amplify !== 'function';
 };
@@ -68,13 +66,9 @@ export class InternalGraphQLAPIClass {
 	private async _headerBasedAuth(
 		amplify: AmplifyClassV6,
 		authMode: GraphQLAuthMode,
-		additionalHeaders: Record<string, string> = {}
+		additionalHeaders: Record<string, string> = {},
 	) {
-		const {
-			region: region,
-			endpoint: appSyncGraphqlEndpoint,
-			apiKey,
-		} = resolveConfig(amplify);
+		const { apiKey } = resolveConfig(amplify);
 
 		let headers = {};
 
@@ -87,18 +81,17 @@ export class InternalGraphQLAPIClass {
 					'X-Api-Key': apiKey,
 				};
 				break;
-			case 'iam':
+			case 'iam': {
 				const session = await amplify.Auth.fetchAuthSession();
 				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
+			}
 			case 'oidc':
-			case 'userPool':
+			case 'userPool': {
 				try {
-					let token;
-
-					token = (
+					const token = (
 						await amplify.Auth.fetchAuthSession()
 					).tokens?.accessToken.toString();
 
@@ -112,6 +105,7 @@ export class InternalGraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
 				break;
+			}
 			case 'lambda':
 				if (
 					typeof additionalHeaders === 'object' &&
@@ -139,8 +133,7 @@ export class InternalGraphQLAPIClass {
 	 */
 	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
 		const doc = parse(operation);
-		const definitions =
-			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
+		const definitions = doc.definitions as readonly OperationDefinitionNode[];
 		const [{ operation: operationType }] = definitions;
 
 		return operationType;
@@ -159,7 +152,7 @@ export class InternalGraphQLAPIClass {
 			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
-		customUserAgentDetails?: CustomUserAgentDetails
+		customUserAgentDetails?: CustomUserAgentDetails,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
 			typeof paramQuery === 'string'
@@ -167,7 +160,7 @@ export class InternalGraphQLAPIClass {
 				: parse(print(paramQuery));
 
 		const [operationDef = {}] = query.definitions.filter(
-			def => def.kind === 'OperationDefinition'
+			def => def.kind === 'OperationDefinition',
 		);
 		const { operation: operationType } =
 			operationDef as OperationDefinitionNode;
@@ -176,7 +169,7 @@ export class InternalGraphQLAPIClass {
 
 		switch (operationType) {
 			case 'query':
-			case 'mutation':
+			case 'mutation': {
 				const abortController = new AbortController();
 
 				let responsePromise: Promise<GraphQLResult<T>>;
@@ -188,7 +181,7 @@ export class InternalGraphQLAPIClass {
 						headers,
 						abortController,
 						customUserAgentDetails,
-						authToken
+						authToken,
 					);
 				} else {
 					const wrapper = (amplifyInstance: AmplifyClassV6) =>
@@ -198,7 +191,7 @@ export class InternalGraphQLAPIClass {
 							headers,
 							abortController,
 							customUserAgentDetails,
-							authToken
+							authToken,
 						);
 
 					responsePromise = amplify(wrapper) as unknown as Promise<
@@ -208,16 +201,18 @@ export class InternalGraphQLAPIClass {
 
 				this._api.updateRequestToBeCancellable(
 					responsePromise,
-					abortController
+					abortController,
 				);
+
 				return responsePromise;
+			}
 			case 'subscription':
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
 					{ query, variables, authMode },
 					headers,
 					customUserAgentDetails,
-					authToken
+					authToken,
 				);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
@@ -230,10 +225,10 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails,
-		authToken?: string
+		authToken?: string,
 	): Promise<GraphQLResult<T>> {
 		const {
-			region: region,
+			region,
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
@@ -263,7 +258,7 @@ export class InternalGraphQLAPIClass {
 			const requestOptions: RequestOptions = {
 				method: 'POST',
 				url: new AmplifyUrl(
-					customEndpoint || appSyncGraphqlEndpoint || ''
+					customEndpoint || appSyncGraphqlEndpoint || '',
 				).toString(),
 				queryString: print(query as DocumentNode),
 			};
@@ -287,7 +282,7 @@ export class InternalGraphQLAPIClass {
 				(await this._headerBasedAuth(
 					amplify,
 					authMode!,
-					additionalCustomHeaders
+					additionalCustomHeaders,
 				))),
 			/**
 			 * Custom endpoint headers.
@@ -300,7 +295,7 @@ export class InternalGraphQLAPIClass {
 					? await this._headerBasedAuth(
 							amplify,
 							authMode!,
-							additionalCustomHeaders
+							additionalCustomHeaders,
 					  )
 					: {})) ||
 				{}),
@@ -352,6 +347,8 @@ export class InternalGraphQLAPIClass {
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
 
+			// TODO(eslint): remove this linter suppression with refactoring.
+			// eslint-disable-next-line no-throw-literal
 			throw {
 				data: {},
 				errors: [error],
@@ -392,7 +389,7 @@ export class InternalGraphQLAPIClass {
 						null,
 						null,
 						null,
-						err as any
+						err as any,
 					),
 				],
 			};
@@ -430,7 +427,7 @@ export class InternalGraphQLAPIClass {
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails,
-		authToken?: string
+		authToken?: string,
 	): Observable<any> {
 		const config = resolveConfig(amplify);
 
@@ -457,7 +454,7 @@ export class InternalGraphQLAPIClass {
 					authToken,
 					libraryConfigHeaders,
 				},
-				customUserAgentDetails
+				customUserAgentDetails,
 			)
 			.pipe(
 				catchError(e => {
@@ -465,7 +462,7 @@ export class InternalGraphQLAPIClass {
 						throw repackageUnauthError(e);
 					}
 					throw e;
-				})
+				}),
 			);
 	}
 }

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
-import { findIndexByFields, resolvePKFields } from '../../utils';
+import { findIndexByFields, resolvePKFields } from '~/src/utils';
 import { SchemaModel } from '@aws-amplify/core/internals/utils';
 
 export function observeQueryFactory(models: any, model: SchemaModel) {
@@ -124,6 +124,7 @@ export function observeQueryFactory(models: any, model: SchemaModel) {
 				// switch the queue to write directly to the items collection
 				receiveMessages = (...messages: typeof messageQueue) => {
 					ingestMessages(messages);
+
 					return items.length;
 				};
 			})();

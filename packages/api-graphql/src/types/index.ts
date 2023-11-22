@@ -1,16 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
-import { ModelTypes, CustomHeaders } from '@aws-amplify/data-schema-types';
-import { Source, DocumentNode, GraphQLError } from 'graphql';
-export { OperationTypeNode } from 'graphql';
+import { CustomHeaders, ModelTypes } from '@aws-amplify/data-schema-types';
+import { DocumentNode, GraphQLError, Source } from 'graphql';
 import { Observable } from 'rxjs';
-
 import {
-	GraphQLAuthMode,
 	DocumentType,
+	GraphQLAuthMode,
 } from '@aws-amplify/core/internals/utils';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+
+export { OperationTypeNode } from 'graphql';
 
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 
@@ -35,9 +35,7 @@ export interface GraphQLOptions {
 export interface GraphQLResult<T = object> {
 	data: T;
 	errors?: GraphQLError[];
-	extensions?: {
-		[key: string]: any;
-	};
+	extensions?: Record<string, any>;
 }
 
 // Opaque type used for determining the graphql query type
@@ -69,6 +67,8 @@ export type GraphQLSubscription<T> = T & {
  *
  * This util simply makes related model properties optional recursively.
  */
+// TODO(eslint): remove this linter suppression with refactoring.
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type GraphQLReturnType<T> = T extends {}
 	? {
 			[K in keyof T]?: GraphQLReturnType<T[K]>;
@@ -79,11 +79,11 @@ export type GraphQLReturnType<T> = T extends {}
  * Describes a paged list result from AppSync, which can either
  * live at the top query or property (e.g., related model) level.
  */
-type PagedList<T, TYPENAME> = {
+interface PagedList<T, TYPENAME> {
 	__typename: TYPENAME;
 	nextToken?: string | null | undefined;
-	items: Array<T>;
-};
+	items: T[];
+}
 
 /**
  * Recursively looks through a result type and removes nulls and
@@ -95,7 +95,9 @@ type PagedList<T, TYPENAME> = {
  */
 type WithListsFixed<T> = T extends PagedList<infer IT, infer NAME>
 	? PagedList<Exclude<IT, null | undefined>, NAME>
-	: T extends {}
+	: // TODO(eslint): remove this linter suppression with refactoring.
+	  // eslint-disable-next-line @typescript-eslint/ban-types
+	  T extends {}
 	  ? {
 				[K in keyof T]: WithListsFixed<T[K]>;
 	    }
@@ -164,9 +166,9 @@ export type GraphqlSubscriptionResult<T> = Observable<
  * })
  * ```
  */
-export type GraphqlSubscriptionMessage<T> = {
+export interface GraphqlSubscriptionMessage<T> {
 	data: T;
-};
+}
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
@@ -175,15 +177,17 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, unknown>;
 	apiKey?: string;
 	region?: string;
-	libraryConfigHeaders?: () => {} | (() => Promise<{}>);
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	graphql_headers?(): {} | (() => Promise<{}>);
 	additionalHeaders?: CustomHeaders;
 }
 
-export type AWSAppSyncRealTimeProvider = {
+export interface AWSAppSyncRealTimeProvider {
 	subscribe(
-		options?: AWSAppSyncRealTimeProviderOptions
+		options?: AWSAppSyncRealTimeProviderOptions,
 	): Observable<Record<string, unknown>>;
-};
+}
 
 export enum GraphQLAuthError {
 	NO_API_KEY = 'No api-key configured',
@@ -252,17 +256,27 @@ export type GraphQLVariablesV6<
 export type GraphQLResponseV6<
 	FALLBACK_TYPE = unknown,
 	TYPED_GQL_STRING extends string = string,
+	// eslint-disable-next-line unused-imports/no-unused-vars
 > = TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer QUERY_OUT>
 	? Promise<GraphQLResult<FixedQueryResult<QUERY_OUT>>>
-	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
+	: // TODO(eslint): remove this linter suppression with refactoring.
+	  // eslint-disable-next-line unused-imports/no-unused-vars
+	  TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
 	  ? Promise<GraphQLResult<NeverEmpty<MUTATION_OUT>>>
-	  : TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
+	  : // TODO(eslint): remove this linter suppression with refactoring.
+	    // eslint-disable-next-line unused-imports/no-unused-vars
+	    TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
 	    ? GraphqlSubscriptionResult<NeverEmpty<SUB_OUT>>
-	    : FALLBACK_TYPE extends GraphQLQuery<infer T>
+	    : // TODO(eslint): remove this linter suppression with refactoring.
+	      // eslint-disable-next-line unused-imports/no-unused-vars
+	      FALLBACK_TYPE extends GraphQLQuery<infer T>
 	      ? Promise<GraphQLResult<FALLBACK_TYPE>>
-	      : FALLBACK_TYPE extends GraphQLSubscription<infer T>
+	      : // TODO(eslint): remove this linter suppression with refactoring.
+	        // eslint-disable-next-line unused-imports/no-unused-vars
+	        FALLBACK_TYPE extends GraphQLSubscription<infer T>
 	        ? GraphqlSubscriptionResult<FALLBACK_TYPE>
 	        : FALLBACK_TYPE extends GraphQLOperationType<
+								// eslint-disable-next-line unused-imports/no-unused-vars
 								infer IN,
 								infer CUSTOM_OUT
 	            >
@@ -287,10 +301,12 @@ export type GraphQLResponseV6<
  * })
  * ```
  */
-export type GraphQLOperationType<IN extends {}, OUT extends {}> = {
+// TODO(eslint): remove this linter suppression with refactoring.
+// eslint-disable-next-line @typescript-eslint/ban-types
+export interface GraphQLOperationType<IN extends {}, OUT extends {}> {
 	variables: IN;
 	result: OUT;
-};
+}
 
 /**
  * Nominal type for branding generated graphql query operation strings with
@@ -379,8 +395,8 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__authToken]?: string;
 	[__headers]?: CustomHeaders;
 	graphql: GraphQLMethod;
-	cancel: (promise: Promise<any>, message?: string) => boolean;
-	isCancelError: (error: any) => boolean;
+	cancel(promise: Promise<any>, message?: string): boolean;
+	isCancelError(error: any): boolean;
 	models: ModelTypes<T>;
 }>;
 
@@ -391,8 +407,8 @@ export type V6ClientSSRRequest<T extends Record<any, any> = never> =
 		[__authToken]?: string;
 		[__headers]?: CustomHeaders;
 		graphql: GraphQLMethodSSR;
-		cancel: (promise: Promise<any>, message?: string) => boolean;
-		isCancelError: (error: any) => boolean;
+		cancel(promise: Promise<any>, message?: string): boolean;
+		isCancelError(error: any): boolean;
 		models: ModelTypes<T, 'REQUEST'>;
 	}>;
 
@@ -403,8 +419,8 @@ export type V6ClientSSRCookies<T extends Record<any, any> = never> =
 		[__authToken]?: string;
 		[__headers]?: CustomHeaders;
 		graphql: GraphQLMethod;
-		cancel: (promise: Promise<any>, message?: string) => boolean;
-		isCancelError: (error: any) => boolean;
+		cancel(promise: Promise<any>, message?: string): boolean;
+		isCancelError(error: any): boolean;
 		models: ModelTypes<T, 'COOKIES'>;
 	}>;
 
@@ -413,7 +429,7 @@ export type GraphQLMethod = <
 	TYPED_GQL_STRING extends string = string,
 >(
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?: CustomHeaders | undefined
+	additionalHeaders?: CustomHeaders | undefined,
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 export type GraphQLMethodSSR = <
@@ -422,7 +438,7 @@ export type GraphQLMethodSSR = <
 >(
 	contextSpec: AmplifyServer.ContextSpec,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?: CustomHeaders | undefined
+	additionalHeaders?: CustomHeaders | undefined,
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 /**
@@ -430,30 +446,32 @@ export type GraphQLMethodSSR = <
  *
  * The knobs available for configuring `server/generateClient` internally.
  */
-export type ServerClientGenerationParams = {
+export interface ServerClientGenerationParams {
 	amplify:
 		| null // null expected when used with `generateServerClient`
 		// closure expected with `generateServerClientUsingCookies`
 		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
-};
+}
 
 export type QueryArgs = Record<string, unknown>;
 
-export type ListArgs = {
+export interface ListArgs extends Record<string, unknown> {
 	selectionSet?: string[];
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line @typescript-eslint/ban-types
 	filter?: {};
 	headers?: CustomHeaders;
-};
+}
 
-export type AuthModeParams = {
+export interface AuthModeParams {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
-};
+}
 
-export type GenerateServerClientParams = {
+export interface GenerateServerClientParams {
 	config: ResourcesConfig;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
-};
+}

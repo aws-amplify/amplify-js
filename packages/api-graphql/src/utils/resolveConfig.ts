@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
+
 import { APIValidationErrorCode, assertValidationError } from './errors';
 
 const logger = new ConsoleLogger('GraphQLAPI resolveConfig');
@@ -14,7 +15,7 @@ export const resolveConfig = (amplify: AmplifyClassV6) => {
 
 	if (!config.API?.GraphQL) {
 		logger.warn(
-			'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient().'
+			'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient().',
 		);
 	}
 
@@ -31,7 +32,7 @@ export const resolveConfig = (amplify: AmplifyClassV6) => {
 	// assertValidationError(!!endpoint, APIValidationErrorCode.NoEndpoint);
 	assertValidationError(
 		!(!customEndpoint && customEndpointRegion),
-		APIValidationErrorCode.NoCustomEndpoint
+		APIValidationErrorCode.NoCustomEndpoint,
 	);
 
 	return {

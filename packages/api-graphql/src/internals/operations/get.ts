@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
-	initializeModel,
-	generateGraphQLDocument,
+	ModelOperation,
+	authModeParams,
 	buildGraphQLVariables,
 	flattenItems,
-	authModeParams,
-	ModelOperation,
+	generateGraphQLDocument,
 	getCustomHeaders,
-} from '../APIClient';
+	initializeModel,
+} from '~/src/internals/APIClient';
 import {
 	AuthModeParams,
 	ClientWithModels,
@@ -19,7 +19,7 @@ import {
 	QueryArgs,
 	V6Client,
 	V6ClientSSRRequest,
-} from '../../types';
+} from '~/src/types';
 import {
 	ModelIntrospectionSchema,
 	SchemaModel,
@@ -30,12 +30,12 @@ export function getFactory(
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	operation: ModelOperation,
-	useContext = false
+	useContext = false,
 ) {
 	const getWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec & GraphQLOptionsV6<unknown, string>,
 		arg?: any,
-		options?: any
+		options?: any,
 	) => {
 		return _get(
 			client,
@@ -44,7 +44,7 @@ export function getFactory(
 			arg,
 			options,
 			operation,
-			contextSpec
+			contextSpec,
 		);
 	};
 
@@ -62,7 +62,7 @@ async function _get(
 	arg: QueryArgs,
 	options: AuthModeParams & ListArgs,
 	operation: ModelOperation,
-	context?: AmplifyServer.ContextSpec
+	context?: AmplifyServer.ContextSpec,
 ) {
 	const { name } = model;
 
@@ -70,13 +70,13 @@ async function _get(
 		modelIntrospection.models,
 		name,
 		operation,
-		options
+		options,
 	);
 	const variables = buildGraphQLVariables(
 		model,
 		operation,
 		arg,
-		modelIntrospection
+		modelIntrospection,
 	);
 
 	try {
@@ -92,7 +92,6 @@ async function _get(
 						query,
 						variables,
 					},
-					headers
 			  )) as GraphQLResult<any>)
 			: ((await (client as V6Client<Record<string, any>>).graphql(
 					{
@@ -100,7 +99,7 @@ async function _get(
 						query,
 						variables,
 					},
-					headers
+					headers,
 			  )) as GraphQLResult<any>);
 
 		// flatten response
@@ -119,7 +118,7 @@ async function _get(
 					modelIntrospection,
 					auth.authMode,
 					auth.authToken,
-					!!context
+					!!context,
 				);
 
 				return { data: initialized, extensions };

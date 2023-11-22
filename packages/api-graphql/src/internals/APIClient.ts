@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { resolveOwnerFields } from '../utils/resolveOwnerFields';
+import { resolveOwnerFields } from '~/src/utils/resolveOwnerFields';
 import {
+	AssociationBelongsTo,
+	AssociationHasOne,
 	GraphQLAuthMode,
-	ModelIntrospectionSchema,
 	ModelFieldType,
+	ModelIntrospectionSchema,
 	SchemaModel,
 	SchemaModels,
-	AssociationHasOne,
-	AssociationBelongsTo,
 } from '@aws-amplify/core/internals/utils';
 import {
 	AuthModeParams,
@@ -16,22 +16,21 @@ import {
 	ListArgs,
 	QueryArgs,
 	V6Client,
-	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 	__authMode,
 	__authToken,
 	__headers,
-} from '../types';
+} from '~/src/types';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
-type LazyLoadOptions = {
+interface LazyLoadOptions {
 	authMode?: GraphQLAuthMode;
 	authToken?: string | undefined;
 	limit?: number | undefined;
 	nextToken?: string | undefined | null;
 	headers?: CustomHeaders | undefined;
-};
+}
 
 const connectionType = {
 	HAS_ONE: 'HAS_ONE',
@@ -51,11 +50,13 @@ export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
 		if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
 			if (value.items !== undefined) {
 				res[prop] = value.items.map((item: Record<string, any>) =>
-					flattenItems(item)
+					flattenItems(item),
 				);
+
 				return;
 			}
 			res[prop] = flattenItems(value);
+
 			return;
 		}
 
@@ -73,7 +74,7 @@ export function initializeModel(
 	modelIntrospection: ModelIntrospectionSchema,
 	authMode: GraphQLAuthMode | undefined,
 	authToken: string | undefined,
-	context = false
+	context = false,
 ): any[] {
 	const introModel = modelIntrospection.models[modelName];
 	const introModelFields = introModel.fields;
@@ -110,25 +111,30 @@ export function initializeModel(
 
 			let targetNames: string[] = [];
 			if (modelField.association && 'targetNames' in modelField.association) {
-				targetNames = modelField.association.targetNames;
+				const {
+					association: { targetNames: associationTargetNames },
+				} = modelField;
+				targetNames = associationTargetNames;
 			}
 
 			switch (relationType) {
 				case connectionType.HAS_ONE:
-				case connectionType.BELONGS_TO:
+				case connectionType.BELONGS_TO: {
 					const sortKeyValues = relatedModelSKFieldNames.reduce(
+						// TODO(eslint): remove this linter suppression with refactoring.
+						// eslint-disable-next-line array-callback-return
 						(acc: Record<string, any>, curVal) => {
 							if (record[curVal]) {
 								return (acc[curVal] = record[curVal]);
 							}
 						},
-						{}
+						{},
 					);
 
 					if (context) {
 						initializedRelationalFields[fieldName] = (
 							contextSpec: AmplifyServer.ContextSpec,
-							options?: LazyLoadOptions
+							options?: LazyLoadOptions,
 						) => {
 							if (record[targetNames[0]]) {
 								return (
@@ -142,14 +148,15 @@ export function initializeModel(
 									{
 										authMode: options?.authMode || authMode,
 										authToken: options?.authToken || authToken,
-									}
+									},
 								);
 							}
+
 							return undefined;
 						};
 					} else {
 						initializedRelationalFields[fieldName] = (
-							options?: LazyLoadOptions
+							options?: LazyLoadOptions,
 						) => {
 							if (record[targetNames[0]]) {
 								return (client as V6Client<Record<string, any>>).models[
@@ -162,15 +169,17 @@ export function initializeModel(
 									{
 										authMode: options?.authMode || authMode,
 										authToken: options?.authToken || authToken,
-									}
+									},
 								);
 							}
+
 							return undefined;
 						};
 					}
 
 					break;
-				case connectionType.HAS_MANY:
+				}
+				case connectionType.HAS_MANY: {
 					const parentPk = introModel.primaryKeyInfo.primaryKeyFieldName;
 					const parentSK = introModel.primaryKeyInfo.sortKeyFieldNames;
 
@@ -194,13 +203,13 @@ export function initializeModel(
 								}
 
 								return { [field]: { eq: record[parentSK[idx - 1]] } };
-							}
+							},
 						);
 
 						if (context) {
 							initializedRelationalFields[fieldName] = (
 								contextSpec: AmplifyServer.ContextSpec,
-								options?: LazyLoadOptions
+								options?: LazyLoadOptions,
 							) => {
 								if (record[parentPk]) {
 									return (
@@ -213,11 +222,12 @@ export function initializeModel(
 										authToken: options?.authToken || authToken,
 									});
 								}
+
 								return [];
 							};
 						} else {
 							initializedRelationalFields[fieldName] = (
-								options?: LazyLoadOptions
+								options?: LazyLoadOptions,
 							) => {
 								if (record[parentPk]) {
 									return (client as V6Client<Record<string, any>>).models[
@@ -230,6 +240,7 @@ export function initializeModel(
 										authToken: options?.authToken || authToken,
 									});
 								}
+
 								return [];
 							};
 						}
@@ -244,13 +255,13 @@ export function initializeModel(
 							}
 
 							return { [field]: { eq: record[parentSK[idx - 1]] } };
-						}
+						},
 					);
 
 					if (context) {
 						initializedRelationalFields[fieldName] = (
 							contextSpec: AmplifyServer.ContextSpec,
-							options?: LazyLoadOptions
+							options?: LazyLoadOptions,
 						) => {
 							if (record[parentPk]) {
 								return (
@@ -263,11 +274,12 @@ export function initializeModel(
 									authToken: options?.authToken || authToken,
 								});
 							}
+
 							return [];
 						};
 					} else {
 						initializedRelationalFields[fieldName] = (
-							options?: LazyLoadOptions
+							options?: LazyLoadOptions,
 						) => {
 							if (record[parentPk]) {
 								return (client as V6Client<Record<string, any>>).models[
@@ -280,11 +292,13 @@ export function initializeModel(
 									authToken: options?.authToken || authToken,
 								});
 							}
+
 							return [];
 						};
 					}
 
 					break;
+				}
 				default:
 					break;
 			}
@@ -307,9 +321,6 @@ export const graphQLOperationsInfo = {
 };
 export type ModelOperation = keyof typeof graphQLOperationsInfo;
 
-type OperationPrefix =
-	(typeof graphQLOperationsInfo)[ModelOperation]['operationPrefix'];
-
 const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
 const SELECTION_SET_WILDCARD = '*';
 
@@ -323,7 +334,7 @@ function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
 			({ type, name }) =>
 				(typeof type === 'string' ||
 					(typeof type === 'object' && typeof type?.enum === 'string')) &&
-				name
+				name,
 		)
 		.filter(Boolean);
 
@@ -358,7 +369,7 @@ const FIELD_IR = '';
 export function customSelectionSetToIR(
 	modelDefinitions: SchemaModels,
 	modelName: string,
-	selectionSet: string[]
+	selectionSet: string[],
 ): Record<string, string | object> {
 	const modelDefinition = modelDefinitions[modelName];
 	const { fields: modelFields } = modelDefinition;
@@ -377,7 +388,7 @@ export function customSelectionSetToIR(
 
 			const relatedModelDefinition = modelDefinitions[relatedModel];
 
-			const selectionSet =
+			const selectionSetNested =
 				nested === SELECTION_SET_WILDCARD
 					? defaultSelectionSetIR(relatedModelDefinition)
 					: // if we have a path like 'field.anotherField' recursively build up selection set IR
@@ -389,16 +400,18 @@ export function customSelectionSetToIR(
 				const existing = resultObj[fieldName] || {
 					items: {},
 				};
-				const merged = { ...existing.items, ...selectionSet };
+				const merged = { ...existing.items, ...selectionSetNested };
 
 				resultObj[fieldName] = { items: merged };
+
 				return resultObj;
 			}
 
 			const existingItems = resultObj[fieldName] || {};
-			const merged = { ...existingItems, ...selectionSet };
+			const merged = { ...existingItems, ...selectionSetNested };
 
 			resultObj[fieldName] = merged;
+
 			return resultObj;
 		}
 
@@ -409,21 +422,23 @@ export function customSelectionSetToIR(
 		}
 
 		resultObj[fieldName] = FIELD_IR;
+
 		return resultObj;
 	}, {});
 }
 
 const defaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 	const defaultSelectionSet = defaultSelectionSetForModel(
-		relatedModelDefinition
+		relatedModelDefinition,
 	);
 
 	const reduced = defaultSelectionSet.reduce(
 		(acc: Record<string, any>, curVal) => {
 			acc[curVal] = FIELD_IR;
+
 			return acc;
 		},
-		{}
+		{},
 	);
 
 	return reduced;
@@ -445,7 +460,7 @@ const defaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
  * `'id comments { items { post { id } } }'`
  */
 export function selectionSetIRToString(
-	obj: Record<string, string | any>
+	obj: Record<string, string | any>,
 ): string {
 	const res: string[] = [];
 
@@ -461,7 +476,7 @@ export function selectionSetIRToString(
 					'{',
 					selectionSetIRToString(value.items),
 					'}',
-					'}'
+					'}',
 				);
 			} else {
 				res.push(fieldName, '{', selectionSetIRToString(value), '}');
@@ -475,7 +490,7 @@ export function selectionSetIRToString(
 export function generateSelectionSet(
 	modelDefinitions: SchemaModels,
 	modelName: string,
-	selectionSet?: string[]
+	selectionSet?: string[],
 ) {
 	const modelDefinition = modelDefinitions[modelName];
 
@@ -486,7 +501,7 @@ export function generateSelectionSet(
 	const selSetIr = customSelectionSetToIR(
 		modelDefinitions,
 		modelName,
-		selectionSet
+		selectionSet,
 	);
 	const selSetString = selectionSetIRToString(selSetIr);
 
@@ -497,7 +512,7 @@ export function generateGraphQLDocument(
 	modelDefinitions: SchemaModels,
 	modelName: string,
 	modelOperation: ModelOperation,
-	listArgs?: ListArgs
+	listArgs?: ListArgs,
 ): string {
 	const modelDefinition = modelDefinitions[modelName];
 
@@ -534,7 +549,7 @@ export function generateGraphQLDocument(
 	const selectionSetFields = generateSelectionSet(
 		modelDefinitions,
 		modelName,
-		selectionSet
+		selectionSet,
 	);
 
 	switch (modelOperation) {
@@ -549,6 +564,8 @@ export function generateGraphQLDocument(
 					}${name}Input!`,
 				});
 			graphQLOperationType ?? (graphQLOperationType = 'mutation');
+		// TODO(eslint): remove this linter suppression with refactoring.
+		// eslint-disable-next-line no-fallthrough
 		case 'READ':
 			graphQLArguments ??
 				(graphQLArguments = isCustomPrimaryKey
@@ -558,12 +575,14 @@ export function generateGraphQLDocument(
 
 								return acc;
 							},
-							{}
+							{},
 					  )
 					: {
 							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
 					  });
 			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
+		// TODO(eslint): remove this linter suppression with refactoring.
+		// eslint-disable-next-line no-fallthrough
 		case 'LIST':
 			graphQLArguments ??
 				(graphQLArguments = {
@@ -574,6 +593,8 @@ export function generateGraphQLDocument(
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
 				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken __typename`);
+		// TODO(eslint): remove this linter suppression with refactoring.
+		// eslint-disable-next-line no-fallthrough
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':
@@ -587,20 +608,20 @@ export function generateGraphQLDocument(
 		case 'OBSERVE_QUERY':
 		default:
 			throw new Error(
-				'Internal error: Attempted to generate graphql document for observeQuery. Please report this error.'
+				'Internal error: Attempted to generate graphql document for observeQuery. Please report this error.',
 			);
 	}
 
 	const graphQLDocument = `${graphQLOperationType}${
 		graphQLArguments
 			? `(${Object.entries(graphQLArguments).map(
-					([fieldName, type]) => `\$${fieldName}: ${type}`
+					([fieldName, type]) => `$${fieldName}: ${type}`,
 			  )})`
 			: ''
 	} { ${graphQLFieldName}${
 		graphQLArguments
 			? `(${Object.keys(graphQLArguments).map(
-					fieldName => `${fieldName}: \$${fieldName}`
+					fieldName => `${fieldName}: $${fieldName}`,
 			  )})`
 			: ''
 	} { ${graphQLSelectionSet} } }`;
@@ -614,7 +635,7 @@ export function buildGraphQLVariables(
 	modelDefinition: SchemaModel,
 	operation: ModelOperation,
 	arg: QueryArgs | undefined,
-	modelIntrospection: ModelIntrospectionSchema
+	modelIntrospection: ModelIntrospectionSchema,
 ): object {
 	const {
 		fields,
@@ -642,12 +663,16 @@ export function buildGraphQLVariables(
 				input: arg
 					? Object.fromEntries(
 							Object.entries(
-								normalizeMutationInput(arg, modelDefinition, modelIntrospection)
+								normalizeMutationInput(
+									arg,
+									modelDefinition,
+									modelIntrospection,
+								),
 							).filter(([fieldName]) => {
 								const { isReadOnly } = fields[fieldName];
 
 								return !isReadOnly;
-							})
+							}),
 					  )
 					: {},
 			};
@@ -663,7 +688,7 @@ export function buildGraphQLVariables(
 
 								return acc;
 							},
-							{}
+							{},
 					  )
 					: { [primaryKeyFieldName]: arg[primaryKeyFieldName] };
 			}
@@ -692,12 +717,13 @@ export function buildGraphQLVariables(
 			break;
 		case 'OBSERVE_QUERY':
 			throw new Error(
-				'Internal error: Attempted to build variables for observeQuery. Please report this error.'
+				'Internal error: Attempted to build variables for observeQuery. Please report this error.',
 			);
 			break;
-		default:
+		default: {
 			const exhaustiveCheck: never = operation;
 			throw new Error(`Unhandled operation case: ${exhaustiveCheck}`);
+		}
 	}
 
 	return variables;
@@ -720,7 +746,7 @@ export function buildGraphQLVariables(
 export function normalizeMutationInput(
 	mutationInput: QueryArgs,
 	model: SchemaModel,
-	modelIntrospection: ModelIntrospectionSchema
+	modelIntrospection: ModelIntrospectionSchema,
 ): QueryArgs {
 	const { fields } = model;
 
@@ -781,7 +807,7 @@ export function normalizeMutationInput(
  */
 export function authModeParams(
 	client: ClientWithModels,
-	options: AuthModeParams = {}
+	options: AuthModeParams = {},
 ): AuthModeParams {
 	return {
 		authMode: options.authMode || client[__authMode],
@@ -797,7 +823,7 @@ export function authModeParams(
  */
 export function getCustomHeaders(
 	client: V6Client | ClientWithModels,
-	requestHeaders?: CustomHeaders
+	requestHeaders?: CustomHeaders,
 ): CustomHeaders {
 	let headers: CustomHeaders = client[__headers] || {};
 

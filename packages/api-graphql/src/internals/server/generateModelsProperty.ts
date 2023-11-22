@@ -1,13 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ModelTypes } from '@aws-amplify/data-schema-types';
-import { graphQLOperationsInfo, ModelOperation } from '../APIClient';
-import { ServerClientGenerationParams } from '../../types/';
-import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../types';
+import {
+	ModelOperation,
+	graphQLOperationsInfo,
+} from '~/src/internals/APIClient';
+import {
+	ServerClientGenerationParams,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
+} from '~/src/types';
 import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
-
-import { listFactory } from '../operations/list';
-import { getFactory } from '../operations/get';
+import { listFactory } from '~/src/internals/operations/list';
+import { getFactory } from '~/src/internals/operations/get';
 
 export function generateModelsProperty<
 	_T extends Record<any, any> = never,
@@ -18,7 +23,7 @@ export function generateModelsProperty<
 	>,
 >(client: ClientType, params: ServerClientGenerationParams): ClientType {
 	const models = {} as any;
-	const config = params.config;
+	const { config } = params;
 	const useContext = params.amplify === null;
 
 	if (!config) {
@@ -59,7 +64,7 @@ export function generateModelsProperty<
 						client,
 						modelIntrospection,
 						model,
-						useContext
+						useContext,
 					);
 				} else {
 					models[name][operationPrefix] = getFactory(
@@ -67,10 +72,10 @@ export function generateModelsProperty<
 						modelIntrospection,
 						model,
 						operation,
-						useContext
+						useContext,
 					);
 				}
-			}
+			},
 		);
 	}
 

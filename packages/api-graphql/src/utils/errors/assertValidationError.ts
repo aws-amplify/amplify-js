@@ -9,7 +9,7 @@ import { APIValidationErrorCode, validationErrorMap } from './validation';
  */
 export function assertValidationError(
 	assertion: boolean,
-	name: APIValidationErrorCode
+	name: APIValidationErrorCode,
 ): asserts assertion {
 	const { message, recoverySuggestion } = validationErrorMap[name];
 

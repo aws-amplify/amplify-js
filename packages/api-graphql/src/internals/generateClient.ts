@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { graphql, cancel, isCancelError } from './v6';
-import { generateModelsProperty } from './generateModelsProperty';
 import {
 	V6Client,
 	__amplify,
 	__authMode,
 	__authToken,
 	__headers,
-} from '../types';
+} from '~/src/types';
+
+import { cancel, graphql, isCancelError } from './v6';
+import { generateModelsProperty } from './generateModelsProperty';
 import { ClientGenerationParams } from './types';
 
 /**
@@ -21,7 +22,7 @@ import { ClientGenerationParams } from './types';
  * @returns
  */
 export function generateClient<T extends Record<any, any> = never>(
-	params: ClientGenerationParams
+	params: ClientGenerationParams,
 ): V6Client<T> {
 	const client = {
 		[__amplify]: params.amplify,

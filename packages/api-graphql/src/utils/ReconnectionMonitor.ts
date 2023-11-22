@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observer } from 'rxjs';
-import { RECONNECT_DELAY, RECONNECT_INTERVAL } from '../Providers/constants';
+import { RECONNECT_DELAY, RECONNECT_INTERVAL } from '~/src/Providers/constants';
 
 export enum ReconnectEvent {
 	START_RECONNECT = 'START_RECONNECT',
