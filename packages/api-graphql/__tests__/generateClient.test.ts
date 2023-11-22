@@ -3697,7 +3697,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test.only('can create() - with custom client header functions', async () => {
+		test('can create() - with custom client header functions', async () => {
 			const spy = mockApiResponse({
 				data: {
 					createTodo: {
@@ -3727,6 +3727,62 @@ describe('generateClient', () => {
 						headers: expect.objectContaining({
 							'X-Api-Key': 'FAKE-KEY',
 							'client-header-function': 'should return this header',
+						}),
+						body: {
+							query: expect.stringContaining('createTodo(input: $input)'),
+							variables: {
+								input: {
+									name: 'some name',
+									description: 'something something',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can create() - with custom client header functions that receive request options', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: async requestOptions => requestOptions,
+			});
+
+			const { data } = await client.models.Todo.create({
+				name: 'some name',
+				description: 'something something',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							method: 'POST',
+							url: 'https://localhost/graphql',
+							queryString:
+								'mutation ($input: CreateTodoInput!) {\n  createTodo(input: $input) {\n    id\n    name\n    description\n    createdAt\n    updatedAt\n    todoMetaId\n    owner\n  }\n}\n',
 						}),
 						body: {
 							query: expect.stringContaining('createTodo(input: $input)'),
@@ -3862,6 +3918,80 @@ describe('generateClient', () => {
 						headers: expect.objectContaining({
 							'X-Api-Key': 'FAKE-KEY',
 							'request-header-function': 'should return this header',
+						}),
+						body: {
+							query: expect.stringContaining('createTodo(input: $input)'),
+							variables: {
+								input: {
+									name: 'some name',
+									description: 'something something',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			// Request headers should overwrite client headers:
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.not.objectContaining({
+							'client-header': 'should not exist',
+						}),
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can create() - with custom request header function that accepts request options', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should not exist',
+				},
+			});
+
+			const { data } = await client.models.Todo.create(
+				{
+					name: 'some name',
+					description: 'something something',
+				},
+				{
+					headers: async requestOptions => requestOptions,
+				}
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							method: 'POST',
+							url: 'https://localhost/graphql',
+							queryString:
+								'mutation ($input: CreateTodoInput!) {\n  createTodo(input: $input) {\n    id\n    name\n    description\n    createdAt\n    updatedAt\n    todoMetaId\n    owner\n  }\n}\n',
 						}),
 						body: {
 							query: expect.stringContaining('createTodo(input: $input)'),
@@ -4495,6 +4625,46 @@ describe('generateClient', () => {
 			client.models.Note.onCreate({
 				filter: graphqlVariables.filter,
 				headers: async () => customHeaders,
+			}).subscribe({
+				next(value) {
+					expectSubWithHeadersFn(spy, 'onCreateNote', graphqlVariables);
+					expect(value).toEqual(expect.objectContaining(noteToSend));
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+
+		test('can subscribe to onCreate() - with a custom header function', done => {
+			const noteToSend = {
+				__typename: 'Note',
+				...serverManagedFields,
+				body: 'a very good note',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onCreateNote: noteToSend,
+				},
+			};
+
+			const graphqlVariables = {
+				filter: {
+					body: { contains: 'good note' },
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			client.models.Note.onCreate({
+				filter: graphqlVariables.filter,
+				headers: async requestOptions => requestOptions,
 			}).subscribe({
 				next(value) {
 					expectSubWithHeadersFn(spy, 'onCreateNote', graphqlVariables);

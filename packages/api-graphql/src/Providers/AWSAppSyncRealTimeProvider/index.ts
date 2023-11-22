@@ -100,7 +100,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	graphql_headers?: () => {} | (() => Promise<{}>);
 	additionalHeaders?:
 		| Record<string, string>
-		| (() => Promise<Record<string, string>>);
+		| ((requestOptions?: any) => Promise<Record<string, string>>);
 	additionalCustomHeaders?: Record<string, string>;
 	authToken?: string;
 }
@@ -321,7 +321,11 @@ export class AWSAppSyncRealTimeProvider {
 		let additionalCustomHeaders: Record<string, string> = {};
 
 		if (typeof additionalHeaders === 'function') {
-			additionalCustomHeaders = await additionalHeaders();
+			const requestOptions: any = {
+				url: appSyncGraphqlEndpoint,
+				queryString: query,
+			};
+			additionalCustomHeaders = await additionalHeaders(requestOptions);
 		} else {
 			additionalCustomHeaders = additionalHeaders;
 		}
@@ -334,7 +338,6 @@ export class AWSAppSyncRealTimeProvider {
 		 *   queryString: string;
 		 * }
 		 */
-		debugger;
 
 		// if an authorization header is set, have the explicit authToken take precedence
 		if (authToken) {

@@ -236,10 +236,25 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
-			defaultAuthMode
+			defaultAuthMode,
 		} = resolveConfig(amplify);
 
 		const authMode = explicitAuthMode || defaultAuthMode || 'iam';
+
+		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
+
+		if (!endpoint) {
+			const error = new GraphQLError('No graphql endpoint provided.');
+
+			throw {
+				data: {},
+				errors: [error],
+			};
+		}
+
+		const url = new AmplifyUrl(endpoint);
+
+		const queryString = print(query as DocumentNode);
 
 		/**
 		 * Retrieve library options from Amplify configuration.
@@ -259,7 +274,25 @@ export class InternalGraphQLAPIClass {
 		let additionalCustomHeaders: Record<string, string>;
 
 		if (typeof additionalHeaders === 'function') {
-			additionalCustomHeaders = await additionalHeaders();
+			/**
+			 * TODO: add type to `amplify-api-next/data-schema-types`:
+			 *
+			 * requestOptions?: {
+			 *   headers?: Record<string, string>;
+			 *   method: string;
+			 *   url: string;
+			 *   queryString: string;
+			 * }
+			 */
+			// TODO - add type:
+			const requestOptions: any = {
+				// headers,
+				method: 'POST',
+				url: url.toString(),
+				queryString,
+			};
+
+			additionalCustomHeaders = await additionalHeaders(requestOptions);
 		} else {
 			additionalCustomHeaders = additionalHeaders;
 		}
@@ -309,8 +342,6 @@ export class InternalGraphQLAPIClass {
 			}),
 		};
 
-		const queryString = print(query as DocumentNode);
-
 		const body = {
 			query: queryString,
 			variables: variables || null,
@@ -340,39 +371,8 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
-
-		if (!endpoint) {
-			const error = new GraphQLError('No graphql endpoint provided.');
-
-			throw {
-				data: {},
-				errors: [error],
-			};
-		}
-
-		const url = new AmplifyUrl(endpoint);
-
-		/**
-		 * TODO: add type to `amplify-api-next/data-schema-types`:
-		 *
-		 * requestOptions?: {
-		 *   headers?: Record<string, string>;
-		 *   method: string;
-		 *   url: string;
-		 *   queryString: string;
-		 * }
-		 */
-		// TODO - add type:
-		const requestOptions: any = {
-			headers,
-			method: 'POST',
-			url: url.toString(),
-			queryString,
-		};
-		debugger;
-
 		let response: any;
+
 		try {
 			const { body: responseBody } = await this._api.post({
 				url: url,
