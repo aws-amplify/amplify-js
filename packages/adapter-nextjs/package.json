@@ -50,7 +50,8 @@
 		"dist/cjs",
 		"dist/esm",
 		"src",
-		"api"
+		"api",
+		"data"
 	],
 	"homepage": "https://aws-amplify.github.io/",
 	"license": "Apache-2.0",
