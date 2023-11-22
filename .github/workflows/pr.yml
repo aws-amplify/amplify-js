@@ -30,6 +30,9 @@ jobs:
   github-actions-test:
     needs: prebuild
     uses: ./.github/workflows/callable-test-github-actions.yml
+  license-test:
+    needs: prebuild
+    uses: ./.github/workflows/callable-test-license.yml
   tsc-compliance-test:
     needs: prebuild
     uses: ./.github/workflows/callable-test-tsc-compliance.yml
@@ -44,6 +47,7 @@ jobs:
       - github-actions-test
       - tsc-compliance-test
       - dependency-review
+      - license-test
     runs-on: ubuntu-latest
     if: success() # only run when all checks have passed
     # store success output flag for ci job
