@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	InteractionsSendInput,
 	InteractionsOnCompleteInput,
-} from '../../types';
+	InteractionsSendInput,
+} from '~/src/types';
 
 /**
  * Input type for LexV1 send API.

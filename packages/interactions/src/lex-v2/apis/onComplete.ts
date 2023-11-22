@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { OnCompleteInput } from '../types';
-import { resolveBotConfig } from '../utils';
-import { lexProvider } from '../AWSLexV2Provider';
+import { OnCompleteInput } from '~/src/lex-v2/types';
+import { resolveBotConfig } from '~/src/lex-v2/utils';
+import { lexProvider } from '~/src/lex-v2/AWSLexV2Provider';
 import {
-	assertValidationError,
 	InteractionsValidationErrorCode,
-} from '../../errors';
+	assertValidationError,
+} from '~/src/errors';
 
 export const onComplete = (input: OnCompleteInput): void => {
 	const { botName, callback } = input;
@@ -15,7 +15,7 @@ export const onComplete = (input: OnCompleteInput): void => {
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
-		`Bot ${botName} does not exist.`
+		`Bot ${botName} does not exist.`,
 	);
 	lexProvider.onComplete(botConfig, callback);
 };

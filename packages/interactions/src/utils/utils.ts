@@ -9,7 +9,7 @@ export const convert = async (stream: object): Promise<Uint8Array> => {
 			.arrayBuffer()
 			.then(buffer => new Uint8Array(buffer));
 	} else {
-		return Promise.reject('Invalid content type');
+		return Promise.reject(new Error('Invalid content type'));
 	}
 };
 
@@ -18,9 +18,9 @@ export const base64ToArrayBuffer = (base64: string): Uint8Array => {
 };
 
 export const gzipDecompressToString = async (
-	data: Uint8Array
+	data: Uint8Array,
 ): Promise<string> => {
-	return await new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		gunzip(data, (err, resp) => {
 			if (err) reject(err);
 			else resolve(strFromU8(resp));

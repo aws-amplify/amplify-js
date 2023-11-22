@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	InteractionsOnCompleteCallback,
 	InteractionsMessage,
+	InteractionsOnCompleteCallback,
 	InteractionsResponse,
-} from '../types/Interactions';
+} from '~/src/types/Interactions';
 import {
 	IntentState,
 	LexRuntimeV2Client,
@@ -17,8 +17,9 @@ import {
 } from '@aws-sdk/client-lex-runtime-v2';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
-import { convert, unGzipBase64AsJson } from '../utils';
+import { convert, unGzipBase64AsJson } from '~/src/utils';
 import { v4 as uuid } from 'uuid';
+
 import { AWSLexV2ProviderOption } from './types';
 
 const logger = new ConsoleLogger('AWSLexV2Provider');
@@ -43,18 +44,19 @@ type AWSLexV2ProviderSendResponse =
 	| RecognizeTextCommandOutput
 	| RecognizeUtteranceCommandOutputFormatted;
 
-type lexV2BaseReqParams = {
+interface lexV2BaseReqParams {
 	botId: string;
 	botAliasId: string;
 	localeId: string;
 	sessionId: string;
-};
+}
 
 class AWSLexV2Provider {
 	private readonly _botsCompleteCallback: Record<
 		string,
 		InteractionsOnCompleteCallback
 	> = {};
+
 	private defaultSessionId: string = uuid();
 
 	/**
@@ -66,14 +68,14 @@ class AWSLexV2Provider {
 	 */
 	public async sendMessage(
 		botConfig: AWSLexV2ProviderOption,
-		message: string | InteractionsMessage
+		message: string | InteractionsMessage,
 	): Promise<InteractionsResponse> {
 		// check if credentials are present
 		let session;
 		try {
 			session = await fetchAuthSession();
 		} catch (error) {
-			return Promise.reject('No credentials');
+			return Promise.reject(new Error('No credentials'));
 		}
 
 		const { region, aliasId, localeId, botId } = botConfig;
@@ -98,16 +100,17 @@ class AWSLexV2Provider {
 				botConfig,
 				message,
 				reqBaseParams,
-				client
+				client,
 			);
 		} else {
 			response = await this._handleRecognizeUtteranceCommand(
 				botConfig,
 				message,
 				reqBaseParams,
-				client
+				client,
 			);
 		}
+
 		return response;
 	}
 
@@ -119,7 +122,7 @@ class AWSLexV2Provider {
 	 */
 	public onComplete(
 		{ name }: AWSLexV2ProviderOption,
-		callback: InteractionsOnCompleteCallback
+		callback: InteractionsOnCompleteCallback,
 	) {
 		this._botsCompleteCallback[name] = callback;
 	}
@@ -129,7 +132,7 @@ class AWSLexV2Provider {
 	 */
 	_reportBotStatus(
 		data: AWSLexV2ProviderSendResponse,
-		{ name }: AWSLexV2ProviderOption
+		{ name }: AWSLexV2ProviderOption,
 	) {
 		const sessionState = data?.sessionState;
 
@@ -159,7 +162,7 @@ class AWSLexV2Provider {
 	 * update audioStream format
 	 */
 	private async _formatUtteranceCommandOutput(
-		data: RecognizeUtteranceCommandOutput
+		data: RecognizeUtteranceCommandOutput,
 	): Promise<RecognizeUtteranceCommandOutputFormatted> {
 		return {
 			...data,
@@ -182,7 +185,7 @@ class AWSLexV2Provider {
 		botConfig: AWSLexV2ProviderOption,
 		data: string,
 		baseParams: lexV2BaseReqParams,
-		client: LexRuntimeV2Client
+		client: LexRuntimeV2Client,
 	) {
 		logger.debug('postText to lex2', data);
 
@@ -193,10 +196,11 @@ class AWSLexV2Provider {
 
 		try {
 			const recognizeTextCommand = new RecognizeTextCommand(params);
-			const data = await client.send(recognizeTextCommand);
+			const result = await client.send(recognizeTextCommand);
 
-			this._reportBotStatus(data, botConfig);
-			return data;
+			this._reportBotStatus(result, botConfig);
+
+			return result;
 		} catch (err) {
 			return Promise.reject(err);
 		}
@@ -210,7 +214,7 @@ class AWSLexV2Provider {
 		botConfig: AWSLexV2ProviderOption,
 		data: InteractionsMessage,
 		baseParams: lexV2BaseReqParams,
-		client: LexRuntimeV2Client
+		client: LexRuntimeV2Client,
 	) {
 		const {
 			content,
@@ -223,7 +227,7 @@ class AWSLexV2Provider {
 		// prepare params
 		if (messageType === 'voice') {
 			if (typeof content !== 'object') {
-				return Promise.reject('invalid content type');
+				return Promise.reject(new Error('invalid content type'));
 			}
 
 			const inputStream =
@@ -237,7 +241,7 @@ class AWSLexV2Provider {
 		} else {
 			// text input
 			if (typeof content !== 'string')
-				return Promise.reject('invalid content type');
+				return Promise.reject(new Error('invalid content type'));
 
 			params = {
 				...baseParams,
@@ -249,10 +253,11 @@ class AWSLexV2Provider {
 		// make API call to lex
 		try {
 			const recognizeUtteranceCommand = new RecognizeUtteranceCommand(params);
-			const data = await client.send(recognizeUtteranceCommand);
+			const result = await client.send(recognizeUtteranceCommand);
 
-			const response = await this._formatUtteranceCommandOutput(data);
+			const response = await this._formatUtteranceCommandOutput(result);
 			this._reportBotStatus(response, botConfig);
+
 			return response;
 		} catch (err) {
 			return Promise.reject(err);

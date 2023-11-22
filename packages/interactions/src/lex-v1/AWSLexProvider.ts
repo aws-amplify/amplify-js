@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	InteractionsOnCompleteCallback,
 	InteractionsMessage,
+	InteractionsOnCompleteCallback,
 	InteractionsResponse,
-} from '../types/Interactions';
+} from '~/src/types/Interactions';
 import {
 	DialogState,
 	LexRuntimeServiceClient,
@@ -17,7 +17,8 @@ import {
 } from '@aws-sdk/client-lex-runtime-service';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
-import { convert } from '../utils';
+import { convert } from '~/src/utils';
+
 import { AWSLexProviderOption } from './types';
 
 const logger = new ConsoleLogger('AWSLexProvider');
@@ -44,7 +45,7 @@ class AWSLexProvider {
 	 */
 	reportBotStatus(
 		data: AWSLexProviderSendResponse,
-		{ name }: AWSLexProviderOption
+		{ name }: AWSLexProviderOption,
 	) {
 		const callback = this._botsCompleteCallback[name];
 		if (!callback) {
@@ -68,14 +69,14 @@ class AWSLexProvider {
 
 	async sendMessage(
 		botConfig: AWSLexProviderOption,
-		message: string | InteractionsMessage
+		message: string | InteractionsMessage,
 	): Promise<InteractionsResponse> {
 		// check if credentials are present
 		let session;
 		try {
 			session = await fetchAuthSession();
 		} catch (error) {
-			return Promise.reject('No credentials');
+			return Promise.reject(new Error('No credentials'));
 		}
 
 		const { name, region, alias } = botConfig;
@@ -100,6 +101,7 @@ class AWSLexProvider {
 				const data = await client.send(postTextCommand);
 
 				this.reportBotStatus(data, botConfig);
+
 				return data;
 			} catch (err) {
 				return Promise.reject(err);
@@ -111,7 +113,7 @@ class AWSLexProvider {
 			} = message;
 			if (messageType === 'voice') {
 				if (typeof content !== 'object') {
-					return Promise.reject('invalid content type');
+					return Promise.reject(new Error('invalid content type'));
 				}
 				const inputStream =
 					content instanceof Uint8Array ? content : await convert(content);
@@ -126,7 +128,7 @@ class AWSLexProvider {
 				};
 			} else {
 				if (typeof content !== 'string')
-					return Promise.reject('invalid content type');
+					return Promise.reject(new Error('invalid content type'));
 
 				params = {
 					botAlias: alias,
@@ -149,6 +151,7 @@ class AWSLexProvider {
 				const response = { ...data, ...{ audioStream: audioArray } };
 
 				this.reportBotStatus(response, botConfig);
+
 				return response;
 			} catch (err) {
 				return Promise.reject(err);
@@ -158,7 +161,7 @@ class AWSLexProvider {
 
 	onComplete(
 		{ name }: AWSLexProviderOption,
-		callback: InteractionsOnCompleteCallback
+		callback: InteractionsOnCompleteCallback,
 	) {
 		this._botsCompleteCallback[name] = callback;
 	}

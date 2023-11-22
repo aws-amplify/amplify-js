@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SendInput, SendOutput } from '../types';
-import { lexProvider } from '../AWSLexV2Provider';
-import { resolveBotConfig } from '../utils';
+import { SendInput, SendOutput } from '~/src/lex-v2/types';
+import { lexProvider } from '~/src/lex-v2/AWSLexV2Provider';
+import { resolveBotConfig } from '~/src/lex-v2/utils';
 import {
-	assertValidationError,
 	InteractionsValidationErrorCode,
-} from '../../errors';
+	assertValidationError,
+} from '~/src/errors';
 
 export const send = async (input: SendInput): Promise<SendOutput> => {
 	const { botName, message } = input;
@@ -15,7 +15,8 @@ export const send = async (input: SendInput): Promise<SendOutput> => {
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
-		`Bot ${botName} does not exist.`
+		`Bot ${botName} does not exist.`,
 	);
+
 	return lexProvider.sendMessage(botConfig, message);
 };
