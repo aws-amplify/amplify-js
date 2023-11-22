@@ -123,8 +123,9 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.cognitoConfig.userPoolClientId
 		);
 
-		const isLegacyHostedUISignIn =
-			await this.keyValueStorage.getItem(V5_HOSTED_UI_KEY);
+		const isLegacyHostedUISignIn = await this.keyValueStorage.getItem(
+			V5_HOSTED_UI_KEY
+		);
 
 		const [isOAuthSignIn, preferPrivateSession] =
 			(await this.keyValueStorage.getItem(authKeys.oauthSignIn))?.split(',') ??

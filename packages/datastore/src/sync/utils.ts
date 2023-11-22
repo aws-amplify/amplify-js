@@ -411,7 +411,7 @@ export function buildGraphQLOperation(
 }
 
 export function createMutationInstanceFromModelOperation<
-	T extends PersistentModel,
+	T extends PersistentModel
 >(
 	relationships: RelationshipType,
 	modelDefinition: SchemaModel,

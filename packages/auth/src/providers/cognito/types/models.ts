@@ -107,5 +107,5 @@ export interface AuthUser extends AWSAuthUser {
  * Holds data describing the dispatch of a confirmation code.
  */
 export type CodeDeliveryDetails<
-	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey
 > = AuthCodeDeliveryDetails<CognitoUserAttributeKey>;
