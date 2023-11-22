@@ -20,7 +20,7 @@ const mockTokenProvider = {
 };
 const mockCredentialAndIdentityProvider = {
 	getCredentialsAndIdentityId: jest.fn(),
-	clearCredentials: jest.fn(),
+	clearCredentialsAndIdentityId: jest.fn(),
 };
 
 describe('serverContext', () => {
@@ -89,6 +89,20 @@ describe('serverContext', () => {
 			expect(() => getAmplifyServerContext(contextSpec)).toThrowError(
 				'Attempted to get the Amplify Server Context that may have been destroyed.'
 			);
+		});
+	});
+
+	describe('passing invalid contextSpec', () => {
+		it('should throw exception if the contextSpec is invalid', () => {
+			[
+				{ bad: 'token' },
+				{ token: { bad: 'value' } },
+				{ token: { value: 'bad-value' } },
+			].forEach(invalidContextSpec => {
+				expect(() =>
+					getAmplifyServerContext(invalidContextSpec as any)
+				).toThrowError('Invalid `contextSpec`.');
+			});
 		});
 	});
 });
