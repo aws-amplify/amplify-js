@@ -15,11 +15,11 @@ export function generateModelsProperty<
 		| V6ClientSSRRequest<Record<string, any>>
 		| V6ClientSSRCookies<Record<string, any>> = V6ClientSSRCookies<
 		Record<string, any>
-	>
+	>,
 >(client: ClientType, params: ServerClientGenerationParams): ClientType {
 	const models = {} as any;
 	const config = params.config;
-	const useContext = client === null;
+	const useContext = params.amplify === null;
 
 	if (!config) {
 		throw new Error('generateModelsProperty cannot retrieve Amplify config');

@@ -279,5 +279,32 @@ describe('server generateClient', () => {
 				client.models.Note.onCreate().subscribe();
 			}).toThrowError();
 		});
+
+		test('contextSpec param gets passed through to client.graphql', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const client = generateClient<Schema, V6ClientSSRRequest<Schema>>({
+				amplify: null,
+				config: config,
+			});
+
+			const mockContextSpec = {};
+
+			const spy = jest.spyOn(client, 'graphql').mockImplementation(async () => {
+				const result: any = {};
+				return result;
+			});
+
+			await client.models.Note.list(mockContextSpec);
+
+			expect(spy).toHaveBeenCalledWith(
+				mockContextSpec,
+				expect.objectContaining({
+					query: expect.stringContaining('listNotes'),
+				}),
+				{}
+			);
+		});
 	});
 });
