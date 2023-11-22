@@ -68,6 +68,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
+		"@aws-amplify/core": "6.0.4",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
@@ -84,6 +85,9 @@
 		"@aws-amplify/api-graphql": "4.0.4",
 		"@aws-amplify/api-rest": "4.0.4",
 		"tslib": "^2.5.0"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "6.0.4"
 	},
 	"jest": {
 		"globals": {
