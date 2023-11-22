@@ -29,6 +29,10 @@ describe('runWithAmplifyServerContext', () => {
 		mockCreateAmplifyServerContext.mockReturnValueOnce(mockContextSpec);
 	});
 
+	afterEach(() => {
+		mockDestroyAmplifyServerContext.mockReset();
+	});
+
 	it('should run the operation with the context', () => {
 		const mockOperation = jest.fn();
 		runWithAmplifyServerContext(
@@ -45,7 +49,7 @@ describe('runWithAmplifyServerContext', () => {
 		expect(mockOperation).toHaveBeenCalledWith(mockContextSpec);
 	});
 
-	it('should destroy the context after the operation', async () => {
+	it('should destroy the context after the operation completed', async () => {
 		const mockOperation = jest.fn();
 		await runWithAmplifyServerContext(
 			mockAmplifyConfig,
@@ -57,6 +61,29 @@ describe('runWithAmplifyServerContext', () => {
 			},
 			mockOperation
 		);
+
+		expect(mockDestroyAmplifyServerContext).toHaveBeenCalledWith(
+			mockContextSpec
+		);
+	});
+
+	it('should destroy the context when the operation throws', async () => {
+		const testError = new Error('some error');
+		const mockOperation = jest.fn();
+		mockOperation.mockRejectedValueOnce(testError);
+
+		await expect(
+			runWithAmplifyServerContext(
+				mockAmplifyConfig,
+				{
+					Auth: {
+						tokenProvider: mockTokenProvider,
+						credentialsProvider: mockCredentialAndIdentityProvider,
+					},
+				},
+				mockOperation
+			)
+		).rejects.toThrow(testError);
 
 		expect(mockDestroyAmplifyServerContext).toHaveBeenCalledWith(
 			mockContextSpec
