@@ -1,10 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import {
+	USER,
+	isModelConstructor,
+	isNonModelConstructor,
+	traverseModel,
+	validatePredicate,
+} from './util';
+
 export {
 	DataStore,
 	DataStoreClass,
 	initSchema,
 	ModelInstanceCreator,
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line import/export
 	AsyncCollection,
 	AsyncItem,
 } from './datastore/datastore';
@@ -16,14 +26,6 @@ export {
 } from './predicates';
 export { Adapter as StorageAdapter } from './storage/adapter';
 
-import {
-	traverseModel,
-	validatePredicate,
-	USER,
-	isNonModelConstructor,
-	isModelConstructor,
-} from './util';
-
 export { NAMESPACES } from './util';
 
 export const utils = {
@@ -34,4 +36,6 @@ export const utils = {
 	isModelConstructor,
 };
 
+// TODO(eslint): remove this linter suppression with refactoring.
+// eslint-disable-next-line import/export
 export * from './types';

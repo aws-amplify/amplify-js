@@ -2,16 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 import { fetchAuthSession } from '@aws-amplify/core';
 import {
+	AmplifyContext,
 	AuthModeStrategy,
+	ModelAttributeAuthAllow,
 	ModelAttributeAuthProperty,
 	ModelAttributeAuthProvider,
-	ModelAttributeAuthAllow,
-	AmplifyContext,
-} from '../types';
+} from '~/src/types';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 function getProviderFromRule(
-	rule: ModelAttributeAuthProperty
+	rule: ModelAttributeAuthProperty,
 ): ModelAttributeAuthProvider {
 	// private with no provider means userPools
 	if (rule.allow === 'private' && !rule.provider) {
@@ -21,6 +21,7 @@ function getProviderFromRule(
 	if (rule.allow === 'public' && !rule.provider) {
 		return ModelAttributeAuthProvider.API_KEY;
 	}
+
 	return rule.provider!;
 }
 
@@ -48,10 +49,11 @@ function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
 					providerSortPriority.indexOf(getProviderFromRule(b))
 				);
 			}
+
 			return (
 				allowSortPriority.indexOf(a.allow) - allowSortPriority.indexOf(b.allow)
 			);
-		}
+		},
 	);
 }
 
@@ -136,9 +138,9 @@ function getAuthRules({
  * @returns A sorted array of auth modes to attempt.
  */
 export const multiAuthStrategy: (
-	amplifyContext: AmplifyContext
+	amplifyContext: AmplifyContext,
 ) => AuthModeStrategy =
-	(amplifyContext: AmplifyContext) =>
+	() =>
 	async ({ schema, modelName }) => {
 		let currentUser;
 		try {
@@ -158,11 +160,12 @@ export const multiAuthStrategy: (
 
 			if (authAttribute?.properties?.rules) {
 				const sortedRules = sortAuthRulesWithPriority(
-					authAttribute.properties.rules
+					authAttribute.properties.rules,
 				);
 
 				return getAuthRules({ currentUser, rules: sortedRules });
 			}
 		}
+
 		return [];
 	};

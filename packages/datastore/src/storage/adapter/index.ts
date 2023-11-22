@@ -9,29 +9,29 @@ import {
 	PersistentModelConstructor,
 	QueryOne,
 	SystemComponent,
-} from '../../types';
+} from '~/src/types';
 
 export interface Adapter extends SystemComponent {
 	clear(): Promise<void>;
 	save<T extends PersistentModel>(
 		model: T,
-		condition?: ModelPredicate<T>
+		condition?: ModelPredicate<T>,
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]>;
-	delete: <T extends PersistentModel>(
+	delete<T extends PersistentModel>(
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
-		condition?: ModelPredicate<T>
-	) => Promise<[T[], T[]]>;
+		condition?: ModelPredicate<T>,
+	): Promise<[T[], T[]]>;
 	query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput<T>
+		pagination?: PaginationInput<T>,
 	): Promise<T[]>;
 	queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		firstOrLast: QueryOne
+		firstOrLast: QueryOne,
 	): Promise<T | undefined>;
 	batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		items: ModelInstanceMetadata[]
+		items: ModelInstanceMetadata[],
 	): Promise<[T, OpType][]>;
 }

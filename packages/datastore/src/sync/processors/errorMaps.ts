@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ErrorType } from '../../types';
-import { resolveServiceErrorStatusCode } from '../utils';
+import { ErrorType } from '~/src/types';
+import { resolveServiceErrorStatusCode } from '~/src/sync/utils';
 
 export type ErrorMap = Partial<{
 	[key in ErrorType]: (error: Error) => boolean;
@@ -16,6 +16,7 @@ export const mutationErrorMap: ErrorMap = {
 	BadModel: () => false,
 	BadRecord: error => {
 		const { message } = error;
+
 		return (
 			/^Cannot return \w+ for [\w-_]+ type/.test(message) ||
 			/^Variable '.+' has coerced Null value for NonNull type/.test(message)
@@ -34,10 +35,12 @@ export const subscriptionErrorMap: ErrorMap = {
 	ConfigError: () => false,
 	Transient: observableError => {
 		const error = unwrapObservableError(observableError);
+
 		return connectionTimeout(error) || serverError(error);
 	},
 	Unauthorized: observableError => {
 		const error = unwrapObservableError(observableError);
+
 		return /Connection failed.+Unauthorized/.test(error.message);
 	},
 };
@@ -60,6 +63,8 @@ function unwrapObservableError(observableError: any) {
 	const {
 		errors: [error],
 	} = ({
+		// TODO(eslint): remove this linter suppression with refactoring.
+		// eslint-disable-next-line no-empty-pattern
 		errors: [],
 	} = observableError);
 
@@ -92,5 +97,6 @@ export function mapErrorToType(errorMap: ErrorMap, error: Error): ErrorType {
 			return errorType;
 		}
 	}
+
 	return 'Unknown';
 }

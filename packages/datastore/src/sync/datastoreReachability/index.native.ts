@@ -4,5 +4,5 @@ import { Reachability } from '@aws-amplify/core/internals/utils';
 import { loadNetInfo } from '@aws-amplify/react-native';
 
 export const ReachabilityMonitor = new Reachability().networkMonitor(
-	loadNetInfo()
+	loadNetInfo(),
 );

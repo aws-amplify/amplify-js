@@ -4,40 +4,39 @@ import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Observable } from 'rxjs';
 import {
-	InternalSchema,
-	ModelInstanceMetadata,
-	SchemaModel,
-	ModelPredicate,
-	PredicatesGroup,
-	GraphQLFilter,
+	AmplifyContext,
 	AuthModeStrategy,
 	ErrorHandler,
+	GraphQLFilter,
+	InternalSchema,
+	ModelInstanceMetadata,
+	ModelPredicate,
+	PredicatesGroup,
 	ProcessName,
-	AmplifyContext,
-} from '../../types';
+	SchemaModel,
+} from '~/src/types';
 import {
 	buildGraphQLOperation,
-	getModelAuthModes,
 	getClientSideAuthError,
 	getForbiddenError,
-	predicateToGraphQLFilter,
+	getModelAuthModes,
 	getTokenForCustomAuth,
-} from '../utils';
+	predicateToGraphQLFilter,
+} from '~/src/sync/utils';
 import {
-	jitteredExponentialRetry,
+	BackgroundProcessManager,
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	NonRetryableError,
-	BackgroundProcessManager,
 	GraphQLAuthMode,
-	AmplifyError,
+	NonRetryableError,
+	jitteredExponentialRetry,
 } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
+import { ModelPredicateCreator } from '~/src/predicates';
 
-import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
-
-import { ModelPredicateCreator } from '../../predicates';
 import { getSyncErrorType } from './errorMaps';
+
 const opResultDefaults = {
 	items: [],
 	nextToken: null,
@@ -60,7 +59,7 @@ class SyncProcessor {
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
-		private readonly amplifyContext: AmplifyContext
+		private readonly amplifyContext: AmplifyContext,
 	) {
 		amplifyContext.InternalAPI = amplifyContext.InternalAPI || InternalAPI;
 		this.generateQueries();
@@ -74,7 +73,7 @@ class SyncProcessor {
 					const [[, ...opNameQuery]] = buildGraphQLOperation(
 						namespace,
 						model,
-						'LIST'
+						'LIST',
 					);
 
 					this.typeQuery.set(model, opNameQuery);
@@ -89,7 +88,7 @@ class SyncProcessor {
 		const predicatesGroup: PredicatesGroup<any> =
 			ModelPredicateCreator.getPredicates(
 				this.syncPredicates.get(model)!,
-				false
+				false,
 			)!;
 
 		if (!predicatesGroup) {
@@ -105,7 +104,7 @@ class SyncProcessor {
 		nextToken: string,
 		limit: number = null!,
 		filter: GraphQLFilter,
-		onTerminate: Promise<void>
+		onTerminate: Promise<void>,
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
 		const [opName, query] = this.typeQuery.get(modelDefinition)!;
 
@@ -130,13 +129,13 @@ class SyncProcessor {
 		const authModeRetry = async () => {
 			if (!this.runningProcesses.isOpen) {
 				throw new Error(
-					'sync.retreievePage termination was requested. Exiting.'
+					'sync.retreievePage termination was requested. Exiting.',
 				);
 			}
 
 			try {
 				logger.debug(
-					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
+					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
 				const response = await this.jitteredRetry<T>({
 					query,
@@ -147,8 +146,9 @@ class SyncProcessor {
 					onTerminate,
 				});
 				logger.debug(
-					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`
+					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
+
 				return response;
 			} catch (error) {
 				authModeAttempts++;
@@ -158,7 +158,7 @@ class SyncProcessor {
 					if (getClientSideAuthError(error) || getForbiddenError(error)) {
 						// return empty list of data so DataStore will continue to sync other models
 						logger.warn(
-							`User is unauthorized to query ${opName} with auth mode ${authMode}. No data could be returned.`
+							`User is unauthorized to query ${opName} with auth mode ${authMode}. No data could be returned.`,
 						);
 
 						return {
@@ -172,9 +172,10 @@ class SyncProcessor {
 				logger.debug(
 					`Sync failed with authMode: ${
 						readAuthModes[authModeAttempts - 1]
-					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`
+					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
-				return await authModeRetry();
+
+				return authModeRetry();
 			}
 		};
 
@@ -206,20 +207,23 @@ class SyncProcessor {
 		authMode: GraphQLAuthMode;
 		onTerminate: Promise<void>;
 	}): Promise<
-		GraphQLResult<{
-			[opName: string]: {
-				items: T[];
-				nextToken: string;
-				startedAt: number;
-			};
-		}>
+		GraphQLResult<
+			Record<
+				string,
+				{
+					items: T[];
+					nextToken: string;
+					startedAt: number;
+				}
+			>
+		>
 	> {
-		return await jitteredExponentialRetry(
-			async (query, variables) => {
+		return jitteredExponentialRetry(
+			async (retryQuery, retryVariables) => {
 				try {
 					const authToken = await getTokenForCustomAuth(
 						authMode,
-						this.amplifyConfig
+						this.amplifyConfig,
 					);
 
 					const customUserAgentDetails: CustomUserAgentDetails = {
@@ -229,13 +233,13 @@ class SyncProcessor {
 
 					return await this.amplifyContext.InternalAPI.graphql(
 						{
-							query,
-							variables,
+							query: retryQuery,
+							variables: retryVariables,
 							authMode,
 							authToken,
 						},
 						undefined,
-						customUserAgentDetails
+						customUserAgentDetails,
 					);
 
 					// TODO: onTerminate.then(() => API.cancel(...))
@@ -254,20 +258,20 @@ class SyncProcessor {
 					const unauthorized =
 						error?.errors &&
 						(error.errors as [any]).some(
-							err => err.errorType === 'Unauthorized'
+							err => err.errorType === 'Unauthorized',
 						);
 
 					const otherErrors =
 						error?.errors &&
 						(error.errors as [any]).filter(
-							err => err.errorType !== 'Unauthorized'
+							err => err.errorType !== 'Unauthorized',
 						);
 
 					const result = error;
 
 					if (hasItems) {
 						result.data[opName].items = result.data[opName].items.filter(
-							item => item !== null
+							item => item !== null,
 						);
 					}
 
@@ -275,6 +279,8 @@ class SyncProcessor {
 						await Promise.all(
 							otherErrors.map(async err => {
 								try {
+									// TODO(eslint): remove this linter suppression with refactoring.
+									// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 									await this.errorHandler({
 										recoverySuggestion:
 											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -290,7 +296,7 @@ class SyncProcessor {
 								} catch (e) {
 									logger.error('Sync error handler failed with:', e);
 								}
-							})
+							}),
 						);
 						Hub.dispatch('datastore', {
 							event: 'nonApplicableDataReceived',
@@ -350,12 +356,12 @@ class SyncProcessor {
 			},
 			[query, variables],
 			undefined,
-			onTerminate
+			onTerminate,
 		);
 	}
 
 	start(
-		typesLastSync: Map<SchemaModel, [string, number]>
+		typesLastSync: Map<SchemaModel, [string, number]>,
 	): Observable<SyncModelPage> {
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
@@ -363,14 +369,15 @@ class SyncProcessor {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
-						namespace.modelTopologicalOrdering!.keys()
+						namespace.modelTopologicalOrdering!.keys(),
 					)) {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
 						map.set(namespace.models[modelName], typeLastSync!);
 					}
+
 					return map;
 				},
-				new Map<SchemaModel, [string, number]>()
+				new Map<SchemaModel, [string, number]>(),
 			);
 
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
@@ -391,10 +398,11 @@ class SyncProcessor {
 								namespace
 							].modelTopologicalOrdering!.get(modelDefinition.name);
 							const promises = parents!.map(parent =>
-								parentPromises.get(`${namespace}_${parent}`)
+								parentPromises.get(`${namespace}_${parent}`),
 							);
-
-							const promise = new Promise<void>(async res => {
+							// TODO(eslint): remove this linter suppression with refactoring.
+							// eslint-disable-next-line no-async-promise-executor
+							const promise = new Promise<void>(async resolve => {
 								await Promise.all(promises);
 
 								do {
@@ -405,14 +413,17 @@ class SyncProcessor {
 									 */
 									if (!this.runningProcesses.isOpen) {
 										logger.debug(
-											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`
+											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`,
 										);
-										return res();
+
+										resolve();
+
+										return;
 									}
 
 									const limit = Math.min(
 										maxRecordsToSync - recordsReceived,
-										syncPageSize
+										syncPageSize,
 									);
 
 									/**
@@ -427,10 +438,12 @@ class SyncProcessor {
 											nextToken,
 											limit,
 											filter,
-											onTerminate
+											onTerminate,
 										));
 									} catch (error) {
 										try {
+											// TODO(eslint): remove this linter suppression with refactoring.
+											// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 											await this.errorHandler({
 												recoverySuggestion:
 													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -472,16 +485,16 @@ class SyncProcessor {
 									});
 								} while (!done);
 
-								res();
+								resolve();
 							});
 
 							parentPromises.set(
 								`${namespace}_${modelDefinition.name}`,
-								promise
+								promise,
 							);
 
 							await promise;
-						}, `adding model ${modelDefinition.name}`)
+						}, `adding model ${modelDefinition.name}`),
 				);
 
 			Promise.all(allModelsReady as Promise<any>[]).then(() => {
@@ -500,13 +513,13 @@ class SyncProcessor {
 	}
 }
 
-export type SyncModelPage = {
+export interface SyncModelPage {
 	namespace: string;
 	modelDefinition: SchemaModel;
 	items: ModelInstanceMetadata[];
 	startedAt: number;
 	done: boolean;
 	isFullSync: boolean;
-};
+}
 
 export { SyncProcessor };

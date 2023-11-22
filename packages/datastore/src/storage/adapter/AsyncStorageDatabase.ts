@@ -7,12 +7,13 @@ import {
 	PaginationInput,
 	PersistentModel,
 	QueryOne,
-} from '../../types';
+} from '~/src/types';
 import {
 	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
 	indexNameFromKeys,
 	monotonicUlidFactory,
-} from '../../util';
+} from '~/src/util';
+
 import { createInMemoryStore } from './InMemoryStore';
 
 const DB_NAME = '@AmplifyDatastore';
@@ -72,12 +73,12 @@ class AsyncStorageDatabase {
 					if (id === undefined) {
 						// It is an old entry (without ulid). Need to migrate to new key format
 
-						const id = ulidOrId;
+						const newId = ulidOrId;
 
 						const newUlid = this.getMonotonicFactory(storeName)();
 
-						const oldKey = this.getLegacyKeyForItem(storeName, id);
-						const newKey = this.getKeyForItem(storeName, id, newUlid);
+						const oldKey = this.getLegacyKeyForItem(storeName, newId);
+						const newKey = this.getKeyForItem(storeName, newId, newUlid);
 
 						const item = await this.storage.getItem(oldKey);
 
@@ -105,7 +106,7 @@ class AsyncStorageDatabase {
 		item: T,
 		storeName: string,
 		keys: string[],
-		keyValuesPath: string
+		keyValuesPath: string,
 	) {
 		const idxName = indexNameFromKeys(keys);
 
@@ -126,7 +127,7 @@ class AsyncStorageDatabase {
 	async batchSave<T extends PersistentModel>(
 		storeName: string,
 		items: ModelInstanceMetadata[],
-		keys: string[]
+		keys: string[],
 	): Promise<[T, OpType][]> {
 		if (items.length === 0) {
 			return [];
@@ -157,11 +158,11 @@ class AsyncStorageDatabase {
 			const key = this.getKeyForItem(
 				storeName,
 				keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR),
-				ulid
+				ulid,
 			);
 
 			allItemsKeys.push(key);
-			itemsMap[key] = { ulid, model: <T>(<unknown>item) };
+			itemsMap[key] = { ulid, model: item as unknown as T };
 
 			if (_deleted) {
 				keysToDelete.add(key);
@@ -180,6 +181,7 @@ class AsyncStorageDatabase {
 		await new Promise<void>((resolve, reject) => {
 			if (keysToDelete.size === 0) {
 				resolve();
+
 				return;
 			}
 
@@ -208,6 +210,7 @@ class AsyncStorageDatabase {
 		await new Promise<void>((resolve, reject) => {
 			if (keysToSave.size === 0) {
 				resolve();
+
 				return;
 			}
 
@@ -252,12 +255,13 @@ class AsyncStorageDatabase {
 
 	async get<T extends PersistentModel>(
 		keyValuePath: string,
-		storeName: string
+		storeName: string,
 	): Promise<T> {
 		const ulid = this.getCollectionIndex(storeName)!.get(keyValuePath)!;
 		const itemKey = this.getKeyForItem(storeName, keyValuePath, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
+
 		return record;
 	}
 
@@ -267,14 +271,18 @@ class AsyncStorageDatabase {
 		const [itemId, ulid] =
 			firstOrLast === QueryOne.FIRST
 				? (() => {
-						let id: string, ulid: string;
-						for ([id, ulid] of collection) break; // Get first element of the set
-						return [id!, ulid!];
+						let id: string, targetUlid: string;
+						// TODO(eslint): remove this linter suppression with refactoring.
+						// eslint-disable-next-line no-unreachable-loop
+						for ([id, targetUlid] of collection) break; // Get first element of the set
+
+						return [id!, targetUlid!];
 				  })()
 				: (() => {
-						let id: string, ulid: string;
-						for ([id, ulid] of collection); // Get last element of the set
-						return [id!, ulid!];
+						let id: string, targetUlid: string;
+						for ([id, targetUlid] of collection); // Get last element of the set
+
+						return [id!, targetUlid!];
 				  })();
 		const itemKey = this.getKeyForItem(storeName, itemId, ulid);
 
@@ -291,7 +299,7 @@ class AsyncStorageDatabase {
 	 */
 	async getAll<T extends PersistentModel>(
 		storeName: string,
-		pagination?: PaginationInput<T>
+		pagination?: PaginationInput<T>,
 	): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName)!;
 

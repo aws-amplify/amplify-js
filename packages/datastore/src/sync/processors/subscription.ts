@@ -3,53 +3,48 @@
 import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import {
+	ConsoleLogger,
 	Hub,
 	HubCapsule,
 	fetchAuthSession,
-	ConsoleLogger,
 } from '@aws-amplify/core';
 import {
+	BackgroundProcessManager,
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	BackgroundProcessManager,
 	GraphQLAuthMode,
-	AmplifyError,
 	JwtPayload,
 } from '@aws-amplify/core/internals/utils';
-
 import { Observable, Observer, SubscriptionLike } from 'rxjs';
 import {
-	InternalSchema,
-	PersistentModel,
-	SchemaModel,
-	SchemaNamespace,
-	PredicatesGroup,
-	ModelPredicate,
+	AmplifyContext,
 	AuthModeStrategy,
 	ErrorHandler,
+	InternalSchema,
+	ModelPredicate,
+	PersistentModel,
+	PredicatesGroup,
 	ProcessName,
-	AmplifyContext,
-} from '../../types';
+	SchemaModel,
+	SchemaNamespace,
+} from '~/src/types';
 import {
+	RTFError,
+	TransformerMutationType,
 	buildSubscriptionGraphQLOperation,
+	generateRTFRemediation,
 	getAuthorizationRules,
 	getModelAuthModes,
-	getUserGroupsFromToken,
-	TransformerMutationType,
 	getTokenForCustomAuth,
+	getUserGroupsFromToken,
 	predicateToGraphQLFilter,
-	dynamicAuthFields,
-	filterFields,
-	repeatedFieldInGroup,
-	countFilterCombinations,
-	RTFError,
-	generateRTFRemediation,
-} from '../utils';
-import { ModelPredicateCreator } from '../../predicates';
-import { validatePredicate } from '../../util';
-import { getSubscriptionErrorType } from './errorMaps';
+} from '~/src/sync/utils';
+import { ModelPredicateCreator } from '~/src/predicates';
+import { validatePredicate } from '~/src/util';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/api-graphql';
+
+import { getSubscriptionErrorType } from './errorMaps';
 
 const logger = new ConsoleLogger('DataStore');
 
@@ -63,20 +58,22 @@ export enum USER_CREDENTIALS {
 	'auth',
 }
 
-type AuthorizationInfo = {
+interface AuthorizationInfo {
 	authMode: GraphQLAuthMode;
 	isOwner: boolean;
 	ownerField?: string;
 	ownerValue?: string;
-};
+}
 
 class SubscriptionProcessor {
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
+
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
+
 	private dataObserver!: Observer<any>;
 
 	private runningProcesses = new BackgroundProcessManager();
@@ -92,7 +89,7 @@ class SubscriptionProcessor {
 		private readonly errorHandler: ErrorHandler,
 		private readonly amplifyContext: AmplifyContext = {
 			InternalAPI,
-		}
+		},
 	) {}
 
 	private buildSubscription(
@@ -102,7 +99,7 @@ class SubscriptionProcessor {
 		userCredentials: USER_CREDENTIALS,
 		oidcTokenPayload: JwtPayload | undefined,
 		authMode: GraphQLAuthMode,
-		filterArg: boolean = false
+		filterArg = false,
 	): {
 		opType: TransformerMutationType;
 		opName: string;
@@ -119,7 +116,7 @@ class SubscriptionProcessor {
 				userCredentials,
 				aws_appsync_authenticationType,
 				oidcTokenPayload,
-				authMode
+				authMode,
 			) || {};
 
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
@@ -128,8 +125,9 @@ class SubscriptionProcessor {
 			transformerMutationType,
 			isOwner,
 			ownerField!,
-			filterArg
+			filterArg,
 		);
+
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
 	}
 
@@ -138,14 +136,14 @@ class SubscriptionProcessor {
 		userCredentials: USER_CREDENTIALS,
 		defaultAuthType: GraphQLAuthMode,
 		oidcTokenPayload: JwtPayload | undefined,
-		authMode: GraphQLAuthMode
+		authMode: GraphQLAuthMode,
 	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
 		// Return null if user doesn't have proper credentials for private API with IAM auth
 		const iamPrivateAuth =
 			authMode === 'iam' &&
 			rules.find(
-				rule => rule.authStrategy === 'private' && rule.provider === 'iam'
+				rule => rule.authStrategy === 'private' && rule.provider === 'iam',
 			);
 
 		if (iamPrivateAuth && userCredentials === USER_CREDENTIALS.unauth) {
@@ -159,17 +157,19 @@ class SubscriptionProcessor {
 		const groupAuthRules = rules.filter(
 			rule =>
 				rule.authStrategy === 'groups' &&
-				['userPools', 'oidc'].includes(rule.provider)
+				['userPools', 'oidc'].includes(rule.provider),
 		);
 
 		const validGroup =
 			(authMode === 'oidc' || authMode === 'userPool') &&
+			// TODO(eslint): remove this linter suppression with refactoring.
+			// eslint-disable-next-line array-callback-return
 			groupAuthRules.find(groupAuthRule => {
 				// validate token against groupClaim
 				if (oidcTokenPayload) {
 					const oidcUserGroups = getUserGroupsFromToken(
 						oidcTokenPayload,
-						groupAuthRule
+						groupAuthRule,
 					);
 
 					return [...oidcUserGroups].find(userGroup => {
@@ -200,7 +200,7 @@ class SubscriptionProcessor {
 				? rules.filter(
 						rule =>
 							rule.authStrategy === 'owner' &&
-							(rule.provider === 'oidc' || rule.provider === 'userPools')
+							(rule.provider === 'oidc' || rule.provider === 'userPools'),
 				  )
 				: [];
 
@@ -233,8 +233,8 @@ class SubscriptionProcessor {
 	}
 
 	private hubQueryCompletionListener(
-		completed: Function,
-		capsule: HubCapsule<'datastore', { event: string }>
+		completed: (...args: any[]) => unknown,
+		capsule: HubCapsule<'datastore', { event: string }>,
 	) {
 		const {
 			payload: { event },
@@ -257,13 +257,14 @@ class SubscriptionProcessor {
 
 			// Creating subs for each model/operation combo so they can be unsubscribed
 			// independently, since the auth retry behavior is asynchronous.
-			let subscriptions: {
-				[modelName: string]: {
+			let subscriptions: Record<
+				string,
+				{
 					[TransformerMutationType.CREATE]: SubscriptionLike[];
 					[TransformerMutationType.UPDATE]: SubscriptionLike[];
 					[TransformerMutationType.DELETE]: SubscriptionLike[];
-				};
-			} = {};
+				}
+			> = {};
 			let oidcTokenPayload: JwtPayload | undefined;
 			let userCredentials = USER_CREDENTIALS.none;
 			this.runningProcesses.add(async () => {
@@ -326,7 +327,7 @@ class SubscriptionProcessor {
 
 									const predicatesGroup = ModelPredicateCreator.getPredicates(
 										this.syncPredicates.get(modelDefinition)!,
-										false
+										false,
 									);
 
 									const addFilterArg = predicatesGroup !== undefined;
@@ -336,7 +337,7 @@ class SubscriptionProcessor {
 									// 2. RTF error - retry without sending filter arg. (filtering will fall back to clientside)
 									const subscriptionRetry = async (
 										operation,
-										addFilter = addFilterArg
+										addFilter = addFilterArg,
 									) => {
 										const {
 											opType: transformerMutationType,
@@ -353,12 +354,12 @@ class SubscriptionProcessor {
 											userCredentials,
 											oidcTokenPayload,
 											readAuthModes[operationAuthModeAttempts[operation]],
-											addFilter
+											addFilter,
 										);
 
 										const authToken = await getTokenForCustomAuth(
 											authMode,
-											this.amplifyConfig
+											this.amplifyConfig,
 										);
 
 										const variables = {};
@@ -369,15 +370,17 @@ class SubscriptionProcessor {
 										};
 
 										if (addFilter && predicatesGroup) {
-											variables['filter'] =
+											// TODO(eslint): remove this linter suppression with refactoring.
+											(variables as any).filter =
 												predicateToGraphQLFilter(predicatesGroup);
 										}
 
 										if (isOwner) {
 											if (!ownerValue) {
 												observer.error(
-													'Owner field required, sign in is needed in order to perform this operation'
+													'Owner field required, sign in is needed in order to perform this operation',
 												);
+
 												return;
 											}
 
@@ -387,21 +390,22 @@ class SubscriptionProcessor {
 										logger.debug(
 											`Attempting ${operation} subscription with authMode: ${
 												readAuthModes[operationAuthModeAttempts[operation]]
-											}`
+											}`,
 										);
 
-										const queryObservable = <
-											Observable<GraphQLResult<Record<string, PersistentModel>>>
-										>(<unknown>this.amplifyContext.InternalAPI.graphql(
-											{
-												query,
-												variables,
-												...{ authMode },
-												authToken,
-											},
-											undefined,
-											customUserAgentDetails
-										));
+										const queryObservable =
+											this.amplifyContext.InternalAPI.graphql(
+												{
+													query,
+													variables,
+													...{ authMode },
+													authToken,
+												},
+												undefined,
+												customUserAgentDetails,
+											) as unknown as Observable<
+												GraphQLResult<Record<string, PersistentModel>>
+											>;
 
 										let subscriptionReadyCallback: (param?: unknown) => void;
 
@@ -414,29 +418,29 @@ class SubscriptionProcessor {
 												next: result => {
 													const { data, errors } = result;
 													if (Array.isArray(errors) && errors.length > 0) {
-														const messages = (<
-															{
+														const messages = (
+															errors as {
 																message: string;
 															}[]
-														>errors).map(({ message }) => message);
+														).map(({ message }) => message);
 
 														logger.warn(
 															`Skipping incoming subscription. Messages: ${messages.join(
-																'\n'
-															)}`
+																'\n',
+															)}`,
 														);
 
 														this.drainBuffer();
+
 														return;
 													}
 
-													const predicatesGroup =
+													const syncPredicatesGroup =
 														ModelPredicateCreator.getPredicates(
 															this.syncPredicates.get(modelDefinition)!,
-															false
+															false,
 														);
 
-													// @ts-ignore
 													const { [opName]: record } = data;
 
 													// checking incoming subscription against syncPredicate.
@@ -446,13 +450,13 @@ class SubscriptionProcessor {
 													if (
 														this.passesPredicateValidation(
 															record,
-															predicatesGroup!
+															syncPredicatesGroup!,
 														)
 													) {
 														this.pushToBuffer(
 															transformerMutationType,
 															modelDefinition,
-															record
+															record,
 														);
 													}
 													this.drainBuffer();
@@ -461,6 +465,8 @@ class SubscriptionProcessor {
 													const {
 														errors: [{ message = '' } = {}],
 													} = ({
+														// TODO(eslint): remove this linter suppression with refactoring.
+														// eslint-disable-next-line no-empty-pattern
 														errors: [],
 													} = subscriptionError);
 
@@ -470,7 +476,7 @@ class SubscriptionProcessor {
 														this.catchRTFError(
 															message,
 															modelDefinition,
-															predicatesGroup
+															predicatesGroup,
 														);
 
 													// Catch RTF errors
@@ -479,7 +485,7 @@ class SubscriptionProcessor {
 														subscriptions[modelDefinition.name][
 															transformerMutationType
 														].forEach(subscription =>
-															subscription.unsubscribe()
+															subscription.unsubscribe(),
 														);
 
 														subscriptions[modelDefinition.name][
@@ -488,22 +494,23 @@ class SubscriptionProcessor {
 
 														// retry subscription connection without filter
 														subscriptionRetry(operation, false);
+
 														return;
 													}
 
 													if (
 														message.includes(
-															PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
+															PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR,
 														) ||
 														message.includes(
-															PUBSUB_CONTROL_MSG.CONNECTION_FAILED
+															PUBSUB_CONTROL_MSG.CONNECTION_FAILED,
 														)
 													) {
 														// Unsubscribe and clear subscription array for model/operation
 														subscriptions[modelDefinition.name][
 															transformerMutationType
 														].forEach(subscription =>
-															subscription.unsubscribe()
+															subscription.unsubscribe(),
 														);
 														subscriptions[modelDefinition.name][
 															transformerMutationType
@@ -520,7 +527,7 @@ class SubscriptionProcessor {
 																	readAuthModes[
 																		operationAuthModeAttempts[operation] - 1
 																	]
-																}`
+																}`,
 															);
 														} else {
 															// retry with different auth mode. Do not trigger
@@ -534,9 +541,10 @@ class SubscriptionProcessor {
 																	readAuthModes[
 																		operationAuthModeAttempts[operation]
 																	]
-																}`
+																}`,
 															);
 															subscriptionRetry(operation);
+
 															return;
 														}
 													}
@@ -544,6 +552,8 @@ class SubscriptionProcessor {
 													logger.warn('subscriptionError', message);
 
 													try {
+														// TODO(eslint): remove this linter suppression with refactoring.
+														// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 														await this.errorHandler({
 															recoverySuggestion:
 																'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -560,7 +570,7 @@ class SubscriptionProcessor {
 													} catch (e) {
 														logger.error(
 															'Subscription error handler failed with:',
-															e
+															e,
 														);
 													}
 
@@ -576,31 +586,31 @@ class SubscriptionProcessor {
 													}
 													observer.error(message);
 												},
-											})
+											}),
 										);
 
 										promises.push(
 											(async () => {
 												let boundFunction: any;
 												let removeBoundFunctionListener: () => void;
-												await new Promise(res => {
-													subscriptionReadyCallback = res;
+												await new Promise(resolve => {
+													subscriptionReadyCallback = resolve;
 													boundFunction = this.hubQueryCompletionListener.bind(
 														this,
-														res
+														resolve,
 													);
 													removeBoundFunctionListener = Hub.listen(
 														'api',
-														boundFunction
+														boundFunction,
 													);
 												});
 												removeBoundFunctionListener();
-											})()
+											})(),
 										);
 									};
 
 									operations.forEach(op => subscriptionRetry(op));
-								})
+								}),
 						);
 				});
 
@@ -608,20 +618,26 @@ class SubscriptionProcessor {
 					this.runningProcesses.add(() =>
 						Promise.all(promises).then(() => {
 							observer.next(CONTROL_MSG.CONNECTED);
-						})
+						}),
 					);
 			}, 'subscription processor new subscriber');
 
 			return this.runningProcesses.addCleaner(async () => {
 				Object.keys(subscriptions).forEach(modelName => {
 					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
-						subscription => subscription.unsubscribe()
+						subscription => {
+							subscription.unsubscribe();
+						},
 					);
 					subscriptions[modelName][TransformerMutationType.UPDATE].forEach(
-						subscription => subscription.unsubscribe()
+						subscription => {
+							subscription.unsubscribe();
+						},
 					);
 					subscriptions[modelName][TransformerMutationType.DELETE].forEach(
-						subscription => subscription.unsubscribe()
+						subscription => {
+							subscription.unsubscribe();
+						},
 					);
 				});
 			});
@@ -648,7 +664,7 @@ class SubscriptionProcessor {
 
 	private passesPredicateValidation(
 		record: PersistentModel,
-		predicatesGroup: PredicatesGroup<any>
+		predicatesGroup: PredicatesGroup<any>,
 	): boolean {
 		if (!predicatesGroup) {
 			return true;
@@ -662,14 +678,16 @@ class SubscriptionProcessor {
 	private pushToBuffer(
 		transformerMutationType: TransformerMutationType,
 		modelDefinition: SchemaModel,
-		data: PersistentModel
+		data: PersistentModel,
 	) {
 		this.buffer.push([transformerMutationType, modelDefinition, data]);
 	}
 
 	private drainBuffer() {
 		if (this.dataObserver) {
-			this.buffer.forEach(data => this.dataObserver.next!(data));
+			this.buffer.forEach(data => {
+				this.dataObserver.next!(data);
+			});
 			this.buffer = [];
 		}
 	}
@@ -682,7 +700,7 @@ class SubscriptionProcessor {
 	private catchRTFError(
 		message: string,
 		modelDefinition: SchemaModel,
-		predicatesGroup: PredicatesGroup<any> | undefined
+		predicatesGroup: PredicatesGroup<any> | undefined,
 	): boolean {
 		const header =
 			'Backend subscriptions filtering error.\n' +
@@ -700,17 +718,18 @@ class SubscriptionProcessor {
 
 		const [_errorMsg, errorType] =
 			Object.entries(messageErrorTypeMap).find(([errorMsg]) =>
-				message.includes(errorMsg)
+				message.includes(errorMsg),
 			) || [];
 
 		if (errorType !== undefined) {
 			const remediationMessage = generateRTFRemediation(
 				errorType,
 				modelDefinition,
-				predicatesGroup
+				predicatesGroup,
 			);
 
 			logger.warn(`${header}\n${message}\n${remediationMessage}`);
+
 			return true;
 		}
 

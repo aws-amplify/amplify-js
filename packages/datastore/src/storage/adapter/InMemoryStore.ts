@@ -9,8 +9,12 @@ export class InMemoryStore {
 
 	multiGet = async (keys: string[]) => {
 		return keys.reduce(
-			(res, k) => (res.push([k, this.db.get(k)!]), res),
-			[] as [string, string][]
+			(res, k) => {
+				res.push([k, this.db.get(k)!]);
+
+				return res;
+			},
+			[] as [string, string][],
 		);
 	};
 

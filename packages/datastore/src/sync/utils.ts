@@ -1,53 +1,61 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { GraphQLAuthError } from '@aws-amplify/api';
-import type { GraphQLError } from 'graphql';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { ModelInstanceCreator } from '../datastore/datastore';
+import { ModelInstanceCreator } from '~/src/datastore/datastore';
 import {
+	AuthModeStrategy,
 	AuthorizationRule,
 	GraphQLCondition,
-	GraphQLFilter,
 	GraphQLField,
-	isEnumFieldType,
-	isGraphQLScalarType,
-	isPredicateObj,
-	isSchemaModel,
-	isSchemaModelWithAttributes,
-	isTargetNameAssociation,
-	isNonModelFieldType,
+	GraphQLFilter,
+	InternalSchema,
+	ModelAttributes,
 	ModelFields,
 	ModelInstanceMetadata,
+	ModelOperation,
 	OpType,
 	PersistentModel,
 	PersistentModelConstructor,
-	PredicatesGroup,
 	PredicateObject,
+	PredicatesGroup,
 	RelationshipType,
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
-	ModelOperation,
-	InternalSchema,
-	AuthModeStrategy,
-	ModelAttributes,
+	isEnumFieldType,
+	isGraphQLScalarType,
+	isNonModelFieldType,
 	isPredicateGroup,
-} from '../types';
+	isPredicateObj,
+	isSchemaModel,
+	isSchemaModelWithAttributes,
+	isTargetNameAssociation,
+} from '~/src/types';
 import {
-	extractPrimaryKeyFieldNames,
-	establishRelationAndKeys,
 	IDENTIFIER_KEY_SEPARATOR,
-} from '../util';
-import { MutationEvent } from './';
+	establishRelationAndKeys,
+	extractPrimaryKeyFieldNames,
+} from '~/src/util';
 import { ConsoleLogger } from '@aws-amplify/core';
+
+import { MutationEvent } from './';
+
+import type { GraphQLError } from 'graphql';
 
 const logger = new ConsoleLogger('DataStore');
 
 enum GraphQLOperationType {
 	LIST = 'query',
 	CREATE = 'mutation',
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
 	UPDATE = 'mutation',
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
 	DELETE = 'mutation',
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
 	GET = 'query',
 }
 
@@ -64,22 +72,22 @@ const dummyMetadata: ModelInstanceMetadata = {
 	_deleted: undefined!,
 };
 
-const metadataFields = <(keyof ModelInstanceMetadata)[]>(
-	Object.keys(dummyMetadata)
-);
-export function getMetadataFields(): ReadonlyArray<string> {
+const metadataFields = Object.keys(
+	dummyMetadata,
+) as (keyof ModelInstanceMetadata)[];
+export function getMetadataFields(): readonly string[] {
 	return metadataFields;
 }
 
 export function generateSelectionSet(
 	namespace: SchemaNamespace,
-	modelDefinition: SchemaModel | SchemaNonModel
+	modelDefinition: SchemaModel | SchemaNonModel,
 ): string {
 	const scalarFields = getScalarFields(modelDefinition);
 	const nonModelFields = getNonModelFields(namespace, modelDefinition);
 	const implicitOwnerField = getImplicitOwnerField(
 		modelDefinition,
-		scalarFields
+		scalarFields,
 	);
 
 	let scalarAndMetadataFields = Object.values(scalarFields)
@@ -100,35 +108,39 @@ export function generateSelectionSet(
 
 function getImplicitOwnerField(
 	modelDefinition: SchemaModel | SchemaNonModel,
-	scalarFields: ModelFields
+	scalarFields: ModelFields,
 ) {
 	const ownerFields = getOwnerFields(modelDefinition);
 
 	if (!scalarFields.owner && ownerFields.includes('owner')) {
 		return ['owner'];
 	}
+
 	return [];
 }
 
 function getOwnerFields(
-	modelDefinition: SchemaModel | SchemaNonModel
+	modelDefinition: SchemaModel | SchemaNonModel,
 ): string[] {
 	const ownerFields: string[] = [];
 	if (isSchemaModelWithAttributes(modelDefinition)) {
 		modelDefinition.attributes!.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
-				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
+				const rule = attr.properties.rules.find(
+					propertyRule => propertyRule.allow === 'owner',
+				);
 				if (rule && rule.ownerField) {
 					ownerFields.push(rule.ownerField);
 				}
 			}
 		});
 	}
+
 	return ownerFields;
 }
 
 function getScalarFields(
-	modelDefinition: SchemaModel | SchemaNonModel
+	modelDefinition: SchemaModel | SchemaNonModel,
 ): ModelFields {
 	const { fields } = modelDefinition;
 
@@ -152,7 +164,7 @@ function getScalarFields(
 // Used for generating the selection set for queries and mutations
 function getConnectionFields(
 	modelDefinition: SchemaModel,
-	namespace: SchemaNamespace
+	namespace: SchemaNamespace,
 ): string[] {
 	const result: string[] = [];
 
@@ -174,10 +186,12 @@ function getConnectionFields(
 							const [relations] = establishRelationAndKeys(namespace);
 
 							const connectedModelName =
+								// TODO(eslint): remove this linter suppression with refactoring.
+								// eslint-disable-next-line dot-notation
 								modelDefinition.fields[name].type['model'];
 
 							const byPkIndex = relations[connectedModelName].indexes.find(
-								([name]) => name === 'byPk'
+								([indexName]) => indexName === 'byPk',
 							);
 							const keyFields = byPkIndex && byPkIndex[1];
 							const keyFieldSelectionSet = keyFields?.join(' ');
@@ -200,7 +214,7 @@ function getConnectionFields(
 
 function getNonModelFields(
 	namespace: SchemaNamespace,
-	modelDefinition: SchemaModel | SchemaNonModel
+	modelDefinition: SchemaModel | SchemaNonModel,
 ): string[] {
 	const result: string[] = [];
 
@@ -208,17 +222,21 @@ function getNonModelFields(
 		if (isNonModelFieldType(type)) {
 			const typeDefinition = namespace.nonModels![type.nonModel];
 			const scalarFields = Object.values(getScalarFields(typeDefinition)).map(
-				({ name }) => name
+				({ name: fieldName }) => fieldName,
 			);
 
 			const nested: string[] = [];
 			Object.values(typeDefinition.fields).forEach(field => {
-				const { type, name } = field;
+				const { type: fieldType, name: fieldName } = field;
 
-				if (isNonModelFieldType(type)) {
-					const typeDefinition = namespace.nonModels![type.nonModel];
+				if (isNonModelFieldType(fieldType)) {
+					const nonModelTypeDefinition =
+						namespace.nonModels![fieldType.nonModel];
 					nested.push(
-						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
+						`${fieldName} { ${generateSelectionSet(
+							namespace,
+							nonModelTypeDefinition,
+						)} }`,
 					);
 				}
 			});
@@ -231,7 +249,7 @@ function getNonModelFields(
 }
 
 export function getAuthorizationRules(
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
 	const authConfig = ([] as ModelAttributes)
@@ -293,6 +311,7 @@ export function getAuthorizationRules(
 		if (isOwnerAuth) {
 			// owner rules has least priority
 			resultRules.push(authRule);
+
 			return;
 		}
 
@@ -308,7 +327,7 @@ export function buildSubscriptionGraphQLOperation(
 	transformerMutationType: TransformerMutationType,
 	isOwnerAuthorization: boolean,
 	ownerField: string,
-	filterArg: boolean = false
+	filterArg = false,
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
@@ -346,7 +365,7 @@ export function buildSubscriptionGraphQLOperation(
 export function buildGraphQLOperation(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel,
-	graphQLOpType: keyof typeof GraphQLOperationType
+	graphQLOpType: keyof typeof GraphQLOperationType,
 ): [TransformerMutationType, string, string][] {
 	let selectionSet = generateSelectionSet(namespace, modelDefinition);
 
@@ -421,7 +440,7 @@ export function createMutationInstanceFromModelOperation<
 	condition: GraphQLCondition,
 	MutationEventConstructor: PersistentModelConstructor<MutationEvent>,
 	modelInstanceCreator: ModelInstanceCreator,
-	id?: string
+	id?: string,
 ): MutationEvent {
 	let operation: TransformerMutationType;
 
@@ -453,6 +472,7 @@ export function createMutationInstanceFromModelOperation<
 		if (isAWSJSON) {
 			return JSON.stringify(v);
 		}
+
 		return v;
 	};
 
@@ -473,7 +493,7 @@ export function createMutationInstanceFromModelOperation<
 
 export function predicateToGraphQLCondition(
 	predicate: PredicatesGroup<any>,
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): GraphQLCondition {
 	const result = {};
 
@@ -491,12 +511,13 @@ export function predicateToGraphQLCondition(
 	// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
 
 	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
 	return predicateToGraphQLFilter(predicate, keyFields) as GraphQLCondition;
 }
 /**
  * @param predicatesGroup - Predicate Group
 	@returns GQL Filter Expression from Predicate Group
-	
+
 	@remarks Flattens redundant list predicates
 	@example
 
@@ -511,7 +532,7 @@ export function predicateToGraphQLCondition(
 export function predicateToGraphQLFilter(
 	predicatesGroup: PredicatesGroup<any>,
 	fieldsToOmit: string[] = [],
-	root = true
+	root = true,
 ): GraphQLFilter {
 	const result: GraphQLFilter = {};
 
@@ -537,6 +558,7 @@ export function predicateToGraphQLFilter(
 			};
 
 			children.push(gqlField);
+
 			return;
 		}
 
@@ -557,6 +579,7 @@ export function predicateToGraphQLFilter(
 		) {
 			delete result[type];
 			Object.assign(result, child);
+
 			return result;
 		}
 	}
@@ -674,7 +697,7 @@ export function countFilterCombinations(group?: PredicatesGroup<any>): number {
  * ```
  */
 export function repeatedFieldInGroup(
-	group?: PredicatesGroup<any>
+	group?: PredicatesGroup<any>,
 ): string | null {
 	if (!group || !Array.isArray(group.predicates)) return null;
 
@@ -693,6 +716,7 @@ export function repeatedFieldInGroup(
 			}
 			seen[fieldName] = true;
 		}
+
 		return null;
 	};
 
@@ -708,12 +732,12 @@ export function repeatedFieldInGroup(
 
 		// field value will be single object
 		const predicateObjects = values.filter(
-			v => !Array.isArray(Object.values(v)[0])
+			v => !Array.isArray(Object.values(v)[0]),
 		);
 
 		// group value will be an array
 		const predicateGroups = values.filter(v =>
-			Array.isArray(Object.values(v)[0])
+			Array.isArray(Object.values(v)[0]),
 		);
 
 		if (key === 'and') {
@@ -741,7 +765,7 @@ export enum RTFError {
 export function generateRTFRemediation(
 	errorType: RTFError,
 	modelDefinition: SchemaModel,
-	predicatesGroup: PredicatesGroup<any> | undefined
+	predicatesGroup: PredicatesGroup<any> | undefined,
 ): string {
 	const selSyncFields = filterFields(predicatesGroup);
 	const selSyncFieldStr = [...selSyncFields].join(', ');
@@ -779,6 +803,7 @@ export function generateRTFRemediation(
 					`Dynamic auth modes, such as owner auth and dynamic group auth factor in to the number of combinations you're using.\n` +
 					`You currently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
 			}
+
 			return message;
 		}
 
@@ -796,8 +821,8 @@ export function generateRTFRemediation(
 }
 
 export function getUserGroupsFromToken(
-	token: { [field: string]: any },
-	rule: AuthorizationRule
+	token: Record<string, any>,
+	rule: AuthorizationRule,
 ): string[] {
 	// validate token against groupClaim
 	let userGroups: string[] | string = token[rule.groupClaim] || [];
@@ -856,11 +881,12 @@ export async function getModelAuthModes({
 					// Use default auth mode if nothing is returned from authModeStrategy
 					modelAuthModes[operation] = [defaultAuthMode];
 				}
-			})
+			}),
 		);
 	} catch (error) {
 		logger.debug(`Error getting auth modes for model: ${modelName}`, error);
 	}
+
 	return modelAuthModes;
 }
 
@@ -869,7 +895,7 @@ export function getForbiddenError(error) {
 	let forbiddenError;
 	if (error && error.errors) {
 		forbiddenError = (error.errors as [any]).find(err =>
-			forbiddenErrorCodes.includes(resolveServiceErrorStatusCode(err))
+			forbiddenErrorCodes.includes(resolveServiceErrorStatusCode(err)),
 		);
 	} else if (error && error.message) {
 		forbiddenError = error;
@@ -879,19 +905,24 @@ export function getForbiddenError(error) {
 		return (
 			forbiddenError.message ??
 			`Request failed with status code ${resolveServiceErrorStatusCode(
-				forbiddenError
+				forbiddenError,
 			)}`
 		);
 	}
+
 	return null;
 }
 
 export function resolveServiceErrorStatusCode(error: unknown): number | null {
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line dot-notation
 	if (error?.['$metadata']?.['httpStatusCode']) {
+		// TODO(eslint): remove this linter suppression with refactoring.
+		// eslint-disable-next-line dot-notation
 		return Number(error?.['$metadata']?.['httpStatusCode']);
 	} else if ((error as GraphQLError)?.originalError) {
 		return resolveServiceErrorStatusCode(
-			(error as GraphQLError)?.originalError
+			(error as GraphQLError)?.originalError,
 		);
 	} else {
 		return null;
@@ -904,14 +935,15 @@ export function getClientSideAuthError(error) {
 		error &&
 		error.message &&
 		clientSideAuthErrors.find(clientError =>
-			error.message.includes(clientError)
+			error.message.includes(clientError),
 		);
+
 	return clientSideError || null;
 }
 
 export async function getTokenForCustomAuth(
 	authMode: GraphQLAuthMode,
-	amplifyConfig: Record<string, any> = {}
+	amplifyConfig: Record<string, any> = {},
 ): Promise<string | undefined> {
 	if (authMode === 'lambda') {
 		const {
@@ -920,16 +952,17 @@ export async function getTokenForCustomAuth(
 		if (functionAuthProvider && typeof functionAuthProvider === 'function') {
 			try {
 				const { token } = await functionAuthProvider();
+
 				return token;
 			} catch (error) {
 				throw new Error(
-					`Error retrieving token from \`functionAuthProvider\`: ${error}`
+					`Error retrieving token from \`functionAuthProvider\`: ${error}`,
 				);
 			}
 		} else {
 			// TODO: add docs link once available
 			throw new Error(
-				'You must provide a `functionAuthProvider` function to `DataStore.configure` when using lambda'
+				'You must provide a `functionAuthProvider` function to `DataStore.configure` when using lambda',
 			);
 		}
 	}
@@ -938,7 +971,7 @@ export async function getTokenForCustomAuth(
 // Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
 export function getIdentifierValue(
 	modelDefinition: SchemaModel,
-	model: ModelInstanceMetadata | PersistentModel
+	model: ModelInstanceMetadata | PersistentModel,
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 

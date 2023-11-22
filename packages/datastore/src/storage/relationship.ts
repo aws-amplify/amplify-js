@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { isFieldAssociation, ModelFieldType, ModelMeta } from '../types';
+import { ModelFieldType, ModelMeta, isFieldAssociation } from '~/src/types';
 
 /**
  * Defines a relationship from a LOCAL model.field to a REMOTE model.field and helps
@@ -52,6 +52,7 @@ export class ModelRelationship<T> {
 			const relationship = ModelRelationship.from(model, field);
 			relationship && relationships.push(relationship);
 		}
+
 		return relationships;
 	}
 
@@ -212,7 +213,7 @@ export class ModelRelationship<T> {
 			// This case is theoretically unnecessary going forward.
 			return [this.explicitRemoteAssociation.targetName!];
 		} else if (this.explicitRemoteAssociation?.targetNames) {
-			return this.explicitRemoteAssociation?.targetNames!;
+			return this.explicitRemoteAssociation.targetNames!;
 		} else if (this.localAssociatedWith) {
 			return this.localAssociatedWith;
 		} else {
@@ -249,6 +250,7 @@ export class ModelRelationship<T> {
 		for (let i = 0; i < this.localJoinFields.length; i++) {
 			fk[this.localJoinFields[i]] = remote[this.remoteJoinFields[i]];
 		}
+
 		return fk;
 	}
 
@@ -278,6 +280,7 @@ export class ModelRelationship<T> {
 			if (localValue === null || localValue === undefined) return null;
 			query[this.remoteJoinFields[i]] = local[this.localJoinFields[i]];
 		}
+
 		return query;
 	}
 }

@@ -1,40 +1,41 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { monotonicFactory, ULID } from 'ulid';
+import { ULID, monotonicFactory } from 'ulid';
 import {
-	amplifyUuid,
 	AmplifyUrl,
 	WordArray,
+	amplifyUuid,
 } from '@aws-amplify/core/internals/utils';
-import { produce, applyPatches, Patch } from 'immer';
+import { Patch, applyPatches, produce } from 'immer';
+
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
-	isPredicateGroup,
-	isPredicateObj,
+	DeferredCallbackResolverOptions,
+	IndexesType,
+	LimitTimerRaceResolvedValues,
+	ModelAssociation,
+	ModelAttribute,
+	ModelAttributes,
+	ModelKeys,
+	NonModelTypeConstructor,
+	PaginationInput,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateGroups,
 	PredicateObject,
 	PredicatesGroup,
-	RelationshipType,
 	RelationType,
-	ModelKeys,
-	ModelAttributes,
+	RelationshipType,
+	SchemaModel,
 	SchemaNamespace,
-	SortPredicatesGroup,
 	SortDirection,
+	SortPredicatesGroup,
+	isModelAttributeCompositeKey,
 	isModelAttributeKey,
 	isModelAttributePrimaryKey,
-	isModelAttributeCompositeKey,
-	NonModelTypeConstructor,
-	PaginationInput,
-	DeferredCallbackResolverOptions,
-	LimitTimerRaceResolvedValues,
-	SchemaModel,
-	ModelAttribute,
-	IndexesType,
-	ModelAssociation,
+	isPredicateGroup,
+	isPredicateObj,
 } from './types';
 import { ModelSortPredicateCreator } from './predicates';
 
@@ -73,14 +74,14 @@ export enum NAMESPACES {
 	STORAGE = 'storage',
 }
 
-const DATASTORE = NAMESPACES.DATASTORE;
-const USER = NAMESPACES.USER;
-const SYNC = NAMESPACES.SYNC;
-const STORAGE = NAMESPACES.STORAGE;
+const { DATASTORE } = NAMESPACES;
+const { USER } = NAMESPACES;
+const { SYNC } = NAMESPACES;
+const { STORAGE } = NAMESPACES;
 
 export { USER, SYNC, STORAGE, DATASTORE };
 
-export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
+export const exhaustiveCheck = (obj: never, throwOnError = true) => {
 	if (throwOnError) {
 		throw new Error(`Invalid ${obj}`);
 	}
@@ -93,7 +94,7 @@ export const isNullOrUndefined = (val: any): boolean => {
 export const validatePredicate = <T extends PersistentModel>(
 	model: T,
 	groupType: keyof PredicateGroups<T>,
-	predicatesOrGroups: (PredicateObject<T> | PredicatesGroup<T>)[]
+	predicatesOrGroups: (PredicateObject<T> | PredicatesGroup<T>)[],
 ) => {
 	let filterType: keyof Pick<any[], 'every' | 'some'>;
 	let isNegation = false;
@@ -127,6 +128,7 @@ export const validatePredicate = <T extends PersistentModel>(
 
 		if (isPredicateGroup(predicateOrGroup)) {
 			const { type, predicates } = predicateOrGroup;
+
 			return validatePredicate(model, type, predicates);
 		}
 
@@ -139,7 +141,7 @@ export const validatePredicate = <T extends PersistentModel>(
 export const validatePredicateField = <T>(
 	value: T,
 	operator: keyof AllOperators,
-	operand: T | [T, T]
+	operand: T | [T, T],
 ) => {
 	switch (operator) {
 		case 'ne':
@@ -154,23 +156,26 @@ export const validatePredicateField = <T>(
 			return value >= operand;
 		case 'gt':
 			return value > operand;
-		case 'between':
-			const [min, max] = <[T, T]>operand;
+		case 'between': {
+			const [min, max] = operand as [T, T];
+
 			return value >= min && value <= max;
+		}
 		case 'beginsWith':
 			return (
 				!isNullOrUndefined(value) &&
-				(<string>(<unknown>value)).startsWith(<string>(<unknown>operand))
+				(value as unknown as string).startsWith(operand as unknown as string)
 			);
 		case 'contains':
 			return (
 				!isNullOrUndefined(value) &&
-				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) > -1
+				(value as unknown as string).indexOf(operand as unknown as string) > -1
 			);
 		case 'notContains':
 			return (
 				isNullOrUndefined(value) ||
-				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
+				(value as unknown as string).indexOf(operand as unknown as string) ===
+					-1
 			);
 		default:
 			return false;
@@ -178,10 +183,10 @@ export const validatePredicateField = <T>(
 };
 
 export const isModelConstructor = <T extends PersistentModel>(
-	obj: any
+	obj: any,
 ): obj is PersistentModelConstructor<T> => {
 	return (
-		obj && typeof (<PersistentModelConstructor<T>>obj).copyOf === 'function'
+		obj && typeof (obj as PersistentModelConstructor<T>).copyOf === 'function'
 	);
 };
 
@@ -192,7 +197,7 @@ export function registerNonModelClass(clazz: NonModelTypeConstructor<any>) {
 }
 
 export const isNonModelConstructor = (
-	obj: any
+	obj: any,
 ): obj is NonModelTypeConstructor<any> => {
 	return nonModelClasses.has(obj);
 };
@@ -206,12 +211,12 @@ export const traverseModel = <T extends PersistentModel>(
 	modelInstanceCreator: ModelInstanceCreator,
 	getModelConstructorByModelName: (
 		namsespaceName: NAMESPACES,
-		modelName: string
-	) => PersistentModelConstructor<any>
+		modelName: string,
+	) => PersistentModelConstructor<any>,
 ) => {
 	const modelConstructor = getModelConstructorByModelName(
 		namespace.name as NAMESPACES,
-		srcModelName
+		srcModelName,
 	);
 
 	const result: {
@@ -220,7 +225,9 @@ export const traverseModel = <T extends PersistentModel>(
 		instance: T;
 	}[] = [];
 
-	const newInstance = modelConstructor.copyOf(instance, () => {});
+	const newInstance = modelConstructor.copyOf(instance, () => {
+		// no-op
+	});
 
 	result.unshift({
 		modelName: srcModelName,
@@ -231,7 +238,7 @@ export const traverseModel = <T extends PersistentModel>(
 	if (!topologicallySortedModels.has(namespace)) {
 		topologicallySortedModels.set(
 			namespace,
-			Array.from(namespace.modelTopologicalOrdering!.keys())
+			Array.from(namespace.modelTopologicalOrdering!.keys()),
 		);
 	}
 
@@ -251,6 +258,8 @@ let privateModeCheckResult;
 export const isPrivateMode = () => {
 	return new Promise(resolve => {
 		const dbname = amplifyUuid();
+		// TODO(eslint): remove this linter suppression with refactoring.
+		// eslint-disable-next-line prefer-const
 		let db;
 
 		const isPrivate = () => {
@@ -268,7 +277,7 @@ export const isPrivateMode = () => {
 
 			privateModeCheckResult = true;
 
-			return resolve(false);
+			resolve(false);
 		};
 
 		if (privateModeCheckResult === true) {
@@ -276,10 +285,16 @@ export const isPrivateMode = () => {
 		}
 
 		if (privateModeCheckResult === false) {
-			return isPrivate();
+			isPrivate();
+
+			return;
 		}
 
-		if (indexedDB === null) return isPrivate();
+		if (indexedDB === null) {
+			isPrivate();
+
+			return;
+		}
 
 		db = indexedDB.open(dbname);
 		db.onerror = isPrivate;
@@ -313,19 +328,23 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 
 		const db: IDBDatabase | false = await new Promise(resolve => {
 			const dbOpenRequest = indexedDB.open(dbName);
-			dbOpenRequest.onerror = () => resolve(false);
+			dbOpenRequest.onerror = () => {
+				resolve(false);
+			};
 
 			dbOpenRequest.onsuccess = () => {
-				const db = dbOpenRequest.result;
-				resolve(db);
+				const resultDB = dbOpenRequest.result;
+				resolve(resultDB);
 			};
 
 			dbOpenRequest.onupgradeneeded = (event: any) => {
-				const db = event?.target?.result;
+				const resultDB = event?.target?.result;
 
-				db.onerror = () => resolve(false);
+				resultDB.onerror = () => {
+					resolve(false);
+				};
 
-				const store = db.createObjectStore(storeName, {
+				const store = resultDB.createObjectStore(storeName, {
 					autoIncrement: true,
 				});
 
@@ -352,7 +371,9 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 
 			const getRequest = index.get([1]);
 
-			getRequest.onerror = () => resolve(false);
+			getRequest.onerror = () => {
+				resolve(false);
+			};
 
 			getRequest.onsuccess = (event: any) => {
 				resolve(event?.target?.result);
@@ -360,6 +381,8 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 		});
 
 		if (db && typeof db.close === 'function') {
+			// TODO(eslint): remove this linter suppression with refactoring.
+			// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 			await db.close();
 		}
 
@@ -400,7 +423,7 @@ const getBytesFromHex = (encoded: string): Uint8Array => {
 			out[i / 2] = HEX_TO_SHORT[encodedByte];
 		} else {
 			throw new Error(
-				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`
+				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`,
 			);
 		}
 	}
@@ -449,7 +472,7 @@ export function getNow() {
 }
 
 export function sortCompareFunction<T extends PersistentModel>(
-	sortPredicates: SortPredicatesGroup<T>
+	sortPredicates: SortPredicatesGroup<T>,
 ) {
 	return function compareFunction(a, b) {
 		// enable multi-field sort by iterating over predicates until
@@ -478,11 +501,7 @@ export function sortCompareFunction<T extends PersistentModel>(
 // returns true if equal by value
 // if nullish is true, treat undefined and null values as equal
 // to normalize for GQL response values for undefined fields
-export function valuesEqual(
-	valA: any,
-	valB: any,
-	nullish: boolean = false
-): boolean {
+export function valuesEqual(valA: any, valB: any, nullish = false): boolean {
 	let a = valA;
 	let b = valB;
 
@@ -561,12 +580,12 @@ export function valuesEqual(
  */
 export function inMemoryPagination<T extends PersistentModel>(
 	records: T[],
-	pagination?: PaginationInput<T>
+	pagination?: PaginationInput<T>,
 ): T[] {
 	if (pagination && records.length > 1) {
 		if (pagination.sort) {
 			const sortPredicates = ModelSortPredicateCreator.getPredicates(
-				pagination.sort
+				pagination.sort,
 			);
 
 			if (sortPredicates.length) {
@@ -581,6 +600,7 @@ export function inMemoryPagination<T extends PersistentModel>(
 
 		return records.slice(start, end);
 	}
+
 	return records;
 }
 
@@ -593,13 +613,14 @@ export function inMemoryPagination<T extends PersistentModel>(
  */
 export async function asyncSome(
 	items: Record<string, any>[],
-	matches: (item: Record<string, any>) => Promise<boolean>
+	matches: (item: Record<string, any>) => Promise<boolean>,
 ): Promise<boolean> {
 	for (const item of items) {
 		if (await matches(item)) {
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -612,13 +633,14 @@ export async function asyncSome(
  */
 export async function asyncEvery(
 	items: Record<string, any>[],
-	matches: (item: Record<string, any>) => Promise<boolean>
+	matches: (item: Record<string, any>) => Promise<boolean>,
 ): Promise<boolean> {
 	for (const item of items) {
 		if (!(await matches(item))) {
 			return false;
 		}
 	}
+
 	return true;
 }
 
@@ -632,7 +654,7 @@ export async function asyncEvery(
  */
 export async function asyncFilter<T>(
 	items: T[],
-	matches: (item: T) => Promise<boolean>
+	matches: (item: T) => Promise<boolean>,
 ): Promise<T[]> {
 	const results: T[] = [];
 	for (const item of items) {
@@ -640,6 +662,7 @@ export async function asyncFilter<T>(
 			results.push(item);
 		}
 	}
+
 	return results;
 }
 
@@ -649,13 +672,13 @@ export const isAWSDate = (val: string): boolean => {
 
 export const isAWSTime = (val: string): boolean => {
 	return !!/^\d{2}:\d{2}(:\d{2}(.\d+)?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(
-		val
+		val,
 	);
 };
 
 export const isAWSDateTime = (val: string): boolean => {
 	return !!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(.\d+)?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(
-		val
+		val,
 	);
 };
 
@@ -665,13 +688,14 @@ export const isAWSTimestamp = (val: number): boolean => {
 
 export const isAWSEmail = (val: string): boolean => {
 	return !!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.exec(
-		val
+		val,
 	);
 };
 
 export const isAWSJSON = (val: string): boolean => {
 	try {
 		JSON.parse(val);
+
 		return true;
 	} catch {
 		return false;
@@ -692,7 +716,7 @@ export const isAWSPhone = (val: string): boolean => {
 
 export const isAWSIPAddress = (val: string): boolean => {
 	return !!/((^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$)|(^((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?$))$/.exec(
-		val
+		val,
 	);
 };
 
@@ -701,12 +725,14 @@ export class DeferredPromise {
 	public resolve: (value: string | PromiseLike<string>) => void;
 	public reject: () => void;
 	constructor() {
+		// TODO(eslint): remove this linter suppression with refactoring.
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 		this.promise = new Promise(
 			(resolve: (value: string | PromiseLike<string>) => void, reject) => {
 				self.resolve = resolve;
 				self.reject = reject;
-			}
+			},
 		);
 	}
 }
@@ -717,10 +743,13 @@ export class DeferredCallbackResolver {
 	private maxInterval: number;
 	private timer: ReturnType<typeof setTimeout>;
 	private raceInFlight = false;
-	private callback = () => {};
+	private callback = () => {
+		// no-op
+	};
+
 	private errorHandler: (error: string) => void;
 	private defaultErrorHandler = (
-		msg = 'DeferredCallbackResolver error'
+		msg = 'DeferredCallbackResolver error',
 	): void => {
 		throw new Error(msg);
 	};
@@ -732,7 +761,7 @@ export class DeferredCallbackResolver {
 	}
 
 	private startTimer(): void {
-		this.timerPromise = new Promise((resolve, reject) => {
+		this.timerPromise = new Promise((resolve, _reject) => {
 			this.timer = setTimeout(() => {
 				resolve(LimitTimerRaceResolvedValues.TIMER);
 			}, this.maxInterval);
@@ -757,6 +786,8 @@ export class DeferredCallbackResolver {
 			this.raceInFlight = false;
 			this.limitPromise = new DeferredPromise();
 
+			// TODO(eslint): remove this linter suppression with refactoring.
+			// eslint-disable-next-line no-unsafe-finally
 			return winner!;
 		}
 	}
@@ -794,7 +825,7 @@ export class DeferredCallbackResolver {
 export function mergePatches<T>(
 	originalSource: T,
 	oldPatches: Patch[],
-	newPatches: Patch[]
+	newPatches: Patch[],
 ): Patch[] {
 	const patchesToMerge = oldPatches.concat(newPatches);
 	let patches: Patch[];
@@ -805,8 +836,9 @@ export function mergePatches<T>(
 		},
 		p => {
 			patches = p;
-		}
+		},
 	);
+
 	return patches!;
 }
 
@@ -816,7 +848,7 @@ export const getStorename = (namespace: string, modelName: string) => {
 	return storeName;
 };
 
-//#region Key Utils
+// #region Key Utils
 
 /*
   When we have GSI(s) with composite sort keys defined on a model
@@ -851,7 +883,7 @@ export const getStorename = (namespace: string, modelName: string) => {
 	See 'processCompositeKeys' test in util.test.ts for more examples
 */
 export const processCompositeKeys = (
-	attributes: ModelAttributes
+	attributes: ModelAttributes,
 ): Set<string>[] => {
 	const extractCompositeSortKey = ({
 		properties: {
@@ -874,6 +906,7 @@ export const processCompositeKeys = (
 
 			if (combined.length === 0) {
 				combined.push(sortKeyFieldsSet);
+
 				return combined;
 			}
 
@@ -906,7 +939,7 @@ export const processCompositeKeys = (
 };
 
 export const extractKeyIfExists = (
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): ModelAttribute | undefined => {
 	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
 
@@ -914,7 +947,7 @@ export const extractKeyIfExists = (
 };
 
 export const extractPrimaryKeyFieldNames = (
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): string[] => {
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
@@ -926,17 +959,18 @@ export const extractPrimaryKeyFieldNames = (
 
 export const extractPrimaryKeyValues = <T extends PersistentModel>(
 	model: T,
-	keyFields: string[]
+	keyFields: string[],
 ): string[] => {
 	return keyFields.map(key => model[key]);
 };
 
 export const extractPrimaryKeysAndValues = <T extends PersistentModel>(
 	model: T,
-	keyFields: string[]
+	keyFields: string[],
 ): any => {
 	const primaryKeysAndValues = {};
 	keyFields.forEach(key => (primaryKeysAndValues[key] = model[key]));
+
 	return primaryKeysAndValues;
 };
 
@@ -955,7 +989,7 @@ export const isIdManaged = (modelDefinition: SchemaModel): boolean => {
 // IdentifierFields<OptionallyManagedIdentifier>
 // @primaryKey with explicit `id` in the PK. Single key or composite
 export const isIdOptionallyManaged = (
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): boolean => {
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 
@@ -967,7 +1001,7 @@ export const isIdOptionallyManaged = (
 };
 
 export const establishRelationAndKeys = (
-	namespace: SchemaNamespace
+	namespace: SchemaNamespace,
 ): [RelationshipType, ModelKeys] => {
 	const relationship: RelationshipType = {};
 	const keys: ModelKeys = {};
@@ -983,25 +1017,31 @@ export const establishRelationAndKeys = (
 				typeof fieldAttribute.type === 'object' &&
 				'model' in fieldAttribute.type
 			) {
-				const connectionType = fieldAttribute.association!.connectionType;
+				const { connectionType } = fieldAttribute.association!;
 				relationship[mKey].relationTypes.push({
 					fieldName: fieldAttribute.name,
 					modelName: fieldAttribute.type.model,
 					relationType: connectionType,
+					// TODO(eslint): remove this linter suppression with refactoring.
+					// eslint-disable-next-line dot-notation
 					targetName: fieldAttribute.association!['targetName'],
+					// TODO(eslint): remove this linter suppression with refactoring.
+					// eslint-disable-next-line dot-notation
 					targetNames: fieldAttribute.association!['targetNames'],
+					// TODO(eslint): remove this linter suppression with refactoring.
+					// eslint-disable-next-line dot-notation
 					associatedWith: fieldAttribute.association!['associatedWith'],
 				});
 
 				if (connectionType === 'BELONGS_TO') {
 					const targetNames = extractTargetNamesFromSrc(
-						fieldAttribute.association
+						fieldAttribute.association,
 					);
 
 					if (targetNames) {
 						const idxName = indexNameFromKeys(targetNames);
 						const idxExists = relationship[mKey].indexes.find(
-							([index]) => index === idxName
+							([index]) => index === idxName,
 						);
 
 						if (!idxExists) {
@@ -1030,7 +1070,7 @@ export const establishRelationAndKeys = (
 				// create indexes for all other keys
 				const idxName = indexNameFromKeys(fields);
 				const idxExists = relationship[mKey].indexes.find(
-					([index]) => index === idxName
+					([index]) => index === idxName,
 				);
 
 				if (!idxExists) {
@@ -1057,22 +1097,26 @@ export const establishRelationAndKeys = (
 
 export const getIndex = (
 	rel: RelationType[],
-	src: string
+	src: string,
 ): string | undefined => {
 	let indexName;
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line array-callback-return
 	rel.some((relItem: RelationType) => {
 		if (relItem.modelName === src) {
 			const targetNames = extractTargetNamesFromSrc(relItem);
 			indexName = targetNames && indexNameFromKeys(targetNames);
+
 			return true;
 		}
 	});
+
 	return indexName;
 };
 
 export const getIndexFromAssociation = (
 	indexes: IndexesType,
-	src: string | string[]
+	src: string | string[],
 ): string | undefined => {
 	let indexName: string;
 
@@ -1083,6 +1127,7 @@ export const getIndexFromAssociation = (
 	}
 
 	const associationIndex = indexes.find(([idxName]) => idxName === indexName);
+
 	return associationIndex && associationIndex[0];
 };
 
@@ -1094,7 +1139,7 @@ the single field `targetName` has been replaced with an array of `targetNames`.
  * @returns array of targetNames, or `undefined`
  */
 export const extractTargetNamesFromSrc = (
-	src: RelationType | ModelAssociation | undefined
+	src: RelationType | ModelAssociation | undefined,
 ): string[] | undefined => {
 	const targetName = src?.targetName;
 	const targetNames = src?.targetNames;
@@ -1115,6 +1160,7 @@ export const indexNameFromKeys = (keys: string[]): string => {
 		if (idx === 0) {
 			return cur;
 		}
+
 		return `${prev}${IDENTIFIER_KEY_SEPARATOR}${cur}`;
 	}, '');
 };
@@ -1130,7 +1176,7 @@ export const keysEqual = (keysA, keysB): boolean => {
 // Returns primary keys for a model
 export const getIndexKeys = (
 	namespace: SchemaNamespace,
-	modelName: string
+	modelName: string,
 ): string[] => {
 	const keyPath = namespace?.keys?.[modelName]?.primaryKey;
 
@@ -1141,7 +1187,7 @@ export const getIndexKeys = (
 	return [ID];
 };
 
-//#endregion
+// #endregion
 
 /**
  * Determine what the managed timestamp field names are for the given model definition
@@ -1156,10 +1202,10 @@ export const getIndexKeys = (
  * @returns An object mapping `createdAt` and `updatedAt` to their field names.
  */
 export const getTimestampFields = (
-	definition: SchemaModel
+	definition: SchemaModel,
 ): { createdAt: string; updatedAt: string } => {
 	const modelAttributes = definition.attributes?.find(
-		attr => attr.type === 'model'
+		attr => attr.type === 'model',
 	);
 	const timestampFieldsMap = modelAttributes?.properties?.timestamps;
 
