@@ -41,7 +41,6 @@ jobs:
     needs:
       - unit-tests
       - bundle-size-tests
-      - license-test
       - github-actions-test
       - tsc-compliance-test
       - dependency-review
