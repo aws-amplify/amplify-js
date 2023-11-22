@@ -1077,7 +1077,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						);
 					});
 
-					test.only('authenticating with AWS_LAMBDA/custom w/ custom header function that accepts request options', async () => {
+					test('authenticating with AWS_LAMBDA/custom w/ custom header function that accepts request options', async () => {
 						expect.assertions(1);
 
 						provider
