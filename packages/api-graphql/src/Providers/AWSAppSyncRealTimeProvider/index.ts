@@ -50,6 +50,7 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
+import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
 
 const logger = new ConsoleLogger('AWSAppSyncRealTimeProvider');
 
@@ -98,9 +99,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
-	additionalHeaders?:
-		| Record<string, string>
-		| ((requestOptions?: any) => Promise<Record<string, string>>);
+	additionalHeaders?: CustomHeaders;
 	additionalCustomHeaders?: Record<string, string>;
 	authToken?: string;
 }
@@ -321,7 +320,7 @@ export class AWSAppSyncRealTimeProvider {
 		let additionalCustomHeaders: Record<string, string> = {};
 
 		if (typeof additionalHeaders === 'function') {
-			const requestOptions: any = {
+			const requestOptions: RequestOptions = {
 				url: appSyncGraphqlEndpoint,
 				queryString: query,
 			};
@@ -329,15 +328,6 @@ export class AWSAppSyncRealTimeProvider {
 		} else {
 			additionalCustomHeaders = additionalHeaders;
 		}
-
-		/**
-		 * requestOptions?: {
-		 *   headers?: Record<string, string>;
-		 *   method: string;
-		 *   url: string;
-		 *   queryString: string;
-		 * }
-		 */
 
 		// if an authorization header is set, have the explicit authToken take precedence
 		if (authToken) {

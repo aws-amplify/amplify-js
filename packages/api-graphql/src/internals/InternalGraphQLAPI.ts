@@ -29,7 +29,7 @@ import {
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -274,19 +274,8 @@ export class InternalGraphQLAPIClass {
 		let additionalCustomHeaders: Record<string, string>;
 
 		if (typeof additionalHeaders === 'function') {
-			/**
-			 * TODO: add type to `amplify-api-next/data-schema-types`:
-			 *
-			 * requestOptions?: {
-			 *   headers?: Record<string, string>;
-			 *   method: string;
-			 *   url: string;
-			 *   queryString: string;
-			 * }
-			 */
-			// TODO - add type:
-			const requestOptions: any = {
-				// headers,
+			const requestOptions: RequestOptions = {
+				// headers, // TODO
 				method: 'POST',
 				url: url.toString(),
 				queryString,
