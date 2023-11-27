@@ -82,7 +82,7 @@ export function validateS3RequiredParameter(
 	if (!assertion) {
 		throw new StorageError({
 			name: AmplifyErrorCode.Unknown,
-			message: 'An unknown error has ocurred.',
+			message: 'An unknown error has occurred.',
 			underlyingError: new TypeError(
 				`Expected a non-null value for S3 parameter ${paramName}`
 			),

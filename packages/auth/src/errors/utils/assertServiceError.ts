@@ -17,7 +17,7 @@ export function assertServiceError(
 	) {
 		throw new AuthError({
 			name: AmplifyErrorCode.Unknown,
-			message: 'An unknown error has ocurred.',
+			message: 'An unknown error has occurred.',
 			underlyingError: error,
 		});
 	}
