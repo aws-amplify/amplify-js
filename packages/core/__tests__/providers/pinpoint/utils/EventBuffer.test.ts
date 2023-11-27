@@ -6,14 +6,14 @@ const DEFAULT_CONFIG = {
 	appId: 'app-id',
 	credentials: {
 		accessKeyId: 'access-key-id',
-		secretAccessKey: 'secret-access-key'
+		secretAccessKey: 'secret-access-key',
 	},
 	identityId: 'identity-id',
 	bufferSize: 1000,
 	flushSize: 100,
 	flushInterval: 5 * 1000, // 5s
 	resendLimit: 5,
-	region: 'region'
+	region: 'region',
 };
 
 const EVENT_OBJECT = {
@@ -34,7 +34,7 @@ const EVENT_OBJECT = {
 	credentials: {},
 	session: {
 		Id: 'session-id',
-		StartTimestamp: 'start-timestamp'
+		StartTimestamp: 'start-timestamp',
 	},
 	resendLimit: 5,
 };

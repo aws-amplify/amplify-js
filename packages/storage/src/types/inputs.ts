@@ -21,7 +21,7 @@ export type StorageRemoveInput<Options extends StorageOptions> = {
 };
 
 export type StorageListInput<
-	Options extends StorageListAllOptions | StorageListPaginateOptions
+	Options extends StorageListAllOptions | StorageListPaginateOptions,
 > = {
 	prefix?: string;
 	options?: Options;
@@ -40,7 +40,7 @@ export type StorageUploadDataInput<Options extends StorageOptions> =
 
 export type StorageCopyInput<
 	SourceOptions extends StorageOptions,
-	DestinationOptions extends StorageOptions
+	DestinationOptions extends StorageOptions,
 > = {
 	source: SourceOptions;
 	destination: DestinationOptions;

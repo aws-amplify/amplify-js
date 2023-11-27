@@ -26,7 +26,7 @@ export const composeTransferHandler =
 			Request,
 			Response,
 			any
-		> = TransferHandler<Request, Response, {}>
+		> = TransferHandler<Request, Response, {}>,
 	>(
 		coreHandler: CoreHandler,
 		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>
@@ -56,34 +56,34 @@ export const composeTransferHandler =
 type OptionToMiddleware<
 	Request extends RequestBase,
 	Response extends ResponseBase,
-	Options extends any[]
+	Options extends any[],
 > = Options extends []
 	? []
 	: Options extends [infer LastOption]
-	? [Middleware<Request, Response, LastOption>]
-	: Options extends [infer FirstOption, ...infer RestOptions]
-	? [
-			Middleware<Request, Response, FirstOption>,
-			...OptionToMiddleware<Request, Response, RestOptions>
-	  ]
-	: never;
+	  ? [Middleware<Request, Response, LastOption>]
+	  : Options extends [infer FirstOption, ...infer RestOptions]
+	    ? [
+					Middleware<Request, Response, FirstOption>,
+					...OptionToMiddleware<Request, Response, RestOptions>,
+	      ]
+	    : never;
 
 /**
  * Type to intersect multiple types if they have no conflict keys.
  */
 type MergeNoConflictKeys<Options extends any[]> = Options extends [
-	infer OnlyOption
+	infer OnlyOption,
 ]
 	? OnlyOption
 	: Options extends [infer FirstOption, infer SecondOption]
-	? FirstOption & SecondOption
-	: Options extends [infer FirstOption, ...infer RestOptions]
-	? FirstOption & MergeNoConflictKeys<RestOptions>
-	: never;
+	  ? FirstOption & SecondOption
+	  : Options extends [infer FirstOption, ...infer RestOptions]
+	    ? FirstOption & MergeNoConflictKeys<RestOptions>
+	    : never;
 
 /**
  * Type to infer the option type of a transfer handler type.
  */
 type InferOptionTypeFromTransferHandler<
-	T extends TransferHandler<any, any, any>
+	T extends TransferHandler<any, any, any>,
 > = Parameters<T>[1];
