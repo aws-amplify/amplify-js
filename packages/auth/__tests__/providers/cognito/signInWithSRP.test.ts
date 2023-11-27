@@ -73,9 +73,8 @@ describe('signIn API happy path cases', () => {
 			.spyOn(initiateAuthHelpers, 'handleUserPasswordAuthFlow')
 			.mockImplementation(
 				async (): Promise<RespondToAuthChallengeCommandOutput> => {
-					const deviceKeys = await tokenOrchestrator.getDeviceMetadata(
-						lastAuthUser
-					);
+					const deviceKeys =
+						await tokenOrchestrator.getDeviceMetadata(lastAuthUser);
 					if (deviceKeys) {
 						throw new AuthError({
 							name: 'ResourceNotFoundException',

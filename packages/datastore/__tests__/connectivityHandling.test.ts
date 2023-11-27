@@ -2187,8 +2187,9 @@ describe('DataStore sync engine', () => {
 			};
 
 			await resyncWith([
-				syncExpression(LegacyJSONPost, p =>
-					p?.title.eq("whatever, it doesn't matter.")
+				syncExpression(
+					LegacyJSONPost,
+					p => p?.title.eq("whatever, it doesn't matter.")
 				),
 			]);
 

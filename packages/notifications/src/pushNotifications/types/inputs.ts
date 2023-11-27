@@ -10,7 +10,8 @@ import {
 } from './pushNotifications';
 
 export type PushNotificationIdentifyUserInput<
-	ServiceOptions extends PushNotificationServiceOptions = PushNotificationServiceOptions
+	ServiceOptions extends
+		PushNotificationServiceOptions = PushNotificationServiceOptions,
 > = {
 	/**
 	 * A User ID associated to the current device.

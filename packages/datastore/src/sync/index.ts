@@ -598,9 +598,8 @@ export class SyncEngine {
 										 * merged individually. Otherwise, we can merge them in batches.
 										 */
 										await this.storage.runExclusive(async storage => {
-											const idsInOutbox = await this.outbox.getModelIds(
-												storage
-											);
+											const idsInOutbox =
+												await this.outbox.getModelIds(storage);
 
 											const oneByOne: ModelInstanceMetadata[] = [];
 											const page = items.filter(item => {
