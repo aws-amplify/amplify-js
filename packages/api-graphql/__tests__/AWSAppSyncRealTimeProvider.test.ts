@@ -571,7 +571,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							expect(e.errors[0].message).toEqual(
 								'Connection failed: Non-retriable Test'
 							);
-							// done();
 						},
 					});
 

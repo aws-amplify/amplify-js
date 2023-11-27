@@ -59,7 +59,7 @@ export function createCancellableOperation(
 			return response;
 		} catch (error: any) {
 			const abortSignal = internalPostAbortSignal ?? publicApisAbortSignal;
-			const message = abortSignal.reason ?? abortReason;
+			const message = abortReason ?? abortSignal.reason;
 			if (error.name === 'AbortError' || abortSignal?.aborted === true) {
 				const canceledError = new CanceledError({
 					...(message && { message }),

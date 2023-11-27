@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Hub } from '@aws-amplify/core';
 import { Observable, Observer } from 'rxjs';
 import { CONNECTION_STATE_CHANGE } from '../src/Providers/constants';
@@ -16,13 +15,11 @@ export function delay(timeout) {
 export class HubConnectionListener {
 	teardownHubListener: () => void;
 	observedConnectionStates: CS[] = [];
-	currentConnectionState: CS;
+	currentConnectionState!: CS;
 
 	private connectionStateObservers: Observer<CS>[] = [];
 
 	constructor(channel: string) {
-		let closeResolver: (value: PromiseLike<any>) => void;
-
 		this.teardownHubListener = Hub.listen(channel, (data: any) => {
 			const { payload } = data;
 			if (payload.event === CONNECTION_STATE_CHANGE) {
@@ -88,12 +85,12 @@ export class HubConnectionListener {
 }
 
 export class FakeWebSocketInterface {
-	webSocket: FakeWebSocket;
-	readyForUse: Promise<void>;
-	hasClosed: Promise<undefined>;
+	webSocket!: FakeWebSocket;
+	readyForUse!: Promise<void>;
+	hasClosed!: Promise<undefined>;
 	hubConnectionListener: HubConnectionListener;
 
-	private readyResolve: (value: PromiseLike<any>) => void;
+	private readyResolve!: (value: PromiseLike<any>) => void;
 
 	constructor() {
 		this.hubConnectionListener = new HubConnectionListener('api');
@@ -300,16 +297,16 @@ class FakeWebSocket implements WebSocket {
 	subscriptionId: string | undefined;
 	closeResolverFcn: () => (value: PromiseLike<any>) => void;
 
-	binaryType: BinaryType;
-	bufferedAmount: number;
-	extensions: string;
-	onclose: (this: WebSocket, ev: CloseEvent) => any;
-	onerror: (this: WebSocket, ev: Event) => any;
-	onmessage: (this: WebSocket, ev: MessageEvent) => any;
-	onopen: (this: WebSocket, ev: Event) => any;
-	protocol: string;
-	readyState: number;
-	url: string;
+	binaryType!: BinaryType;
+	bufferedAmount!: number;
+	extensions!: string;
+	onclose!: (this: WebSocket, ev: CloseEvent) => any;
+	onerror!: (this: WebSocket, ev: Event) => any;
+	onmessage!: (this: WebSocket, ev: MessageEvent) => any;
+	onopen!: (this: WebSocket, ev: Event) => any;
+	protocol!: string;
+	readyState!: number;
+	url!: string;
 	close(code?: number, reason?: string): void {
 		const closeResolver = this.closeResolverFcn();
 		if (closeResolver) closeResolver(Promise.resolve(undefined));
@@ -355,10 +352,10 @@ class FakeWebSocket implements WebSocket {
 	constructor(closeResolver: () => (value: PromiseLike<any>) => void) {
 		this.closeResolverFcn = closeResolver;
 	}
-	CONNECTING: 0;
-	OPEN: 1;
-	CLOSING: 2;
-	CLOSED: 3;
+	CONNECTING: 0 = 0;
+	OPEN: 1 = 1;
+	CLOSING: 2 = 2;
+	CLOSED: 3 = 3;
 }
 
 export async function replaceConstant(

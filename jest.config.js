@@ -3,13 +3,8 @@ module.exports = {
 	coveragePathIgnorePatterns: [
 		'/node_modules/',
 		'dist',
-		'lib',
-		'lib-esm',
 		'__tests__',
 	],
-	moduleNameMapper: {
-		uuid: require.resolve('uuid'),
-	},
 	setupFiles: ['../../jest.setup.js'],
 	testEnvironment: 'jsdom',
 	testRegex: '/__tests__/.*\\.(test|spec)\\.[jt]sx?$',
