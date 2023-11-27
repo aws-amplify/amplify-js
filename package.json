@@ -26,6 +26,7 @@
 		"clean:size": "lerna run clean:size --parallel",
 		"format": "lerna run format",
 		"lint": "lerna run lint",
+		"lint:file": "echo",
 		"lint:license": "license-check-and-add add -f license_config.json",
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
@@ -35,7 +36,7 @@
 		"publish:v5-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-5 --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
 		"ts-coverage": "lerna run ts-coverage",
-		"prepare": "./scripts/set-preid-versions.sh"
+		"prepare": "husky install && ./scripts/set-preid-versions.sh"
 	},
 	"workspaces": {
 		"packages": [
@@ -93,11 +94,13 @@
 		"babel-loader": "^8.3.0",
 		"codecov": "^3.6.5",
 		"glob": "^10.3.10",
+		"husky": "^8.0.3",
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
 		"json-loader": "^0.5.7",
 		"lerna": "^7.4.2",
 		"license-check-and-add": "^4.0.5",
+		"lint-staged": "^15.1.0",
 		"prettier": "^3.1.0",
 		"rimraf": "^2.6.2",
 		"rollup": "^0.67.4",
@@ -128,5 +131,8 @@
 		"**/glob/minipass": "6.0.2",
 		"nx": "16.7.0",
 		"next": "13.5.6"
+	},
+	"lint-staged": {
+		"*": "yarn lint:file"
 	}
 }
