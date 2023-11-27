@@ -26,9 +26,12 @@ export const runWithAmplifyServerContext: AmplifyServer.RunOperationWithContext 
 		);
 
 		// run the operation with injecting the context
-		const result = await operation(contextSpec);
+		try {
+			const result = await operation(contextSpec);
 
-		destroyAmplifyServerContext(contextSpec);
-
-		return result;
+			return result;
+		} finally {
+			// ensures destroy the context regardless whether the operation succeeded or failed
+			destroyAmplifyServerContext(contextSpec);
+		}
 	};

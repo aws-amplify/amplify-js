@@ -5,6 +5,7 @@ import { AmplifyServer } from './types';
 import { serverContextRegistry } from './serverContextRegistry';
 import { AmplifyClass } from '../../singleton';
 import { LibraryOptions, ResourcesConfig } from '../../singleton/types';
+import { AmplifyServerContextError } from '../error';
 
 /**
  * Creates an Amplify server context.
@@ -32,15 +33,19 @@ export const createAmplifyServerContext = (
 export const getAmplifyServerContext = (
 	contextSpec: AmplifyServer.ContextSpec
 ): AmplifyServer.Context => {
+	assertContextSpec(contextSpec);
 	const context = serverContextRegistry.get(contextSpec);
 
 	if (context) {
 		return context;
 	}
 
-	throw new Error(
-		'Attempted to get the Amplify Server Context that may have been destroyed.'
-	);
+	throw new AmplifyServerContextError({
+		message:
+			'Attempted to get the Amplify Server Context that may have been destroyed.',
+		recoverySuggestion:
+			'Ensure always call Amplify APIs within `runWithAmplifyServerContext` function, and do not attempt to reuse `contextSpec` object.',
+	});
 };
 
 /**
@@ -51,4 +56,29 @@ export const destroyAmplifyServerContext = (
 	contextSpec: AmplifyServer.ContextSpec
 ): void => {
 	serverContextRegistry.deregister(contextSpec);
+};
+
+const assertContextSpec = (contextSpec: AmplifyServer.ContextSpec) => {
+	let invalid = false;
+
+	if (!Object.prototype.hasOwnProperty.call(contextSpec, 'token')) {
+		invalid = true;
+	} else if (
+		!Object.prototype.hasOwnProperty.call(contextSpec.token, 'value')
+	) {
+		invalid = true;
+	} else if (
+		Object.prototype.toString.call(contextSpec.token.value) !==
+		'[object Symbol]'
+	) {
+		invalid = true;
+	}
+
+	if (invalid) {
+		throw new AmplifyServerContextError({
+			message: 'Invalid `contextSpec`.',
+			recoverySuggestion:
+				'Ensure to use the `contextSpec` object injected by `runWithAmplifyServerContext` function.',
+		});
+	}
 };

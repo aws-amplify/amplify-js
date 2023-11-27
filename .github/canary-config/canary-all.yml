@@ -236,8 +236,8 @@ tests:
     desc: 'React Storage Copy'
     framework: react
     category: storage
-    sample_name: [multi-part-copy-with-progress]
-    spec: multi-part-copy-with-progress
+    sample_name: [multi-part-copy]
+    spec: multi-part-copy
     browser: *minimal_browser_list
 
     # API
