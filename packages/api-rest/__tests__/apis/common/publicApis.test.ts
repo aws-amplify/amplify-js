@@ -82,11 +82,11 @@ describe('public APIs', () => {
 	});
 	const APIs = [
 		{ name: 'get', fn: get, method: 'GET' },
-		// { name: 'post', fn: post, method: 'POST' },
-		// { name: 'put', fn: put, method: 'PUT' },
-		// { name: 'del', fn: del, method: 'DELETE' },
-		// { name: 'head', fn: head, method: 'HEAD' },
-		// { name: 'patch', fn: patch, method: 'PATCH' },
+		{ name: 'post', fn: post, method: 'POST' },
+		{ name: 'put', fn: put, method: 'PUT' },
+		{ name: 'del', fn: del, method: 'DELETE' },
+		{ name: 'head', fn: head, method: 'HEAD' },
+		{ name: 'patch', fn: patch, method: 'PATCH' },
 	];
 	// TODO: use describe.each after upgrading Jest
 	APIs.forEach(({ name, fn, method }) => {

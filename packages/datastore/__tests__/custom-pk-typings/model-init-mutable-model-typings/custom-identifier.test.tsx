@@ -28,23 +28,29 @@ describe('Custom Identifier', () => {
 			myId: '',
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CustomIdentifierDefaultRO.copyOf({} as CustomIdentifierDefaultRO, d => {
+			// TODO: Uncomment below and update test
 			// d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.myId;
+			// TODO: Uncomment below and update test
 			// d.myId = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 	});
@@ -70,23 +76,29 @@ describe('Custom Identifier', () => {
 			myId: '',
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CustomIdentifierCustomRO.copyOf({} as CustomIdentifierCustomRO, d => {
+			// TODO: Uncomment below and update test
 			// d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.myId;
+			// TODO: Uncomment below and update test
 			// d.myId = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 	});

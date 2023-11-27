@@ -318,6 +318,7 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async () => {
+		expect.assertions(1);
 		const team1 = new Team({ name: 'team' });
 		const savedTeam = await DataStore.save(team1);
 		const project1 = new Project({
@@ -329,8 +330,9 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(project1);
 
 		const q1 = (await DataStore.query(Project, project1.id))!;
-		const value = await q1.team;
-		expect(value!.id).toEqual(team1.id);
+		return q1.team.then(value => {
+			expect(value!.id).toEqual(team1.id);
+		});
 	});
 
 	test('query lazily HAS_MANY, setting FK', async () => {
@@ -755,6 +757,7 @@ describe('AsyncCollection toArray Test', () => {
 			},
 		].forEach(Parameter => {
 			test(`Testing input of ${Parameter.input}`, async () => {
+				expect.assertions(1);
 				const { input, expected } = Parameter;
 				const album1 = new Album({
 					name: "Lupe Fiasco's The Cool",
@@ -787,8 +790,9 @@ describe('AsyncCollection toArray Test', () => {
 				for (const num of expected) {
 					expectedValues.push(songsArray[num]);
 				}
-				const value = await songs.toArray(input);
-				expect(value).toStrictEqual(expectedValues);
+				return songs.toArray(input).then(value => {
+					expect(value).toStrictEqual(expectedValues);
+				});
 			});
 		});
 	});

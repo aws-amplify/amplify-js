@@ -34,6 +34,7 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
@@ -45,20 +46,24 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		OptionallyManagedDefaultRO.copyOf({} as OptionallyManagedDefaultRO, d => {
 			d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 
@@ -181,6 +186,7 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
@@ -192,20 +198,24 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		OptionallyManagedCustomRO.copyOf({} as OptionallyManagedCustomRO, d => {
 			d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 

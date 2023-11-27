@@ -553,7 +553,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					]);
 				});
 
-				fit('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async () => {
+				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async () => {
 					expect.assertions(3);
 
 					const socketCloseSpy = jest.spyOn(

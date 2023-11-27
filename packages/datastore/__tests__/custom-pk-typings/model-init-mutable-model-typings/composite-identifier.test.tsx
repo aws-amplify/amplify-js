@@ -32,30 +32,39 @@ describe('Composite Identifier', () => {
 			dob: '',
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
+			// TODO: Uncomment below and update test
 			// d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.tenant;
+			// TODO: Uncomment below and update test
 			// d.tenant = '';
 			d.dob;
+			// TODO: Uncomment below and update test
 			// d.dob = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 
 		// Query
+		// TODO: Uncomment below and update test
 		// await DataStore.query(CompositeDefaultRO, 'someid');
+		// TODO: Uncomment below and update test
 		// await DataStore.query(CompositeDefaultRO, { id: 'someid' });
 
 		expectType<CompositeDefaultRO | undefined>(
@@ -81,6 +90,7 @@ describe('Composite Identifier', () => {
 
 		// Delete
 
+		// TODO: Uncomment below and update test
 		// await DataStore.delete(CompositeDefaultRO, '')
 
 		expectType<CompositeDefaultRO[]>(
@@ -148,25 +158,32 @@ describe('Composite Identifier', () => {
 			dob: '',
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CompositeCustomRO.copyOf({} as CompositeCustomRO, d => {
+			// TODO: Uncomment below and update test
 			// d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.tenant;
+			// TODO: Uncomment below and update test
 			// d.tenant = '';
 			d.dob;
+			// TODO: Uncomment below and update test
 			// d.dob = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 	});

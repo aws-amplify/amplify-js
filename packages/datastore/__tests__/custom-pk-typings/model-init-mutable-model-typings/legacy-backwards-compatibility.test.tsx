@@ -19,6 +19,7 @@ import {
 describe('Legacy - backwards compatibility', () => {
 	test(`LegacyNoMetadata`, async () => {
 		expectType<ModelInit<LegacyNoMetadata>>({
+			// TODO: Uncomment below and update test
 			// id: '234',
 			name: '',
 			description: '',
@@ -27,6 +28,7 @@ describe('Legacy - backwards compatibility', () => {
 		expectType<ModelInit<LegacyNoMetadata>>({
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
@@ -38,6 +40,7 @@ describe('Legacy - backwards compatibility', () => {
 
 		LegacyNoMetadata.copyOf({} as LegacyNoMetadata, d => {
 			d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
@@ -136,6 +139,7 @@ describe('Legacy - backwards compatibility', () => {
 
 	test(`LegacyDefaultRO`, async () => {
 		expectType<ModelInit<LegacyDefaultRO>>({
+			// TODO: Uncomment below and update test
 			// id: '234',
 			name: '',
 			description: '',
@@ -144,20 +148,24 @@ describe('Legacy - backwards compatibility', () => {
 		expectType<ModelInit<LegacyDefaultRO>>({
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		LegacyDefaultRO.copyOf({} as LegacyDefaultRO, d => {
 			d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 
@@ -238,6 +246,7 @@ describe('Legacy - backwards compatibility', () => {
 
 	test(`LegacyCustomRO`, async () => {
 		expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
+			// TODO: Uncomment below and update test
 			// id: '234',
 			name: '',
 			description: '',
@@ -246,30 +255,37 @@ describe('Legacy - backwards compatibility', () => {
 		expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// createdOn: '',
 		});
 
 		expectType<ModelInit<LegacyCustomRO, LegacyCustomROMETA>>({
 			name: '',
 			description: '',
+			// TODO: Uncomment below and update test
 			// createdAt: '',
 		});
 
 		LegacyCustomRO.copyOf({} as LegacyCustomRO, d => {
 			d.id;
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
+			// TODO: Uncomment below and update test
 			// d.createdAt;
 
+			// TODO: Uncomment below and update test
 			// d.updatedAt;
 
 			d.createdOn;
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 
@@ -350,6 +366,7 @@ describe('Legacy - backwards compatibility', () => {
 
 	test(`CustomIdentifierNoRO`, async () => {
 		expectType<ModelInit<CustomIdentifierNoRO>>({
+			// TODO: Uncomment below and update test
 			// id: '234',
 			myId: '23342',
 			name: '',
@@ -372,6 +389,7 @@ describe('Legacy - backwards compatibility', () => {
 
 		CustomIdentifierNoRO.copyOf({} as CustomIdentifierNoRO, d => {
 			d.myId;
+			// TODO: Uncomment below and update test
 			// d.myId = '';
 
 			d.name = '';
@@ -383,8 +401,10 @@ describe('Legacy - backwards compatibility', () => {
 			d.updatedAt;
 			d.updatedAt = '';
 
+			// TODO: Uncomment below and update test
 			// d.createdOn;
 
+			// TODO: Uncomment below and update test
 			// d.updatedOn;
 		});
 
