@@ -16,7 +16,7 @@ import {
 	cognitoCredentialsProvider,
 } from './auth/cognito';
 
-export const DefaultAmplify = {
+const DefaultAmplify = {
 	configure(
 		resourceConfig: ResourcesConfig | LegacyConfig,
 		libraryOptions?: LibraryOptions
@@ -85,3 +85,5 @@ export const DefaultAmplify = {
 		return Amplify.getConfig();
 	},
 };
+
+export default DefaultAmplify;
