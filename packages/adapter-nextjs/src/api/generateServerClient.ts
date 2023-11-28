@@ -44,7 +44,7 @@ type ReqClientParams = {
  * const result = await client.graphql({ query: listPosts });
  */
 export function generateServerClientUsingCookies<
-	T extends Record<any, any> = never
+	T extends Record<any, any> = never,
 >({
 	config,
 	cookies,
@@ -99,7 +99,7 @@ export function generateServerClientUsingCookies<
  * });
  */
 export function generateServerClientUsingReqRes<
-	T extends Record<any, any> = never
+	T extends Record<any, any> = never,
 >({ config, authMode, authToken }: ReqClientParams): V6ClientSSRRequest<T> {
 	const amplifyConfig = getAmplifyConfig(config);
 	// passing `null` instance because each (future model) method must retrieve a valid instance

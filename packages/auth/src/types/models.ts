@@ -20,7 +20,7 @@ export type AuthDeliveryMedium = 'EMAIL' | 'SMS' | 'PHONE' | 'UNKNOWN';
  * Data describing the dispatch of a confirmation code.
  */
 export type AuthCodeDeliveryDetails<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	destination?: string;
 	deliveryMedium?: AuthDeliveryMedium;
@@ -31,7 +31,7 @@ export type AuthCodeDeliveryDetails<
  */
 export type AuthResetPasswordStep = 'CONFIRM_RESET_PASSWORD_WITH_CODE' | 'DONE';
 export type AuthNextResetPasswordStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	resetPasswordStep: AuthResetPasswordStep;
 	additionalInfo?: AuthAdditionalInfo;
@@ -106,7 +106,7 @@ export type ConfirmSignInWithCustomChallenge = {
 };
 
 export type ConfirmSignInWithNewPasswordRequired<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	/**
 	 * Auth step requires user to change their password with any required attributes.
@@ -173,7 +173,7 @@ export type DoneSignInStep = {
 };
 
 export type AuthNextSignInStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > =
 	| ConfirmSignInWithCustomChallenge
 	| ContinueSignInWithMFASelection
@@ -189,7 +189,7 @@ export type AuthNextSignInStep<
  * Key/value pairs describing a user attributes.
  */
 export type AuthUserAttributes<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	[Attribute in UserAttributeKey]?: string;
 };
@@ -198,7 +198,7 @@ export type AuthUserAttributes<
  * The interface of a user attribute.
  */
 export type AuthUserAttribute<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	attributeKey: UserAttributeKey;
 	value: string;
@@ -226,7 +226,7 @@ export type AuthUpdateAttributeStep =
  * Data encapsulating the next step in the Sign Up process
  */
 export type AuthNextSignUpStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > =
 	| ConfirmSignUpSignUpStep<UserAttributeKey>
 	| AutoSignInSignUpStep<UserAttributeKey>
@@ -238,21 +238,21 @@ export type DoneSignUpStep = {
 };
 
 export type ConfirmSignUpSignUpStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	signUpStep: 'CONFIRM_SIGN_UP';
 	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
 };
 
 export type AutoSignInSignUpStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	signUpStep: 'COMPLETE_AUTO_SIGN_IN';
 	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
 };
 
 export type AuthNextUpdateAttributeStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	updateAttributeStep: AuthUpdateAttributeStep;
 	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
