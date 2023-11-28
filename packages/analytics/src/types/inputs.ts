@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UserProfile } from '@aws-amplify/core';
-import { AnalyticsServiceOptions } from '.';
+import { AnalyticsServiceOptions } from './options';
 import {
 	SessionTrackingOptions,
 	PageViewTrackingOptions,
