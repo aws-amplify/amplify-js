@@ -26,7 +26,7 @@
 		"clean:size": "lerna run clean:size --parallel",
 		"format": "lerna run format",
 		"lint": "lerna run lint",
-		"lint:file": "echo",
+		"lint:file": ":",
 		"lint:license": "license-check-and-add add -f license_config.json",
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
