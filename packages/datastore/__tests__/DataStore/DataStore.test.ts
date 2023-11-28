@@ -131,7 +131,7 @@ describe('DataStore tests', () => {
 		});
 
 		test('Model class can be instantiated', () => {
-			const { validate } = require('uuid-validate');
+			const validate = require('uuid-validate');
 			const { Model } = initSchema(testSchema()) as {
 				Model: PersistentModelConstructor<Model>;
 			};
