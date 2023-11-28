@@ -1,125 +1,89 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { updatePassword } from '../../../src/providers/cognito';
 import { ChangePasswordException } from '../../../src/providers/cognito/types/errors';
-import * as changePasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { ChangePasswordCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+import { changePassword } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getMockError, mockAccessToken } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
 jest.mock('@aws-amplify/core', () => ({
-	...jest.requireActual('@aws-amplify/core'),
-	fetchAuthSession: jest.fn(),
-	Amplify: {
-		configure: jest.fn(),
-		getConfig: jest.fn(() => ({
-			Auth: {
-				Cognito: {
-					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-					identityPoolId: 'us-west-2:xxxxxx',
-				},
-			},
-		})),
-	},
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
-const mockedAccessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-describe('updatePassword API happy path cases', () => {
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
+
+describe('updatePassword', () => {
 	const oldPassword = 'oldPassword';
 	const newPassword = 'newPassword';
+	// assert mocks
+	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+	const mockChangePassword = changePassword as jest.Mock;
 
-	let changePasswordClientSpy;
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+		mockFetchAuthSession.mockResolvedValue({
+			tokens: { accessToken: decodeJWT(mockAccessToken) },
+		});
+	});
+
 	beforeEach(() => {
-		mockFetchAuthSession.mockImplementationOnce(
-			async (): Promise<{ tokens: { accessToken: any } }> => {
-				return {
-					tokens: {
-						accessToken: decodeJWT(mockedAccessToken),
-					},
-				};
-			}
-		);
-		changePasswordClientSpy = jest
-			.spyOn(changePasswordClient, 'changePassword')
-			.mockImplementationOnce(
-				async (): Promise<ChangePasswordCommandOutput> => {
-					return {} as ChangePasswordCommandOutput;
-				}
-			);
+		mockChangePassword.mockResolvedValue({});
 	});
 
 	afterEach(() => {
-		changePasswordClientSpy.mockClear();
+		mockChangePassword.mockReset();
 		mockFetchAuthSession.mockClear();
 	});
 
-	test('updatePassword should call changePassword', async () => {
+	it('should call changePassword', async () => {
 		await updatePassword({ oldPassword, newPassword });
 
-		expect(changePasswordClientSpy).toHaveBeenCalledWith(
+		expect(mockChangePassword).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
-				AccessToken: mockedAccessToken,
+				AccessToken: mockAccessToken,
 				PreviousPassword: oldPassword,
 				ProposedPassword: newPassword,
 			})
 		);
 	});
-});
 
-describe('updatePassword API error path cases:', () => {
-	const oldPassword = 'oldPassword';
-	const newPassword = 'newPassword';
-
-	test('updatePassword API should throw a validation AuthError when oldPassword is empty', async () => {
+	it('should throw an error when oldPassword is empty', async () => {
 		expect.assertions(2);
 		try {
 			await updatePassword({ oldPassword: '', newPassword });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptyUpdatePassword);
 		}
 	});
 
-	test('updatePassword API should throw a validation AuthError when newPassword is empty', async () => {
+	it('should throw an error when newPassword is empty', async () => {
 		expect.assertions(2);
 		try {
 			await updatePassword({ oldPassword, newPassword: '' });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptyUpdatePassword);
 		}
 	});
 
-	test('updatePassword API should raise service error', async () => {
+	it('should throw an error when service returns an error response', async () => {
 		expect.assertions(2);
-		mockFetchAuthSession.mockImplementationOnce(
-			async (): Promise<{ tokens: { accessToken: any } }> => {
-				return {
-					tokens: {
-						accessToken: decodeJWT(mockedAccessToken),
-					},
-				};
-			}
-		);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(
-					ChangePasswordException.InvalidParameterException
-				)
-			)
-		);
+		mockChangePassword.mockImplementation(() => {
+			throw getMockError(ChangePasswordException.InvalidParameterException);
+		});
+
 		try {
 			await updatePassword({ oldPassword, newPassword });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				ChangePasswordException.InvalidParameterException

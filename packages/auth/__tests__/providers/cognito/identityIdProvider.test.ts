@@ -57,6 +57,11 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 			}
 		});
 	});
+
+	afterEach(() => {
+		mockGetId.mockClear();
+	});
+
 	test('Should return stored guest identityId', async () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
 			async () => {
@@ -69,7 +74,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
 		).toBe(authAPITestParams.GuestIdentityId.id);
-		expect(mockGetId).toBeCalledTimes(0);
+		expect(mockGetId).toHaveBeenCalledTimes(0);
 	});
 	test('Should generate a guest identityId and return it', async () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
@@ -91,7 +96,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
 		).toBe(authAPITestParams.GuestIdentityId.id);
-		expect(mockGetId).toBeCalledTimes(1);
+		expect(mockGetId).toHaveBeenCalledTimes(1);
 	});
 	test('Should return stored primary identityId', async () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
@@ -106,7 +111,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
 		).toBe(authAPITestParams.PrimaryIdentityId.id);
-		expect(mockGetId).toBeCalledTimes(0);
+		expect(mockGetId).toHaveBeenCalledTimes(0);
 	});
 	test('Should generate a primary identityId and return it', async () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
@@ -129,6 +134,6 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
 			})
 		).toBe(authAPITestParams.PrimaryIdentityId.id);
-		expect(mockGetId).toBeCalledTimes(1);
+		expect(mockGetId).toHaveBeenCalledTimes(1);
 	});
 });

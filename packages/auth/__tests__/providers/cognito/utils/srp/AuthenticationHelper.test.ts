@@ -103,7 +103,7 @@ describe('AuthenticationHelper', () => {
 		it('should instantiate the verifierDevices of the instance', async () => {
 			await instance.generateHashDevice(deviceGroupKey, username);
 
-			expect(mockGetHashFromData).toBeCalledWith(
+			expect(mockGetHashFromData).toHaveBeenCalledWith(
 				`${deviceGroupKey}${username}:${randomString}`
 			);
 			expect(instance.getVerifierDevices()).toBeDefined();
@@ -161,10 +161,10 @@ describe('AuthenticationHelper', () => {
 					salt,
 				})
 			).toBe(hkdfKey);
-			expect(mockCalculateU).toBeCalledWith({ A, B: serverBValue });
-			expect(mockGetPaddedHex).toBeCalledWith(salt);
-			expect(mockGetHashFromHex).toBeCalledWith(usernamePasswordHash);
-			expect(mockCalculateS).toBeCalledWith({
+			expect(mockCalculateU).toHaveBeenCalledWith({ A, B: serverBValue });
+			expect(mockGetPaddedHex).toHaveBeenCalledWith(salt);
+			expect(mockGetHashFromHex).toHaveBeenCalledWith(usernamePasswordHash);
+			expect(mockCalculateS).toHaveBeenCalledWith({
 				a,
 				g,
 				k: expect.any(BigInteger),

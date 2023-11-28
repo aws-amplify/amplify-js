@@ -1,4 +1,4 @@
-import { CacheConfig } from '../../src/Cache/types/Cache';
+import { CacheConfig } from '../../src/Cache/types';
 import { defaultConfig } from '../../src/Cache/constants';
 import { StorageCache } from '../../src/Cache/StorageCache';
 import { getCurrentSizeKey } from '../../src/Cache/utils';
@@ -65,13 +65,13 @@ describe('StorageCache', () => {
 	describe('constructor', () => {
 		it('can be constructed with default configurations', () => {
 			const cache = getStorageCache();
-			expect(mockGetLocalStorageWithFallback).toBeCalled();
+			expect(mockGetLocalStorageWithFallback).toHaveBeenCalled();
 			expect(cache.testGetConfig()).toStrictEqual(defaultConfig);
 		});
 
 		it('can be constructed with custom configurations', () => {
 			const cache = getStorageCache(config);
-			expect(mockGetLocalStorageWithFallback).toBeCalled();
+			expect(mockGetLocalStorageWithFallback).toHaveBeenCalled();
 			expect(cache.testGetConfig()).toStrictEqual(config);
 		});
 	});

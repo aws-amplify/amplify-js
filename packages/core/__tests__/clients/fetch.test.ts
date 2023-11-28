@@ -34,7 +34,7 @@ describe(fetchTransferHandler.name, () => {
 	it('should support abort signal', async () => {
 		const signal = new AbortController().signal;
 		await fetchTransferHandler(mockRequest, { abortSignal: signal });
-		expect(mockFetch).toBeCalledTimes(1);
+		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
 			expect.objectContaining({ signal })
 		);
@@ -43,7 +43,7 @@ describe(fetchTransferHandler.name, () => {
 	it('should configure cache', async () => {
 		const cacheMode = 'no-store';
 		await fetchTransferHandler(mockRequest, { cache: cacheMode });
-		expect(mockFetch).toBeCalledTimes(1);
+		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
 			expect.objectContaining({ cache: cacheMode })
 		);
@@ -53,7 +53,7 @@ describe(fetchTransferHandler.name, () => {
 		await fetchTransferHandler(mockRequest, {
 			withCrossDomainCredentials: true,
 		});
-		expect(mockFetch).toBeCalledTimes(1);
+		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
 			expect.objectContaining({ credentials: 'include' })
 		);
@@ -61,7 +61,7 @@ describe(fetchTransferHandler.name, () => {
 
 	it('should set credentials options to "same-origin" if cross domain credentials is not set', async () => {
 		await fetchTransferHandler(mockRequest, {});
-		expect(mockFetch).toBeCalledTimes(1);
+		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
 			expect.objectContaining({ credentials: 'same-origin' })
 		);
@@ -83,7 +83,7 @@ describe(fetchTransferHandler.name, () => {
 		}
 		expect(await body.text()).toBe(mockPayloadValue);
 		expect(await body.text()).toBe(mockPayloadValue);
-		expect(mockBody.text).toBeCalledTimes(1); // test caching
+		expect(mockBody.text).toHaveBeenCalledTimes(1); // test caching
 	});
 
 	it('should support blob() in response.body with caching', async () => {
@@ -94,7 +94,7 @@ describe(fetchTransferHandler.name, () => {
 		}
 		expect(await body.blob()).toBe(mockPayloadValue);
 		expect(await body.blob()).toBe(mockPayloadValue);
-		expect(mockBody.blob).toBeCalledTimes(1); // test caching
+		expect(mockBody.blob).toHaveBeenCalledTimes(1); // test caching
 	});
 
 	it('should support json() in response.body with caching', async () => {
@@ -105,7 +105,7 @@ describe(fetchTransferHandler.name, () => {
 		}
 		expect(await body.json()).toBe(mockPayloadValue);
 		expect(await body.json()).toBe(mockPayloadValue);
-		expect(mockBody.json).toBeCalledTimes(1); // test caching
+		expect(mockBody.json).toHaveBeenCalledTimes(1); // test caching
 	});
 
 	test.each(['GET', 'HEAD', 'DELETE'])(
@@ -115,7 +115,7 @@ describe(fetchTransferHandler.name, () => {
 				{ ...mockRequest, method, body: 'Mock Body' },
 				{}
 			);
-			expect(mockFetch).toBeCalledTimes(1);
+			expect(mockFetch).toHaveBeenCalledTimes(1);
 			expect(mockFetch.mock.calls[0][0].body).toBeUndefined();
 		}
 	);

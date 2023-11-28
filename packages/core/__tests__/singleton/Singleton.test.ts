@@ -312,7 +312,7 @@ describe('Session tests', () => {
 		});
 
 		const session = await Amplify.Auth.fetchAuthSession();
-		expect(spyTokenProvider).toBeCalled();
+		expect(spyTokenProvider).toHaveBeenCalled();
 
 		expect(session.tokens?.accessToken.payload).toEqual({
 			exp: 1710293130,
@@ -394,7 +394,7 @@ describe('Session tests', () => {
 			expiration: new Date(123),
 		});
 
-		expect(credentialsSpy).toBeCalledWith({
+		expect(credentialsSpy).toHaveBeenCalledWith({
 			authConfig: {
 				Cognito: {
 					identityPoolId: 'us-east-1:bbbbb',
@@ -479,7 +479,7 @@ describe('Session tests', () => {
 			expiration: new Date(123),
 		});
 
-		expect(credentialsSpy).toBeCalledWith({
+		expect(credentialsSpy).toHaveBeenCalledWith({
 			authConfig: {
 				Cognito: {
 					allowGuestAccess: true,
@@ -521,7 +521,7 @@ describe('Session tests', () => {
 		);
 
 		await auth.fetchAuthSession({ forceRefresh: true });
-		expect(tokenProvider).toBeCalledWith({
+		expect(tokenProvider).toHaveBeenCalledWith({
 			forceRefresh: true,
 		});
 	});
@@ -553,6 +553,6 @@ describe('Session tests', () => {
 
 		await expect(action()).rejects.toThrow('no no no');
 
-		expect(tokenProvider).toBeCalled();
+		expect(tokenProvider).toHaveBeenCalled();
 	});
 });

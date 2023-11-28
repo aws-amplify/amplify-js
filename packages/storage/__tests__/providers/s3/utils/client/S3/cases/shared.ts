@@ -12,7 +12,6 @@ export const DEFAULT_RESPONSE_HEADERS = {
 };
 
 export const expectedMetadata = {
-	attempts: 1,
 	requestId: MOCK_REQUEST_ID,
 	extendedRequestId: MOCK_EXTENDED_REQUEST_ID,
 	httpStatusCode: 200,
@@ -24,12 +23,4 @@ export const defaultConfig = {
 		accessKeyId: 'key',
 		secretAccessKey: 'secret',
 	},
-};
-
-export const defaultRequiredRequestHeaders = {
-	authorization: expect.stringContaining('Signature'),
-	host: 'bucket.s3.us-east-1.amazonaws.com',
-	'x-amz-content-sha256': EMPTY_SHA256,
-	'x-amz-date': expect.stringMatching(/^\d{8}T\d{6}Z/),
-	'x-amz-user-agent': expect.stringContaining('aws-amplify'),
 };

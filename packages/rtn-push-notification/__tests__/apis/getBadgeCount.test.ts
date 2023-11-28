@@ -24,6 +24,6 @@ describe('getBadgeCount', () => {
 
 	it('calls the native getBadgeCount', async () => {
 		expect(await getBadgeCount()).toBe(42);
-		expect(mockGetBadgeCountNative).toBeCalled();
+		expect(mockGetBadgeCountNative).toHaveBeenCalled();
 	});
 });

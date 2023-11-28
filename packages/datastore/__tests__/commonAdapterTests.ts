@@ -5,7 +5,7 @@ import {
 	PersistentModelConstructor,
 	PersistentModel,
 	initSchema as initSchemaType,
-} from '../src/';
+} from '../src';
 
 import { ModelRelationship } from '../src/storage/relationship';
 import {
@@ -36,7 +36,7 @@ import {
 export { pause };
 
 const isSQLiteAdapter = () =>
-	expect.getState().testPath.includes('SQLiteAdapter');
+	expect.getState().testPath?.includes('SQLiteAdapter');
 
 /**
  * Adds common query test cases that all adapters should support.

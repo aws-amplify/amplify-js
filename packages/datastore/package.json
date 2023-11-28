@@ -61,7 +61,7 @@
 		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
 		"dexie-export-import": "1.0.3",
-		"fake-indexeddb": "3.0.0",
+		"fake-indexeddb": "^4.0.2",
 		"graphql": "15.8.0",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
@@ -73,62 +73,5 @@
 			"import": "{ Amplify, DataStore }",
 			"limit": "65.25 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": true,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2019"
-					],
-					"target": "es5",
-					"allowJs": true,
-					"esModuleInterop": true,
-					"strictNullChecks": false,
-					"types": [
-						"@types/jest"
-					]
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"__tests__/model.ts",
-			"__tests__/schema.ts",
-			"__tests__/helpers/",
-			"__tests__/commonAdapterTests.ts"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist"
-		],
-		"setupFilesAfterEnv": [
-			"<rootDir>/jest.setup.js"
-		]
-	}
+	]
 }

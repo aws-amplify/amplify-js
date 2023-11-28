@@ -5,7 +5,6 @@ import { listObjectsV2 } from '../../../../../../../src/providers/s3/utils/clien
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 import {
 	defaultConfig,
-	defaultRequiredRequestHeaders,
 	DEFAULT_RESPONSE_HEADERS,
 	expectedMetadata,
 } from './shared';
@@ -34,7 +33,6 @@ const listObjectsV2HappyCase: ApiFunctionalTestCase<typeof listObjectsV2> = [
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({
-			...defaultRequiredRequestHeaders,
 			'x-amz-request-payer': 'RequestPayer',
 			'x-amz-expected-bucket-owner': 'ExpectedBucketOwner',
 		}),

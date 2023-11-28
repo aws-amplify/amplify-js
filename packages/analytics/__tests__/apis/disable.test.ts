@@ -16,6 +16,6 @@ describe('Pinpoint APIs: disable', () => {
 	it('should disable Analytics', () => {
 		disable();
 
-		expect(mockDisableAnalytics).toBeCalledTimes(1);
+		expect(mockDisableAnalytics).toHaveBeenCalledTimes(1);
 	});
 });

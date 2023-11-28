@@ -24,6 +24,6 @@ describe('cryptoSecureRandomInt test', () => {
 
 		expect(window.crypto).toBeTruthy();
 		expect(cryptoSecureRandomInt()).toBe(12345);
-		expect(windowSpy).toBeCalledTimes(4);
+		expect(windowSpy).toHaveBeenCalledTimes(4);
 	});
 });

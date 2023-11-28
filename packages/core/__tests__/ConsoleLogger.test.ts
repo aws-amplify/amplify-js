@@ -1,4 +1,5 @@
 import { ConsoleLogger } from '../src';
+import { LoggingProvider } from '../src/Logger/types';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {
@@ -16,7 +17,7 @@ describe('ConsoleLogger', () => {
 
 		it('should do nothing when no plugin is provided to addPluggable', () => {
 			const logger = new ConsoleLogger('name');
-			logger.addPluggable();
+			logger.addPluggable(null as any);
 			const pluggables = logger.listPluggables();
 
 			expect(pluggables).toHaveLength(0);
@@ -33,8 +34,8 @@ describe('ConsoleLogger', () => {
 				configure: function () {
 					return {};
 				},
-				pushLogs: null,
-			};
+				pushLogs: () => {},
+			} as LoggingProvider;
 
 			const logger = new ConsoleLogger('name');
 			logger.addPluggable(provider);

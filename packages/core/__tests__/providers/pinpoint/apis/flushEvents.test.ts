@@ -29,7 +29,7 @@ describe('Pinpoint Provider API: flushEvents', () => {
 
 	it('invokes flushAll on pinpoint buffer', () => {
 		flushEvents({ appId, region, credentials, identityId });
-		expect(mockGetEventBuffer).toBeCalledWith({
+		expect(mockGetEventBuffer).toHaveBeenCalledWith({
 			appId,
 			region,
 			credentials,
@@ -39,6 +39,6 @@ describe('Pinpoint Provider API: flushEvents', () => {
 			flushSize: FLUSH_SIZE,
 			resendLimit: RESEND_LIMIT,
 		});
-		expect(mockFlushAll).toBeCalledTimes(1);
+		expect(mockFlushAll).toHaveBeenCalledTimes(1);
 	});
 });

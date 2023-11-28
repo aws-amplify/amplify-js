@@ -61,13 +61,13 @@ describe('Pinpoint API: record', () => {
 	it('invokes the core record implementation', async () => {
 		record(event);
 
-		expect(mockResolveCredentials).toBeCalledTimes(1);
-		expect(mockResolveConfig).toBeCalledTimes(1);
+		expect(mockResolveCredentials).toHaveBeenCalledTimes(1);
+		expect(mockResolveConfig).toHaveBeenCalledTimes(1);
 
 		await new Promise(process.nextTick);
 
-		expect(mockPinpointRecord).toBeCalledTimes(1);
-		expect(mockPinpointRecord).toBeCalledWith({
+		expect(mockPinpointRecord).toHaveBeenCalledTimes(1);
+		expect(mockPinpointRecord).toHaveBeenCalledWith({
 			appId,
 			category: 'Analytics',
 			credentials,
@@ -85,8 +85,11 @@ describe('Pinpoint API: record', () => {
 
 		await new Promise(process.nextTick);
 
-		expect(mockPinpointRecord).not.toBeCalled();
-		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
+		expect(mockPinpointRecord).not.toHaveBeenCalled();
+		expect(loggerWarnSpy).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(Error)
+		);
 	});
 
 	it('throws a validation error when event does not specify a name', () => {
@@ -94,7 +97,7 @@ describe('Pinpoint API: record', () => {
 
 		try {
 			record(mockParams as RecordInput);
-		} catch (e) {
+		} catch (e: any) {
 			expect(e.name).toEqual(AnalyticsValidationErrorCode.NoEventName);
 		}
 
@@ -108,7 +111,7 @@ describe('Pinpoint API: record', () => {
 
 		await new Promise(process.nextTick);
 
-		expect(mockPinpointRecord).not.toBeCalled();
+		expect(mockPinpointRecord).not.toHaveBeenCalled();
 	});
 
 	it('should dispatch a Hub event', async () => {
@@ -116,7 +119,7 @@ describe('Pinpoint API: record', () => {
 
 		await new Promise(process.nextTick);
 
-		expect(mockHubDispatch).toBeCalledWith(
+		expect(mockHubDispatch).toHaveBeenCalledWith(
 			'analytics',
 			{ event: 'record', data: event, message: 'Recording Analytics event' },
 			'Analytics',

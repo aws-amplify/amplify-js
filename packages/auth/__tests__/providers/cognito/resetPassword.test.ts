@@ -1,57 +1,54 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { Amplify } from '@aws-amplify/core';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { resetPassword } from '../../../src/providers/cognito';
 import { ForgotPasswordException } from '../../../src/providers/cognito/types/errors';
-import * as resetPasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { ForgotPasswordCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { Amplify } from 'aws-amplify';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+import { forgotPassword } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getMockError } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-Amplify.configure({
-	Auth: {
-		Cognito: {
-			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
-		},
-	},
-});
-describe('ResetPassword API happy path cases', () => {
-	let resetPasswordSpy;
+jest.mock('@aws-amplify/core', () => ({
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
+}));
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
+
+describe('resetPassword', () => {
+	// assert mocks
+	const mockForgotPassword = forgotPassword as jest.Mock;
+
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+	});
 
 	beforeEach(() => {
-		resetPasswordSpy = jest
-			.spyOn(resetPasswordClient, 'forgotPassword')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
-			});
+		mockForgotPassword.mockResolvedValue(
+			authAPITestParams.resetPasswordHttpCallResult
+		);
 	});
 
 	afterEach(() => {
-		resetPasswordSpy.mockClear();
+		mockForgotPassword.mockReset();
 	});
 
-	afterAll(() => {
-		jest.restoreAllMocks();
-	});
-
-	test('ResetPassword API should call the UserPoolClient and should return a ResetPasswordResult', async () => {
+	it('should call forgotPassword and return a result', async () => {
 		const result = await resetPassword(authAPITestParams.resetPasswordRequest);
 		expect(result).toEqual(authAPITestParams.resetPasswordResult);
 	});
 
-	test('ResetPassword API input should contain clientMetadata from request', async () => {
+	it('should contain clientMetadata from request', async () => {
 		await resetPassword({
 			username: 'username',
 			options: {
 				clientMetadata: { foo: 'foo' },
 			},
 		});
-		expect(resetPasswordSpy).toHaveBeenCalledWith(
+		expect(mockForgotPassword).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				Username: 'username',
@@ -60,14 +57,12 @@ describe('ResetPassword API happy path cases', () => {
 			})
 		);
 	});
-});
 
-describe('ResetPassword API error path cases:', () => {
-	test('ResetPassword API should throw a validation AuthError when username is empty', async () => {
+	it('should throw an error when username is empty', async () => {
 		expect.assertions(2);
 		try {
 			await resetPassword({ username: '' });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				AuthValidationErrorCode.EmptyResetPasswordUsername
@@ -75,60 +70,34 @@ describe('ResetPassword API error path cases:', () => {
 		}
 	});
 
-	test('ResetPassword API should raise service error', async () => {
+	it('should throw an error when service returns an error response', async () => {
 		expect.assertions(2);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(
-					ForgotPasswordException.InvalidParameterException
-				)
-			)
-		);
+		mockForgotPassword.mockImplementation(() => {
+			throw getMockError(ForgotPasswordException.InvalidParameterException);
+		});
 		try {
 			await resetPassword(authAPITestParams.resetPasswordRequest);
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				ForgotPasswordException.InvalidParameterException
 			);
 		}
 	});
-});
 
-describe('Cognito ASF', () => {
-	let resetPasswordSpy;
-
-	beforeEach(() => {
-		resetPasswordSpy = jest
-			.spyOn(resetPasswordClient, 'forgotPassword')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.resetPasswordHttpCallResult as ForgotPasswordCommandOutput;
-			});
-		// load Cognito ASF polyfill
+	it('should send UserContextData', async () => {
 		window['AmazonCognitoAdvancedSecurityData'] = {
 			getData() {
 				return 'abcd';
 			},
 		};
-	});
-
-	afterEach(() => {
-		resetPasswordSpy.mockClear();
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
-	});
-
-	afterAll(() => {
-		jest.restoreAllMocks();
-	});
-
-	test('ResetPassword API should send UserContextData', async () => {
 		await resetPassword({
 			username: 'username',
 			options: {
 				clientMetadata: { foo: 'foo' },
 			},
 		});
-		expect(resetPasswordSpy).toHaveBeenCalledWith(
+		expect(mockForgotPassword).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				Username: 'username',
@@ -137,5 +106,6 @@ describe('Cognito ASF', () => {
 				UserContextData: { EncodedData: 'abcd' },
 			})
 		);
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
 	});
 });

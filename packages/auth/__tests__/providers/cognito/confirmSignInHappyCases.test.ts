@@ -113,9 +113,9 @@ describe('confirmSignIn API happy path cases', () => {
 			},
 		});
 
-		expect(handleChallengeNameSpy).toBeCalledTimes(1);
+		expect(handleChallengeNameSpy).toHaveBeenCalledTimes(1);
 
-		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 		handleUserSRPAuthflowSpy.mockClear();
 		mockedGetCurrentUser.mockClear();
 	});
@@ -154,9 +154,9 @@ describe('confirmSignIn API happy path cases', () => {
 			},
 		});
 
-		expect(handleChallengeNameSpy).toBeCalledTimes(1);
+		expect(handleChallengeNameSpy).toHaveBeenCalledTimes(1);
 
-		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 		handleUserSRPAuthflowSpy.mockClear();
 	});
 
@@ -217,9 +217,9 @@ describe('confirmSignIn API happy path cases', () => {
 			},
 		});
 
-		expect(handleChallengeNameSpy).toBeCalledTimes(1);
+		expect(handleChallengeNameSpy).toHaveBeenCalledTimes(1);
 
-		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 
 		handleUserSRPAuthflowSpy.mockClear();
 	});
@@ -258,7 +258,7 @@ describe('confirmSignIn API happy path cases', () => {
 			options: authAPITestParams.configWithClientMetadata,
 		});
 		const options = authAPITestParams.configWithClientMetadata;
-		expect(handleChallengeNameSpy).toBeCalledWith(
+		expect(handleChallengeNameSpy).toHaveBeenCalledWith(
 			mockedUserSub,
 			activeChallengeName,
 			activeSignInSession,

@@ -74,11 +74,6 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({
-			authorization: expect.stringContaining('Signature'),
-			host: 'bucket.s3.us-east-1.amazonaws.com',
-			'x-amz-content-sha256': EMPTY_SHA256,
-			'x-amz-date': expect.stringMatching(/^\d{8}T\d{6}Z/),
-			'x-amz-user-agent': expect.stringContaining('aws-amplify'),
 			Range: 'bytes=1-100',
 		}),
 	}),

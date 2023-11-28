@@ -31,7 +31,7 @@ describe('Event listeners', () => {
 		addEventListener(eventType, mockHandler);
 		notifyEventListeners(eventType, params);
 
-		expect(mockHandler).toBeCalledWith(params);
+		expect(mockHandler).toHaveBeenCalledWith(params);
 	});
 
 	it('can be notified and awaited on', async () => {
@@ -41,7 +41,7 @@ describe('Event listeners', () => {
 
 		try {
 			await notifyEventListenersAndAwaitHandlers(eventType, params);
-			expect(mockHandler).toBeCalledWith(params);
+			expect(mockHandler).toHaveBeenCalledWith(params);
 		} catch (e) {}
 
 		expect.assertions(1);
@@ -57,7 +57,7 @@ describe('Event listeners', () => {
 		await expect(
 			notifyEventListenersAndAwaitHandlers(eventType, params)
 		).rejects.toThrow();
-		expect(mockHandler).toBeCalledWith(params);
+		expect(mockHandler).toHaveBeenCalledWith(params);
 	});
 
 	it('can handle multiple parameters', () => {
@@ -66,7 +66,7 @@ describe('Event listeners', () => {
 		addEventListener(eventType, mockHandler);
 		notifyEventListeners(eventType, param1, param2);
 
-		expect(mockHandler).toBeCalledWith(param1, param2);
+		expect(mockHandler).toHaveBeenCalledWith(param1, param2);
 	});
 
 	it('can be removed', () => {
@@ -75,7 +75,7 @@ describe('Event listeners', () => {
 		listener.remove();
 		notifyEventListeners(eventType);
 
-		expect(mockHandler).not.toBeCalled();
+		expect(mockHandler).not.toHaveBeenCalled();
 	});
 
 	it('can be added in multiples', () => {
@@ -93,11 +93,11 @@ describe('Event listeners', () => {
 		notifyEventListeners(bazType);
 
 		// two listeners added
-		expect(mockHandler).toBeCalledTimes(2);
+		expect(mockHandler).toHaveBeenCalledTimes(2);
 		// listener added but not notified
-		expect(barHandler).toBeCalledTimes(0);
+		expect(barHandler).toHaveBeenCalledTimes(0);
 		// one listener added
-		expect(bazHandler).toBeCalledTimes(1);
+		expect(bazHandler).toHaveBeenCalledTimes(1);
 	});
 
 	it('will not error out on an unregistered type', async () => {
