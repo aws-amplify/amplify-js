@@ -18,8 +18,8 @@ export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 	const code = body?.['Code']
 		? (body.Code as string)
 		: statusCode === 404
-		? 'NotFound'
-		: statusCode.toString();
+		  ? 'NotFound'
+		  : statusCode.toString();
 	const message = body?.['message'] ?? body?.['Message'] ?? code;
 	const error = new Error(message);
 	return Object.assign(error, {

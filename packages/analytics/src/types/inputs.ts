@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UserProfile } from '@aws-amplify/core';
-import { AnalyticsServiceOptions } from '.';
+import { AnalyticsServiceOptions } from './options';
 import {
 	SessionTrackingOptions,
 	PageViewTrackingOptions,
@@ -13,7 +13,7 @@ import {
  * Input type for `identifyUser`.
  */
 export type AnalyticsIdentifyUserInput<
-	ServiceOptions extends AnalyticsServiceOptions = AnalyticsServiceOptions
+	ServiceOptions extends AnalyticsServiceOptions = AnalyticsServiceOptions,
 > = {
 	/**
 	 * A User ID associated to the current device.

@@ -76,9 +76,8 @@ export function sessionStateChangeHandler(state: SessionState): void {
 }
 
 export async function incrementMessageCounts(messageId: string): Promise<void> {
-	const { sessionCount, dailyCount, totalCount } = await getMessageCounts(
-		messageId
-	);
+	const { sessionCount, dailyCount, totalCount } =
+		await getMessageCounts(messageId);
 	setSessionCount(messageId, sessionCount + 1);
 	setDailyCount(dailyCount + 1);
 	await setTotalCount(messageId, totalCount + 1);
@@ -106,9 +105,8 @@ async function isBelowCap({
 	DailyCap,
 	TotalCap,
 }: PinpointInAppMessage): Promise<Boolean> {
-	const { sessionCount, dailyCount, totalCount } = await getMessageCounts(
-		CampaignId
-	);
+	const { sessionCount, dailyCount, totalCount } =
+		await getMessageCounts(CampaignId);
 
 	return (
 		(!SessionCap || sessionCount < SessionCap) &&

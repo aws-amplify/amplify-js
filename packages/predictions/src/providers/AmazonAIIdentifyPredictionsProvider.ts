@@ -203,9 +203,8 @@ export class AmazonAIIdentifyPredictionsProvider {
 			};
 
 			const detectTextCommand = new DetectTextCommand(rekognitionParam);
-			const rekognitionData = await this.rekognitionClient.send(
-				detectTextCommand
-			);
+			const rekognitionData =
+				await this.rekognitionClient.send(detectTextCommand);
 
 			const rekognitionResponse = categorizeRekognitionBlocks(
 				rekognitionData.TextDetections as TextDetectionList
@@ -400,7 +399,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 								...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
 								pose: makeCamelCase(celebrity.Face?.Pose),
 							},
-						} as IdentifyEntity)
+						}) as IdentifyEntity
 				) ?? [];
 			return { entities: faces };
 		} else if (
