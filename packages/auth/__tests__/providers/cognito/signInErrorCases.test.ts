@@ -1,82 +1,66 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import {
-	signIn,
-	getCurrentUser,
-	cognitoUserPoolsTokenProvider,
-} from '../../../src/providers/cognito';
+import { signIn, getCurrentUser } from '../../../src/providers/cognito';
+import { initiateAuth } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
-import { Amplify } from 'aws-amplify';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
+import { getMockError } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
+
+jest.mock('@aws-amplify/core', () => ({
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
+}));
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
-
-const authConfig = {
-	Cognito: {
-		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-	},
-};
-
-Amplify.configure({
-	Auth: authConfig,
-});
-cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
 
 describe('signIn API error path cases:', () => {
-	test('signIn API should throw a validation AuthError when a user is already signed-in', async () => {
-		const mockedGetCurrentUser = getCurrentUser as jest.Mock;
+	// assert mocks
+	const mockInitiateAuth = initiateAuth as jest.Mock;
+	const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 
-		mockedGetCurrentUser.mockImplementationOnce(async () => {
-			return {
-				username: 'username',
-				userId: 'userId',
-			};
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+	});
+
+	afterEach(() => {
+		mockedGetCurrentUser.mockReset();
+		mockInitiateAuth.mockClear();
+	});
+
+	it('should throw an error when a user is already signed-in', async () => {
+		mockedGetCurrentUser.mockResolvedValue({
+			username: 'username',
+			userId: 'userId',
 		});
 
 		try {
 			await signIn({ username: 'username', password: 'password' });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(USER_ALREADY_AUTHENTICATED_EXCEPTION);
 		}
 		mockedGetCurrentUser.mockClear();
 	});
-	test('signIn API should throw a validation AuthError when username is empty', async () => {
+
+	it('should throw an error when username is empty', async () => {
 		expect.assertions(2);
 		try {
 			await signIn({ username: '' });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptySignInUsername);
 		}
 	});
 
-	test('signIn API should raise service error', async () => {
-		expect.assertions(2);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(InitiateAuthException.InvalidParameterException)
-			)
-		);
-		try {
-			await signIn({
-				username: authAPITestParams.user1.username,
-				password: authAPITestParams.user1.password,
-			});
-		} catch (error) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(InitiateAuthException.InvalidParameterException);
-		}
-	});
-
-	test('signIn API should throw a validation AuthError when password is not empty and when authFlow is CUSTOM_WITHOUT_SRP', async () => {
+	it('should throw an error when password is not empty and authFlow is CUSTOM_WITHOUT_SRP', async () => {
 		expect.assertions(2);
 		try {
 			await signIn({
@@ -86,9 +70,25 @@ describe('signIn API error path cases:', () => {
 					authFlowType: 'CUSTOM_WITHOUT_SRP',
 				},
 			});
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.CustomAuthSignInPassword);
+		}
+	});
+
+	it('should throw an error when service returns an error response', async () => {
+		expect.assertions(2);
+		mockInitiateAuth.mockImplementation(() => {
+			throw getMockError(InitiateAuthException.InvalidParameterException);
+		});
+		try {
+			await signIn({
+				username: authAPITestParams.user1.username,
+				password: authAPITestParams.user1.password,
+			});
+		} catch (error: any) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(InitiateAuthException.InvalidParameterException);
 		}
 	});
 });

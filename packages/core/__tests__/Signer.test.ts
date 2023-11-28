@@ -62,7 +62,7 @@ describe('Signer.sign', () => {
 			};
 			const signedRequest = Signer.sign(
 				{ ...request, url: url.toString() },
-				accessInfo,
+				accessInfo as any,
 				serviceInfo as any
 			);
 			expect(signedRequest.headers?.Authorization).toBe(expected);
@@ -89,7 +89,7 @@ describe('Signer.sign', () => {
 			};
 
 			expect(() => {
-				Signer.sign(request, accessInfo, serviceInfo as any);
+				Signer.sign(request, accessInfo as any, serviceInfo as any);
 			}).toThrow();
 		});
 
@@ -101,7 +101,7 @@ describe('Signer.sign', () => {
 			};
 
 			expect(() => {
-				Signer.sign(request, accessInfo, serviceInfo as any);
+				Signer.sign(request, accessInfo as any, serviceInfo as any);
 			}).not.toThrow();
 		});
 	});
@@ -118,7 +118,7 @@ describe('Signer.sign', () => {
 		};
 		const {
 			headers: { Authorization },
-		} = Signer.sign(request, accessInfo, undefined);
+		} = Signer.sign(request as any, accessInfo as any, undefined as any);
 		expect(Authorization).toEqual(
 			expect.stringContaining(
 				'Credential=access-key-id/20200918/us-east-1/foo/aws4_request'

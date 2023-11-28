@@ -9,7 +9,6 @@ import {
 import { PersistentModelConstructor, SortDirection } from '../src/types';
 import {
 	pause,
-	expectMutation,
 	Model,
 	User,
 	Profile,
@@ -21,7 +20,6 @@ import {
 	DefaultPKChild,
 	CompositePKParent,
 	CompositePKChild,
-	testSchema,
 	getDataStore,
 } from './helpers';
 import { Predicates as PredicatesClass } from '../src/predicates';

@@ -1,40 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DB versions migration with destructive schema change Migration from v1 to v3: v3-destructive-schema 1`] = `
-Object {
-  "data": Object {
-    "data": Array [
-      Object {
+{
+  "data": {
+    "data": [
+      {
         "inbound": false,
-        "rows": Array [
-          Array [
+        "rows": [
+          [
             1,
-            Object {
+            {
               "id": "094a722a-4f00-4723-928a-536aa04b3470",
               "key": "schemaVersion",
-              "value": "\\"a66372d29356c40e7cd29e41527cead7\\"",
+              "value": ""a66372d29356c40e7cd29e41527cead7"",
             },
           ],
         ],
         "tableName": "datastore_Setting",
       },
-      Object {
+      {
         "inbound": false,
-        "rows": Array [],
+        "rows": [],
         "tableName": "sync_ModelMetadata",
       },
-      Object {
+      {
         "inbound": false,
-        "rows": Array [],
+        "rows": [],
         "tableName": "sync_MutationEvent",
       },
-      Object {
+      {
         "inbound": false,
-        "rows": Array [
-          Object {
-            "$": Array [
+        "rows": [
+          {
+            "$": [
               1,
-              Object {
+              {
                 "_deleted": null,
                 "_lastChangedAt": null,
                 "_version": null,
@@ -43,24 +43,24 @@ Object {
                 "name": "blog2",
               },
             ],
-            "$types": Object {
-              "$": Object {
+            "$types": {
+              "$": {
                 "1._deleted": "undef",
                 "1._lastChangedAt": "undef",
                 "1._version": "undef",
               },
             },
           },
-          Object {
-            "$": Array [
+          {
+            "$": [
               2,
-              Object {
+              {
                 "_deleted": null,
                 "_lastChangedAt": null,
                 "_version": null,
                 "id": "844724fe-373c-4505-b202-2852580058e3",
                 "name": "B1",
-                "owner": Object {
+                "owner": {
                   "_deleted": null,
                   "_lastChangedAt": null,
                   "_version": null,
@@ -69,8 +69,8 @@ Object {
                 },
               },
             ],
-            "$types": Object {
-              "$": Object {
+            "$types": {
+              "$": {
                 "1._deleted": "undef",
                 "1._lastChangedAt": "undef",
                 "1._version": "undef",
@@ -80,16 +80,16 @@ Object {
               },
             },
           },
-          Object {
-            "$": Array [
+          {
+            "$": [
               3,
-              Object {
+              {
                 "_deleted": null,
                 "_lastChangedAt": null,
                 "_version": null,
                 "id": "91e67f1e-aba4-497d-a2c1-f2d3133468c0",
                 "name": "Avatar: Last Airbender",
-                "owner": Object {
+                "owner": {
                   "_deleted": null,
                   "_lastChangedAt": null,
                   "_version": null,
@@ -98,8 +98,8 @@ Object {
                 },
               },
             ],
-            "$types": Object {
-              "$": Object {
+            "$types": {
+              "$": {
                 "1._deleted": "undef",
                 "1._lastChangedAt": "undef",
                 "1._version": "undef",
@@ -109,10 +109,10 @@ Object {
               },
             },
           },
-          Object {
-            "$": Array [
+          {
+            "$": [
               4,
-              Object {
+              {
                 "_deleted": null,
                 "_lastChangedAt": null,
                 "_version": null,
@@ -121,24 +121,24 @@ Object {
                 "name": "The Blog",
               },
             ],
-            "$types": Object {
-              "$": Object {
+            "$types": {
+              "$": {
                 "1._deleted": "undef",
                 "1._lastChangedAt": "undef",
                 "1._version": "undef",
               },
             },
           },
-          Object {
-            "$": Array [
+          {
+            "$": [
               5,
-              Object {
+              {
                 "_deleted": null,
                 "_lastChangedAt": null,
                 "_version": null,
                 "id": "d5e7eb84-2aa1-4bb2-8e2a-21ccc06d2d69",
                 "name": "Avatar: Last Airbender",
-                "owner": Object {
+                "owner": {
                   "_deleted": null,
                   "_lastChangedAt": null,
                   "_version": null,
@@ -147,8 +147,8 @@ Object {
                 },
               },
             ],
-            "$types": Object {
-              "$": Object {
+            "$types": {
+              "$": {
                 "1._deleted": "undef",
                 "1._lastChangedAt": "undef",
                 "1._version": "undef",
@@ -158,10 +158,10 @@ Object {
               },
             },
           },
-          Object {
-            "$": Array [
+          {
+            "$": [
               6,
-              Object {
+              {
                 "_deleted": null,
                 "_lastChangedAt": null,
                 "_version": null,
@@ -170,8 +170,8 @@ Object {
                 "name": "blog2",
               },
             ],
-            "$types": Object {
-              "$": Object {
+            "$types": {
+              "$": {
                 "1._deleted": "undef",
                 "1._lastChangedAt": "undef",
                 "1._version": "undef",
@@ -184,23 +184,23 @@ Object {
     ],
     "databaseName": "amplify-datastore",
     "databaseVersion": 0.3,
-    "tables": Array [
-      Object {
+    "tables": [
+      {
         "name": "datastore_Setting",
         "rowCount": 1,
         "schema": "++,&[id]",
       },
-      Object {
+      {
         "name": "sync_ModelMetadata",
         "rowCount": 0,
         "schema": "++,&[id]",
       },
-      Object {
+      {
         "name": "sync_MutationEvent",
         "rowCount": 0,
         "schema": "++,&[id]",
       },
-      Object {
+      {
         "name": "user_Blog",
         "rowCount": 6,
         "schema": "++,&[id]",

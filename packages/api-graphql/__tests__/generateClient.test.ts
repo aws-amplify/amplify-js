@@ -1298,7 +1298,7 @@ describe('generateClient', () => {
 
 			client.models.Note.onDelete({
 				authMode: 'userPool',
-			}).subscribe({
+			} as any).subscribe({
 				next(value) {
 					expect(spy).toHaveBeenCalledWith(
 						expect.objectContaining({
@@ -1926,7 +1926,7 @@ describe('generateClient', () => {
 			client.models.Note.onUpdate({
 				authMode: 'lambda',
 				authToken: 'some-token',
-			}).subscribe({
+			} as any).subscribe({
 				next(value) {
 					expect(spy).toHaveBeenCalledWith(
 						expect.objectContaining({
@@ -1964,7 +1964,7 @@ describe('generateClient', () => {
 			client.models.Note.onDelete({
 				authMode: 'lambda',
 				authToken: 'some-token',
-			}).subscribe({
+			} as any).subscribe({
 				next(value) {
 					expect(spy).toHaveBeenCalledWith(
 						expect.objectContaining({
@@ -4736,7 +4736,7 @@ describe('generateClient', () => {
 			});
 		});
 
-		test('can see creates - with non-empty query result', async done => {
+		test('can see creates - with non-empty query result', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			mockApiResponse({
@@ -4805,7 +4805,7 @@ describe('generateClient', () => {
 			});
 		});
 
-		test('can see creates - with empty query result', async done => {
+		test('can see creates - with empty query result', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			mockApiResponse({
@@ -4854,7 +4854,7 @@ describe('generateClient', () => {
 			});
 		});
 
-		test('can see onCreates that are received prior to fetch completion', async done => {
+		test('can see onCreates that are received prior to fetch completion', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			// to record which order
@@ -4937,7 +4937,7 @@ describe('generateClient', () => {
 			callSequence.push('onCreate');
 		});
 
-		test('can see onUpdates that are received prior to fetch completion', async done => {
+		test('can see onUpdates that are received prior to fetch completion', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			// to record which order
@@ -5013,7 +5013,7 @@ describe('generateClient', () => {
 			callSequence.push('onUpdate');
 		});
 
-		test('can see onDeletes that are received prior to fetch completion', async done => {
+		test('can see onDeletes that are received prior to fetch completion', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			// to record which order
@@ -5082,7 +5082,7 @@ describe('generateClient', () => {
 			callSequence.push('onDelete');
 		});
 
-		test('can see updates', async done => {
+		test('can see updates', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			mockApiResponse({
@@ -5143,7 +5143,7 @@ describe('generateClient', () => {
 			});
 		});
 
-		test('can see deletions', async done => {
+		test('can see deletions', done => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			mockApiResponse({
@@ -5219,7 +5219,7 @@ describe('generateClient', () => {
 					});
 			});
 
-			test('uses configured authMode by default', async done => {
+			test('uses configured authMode by default', done => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 				mockApiResponse({
 					data: {
@@ -5247,7 +5247,7 @@ describe('generateClient', () => {
 				});
 			});
 
-			test('uses provided authMode at call site', async done => {
+			test('uses provided authMode at call site', done => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 				mockApiResponse({
 					data: {
@@ -5274,7 +5274,7 @@ describe('generateClient', () => {
 				});
 			});
 
-			test('uses provided authToken at call site', async done => {
+			test('uses provided authToken at call site', done => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 				mockApiResponse({
 					data: {
@@ -5305,7 +5305,7 @@ describe('generateClient', () => {
 				});
 			});
 
-			test('uses provided authMode from the client', async done => {
+			test('uses provided authMode from the client', done => {
 				const client = generateClient<Schema>({
 					amplify: Amplify,
 					authMode: 'userPool',
@@ -5335,7 +5335,7 @@ describe('generateClient', () => {
 				});
 			});
 
-			test('uses provided authToken from the client', async done => {
+			test('uses provided authToken from the client', done => {
 				const client = generateClient<Schema>({
 					amplify: Amplify,
 					authMode: 'lambda',

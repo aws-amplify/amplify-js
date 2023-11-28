@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import { AuthSignInResult } from '../../../../src/types';
+import { AuthSignInOutput } from '../../../../src/types';
 
 export const authAPITestParams = {
 	user1: {
@@ -207,7 +207,7 @@ export const authAPITestParams = {
 			},
 		};
 	},
-	signInResult: (): AuthSignInResult => {
+	signInResult: (): AuthSignInOutput => {
 		return {
 			isSignedIn: true,
 			nextStep: {

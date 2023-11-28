@@ -90,7 +90,7 @@ describe('Util', () => {
 			expect(err).toBe(nonRetryableError);
 		}
 
-		expect(testFunc).toBeCalledTimes(1);
+		expect(testFunc).toHaveBeenCalledTimes(1);
 	});
 	test('Should throw an Error when NetInfo is not passed to networkMonitor in React Native Reachability', () => {
 		const subscribe = netInfo => {
@@ -102,16 +102,16 @@ describe('Util', () => {
 			subscribe({ addEventListener: {} });
 		}
 
-		expect(subscribe).toThrowError(
+		expect(subscribe).toThrow(
 			'NetInfo must be passed to networkMonitor to enable reachability in React Native'
 		);
-		expect(subscribeWithNetInfo).not.toThrowError();
+		expect(subscribeWithNetInfo).not.toThrow();
 	});
 	test('Should not throw an Error when NetInfo is not passed to networkMonitor in Web Reachability', () => {
 		const subscribe = () => {
 			new Reachability().networkMonitor();
 		};
 
-		expect(subscribe).not.toThrowError();
+		expect(subscribe).not.toThrow();
 	});
 });

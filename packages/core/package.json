@@ -193,45 +193,5 @@
 				"./dist/esm/libraryUtils.d.ts"
 			]
 		}
-	},
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": false
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"/testUtils/"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"setupFiles": [
-			"./__mocks__/SessionStorage.js",
-			"./__mocks__/LocalStorage.js"
-		],
-		"testEnvironment": "jsdom",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"testURL": "http://localhost/",
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist"
-		]
 	}
 }

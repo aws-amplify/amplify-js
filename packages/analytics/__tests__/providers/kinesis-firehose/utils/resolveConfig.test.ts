@@ -47,7 +47,9 @@ describe('Analytics KinesisFirehose Provider Util: resolveConfig', () => {
 
 	it('throws if region is missing', () => {
 		getConfigSpy.mockReturnValue({
-			Analytics: { KinesisFirehose: { ...providedConfig, region: undefined } },
+			Analytics: {
+				KinesisFirehose: { ...providedConfig, region: undefined as any },
+			},
 		});
 
 		expect(resolveConfig).toThrow();

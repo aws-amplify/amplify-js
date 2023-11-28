@@ -34,7 +34,7 @@ describe('getPermissionStatus', () => {
 
 	it('calls the native getPermissionStatus', async () => {
 		expect(await getPermissionStatus()).toBe(`normalized-${status}`);
-		expect(mockGetPermissionStatusNative).toBeCalled();
-		expect(mockNormalizeNativePermissionStatus).toBeCalledWith(status);
+		expect(mockGetPermissionStatusNative).toHaveBeenCalled();
+		expect(mockNormalizeNativePermissionStatus).toHaveBeenCalledWith(status);
 	});
 });

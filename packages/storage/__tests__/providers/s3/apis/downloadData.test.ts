@@ -101,7 +101,7 @@ describe('downloadData', () => {
 			});
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			await job();
-			expect(getObject).toBeCalledTimes(1);
+			expect(getObject).toHaveBeenCalledTimes(1);
 			expect(getObject).toHaveBeenCalledWith(
 				{
 					credentials,
@@ -141,7 +141,7 @@ describe('downloadData', () => {
 		downloadData({ key });
 		const job = mockCreateDownloadTask.mock.calls[0][0].job;
 		const result = await job();
-		expect(getObject).toBeCalledTimes(1);
+		expect(getObject).toHaveBeenCalledTimes(1);
 		expect(result).toEqual({
 			key,
 			body,

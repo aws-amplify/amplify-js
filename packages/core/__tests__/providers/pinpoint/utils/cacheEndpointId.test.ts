@@ -26,8 +26,8 @@ describe('Pinpoint Provider Util: cacheEndpointId', () => {
 
 	it('writes an endpoint id to cache', async () => {
 		await cacheEndpointId(appId, category, endpointId);
-		expect(mockGetCacheKey).toBeCalledWith(appId, category);
-		expect(setItemSpy).toBeCalledWith(
+		expect(mockGetCacheKey).toHaveBeenCalledWith(appId, category);
+		expect(setItemSpy).toHaveBeenCalledWith(
 			cacheKey,
 			endpointId,
 			expect.objectContaining({ priority: 1 })

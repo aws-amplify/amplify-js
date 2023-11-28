@@ -40,11 +40,11 @@ describe('Pinpoint API: flushEvents', () => {
 	it('invokes the core flushEvents implementation', async () => {
 		flushEvents();
 
-		expect(mockResolveConfig).toBeCalledTimes(1);
-		expect(mockResolveCredentials).toBeCalledTimes(1);
+		expect(mockResolveConfig).toHaveBeenCalledTimes(1);
+		expect(mockResolveCredentials).toHaveBeenCalledTimes(1);
 
 		await new Promise(process.nextTick);
-		expect(mockPinpointFlushEvents).toBeCalledWith({
+		expect(mockPinpointFlushEvents).toHaveBeenCalledWith({
 			...config,
 			credentials,
 			identityId,
@@ -59,7 +59,10 @@ describe('Pinpoint API: flushEvents', () => {
 
 		await new Promise(process.nextTick);
 
-		expect(mockPinpointFlushEvents).not.toBeCalled();
-		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
+		expect(mockPinpointFlushEvents).not.toHaveBeenCalled();
+		expect(loggerWarnSpy).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(Error)
+		);
 	});
 });
