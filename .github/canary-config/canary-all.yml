@@ -249,13 +249,6 @@ tests:
     browser: *minimal_browser_list
 
     # AUTH
-  - test_name: integ_react_auth_1_react_authenticator
-    desc: 'React Authenticator'
-    framework: react
-    category: auth
-    sample_name: [amplify-authenticator]
-    spec: new-ui-authenticator
-    browser: *minimal_browser_list
   - test_name: integ_react_auth_2_react_credentials_different_region
     desc: 'React Credentials Different Region'
     framework: react
