@@ -31,7 +31,7 @@ import {
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
-import { repackageAuthError } from '../utils/errors/repackageAuthError';
+import { repackageUnauthError } from '../utils/errors/repackageAuthError';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -392,7 +392,7 @@ export class InternalGraphQLAPIClass {
 		const { errors } = response;
 
 		if (errors && errors.length) {
-			throw repackageAuthError(response);
+			throw repackageUnauthError(response);
 		}
 
 		return response;
@@ -442,7 +442,7 @@ export class InternalGraphQLAPIClass {
 			.pipe(
 				catchError(e => {
 					if (e.errors) {
-						throw repackageAuthError(e);
+						throw repackageUnauthError(e);
 					}
 					throw e;
 				})
