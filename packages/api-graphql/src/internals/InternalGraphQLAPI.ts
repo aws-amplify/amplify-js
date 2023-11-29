@@ -8,7 +8,7 @@ import {
 	GraphQLError,
 	OperationTypeNode,
 } from 'graphql';
-import { Observable } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
 import {
 	GraphQLAuthMode,
@@ -31,6 +31,7 @@ import {
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
+import { repackageAuthError } from '../utils/errors/repackageAuthError';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -236,7 +237,7 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
-			defaultAuthMode
+			defaultAuthMode,
 		} = resolveConfig(amplify);
 
 		const authMode = explicitAuthMode || defaultAuthMode || 'iam';
@@ -391,7 +392,7 @@ export class InternalGraphQLAPIClass {
 		const { errors } = response;
 
 		if (errors && errors.length) {
-			throw response;
+			throw repackageAuthError(response);
 		}
 
 		return response;
@@ -424,19 +425,28 @@ export class InternalGraphQLAPIClass {
 	): Observable<any> {
 		const config = resolveConfig(amplify);
 
-		return this.appSyncRealTime.subscribe(
-			{
-				query: print(query as DocumentNode),
-				variables,
-				appSyncGraphqlEndpoint: config?.endpoint,
-				region: config?.region,
-				authenticationType: authMode || config?.defaultAuthMode,
-				apiKey: config?.apiKey,
-				additionalHeaders,
-				authToken,
-			},
-			customUserAgentDetails
-		);
+		return this.appSyncRealTime
+			.subscribe(
+				{
+					query: print(query as DocumentNode),
+					variables,
+					appSyncGraphqlEndpoint: config?.endpoint,
+					region: config?.region,
+					authenticationType: authMode || config?.defaultAuthMode,
+					apiKey: config?.apiKey,
+					additionalHeaders,
+					authToken,
+				},
+				customUserAgentDetails
+			)
+			.pipe(
+				catchError(e => {
+					if (e.errors) {
+						throw repackageAuthError(e);
+					}
+					throw e;
+				})
+			);
 	}
 }
 
