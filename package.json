@@ -38,9 +38,6 @@
 		"ts-coverage": "lerna run ts-coverage",
 		"prepare": "./scripts/set-preid-versions.sh"
 	},
-	"husky": {
-		"hooks": {}
-	},
 	"workspaces": {
 		"packages": [
 			"packages/core",
