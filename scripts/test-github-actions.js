@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 'use strict';
 
-const glob = require('glob');
 const fs = require('fs');
+
+const glob = require('glob');
 const yaml = require('js-yaml');
 
 function parseYamlFile(file) {
 	const fileContents = fs.readFileSync(file, 'utf8');
-	return yaml.safeLoad(fileContents);
+
+	return yaml.load(fileContents);
 }
 
 function getKeyValuesFor(targetKey, yamlObject) {
@@ -62,7 +64,7 @@ for (const file of [...workflowYmlFiles, ...actionYmlFiles]) {
 			continue;
 		}
 		console.log(
-			`In ${file} the uses reference ${val} must either be local to the project or fully reference a specific action commit on an external project`
+			`In ${file} the uses reference ${val} must either be local to the project or fully reference a specific action commit on an external project`,
 		);
 		exitCode = 1;
 	}
