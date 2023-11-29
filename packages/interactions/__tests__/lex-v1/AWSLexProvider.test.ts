@@ -369,19 +369,19 @@ describe('Interactions', () => {
 			provider.onComplete(botConfig.BookTrip, inProgressCallback);
 			provider.reportBotStatus(inProgressResp, botConfig.BookTrip);
 			jest.runAllTimers();
-			expect(inProgressCallback).toBeCalledTimes(0);
+			expect(inProgressCallback).toHaveBeenCalledTimes(0);
 
 			// 2. task complete; success, callback be called with response
 			provider.onComplete(botConfig.BookTrip, completeSuccessCallback);
 			provider.reportBotStatus(completeSuccessResp, botConfig.BookTrip);
 			jest.runAllTimers();
-			expect(completeSuccessCallback).toBeCalledTimes(1);
+			expect(completeSuccessCallback).toHaveBeenCalledTimes(1);
 
 			// 3. task complete; error, callback be called with error
 			provider.onComplete(botConfig.BookTrip, completeFailCallback);
 			provider.reportBotStatus(completeFailResp, botConfig.BookTrip);
 			jest.runAllTimers();
-			expect(completeFailCallback).toBeCalledTimes(1);
+			expect(completeFailCallback).toHaveBeenCalledTimes(1);
 			expect.assertions(6);
 		});
 	});

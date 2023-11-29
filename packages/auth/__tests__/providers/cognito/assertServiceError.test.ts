@@ -7,8 +7,8 @@ describe('asserts service errors', () => {
 	test('it should throw an unknown error when error is null', () => {
 		try {
 			const error = null;
-			expect(assertServiceError(error)).toThrowError();
-		} catch (error) {
+			expect(assertServiceError(error)).toThrow();
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AmplifyErrorCode.Unknown);
 		}
@@ -16,8 +16,8 @@ describe('asserts service errors', () => {
 	test('it should throw an unknown error when error is a TypeError', () => {
 		try {
 			const error = new TypeError('TypeError');
-			expect(assertServiceError(error)).toThrowError();
-		} catch (error) {
+			expect(assertServiceError(error)).toThrow();
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AmplifyErrorCode.Unknown);
 		}
@@ -25,8 +25,8 @@ describe('asserts service errors', () => {
 	test('it should throw an unknown error when error does not have a name', () => {
 		try {
 			const error = new Error('Error');
-			expect(assertServiceError(error)).toThrowError();
-		} catch (error) {
+			expect(assertServiceError(error)).toThrow();
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AmplifyErrorCode.Unknown);
 		}

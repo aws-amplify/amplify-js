@@ -27,7 +27,6 @@ import { PubSub as MqttPubSub } from '../src/clients/mqtt';
 import { HubConnectionListener } from './helpers';
 import { Observable, Observer } from 'rxjs';
 import * as constants from '../src/Providers/constants';
-import { NetworkStatus } from '@aws-amplify/core/lib-esm/Reachability/types';
 
 const pahoClientMockCache = {};
 
@@ -105,6 +104,11 @@ afterEach(() => {
 });
 
 describe('PubSub', () => {
+	// extend class for testing
+	class MqttPubSubTest extends MqttPubSub {
+		disconnect = this.disconnect;
+	}
+
 	describe('constructor test', () => {
 		test('happy case', () => {
 			const pubsub = new IotPubSub();
@@ -138,7 +142,9 @@ describe('PubSub', () => {
 	});
 
 	describe('AWSIoTProvider', () => {
-		test('subscribe and publish to the same topic using AWSIoTProvider', async done => {
+		test('subscribe and publish to the same topic using AWSIoTProvider', async () => {
+			expect.assertions(1);
+
 			let hubConnectionListener = new HubConnectionListener('pubsub');
 
 			const config = {
@@ -153,10 +159,9 @@ describe('PubSub', () => {
 				value: 'my message',
 			};
 
-			const obs = pubsub.subscribe({ topics: 'topicA' }).subscribe({
+			pubsub.subscribe({ topics: 'topicA' }).subscribe({
 				next: data => {
 					expect(data).toMatchObject(expectedData);
-					done();
 				},
 				complete: () => console.log('done'),
 				error: error => console.log('error', error),
@@ -205,7 +210,7 @@ describe('PubSub', () => {
 
 	describe('MqttOverWSProvider', () => {
 		test('trigger observer error when connect failed', () => {
-			const pubsub = new MqttPubSub({
+			const pubsub = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
@@ -227,7 +232,7 @@ describe('PubSub', () => {
 
 		test('trigger reconnection when disconnected', async () => {
 			let hubConnectionListener = new HubConnectionListener('pubsub');
-			const pubsub = new MqttPubSub({
+			const pubsub = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
@@ -257,12 +262,12 @@ describe('PubSub', () => {
 		});
 
 		test('should remove MqttOverWSProvider', () => {
-			const pubsubClient = new MqttPubSub({
+			const pubsubClient = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 			jest.spyOn(pubsubClient, 'publish');
-			const newPubsubClient = new MqttPubSub({
+			const newPubsubClient = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
@@ -280,7 +285,7 @@ describe('PubSub', () => {
 		describe('Hub connection state changes', () => {
 			let hubConnectionListener: HubConnectionListener;
 
-			let reachabilityObserver: Observer<NetworkStatus>;
+			let reachabilityObserver: Observer<any>;
 
 			beforeEach(() => {
 				// Maintain the Hub connection listener, used to monitor the connection messages sent through Hub
@@ -412,7 +417,7 @@ describe('PubSub', () => {
 	describe('MqttOverWSProvider local testing config', () => {
 		test('ssl should be disabled in the case of local testing', async () => {
 			mockConnect.mockClear();
-			const pubsub = new MqttPubSub({
+			const pubsub = new MqttPubSubTest({
 				region: 'region',
 				aws_appsync_dangerously_connect_to_http_endpoint_for_testing: true,
 			});
@@ -422,7 +427,7 @@ describe('PubSub', () => {
 			});
 
 			expect(pubsub['isSSLEnabled']).toBe(false);
-			expect(mockConnect).toBeCalledWith({
+			expect(mockConnect).toHaveBeenCalledWith({
 				useSSL: false,
 				mqttVersion: 3,
 				onSuccess: expect.any(Function),
@@ -438,7 +443,7 @@ describe('PubSub', () => {
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
-			const mqttClient = new MqttPubSub({
+			const mqttClient = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
@@ -471,7 +476,7 @@ describe('PubSub', () => {
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
-			const mqttClient = new MqttPubSub({
+			const mqttClient = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
@@ -490,15 +495,11 @@ describe('PubSub', () => {
 
 		test('On unsubscribe when is the last observer it should disconnect the websocket', async () => {
 			const hubConnectionListener = new HubConnectionListener('pubsub');
-			const mqttClient = new MqttPubSub({
+			const mqttClient = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
 			});
-			const spyDisconnect = jest.spyOn(
-				MqttPubSub.prototype,
-				// @ts-ignore
-				'disconnect'
-			);
+			const spyDisconnect = jest.spyOn(mqttClient, 'disconnect');
 
 			const subscription1 = mqttClient
 				.subscribe({ topics: ['topic1', 'topic2'] })
@@ -528,16 +529,12 @@ describe('PubSub', () => {
 			'For multiple observers, client should not be disconnected if there are ' +
 				'other observers connected when unsubscribing',
 			async () => {
-				const pubsub = new MqttPubSub({
+				const pubsub = new MqttPubSubTest({
 					region: 'region',
 					endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
 				});
 
-				const spyDisconnect = jest.spyOn(
-					MqttPubSub.prototype,
-					// @ts-ignore
-					'disconnect'
-				);
+				const spyDisconnect = jest.spyOn(pubsub, 'disconnect');
 
 				const subscription1 = pubsub
 					.subscribe({ topics: ['topic1', 'topic2'] })

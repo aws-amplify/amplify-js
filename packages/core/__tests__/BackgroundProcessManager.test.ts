@@ -26,7 +26,7 @@ describe('BackgroundProcessManager', () => {
 		// we want to ensure that close() is called before the promise
 		// completes.
 		manager.add(async () => {
-			return new Promise(resolve => {
+			return new Promise<void>(resolve => {
 				setTimeout(() => {
 					proof = true;
 					resolve();
@@ -76,7 +76,7 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 
 		const resultPromise = manager.add(async () => {
-			return new Promise(resolve => {
+			return new Promise<void>(resolve => {
 				setTimeout(() => {
 					resolve();
 				}, 50);
@@ -193,7 +193,7 @@ describe('BackgroundProcessManager', () => {
 		// manager can register completion.
 
 		unblock();
-		await new Promise(resume => setImmediate(resume));
+		await new Promise(process.nextTick);
 
 		expect(manager.state).toEqual(BackgroundProcessManagerState.Closed);
 		expect(manager.isOpen).toBe(false);
@@ -230,7 +230,7 @@ describe('BackgroundProcessManager', () => {
 			const _i = i;
 			results.push(false);
 			manager.add(async () => {
-				return new Promise(resolve => {
+				return new Promise<void>(resolve => {
 					setTimeout(() => {
 						results[_i] = true;
 						resolve();
@@ -250,7 +250,7 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 
 		const resultPromise = manager.add(async onTerminate => {
-			return new Promise((resolve, reject) => {
+			return new Promise<void>((resolve, reject) => {
 				const timer = setTimeout(() => {
 					// this is the happy path that we plan not to reach in
 					// this test.
@@ -289,7 +289,7 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 
 		const resultPromise = manager.add(async onTerminate => {
-			return new Promise((resolve, reject) => {
+			return new Promise<void>((resolve, reject) => {
 				const timer = setTimeout(() => {
 					// this is the happy path that we plan not to reach in
 					// this test.
@@ -339,7 +339,7 @@ describe('BackgroundProcessManager', () => {
 			const _i = i;
 			results.push(false);
 			manager.add(async onTerminate => {
-				return new Promise((resolve, reject) => {
+				return new Promise<void>((resolve, reject) => {
 					const timer = setTimeout(() => {
 						results[_i] = true;
 						resolve();
@@ -512,7 +512,7 @@ describe('BackgroundProcessManager', () => {
 		outer.add(inner);
 		inner.add(
 			async () =>
-				new Promise(resolve =>
+				new Promise<void>(resolve =>
 					setTimeout(() => {
 						proof = true;
 						resolve();
@@ -534,7 +534,7 @@ describe('BackgroundProcessManager', () => {
 		outer.add(inner);
 		inner.add(
 			async onTerminate =>
-				new Promise(resolve =>
+				new Promise<void>(resolve =>
 					onTerminate.then(() => {
 						proof = true;
 						resolve();

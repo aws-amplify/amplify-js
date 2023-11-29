@@ -189,7 +189,7 @@ describe('getMultipartUploadHandlers', () => {
 						options: options as StorageOptions,
 					});
 					const result = await multipartUploadJob();
-					expect(mockCreateMultipartUpload).toBeCalledWith(
+					expect(mockCreateMultipartUpload).toHaveBeenCalledWith(
 						expect.objectContaining({
 							credentials,
 							region,
@@ -204,9 +204,9 @@ describe('getMultipartUploadHandlers', () => {
 					expect(result).toEqual(
 						expect.objectContaining({ key: defaultKey, eTag: 'etag' })
 					);
-					expect(mockCreateMultipartUpload).toBeCalledTimes(1);
-					expect(mockUploadPart).toBeCalledTimes(2);
-					expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
+					expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+					expect(mockUploadPart).toHaveBeenCalledTimes(2);
+					expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
 				}
 			);
 		});
@@ -217,7 +217,7 @@ describe('getMultipartUploadHandlers', () => {
 				key: defaultKey,
 				data: 1 as any,
 			});
-			await expect(multipartUploadJob()).rejects.toThrowError(
+			await expect(multipartUploadJob()).rejects.toThrow(
 				expect.objectContaining(
 					validationErrorMap[StorageValidationErrorCode.InvalidUploadSource]
 				)
@@ -248,10 +248,10 @@ describe('getMultipartUploadHandlers', () => {
 				file.size
 			);
 			await multipartUploadJob();
-			expect(file.slice).toBeCalledTimes(10_000); // S3 limit of parts count
-			expect(mockCreateMultipartUpload).toBeCalledTimes(1);
-			expect(mockUploadPart).toBeCalledTimes(10_000);
-			expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
+			expect(file.slice).toHaveBeenCalledTimes(10_000); // S3 limit of parts count
+			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
+			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart.mock.calls[0][1].Body.byteLength).toEqual(10 * MB); // The part size should be adjusted from default 5MB to 10MB.
 		});
 
@@ -273,7 +273,7 @@ describe('getMultipartUploadHandlers', () => {
 			try {
 				await multipartUploadJob();
 				fail('should throw error');
-			} catch (e) {
+			} catch (e: any) {
 				expect(e.message).toEqual(
 					`Upload failed. Expected object size ${8 * MB}, but got 1.`
 				);
@@ -290,7 +290,7 @@ describe('getMultipartUploadHandlers', () => {
 				key: defaultKey,
 				data: new ArrayBuffer(8 * MB),
 			});
-			await expect(multipartUploadJob()).rejects.toThrowError('error');
+			await expect(multipartUploadJob()).rejects.toThrow('error');
 		});
 
 		it('should handle error case: finish multipart upload failed', async () => {
@@ -303,7 +303,7 @@ describe('getMultipartUploadHandlers', () => {
 				key: defaultKey,
 				data: new ArrayBuffer(8 * MB),
 			});
-			await expect(multipartUploadJob()).rejects.toThrowError('error');
+			await expect(multipartUploadJob()).rejects.toThrow('error');
 		});
 
 		it('should handle error case: upload a body that splits in two parts but second part fails', async () => {
@@ -320,9 +320,9 @@ describe('getMultipartUploadHandlers', () => {
 				key: defaultKey,
 				data: new ArrayBuffer(8 * MB),
 			});
-			await expect(multipartUploadJob()).rejects.toThrowError('error');
-			expect(mockUploadPart).toBeCalledTimes(2);
-			expect(mockCompleteMultipartUpload).not.toBeCalled();
+			await expect(multipartUploadJob()).rejects.toThrow('error');
+			expect(mockUploadPart).toHaveBeenCalledTimes(2);
+			expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
 		});
 	});
 
@@ -347,9 +347,9 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
-			expect(mockCreateMultipartUpload).toBeCalledTimes(1);
-			expect(mockListParts).not.toBeCalled();
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(2);
+			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+			expect(mockListParts).not.toHaveBeenCalled();
 		});
 
 		it('should send createMultipartUpload request if the upload task is cached but outdated', async () => {
@@ -374,10 +374,10 @@ describe('getMultipartUploadHandlers', () => {
 				size
 			);
 			await multipartUploadJob();
-			expect(mockCreateMultipartUpload).toBeCalledTimes(1);
-			expect(mockListParts).not.toBeCalled();
-			expect(mockUploadPart).toBeCalledTimes(2);
-			expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
+			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+			expect(mockListParts).not.toHaveBeenCalled();
+			expect(mockUploadPart).toHaveBeenCalledTimes(2);
+			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
 		});
 
 		it('should cache the upload with file including file lastModified property', async () => {
@@ -393,7 +393,7 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(2);
 			const cacheValue = JSON.parse(
 				mockDefaultStorage.setItem.mock.calls[0][1]
 			);
@@ -427,10 +427,10 @@ describe('getMultipartUploadHandlers', () => {
 				size
 			);
 			await multipartUploadJob();
-			expect(mockCreateMultipartUpload).not.toBeCalled();
-			expect(mockListParts).toBeCalledTimes(1);
-			expect(mockUploadPart).toBeCalledTimes(2);
-			expect(mockCompleteMultipartUpload).toBeCalledTimes(1);
+			expect(mockCreateMultipartUpload).not.toHaveBeenCalled();
+			expect(mockListParts).toHaveBeenCalledTimes(1);
+			expect(mockUploadPart).toHaveBeenCalledTimes(2);
+			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
 		});
 
 		it('should cache upload task if new upload task is created', async () => {
@@ -446,7 +446,7 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(2);
 			expect(mockDefaultStorage.setItem.mock.calls[0][0]).toEqual(
 				UPLOADS_STORAGE_KEY
 			);
@@ -473,7 +473,7 @@ describe('getMultipartUploadHandlers', () => {
 			);
 			await multipartUploadJob();
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(2);
 			expect(mockDefaultStorage.setItem).toHaveBeenNthCalledWith(
 				2,
 				UPLOADS_STORAGE_KEY,
@@ -496,7 +496,7 @@ describe('getMultipartUploadHandlers', () => {
 			const uploadJobPromise = multipartUploadJob();
 			await uploadJobPromise;
 			// 1 for caching upload task; 1 for remove cache after upload is completed
-			expect(mockDefaultStorage.setItem).toBeCalledTimes(2);
+			expect(mockDefaultStorage.setItem).toHaveBeenCalledTimes(2);
 			expect(mockDefaultStorage.setItem).toHaveBeenNthCalledWith(
 				2,
 				UPLOADS_STORAGE_KEY,
@@ -521,12 +521,12 @@ describe('getMultipartUploadHandlers', () => {
 			try {
 				await multipartUploadJob();
 				fail('should throw error');
-			} catch (error) {
+			} catch (error: any) {
 				expect(error).toBeInstanceOf(CanceledError);
 				expect(error.message).toBe('Upload is canceled by user');
 			}
-			expect(mockAbortMultipartUpload).toBeCalledTimes(1);
-			expect(mockUploadPart).toBeCalledTimes(2);
+			expect(mockAbortMultipartUpload).toHaveBeenCalledTimes(1);
+			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 			expect(mockUploadPart.mock.calls[0][0].abortSignal?.aborted).toBe(true);
 			expect(mockUploadPart.mock.calls[1][0].abortSignal?.aborted).toBe(true);
 		});
@@ -549,7 +549,7 @@ describe('getMultipartUploadHandlers', () => {
 			const uploadPromise = multipartUploadJob();
 			onResume();
 			await uploadPromise;
-			expect(mockUploadPart).toBeCalledTimes(2);
+			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 			expect(mockUploadPart.mock.calls[0][0].abortSignal?.aborted).toBe(true);
 			expect(mockUploadPart.mock.calls[1][0].abortSignal?.aborted).toBe(true);
 		});
@@ -570,7 +570,7 @@ describe('getMultipartUploadHandlers', () => {
 				8 * MB
 			);
 			await multipartUploadJob();
-			expect(onProgress).toBeCalledTimes(4); // 2 simulated onProgress events per uploadPart call are all tracked
+			expect(onProgress).toHaveBeenCalledTimes(4); // 2 simulated onProgress events per uploadPart call are all tracked
 			expect(onProgress).toHaveBeenNthCalledWith(1, {
 				totalBytes: 8388608,
 				transferredBytes: 2621440,
@@ -620,7 +620,7 @@ describe('getMultipartUploadHandlers', () => {
 				8 * MB
 			);
 			await multipartUploadJob();
-			expect(onProgress).toBeCalledTimes(3);
+			expect(onProgress).toHaveBeenCalledTimes(3);
 			// The first part's 5 MB progress is reported even though no uploadPart call is made.
 			expect(onProgress).toHaveBeenNthCalledWith(1, {
 				totalBytes: 8388608,

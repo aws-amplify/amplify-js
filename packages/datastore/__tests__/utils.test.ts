@@ -484,14 +484,14 @@ _deleted`;
 
 			limitTimerRace.start();
 
-			expect(spyOnRace).toBeCalledTimes(1);
+			expect(spyOnRace).toHaveBeenCalledTimes(1);
 			limitTimerRace.resolve();
 
 			const winner = await spyOnRace.mock.results[0].value;
 			expect(winner).toEqual(LimitTimerRaceResolvedValues.LIMIT);
 
 			expect(limitTimerRace.raceInFlight).toBe(false);
-			expect(limitTimerRaceCallback).toBeCalledTimes(1);
+			expect(limitTimerRaceCallback).toHaveBeenCalledTimes(1);
 
 			limitTimerRace.clear();
 		});
@@ -512,13 +512,13 @@ _deleted`;
 
 			limitTimerRace.start();
 
-			expect(spyOnRace).toBeCalledTimes(1);
+			expect(spyOnRace).toHaveBeenCalledTimes(1);
 
 			const winner = await spyOnRace.mock.results[0].value;
 			expect(winner).toEqual(LimitTimerRaceResolvedValues.TIMER);
 
 			expect(limitTimerRace.raceInFlight).toBe(false);
-			expect(limitTimerRaceCallback).toBeCalledTimes(1);
+			expect(limitTimerRaceCallback).toHaveBeenCalledTimes(1);
 
 			limitTimerRace.clear();
 		});
@@ -545,11 +545,11 @@ _deleted`;
 
 			limitTimerRace.start();
 
-			expect(spyOnRace).toBeCalledTimes(1);
+			expect(spyOnRace).toHaveBeenCalledTimes(1);
 
-			expect(spyOnErrorHandler).toThrowError('DeferredCallbackResolver error');
+			expect(spyOnErrorHandler).toThrow('DeferredCallbackResolver error');
 
-			expect(limitTimerRaceCallback).toBeCalledTimes(0);
+			expect(limitTimerRaceCallback).toHaveBeenCalledTimes(0);
 
 			limitTimerRace.clear();
 		});
@@ -582,11 +582,11 @@ _deleted`;
 
 			limitTimerRace.start();
 
-			expect(spyOnRace).toBeCalledTimes(1);
+			expect(spyOnRace).toHaveBeenCalledTimes(1);
 
-			expect(spyOnErrorHandler).toThrowError(customErrorMsg);
+			expect(spyOnErrorHandler).toThrow(customErrorMsg);
 
-			expect(limitTimerRaceCallback).toBeCalledTimes(0);
+			expect(limitTimerRaceCallback).toHaveBeenCalledTimes(0);
 
 			limitTimerRace.clear();
 		});

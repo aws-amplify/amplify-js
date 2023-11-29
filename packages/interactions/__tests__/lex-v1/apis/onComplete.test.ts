@@ -4,7 +4,7 @@
 import { v4 as uuid } from 'uuid';
 import { lexProvider } from '../../../src/lex-v1/AWSLexProvider';
 import { onComplete } from '../../../src/lex-v1/apis';
-import { generateRandomLexV1Config } from '../../testUtils/randomConfigGeneration.test';
+import { generateRandomLexV1Config } from '../../testUtils/randomConfigGeneration';
 import { resolveBotConfig } from '../../../src/lex-v1/utils';
 import { InteractionsError } from '../../../src/errors/InteractionsError';
 
@@ -30,8 +30,8 @@ describe('Interactions LexV1 API: onComplete', () => {
 		const message = uuid();
 		const mockCallback = jest.fn();
 		onComplete({ botName: v1BotConfig.name, callback: mockCallback });
-		expect(mockLexProvider).toBeCalledTimes(1);
-		expect(mockLexProvider).toBeCalledWith(v1BotConfig, mockCallback);
+		expect(mockLexProvider).toHaveBeenCalledTimes(1);
+		expect(mockLexProvider).toHaveBeenCalledWith(v1BotConfig, mockCallback);
 	});
 
 	it('rejects when bot config does not exist', async () => {

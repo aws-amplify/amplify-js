@@ -25,7 +25,7 @@ describe('requestPermissions', () => {
 
 	it('calls the native requestPermissions with defaults', async () => {
 		expect(await requestPermissions()).toBe(true);
-		expect(mockRequestPermissionsNative).toBeCalledWith({
+		expect(mockRequestPermissionsNative).toHaveBeenCalledWith({
 			alert: true,
 			badge: true,
 			sound: true,
@@ -39,7 +39,7 @@ describe('requestPermissions', () => {
 				sound: false,
 			})
 		).toBe(true);
-		expect(mockRequestPermissionsNative).toBeCalledWith({
+		expect(mockRequestPermissionsNative).toHaveBeenCalledWith({
 			alert: true,
 			badge: false,
 			sound: false,

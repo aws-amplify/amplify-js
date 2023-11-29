@@ -66,7 +66,7 @@ describe('Pinpoint - updateEndpoint', () => {
 		);
 		const response = await updateEndpoint(pinpointHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
-		expect(fetchTransferHandler).toBeCalledWith(
+		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
 			expect.anything()
 		);

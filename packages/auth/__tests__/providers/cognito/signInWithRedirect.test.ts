@@ -83,7 +83,7 @@ describe('getRedirectUrl on web', () => {
 
 		try {
 			return getRedirectUrl(['http://localhost:3000/', 'https://example.com/']);
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(INVALID_ORIGIN_EXCEPTION);
 		}
@@ -99,7 +99,7 @@ describe('getRedirectUrl on web', () => {
 
 		try {
 			return getRedirectUrl(['novalid']);
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(INVALID_REDIRECT_EXCEPTION);
 		}
@@ -118,7 +118,7 @@ describe('getRedirectUrl on React Native', () => {
 	it('should throw if the redirect is invalid or not found', async () => {
 		try {
 			return getRedirectUrlRN(['invalid']);
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(INVALID_REDIRECT_EXCEPTION);
 		}

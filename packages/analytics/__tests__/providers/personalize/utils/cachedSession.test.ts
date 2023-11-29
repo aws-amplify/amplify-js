@@ -57,7 +57,7 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 
 	it('updateCachedSession create a new session if user has changed', () => {
 		updateCachedSession('newUserId', mockSession.sessionId, mockSession.userId);
-		expect(mockCache.setItem).toBeCalledTimes(2);
+		expect(mockCache.setItem).toHaveBeenCalledTimes(2);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			1,
 			sessionIdCacheKey,
@@ -74,7 +74,7 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 
 	it('updateCachedSession create a new session if user is signed out', () => {
 		updateCachedSession(undefined, mockSession.sessionId, undefined);
-		expect(mockCache.setItem).toBeCalledTimes(2);
+		expect(mockCache.setItem).toHaveBeenCalledTimes(2);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			1,
 			sessionIdCacheKey,
@@ -91,7 +91,7 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 
 	it('updateCachedSession create a new session if no cached session', () => {
 		updateCachedSession('newUserId', undefined, mockSession.userId);
-		expect(mockCache.setItem).toBeCalledTimes(2);
+		expect(mockCache.setItem).toHaveBeenCalledTimes(2);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			1,
 			sessionIdCacheKey,
@@ -108,7 +108,7 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 
 	it('updateCachedSession only updates userId if cached sessionId but no cached userId', () => {
 		updateCachedSession('newUserId', mockSession.sessionId, undefined);
-		expect(mockCache.setItem).toBeCalledTimes(1);
+		expect(mockCache.setItem).toHaveBeenCalledTimes(1);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			1,
 			userIdCacheKey,

@@ -41,10 +41,10 @@ describe('completeOAuthSignOut', () => {
 	it('should complete OAuth sign out', async () => {
 		await completeOAuthSignOut(mockStore);
 
-		expect(mockStore.clearOAuthData).toBeCalledTimes(1);
-		expect(mockTokenOrchestrator.clearTokens).toBeCalledTimes(1);
-		expect(mockClearCredentials).toBeCalledTimes(1);
-		expect(mockHub.dispatch).toBeCalledWith(
+		expect(mockStore.clearOAuthData).toHaveBeenCalledTimes(1);
+		expect(mockTokenOrchestrator.clearTokens).toHaveBeenCalledTimes(1);
+		expect(mockClearCredentials).toHaveBeenCalledTimes(1);
+		expect(mockHub.dispatch).toHaveBeenCalledWith(
 			'auth',
 			{ event: 'signedOut' },
 			'Auth',

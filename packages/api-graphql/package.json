@@ -95,55 +95,5 @@
 			"import": "{ Amplify, GraphQLAPI }",
 			"limit": "91.7 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"dom",
-						"es2020"
-					],
-					"allowJs": true,
-					"noEmitOnError": false,
-					"strictNullChecks": true,
-					"types": [
-						"@types/jest"
-					]
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"<rootDir>/__tests__/helpers.ts",
-			"<rootDir>/__tests__/fixtures/",
-			"<rootDir>/__tests__/utils/"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"<rootDir>/node_modules/",
-			"<rootDir>/dist",
-			"<rootDir>/__tests__"
-		]
-	}
+	]
 }

@@ -38,7 +38,7 @@ describe('[RN] Session Listener', () => {
 		const mockStateListener = jest.fn();
 		sessionListener.addStateChangeListener(mockStateListener, true);
 
-		expect(mockStateListener).toBeCalledWith('ended');
+		expect(mockStateListener).toHaveBeenCalledWith('ended');
 		expect(mockStateListener).toHaveBeenCalledTimes(1);
 
 		// Simulate the app being already being in the foreground on add
@@ -47,7 +47,7 @@ describe('[RN] Session Listener', () => {
 		const mockStateListener2 = jest.fn();
 		sessionListener.addStateChangeListener(mockStateListener2, true);
 
-		expect(mockStateListener2).toBeCalledWith('started');
+		expect(mockStateListener2).toHaveBeenCalledWith('started');
 		expect(mockStateListener2).toHaveBeenCalledTimes(1);
 	});
 
@@ -58,12 +58,12 @@ describe('[RN] Session Listener', () => {
 		// Simulate the app being in the foreground
 		eventListenerCallback('active');
 
-		expect(mockStateListener).toBeCalledWith('started');
+		expect(mockStateListener).toHaveBeenCalledWith('started');
 
 		// Simulate the app moving to inactive
 		eventListenerCallback('inactive');
 
-		expect(mockStateListener).toBeCalledWith('ended');
+		expect(mockStateListener).toHaveBeenCalledWith('ended');
 
 		// Simulate the app moving to background from inactive (shouldn't generate another call)
 		eventListenerCallback('background');
@@ -76,11 +76,11 @@ describe('[RN] Session Listener', () => {
 
 		// Check that the listener is working
 		eventListenerCallback('active');
-		expect(mockStateListener).toBeCalledWith('started');
+		expect(mockStateListener).toHaveBeenCalledWith('started');
 
 		// Remove the listener and confirm it stops receiving updates
 		sessionListener.removeStateChangeListener(mockStateListener);
 		eventListenerCallback('background');
-		expect(mockStateListener).toBeCalledTimes(1);
+		expect(mockStateListener).toHaveBeenCalledTimes(1);
 	});
 });

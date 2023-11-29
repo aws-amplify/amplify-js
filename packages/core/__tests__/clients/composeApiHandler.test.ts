@@ -33,8 +33,8 @@ describe(composeServiceApi.name, () => {
 			defaultConfig
 		);
 		const output = await api({ bar: 'baz', foo: 'foo' }, 'Input');
-		expect(mockTransferHandler).toBeCalledTimes(1);
-		expect(mockTransferHandler).toBeCalledWith(
+		expect(mockTransferHandler).toHaveBeenCalledTimes(1);
+		expect(mockTransferHandler).toHaveBeenCalledWith(
 			defaultRequest,
 			expect.objectContaining({
 				bar: 'baz',
@@ -58,8 +58,11 @@ describe(composeServiceApi.name, () => {
 			defaultConfig
 		);
 		await api(config, 'Input');
-		expect(defaultConfig.endpointResolver).toBeCalledTimes(1);
-		expect(defaultConfig.endpointResolver).toBeCalledWith(config, 'Input');
+		expect(defaultConfig.endpointResolver).toHaveBeenCalledTimes(1);
+		expect(defaultConfig.endpointResolver).toHaveBeenCalledWith(
+			config,
+			'Input'
+		);
 	});
 
 	test('should call serializer and deserializer', async () => {
@@ -79,12 +82,12 @@ describe(composeServiceApi.name, () => {
 			defaultConfig
 		);
 		const output = await api({ bar: 'baz', foo: 'foo' }, 'Input');
-		expect(mockSerializer).toBeCalledTimes(1);
-		expect(mockSerializer).toBeCalledWith(
+		expect(mockSerializer).toHaveBeenCalledTimes(1);
+		expect(mockSerializer).toHaveBeenCalledWith(
 			'Input',
 			defaultConfig.endpointResolver.mock.results[0].value
 		);
-		expect(mockDeserializer).toBeCalledTimes(1);
-		expect(mockDeserializer).toBeCalledWith(defaultResponse);
+		expect(mockDeserializer).toHaveBeenCalledTimes(1);
+		expect(mockDeserializer).toHaveBeenCalledWith(defaultResponse);
 	});
 });

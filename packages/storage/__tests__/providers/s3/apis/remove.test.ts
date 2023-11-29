@@ -88,7 +88,7 @@ describe('remove API', () => {
 				expect(
 					await remove({ key, options: options as StorageOptions })
 				).toEqual(removeResult);
-				expect(deleteObject).toBeCalledTimes(1);
+				expect(deleteObject).toHaveBeenCalledTimes(1);
 				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 					Bucket: bucket,
 					Key: expectedKey,
@@ -112,8 +112,8 @@ describe('remove API', () => {
 			const key = 'wrongKey';
 			try {
 				await remove({ key });
-			} catch (error) {
-				expect(deleteObject).toBeCalledTimes(1);
+			} catch (error: any) {
+				expect(deleteObject).toHaveBeenCalledTimes(1);
 				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 					Bucket: bucket,
 					Key: `public/${key}`,

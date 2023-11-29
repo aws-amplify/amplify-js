@@ -1,48 +1,50 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from 'aws-amplify';
+import { Amplify } from '@aws-amplify/core';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { confirmResetPassword } from '../../../src/providers/cognito';
 import { ConfirmForgotPasswordException } from '../../../src/providers/cognito/types/errors';
-import * as confirmResetPasswordClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { confirmForgotPassword } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+import { getMockError } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-Amplify.configure({
-	Auth: {
-		Cognito: {
-			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
-		},
-	},
-});
-describe('ConfirmResetPassword API happy path cases', () => {
-	let confirmForgotPasswordSpy;
+jest.mock('@aws-amplify/core', () => ({
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
+}));
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
+
+describe('confirmResetPassword', () => {
+	// assert mocks
+	const mockConfirmForgotPassword = confirmForgotPassword as jest.Mock;
+
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+	});
 
 	beforeEach(() => {
-		confirmForgotPasswordSpy = jest
-			.spyOn(confirmResetPasswordClient, 'confirmForgotPassword')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.confirmResetPasswordHttpCallResult;
-			});
+		mockConfirmForgotPassword.mockResolvedValue(
+			authAPITestParams.confirmResetPasswordHttpCallResult
+		);
 	});
 
 	afterEach(() => {
-		confirmForgotPasswordSpy.mockClear();
+		mockConfirmForgotPassword.mockReset();
 	});
 
-	test('ConfirmResetPassword API should call the UserPoolClient and return void', async () => {
+	it('should call the confirmForgotPassword and return void', async () => {
 		expect(
 			await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest)
 		).toBeUndefined();
-		expect(confirmForgotPasswordSpy).toBeCalled();
+		expect(mockConfirmForgotPassword).toHaveBeenCalled();
 	});
 
-	test('ConfirmResetPassword API input should contain clientMetadata from request', async () => {
+	it('should contain clientMetadata from request', async () => {
 		await confirmResetPassword({
 			username: 'username',
 			newPassword: 'password',
@@ -51,7 +53,7 @@ describe('ConfirmResetPassword API happy path cases', () => {
 				clientMetadata: { fooo: 'fooo' },
 			},
 		});
-		expect(confirmForgotPasswordSpy).toHaveBeenCalledWith(
+		expect(mockConfirmForgotPassword).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				Username: 'username',
@@ -62,10 +64,8 @@ describe('ConfirmResetPassword API happy path cases', () => {
 			})
 		);
 	});
-});
 
-describe('ConfirmResetPassword API error path cases', () => {
-	test('ConfirmResetPassword API should throw a validation AuthError when username is empty', async () => {
+	it('should throw an error when username is empty', async () => {
 		expect.assertions(2);
 		try {
 			await confirmResetPassword({
@@ -73,7 +73,7 @@ describe('ConfirmResetPassword API error path cases', () => {
 				newPassword: 'password',
 				confirmationCode: 'code',
 			});
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				AuthValidationErrorCode.EmptyConfirmResetPasswordUsername
@@ -81,7 +81,7 @@ describe('ConfirmResetPassword API error path cases', () => {
 		}
 	});
 
-	test('ConfirmResetPassword API should throw a validation AuthError when newPassword is empty', async () => {
+	it('should throw an error when newPassword is empty', async () => {
 		expect.assertions(2);
 		try {
 			await confirmResetPassword({
@@ -89,7 +89,7 @@ describe('ConfirmResetPassword API error path cases', () => {
 				newPassword: '',
 				confirmationCode: 'code',
 			});
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				AuthValidationErrorCode.EmptyConfirmResetPasswordNewPassword
@@ -97,7 +97,7 @@ describe('ConfirmResetPassword API error path cases', () => {
 		}
 	});
 
-	test('ConfirmResetPassword API should throw a validation AuthError when confirmationCode is empty', async () => {
+	it('should throw an error when confirmationCode is empty', async () => {
 		expect.assertions(2);
 		try {
 			await confirmResetPassword({
@@ -105,7 +105,7 @@ describe('ConfirmResetPassword API error path cases', () => {
 				newPassword: 'password',
 				confirmationCode: '',
 			});
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
@@ -113,48 +113,30 @@ describe('ConfirmResetPassword API error path cases', () => {
 		}
 	});
 
-	test('ConfirmResetPassword API should raise service error', async () => {
+	it('should throw an error when service returns an error response', async () => {
 		expect.assertions(2);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(
-					ConfirmForgotPasswordException.InvalidParameterException
-				)
-			)
-		);
+		mockConfirmForgotPassword.mockImplementation(() => {
+			throw getMockError(
+				ConfirmForgotPasswordException.InvalidParameterException
+			);
+		});
 		try {
 			await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest);
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				ConfirmForgotPasswordException.InvalidParameterException
 			);
 		}
 	});
-});
 
-describe('Cognito ASF', () => {
-	let confirmForgotPasswordSpy;
-
-	beforeEach(() => {
-		// load Cognito ASF polyfill
+	it('should add UserContextData', async () => {
 		window['AmazonCognitoAdvancedSecurityData'] = {
 			getData() {
 				return 'abcd';
 			},
 		};
-		confirmForgotPasswordSpy = jest
-			.spyOn(confirmResetPasswordClient, 'confirmForgotPassword')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.confirmResetPasswordHttpCallResult;
-			});
-	});
 
-	afterEach(() => {
-		confirmForgotPasswordSpy.mockClear();
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
-	});
-	test('Check UserContextData is added', async () => {
 		await confirmResetPassword({
 			username: 'username',
 			newPassword: 'password',
@@ -163,7 +145,7 @@ describe('Cognito ASF', () => {
 				clientMetadata: { fooo: 'fooo' },
 			},
 		});
-		expect(confirmForgotPasswordSpy).toHaveBeenCalledWith(
+		expect(mockConfirmForgotPassword).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				Username: 'username',
@@ -176,5 +158,6 @@ describe('Cognito ASF', () => {
 				},
 			})
 		);
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
 	});
 });

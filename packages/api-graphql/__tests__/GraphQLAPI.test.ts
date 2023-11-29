@@ -685,7 +685,7 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'oidc',
 				})
-			).rejects.toThrowError('No current user');
+			).rejects.toThrow('No current user');
 
 			// Cleanup:
 			mockAccessToken = prevMockAccessToken;
@@ -762,7 +762,7 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'lambda',
 				})
-			).rejects.toThrowError(GraphQLAuthError.NO_AUTH_TOKEN);
+			).rejects.toThrow(GraphQLAuthError.NO_AUTH_TOKEN);
 		});
 
 		test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
@@ -784,7 +784,7 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'apiKey',
 				})
-			).rejects.toThrowError(GraphQLAuthError.NO_API_KEY);
+			).rejects.toThrow(GraphQLAuthError.NO_API_KEY);
 		});
 
 		test('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
@@ -810,7 +810,7 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'iam',
 				})
-			).rejects.toThrowError(GraphQLAuthError.NO_CREDENTIALS);
+			).rejects.toThrow(GraphQLAuthError.NO_CREDENTIALS);
 
 			// Cleanup:
 			mockCredentials = prevMockCredentials;
@@ -905,7 +905,7 @@ describe('API test', () => {
 				}) as any
 			).subscribe();
 
-			expect(spyon_appsync_realtime).toBeCalledWith(
+			expect(spyon_appsync_realtime).toHaveBeenCalledWith(
 				expect.objectContaining({
 					authenticationType: 'oidc',
 				}),
@@ -913,7 +913,7 @@ describe('API test', () => {
 			);
 		});
 
-		test('happy-case-subscription', async done => {
+		test('happy-case-subscription', done => {
 			const spyon_appsync_realtime = jest
 				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
 				.mockImplementation(jest.fn(() => of({}) as any));
@@ -942,7 +942,7 @@ describe('API test', () => {
 			expect(observable).not.toBe(undefined);
 		});
 
-		test('happy case subscription with additionalHeaders', async done => {
+		test('happy case subscription with additionalHeaders', done => {
 			const spyon_appsync_realtime = jest
 				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
 				.mockImplementation(jest.fn(() => of({}) as any));

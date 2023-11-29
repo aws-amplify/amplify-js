@@ -148,7 +148,7 @@ describe('list API', () => {
 					{ ...listResultItem, key: path ?? '' },
 				]);
 				expect(response.nextToken).toEqual(nextToken);
-				expect(listObjectsV2).toBeCalledTimes(1);
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
 					MaxKeys: 1000,
@@ -186,7 +186,7 @@ describe('list API', () => {
 					{ ...listResultItem, key: path ?? '' },
 				]);
 				expect(response.nextToken).toEqual(nextToken);
-				expect(listObjectsV2).toBeCalledTimes(1);
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
 					Prefix: expectedPath,
@@ -283,8 +283,8 @@ describe('list API', () => {
 			expect.assertions(3);
 			try {
 				await list({});
-			} catch (error) {
-				expect(listObjectsV2).toBeCalledTimes(1);
+			} catch (error: any) {
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
 					MaxKeys: 1000,

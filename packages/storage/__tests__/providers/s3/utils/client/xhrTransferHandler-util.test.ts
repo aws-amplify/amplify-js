@@ -80,7 +80,7 @@ describe('xhrTransferHandler', () => {
 		);
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
-		expect(mockXhr.setRequestHeader).toBeCalledTimes(1);
+		expect(mockXhr.setRequestHeader).toHaveBeenCalledTimes(1);
 		expect(mockXhr.setRequestHeader).toHaveBeenCalledWith('foo', 'bar');
 	});
 
@@ -244,11 +244,11 @@ describe('xhrTransferHandler', () => {
 			downloadEvents: [downloadProgressEvent],
 		});
 		await requestPromise;
-		expect(onDownloadProgress).toBeCalledWith({
+		expect(onDownloadProgress).toHaveBeenCalledWith({
 			transferredBytes: downloadProgressEvent.loaded,
 			totalBytes: downloadProgressEvent.total,
 		});
-		expect(onUploadProgress).toBeCalledWith({
+		expect(onUploadProgress).toHaveBeenCalledWith({
 			transferredBytes: uploadProgressEvent.loaded,
 			totalBytes: uploadProgressEvent.total,
 		});
@@ -301,7 +301,7 @@ describe('xhrTransferHandler', () => {
 		});
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
-		expect(mockXhr.getAllResponseHeaders).toBeCalledTimes(1);
+		expect(mockXhr.getAllResponseHeaders).toHaveBeenCalledTimes(1);
 	});
 
 	it('should NOT process response when xhr is cleared', async () => {
@@ -312,7 +312,7 @@ describe('xhrTransferHandler', () => {
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
 		mockXhrResponse(mockXhr, mock200Response);
-		expect(mockXhr.getAllResponseHeaders).toBeCalledTimes(1);
+		expect(mockXhr.getAllResponseHeaders).toHaveBeenCalledTimes(1);
 	});
 
 	it('should set Blob response with ResponseBodyMixin when xhr.responseType is blob', async () => {
@@ -331,7 +331,7 @@ describe('xhrTransferHandler', () => {
 		await body!.text();
 		const responseText = await body!.text();
 		expect(responseText).toBe(mock200Response.body);
-		expect(FileReader).toBeCalledTimes(1); // validate memoization
+		expect(FileReader).toHaveBeenCalledTimes(1); // validate memoization
 
 		await expect(body!.json()).rejects.toThrow(
 			expect.objectContaining({
@@ -362,7 +362,7 @@ describe('xhrTransferHandler', () => {
 		await requestPromise;
 		// Should be no-op if the xhr is already cleared
 		mockXhrResponse(mockXhr, mock200Response);
-		expect(mockXhr.getAllResponseHeaders).toBeCalledTimes(1);
+		expect(mockXhr.getAllResponseHeaders).toHaveBeenCalledTimes(1);
 	});
 
 	it('should immediately reject with canceled error when signal is already aborted', async () => {
@@ -384,8 +384,8 @@ describe('xhrTransferHandler', () => {
 				name: 'ERR_CANCELED',
 			});
 		}
-		expect(mockXhr.abort).toBeCalledTimes(1);
-		expect(mockXhr.send).not.toBeCalled();
+		expect(mockXhr.abort).toHaveBeenCalledTimes(1);
+		expect(mockXhr.send).not.toHaveBeenCalled();
 	});
 
 	it('should reject with canceled error when signal is aborted', async () => {
@@ -407,7 +407,7 @@ describe('xhrTransferHandler', () => {
 				name: 'ERR_CANCELED',
 			});
 		}
-		expect(mockXhr.abort).toBeCalledTimes(1);
-		expect(mockXhr.send).toBeCalledTimes(1);
+		expect(mockXhr.abort).toHaveBeenCalledTimes(1);
+		expect(mockXhr.send).toHaveBeenCalledTimes(1);
 	});
 });

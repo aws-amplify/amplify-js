@@ -45,24 +45,33 @@ describe('handleOAuthSignOut (native)', () => {
 			mockOAuthSignOutRedirect.mockResolvedValue({ type: 'success' });
 			await handleOAuthSignOut(cognitoConfig, mockStore);
 
-			expect(mockOAuthSignOutRedirect).toBeCalledWith(cognitoConfig, false);
-			expect(mockCompleteOAuthSignOut).toBeCalledWith(mockStore);
+			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
+				cognitoConfig,
+				false
+			);
+			expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 		});
 
 		it('should not complete OAuth sign out if redirect is canceled', async () => {
 			mockOAuthSignOutRedirect.mockResolvedValue({ type: 'canceled' });
 			await handleOAuthSignOut(cognitoConfig, mockStore);
 
-			expect(mockOAuthSignOutRedirect).toBeCalledWith(cognitoConfig, false);
-			expect(mockCompleteOAuthSignOut).not.toBeCalled();
+			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
+				cognitoConfig,
+				false
+			);
+			expect(mockCompleteOAuthSignOut).not.toHaveBeenCalled();
 		});
 
 		it('should not complete OAuth sign out if redirect failed', async () => {
 			mockOAuthSignOutRedirect.mockResolvedValue({ type: 'error' });
 			await handleOAuthSignOut(cognitoConfig, mockStore);
 
-			expect(mockOAuthSignOutRedirect).toBeCalledWith(cognitoConfig, false);
-			expect(mockCompleteOAuthSignOut).not.toBeCalled();
+			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
+				cognitoConfig,
+				false
+			);
+			expect(mockCompleteOAuthSignOut).not.toHaveBeenCalled();
 		});
 	});
 
@@ -74,8 +83,8 @@ describe('handleOAuthSignOut (native)', () => {
 		mockOAuthSignOutRedirect.mockResolvedValue({ type: 'error' });
 		await handleOAuthSignOut(cognitoConfig, mockStore);
 
-		expect(mockOAuthSignOutRedirect).toBeCalledWith(cognitoConfig, true);
-		expect(mockCompleteOAuthSignOut).toBeCalledWith(mockStore);
+		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(cognitoConfig, true);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 	});
 
 	it('should complete OAuth sign out but not redirect', async () => {
@@ -85,7 +94,7 @@ describe('handleOAuthSignOut (native)', () => {
 		});
 		await handleOAuthSignOut(cognitoConfig, mockStore);
 
-		expect(mockOAuthSignOutRedirect).not.toBeCalled();
-		expect(mockCompleteOAuthSignOut).toBeCalledWith(mockStore);
+		expect(mockOAuthSignOutRedirect).not.toHaveBeenCalled();
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 	});
 });

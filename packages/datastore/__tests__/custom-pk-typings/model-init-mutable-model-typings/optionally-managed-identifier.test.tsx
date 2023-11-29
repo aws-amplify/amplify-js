@@ -34,7 +34,7 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
@@ -46,24 +46,24 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		OptionallyManagedDefaultRO.copyOf({} as OptionallyManagedDefaultRO, d => {
 			d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 
@@ -186,7 +186,7 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
@@ -198,24 +198,24 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		OptionallyManagedCustomRO.copyOf({} as OptionallyManagedCustomRO, d => {
 			d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 

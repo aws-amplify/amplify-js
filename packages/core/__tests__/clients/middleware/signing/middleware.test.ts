@@ -63,7 +63,7 @@ describe('Signing middleware', () => {
 		const signableHandler = getSignableHandler(nextHandler);
 		const config = { ...defaultSigningOptions };
 		await signableHandler(defaultRequest, config);
-		expect(nextHandler).toBeCalledWith(
+		expect(nextHandler).toHaveBeenCalledWith(
 			expect.objectContaining({
 				headers: expect.objectContaining({
 					authorization: basicTestCase.expectedAuthorization,
@@ -79,7 +79,7 @@ describe('Signing middleware', () => {
 		const signableHandler = getSignableHandler(nextHandler);
 		const config = { ...defaultSigningOptions, systemClockOffset };
 		await signableHandler(defaultRequest, config);
-		expect(nextHandler).toBeCalledWith(
+		expect(nextHandler).toHaveBeenCalledWith(
 			expect.objectContaining({
 				headers: expect.objectContaining({
 					authorization: basicTestCase.expectedAuthorization,
@@ -101,7 +101,7 @@ describe('Signing middleware', () => {
 			credentials: credentialsProvider,
 		};
 		await signableHandler(defaultRequest, config);
-		expect(nextHandler).toBeCalledWith(
+		expect(nextHandler).toHaveBeenCalledWith(
 			expect.objectContaining({
 				headers: expect.objectContaining({
 					authorization: basicTestCase.expectedAuthorization,
@@ -109,7 +109,7 @@ describe('Signing middleware', () => {
 			}),
 			expect.anything()
 		);
-		expect(credentialsProvider).toBeCalledTimes(1);
+		expect(credentialsProvider).toHaveBeenCalledTimes(1);
 	});
 
 	test.each([
@@ -130,12 +130,15 @@ describe('Signing middleware', () => {
 		);
 
 		await middlewareFunction(defaultRequest);
-		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(parsedServerTime, 0);
+		expect(mockGetUpdatedSystemClockOffset).toHaveBeenCalledWith(
+			parsedServerTime,
+			0
+		);
 
 		jest.clearAllMocks();
 		await middlewareFunction(defaultRequest);
-		expect(mockGetSkewCorrectedDate).toBeCalledWith(updatedOffset);
-		expect(mockGetUpdatedSystemClockOffset).toBeCalledWith(
+		expect(mockGetSkewCorrectedDate).toHaveBeenCalledWith(updatedOffset);
+		expect(mockGetUpdatedSystemClockOffset).toHaveBeenCalledWith(
 			parsedServerTime,
 			updatedOffset
 		);

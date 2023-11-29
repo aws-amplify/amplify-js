@@ -109,7 +109,7 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 	if (abortSignal?.aborted) {
 		return Promise.resolve();
 	}
-	let timeoutId: number;
+	let timeoutId: ReturnType<typeof setTimeout>;
 	let sleepPromiseResolveFn: Function;
 	const sleepPromise = new Promise<void>(resolve => {
 		sleepPromiseResolveFn = resolve;
