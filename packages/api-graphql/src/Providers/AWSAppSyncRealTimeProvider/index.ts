@@ -329,10 +329,11 @@ export class AWSAppSyncRealTimeProvider {
 		// if an authorization header is set, have the explicit authToken take precedence
 		if (authToken) {
 			additionalCustomHeaders = {
-				...additionalCustomHeaders,
 				Authorization: authToken,
+				...additionalCustomHeaders,
 			};
 		}
+		debugger;
 
 		const subscriptionState: SUBSCRIPTION_STATUS = SUBSCRIPTION_STATUS.PENDING;
 		const data = {
@@ -365,6 +366,7 @@ export class AWSAppSyncRealTimeProvider {
 			...additionalCustomHeaders,
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
+		debugger;
 
 		const subscriptionMessage = {
 			id: subscriptionId,
@@ -725,6 +727,7 @@ export class AWSAppSyncRealTimeProvider {
 						region,
 						additionalCustomHeaders,
 					});
+					debugger;
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
 					const headerQs = base64Encoder.convert(headerString);
