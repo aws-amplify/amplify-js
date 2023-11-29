@@ -10,6 +10,11 @@ type ErrorObject = {
 	errors: AmplifyErrorParams[];
 };
 
+/**
+ * Checks to see if the given response or subscription message contains an
+ * unauth error. If it does, it changes the error message to include instructions
+ * for the app developer.
+ */
 export function repackageUnauthError<T extends ErrorObject>(
 	content: T,
 	authMode?: GraphQLAuthMode
