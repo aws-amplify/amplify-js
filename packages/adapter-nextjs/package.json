@@ -69,7 +69,7 @@
 		"format": "echo \"Not implemented\"",
 		"lint": "eslint '**/*.{ts,tsx}' -c ../../.eslintrc.scoped.js && npm run ts-coverage",
 		"lint:fix": "eslint '**/*.{ts,tsx}' -c ../../.eslintrc.scoped.js --fix",
-		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
+		"test": "npm run lint && cross-env NODE_OPTIONS='--no-warnings' jest -w 1 --coverage --logHeapUsage",
 		"ts-coverage": "rimraf coverage-ts && typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
 	}
 }

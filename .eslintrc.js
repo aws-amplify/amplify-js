@@ -34,7 +34,9 @@ module.exports = {
 		'rollup',
 		'rollup.config.*',
 		'setupTests.ts',
-		// temporarily disable linting __tests__ to avoid merge conflicts
+		'jest.setup.*',
+		'jest.config.*',
+		// temporarily disable lint on __tests__
 		'__tests__',
 	],
 	rules: {

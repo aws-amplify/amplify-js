@@ -22,6 +22,7 @@
 		"sourceMap": true,
 		"resolveJsonModule": true,
 		"target": "es2020",
+		"module": "es2020",
 		"types": ["node", "jest"],
 		"plugins": [
 			{ "transform": "typescript-transform-paths", "useRootDirs": true },

@@ -14,7 +14,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
+		"test": "npm run lint && cross-env NODE_OPTIONS='--no-warnings' jest -w 1 --coverage --logHeapUsage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
 		"build-with-test": "npm test && npm build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",

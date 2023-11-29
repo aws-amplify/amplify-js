@@ -38,7 +38,9 @@
 		"**/Gemfile",
 		"**/.rollup.cache",
 		"**/rollup.config.mjs",
-		"rollup"
+		"rollup",
+		"jest",
+		"**/jest.config.mjs"
 	],
 	"ignoreFile": ".gitignore",
 	"license": "license_header.txt",
