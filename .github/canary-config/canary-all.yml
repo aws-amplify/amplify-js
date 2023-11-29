@@ -309,4 +309,4 @@ tests:
     category: auth
     sample_name: [auth-ssr]
     spec: auth-ssr
-    browser: *minimal_browser_list
+    browser: *minimal_browser_list_2
