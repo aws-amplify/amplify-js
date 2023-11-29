@@ -2,6 +2,10 @@ minimal_browser_list: &minimal_browser_list
   - chrome
   - firefox
 
+minimal_browser_list_2: &minimal_browser_list_2
+  - chrome
+  - edge
+
 extended_browser_list: &extended_browser_list
   - chrome
   - firefox
