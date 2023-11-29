@@ -184,7 +184,10 @@ describe('API test', () => {
 				expect(errors).toEqual([
 					expect.objectContaining({
 						message: expect.stringContaining(
-							`UnauthorizedError: If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
+							'UnauthorizedError: The authMode used ('
+						),
+						recoverySuggestion: expect.stringContaining(
+							`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
 						),
 					}),
 				]);
@@ -1049,7 +1052,10 @@ describe('API test', () => {
 					expect(e.errors).toEqual([
 						expect.objectContaining({
 							message: expect.stringContaining(
-								`UnauthorizedError: If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
+								'UnauthorizedError: The authMode used ('
+							),
+							recoverySuggestion: expect.stringContaining(
+								`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
 							),
 						}),
 					]);

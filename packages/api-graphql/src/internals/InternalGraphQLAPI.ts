@@ -392,7 +392,7 @@ export class InternalGraphQLAPIClass {
 		const { errors } = response;
 
 		if (errors && errors.length) {
-			throw repackageUnauthError(response);
+			throw repackageUnauthError(response, authMode);
 		}
 
 		return response;
@@ -442,7 +442,7 @@ export class InternalGraphQLAPIClass {
 			.pipe(
 				catchError(e => {
 					if (e.errors) {
-						throw repackageUnauthError(e);
+						throw repackageUnauthError(e, authMode);
 					}
 					throw e;
 				})

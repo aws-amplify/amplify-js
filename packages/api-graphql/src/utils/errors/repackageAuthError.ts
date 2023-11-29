@@ -1,18 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { GraphQLError } from 'graphql';
+import {
+	AmplifyErrorParams,
+	GraphQLAuthMode,
+} from '@aws-amplify/core/internals/utils';
 
 type ErrorObject = {
-	errors: GraphQLError[];
+	errors: AmplifyErrorParams[];
 };
 
-export function repackageUnauthError<T extends ErrorObject>(content: T): T {
+export function repackageUnauthError<T extends ErrorObject>(
+	content: T,
+	authMode?: GraphQLAuthMode
+): T {
 	if (content.errors && Array.isArray(content.errors)) {
 		content.errors.forEach(e => {
 			if (isUnauthError(e)) {
-				e.message =
-					`UnauthorizedError: If you're calling an Amplify-generated API, make sure ` +
+				e.message = `UnauthorizedError: The authMode used ('${authMode}') didn't have permission to perform the requested action`;
+				e.recoverySuggestion =
+					`If you're calling an Amplify-generated API, make sure ` +
 					`to set the "authMode" in generateClient({ authMode: '...' }) to the backend authorization ` +
 					`rule's auth provider ('apiKey', 'userPool', 'iam', 'oidc', 'lambda')`;
 			}
