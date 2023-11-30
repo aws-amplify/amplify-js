@@ -292,13 +292,6 @@ tests:
     spec: auth-cdn
     browser: *minimal_browser_list
     amplifyjs_dir: true
-  - test_name: integ_vue_auth_legacy_vue_authenticator
-    desc: 'Legacy Vue Authenticator'
-    framework: vue
-    category: auth
-    sample_name: [amplify-authenticator-legacy]
-    spec: authenticator
-    browser: *minimal_browser_list
   - test_name: integ_next_auth_authenticator_and_ssr_page
     desc: 'Authenticator and SSR page'
     framework: next
