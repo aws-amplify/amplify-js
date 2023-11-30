@@ -97,12 +97,14 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
 	region?: string;
-	graphql_headers?: () => {} | (() => Promise<{}>);
+	// graphql_headers?: () => {} | (() => Promise<{}>);
+	graphql_headers?: any;
 	additionalHeaders?:
 		| Record<string, string>
 		| (() => Promise<Record<string, string>>);
 	additionalCustomHeaders?: Record<string, string>;
 	authToken?: string;
+	customLibraryOptionsHeaders?: () => Promise<Record<string, string>>;
 }
 
 type AWSAppSyncRealTimeAuthInput =
@@ -203,6 +205,7 @@ export class AWSAppSyncRealTimeProvider {
 			additionalHeaders,
 			apiKey,
 			authToken,
+			customLibraryOptionsHeaders,
 		} = options || {};
 
 		return new Observable(observer => {
@@ -235,6 +238,7 @@ export class AWSAppSyncRealTimeProvider {
 									additionalHeaders,
 									apiKey,
 									authToken,
+									customLibraryOptionsHeaders,
 								},
 								observer,
 								subscriptionId,
@@ -329,10 +333,11 @@ export class AWSAppSyncRealTimeProvider {
 		// if an authorization header is set, have the explicit authToken take precedence
 		if (authToken) {
 			additionalCustomHeaders = {
-				Authorization: authToken,
 				...additionalCustomHeaders,
+				Authorization: authToken,
 			};
 		}
+		// TODO: additional after auth?
 		debugger;
 
 		const subscriptionState: SUBSCRIPTION_STATUS = SUBSCRIPTION_STATUS.PENDING;
@@ -350,6 +355,8 @@ export class AWSAppSyncRealTimeProvider {
 		});
 
 		// Preparing payload for subscription message
+
+		debugger;
 
 		const dataString = JSON.stringify(data);
 		const headerObj = {

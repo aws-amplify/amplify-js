@@ -211,6 +211,7 @@ export class InternalGraphQLAPIClass {
 				);
 				return responsePromise;
 			case 'subscription':
+				debugger;
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
 					{ query, variables, authMode },
@@ -236,7 +237,7 @@ export class InternalGraphQLAPIClass {
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
-			defaultAuthMode
+			defaultAuthMode,
 		} = resolveConfig(amplify);
 
 		const authMode = explicitAuthMode || defaultAuthMode || 'iam';
@@ -251,6 +252,8 @@ export class InternalGraphQLAPIClass {
 		 */
 		const { headers: customHeaders, withCredentials } =
 			resolveLibraryOptions(amplify);
+
+		debugger;
 
 		/**
 		 * Client or request-specific custom headers that may or may not be
@@ -271,6 +274,9 @@ export class InternalGraphQLAPIClass {
 				Authorization: authToken,
 			};
 		}
+
+		// custom headers?
+		debugger;
 
 		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
@@ -424,6 +430,19 @@ export class InternalGraphQLAPIClass {
 	): Observable<any> {
 		const config = resolveConfig(amplify);
 
+		/**
+		 * Retrieve library options from Amplify configuration.
+		 * `customHeaders` here are from the Amplify configuration options,
+		 * and are for non-AppSync endpoints only. These are *not* the same as
+		 * `additionalHeaders`, which are custom headers that are either 1)
+		 * included when configuring the API client or 2) passed along with
+		 * individual requests.
+		 */
+		const { headers: graphql_headers } = resolveLibraryOptions(amplify);
+
+		// THIS SHOULD BE IT
+		debugger;
+
 		return this.appSyncRealTime.subscribe(
 			{
 				query: print(query as DocumentNode),
@@ -434,6 +453,7 @@ export class InternalGraphQLAPIClass {
 				apiKey: config?.apiKey,
 				additionalHeaders,
 				authToken,
+				graphql_headers,
 			},
 			customUserAgentDetails
 		);
