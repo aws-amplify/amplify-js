@@ -129,7 +129,6 @@ export function expectSubWithHeaders(
 	item: Record<string, any>,
 	headers?: CustomHeaders
 ) {
-	debugger;
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
 			authenticationType: 'apiKey',

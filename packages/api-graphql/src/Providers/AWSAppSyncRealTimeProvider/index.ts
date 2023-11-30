@@ -104,7 +104,6 @@ export interface AWSAppSyncRealTimeProviderOptions {
 		| (() => Promise<Record<string, string>>);
 	additionalCustomHeaders?: Record<string, string>;
 	authToken?: string;
-	customLibraryOptionsHeaders?: () => Promise<Record<string, string>>;
 }
 
 type AWSAppSyncRealTimeAuthInput =
@@ -205,7 +204,6 @@ export class AWSAppSyncRealTimeProvider {
 			additionalHeaders,
 			apiKey,
 			authToken,
-			customLibraryOptionsHeaders,
 		} = options || {};
 
 		return new Observable(observer => {
@@ -238,7 +236,6 @@ export class AWSAppSyncRealTimeProvider {
 									additionalHeaders,
 									apiKey,
 									authToken,
-									customLibraryOptionsHeaders,
 								},
 								observer,
 								subscriptionId,
@@ -338,7 +335,7 @@ export class AWSAppSyncRealTimeProvider {
 			};
 		}
 		// TODO: additional after auth?
-		debugger;
+		// debugger;
 
 		const subscriptionState: SUBSCRIPTION_STATUS = SUBSCRIPTION_STATUS.PENDING;
 		const data = {
@@ -356,7 +353,7 @@ export class AWSAppSyncRealTimeProvider {
 
 		// Preparing payload for subscription message
 
-		debugger;
+		// debugger;
 
 		const dataString = JSON.stringify(data);
 		const headerObj = {
@@ -373,7 +370,7 @@ export class AWSAppSyncRealTimeProvider {
 			...additionalCustomHeaders,
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
-		debugger;
+		// debugger;
 
 		const subscriptionMessage = {
 			id: subscriptionId,
@@ -734,7 +731,7 @@ export class AWSAppSyncRealTimeProvider {
 						region,
 						additionalCustomHeaders,
 					});
-					debugger;
+					// debugger;
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
 					const headerQs = base64Encoder.convert(headerString);

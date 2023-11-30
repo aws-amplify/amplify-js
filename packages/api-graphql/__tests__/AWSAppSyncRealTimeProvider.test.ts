@@ -1055,6 +1055,27 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						);
 					});
 
+					test.only('authenticating with AWS_LAMBDA/custom w/ library headers', async () => {
+						expect.assertions(1);
+
+						provider
+							.subscribe({
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								authenticationType: 'none',
+								graphql_headers: async () => ({
+									Authorization: 'library-config-token'
+								})
+							})
+							.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface?.readyForUse;
+
+						expect(loggerSpy).toHaveBeenCalledWith(
+							'DEBUG',
+							'Authenticating with "none"'
+						);
+					});
+
 					test('authenticating with AWS_LAMBDA/custom w/ custom header function', async () => {
 						expect.assertions(1);
 

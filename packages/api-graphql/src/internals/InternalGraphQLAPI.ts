@@ -211,7 +211,6 @@ export class InternalGraphQLAPIClass {
 				);
 				return responsePromise;
 			case 'subscription':
-				debugger;
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
 					{ query, variables, authMode },
@@ -253,8 +252,6 @@ export class InternalGraphQLAPIClass {
 		const { headers: customHeaders, withCredentials } =
 			resolveLibraryOptions(amplify);
 
-		debugger;
-
 		/**
 		 * Client or request-specific custom headers that may or may not be
 		 * returned by a function:
@@ -274,9 +271,6 @@ export class InternalGraphQLAPIClass {
 				Authorization: authToken,
 			};
 		}
-
-		// custom headers?
-		debugger;
 
 		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
@@ -440,8 +434,8 @@ export class InternalGraphQLAPIClass {
 		 */
 		const { headers: graphql_headers } = resolveLibraryOptions(amplify);
 
-		// THIS SHOULD BE IT
-		debugger;
+		// THIS IS IT
+		// debugger;
 
 		return this.appSyncRealTime.subscribe(
 			{
