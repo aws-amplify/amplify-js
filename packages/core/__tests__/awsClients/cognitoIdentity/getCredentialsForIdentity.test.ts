@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
 	getCredentialsForIdentity,
@@ -69,7 +65,7 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 			params
 		);
 		expect(response).toEqual(expectedOutput);
-		expect(fetchTransferHandler).toBeCalledWith(
+		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
 			expect.anything()
 		);

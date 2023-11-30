@@ -19,15 +19,7 @@ import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWi
 import { handleOAuthSignOut } from '../../../src/providers/cognito/utils/oauth';
 import { AuthTokenStore } from '../../../src/providers/cognito/tokenProvider/types';
 
-jest.mock('@aws-amplify/core', () => {
-	return {
-		...(jest.genMockFromModule('@aws-amplify/core') as object),
-		// must do this as auth tests import `signInWithRedirect`
-		Amplify: {
-			getConfig: jest.fn().mockReturnValue({}),
-		},
-	};
-});
+jest.mock('@aws-amplify/core');
 jest.mock('../../../src/providers/cognito/tokenProvider');
 jest.mock(
 	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
@@ -79,9 +71,9 @@ describe('signOut', () => {
 	// create test helpers
 	const expectSignOut = () => ({
 		toComplete: () => {
-			expect(mockTokenOrchestrator.clearTokens).toBeCalledTimes(1);
-			expect(mockClearCredentials).toBeCalledTimes(1);
-			expect(mockHub.dispatch).toBeCalledWith(
+			expect(mockTokenOrchestrator.clearTokens).toHaveBeenCalledTimes(1);
+			expect(mockClearCredentials).toHaveBeenCalledTimes(1);
+			expect(mockHub.dispatch).toHaveBeenCalledWith(
 				'auth',
 				{ event: 'signedOut' },
 				'Auth',
@@ -90,9 +82,9 @@ describe('signOut', () => {
 		},
 		not: {
 			toComplete: () => {
-				expect(mockTokenOrchestrator.clearTokens).not.toBeCalled();
-				expect(mockClearCredentials).not.toBeCalled();
-				expect(mockHub.dispatch).not.toBeCalled();
+				expect(mockTokenOrchestrator.clearTokens).not.toHaveBeenCalled();
+				expect(mockClearCredentials).not.toHaveBeenCalled();
+				expect(mockHub.dispatch).not.toHaveBeenCalled();
 			},
 		},
 	});
@@ -127,12 +119,12 @@ describe('signOut', () => {
 		it('should perform client sign out on a revocable session', async () => {
 			await signOut();
 
-			expect(mockRevokeToken).toBeCalledWith(
+			expect(mockRevokeToken).toHaveBeenCalledWith(
 				{ region },
 				{ ClientId: cognitoConfig.userPoolClientId, Token: refreshToken }
 			);
-			expect(mockGetRegion).toBeCalledTimes(1);
-			expect(mockGlobalSignOut).not.toBeCalled();
+			expect(mockGetRegion).toHaveBeenCalledTimes(1);
+			expect(mockGlobalSignOut).not.toHaveBeenCalled();
 			expectSignOut().toComplete();
 		});
 
@@ -144,21 +136,21 @@ describe('signOut', () => {
 
 			await signOut();
 
-			expect(mockRevokeToken).not.toBeCalled();
-			expect(mockGlobalSignOut).not.toBeCalled();
-			expect(mockGetRegion).not.toBeCalled();
+			expect(mockRevokeToken).not.toHaveBeenCalled();
+			expect(mockGlobalSignOut).not.toHaveBeenCalled();
+			expect(mockGetRegion).not.toHaveBeenCalled();
 			expectSignOut().toComplete();
 		});
 
 		it('should perform global sign out', async () => {
 			await signOut({ global: true });
 
-			expect(mockGlobalSignOut).toBeCalledWith(
+			expect(mockGlobalSignOut).toHaveBeenCalledWith(
 				{ region: 'us-west-2' },
 				{ AccessToken: accessToken.toString() }
 			);
-			expect(mockGetRegion).toBeCalledTimes(1);
-			expect(mockRevokeToken).not.toBeCalled();
+			expect(mockGetRegion).toHaveBeenCalledTimes(1);
+			expect(mockRevokeToken).not.toHaveBeenCalled();
 			expectSignOut().toComplete();
 		});
 
@@ -167,10 +159,10 @@ describe('signOut', () => {
 
 			await signOut();
 
-			expect(loggerDebugSpy).toBeCalledWith(
+			expect(loggerDebugSpy).toHaveBeenCalledWith(
 				expect.stringContaining('Client signOut error caught')
 			);
-			expect(mockGetRegion).toBeCalledTimes(1);
+			expect(mockGetRegion).toHaveBeenCalledTimes(1);
 			expectSignOut().toComplete();
 		});
 
@@ -179,10 +171,10 @@ describe('signOut', () => {
 
 			await signOut({ global: true });
 
-			expect(loggerDebugSpy).toBeCalledWith(
+			expect(loggerDebugSpy).toHaveBeenCalledWith(
 				expect.stringContaining('Global signOut error caught')
 			);
-			expect(mockGetRegion).toBeCalledTimes(1);
+			expect(mockGetRegion).toHaveBeenCalledTimes(1);
 			expectSignOut().toComplete();
 		});
 	});
@@ -216,11 +208,11 @@ describe('signOut', () => {
 		it('should perform OAuth sign out', async () => {
 			await signOut();
 
-			expect(MockDefaultOAuthStore).toBeCalledTimes(1);
-			expect(mockDefaultOAuthStoreInstance.setAuthConfig).toBeCalledWith(
+			expect(MockDefaultOAuthStore).toHaveBeenCalledTimes(1);
+			expect(mockDefaultOAuthStoreInstance.setAuthConfig).toHaveBeenCalledWith(
 				cognitoConfigWithOauth
 			);
-			expect(mockHandleOAuthSignOut).toBeCalledWith(
+			expect(mockHandleOAuthSignOut).toHaveBeenCalledWith(
 				cognitoConfigWithOauth,
 				mockDefaultOAuthStoreInstance
 			);

@@ -6,7 +6,7 @@ import { resolveCredentials } from '../../../../src/utils';
 import {
 	mockKinesisConfig,
 	mockCredentialConfig,
-} from '../../../testUtils/mockConstants.test';
+} from '../../../testUtils/mockConstants';
 import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEventBuffer';
 import { flushEvents } from '../../../../src/providers/kinesis/apis';
 import { ConsoleLogger } from '@aws-amplify/core';
@@ -59,6 +59,9 @@ describe('Analytics Kinesis API: flushEvents', () => {
 
 		flushEvents();
 		await new Promise(process.nextTick);
-		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
+		expect(loggerWarnSpy).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(Error)
+		);
 	});
 });

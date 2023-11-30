@@ -9,7 +9,7 @@ import { resolveCredentials } from '../../../../src/utils';
 import {
 	mockCredentialConfig,
 	mockPersonalizeConfig,
-} from '../../../testUtils/mockConstants.test';
+} from '../../../testUtils/mockConstants';
 import { flushEvents } from '../../../../src/providers/personalize';
 import { ConsoleLogger } from '@aws-amplify/core';
 
@@ -61,6 +61,9 @@ describe('Analytics Personalize API: flushEvents', () => {
 
 		flushEvents();
 		await new Promise(process.nextTick);
-		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
+		expect(loggerWarnSpy).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(Error)
+		);
 	});
 });

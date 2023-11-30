@@ -1,40 +1,42 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
 import { signUp } from '../../../src/providers/cognito';
-import * as signUpClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { signUp as providerSignUp } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { SignUpException } from '../../../src/providers/cognito/types/errors';
-import { SignUpCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { Amplify } from 'aws-amplify';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+import { getMockError } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-Amplify.configure({
-	Auth: {
-		Cognito: {
-			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
-		},
-	},
-});
-describe('SignUp API Happy Path Cases:', () => {
-	let signUpSpy;
+jest.mock('@aws-amplify/core', () => ({
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
+}));
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
+
+describe('signUp', () => {
 	const { user1 } = authAPITestParams;
+	// assert mocks
+	const mockSignUp = providerSignUp as jest.Mock;
+
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+	});
+
 	beforeEach(() => {
-		signUpSpy = jest
-			.spyOn(signUpClient, 'signUp')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.signUpHttpCallResult as SignUpCommandOutput;
-			});
+		mockSignUp.mockResolvedValue(authAPITestParams.signUpHttpCallResult);
 	});
+
 	afterEach(() => {
-		signUpSpy.mockClear();
+		mockSignUp.mockReset();
 	});
-	test('SignUp API should call the UserPoolClient and should return a SignUpResult', async () => {
+
+	it('should call signUp and return a result', async () => {
 		const result = await signUp({
 			username: user1.username,
 			password: user1.password,
@@ -54,7 +56,7 @@ describe('SignUp API Happy Path Cases:', () => {
 			},
 			userId: '1234567890',
 		});
-		expect(signUpSpy).toHaveBeenCalledWith(
+		expect(mockSignUp).toHaveBeenCalledWith(
 			{
 				region: 'us-west-2',
 				userAgentValue: expect.any(String),
@@ -68,47 +70,39 @@ describe('SignUp API Happy Path Cases:', () => {
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 			}
 		);
-		expect(signUpSpy).toBeCalledTimes(1);
+		expect(mockSignUp).toHaveBeenCalledTimes(1);
 	});
-});
 
-describe('SignUp API Error Path Cases:', () => {
-	const { user1 } = authAPITestParams;
-
-	test('SignUp API should throw a validation AuthError when username is empty', async () => {
+	it('should throw an error when username is empty', async () => {
 		expect.assertions(2);
 		try {
 			await signUp({ username: '', password: user1.password });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptySignUpUsername);
 		}
 	});
 
-	test('SignUp API should throw a validation AuthError when password is empty', async () => {
+	it('should throw an error when password is empty', async () => {
 		expect.assertions(2);
 		try {
 			await signUp({ username: user1.username, password: '' });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptySignUpPassword);
 		}
 	});
 
-	test('SignUp API should expect a service error', async () => {
+	it('should throw an error when service returns an error response', async () => {
 		expect.assertions(2);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(SignUpException.InvalidParameterException)
-			)
-		);
+		mockSignUp.mockImplementation(() => {
+			throw getMockError(SignUpException.InvalidParameterException);
+		});
 		try {
 			await signUp({ username: user1.username, password: user1.password });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(SignUpException.InvalidParameterException);
 		}
 	});
 });
-
-describe('SignUp API Edge Cases:', () => {});

@@ -93,6 +93,9 @@ export type AuthStandardAttributeKey =
 	| 'zoneinfo'
 	| AuthVerifiableAttributeKey;
 
+// legacy config user attribute keys are uppercase
+export type LegacyUserAttributeKey = Uppercase<AuthStandardAttributeKey>;
+
 export type AuthVerifiableAttributeKey = 'email' | 'phone_number';
 
 export type AuthConfigUserAttributes = Partial<

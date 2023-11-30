@@ -1,84 +1,74 @@
+import { Amplify } from '@aws-amplify/core';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { signIn } from '../../../src/providers/cognito/apis/signIn';
-import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeException } from '../../../src/providers/cognito/types/errors';
-import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { Amplify } from 'aws-amplify';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+import { respondToAuthChallenge } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getMockError } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
+import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
 
-Amplify.configure({
-	Auth: {
-		Cognito: {
-			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
-		},
-	},
-});
+jest.mock('@aws-amplify/core', () => ({
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
+}));
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
+jest.mock('../../../src/providers/cognito/utils/signInStore');
+
 describe('confirmSignIn API error path cases:', () => {
-	let handleUserSRPAuthflowSpy;
+	const challengeName = 'SELECT_MFA_TYPE';
+	const signInSession = '1234234232';
 	const username = authAPITestParams.user1.username;
-	const password = authAPITestParams.user1.password;
-	beforeEach(async () => {
-		handleUserSRPAuthflowSpy = jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: 'SELECT_MFA_TYPE',
-					Session: '1234234232',
-					$metadata: {},
-					ChallengeParameters: {
-						MFAS_CAN_CHOOSE: '["SMS_MFA","SOFTWARE_TOKEN_MFA"]',
-					},
-				})
-			);
+	// assert mocks
+	const mockStoreGetState = signInStore.getState as jest.Mock;
+	const mockRespondToAuthChallenge = respondToAuthChallenge as jest.Mock;
+
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+		mockStoreGetState.mockReturnValue({
+			username,
+			challengeName,
+			signInSession,
+		});
 	});
 
 	afterEach(() => {
-		handleUserSRPAuthflowSpy.mockClear();
+		mockRespondToAuthChallenge.mockReset();
 	});
 
-	test('confirmSignIn API should throw a validation AuthError when challengeResponse is empty', async () => {
+	it('confirmSignIn API should throw an error when challengeResponse is empty', async () => {
 		expect.assertions(2);
 		try {
 			await confirmSignIn({ challengeResponse: '' });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptyChallengeResponse);
 		}
 	});
 
-	test(`confirmSignIn API should throw a validation AuthError when sign-in step is
-     ${'CONTINUE_SIGN_IN_WITH_MFA_SELECTION'} and challengeResponse is not "SMS" or "TOTP" `, async () => {
+	it('should throw an error when sign-in step is CONTINUE_SIGN_IN_WITH_MFA_SELECTION and challengeResponse is not "SMS" or "TOTP"', async () => {
 		expect.assertions(2);
 		try {
-			await signIn({ username, password });
 			await confirmSignIn({ challengeResponse: 'NO_SMS' });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.IncorrectMFAMethod);
 		}
 	});
 
-	test('confirmSignIn API should raise service error', async () => {
+	it('should throw an error when service returns an error response', async () => {
 		expect.assertions(2);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(
-					RespondToAuthChallengeException.InvalidParameterException
-				)
-			)
-		);
+		mockRespondToAuthChallenge.mockImplementation(() => {
+			throw getMockError(
+				RespondToAuthChallengeException.InvalidParameterException
+			);
+		});
 		try {
-			await signIn({ username, password });
-			await confirmSignIn({
-				challengeResponse: 'TOTP',
-			});
-		} catch (error) {
+			await confirmSignIn({ challengeResponse: 'TOTP' });
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				RespondToAuthChallengeException.InvalidParameterException

@@ -479,7 +479,7 @@ describe('Interactions', () => {
 				);
 
 				jest.runAllTimers();
-				expect(inProgressCallback).toBeCalledTimes(0);
+				expect(inProgressCallback).toHaveBeenCalledTimes(0);
 				expect.assertions(1);
 			});
 
@@ -496,7 +496,7 @@ describe('Interactions', () => {
 				);
 
 				jest.runAllTimers();
-				expect(completeSuccessCallback).toBeCalledTimes(1);
+				expect(completeSuccessCallback).toHaveBeenCalledTimes(1);
 				// 2 assertions from callback
 				expect.assertions(3);
 			});
@@ -512,7 +512,7 @@ describe('Interactions', () => {
 				);
 
 				jest.runAllTimers();
-				expect(completeFailCallback).toBeCalledTimes(1);
+				expect(completeFailCallback).toHaveBeenCalledTimes(1);
 				// 1 assertion from callback
 				expect.assertions(2);
 			});

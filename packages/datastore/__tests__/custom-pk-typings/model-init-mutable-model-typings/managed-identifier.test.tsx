@@ -15,7 +15,7 @@ import {
 describe('Managed Identifier', () => {
 	test(`ManagedDefaultRO`, async () => {
 		expectType<ModelInit<ManagedDefaultRO>>({
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// id: 'eeeeeee',
 			name: '',
 			description: '',
@@ -24,31 +24,31 @@ describe('Managed Identifier', () => {
 		expectType<ModelInit<ManagedDefaultRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		expectType<ModelInit<ManagedDefaultRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		ManagedDefaultRO.copyOf({} as ManagedDefaultRO, d => {
 			d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 
@@ -134,7 +134,7 @@ describe('Managed Identifier', () => {
 
 	test(`ManagedCustomRO`, async () => {
 		expectType<ModelInit<ManagedCustomRO>>({
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// id: 'eeeeeee',
 			name: '',
 			description: '',
@@ -143,31 +143,31 @@ describe('Managed Identifier', () => {
 		expectType<ModelInit<ManagedCustomRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		expectType<ModelInit<ManagedCustomRO>>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		ManagedCustomRO.copyOf({} as ManagedCustomRO, d => {
 			d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 

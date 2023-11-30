@@ -49,7 +49,7 @@ describe('signIn API happy path cases', () => {
 			},
 		});
 		expect(result).toEqual(authAPITestParams.signInResult());
-		expect(handleUserPasswordFlowSpy).toBeCalledTimes(1);
+		expect(handleUserPasswordFlowSpy).toHaveBeenCalledTimes(1);
 	});
 
 	test('handleUserPasswordAuthFlow should be called with clientMetada from request', async () => {
@@ -60,7 +60,7 @@ describe('signIn API happy path cases', () => {
 			password,
 			options: authAPITestParams.configWithClientMetadata,
 		});
-		expect(handleUserPasswordFlowSpy).toBeCalledWith(
+		expect(handleUserPasswordFlowSpy).toHaveBeenCalledWith(
 			username,
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
@@ -112,7 +112,7 @@ describe('Cognito ASF', () => {
 		} catch (_) {
 			// only want to test the contents
 		}
-		expect(initiateAuthSpy).toBeCalledWith(
+		expect(initiateAuthSpy).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: 'us-west-2',
 			}),

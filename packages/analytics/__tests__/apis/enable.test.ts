@@ -16,6 +16,6 @@ describe('Pinpoint APIs: enable', () => {
 	it('should enable Analytics', () => {
 		enable();
 
-		expect(mockEnableAnalytics).toBeCalledTimes(1);
+		expect(mockEnableAnalytics).toHaveBeenCalledTimes(1);
 	});
 });

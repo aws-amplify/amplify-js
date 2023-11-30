@@ -49,7 +49,7 @@ describe('DefaultIdentityIdStore', () => {
 		});
 		it('Should store guest identityId in keyValueStorage', async () => {
 			defaultIdStore.storeIdentityId(validGuestIdentityId);
-			expect(mockKeyValueStorage.setItem).toBeCalledWith(
+			expect(mockKeyValueStorage.setItem).toHaveBeenCalledWith(
 				validAuthKey.identityId,
 				validGuestIdentityId.id
 			);
@@ -64,7 +64,7 @@ describe('DefaultIdentityIdStore', () => {
 		});
 		it('Should store primary identityId in keyValueStorage', async () => {
 			defaultIdStore.storeIdentityId(validPrimaryIdentityId);
-			expect(mockKeyValueStorage.removeItem).toBeCalledWith(
+			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
 				validAuthKey.identityId
 			);
 			expect(defaultIdStore._primaryIdentityId).toEqual(
@@ -78,7 +78,7 @@ describe('DefaultIdentityIdStore', () => {
 		});
 		it('Should clear the cached identityId', async () => {
 			defaultIdStore.clearIdentityId();
-			expect(mockKeyValueStorage.removeItem).toBeCalledWith(
+			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
 				validAuthKey.identityId
 			);
 			expect(defaultIdStore._primaryIdentityId).toBeUndefined();
@@ -88,7 +88,7 @@ describe('DefaultIdentityIdStore', () => {
 		it('Should assert when identityPoolId is not present while setting the auth config', async () => {
 			try {
 				defaultIdStore.setAuthConfig(noIdentityPoolIdAuthConfig.Auth!);
-			} catch (e) {
+			} catch (e: any) {
 				expect(e.name).toEqual('InvalidIdentityPoolIdException');
 			}
 		});

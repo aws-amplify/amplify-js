@@ -61,7 +61,7 @@ describe('serializeGetObjectRequest', () => {
 			}
 		);
 
-		expect(mockPresignUrl).toBeCalledWith(
+		expect(mockPresignUrl).toHaveBeenCalledWith(
 			expect.anything(),
 			expect.objectContaining({
 				uriEscapePath: false,

@@ -60,7 +60,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 			},
 		};
 		await identifyUser(input);
-		expect(mockUpdateEndpoint).toBeCalledWith({
+		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
 			...config,
@@ -82,7 +82,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 			userAttributes,
 		};
 		await identifyUser({ ...input, options });
-		expect(mockUpdateEndpoint).toBeCalledWith({
+		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...options,
 			...credentials,

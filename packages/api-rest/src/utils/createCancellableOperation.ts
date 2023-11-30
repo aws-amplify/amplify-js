@@ -45,6 +45,7 @@ export function createCancellableOperation(
 	const publicApisAbortController = new AbortController();
 	const publicApisAbortSignal = publicApisAbortController.signal;
 	const internalPostAbortSignal = abortController?.signal;
+	let abortReason: string;
 
 	const job = async () => {
 		try {
@@ -58,9 +59,10 @@ export function createCancellableOperation(
 			return response;
 		} catch (error: any) {
 			const abortSignal = internalPostAbortSignal ?? publicApisAbortSignal;
+			const message = abortReason ?? abortSignal.reason;
 			if (error.name === 'AbortError' || abortSignal?.aborted === true) {
 				const canceledError = new CanceledError({
-					...(abortSignal.reason ? { message: abortSignal.reason } : undefined),
+					...(message && { message }),
 					underlyingError: error,
 				});
 				logger.debug(error);
@@ -79,14 +81,10 @@ export function createCancellableOperation(
 				return;
 			}
 			publicApisAbortController.abort(abortMessage);
-			// Abort reason is not widely support enough across runtimes and and browsers, so we set it
-			// if it is not already set.
+			// If abort reason is not supported, set a scoped reasons instead. The reason property inside an
+			// AbortSignal is a readonly property and trying to set it would throw an error.
 			if (abortMessage && publicApisAbortSignal.reason !== abortMessage) {
-				type AbortSignalWithReasonSupport = Omit<AbortSignal, 'reason'> & {
-					reason?: string;
-				};
-				(publicApisAbortSignal as AbortSignalWithReasonSupport)['reason'] =
-					abortMessage;
+				abortReason = abortMessage;
 			}
 		};
 		return { response: job(), cancel };

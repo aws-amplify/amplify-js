@@ -29,9 +29,9 @@ describe('calculateU', () => {
 		mockGetHashFromHex.mockReturnValue('A+B');
 
 		expect(calculateU({ A, B })).toBeDefined();
-		expect(mockGetPaddedHex).toBeCalledWith(A);
-		expect(mockGetPaddedHex).toBeCalledWith(B);
-		expect(mockGetHashFromHex).toBeCalled();
+		expect(mockGetPaddedHex).toHaveBeenCalledWith(A);
+		expect(mockGetPaddedHex).toHaveBeenCalledWith(B);
+		expect(mockGetHashFromHex).toHaveBeenCalled();
 	});
 
 	it('should throw an error if U equals BigInteger.ZERO', async () => {

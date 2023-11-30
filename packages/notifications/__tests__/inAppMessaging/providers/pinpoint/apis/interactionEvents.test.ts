@@ -28,25 +28,37 @@ describe('Interaction events', () => {
 	it('can be listened to by onMessageReceived', () => {
 		onMessageReceived(handler);
 
-		expect(mockAddEventListener).toBeCalledWith('messageReceived', handler);
+		expect(mockAddEventListener).toHaveBeenCalledWith(
+			'messageReceived',
+			handler
+		);
 	});
 
 	it('can be listened to by onMessageDisplayed', () => {
 		onMessageDisplayed(handler);
 
-		expect(mockAddEventListener).toBeCalledWith('messageDisplayed', handler);
+		expect(mockAddEventListener).toHaveBeenCalledWith(
+			'messageDisplayed',
+			handler
+		);
 	});
 
 	it('can be listened to by onMessageDismissed', () => {
 		onMessageDismissed(handler);
 
-		expect(mockAddEventListener).toBeCalledWith('messageDismissed', handler);
+		expect(mockAddEventListener).toHaveBeenCalledWith(
+			'messageDismissed',
+			handler
+		);
 	});
 
 	it('can be listened to by onMessageActionTaken', () => {
 		onMessageActionTaken(handler);
 
-		expect(mockAddEventListener).toBeCalledWith('messageActionTaken', handler);
+		expect(mockAddEventListener).toHaveBeenCalledWith(
+			'messageActionTaken',
+			handler
+		);
 	});
 	it('can be notified by notifyMessageInteraction', () => {
 		const [message] = inAppMessages;
@@ -56,6 +68,9 @@ describe('Interaction events', () => {
 			message,
 		});
 
-		expect(mockNotifyEventListeners).toBeCalledWith('messageReceived', message);
+		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
+			'messageReceived',
+			message
+		);
 	});
 });

@@ -28,7 +28,7 @@ describe('ServiceWorker test', () => {
 
 			try {
 				await serviceWorker.register();
-			} catch (e) {
+			} catch (e: any) {
 				expect(e).toBeInstanceOf(AmplifyError);
 				expect(e.name).toBe(ServiceWorkerErrorCode.Unavailable);
 			}
@@ -96,7 +96,9 @@ describe('ServiceWorker test', () => {
 
 			serviceWorker.send('A message');
 
-			return expect(bla.installing.postMessage).toBeCalledWith('A message');
+			return expect(bla.installing.postMessage).toHaveBeenCalledWith(
+				'A message'
+			);
 		});
 		test('can send object message after registration', async () => {
 			const bla = {
@@ -112,7 +114,7 @@ describe('ServiceWorker test', () => {
 
 			serviceWorker.send({ property: 'value' });
 
-			return expect(bla.installing.postMessage).toBeCalledWith(
+			return expect(bla.installing.postMessage).toHaveBeenCalledWith(
 				JSON.stringify({ property: 'value' })
 			);
 		});

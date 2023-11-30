@@ -89,7 +89,7 @@ describe('putObjectJob', () => {
 			metadata: { key: 'value' },
 			size: undefined,
 		});
-		expect(mockPutObject).toBeCalledWith(
+		expect(mockPutObject).toHaveBeenCalledWith(
 			{
 				credentials,
 				region: 'region',
@@ -127,6 +127,6 @@ describe('putObjectJob', () => {
 			new AbortController().signal
 		);
 		await job();
-		expect(calculateContentMd5).toBeCalledWith('data');
+		expect(calculateContentMd5).toHaveBeenCalledWith('data');
 	});
 });

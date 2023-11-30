@@ -62,7 +62,7 @@ describe('Pinpoint - getInAppMessages', () => {
 		);
 		const response = await getInAppMessages(pinpointHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
-		expect(fetchTransferHandler).toBeCalledWith(
+		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
 			expect.anything()
 		);

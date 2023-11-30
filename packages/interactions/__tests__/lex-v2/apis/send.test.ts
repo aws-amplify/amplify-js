@@ -4,7 +4,7 @@
 import { v4 as uuid } from 'uuid';
 import { lexProvider } from '../../../src/lex-v2/AWSLexV2Provider';
 import { send } from '../../../src/lex-v2/apis';
-import { generateRandomLexV2Config } from '../../testUtils/randomConfigGeneration.test';
+import { generateRandomLexV2Config } from '../../testUtils/randomConfigGeneration';
 import { resolveBotConfig } from '../../../src/lex-v2/utils';
 import { InteractionsError } from '../../../src/errors/InteractionsError';
 
@@ -29,8 +29,8 @@ describe('Interactions LexV2 API: send', () => {
 	it('invokes provider sendMessage API', async () => {
 		const message = uuid();
 		await send({ botName: v2BotConfig.name, message });
-		expect(mockLexProvider).toBeCalledTimes(1);
-		expect(mockLexProvider).toBeCalledWith(v2BotConfig, message);
+		expect(mockLexProvider).toHaveBeenCalledTimes(1);
+		expect(mockLexProvider).toHaveBeenCalledWith(v2BotConfig, message);
 	});
 
 	it('rejects when bot config does not exist', async () => {

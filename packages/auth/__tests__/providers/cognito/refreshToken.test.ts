@@ -1,77 +1,51 @@
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { mockJsonResponse, mockRequestId } from './testUtils/data';
 import { refreshAuthTokens } from '../../../src/providers/cognito/utils/refreshAuthTokens';
 import { CognitoAuthTokens } from '../../../src/providers/cognito/tokenProvider/types';
-import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { initiateAuth } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { mockAccessToken, mockRequestId } from './testUtils/data';
 
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
 
-describe('refresh token tests', () => {
+describe('refreshToken', () => {
 	const mockedUsername = 'mockedUsername';
 	const mockedRefreshToken = 'mockedRefreshToken';
-	test('Default Cognito Token Refresh Handler', async () => {
-		const succeedResponse = {
-			status: 200,
-			headers: {
-				'x-amzn-requestid': mockRequestId,
-			},
-			body: {
-				AuthenticationResult: {
-					AccessToken:
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
-					ExpiresIn: 3600,
-					IdToken:
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
-					TokenType: 'Bearer',
-				},
-				ChallengeParameters: {},
-				$metadata: {
-					attempts: 1,
-					httpStatusCode: 200,
-					requestId: mockRequestId,
-				},
-			},
-		};
-		const expectedOutput: CognitoAuthTokens = {
-			accessToken: decodeJWT(
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
-			),
-			idToken: decodeJWT(
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
-			),
+	// assert mocks
+	const mockInitiateAuth = initiateAuth as jest.Mock;
 
+	beforeEach(() => {
+		mockInitiateAuth.mockResolvedValue({
+			AuthenticationResult: {
+				AccessToken: mockAccessToken,
+				ExpiresIn: 3600,
+				IdToken: mockAccessToken,
+				TokenType: 'Bearer',
+			},
+			ChallengeParameters: {},
+			$metadata: {
+				attempts: 1,
+				httpStatusCode: 200,
+				requestId: mockRequestId,
+			},
+		});
+	});
+
+	afterEach(() => {
+		mockInitiateAuth.mockReset();
+	});
+
+	it('should refresh token', async () => {
+		const expectedOutput = {
+			accessToken: decodeJWT(mockAccessToken),
+			idToken: decodeJWT(mockAccessToken),
 			refreshToken: mockedRefreshToken,
-
-			clockDrift: 0,
 			username: mockedUsername,
-		};
-		const expectedRequest = {
-			url: new URL('https://cognito-idp.us-east-1.amazonaws.com/'),
-			method: 'POST',
-			headers: expect.objectContaining({
-				'cache-control': 'no-store',
-				'content-type': 'application/x-amz-json-1.1',
-				'x-amz-target': 'AWSCognitoIdentityProviderService.InitiateAuth',
-				'x-amz-user-agent': expect.any(String),
-			}),
-			body: JSON.stringify({
-				ClientId: 'aaaaaaaaaaaa',
-				AuthFlow: 'REFRESH_TOKEN_AUTH',
-				AuthParameters: {
-					REFRESH_TOKEN: mockedRefreshToken,
-				},
-			}),
-		};
+		} as CognitoAuthTokens;
 
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(succeedResponse)
-		);
 		const response = await refreshAuthTokens({
 			tokens: {
-				accessToken: {
-					payload: {},
-				},
+				accessToken: { payload: {} },
 				clockDrift: 0,
 				refreshToken: mockedRefreshToken,
 				username: mockedUsername,
@@ -85,58 +59,29 @@ describe('refresh token tests', () => {
 			username: mockedUsername,
 		});
 
-		expect(response.accessToken.toString()).toEqual(
-			expectedOutput.accessToken.toString()
+		// stringify and re-parse for JWT equality
+		expect(JSON.parse(JSON.stringify(response))).toMatchObject(
+			JSON.parse(JSON.stringify(expectedOutput))
 		);
-
-		expect(response.refreshToken).toEqual(expectedOutput.refreshToken);
-
-		expect(fetchTransferHandler).toBeCalledWith(
-			expectedRequest,
-			expect.anything()
+		expect(mockInitiateAuth).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-east-1' }),
+			expect.objectContaining({
+				ClientId: 'aaaaaaaaaaaa',
+				AuthFlow: 'REFRESH_TOKEN_AUTH',
+				AuthParameters: {
+					REFRESH_TOKEN: mockedRefreshToken,
+				},
+			})
 		);
 	});
-});
 
-describe('Cognito ASF', () => {
-	let initiateAuthSpy;
-	afterAll(() => {
-		jest.restoreAllMocks();
-	});
-	beforeEach(() => {
-		initiateAuthSpy = jest
-			.spyOn(clients, 'initiateAuth')
-			.mockImplementationOnce(async () => ({
-				AuthenticationResult: {
-					AccessToken:
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
-					ExpiresIn: 3600,
-					IdToken:
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
-					TokenType: 'Bearer',
-				},
-				ChallengeParameters: {},
-				$metadata: {
-					attempts: 1,
-					httpStatusCode: 200,
-					requestId: mockRequestId,
-				},
-			}));
-		// load Cognito ASF polyfill
+	it('should send UserContextData', async () => {
 		window['AmazonCognitoAdvancedSecurityData'] = {
 			getData() {
 				return 'abcd';
 			},
 		};
-	});
-
-	afterEach(() => {
-		initiateAuthSpy.mockClear();
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
-	});
-
-	test('refreshTokens API should send UserContextData', async () => {
-		const response = await refreshAuthTokens({
+		await refreshAuthTokens({
 			username: 'username',
 			tokens: {
 				accessToken: decodeJWT(
@@ -156,10 +101,8 @@ describe('Cognito ASF', () => {
 				},
 			},
 		});
-		expect(initiateAuthSpy).toBeCalledWith(
-			expect.objectContaining({
-				region: 'us-east-1',
-			}),
+		expect(mockInitiateAuth).toHaveBeenCalledWith(
+			expect.objectContaining({ region: 'us-east-1' }),
 			expect.objectContaining({
 				AuthFlow: 'REFRESH_TOKEN_AUTH',
 				AuthParameters: { REFRESH_TOKEN: 'refreshtoken' },
@@ -167,5 +110,6 @@ describe('Cognito ASF', () => {
 				UserContextData: { EncodedData: 'abcd' },
 			})
 		);
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
 	});
 });
