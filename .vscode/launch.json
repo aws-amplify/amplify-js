@@ -23,7 +23,6 @@
 			],
 			"console": "integratedTerminal",
 			"internalConsoleOptions": "neverOpen",
-			"runtimeExecutable": "/Users/mcafd/.nvm/versions/node/v16.20.2/bin/node"
 		}
 	]
 }
