@@ -16,7 +16,7 @@ export type AuthHubEventData =
 	/** Dispatched when there is an error in the oauth flow process.*/
 	| {
 			event: 'signInWithRedirect_failure';
-			data: { error?: AuthError | unknown };
+			data: { error?: AuthError };
 	  }
 	/** Dispatched when auth tokens are successfully refreshed.*/
 	| { event: 'tokenRefresh' }
