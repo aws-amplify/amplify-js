@@ -426,11 +426,11 @@ export class InternalGraphQLAPIClass {
 
 		/**
 		 * Retrieve library options from Amplify configuration.
-		 * `customHeaders` here are from the Amplify configuration options,
-		 * and are for non-AppSync endpoints only. These are *not* the same as
-		 * `additionalHeaders`, which are custom headers that are either 1)
-		 * included when configuring the API client or 2) passed along with
-		 * individual requests.
+		 * `libraryOptionsHeaders` are from the Amplify configuration options,
+		 * and will not be overwritten by other custom headers. These are *not*
+		 * the same as `additionalHeaders`, which are custom headers that are 
+		 * either 1)included when configuring the API client or 2) passed along
+		 * with individual requests.
 		 */
 		const { headers: libraryOptionsHeaders } = resolveLibraryOptions(amplify);
 
