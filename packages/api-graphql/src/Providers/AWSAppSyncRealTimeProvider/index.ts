@@ -97,8 +97,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
 	region?: string;
-	// libraryOptionsHeaders?: () => {} | (() => Promise<{}>);
-	libraryOptionsHeaders?: any;
+	libraryOptionsHeaders?: () => {} | (() => Promise<{}>);
 	additionalHeaders?:
 		| Record<string, string>
 		| (() => Promise<Record<string, string>>);
@@ -1017,7 +1016,6 @@ export class AWSAppSyncRealTimeProvider {
 		host,
 		additionalCustomHeaders,
 	}: AWSAppSyncRealTimeAuthInput) {
-		debugger;
 		/**
 		 * If `additionalHeaders` was provided to the subscription as a function,
 		 * the headers that are returned by that function will already have been
