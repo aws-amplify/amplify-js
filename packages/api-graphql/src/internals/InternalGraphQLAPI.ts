@@ -149,7 +149,7 @@ export class InternalGraphQLAPIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param options - GraphQL Options
-	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
+	 * @param [additionalHeaders] - headers to merge in after any `libraryOptionsHeaders` set in the config
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
@@ -432,7 +432,7 @@ export class InternalGraphQLAPIClass {
 		 * included when configuring the API client or 2) passed along with
 		 * individual requests.
 		 */
-		const { headers: graphql_headers } = resolveLibraryOptions(amplify);
+		const { headers: libraryOptionsHeaders } = resolveLibraryOptions(amplify);
 
 		// THIS IS IT
 		// debugger;
@@ -447,7 +447,7 @@ export class InternalGraphQLAPIClass {
 				apiKey: config?.apiKey,
 				additionalHeaders,
 				authToken,
-				graphql_headers,
+				libraryOptionsHeaders,
 			},
 			customUserAgentDetails
 		);

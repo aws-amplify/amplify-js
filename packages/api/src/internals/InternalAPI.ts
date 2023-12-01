@@ -62,7 +62,7 @@ export class InternalAPIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param options - GraphQL Options
-	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
+	 * @param [additionalHeaders] - headers to merge in after any `libraryOptionsHeaders` set in the config
 	 * @returns An Observable if queryType is 'subscription', else a promise of the graphql result from the query.
 	 */
 	graphql<T>(

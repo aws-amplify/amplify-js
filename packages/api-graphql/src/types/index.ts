@@ -175,7 +175,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, unknown>;
 	apiKey?: string;
 	region?: string;
-	graphql_headers?: () => {} | (() => Promise<{}>);
+	libraryOptionsHeaders?: () => {} | (() => Promise<{}>);
 	additionalHeaders?: CustomHeaders;
 }
 

@@ -185,9 +185,9 @@ export function expectSubWithHeadersFn(
  * @param spy The jest spy to check.
  * @param opName The name of the graphql operation. E.g., `onCreateTodo`.
  * @param item The item we expect to have been in the `variables`
- * @param graphql_headers TODO
+ * @param libraryOptionsHeaders TODO
  */
-export function expectSubWithTodo(
+export function expectSubWithLibraryOptionsHeaders(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
@@ -202,7 +202,8 @@ export function expectSubWithTodo(
 			query: expect.stringContaining(`${opName}(filter: $filter`),
 			variables: expect.objectContaining(item),
 			additionalHeaders: expect.objectContaining(headers),
-			graphql_headers: expect.any(Function),
+			// `headers` that are included in `Amplify.configure` options
+			libraryOptionsHeaders: expect.any(Function),
 		}),
 		{
 			action: '1',

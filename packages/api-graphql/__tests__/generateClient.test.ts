@@ -7,7 +7,7 @@ import {
 	expectSub,
 	expectSubWithHeaders,
 	expectSubWithHeadersFn,
-	expectSubWithTodo,
+	expectSubWithLibraryOptionsHeaders,
 } from './utils/expects';
 import { Observable, from } from 'rxjs';
 import * as internals from '../src/internals/';
@@ -5367,7 +5367,7 @@ describe('generateClient', () => {
 				headers: customHeaders,
 			}).subscribe({
 				next(value) {
-					expectSubWithTodo(
+					expectSubWithLibraryOptionsHeaders(
 						spy,
 						'onCreateNote',
 						graphqlVariables,
@@ -5461,10 +5461,15 @@ describe('generateClient', () => {
 				headers: customHeaders,
 			}).subscribe({
 				next(value) {
-					expectSubWithTodo(spy, 'onUpdateNote', graphqlVariables, {
-						...customHeaders,
-						// Authorization: 'amplify-config-auth-token',
-					});
+					expectSubWithLibraryOptionsHeaders(
+						spy,
+						'onUpdateNote',
+						graphqlVariables,
+						{
+							...customHeaders,
+							// Authorization: 'amplify-config-auth-token',
+						}
+					);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
 				},

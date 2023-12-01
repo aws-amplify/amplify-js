@@ -97,8 +97,8 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
 	region?: string;
-	// graphql_headers?: () => {} | (() => Promise<{}>);
-	graphql_headers?: any;
+	// libraryOptionsHeaders?: () => {} | (() => Promise<{}>);
+	libraryOptionsHeaders?: any;
 	additionalHeaders?:
 		| Record<string, string>
 		| (() => Promise<Record<string, string>>);
@@ -204,7 +204,11 @@ export class AWSAppSyncRealTimeProvider {
 			additionalHeaders,
 			apiKey,
 			authToken,
+			libraryOptionsHeaders,
 		} = options || {};
+
+		// libraryOptionsHeaders
+		// debugger;
 
 		return new Observable(observer => {
 			if (!options || !appSyncGraphqlEndpoint) {
@@ -236,6 +240,7 @@ export class AWSAppSyncRealTimeProvider {
 									additionalHeaders,
 									apiKey,
 									authToken,
+									libraryOptionsHeaders,
 								},
 								observer,
 								subscriptionId,
@@ -314,10 +319,12 @@ export class AWSAppSyncRealTimeProvider {
 			variables,
 			apiKey,
 			region,
-			graphql_headers = () => ({}),
+			libraryOptionsHeaders = () => ({}),
 			additionalHeaders = {},
 			authToken,
 		} = options;
+
+		// debugger;
 
 		let additionalCustomHeaders: Record<string, string> = {};
 
@@ -354,6 +361,8 @@ export class AWSAppSyncRealTimeProvider {
 		// Preparing payload for subscription message
 
 		// debugger;
+		// const test = await libraryOptionsHeaders();
+		// debugger;
 
 		const dataString = JSON.stringify(data);
 		const headerObj = {
@@ -366,7 +375,7 @@ export class AWSAppSyncRealTimeProvider {
 				region,
 				additionalCustomHeaders,
 			})),
-			...(await graphql_headers()),
+			...(await libraryOptionsHeaders()),
 			...additionalCustomHeaders,
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
@@ -386,6 +395,8 @@ export class AWSAppSyncRealTimeProvider {
 		};
 
 		const stringToAWSRealTime = JSON.stringify(subscriptionMessage);
+
+		// debugger;
 
 		try {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
@@ -784,6 +795,7 @@ export class AWSAppSyncRealTimeProvider {
 
 	private async _initializeRetryableHandshake(awsRealTimeUrl: string) {
 		logger.debug(`Initializaling retryable Handshake`);
+		// debugger;
 		await jitteredExponentialRetry(
 			this._initializeHandshake.bind(this),
 			[awsRealTimeUrl],
@@ -928,7 +940,10 @@ export class AWSAppSyncRealTimeProvider {
 			none: this._customAuthHeader,
 		};
 
+		// debugger;
+
 		if (!authenticationType || !headerHandler[authenticationType]) {
+			// debugger;
 			logger.debug(`Authentication type ${authenticationType} not supported`);
 			return undefined;
 		} else {
@@ -937,6 +952,8 @@ export class AWSAppSyncRealTimeProvider {
 			const host = appSyncGraphqlEndpoint
 				? new AmplifyUrl(appSyncGraphqlEndpoint).host
 				: undefined;
+
+			// debugger;
 
 			logger.debug(`Authenticating with ${JSON.stringify(authenticationType)}`);
 			let resolvedApiKey;
@@ -1021,6 +1038,7 @@ export class AWSAppSyncRealTimeProvider {
 		host,
 		additionalCustomHeaders,
 	}: AWSAppSyncRealTimeAuthInput) {
+		debugger;
 		/**
 		 * If `additionalHeaders` was provided to the subscription as a function,
 		 * the headers that are returned by that function will already have been

@@ -1055,16 +1055,25 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						);
 					});
 
-					test.only('authenticating with AWS_LAMBDA/custom w/ library headers', async () => {
+					test.only('authenticating with userPool / custom library options token', async () => {
 						expect.assertions(1);
+
+						// debugger;
 
 						provider
 							.subscribe({
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',
-								authenticationType: 'none',
-								graphql_headers: async () => ({
-									Authorization: 'library-config-token'
-								})
+								authenticationType: 'userPool',
+								/**
+								 * When Amplify is configured with a `header` function
+								 * that returns an `Authorization` token, the GraphQL
+								 * API will pass this function as the `libraryOptionsHeaders`
+								 * option to the AWSAppSyncRealTimeProvider's `subscribe`
+								 * function.
+								 */
+								libraryOptionsHeaders: async () => ({
+									Authorization: 'test',
+								}),
 							})
 							.subscribe({ error: () => {} });
 
@@ -1072,7 +1081,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'Authenticating with "none"'
+							'Authenticating with "userPool"'
 						);
 					});
 
