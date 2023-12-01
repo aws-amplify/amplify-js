@@ -149,7 +149,7 @@ export class InternalGraphQLAPIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param options - GraphQL Options
-	 * @param [additionalHeaders] - headers to merge in after any `libraryOptionsHeaders` set in the config
+	 * @param [additionalHeaders] - headers to merge in after any `libraryConfigHeaders` set in the config
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
@@ -426,13 +426,13 @@ export class InternalGraphQLAPIClass {
 
 		/**
 		 * Retrieve library options from Amplify configuration.
-		 * `libraryOptionsHeaders` are from the Amplify configuration options,
+		 * `libraryConfigHeaders` are from the Amplify configuration options,
 		 * and will not be overwritten by other custom headers. These are *not*
-		 * the same as `additionalHeaders`, which are custom headers that are 
+		 * the same as `additionalHeaders`, which are custom headers that are
 		 * either 1)included when configuring the API client or 2) passed along
 		 * with individual requests.
 		 */
-		const { headers: libraryOptionsHeaders } = resolveLibraryOptions(amplify);
+		const { headers: libraryConfigHeaders } = resolveLibraryOptions(amplify);
 
 		return this.appSyncRealTime.subscribe(
 			{
@@ -444,7 +444,7 @@ export class InternalGraphQLAPIClass {
 				apiKey: config?.apiKey,
 				additionalHeaders,
 				authToken,
-				libraryOptionsHeaders,
+				libraryConfigHeaders,
 			},
 			customUserAgentDetails
 		);

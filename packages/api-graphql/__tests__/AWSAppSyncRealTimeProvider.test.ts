@@ -1065,11 +1065,11 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								/**
 								 * When Amplify is configured with a `header` function
 								 * that returns an `Authorization` token, the GraphQL
-								 * API will pass this function as the `libraryOptionsHeaders`
+								 * API will pass this function as the `libraryConfigHeaders`
 								 * option to the AWSAppSyncRealTimeProvider's `subscribe`
 								 * function.
 								 */
-								libraryOptionsHeaders: async () => ({
+								libraryConfigHeaders: async () => ({
 									Authorization: 'test',
 								}),
 							})

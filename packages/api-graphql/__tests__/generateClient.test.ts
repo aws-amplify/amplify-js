@@ -7,7 +7,7 @@ import {
 	expectSub,
 	expectSubWithHeaders,
 	expectSubWithHeadersFn,
-	expectSubWithLibraryOptionsHeaders,
+	expectSubWithlibraryConfigHeaders,
 } from './utils/expects';
 import { Observable, from } from 'rxjs';
 import * as internals from '../src/internals/';
@@ -5353,7 +5353,7 @@ describe('generateClient', () => {
 			}).subscribe({
 				next(value) {
 					// This util checks for the existence of library config headers:
-					expectSubWithLibraryOptionsHeaders(
+					expectSubWithlibraryConfigHeaders(
 						spy,
 						'onCreateNote',
 						graphqlVariables,
@@ -5403,7 +5403,7 @@ describe('generateClient', () => {
 			}).subscribe({
 				next(value) {
 					// This util checks for the existence of library config headers:
-					expectSubWithLibraryOptionsHeaders(
+					expectSubWithlibraryConfigHeaders(
 						spy,
 						'onUpdateNote',
 						graphqlVariables,
@@ -5453,7 +5453,7 @@ describe('generateClient', () => {
 			}).subscribe({
 				next(value) {
 					// This util checks for the existence of library config headers:
-					expectSubWithLibraryOptionsHeaders(
+					expectSubWithlibraryConfigHeaders(
 						spy,
 						'onDeleteNote',
 						graphqlVariables,
