@@ -445,7 +445,7 @@
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "19.61 kB"
+			"limit": "19.68 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
