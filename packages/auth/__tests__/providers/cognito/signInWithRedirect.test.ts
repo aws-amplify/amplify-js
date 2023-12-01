@@ -17,6 +17,14 @@ describe('signInWithRedirect API', () => {
 	it('should try to clear oauth data before starting an oauth flow.', async () => {
 		// TODO: ADD Test: previous test was invalid
 	});
+
+	it('should call `assertUserNotAuthenticated` by default', async () => {
+		// TODO: ADD Test
+	});
+
+	it('should not call `assertUserNotAuthenticated` when skip set to true', async () => {
+		// TODO: ADD Test
+	});
 });
 
 describe('getRedirectUrl on web', () => {

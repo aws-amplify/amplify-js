@@ -44,7 +44,9 @@ export async function signInWithRedirect(
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	store.setAuthConfig(authConfig);
-	await assertUserNotAuthenticated();
+	if (input?.options?.skipAssertUserNotAuthenticated !== true) {
+		await assertUserNotAuthenticated();
+	}
 
 	let provider = 'COGNITO'; // Default
 
