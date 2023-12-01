@@ -1,5 +1,5 @@
 import * as raw from '../src';
-import { Amplify, AmplifyClassV6, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../src/internals';
 import configFixture from './fixtures/modeled/amplifyconfiguration';
 import { Schema } from './fixtures/modeled/schema';
