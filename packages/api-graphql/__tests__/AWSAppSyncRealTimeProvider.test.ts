@@ -1058,8 +1058,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					test.only('authenticating with userPool / custom library options token', async () => {
 						expect.assertions(1);
 
-						// debugger;
-
 						provider
 							.subscribe({
 								appSyncGraphqlEndpoint: 'ws://localhost:8080',

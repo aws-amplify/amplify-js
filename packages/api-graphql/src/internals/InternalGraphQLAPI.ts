@@ -434,9 +434,6 @@ export class InternalGraphQLAPIClass {
 		 */
 		const { headers: libraryOptionsHeaders } = resolveLibraryOptions(amplify);
 
-		// THIS IS IT
-		// debugger;
-
 		return this.appSyncRealTime.subscribe(
 			{
 				query: print(query as DocumentNode),
