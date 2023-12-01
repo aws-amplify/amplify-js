@@ -116,6 +116,8 @@ export async function oauthSignIn({
 	const { type, error, url } =
 		(await openAuthSession(oAuthUrl, redirectSignIn, preferPrivateSession)) ??
 		{};
+	// This code will run in RN applications only as calling signInWithRedirect will
+	// resolve the promise.
 	if (type === 'success' && url) {
 		// ensure the code exchange completion resolves the signInWithRedirect
 		// returned promise in react-native
@@ -129,6 +131,8 @@ export async function oauthSignIn({
 			preferPrivateSession,
 		});
 	}
+	// This code will run in RN applications only as calling signInWithRedirect will
+	// resolve the promise.
 	if (type === 'error') {
 		await handleFailure(String(error));
 	}
@@ -157,7 +161,7 @@ async function handleCodeFlow({
 		validatedState = await validateState(getStateFromURL(url));
 	} catch (err) {
 		invokeAndClearPromise();
-		
+		// validateState method will always throw an AuthError when the state is not valid. The if statement is making TS happy.
 		if (err instanceof AuthError) {
 			await handleFailure(err.message);
 		}
@@ -289,6 +293,7 @@ async function handleImplicitFlow({
 		validatedState = await validateState(state);
 	} catch (error) {
 		invokeAndClearPromise();
+		// validateState method will always throw an AuthError when the state is not valid. The if statement is making TS happy.
 		if (error instanceof AuthError) {
 			await handleFailure(error.message);
 		}
