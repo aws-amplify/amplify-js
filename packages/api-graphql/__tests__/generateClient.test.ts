@@ -4607,97 +4607,23 @@ describe('generateClient', () => {
 			});
 		});
 	});
-	describe('basic model operations - custom config headers', () => {
+	describe('basic model operations with Amplify configuration options headers', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 
-			jest
-				.spyOn(Amplify.Auth, 'fetchAuthSession')
-				.mockImplementation(async () => {
-					return {
-						tokens: {
-							idToken: {
-								toString: () => 'amplify-config-auth-token',
-							},
-						},
-						// credentials: {
-						// 	accessKeyId: 'test',
-						// 	secretAccessKey: 'test',
-						// },
-					} as any;
-				});
-
-			// Contains `Authorization` token which should [TODO]
 			Amplify.configure(configFixture as any, {
 				API: {
 					GraphQL: {
+						// This is what we're testing:
 						headers: async () => ({
-							// Authorization: 'amplify-config-auth-token',
-							Authorization: (
-								await fetchAuthSession()
-							).tokens?.idToken?.toString() as string,
-						}),
-					},
-				},
-			});
-		});
-
-		test('can create() - with custom client headers', async () => {
-			const spy = mockApiResponse({
-				data: {
-					createTodo: {
-						__typename: 'Todo',
-						...serverManagedFields,
-						name: 'some name',
-						description: 'something something',
-					},
-				},
-			});
-
-			const client = generateClient<Schema>({
-				amplify: Amplify,
-				// headers: {
-				// 	'client-header': 'should exist',
-				// },
-			});
-
-			const { data } = await client.models.Todo.create({
-				name: 'some name',
-				description: 'something something',
-			});
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
 							Authorization: 'amplify-config-auth-token',
 						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(data).toEqual(
-				expect.objectContaining({
-					__typename: 'Todo',
-					id: 'some-id',
-					owner: 'wirejobviously',
-					name: 'some name',
-					description: 'something something',
-				})
-			);
+					},
+				},
+			});
 		});
 
-		test('can create() - custom client headers should not overwrite `Authorization` token', async () => {
+		test('can create() - with library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					createTodo: {
@@ -4752,7 +4678,63 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can create() - custom request headers should not overwrite `Authorization` token', async () => {
+		test('can create() - custom client headers should not overwrite library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
+			});
+
+			const { data } = await client.models.Todo.create({
+				name: 'some name',
+				description: 'something something',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'client-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('createTodo(input: $input)'),
+							variables: {
+								input: {
+									name: 'some name',
+									description: 'something something',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can create() - custom request headers should not overwrite library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					createTodo: {
@@ -4812,7 +4794,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can get() - with custom client headers', async () => {
+		test('can get() - custom client headers should not overwrite library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					getTodo: {
@@ -4826,6 +4808,9 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({
 				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
 			});
 			const { data } = await client.models.Todo.get({ id: 'asdf' });
 
@@ -4834,7 +4819,7 @@ describe('generateClient', () => {
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
 							'X-Api-Key': 'FAKE-KEY',
-							// 'client-header': 'should exist',
+							'client-header': 'should exist',
 							Authorization: 'amplify-config-auth-token',
 						}),
 						body: {
@@ -4858,7 +4843,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can get() - with custom request headers', async () => {
+		test('can get() - custom request headers overwrite client headers, but not library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					getTodo: {
@@ -4925,7 +4910,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can list() - with custom client headers', async () => {
+		test('can list() - custom client headers should not overwrite library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					listTodos: {
@@ -4998,7 +4983,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can list() - with custom request headers', async () => {
+		test('can list() - custom request headers should overwrite client headers but not library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					listTodos: {
@@ -5084,7 +5069,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can update() - with custom client headers', async () => {
+		test('can update() - custom client headers should not overwrite library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					updateTodo: {
@@ -5139,7 +5124,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can update() - with custom request headers', async () => {
+		test('can update() - custom request headers should overwrite client headers but not library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					updateTodo: {
@@ -5211,7 +5196,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can delete() - with custom client headers', async () => {
+		test('can delete() - custom client headers should not overwrite library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					deleteTodo: {
@@ -5264,7 +5249,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can delete() - with custom request headers', async () => {
+		test('can delete() - custom request headers should overwrite client headers but not library config headers', async () => {
 			const spy = mockApiResponse({
 				data: {
 					deleteTodo: {
@@ -5334,7 +5319,7 @@ describe('generateClient', () => {
 			);
 		});
 
-		test('can subscribe to onCreate() - with custom headers', done => {
+		test('can subscribe to onCreate() - with custom headers and library config headers', done => {
 			const noteToSend = {
 				__typename: 'Note',
 				...serverManagedFields,
@@ -5367,6 +5352,7 @@ describe('generateClient', () => {
 				headers: customHeaders,
 			}).subscribe({
 				next(value) {
+					// This util checks for the existence of library config headers:
 					expectSubWithLibraryOptionsHeaders(
 						spy,
 						'onCreateNote',
@@ -5383,52 +5369,7 @@ describe('generateClient', () => {
 			});
 		});
 
-		test('can subscribe to onCreate() - with a custom header function', done => {
-			const noteToSend = {
-				__typename: 'Note',
-				...serverManagedFields,
-				body: 'a very good note',
-			};
-
-			const graphqlMessage = {
-				data: {
-					onCreateNote: noteToSend,
-				},
-			};
-
-			const graphqlVariables = {
-				filter: {
-					body: { contains: 'good note' },
-				},
-			};
-
-			const customHeaders = {
-				'subscription-header-function': 'should-return-this-header',
-			};
-
-			const client = generateClient<Schema>({ amplify: Amplify });
-
-			const spy = jest.fn(() => from([graphqlMessage]));
-			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-
-			client.models.Note.onCreate({
-				filter: graphqlVariables.filter,
-				headers: async () => customHeaders,
-			}).subscribe({
-				next(value) {
-					// TODO:
-					expectSubWithHeadersFn(spy, 'onCreateNote', graphqlVariables);
-					expect(value).toEqual(expect.objectContaining(noteToSend));
-					done();
-				},
-				error(error) {
-					expect(error).toBeUndefined();
-					done('bad news!');
-				},
-			});
-		});
-
-		test('can subscribe to onUpdate()', done => {
+		test('can subscribe to onUpdate() - with a custom header and library config headers', done => {
 			const noteToSend = {
 				__typename: 'Note',
 				...serverManagedFields,
@@ -5461,14 +5402,12 @@ describe('generateClient', () => {
 				headers: customHeaders,
 			}).subscribe({
 				next(value) {
+					// This util checks for the existence of library config headers:
 					expectSubWithLibraryOptionsHeaders(
 						spy,
 						'onUpdateNote',
 						graphqlVariables,
-						{
-							...customHeaders,
-							// Authorization: 'amplify-config-auth-token',
-						}
+						customHeaders
 					);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
@@ -5480,7 +5419,7 @@ describe('generateClient', () => {
 			});
 		});
 
-		test('can subscribe to onDelete()', done => {
+		test('can subscribe to onDelete() - with custom headers and library config headers', done => {
 			const noteToSend = {
 				__typename: 'Note',
 				...serverManagedFields,
@@ -5510,13 +5449,11 @@ describe('generateClient', () => {
 
 			client.models.Note.onDelete({
 				filter: graphqlVariables.filter,
-				headers: {
-					...customHeaders,
-					// Authorization: 'amplify-config-auth-token',
-				},
+				headers: customHeaders,
 			}).subscribe({
 				next(value) {
-					expectSubWithHeaders(
+					// This util checks for the existence of library config headers:
+					expectSubWithLibraryOptionsHeaders(
 						spy,
 						'onDeleteNote',
 						graphqlVariables,
