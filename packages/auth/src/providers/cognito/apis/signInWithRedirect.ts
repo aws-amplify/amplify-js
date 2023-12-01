@@ -130,7 +130,7 @@ export async function oauthSignIn({
 		});
 	}
 	if (type === 'error') {
-		handleFailure(String(error));
+		await handleFailure(String(error));
 	}
 }
 
@@ -154,11 +154,13 @@ async function handleCodeFlow({
 	const url = new AmplifyUrl(currentUrl);
 	let validatedState: string;
 	try {
-		validatedState = await validateStateFromURL(url);
+		validatedState = await validateState(getStateFromURL(url));
 	} catch (err) {
 		invokeAndClearPromise();
-		// clear temp values
-		await store.clearOAuthInflightData();
+		
+		if (err instanceof AuthError) {
+			await handleFailure(err.message);
+		}
 		return;
 	}
 	const code = url.searchParams.get('code');
@@ -197,6 +199,7 @@ async function handleCodeFlow({
 		refresh_token,
 		id_token,
 		error,
+		error_message,
 		token_type,
 		expires_in,
 	} = await (
@@ -212,7 +215,7 @@ async function handleCodeFlow({
 
 	if (error) {
 		invokeAndClearPromise();
-		handleFailure(error);
+		await handleFailure(error_message ?? error);
 	}
 
 	await store.clearOAuthInflightData();
@@ -249,9 +252,15 @@ async function handleImplicitFlow({
 
 	const url = new AmplifyUrl(currentUrl);
 
-	const { id_token, access_token, state, token_type, expires_in } = (
-		url.hash ?? '#'
-	)
+	const {
+		id_token,
+		access_token,
+		state,
+		token_type,
+		expires_in,
+		error_description,
+		error,
+	} = (url.hash ?? '#')
 		.substring(1) // Remove # from returned code
 		.split('&')
 		.map(pairings => pairings.split('='))
@@ -261,17 +270,28 @@ async function handleImplicitFlow({
 			state: undefined,
 			token_type: undefined,
 			expires_in: undefined,
+			error_description: undefined,
+			error: undefined,
 		});
+
+	if (error) {
+		invokeAndClearPromise();
+		await handleFailure(error_description ?? error);
+	}
+
 	if (!access_token) {
 		await store.clearOAuthData();
 		invokeAndClearPromise();
 		return;
 	}
-
+	let validatedState;
 	try {
-		validateState(state);
+		validatedState = await validateState(state);
 	} catch (error) {
 		invokeAndClearPromise();
+		if (error instanceof AuthError) {
+			await handleFailure(error.message);
+		}
 		return;
 	}
 
@@ -286,7 +306,11 @@ async function handleImplicitFlow({
 		ExpiresIn: expires_in,
 	});
 
-	return completeFlow({ redirectUri, state, preferPrivateSession });
+	return completeFlow({
+		redirectUri,
+		state: validatedState,
+		preferPrivateSession,
+	});
 }
 
 async function completeFlow({
@@ -345,7 +369,7 @@ async function handleAuthResponse({
 		const errorMessage = urlParams.searchParams.get('error_description');
 
 		if (error) {
-			handleFailure(errorMessage);
+			await handleFailure(errorMessage);
 		}
 
 		if (responseType === 'code') {
@@ -369,36 +393,35 @@ async function handleAuthResponse({
 	}
 }
 
-async function validateStateFromURL(urlParams: URL): Promise<string> {
-	if (!urlParams) {
-	}
-	const returnedState = urlParams.searchParams.get('state');
-
-	validateState(returnedState);
-	return returnedState;
+function getStateFromURL(urlParams: URL): string | null {
+	return urlParams.searchParams.get('state');
 }
 
-function validateState(state?: string | null): asserts state {
-	let savedState: string | undefined | null;
-
-	store.loadOAuthState().then(resp => {
-		savedState = resp;
-	});
+async function validateState(state?: string | null): Promise<string> {
+	const savedState = await store.loadOAuthState();
 
 	// This is because savedState only exists if the flow was initiated by Amplify
-	if (savedState && state && savedState !== state) {
+	const validatedState = state === savedState ? savedState : undefined;
+	if (!validatedState) {
 		throw new AuthError({
 			name: AuthErrorTypes.OAuthSignInError,
 			message: 'An error occurred while validating the state',
 			recoverySuggestion: 'Try to initiate an OAuth flow from Amplify',
 		});
 	}
+	return validatedState;
 }
 
-function handleFailure(errorMessage: string | null) {
+async function handleFailure(errorMessage: string | null) {
+	const error = new AuthError({
+		message: errorMessage ?? 'An error has occurred during the oauth proccess',
+		name: AuthErrorCodes.OAuthSignInError,
+		recoverySuggestion: authErrorMessages.oauthSignInError.log,
+	});
+	await store.clearOAuthInflightData();
 	Hub.dispatch(
 		'auth',
-		{ event: 'signInWithRedirect_failure' },
+		{ event: 'signInWithRedirect_failure', data: { error } },
 		'Auth',
 		AMPLIFY_SYMBOL
 	);
@@ -409,7 +432,7 @@ function handleFailure(errorMessage: string | null) {
 	});
 }
 
-async function parseRedirectURL() {
+export async function parseRedirectURL() {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	try {
 		assertTokenProviderConfig(authConfig);
@@ -435,7 +458,7 @@ async function parseRedirectURL() {
 		const { loginWith, userPoolClientId } = authConfig;
 		const { domain, redirectSignIn, responseType } = loginWith.oauth;
 
-		handleAuthResponse({
+		await handleAuthResponse({
 			currentUrl,
 			clientId: userPoolClientId,
 			domain,
