@@ -114,7 +114,7 @@ describe('getProperties api', () => {
 						options: options as GetPropertiesOptions,
 					})
 				).toEqual(expected);
-				expect(headObject).toBeCalledTimes(1);
+				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
 			});
 		});
@@ -131,11 +131,11 @@ describe('getProperties api', () => {
 					name: 'NotFound',
 				})
 			);
+			expect.assertions(3);
 			try {
 				await getProperties({ key: 'keyed' });
-			} catch (error) {
-				expect.assertions(3);
-				expect(headObject).toBeCalledTimes(1);
+			} catch (error: any) {
+				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(
 					{
 						credentials,

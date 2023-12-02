@@ -19,6 +19,7 @@ import { NextServer } from '../types';
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 import { getAmplifyConfig } from '../utils';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 type CookiesClientParams = {
 	cookies: NextServer.ServerComponentContext['cookies'];
@@ -43,7 +44,7 @@ type ReqClientParams = {
  * const result = await client.graphql({ query: listPosts });
  */
 export function generateServerClientUsingCookies<
-	T extends Record<any, any> = never
+	T extends Record<any, any> = never,
 >({
 	config,
 	cookies,
@@ -98,7 +99,7 @@ export function generateServerClientUsingCookies<
  * });
  */
 export function generateServerClientUsingReqRes<
-	T extends Record<any, any> = never
+	T extends Record<any, any> = never,
 >({ config, authMode, authToken }: ReqClientParams): V6ClientSSRRequest<T> {
 	const amplifyConfig = getAmplifyConfig(config);
 	// passing `null` instance because each (future model) method must retrieve a valid instance
@@ -116,7 +117,7 @@ export function generateServerClientUsingReqRes<
 	const wrappedGraphql = (
 		contextSpec: AmplifyServer.ContextSpec,
 		options: GraphQLOptionsV6,
-		additionalHeaders?: { [key: string]: string }
+		additionalHeaders?: CustomHeaders
 	) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
 		return prevGraphql.call(

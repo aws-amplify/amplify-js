@@ -1,48 +1,49 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
 import { resendSignUpCode } from '../../../src/providers/cognito';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ResendConfirmationException } from '../../../src/providers/cognito/types/errors';
-import * as resendSignUpConfirmationCodeClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { ResendConfirmationCodeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { Amplify } from 'aws-amplify';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+import { resendConfirmationCode } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getMockError } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
-Amplify.configure({
-	Auth: {
-		Cognito: {
-			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			userPoolId: 'us-west-2_zzzzz',
-		},
-	},
-});
-describe('ResendSignUp API Happy Path Cases:', () => {
-	let resendSignUpSpy;
+jest.mock('@aws-amplify/core', () => ({
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
+}));
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
+
+describe('resendSignUpCode', () => {
 	const { user1 } = authAPITestParams;
+	// assert mocks
+	const mockResendConfirmationCode = resendConfirmationCode as jest.Mock;
+
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+	});
+
 	beforeEach(() => {
-		resendSignUpSpy = jest
-			.spyOn(resendSignUpConfirmationCodeClient, 'resendConfirmationCode')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.resendSignUpClientResult as ResendConfirmationCodeCommandOutput;
-			});
+		mockResendConfirmationCode.mockResolvedValue(
+			authAPITestParams.resendSignUpClientResult
+		);
 	});
+
 	afterEach(() => {
-		resendSignUpSpy.mockClear();
+		mockResendConfirmationCode.mockReset();
 	});
-	afterAll(() => {
-		jest.restoreAllMocks();
-	});
-	test('ResendSignUp API should call the UserPoolClient and should return a ResendSignUpCodeResult', async () => {
+
+	it('should call resendConfirmationCode and return a result', async () => {
 		const result = await resendSignUpCode({
 			username: user1.username,
 		});
 		expect(result).toEqual(authAPITestParams.resendSignUpAPIResult);
-		expect(resendSignUpSpy).toHaveBeenCalledWith(
+		expect(mockResendConfirmationCode).toHaveBeenCalledWith(
 			{
 				region: 'us-west-2',
 				userAgentValue: expect.any(String),
@@ -53,79 +54,45 @@ describe('ResendSignUp API Happy Path Cases:', () => {
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 			}
 		);
-		expect(resendSignUpSpy).toBeCalledTimes(1);
+		expect(mockResendConfirmationCode).toHaveBeenCalledTimes(1);
 	});
-});
 
-describe('ResendSignUp API Error Path Cases:', () => {
-	const { user1 } = authAPITestParams;
-	afterAll(() => {
-		jest.restoreAllMocks();
-	});
-	test('ResendSignUp API should throw a validation AuthError when username is empty', async () => {
+	it('should throw an error when username is empty', async () => {
 		expect.assertions(2);
 		try {
 			await resendSignUpCode({ username: '' });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AuthValidationErrorCode.EmptySignUpUsername);
 		}
 	});
 
-	test('ResendSignUp API should expect a service error', async () => {
+	it('should throw an error when service returns an error response', async () => {
 		expect.assertions(2);
-		expect.assertions(2);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(
-					ResendConfirmationException.InvalidParameterException
-				)
-			)
-		);
+		mockResendConfirmationCode.mockImplementation(() => {
+			throw getMockError(ResendConfirmationException.InvalidParameterException);
+		});
 		try {
 			await resendSignUpCode({ username: user1.username });
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				ResendConfirmationException.InvalidParameterException
 			);
 		}
 	});
-});
 
-describe('ResendSignUp API Edge Cases:', () => {});
-
-describe('Cognito ASF', () => {
-	let resendSignUpSpy;
-	const { user1 } = authAPITestParams;
-	beforeEach(() => {
-		resendSignUpSpy = jest
-			.spyOn(resendSignUpConfirmationCodeClient, 'resendConfirmationCode')
-			.mockImplementationOnce(async () => {
-				return authAPITestParams.resendSignUpClientResult as ResendConfirmationCodeCommandOutput;
-			});
-
-		// load Cognito ASF polyfill
+	it('should send UserContextData', async () => {
 		window['AmazonCognitoAdvancedSecurityData'] = {
 			getData() {
 				return 'abcd';
 			},
 		};
-	});
-
-	afterEach(() => {
-		resendSignUpSpy.mockClear();
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
-	});
-	afterAll(() => {
-		jest.restoreAllMocks();
-	});
-	test('ResendSignUp API should send UserContextData', async () => {
 		const result = await resendSignUpCode({
 			username: user1.username,
 		});
 		expect(result).toEqual(authAPITestParams.resendSignUpAPIResult);
-		expect(resendSignUpSpy).toHaveBeenCalledWith(
+		expect(mockResendConfirmationCode).toHaveBeenCalledWith(
 			{
 				region: 'us-west-2',
 				userAgentValue: expect.any(String),
@@ -137,6 +104,7 @@ describe('Cognito ASF', () => {
 				UserContextData: { EncodedData: 'abcd' },
 			}
 		);
-		expect(resendSignUpSpy).toBeCalledTimes(1);
+		expect(mockResendConfirmationCode).toHaveBeenCalledTimes(1);
+		window['AmazonCognitoAdvancedSecurityData'] = undefined;
 	});
 });

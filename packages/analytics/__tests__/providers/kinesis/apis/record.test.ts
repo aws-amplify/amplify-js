@@ -7,7 +7,7 @@ import { isAnalyticsEnabled, resolveCredentials } from '../../../../src/utils';
 import {
 	mockKinesisConfig,
 	mockCredentialConfig,
-} from '../../../testUtils/mockConstants.test';
+} from '../../../testUtils/mockConstants';
 import { record } from '../../../../src/providers/kinesis';
 import { ConsoleLogger } from '@aws-amplify/core';
 import { RecordInput as KinesisRecordInput } from '../../../../src/providers/kinesis/types';
@@ -54,7 +54,7 @@ describe('Analytics Kinesis API: record', () => {
 		record(mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
-		expect(mockAppend).toBeCalledWith(
+		expect(mockAppend).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: mockKinesisConfig.region,
 				streamName: mockRecordInput.streamName,
@@ -71,15 +71,18 @@ describe('Analytics Kinesis API: record', () => {
 		record(mockRecordInput);
 
 		await new Promise(process.nextTick);
-		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
+		expect(loggerWarnSpy).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(Error)
+		);
 	});
 
 	it('logs and skip the event recoding if Analytics plugin is not enabled', async () => {
 		mockIsAnalyticsEnabled.mockReturnValue(false);
 		record(mockRecordInput);
 		await new Promise(process.nextTick);
-		expect(loggerDebugSpy).toBeCalledWith(expect.any(String));
-		expect(mockGetEventBuffer).not.toBeCalled();
-		expect(mockAppend).not.toBeCalled();
+		expect(loggerDebugSpy).toHaveBeenCalledWith(expect.any(String));
+		expect(mockGetEventBuffer).not.toHaveBeenCalled();
+		expect(mockAppend).not.toHaveBeenCalled();
 	});
 });

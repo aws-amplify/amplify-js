@@ -73,9 +73,8 @@ describe('signIn API happy path cases', () => {
 			.spyOn(initiateAuthHelpers, 'handleUserPasswordAuthFlow')
 			.mockImplementation(
 				async (): Promise<RespondToAuthChallengeCommandOutput> => {
-					const deviceKeys = await tokenOrchestrator.getDeviceMetadata(
-						lastAuthUser
-					);
+					const deviceKeys =
+						await tokenOrchestrator.getDeviceMetadata(lastAuthUser);
 					if (deviceKeys) {
 						throw new AuthError({
 							name: 'ResourceNotFoundException',
@@ -121,7 +120,7 @@ describe('signIn API happy path cases', () => {
 			},
 		});
 		expect(result).toEqual(authAPITestParams.signInResult());
-		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 	});
 
 	test('signIn API should delegate to signinWithSRP API by default and return a SignInResult', async () => {
@@ -130,7 +129,7 @@ describe('signIn API happy path cases', () => {
 			password: authAPITestParams.user1.password,
 		});
 		expect(result).toEqual(authAPITestParams.signInResult());
-		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 	});
 
 	test('signInWithSRP API should return a SignInResult', async () => {
@@ -139,7 +138,7 @@ describe('signIn API happy path cases', () => {
 			password: authAPITestParams.user1.password,
 		});
 		expect(result).toEqual(authAPITestParams.signInResult());
-		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 	});
 
 	test('handleUserSRPFlow  should be called with clientMetada from request', async () => {
@@ -150,7 +149,7 @@ describe('signIn API happy path cases', () => {
 			password,
 			options: authAPITestParams.configWithClientMetadata,
 		});
-		expect(handleUserSRPAuthflowSpy).toBeCalledWith(
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledWith(
 			username,
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
@@ -199,7 +198,7 @@ describe('Cognito ASF', () => {
 		} catch (_) {
 			// only want to test the contents
 		}
-		expect(initiateAuthSpy).toBeCalledWith(
+		expect(initiateAuthSpy).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: 'us-west-2',
 			}),

@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "6.0.2",
+	"version": "6.0.5",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -11,7 +11,7 @@
 		"./dist/esm/Predictions.mjs"
 	],
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
+		"test": "npm run lint && jest -w 1 --coverage",
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
@@ -43,7 +43,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/storage": "6.0.2",
+		"@aws-amplify/storage": "6.0.5",
 		"@aws-sdk/client-comprehend": "3.398.0",
 		"@aws-sdk/client-polly": "3.398.0",
 		"@aws-sdk/client-rekognition": "3.398.0",
@@ -59,7 +59,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.2",
+		"@aws-amplify/core": "6.0.5",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
@@ -71,50 +71,5 @@
 			"import": "{ Predictions }",
 			"limit": "69.8 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": {
-					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
-				},
-				"tsConfig": {
-					"downlevelIteration": true,
-					"allowJs": true,
-					"types": [
-						"@types/jest"
-					],
-					"outDir": "./tsconfig.json",
-					"noEmitOnError": false,
-					"noImplicitAny": false,
-					"skipLibCheck": true
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist"
-		]
-	}
+	]
 }

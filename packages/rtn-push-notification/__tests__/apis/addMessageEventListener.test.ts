@@ -27,7 +27,10 @@ describe('addMessageEventListener', () => {
 	it('calls the native addMessageEventListener', () => {
 		addMessageEventListener(event, jest.fn());
 
-		expect(mockAddListenerNative).toBeCalledWith(event, expect.any(Function));
+		expect(mockAddListenerNative).toHaveBeenCalledWith(
+			event,
+			expect.any(Function)
+		);
 	});
 
 	it('calls the registered handler with a normalized message', () => {
@@ -41,7 +44,7 @@ describe('addMessageEventListener', () => {
 		const listener = jest.fn();
 		addMessageEventListener(event, listener);
 
-		expect(listener).toBeCalledWith(
+		expect(listener).toHaveBeenCalledWith(
 			expect.objectContaining({
 				body: `normalized-${nativeMessage.body}`,
 			}),
@@ -62,7 +65,7 @@ describe('addMessageEventListener', () => {
 		});
 		const listener = jest.fn();
 		addMessageEventListener(event, listener);
-		expect(listener).toBeCalledWith(
+		expect(listener).toHaveBeenCalledWith(
 			expect.objectContaining({
 				body: `normalized-${nativeMessage.body}`,
 			}),

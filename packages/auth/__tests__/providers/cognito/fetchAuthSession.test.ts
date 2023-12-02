@@ -61,7 +61,7 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 			userSub: undefined,
 		});
 
-		expect(credentialsProviderSpy).toBeCalledWith({
+		expect(credentialsProviderSpy).toHaveBeenCalledWith({
 			authConfig: {
 				Cognito: {
 					allowGuestAccess: true,
@@ -74,7 +74,7 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 	});
 });
 
-describe.only('fetchAuthSession behavior for UserPools only', () => {
+describe('fetchAuthSession behavior for UserPools only', () => {
 	let tokenProviderSpy;
 	beforeEach(() => {
 		tokenProviderSpy = jest

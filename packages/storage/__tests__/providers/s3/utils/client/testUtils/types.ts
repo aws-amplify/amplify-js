@@ -20,7 +20,7 @@ type ApiFunctionalTestHappyCase<ApiHandler extends (...args: any) => any> = [
 	Parameters<ApiHandler>[1], // input
 	HttpRequest, // expected request
 	MockFetchResponse, // response
-	Awaited<ReturnType<ApiHandler>> // expected output
+	Awaited<ReturnType<ApiHandler>>, // expected output
 ];
 
 type ApiFunctionalTestErrorCase<ApiHandler extends (...args: any) => any> = [
@@ -31,7 +31,7 @@ type ApiFunctionalTestErrorCase<ApiHandler extends (...args: any) => any> = [
 	Parameters<ApiHandler>[1], // input
 	HttpRequest, // expected request
 	MockFetchResponse, // response
-	{} // error
+	{}, // error
 ];
 
 /**

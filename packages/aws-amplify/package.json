@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.0.2",
+	"version": "6.0.5",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -264,13 +264,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.2",
-		"@aws-amplify/api": "6.0.2",
-		"@aws-amplify/auth": "6.0.2",
-		"@aws-amplify/core": "6.0.2",
-		"@aws-amplify/datastore": "5.0.2",
-		"@aws-amplify/notifications": "2.0.2",
-		"@aws-amplify/storage": "6.0.2",
+		"@aws-amplify/analytics": "7.0.5",
+		"@aws-amplify/api": "6.0.5",
+		"@aws-amplify/auth": "6.0.5",
+		"@aws-amplify/core": "6.0.5",
+		"@aws-amplify/datastore": "5.0.5",
+		"@aws-amplify/notifications": "2.0.5",
+		"@aws-amplify/storage": "6.0.5",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -439,7 +439,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "27.40 kB"
+			"limit": "27.44 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
@@ -489,45 +489,5 @@
 			"import": "{ uploadData }",
 			"limit": "18.09 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"allowJs": true,
-					"noEmitOnError": false
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testPathIgnorePatterns": [
-			"dual-publish-tmp"
-		],
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"node_modules",
-			"dist",
-			"dual-publish-tmp"
-		]
-	}
+	]
 }

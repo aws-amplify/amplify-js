@@ -4,6 +4,7 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { Category, ApiAction } from '@aws-amplify/core/internals/utils';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 import { Observable } from 'rxjs';
 
 export const graphqlOperation = (
@@ -34,7 +35,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	graphql<T = any>(
 		amplify: AmplifyClassV6 | (() => Promise<AmplifyClassV6>),
 		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string }
+		additionalHeaders?: CustomHeaders
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		return super.graphql(amplify, options, additionalHeaders, {
 			category: Category.API,

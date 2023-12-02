@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api-graphql",
-	"version": "4.0.2",
+	"version": "4.0.5",
 	"description": "Api-graphql category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -67,7 +67,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@aws-amplify/data-schema": "^0.11.0",
+		"@aws-amplify/data-schema": "^0.12.9",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
@@ -79,9 +79,9 @@
 		"internals"
 	],
 	"dependencies": {
-		"@aws-amplify/api-rest": "4.0.2",
-		"@aws-amplify/core": "6.0.2",
-		"@aws-amplify/data-schema-types": "^0.4.2",
+		"@aws-amplify/api-rest": "4.0.5",
+		"@aws-amplify/core": "6.0.5",
+		"@aws-amplify/data-schema-types": "^0.6.6",
 		"@aws-sdk/types": "3.387.0",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
@@ -95,55 +95,5 @@
 			"import": "{ Amplify, GraphQLAPI }",
 			"limit": "91.7 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"dom",
-						"es2020"
-					],
-					"allowJs": true,
-					"noEmitOnError": false,
-					"strictNullChecks": true,
-					"types": [
-						"@types/jest"
-					]
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"<rootDir>/__tests__/helpers.ts",
-			"<rootDir>/__tests__/fixtures/",
-			"<rootDir>/__tests__/utils/"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"<rootDir>/node_modules/",
-			"<rootDir>/dist",
-			"<rootDir>/__tests__"
-		]
-	}
+	]
 }

@@ -14,7 +14,7 @@ import { Schema } from '../src/types';
 const DB_VERSION = 3;
 
 let db: idb.IDBPDatabase;
-const indexedDB = require('fake-indexeddb');
+const { indexedDB } = require('fake-indexeddb');
 const IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 Dexie.dependencies.indexedDB = indexedDB;
 Dexie.dependencies.IDBKeyRange = IDBKeyRange;
@@ -82,7 +82,7 @@ describe('DB versions migration with destructive schema change', () => {
 
 		const blob = new Blob([JSON.stringify(v1Data)], {
 			type: 'application/json',
-		});
+		} as any);
 
 		// Import V1
 		(await Dexie.import(blob)).close();

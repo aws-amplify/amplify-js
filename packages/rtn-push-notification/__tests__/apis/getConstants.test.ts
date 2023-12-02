@@ -25,6 +25,6 @@ describe('getConstants', () => {
 
 	it('calls the native getConstants', () => {
 		expect(getConstants()).toStrictEqual(constants);
-		expect(mockGetConstantsNative).toBeCalled();
+		expect(mockGetConstantsNative).toHaveBeenCalled();
 	});
 });

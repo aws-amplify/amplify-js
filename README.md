@@ -24,7 +24,7 @@
 [![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-js?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aclosed+)
 
 > **Note**
-> aws-amplify 5 has been released. If you are looking for upgrade guidance [click here](#notice)
+> aws-amplify 6 has been released. If you are looking for upgrade guidance [click here](#notice)
 
 ### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications
 
@@ -61,9 +61,11 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 AWS Amplify is available as `aws-amplify` on [npm](https://www.npmjs.com/package/aws-amplify).
 
-To get started pick your platform from our [**Getting Started** home page](https://docs.amplify.aws/start/?sc_icampaign=start&sc_ichannel=docs-home)
+To get started pick your platform from our [**Getting Started** home page](https://docs.amplify.aws/javascript/)
 
 ## Notice:
+
+### Amplify 6.x.x has breaking changes. Please see the breaking changes on our [migration guide](https://docs.amplify.aws/javascript/build-a-backend/troubleshooting/migrate-from-javascript-v5-to-v6/)
 
 ### Amplify 5.x.x has breaking changes. Please see the breaking changes below:
 

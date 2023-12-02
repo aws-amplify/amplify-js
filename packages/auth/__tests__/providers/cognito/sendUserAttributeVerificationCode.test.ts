@@ -1,66 +1,49 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { sendUserAttributeVerificationCode } from '../../../src/providers/cognito';
 import { GetUserAttributeVerificationException } from '../../../src/providers/cognito/types/errors';
-import * as getUserAttributeVerificationCodeClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
-import { GetUserAttributeVerificationCodeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+import { getUserAttributeVerificationCode } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { getMockError, mockAccessToken } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
 jest.mock('@aws-amplify/core', () => ({
-	...jest.requireActual('@aws-amplify/core'),
-	fetchAuthSession: jest.fn(),
-	Amplify: {
-		configure: jest.fn(),
-		getConfig: jest.fn(() => ({
-			Auth: {
-				Cognito: {
-					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-					identityPoolId: 'us-west-2:xxxxxx',
-				},
-			},
-		})),
-	},
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
-const mockedAccessToken =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-describe('resendUserAttributeConfirmationCode API happy path cases', () => {
-	let getUserAttributeVerificationCodeClientSpy;
+jest.mock(
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+);
+
+describe('sendUserAttributeVerificationCode', () => {
+	// assert mocks
+	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+	const mockGetUserAttributeVerificationCode =
+		getUserAttributeVerificationCode as jest.Mock;
+
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+		mockFetchAuthSession.mockResolvedValue({
+			tokens: { accessToken: decodeJWT(mockAccessToken) },
+		});
+	});
+
 	beforeEach(() => {
-		mockFetchAuthSession.mockImplementationOnce(
-			async (): Promise<{ tokens: { accessToken: any } }> => {
-				return {
-					tokens: {
-						accessToken: decodeJWT(mockedAccessToken),
-					},
-				};
-			}
+		mockGetUserAttributeVerificationCode.mockResolvedValue(
+			authAPITestParams.resendSignUpClientResult
 		);
-		getUserAttributeVerificationCodeClientSpy = jest
-			.spyOn(
-				getUserAttributeVerificationCodeClient,
-				'getUserAttributeVerificationCode'
-			)
-			.mockImplementationOnce(
-				async () =>
-					authAPITestParams.resendSignUpClientResult as GetUserAttributeVerificationCodeCommandOutput
-			);
 	});
 
 	afterEach(() => {
+		mockGetUserAttributeVerificationCode.mockReset();
 		mockFetchAuthSession.mockClear();
-		getUserAttributeVerificationCodeClientSpy.mockClear();
 	});
 
-	it('Should return a resendUserAttributeConfirmationCodeRequest', async () => {
+	it('should return a result', async () => {
 		const result = await sendUserAttributeVerificationCode({
 			userAttributeKey: 'email',
 			options: {
@@ -69,37 +52,24 @@ describe('resendUserAttributeConfirmationCode API happy path cases', () => {
 		});
 		expect(result).toEqual(authAPITestParams.resendSignUpAPIResult);
 
-		expect(getUserAttributeVerificationCodeClientSpy).toHaveBeenCalledWith(
+		expect(mockGetUserAttributeVerificationCode).toHaveBeenCalledWith(
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
-				AccessToken: mockedAccessToken,
+				AccessToken: mockAccessToken,
 				AttributeName: 'email',
 				ClientMetadata: { foo: 'bar' },
 			})
 		);
-		expect(getUserAttributeVerificationCodeClientSpy).toBeCalledTimes(1);
+		expect(mockGetUserAttributeVerificationCode).toHaveBeenCalledTimes(1);
 	});
-});
 
-describe('resendUserAttributeConfirmationCode API error path cases', () => {
-	test('Should raise service error', async () => {
+	it('should throw an error when service returns an error response', async () => {
 		expect.assertions(2);
-		mockFetchAuthSession.mockImplementationOnce(
-			async (): Promise<{ tokens: { accessToken: any } }> => {
-				return {
-					tokens: {
-						accessToken: decodeJWT(mockedAccessToken),
-					},
-				};
-			}
-		);
-		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(
-				buildMockErrorResponse(
-					GetUserAttributeVerificationException.InvalidParameterException
-				)
-			)
-		);
+		mockGetUserAttributeVerificationCode.mockImplementation(() => {
+			throw getMockError(
+				GetUserAttributeVerificationException.InvalidParameterException
+			);
+		});
 		try {
 			await sendUserAttributeVerificationCode({
 				userAttributeKey: 'email',
@@ -107,7 +77,7 @@ describe('resendUserAttributeConfirmationCode API error path cases', () => {
 					clientMetadata: { foo: 'bar' },
 				},
 			});
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
 				GetUserAttributeVerificationException.InvalidParameterException

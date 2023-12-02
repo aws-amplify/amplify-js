@@ -47,7 +47,7 @@ describe('Analytics Kinesis Provider Util: resolveConfig', () => {
 
 	it('throws if region is missing', () => {
 		getConfigSpy.mockReturnValue({
-			Analytics: { Kinesis: { ...kinesisConfig, region: undefined } },
+			Analytics: { Kinesis: { ...kinesisConfig, region: undefined as any } },
 		});
 
 		expect(resolveConfig).toThrow();

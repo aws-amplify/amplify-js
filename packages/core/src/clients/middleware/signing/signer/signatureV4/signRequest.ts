@@ -43,9 +43,8 @@ export const signRequest = (
 	const credentialEntry = `Credential=${accessKeyId}/${credentialScope}`;
 	const signedHeadersEntry = `SignedHeaders=${getSignedHeaders(headers)}`;
 	const signatureEntry = `Signature=${signature}`;
-	headers[
-		AUTH_HEADER
-	] = `${SHA256_ALGORITHM_IDENTIFIER} ${credentialEntry}, ${signedHeadersEntry}, ${signatureEntry}`;
+	headers[AUTH_HEADER] =
+		`${SHA256_ALGORITHM_IDENTIFIER} ${credentialEntry}, ${signedHeadersEntry}, ${signatureEntry}`;
 
 	return requestToSign;
 };

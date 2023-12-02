@@ -41,7 +41,7 @@ describe('setConflictHandler', () => {
 		setConflictHandler(customConflictHandler);
 		await dispatchEvent(simpleInAppMessagingEvent);
 
-		expect(mockNotifyEventListeners).toBeCalledWith(
+		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
 			'messageReceived',
 			customHandledMessage
 		);

@@ -9,6 +9,7 @@ import {
 	buildGraphQLVariables,
 	authModeParams,
 	ModelOperation,
+	getCustomHeaders,
 } from '../APIClient';
 import {
 	ModelIntrospectionSchema,
@@ -38,11 +39,16 @@ export function subscriptionFactory(
 
 		const auth = authModeParams(client, args);
 
-		const observable = client.graphql({
-			...auth,
-			query,
-			variables,
-		}) as GraphqlSubscriptionResult<object>;
+		const headers = getCustomHeaders(client, args?.headers);
+
+		const observable = client.graphql(
+			{
+				...auth,
+				query,
+				variables,
+			},
+			headers
+		) as GraphqlSubscriptionResult<object>;
 
 		return observable.pipe(
 			map(value => {

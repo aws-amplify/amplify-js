@@ -23,7 +23,7 @@ describe('getPushNotificationUserAgentString', () => {
 		expect(
 			getPushNotificationUserAgentString(PushNotificationAction.IdentifyUser)
 		).toBe(userAgentValue);
-		expect(mockGetAmplifyUserAgent).toBeCalledWith({
+		expect(mockGetAmplifyUserAgent).toHaveBeenCalledWith({
 			category: Category.PushNotification,
 			action: PushNotificationAction.IdentifyUser,
 		});

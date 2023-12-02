@@ -29,7 +29,7 @@ describe('onNotificationOpened (native)', () => {
 
 	it('adds an event listener', () => {
 		onNotificationOpened(mockHandler);
-		expect(mockAddEventListener).toBeCalledWith(
+		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'notificationOpened',
 			mockHandler
 		);

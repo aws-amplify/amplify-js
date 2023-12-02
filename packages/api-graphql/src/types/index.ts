@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
-import { ModelTypes } from '@aws-amplify/data-schema-types';
+import { ModelTypes, CustomHeaders } from '@aws-amplify/data-schema-types';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -96,10 +96,10 @@ type PagedList<T, TYPENAME> = {
 type WithListsFixed<T> = T extends PagedList<infer IT, infer NAME>
 	? PagedList<Exclude<IT, null | undefined>, NAME>
 	: T extends {}
-	? {
-			[K in keyof T]: WithListsFixed<T[K]>;
-	  }
-	: T;
+	  ? {
+				[K in keyof T]: WithListsFixed<T[K]>;
+	    }
+	  : T;
 
 /**
  * Returns an updated response type to always return a value.
@@ -176,7 +176,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	apiKey?: string;
 	region?: string;
 	graphql_headers?: () => {} | (() => Promise<{}>);
-	additionalHeaders?: { [key: string]: string };
+	additionalHeaders?: CustomHeaders;
 }
 
 export type AWSAppSyncRealTimeProvider = {
@@ -205,7 +205,7 @@ export type GraphQLOperation = Source | string;
  */
 export interface GraphQLOptionsV6<
 	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string
+	TYPED_GQL_STRING extends string = string,
 > {
 	query: TYPED_GQL_STRING | DocumentNode;
 	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
@@ -234,16 +234,16 @@ export type UnknownGraphQLResponse =
  */
 export type GraphQLVariablesV6<
 	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string
+	TYPED_GQL_STRING extends string = string,
 > = TYPED_GQL_STRING extends GeneratedQuery<infer IN, any>
 	? IN
 	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, any>
-	? IN
-	: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, any>
-	? IN
-	: FALLBACK_TYPES extends GraphQLOperationType<infer IN, any>
-	? IN
-	: any;
+	  ? IN
+	  : TYPED_GQL_STRING extends GeneratedSubscription<infer IN, any>
+	    ? IN
+	    : FALLBACK_TYPES extends GraphQLOperationType<infer IN, any>
+	      ? IN
+	      : any;
 
 /**
  * The expected return type with respect to the given `FALLBACK_TYPE`
@@ -251,20 +251,23 @@ export type GraphQLVariablesV6<
  */
 export type GraphQLResponseV6<
 	FALLBACK_TYPE = unknown,
-	TYPED_GQL_STRING extends string = string
+	TYPED_GQL_STRING extends string = string,
 > = TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer QUERY_OUT>
 	? Promise<GraphQLResult<FixedQueryResult<QUERY_OUT>>>
 	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
-	? Promise<GraphQLResult<NeverEmpty<MUTATION_OUT>>>
-	: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
-	? GraphqlSubscriptionResult<NeverEmpty<SUB_OUT>>
-	: FALLBACK_TYPE extends GraphQLQuery<infer T>
-	? Promise<GraphQLResult<FALLBACK_TYPE>>
-	: FALLBACK_TYPE extends GraphQLSubscription<infer T>
-	? GraphqlSubscriptionResult<FALLBACK_TYPE>
-	: FALLBACK_TYPE extends GraphQLOperationType<infer IN, infer CUSTOM_OUT>
-	? CUSTOM_OUT
-	: UnknownGraphQLResponse;
+	  ? Promise<GraphQLResult<NeverEmpty<MUTATION_OUT>>>
+	  : TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
+	    ? GraphqlSubscriptionResult<NeverEmpty<SUB_OUT>>
+	    : FALLBACK_TYPE extends GraphQLQuery<infer T>
+	      ? Promise<GraphQLResult<FALLBACK_TYPE>>
+	      : FALLBACK_TYPE extends GraphQLSubscription<infer T>
+	        ? GraphqlSubscriptionResult<FALLBACK_TYPE>
+	        : FALLBACK_TYPE extends GraphQLOperationType<
+								infer IN,
+								infer CUSTOM_OUT
+	            >
+	          ? CUSTOM_OUT
+	          : UnknownGraphQLResponse;
 
 /**
  * The shape customers can use to provide `T` to `graphql<T>()` to specify both
@@ -363,6 +366,7 @@ type ExcludeNeverFields<O> = {
 export const __amplify = Symbol('amplify');
 export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
+export const __headers = Symbol('headers');
 
 export type ClientWithModels =
 	| V6Client<Record<string, any>>
@@ -373,6 +377,7 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__amplify]: AmplifyClassV6;
 	[__authMode]?: GraphQLAuthMode;
 	[__authToken]?: string;
+	[__headers]?: CustomHeaders;
 	graphql: GraphQLMethod;
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
@@ -384,6 +389,7 @@ export type V6ClientSSRRequest<T extends Record<any, any> = never> =
 		[__amplify]: AmplifyClassV6;
 		[__authMode]?: GraphQLAuthMode;
 		[__authToken]?: string;
+		[__headers]?: CustomHeaders;
 		graphql: GraphQLMethodSSR;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
@@ -395,6 +401,7 @@ export type V6ClientSSRCookies<T extends Record<any, any> = never> =
 		[__amplify]: AmplifyClassV6;
 		[__authMode]?: GraphQLAuthMode;
 		[__authToken]?: string;
+		[__headers]?: CustomHeaders;
 		graphql: GraphQLMethod;
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
@@ -403,27 +410,19 @@ export type V6ClientSSRCookies<T extends Record<any, any> = never> =
 
 export type GraphQLMethod = <
 	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string
+	TYPED_GQL_STRING extends string = string,
 >(
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?:
-		| {
-				[key: string]: string;
-		  }
-		| undefined
+	additionalHeaders?: CustomHeaders | undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 export type GraphQLMethodSSR = <
 	FALLBACK_TYPES = unknown,
-	TYPED_GQL_STRING extends string = string
+	TYPED_GQL_STRING extends string = string,
 >(
 	contextSpec: AmplifyServer.ContextSpec,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?:
-		| {
-				[key: string]: string;
-		  }
-		| undefined
+	additionalHeaders?: CustomHeaders | undefined
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 /**
@@ -442,7 +441,11 @@ export type ServerClientGenerationParams = {
 
 export type QueryArgs = Record<string, unknown>;
 
-export type ListArgs = { selectionSet?: string[]; filter?: {} };
+export type ListArgs = {
+	selectionSet?: string[];
+	filter?: {};
+	headers?: CustomHeaders;
+};
 
 export type AuthModeParams = {
 	authMode?: GraphQLAuthMode;

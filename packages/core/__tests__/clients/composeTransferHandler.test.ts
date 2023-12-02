@@ -18,7 +18,7 @@ describe(composeTransferHandler.name, () => {
 		const handler = composeTransferHandler(coreHandler, []);
 		const resp = await handler({ url: new URL('https://a.b') }, { foo: 'bar' });
 		expect(resp).toEqual({ body: 'Response' });
-		expect(coreHandler).toBeCalledWith(
+		expect(coreHandler).toHaveBeenCalledWith(
 			{ url: new URL('https://a.b') },
 			{ foo: 'bar' }
 		);
@@ -57,7 +57,7 @@ describe(composeTransferHandler.name, () => {
 			options
 		);
 		expect(resp).toEqual({ body: 'BA' });
-		expect(coreHandler).toBeCalledWith(
+		expect(coreHandler).toHaveBeenCalledWith(
 			expect.objectContaining({ body: 'AB' }),
 			expect.anything()
 		);
@@ -72,7 +72,7 @@ describe(composeTransferHandler.name, () => {
 			options
 		);
 		expect(resp2).toEqual({ body: 'BA' });
-		expect(coreHandler).toBeCalledWith(
+		expect(coreHandler).toHaveBeenCalledWith(
 			expect.objectContaining({ body: 'AB' }),
 			expect.anything()
 		);

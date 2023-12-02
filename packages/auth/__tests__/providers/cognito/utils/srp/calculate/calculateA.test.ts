@@ -17,7 +17,7 @@ describe('calculateA', () => {
 
 	it('calculates A', async () => {
 		expect(await calculateA({ a, g, N })).toBeDefined();
-		expect(modPowSpy).toBeCalledWith(a, N, expect.any(Function));
+		expect(modPowSpy).toHaveBeenCalledWith(a, N, expect.any(Function));
 	});
 
 	it('should throw an error if modPow fails', async () => {

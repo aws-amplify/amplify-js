@@ -221,7 +221,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						})
 					);
 
-					expect(mockError).toBeCalled();
+					expect(mockError).toHaveBeenCalled();
 				});
 
 				test('subscription waiting for onopen with ws://localhost:8080 goes untranslated', async () => {
@@ -334,7 +334,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						CS.ConnectionDisrupted,
 					]);
 					// Watching for raised exception to be caught and logged
-					expect(loggerSpy).toBeCalledWith(
+					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
 						expect.stringContaining('error on bound '),
 						expect.objectContaining({
@@ -442,7 +442,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					// When the socket is closed during handshake
 					// Watching for raised exception to be caught and logged
-					expect(loggerSpy).toBeCalledWith(
+					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
 						expect.stringContaining('error on bound '),
 						expect.objectContaining({
@@ -473,7 +473,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						payload: { data: {} },
 					});
 
-					expect(mockNext).toBeCalled();
+					expect(mockNext).toHaveBeenCalled();
 				});
 
 				test('subscription observer is triggered when a connection is formed and a data message is received after connection ack', async () => {
@@ -499,7 +499,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						payload: { data: {} },
 					});
 
-					expect(mockNext).toBeCalled();
+					expect(mockNext).toHaveBeenCalled();
 				});
 
 				test('subscription observer is triggered when a connection is formed and a data message is received after connection ack and close triggered', async () => {
@@ -524,7 +524,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						type: MESSAGE_TYPES.GQL_DATA,
 						payload: { data: {} },
 					});
-					expect(mockNext).toBeCalled();
+					expect(mockNext).toHaveBeenCalled();
 				});
 
 				test('subscription observer error is triggered when a connection is formed the error is logged and reconnect is triggered', async () => {
@@ -544,7 +544,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						type: MESSAGE_TYPES.GQL_ERROR,
 						payload: { data: {} },
 					});
-					expect(loggerSpy).toBeCalledWith(
+					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
 						'Connection failed: {"data":{}}'
 					);
@@ -553,7 +553,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					]);
 				});
 
-				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async done => {
+				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async () => {
 					expect.assertions(3);
 
 					const socketCloseSpy = jest.spyOn(
@@ -571,7 +571,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							expect(e.errors[0].message).toEqual(
 								'Connection failed: Non-retriable Test'
 							);
-							done();
 						},
 					});
 
@@ -594,7 +593,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 
 					// Watching for raised exception to be caught and logged
-					expect(loggerSpy).toBeCalledWith(
+					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
 						expect.stringContaining('error on bound '),
 						expect.objectContaining({
@@ -618,7 +617,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					await fakeWebSocketInterface?.standardConnectionHandshake();
 					await fakeWebSocketInterface?.triggerError();
-					expect(loggerSpy).toBeCalledWith(
+					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
 						'Disconnect error: Connection closed'
 					);
@@ -661,7 +660,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await openSocketAttempt();
 
 					// Watching for raised exception to be caught and logged
-					expect(loggerSpy).toBeCalledWith(
+					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
 						expect.stringContaining('error on bound '),
 						expect.objectContaining({
@@ -673,7 +672,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						CS.ConnectionDisrupted,
 					]);
 
-					expect(loggerSpy).toBeCalledWith(
+					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
 						'Connection failed: Retriable Test'
 					);
@@ -717,7 +716,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						CS.ConnectedPendingKeepAlive
 					);
 
-					expect(loggerSpy).toBeCalledWith(
+					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
 						'Disconnect error: Timeout disconnect'
 					);
@@ -882,7 +881,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							CS.ConnectionDisrupted,
 						]);
 
-						expect(loggerSpy).toBeCalledWith(
+						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							'timeoutStartSubscription',
 							expect.anything()
@@ -915,7 +914,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						).toBe(CS.Connecting);
 
 						// Watching for raised exception to be caught and logged
-						expect(loggerSpy).not.toBeCalledWith(
+						expect(loggerSpy).not.toHaveBeenCalledWith(
 							'DEBUG',
 							expect.stringContaining('error on bound '),
 							expect.objectContaining({
@@ -950,7 +949,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						]);
 
 						// Watching for raised exception to be caught and logged
-						expect(loggerSpy).toBeCalledWith(
+						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							expect.stringContaining('error on bound '),
 							expect.objectContaining({
@@ -976,7 +975,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						await fakeWebSocketInterface?.readyForUse;
 
-						expect(loggerSpy).toBeCalledWith(
+						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							'Authenticating with "apiKey"'
 						);
@@ -994,7 +993,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						await fakeWebSocketInterface?.readyForUse;
 
-						expect(loggerSpy).toBeCalledWith(
+						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							'Authenticating with "iam"'
 						);
@@ -1012,7 +1011,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						await fakeWebSocketInterface?.readyForUse;
 
-						expect(loggerSpy).toBeCalledWith(
+						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							'Authenticating with "oidc"'
 						);
@@ -1029,7 +1028,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							.subscribe({ error: () => {} });
 
 						await fakeWebSocketInterface?.readyForUse;
-						expect(loggerSpy).toBeCalledWith(
+						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							'Authenticating with "oidc"'
 						);
@@ -1045,6 +1044,27 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								additionalHeaders: {
 									Authorization: 'test',
 								},
+							})
+							.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface?.readyForUse;
+
+						expect(loggerSpy).toHaveBeenCalledWith(
+							'DEBUG',
+							'Authenticating with "none"'
+						);
+					});
+
+					test('authenticating with AWS_LAMBDA/custom w/ custom header function', async () => {
+						expect.assertions(1);
+
+						provider
+							.subscribe({
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								authenticationType: 'none',
+								additionalHeaders: async () => ({
+									Authorization: 'test',
+								}),
 							})
 							.subscribe({ error: () => {} });
 
@@ -1072,7 +1092,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// TODO Find a better way to give the catch stack time to resolve
 						await delay(10);
 
-						expect(loggerSpy).toBeCalledWith(
+						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							'AppSync Realtime subscription init error: Error: No auth token specified'
 						);

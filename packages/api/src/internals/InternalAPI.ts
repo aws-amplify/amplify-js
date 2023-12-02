@@ -17,6 +17,7 @@ import {
 	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
 import { Observable } from 'rxjs';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 /**
  * NOTE!
@@ -66,19 +67,19 @@ export class InternalAPIClass {
 	 */
 	graphql<T>(
 		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string },
+		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
 		: T extends GraphQLSubscription<T>
-		? Observable<{
-				provider: AWSAppSyncRealTimeProvider;
-				value: GraphQLResult<T>;
-		  }>
-		: Promise<GraphQLResult<any>> | Observable<object>;
+		  ? Observable<{
+					provider: AWSAppSyncRealTimeProvider;
+					value: GraphQLResult<T>;
+		    }>
+		  : Promise<GraphQLResult<any>> | Observable<object>;
 	graphql<T = any>(
 		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string },
+		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Promise<GraphQLResult<any>> | Observable<object> {
 		const apiUserAgentDetails: CustomUserAgentDetails = {

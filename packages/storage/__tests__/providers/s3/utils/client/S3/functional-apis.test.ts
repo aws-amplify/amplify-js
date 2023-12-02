@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
-import { fetchTransferHandler } from '@aws-amplify/core/dist/cjs/clients/handlers/fetch';
+import { s3TransferHandler } from '../../../../../../src/providers/s3/utils/client/runtime/s3TransferHandler/fetch';
 
 import cases from './cases';
 import { StorageError } from '../../../../../../src/errors/StorageError';
 
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
+jest.mock(
+	'../../../../../../src/providers/s3/utils/client/runtime/s3TransferHandler/fetch'
+);
 
-const mockFetchTransferHandler = fetchTransferHandler as jest.Mock;
+const mockS3TransferHandler = s3TransferHandler as jest.Mock;
 const mockBinaryResponse = ({
 	status,
 	headers,
@@ -32,12 +34,12 @@ const mockBinaryResponse = ({
 		statusCode: status,
 		headers,
 		body: responseBody,
-	};
+	} as any;
 };
 
 describe('S3 APIs functional test', () => {
 	beforeEach(() => {
-		mockFetchTransferHandler.mockReset();
+		mockS3TransferHandler.mockReset();
 	});
 	test.each(cases)(
 		'%s %s',
@@ -52,15 +54,14 @@ describe('S3 APIs functional test', () => {
 			outputOrError
 		) => {
 			expect.assertions(2);
-			mockFetchTransferHandler.mockResolvedValue(
+			mockS3TransferHandler.mockResolvedValue(
 				mockBinaryResponse(response as any)
 			);
 			try {
-				// @ts-ignore
-				const output = await handler(config, input);
+				const output = await handler(config, input as any);
 				if (caseType === 'happy case') {
 					expect(output).toEqual(outputOrError);
-					expect(fetchTransferHandler).toBeCalledWith(
+					expect(mockS3TransferHandler).toHaveBeenCalledWith(
 						expectedRequest,
 						expect.anything()
 					);

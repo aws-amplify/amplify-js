@@ -67,7 +67,7 @@ jobs:
 
       # Angular
       - name: Install angular CLI
-        run: npm install -g @angular/cli
+        run: npm install -g @angular/cli@16.2.10
       - name: Create angular application
         run: npx -p @angular/cli ng new new-angular-app
         working-directory: amplify-js-samples-staging/samples/angular/interactions

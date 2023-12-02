@@ -10,7 +10,7 @@ import {
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
 export type AuthConfirmResetPasswordInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	username: string;
 	newPassword: string;
@@ -25,21 +25,21 @@ export type AuthConfirmResetPasswordInput<
  * @param options - optional parameters for the Sign Up process such as the plugin options
  */
 export type AuthResendSignUpCodeInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	username: string;
 	options?: ServiceOptions;
 };
 
 export type AuthResetPasswordInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	username: string;
 	options?: ServiceOptions;
 };
 
 export type AuthSignInInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	username: string;
 	password?: string;
@@ -76,7 +76,8 @@ export type AuthSignInWithRedirectInput = {
  * @param options - optional parameters for the Sign Up process, including user attributes
  */
 export type AuthSignUpInput<
-	ServiceOptions extends AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>
+	ServiceOptions extends
+		AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>,
 > = {
 	username: string;
 	password: string;
@@ -91,7 +92,7 @@ export type AuthSignUpInput<
  * @param options - optional parameters for the Sign Up process, including user attributes
  */
 export type AuthConfirmSignUpInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	username: string;
 	confirmationCode: string;
@@ -105,7 +106,7 @@ export type AuthConfirmSignUpInput<
  * @param options - optional parameters for the Confirm Sign In process such as the service options
  */
 export type AuthConfirmSignInInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	challengeResponse: string;
 	options?: ServiceOptions;
@@ -118,7 +119,7 @@ export type AuthConfirmSignInInput<
  * @param options - optional parameters for the Verify TOTP Setup process such as the service options.
  */
 export type AuthVerifyTOTPSetupInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	code: string;
 	options?: ServiceOptions;
@@ -143,7 +144,7 @@ export type AuthUpdatePasswordInput = {
  */
 export type AuthUpdateUserAttributesInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	userAttributes: AuthUserAttributes<UserAttributeKey>;
 	options?: ServiceOptions;
@@ -156,7 +157,7 @@ export type AuthUpdateUserAttributesInput<
  */
 export type AuthUpdateUserAttributeInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	userAttribute: AuthUserAttribute<UserAttributeKey>;
 	options?: ServiceOptions;
@@ -170,7 +171,7 @@ export type AuthUpdateUserAttributeInput<
  *
  */
 export type AuthConfirmUserAttributeInput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = { userAttributeKey: UserAttributeKey; confirmationCode: string };
 
 /**
@@ -181,7 +182,7 @@ export type AuthConfirmUserAttributeInput<
  */
 export type AuthSendUserAttributeVerificationCodeInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions
+	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	userAttributeKey: UserAttributeKey;
 	options?: ServiceOptions;
@@ -193,7 +194,7 @@ export type AuthSendUserAttributeVerificationCodeInput<
  * @param userAttributeKeys - the user attribute keys to be deleted
  */
 export type AuthDeleteUserAttributesInput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = { userAttributeKeys: [UserAttributeKey, ...UserAttributeKey[]] };
 
 /**

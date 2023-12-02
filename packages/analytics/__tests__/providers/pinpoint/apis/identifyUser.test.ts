@@ -54,7 +54,7 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 			},
 		};
 		await identifyUser(input);
-		expect(mockUpdateEndpoint).toBeCalledWith({
+		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
 			...config,
@@ -73,7 +73,7 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 			userAttributes,
 		};
 		await identifyUser({ ...input, options });
-		expect(mockUpdateEndpoint).toBeCalledWith({
+		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
 			...config,

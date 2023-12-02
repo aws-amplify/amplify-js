@@ -38,11 +38,14 @@ describe('dispatchEvent', () => {
 		);
 		mockProcessInAppMessages.mockReturnValueOnce([message]);
 		await dispatchEvent(simpleInAppMessagingEvent);
-		expect(mockProcessInAppMessages).toBeCalledWith(
+		expect(mockProcessInAppMessages).toHaveBeenCalledWith(
 			simpleInAppMessages,
 			simpleInAppMessagingEvent
 		);
-		expect(mockNotifyEventListeners).toBeCalledWith('messageReceived', message);
+		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
+			'messageReceived',
+			message
+		);
 	});
 
 	it('handles conflicts through default conflict handler', async () => {
@@ -51,11 +54,11 @@ describe('dispatchEvent', () => {
 		);
 		mockProcessInAppMessages.mockReturnValueOnce(inAppMessages);
 		await dispatchEvent(simpleInAppMessagingEvent);
-		expect(mockProcessInAppMessages).toBeCalledWith(
+		expect(mockProcessInAppMessages).toHaveBeenCalledWith(
 			simpleInAppMessages,
 			simpleInAppMessagingEvent
 		);
-		expect(mockNotifyEventListeners).toBeCalledWith(
+		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
 			'messageReceived',
 			inAppMessages[4]
 		);
@@ -69,7 +72,7 @@ describe('dispatchEvent', () => {
 
 		await dispatchEvent(simpleInAppMessagingEvent);
 
-		expect(mockNotifyEventListeners).not.toBeCalled();
+		expect(mockNotifyEventListeners).not.toHaveBeenCalled();
 	});
 
 	it('logs error if storage retrieval fails', async () => {

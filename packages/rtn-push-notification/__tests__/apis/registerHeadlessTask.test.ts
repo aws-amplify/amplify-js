@@ -42,7 +42,7 @@ describe('registerHeadlessTask', () => {
 	it('registers a task', () => {
 		registerHeadlessTask(jest.fn());
 
-		expect(mockReactNativeRegisterHeadlessTask).toBeCalledWith(
+		expect(mockReactNativeRegisterHeadlessTask).toHaveBeenCalledWith(
 			nativeHeadlessTaskKey,
 			expect.any(Function)
 		);
@@ -60,7 +60,7 @@ describe('registerHeadlessTask', () => {
 		const listener = jest.fn();
 		registerHeadlessTask(listener);
 
-		expect(listener).toBeCalledWith(
+		expect(listener).toHaveBeenCalledWith(
 			expect.objectContaining({
 				body: `normalized-${nativeMessage.body}`,
 			})
@@ -71,6 +71,6 @@ describe('registerHeadlessTask', () => {
 		mockGetConstants.mockReturnValue({});
 		registerHeadlessTask(jest.fn());
 
-		expect(mockReactNativeRegisterHeadlessTask).not.toBeCalled();
+		expect(mockReactNativeRegisterHeadlessTask).not.toHaveBeenCalled();
 	});
 });

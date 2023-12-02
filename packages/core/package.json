@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.0.2",
+	"version": "6.0.5",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -60,7 +60,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/react-native": "1.0.2",
+		"@aws-amplify/react-native": "1.0.5",
 		"@rollup/plugin-typescript": "11.1.5",
 		"@types/js-cookie": "3.0.2",
 		"genversion": "^2.2.0",
@@ -193,45 +193,5 @@
 				"./dist/esm/libraryUtils.d.ts"
 			]
 		}
-	},
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": false
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"/testUtils/"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"setupFiles": [
-			"./__mocks__/SessionStorage.js",
-			"./__mocks__/LocalStorage.js"
-		],
-		"testEnvironment": "jsdom",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"testURL": "http://localhost/",
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist"
-		]
 	}
 }

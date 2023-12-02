@@ -91,41 +91,37 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 			Amplify.configure(mockLegacyConfig);
 
-			expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
-				{
-					Auth: {
-						Cognito: {
-							allowGuestAccess: true,
-							identityPoolId: 'aws_cognito_identity_pool_id',
-							loginWith: {
-								email: false,
-								phone: false,
-								username: true,
-							},
-							mfa: {
-								smsEnabled: true,
-								status: 'off',
-								totpEnabled: false,
-							},
-							passwordFormat: {
-								minLength: 8,
-								requireLowercase: false,
-								requireNumbers: false,
-								requireSpecialCharacters: false,
-								requireUppercase: false,
-							},
-							userAttributes: [
-								{
-									phone_number: {
-										required: true,
-									},
-								},
-							],
-							userPoolClientId: 'aws_user_pools_web_client_id',
-							userPoolId: 'aws_user_pools_id',
+			const resourcesConfig: ResourcesConfig = {
+				Auth: {
+					Cognito: {
+						allowGuestAccess: true,
+						identityPoolId: 'aws_cognito_identity_pool_id',
+						loginWith: {
+							email: false,
+							phone: false,
+							username: true,
 						},
+						mfa: {
+							smsEnabled: true,
+							status: 'off',
+							totpEnabled: false,
+						},
+						passwordFormat: {
+							minLength: 8,
+							requireLowercase: false,
+							requireNumbers: false,
+							requireSpecialCharacters: false,
+							requireUppercase: false,
+						},
+						userAttributes: { phone_number: { required: true } },
+						userPoolClientId: 'aws_user_pools_web_client_id',
+						userPoolId: 'aws_user_pools_id',
 					},
 				},
+			};
+
+			expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+				resourcesConfig,
 				expect.anything()
 			);
 		});
@@ -159,13 +155,13 @@ describe('initSingleton (DefaultAmplify)', () => {
 					const libraryOptions = { ssr: true };
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
-					expect(mockCognitoUserPoolsTokenProviderSetAuthConfig).toBeCalledWith(
-						mockResourceConfig.Auth
-					);
+					expect(
+						mockCognitoUserPoolsTokenProviderSetAuthConfig
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(MockCookieStorage).toHaveBeenCalledWith({ sameSite: 'lax' });
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
-					).toBeCalledWith(mockCookieStorageInstance);
+					).toHaveBeenCalledWith(mockCookieStorageInstance);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
@@ -182,12 +178,12 @@ describe('initSingleton (DefaultAmplify)', () => {
 					const libraryOptions = {};
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
-					expect(mockCognitoUserPoolsTokenProviderSetAuthConfig).toBeCalledWith(
-						mockResourceConfig.Auth
-					);
+					expect(
+						mockCognitoUserPoolsTokenProviderSetAuthConfig
+					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
-					).toBeCalledWith(defaultStorage);
+					).toHaveBeenCalledWith(defaultStorage);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
@@ -217,11 +213,11 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig
-					).not.toBeCalled();
+					).not.toHaveBeenCalled();
 					expect(MockCookieStorage).toHaveBeenCalledWith({ sameSite: 'lax' });
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
-					).toBeCalledWith(mockCookieStorageInstance);
+					).toHaveBeenCalledWith(mockCookieStorageInstance);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
@@ -237,10 +233,10 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig
-					).not.toBeCalled();
+					).not.toHaveBeenCalled();
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
-					).toBeCalledWith(defaultStorage);
+					).toHaveBeenCalledWith(defaultStorage);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
@@ -258,11 +254,11 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 					expect(
 						mockCognitoUserPoolsTokenProviderSetAuthConfig
-					).not.toBeCalled();
-					expect(MockCookieStorage).not.toBeCalled();
+					).not.toHaveBeenCalled();
+					expect(MockCookieStorage).not.toHaveBeenCalled();
 					expect(
 						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
-					).not.toBeCalled();
+					).not.toHaveBeenCalled();
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
