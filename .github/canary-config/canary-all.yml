@@ -98,7 +98,7 @@ tests:
     sample_name: [websocket-disruption]
     spec: websocket-disruption
     browser: [chrome, firefox]
-  #   can un comment when ever fixed after when can work on it
+  #   can un comment when ever fixed
   # - test_name: integ_next_datastore_owner_auth
   #   desc: 'next owner auth'
   #   framework: next
