@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 5.4.7 (2023-12-04)
+
+### Bug Fixes
+
+- prevent memory leak in withSSRContext ([#12570](https://github.com/aws-amplify/amplify-js/issues/12570)) ([f963a11](https://github.com/aws-amplify/amplify-js/commit/f963a119f00503a9f4e193f7b9fea231f1fc958e))
+
 ## 5.4.6 (2023-11-06)
 
 ### Bug Fixes
