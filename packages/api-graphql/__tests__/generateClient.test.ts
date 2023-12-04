@@ -7,6 +7,7 @@ import {
 	expectSub,
 	expectSubWithHeaders,
 	expectSubWithHeadersFn,
+	expectSubWithlibraryConfigHeaders,
 } from './utils/expects';
 import { Observable, from } from 'rxjs';
 import * as internals from '../src/internals/';
@@ -4591,6 +4592,868 @@ describe('generateClient', () => {
 			}).subscribe({
 				next(value) {
 					expectSubWithHeaders(
+						spy,
+						'onDeleteNote',
+						graphqlVariables,
+						customHeaders
+					);
+					expect(value).toEqual(expect.objectContaining(noteToSend));
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+	});
+	describe('basic model operations with Amplify configuration options headers', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+
+			Amplify.configure(configFixture as any, {
+				API: {
+					GraphQL: {
+						// This is what we're testing:
+						headers: async () => ({
+							Authorization: 'amplify-config-auth-token',
+						}),
+					},
+				},
+			});
+		});
+
+		test('can create() - with library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
+			});
+
+			const { data } = await client.models.Todo.create({
+				name: 'some name',
+				description: 'something something',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('createTodo(input: $input)'),
+							variables: {
+								input: {
+									name: 'some name',
+									description: 'something something',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can create() - custom client headers should not overwrite library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
+			});
+
+			const { data } = await client.models.Todo.create({
+				name: 'some name',
+				description: 'something something',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'client-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('createTodo(input: $input)'),
+							variables: {
+								input: {
+									name: 'some name',
+									description: 'something something',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can create() - custom request headers should not overwrite library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+
+			const { data } = await client.models.Todo.create(
+				{
+					name: 'some name',
+					description: 'something something',
+				},
+				{
+					headers: {
+						'request-header': 'should exist',
+					},
+				}
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'request-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('createTodo(input: $input)'),
+							variables: {
+								input: {
+									name: 'some name',
+									description: 'something something',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can get() - custom client headers should not overwrite library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
+			});
+			const { data } = await client.models.Todo.get({ id: 'asdf' });
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'client-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('getTodo(id: $id)'),
+							variables: {
+								id: 'asdf',
+							},
+						},
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can get() - custom request headers overwrite client headers, but not library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					getTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should not exist',
+				},
+			});
+			const { data } = await client.models.Todo.get(
+				{ id: 'asdf' },
+				{
+					headers: {
+						'request-header': 'should exist',
+					},
+				}
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'request-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('getTodo(id: $id)'),
+							variables: {
+								id: 'asdf',
+							},
+						},
+					}),
+				})
+			);
+
+			// Request headers should overwrite client headers:
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.not.objectContaining({
+							'client-header': 'should not exist',
+						}),
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can list() - custom client headers should not overwrite library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
+			});
+			const { data } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'client-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									name: {
+										contains: 'name',
+									},
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
+						}),
+					}),
+				})
+			);
+
+			expect(data.length).toBe(1);
+			expect(data[0]).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can list() - custom request headers should overwrite client headers but not library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should not exist',
+				},
+			});
+			const { data } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+				headers: {
+					'request-header': 'should exist',
+				},
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'request-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+							),
+							variables: {
+								filter: {
+									name: {
+										contains: 'name',
+									},
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.not.objectContaining({
+							'client-header': 'should not exist',
+						}),
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
+						}),
+					}),
+				})
+			);
+
+			expect(data.length).toBe(1);
+			expect(data[0]).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can update() - custom client headers should not overwrite library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					updateTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some other name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
+			});
+			const { data } = await client.models.Todo.update({
+				id: 'some-id',
+				name: 'some other name',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'client-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('updateTodo(input: $input)'),
+							variables: {
+								input: {
+									id: 'some-id',
+									name: 'some other name',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some other name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can update() - custom request headers should overwrite client headers but not library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					updateTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some other name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
+			});
+			const { data } = await client.models.Todo.update(
+				{
+					id: 'some-id',
+					name: 'some other name',
+				},
+				{
+					headers: {
+						'request-header': 'should exist',
+					},
+				}
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'request-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('updateTodo(input: $input)'),
+							variables: {
+								input: {
+									id: 'some-id',
+									name: 'some other name',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.not.objectContaining({
+							'client-header': 'should not exist',
+						}),
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some other name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can delete() - custom client headers should not overwrite library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					deleteTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should exist',
+				},
+			});
+			const { data } = await client.models.Todo.delete({
+				id: 'some-id',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'client-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('deleteTodo(input: $input)'),
+							variables: {
+								input: {
+									id: 'some-id',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can delete() - custom request headers should overwrite client headers but not library config headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					deleteTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should not exist',
+				},
+			});
+			const { data } = await client.models.Todo.delete(
+				{
+					id: 'some-id',
+				},
+				{
+					headers: {
+						'request-header': 'should exist',
+					},
+				}
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+							'request-header': 'should exist',
+							Authorization: 'amplify-config-auth-token',
+						}),
+						body: {
+							query: expect.stringContaining('deleteTodo(input: $input)'),
+							variables: {
+								input: {
+									id: 'some-id',
+								},
+							},
+						},
+					}),
+				})
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.not.objectContaining({
+							'client-header': 'should not exist',
+						}),
+					}),
+				})
+			);
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can subscribe to onCreate() - with custom headers and library config headers', done => {
+			const noteToSend = {
+				__typename: 'Note',
+				...serverManagedFields,
+				body: 'a very good note',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onCreateNote: noteToSend,
+				},
+			};
+
+			const graphqlVariables = {
+				filter: {
+					body: { contains: 'good note' },
+				},
+			};
+
+			const customHeaders = {
+				'subscription-header': 'should-exist',
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			client.models.Note.onCreate({
+				filter: graphqlVariables.filter,
+				headers: customHeaders,
+			}).subscribe({
+				next(value) {
+					// This util checks for the existence of library config headers:
+					expectSubWithlibraryConfigHeaders(
+						spy,
+						'onCreateNote',
+						graphqlVariables,
+						customHeaders
+					);
+					expect(value).toEqual(expect.objectContaining(noteToSend));
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+
+		test('can subscribe to onUpdate() - with a custom header and library config headers', done => {
+			const noteToSend = {
+				__typename: 'Note',
+				...serverManagedFields,
+				body: 'a very good note',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onUpdateNote: noteToSend,
+				},
+			};
+
+			const graphqlVariables = {
+				filter: {
+					body: { contains: 'good note' },
+				},
+			};
+
+			const customHeaders = {
+				'subscription-header': 'should-exist',
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			client.models.Note.onUpdate({
+				filter: graphqlVariables.filter,
+				headers: customHeaders,
+			}).subscribe({
+				next(value) {
+					// This util checks for the existence of library config headers:
+					expectSubWithlibraryConfigHeaders(
+						spy,
+						'onUpdateNote',
+						graphqlVariables,
+						customHeaders
+					);
+					expect(value).toEqual(expect.objectContaining(noteToSend));
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+
+		test('can subscribe to onDelete() - with custom headers and library config headers', done => {
+			const noteToSend = {
+				__typename: 'Note',
+				...serverManagedFields,
+				body: 'a very good note',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onDeleteNote: noteToSend,
+				},
+			};
+
+			const graphqlVariables = {
+				filter: {
+					body: { contains: 'good note' },
+				},
+			};
+
+			const customHeaders = {
+				'subscription-header': 'should-exist',
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			client.models.Note.onDelete({
+				filter: graphqlVariables.filter,
+				headers: customHeaders,
+			}).subscribe({
+				next(value) {
+					// This util checks for the existence of library config headers:
+					expectSubWithlibraryConfigHeaders(
 						spy,
 						'onDeleteNote',
 						graphqlVariables,
