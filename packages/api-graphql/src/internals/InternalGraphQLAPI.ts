@@ -150,7 +150,7 @@ export class InternalGraphQLAPIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param options - GraphQL Options
-	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
+	 * @param [additionalHeaders] - headers to merge in after any `libraryConfigHeaders` set in the config
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
@@ -425,28 +425,37 @@ export class InternalGraphQLAPIClass {
 	): Observable<any> {
 		const config = resolveConfig(amplify);
 
-		return this.appSyncRealTime
-			.subscribe(
-				{
-					query: print(query as DocumentNode),
-					variables,
-					appSyncGraphqlEndpoint: config?.endpoint,
-					region: config?.region,
-					authenticationType: authMode || config?.defaultAuthMode,
-					apiKey: config?.apiKey,
-					additionalHeaders,
-					authToken,
-				},
-				customUserAgentDetails
-			)
-			.pipe(
-				catchError(e => {
-					if (e.errors) {
-						throw repackageUnauthError(e, authMode);
-					}
-					throw e;
-				})
-			);
+		/**
+		 * Retrieve library options from Amplify configuration.
+		 * `libraryConfigHeaders` are from the Amplify configuration options,
+		 * and will not be overwritten by other custom headers. These are *not*
+		 * the same as `additionalHeaders`, which are custom headers that are
+		 * either 1)included when configuring the API client or 2) passed along
+		 * with individual requests.
+		 */
+		const { headers: libraryConfigHeaders } = resolveLibraryOptions(amplify);
+
+		return this.appSyncRealTime.subscribe(
+			{
+				query: print(query as DocumentNode),
+				variables,
+				appSyncGraphqlEndpoint: config?.endpoint,
+				region: config?.region,
+				authenticationType: authMode || config?.defaultAuthMode,
+				apiKey: config?.apiKey,
+				additionalHeaders,
+				authToken,
+				libraryConfigHeaders,
+			},
+			customUserAgentDetails
+		).pipe(
+      catchError(e => {
+        if (e.errors) {
+          throw repackageUnauthError(e, authMode);
+        }
+        throw e;
+      })
+    );
 	}
 }
 
