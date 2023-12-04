@@ -183,9 +183,7 @@ describe('API test', () => {
 				const errors = e.errors;
 				expect(errors).toEqual([
 					expect.objectContaining({
-						message: expect.stringContaining(
-							'UnauthorizedError: The authMode used ('
-						),
+						message: 'Unauthorized',
 						recoverySuggestion: expect.stringContaining(
 							`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
 						),
@@ -1051,9 +1049,7 @@ describe('API test', () => {
 					expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
 					expect(e.errors).toEqual([
 						expect.objectContaining({
-							message: expect.stringContaining(
-								'UnauthorizedError: The authMode used ('
-							),
+							message: 'Unauthorized',
 							recoverySuggestion: expect.stringContaining(
 								`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
 							),

@@ -22,7 +22,7 @@ export function repackageUnauthError<T extends ErrorObject>(
 	if (content.errors && Array.isArray(content.errors)) {
 		content.errors.forEach(e => {
 			if (isUnauthError(e)) {
-				e.message = `UnauthorizedError: The authMode used ('${authMode}') didn't have permission to perform the requested action`;
+				e.message = 'Unauthorized';
 				e.recoverySuggestion =
 					`If you're calling an Amplify-generated API, make sure ` +
 					`to set the "authMode" in generateClient({ authMode: '...' }) to the backend authorization ` +
