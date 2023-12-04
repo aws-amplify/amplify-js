@@ -97,7 +97,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
 	region?: string;
-	graphql_headers?: () => {} | (() => Promise<{}>);
+	libraryConfigHeaders?: () => {} | (() => Promise<{}>);
 	additionalHeaders?:
 		| Record<string, string>
 		| (() => Promise<Record<string, string>>);
@@ -203,6 +203,7 @@ export class AWSAppSyncRealTimeProvider {
 			additionalHeaders,
 			apiKey,
 			authToken,
+			libraryConfigHeaders,
 		} = options || {};
 
 		return new Observable(observer => {
@@ -235,6 +236,7 @@ export class AWSAppSyncRealTimeProvider {
 									additionalHeaders,
 									apiKey,
 									authToken,
+									libraryConfigHeaders,
 								},
 								observer,
 								subscriptionId,
@@ -313,7 +315,7 @@ export class AWSAppSyncRealTimeProvider {
 			variables,
 			apiKey,
 			region,
-			graphql_headers = () => ({}),
+			libraryConfigHeaders = () => ({}),
 			additionalHeaders = {},
 			authToken,
 		} = options;
@@ -361,7 +363,7 @@ export class AWSAppSyncRealTimeProvider {
 				region,
 				additionalCustomHeaders,
 			})),
-			...(await graphql_headers()),
+			...(await libraryConfigHeaders()),
 			...additionalCustomHeaders,
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
