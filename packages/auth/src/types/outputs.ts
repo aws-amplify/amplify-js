@@ -7,6 +7,9 @@ import {
 	AuthNextSignUpStep,
 	AuthNextResetPasswordStep,
 	AuthNextUpdateAttributeStep,
+	AuthConfirmSignInWithOTPStep,
+	DoneSignInStep,
+	AuthConfirmSignInWithMagicLinkStep,
 } from './models';
 
 export type AuthSignInOutput<
@@ -43,3 +46,25 @@ export type AuthUpdateUserAttributesOutput<
 > = {
 	[authKey in UserAttributeKey]: AuthUpdateUserAttributeOutput<UserAttributeKey>;
 };
+
+export type AuthSignInWithOTPOutput<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+> = {
+	isSignedIn: boolean;
+	nextStep: AuthConfirmSignInWithOTPStep<UserAttributeKey>;
+};
+
+export type AuthConfirmSignInWithOTPOutput = {
+	isSignedIn: boolean;
+	nextStep: DoneSignInStep;
+};
+
+export type AuthSignInWithMagicLinkOutput<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+> = {
+	isSignedIn: boolean;
+	nextStep: AuthConfirmSignInWithMagicLinkStep<UserAttributeKey>;
+};
+
+export type AuthConfirmSignInWithMagicLinkOutput =
+	AuthConfirmSignInWithOTPOutput;

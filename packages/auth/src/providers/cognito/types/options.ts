@@ -93,10 +93,6 @@ export type UpdateUserAttributeOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
 };
 
-export type AuthPasswordlessSignInOptions = {
+export type PasswordlessSharedOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
-};
-export type AuthPasswordlessSignInAndSignUpOptions = {
-	clientMetadata?: ClientMetadata;
-	userAttributes?: AuthUserAttributes;
 };

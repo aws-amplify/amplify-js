@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthUserAttributes, AuthUserAttributeKey } from './models';
+import {
+	AuthUserAttributes,
+	AuthUserAttributeKey,
+	AuthPasswordlessFlow,
+} from './models';
 
 /**
  * Base type for service options.
@@ -21,3 +25,9 @@ export type AuthSignUpOptions<
 };
 
 export type SignInWithWebUIOptions<ServiceOptions> = ServiceOptions;
+
+export type AuthPasswordlessSignInOptions = AuthServiceOptions;
+
+export type AuthPasswordlessSignUpAndSignInOptions<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+> = AuthSignUpOptions<UserAttributeKey> & AuthPasswordlessSignInOptions;

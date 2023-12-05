@@ -16,10 +16,6 @@ import {
 
 import { AuthProvider } from '../../../types/inputs';
 import { SignUpOutput } from './outputs';
-import {
-	AuthPasswordlessSignInAndSignUpOptions,
-	AuthPasswordlessSignInOptions,
-} from './options';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
@@ -114,32 +110,3 @@ export interface AuthUser extends AWSAuthUser {
 export type CodeDeliveryDetails<
 	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
 > = AuthCodeDeliveryDetails<CognitoUserAttributeKey>;
-
-type ConfirmSignInWithOTPStep = {
-	signInStep: 'CONFIRM_SIGN_IN_WITH_OTP';
-	codeDeliveryDetails: CodeDeliveryDetails;
-	additionalInfo: AuthAdditionalInfo;
-};
-
-type ConfirmSignInWithMagicLinkStep = {
-	signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK';
-	codeDeliveryDetails: CodeDeliveryDetails;
-	additionalInfo: AuthAdditionalInfo;
-};
-
-type PasswordlessWithOTPDoneStep = {
-	signInStep: 'DONE';
-};
-
-export type SignInWithOTPNextStep =
-	| ConfirmSignInWithMagicLinkStep
-	| ConfirmSignInWithOTPStep
-	| PasswordlessWithOTPDoneStep;
-
-export type AuthPasswordlessFlow = 'SIGN_IN' | 'SIGN_UP_AND_SIGN_IN';
-
-export type AuthPasswordlessDeliveryDestination = 'PHONE' | 'EMAIL';
-
-export type GetOptions<T extends AuthPasswordlessFlow> = T extends 'SIGN_IN'
-	? AuthPasswordlessSignInOptions
-	: AuthPasswordlessSignInAndSignUpOptions;

@@ -26,6 +26,7 @@ export {
 	VerifyTOTPSetupOptions,
 	UpdateUserAttributeOptions,
 	SendUserAttributeVerificationCodeOptions,
+	PasswordlessSharedOptions,
 } from './options';
 
 export {

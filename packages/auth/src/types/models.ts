@@ -272,3 +272,31 @@ export type AWSAuthUser = {
 export type AuthDevice = {
 	id: string;
 };
+
+export type AuthPasswordlessFlow = 'SIGN_IN' | 'SIGN_UP_AND_SIGN_IN';
+
+export type AuthOTPDeliveryDestination = 'SMS' | 'EMAIL';
+
+export type AuthConfirmSignInWithOTPStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+> = {
+	signInStep: 'CONFIRM_SIGN_IN_WITH_OTP';
+	// TODO: deliveryMedium can only by SMS and Email
+	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+	additionalInfo: AuthAdditionalInfo;
+};
+
+export type AuthConfirmSignInWithMagicLinkStep<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+> = {
+	signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK';
+	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+	additionalInfo: AuthAdditionalInfo;
+};
+
+// export type AuthSignInWithOTPNextStep<
+// 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+// > =
+// 	| AuthConfirmSignInWithOTPStep<UserAttributeKey>
+// 	| AuthConfirmSignInWithMagicLinkStep<UserAttributeKey>
+// 	| DoneSignInStep;

@@ -16,11 +16,7 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { getAuthUserAgentValue } from '../../../utils';
-import {
-	AuthPasswordlessDeliveryDestination,
-	AuthPasswordlessFlow,
-	CognitoAuthSignInDetails,
-} from '../types/models';
+import { CognitoAuthSignInDetails } from '../types/models';
 import { SignInWithOTPInput } from '../types/inputs';
 import { SignInWithOTPOutput } from '../types/outputs';
 import { setActiveSignInState } from '../utils/signInStore';
@@ -29,10 +25,8 @@ import {
 	setActiveSignInUsername,
 } from '../utils/signInHelpers';
 
-export const signInWithOTP = async <
-	T extends AuthPasswordlessFlow = AuthPasswordlessFlow,
->(
-	input: SignInWithOTPInput<T>
+export const signInWithOTP = async (
+	input: SignInWithOTPInput
 ): Promise<SignInWithOTPOutput> => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

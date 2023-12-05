@@ -12,9 +12,12 @@ import {
 	AuthResetPasswordOutput,
 	AuthUpdateUserAttributesOutput,
 	AuthUpdateUserAttributeOutput,
+	AuthSignInWithOTPOutput,
+	AuthConfirmSignInWithOTPOutput,
+	AuthSignInWithMagicLinkOutput,
+	AuthConfirmSignInWithMagicLinkOutput,
 } from '../../../types';
 import { AWSAuthDevice, AuthUser, UserAttributeKey } from '../types';
-import { SignInWithOTPNextStep } from './models';
 
 export type FetchMFAPreferenceOutput = {
 	enabled?: AuthMFAType[];
@@ -111,7 +114,12 @@ export type UpdateUserAttributeOutput =
  */
 export type FetchDevicesOutput = AWSAuthDevice[];
 
-export type SignInWithOTPOutput = {
-	isSignedIn: boolean;
-	nextStep: SignInWithOTPNextStep;
-};
+export type SignInWithOTPOutput = AuthSignInWithOTPOutput<UserAttributeKey>;
+
+export type ConfirmSignInWithOTPOutput = AuthConfirmSignInWithOTPOutput;
+
+export type SignInWithMagicLinkOutput =
+	AuthSignInWithMagicLinkOutput<UserAttributeKey>;
+
+export type ConfirmSignInWithMagicLinkOutput =
+	AuthConfirmSignInWithMagicLinkOutput;

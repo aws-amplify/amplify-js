@@ -17,6 +17,7 @@ import {
 	UpdateUserAttributeOptions,
 	VerifyTOTPSetupOptions,
 	SendUserAttributeVerificationCodeOptions,
+	PasswordlessSharedOptions,
 } from '../types';
 import {
 	AuthConfirmResetPasswordInput,
@@ -36,12 +37,11 @@ import {
 	AuthSendUserAttributeVerificationCodeInput,
 	AuthDeleteUserAttributesInput,
 	AuthForgetDeviceInput,
-} from '../../../types';
-import {
+	AuthSignUpOptions,
 	AuthPasswordlessFlow,
-	AuthPasswordlessDeliveryDestination,
-	GetOptions,
-} from './models';
+	AuthSignInWithOTPInput,
+	AuthSignInWithMagicLinkInput,
+} from '../../../types';
 
 /**
  * Input type for Cognito confirmResetPassword API.
@@ -171,11 +171,18 @@ export type DeleteUserAttributesInput =
  */
 export type ForgetDeviceInput = AuthForgetDeviceInput;
 
-export type SignInWithOTPInput<
-	T extends AuthPasswordlessFlow = AuthPasswordlessFlow,
-> = {
-	username: string;
-	flow: T;
-	destination: AuthPasswordlessDeliveryDestination;
-	options?: GetOptions<T>;
-};
+type PasswordlessSignInOptions = PasswordlessSharedOptions;
+type PasswordlessSignUpAndSignInOptions = AuthSignUpOptions<UserAttributeKey> &
+	PasswordlessSignInOptions;
+
+export type SignInWithOTPInput = AuthSignInWithOTPInput<
+	AuthPasswordlessFlow,
+	PasswordlessSharedOptions,
+	PasswordlessSignUpAndSignInOptions
+>;
+
+export type SignInWithMagicLinkInput = AuthSignInWithMagicLinkInput<
+	AuthPasswordlessFlow,
+	PasswordlessSharedOptions,
+	PasswordlessSignUpAndSignInOptions
+>;
