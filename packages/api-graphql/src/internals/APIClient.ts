@@ -317,6 +317,9 @@ function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
 	// fields that are explicitly part of the graphql schema; not
 	// inferred from owner auth rules.
 	const { fields } = modelDefinition;
+
+	// Enum type is excluded here (intentional?)
+	debugger;
 	const explicitFields = Object.values<any>(fields)
 		.map(({ type, name }) => typeof type === 'string' && name) // Default selection set omits model fields
 		.filter(Boolean);
@@ -324,6 +327,8 @@ function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
 	// fields used for owner auth rules that may or may not also
 	// be explicit on the model.
 	const ownerFields = resolveOwnerFields(modelDefinition);
+
+	debugger;
 
 	return Array.from(new Set(explicitFields.concat(ownerFields)));
 }
@@ -473,6 +478,8 @@ export function generateSelectionSet(
 ) {
 	const modelDefinition = modelDefinitions[modelName];
 
+	debugger;
+
 	if (!selectionSet) {
 		return defaultSelectionSetForModel(modelDefinition).join(' ');
 	}
@@ -482,7 +489,11 @@ export function generateSelectionSet(
 		modelName,
 		selectionSet
 	);
+
+	debugger;
 	const selSetString = selectionSetIRToString(selSetIr);
+
+	debugger;
 
 	return selSetString;
 }

@@ -297,11 +297,11 @@ describe('flattenItems', () => {
 	});
 
 	describe('generateSelectionSet', () => {
-		test('it should generate default selection set', () => {
+		test.only('it should generate default selection set', () => {
+			debugger;
 			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo');
-
 			const expected =
-				'id name description createdAt updatedAt todoMetaId owner';
+				'id name description test priority createdAt updatedAt todoMetaId owner';
 
 			expect(selSet).toEqual(expected);
 		});

@@ -35,6 +35,22 @@ const amplifyConfig = {
 						isRequired: false,
 						attributes: [],
 					},
+					test: {
+						name: 'test',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					priority: {
+						name: 'priority',
+						isArray: false,
+						type: {
+							enum: 'Priority',
+						},
+						isRequired: false,
+						attributes: [],
+					},
 					notes: {
 						name: 'notes',
 						isArray: true,
@@ -606,7 +622,12 @@ const amplifyConfig = {
 				},
 			},
 		},
-		enums: {},
+		enums: {
+			Priority: {
+				name: 'Priority',
+				values: ['low', 'medium', 'high'],
+			},
+		},
 		nonModels: {},
 	},
 };
