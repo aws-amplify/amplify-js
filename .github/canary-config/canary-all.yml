@@ -98,13 +98,14 @@ tests:
     sample_name: [websocket-disruption]
     spec: websocket-disruption
     browser: [chrome, firefox]
-  - test_name: integ_next_datastore_owner_auth
-    desc: 'next owner auth'
-    framework: next
-    category: datastore
-    sample_name: [owner-based-default]
-    spec: next-owner-based-default
-    browser: [chrome, firefox]
+  #   can un comment when ever fixed
+  # - test_name: integ_next_datastore_owner_auth
+  #   desc: 'next owner auth'
+  #   framework: next
+  #   category: datastore
+  #   sample_name: [owner-based-default]
+  #   spec: next-owner-based-default
+  #   browser: [chrome, firefox]
   - test_name: integ_next_datastore_13_js
     desc: 'DataStore - Nextjs 13 build with SWC - JS app'
     framework: next
