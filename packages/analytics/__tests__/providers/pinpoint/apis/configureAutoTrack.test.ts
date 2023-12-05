@@ -50,7 +50,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 					...MOCK_INPUT,
 					type: 'invalidTracker',
 				} as any);
-			} catch (e) {
+			} catch (e: any) {
 				expect(e.message).toBe('Invalid tracker type specified.');
 			}
 		});
@@ -65,7 +65,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			configureAutoTrack(MOCK_INPUT);
 		});
 
-		expect(MockEventTracker).toBeCalledWith(
+		expect(MockEventTracker).toHaveBeenCalledWith(
 			expect.any(Function),
 			MOCK_INPUT.options
 		);
@@ -85,7 +85,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			configureAutoTrack(testInput);
 		});
 
-		expect(MockSessionTracker).toBeCalledWith(
+		expect(MockSessionTracker).toHaveBeenCalledWith(
 			expect.any(Function),
 			testInput.options
 		);
@@ -105,7 +105,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			configureAutoTrack(testInput);
 		});
 
-		expect(MockPageViewTracker).toBeCalledWith(
+		expect(MockPageViewTracker).toHaveBeenCalledWith(
 			expect.any(Function),
 			testInput.options
 		);
@@ -119,7 +119,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 
 			// Enable the tracker
 			configureAutoTrack(MOCK_INPUT);
-			expect(MockEventTracker).toBeCalledWith(
+			expect(MockEventTracker).toHaveBeenCalledWith(
 				expect.any(Function),
 				MOCK_INPUT.options
 			);
@@ -145,7 +145,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 
 			// Enable the tracker
 			configureAutoTrack(MOCK_INPUT);
-			expect(MockEventTracker).toBeCalledWith(
+			expect(MockEventTracker).toHaveBeenCalledWith(
 				expect.any(Function),
 				MOCK_INPUT.options
 			);

@@ -62,7 +62,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 
 	it('calls the service API with a baseline input', async () => {
 		await updateEndpoint({ appId, category, credentials, region });
-		expect(mockClientUpdateEndpoint).toBeCalledWith(
+		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
 			{ credentials, region },
 			getExpectedInput({})
 		);
@@ -99,7 +99,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 				metrics,
 			},
 		});
-		expect(mockClientUpdateEndpoint).toBeCalledWith(
+		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
 			{ credentials, region },
 			getExpectedInput({
 				address,
@@ -132,7 +132,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 				demographic: partialDemographic,
 			},
 		});
-		expect(mockClientUpdateEndpoint).toBeCalledWith(
+		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
 			{ credentials, region },
 			getExpectedInput({
 				demographic: {
@@ -148,11 +148,11 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		mockGetEndpointId.mockReturnValue(undefined);
 		mockUuid.mockReturnValueOnce(createdEndpointId);
 		await updateEndpoint({ appId, category, credentials, region });
-		expect(mockClientUpdateEndpoint).toBeCalledWith(
+		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
 			{ credentials, region },
 			getExpectedInput({ endpointId: createdEndpointId })
 		);
-		expect(mockCacheEndpointId).toBeCalledWith(
+		expect(mockCacheEndpointId).toHaveBeenCalledWith(
 			appId,
 			category,
 			createdEndpointId
@@ -161,6 +161,6 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 
 	it('does not cache endpoint if previously cached', async () => {
 		await updateEndpoint({ appId, category, credentials, region });
-		expect(mockCacheEndpointId).not.toBeCalled();
+		expect(mockCacheEndpointId).not.toHaveBeenCalled();
 	});
 });

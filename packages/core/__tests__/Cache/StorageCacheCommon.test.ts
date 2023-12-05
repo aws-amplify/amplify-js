@@ -1,4 +1,4 @@
-import { CacheConfig } from '../../src/Cache/types/Cache';
+import { CacheConfig } from '../../src/Cache/types';
 import { defaultConfig } from '../../src/Cache/constants';
 import { StorageCacheCommon } from '../../src/Cache/StorageCacheCommon';
 import { KeyValueStorageInterface } from '../../src/types';
@@ -96,7 +96,7 @@ describe('StorageCacheCommon', () => {
 				itemMaxSize: config.capacityInBytes * 2,
 			});
 			expect(cache.testGetConfig().itemMaxSize).toBe(defaultConfig.itemMaxSize);
-			expect(loggerSpy.error).toBeCalled();
+			expect(loggerSpy.error).toHaveBeenCalled();
 		});
 
 		it('reverts to default defaultPriority if it is set below minimum range', () => {
@@ -107,7 +107,7 @@ describe('StorageCacheCommon', () => {
 			expect(cache.testGetConfig().defaultPriority).toBe(
 				defaultConfig.defaultPriority
 			);
-			expect(loggerSpy.error).toBeCalled();
+			expect(loggerSpy.error).toHaveBeenCalled();
 		});
 
 		it('reverts to default defaultPriority if it is set above maximum range', () => {
@@ -118,7 +118,7 @@ describe('StorageCacheCommon', () => {
 			expect(cache.testGetConfig().defaultPriority).toBe(
 				defaultConfig.defaultPriority
 			);
-			expect(loggerSpy.error).toBeCalled();
+			expect(loggerSpy.error).toHaveBeenCalled();
 		});
 
 		it('reverts to default warningThreshold if it is set below minimum range', () => {
@@ -129,7 +129,7 @@ describe('StorageCacheCommon', () => {
 			expect(cache.testGetConfig().warningThreshold).toBe(
 				defaultConfig.warningThreshold
 			);
-			expect(loggerSpy.error).toBeCalled();
+			expect(loggerSpy.error).toHaveBeenCalled();
 		});
 
 		it('reverts to default warningThreshold if it is set above maximum range', () => {
@@ -140,7 +140,7 @@ describe('StorageCacheCommon', () => {
 			expect(cache.testGetConfig().warningThreshold).toBe(
 				defaultConfig.warningThreshold
 			);
-			expect(loggerSpy.error).toBeCalled();
+			expect(loggerSpy.error).toHaveBeenCalled();
 		});
 
 		it('reverts to default capacityInBytes if it is set larger than 5MB limit', () => {
@@ -152,7 +152,7 @@ describe('StorageCacheCommon', () => {
 			expect(cache.testGetConfig().capacityInBytes).toBe(
 				defaultConfig.capacityInBytes
 			);
-			expect(loggerSpy.error).toBeCalled();
+			expect(loggerSpy.error).toHaveBeenCalled();
 		});
 	});
 
@@ -177,7 +177,7 @@ describe('StorageCacheCommon', () => {
 			const cache = getStorageCache(config);
 			cache.configure(config);
 
-			expect(loggerSpy.warn).toBeCalled();
+			expect(loggerSpy.warn).toHaveBeenCalled();
 		});
 	});
 
@@ -187,19 +187,22 @@ describe('StorageCacheCommon', () => {
 		it('returns the current cache size', async () => {
 			mockKeyValueStorageGetItem.mockResolvedValue('10');
 			expect(await cache.getCurrentCacheSize()).toBe(10);
-			expect(mockKeyValueStorageGetItem).toBeCalledWith(currentSizeKey);
+			expect(mockKeyValueStorageGetItem).toHaveBeenCalledWith(currentSizeKey);
 		});
 
 		it('returns zero if size set to zero', async () => {
 			mockKeyValueStorageGetItem.mockResolvedValue('0');
 			expect(await cache.getCurrentCacheSize()).toBe(0);
-			expect(mockKeyValueStorageSetItem).not.toBeCalled();
+			expect(mockKeyValueStorageSetItem).not.toHaveBeenCalled();
 		});
 
 		it('returns zero if size it not set', async () => {
 			mockKeyValueStorageGetItem.mockResolvedValue(null);
 			expect(await cache.getCurrentCacheSize()).toBe(0);
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(currentSizeKey, '0');
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
+				currentSizeKey,
+				'0'
+			);
 		});
 	});
 
@@ -221,10 +224,10 @@ describe('StorageCacheCommon', () => {
 			['boolean', true],
 		])('sets an item if it does not exist (%s}', async (_, value: any) => {
 			await cache.setItem(key, value);
-			expect(loggerSpy.debug).toBeCalledWith(
+			expect(loggerSpy.debug).toHaveBeenCalledWith(
 				expect.stringContaining(`Set item: key is ${key}`)
 			);
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
 				prefixedKey,
 				expect.stringContaining(JSON.stringify(value))
 			);
@@ -232,42 +235,42 @@ describe('StorageCacheCommon', () => {
 
 		it('aborts on empty key', async () => {
 			await cache.setItem('', 'abc');
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid key')
 			);
-			expect(mockKeyValueStorageSetItem).not.toBeCalled();
+			expect(mockKeyValueStorageSetItem).not.toHaveBeenCalled();
 		});
 
 		it('aborts on reserved key', async () => {
 			await cache.setItem('CurSize', 'abc');
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid key')
 			);
-			expect(mockKeyValueStorageSetItem).not.toBeCalled();
+			expect(mockKeyValueStorageSetItem).not.toHaveBeenCalled();
 		});
 
 		it('aborts on undefined value', async () => {
 			await cache.setItem(key, undefined);
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('should not be undefined')
 			);
-			expect(mockKeyValueStorageGetItem).not.toBeCalled();
+			expect(mockKeyValueStorageGetItem).not.toHaveBeenCalled();
 		});
 
 		it('aborts if priority is below minimum', async () => {
 			await cache.setItem(key, 'abc', { priority: 0 });
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid parameter')
 			);
-			expect(mockKeyValueStorageGetItem).not.toBeCalled();
+			expect(mockKeyValueStorageGetItem).not.toHaveBeenCalled();
 		});
 
 		it('aborts if priority is above maximum', async () => {
 			await cache.setItem(key, 'abc', { priority: 6 });
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid parameter')
 			);
-			expect(mockKeyValueStorageGetItem).not.toBeCalled();
+			expect(mockKeyValueStorageGetItem).not.toHaveBeenCalled();
 		});
 
 		it('aborts if item size is above maximum', async () => {
@@ -276,10 +279,10 @@ describe('StorageCacheCommon', () => {
 			);
 			const value = 'x'.repeat(config.itemMaxSize * 2);
 			await cache.setItem(key, value);
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('is too big')
 			);
-			expect(mockKeyValueStorageGetItem).not.toBeCalled();
+			expect(mockKeyValueStorageGetItem).not.toHaveBeenCalled();
 		});
 
 		it('updates existing cache content with the same key', async () => {
@@ -294,11 +297,17 @@ describe('StorageCacheCommon', () => {
 				.mockReturnValueOnce(15); // get current cache size (increase)
 			await cache.setItem(key, value);
 
-			expect(mockKeyValueStorageGetItem).toBeCalledTimes(5);
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(currentSizeKey, '15'); // 25 - 10
-			expect(mockKeyValueStorageRemoveItem).toBeCalledTimes(1);
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(currentSizeKey, '35'); // 15 + 20
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(
+			expect(mockKeyValueStorageGetItem).toHaveBeenCalledTimes(5);
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
+				currentSizeKey,
+				'15'
+			); // 25 - 10
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(1);
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
+				currentSizeKey,
+				'35'
+			); // 15 + 20
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
 				prefixedKey,
 				JSON.stringify({
 					key: prefixedKey,
@@ -331,8 +340,8 @@ describe('StorageCacheCommon', () => {
 				`${keyPrefix}valid-key`,
 			]);
 			await cache.setItem(key, value);
-			expect(mockKeyValueStorageRemoveItem).toBeCalledTimes(1);
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(1);
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
 				prefixedKey,
 				expect.stringContaining(value)
 			);
@@ -381,12 +390,14 @@ describe('StorageCacheCommon', () => {
 				lowPriorityItem.key,
 			]);
 			await cache.setItem(key, value);
-			expect(mockKeyValueStorageRemoveItem).toBeCalledTimes(2);
-			expect(mockKeyValueStorageRemoveItem).toBeCalledWith(lowPriorityItem.key);
-			expect(mockKeyValueStorageRemoveItem).toBeCalledWith(
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(2);
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(
+				lowPriorityItem.key
+			);
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(
 				mediumPriorityItem.key
 			);
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
 				prefixedKey,
 				expect.stringContaining(value)
 			);
@@ -436,12 +447,14 @@ describe('StorageCacheCommon', () => {
 				lastVisitedItem.key,
 			]);
 			await cache.setItem(key, value);
-			expect(mockKeyValueStorageRemoveItem).toBeCalledTimes(2);
-			expect(mockKeyValueStorageRemoveItem).toBeCalledWith(lastVisitedItem.key);
-			expect(mockKeyValueStorageRemoveItem).toBeCalledWith(
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(2);
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(
+				lastVisitedItem.key
+			);
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(
 				recentlyVistedItem.key
 			);
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
 				prefixedKey,
 				expect.stringContaining(value)
 			);
@@ -464,26 +477,26 @@ describe('StorageCacheCommon', () => {
 			);
 
 			expect(await cache.getItem(key)).toBe(value);
-			expect(loggerSpy.debug).toBeCalledWith(
+			expect(loggerSpy.debug).toHaveBeenCalledWith(
 				expect.stringContaining(`Get item: key is ${key}`)
 			);
-			expect(mockKeyValueStorageGetItem).toBeCalledWith(prefixedKey);
+			expect(mockKeyValueStorageGetItem).toHaveBeenCalledWith(prefixedKey);
 		});
 
 		it('aborts on empty key', async () => {
 			expect(await cache.getItem('')).toBeNull();
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid key')
 			);
-			expect(mockKeyValueStorageGetItem).not.toBeCalled();
+			expect(mockKeyValueStorageGetItem).not.toHaveBeenCalled();
 		});
 
 		it('aborts on reserved key', async () => {
 			expect(await cache.getItem('CurSize')).toBeNull();
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid key')
 			);
-			expect(mockKeyValueStorageGetItem).not.toBeCalled();
+			expect(mockKeyValueStorageGetItem).not.toHaveBeenCalled();
 		});
 
 		it('clears item if it expires when trying to get it', async () => {
@@ -496,7 +509,7 @@ describe('StorageCacheCommon', () => {
 			);
 
 			expect(await cache.getItem(key)).toBeNull();
-			expect(mockKeyValueStorageRemoveItem).toBeCalledWith(prefixedKey);
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(prefixedKey);
 		});
 
 		it('returns null if not in cache', async () => {
@@ -508,8 +521,8 @@ describe('StorageCacheCommon', () => {
 			mockKeyValueStorageGetItem.mockReturnValue(JSON.stringify(item));
 
 			expect(await cache.getItem(key)).toBe(value);
-			expect(mockKeyValueStorageGetItem).toBeCalledWith(prefixedKey);
-			expect(mockKeyValueStorageSetItem).toBeCalledWith(
+			expect(mockKeyValueStorageGetItem).toHaveBeenCalledWith(prefixedKey);
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
 				prefixedKey,
 				JSON.stringify({ ...item, visitedTime: currentTime })
 			);
@@ -519,8 +532,8 @@ describe('StorageCacheCommon', () => {
 			mockGetByteLength.mockReturnValue(20);
 			const callback = jest.fn(() => value);
 			expect(await cache.getItem(key, { callback })).toBe(value);
-			expect(callback).toBeCalled();
-			expect(mockKeyValueStorageSetItem).toBeCalled();
+			expect(callback).toHaveBeenCalled();
+			expect(mockKeyValueStorageSetItem).toHaveBeenCalled();
 		});
 	});
 
@@ -537,32 +550,32 @@ describe('StorageCacheCommon', () => {
 
 		it('removes an item', async () => {
 			await cache.removeItem(key);
-			expect(loggerSpy.debug).toBeCalledWith(
+			expect(loggerSpy.debug).toHaveBeenCalledWith(
 				expect.stringContaining(`Remove item: key is ${key}`)
 			);
-			expect(mockKeyValueStorageRemoveItem).toBeCalledWith(prefixedKey);
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(prefixedKey);
 		});
 
 		it('aborts on empty key', async () => {
 			await cache.removeItem('');
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid key')
 			);
-			expect(mockKeyValueStorageRemoveItem).not.toBeCalled();
+			expect(mockKeyValueStorageRemoveItem).not.toHaveBeenCalled();
 		});
 
 		it('aborts on reserved key', async () => {
 			await cache.removeItem('CurSize');
-			expect(loggerSpy.warn).toBeCalledWith(
+			expect(loggerSpy.warn).toHaveBeenCalledWith(
 				expect.stringContaining('Invalid key')
 			);
-			expect(mockKeyValueStorageRemoveItem).not.toBeCalled();
+			expect(mockKeyValueStorageRemoveItem).not.toHaveBeenCalled();
 		});
 
 		it('does nothing if item not found', async () => {
 			mockKeyValueStorageGetItem.mockReturnValue(null);
 			await cache.removeItem(key);
-			expect(mockKeyValueStorageRemoveItem).not.toBeCalled();
+			expect(mockKeyValueStorageRemoveItem).not.toHaveBeenCalled();
 		});
 	});
 
@@ -575,8 +588,8 @@ describe('StorageCacheCommon', () => {
 				`${keyPrefix}some-key`,
 			]);
 			await cache.clear();
-			expect(loggerSpy.debug).toBeCalledWith('Clear Cache');
-			expect(mockKeyValueStorageRemoveItem).toBeCalledTimes(2);
+			expect(loggerSpy.debug).toHaveBeenCalledWith('Clear Cache');
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(2);
 		});
 	});
 

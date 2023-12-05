@@ -23,7 +23,7 @@ describe('addTokenEventListener', () => {
 	it('calls the native addTokenEventListener', () => {
 		addTokenEventListener(eventType, jest.fn());
 
-		expect(mockAddListenerNative).toBeCalledWith(
+		expect(mockAddListenerNative).toHaveBeenCalledWith(
 			eventType,
 			expect.any(Function)
 		);
@@ -36,6 +36,6 @@ describe('addTokenEventListener', () => {
 		const listener = jest.fn();
 		addTokenEventListener(eventType, listener);
 
-		expect(listener).toBeCalledWith(token);
+		expect(listener).toHaveBeenCalledWith(token);
 	});
 });

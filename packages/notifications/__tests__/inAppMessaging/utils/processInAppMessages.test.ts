@@ -3,7 +3,7 @@
 
 import {
 	pinpointInAppMessage,
-	simpleInAppMessagingEvent
+	simpleInAppMessagingEvent,
 } from '../../testUtils/data';
 import {
 	incrementMessageCounts,

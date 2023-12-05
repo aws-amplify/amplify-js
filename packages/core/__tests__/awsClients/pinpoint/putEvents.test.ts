@@ -61,7 +61,7 @@ describe('Pinpoint - putEvents', () => {
 		);
 		const response = await putEvents(pinpointHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
-		expect(fetchTransferHandler).toBeCalledWith(
+		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
 			expect.anything()
 		);

@@ -49,7 +49,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				({
 					get: mockGetFunc,
 					getAll: mockGetAllFunc,
-				} as any)
+				}) as any
 		);
 
 		jest.spyOn(response, 'cookies', 'get').mockImplementation(() => ({
@@ -124,13 +124,13 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				({
 					get: mockGetFunc,
 					getAll: mockGetAllFunc,
-				} as any)
+				}) as any
 		);
 		jest.spyOn(response, 'headers', 'get').mockImplementation(
 			() =>
 				({
 					append: mockAppend,
-				} as any)
+				}) as any
 		);
 
 		const mockContext = {
@@ -397,6 +397,6 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				request: undefined,
 				response: new ServerResponse({} as any),
 			} as any)
-		).toThrowError();
+		).toThrow();
 	});
 });

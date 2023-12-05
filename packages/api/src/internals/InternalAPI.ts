@@ -62,7 +62,7 @@ export class InternalAPIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param options - GraphQL Options
-	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
+	 * @param [additionalHeaders] - headers to merge in after any `libraryConfigHeaders` set in the config
 	 * @returns An Observable if queryType is 'subscription', else a promise of the graphql result from the query.
 	 */
 	graphql<T>(
@@ -72,11 +72,11 @@ export class InternalAPIClass {
 	): T extends GraphQLQuery<T>
 		? Promise<GraphQLResult<T>>
 		: T extends GraphQLSubscription<T>
-		? Observable<{
-				provider: AWSAppSyncRealTimeProvider;
-				value: GraphQLResult<T>;
-		  }>
-		: Promise<GraphQLResult<any>> | Observable<object>;
+		  ? Observable<{
+					provider: AWSAppSyncRealTimeProvider;
+					value: GraphQLResult<T>;
+		    }>
+		  : Promise<GraphQLResult<any>> | Observable<object>;
 	graphql<T = any>(
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,

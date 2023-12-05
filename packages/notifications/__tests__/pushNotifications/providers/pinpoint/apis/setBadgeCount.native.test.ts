@@ -38,6 +38,6 @@ describe('setBadgeCount (native)', () => {
 
 	it('returns the result of the native call', async () => {
 		setBadgeCount(42);
-		expect(mockSetBadgeCountNative).toBeCalledWith(42);
+		expect(mockSetBadgeCountNative).toHaveBeenCalledWith(42);
 	});
 });

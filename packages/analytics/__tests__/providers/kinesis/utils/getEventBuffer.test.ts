@@ -7,7 +7,7 @@ import {
 	mockBufferConfig,
 	mockKinesisConfig,
 	mockCredentialConfig,
-} from '../../../testUtils/mockConstants.test';
+} from '../../../testUtils/mockConstants';
 
 jest.mock('../../../../src/utils');
 
@@ -24,7 +24,7 @@ describe('Kinesis Provider Util: getEventBuffer', () => {
 			...mockCredentialConfig,
 		});
 
-		expect(mockEventBuffer).toBeCalledWith(
+		expect(mockEventBuffer).toHaveBeenCalledWith(
 			mockBufferConfig,
 			expect.any(Function)
 		);
@@ -58,8 +58,8 @@ describe('Kinesis Provider Util: getEventBuffer', () => {
 		});
 
 		await new Promise(process.nextTick);
-		expect(testBuffer1.flushAll).toBeCalledTimes(1);
-		expect(testBuffer1.release).toBeCalledTimes(1);
+		expect(testBuffer1.flushAll).toHaveBeenCalledTimes(1);
+		expect(testBuffer1.release).toHaveBeenCalledTimes(1);
 		expect(testBuffer1).not.toBe(testBuffer2);
 	});
 });

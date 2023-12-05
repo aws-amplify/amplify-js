@@ -9,7 +9,7 @@ import { resolveCredentials } from '../../../../src/utils';
 import {
 	mockKinesisConfig,
 	mockCredentialConfig,
-} from '../../../testUtils/mockConstants.test';
+} from '../../../testUtils/mockConstants';
 import { flushEvents } from '../../../../src/providers/kinesis-firehose/apis';
 import { ConsoleLogger } from '@aws-amplify/core';
 
@@ -60,6 +60,9 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 
 		flushEvents();
 		await new Promise(process.nextTick);
-		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
+		expect(loggerWarnSpy).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(Error)
+		);
 	});
 });

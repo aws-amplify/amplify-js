@@ -403,7 +403,7 @@ describe('Predictions convert provider test', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
 			await predictionsProvider.convert(validSpeechToTextInput);
-			expect(downsampleBufferSpyon).toBeCalledWith(
+			expect(downsampleBufferSpyon).toHaveBeenCalledWith(
 				expect.objectContaining({ outputSampleRate: 8000 })
 			);
 			downsampleBufferSpyon.mockClear();

@@ -1,4 +1,4 @@
-Symbol = undefined; // this should be undefined before loading Hub
+Symbol = undefined as any; // this should be undefined before loading Hub
 import { Hub } from '../src';
 import { ConsoleLogger } from '../src';
 

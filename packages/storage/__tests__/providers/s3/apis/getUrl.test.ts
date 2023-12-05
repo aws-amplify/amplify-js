@@ -114,8 +114,8 @@ describe('getUrl test', () => {
 						validateObjectExistence: true,
 					} as GetUrlOptions,
 				});
-				expect(getPresignedGetObjectUrl).toBeCalledTimes(1);
-				expect(headObject).toBeCalledTimes(1);
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
 				expect(result.url).toEqual({
 					url: new URL('https://google.com'),
@@ -128,20 +128,20 @@ describe('getUrl test', () => {
 			jest.clearAllMocks();
 		});
 		it('should return not found error when the object is not found', async () => {
-			(headObject as jest.Mock).mockImplementation(() =>
-				Object.assign(new Error(), {
+			(headObject as jest.Mock).mockImplementation(() => {
+				throw Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
 					name: 'NotFound',
-				})
-			);
+				});
+			});
+			expect.assertions(2);
 			try {
 				await getUrl({
 					key: 'invalid_key',
 					options: { validateObjectExistence: true },
 				});
-			} catch (error) {
-				expect.assertions(2);
-				expect(headObject).toBeCalledTimes(1);
+			} catch (error: any) {
+				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(error.$metadata?.httpStatusCode).toBe(404);
 			}
 		});

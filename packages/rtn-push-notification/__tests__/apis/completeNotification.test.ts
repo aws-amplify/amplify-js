@@ -27,6 +27,8 @@ describe('completeNotification', () => {
 	it('calls the native completeNotification', () => {
 		completeNotification(completionHandlerId);
 
-		expect(mockCompleteNotificationNative).toBeCalledWith(completionHandlerId);
+		expect(mockCompleteNotificationNative).toHaveBeenCalledWith(
+			completionHandlerId
+		);
 	});
 });
