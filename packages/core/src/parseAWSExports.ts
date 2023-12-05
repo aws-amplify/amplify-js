@@ -35,7 +35,7 @@ export const parseAWSExports = (
 ): ResourcesConfig => {
 	if (!Object.prototype.hasOwnProperty.call(config, 'aws_project_region')) {
 		throw new AmplifyError({
-			name: 'InvalidInputForParseAmplifyConfig',
+			name: 'InvalidParameterException',
 			message: 'Invalid config parameter.',
 			recoverySuggestion:
 				'Ensure passing the config object imported from  `amplifyconfiguration.json`.',
