@@ -39,6 +39,7 @@ describe('aws-amplify Exports', () => {
 					'ServiceWorker',
 					'CookieStorage',
 					'defaultStorage',
+					'parseAmplifyConfig',
 					'sessionStorage',
 					'sharedInMemoryStorage',
 				].sort()

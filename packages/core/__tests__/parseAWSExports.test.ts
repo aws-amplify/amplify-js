@@ -144,6 +144,7 @@ describe('parseAWSExports', () => {
 		};
 		expect(
 			parseAWSExports({
+				aws_project_region: 'us-west-2',
 				aws_cognito_identity_pool_id: identityPoolId,
 				aws_cognito_sign_up_verification_method: signUpVerificationMethod,
 				aws_cognito_username_attributes: ['PHONE_NUMBER'],
@@ -190,6 +191,7 @@ describe('parseAWSExports', () => {
 	it('should fallback to IAM auth mode if Appsync auth type is invalid', () => {
 		expect(
 			parseAWSExports({
+				aws_project_region: 'us-west-2',
 				aws_appsync_graphqlEndpoint: appsyncEndpoint,
 				aws_appsync_apiKey: apiKey,
 				aws_appsync_region: region,
@@ -210,6 +212,7 @@ describe('parseAWSExports', () => {
 	it('should handle missing `redirectSignIn` or `redirectSignOut` configuration', () => {
 		expect(
 			parseAWSExports({
+				aws_project_region: 'us-west-2',
 				aws_user_pools_id: userPoolId,
 				oauth: {
 					domain: oAuthDomain,
@@ -243,5 +246,20 @@ describe('parseAWSExports', () => {
 				},
 			},
 		});
+	});
+
+	it('should throw an error when passing a `ResourceConfig` object as the config parameter', () => {
+		const testConfig: ResourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: 'userPoolClientId',
+					userPoolId: 'userPoolId',
+				},
+			},
+		};
+
+		expect(() => parseAWSExports(testConfig)).toThrow(
+			'Invalid config parameter.'
+		);
 	});
 });
