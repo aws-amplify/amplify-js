@@ -392,7 +392,7 @@ export class InternalGraphQLAPIClass {
 		const { errors } = response;
 
 		if (errors && errors.length) {
-			throw repackageUnauthError(response, authMode);
+			throw repackageUnauthError(response);
 		}
 
 		return response;
@@ -435,27 +435,29 @@ export class InternalGraphQLAPIClass {
 		 */
 		const { headers: libraryConfigHeaders } = resolveLibraryOptions(amplify);
 
-		return this.appSyncRealTime.subscribe(
-			{
-				query: print(query as DocumentNode),
-				variables,
-				appSyncGraphqlEndpoint: config?.endpoint,
-				region: config?.region,
-				authenticationType: authMode || config?.defaultAuthMode,
-				apiKey: config?.apiKey,
-				additionalHeaders,
-				authToken,
-				libraryConfigHeaders,
-			},
-			customUserAgentDetails
-		).pipe(
-      catchError(e => {
-        if (e.errors) {
-          throw repackageUnauthError(e, authMode);
-        }
-        throw e;
-      })
-    );
+		return this.appSyncRealTime
+			.subscribe(
+				{
+					query: print(query as DocumentNode),
+					variables,
+					appSyncGraphqlEndpoint: config?.endpoint,
+					region: config?.region,
+					authenticationType: authMode || config?.defaultAuthMode,
+					apiKey: config?.apiKey,
+					additionalHeaders,
+					authToken,
+					libraryConfigHeaders,
+				},
+				customUserAgentDetails
+			)
+			.pipe(
+				catchError(e => {
+					if (e.errors) {
+						throw repackageUnauthError(e);
+					}
+					throw e;
+				})
+			);
 	}
 }
 

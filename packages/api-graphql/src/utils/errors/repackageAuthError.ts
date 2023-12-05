@@ -15,10 +15,7 @@ type ErrorObject = {
  * unauth error. If it does, it changes the error message to include instructions
  * for the app developer.
  */
-export function repackageUnauthError<T extends ErrorObject>(
-	content: T,
-	authMode?: GraphQLAuthMode
-): T {
+export function repackageUnauthError<T extends ErrorObject>(content: T): T {
 	if (content.errors && Array.isArray(content.errors)) {
 		content.errors.forEach(e => {
 			if (isUnauthError(e)) {
