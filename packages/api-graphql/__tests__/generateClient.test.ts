@@ -61,6 +61,42 @@ function makeAppSyncStreams() {
 	return { streams, spy };
 }
 
+/**
+ * For each call against the spy, assuming the spy is a `post()` spy,
+ * replaces fields that are likely to change between calls (or library version revs)
+ * with static values. When possible, on the unpredicable portions of these values
+ * are replaced.
+ * 
+ * ## THIS IS DESTRUCTIVE
+ * 
+ * The original `spy.mocks.calls` will be updated *and* returned.
+ * 
+ * For example,
+ * 
+ * ```plain
+ * headers.x-amz-user-agent: "aws-amplify/6.0.5 api/1 framework/0"
+ * ```
+ * 
+ * Is replaced with:
+ * 
+ * ```plain
+ * headers.x-amz-user-agent: "aws-amplify/latest api/latest framework/latest"
+ * ```
+ * 
+ * @param spy The Jest spy
+ */
+function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
+	return spy.mock.calls.map((call: any) => {
+		const [postOptions] = call;
+		const userAgent = postOptions?.options?.headers?.['x-amz-user-agent'];
+		if (userAgent) {
+			const staticUserAgent = userAgent.replace(/\/[\d.]+/g, '/latest');
+			postOptions.options.headers['x-amz-user-agent'] = staticUserAgent;
+		}
+		return call;
+	});
+}
+
 const USER_AGENT_DETAILS = {
 	action: '1',
 	category: 'api',
@@ -215,24 +251,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -260,21 +279,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			const { data } = await client.models.Todo.get({ id: 'asdf' });
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -308,39 +313,8 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				})
-			);
-
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
 				expect.objectContaining({
@@ -375,39 +349,7 @@ describe('generateClient', () => {
 				nextToken: 'some-token',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-								nextToken: 'some-token',
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can list() with limit', async () => {
@@ -432,39 +374,7 @@ describe('generateClient', () => {
 				limit: 5,
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-								limit: 5,
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can update()', async () => {
@@ -485,24 +395,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -532,23 +425,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -711,25 +588,7 @@ describe('generateClient', () => {
 
 			const { data: notes } = await data.notes();
 
-			expect(getChildNotesSpy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									and: [{ todoNotesId: { eq: 'todo-id' } }],
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 
 			expect(notes!.length).toBe(1);
 			expect(notes![0]).toEqual(
@@ -775,26 +634,7 @@ describe('generateClient', () => {
 
 			const { data: notes } = await data.notes({ nextToken: 'some-token' });
 
-			expect(getChildNotesSpy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									and: [{ todoNotesId: { eq: 'todo-id' } }],
-								},
-								nextToken: 'some-token',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 
 			expect(notes!.length).toBe(1);
 			expect(notes![0]).toEqual(
@@ -840,26 +680,7 @@ describe('generateClient', () => {
 
 			const { data: notes } = await data.notes({ limit: 5 });
 
-			expect(getChildNotesSpy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									and: [{ todoNotesId: { eq: 'todo-id' } }],
-								},
-								limit: 5,
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 
 			expect(notes!.length).toBe(1);
 			expect(notes![0]).toEqual(
@@ -902,21 +723,7 @@ describe('generateClient', () => {
 
 			const { data: todo } = await data.todo();
 
-			expect(getChildNotesSpy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'todo-id',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 
 			expect(todo).toEqual(
 				expect.objectContaining({
@@ -957,21 +764,7 @@ describe('generateClient', () => {
 
 			const { data: todo } = await data.meta();
 
-			expect(getChildMetaSpy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining('getTodoMetadata(id: $id)'),
-							variables: {
-								id: 'meta-id',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 
 			expect(todo).toEqual(
 				expect.objectContaining({
@@ -1028,24 +821,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can get()', async () => {
@@ -1063,21 +839,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			await client.models.Todo.get({ id: 'asdf' }, { authMode: 'userPool' });
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can list()', async () => {
@@ -1102,27 +864,7 @@ describe('generateClient', () => {
 				authMode: 'userPool',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can update()', async () => {
@@ -1146,24 +888,7 @@ describe('generateClient', () => {
 				{ authMode: 'userPool' }
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can delete()', async () => {
@@ -1186,23 +911,7 @@ describe('generateClient', () => {
 				{ authMode: 'userPool' }
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can subscribe to onCreate()', done => {
@@ -1353,25 +1062,7 @@ describe('generateClient', () => {
 
 				await data.notes();
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'test',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-								),
-								variables: {
-									filter: {
-										and: [{ todoNotesId: { eq: 'todo-id' } }],
-									},
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -1409,21 +1100,7 @@ describe('generateClient', () => {
 
 				await data.todo();
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'test',
-							}),
-							body: {
-								query: expect.stringContaining('getTodo(id: $id)'),
-								variables: {
-									id: 'todo-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -1460,21 +1137,7 @@ describe('generateClient', () => {
 
 				await data.meta();
 
-				expect(getChildMetaSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'test',
-							}),
-							body: {
-								query: expect.stringContaining('getTodoMetadata(id: $id)'),
-								variables: {
-									id: 'meta-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 			});
 		});
 
@@ -1515,25 +1178,7 @@ describe('generateClient', () => {
 
 				await data.notes({ authMode: 'apiKey' });
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								'X-Api-Key': 'FAKE-KEY',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-								),
-								variables: {
-									filter: {
-										and: [{ todoNotesId: { eq: 'todo-id' } }],
-									},
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -1571,21 +1216,7 @@ describe('generateClient', () => {
 
 				await data.todo({ authMode: 'apiKey' });
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								'X-Api-Key': 'FAKE-KEY',
-							}),
-							body: {
-								query: expect.stringContaining('getTodo(id: $id)'),
-								variables: {
-									id: 'todo-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -1622,21 +1253,7 @@ describe('generateClient', () => {
 
 				await data.meta({ authMode: 'apiKey' });
 
-				expect(getChildMetaSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								'X-Api-Key': 'FAKE-KEY',
-							}),
-							body: {
-								query: expect.stringContaining('getTodoMetadata(id: $id)'),
-								variables: {
-									id: 'meta-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 			});
 		});
 	});
@@ -1687,24 +1304,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can get()', async () => {
@@ -1725,21 +1325,7 @@ describe('generateClient', () => {
 				{ authMode: 'lambda', authToken: 'some-token' }
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can list()', async () => {
@@ -1765,27 +1351,7 @@ describe('generateClient', () => {
 				authToken: 'some-token',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can update()', async () => {
@@ -1809,24 +1375,7 @@ describe('generateClient', () => {
 				{ authMode: 'lambda', authToken: 'some-token' }
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can delete()', async () => {
@@ -1849,23 +1398,7 @@ describe('generateClient', () => {
 				{ authMode: 'lambda', authToken: 'some-token' }
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can subscribe to onCreate()', done => {
@@ -2019,25 +1552,7 @@ describe('generateClient', () => {
 
 				await data.notes();
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-								),
-								variables: {
-									filter: {
-										and: [{ todoNotesId: { eq: 'todo-id' } }],
-									},
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -2076,21 +1591,7 @@ describe('generateClient', () => {
 
 				await data.todo();
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining('getTodo(id: $id)'),
-								variables: {
-									id: 'todo-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -2128,21 +1629,7 @@ describe('generateClient', () => {
 
 				await data.meta();
 
-				expect(getChildMetaSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining('getTodoMetadata(id: $id)'),
-								variables: {
-									id: 'meta-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 			});
 		});
 
@@ -2183,25 +1670,7 @@ describe('generateClient', () => {
 
 				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-								),
-								variables: {
-									filter: {
-										and: [{ todoNotesId: { eq: 'todo-id' } }],
-									},
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -2239,21 +1708,7 @@ describe('generateClient', () => {
 
 				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining('getTodo(id: $id)'),
-								variables: {
-									id: 'todo-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -2290,21 +1745,7 @@ describe('generateClient', () => {
 
 				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(getChildMetaSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining('getTodoMetadata(id: $id)'),
-								variables: {
-									id: 'meta-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 			});
 		});
 	});
@@ -2352,24 +1793,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can get()', async () => {
@@ -2390,21 +1814,7 @@ describe('generateClient', () => {
 			});
 			await client.models.Todo.get({ id: 'asdf' });
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can list()', async () => {
@@ -2431,27 +1841,7 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can update()', async () => {
@@ -2475,24 +1865,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can delete()', async () => {
@@ -2515,23 +1888,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'test',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can subscribe to onCreate()', done => {
@@ -2685,25 +2042,7 @@ describe('generateClient', () => {
 
 				await data.notes();
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'test',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-								),
-								variables: {
-									filter: {
-										and: [{ todoNotesId: { eq: 'todo-id' } }],
-									},
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -2739,21 +2078,7 @@ describe('generateClient', () => {
 
 				await data.todo();
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'test',
-							}),
-							body: {
-								query: expect.stringContaining('getTodo(id: $id)'),
-								variables: {
-									id: 'todo-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -2788,21 +2113,7 @@ describe('generateClient', () => {
 
 				await data.meta();
 
-				expect(getChildMetaSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'test',
-							}),
-							body: {
-								query: expect.stringContaining('getTodoMetadata(id: $id)'),
-								variables: {
-									id: 'meta-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 			});
 		});
 
@@ -2843,25 +2154,7 @@ describe('generateClient', () => {
 
 				await data.notes({ authMode: 'apiKey' });
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								'X-Api-Key': 'FAKE-KEY',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-								),
-								variables: {
-									filter: {
-										and: [{ todoNotesId: { eq: 'todo-id' } }],
-									},
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -2897,21 +2190,7 @@ describe('generateClient', () => {
 
 				await data.todo({ authMode: 'apiKey' });
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								'X-Api-Key': 'FAKE-KEY',
-							}),
-							body: {
-								query: expect.stringContaining('getTodo(id: $id)'),
-								variables: {
-									id: 'todo-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -2946,21 +2225,7 @@ describe('generateClient', () => {
 
 				await data.meta({ authMode: 'apiKey' });
 
-				expect(getChildMetaSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								'X-Api-Key': 'FAKE-KEY',
-							}),
-							body: {
-								query: expect.stringContaining('getTodoMetadata(id: $id)'),
-								variables: {
-									id: 'meta-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 			});
 		});
 	});
@@ -3009,24 +2274,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can get()', async () => {
@@ -3048,21 +2296,7 @@ describe('generateClient', () => {
 			});
 			await client.models.Todo.get({ id: 'asdf' });
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can list()', async () => {
@@ -3090,27 +2324,7 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can update()', async () => {
@@ -3135,24 +2349,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can delete()', async () => {
@@ -3176,23 +2373,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							Authorization: 'some-token',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can subscribe to onCreate()', done => {
@@ -3350,25 +2531,7 @@ describe('generateClient', () => {
 
 				await data.notes();
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-								),
-								variables: {
-									filter: {
-										and: [{ todoNotesId: { eq: 'todo-id' } }],
-									},
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -3405,21 +2568,7 @@ describe('generateClient', () => {
 
 				await data.todo();
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining('getTodo(id: $id)'),
-								variables: {
-									id: 'todo-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -3455,21 +2604,7 @@ describe('generateClient', () => {
 
 				await data.meta();
 
-				expect(getChildMetaSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining('getTodoMetadata(id: $id)'),
-								variables: {
-									id: 'meta-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 			});
 		});
 
@@ -3510,25 +2645,7 @@ describe('generateClient', () => {
 
 				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'listNotes(filter: $filter, limit: $limit, nextToken: $nextToken)'
-								),
-								variables: {
-									filter: {
-										and: [{ todoNotesId: { eq: 'todo-id' } }],
-									},
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -3564,21 +2681,7 @@ describe('generateClient', () => {
 
 				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(getChildNotesSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining('getTodo(id: $id)'),
-								variables: {
-									id: 'todo-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -3613,21 +2716,7 @@ describe('generateClient', () => {
 
 				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(getChildMetaSpy).toHaveBeenCalledWith(
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								Authorization: 'some-token',
-							}),
-							body: {
-								query: expect.stringContaining('getTodoMetadata(id: $id)'),
-								variables: {
-									id: 'meta-id',
-								},
-							},
-						}),
-					})
-				);
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
 			});
 		});
 	});
@@ -3667,25 +2756,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3722,25 +2793,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header-function': 'should return this header',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3784,25 +2837,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			// Request headers should overwrite client headers:
 			expect(spy).toHaveBeenCalledWith(
@@ -3857,36 +2892,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header-function': 'should return this header',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			// Request headers should overwrite client headers:
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3919,22 +2925,7 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.get({ id: 'asdf' });
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3974,33 +2965,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
-
-			// Request headers should overwrite client headers:
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4039,39 +3004,7 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
@@ -4114,38 +3047,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -4193,25 +3095,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4254,35 +3138,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4317,34 +3173,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(data).toEqual(
-				expect.objectContaining({
-					__typename: 'Todo',
-					id: 'some-id',
-					owner: 'wirejobviously',
-					name: 'some name',
-					description: 'something something',
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('can delete() - with custom request headers', async () => {
@@ -4376,34 +3205,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4647,25 +3449,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4702,26 +3486,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4762,26 +3527,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('createTodo(input: $input)'),
-							variables: {
-								input: {
-									name: 'some name',
-									description: 'something something',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4814,23 +3560,7 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.get({ id: 'asdf' });
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4870,34 +3600,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('getTodo(id: $id)'),
-							variables: {
-								id: 'asdf',
-							},
-						},
-					}),
-				})
-			);
-
-			// Request headers should overwrite client headers:
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4936,40 +3639,7 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
@@ -5012,39 +3682,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -5092,26 +3730,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -5154,36 +3773,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('updateTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-									name: 'some other name',
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -5218,25 +3808,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'client-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -5278,35 +3850,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-							'request-header': 'should exist',
-							Authorization: 'amplify-config-auth-token',
-						}),
-						body: {
-							query: expect.stringContaining('deleteTodo(input: $input)'),
-							variables: {
-								input: {
-									id: 'some-id',
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.not.objectContaining({
-							'client-header': 'should not exist',
-						}),
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -5580,18 +4124,7 @@ describe('generateClient', () => {
 							}),
 						]);
 
-						// ensure we actually got a request that included our next token
-						expect(spy).toHaveBeenCalledWith(
-							expect.objectContaining({
-								options: expect.objectContaining({
-									body: expect.objectContaining({
-										variables: expect.objectContaining({
-											nextToken: 'sometoken',
-										}),
-									}),
-								}),
-							})
-						);
+						expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 
 						done();
 					}
@@ -6271,17 +4804,7 @@ describe('generateClient', () => {
 				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: {
-							query: expect.stringContaining('listTodos'),
-							variables: {},
-						},
-						signingServiceInfo: { region: 'us-west-1', service: 'appsync' },
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 	});
 
@@ -6324,17 +4847,7 @@ describe('generateClient', () => {
 				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: {
-							query: expect.stringContaining('listTodos'),
-							variables: {},
-						},
-						signingServiceInfo: { region: 'us-west-1', service: 'appsync' },
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 
 		test('client auth override query - lambda', async () => {
@@ -6363,20 +4876,7 @@ describe('generateClient', () => {
 				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: {
-							query: expect.stringContaining('listTodos'),
-							variables: {},
-						},
-						headers: expect.objectContaining({
-							Authorization: 'trustno1',
-						}),
-						signingServiceInfo: { region: 'us-west-1', service: 'appsync' },
-					}),
-				})
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
 		});
 	});
 });
