@@ -72,6 +72,14 @@ const amplifyConfig = {
 						isRequired: false,
 						attributes: [],
 					},
+					tags: {
+						name: 'tags',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+					},
 					createdAt: {
 						name: 'createdAt',
 						isArray: false,
