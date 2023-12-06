@@ -242,7 +242,7 @@ export type AuthSignInWithMagicLinkInput<
 > = {
 	username: string;
 	flow: Flow;
-	redirectURL: URL;
+	redirectURL: string;
 	options?: Flow extends 'SIGN_IN' ? SignInOptions : SignUpOptions;
 };
 

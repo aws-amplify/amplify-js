@@ -275,28 +275,30 @@ export type AuthDevice = {
 
 export type AuthPasswordlessFlow = 'SIGN_IN' | 'SIGN_UP_AND_SIGN_IN';
 
-export type AuthOTPDeliveryDestination = 'SMS' | 'EMAIL';
+interface AuthOTPDeliveryDetails<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+> extends AuthCodeDeliveryDetails<UserAttributeKey> {
+	deliveryMedium?: 'SMS' | 'EMAIL';
+}
 
 export type AuthConfirmSignInWithOTPStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	signInStep: 'CONFIRM_SIGN_IN_WITH_OTP';
-	// TODO: deliveryMedium can only by SMS and Email
-	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+	codeDeliveryDetails: AuthOTPDeliveryDetails<UserAttributeKey>;
 	additionalInfo: AuthAdditionalInfo;
 };
+
+interface AuthMagicLinkDeliveryDetails<
+	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+> extends AuthCodeDeliveryDetails<UserAttributeKey> {
+	deliveryMedium?: 'EMAIL';
+}
 
 export type AuthConfirmSignInWithMagicLinkStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > = {
 	signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK';
-	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
+	codeDeliveryDetails: AuthMagicLinkDeliveryDetails<UserAttributeKey>;
 	additionalInfo: AuthAdditionalInfo;
 };
-
-// export type AuthSignInWithOTPNextStep<
-// 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-// > =
-// 	| AuthConfirmSignInWithOTPStep<UserAttributeKey>
-// 	| AuthConfirmSignInWithMagicLinkStep<UserAttributeKey>
-// 	| DoneSignInStep;
