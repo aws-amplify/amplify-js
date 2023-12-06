@@ -272,6 +272,7 @@ describe('generateClient', () => {
 						...serverManagedFields,
 						name: 'some name',
 						description: 'something something',
+						tags: ['one', 'two', 'three']
 					},
 				},
 			});
@@ -288,6 +289,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
+					tags: ['one', 'two', 'three']
 				})
 			);
 		});
