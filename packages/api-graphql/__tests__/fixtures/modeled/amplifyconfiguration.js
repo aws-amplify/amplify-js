@@ -63,6 +63,23 @@ const amplifyConfig = {
 							targetNames: ['todoMetaId'],
 						},
 					},
+					status: {
+						name: 'status',
+						isArray: false,
+						type: {
+							enum: 'Status',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+					tags: {
+						name: 'tags',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+					},
 					createdAt: {
 						name: 'createdAt',
 						isArray: false,
@@ -606,7 +623,12 @@ const amplifyConfig = {
 				},
 			},
 		},
-		enums: {},
+		enums: {
+			Status: {
+				name: 'Status',
+				values: ['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED'],
+			},
+		},
 		nonModels: {},
 	},
 };

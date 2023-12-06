@@ -12,6 +12,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -54,6 +56,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -95,6 +99,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -167,6 +173,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -206,6 +214,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -290,6 +300,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -394,6 +406,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -430,6 +444,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -511,6 +527,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -580,6 +598,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -626,6 +646,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -668,6 +690,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -710,6 +734,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -751,6 +777,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -823,6 +851,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -862,6 +892,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -946,6 +978,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1050,6 +1084,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1086,6 +1122,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1167,6 +1205,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1236,6 +1276,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -1282,6 +1324,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1324,6 +1368,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1366,6 +1412,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1407,6 +1455,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1479,6 +1529,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1518,6 +1570,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1602,6 +1656,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1706,6 +1762,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1745,6 +1803,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1829,6 +1889,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1901,6 +1963,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -1947,6 +2011,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -1989,6 +2055,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2031,6 +2099,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2072,6 +2142,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2144,6 +2216,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2183,6 +2257,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2267,6 +2343,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2371,6 +2449,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2410,6 +2490,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2494,6 +2576,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2566,6 +2650,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -2612,6 +2698,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2654,6 +2742,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2694,6 +2784,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2734,6 +2826,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2774,6 +2868,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2814,6 +2910,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2853,6 +2951,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2892,6 +2992,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2929,6 +3031,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -2967,6 +3071,8 @@ exports[`generateClient basic model operations - custom client and request heade
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -3012,6 +3118,8 @@ exports[`generateClient basic model operations - custom client and request heade
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -3056,6 +3164,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3096,6 +3206,8 @@ exports[`generateClient basic model operations - custom client and request heade
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3136,6 +3248,8 @@ exports[`generateClient basic model operations can create() 1`] = `
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3175,6 +3289,8 @@ exports[`generateClient basic model operations can delete() 1`] = `
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3213,6 +3329,8 @@ exports[`generateClient basic model operations can get() 1`] = `
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3279,6 +3397,8 @@ exports[`generateClient basic model operations can lazy load @belongsTo 1`] = `
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3315,6 +3435,8 @@ exports[`generateClient basic model operations can lazy load @hasMany 1`] = `
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3393,6 +3515,8 @@ exports[`generateClient basic model operations can lazy load @hasMany with limit
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3472,6 +3596,8 @@ exports[`generateClient basic model operations can lazy load @hasMany with nextT
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3551,6 +3677,8 @@ exports[`generateClient basic model operations can lazy load @hasOne 1`] = `
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3617,6 +3745,8 @@ exports[`generateClient basic model operations can list() 1`] = `
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -3661,6 +3791,8 @@ exports[`generateClient basic model operations can list() with limit 1`] = `
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -3706,6 +3838,8 @@ exports[`generateClient basic model operations can list() with nextToken 1`] = `
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -3750,6 +3884,8 @@ exports[`generateClient basic model operations can update() 1`] = `
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3789,6 +3925,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3830,6 +3968,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3871,6 +4011,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3912,6 +4054,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3952,6 +4096,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -3992,6 +4138,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -4030,6 +4178,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -4069,6 +4219,8 @@ exports[`generateClient basic model operations with Amplify configuration option
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -4115,6 +4267,8 @@ exports[`generateClient basic model operations with Amplify configuration option
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -4160,6 +4314,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -4201,6 +4357,8 @@ exports[`generateClient basic model operations with Amplify configuration option
     id
     name
     description
+    status
+    tags
     createdAt
     updatedAt
     todoMetaId
@@ -4354,6 +4512,8 @@ exports[`generateClient observeQuery can paginate through initial results 1`] = 
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
@@ -4388,6 +4548,8 @@ exports[`generateClient observeQuery can paginate through initial results 1`] = 
       id
       name
       description
+      status
+      tags
       createdAt
       updatedAt
       todoMetaId
