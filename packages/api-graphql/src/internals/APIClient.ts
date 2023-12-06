@@ -48,7 +48,7 @@ export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
 	const res: Record<string, any> = {};
 
 	Object.entries(obj).forEach(([prop, value]) => {
-		if (typeof value === 'object' && value !== null) {
+		if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
 			if (value.items !== undefined) {
 				res[prop] = value.items.map((item: Record<string, any>) =>
 					flattenItems(item)
