@@ -1021,7 +1021,8 @@ describe('DataStore sync engine', () => {
 				// Validate that `query` returns the latest `title` and `_version`:
 				const queryResult = await DataStore.query(Post, postId);
 				expect(queryResult?.title).toEqual(title);
-				expect(queryResult!['_version'].toEqual(version));
+				// @ts-ignore
+				expect(queryResult?._version).toEqual(version);
 
 				if (blogId) expect(queryResult?.blogId).toEqual(blogId);
 			};
@@ -1038,7 +1039,9 @@ describe('DataStore sync engine', () => {
 						if (opType === 'UPDATE') {
 							const response: SubscriptionLogTuple = [
 								element.title,
-								element['_version'],
+								// No, TypeScript, there is a version:
+								// @ts-ignore
+								element._version,
 							];
 							// Track sequence of versions and titles
 							subscriptionLog.push(response);
@@ -1459,7 +1462,9 @@ describe('DataStore sync engine', () => {
 							if (opType === 'UPDATE') {
 								const response: SubscriptionLogTuple = [
 									element.title,
-									element['_version'],
+									// No, TypeScript, there is a version:
+									// @ts-ignore
+									element._version,
 								];
 								// Track sequence of versions and titles
 								subscriptionLog.push(response);
@@ -1697,8 +1702,10 @@ describe('DataStore sync engine', () => {
 						await DataStore.observe(Post).subscribe(({ opType, element }) => {
 							const response: SubscriptionLogMultiField = [
 								element.title,
-								element.blogId!,
-								element['_version'],
+								// @ts-ignore
+								element.blogId,
+								// @ts-ignore
+								element._version,
 							];
 							subscriptionLog.push(response);
 						});
