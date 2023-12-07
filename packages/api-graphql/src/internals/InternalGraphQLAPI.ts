@@ -276,7 +276,6 @@ export class InternalGraphQLAPIClass {
 
 		if (typeof additionalHeaders === 'function') {
 			const requestOptions: RequestOptions = {
-				// headers, // TODO
 				method: 'POST',
 				url: url.toString(),
 				queryString,
