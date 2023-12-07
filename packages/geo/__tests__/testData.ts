@@ -22,6 +22,7 @@ export const credentials = {
 };
 
 export const awsConfig = {
+	aws_project_region: 'us-east-2',
 	geo: {
 		amazon_location_service: {
 			maps: {

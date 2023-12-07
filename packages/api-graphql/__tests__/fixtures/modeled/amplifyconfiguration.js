@@ -4,6 +4,7 @@
  * Cognito fields etc. omitted.
  */
 const amplifyConfig = {
+	aws_project_region: 'us-east-2',
 	aws_appsync_graphqlEndpoint: 'https://localhost/graphql',
 	aws_appsync_region: 'us-west-1',
 	aws_appsync_authenticationType: 'API_KEY',
