@@ -38,6 +38,10 @@ export type SignInOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
 };
 
+export type SignInPasswordlessOptions = AuthServiceOptions & {
+	clientMetadata?: ClientMetadata;
+};
+
 /**
  * Options specific to Cognito Sign Up.
  */
@@ -90,9 +94,5 @@ export type SendUserAttributeVerificationCodeOptions = AuthServiceOptions & {
  * Options specific to Cognito Update User Attribute.
  */
 export type UpdateUserAttributeOptions = AuthServiceOptions & {
-	clientMetadata?: ClientMetadata;
-};
-
-export type PasswordlessSharedOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
 };

@@ -183,6 +183,8 @@ export type AuthNextSignInStep<
 	| ContinueSignInWithTOTPSetup
 	| ConfirmSignUpStep
 	| ResetPasswordStep
+	| AuthConfirmSignInWithMagicLinkStep
+	| AuthConfirmSignInWithOTPStep
 	| DoneSignInStep;
 
 /**

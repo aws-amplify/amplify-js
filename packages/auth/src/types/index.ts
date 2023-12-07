@@ -43,10 +43,6 @@ export {
 	AuthSendUserAttributeVerificationCodeInput,
 	AuthDeleteUserAttributesInput,
 	AuthForgetDeviceInput,
-	AuthSignInWithMagicLinkInput,
-	AuthSignInWithOTPInput,
-	AuthConfirmSignInWithMagicLinkInput,
-	AuthConfirmSignInWithOPTInput,
 } from './inputs';
 
 export {

@@ -6,7 +6,6 @@ import {
 	AuthUserAttribute,
 	AuthUserAttributeKey,
 	AuthDevice,
-	AuthOTPDeliveryDestination,
 	AuthPasswordlessFlow,
 } from './models';
 import {
@@ -87,7 +86,7 @@ export type AuthSignUpInput<
 		AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>,
 > = {
 	username: string;
-	password: string;
+	password?: string;
 	options?: ServiceOptions;
 };
 
@@ -213,42 +212,35 @@ export type AuthForgetDeviceInput = {
 	device?: AuthDevice;
 };
 
-export type AuthSignInWithOTPInput<
-	Flow extends AuthPasswordlessFlow = AuthPasswordlessFlow,
-	SignInOptions extends
-		AuthPasswordlessSignInOptions = AuthPasswordlessSignInOptions,
-	SignUpOptions extends
-		AuthPasswordlessSignUpAndSignInOptions = AuthPasswordlessSignUpAndSignInOptions,
-> = {
-	username: string;
-	flow: Flow;
-	destination: AuthOTPDeliveryDestination;
-	options?: Flow extends 'SIGN_IN' ? SignInOptions : SignUpOptions;
-};
+// export type AuthSignInWithOTPInput<
+// 	Flow extends AuthPasswordlessFlow = AuthPasswordlessFlow,
+// 	SignInOptions extends
+// 		AuthPasswordlessSignInOptions = AuthPasswordlessSignInOptions,
+// 	SignUpOptions extends
+// 		AuthPasswordlessSignUpAndSignInOptions = AuthPasswordlessSignUpAndSignInOptions,
+// > = {
+// 	username: string;
+// 	flow: Flow;
+// 	destination: AuthOTPDeliveryDestination;
+// 	options?: Flow extends 'SIGN_IN' ? SignInOptions : SignUpOptions;
+// };
 
-export type AuthConfirmSignInWithOPTInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
-	challengeResponse: string;
-	options?: ServiceOptions;
-};
+// export type AuthSignInWithMagicLinkInput<
+// 	Flow extends AuthPasswordlessFlow = AuthPasswordlessFlow,
+// 	SignInOptions extends
+// 		AuthPasswordlessSignInOptions = AuthPasswordlessSignInOptions,
+// 	SignUpOptions extends
+// 		AuthPasswordlessSignUpAndSignInOptions = AuthPasswordlessSignUpAndSignInOptions,
+// > = {
+// 	username: string;
+// 	flow: Flow;
+// 	redirectURL: string;
+// 	options?: Flow extends 'SIGN_IN' ? SignInOptions : SignUpOptions;
+// };
 
-export type AuthSignInWithMagicLinkInput<
-	Flow extends AuthPasswordlessFlow = AuthPasswordlessFlow,
-	SignInOptions extends
-		AuthPasswordlessSignInOptions = AuthPasswordlessSignInOptions,
-	SignUpOptions extends
-		AuthPasswordlessSignUpAndSignInOptions = AuthPasswordlessSignUpAndSignInOptions,
-> = {
-	username: string;
-	flow: Flow;
-	redirectURL: string;
-	options?: Flow extends 'SIGN_IN' ? SignInOptions : SignUpOptions;
-};
-
-export type AuthConfirmSignInWithMagicLinkInput<
-	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
-	challengeResponse: string;
-	options?: ServiceOptions;
-};
+// export type AuthConfirmSignInWithMagicLinkInput<
+// 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
+// > = {
+// 	challengeResponse: string;
+// 	options?: ServiceOptions;
+// };

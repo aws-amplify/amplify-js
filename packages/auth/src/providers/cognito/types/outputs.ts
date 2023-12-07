@@ -114,12 +114,13 @@ export type UpdateUserAttributeOutput =
  */
 export type FetchDevicesOutput = AWSAuthDevice[];
 
-export type SignInWithOTPOutput = AuthSignInWithOTPOutput<UserAttributeKey>;
+export type SignInWithOTPOutput = AuthSignInWithOTPOutput<
+	'email' | 'phone_number'
+>;
 
 export type ConfirmSignInWithOTPOutput = AuthConfirmSignInWithOTPOutput;
 
-export type SignInWithMagicLinkOutput =
-	AuthSignInWithMagicLinkOutput<UserAttributeKey>;
+export type SignInWithMagicLinkOutput = AuthSignInWithMagicLinkOutput<'email'>;
 
 export type ConfirmSignInWithMagicLinkOutput =
 	AuthConfirmSignInWithMagicLinkOutput;

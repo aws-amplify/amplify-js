@@ -17,6 +17,7 @@ import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { getNewDeviceMetatada } from '../utils/signInHelpers';
 import { getCurrentUser } from './getCurrentUser';
+import { AuthConfirmSignInWithOTPOutput } from '../../../types';
 
 export type ConfirmSignInWithOTPInput = {
 	challengeResponse: string;
@@ -24,7 +25,7 @@ export type ConfirmSignInWithOTPInput = {
 
 export const confirmSignInWithOTP = async (
 	input: ConfirmSignInWithOTPInput
-): Promise<SignInWithOTPOutput> => {
+): Promise<AuthConfirmSignInWithOTPOutput> => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolId, userPoolClientId } = authConfig;

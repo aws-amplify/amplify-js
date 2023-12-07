@@ -30,7 +30,10 @@ export const signInWithOTP = async (
 ): Promise<SignInWithOTPOutput> => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { username, flow } = input;
+	const {
+		username,
+		// flow
+	} = input;
 
 	assertValidationError(
 		!!username,
@@ -42,35 +45,36 @@ export const signInWithOTP = async (
 		authFlowType: 'CUSTOM_WITHOUT_SRP',
 	};
 
-	switch (flow) {
-		case 'SIGN_IN':
-			const { ChallengeParameters, Session } = await handlePasswordlessSignIn(
-				input,
-				authConfig as AuthConfig['Cognito']
-			);
-			// sets up local state used during the sign-in process
-			setActiveSignInState({
-				signInSession: Session,
-				username: getActiveSignInUsername(username),
-				signInDetails,
-			});
+	// switch (flow) {
+	// 	case 'SIGN_IN':
+	const { ChallengeParameters, Session } = await handlePasswordlessSignIn(
+		input,
+		authConfig as AuthConfig['Cognito']
+	);
+	// sets up local state used during the sign-in process
+	setActiveSignInState({
+		signInSession: Session,
+		username: getActiveSignInUsername(username),
+		signInDetails,
+	});
 
-			return {
-				isSignedIn: false,
-				nextStep: {
-					signInStep: 'CONFIRM_SIGN_IN_WITH_OTP',
-					additionalInfo: ChallengeParameters as AuthAdditionalInfo,
-					codeDeliveryDetails: {
-						deliveryMedium:
-							ChallengeParameters?.deliveryMedium as AuthDeliveryMedium,
-						destination: ChallengeParameters?.destination,
-					},
-				},
-			};
+	return {
+		isSignedIn: false,
+		nextStep: {
+			signInStep: 'CONFIRM_SIGN_IN_WITH_OTP',
+			additionalInfo: ChallengeParameters as AuthAdditionalInfo,
+			codeDeliveryDetails: {
+				// @ts-ignore
+				deliveryMedium:
+					ChallengeParameters?.deliveryMedium as AuthDeliveryMedium,
+				destination: ChallengeParameters?.destination,
+			},
+		},
+	};
 
-		case 'SIGN_UP_AND_SIGN_IN':
-			throw new Error('Not implemented');
-	}
+	// 	case 'SIGN_UP_AND_SIGN_IN':
+	// 		throw new Error('Not implemented');
+	// }
 
 	throw new Error('Not implemented');
 };
@@ -80,7 +84,7 @@ async function handlePasswordlessSignIn(
 	authConfig: AuthConfig['Cognito']
 ) {
 	const { userPoolId, userPoolClientId } = authConfig;
-	const { username, options, destination } = input;
+	const { username, options, deliveryMedium } = input;
 	const { clientMetadata } = options ?? {};
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
@@ -115,7 +119,10 @@ async function handlePasswordlessSignIn(
 		ClientMetadata: {
 			...clientMetadata,
 			signInMethod: 'OTP',
-			deliveryMedium: getDeliveryMedium(destination),
+			deliveryMedium:
+				// getDeliveryMedium(
+				deliveryMedium,
+			// ),
 			action: 'REQUEST',
 		},
 		ClientId: userPoolClientId,
@@ -130,11 +137,10 @@ async function handlePasswordlessSignIn(
 	);
 }
 
-function getDeliveryMedium(destination: AuthPasswordlessDeliveryDestination) {
-	const deliveryMediumMap: Record<AuthPasswordlessDeliveryDestination, string> =
-		{
-			EMAIL: 'EMAIL',
-			PHONE: 'SMS',
-		};
-	return deliveryMediumMap[destination];
-}
+// function getDeliveryMedium(destination: 'EMAIL' | 'SMS') {
+// 	const deliveryMediumMap: Record<'EMAIL' | 'PHONE', string> = {
+// 		EMAIL: 'EMAIL',
+// 		PHONE: 'SMS',
+// 	};
+// 	return deliveryMediumMap[destination];
+// }
