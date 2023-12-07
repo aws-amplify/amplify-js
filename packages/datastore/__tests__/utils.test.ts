@@ -14,7 +14,7 @@ import {
 	countFilterCombinations,
 	repeatedFieldInGroup,
 } from '../src/sync/utils';
-import { DeferredCallbackResolver } from '../src/util';
+import { DeferredCallbackResolver, objectMatches } from '../src/util';
 
 describe('DataStore - utils', () => {
 	describe('generateSelectionSet', () => {
@@ -880,6 +880,33 @@ _deleted`;
 			};
 
 			expect(countFilterCombinations(group2)).toEqual(3);
+		});
+	});
+	describe('objectMatches', () => {
+		test('shallow comparison match', () => {
+			const valA = { a: 1, b: 2 };
+			const valB = { a: 1, b: 2, c: 3 };
+			expect(objectMatches(valA, valB)).toEqual(true);
+		});
+		test('shallow comparison mismatch', () => {
+			const valA = { a: 1, b: 2, c: 3 };
+			const valB = { a: 1, b: 2 };
+			expect(objectMatches(valA, valB)).toEqual(false);
+		});
+		test('nested comparison match', () => {
+			const valA = { outer: { a: 1, b: 2, c: 3 } };
+			const valB = { outer: { a: 1, b: 2, c: 3 }, otherValue: { a: 'a' } };
+			expect(objectMatches(valA, valB)).toEqual(true);
+		});
+		test('nested comparison mismatch', () => {
+			const valA = { outer: { a: 1, b: 2, c: 3 } };
+			const valB = { outer: { a: 1, b: 2 }, otherValue: { a: 'a' } };
+			expect(objectMatches(valA, valB)).toEqual(false);
+		});
+		test('nested comparison mismatch without full equality', () => {
+			const valA = { outer: { a: 1, b: 2 } };
+			const valB = { outer: { a: 1, b: 2, c: 3 }, otherValue: { a: 'a' } };
+			expect(objectMatches(valA, valB)).toEqual(false);
 		});
 	});
 });

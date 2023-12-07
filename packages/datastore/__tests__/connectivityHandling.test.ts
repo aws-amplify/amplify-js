@@ -978,8 +978,7 @@ describe('DataStore sync engine', () => {
 				const retrieved = await DataStore.query(Post, postId);
 
 				await DataStore.save(
-					// @ts-ignore
-					Post.copyOf(retrieved, updated => {
+					Post.copyOf(retrieved!, updated => {
 						updated.title = updatedTitle;
 					})
 				);
@@ -1022,8 +1021,7 @@ describe('DataStore sync engine', () => {
 				// Validate that `query` returns the latest `title` and `_version`:
 				const queryResult = await DataStore.query(Post, postId);
 				expect(queryResult?.title).toEqual(title);
-				// @ts-ignore
-				expect(queryResult?._version).toEqual(version);
+				expect(queryResult!['_version'].toEqual(version));
 
 				if (blogId) expect(queryResult?.blogId).toEqual(blogId);
 			};
@@ -1040,9 +1038,7 @@ describe('DataStore sync engine', () => {
 						if (opType === 'UPDATE') {
 							const response: SubscriptionLogTuple = [
 								element.title,
-								// No, TypeScript, there is a version:
-								// @ts-ignore
-								element._version,
+								element['_version'],
 							];
 							// Track sequence of versions and titles
 							subscriptionLog.push(response);
@@ -1115,13 +1111,13 @@ describe('DataStore sync engine', () => {
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
-						['post title 0', 3],
+						['post title 2', 3],
 					]);
 
 					expectFinalRecordsToMatch({
 						postId: original.id,
 						version: 3,
-						title: 'post title 0',
+						title: 'post title 2',
 					});
 				});
 				test('rapid mutations on fast connection when initial create is not pending', async () => {
@@ -1176,13 +1172,13 @@ describe('DataStore sync engine', () => {
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
-						['post title 0', 4],
+						['post title 2', 4],
 					]);
 
 					expectFinalRecordsToMatch({
 						postId: original.id,
 						version: 4,
-						title: 'post title 0',
+						title: 'post title 2',
 					});
 				});
 				test('rapid mutations on poor connection when initial create is pending', async () => {
@@ -1463,9 +1459,7 @@ describe('DataStore sync engine', () => {
 							if (opType === 'UPDATE') {
 								const response: SubscriptionLogTuple = [
 									element.title,
-									// No, TypeScript, there is a version:
-									// @ts-ignore
-									element._version,
+									element['_version'],
 								];
 								// Track sequence of versions and titles
 								subscriptionLog.push(response);
@@ -1703,10 +1697,8 @@ describe('DataStore sync engine', () => {
 						await DataStore.observe(Post).subscribe(({ opType, element }) => {
 							const response: SubscriptionLogMultiField = [
 								element.title,
-								// @ts-ignore
-								element.blogId,
-								// @ts-ignore
-								element._version,
+								element.blogId!,
+								element['_version'],
 							];
 							subscriptionLog.push(response);
 						});
@@ -2187,9 +2179,8 @@ describe('DataStore sync engine', () => {
 			};
 
 			await resyncWith([
-				syncExpression(
-					LegacyJSONPost,
-					p => p?.title.eq("whatever, it doesn't matter.")
+				syncExpression(LegacyJSONPost, p =>
+					p?.title.eq("whatever, it doesn't matter.")
 				),
 			]);
 
