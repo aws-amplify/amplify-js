@@ -6,10 +6,10 @@ import { AtLeastOne } from '../types';
 export type LibraryAPIOptions = {
 	GraphQL?: {
 		// custom headers for given GraphQL service. Will be applied to all operations.
-		headers?: (options: {
-			query: string;
+		headers?: (options?: {
+			query?: string;
 			variables?: Record<string, DocumentType>;
-		}) => Promise<Headers>;
+		}) => Promise<Headers | {}>;
 		withCredentials?: boolean;
 	};
 	REST?: {

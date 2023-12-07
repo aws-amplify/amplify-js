@@ -122,6 +122,76 @@ describe('API test', () => {
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 		});
 
+		test('auth-error-case', async () => {
+			expect.assertions(1);
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const threadToGet = {
+				id: 'some-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlVariables = { id: 'some-id' };
+
+			const err = {
+				name: 'GraphQLError',
+				message: 'Unknown error',
+				originalError: {
+					name: 'UnauthorizedException',
+					underlyingError: {
+						name: 'UnauthorizedException',
+						$metadata: {
+							httpStatusCode: 401,
+							requestId: '12345abcde-test-error-id',
+						},
+					},
+					$metadata: {
+						httpStatusCode: 401,
+						requestId: '12345abcde-test-error-id',
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(() => {
+					return {
+						body: {
+							json: () => ({
+								errors: [err],
+							}),
+						},
+					};
+				});
+
+			try {
+				const result: GraphQLResult<GetThreadQuery> = await client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'apiKey',
+				});
+			} catch (e: any) {
+				const errors = e.errors;
+				expect(errors).toEqual([
+					expect.objectContaining({
+						message: 'Unauthorized',
+						recoverySuggestion: expect.stringContaining(
+							`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
+						),
+					}),
+				]);
+			}
+		});
+
 		test('cancel-graphql-query', async () => {
 			Amplify.configure({
 				API: {
@@ -685,7 +755,7 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'oidc',
 				})
-			).rejects.toThrowError('No current user');
+			).rejects.toThrow('No current user');
 
 			// Cleanup:
 			mockAccessToken = prevMockAccessToken;
@@ -762,7 +832,7 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'lambda',
 				})
-			).rejects.toThrowError(GraphQLAuthError.NO_AUTH_TOKEN);
+			).rejects.toThrow(GraphQLAuthError.NO_AUTH_TOKEN);
 		});
 
 		test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
@@ -784,7 +854,7 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'apiKey',
 				})
-			).rejects.toThrowError(GraphQLAuthError.NO_API_KEY);
+			).rejects.toThrow(GraphQLAuthError.NO_API_KEY);
 		});
 
 		test('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
@@ -810,7 +880,7 @@ describe('API test', () => {
 					variables: graphqlVariables,
 					authMode: 'iam',
 				})
-			).rejects.toThrowError(GraphQLAuthError.NO_CREDENTIALS);
+			).rejects.toThrow(GraphQLAuthError.NO_CREDENTIALS);
 
 			// Cleanup:
 			mockCredentials = prevMockCredentials;
@@ -905,7 +975,7 @@ describe('API test', () => {
 				}) as any
 			).subscribe();
 
-			expect(spyon_appsync_realtime).toBeCalledWith(
+			expect(spyon_appsync_realtime).toHaveBeenCalledWith(
 				expect.objectContaining({
 					authenticationType: 'oidc',
 				}),
@@ -913,7 +983,7 @@ describe('API test', () => {
 			);
 		});
 
-		test('happy-case-subscription', async done => {
+		test('happy-case-subscription', done => {
 			const spyon_appsync_realtime = jest
 				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
 				.mockImplementation(jest.fn(() => of({}) as any));
@@ -942,7 +1012,57 @@ describe('API test', () => {
 			expect(observable).not.toBe(undefined);
 		});
 
-		test('happy case subscription with additionalHeaders', async done => {
+		test('subscription auth permissions error', done => {
+			expect.assertions(3);
+
+			const spyon_appsync_realtime = jest
+				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
+				.mockImplementation(
+					jest.fn(() => {
+						return new Observable(observer => {
+							observer.error({
+								errors: [
+									{
+										message:
+											'Connection failed: {"errors":[{"errorType":"UnauthorizedException","message":"Permission denied"}]}',
+									},
+								],
+							});
+						});
+					})
+				);
+
+			const query = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
+
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+
+			const observable = (
+				client.graphql({ query, variables }) as unknown as Observable<object>
+			).subscribe({
+				error: e => {
+					expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
+					expect(e.errors).toEqual([
+						expect.objectContaining({
+							message: 'Unauthorized',
+							recoverySuggestion: expect.stringContaining(
+								`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
+							),
+						}),
+					]);
+					done();
+				},
+			});
+
+			expect(observable).not.toBe(undefined);
+		});
+
+		test('happy case subscription with additionalHeaders', done => {
 			const spyon_appsync_realtime = jest
 				.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe')
 				.mockImplementation(jest.fn(() => of({}) as any));

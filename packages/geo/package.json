@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "3.0.4",
+	"version": "3.0.6",
 	"description": "Geo category for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -76,7 +76,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.4",
+		"@aws-amplify/core": "6.0.6",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
@@ -88,57 +88,5 @@
 			"import": "{ Amplify, Geo }",
 			"limit": "43.9 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": true,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2019.object"
-					],
-					"allowJs": true,
-					"noEmitOnError": false,
-					"esModuleInterop": true,
-					"downlevelIteration": true
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"__tests__/model.ts",
-			"__tests__/schema.ts",
-			"__tests__/helpers.ts",
-			"__tests__/testData.ts",
-			"__tests__/testUtils.ts"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"node_modules",
-			"dist"
-		]
-	}
+	]
 }

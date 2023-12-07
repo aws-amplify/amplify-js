@@ -37,7 +37,7 @@ describe('EventBuffer', () => {
 	});
 
 	it('flush all events at once', done => {
-		const results = [];
+		const results: number[] = [];
 		const testEvents: TestEvent[] = [
 			{ id: '1', timestamp: 1 },
 			{ id: '2', timestamp: 2 },
@@ -69,7 +69,7 @@ describe('EventBuffer', () => {
 	});
 
 	it('release all resources', done => {
-		const results = [];
+		const results: TestEvent[] = [];
 		const testEvents: TestEvent[] = [
 			{ id: '1', timestamp: 1 },
 			{ id: '2', timestamp: 2 },

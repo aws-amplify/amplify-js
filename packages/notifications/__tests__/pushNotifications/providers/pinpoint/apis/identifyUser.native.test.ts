@@ -72,7 +72,7 @@ describe('identifyUser (native)', () => {
 			},
 		};
 		await identifyUser(input);
-		expect(mockUpdateEndpoint).toBeCalledWith({
+		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
 			...pinpointConfig,
@@ -92,7 +92,7 @@ describe('identifyUser (native)', () => {
 			userAttributes,
 		};
 		await identifyUser({ ...input, options });
-		expect(mockUpdateEndpoint).toBeCalledWith({
+		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			...input,
 			...credentials,
 			...pinpointConfig,

@@ -1082,7 +1082,7 @@ export async function getNewDeviceMetatada(
  *
  */
 export async function retryOnResourceNotFoundException<
-	F extends (...args: any[]) => any
+	F extends (...args: any[]) => any,
 >(
 	func: F,
 	args: Parameters<F>,

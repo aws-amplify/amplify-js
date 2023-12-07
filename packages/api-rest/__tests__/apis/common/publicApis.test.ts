@@ -99,7 +99,7 @@ describe('public APIs', () => {
 						withCredentials: true,
 					},
 				}).response;
-				expect(mockAuthenticatedHandler).toBeCalledWith(
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					{
 						url: new URL(
 							'https://123.execute-api.us-west-2.amazonaws.com/development/items'
@@ -132,7 +132,7 @@ describe('public APIs', () => {
 					apiName: 'restApi1',
 					path: '/items',
 				}).response;
-				expect(mockAuthenticatedHandler).toBeCalledWith(
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					{
 						url: new URL(
 							'https://123.execute-api.us-west-2.amazonaws.com/development/items'
@@ -160,7 +160,7 @@ describe('public APIs', () => {
 						},
 					},
 				}).response;
-				expect(mockAuthenticatedHandler).toBeCalledWith(
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					{
 						url: new URL(
 							'https://123.execute-api.us-west-2.amazonaws.com/development/items'
@@ -183,7 +183,7 @@ describe('public APIs', () => {
 					apiName: 'restApi1',
 					path: '/items/123',
 				}).response;
-				expect(mockAuthenticatedHandler).toBeCalledWith(
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					expect.objectContaining({
 						url: new URL(
 							'https://123.execute-api.us-west-2.amazonaws.com/development/items/123'
@@ -203,13 +203,11 @@ describe('public APIs', () => {
 						},
 					},
 				}).response;
-				expect(mockAuthenticatedHandler).toBeCalledWith(
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					expect.objectContaining({
-						url: expect.objectContaining(
-							new URL(
-								'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1'
-							)
-						),
+						url: expect.objectContaining({
+							href: 'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1',
+						}),
 					}),
 					expect.anything()
 				);
@@ -225,13 +223,11 @@ describe('public APIs', () => {
 						},
 					},
 				}).response;
-				expect(mockAuthenticatedHandler).toBeCalledWith(
+				expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
 					expect.objectContaining({
-						url: expect.objectContaining(
-							new URL(
-								'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1&foo=bar'
-							)
-						),
+						url: expect.objectContaining({
+							href: 'https://123.execute-api.us-west-2.amazonaws.com/development/items?param1=value1&foo=bar',
+						}),
 					}),
 					expect.anything()
 				);
@@ -308,7 +304,7 @@ describe('public APIs', () => {
 					}).response;
 					fail('should throw RestApiError');
 				} catch (error) {
-					expect(mockParseJsonError).toBeCalledWith(errorResponse);
+					expect(mockParseJsonError).toHaveBeenCalledWith(errorResponse);
 					expect(error).toEqual(expect.any(RestApiError));
 				}
 			});
@@ -334,11 +330,13 @@ describe('public APIs', () => {
 					path: '/items',
 				});
 				const cancelMessage = 'cancelMessage';
-				cancel(cancelMessage);
 				try {
+					setTimeout(() => {
+						cancel(cancelMessage);
+					});
 					await response;
 					fail('should throw cancel error');
-				} catch (error) {
+				} catch (error: any) {
 					expect(isCancelError(error)).toBe(true);
 					expect(error.message).toBe(cancelMessage);
 				}

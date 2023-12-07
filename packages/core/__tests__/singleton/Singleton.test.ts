@@ -3,7 +3,7 @@ import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { CredentialsAndIdentityId } from '../../src/singleton/Auth/types';
 import { TextEncoder, TextDecoder } from 'util';
-import { fetchAuthSession } from '../../src';
+import { fetchAuthSession, ResourcesConfig } from '../../src';
 Object.assign(global, { TextDecoder, TextEncoder });
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
@@ -16,7 +16,12 @@ const MOCK_AUTH_CONFIG = {
 		},
 	},
 };
-const modelIntrospection = {
+
+type ModelIntrospection = NonNullable<
+	NonNullable<ResourcesConfig['API']>['GraphQL']
+>['modelIntrospection'];
+
+const modelIntrospection: ModelIntrospection = {
 	version: 1,
 	models: {
 		Todo: {
@@ -107,24 +112,15 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 
 		Amplify.configure(mockLegacyConfig);
 		const result = Amplify.getConfig();
-
-		expect(result).toEqual({
+		const expected: ResourcesConfig = {
 			Auth: {
 				Cognito: {
 					allowGuestAccess: true,
 					identityPoolId: 'aws_cognito_identity_pool_id',
 					userPoolClientId: 'aws_user_pools_web_client_id',
 					userPoolId: 'aws_user_pools_id',
-					loginWith: {
-						email: false,
-						phone: false,
-						username: true,
-					},
-					mfa: {
-						smsEnabled: true,
-						status: 'off',
-						totpEnabled: false,
-					},
+					loginWith: { email: false, phone: false, username: true },
+					mfa: { smsEnabled: true, status: 'off', totpEnabled: false },
 					passwordFormat: {
 						minLength: 8,
 						requireLowercase: false,
@@ -132,13 +128,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 						requireSpecialCharacters: false,
 						requireUppercase: false,
 					},
-					userAttributes: [
-						{
-							phone_number: {
-								required: true,
-							},
-						},
-					],
+					userAttributes: { phone_number: { required: true } },
 				},
 			},
 			API: {
@@ -150,7 +140,9 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 					modelIntrospection,
 				},
 			},
-		});
+		};
+
+		expect(result).toEqual(expected);
 	});
 
 	it('should take the v6 shaped config object for configuring and return it from getConfig()', () => {
@@ -312,7 +304,7 @@ describe('Session tests', () => {
 		});
 
 		const session = await Amplify.Auth.fetchAuthSession();
-		expect(spyTokenProvider).toBeCalled();
+		expect(spyTokenProvider).toHaveBeenCalled();
 
 		expect(session.tokens?.accessToken.payload).toEqual({
 			exp: 1710293130,
@@ -394,7 +386,7 @@ describe('Session tests', () => {
 			expiration: new Date(123),
 		});
 
-		expect(credentialsSpy).toBeCalledWith({
+		expect(credentialsSpy).toHaveBeenCalledWith({
 			authConfig: {
 				Cognito: {
 					identityPoolId: 'us-east-1:bbbbb',
@@ -479,7 +471,7 @@ describe('Session tests', () => {
 			expiration: new Date(123),
 		});
 
-		expect(credentialsSpy).toBeCalledWith({
+		expect(credentialsSpy).toHaveBeenCalledWith({
 			authConfig: {
 				Cognito: {
 					allowGuestAccess: true,
@@ -521,7 +513,7 @@ describe('Session tests', () => {
 		);
 
 		await auth.fetchAuthSession({ forceRefresh: true });
-		expect(tokenProvider).toBeCalledWith({
+		expect(tokenProvider).toHaveBeenCalledWith({
 			forceRefresh: true,
 		});
 	});
@@ -553,6 +545,6 @@ describe('Session tests', () => {
 
 		await expect(action()).rejects.toThrow('no no no');
 
-		expect(tokenProvider).toBeCalled();
+		expect(tokenProvider).toHaveBeenCalled();
 	});
 });

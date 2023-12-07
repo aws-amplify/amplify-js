@@ -51,7 +51,7 @@ describe('signIn API happy path cases', () => {
 			},
 		});
 		expect(result).toEqual(authAPITestParams.signInResultWithCustomAuth());
-		expect(handleCustomAuthFlowWithoutSRPSpy).toBeCalledTimes(1);
+		expect(handleCustomAuthFlowWithoutSRPSpy).toHaveBeenCalledTimes(1);
 	});
 
 	test('signInWithCustomAuth API should return a SignInResult', async () => {
@@ -59,7 +59,7 @@ describe('signIn API happy path cases', () => {
 			username: authAPITestParams.user1.username,
 		});
 		expect(result).toEqual(authAPITestParams.signInResultWithCustomAuth());
-		expect(handleCustomAuthFlowWithoutSRPSpy).toBeCalledTimes(1);
+		expect(handleCustomAuthFlowWithoutSRPSpy).toHaveBeenCalledTimes(1);
 	});
 	test('handleCustomAuthFlowWithoutSRP should be called with clientMetada from request', async () => {
 		const username = authAPITestParams.user1.username;
@@ -68,7 +68,7 @@ describe('signIn API happy path cases', () => {
 			username,
 			options: authAPITestParams.configWithClientMetadata,
 		});
-		expect(handleCustomAuthFlowWithoutSRPSpy).toBeCalledWith(
+		expect(handleCustomAuthFlowWithoutSRPSpy).toHaveBeenCalledWith(
 			username,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
@@ -117,7 +117,7 @@ describe('Cognito ASF', () => {
 				authFlowType: 'CUSTOM_WITHOUT_SRP',
 			},
 		});
-		expect(initiateAuthSpy).toBeCalledWith(
+		expect(initiateAuthSpy).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: 'us-west-2',
 			}),

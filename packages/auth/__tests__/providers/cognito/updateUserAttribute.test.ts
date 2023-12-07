@@ -1,59 +1,36 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { fetchAuthSession } from '@aws-amplify/core';
-import { AuthError } from '../../../src/errors/AuthError';
-import {
-	updateUserAttribute,
-	UpdateUserAttributesOutput,
-} from '../../../src/providers/cognito';
-import * as updateUserAttributesApi from '../../../src/providers/cognito';
-import { UpdateUserAttributesException } from '../../../src/providers/cognito/types/errors';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import { fetchTransferHandler } from '@aws-amplify/core/internals/aws-client-utils';
-import { buildMockErrorResponse, mockJsonResponse } from './testUtils/data';
+import { updateUserAttribute } from '../../../src/providers/cognito';
 import { updateUserAttributes } from '../../../src/providers/cognito/apis/updateUserAttributes';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
-jest.mock('../../../src/providers/cognito/apis/updateUserAttributes');
+import { mockAccessToken } from './testUtils/data';
+import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
 jest.mock('@aws-amplify/core', () => ({
-	...jest.requireActual('@aws-amplify/core'),
-	fetchAuthSession: jest.fn(),
-	Amplify: {
-		configure: jest.fn(),
-		getConfig: jest.fn(() => ({
-			Auth: {
-				Cognito: {
-					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-					userPoolId: 'us-west-2_zzzzz',
-					identityPoolId: 'us-west-2:xxxxxx',
-				},
-			},
-		})),
-	},
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
-const mockedAccessToken =
-	'test_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
-const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-const mockUpdateUserAttributes = updateUserAttributes as jest.Mock;
+jest.mock('../../../src/providers/cognito/apis/updateUserAttributes');
+
 describe('updateUserAttribute API happy path cases', () => {
-	beforeEach(() => {
-		mockFetchAuthSession.mockImplementationOnce(
-			async (): Promise<{ tokens: { accessToken: any } }> => {
-				return {
-					tokens: {
-						accessToken: decodeJWT(mockedAccessToken),
-					},
-				};
-			}
-		);
+	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+	const mockUpdateUserAttributes = updateUserAttributes as jest.Mock;
+
+	beforeAll(() => {
+		setUpGetConfig(Amplify);
+		mockFetchAuthSession.mockResolvedValue({
+			tokens: { accessToken: decodeJWT(mockAccessToken) },
+		});
 	});
 
 	afterEach(() => {
+		mockUpdateUserAttributes.mockReset();
 		mockFetchAuthSession.mockClear();
 	});
 
-	it('should call updateUserAttributes with correct input and should return correct output', async () => {
+	it('should return correct output', async () => {
 		const mockInput = {
 			userAttribute: {
 				attributeKey: 'email',
@@ -74,12 +51,10 @@ describe('updateUserAttribute API happy path cases', () => {
 				},
 			},
 		};
-		mockUpdateUserAttributes.mockImplementationOnce(async () => {
-			return { email: mockOutput } as UpdateUserAttributesOutput;
-		});
+		mockUpdateUserAttributes.mockResolvedValue({ email: mockOutput });
 		const result = await updateUserAttribute(mockInput);
 		expect(result).toEqual(mockOutput);
-		expect(mockUpdateUserAttributes).toBeCalledTimes(1);
+		expect(mockUpdateUserAttributes).toHaveBeenCalledTimes(1);
 		expect(mockUpdateUserAttributes).toHaveBeenCalledWith({
 			userAttributes: {
 				[mockInput.userAttribute.attributeKey]: mockInput.userAttribute.value,

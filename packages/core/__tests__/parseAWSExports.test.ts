@@ -1,7 +1,8 @@
 import { parseAWSExports } from '../src/parseAWSExports';
+import { ResourcesConfig } from '../src/singleton/types';
 
 // TODO: Add API category tests
-describe('Parser', () => {
+describe('parseAWSExports', () => {
 	const appId = 'app-id';
 	const bucket = 'bucket';
 	const identityPoolId = 'identity-pool-id';
@@ -75,8 +76,75 @@ describe('Parser', () => {
 	const oAuthResponseType = 'code';
 
 	it('should parse valid aws-exports.js', () => {
+		const expected: ResourcesConfig = {
+			Analytics: { Pinpoint: { appId, region } },
+			Auth: {
+				Cognito: {
+					identityPoolId,
+					allowGuestAccess: false,
+					loginWith: {
+						email: false,
+						oauth: {
+							domain: oAuthDomain,
+							providers: ['Google', 'Apple', 'Facebook', 'Amazon'],
+							redirectSignIn: [oAuthSigninUrl],
+							redirectSignOut: [oAuthSignoutUrl],
+							responseType: oAuthResponseType,
+							scopes: oAuthScopes,
+						},
+						phone: true,
+						username: false,
+					},
+					mfa: { smsEnabled: true, status: 'off', totpEnabled: true },
+					passwordFormat: {
+						minLength: 8,
+						requireLowercase: false,
+						requireNumbers: true,
+						requireSpecialCharacters: true,
+						requireUppercase: true,
+					},
+					signUpVerificationMethod,
+					userAttributes: {
+						email: { required: true },
+						phone_number: { required: true },
+					},
+					userPoolId,
+					userPoolClientId,
+				},
+			},
+			Geo: {
+				LocationService: amazonLocationServiceV4,
+			},
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					dangerouslyConnectToHttpEndpointForTesting: undefined,
+				},
+			},
+			API: {
+				REST: {
+					api1: { endpoint: 'https://api1.com', region: 'us-east-1' },
+					api2: {
+						endpoint: 'https://api2.com',
+						region: 'us-west-2',
+						service: 'lambda',
+					},
+				},
+				GraphQL: {
+					endpoint: appsyncEndpoint,
+					apiKey,
+					region,
+					defaultAuthMode: 'userPool',
+				},
+			},
+			Notifications: {
+				InAppMessaging: { Pinpoint: { appId, region } },
+			},
+		};
 		expect(
 			parseAWSExports({
+				aws_project_region: 'us-west-2',
 				aws_cognito_identity_pool_id: identityPoolId,
 				aws_cognito_sign_up_verification_method: signUpVerificationMethod,
 				aws_cognito_username_attributes: ['PHONE_NUMBER'],
@@ -107,119 +175,23 @@ describe('Parser', () => {
 				aws_user_files_s3_bucket_region: region,
 				aws_user_pools_id: userPoolId,
 				aws_user_pools_web_client_id: userPoolClientId,
-				geo: {
-					amazon_location_service: amazonLocationService,
-				},
+				geo: { amazon_location_service: amazonLocationService },
 				aws_cloud_logic_custom: [restEndpoint1, restEndpoint2],
 				aws_appsync_graphqlEndpoint: appsyncEndpoint,
 				aws_appsync_apiKey: apiKey,
 				aws_appsync_region: region,
 				aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
 				Notifications: {
-					InAppMessaging: {
-						AWSPinpoint: {
-							appId: appId,
-							region: region,
-						},
-					},
+					InAppMessaging: { AWSPinpoint: { appId, region } },
 				},
 			})
-		).toStrictEqual({
-			Analytics: {
-				Pinpoint: {
-					appId,
-					region,
-				},
-			},
-			Auth: {
-				Cognito: {
-					identityPoolId,
-					allowGuestAccess: false,
-					loginWith: {
-						email: false,
-						oauth: {
-							domain: oAuthDomain,
-							providers: ['Google', 'Apple', 'Facebook', 'Amazon'],
-							redirectSignIn: [oAuthSigninUrl],
-							redirectSignOut: [oAuthSignoutUrl],
-							responseType: oAuthResponseType,
-							scopes: oAuthScopes,
-						},
-						phone: true,
-						username: false,
-					},
-					mfa: {
-						smsEnabled: true,
-						status: 'off',
-						totpEnabled: true,
-					},
-					passwordFormat: {
-						minLength: 8,
-						requireLowercase: false,
-						requireNumbers: true,
-						requireSpecialCharacters: true,
-						requireUppercase: true,
-					},
-					signUpVerificationMethod,
-					userAttributes: [
-						{
-							email: {
-								required: true,
-							},
-						},
-						{
-							phone_number: {
-								required: true,
-							},
-						},
-					],
-					userPoolId,
-					userPoolClientId,
-				},
-			},
-			Geo: {
-				LocationService: amazonLocationServiceV4,
-			},
-			Storage: {
-				S3: {
-					bucket,
-					region,
-					dangerouslyConnectToHttpEndpointForTesting: undefined,
-				},
-			},
-			API: {
-				REST: {
-					api1: {
-						endpoint: 'https://api1.com',
-						region: 'us-east-1',
-					},
-					api2: {
-						endpoint: 'https://api2.com',
-						region: 'us-west-2',
-						service: 'lambda',
-					},
-				},
-				GraphQL: {
-					endpoint: appsyncEndpoint,
-					apiKey,
-					region,
-					defaultAuthMode: 'userPool',
-				},
-			},
-			Notifications: {
-				InAppMessaging: {
-					Pinpoint: {
-						appId,
-						region,
-					},
-				},
-			},
-		});
+		).toStrictEqual(expected);
 	});
 
 	it('should fallback to IAM auth mode if Appsync auth type is invalid', () => {
 		expect(
 			parseAWSExports({
+				aws_project_region: 'us-west-2',
 				aws_appsync_graphqlEndpoint: appsyncEndpoint,
 				aws_appsync_apiKey: apiKey,
 				aws_appsync_region: region,
@@ -240,6 +212,7 @@ describe('Parser', () => {
 	it('should handle missing `redirectSignIn` or `redirectSignOut` configuration', () => {
 		expect(
 			parseAWSExports({
+				aws_project_region: 'us-west-2',
 				aws_user_pools_id: userPoolId,
 				oauth: {
 					domain: oAuthDomain,
@@ -267,11 +240,26 @@ describe('Parser', () => {
 					mfa: undefined,
 					passwordFormat: undefined,
 					signUpVerificationMethod: undefined,
-					userAttributes: [],
+					userAttributes: {},
 					userPoolClientId: undefined,
 					userPoolId: userPoolId,
 				},
 			},
 		});
+	});
+
+	it('should throw an error when passing a `ResourceConfig` object as the config parameter', () => {
+		const testConfig: ResourcesConfig = {
+			Auth: {
+				Cognito: {
+					userPoolClientId: 'userPoolClientId',
+					userPoolId: 'userPoolId',
+				},
+			},
+		};
+
+		expect(() => parseAWSExports(testConfig)).toThrow(
+			'Invalid config parameter.'
+		);
 	});
 });

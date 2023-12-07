@@ -301,7 +301,7 @@ describe('flattenItems', () => {
 			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo');
 
 			const expected =
-				'id name description createdAt updatedAt todoMetaId owner';
+				'id name description status tags createdAt updatedAt todoMetaId owner';
 
 			expect(selSet).toEqual(expected);
 		});

@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/api-rest",
 	"private": false,
-	"version": "4.0.4",
+	"version": "4.0.6",
 	"description": "Api-rest category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -87,8 +87,8 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.4",
-		"@aws-amplify/react-native": "1.0.4",
+		"@aws-amplify/core": "6.0.6",
+		"@aws-amplify/react-native": "1.0.6",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
@@ -100,47 +100,5 @@
 			"import": "{ Amplify, RestAPI }",
 			"limit": "31.5 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"allowJs": true,
-					"noEmitOnError": false
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testPathIgnorePatterns": [
-			"/testUtils/"
-		],
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"node_modules",
-			"dist"
-		],
-		"setupFiles": [
-			"<rootDir>/setupTests.ts"
-		]
-	}
+	]
 }

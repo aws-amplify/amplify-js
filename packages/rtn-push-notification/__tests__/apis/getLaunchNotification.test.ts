@@ -36,8 +36,8 @@ describe('getLaunchNotification', () => {
 				body: `normalized-${nativeMessage.body}`,
 			})
 		);
-		expect(mockGetLaunchNotificationNative).toBeCalled();
-		expect(mockNormalizeNativeMessage).toBeCalledWith(nativeMessage);
+		expect(mockGetLaunchNotificationNative).toHaveBeenCalled();
+		expect(mockNormalizeNativeMessage).toHaveBeenCalledWith(nativeMessage);
 	});
 
 	it('can handle a null value', async () => {
@@ -45,7 +45,7 @@ describe('getLaunchNotification', () => {
 		mockGetLaunchNotificationNative.mockResolvedValue(null);
 
 		expect(await getLaunchNotification()).toBeNull();
-		expect(mockGetLaunchNotificationNative).toBeCalled();
-		expect(mockNormalizeNativeMessage).toBeCalledWith(undefined);
+		expect(mockGetLaunchNotificationNative).toHaveBeenCalled();
+		expect(mockNormalizeNativeMessage).toHaveBeenCalledWith(undefined);
 	});
 });

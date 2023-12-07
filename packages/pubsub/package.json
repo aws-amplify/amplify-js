@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/pubsub",
-	"version": "6.0.4",
+	"version": "6.0.6",
 	"description": "Pubsub category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -73,7 +73,7 @@
 		"mqtt"
 	],
 	"dependencies": {
-		"@aws-amplify/auth": "6.0.4",
+		"@aws-amplify/auth": "6.0.6",
 		"buffer": "4.9.2",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
@@ -84,7 +84,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.4",
+		"@aws-amplify/core": "6.0.6",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
@@ -102,47 +102,5 @@
 			"import": "{ generateClient }",
 			"limit": "1.07 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"allowJs": true,
-					"noEmitOnError": false
-				}
-			},
-			"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-			"testPathIgnorePatterns": [
-				"__tests__/helpers.ts"
-			]
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testPathIgnorePatterns": [
-			"__tests__/helpers.ts"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"node_modules",
-			"dist"
-		]
-	}
+	]
 }

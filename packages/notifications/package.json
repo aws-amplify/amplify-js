@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "2.0.4",
+	"version": "2.0.6",
 	"description": "Notifications category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -98,50 +98,10 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.4",
-		"@aws-amplify/react-native": "1.0.4",
+		"@aws-amplify/core": "6.0.6",
+		"@aws-amplify/react-native": "1.0.6",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
-	},
-	"jest": {
-		"globals": {
-			"__DEV__": true,
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"allowJs": true,
-					"noEmitOnError": false
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testPathIgnorePatterns": [
-			"/testUtils/"
-		],
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 70,
-				"functions": 85,
-				"lines": 85,
-				"statements": 85
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"node_modules",
-			"dist"
-		]
 	}
 }

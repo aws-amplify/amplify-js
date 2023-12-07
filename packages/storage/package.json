@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/storage",
-	"version": "6.0.4",
+	"version": "6.0.6",
 	"description": "Storage category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -101,64 +101,11 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.4",
-		"@aws-amplify/react-native": "1.0.4",
+		"@aws-amplify/core": "6.0.6",
+		"@aws-amplify/react-native": "1.0.6",
 		"@rollup/plugin-json": "6.0.1",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"
-	},
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": {
-					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
-				},
-				"tsConfig": {
-					"downlevelIteration": true,
-					"allowJs": true,
-					"types": [
-						"@types/jest"
-					],
-					"outDir": "./tsconfig.json",
-					"noEmitOnError": false,
-					"noImplicitAny": false,
-					"skipLibCheck": true
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.test|spec)\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"xmlParser-fixture.ts",
-			"testUtils",
-			"cases"
-		],
-		"modulePathIgnorePatterns": [
-			"dist"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist"
-		]
 	}
 }

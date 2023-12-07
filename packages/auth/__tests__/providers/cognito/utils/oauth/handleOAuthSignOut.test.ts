@@ -41,8 +41,8 @@ describe('handleOAuthSignOut', () => {
 		});
 		await handleOAuthSignOut(cognitoConfig, mockStore);
 
-		expect(mockCompleteOAuthSignOut).toBeCalledWith(mockStore);
-		expect(mockOAuthSignOutRedirect).toBeCalledWith(cognitoConfig);
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(cognitoConfig);
 	});
 
 	it('should complete OAuth sign out but not redirect', async () => {
@@ -52,7 +52,7 @@ describe('handleOAuthSignOut', () => {
 		});
 		await handleOAuthSignOut(cognitoConfig, mockStore);
 
-		expect(mockCompleteOAuthSignOut).toBeCalledWith(mockStore);
-		expect(mockOAuthSignOutRedirect).not.toBeCalled();
+		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
+		expect(mockOAuthSignOutRedirect).not.toHaveBeenCalled();
 	});
 });

@@ -83,7 +83,7 @@ describe('Mutex', function () {
 
 		mutex.runExclusive(
 			() =>
-				new Promise(resolve =>
+				new Promise<void>(resolve =>
 					setTimeout(() => {
 						flag = true;
 						resolve();

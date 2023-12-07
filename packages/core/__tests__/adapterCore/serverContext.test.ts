@@ -20,7 +20,7 @@ const mockTokenProvider = {
 };
 const mockCredentialAndIdentityProvider = {
 	getCredentialsAndIdentityId: jest.fn(),
-	clearCredentials: jest.fn(),
+	clearCredentialsAndIdentityId: jest.fn(),
 };
 
 describe('serverContext', () => {
@@ -33,7 +33,7 @@ describe('serverContext', () => {
 				},
 			});
 
-			expect(mockConfigure).toBeCalledWith(mockAmplifyConfig, {
+			expect(mockConfigure).toHaveBeenCalledWith(mockAmplifyConfig, {
 				Auth: {
 					tokenProvider: mockTokenProvider,
 					credentialsProvider: mockCredentialAndIdentityProvider,
@@ -69,7 +69,7 @@ describe('serverContext', () => {
 		it('should throw an error if the context is not found', () => {
 			expect(() =>
 				getAmplifyServerContext({ token: { value: Symbol('test') } })
-			).toThrowError(
+			).toThrow(
 				'Attempted to get the Amplify Server Context that may have been destroyed.'
 			);
 		});
@@ -86,9 +86,23 @@ describe('serverContext', () => {
 
 			destroyAmplifyServerContext(contextSpec);
 
-			expect(() => getAmplifyServerContext(contextSpec)).toThrowError(
+			expect(() => getAmplifyServerContext(contextSpec)).toThrow(
 				'Attempted to get the Amplify Server Context that may have been destroyed.'
 			);
+		});
+	});
+
+	describe('passing invalid contextSpec', () => {
+		it('should throw exception if the contextSpec is invalid', () => {
+			[
+				{ bad: 'token' },
+				{ token: { bad: 'value' } },
+				{ token: { value: 'bad-value' } },
+			].forEach(invalidContextSpec => {
+				expect(() =>
+					getAmplifyServerContext(invalidContextSpec as any)
+				).toThrowError('Invalid `contextSpec`.');
+			});
 		});
 	});
 });

@@ -11,7 +11,7 @@ import { isAnalyticsEnabled, resolveCredentials } from '../../../../src/utils';
 import {
 	mockCredentialConfig,
 	mockPersonalizeConfig,
-} from '../../../testUtils/mockConstants.test';
+} from '../../../testUtils/mockConstants';
 import { record } from '../../../../src/providers/personalize';
 import { ConsoleLogger } from '@aws-amplify/core';
 import { RecordInput as PersonalizeRecordInput } from '../../../../src/providers/personalize/types';
@@ -75,7 +75,7 @@ describe('Analytics Personalize API: record', () => {
 		record(mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
-		expect(mockAppend).toBeCalledWith(
+		expect(mockAppend).toHaveBeenCalledWith(
 			expect.objectContaining({
 				trackingId: mockPersonalizeConfig.trackingId,
 				...mockCachedSession,
@@ -105,12 +105,12 @@ describe('Analytics Personalize API: record', () => {
 
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
-		expect(mockUpdateCachedSession).toBeCalledWith(
+		expect(mockUpdateCachedSession).toHaveBeenCalledWith(
 			newSession.userId,
 			mockCachedSession.sessionId,
 			mockCachedSession.userId
 		);
-		expect(mockAppend).toBeCalledWith(
+		expect(mockAppend).toHaveBeenCalledWith(
 			expect.objectContaining({
 				trackingId: mockPersonalizeConfig.trackingId,
 				...newSession,
@@ -136,12 +136,12 @@ describe('Analytics Personalize API: record', () => {
 
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
-		expect(mockUpdateCachedSession).toBeCalledWith(
+		expect(mockUpdateCachedSession).toHaveBeenCalledWith(
 			newSession.userId,
 			mockCachedSession.sessionId,
 			mockCachedSession.userId
 		);
-		expect(mockAppend).toBeCalledWith(
+		expect(mockAppend).toHaveBeenCalledWith(
 			expect.objectContaining({
 				trackingId: mockPersonalizeConfig.trackingId,
 				...newSession,
@@ -159,7 +159,7 @@ describe('Analytics Personalize API: record', () => {
 
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
-		expect(mockAutoTrackMedia).toBeCalledWith(
+		expect(mockAutoTrackMedia).toHaveBeenCalledWith(
 			{
 				trackingId: mockPersonalizeConfig.trackingId,
 				...mockCachedSession,
@@ -167,7 +167,7 @@ describe('Analytics Personalize API: record', () => {
 			},
 			mockEventBuffer
 		);
-		expect(mockAppend).not.toBeCalled();
+		expect(mockAppend).not.toHaveBeenCalled();
 	});
 
 	it('flushEvents when buffer size is full', async () => {
@@ -187,7 +187,7 @@ describe('Analytics Personalize API: record', () => {
 		record(mockRecordInput);
 		await new Promise(process.nextTick);
 		expect(mockGetEventBuffer).toHaveBeenCalledTimes(1);
-		expect(mockAppend).toBeCalledWith(
+		expect(mockAppend).toHaveBeenCalledWith(
 			expect.objectContaining({
 				trackingId: mockPersonalizeConfig.trackingId,
 				...mockCachedSession,
@@ -204,15 +204,18 @@ describe('Analytics Personalize API: record', () => {
 		record(mockRecordInput);
 
 		await new Promise(process.nextTick);
-		expect(loggerWarnSpy).toBeCalledWith(expect.any(String), expect.any(Error));
+		expect(loggerWarnSpy).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.any(Error)
+		);
 	});
 
 	it('logs and skip the event recoding if Analytics plugin is not enabled', async () => {
 		mockIsAnalyticsEnabled.mockReturnValue(false);
 		record(mockRecordInput);
 		await new Promise(process.nextTick);
-		expect(loggerDebugSpy).toBeCalledWith(expect.any(String));
-		expect(mockGetEventBuffer).not.toBeCalled();
-		expect(mockAppend).not.toBeCalled();
+		expect(loggerDebugSpy).toHaveBeenCalledWith(expect.any(String));
+		expect(mockGetEventBuffer).not.toHaveBeenCalled();
+		expect(mockAppend).not.toHaveBeenCalled();
 	});
 });

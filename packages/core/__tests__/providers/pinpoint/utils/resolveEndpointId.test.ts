@@ -56,7 +56,7 @@ describe('Pinpoint Provider Util: resolveEndpointId', () => {
 			})
 		).toBe(endpointId);
 
-		expect(mockUpdateEndpoint).toBeCalledWith({
+		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
 			appId,
 			category,
 			credentials,

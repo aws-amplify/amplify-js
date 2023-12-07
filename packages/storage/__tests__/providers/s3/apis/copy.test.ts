@@ -166,7 +166,7 @@ describe('copy API', () => {
 							},
 						})
 					).toEqual(copyResult);
-					expect(copyObject).toBeCalledTimes(1);
+					expect(copyObject).toHaveBeenCalledTimes(1);
 					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 						...copyObjectClientBaseParams,
 						CopySource: expectedSourceKey,
@@ -196,8 +196,8 @@ describe('copy API', () => {
 					source: { key: sourceKey },
 					destination: { key: destinationKey },
 				});
-			} catch (error) {
-				expect(copyObject).toBeCalledTimes(1);
+			} catch (error: any) {
+				expect(copyObject).toHaveBeenCalledTimes(1);
 				expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 					...copyObjectClientBaseParams,
 					CopySource: `${bucket}/public/${sourceKey}`,

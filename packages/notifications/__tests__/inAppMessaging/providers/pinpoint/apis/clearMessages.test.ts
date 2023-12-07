@@ -28,7 +28,7 @@ describe('clearMessages', () => {
 		await expect(clearMessages()).rejects.toStrictEqual(
 			expect.any(InAppMessagingError)
 		);
-		expect(mockDefaultStorage.removeItem).not.toBeCalled();
+		expect(mockDefaultStorage.removeItem).not.toHaveBeenCalled();
 	});
 
 	it('Rejects if there is a failure storing messages', async () => {
@@ -47,7 +47,7 @@ describe('clearMessages', () => {
 	it('Succeeds in calling the removeItem API of defaultStorage with the correct key', async () => {
 		initializeInAppMessaging();
 		await clearMessages();
-		expect(mockDefaultStorage.removeItem).toBeCalledWith(
+		expect(mockDefaultStorage.removeItem).toHaveBeenCalledWith(
 			`${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`
 		);
 	});
