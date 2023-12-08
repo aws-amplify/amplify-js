@@ -323,8 +323,8 @@ export class AWSAppSyncRealTimeProvider {
 
 		if (typeof additionalHeaders === 'function') {
 			const requestOptions: RequestOptions = {
-				url: appSyncGraphqlEndpoint,
-				queryString: query,
+				url: appSyncGraphqlEndpoint || '',
+				queryString: query || '',
 			};
 			additionalCustomHeaders = await additionalHeaders(requestOptions);
 		} else {
