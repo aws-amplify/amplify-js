@@ -24,7 +24,7 @@
   dependencies:
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema@^0.12.10":
+"@aws-amplify/data-schema@^0.12.9":
   version "0.12.10"
   resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.12.10.tgz#f1c9c2ae516f576356862be79b77157aa9693f1a"
   integrity sha512-dqt3gnYtA3G1feGoed2JUhA+SeV1hOFAzBFg2e+vDgAsWD1a4QUks8evoVXZ5wFU7LAeJRZdG+pU7MMoSHhzQg==
