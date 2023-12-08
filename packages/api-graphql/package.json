@@ -47,6 +47,11 @@
 			"require": "./dist/cjs/internals/server/index.js",
 			"react-native": "./src/internals/server/index.ts"
 		},
+		"./server": {
+			"types": "./dist/esm/server/index.d.ts",
+			"import": "./dist/esm/server/index.mjs",
+			"require": "./dist/cjs/server/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -76,7 +81,8 @@
 		"dist/cjs",
 		"dist/esm",
 		"src",
-		"internals"
+		"internals",
+		"server"
 	],
 	"dependencies": {
 		"@aws-amplify/api-rest": "4.0.6",
