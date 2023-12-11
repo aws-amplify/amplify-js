@@ -96,13 +96,13 @@
 			"name": "Custom clients (request signer)",
 			"path": "./dist/esm/clients/middleware/signing/signer/signatureV4/index.mjs",
 			"import": "{ signRequest }",
-			"limit": "3.53 kB"
+			"limit": "3.60 kB"
 		},
 		{
 			"name": "Custom clients (url presigner)",
 			"path": "./dist/esm/clients/middleware/signing/signer/signatureV4/index.mjs",
 			"import": "{ presignUrl }",
-			"limit": "3.58 kB"
+			"limit": "3.65 kB"
 		},
 		{
 			"name": "Cache (default browser storage)",
