@@ -1,25 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { generateServerClient } from '@aws-amplify/api/internals';
+import { generateClientWithAmplifyInstance } from '@aws-amplify/api/internals';
+import { generateClient } from 'aws-amplify/api/server';
 import {
 	getAmplifyServerContext,
 	AmplifyServerContextError,
-	AmplifyServer,
 } from '@aws-amplify/core/internals/adapter-core';
 import {
 	V6ClientSSRRequest,
 	V6ClientSSRCookies,
-	GraphQLMethod,
-	GraphQLMethodSSR,
 	__amplify,
-	GraphQLOptionsV6,
 } from '@aws-amplify/api-graphql';
 import { NextServer } from '../types';
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 import { getAmplifyConfig } from '../utils';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 type CookiesClientParams = {
 	cookies: NextServer.ServerComponentContext['cookies'];
@@ -74,7 +70,7 @@ export function generateServerClientUsingCookies<
 				fn(getAmplifyServerContext(contextSpec).amplify),
 		});
 
-	return generateServerClient<T, V6ClientSSRCookies<T>>({
+	return generateClientWithAmplifyInstance<T, V6ClientSSRCookies<T>>({
 		amplify: getAmplify,
 		config: resourcesConfig,
 		authMode,
@@ -89,9 +85,9 @@ export function generateServerClientUsingCookies<
  * import config from './amplifyconfiguration.json';
  * import { listPosts } from './graphql/queries';
  *
- * const client = generateServerClientUsingReqRes();
+ * const client = generateServerClientUsingReqRes({ config });
  *
- * result = await runWithAmplifyServerContext({
+ * const result = await runWithAmplifyServerContext({
  *   nextServerContext: { request, response },
  *   operation: (contextSpec) => client.graphql(contextSpec, {
  *     query: listPosts,
@@ -102,31 +98,9 @@ export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never,
 >({ config, authMode, authToken }: ReqClientParams): V6ClientSSRRequest<T> {
 	const amplifyConfig = getAmplifyConfig(config);
-	// passing `null` instance because each (future model) method must retrieve a valid instance
-	// from server context
-	const client = generateServerClient<T, V6ClientSSRRequest<T>>({
-		amplify: null,
+	return generateClient<T>({
 		config: amplifyConfig,
 		authMode,
 		authToken,
 	});
-
-	// TODO: improve this and the next type
-	const prevGraphql = client.graphql as unknown as GraphQLMethod;
-
-	const wrappedGraphql = (
-		contextSpec: AmplifyServer.ContextSpec,
-		options: GraphQLOptionsV6,
-		additionalHeaders?: CustomHeaders
-	) => {
-		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
-		return prevGraphql.call(
-			{ [__amplify]: amplifyInstance },
-			options,
-			additionalHeaders as any
-		);
-	};
-
-	client.graphql = wrappedGraphql as unknown as GraphQLMethodSSR;
-	return client;
 }

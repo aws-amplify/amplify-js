@@ -1,309 +1,118 @@
-import * as raw from '../../src';
-import { Amplify, ResourcesConfig } from '@aws-amplify/core';
-import { generateClient } from '../../src/internals/server';
-import configFixture from '../fixtures/modeled/amplifyconfiguration';
-import { Schema } from '../fixtures/modeled/schema';
-import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../src/types';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
-const serverManagedFields = {
-	id: 'some-id',
-	owner: 'wirejobviously',
-	createdAt: new Date().toISOString(),
-	updatedAt: new Date().toISOString(),
-};
+import {
+	AmplifyServer,
+	getAmplifyServerContext,
+} from '@aws-amplify/core/internals/adapter-core';
+import { generateClient } from '../../src/server';
+import { generateClientWithAmplifyInstance } from '../../src/internals/server';
+import {
+	CommonPublicClientOptions,
+	ServerClientGenerationParams,
+	__amplify,
+	__authMode,
+	__authToken,
+} from '../../src/types';
+import { ResourcesConfig } from '@aws-amplify/core';
 
-const config: ResourcesConfig = {
+jest.mock('@aws-amplify/core/internals/adapter-core');
+jest.mock('../../src/internals/server', () => ({
+	...jest.requireActual('../../src/internals/server'),
+	generateClientWithAmplifyInstance: jest.fn(
+		(params: ServerClientGenerationParams & CommonPublicClientOptions) => ({
+			[__amplify]: params.amplify,
+			[__authMode]: params.authMode,
+			[__authToken]: params.authToken,
+			graphql: mockGraphQLMethod,
+			cancel: jest.fn(),
+			isCancelError: jest.fn(),
+		})
+	),
+}));
+
+const mockGraphQLMethod = jest.fn();
+const mockGetAmplifyServerContext = getAmplifyServerContext as jest.Mock;
+const mockGenerateClientWithAmplifyInstance =
+	generateClientWithAmplifyInstance as jest.Mock;
+const mockResourceConfig: ResourcesConfig = {
 	API: {
 		GraphQL: {
-			apiKey: 'apikey',
-			customEndpoint: undefined,
-			customEndpointRegion: undefined,
+			endpoint: 'https://graphql.com',
 			defaultAuthMode: 'apiKey',
-			endpoint: 'https://0.0.0.0/graphql',
-			region: 'us-east-1',
 		},
 	},
 };
 
-/**
- *
- * @param value Value to be returned. Will be `awaited`, and can
- * therefore be a simple JSON value or a `Promise`.
- * @returns
- */
-function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
-			const result = await value;
-			return {
-				body: {
-					json: () => result,
-				},
-			};
-		});
-}
+describe('generateClient server edition', () => {
+	const testParams: Parameters<typeof generateClient>[0] = {
+		config: mockResourceConfig,
+		authMode: 'oidc',
+		authToken: 'some-token',
+	};
+	const client = generateClient(testParams);
 
-describe('server generateClient', () => {
-	describe('with cookies', () => {
-		test('subscriptions are disabled', () => {
-			const getAmplify = async (fn: any) => await fn(Amplify);
+	afterEach(() => {
+		mockGenerateClientWithAmplifyInstance.mockClear();
+		mockGraphQLMethod.mockClear();
+	});
 
-			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
-				amplify: getAmplify,
-				config: config,
+	describe('calling to create the client', () => {
+		it('invokes `generateClientWithAmplifyInstance` with expected params', () => {
+			expect(mockGenerateClientWithAmplifyInstance).toHaveBeenCalledTimes(1);
+			expect(mockGenerateClientWithAmplifyInstance).toHaveBeenCalledWith({
+				amplify: null,
+				config: testParams.config,
+				authMode: testParams.authMode,
+				authToken: testParams.authToken,
 			});
-
-			expect(() => {
-				// @ts-expect-error
-				client.models.Note.onCreate().subscribe();
-			}).toThrow();
-		});
-
-		test('can list', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'some name',
-								description: 'something something',
-							},
-						],
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const { data } = await client.models.Todo.list({
-				filter: { name: { contains: 'name' } },
-			});
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				})
-			);
-
-			expect(data.length).toBe(1);
-			expect(data[0]).toEqual(
-				expect.objectContaining({
-					__typename: 'Todo',
-					id: 'some-id',
-					owner: 'wirejobviously',
-					name: 'some name',
-					description: 'something something',
-				})
-			);
-		});
-
-		test('can list with nextToken', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'some name',
-								description: 'something something',
-							},
-						],
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const { data } = await client.models.Todo.list({
-				filter: { name: { contains: 'name' } },
-				nextToken: 'some-token',
-			});
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-								nextToken: 'some-token',
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				})
-			);
-		});
-
-		test('can list with limit', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'some name',
-								description: 'something something',
-							},
-						],
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClient<Schema, V6ClientSSRCookies<Schema>>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const { data } = await client.models.Todo.list({
-				filter: { name: { contains: 'name' } },
-				limit: 5,
-			});
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-								limit: 5,
-							},
-						},
-					}),
-				})
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				})
-			);
 		});
 	});
-	describe('with request', () => {
-		test('subscriptions are disabled', () => {
-			const client = generateClient<Schema, V6ClientSSRRequest<Schema>>({
-				amplify: null,
-				config: config,
-			});
 
-			expect(() => {
-				// @ts-expect-error
-				client.models.Note.onCreate().subscribe();
-			}).toThrow();
+	describe('calling the `graphql` method of the created client', () => {
+		const mockContextSpec: AmplifyServer.ContextSpec = {
+			token: {
+				value: Symbol('AmplifyServerContextToken'),
+			},
+		};
+		const mockAmplifyInstanceFromTheContext = jest.fn();
+
+		beforeEach(() => {
+			mockGetAmplifyServerContext.mockReturnValue({
+				amplify: mockAmplifyInstanceFromTheContext,
+			});
 		});
 
-		test('contextSpec param gets passed through to client.graphql', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
+		afterEach(() => {
+			mockGetAmplifyServerContext.mockClear();
+		});
 
-			const client = generateClient<Schema, V6ClientSSRRequest<Schema>>({
-				amplify: null,
-				config: config,
+		it('invokes `getAmplifyServerContext` to get the context', () => {
+			client.graphql(mockContextSpec, {
+				query: 'some query',
 			});
 
-			const mockContextSpec = {};
+			expect(mockGetAmplifyServerContext).toHaveBeenCalledTimes(1);
+			expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(mockContextSpec);
+		});
 
-			const spy = jest.spyOn(client, 'graphql').mockImplementation(async () => {
-				const result: any = {};
-				return result;
-			});
-
-			await client.models.Note.list(mockContextSpec);
-
-			expect(spy).toHaveBeenCalledWith(
+		it('invokes the underlying client (crated by `generateClientWithAmplifyInstance`) `graphql` method with expected params', () => {
+			const testGraphQLOptions = {
+				query: 'some query',
+			};
+			const testAdditionalHeaders = {
+				myHeader: 'myValue',
+			};
+			client.graphql(
 				mockContextSpec,
-				expect.objectContaining({
-					query: expect.stringContaining('listNotes'),
-				}),
-				{}
+				testGraphQLOptions,
+				testAdditionalHeaders
+			);
+
+			expect(mockGraphQLMethod).toHaveBeenCalledTimes(1);
+			expect(mockGraphQLMethod).toHaveBeenCalledWith(
+				testGraphQLOptions,
+				testAdditionalHeaders
 			);
 		});
 	});

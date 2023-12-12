@@ -4,6 +4,7 @@
  * Cognito fields etc. omitted.
  */
 const amplifyConfig = {
+	aws_project_region: 'us-east-2',
 	aws_appsync_graphqlEndpoint: 'https://localhost/graphql',
 	aws_appsync_region: 'us-west-1',
 	aws_appsync_authenticationType: 'API_KEY',
@@ -62,6 +63,23 @@ const amplifyConfig = {
 							associatedWith: ['id'],
 							targetNames: ['todoMetaId'],
 						},
+					},
+					status: {
+						name: 'status',
+						isArray: false,
+						type: {
+							enum: 'Status',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+					tags: {
+						name: 'tags',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
 					},
 					createdAt: {
 						name: 'createdAt',
@@ -606,7 +624,12 @@ const amplifyConfig = {
 				},
 			},
 		},
-		enums: {},
+		enums: {
+			Status: {
+				name: 'Status',
+				values: ['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED'],
+			},
+		},
 		nonModels: {},
 	},
 };

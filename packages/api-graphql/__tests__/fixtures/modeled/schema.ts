@@ -7,6 +7,8 @@ const schema = a.schema({
 			description: a.string(),
 			notes: a.hasMany('Note'),
 			meta: a.hasOne('TodoMetadata'),
+			status: a.enum(["NOT_STARTED", "STARTED", "DONE", "CANCELED"]),
+			tags: a.string().array(),
 		})
 		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	Note: a

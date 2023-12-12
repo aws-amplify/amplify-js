@@ -17,3 +17,5 @@ export {
 	sharedInMemoryStorage,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
+
+export { parseAWSExports as parseAmplifyConfig } from '@aws-amplify/core/internals/utils';

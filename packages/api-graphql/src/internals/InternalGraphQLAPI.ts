@@ -8,7 +8,7 @@ import {
 	GraphQLError,
 	OperationTypeNode,
 } from 'graphql';
-import { Observable } from 'rxjs';
+import { Observable, catchError } from 'rxjs';
 import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
 import {
 	GraphQLAuthMode,
@@ -31,6 +31,7 @@ import {
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
+import { repackageUnauthError } from '../utils/errors/repackageAuthError';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -391,7 +392,7 @@ export class InternalGraphQLAPIClass {
 		const { errors } = response;
 
 		if (errors && errors.length) {
-			throw response;
+			throw repackageUnauthError(response);
 		}
 
 		return response;
@@ -434,20 +435,29 @@ export class InternalGraphQLAPIClass {
 		 */
 		const { headers: libraryConfigHeaders } = resolveLibraryOptions(amplify);
 
-		return this.appSyncRealTime.subscribe(
-			{
-				query: print(query as DocumentNode),
-				variables,
-				appSyncGraphqlEndpoint: config?.endpoint,
-				region: config?.region,
-				authenticationType: authMode || config?.defaultAuthMode,
-				apiKey: config?.apiKey,
-				additionalHeaders,
-				authToken,
-				libraryConfigHeaders,
-			},
-			customUserAgentDetails
-		);
+		return this.appSyncRealTime
+			.subscribe(
+				{
+					query: print(query as DocumentNode),
+					variables,
+					appSyncGraphqlEndpoint: config?.endpoint,
+					region: config?.region,
+					authenticationType: authMode || config?.defaultAuthMode,
+					apiKey: config?.apiKey,
+					additionalHeaders,
+					authToken,
+					libraryConfigHeaders,
+				},
+				customUserAgentDetails
+			)
+			.pipe(
+				catchError(e => {
+					if (e.errors) {
+						throw repackageUnauthError(e);
+					}
+					throw e;
+				})
+			);
 	}
 }
 

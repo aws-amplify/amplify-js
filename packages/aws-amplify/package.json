@@ -289,7 +289,7 @@
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./dist/esm/analytics/kinesis/index.mjs",
 			"import": "{ record }",
-			"limit": "44.05 kB"
+			"limit": "44.10 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
@@ -427,7 +427,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "19.24 kB"
+			"limit": "19.30 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -439,55 +439,55 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "27.44 kB"
+			"limit": "27.60 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "19.68 kB"
+			"limit": "19.80 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "12.98 kB"
+			"limit": "13.10 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "13.76 kB"
+			"limit": "13.80 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "13.01 kB"
+			"limit": "13.10 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "14.09 kB"
+			"limit": "14.10 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "13.39 kB"
+			"limit": "13.50 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "12.82 kB"
+			"limit": "12.90 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "18.09 kB"
+			"limit": "18.10 kB"
 		}
 	]
 }

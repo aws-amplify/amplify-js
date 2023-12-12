@@ -451,3 +451,9 @@ export type AuthModeParams = {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
 };
+
+export type GenerateServerClientParams = {
+	config: ResourcesConfig;
+	authMode?: GraphQLAuthMode;
+	authToken?: string;
+};
