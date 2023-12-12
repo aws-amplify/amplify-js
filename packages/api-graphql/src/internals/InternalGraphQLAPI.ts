@@ -242,7 +242,7 @@ export class InternalGraphQLAPIClass {
 
 		const authMode = explicitAuthMode || defaultAuthMode || 'iam';
 
-		const rqendpoint = customEndpoint || appSyncGraphqlEndpoint;
+		const rqendpoint = customEndpoint || appSyncGraphqlEndpoint || '';
 
 		const rqurl = new AmplifyUrl(rqendpoint);
 
