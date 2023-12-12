@@ -41,8 +41,6 @@ export {
 	SignInWithSRPInput,
 	SignInWithUserPasswordInput,
 	SignInWithRedirectInput,
-	SignInWithMagicLinkInput,
-	SignInWithOTPInput,
 	SignOutInput,
 	SignUpInput,
 	UpdateMFAPreferenceInput,

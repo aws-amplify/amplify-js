@@ -37,16 +37,8 @@ import {
 	AuthSendUserAttributeVerificationCodeInput,
 	AuthDeleteUserAttributesInput,
 	AuthForgetDeviceInput,
-	AuthServiceOptions,
 } from '../../../types';
-import {
-	SignInWithCustomAuthOptions,
-	SignInWithCustomSRPAuthOptions,
-	SignInWithMagicLinkOptions,
-	SignInWithOTPOptions,
-	SignInWithSRPOptions,
-	SignInWithUserPasswordOptions,
-} from './options';
+import { SignInPasswordlessOptions } from './options';
 
 /**
  * Input type for Cognito confirmResetPassword API.
@@ -81,68 +73,50 @@ export type ResendSignUpCodeInput =
  */
 export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 
-type SignInInputWithOptionalPassword<
-	ServiceOptions extends AuthServiceOptions,
-> = AuthSignInInput<ServiceOptions> & {
-	passwordlessFlow?: never;
-	password?: string;
-};
-
-type SignInNonDefaultInputWithOptionalPassword<
-	ServiceOptions extends AuthServiceOptions,
-> = AuthSignInInput & {
-	passwordlessFlow?: never;
-	password?: string;
-	options: ServiceOptions;
-};
-
 /**
  * Input type for Cognito signIn API.
  */
 export type SignInInput =
-	| SignInWithCustomAuthInput
-	| SignInWithCustomSRPAuthInput
-	| SignInWithSRPInput
-	| SignInWithUserPasswordInput;
+	| SignInWithMagicLinkInput
+	| SignInWithOTPInput
+	| SignInInputWithOptionalPassword;
+
+export type SignInInputWithOptionalPassword = AuthSignInInput<SignInOptions> & {
+	passwordlessFlow?: never;
+};
 
 /**
  * Input type for Cognito signInWithCustomAuth API.
  */
-export type SignInWithCustomAuthInput =
-	SignInNonDefaultInputWithOptionalPassword<SignInWithCustomAuthOptions>;
+export type SignInWithCustomAuthInput = AuthSignInInput<SignInOptions>;
+
 /**
  * Input type for Cognito signInWithCustomSRPAuth API.
  */
-export type SignInWithCustomSRPAuthInput =
-	SignInNonDefaultInputWithOptionalPassword<SignInWithCustomSRPAuthOptions>;
+export type SignInWithCustomSRPAuthInput = AuthSignInInput<SignInOptions>;
 
 /**
  * Input type for Cognito signInWithSRP API.
  */
-export type SignInWithSRPInput =
-	SignInInputWithOptionalPassword<SignInWithSRPOptions>;
+export type SignInWithSRPInput = AuthSignInInput<SignInOptions>;
 
 /**
  * Input type for Cognito signInWithUserPasswordInput API.
  */
-export type SignInWithUserPasswordInput =
-	SignInNonDefaultInputWithOptionalPassword<SignInWithUserPasswordOptions>;
+export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions>;
 
-type SignInNonDefaultInputPasswordless<
-	ServiceOptions extends AuthServiceOptions,
-> = AuthSignInInput & {
+export type SignInWithOTPInput = AuthSignInInput<SignInPasswordlessOptions> & {
 	password?: never;
-	options: ServiceOptions;
+	passwordlessFlow: 'OTP';
+	deliveryMedium: 'EMAIL' | 'SMS';
 };
 
-export type SignInWithOTPInput =
-	SignInNonDefaultInputPasswordless<SignInWithOTPOptions> & {
-		passwordlessFlow: 'OTP';
-	};
-
 export type SignInWithMagicLinkInput =
-	SignInNonDefaultInputPasswordless<SignInWithMagicLinkOptions> & {
+	AuthSignInInput<SignInPasswordlessOptions> & {
+		password?: never;
 		passwordlessFlow: 'MAGIC_LINK';
+		// TODO: need to decide if we want to move it to configuration
+		redirectURL: string;
 	};
 
 /**
