@@ -242,20 +242,11 @@ export class InternalGraphQLAPIClass {
 
 		const authMode = explicitAuthMode || defaultAuthMode || 'iam';
 
-		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
+		const rqendpoint = customEndpoint || appSyncGraphqlEndpoint;
 
-		if (!endpoint) {
-			const error = new GraphQLError('No graphql endpoint provided.');
+		const rqurl = new AmplifyUrl(rqendpoint);
 
-			throw {
-				data: {},
-				errors: [error],
-			};
-		}
-
-		const url = new AmplifyUrl(endpoint);
-
-		const queryString = print(query as DocumentNode);
+		const rqqueryString = print(query as DocumentNode);
 
 		/**
 		 * Retrieve library options from Amplify configuration.
@@ -277,8 +268,8 @@ export class InternalGraphQLAPIClass {
 		if (typeof additionalHeaders === 'function') {
 			const requestOptions: RequestOptions = {
 				method: 'POST',
-				url: url.toString(),
-				queryString,
+				url: rqurl.toString(),
+				queryString: rqqueryString,
 			};
 
 			additionalCustomHeaders = await additionalHeaders(requestOptions);
@@ -332,7 +323,7 @@ export class InternalGraphQLAPIClass {
 		};
 
 		const body = {
-			query: queryString,
+			query: print(query as DocumentNode),
 			variables: variables || null,
 		};
 
@@ -360,11 +351,22 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
+		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
+
+		if (!endpoint) {
+			const error = new GraphQLError('No graphql endpoint provided.');
+
+			throw {
+				data: {},
+				errors: [error],
+			};
+		}
+
 		let response: any;
 
 		try {
 			const { body: responseBody } = await this._api.post({
-				url,
+				url: new AmplifyUrl(endpoint),
 				options: {
 					headers,
 					body,
