@@ -11,12 +11,12 @@ import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 
-import { SignInInput, SignInOutput } from '../types';
 import {
-	SignInInputWithOptionalPassword,
+	SignInInput,
+	SignInOutput,
 	SignInWithMagicLinkInput,
 	SignInWithOTPInput,
-} from '../types/inputs';
+} from '../types';
 import {
 	SignInWithMagicLinkOutput,
 	SignInWithOTPOutput,
@@ -35,7 +35,7 @@ type SignInApi = {
 	 *  are not defined.
 	 * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
 	 */
-	(intput: SignInInputWithOptionalPassword): Promise<SignInOutput>;
+	(intput: SignInInput): Promise<SignInOutput>;
 
 	(intput: SignInWithMagicLinkInput): Promise<SignInWithMagicLinkOutput>;
 
@@ -60,7 +60,7 @@ export const signIn: SignInApi = async (
 	const passwordlessFlow = input.passwordlessFlow;
 	const authFlowType = input.options?.authFlowType;
 	await assertUserNotAuthenticated();
-	switch (passwordlessFlow) {
+	switch (input.passwordlessFlow) {
 		case 'MAGIC_LINK':
 			// TODO: needs implementation
 			return {
@@ -82,21 +82,22 @@ export const signIn: SignInApi = async (
 				},
 			} as any;
 		default:
-			switch (authFlowType) {
+			const { username, password, options } = input;
+			switch (options?.authFlowType) {
 				case 'USER_SRP_AUTH':
-					return signInWithSRP(input) as any;
+					return signInWithSRP({ username, password, options });
 				case 'USER_PASSWORD_AUTH':
-					return signInWithUserPassword(input) as any;
+					return signInWithUserPassword({ username, password, options });
 				case 'CUSTOM_WITHOUT_SRP':
-					return signInWithCustomAuth(input) as any;
+					return signInWithCustomAuth({ username, password, options });
 				case 'CUSTOM_WITH_SRP':
-					return signInWithCustomSRPAuth(input) as any;
+					return signInWithCustomSRPAuth({ username, password, options });
 				default:
-					return signInWithSRP(input) as any;
+					return signInWithSRP({ username, password, options });
 			}
 	}
 };
 
 const isMagicLinkInput = (
-	input: SignInInput
+	input: SignInInput | SignInWithMagicLinkInput | SignInWithOTPInput
 ): input is SignInWithMagicLinkInput => input.passwordlessFlow === 'MAGIC_LINK';

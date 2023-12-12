@@ -33,13 +33,34 @@ export type ResetPasswordOptions = AuthServiceOptions & {
 /**
  * Options specific to Cognito Sign In.
  */
-export type SignInOptions = AuthServiceOptions & {
-	authFlowType?: AuthFlowType;
+type SignInOptionsBase = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
 };
+export type SignInWithCustomAuthOptions = SignInOptionsBase & {
+	authFlowType: 'CUSTOM_WITHOUT_SRP';
+};
 
-export type SignInPasswordlessOptions = AuthServiceOptions & {
+export type SignInWithCustomSRPAuthOptions = SignInOptionsBase & {
+	authFlowType: 'CUSTOM_WITH_SRP';
+};
+
+export type SignInWithSRPOptions = SignInOptionsBase & {
+	authFlowType?: 'USER_SRP_AUTH';
+};
+
+export type SignInWithUserPasswordOptions = SignInOptionsBase & {
+	authFlowType: 'USER_PASSWORD_AUTH';
+};
+
+export type SignInWithOTPOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
+	deliveryMedium: 'SMS' | 'EMAIL';
+};
+
+export type SignInWithMagicLinkOptions = AuthServiceOptions & {
+	clientMetadata?: ClientMetadata;
+	// TODO: need to decide if we want to move it to configuration
+	redirectURL: string;
 };
 
 /**
@@ -49,7 +70,12 @@ export type SignUpOptions<UserAttributeKey extends AuthUserAttributeKey> =
 	AuthSignUpOptions<UserAttributeKey> & {
 		validationData?: ValidationData;
 		clientMetadata?: ClientMetadata;
-		autoSignIn?: SignInOptions | boolean; // default is false;
+		autoSignIn?:
+			| SignInWithCustomAuthOptions
+			| SignInWithCustomSRPAuthOptions
+			| SignInWithSRPOptions
+			| SignInWithUserPasswordOptions
+			| boolean; // default is false;
 	};
 
 /**

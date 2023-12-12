@@ -4,11 +4,6 @@
 import { HubInternal } from '@aws-amplify/core/internals/utils';
 import { signIn } from '../apis/signIn';
 import { SignInInput, SignInOutput } from '../types';
-import {
-	SignInWithMagicLinkInput,
-	SignInWithOTPInput,
-	SignInInputWithOptionalPassword,
-} from '../types/inputs';
 import { AutoSignInEventData } from '../types/models';
 import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
