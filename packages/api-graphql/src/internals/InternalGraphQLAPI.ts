@@ -242,12 +242,6 @@ export class InternalGraphQLAPIClass {
 
 		const authMode = explicitAuthMode || defaultAuthMode || 'iam';
 
-		const rqendpoint = customEndpoint || appSyncGraphqlEndpoint || '';
-
-		const rqurl = new AmplifyUrl(rqendpoint);
-
-		const rqqueryString = print(query as DocumentNode);
-
 		/**
 		 * Retrieve library options from Amplify configuration.
 		 * `customHeaders` here are from the Amplify configuration options,
@@ -268,8 +262,10 @@ export class InternalGraphQLAPIClass {
 		if (typeof additionalHeaders === 'function') {
 			const requestOptions: RequestOptions = {
 				method: 'POST',
-				url: rqurl.toString(),
-				queryString: rqqueryString,
+				url: new AmplifyUrl(
+					customEndpoint || appSyncGraphqlEndpoint || ''
+				).toString(),
+				queryString: print(query as DocumentNode),
 			};
 
 			additionalCustomHeaders = await additionalHeaders(requestOptions);
