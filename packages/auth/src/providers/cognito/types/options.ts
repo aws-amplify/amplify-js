@@ -38,9 +38,20 @@ export type SignInOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
 };
 
-export type SignInPasswordlessOptions = AuthServiceOptions & {
+export type SignInWithOTPOptions = AuthServiceOptions & {
+	authFlowType: 'AMPLIFY_PASSWORDLESS_OTP';
+	deliveryMedium: 'SMS' | 'EMAIL';
 	clientMetadata?: ClientMetadata;
 };
+
+export type SignInWithMagicLinkOptions = AuthServiceOptions & {
+	authFlowType: 'AMPLIFY_PASSWORDLESS_MAGIC_LINK';
+	clientMetadata?: ClientMetadata;
+};
+
+export type SignInPasswordlessOptions =
+	| SignInWithOTPOptions
+	| SignInWithMagicLinkOptions;
 
 /**
  * Options specific to Cognito Sign Up.

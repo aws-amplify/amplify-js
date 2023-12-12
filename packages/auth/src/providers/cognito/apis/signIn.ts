@@ -23,24 +23,20 @@ import {
 	SignInWithSRPOutput,
 } from '../types/outputs';
 
-type SignInApi = {
-	/**
-	 * Signs a user in
-	 *
-	 * @param input -  The SignInInput object
-	 * @returns SignInOutput
-	 * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException }
-	 *  - Cognito service errors thrown during the sign-in process.
-	 * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
-	 *  are not defined.
-	 * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
-	 */
-	(intput: SignInInputWithOptionalPassword): Promise<SignInOutput>;
-
-	(intput: SignInWithMagicLinkInput): Promise<SignInWithMagicLinkOutput>;
-
-	(input: SignInWithOTPInput): Promise<SignInWithOTPOutput>;
-};
+type SignInApi = <
+	T extends
+		| SignInInputWithOptionalPassword
+		| SignInWithMagicLinkInput
+		| SignInWithOTPInput,
+>(
+	input: T
+) => Promise<
+	T['options'] extends { authFlowType: 'AMPLIFY_PASSWORDLESS_OTP' }
+		? SignInWithOTPOutput
+		: T['options'] extends { authFlowType: 'AMPLIFY_PASSWORDLESS_MAGIC_LINK' }
+		  ? SignInWithMagicLinkOutput
+		  : SignInOutput
+>;
 
 /**
  * Signs a user in
@@ -53,15 +49,20 @@ type SignInApi = {
  *  are not defined.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
-export const signIn: SignInApi = async (
-	input: SignInInput | SignInWithMagicLinkInput | SignInWithOTPInput
-): Promise<{ isSignedIn: boolean; nextStep: any }> => {
+export const signIn: SignInApi = async ({ username, password, options }) => {
 	// export async function signIn(input: SignInInput): Promise<SignInOutput> {
-	const passwordlessFlow = input.passwordlessFlow;
-	const authFlowType = input.options?.authFlowType;
+	const authFlowType = options?.authFlowType;
 	await assertUserNotAuthenticated();
-	switch (passwordlessFlow) {
-		case 'MAGIC_LINK':
+	switch (authFlowType) {
+		case 'USER_SRP_AUTH':
+			return signInWithSRP({ username, password, options }) as any;
+		case 'USER_PASSWORD_AUTH':
+			return signInWithUserPassword({ username, password, options }) as any;
+		case 'CUSTOM_WITHOUT_SRP':
+			return signInWithCustomAuth({ username, options }) as any;
+		case 'CUSTOM_WITH_SRP':
+			return signInWithCustomSRPAuth({ username, password, options }) as any;
+		case 'AMPLIFY_PASSWORDLESS_MAGIC_LINK':
 			// TODO: needs implementation
 			return {
 				isSignedIn: false,
@@ -71,7 +72,7 @@ export const signIn: SignInApi = async (
 					codeDeliveryDetails: {},
 				},
 			} as any;
-		case 'OTP':
+		case 'AMPLIFY_PASSWORDLESS_OTP':
 			// TODO: needs implementation
 			return {
 				isSignedIn: false,
@@ -82,21 +83,6 @@ export const signIn: SignInApi = async (
 				},
 			} as any;
 		default:
-			switch (authFlowType) {
-				case 'USER_SRP_AUTH':
-					return signInWithSRP(input) as any;
-				case 'USER_PASSWORD_AUTH':
-					return signInWithUserPassword(input) as any;
-				case 'CUSTOM_WITHOUT_SRP':
-					return signInWithCustomAuth(input) as any;
-				case 'CUSTOM_WITH_SRP':
-					return signInWithCustomSRPAuth(input) as any;
-				default:
-					return signInWithSRP(input) as any;
-			}
+			return signInWithSRP({ username, password, options }) as any;
 	}
 };
-
-const isMagicLinkInput = (
-	input: SignInInput
-): input is SignInWithMagicLinkInput => input.passwordlessFlow === 'MAGIC_LINK';

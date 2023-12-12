@@ -48,7 +48,6 @@ export type AuthSignInInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
 > = {
 	username: string;
-	password?: string;
 	options?: ServiceOptions;
 };
 export type AuthSignOutInput = {
