@@ -1,5 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
+	workerIdleMemoryLimit: '512MB',
 	coveragePathIgnorePatterns: [
 		'/node_modules/',
 		'dist',
