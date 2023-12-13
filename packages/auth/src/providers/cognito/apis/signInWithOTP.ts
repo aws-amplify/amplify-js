@@ -84,8 +84,9 @@ async function handlePasswordlessSignIn(
 	authConfig: AuthConfig['Cognito']
 ) {
 	const { userPoolId, userPoolClientId } = authConfig;
-	const { username, options, deliveryMedium } = input;
-	const { clientMetadata } = options ?? {};
+	const { username, options } = input;
+	// TODO: verify options is set
+	const { clientMetadata, deliveryMedium } = options!;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 	};

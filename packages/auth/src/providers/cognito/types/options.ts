@@ -38,8 +38,15 @@ export type SignInOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
 };
 
-export type SignInPasswordlessOptions = AuthServiceOptions & {
+export type SignInWithMagicLinkOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
+	// TODO: need to decide if we want to move it to configuration
+	redirectURL: string;
+};
+
+export type SignInWithOTPOptions = AuthServiceOptions & {
+	clientMetadata?: ClientMetadata;
+	deliveryMedium: 'EMAIL' | 'SMS';
 };
 
 /**

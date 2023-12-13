@@ -96,7 +96,3 @@ export const signIn: SignInApi = async (
 			}
 	}
 };
-
-const isMagicLinkInput = (
-	input: SignInInput
-): input is SignInWithMagicLinkInput => input.passwordlessFlow === 'MAGIC_LINK';

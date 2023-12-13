@@ -38,7 +38,7 @@ import {
 	AuthDeleteUserAttributesInput,
 	AuthForgetDeviceInput,
 } from '../../../types';
-import { SignInPasswordlessOptions } from './options';
+import { SignInWithMagicLinkOptions, SignInWithOTPOptions } from './options';
 
 /**
  * Input type for Cognito confirmResetPassword API.
@@ -76,10 +76,7 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 /**
  * Input type for Cognito signIn API.
  */
-export type SignInInput =
-	| SignInWithMagicLinkInput
-	| SignInWithOTPInput
-	| SignInInputWithOptionalPassword;
+export type SignInInput = SignInInputWithOptionalPassword;
 
 export type SignInInputWithOptionalPassword = AuthSignInInput<SignInOptions> & {
 	passwordlessFlow?: never;
@@ -105,18 +102,17 @@ export type SignInWithSRPInput = AuthSignInInput<SignInOptions>;
  */
 export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions>;
 
-export type SignInWithOTPInput = AuthSignInInput<SignInPasswordlessOptions> & {
+export type SignInWithOTPInput = AuthSignInInput & {
 	password?: never;
 	passwordlessFlow: 'OTP';
-	deliveryMedium: 'EMAIL' | 'SMS';
+	options: SignInWithOTPOptions;
 };
 
 export type SignInWithMagicLinkInput =
-	AuthSignInInput<SignInPasswordlessOptions> & {
+	AuthSignInInput<SignInWithMagicLinkOptions> & {
 		password?: never;
 		passwordlessFlow: 'MAGIC_LINK';
-		// TODO: need to decide if we want to move it to configuration
-		redirectURL: string;
+		options: SignInWithMagicLinkOptions;
 	};
 
 /**
