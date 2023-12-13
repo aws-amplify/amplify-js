@@ -33,18 +33,18 @@ export type ResetPasswordOptions = AuthServiceOptions & {
 /**
  * Options specific to Cognito Sign In.
  */
-export type SignInOptions = AuthServiceOptions & {
+export type SignInOptions = {
 	authFlowType?: AuthFlowType;
 	clientMetadata?: ClientMetadata;
 };
 
-export type SignInWithMagicLinkOptions = AuthServiceOptions & {
+export type SignInWithMagicLinkOptions = {
 	clientMetadata?: ClientMetadata;
 	// TODO: need to decide if we want to move it to configuration
 	redirectURL: string;
 };
 
-export type SignInWithOTPOptions = AuthServiceOptions & {
+export type SignInWithOTPOptions = {
 	clientMetadata?: ClientMetadata;
 	deliveryMedium: 'EMAIL' | 'SMS';
 };

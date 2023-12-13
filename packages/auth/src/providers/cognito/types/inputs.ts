@@ -104,6 +104,12 @@ export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions>;
 
 export type SignInWithOTPInput = AuthSignInInput & {
 	password?: never;
+	/**
+	 * Use One-time pin instead of password to sign in.
+	 *
+	 * @note Setting this value requires backend setup with Amplify CLI.
+	 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+	 */
 	passwordlessFlow: 'OTP';
 	options: SignInWithOTPOptions;
 };
@@ -111,6 +117,13 @@ export type SignInWithOTPInput = AuthSignInInput & {
 export type SignInWithMagicLinkInput =
 	AuthSignInInput<SignInWithMagicLinkOptions> & {
 		password?: never;
+
+		/**
+		 * Use Magic Link instead of password to sign in.
+		 *
+		 * @note Setting this value requires backend setup with Amplify CLI.
+		 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+		 */
 		passwordlessFlow: 'MAGIC_LINK';
 		options: SignInWithMagicLinkOptions;
 	};

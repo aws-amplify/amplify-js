@@ -58,7 +58,6 @@ export const signIn: SignInApi = async (
 ): Promise<{ isSignedIn: boolean; nextStep: any }> => {
 	// export async function signIn(input: SignInInput): Promise<SignInOutput> {
 	const passwordlessFlow = input.passwordlessFlow;
-	const authFlowType = input.options?.authFlowType;
 	await assertUserNotAuthenticated();
 	switch (passwordlessFlow) {
 		case 'MAGIC_LINK':
@@ -82,17 +81,18 @@ export const signIn: SignInApi = async (
 				},
 			} as any;
 		default:
+			const authFlowType = input.options?.authFlowType;
 			switch (authFlowType) {
 				case 'USER_SRP_AUTH':
-					return signInWithSRP(input) as any;
+					return signInWithSRP(input);
 				case 'USER_PASSWORD_AUTH':
-					return signInWithUserPassword(input) as any;
+					return signInWithUserPassword(input);
 				case 'CUSTOM_WITHOUT_SRP':
-					return signInWithCustomAuth(input) as any;
+					return signInWithCustomAuth(input);
 				case 'CUSTOM_WITH_SRP':
-					return signInWithCustomSRPAuth(input) as any;
+					return signInWithCustomSRPAuth(input);
 				default:
-					return signInWithSRP(input) as any;
+					return signInWithSRP(input);
 			}
 	}
 };
