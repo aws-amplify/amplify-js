@@ -66,23 +66,23 @@ function makeAppSyncStreams() {
  * replaces fields that are likely to change between calls (or library version revs)
  * with static values. When possible, on the unpredicable portions of these values
  * are replaced.
- * 
+ *
  * ## THIS IS DESTRUCTIVE
- * 
+ *
  * The original `spy.mocks.calls` will be updated *and* returned.
- * 
+ *
  * For example,
- * 
+ *
  * ```plain
  * headers.x-amz-user-agent: "aws-amplify/6.0.5 api/1 framework/0"
  * ```
- * 
+ *
  * Is replaced with:
- * 
+ *
  * ```plain
  * headers.x-amz-user-agent: "aws-amplify/latest api/latest framework/latest"
  * ```
- * 
+ *
  * @param spy The Jest spy
  */
 function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
@@ -251,7 +251,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -272,7 +272,7 @@ describe('generateClient', () => {
 						...serverManagedFields,
 						name: 'some name',
 						description: 'something something',
-						tags: ['one', 'two', 'three']
+						tags: ['one', 'two', 'three'],
 					},
 				},
 			});
@@ -280,7 +280,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			const { data } = await client.models.Todo.get({ id: 'asdf' });
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -289,7 +289,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-					tags: ['one', 'two', 'three']
+					tags: ['one', 'two', 'three'],
 				})
 			);
 		});
@@ -315,8 +315,8 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
-			
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
 				expect.objectContaining({
@@ -351,7 +351,7 @@ describe('generateClient', () => {
 				nextToken: 'some-token',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can list() with limit', async () => {
@@ -376,7 +376,7 @@ describe('generateClient', () => {
 				limit: 5,
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can update()', async () => {
@@ -397,7 +397,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -427,7 +427,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -590,7 +590,7 @@ describe('generateClient', () => {
 
 			const { data: notes } = await data.notes();
 
-			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
 			expect(notes!.length).toBe(1);
 			expect(notes![0]).toEqual(
@@ -636,7 +636,7 @@ describe('generateClient', () => {
 
 			const { data: notes } = await data.notes({ nextToken: 'some-token' });
 
-			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
 			expect(notes!.length).toBe(1);
 			expect(notes![0]).toEqual(
@@ -682,7 +682,7 @@ describe('generateClient', () => {
 
 			const { data: notes } = await data.notes({ limit: 5 });
 
-			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
 			expect(notes!.length).toBe(1);
 			expect(notes![0]).toEqual(
@@ -725,7 +725,7 @@ describe('generateClient', () => {
 
 			const { data: todo } = await data.todo();
 
-			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
 			expect(todo).toEqual(
 				expect.objectContaining({
@@ -766,7 +766,7 @@ describe('generateClient', () => {
 
 			const { data: todo } = await data.meta();
 
-			expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 
 			expect(todo).toEqual(
 				expect.objectContaining({
@@ -823,7 +823,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can get()', async () => {
@@ -841,7 +841,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			await client.models.Todo.get({ id: 'asdf' }, { authMode: 'userPool' });
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can list()', async () => {
@@ -866,7 +866,7 @@ describe('generateClient', () => {
 				authMode: 'userPool',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can update()', async () => {
@@ -890,7 +890,7 @@ describe('generateClient', () => {
 				{ authMode: 'userPool' }
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can delete()', async () => {
@@ -913,7 +913,7 @@ describe('generateClient', () => {
 				{ authMode: 'userPool' }
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can subscribe to onCreate()', done => {
@@ -1064,7 +1064,7 @@ describe('generateClient', () => {
 
 				await data.notes();
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -1102,7 +1102,7 @@ describe('generateClient', () => {
 
 				await data.todo();
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -1139,7 +1139,7 @@ describe('generateClient', () => {
 
 				await data.meta();
 
-				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
 		});
 
@@ -1180,7 +1180,7 @@ describe('generateClient', () => {
 
 				await data.notes({ authMode: 'apiKey' });
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -1218,7 +1218,7 @@ describe('generateClient', () => {
 
 				await data.todo({ authMode: 'apiKey' });
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -1255,7 +1255,7 @@ describe('generateClient', () => {
 
 				await data.meta({ authMode: 'apiKey' });
 
-				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
 		});
 	});
@@ -1306,7 +1306,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can get()', async () => {
@@ -1327,7 +1327,7 @@ describe('generateClient', () => {
 				{ authMode: 'lambda', authToken: 'some-token' }
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can list()', async () => {
@@ -1353,7 +1353,7 @@ describe('generateClient', () => {
 				authToken: 'some-token',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can update()', async () => {
@@ -1377,7 +1377,7 @@ describe('generateClient', () => {
 				{ authMode: 'lambda', authToken: 'some-token' }
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can delete()', async () => {
@@ -1400,7 +1400,7 @@ describe('generateClient', () => {
 				{ authMode: 'lambda', authToken: 'some-token' }
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can subscribe to onCreate()', done => {
@@ -1554,7 +1554,7 @@ describe('generateClient', () => {
 
 				await data.notes();
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -1593,7 +1593,7 @@ describe('generateClient', () => {
 
 				await data.todo();
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -1631,7 +1631,7 @@ describe('generateClient', () => {
 
 				await data.meta();
 
-				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
 		});
 
@@ -1672,7 +1672,7 @@ describe('generateClient', () => {
 
 				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -1710,7 +1710,7 @@ describe('generateClient', () => {
 
 				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -1747,7 +1747,7 @@ describe('generateClient', () => {
 
 				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
 		});
 	});
@@ -1795,7 +1795,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can get()', async () => {
@@ -1816,7 +1816,7 @@ describe('generateClient', () => {
 			});
 			await client.models.Todo.get({ id: 'asdf' });
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can list()', async () => {
@@ -1843,7 +1843,7 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can update()', async () => {
@@ -1867,7 +1867,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can delete()', async () => {
@@ -1890,7 +1890,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can subscribe to onCreate()', done => {
@@ -2044,7 +2044,7 @@ describe('generateClient', () => {
 
 				await data.notes();
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -2080,7 +2080,7 @@ describe('generateClient', () => {
 
 				await data.todo();
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -2115,7 +2115,7 @@ describe('generateClient', () => {
 
 				await data.meta();
 
-				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
 		});
 
@@ -2156,7 +2156,7 @@ describe('generateClient', () => {
 
 				await data.notes({ authMode: 'apiKey' });
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -2192,7 +2192,7 @@ describe('generateClient', () => {
 
 				await data.todo({ authMode: 'apiKey' });
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -2227,7 +2227,7 @@ describe('generateClient', () => {
 
 				await data.meta({ authMode: 'apiKey' });
 
-				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
 		});
 	});
@@ -2276,7 +2276,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can get()', async () => {
@@ -2298,7 +2298,7 @@ describe('generateClient', () => {
 			});
 			await client.models.Todo.get({ id: 'asdf' });
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can list()', async () => {
@@ -2326,7 +2326,7 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can update()', async () => {
@@ -2351,7 +2351,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can delete()', async () => {
@@ -2375,7 +2375,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can subscribe to onCreate()', done => {
@@ -2533,7 +2533,7 @@ describe('generateClient', () => {
 
 				await data.notes();
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -2570,7 +2570,7 @@ describe('generateClient', () => {
 
 				await data.todo();
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -2606,7 +2606,7 @@ describe('generateClient', () => {
 
 				await data.meta();
 
-				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
 		});
 
@@ -2647,7 +2647,7 @@ describe('generateClient', () => {
 
 				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @belongsTo', async () => {
@@ -2683,7 +2683,7 @@ describe('generateClient', () => {
 
 				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
 
 			test('can lazy load @hasOne', async () => {
@@ -2718,7 +2718,7 @@ describe('generateClient', () => {
 
 				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
 
-				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot()
+				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
 		});
 	});
@@ -2758,7 +2758,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -2795,7 +2795,46 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can create() - with custom client header functions that pass requestOptions', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: async requestOptions => ({
+					'rq-url': requestOptions?.url || 'should-not-be-present',
+					'rq-qs': requestOptions?.queryString || 'should-not-be-present',
+					'rq-method': requestOptions?.method || 'should-not-be-present',
+				}),
+			});
+
+			const { data } = await client.models.Todo.create({
+				name: 'some name',
+				description: 'something something',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -2839,7 +2878,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			// Request headers should overwrite client headers:
 			expect(spy).toHaveBeenCalledWith(
@@ -2894,7 +2933,53 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					owner: 'wirejobviously',
+					name: 'some name',
+					description: 'something something',
+				})
+			);
+		});
+
+		test('can create() - with custom request header function that accept requestOptions', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					'client-header': 'should not exist',
+				},
+			});
+
+			const { data } = await client.models.Todo.create(
+				{
+					name: 'some name',
+					description: 'something something',
+				},
+				{
+					headers: async requestOptions => ({
+						'rq-url': requestOptions?.url || 'should-not-be-present',
+						'rq-qs': requestOptions?.queryString || 'should-not-be-present',
+						'rq-method': requestOptions?.method || 'should-not-be-present',
+					}),
+				}
+			);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -2927,7 +3012,7 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.get({ id: 'asdf' });
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -2967,7 +3052,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3006,7 +3091,7 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
@@ -3049,7 +3134,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -3097,7 +3182,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3140,7 +3225,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3175,7 +3260,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can delete() - with custom request headers', async () => {
@@ -3207,7 +3292,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3300,6 +3385,50 @@ describe('generateClient', () => {
 			client.models.Note.onCreate({
 				filter: graphqlVariables.filter,
 				headers: async () => customHeaders,
+			}).subscribe({
+				next(value) {
+					expectSubWithHeadersFn(spy, 'onCreateNote', graphqlVariables);
+					expect(value).toEqual(expect.objectContaining(noteToSend));
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+		});
+
+		test('can subscribe to onCreate() - with a custom header function that accepts requestOptions', done => {
+			const noteToSend = {
+				__typename: 'Note',
+				...serverManagedFields,
+				body: 'a very good note',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onCreateNote: noteToSend,
+				},
+			};
+
+			const graphqlVariables = {
+				filter: {
+					body: { contains: 'good note' },
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			client.models.Note.onCreate({
+				filter: graphqlVariables.filter,
+				headers: async requestOptions => ({
+					'rq-url': requestOptions?.url || 'should-not-be-present',
+					'rq-qs': requestOptions?.queryString || 'should-not-be-present',
+					'rq-method': requestOptions?.method || 'should-not-be-present',
+				}),
 			}).subscribe({
 				next(value) {
 					expectSubWithHeadersFn(spy, 'onCreateNote', graphqlVariables);
@@ -3451,7 +3580,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3488,7 +3617,7 @@ describe('generateClient', () => {
 				description: 'something something',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3529,7 +3658,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3562,7 +3691,7 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.get({ id: 'asdf' });
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3602,7 +3731,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3641,7 +3770,7 @@ describe('generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
@@ -3684,7 +3813,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.objectContaining({
@@ -3732,7 +3861,7 @@ describe('generateClient', () => {
 				name: 'some other name',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3775,7 +3904,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3810,7 +3939,7 @@ describe('generateClient', () => {
 				id: 'some-id',
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -3852,7 +3981,7 @@ describe('generateClient', () => {
 				}
 			);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data).toEqual(
 				expect.objectContaining({
@@ -4126,7 +4255,7 @@ describe('generateClient', () => {
 							}),
 						]);
 
-						expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+						expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 						done();
 					}
@@ -4806,7 +4935,7 @@ describe('generateClient', () => {
 				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 	});
 
@@ -4849,7 +4978,7 @@ describe('generateClient', () => {
 				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('client auth override query - lambda', async () => {
@@ -4878,7 +5007,7 @@ describe('generateClient', () => {
 				query: `query { listTodos { __typename id owner createdAt updatedAt name description } }`,
 			});
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot()
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 	});
 });
