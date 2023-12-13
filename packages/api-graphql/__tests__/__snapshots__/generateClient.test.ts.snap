@@ -2772,6 +2772,63 @@ exports[`generateClient basic model operations - custom client and request heade
 ]
 `;
 
+exports[`generateClient basic model operations - custom client and request headers can create() - with custom client header functions that pass requestOptions 1`] = `
+[
+  [
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "mutation ($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "input": {
+              "description": "something something",
+              "name": "some name",
+            },
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "rq-method": "POST",
+          "rq-qs": "mutation ($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "rq-url": "https://localhost/graphql",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
 exports[`generateClient basic model operations - custom client and request headers can create() - with custom client headers 1`] = `
 [
   [
@@ -2845,6 +2902,63 @@ exports[`generateClient basic model operations - custom client and request heade
         "headers": {
           "X-Api-Key": "FAKE-KEY",
           "request-header-function": "should return this header",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient basic model operations - custom client and request headers can create() - with custom request header function that accept requestOptions 1`] = `
+[
+  [
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "mutation ($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "input": {
+              "description": "something something",
+              "name": "some name",
+            },
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "rq-method": "POST",
+          "rq-qs": "mutation ($input: CreateTodoInput!) {
+  createTodo(input: $input) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "rq-url": "https://localhost/graphql",
           "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
         },
         "signingServiceInfo": undefined,

@@ -50,6 +50,7 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
+import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
 
 const logger = new ConsoleLogger('AWSAppSyncRealTimeProvider');
 
@@ -98,9 +99,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	apiKey?: string;
 	region?: string;
 	libraryConfigHeaders?: () => {} | (() => Promise<{}>);
-	additionalHeaders?:
-		| Record<string, string>
-		| (() => Promise<Record<string, string>>);
+	additionalHeaders?: CustomHeaders;
 	additionalCustomHeaders?: Record<string, string>;
 	authToken?: string;
 }
@@ -323,7 +322,11 @@ export class AWSAppSyncRealTimeProvider {
 		let additionalCustomHeaders: Record<string, string> = {};
 
 		if (typeof additionalHeaders === 'function') {
-			additionalCustomHeaders = await additionalHeaders();
+			const requestOptions: RequestOptions = {
+				url: appSyncGraphqlEndpoint || '',
+				queryString: query || '',
+			};
+			additionalCustomHeaders = await additionalHeaders(requestOptions);
 		} else {
 			additionalCustomHeaders = additionalHeaders;
 		}

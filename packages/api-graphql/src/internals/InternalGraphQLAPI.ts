@@ -29,7 +29,7 @@ import {
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthError } from '../utils/errors/repackageAuthError';
 
@@ -260,7 +260,15 @@ export class InternalGraphQLAPIClass {
 		let additionalCustomHeaders: Record<string, string>;
 
 		if (typeof additionalHeaders === 'function') {
-			additionalCustomHeaders = await additionalHeaders();
+			const requestOptions: RequestOptions = {
+				method: 'POST',
+				url: new AmplifyUrl(
+					customEndpoint || appSyncGraphqlEndpoint || ''
+				).toString(),
+				queryString: print(query as DocumentNode),
+			};
+
+			additionalCustomHeaders = await additionalHeaders(requestOptions);
 		} else {
 			additionalCustomHeaders = additionalHeaders;
 		}
@@ -351,6 +359,7 @@ export class InternalGraphQLAPIClass {
 		}
 
 		let response: any;
+
 		try {
 			const { body: responseBody } = await this._api.post({
 				url: new AmplifyUrl(endpoint),
