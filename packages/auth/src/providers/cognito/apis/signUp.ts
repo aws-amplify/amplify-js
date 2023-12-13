@@ -38,7 +38,7 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
-	const { username, password, options, passwordlessFlow } = input;
+	const { username, password, options, passwordlessMethod } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
@@ -49,7 +49,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
 	assertValidationError(
-		!passwordlessFlow && !!password,
+		!passwordlessMethod && !!password,
 		AuthValidationErrorCode.EmptySignUpPassword
 	);
 
@@ -61,10 +61,10 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		options: signInServiceOptions,
 	};
 
-	if (passwordlessFlow === 'MAGIC_LINK') {
+	if (passwordlessMethod === 'MAGIC_LINK') {
 		// TODO: needs implementation
 	}
-	if (passwordlessFlow === 'OTP') {
+	if (passwordlessMethod === 'OTP') {
 		// TODO: needs implementation
 	}
 

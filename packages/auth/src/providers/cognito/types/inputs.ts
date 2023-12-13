@@ -79,7 +79,7 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 export type SignInInput = SignInInputWithOptionalPassword;
 
 export type SignInInputWithOptionalPassword = AuthSignInInput<SignInOptions> & {
-	passwordlessFlow?: never;
+	passwordlessMethod?: never;
 };
 
 /**
@@ -110,7 +110,7 @@ export type SignInWithOTPInput = AuthSignInInput & {
 	 * @note Setting this value requires backend setup with Amplify CLI.
 	 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
 	 */
-	passwordlessFlow: 'OTP';
+	passwordlessMethod: 'OTP';
 	options: SignInWithOTPOptions;
 };
 
@@ -124,7 +124,7 @@ export type SignInWithMagicLinkInput =
 		 * @note Setting this value requires backend setup with Amplify CLI.
 		 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
 		 */
-		passwordlessFlow: 'MAGIC_LINK';
+		passwordlessMethod: 'MAGIC_LINK';
 		options: SignInWithMagicLinkOptions;
 	};
 
@@ -150,27 +150,26 @@ type SignUpInputWithPassword = AuthSignUpInput<
 	SignUpOptions<UserAttributeKey>
 > & {
 	password: string;
-	passwordlessFlow?: never;
+	passwordlessMethod?: never;
 };
 
 type SignUpWithOTPInput = {
 	password?: never;
-	passwordlessFlow: 'OTP';
+	passwordlessMethod: 'OTP';
 	username: string;
-	deliveryMedium: 'EMAIL' | 'SMS';
 	// TODO: require respective user attribute key based on deliveryMedium
 	// TODO: verify if validationData is supported for passwordless flow
 	// TODO: decide whether we need to move autoSignIn default to true
 	// TODO: verify if all the user attributes are supported when registering users
-	options: SignUpOptions<'email' | 'phone_number'>;
+	options: SignUpOptions<'email' | 'phone_number'> & {
+		deliveryMedium: 'EMAIL' | 'SMS';
+	};
 };
 
 type SignUpWithMagicLink = {
 	password?: never;
-	passwordlessFlow: 'MAGIC_LINK';
+	passwordlessMethod: 'MAGIC_LINK';
 	username: string;
-	// TODO: decide whether to move this to the configuration
-	redirectURL: string;
 	// TODO: require respective user attribute key based on deliveryMedium
 	// TODO: verify if validationData is supported for passwordless flow
 	// TODO: decide whether we need to move autoSignIn default to true

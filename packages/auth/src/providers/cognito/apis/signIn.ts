@@ -57,9 +57,9 @@ export const signIn: SignInApi = async (
 	input: SignInInput | SignInWithMagicLinkInput | SignInWithOTPInput
 ): Promise<{ isSignedIn: boolean; nextStep: any }> => {
 	// export async function signIn(input: SignInInput): Promise<SignInOutput> {
-	const passwordlessFlow = input.passwordlessFlow;
+	const passwordlessMethod = input.passwordlessMethod;
 	await assertUserNotAuthenticated();
-	switch (passwordlessFlow) {
+	switch (passwordlessMethod) {
 		case 'MAGIC_LINK':
 			// TODO: needs implementation
 			return {
