@@ -3,6 +3,7 @@
 
 import { Amplify, AuthConfig } from '@aws-amplify/core';
 import { AuthAdditionalInfo, AuthDeliveryMedium } from '../../../types';
+<<<<<<< Updated upstream
 import {
 	initiateAuth,
 	respondToAuthChallenge,
@@ -21,16 +22,27 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { getAuthUserAgentValue } from '../../../utils';
 import {
 	AuthPasswordlessDeliveryDestination,
+=======
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { AuthValidationErrorCode } from '../../../errors/types/validation';
+import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import {
+>>>>>>> Stashed changes
 	AuthPasswordlessFlow,
 	CognitoAuthSignInDetails,
 } from '../types/models';
 import { SignInWithOTPInput } from '../types/inputs';
 import { SignInWithOTPOutput } from '../types/outputs';
 import { setActiveSignInState } from '../utils/signInStore';
+<<<<<<< Updated upstream
 import {
 	getActiveSignInUsername,
 	setActiveSignInUsername,
 } from '../utils/signInHelpers';
+=======
+import { getActiveSignInUsername } from '../utils/signInHelpers';
+>>>>>>> Stashed changes
 import { AuthPasswordlessSignInAndSignUpOptions } from '../types/options';
 import {
 	HttpRequest,
@@ -43,8 +55,12 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { normalizeHeaders } from '../utils/apiHelpers';
 import { MetadataBearer } from '@aws-amplify/core/dist/esm/clients/types/aws';
+<<<<<<< Updated upstream
 import { AuthError } from '../../../Errors';
 import { handlePasswordlessSignIn } from './passwordless';
+=======
+import { getDeliveryMedium, handlePasswordlessSignIn } from './passwordless';
+>>>>>>> Stashed changes
 
 export const signInWithOTP = async <
 	T extends AuthPasswordlessFlow = AuthPasswordlessFlow

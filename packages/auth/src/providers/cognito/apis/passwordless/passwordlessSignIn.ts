@@ -12,6 +12,10 @@ import {  AuthConfig } from '@aws-amplify/core';
 import {
 	AuthAction
 } from '@aws-amplify/core/internals/utils';
+<<<<<<< Updated upstream
+=======
+import { getDeliveryMedium } from "./utils";
+>>>>>>> Stashed changes
 
 
 export async function handlePasswordlessSignIn(
