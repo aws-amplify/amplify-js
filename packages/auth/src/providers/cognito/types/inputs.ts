@@ -17,7 +17,6 @@ import {
 	UpdateUserAttributeOptions,
 	VerifyTOTPSetupOptions,
 	SendUserAttributeVerificationCodeOptions,
-	// PasswordlessSharedOptions,
 } from '../types';
 import {
 	AuthConfirmResetPasswordInput,
@@ -38,7 +37,12 @@ import {
 	AuthDeleteUserAttributesInput,
 	AuthForgetDeviceInput,
 } from '../../../types';
-import { SignInWithMagicLinkOptions, SignInWithOTPOptions } from './options';
+import {
+	SignInWithEmailOptions,
+	SignInWithSMSOptions,
+	SignUpWithEmailOptions,
+	SignUpWithSMSOptions,
+} from './options';
 
 /**
  * Input type for Cognito confirmResetPassword API.
@@ -79,7 +83,7 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 export type SignInInput = SignInInputWithOptionalPassword;
 
 export type SignInInputWithOptionalPassword = AuthSignInInput<SignInOptions> & {
-	passwordlessMethod?: never;
+	passwordlessConnection?: never;
 };
 
 /**
@@ -102,31 +106,31 @@ export type SignInWithSRPInput = AuthSignInInput<SignInOptions>;
  */
 export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions>;
 
-export type SignInWithOTPInput = AuthSignInInput & {
+export type SignInWithEmailInput<
+	PasswordlessMethod extends 'MAGIC_LINK' | 'OTP',
+> = AuthSignInInput & {
 	password?: never;
 	/**
-	 * Use One-time pin instead of password to sign in.
+	 * Use email instead of password to sign in.
 	 *
 	 * @note Setting this value requires backend setup with Amplify CLI.
 	 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
 	 */
-	passwordlessMethod: 'OTP';
-	options: SignInWithOTPOptions;
+	passwordlessConnection: 'EMAIL';
+	options: SignInWithEmailOptions<PasswordlessMethod>;
 };
 
-export type SignInWithMagicLinkInput =
-	AuthSignInInput<SignInWithMagicLinkOptions> & {
-		password?: never;
-
-		/**
-		 * Use Magic Link instead of password to sign in.
-		 *
-		 * @note Setting this value requires backend setup with Amplify CLI.
-		 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
-		 */
-		passwordlessMethod: 'MAGIC_LINK';
-		options: SignInWithMagicLinkOptions;
-	};
+export type SignInWithSMSInput = AuthSignInInput & {
+	password?: never;
+	/**
+	 * Use SMS instead of password to sign in.
+	 *
+	 * @note Setting this value requires backend setup with Amplify CLI.
+	 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+	 */
+	passwordlessConnection: 'SMS';
+	options: SignInWithSMSOptions;
+};
 
 /**
  * Input type for Cognito signInWithRedirect API.
@@ -141,40 +145,33 @@ export type SignOutInput = AuthSignOutInput;
 /**
  * Input type for Cognito signUp API.
  */
-export type SignUpInput =
-	| SignUpInputWithPassword
-	| SignUpWithOTPInput
-	| SignUpWithMagicLink;
+export type SignUpInput = SignUpInputWithOptionalPassword;
 
-type SignUpInputWithPassword = AuthSignUpInput<
+type SignUpInputWithOptionalPassword = AuthSignUpInput<
 	SignUpOptions<UserAttributeKey>
 > & {
 	password: string;
-	passwordlessMethod?: never;
+	passwordlessConnection?: never;
 };
 
-type SignUpWithOTPInput = {
-	password?: never;
-	passwordlessMethod: 'OTP';
+export type SignUpWithEmailInput<
+	PasswordlessMethod extends 'MAGIC_LINK' | 'OTP',
+> = {
 	username: string;
+	password?: never;
+	passwordlessConnection: 'EMAIL';
 	// TODO: require respective user attribute key based on deliveryMedium
 	// TODO: verify if validationData is supported for passwordless flow
-	// TODO: decide whether we need to move autoSignIn default to true
-	// TODO: verify if all the user attributes are supported when registering users
-	options: SignUpOptions<'email' | 'phone_number'> & {
-		deliveryMedium: 'EMAIL' | 'SMS';
-	};
+	options: SignUpWithEmailOptions<PasswordlessMethod, 'email'>;
 };
 
-type SignUpWithMagicLink = {
-	password?: never;
-	passwordlessMethod: 'MAGIC_LINK';
+export type SignUpWithSMSInput = {
 	username: string;
+	password?: never;
+	passwordlessConnection: 'SMS';
 	// TODO: require respective user attribute key based on deliveryMedium
 	// TODO: verify if validationData is supported for passwordless flow
-	// TODO: decide whether we need to move autoSignIn default to true
-	// TODO: verify if all the user attributes are supported when registering users
-	options: SignUpOptions<'email'>;
+	options: SignUpWithSMSOptions<'phone_number'>;
 };
 
 /**

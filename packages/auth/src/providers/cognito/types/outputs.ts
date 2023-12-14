@@ -12,12 +12,13 @@ import {
 	AuthResetPasswordOutput,
 	AuthUpdateUserAttributesOutput,
 	AuthUpdateUserAttributeOutput,
-	AuthSignInWithOTPOutput,
-	AuthConfirmSignInWithOTPOutput,
-	AuthSignInWithMagicLinkOutput,
-	AuthConfirmSignInWithMagicLinkOutput,
 } from '../../../types';
 import { AWSAuthDevice, AuthUser, UserAttributeKey } from '../types';
+import {
+	AuthConfirmSignInWithMagicLinkStep,
+	AuthConfirmSignInWithOTPStep,
+	DoneSignInStep,
+} from '../../../types/models';
 
 export type FetchMFAPreferenceOutput = {
 	enabled?: AuthMFAType[];
@@ -91,6 +92,11 @@ export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
  */
 export type SignUpOutput = AuthSignUpOutput<AuthVerifiableAttributeKey>;
 
+export type SignUpWithEmailOutput<Method extends 'MAGIC_LINK' | 'OTP'> =
+	SignInWithEmailOutput<Method>;
+
+export type SignUpWithSMSOutput = SignInWithSMSOutput;
+
 /**
  * Output type for Cognito updateUserAttributes API.
  */
@@ -114,13 +120,24 @@ export type UpdateUserAttributeOutput =
  */
 export type FetchDevicesOutput = AWSAuthDevice[];
 
-export type SignInWithOTPOutput = AuthSignInWithOTPOutput<
-	'email' | 'phone_number'
->;
+export type SignInWithEmailOutput<Method extends 'MAGIC_LINK' | 'OTP'> = {
+	isSignedIn: boolean;
+	nextStep: Method extends 'MAGIC_LINK'
+		? AuthConfirmSignInWithMagicLinkStep
+		: AuthConfirmSignInWithOTPStep;
+};
 
-export type ConfirmSignInWithOTPOutput = AuthConfirmSignInWithOTPOutput;
+export type ConfirmSignInWithEmailOutput = {
+	isSignedIn: boolean;
+	nextStep: DoneSignInStep;
+};
 
-export type SignInWithMagicLinkOutput = AuthSignInWithMagicLinkOutput<'email'>;
+export type SignInWithSMSOutput = {
+	isSignedIn: boolean;
+	nextStep: AuthConfirmSignInWithOTPStep;
+};
 
-export type ConfirmSignInWithMagicLinkOutput =
-	AuthConfirmSignInWithMagicLinkOutput;
+export type ConfirmSignInWithMagicLinkOutput = {
+	isSignedIn: boolean;
+	nextStep: DoneSignInStep;
+};

@@ -26,19 +26,46 @@ import {
 } from '../utils/signUpHelpers';
 import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
+import {
+	SignInWithSMSInput,
+	SignUpWithEmailInput,
+	SignUpWithSMSInput,
+} from '../types/inputs';
+import { SignUpWithEmailOutput, SignUpWithSMSOutput } from '../types/outputs';
 
-/**
- * Creates a user
- *
- * @param input - The SignUpInput object
- * @returns SignUpOutput
- * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
- */
-export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
-	const { username, password, options, passwordlessMethod } = input;
+type SignUpApi = {
+	/**
+	 * Creates a user
+	 *
+	 * @param input - The SignUpInput object
+	 * @returns SignUpOutput
+	 * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+	 * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
+	 *  are not defined.
+	 * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+	 */
+	(input: SignUpInput): Promise<SignUpOutput>;
+
+	(input: SignUpWithEmailInput<'OTP'>): Promise<SignUpWithEmailOutput<'OTP'>>;
+
+	(input: SignUpWithSMSInput): Promise<SignUpWithSMSOutput>;
+
+	(
+		input: SignUpWithEmailInput<'MAGIC_LINK'>
+	): Promise<SignUpWithEmailOutput<'MAGIC_LINK'>>;
+};
+
+export const signUp: SignUpApi = async (
+	input:
+		| SignUpInput
+		| SignUpWithEmailInput<'MAGIC_LINK' | 'OTP'>
+		| SignUpWithSMSInput
+) => {
+	const { username, password, options, passwordlessConnection } = input;
+	if (passwordlessConnection === 'EMAIL' || passwordlessConnection === 'SMS') {
+		// TODO: needs implementation
+		return {} as any;
+	}
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
@@ -48,10 +75,6 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
 	);
-	assertValidationError(
-		!passwordlessMethod && !!password,
-		AuthValidationErrorCode.EmptySignUpPassword
-	);
 
 	const signInServiceOptions =
 		typeof autoSignIn !== 'boolean' ? autoSignIn : undefined;
@@ -60,13 +83,6 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		username,
 		options: signInServiceOptions,
 	};
-
-	if (passwordlessMethod === 'MAGIC_LINK') {
-		// TODO: needs implementation
-	}
-	if (passwordlessMethod === 'OTP') {
-		// TODO: needs implementation
-	}
 
 	// if the authFlowType is 'CUSTOM_WITHOUT_SRP' then we don't include the password
 	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
@@ -150,4 +166,4 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		},
 		userId: UserSub,
 	};
-}
+};

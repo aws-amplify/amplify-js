@@ -51,8 +51,8 @@ export {
 	AuthResetPasswordOutput,
 	AuthUpdateUserAttributeOutput,
 	AuthUpdateUserAttributesOutput,
-	AuthSignInWithOTPOutput,
-	AuthConfirmSignInWithOTPOutput,
-	AuthSignInWithMagicLinkOutput,
-	AuthConfirmSignInWithMagicLinkOutput,
+	// AuthSignInWithOTPOutput,
+	// AuthConfirmSignInWithOTPOutput,
+	// AuthSignInWithMagicLinkOutput,
+	// AuthConfirmSignInWithMagicLinkOutput,
 } from './outputs';
