@@ -17,17 +17,17 @@ import {
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { getAuthUserAgentValue } from '../../../utils';
 import { CognitoAuthSignInDetails } from '../types/models';
-import { SignInWithOTPInput } from '../types/inputs';
-import { SignInWithOTPOutput } from '../types/outputs';
+import { SignInWithEmailInput } from '../types/inputs';
+import { SignInWithEmailOutput } from '../types/outputs';
 import { setActiveSignInState } from '../utils/signInStore';
 import {
 	getActiveSignInUsername,
 	setActiveSignInUsername,
 } from '../utils/signInHelpers';
 
-export const signInWithOTP = async (
-	input: SignInWithOTPInput
-): Promise<SignInWithOTPOutput> => {
+export const signInWithEmail = async <Method extends 'MAGIC_LINK' | 'OTP'>(
+	input: SignInWithEmailInput<Method>
+): Promise<SignInWithEmailOutput<Method>> => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const {
@@ -58,29 +58,43 @@ export const signInWithOTP = async (
 		signInDetails,
 	});
 
-	return {
-		isSignedIn: false,
-		nextStep: {
-			signInStep: 'CONFIRM_SIGN_IN_WITH_OTP',
-			additionalInfo: ChallengeParameters as AuthAdditionalInfo,
-			codeDeliveryDetails: {
-				// @ts-ignore
-				deliveryMedium:
-					ChallengeParameters?.deliveryMedium as AuthDeliveryMedium,
-				destination: ChallengeParameters?.destination,
+	if (input.options.passwordlessMethod === 'MAGIC_LINK') {
+		return {
+			isSignedIn: false,
+			// @ts-ignore
+			nextStep: {
+				signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK',
+				additionalInfo: ChallengeParameters as AuthAdditionalInfo,
+				codeDeliveryDetails: {
+					// @ts-ignore
+					deliveryMedium:
+						ChallengeParameters?.deliveryMedium as AuthDeliveryMedium,
+					destination: ChallengeParameters?.destination,
+				},
 			},
-		},
-	};
-
-	// 	case 'SIGN_UP_AND_SIGN_IN':
-	// 		throw new Error('Not implemented');
-	// }
+		};
+	} else {
+		return {
+			isSignedIn: false,
+			// @ts-ignore
+			nextStep: {
+				signInStep: 'CONFIRM_SIGN_IN_WITH_OTP',
+				additionalInfo: ChallengeParameters as AuthAdditionalInfo,
+				codeDeliveryDetails: {
+					// @ts-ignore
+					deliveryMedium:
+						ChallengeParameters?.deliveryMedium as AuthDeliveryMedium,
+					destination: ChallengeParameters?.destination,
+				},
+			},
+		};
+	}
 
 	throw new Error('Not implemented');
 };
 
 async function handlePasswordlessSignIn(
-	input: SignInWithOTPInput,
+	input: SignInWithEmailInput<'MAGIC_LINK' | 'OTP'>,
 	authConfig: AuthConfig['Cognito']
 ) {
 	const { userPoolId, userPoolClientId } = authConfig;
@@ -120,10 +134,7 @@ async function handlePasswordlessSignIn(
 		ClientMetadata: {
 			...clientMetadata,
 			signInMethod: 'OTP',
-			deliveryMedium:
-				// getDeliveryMedium(
-				deliveryMedium,
-			// ),
+			deliveryMedium: 'EMAIL',
 			action: 'REQUEST',
 		},
 		ClientId: userPoolClientId,

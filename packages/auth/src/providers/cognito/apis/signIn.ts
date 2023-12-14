@@ -11,17 +11,13 @@ import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 
-import { SignInInput, SignInOutput } from '../types';
+import { SignInInput, SignInOptions, SignInOutput } from '../types';
 import {
 	SignInInputWithOptionalPassword,
-	SignInWithMagicLinkInput,
-	SignInWithOTPInput,
+	SignInWithEmailInput,
+	SignInWithSMSInput,
 } from '../types/inputs';
-import {
-	SignInWithMagicLinkOutput,
-	SignInWithOTPOutput,
-	SignInWithSRPOutput,
-} from '../types/outputs';
+import { SignInWithEmailOutput, SignInWithSMSOutput } from '../types/outputs';
 
 type SignInApi = {
 	/**
@@ -35,11 +31,15 @@ type SignInApi = {
 	 *  are not defined.
 	 * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
 	 */
-	(intput: SignInInputWithOptionalPassword): Promise<SignInOutput>;
+	(input: SignInInputWithOptionalPassword): Promise<SignInOutput>;
 
-	(intput: SignInWithMagicLinkInput): Promise<SignInWithMagicLinkOutput>;
+	(input: SignInWithEmailInput<'OTP'>): Promise<SignInWithEmailOutput<'OTP'>>;
 
-	(input: SignInWithOTPInput): Promise<SignInWithOTPOutput>;
+	(input: SignInWithSMSInput): Promise<SignInWithSMSOutput>;
+
+	(
+		input: SignInWithEmailInput<'MAGIC_LINK'>
+	): Promise<SignInWithEmailOutput<'MAGIC_LINK'>>;
 };
 
 /**
@@ -54,11 +54,16 @@ type SignInApi = {
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const signIn: SignInApi = async (
-	input: SignInInput | SignInWithMagicLinkInput | SignInWithOTPInput
+	input:
+		| SignInInput
+		| SignInWithSMSInput
+		| SignInWithEmailInput<'MAGIC_LINK' | 'OTP'>
 ): Promise<{ isSignedIn: boolean; nextStep: any }> => {
 	// export async function signIn(input: SignInInput): Promise<SignInOutput> {
-	const passwordlessMethod = input.passwordlessMethod;
+	const passwordlessConnection = input.passwordlessConnection;
+	const passwordlessMethod = input.options?.passwordlessMethod;
 	await assertUserNotAuthenticated();
+	// if ((passwordlessConnection === 'EMAIL' || input.passwordlessConnection === 'SMS') && input.options?)
 	switch (passwordlessMethod) {
 		case 'MAGIC_LINK':
 			// TODO: needs implementation
@@ -82,17 +87,40 @@ export const signIn: SignInApi = async (
 			} as any;
 		default:
 			const authFlowType = input.options?.authFlowType;
+			const username = input.username;
+			const password = input.password;
+			const options = input.options as SignInOptions;
 			switch (authFlowType) {
 				case 'USER_SRP_AUTH':
-					return signInWithSRP(input);
+					return signInWithSRP({
+						username,
+						password,
+						options,
+					});
 				case 'USER_PASSWORD_AUTH':
-					return signInWithUserPassword(input);
+					return signInWithUserPassword({
+						username,
+						password,
+						options,
+					});
 				case 'CUSTOM_WITHOUT_SRP':
-					return signInWithCustomAuth(input);
+					return signInWithCustomAuth({
+						username,
+						password,
+						options,
+					});
 				case 'CUSTOM_WITH_SRP':
-					return signInWithCustomSRPAuth(input);
+					return signInWithCustomSRPAuth({
+						username,
+						password,
+						options,
+					});
 				default:
-					return signInWithSRP(input);
+					return signInWithSRP({
+						username,
+						password,
+						options,
+					});
 			}
 	}
 };

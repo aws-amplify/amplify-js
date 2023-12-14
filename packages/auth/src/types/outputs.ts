@@ -47,24 +47,24 @@ export type AuthUpdateUserAttributesOutput<
 	[authKey in UserAttributeKey]: AuthUpdateUserAttributeOutput<UserAttributeKey>;
 };
 
-export type AuthSignInWithOTPOutput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
-	isSignedIn: boolean;
-	nextStep: AuthConfirmSignInWithOTPStep<UserAttributeKey>;
-};
+// export type AuthSignInWithOTPOutput<
+// 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+// > = {
+// 	isSignedIn: boolean;
+// 	nextStep: AuthConfirmSignInWithOTPStep<UserAttributeKey>;
+// };
 
-export type AuthConfirmSignInWithOTPOutput = {
-	isSignedIn: boolean;
-	nextStep: DoneSignInStep;
-};
+// export type AuthConfirmSignInWithOTPOutput = {
+// 	isSignedIn: boolean;
+// 	nextStep: DoneSignInStep;
+// };
 
-export type AuthSignInWithMagicLinkOutput<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
-	isSignedIn: boolean;
-	nextStep: AuthConfirmSignInWithMagicLinkStep<UserAttributeKey>;
-};
+// export type AuthSignInWithMagicLinkOutput<
+// 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
+// > = {
+// 	isSignedIn: boolean;
+// 	nextStep: AuthConfirmSignInWithMagicLinkStep<UserAttributeKey>;
+// };
 
-export type AuthConfirmSignInWithMagicLinkOutput =
-	AuthConfirmSignInWithOTPOutput;
+// export type AuthConfirmSignInWithMagicLinkOutput =
+// 	AuthConfirmSignInWithOTPOutput;

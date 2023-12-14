@@ -36,17 +36,19 @@ export type ResetPasswordOptions = AuthServiceOptions & {
 export type SignInOptions = {
 	authFlowType?: AuthFlowType;
 	clientMetadata?: ClientMetadata;
+	passwordlessMethod?: never;
 };
 
-export type SignInWithMagicLinkOptions = {
+export type SignInWithEmailOptions<Method extends 'MAGIC_LINK' | 'OTP'> = {
+	authFlowType?: never;
 	clientMetadata?: ClientMetadata;
-	// TODO: need to decide if we want to move it to configuration
-	redirectURL: string;
+	passwordlessMethod: Method;
 };
 
-export type SignInWithOTPOptions = {
+export type SignInWithSMSOptions = {
+	authFlowType?: never;
 	clientMetadata?: ClientMetadata;
-	deliveryMedium: 'EMAIL' | 'SMS';
+	passwordlessMethod: 'OTP';
 };
 
 /**
@@ -54,10 +56,30 @@ export type SignInWithOTPOptions = {
  */
 export type SignUpOptions<UserAttributeKey extends AuthUserAttributeKey> =
 	AuthSignUpOptions<UserAttributeKey> & {
+		passwordlessMethod?: never;
 		validationData?: ValidationData;
 		clientMetadata?: ClientMetadata;
 		autoSignIn?: SignInOptions | boolean; // default is false;
 	};
+
+export type SignUpWithEmailOptions<
+	Method extends 'MAGIC_LINK' | 'OTP',
+	UserAttributeKey extends AuthUserAttributeKey,
+> = {
+	userAttributes: Required<AuthUserAttributes<UserAttributeKey>>;
+	passwordlessMethod: Method;
+	validationData?: ValidationData;
+	clientMetadata?: ClientMetadata;
+};
+
+export type SignUpWithSMSOptions<
+	UserAttributeKey extends AuthUserAttributeKey,
+> = {
+	userAttributes: Required<AuthUserAttributes<UserAttributeKey>>;
+	passwordlessMethod: 'OTP';
+	validationData?: ValidationData;
+	clientMetadata?: ClientMetadata;
+};
 
 /**
  * Options specific to Cognito Confirm Sign Up.

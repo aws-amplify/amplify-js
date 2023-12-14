@@ -27,8 +27,6 @@ export { rememberDevice } from './apis/rememberDevice';
 export { forgetDevice } from './apis/forgetDevice';
 export { fetchDevices } from './apis/fetchDevices';
 export { autoSignIn } from './apis/autoSignIn';
-export { signInWithOTP } from './apis/signInWithOTP';
-export { confirmSignInWithOTP } from './apis/confirmSignInWithOTP';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
