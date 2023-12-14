@@ -59,8 +59,8 @@ export const confirmSignInWithOTP = async (
 		},
 		Session: signInSession,
 		ClientMetadata: {
-			signInMethod: 'OTP',
-			action: 'CONFIRM',
+			"Amplify.Passwordless.signInMethod": "OTP",
+			"Amplify.Passwordless.action": "CONFIRM",
 		},
 		ClientId: userPoolClientId,
 	};
