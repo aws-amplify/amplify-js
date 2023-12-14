@@ -2,7 +2,6 @@ import { Observable } from 'rxjs';
 import {
 	pause,
 	getDataStore,
-	graphqlServiceSettled,
 	waitForEmptyOutbox,
 	waitForDataStoreReady,
 	waitForSyncQueriesReady,

@@ -459,15 +459,13 @@ export async function waitForSyncQueriesReady(verbose = false) {
  */
 type GraphQLServiceSettledParams = {
 	graphqlService: any;
-	expectedNumberOfUpdates: number;
-	externalNumberOfUpdates: number;
+	expectedCallCount: number;
 	modelName: string;
 };
 
-export async function graphqlServiceSettled({
+export async function waitForExpectModelUpdateGraphqlCallCount({
 	graphqlService,
-	expectedNumberOfUpdates,
-	externalNumberOfUpdates,
+	expectedCallCount,
 	modelName,
 }: GraphQLServiceSettledParams) {
 	/**
@@ -477,54 +475,62 @@ export async function graphqlServiceSettled({
 	 */
 	await pause(1);
 
+	let lastObservedCount: number | undefined = undefined;
+
 	/**
 	 * Due to the addition of artificial latencies, the service may not be
 	 * done, so we retry:
 	 */
-	await jitteredExponentialRetry(
-		() => {
-			// The test should fail if we haven't ended the simulated disruption:
-			const subscriptionMessagesNotStopped =
-				!graphqlService.stopSubscriptionMessages;
+	try {
+		await jitteredExponentialRetry(
+			() => {
+				// The test should fail if we haven't ended the simulated disruption:
+				const subscriptionMessagesNotStopped =
+					!graphqlService.stopSubscriptionMessages;
 
-			// Ensure the service has received all the requests:
-			const allUpdatesSent =
-				graphqlService.requests.filter(
+				// Ensure the service has received all the requests:
+				lastObservedCount = graphqlService.requests.filter(
 					({ operation, type, tableName }) =>
 						operation === 'mutation' &&
 						type === 'update' &&
 						tableName === modelName
-				).length ===
-				expectedNumberOfUpdates + externalNumberOfUpdates;
+				).length;
+				const allUpdatesSent = lastObservedCount === expectedCallCount;
 
-			// Ensure all mutations are complete:
-			const allRunningMutationsComplete =
-				graphqlService.runningMutations.size === 0;
+				// Ensure all mutations are complete:
+				const allRunningMutationsComplete =
+					graphqlService.runningMutations.size === 0;
 
-			// Ensure we've notified subscribers:
-			const allSubscriptionsSent =
-				graphqlService.subscriptionMessagesSent.filter(
-					([observerMessageName, message]) => {
-						return observerMessageName === `onUpdate${modelName}`;
-					}
-				).length ===
-				expectedNumberOfUpdates + externalNumberOfUpdates;
+				// Ensure we've notified subscribers:
+				const allSubscriptionsSent =
+					graphqlService.subscriptionMessagesSent.filter(
+						([observerMessageName, message]) => {
+							return observerMessageName === `onUpdate${modelName}`;
+						}
+					).length === expectedCallCount;
 
-			if (
-				allUpdatesSent &&
-				allRunningMutationsComplete &&
-				allSubscriptionsSent &&
-				subscriptionMessagesNotStopped
-			) {
-				return true;
-			} else {
-				throw new Error(
-					'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
-				);
-			}
-		},
-		[null],
-		undefined,
-		undefined
-	);
+				if (
+					allUpdatesSent &&
+					allRunningMutationsComplete &&
+					allSubscriptionsSent &&
+					subscriptionMessagesNotStopped
+				) {
+					return true;
+				} else {
+					throw new Error(
+						'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
+					);
+				}
+			},
+			[null],
+			5_000,
+			undefined
+		);
+	} catch {
+		throw new Error(
+			`Expected ${expectedCallCount} update calls for ${modelName}, but received ${
+				lastObservedCount ?? 'unknown'
+			}`
+		);
+	}
 }
