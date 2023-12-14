@@ -1,21 +1,10 @@
 <img src="https://s3.amazonaws.com/aws-mobile-hub-images/aws-amplify-logo.png" alt="AWS Amplify" width="550" >
 
-<a href="https://nodei.co/npm/aws-amplify/">
-  <img src="https://nodei.co/npm/aws-amplify.svg?downloads=true&downloadRank=true&stars=true">
-</a>
-<p>
-  <a href="https://discord.gg/jWVbPfC" target="_blank">
-    <img src="https://img.shields.io/discord/308323056592486420?logo=discord"" alt="Discord Chat" />
-  </a>
-  <a href="https://codecov.io/gh/aws-amplify/amplify-js">
-    <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/main/graph/badge.svg" />
-  </a>
-  <a href="https://lgtm.com/projects/g/aws-amplify/amplify-js/context:javascript"><img alt="Language grade: JavaScript" src="https://img.shields.io/lgtm/grade/javascript/g/aws-amplify/amplify-js.svg?logo=lgtm&logoWidth=18"/>
-  </a>
-  <a href="https://circleci.com/gh/aws-amplify/amplify-js">
-    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/main.svg" alt="build:started">
-  </a>
-</p>
+[![npm package](https://nodei.co/npm/aws-amplify.svg?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/aws-amplify/)
+
+[![join discord](https://img.shields.io/discord/308323056592486420?logo=discord)](https://discord.gg/jWVbPfC)
+[![code coverage](https://codecov.io/gh/aws-amplify/amplify-js/branch/main/graph/badge.svg)](https://codecov.io/gh/aws-amplify/amplify-js)
+[![main branch build and publish](https://github.com/aws-amplify/amplify-js/actions/workflows/push-main-release.yml/badge.svg)](https://github.com/aws-amplify/amplify-js/blob/main/.github/workflows/push-main-release.yml)
 
 ### Reporting Bugs / Feature Requests
 
