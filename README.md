@@ -1,10 +1,11 @@
 <img src="https://s3.amazonaws.com/aws-mobile-hub-images/aws-amplify-logo.png" alt="AWS Amplify" width="550" >
 
-[![npm package](https://nodei.co/npm/aws-amplify.svg?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/aws-amplify/)
-
-[![join discord](https://img.shields.io/discord/308323056592486420?logo=discord)](https://discord.gg/jWVbPfC)
+[![current aws-amplify package version](https://img.shields.io/npm/v/aws-amplify?color=brightgreen&label=npm%20package)](https://www.npmjs.com/package/aws-amplify)
+[![weekly downloads](https://img.shields.io/npm/dw/aws-amplify)](https://www.npmjs.com/package/aws-amplify)
+[![GitHub Workflow Status (with event)](https://img.shields.io/github/actions/workflow/status/aws-amplify/amplify-js/push-main-release.yml)
+](https://github.com/aws-amplify/amplify-js/blob/main/.github/workflows/push-main-release.yml)
 [![code coverage](https://codecov.io/gh/aws-amplify/amplify-js/branch/main/graph/badge.svg)](https://codecov.io/gh/aws-amplify/amplify-js)
-[![main branch build and publish](https://github.com/aws-amplify/amplify-js/actions/workflows/push-main-release.yml/badge.svg)](https://github.com/aws-amplify/amplify-js/blob/main/.github/workflows/push-main-release.yml)
+[![join discord](https://img.shields.io/discord/308323056592486420?logo=discord)](https://discord.gg/jWVbPfC)
 
 ### Reporting Bugs / Feature Requests
 
