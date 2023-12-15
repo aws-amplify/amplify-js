@@ -374,7 +374,7 @@ export function customSelectionSetToIR(
 			const nested = rest[0];
 			const modelDefinition = modelDefinitions[modelName];
 			const modelFields = modelDefinition.fields;
-			const relatedModel = modelFields[fieldName]?.type?.model;
+			const relatedModel = (modelFields[fieldName]?.type as ModelFieldType)?.model;
 
 			if (!relatedModel) {
 				// TODO: may need to change this to support custom types
