@@ -142,7 +142,6 @@ const signUpWithPassword = async (
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
 	const { clientMetadata, validationData, autoSignIn } = input.options ?? {};
-	console.log("authConfig: ", authConfig)
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
