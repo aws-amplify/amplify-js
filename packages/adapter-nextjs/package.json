@@ -69,7 +69,7 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
-		"test": "npm run lint && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
 	}
 }

@@ -224,7 +224,7 @@
 	},
 	"sideEffects": false,
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
