@@ -362,7 +362,7 @@ export function customSelectionSetToIR(
 ): Record<string, string | object> {
 	const dotNotationToObject = (
 		path: string,
-		modelName?: string
+		modelName: string
 	): Record<string, any> => {
 		const [fieldName, ...rest] = path.split('.');
 
