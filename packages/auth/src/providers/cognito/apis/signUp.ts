@@ -43,7 +43,6 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
 	const { clientMetadata, validationData, autoSignIn } = input.options ?? {};
-	console.log("authConfig: ", authConfig)
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
