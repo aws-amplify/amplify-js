@@ -2,29 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getAuthUserAgentValue } from "../../../../utils";
-import { SignInWithOTPInput } from "../../types/inputs";
-import { AuthPasswordlessDeliveryDestination } from "../../types/models";
+import { CognitoAuthSignInDetails } from "../../types/models";
 import { initiateAuth, respondToAuthChallenge } from "../../utils/clients/CognitoIdentityProvider";
 import { InitiateAuthCommandInput, RespondToAuthChallengeCommandInput } from "../../utils/clients/CognitoIdentityProvider/types";
 import { getRegion } from "../../utils/clients/CognitoIdentityProvider/utils";
-import { setActiveSignInUsername } from "../../utils/signInHelpers";
+import { getActiveSignInUsername, setActiveSignInUsername } from "../../utils/signInHelpers";
 import {  AuthConfig } from '@aws-amplify/core';
 import {
 	AuthAction
 } from '@aws-amplify/core/internals/utils';
-<<<<<<< Updated upstream
-=======
 import { getDeliveryMedium } from "./utils";
->>>>>>> Stashed changes
+import { setActiveSignInState } from "../../utils/signInStore";
+import { PasswordlessSignInPayload } from "./types";
 
-
+/**
+ * Internal method to perform passwordless sign in via both otp and magic link.
+ */
 export async function handlePasswordlessSignIn(
-	input: SignInWithOTPInput,
+	payload: PasswordlessSignInPayload,
 	authConfig: AuthConfig['Cognito']
 ) {
 	const { userPoolId, userPoolClientId } = authConfig;
-	const { username, options, destination } = input;
-	const { clientMetadata } = options ?? {};
+	const { username, clientMetadata, destination, signInMethod } = payload;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 	};
@@ -35,7 +34,7 @@ export async function handlePasswordlessSignIn(
 		ClientId: userPoolClientId,
 	};
 
-	console.log('jsonReqInitiateAuth: ', jsonReqInitiateAuth);
+	// Intiate Auth with a custom flow
 	const { Session, ChallengeParameters } = await initiateAuth(
 		{
 			region: getRegion(userPoolId),
@@ -58,20 +57,36 @@ export async function handlePasswordlessSignIn(
 		Session,
 		ClientMetadata: {
 			...clientMetadata,
-			'Amplify.Passwordless.signInMethod': 'OTP',
+			'Amplify.Passwordless.signInMethod': signInMethod,
 			'Amplify.Passwordless.action': 'REQUEST',
 			'Amplify.Passwordless.deliveryMedium': getDeliveryMedium(destination),
 		},
 		ClientId: userPoolClientId,
 	};
-	console.log('jsonReqRespondToAuthChallenge: ', jsonReqRespondToAuthChallenge);
 
-	return await respondToAuthChallenge(
+	// Request the backend to send code/link to the destination address
+	const responseFromAuthChallenge =  await respondToAuthChallenge(
 		{
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
 		jsonReqRespondToAuthChallenge
 	);
+
+	const signInDetails: CognitoAuthSignInDetails = {
+		loginId: username,
+		authFlowType: 'CUSTOM_WITHOUT_SRP',
+	};
+
+	// sets up local state used during the sign-in process
+	setActiveSignInState({
+		signInSession: responseFromAuthChallenge.Session,
+		username: getActiveSignInUsername(username),
+		signInDetails,
+	});
+	
+	return responseFromAuthChallenge;
 }
+
+
 
