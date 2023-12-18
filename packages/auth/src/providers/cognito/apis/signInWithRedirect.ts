@@ -92,12 +92,14 @@ export async function oauthSignIn({
 		: randomState;
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
 
+	const redirectUri = getRedirectUrl(oauthConfig.redirectSignIn);
+	
 	store.storeOAuthInFlight(true);
 	store.storeOAuthState(state);
 	store.storePKCE(value);
 
 	const queryString = Object.entries({
-		redirect_uri: getRedirectUrl(oauthConfig.redirectSignIn),
+		redirect_uri: redirectUri ,
 		response_type: responseType,
 		client_id: clientId,
 		identity_provider: provider,
