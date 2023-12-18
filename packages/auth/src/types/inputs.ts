@@ -6,14 +6,8 @@ import {
 	AuthUserAttribute,
 	AuthUserAttributeKey,
 	AuthDevice,
-	AuthPasswordlessFlow,
 } from './models';
-import {
-	AuthServiceOptions,
-	AuthSignUpOptions,
-	AuthPasswordlessSignInOptions,
-	AuthPasswordlessSignUpAndSignInOptions,
-} from './options';
+import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
 export type AuthConfirmResetPasswordInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
@@ -86,7 +80,7 @@ export type AuthSignUpInput<
 		AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>,
 > = {
 	username: string;
-	password?: string;
+	password: string;
 	options?: ServiceOptions;
 };
 
@@ -211,36 +205,3 @@ export type AuthDeleteUserAttributesInput<
 export type AuthForgetDeviceInput = {
 	device?: AuthDevice;
 };
-
-// export type AuthSignInWithOTPInput<
-// 	Flow extends AuthPasswordlessFlow = AuthPasswordlessFlow,
-// 	SignInOptions extends
-// 		AuthPasswordlessSignInOptions = AuthPasswordlessSignInOptions,
-// 	SignUpOptions extends
-// 		AuthPasswordlessSignUpAndSignInOptions = AuthPasswordlessSignUpAndSignInOptions,
-// > = {
-// 	username: string;
-// 	flow: Flow;
-// 	destination: AuthOTPDeliveryDestination;
-// 	options?: Flow extends 'SIGN_IN' ? SignInOptions : SignUpOptions;
-// };
-
-// export type AuthSignInWithMagicLinkInput<
-// 	Flow extends AuthPasswordlessFlow = AuthPasswordlessFlow,
-// 	SignInOptions extends
-// 		AuthPasswordlessSignInOptions = AuthPasswordlessSignInOptions,
-// 	SignUpOptions extends
-// 		AuthPasswordlessSignUpAndSignInOptions = AuthPasswordlessSignUpAndSignInOptions,
-// > = {
-// 	username: string;
-// 	flow: Flow;
-// 	redirectURL: string;
-// 	options?: Flow extends 'SIGN_IN' ? SignInOptions : SignUpOptions;
-// };
-
-// export type AuthConfirmSignInWithMagicLinkInput<
-// 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-// > = {
-// 	challengeResponse: string;
-// 	options?: ServiceOptions;
-// };

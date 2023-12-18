@@ -14,11 +14,13 @@ import {
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
 import { AWSAuthDevice, AuthUser, UserAttributeKey } from '../types';
+import { DoneSignInStep } from '../../../types/models';
 import {
-	AuthConfirmSignInWithMagicLinkStep,
-	AuthConfirmSignInWithOTPStep,
-	DoneSignInStep,
-} from '../../../types/models';
+	ConfirmSignInWithMagicLinkSignUpStep,
+	ConfirmSignInWithMagicLinkStep,
+	ConfirmSignInWithOTPSignUpStep,
+	ConfirmSignInWithOTPStep,
+} from './models';
 
 export type FetchMFAPreferenceOutput = {
 	enabled?: AuthMFAType[];
@@ -92,10 +94,20 @@ export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
  */
 export type SignUpOutput = AuthSignUpOutput<AuthVerifiableAttributeKey>;
 
-export type SignUpWithEmailOutput<Method extends 'MAGIC_LINK' | 'OTP'> =
-	SignInWithEmailOutput<Method>;
+export type SignUpPasswordlessWithEmailAndMagicLinkOutput = {
+	isSignUpComplete: boolean;
+	nextStep: ConfirmSignInWithMagicLinkSignUpStep;
+};
 
-export type SignUpWithSMSOutput = SignInWithSMSOutput;
+export type SignUpPasswordlessWithEmailAndOTPOutput = {
+	isSignUpComplete: boolean;
+	nextStep: ConfirmSignInWithOTPSignUpStep;
+};
+
+export type SignUpPasswordlessWithSMSAndOTPOutput = {
+	isSignUpComplete: boolean;
+	nextStep: ConfirmSignInWithOTPSignUpStep;
+};
 
 /**
  * Output type for Cognito updateUserAttributes API.
@@ -120,21 +132,19 @@ export type UpdateUserAttributeOutput =
  */
 export type FetchDevicesOutput = AWSAuthDevice[];
 
-export type SignInWithEmailOutput<Method extends 'MAGIC_LINK' | 'OTP'> = {
+export type SignInPasswordlessWithEmailAndMagicLinkOutput = {
 	isSignedIn: boolean;
-	nextStep: Method extends 'MAGIC_LINK'
-		? AuthConfirmSignInWithMagicLinkStep
-		: AuthConfirmSignInWithOTPStep;
+	nextStep: ConfirmSignInWithMagicLinkStep;
 };
 
-export type ConfirmSignInWithEmailOutput = {
+export type SignInPasswordlessWithEmailAndOTPOutput = {
 	isSignedIn: boolean;
-	nextStep: DoneSignInStep;
+	nextStep: ConfirmSignInWithOTPStep;
 };
 
-export type SignInWithSMSOutput = {
+export type SignInPasswordlessWithSMSAndOTPOutput = {
 	isSignedIn: boolean;
-	nextStep: AuthConfirmSignInWithOTPStep;
+	nextStep: ConfirmSignInWithOTPStep;
 };
 
 export type ConfirmSignInWithMagicLinkOutput = {

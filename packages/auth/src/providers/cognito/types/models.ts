@@ -110,3 +110,41 @@ export interface AuthUser extends AWSAuthUser {
 export type CodeDeliveryDetails<
 	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
 > = AuthCodeDeliveryDetails<CognitoUserAttributeKey>;
+
+export type AuthPasswordlessFlow = 'SIGN_IN' | 'SIGN_UP_AND_SIGN_IN';
+
+interface PasswordlessCodeDeliveryDetails<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> extends AuthCodeDeliveryDetails<CognitoUserAttributeKey> {
+	deliveryMedium?: 'SMS' | 'EMAIL';
+}
+
+export type ConfirmSignInWithOTPStep<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> = {
+	signInStep: 'CONFIRM_SIGN_IN_WITH_OTP';
+	codeDeliveryDetails: PasswordlessCodeDeliveryDetails<CognitoUserAttributeKey>;
+	additionalInfo: AuthAdditionalInfo;
+};
+
+export type ConfirmSignInWithMagicLinkStep<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> = {
+	signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK';
+	codeDeliveryDetails: PasswordlessCodeDeliveryDetails<CognitoUserAttributeKey>;
+	additionalInfo: AuthAdditionalInfo;
+};
+
+export type ConfirmSignInWithOTPSignUpStep<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> = {
+	signUpStep: 'CONFIRM_SIGN_IN_WITH_OTP';
+	codeDeliveryDetails: PasswordlessCodeDeliveryDetails<CognitoUserAttributeKey>;
+};
+
+export type ConfirmSignInWithMagicLinkSignUpStep<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> = {
+	signUpStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK';
+	codeDeliveryDetails: PasswordlessCodeDeliveryDetails<CognitoUserAttributeKey>;
+};

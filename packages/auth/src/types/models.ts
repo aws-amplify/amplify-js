@@ -3,6 +3,10 @@
 
 import { SignInOutput } from '../providers/cognito';
 import { AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
+import {
+	ConfirmSignInWithMagicLinkStep,
+	ConfirmSignInWithOTPStep,
+} from '../providers/cognito/types/models';
 
 /**
  * Additional data that may be returned from Auth APIs.
@@ -183,8 +187,6 @@ export type AuthNextSignInStep<
 	| ContinueSignInWithTOTPSetup
 	| ConfirmSignUpStep
 	| ResetPasswordStep
-	| AuthConfirmSignInWithMagicLinkStep
-	| AuthConfirmSignInWithOTPStep
 	| DoneSignInStep;
 
 /**
@@ -273,34 +275,4 @@ export type AWSAuthUser = {
  */
 export type AuthDevice = {
 	id: string;
-};
-
-export type AuthPasswordlessFlow = 'SIGN_IN' | 'SIGN_UP_AND_SIGN_IN';
-
-interface AuthOTPDeliveryDetails<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> extends AuthCodeDeliveryDetails<UserAttributeKey> {
-	deliveryMedium?: 'SMS' | 'EMAIL';
-}
-
-export type AuthConfirmSignInWithOTPStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
-	signInStep: 'CONFIRM_SIGN_IN_WITH_OTP';
-	codeDeliveryDetails: AuthOTPDeliveryDetails<UserAttributeKey>;
-	additionalInfo: AuthAdditionalInfo;
-};
-
-interface AuthMagicLinkDeliveryDetails<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> extends AuthCodeDeliveryDetails<UserAttributeKey> {
-	deliveryMedium?: 'EMAIL';
-}
-
-export type AuthConfirmSignInWithMagicLinkStep<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
-	signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK';
-	codeDeliveryDetails: AuthMagicLinkDeliveryDetails<UserAttributeKey>;
-	additionalInfo: AuthAdditionalInfo;
 };

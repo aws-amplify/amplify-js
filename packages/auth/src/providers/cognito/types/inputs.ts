@@ -38,10 +38,8 @@ import {
 	AuthForgetDeviceInput,
 } from '../../../types';
 import {
-	SignInWithEmailOptions,
-	SignInWithSMSOptions,
-	SignUpWithEmailOptions,
-	SignUpWithSMSOptions,
+	SignInPasswordlessOptions,
+	SignUpPasswordlessOptions,
 } from './options';
 
 /**
@@ -83,7 +81,7 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 export type SignInInput = SignInInputWithOptionalPassword;
 
 export type SignInInputWithOptionalPassword = AuthSignInInput<SignInOptions> & {
-	passwordlessConnection?: never;
+	passwordless?: never;
 };
 
 /**
@@ -104,33 +102,63 @@ export type SignInWithSRPInput = AuthSignInInput<SignInOptions>;
 /**
  * Input type for Cognito signInWithUserPasswordInput API.
  */
-export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions>;
-
-export type SignInWithEmailInput<
-	PasswordlessMethod extends 'MAGIC_LINK' | 'OTP',
-> = AuthSignInInput & {
-	password?: never;
-	/**
-	 * Use email instead of password to sign in.
-	 *
-	 * @note Setting this value requires backend setup with Amplify CLI.
-	 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
-	 */
-	passwordlessConnection: 'EMAIL';
-	options: SignInWithEmailOptions<PasswordlessMethod>;
+export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions> & {
+	passwordless?: never;
 };
 
-export type SignInWithSMSInput = AuthSignInInput & {
+type SignInPasswordlessInput<
+	DeliveryMedium extends 'EMAIL' | 'SMS',
+	Method extends 'MAGIC_LINK' | 'OTP',
+> = {
+	username: string;
 	password?: never;
-	/**
-	 * Use SMS instead of password to sign in.
-	 *
-	 * @note Setting this value requires backend setup with Amplify CLI.
-	 * see {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
-	 */
-	passwordlessConnection: 'SMS';
-	options: SignInWithSMSOptions;
+	passwordless: {
+		deliveryMedium: DeliveryMedium;
+		method: Method;
+	};
+	options?: SignInPasswordlessOptions;
 };
+
+/**
+ * The parameters to construct sign-in input without a password. Users will be
+ * signed-in with a Magic Link sent to their device via registered email.
+ *
+ * This input interface can only be used with proper passwordless configuration
+ * in the backend.
+ *
+ * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+ */
+export type SignInPasswordlessWithEmailAndMagicLinkInput =
+	SignInPasswordlessInput<'EMAIL', 'MAGIC_LINK'>;
+
+/**
+ * The parameters to construct sign-in input without a password. Users will be
+ * signed-in with an One-time pin sent to their device via registered email.
+ *
+ * This input interface can only be used with proper passwordless configuration
+ * in the backend.
+ *
+ * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+ */
+export type SignInPasswordlessWithEmailAndOTPInput = SignInPasswordlessInput<
+	'EMAIL',
+	'OTP'
+>;
+
+/**
+ * The parameters to construct sign-in input without a password. Users will be
+ * signed-in with an One-time pin sent to their device via SMS.
+ *
+ * This input interface can only be used with proper passwordless configuration
+ * in the backend.
+ *
+ * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+ */
+
+export type SignInPasswordlessWithSMSAndOTPInput = SignInPasswordlessInput<
+	'SMS',
+	'OTP'
+>;
 
 /**
  * Input type for Cognito signInWithRedirect API.
@@ -142,37 +170,72 @@ export type SignInWithRedirectInput = AuthSignInWithRedirectInput;
  */
 export type SignOutInput = AuthSignOutInput;
 
+type SignUpWithPasswordInput = AuthSignUpInput<
+	SignUpOptions<UserAttributeKey>
+> & {
+	passwordless?: never;
+};
+
 /**
  * Input type for Cognito signUp API.
  */
-export type SignUpInput = SignUpInputWithOptionalPassword;
+export type SignUpInput = SignUpWithPasswordInput;
 
-type SignUpInputWithOptionalPassword = AuthSignUpInput<
-	SignUpOptions<UserAttributeKey>
-> & {
-	password: string;
-	passwordlessConnection?: never;
-};
-
-export type SignUpWithEmailInput<
-	PasswordlessMethod extends 'MAGIC_LINK' | 'OTP',
+type SignUpPasswordlessInput<
+	DeliveryMedium extends 'EMAIL' | 'SMS',
+	Method extends 'MAGIC_LINK' | 'OTP',
+	RequiredAttribute extends VerifiableUserAttributeKey,
 > = {
 	username: string;
 	password?: never;
-	passwordlessConnection: 'EMAIL';
-	// TODO: require respective user attribute key based on deliveryMedium
-	// TODO: verify if validationData is supported for passwordless flow
-	options: SignUpWithEmailOptions<PasswordlessMethod, 'email'>;
+	passwordless: {
+		deliveryMedium: DeliveryMedium;
+		method: Method;
+	};
+	options: SignUpPasswordlessOptions<RequiredAttribute>;
 };
 
-export type SignUpWithSMSInput = {
-	username: string;
-	password?: never;
-	passwordlessConnection: 'SMS';
-	// TODO: require respective user attribute key based on deliveryMedium
-	// TODO: verify if validationData is supported for passwordless flow
-	options: SignUpWithSMSOptions<'phone_number'>;
-};
+/**
+ * The parameters to construct sign-up input without a password. Users will be
+ * signed-up with a Magic Link sent to their device via registered email.
+ *
+ * This input interface can only be used with proper passwordless configuration
+ * in the backend.
+ *
+ * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+ */
+export type SignUpPasswordlessWithEmailAndMagicLinkInput =
+	SignUpPasswordlessInput<'EMAIL', 'MAGIC_LINK', 'email'>;
+
+/**
+ * The parameters to construct sign-up input without a password. Users will be
+ * signed-up with an One-time pin sent to their device via registered email.
+ *
+ * This input interface can only be used with proper passwordless configuration
+ * in the backend.
+ *
+ * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+ */
+export type SignUpPasswordlessWithEmailAndOTPInput = SignUpPasswordlessInput<
+	'EMAIL',
+	'OTP',
+	'email'
+>;
+
+/**
+ * The parameters to construct sign-up input without a password. Users will be
+ * signed-up with an One-time pin sent to their device via SMS.
+ *
+ * This input interface can only be used with proper passwordless configuration
+ * in the backend.
+ *
+ * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
+ */
+export type SignUpPasswordlessWithSMSAndOTPInput = SignUpPasswordlessInput<
+	'SMS',
+	'OTP',
+	'phone_number'
+>;
 
 /**
  * Input type for Cognito updateMFAPreference API.

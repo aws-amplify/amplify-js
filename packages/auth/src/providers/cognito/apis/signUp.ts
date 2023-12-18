@@ -27,11 +27,16 @@ import {
 import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
 import {
-	SignInWithSMSInput,
-	SignUpWithEmailInput,
-	SignUpWithSMSInput,
+	SignUpPasswordlessWithEmailAndMagicLinkInput,
+	SignUpPasswordlessWithEmailAndOTPInput,
+	SignUpPasswordlessWithSMSAndOTPInput,
 } from '../types/inputs';
-import { SignUpWithEmailOutput, SignUpWithSMSOutput } from '../types/outputs';
+import {
+	SignUpPasswordlessWithEmailAndMagicLinkOutput,
+	SignUpPasswordlessWithEmailAndOTPOutput,
+	SignUpPasswordlessWithSMSAndOTPOutput,
+} from '../types/outputs';
+import { signUpPasswordless } from './signUpPasswordless';
 
 type SignUpApi = {
 	/**
@@ -46,25 +51,26 @@ type SignUpApi = {
 	 */
 	(input: SignUpInput): Promise<SignUpOutput>;
 
-	(input: SignUpWithEmailInput<'OTP'>): Promise<SignUpWithEmailOutput<'OTP'>>;
-
-	(input: SignUpWithSMSInput): Promise<SignUpWithSMSOutput>;
+	(
+		input: SignUpPasswordlessWithEmailAndMagicLinkInput
+	): Promise<SignUpPasswordlessWithEmailAndMagicLinkOutput>;
 
 	(
-		input: SignUpWithEmailInput<'MAGIC_LINK'>
-	): Promise<SignUpWithEmailOutput<'MAGIC_LINK'>>;
+		input: SignUpPasswordlessWithSMSAndOTPInput
+	): Promise<SignUpPasswordlessWithSMSAndOTPOutput>;
+
+	(
+		input: SignUpPasswordlessWithEmailAndOTPInput
+	): Promise<SignUpPasswordlessWithEmailAndOTPOutput>;
 };
 
-export const signUp: SignUpApi = async (
-	input:
-		| SignUpInput
-		| SignUpWithEmailInput<'MAGIC_LINK' | 'OTP'>
-		| SignUpWithSMSInput
-) => {
-	const { username, password, options, passwordlessConnection } = input;
-	if (passwordlessConnection === 'EMAIL' || passwordlessConnection === 'SMS') {
-		// TODO: needs implementation
-		return {} as any;
+export const signUp: SignUpApi = async input => {
+	const { username, password, options, passwordless } = input;
+	if (passwordless) {
+		return signUpPasswordless(
+			input as Parameters<typeof signUpPasswordless>[0]
+			// TODO: fix this
+		) as any;
 	}
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =

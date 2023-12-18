@@ -7,7 +7,12 @@ import {
 	AuthUserAttributes,
 	AuthUserAttributeKey,
 } from '../../../types';
-import { ClientMetadata, AuthFlowType, ValidationData } from './models';
+import {
+	ClientMetadata,
+	AuthFlowType,
+	ValidationData,
+	VerifiableUserAttributeKey,
+} from './models';
 
 /**
  * Options specific to Cognito Confirm Reset Password.
@@ -36,19 +41,10 @@ export type ResetPasswordOptions = AuthServiceOptions & {
 export type SignInOptions = {
 	authFlowType?: AuthFlowType;
 	clientMetadata?: ClientMetadata;
-	passwordlessMethod?: never;
 };
 
-export type SignInWithEmailOptions<Method extends 'MAGIC_LINK' | 'OTP'> = {
-	authFlowType?: never;
+export type SignInPasswordlessOptions = {
 	clientMetadata?: ClientMetadata;
-	passwordlessMethod: Method;
-};
-
-export type SignInWithSMSOptions = {
-	authFlowType?: never;
-	clientMetadata?: ClientMetadata;
-	passwordlessMethod: 'OTP';
 };
 
 /**
@@ -56,27 +52,18 @@ export type SignInWithSMSOptions = {
  */
 export type SignUpOptions<UserAttributeKey extends AuthUserAttributeKey> =
 	AuthSignUpOptions<UserAttributeKey> & {
-		passwordlessMethod?: never;
 		validationData?: ValidationData;
 		clientMetadata?: ClientMetadata;
 		autoSignIn?: SignInOptions | boolean; // default is false;
 	};
 
-export type SignUpWithEmailOptions<
-	Method extends 'MAGIC_LINK' | 'OTP',
-	UserAttributeKey extends AuthUserAttributeKey,
+/**
+ * Options specific to Sign Up with passwordless configurations.
+ */
+export type SignUpPasswordlessOptions<
+	RequiredAttribute extends VerifiableUserAttributeKey,
 > = {
-	userAttributes: Required<AuthUserAttributes<UserAttributeKey>>;
-	passwordlessMethod: Method;
-	validationData?: ValidationData;
-	clientMetadata?: ClientMetadata;
-};
-
-export type SignUpWithSMSOptions<
-	UserAttributeKey extends AuthUserAttributeKey,
-> = {
-	userAttributes: Required<AuthUserAttributes<UserAttributeKey>>;
-	passwordlessMethod: 'OTP';
+	userAttributes: Required<AuthUserAttributes<RequiredAttribute>>;
 	validationData?: ValidationData;
 	clientMetadata?: ClientMetadata;
 };

@@ -5,19 +5,25 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
+import { signInPasswordless } from './signInPasswordless';
 import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 
-import { SignInInput, SignInOptions, SignInOutput } from '../types';
+import { SignInOutput } from '../types';
 import {
 	SignInInputWithOptionalPassword,
-	SignInWithEmailInput,
-	SignInWithSMSInput,
+	SignInPasswordlessWithEmailAndMagicLinkInput,
+	SignInPasswordlessWithEmailAndOTPInput,
+	SignInPasswordlessWithSMSAndOTPInput,
 } from '../types/inputs';
-import { SignInWithEmailOutput, SignInWithSMSOutput } from '../types/outputs';
+import {
+	SignInPasswordlessWithEmailAndMagicLinkOutput,
+	SignInPasswordlessWithEmailAndOTPOutput,
+	SignInPasswordlessWithSMSAndOTPOutput,
+} from '../types/outputs';
 
 type SignInApi = {
 	/**
@@ -33,13 +39,17 @@ type SignInApi = {
 	 */
 	(input: SignInInputWithOptionalPassword): Promise<SignInOutput>;
 
-	(input: SignInWithEmailInput<'OTP'>): Promise<SignInWithEmailOutput<'OTP'>>;
-
-	(input: SignInWithSMSInput): Promise<SignInWithSMSOutput>;
+	(
+		input: SignInPasswordlessWithEmailAndMagicLinkInput
+	): Promise<SignInPasswordlessWithEmailAndMagicLinkOutput>;
 
 	(
-		input: SignInWithEmailInput<'MAGIC_LINK'>
-	): Promise<SignInWithEmailOutput<'MAGIC_LINK'>>;
+		input: SignInPasswordlessWithEmailAndOTPInput
+	): Promise<SignInPasswordlessWithEmailAndOTPOutput>;
+
+	(
+		input: SignInPasswordlessWithSMSAndOTPInput
+	): Promise<SignInPasswordlessWithSMSAndOTPOutput>;
 };
 
 /**
@@ -54,72 +64,26 @@ type SignInApi = {
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const signIn: SignInApi = async (
-	input:
-		| SignInInput
-		| SignInWithSMSInput
-		| SignInWithEmailInput<'MAGIC_LINK' | 'OTP'>
+	input
 ): Promise<{ isSignedIn: boolean; nextStep: any }> => {
-	// export async function signIn(input: SignInInput): Promise<SignInOutput> {
-	const passwordlessConnection = input.passwordlessConnection;
-	const passwordlessMethod = input.options?.passwordlessMethod;
+	const { passwordless } = input;
 	await assertUserNotAuthenticated();
-	switch (passwordlessMethod) {
-		case 'MAGIC_LINK':
-			// TODO: needs implementation
-			return {
-				isSignedIn: false,
-				nextStep: {
-					signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK',
-					additionalInfo: {},
-					codeDeliveryDetails: {},
-				},
-			} as any;
-		case 'OTP':
-			// TODO: needs implementation
-			return {
-				isSignedIn: false,
-				nextStep: {
-					signInStep: 'CONFIRM_SIGN_IN_WITH_OTP',
-					additionalInfo: {},
-					codeDeliveryDetails: {},
-				},
-			} as any;
+	if (passwordless) {
+		return signInPasswordless(
+			input as Parameters<typeof signInPasswordless>[0]
+		);
+	}
+	const authFlowType = input.options?.authFlowType;
+	switch (authFlowType) {
+		case 'USER_SRP_AUTH':
+			return signInWithSRP(input);
+		case 'USER_PASSWORD_AUTH':
+			return signInWithUserPassword(input);
+		case 'CUSTOM_WITHOUT_SRP':
+			return signInWithCustomAuth(input);
+		case 'CUSTOM_WITH_SRP':
+			return signInWithCustomSRPAuth(input);
 		default:
-			const authFlowType = input.options?.authFlowType;
-			const username = input.username;
-			const password = input.password;
-			const options = input.options as SignInOptions;
-			switch (authFlowType) {
-				case 'USER_SRP_AUTH':
-					return signInWithSRP({
-						username,
-						password,
-						options,
-					});
-				case 'USER_PASSWORD_AUTH':
-					return signInWithUserPassword({
-						username,
-						password,
-						options,
-					});
-				case 'CUSTOM_WITHOUT_SRP':
-					return signInWithCustomAuth({
-						username,
-						password,
-						options,
-					});
-				case 'CUSTOM_WITH_SRP':
-					return signInWithCustomSRPAuth({
-						username,
-						password,
-						options,
-					});
-				default:
-					return signInWithSRP({
-						username,
-						password,
-						options,
-					});
-			}
+			return signInWithSRP(input);
 	}
 };

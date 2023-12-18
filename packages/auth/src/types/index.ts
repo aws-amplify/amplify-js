@@ -20,7 +20,6 @@ export {
 	AuthResetPasswordStep,
 	AuthUpdateAttributeStep,
 	AuthDevice,
-	AuthPasswordlessFlow,
 } from './models';
 
 export { AuthServiceOptions, AuthSignUpOptions } from './options';
@@ -51,8 +50,4 @@ export {
 	AuthResetPasswordOutput,
 	AuthUpdateUserAttributeOutput,
 	AuthUpdateUserAttributesOutput,
-	// AuthSignInWithOTPOutput,
-	// AuthConfirmSignInWithOTPOutput,
-	// AuthSignInWithMagicLinkOutput,
-	// AuthConfirmSignInWithMagicLinkOutput,
 } from './outputs';
