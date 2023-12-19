@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/storage/server",
+	"main": "../../dist/cjs/storage/server.js",
+	"browser": "../../dist/esm/storage/server.mjs",
+	"module": "../../dist/esm/storage/server.mjs",
+	"typings": "../../dist/esm/storage/server.d.ts"
+}

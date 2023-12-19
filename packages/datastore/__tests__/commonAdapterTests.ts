@@ -1,11 +1,11 @@
-import { ulid } from 'ulid';
+import { v4 as uuid } from 'uuid';
 
 import {
 	DataStore as DataStoreType,
 	PersistentModelConstructor,
 	PersistentModel,
 	initSchema as initSchemaType,
-} from '../src/';
+} from '../src';
 
 import { ModelRelationship } from '../src/storage/relationship';
 import {
@@ -36,7 +36,7 @@ import {
 export { pause };
 
 const isSQLiteAdapter = () =>
-	expect.getState().testPath.includes('SQLiteAdapter');
+	expect.getState().testPath?.includes('SQLiteAdapter');
 
 /**
  * Adds common query test cases that all adapters should support.
@@ -1060,10 +1060,10 @@ export function addCommonQueryTests({
 				if (fkFields.has(field)) continue;
 				switch (def.type) {
 					case 'ID':
-						initializer[field] = ulid();
+						initializer[field] = uuid();
 						break;
 					case 'String':
-						initializer[field] = `some random content ${ulid()}`;
+						initializer[field] = `some random content ${uuid()}`;
 						break;
 					case 'Int':
 						initializer[field] =

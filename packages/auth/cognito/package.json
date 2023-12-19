@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/auth/cognito",
+	"main": "../dist/cjs/providers/cognito/index.js",
+	"react-native": "../src/providers/cognito/index.ts",
+	"browser": "../dist/esm/providers/cognito/index.mjs",
+	"module": "../dist/esm/providers/cognito/index.mjs",
+	"typings": "../dist/esm/providers/cognito/index.d.ts"
+}

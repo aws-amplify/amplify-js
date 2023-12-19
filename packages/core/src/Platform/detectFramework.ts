@@ -7,7 +7,7 @@ import { detect } from './detection';
 // We want to cache detection since the framework won't change
 let frameworkCache: Framework | undefined;
 
-const frameworkChangeObservers: (() => void)[] = [];
+export const frameworkChangeObservers: (() => void)[] = [];
 
 // Setup the detection reset tracking / timeout delays
 let resetTriggered = false;
@@ -19,8 +19,19 @@ export const detectFramework = (): Framework => {
 	if (!frameworkCache) {
 		frameworkCache = detect();
 
-		// Everytime we update the cache, call each observer function
-		frameworkChangeObservers.forEach(fcn => fcn());
+		if (resetTriggered) {
+			// The final run of detectFramework:
+			// Starting from this point, the `frameworkCache` becomes "final".
+			// So we don't need to notify the observers again so the observer
+			// can be removed after the final notice.
+			while (frameworkChangeObservers.length) {
+				frameworkChangeObservers.pop()?.();
+			}
+		} else {
+			// The first run of detectFramework:
+			// Every time we update the cache, call each observer function
+			frameworkChangeObservers.forEach(fcn => fcn());
+		}
 
 		// Retry once for either Unknown type after a delay (explained below)
 		resetTimeout(Framework.ServerSideUnknown, SSR_RESET_TIMEOUT);
@@ -33,6 +44,12 @@ export const detectFramework = (): Framework => {
  * @internal Setup observer callback that will be called everytime the framework changes
  */
 export const observeFrameworkChanges = (fcn: () => void) => {
+	// When the `frameworkCache` won't be updated again, we ignore all incoming
+	// observers.
+	if (resetTriggered) {
+		return;
+	}
+
 	frameworkChangeObservers.push(fcn);
 };
 

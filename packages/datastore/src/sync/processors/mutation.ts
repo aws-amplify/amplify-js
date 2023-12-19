@@ -1,18 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import {
 	Category,
-	ConsoleLogger as Logger,
 	CustomUserAgentDetails,
 	DataStoreAction,
 	jitteredBackoff,
 	NonRetryableError,
 	retry,
 	BackgroundProcessManager,
-} from '@aws-amplify/core';
-import Observable, { ZenObservable } from 'zen-observable-ts';
+	GraphQLAuthMode,
+	AmplifyError,
+} from '@aws-amplify/core/internals/utils';
+
+import { Observable, Observer } from 'rxjs';
 import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
@@ -44,10 +46,11 @@ import {
 	getTokenForCustomAuth,
 } from '../utils';
 import { getMutationErrorType } from './errorMaps';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 const MAX_ATTEMPTS = 10;
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 type MutationProcessorEvent = {
 	operation: TransformerMutationType;
@@ -65,7 +68,7 @@ class MutationProcessor {
 	 * yet started. In this case, `isReady()` will be `false` and `resume()` will exit
 	 * early.
 	 */
-	private observer?: ZenObservable.Observer<MutationProcessorEvent>;
+	private observer?: Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
@@ -161,8 +164,8 @@ class MutationProcessor {
 	}
 
 	public async resume(): Promise<void> {
-		await (this.runningProcesses.isOpen &&
-			this.runningProcesses.add(async onTerminate => {
+		if (this.runningProcesses.isOpen) {
+			await this.runningProcesses.add(async onTerminate => {
 				if (
 					this.processing ||
 					!this.isReady() ||
@@ -170,7 +173,6 @@ class MutationProcessor {
 				) {
 					return;
 				}
-
 				this.processing = true;
 				let head: MutationEvent;
 				const namespaceName = USER;
@@ -300,7 +302,8 @@ class MutationProcessor {
 
 				// pauses itself
 				this.pause();
-			}, 'mutation resume loop'));
+			}, 'mutation resume loop');
+		}
 	}
 
 	private async jitteredRetry(
@@ -312,7 +315,7 @@ class MutationProcessor {
 		modelConstructor: PersistentModelConstructor<PersistentModel>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
-		authMode: GRAPHQL_AUTH_MODE,
+		authMode: GraphQLAuthMode,
 		onTerminate: Promise<void>
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
@@ -544,7 +547,7 @@ class MutationProcessor {
 
 		// include all the fields that comprise a custom PK if one is specified
 		const deleteInput = {};
-		if (primaryKey?.length) {
+		if (primaryKey && primaryKey.length) {
 			for (const pkField of primaryKey) {
 				deleteInput[pkField] = parsedData[pkField];
 			}
@@ -679,7 +682,10 @@ export const safeJitteredBackoff: typeof originalJitteredBackoff = (
 	const attemptResult = originalJitteredBackoff(attempt);
 
 	// If this is the last attempt and it is a network error, we retry indefinitively every 5 minutes
-	if (attemptResult === false && error?.message === 'Network Error') {
+	if (
+		attemptResult === false &&
+		((error || {}) as any).message === 'Network Error'
+	) {
 		return MAX_RETRY_DELAY_MS;
 	}
 

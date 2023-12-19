@@ -1,0 +1,23 @@
+name: Push - release from release to latest
+
+concurrency:
+  # group name unique for push to push-latest-release
+  group: push-release-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  e2e:
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
+  release:
+    needs:
+      - e2e
+    permissions:
+      contents: write
+    secrets: inherit
+    uses: ./.github/workflows/callable-npm-publish-release.yml

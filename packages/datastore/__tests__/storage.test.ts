@@ -89,13 +89,14 @@ describe('Storage tests', () => {
 			beforeEach(() => {
 				zenNext = jest.fn();
 
-				jest.doMock('zen-push', () => {
-					class zenPush {
+				jest.doMock('rxjs', () => {
+					const actualRxjs = jest.requireActual('rxjs');
+					class Subject {
 						constructor() {}
 						next = zenNext;
 					}
 
-					return zenPush;
+					return { ...actualRxjs, Subject };
 				});
 			});
 

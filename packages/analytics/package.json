@@ -1,36 +1,78 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "6.5.0",
+	"version": "7.0.8",
 	"description": "Analytics category of aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"sideEffects": [
-		"./lib/Analytics.js",
-		"./lib-esm/Analytics.js"
-	],
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./src/index.ts",
+	"typings": "./dist/esm/index.d.ts",
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
-		"test:size": "size-limit",
-		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"build-with-test": "npm run clean && npm run test && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 69.26"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 71.4"
 	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js",
-		"./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
+	"typesVersions": {
+		">=4.2": {
+			"pinpoint": [
+				"./dist/esm/providers/pinpoint/index.d.ts"
+			],
+			"kinesis": [
+				"./dist/esm/providers/kinesis/index.d.ts"
+			],
+			"kinesis-firehose": [
+				"./dist/esm/providers/kinesis-firehose/index.d.ts"
+			],
+			"personalize": [
+				"./dist/esm/providers/personalize/index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
+		},
+		"./pinpoint": {
+			"types": "./dist/esm/providers/pinpoint/index.d.ts",
+			"import": "./dist/esm/providers/pinpoint/index.mjs",
+			"require": "./dist/cjs/providers/pinpoint/index.js",
+			"react-native": "./src/providers/pinpoint/index.ts"
+		},
+		"./kinesis": {
+			"types": "./dist/esm/providers/kinesis/index.d.ts",
+			"import": "./dist/esm/providers/kinesis/index.mjs",
+			"require": "./dist/cjs/providers/kinesis/index.js",
+			"react-native": "./src/providers/kinesis/index.ts"
+		},
+		"./kinesis-firehose": {
+			"types": "./dist/esm/providers/kinesis-firehose/index.d.ts",
+			"import": "./dist/esm/providers/kinesis-firehose/index.mjs",
+			"require": "./dist/cjs/providers/kinesis-firehose/index.js",
+			"react-native": "./src/providers/kinesis-firehose/index.ts"
+		},
+		"./personalize": {
+			"types": "./dist/esm/providers/personalize/index.d.ts",
+			"import": "./dist/esm/providers/personalize/index.mjs",
+			"require": "./dist/cjs/providers/personalize/index.js",
+			"react-native": "./src/providers/personalize/index.ts"
+		},
+		"./package.json": "./package.json"
 	},
 	"repository": {
 		"type": "git",
@@ -43,84 +85,30 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"files": [
-		"lib",
-		"lib-esm",
-		"src"
+		"dist/cjs",
+		"dist/esm",
+		"src",
+		"pinpoint",
+		"kinesis",
+		"kinesis-firehose",
+		"personalize"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "5.1.6",
-		"@aws-amplify/core": "5.8.0",
-		"@aws-sdk/client-firehose": "3.6.1",
-		"@aws-sdk/client-kinesis": "3.6.1",
-		"@aws-sdk/client-personalize-events": "3.6.1",
-		"@aws-sdk/util-utf8-browser": "3.6.1",
-		"lodash": "^4.17.20",
-		"tslib": "^1.8.0",
-		"uuid": "^3.2.1"
+		"@aws-sdk/client-firehose": "3.398.0",
+		"@aws-sdk/client-kinesis": "3.398.0",
+		"@aws-sdk/client-personalize-events": "3.398.0",
+		"@smithy/util-utf8": "2.0.0",
+		"tslib": "^2.5.0"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-sdk/types": "3.6.1"
-	},
-	"size-limit": [
-		{
-			"name": "Analytics (Pinpoint)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Analytics, AWSPinpointProvider }",
-			"limit": "31.5 kB"
-		},
-		{
-			"name": "Analytics (Kinesis)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Analytics, AWSKinesisProvider }",
-			"limit": "60.5 kB"
-		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true,
-					"esModuleInterop": true
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
-		],
-		"setupFiles": [
-			"<rootDir>/src/setupTests.ts"
-		]
+		"@aws-amplify/core": "6.0.8",
+		"@aws-amplify/react-native": "1.0.8",
+		"@aws-sdk/types": "3.398.0",
+		"@rollup/plugin-typescript": "11.1.5",
+		"rollup": "3.29.4",
+		"typescript": "5.0.2"
 	}
 }

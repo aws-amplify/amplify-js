@@ -1,0 +1,25 @@
+name: Push - release from LTS branch to LTS dist tag
+
+concurrency:
+  # group name unique for push to push-latest-release
+  group: push-lts-release-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - v5-stable
+
+jobs:
+  e2e:
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
+  release:
+    needs:
+      - e2e
+    permissions:
+      contents: write
+    secrets: inherit
+    uses: ./.github/workflows/callable-npm-publish-lts-release.yml
+    with:
+      target: v5-stable # TODO Update this to support other LTS branches in the future

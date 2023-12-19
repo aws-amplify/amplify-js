@@ -1,0 +1,7 @@
+{
+	"name": "aws-amplify/api/server",
+	"main": "../../dist/cjs/api/server.js",
+	"browser": "../../dist/esm/api/server.mjs",
+	"module": "../../dist/esm/api/server.mjs",
+	"typings": "../../dist/esm/api/server.d.ts"
+}

@@ -1,0 +1,47 @@
+name: Publish to NPM
+description: Publish changes from the current commit to npm using the target release process.
+
+inputs:
+  github_user:
+    description: The git user to make commits with
+    required: true
+  github_email:
+    description: The git email to make commits with
+    required: true
+  target:
+    description: The release process target (either release or preid)
+    required: true
+  preid:
+    description: The preid to release to when the target is preid. The preid process will fail if this isn't provided.
+    required: false
+  npm_token:
+    description: The npm token that gives the job npm permissions
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set github commit user
+      shell: bash
+      env:
+        GITHUB_EMAIL: ${{ inputs.github_email }}
+        GITHUB_USER: ${{ inputs.github_user }}
+      run: |
+        git config --global user.email $GITHUB_EMAIL
+        git config --global user.name $GITHUB_USER
+
+    - name: Run npm publish
+      if: github.repository_owner == 'aws-amplify'
+      shell: bash
+      working-directory: ./amplify-js
+      env:
+        NPM_TOKEN: ${{ inputs.npm_token }}
+        GH_SHA: ${{ github.sha }}
+        TARGET: ${{ inputs.target }}
+        PREID_PREFIX: ${{ inputs.preid || '' }}
+      run: |
+        echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+        export PREID_HASH_SUFFIX=$(echo $GH_SHA | cut -c -7 | sed 's/^/\./')
+        git status
+        git --no-pager diff
+        yarn publish:$TARGET

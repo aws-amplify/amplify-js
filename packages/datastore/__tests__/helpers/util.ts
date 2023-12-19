@@ -4,7 +4,7 @@ import { initSchema as _initSchema } from '../../src/datastore/datastore';
 import * as schemas from './schemas';
 import { getDataStore } from './datastoreFactory';
 import { FakeGraphQLService } from './fakes';
-import { jitteredExponentialRetry } from '@aws-amplify/core';
+import { jitteredExponentialRetry } from '@aws-amplify/core/internals/utils';
 
 /**
  * Convenience function to wait for a number of ms.
@@ -398,11 +398,11 @@ export async function waitForEmptyOutbox(verbose = false) {
 				message.payload.event === 'outboxStatus' &&
 				message.payload.data.isEmpty
 			) {
-				Hub.remove('datastore', hubCallback);
+				removeListener();
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
 
@@ -419,11 +419,11 @@ export async function waitForDataStoreReady(verbose = false) {
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
 			if (message.payload.event === 'ready') {
-				Hub.remove('datastore', hubCallback);
+				removeListener();
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
 
@@ -440,11 +440,11 @@ export async function waitForSyncQueriesReady(verbose = false) {
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
 			if (message.payload.event === 'syncQueriesReady') {
-				Hub.remove('datastore', hubCallback);
+				removeListener;
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
 

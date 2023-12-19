@@ -1,11 +1,14 @@
 module.exports = {
 	entry: {
-		'aws-amplify-storage.min': './lib-esm/index.js',
+		'aws-amplify-storage.min': './dist/esm/index.mjs',
 	},
-	externals: [{ '@aws-amplify/core': 'aws_amplify_core' }, 'aws-sdk/clients/s3'],
+	externals: [
+		{ '@aws-amplify/core': 'aws_amplify_core' },
+		'aws-sdk/clients/s3',
+	],
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify_storage',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
@@ -21,8 +24,6 @@ module.exports = {
 	mode: 'production',
 	module: {
 		rules: [
-			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,

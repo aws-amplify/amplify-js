@@ -923,6 +923,9 @@ img { max-width: 100%; }
 				<a href="pageviewtracker.html#constructor" class="tsd-kind-icon">constructor</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="pageviewtracker.html#cleanup" class="tsd-kind-icon">cleanup</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="pageviewtracker.html#configure" class="tsd-kind-icon">configure</a>
 			</li>
 		</ul>
@@ -939,6 +942,12 @@ img { max-width: 100%; }
 			</li>
 		</ul>
 	</section>
+	<section class="tsd-panel">
+		<h3>Implements</h3>
+		<ul class="tsd-hierarchy">
+			<li><a href="../interfaces/trackerinterface.html" class="tsd-signature-type">TrackerInterface</a></li>
+		</ul>
+	</section>
 	<section class="tsd-panel-group tsd-index-group">
 		<h2>Index</h2>
 		<section class="tsd-panel tsd-index-panel">
@@ -952,6 +961,7 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pageviewtracker.html#cleanup" class="tsd-kind-icon">cleanup</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="pageviewtracker.html#configure" class="tsd-kind-icon">configure</a></li>
 					</ul>
 				</section>
@@ -964,22 +974,22 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Page<wbr>View<wbr>Tracker<span class="tsd-signature-symbol">(</span>tracker<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, opts<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pageviewtracker.html" class="tsd-signature-type">PageViewTracker</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Page<wbr>View<wbr>Tracker<span class="tsd-signature-symbol">(</span>eventRecorder<span class="tsd-signature-symbol">: </span><a href="../globals.html#trackereventrecorder" class="tsd-signature-type">TrackerEventRecorder</a>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#pageviewtrackingoptions" class="tsd-signature-type">PageViewTrackingOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="pageviewtracker.html" class="tsd-signature-type">PageViewTracker</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/analytics/src/trackers/PageViewTracker.ts#L25">packages/analytics/src/trackers/PageViewTracker.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/analytics/src/trackers/PageViewTracker.ts#L31">packages/analytics/src/trackers/PageViewTracker.ts:31</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>tracker: <span class="tsd-signature-type">any</span></h5>
+							<h5>eventRecorder: <a href="../globals.html#trackereventrecorder" class="tsd-signature-type">TrackerEventRecorder</a></h5>
 						</li>
 						<li>
-							<h5>opts: <span class="tsd-signature-type">any</span></h5>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#pageviewtrackingoptions" class="tsd-signature-type">PageViewTrackingOptions</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="pageviewtracker.html" class="tsd-signature-type">PageViewTracker</a></h4>
@@ -990,25 +1000,46 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="cleanup" class="tsd-anchor"></a>
+			<h3>cleanup</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">cleanup<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/trackerinterface.html">TrackerInterface</a>.<a href="../interfaces/trackerinterface.html#cleanup">cleanup</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/analytics/src/trackers/PageViewTracker.ts#L75">packages/analytics/src/trackers/PageViewTracker.ts:75</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="configure" class="tsd-anchor"></a>
 			<h3>configure</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>opts<span class="tsd-signature-symbol">?: </span><a href="../interfaces/pageviewtrackopts.html" class="tsd-signature-type">pageViewTrackOpts</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/pageviewtrackopts.html" class="tsd-signature-type">pageViewTrackOpts</a></li>
+				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>eventRecorder<span class="tsd-signature-symbol">: </span><a href="../globals.html#trackereventrecorder" class="tsd-signature-type">TrackerEventRecorder</a>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#pageviewtrackingoptions" class="tsd-signature-type">PageViewTrackingOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/analytics/src/trackers/PageViewTracker.ts#L41">packages/analytics/src/trackers/PageViewTracker.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/analytics/src/trackers/PageViewTracker.ts#L46">packages/analytics/src/trackers/PageViewTracker.ts:46</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> opts: <a href="../interfaces/pageviewtrackopts.html" class="tsd-signature-type">pageViewTrackOpts</a></h5>
+							<h5>eventRecorder: <a href="../globals.html#trackereventrecorder" class="tsd-signature-type">TrackerEventRecorder</a></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#pageviewtrackingoptions" class="tsd-signature-type">PageViewTrackingOptions</a></h5>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <a href="../interfaces/pageviewtrackopts.html" class="tsd-signature-type">pageViewTrackOpts</a></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 				</li>
 			</ul>
 		</section>

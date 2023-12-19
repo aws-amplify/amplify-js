@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CustomUserAgentDetails } from '@aws-amplify/core';
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
@@ -26,9 +25,6 @@ export interface GeoProvider {
 	// get provider name
 	getProviderName(): string;
 
-	// configure your provider
-	configure(config: object): object;
-
 	// get the available map resources
 	getAvailableMaps(): MapStyle[];
 
@@ -36,55 +32,42 @@ export interface GeoProvider {
 	getDefaultMap(): MapStyle;
 
 	// search by a text string and return a list of places
-	searchByText(
-		text: string,
-		options?: SearchByTextOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<Place[]>;
+	searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]>;
 
 	// search by coordinates and return a matching place
 	searchByCoordinates(
 		coordinates: Coordinates,
-		options?: SearchByCoordinatesOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: SearchByCoordinatesOptions
 	): Promise<Place>;
 
 	searchForSuggestions(
 		text: string,
-		options?: SearchByTextOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: SearchByTextOptions
 	): Promise<SearchForSuggestionsResults>;
 
 	searchByPlaceId(
 		placeId: string,
-		options?: searchByPlaceIdOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: searchByPlaceIdOptions
 	): Promise<Place | undefined>;
 
 	// create geofences
 	saveGeofences(
 		geofences: GeofenceInput[],
-		options?: GeofenceOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: GeofenceOptions
 	): Promise<SaveGeofencesResults>;
 
 	// get a single geofence
 	getGeofence(
 		geofenceId: GeofenceId,
-		options?: ListGeofenceOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: ListGeofenceOptions
 	): Promise<Geofence>;
 
 	// list all geofences
-	listGeofences(
-		options?: ListGeofenceOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
-	): Promise<ListGeofenceResults>;
+	listGeofences(options?: ListGeofenceOptions): Promise<ListGeofenceResults>;
 
 	// Delete geofences
 	deleteGeofences(
 		geofenceIds: string[],
-		options?: GeofenceOptions,
-		customUserAgentDetails?: CustomUserAgentDetails
+		options?: GeofenceOptions
 	): Promise<DeleteGeofencesResults>;
 }

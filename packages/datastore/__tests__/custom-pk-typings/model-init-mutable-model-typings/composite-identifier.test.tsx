@@ -32,39 +32,39 @@ describe('Composite Identifier', () => {
 			dob: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.tenant;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.tenant = '';
 			d.dob;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.dob = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 
 		// Query
-		// @ts-expect-error
+		// TODO: Uncomment below and update test
 		// await DataStore.query(CompositeDefaultRO, 'someid');
-		// @ts-expect-error
+		// TODO: Uncomment below and update test
 		// await DataStore.query(CompositeDefaultRO, { id: 'someid' });
 
 		expectType<CompositeDefaultRO | undefined>(
@@ -90,7 +90,7 @@ describe('Composite Identifier', () => {
 
 		// Delete
 
-		// @ts-expect-error
+		// TODO: Uncomment below and update test
 		// await DataStore.delete(CompositeDefaultRO, '')
 
 		expectType<CompositeDefaultRO[]>(
@@ -158,32 +158,32 @@ describe('Composite Identifier', () => {
 			dob: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CompositeCustomRO.copyOf({} as CompositeCustomRO, d => {
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.tenant;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.tenant = '';
 			d.dob;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.dob = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 	});

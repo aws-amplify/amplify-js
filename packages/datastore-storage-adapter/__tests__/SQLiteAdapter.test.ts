@@ -14,8 +14,8 @@ import {
 	testSchema,
 	InnerSQLiteDatabase,
 } from './helpers';
-import { SyncEngine } from '@aws-amplify/datastore/lib-esm/sync';
-import Observable from 'zen-observable';
+import { SyncEngine } from '@aws-amplify/datastore/dist/esm/sync';
+import { of } from 'rxjs';
 import {
 	pause,
 	addCommonQueryTests,
@@ -25,7 +25,7 @@ let innerSQLiteDatabase;
 
 jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 	return {
-		status: () => Observable.of(false) as any,
+		status: () => of(false) as any,
 		unsubscribe: () => {},
 		socketDisconnected: () => {},
 	};

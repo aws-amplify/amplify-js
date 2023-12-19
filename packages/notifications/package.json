@@ -1,37 +1,77 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "1.6.0",
+	"version": "2.0.8",
 	"description": "Notifications category of aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"sideEffects": [
-		"./lib/Notifications.js",
-		"./lib-esm/Notifications.js"
-	],
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./src/index.ts",
+	"typings": "./dist/esm/index.d.ts",
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
 	"scripts": {
-		"test": "npm run lint && npm run test:default && npm run test:native",
-		"test:default": "jest -w 1 --coverage",
-		"test:native": "jest -w 1 --coverage --config=jest.native.config.js --coverageDirectory=coverage-native",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
-		"test:size": "size-limit",
-		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"build-with-test": "npm run clean && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 88.21"
 	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
+	"typesVersions": {
+		">=4.2": {
+			"in-app-messaging": [
+				"./dist/esm/inAppMessaging/index.d.ts"
+			],
+			"push-notifications": [
+				"./dist/esm/pushNotifications/providers/index.d.ts"
+			],
+			"in-app-messaging/pinpoint": [
+				"./dist/esm/inAppMessaging/providers/pinpoint/index.d.ts"
+			],
+			"push-notifications/pinpoint": [
+				"./dist/esm/pushNotifications/providers/pinpoint/index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
+		},
+		"./in-app-messaging": {
+			"types": "./dist/esm/inAppMessaging/index.d.ts",
+			"import": "./dist/esm/inAppMessaging/index.mjs",
+			"require": "./dist/cjs/inAppMessaging/index.js",
+			"react-native": "./src/inAppMessaging/index.ts"
+		},
+		"./push-notifications": {
+			"types": "./dist/esm/pushNotifications/index.d.ts",
+			"import": "./dist/esm/pushNotifications/index.mjs",
+			"require": "./dist/cjs/pushNotifications/index.js",
+			"react-native": "./src/pushNotifications/index.ts"
+		},
+		"./in-app-messaging/pinpoint": {
+			"types": "./dist/esm/inAppMessaging/providers/pinpoint/index.d.ts",
+			"import": "./dist/esm/inAppMessaging/providers/pinpoint/index.mjs",
+			"require": "./dist/cjs/inAppMessaging/providers/pinpoint/index.js",
+			"react-native": "./src/inAppMessaging/providers/pinpoint/index.ts"
+		},
+		"./push-notifications/pinpoint": {
+			"types": "./dist/esm/pushNotifications/providers/pinpoint/index.d.ts",
+			"import": "./dist/esm/pushNotifications/providers/pinpoint/index.mjs",
+			"require": "./dist/cjs/pushNotifications/providers/pinpoint/index.js",
+			"react-native": "./src/pushNotifications/providers/pinpoint/index.ts"
+		},
+		"./package.json": "./package.json"
 	},
 	"repository": {
 		"type": "git",
@@ -44,35 +84,24 @@
 	},
 	"homepage": "https://docs.amplify.aws/",
 	"files": [
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
 		"src",
-		"internals"
+		"in-app-messaging",
+		"push-notifications"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "5.1.6",
-		"@aws-amplify/core": "5.8.0",
-		"@aws-amplify/rtn-push-notification": "1.1.2",
 		"lodash": "^4.17.21",
-		"uuid": "^3.2.1"
+		"tslib": "^2.5.0"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@babel/plugin-proposal-class-properties": "^7.0.0",
-		"@babel/plugin-proposal-private-methods": "^7.0.0",
-		"@babel/plugin-proposal-private-property-in-object": "^7.0.0"
-	},
-	"size-limit": [
-		{
-			"name": "Notifications (top-level class)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Notifications }",
-			"limit": "30.5 kB"
-		},
-		{
-			"name": "Notifications (with Analytics)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Notifications, Analytics }",
-			"limit": "30.5 kB"
-		}
-	]
+		"@aws-amplify/core": "6.0.8",
+		"@aws-amplify/react-native": "1.0.8",
+		"@rollup/plugin-typescript": "11.1.5",
+		"rollup": "3.29.4",
+		"typescript": "5.0.2"
+	}
 }

@@ -1,10 +1,17 @@
 module.exports = {
 	entry: {
-		'aws-amplify.min': './lib-esm/index.js',
+		'aws-amplify.min': [
+			'./dist/esm/index.mjs',
+			'./dist/esm/utils/index.mjs',
+			'./dist/esm/auth/index.mjs',
+			'./dist/esm/auth/cognito/index.mjs',
+			'./dist/esm/storage/index.mjs',
+			'./dist/esm/storage/s3/index.mjs',
+		],
 	},
 	output: {
 		filename: '[name].js',
-		path: __dirname + '/dist',
+		path: __dirname + '/dist/umd',
 		library: 'aws_amplify',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
@@ -20,8 +27,6 @@ module.exports = {
 	mode: 'production',
 	module: {
 		rules: [
-			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-			//{ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 			{
 				test: /\.js?$/,
 				exclude: /node_modules/,

@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/analytics/pinpoint",
+	"main": "../../dist/cjs/analytics/pinpoint/index.js",
+	"react-native": "../../src/analytics/pinpoint/index.ts",
+	"browser": "../../dist/esm/analytics/pinpoint/index.mjs",
+	"module": "../../dist/esm/analytics/pinpoint/index.mjs",
+	"typings": "../../dist/esm/analytics/pinpoint/index.d.ts"
+}

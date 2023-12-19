@@ -8,38 +8,42 @@ import {
 	GraphQLError,
 	OperationTypeNode,
 } from 'graphql';
-import Observable from 'zen-observable-ts';
+import { Observable, catchError } from 'rxjs';
+import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
 import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Credentials,
+	GraphQLAuthMode,
 	CustomUserAgentDetails,
 	getAmplifyUserAgent,
-	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-} from '@aws-amplify/core';
-import { InternalPubSub } from '@aws-amplify/pubsub/internals';
-import { Auth } from '@aws-amplify/auth';
-import { Cache } from '@aws-amplify/cache';
+	AmplifyUrl,
+} from '@aws-amplify/core/internals/utils';
 import {
 	GraphQLAuthError,
-	GraphQLOptions,
 	GraphQLResult,
 	GraphQLOperation,
+	GraphQLOptions,
 } from '../types';
-import { RestClient } from '@aws-amplify/api-rest';
+import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
+import {
+	post,
+	cancel as cancelREST,
+	updateRequestToBeCancellable,
+} from '@aws-amplify/api-rest/internals';
+import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
+import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
+import { resolveConfig, resolveLibraryOptions } from '../utils';
+import { repackageUnauthError } from '../utils/errors/repackageAuthError';
+
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
-const logger = new Logger('GraphQLAPI');
+const logger = new ConsoleLogger('GraphQLAPI');
 
-export const graphqlOperation = (
-	query,
-	variables = {},
-	authToken?: string
-) => ({
-	query,
-	variables,
-	authToken,
-});
+const isAmplifyInstance = (
+	amplify:
+		| AmplifyClassV6
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>)
+): amplify is AmplifyClassV6 => {
+	return typeof amplify !== 'function';
+};
 
 /**
  * Export Cloud Logic APIs
@@ -48,114 +52,56 @@ export class InternalGraphQLAPIClass {
 	/**
 	 * @private
 	 */
-	private _options;
-	private _api = null;
+	private appSyncRealTime = new AWSAppSyncRealTimeProvider();
 
-	Auth = Auth;
-	Cache = Cache;
-	Credentials = Credentials;
-
-	/**
-	 * Initialize GraphQL API with AWS configuration
-	 * @param {Object} options - Configuration object for API
-	 */
-	constructor(options) {
-		this._options = options;
-		logger.debug('API Options', this._options);
-	}
+	private _api = {
+		post,
+		cancelREST,
+		isCancelErrorREST,
+		updateRequestToBeCancellable,
+	};
 
 	public getModuleName() {
 		return 'InternalGraphQLAPI';
 	}
 
-	/**
-	 * Configure API
-	 * @param {Object} config - Configuration of the API
-	 * @return {Object} - The current configuration
-	 */
-	configure(options) {
-		const { API = {}, ...otherOptions } = options || {};
-		let opt = { ...otherOptions, ...API };
-		logger.debug('configure GraphQL API', { opt });
-
-		if (opt['aws_project_region']) {
-			opt = Object.assign({}, opt, {
-				region: opt['aws_project_region'],
-				header: {},
-			});
-		}
-
-		if (
-			typeof opt.graphql_headers !== 'undefined' &&
-			typeof opt.graphql_headers !== 'function'
-		) {
-			logger.warn('graphql_headers should be a function');
-			opt.graphql_headers = undefined;
-		}
-
-		this._options = Object.assign({}, this._options, opt);
-
-		this.createInstance();
-
-		return this._options;
-	}
-
-	/**
-	 * Create an instance of API for the library
-	 * @return - A promise of true if Success
-	 */
-	createInstance() {
-		logger.debug('create Rest instance');
-		if (this._options) {
-			this._api = new RestClient(this._options);
-			// Share instance Credentials with client for SSR
-			this._api.Credentials = this.Credentials;
-
-			return true;
-		} else {
-			return Promise.reject('API not configured');
-		}
-	}
-
 	private async _headerBasedAuth(
-		defaultAuthenticationType?,
-		additionalHeaders: { [key: string]: string } = {}
+		amplify: AmplifyClassV6,
+		authMode: GraphQLAuthMode,
+		additionalHeaders: Record<string, string> = {}
 	) {
-		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
-			this._options;
-		const authenticationType =
-			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+		const {
+			region: region,
+			endpoint: appSyncGraphqlEndpoint,
+			apiKey,
+		} = resolveConfig(amplify);
+
 		let headers = {};
 
-		switch (authenticationType) {
-			case 'API_KEY':
+		switch (authMode) {
+			case 'apiKey':
 				if (!apiKey) {
 					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
 				headers = {
-					Authorization: null,
 					'X-Api-Key': apiKey,
 				};
 				break;
-			case 'AWS_IAM':
-				const credentialsOK = await this._ensureCredentials();
-				if (!credentialsOK) {
+			case 'iam':
+				const session = await amplify.Auth.fetchAuthSession();
+				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
-			case 'OPENID_CONNECT':
+			case 'oidc':
+			case 'userPool':
 				try {
 					let token;
-					// backwards compatibility
-					const federatedInfo = await Cache.getItem('federatedInfo');
-					if (federatedInfo) {
-						token = federatedInfo.token;
-					} else {
-						const currentUser = await Auth.currentAuthenticatedUser();
-						if (currentUser) {
-							token = currentUser.token;
-						}
-					}
+
+					token = (
+						await amplify.Auth.fetchAuthSession()
+					).tokens?.accessToken.toString();
+
 					if (!token) {
 						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
 					}
@@ -166,28 +112,21 @@ export class InternalGraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
 				break;
-			case 'AMAZON_COGNITO_USER_POOLS':
-				try {
-					const session = await this.Auth.currentSession();
-					headers = {
-						Authorization: session.getAccessToken().getJwtToken(),
-					};
-				} catch (e) {
-					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
-				}
-				break;
-			case 'AWS_LAMBDA':
-				if (!additionalHeaders.Authorization) {
+			case 'lambda':
+				if (
+					typeof additionalHeaders === 'object' &&
+					!additionalHeaders.Authorization
+				) {
 					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
 				}
+
 				headers = {
 					Authorization: additionalHeaders.Authorization,
 				};
 				break;
+			case 'none':
+				break;
 			default:
-				headers = {
-					Authorization: null,
-				};
 				break;
 		}
 
@@ -211,12 +150,15 @@ export class InternalGraphQLAPIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param options - GraphQL Options
-	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
+	 * @param [additionalHeaders] - headers to merge in after any `libraryConfigHeaders` set in the config
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
+		amplify:
+			| AmplifyClassV6
+			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string },
+		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
@@ -232,36 +174,50 @@ export class InternalGraphQLAPIClass {
 
 		const headers = additionalHeaders || {};
 
-		// if an authorization header is set, have the explicit authToken take precedence
-		if (authToken) {
-			headers.Authorization = authToken;
-		}
-
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				this.createInstanceIfNotCreated();
-				const cancellableToken = this._api.getCancellableToken();
-				const initParams = {
-					cancellableToken,
-					withCredentials: this._options.withCredentials,
-				};
-				const responsePromise = this._graphql<T>(
-					{ query, variables, authMode },
-					headers,
-					initParams,
-					customUserAgentDetails
-				);
+				const abortController = new AbortController();
+
+				let responsePromise: Promise<GraphQLResult<T>>;
+
+				if (isAmplifyInstance(amplify)) {
+					responsePromise = this._graphql<T>(
+						amplify,
+						{ query, variables, authMode },
+						headers,
+						abortController,
+						customUserAgentDetails,
+						authToken
+					);
+				} else {
+					const wrapper = (amplifyInstance: AmplifyClassV6) =>
+						this._graphql<T>(
+							amplifyInstance,
+							{ query, variables, authMode },
+							headers,
+							abortController,
+							customUserAgentDetails,
+							authToken
+						);
+
+					responsePromise = amplify(wrapper) as unknown as Promise<
+						GraphQLResult<T>
+					>;
+				}
+
 				this._api.updateRequestToBeCancellable(
 					responsePromise,
-					cancellableToken
+					abortController
 				);
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe(
+					amplify as AmplifyClassV6,
 					{ query, variables, authMode },
 					headers,
-					customUserAgentDetails
+					customUserAgentDetails,
+					authToken
 				);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
@@ -269,52 +225,129 @@ export class InternalGraphQLAPIClass {
 	}
 
 	private async _graphql<T = any>(
-		{ query, variables, authMode }: GraphQLOptions,
-		additionalHeaders = {},
-		initParams = {},
-		customUserAgentDetails?: CustomUserAgentDetails
+		amplify: AmplifyClassV6,
+		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
+		additionalHeaders: CustomHeaders = {},
+		abortController: AbortController,
+		customUserAgentDetails?: CustomUserAgentDetails,
+		authToken?: string
 	): Promise<GraphQLResult<T>> {
-		this.createInstanceIfNotCreated();
 		const {
-			aws_appsync_region: region,
-			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
-			graphql_headers = () => ({}),
-			graphql_endpoint: customGraphqlEndpoint,
-			graphql_endpoint_iam_region: customEndpointRegion,
-		} = this._options;
+			region: region,
+			endpoint: appSyncGraphqlEndpoint,
+			customEndpoint,
+			customEndpointRegion,
+			defaultAuthMode,
+		} = resolveConfig(amplify);
 
+		const authMode = explicitAuthMode || defaultAuthMode || 'iam';
+
+		/**
+		 * Retrieve library options from Amplify configuration.
+		 * `customHeaders` here are from the Amplify configuration options,
+		 * and are for non-AppSync endpoints only. These are *not* the same as
+		 * `additionalHeaders`, which are custom headers that are either 1)
+		 * included when configuring the API client or 2) passed along with
+		 * individual requests.
+		 */
+		const { headers: customHeaders, withCredentials } =
+			resolveLibraryOptions(amplify);
+
+		/**
+		 * Client or request-specific custom headers that may or may not be
+		 * returned by a function:
+		 */
+		let additionalCustomHeaders: Record<string, string>;
+
+		if (typeof additionalHeaders === 'function') {
+			const requestOptions: RequestOptions = {
+				method: 'POST',
+				url: new AmplifyUrl(
+					customEndpoint || appSyncGraphqlEndpoint || ''
+				).toString(),
+				queryString: print(query as DocumentNode),
+			};
+
+			additionalCustomHeaders = await additionalHeaders(requestOptions);
+		} else {
+			additionalCustomHeaders = additionalHeaders;
+		}
+
+		// if an authorization header is set, have the explicit authToken take precedence
+		if (authToken) {
+			additionalCustomHeaders = {
+				...additionalCustomHeaders,
+				Authorization: authToken,
+			};
+		}
+
+		// TODO: Figure what we need to do to remove `!`'s.
 		const headers = {
-			...(!customGraphqlEndpoint &&
-				(await this._headerBasedAuth(authMode, additionalHeaders))),
-			...(customGraphqlEndpoint &&
+			...(!customEndpoint &&
+				(await this._headerBasedAuth(
+					amplify,
+					authMode!,
+					additionalCustomHeaders
+				))),
+			/**
+			 * Custom endpoint headers.
+			 * If there is both a custom endpoint and custom region present, we get the headers.
+			 * If there is a custom endpoint but no region, we return an empty object.
+			 * If neither are present, we return an empty object.
+			 */
+			...((customEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode, additionalHeaders)
-					: { Authorization: null })),
-			...(await graphql_headers({ query, variables })),
-			...additionalHeaders,
-			...(!customGraphqlEndpoint && {
+					? await this._headerBasedAuth(
+							amplify,
+							authMode!,
+							additionalCustomHeaders
+					  )
+					: {})) ||
+				{}),
+			// Custom headers included in Amplify configuration options:
+			...(customHeaders &&
+				(await customHeaders({
+					query: print(query as DocumentNode),
+					variables,
+				}))),
+			// Custom headers from individual requests or API client configuration:
+			...additionalCustomHeaders,
+			// User agent headers:
+			...(!customEndpoint && {
 				[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 			}),
 		};
 
 		const body = {
 			query: print(query as DocumentNode),
-			variables,
+			variables: variables || null,
 		};
 
-		const init = Object.assign(
-			{
-				headers,
-				body,
-				signerServiceInfo: {
-					service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
-					region: !customGraphqlEndpoint ? region : customEndpointRegion,
-				},
-			},
-			initParams
-		);
+		let signingServiceInfo;
 
-		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
+		/**
+		 * We do not send the signing service info to the REST API under the
+		 * following conditions (i.e. it will not sign the request):
+		 *   - there is a custom endpoint but no region
+		 *   - the auth mode is `none`, or `apiKey`
+		 *   - the auth mode is a type other than the types listed below
+		 */
+		if (
+			(customEndpoint && !customEndpointRegion) ||
+			(authMode !== 'oidc' &&
+				authMode !== 'userPool' &&
+				authMode !== 'iam' &&
+				authMode !== 'lambda')
+		) {
+			signingServiceInfo = undefined;
+		} else {
+			signingServiceInfo = {
+				service: !customEndpointRegion ? 'appsync' : 'execute-api',
+				region: !customEndpointRegion ? region : customEndpointRegion,
+			};
+		}
+
+		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
@@ -325,35 +358,53 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		let response;
+		let response: any;
+
 		try {
-			response = await this._api.post(endpoint, init);
+			const { body: responseBody } = await this._api.post({
+				url: new AmplifyUrl(endpoint),
+				options: {
+					headers,
+					body,
+					signingServiceInfo,
+					withCredentials,
+				},
+				abortController,
+			});
+
+			const result = await responseBody.json();
+
+			response = result;
 		} catch (err) {
 			// If the exception is because user intentionally
 			// cancelled the request, do not modify the exception
 			// so that clients can identify the exception correctly.
-			if (this._api.isCancel(err)) {
+			if (this.isCancelError(err)) {
 				throw err;
 			}
+
 			response = {
 				data: {},
-				errors: [new GraphQLError(err.message, null, null, null, null, err)],
+				errors: [
+					new GraphQLError(
+						(err as any).message,
+						null,
+						null,
+						null,
+						null,
+						err as any
+					),
+				],
 			};
 		}
 
 		const { errors } = response;
 
 		if (errors && errors.length) {
-			throw response;
+			throw repackageUnauthError(response);
 		}
 
 		return response;
-	}
-
-	async createInstanceIfNotCreated() {
-		if (!this._api) {
-			await this.createInstance();
-		}
 	}
 
 	/**
@@ -361,89 +412,62 @@ export class InternalGraphQLAPIClass {
 	 * @param {any} error - Any error
 	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
 	 */
-	isCancel(error) {
-		return this._api.isCancel(error);
+	isCancelError(error: any): boolean {
+		return this._api.isCancelErrorREST(error);
 	}
 
 	/**
 	 * Cancels an inflight request. Only applicable for graphql queries and mutations
 	 * @param {any} request - request to cancel
-	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 * @returns - A boolean indicating if the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string) {
-		return this._api.cancel(request, message);
-	}
-
-	/**
-	 * Check if the request has a corresponding cancel token in the WeakMap.
-	 * @params request - The request promise
-	 * @return if the request has a corresponding cancel token.
-	 */
-	hasCancelToken(request: Promise<any>) {
-		return this._api.hasCancelToken(request);
+	cancel(request: Promise<any>, message?: string): boolean {
+		return this._api.cancelREST(request, message);
 	}
 
 	private _graphqlSubscribe(
-		{
-			query,
-			variables,
-			authMode: defaultAuthenticationType,
-			authToken,
-		}: GraphQLOptions,
-		additionalHeaders = {},
-		customUserAgentDetails?: CustomUserAgentDetails
+		amplify: AmplifyClassV6,
+		{ query, variables, authMode }: GraphQLOptions,
+		additionalHeaders: CustomHeaders = {},
+		customUserAgentDetails?: CustomUserAgentDetails,
+		authToken?: string
 	): Observable<any> {
-		const {
-			aws_appsync_region: region,
-			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
-			aws_appsync_authenticationType,
-			aws_appsync_apiKey: apiKey,
-			graphql_headers = () => ({}),
-		} = this._options;
-		const authenticationType =
-			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
+		const config = resolveConfig(amplify);
 
-		if (InternalPubSub && typeof InternalPubSub.subscribe === 'function') {
-			return InternalPubSub.subscribe(
-				'',
+		/**
+		 * Retrieve library options from Amplify configuration.
+		 * `libraryConfigHeaders` are from the Amplify configuration options,
+		 * and will not be overwritten by other custom headers. These are *not*
+		 * the same as `additionalHeaders`, which are custom headers that are
+		 * either 1)included when configuring the API client or 2) passed along
+		 * with individual requests.
+		 */
+		const { headers: libraryConfigHeaders } = resolveLibraryOptions(amplify);
+
+		return this.appSyncRealTime
+			.subscribe(
 				{
-					provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
-					appSyncGraphqlEndpoint,
-					authenticationType,
-					apiKey,
 					query: print(query as DocumentNode),
-					region,
 					variables,
-					graphql_headers,
+					appSyncGraphqlEndpoint: config?.endpoint,
+					region: config?.region,
+					authenticationType: authMode || config?.defaultAuthMode,
+					apiKey: config?.apiKey,
 					additionalHeaders,
 					authToken,
+					libraryConfigHeaders,
 				},
 				customUserAgentDetails
+			)
+			.pipe(
+				catchError(e => {
+					if (e.errors) {
+						throw repackageUnauthError(e);
+					}
+					throw e;
+				})
 			);
-		} else {
-			logger.debug('No pubsub module applied for subscription');
-			throw new Error('No pubsub module applied for subscription');
-		}
-	}
-
-	/**
-	 * @private
-	 */
-	_ensureCredentials() {
-		return this.Credentials.get()
-			.then(credentials => {
-				if (!credentials) return false;
-				const cred = this.Credentials.shear(credentials);
-				logger.debug('set credentials for api', cred);
-
-				return true;
-			})
-			.catch(err => {
-				logger.warn('ensure credentials error', err);
-				return false;
-			});
 	}
 }
 
-export const InternalGraphQLAPI = new InternalGraphQLAPIClass(null);
-Amplify.register(InternalGraphQLAPI);
+export const InternalGraphQLAPI = new InternalGraphQLAPIClass();

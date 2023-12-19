@@ -1,11 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthErrorMessages, AuthErrorTypes } from './types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+// TODO: delete this module when the Auth class is removed.
+
+import { AuthErrorMessages, AuthErrorTypes } from './types/Auth';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { AuthErrorStrings } from './common/AuthErrorStrings';
 
-const logger = new Logger('AuthError');
+const logger = new ConsoleLogger('AuthError');
 
 export class AuthError extends Error {
 	public log: string;
@@ -39,6 +41,10 @@ export class NoUserPoolError extends AuthError {
 }
 
 export const authErrorMessages: AuthErrorMessages = {
+	oauthSignInError: {
+		message: AuthErrorStrings.OAUTH_ERROR,
+		log: 'Make sure Cognito Hosted UI has been configured correctly',
+	},
 	noConfig: {
 		message: AuthErrorStrings.DEFAULT_MSG,
 		log: `

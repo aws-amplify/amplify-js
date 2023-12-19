@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/core/internals/utils",
+	"types": "../../dist/esm/libraryUtils.d.ts",
+	"main": "../../dist/cjs/libraryUtils.js",
+	"module": "../../dist/esm/libraryUtils.mjs",
+	"react-native": "../../src/libraryUtils.ts"
+}

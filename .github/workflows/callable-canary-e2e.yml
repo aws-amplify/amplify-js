@@ -1,0 +1,46 @@
+name: 'Canary E2E Tests'
+
+on:
+  workflow_call:
+
+env:
+  WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+
+jobs:
+  prebuild-ubuntu:
+    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
+    with:
+      runs_on: ubuntu-latest
+  prebuild-macos:
+    uses: ./.github/workflows/callable-prebuild-amplify-js.yml
+    with:
+      runs_on: macos-latest
+  prebuild-samples-staging:
+    secrets: inherit
+    uses: ./.github/workflows/callable-prebuild-samples-staging.yml
+  e2e:
+    needs:
+      - prebuild-macos
+      - prebuild-ubuntu
+      - prebuild-samples-staging
+    secrets: inherit
+    uses: ./.github/workflows/callable-canary-e2e-runner.yml
+  sample-app-tests:
+    secrets: inherit
+    uses: ./.github/workflows/callable-canary-sampleapp-tests.yml
+  slack-alert:
+    needs:
+      - e2e
+      - sample-app-tests
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Send slack message
+        env:
+          WORKFLOW_URL: '{ "URL": "${{ env.WORKFLOW_URL }}" }'
+          WEBHOOK_URL: ${{ env.WEBHOOK_URL }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+          --data "$WORKFLOW_URL" \
+          $WEBHOOK_URL

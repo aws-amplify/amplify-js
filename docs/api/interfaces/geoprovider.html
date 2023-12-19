@@ -920,9 +920,6 @@ img { max-width: 100%; }
 		<a href="geoprovider.html" class="tsd-kind-icon">Geo<wbr>Provider</a>
 		<ul>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
-				<a href="geoprovider.html#configure" class="tsd-kind-icon">configure</a>
-			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="geoprovider.html#deletegeofences" class="tsd-kind-icon">delete<wbr>Geofences</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-interface">
@@ -985,7 +982,6 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="geoprovider.html#configure" class="tsd-kind-icon">configure</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="geoprovider.html#deletegeofences" class="tsd-kind-icon">delete<wbr>Geofences</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="geoprovider.html#getavailablemaps" class="tsd-kind-icon">get<wbr>Available<wbr>Maps</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="geoprovider.html#getcategory" class="tsd-kind-icon">get<wbr>Category</a></li>
@@ -1006,39 +1002,16 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-			<a name="configure" class="tsd-anchor"></a>
-			<h3>configure</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">configure<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L30">packages/geo/src/types/Provider.ts:30</a></li>
-						</ul>
-					</aside>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>config: <span class="tsd-signature-type">object</span></h5>
-						</li>
-					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 			<a name="deletegeofences" class="tsd-anchor"></a>
 			<h3>delete<wbr>Geofences</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">delete<wbr>Geofences<span class="tsd-signature-symbol">(</span>geofenceIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#geofenceoptions" class="tsd-signature-type">GeofenceOptions</a>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#deletegeofencesresults" class="tsd-signature-type">DeleteGeofencesResults</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">delete<wbr>Geofences<span class="tsd-signature-symbol">(</span>geofenceIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#geofenceoptions" class="tsd-signature-type">GeofenceOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#deletegeofencesresults" class="tsd-signature-type">DeleteGeofencesResults</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L85">packages/geo/src/types/Provider.ts:85</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L69">packages/geo/src/types/Provider.ts:69</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1048,9 +1021,6 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#geofenceoptions" class="tsd-signature-type">GeofenceOptions</a></h5>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#deletegeofencesresults" class="tsd-signature-type">DeleteGeofencesResults</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1067,7 +1037,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L33">packages/geo/src/types/Provider.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L29">packages/geo/src/types/Provider.ts:29</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <a href="mapstyle.html" class="tsd-signature-type">MapStyle</a><span class="tsd-signature-symbol">[]</span></h4>
@@ -1084,7 +1054,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L24">packages/geo/src/types/Provider.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L23">packages/geo/src/types/Provider.ts:23</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1101,7 +1071,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L36">packages/geo/src/types/Provider.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L32">packages/geo/src/types/Provider.ts:32</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <a href="mapstyle.html" class="tsd-signature-type">MapStyle</a></h4>
@@ -1112,13 +1082,13 @@ img { max-width: 100%; }
 			<a name="getgeofence" class="tsd-anchor"></a>
 			<h3>get<wbr>Geofence</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">get<wbr>Geofence<span class="tsd-signature-symbol">(</span>geofenceId<span class="tsd-signature-symbol">: </span><a href="../globals.html#geofenceid" class="tsd-signature-type">GeofenceId</a>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#listgeofenceoptions" class="tsd-signature-type">ListGeofenceOptions</a>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#geofence" class="tsd-signature-type">Geofence</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Geofence<span class="tsd-signature-symbol">(</span>geofenceId<span class="tsd-signature-symbol">: </span><a href="../globals.html#geofenceid" class="tsd-signature-type">GeofenceId</a>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#listgeofenceoptions" class="tsd-signature-type">ListGeofenceOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#geofence" class="tsd-signature-type">Geofence</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L72">packages/geo/src/types/Provider.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L60">packages/geo/src/types/Provider.ts:60</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1128,9 +1098,6 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#listgeofenceoptions" class="tsd-signature-type">ListGeofenceOptions</a></h5>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#geofence" class="tsd-signature-type">Geofence</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1147,7 +1114,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L27">packages/geo/src/types/Provider.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L26">packages/geo/src/types/Provider.ts:26</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1158,22 +1125,19 @@ img { max-width: 100%; }
 			<a name="listgeofences" class="tsd-anchor"></a>
 			<h3>list<wbr>Geofences</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">list<wbr>Geofences<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#listgeofenceoptions" class="tsd-signature-type">ListGeofenceOptions</a>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#listgeofenceresults" class="tsd-signature-type">ListGeofenceResults</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">list<wbr>Geofences<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#listgeofenceoptions" class="tsd-signature-type">ListGeofenceOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#listgeofenceresults" class="tsd-signature-type">ListGeofenceResults</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L79">packages/geo/src/types/Provider.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L66">packages/geo/src/types/Provider.ts:66</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#listgeofenceoptions" class="tsd-signature-type">ListGeofenceOptions</a></h5>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#listgeofenceresults" class="tsd-signature-type">ListGeofenceResults</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1184,13 +1148,13 @@ img { max-width: 100%; }
 			<a name="savegeofences" class="tsd-anchor"></a>
 			<h3>save<wbr>Geofences</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">save<wbr>Geofences<span class="tsd-signature-symbol">(</span>geofences<span class="tsd-signature-symbol">: </span><a href="../globals.html#geofenceinput" class="tsd-signature-type">GeofenceInput</a><span class="tsd-signature-symbol">[]</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#geofenceoptions" class="tsd-signature-type">GeofenceOptions</a>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#savegeofencesresults" class="tsd-signature-type">SaveGeofencesResults</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">save<wbr>Geofences<span class="tsd-signature-symbol">(</span>geofences<span class="tsd-signature-symbol">: </span><a href="../globals.html#geofenceinput" class="tsd-signature-type">GeofenceInput</a><span class="tsd-signature-symbol">[]</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#geofenceoptions" class="tsd-signature-type">GeofenceOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#savegeofencesresults" class="tsd-signature-type">SaveGeofencesResults</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L65">packages/geo/src/types/Provider.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L54">packages/geo/src/types/Provider.ts:54</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1201,9 +1165,6 @@ img { max-width: 100%; }
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#geofenceoptions" class="tsd-signature-type">GeofenceOptions</a></h5>
 						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>
-						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#savegeofencesresults" class="tsd-signature-type">SaveGeofencesResults</a><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
@@ -1213,13 +1174,13 @@ img { max-width: 100%; }
 			<a name="searchbycoordinates" class="tsd-anchor"></a>
 			<h3>search<wbr>ByCoordinates</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">search<wbr>ByCoordinates<span class="tsd-signature-symbol">(</span>coordinates<span class="tsd-signature-symbol">: </span><a href="../globals.html#coordinates" class="tsd-signature-type">Coordinates</a>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#searchbycoordinatesoptions" class="tsd-signature-type">SearchByCoordinatesOptions</a>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">search<wbr>ByCoordinates<span class="tsd-signature-symbol">(</span>coordinates<span class="tsd-signature-symbol">: </span><a href="../globals.html#coordinates" class="tsd-signature-type">Coordinates</a>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#searchbycoordinatesoptions" class="tsd-signature-type">SearchByCoordinatesOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L46">packages/geo/src/types/Provider.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L38">packages/geo/src/types/Provider.ts:38</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1230,9 +1191,6 @@ img { max-width: 100%; }
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#searchbycoordinatesoptions" class="tsd-signature-type">SearchByCoordinatesOptions</a></h5>
 						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>
-						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
@@ -1242,13 +1200,13 @@ img { max-width: 100%; }
 			<a name="searchbyplaceid" class="tsd-anchor"></a>
 			<h3>search<wbr>ByPlace<wbr>Id</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">search<wbr>ByPlace<wbr>Id<span class="tsd-signature-symbol">(</span>placeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#searchbyplaceidoptions" class="tsd-signature-type">searchByPlaceIdOptions</a>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">search<wbr>ByPlace<wbr>Id<span class="tsd-signature-symbol">(</span>placeId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#searchbyplaceidoptions" class="tsd-signature-type">searchByPlaceIdOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L58">packages/geo/src/types/Provider.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L48">packages/geo/src/types/Provider.ts:48</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1259,9 +1217,6 @@ img { max-width: 100%; }
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#searchbyplaceidoptions" class="tsd-signature-type">searchByPlaceIdOptions</a></h5>
 						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>
-						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
 				</li>
@@ -1271,13 +1226,13 @@ img { max-width: 100%; }
 			<a name="searchbytext" class="tsd-anchor"></a>
 			<h3>search<wbr>ByText</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">search<wbr>ByText<span class="tsd-signature-symbol">(</span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#searchbytextoptions" class="tsd-signature-type">SearchByTextOptions</a>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">search<wbr>ByText<span class="tsd-signature-symbol">(</span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#searchbytextoptions" class="tsd-signature-type">SearchByTextOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L39">packages/geo/src/types/Provider.ts:39</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L35">packages/geo/src/types/Provider.ts:35</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1287,9 +1242,6 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#searchbytextoptions" class="tsd-signature-type">SearchByTextOptions</a></h5>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="place.html" class="tsd-signature-type">Place</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1300,13 +1252,13 @@ img { max-width: 100%; }
 			<a name="searchforsuggestions" class="tsd-anchor"></a>
 			<h3>search<wbr>For<wbr>Suggestions</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-				<li class="tsd-signature tsd-kind-icon">search<wbr>For<wbr>Suggestions<span class="tsd-signature-symbol">(</span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#searchbytextoptions" class="tsd-signature-type">SearchByTextOptions</a>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#searchforsuggestionsresults" class="tsd-signature-type">SearchForSuggestionsResults</a><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">search<wbr>For<wbr>Suggestions<span class="tsd-signature-symbol">(</span>text<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, options<span class="tsd-signature-symbol">?: </span><a href="../globals.html#searchbytextoptions" class="tsd-signature-type">SearchByTextOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#searchforsuggestionsresults" class="tsd-signature-type">SearchForSuggestionsResults</a><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/346091cd8/packages/geo/src/types/Provider.ts#L52">packages/geo/src/types/Provider.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/36dbfc018/packages/geo/src/types/Provider.ts#L43">packages/geo/src/types/Provider.ts:43</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1316,9 +1268,6 @@ img { max-width: 100%; }
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../globals.html#searchbytextoptions" class="tsd-signature-type">SearchByTextOptions</a></h5>
-						</li>
-						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#searchforsuggestionsresults" class="tsd-signature-type">SearchForSuggestionsResults</a><span class="tsd-signature-symbol">&gt;</span></h4>

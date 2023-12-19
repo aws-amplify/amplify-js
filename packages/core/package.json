@@ -1,42 +1,36 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "5.8.0",
+	"version": "6.0.8",
 	"description": "Core category of aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./src/index.ts",
+	"typings": "./dist/esm/index.d.ts",
 	"publishConfig": {
 		"access": "public"
 	},
 	"sideEffects": [
-		"./lib/I18n/index.js",
-		"./lib/Credentials.js",
-		"./lib-esm/I18n/index.js",
-		"./lib-esm/Credentials.js"
+		"./dist/cjs/I18n/index.js",
+		"./dist/cjs/Cache/index.js",
+		"./dist/esm/I18n/index.mjs",
+		"./dist/esm/Cache/index.mjs"
 	],
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs": "rimraf lib && tsc -m commonjs --outDir lib && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "rimraf lib-esm && tsc -m esnext --outDir lib-esm",
-		"build:cjs:watch": "rimraf lib && tsc -m commonjs --outDir lib --watch",
-		"build:esm:watch": "rimraf lib-esm && tsc -m esnext --outDir lib-esm --watch",
-		"build": "npm run clean && npm run generate-version && npm run build:polyfills:url && npm run build:esm && npm run build:cjs",
-		"build:polyfills:url": "webpack --config ./polyfills/URL/webpack.config.js",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run generate-version && npm run build:esm-cjs && npm run build:umd",
 		"generate-version": "genversion src/Platform/version.ts --es6 --semi --source ../aws-amplify",
-		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"prepublishOnly": "npm run build",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 76.41"
-	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js",
-		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
-		"./lib-esm/RNComponents": "./lib-esm/RNComponents/reactnative.js",
-		"./lib-esm/StorageHelper": "./lib-esm/StorageHelper/reactnative.js"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 92.36"
 	},
 	"repository": {
 		"type": "git",
@@ -48,143 +42,156 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"devDependencies": {
-		"@react-native-async-storage/async-storage": "1.15.17",
-		"find": "^0.2.7",
-		"genversion": "^2.2.0",
-		"react-native": "^0.64.1",
-		"typescript": "5.0.2"
-	},
 	"files": [
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
 		"src",
-		"typings.d.ts",
 		"internals",
-		"polyfills"
+		"server"
 	],
 	"dependencies": {
-		"@aws-crypto/sha256-js": "1.2.2",
-		"@aws-sdk/client-cloudwatch-logs": "3.6.1",
-		"@aws-sdk/types": "3.6.1",
-		"@aws-sdk/util-hex-encoding": "3.6.1",
-		"@types/node-fetch": "2.6.4",
-		"isomorphic-unfetch": "^3.0.0",
-		"react-native-url-polyfill": "^1.3.0",
-		"tslib": "^1.8.0",
-		"universal-cookie": "^4.0.4",
-		"zen-observable-ts": "0.8.19"
+		"@aws-crypto/sha256-js": "5.2.0",
+		"@aws-sdk/types": "3.398.0",
+		"@smithy/util-hex-encoding": "2.0.0",
+		"@types/uuid": "^9.0.0",
+		"js-cookie": "^3.0.5",
+		"rxjs": "^7.8.1",
+		"tslib": "^2.5.0",
+		"uuid": "^9.0.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/react-native": "1.0.8",
+		"@rollup/plugin-typescript": "11.1.5",
+		"@types/js-cookie": "3.0.2",
+		"genversion": "^2.2.0",
+		"rollup": "3.29.4",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
-			"name": "Core (ServiceWorker)",
-			"path": "./lib-esm/index.js",
-			"import": "{ ServiceWorker }",
-			"limit": "2.4 kB"
-		},
-		{
 			"name": "Core (Hub)",
-			"path": "./lib-esm/index.js",
+			"path": "./dist/esm/index.mjs",
 			"import": "{ Hub }",
-			"limit": "2.05 kB"
+			"limit": "1.43 kB"
 		},
 		{
 			"name": "Core (I18n)",
-			"path": "./lib-esm/index.js",
+			"path": "./dist/esm/index.mjs",
 			"import": "{ I18n }",
-			"limit": "2.12 kB"
-		},
-		{
-			"name": "Core (Logger)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Logger }",
-			"limit": "1.2 kB"
-		},
-		{
-			"name": "Core (Credentials)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Credentials }",
-			"limit": "13.45 kB"
-		},
-		{
-			"name": "Core (Signer)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Signer }",
-			"limit": "7.4 kB"
+			"limit": "1.46 kB"
 		},
 		{
 			"name": "Custom clients (fetch handler)",
-			"path": "./lib-esm/clients/handlers/fetch.js",
+			"path": "./dist/esm/clients/handlers/fetch.mjs",
 			"import": "{ fetchTransferHandler }",
-			"limit": "1.85 kB"
+			"limit": "500 B"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
-			"path": "./lib-esm/clients/handlers/unauthenticated.js",
+			"path": "./dist/esm/clients/handlers/unauthenticated.mjs",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "2.85 kB"
-		},
-		{
-			"name": "Custom clients (retry middleware)",
-			"path": "./lib-esm/clients/middleware/retry/middleware.js",
-			"import": "{ retryMiddleware }",
-			"limit": "1.35 kB"
-		},
-		{
-			"name": "Custom clients (signing middleware)",
-			"path": "./lib-esm/clients/middleware/signing/middleware.js",
-			"import": "{ signingMiddleware }",
-			"limit": "6.85 kB"
+			"limit": "1 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
-			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
+			"path": "./dist/esm/clients/middleware/signing/signer/signatureV4/index.mjs",
 			"import": "{ signRequest }",
-			"limit": "6.2 kB"
+			"limit": "3.60 kB"
 		},
 		{
 			"name": "Custom clients (url presigner)",
-			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
+			"path": "./dist/esm/clients/middleware/signing/signer/signatureV4/index.mjs",
 			"import": "{ presignUrl }",
-			"limit": "6.3 kB"
+			"limit": "3.65 kB"
+		},
+		{
+			"name": "Cache (default browser storage)",
+			"path": "./dist/esm/index.mjs",
+			"import": "{ Cache }",
+			"limit": "3.3 kB"
 		}
 	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": false
-			}
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
 		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		"./server": {
+			"types": "./dist/esm/server.d.ts",
+			"import": "./dist/esm/server.mjs",
+			"require": "./dist/cjs/server.js"
 		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"/testUtils/"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
+		"./internals/adapter-core": {
+			"types": "./dist/esm/adapterCore/index.d.ts",
+			"import": "./dist/esm/adapterCore/index.mjs",
+			"require": "./dist/cjs/adapterCore/index.js"
 		},
-		"testURL": "http://localhost/",
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
-		]
+		"./internals/aws-client-utils": {
+			"types": "./dist/esm/clients/index.d.ts",
+			"import": "./dist/esm/clients/index.mjs",
+			"require": "./dist/cjs/clients/index.js",
+			"react-native": "./src/clients/index.ts"
+		},
+		"./internals/aws-client-utils/composers": {
+			"types": "./dist/esm/clients/internal/index.d.ts",
+			"import": "./dist/esm/clients/internal/index.mjs",
+			"require": "./dist/cjs/clients/internal/index.js",
+			"react-native": "./src/clients/internal/index.ts"
+		},
+		"./internals/aws-clients/cognitoIdentity": {
+			"types": "./dist/esm/awsClients/cognitoIdentity/index.d.ts",
+			"import": "./dist/esm/awsClients/cognitoIdentity/index.mjs",
+			"require": "./dist/cjs/awsClients/cognitoIdentity/index.js",
+			"react-native": "./src/awsClients/cognitoIdentity/index.ts"
+		},
+		"./internals/aws-clients/pinpoint": {
+			"types": "./dist/esm/awsClients/pinpoint/index.d.ts",
+			"import": "./dist/esm/awsClients/pinpoint/index.mjs",
+			"require": "./dist/cjs/awsClients/pinpoint/index.js",
+			"react-native": "./src/awsClients/pinpoint/index.ts"
+		},
+		"./internals/providers/pinpoint": {
+			"types": "./dist/esm/providers/pinpoint/index.d.ts",
+			"import": "./dist/esm/providers/pinpoint/index.mjs",
+			"require": "./dist/cjs/providers/pinpoint/index.js",
+			"react-native": "./src/providers/pinpoint/index.ts"
+		},
+		"./internals/utils": {
+			"types": "./dist/esm/libraryUtils.d.ts",
+			"import": "./dist/esm/libraryUtils.mjs",
+			"require": "./dist/cjs/libraryUtils.js",
+			"react-native": "./src/libraryUtils.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"typesVersions": {
+		">=4.2": {
+			"server": [
+				"./dist/esm/server.d.ts"
+			],
+			"internals/adapter-core": [
+				"./dist/esm/adapterCore/index.d.ts"
+			],
+			"internals/aws-client-utils": [
+				"./dist/esm/clients/index.d.ts"
+			],
+			"internals/aws-client-utils/composers": [
+				"./dist/esm/clients/internal/index.d.ts"
+			],
+			"internals/aws-clients/cognitoIdentity": [
+				"./dist/esm/awsClients/cognitoIdentity/index.d.ts"
+			],
+			"internals/aws-clients/pinpoint": [
+				"./dist/esm/awsClients/pinpoint/index.d.ts"
+			],
+			"internals/providers/pinpoint": [
+				"./dist/esm/providers/pinpoint/index.d.ts"
+			],
+			"internals/utils": [
+				"./dist/esm/libraryUtils.d.ts"
+			]
+		}
 	}
 }

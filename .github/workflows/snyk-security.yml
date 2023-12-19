@@ -1,4 +1,4 @@
-name: 'Snyk Security'
+name: Snyk Security
 
 on:
   push:

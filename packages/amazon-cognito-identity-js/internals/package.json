@@ -1,8 +1,0 @@
-{
-	"name": "amazon-cognito-identity-js/internals",
-	"types": "./index.d.ts",
-	"main": "../lib/internals/index.js",
-	"module": "../es/internals/index.js",
-	"react-native": "../es/internals/index.js",
-	"sideEffects": false
-}

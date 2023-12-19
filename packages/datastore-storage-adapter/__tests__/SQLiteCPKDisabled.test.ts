@@ -8,14 +8,13 @@
  *
  * Both files should be removed when CPK support is added.
  */
-import Observable from 'zen-observable';
+import { of } from 'rxjs';
 import SQLiteAdapter from '../src/SQLiteAdapter/SQLiteAdapter';
 import { testSchema, InnerSQLiteDatabase } from './helpers';
-import { initSchema, DataStore } from '@aws-amplify/datastore';
 
 jest.mock('@aws-amplify/datastore/src/sync/datastoreConnectivity', () => {
 	return {
-		status: () => Observable.of(false) as any,
+		status: () => of(false) as any,
 		unsubscribe: () => {},
 		socketDisconnected: () => {},
 	};

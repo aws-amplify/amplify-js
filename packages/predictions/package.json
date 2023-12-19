@@ -1,33 +1,31 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "5.5.0",
+	"version": "6.0.8",
 	"description": "Machine learning category of aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
-	},
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./src/index.ts",
 	"sideEffects": [
-		"./lib/Predictions.js",
-		"./lib-esm/Predictions.js"
+		"./dist/cjs/Predictions.js",
+		"./dist/esm/Predictions.mjs"
 	],
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:size": "size-limit",
-		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"build-with-test": "npm run clean && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"generate-docs-local": "typedoc --out docs src",
 		"generate-docs-root": "typedoc --out ../../docs src",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 87.84"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 87.84"
 	},
 	"repository": {
 		"type": "git",
@@ -40,92 +38,38 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"files": [
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.8.0",
-		"@aws-amplify/storage": "5.9.0",
-		"@aws-sdk/client-comprehend": "3.6.1",
-		"@aws-sdk/client-polly": "3.6.1",
-		"@aws-sdk/client-rekognition": "3.6.1",
-		"@aws-sdk/client-textract": "3.6.1",
-		"@aws-sdk/client-translate": "3.6.1",
-		"@aws-sdk/eventstream-marshaller": "3.6.1",
-		"@aws-sdk/util-utf8-node": "3.6.1",
+		"@aws-amplify/storage": "6.0.8",
+		"@aws-sdk/client-comprehend": "3.398.0",
+		"@aws-sdk/client-polly": "3.398.0",
+		"@aws-sdk/client-rekognition": "3.398.0",
+		"@aws-sdk/client-textract": "3.398.0",
+		"@aws-sdk/client-translate": "3.398.0",
+		"@smithy/eventstream-codec": "2.0.9",
+		"@smithy/util-utf8": "2.0.0",
 		"buffer": "4.9.2",
-		"tslib": "^1.8.0",
-		"uuid": "^3.2.1"
+		"tslib": "^2.5.0",
+		"uuid": "^9.0.0"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/core": "6.0.8",
+		"@rollup/plugin-typescript": "11.1.5",
+		"rollup": "3.29.4",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
-			"name": "Predictions (all providers)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIPredictionsProvider }",
-			"limit": "103.55 kB"
-		},
-		{
-			"name": "Predictions (Convert provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIConvertPredictionsProvider }",
-			"limit": "58 kB"
-		},
-		{
-			"name": "Predictions (Identify provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIIdentifyPredictionsProvider }",
-			"limit": "73.55 kB"
-		},
-		{
-			"name": "Predictions (Interpret provider)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Predictions, AmazonAIInterpretPredictionsProvider }",
-			"limit": "43.45 kB"
+			"name": "Predictions",
+			"path": "./dist/esm/index.mjs",
+			"import": "{ Predictions }",
+			"limit": "69.8 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
-		]
-	}
+	]
 }

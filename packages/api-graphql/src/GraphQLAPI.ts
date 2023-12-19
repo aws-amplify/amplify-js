@@ -1,12 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
+import { Category, ApiAction } from '@aws-amplify/core/internals/utils';
 import { GraphQLOptions, GraphQLResult } from './types';
-import { InternalGraphQLAPIClass } from './internals';
-import Observable from 'zen-observable-ts';
+import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import { Observable } from 'rxjs';
 
 export const graphqlOperation = (
-	query,
+	query: any,
 	variables = {},
 	authToken?: string
 ) => ({
@@ -27,16 +29,37 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param options - GraphQL Options
-	 * @param [additionalHeaders] - headers to merge in after any `graphql_headers` set in the config
+	 * @param [additionalHeaders] - headers to merge in after any `libraryConfigHeaders` set in the config
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
 	 */
 	graphql<T = any>(
+		amplify: AmplifyClassV6 | (() => Promise<AmplifyClassV6>),
 		options: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string }
+		additionalHeaders?: CustomHeaders
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		return super.graphql(options, additionalHeaders);
+		return super.graphql(amplify, options, additionalHeaders, {
+			category: Category.API,
+			action: ApiAction.GraphQl,
+		});
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param error - Any error
+	 * @returns A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancelError(error: any): boolean {
+		return super.isCancelError(error);
+	}
+
+	/**
+	 * Cancels an inflight request. Only applicable for graphql queries and mutations
+	 * @param {any} request - request to cancel
+	 * @returns A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string): boolean {
+		return super.cancel(request, message);
 	}
 }
 
-export const GraphQLAPI = new GraphQLAPIClass(null);
-Amplify.register(GraphQLAPI);
+export const GraphQLAPI = new GraphQLAPIClass();

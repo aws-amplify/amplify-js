@@ -1,4 +1,4 @@
-import { Observable } from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import {
 	pause,
 	getDataStore,
@@ -2187,8 +2187,9 @@ describe('DataStore sync engine', () => {
 			};
 
 			await resyncWith([
-				syncExpression(LegacyJSONPost, p =>
-					p?.title.eq("whatever, it doesn't matter.")
+				syncExpression(
+					LegacyJSONPost,
+					p => p?.title.eq("whatever, it doesn't matter.")
 				),
 			]);
 
@@ -2262,40 +2263,40 @@ describe('DataStore sync engine', () => {
 			expect(onCreate).toEqual(onUpdate);
 			expect(onCreate).toEqual(onDelete);
 			expect(onCreate).toMatchInlineSnapshot(`
-			Object {
-			  "or": Array [
-			    Object {
-			      "and": Array [
-			        Object {
-			          "field1": Object {
+			{
+			  "or": [
+			    {
+			      "and": [
+			        {
+			          "field1": {
 			            "eq": "field",
 			          },
 			        },
-			        Object {
-			          "createdAt": Object {
+			        {
+			          "createdAt": {
 			            "gt": "1/1/2023",
 			          },
 			        },
 			      ],
 			    },
-			    Object {
-			      "and": Array [
-			        Object {
-			          "or": Array [
-			            Object {
-			              "optionalField1": Object {
+			    {
+			      "and": [
+			        {
+			          "or": [
+			            {
+			              "optionalField1": {
 			                "beginsWith": "a",
 			              },
 			            },
-			            Object {
-			              "optionalField1": Object {
+			            {
+			              "optionalField1": {
 			                "notContains": "z",
 			              },
 			            },
 			          ],
 			        },
-			        Object {
-			          "emails": Object {
+			        {
+			          "emails": {
 			            "ne": "-",
 			          },
 			        },

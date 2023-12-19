@@ -1,9 +1,14 @@
 # Ref: https://tinyurl.com/5d6rr8s7
-name: 'CodeQL'
+name: CodeQL
 
 on:
   push:
+    branches: ['*']
   pull_request:
+    branches: ['main', 'next/main', 'next/release']
+  schedule:
+    # Run every Tuesday at midnight GMT
+    - cron: '0 0 * * 2'
 
 jobs:
   analyze:
@@ -40,4 +45,4 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@d23060145bc9131d50558d5d4185494a20208101 # v2.12.5 https://github.com/github/codeql-action/commit/d23060145bc9131d50558d5d4185494a20208101
         with:
-          category: '/language:${{matrix.language}}'
+          category: '/language:${{ matrix.language }}'

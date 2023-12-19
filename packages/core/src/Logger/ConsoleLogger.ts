@@ -1,12 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
-import { LoggingProvider } from '../types';
-import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
-import { Logger } from './logger-interface';
+import { InputLogEvent, Logger, LoggingProvider, LogType } from './types';
+import { AWS_CLOUDWATCH_CATEGORY } from '../constants';
 
-const LOG_LEVELS = {
+const LOG_LEVELS: Record<string, number> = {
 	VERBOSE: 1,
 	DEBUG: 2,
 	INFO: 3,
@@ -14,37 +12,29 @@ const LOG_LEVELS = {
 	ERROR: 5,
 };
 
-export enum LOG_TYPE {
-	DEBUG = 'DEBUG',
-	ERROR = 'ERROR',
-	INFO = 'INFO',
-	WARN = 'WARN',
-	VERBOSE = 'VERBOSE',
-}
-
 /**
  * Write logs
  * @class Logger
  */
 export class ConsoleLogger implements Logger {
 	name: string;
-	level: LOG_TYPE | string;
+	level: LogType | string;
 	private _pluggables: LoggingProvider[];
-	private _config: object;
+	private _config?: object;
 
 	/**
 	 * @constructor
 	 * @param {string} name - Name of the logger
 	 */
-	constructor(name: string, level: LOG_TYPE | string = LOG_TYPE.WARN) {
+	constructor(name: string, level: LogType | string = LogType.WARN) {
 		this.name = name;
 		this.level = level;
 		this._pluggables = [];
 	}
 
-	static LOG_LEVEL = null;
+	static LOG_LEVEL: string | null = null;
 
-	_padding(n) {
+	_padding(n: number) {
 		return n < 10 ? '0' + n : '' + n;
 	}
 
@@ -71,10 +61,10 @@ export class ConsoleLogger implements Logger {
 	 * Write log
 	 * @method
 	 * @memeberof Logger
-	 * @param {LOG_TYPE|string} type - log type, default INFO
+	 * @param {LogType|string} type - log type, default INFO
 	 * @param {string|object} msg - Logging message or object
 	 */
-	_log(type: LOG_TYPE | string, ...msg) {
+	_log(type: LogType | string, ...msg: any) {
 		let logger_level_name = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
@@ -90,10 +80,10 @@ export class ConsoleLogger implements Logger {
 		}
 
 		let log = console.log.bind(console);
-		if (type === LOG_TYPE.ERROR && console.error) {
+		if (type === LogType.ERROR && console.error) {
 			log = console.error.bind(console);
 		}
-		if (type === LOG_TYPE.WARN && console.warn) {
+		if (type === LogType.WARN && console.warn) {
 			log = console.warn.bind(console);
 		}
 
@@ -130,8 +120,8 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	log(...msg) {
-		this._log(LOG_TYPE.INFO, ...msg);
+	log(...msg: any) {
+		this._log(LogType.INFO, ...msg);
 	}
 
 	/**
@@ -140,8 +130,8 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	info(...msg) {
-		this._log(LOG_TYPE.INFO, ...msg);
+	info(...msg: any) {
+		this._log(LogType.INFO, ...msg);
 	}
 
 	/**
@@ -150,8 +140,8 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	warn(...msg) {
-		this._log(LOG_TYPE.WARN, ...msg);
+	warn(...msg: any) {
+		this._log(LogType.WARN, ...msg);
 	}
 
 	/**
@@ -160,8 +150,8 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	error(...msg) {
-		this._log(LOG_TYPE.ERROR, ...msg);
+	error(...msg: any) {
+		this._log(LogType.ERROR, ...msg);
 	}
 
 	/**
@@ -170,8 +160,8 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	debug(...msg) {
-		this._log(LOG_TYPE.DEBUG, ...msg);
+	debug(...msg: any) {
+		this._log(LogType.DEBUG, ...msg);
 	}
 
 	/**
@@ -180,8 +170,8 @@ export class ConsoleLogger implements Logger {
 	 * @memeberof Logger
 	 * @param {string|object} msg - Logging message or object
 	 */
-	verbose(...msg) {
-		this._log(LOG_TYPE.VERBOSE, ...msg);
+	verbose(...msg: any) {
+		this._log(LogType.VERBOSE, ...msg);
 	}
 
 	addPluggable(pluggable: LoggingProvider) {

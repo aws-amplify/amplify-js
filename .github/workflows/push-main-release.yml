@@ -1,0 +1,24 @@
+name: Push - release from main to unstable
+
+concurrency:
+  # group name unique for push to push-main-release
+  group: push-release-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  e2e:
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
+  unstable-release:
+    needs:
+      - e2e
+    secrets: inherit
+    uses: ./.github/workflows/callable-npm-publish-preid.yml
+    with:
+      preid: unstable
+      allow-protected-preid: true
