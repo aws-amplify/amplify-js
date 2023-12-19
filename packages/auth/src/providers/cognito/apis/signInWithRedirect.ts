@@ -127,7 +127,7 @@ export async function oauthSignIn({
 			currentUrl: url,
 			clientId,
 			domain,
-			redirectUri: redirectSignIn[0],
+			redirectUri,
 			responseType,
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
 			preferPrivateSession,
@@ -464,12 +464,13 @@ export async function parseRedirectURL() {
 		const currentUrl = window.location.href;
 		const { loginWith, userPoolClientId } = authConfig;
 		const { domain, redirectSignIn, responseType } = loginWith.oauth;
+		const redirectUri = getRedirectUrl(redirectSignIn);
 
 		await handleAuthResponse({
 			currentUrl,
 			clientId: userPoolClientId,
 			domain,
-			redirectUri: redirectSignIn[0],
+			redirectUri,
 			responseType,
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
 		});
