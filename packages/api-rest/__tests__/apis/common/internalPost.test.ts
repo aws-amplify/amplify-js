@@ -128,11 +128,14 @@ describe('internal post', () => {
 		);
 	});
 
-	it('should use multipart/form-data content type if body is FormData', async () => {
+	it('should unset content type if body is FormData', async () => {
 		const formData = new FormData();
 		await post(mockAmplifyInstance, {
 			url: apiGatewayUrl,
 			options: {
+				headers: {
+					'content-type': 'some-value',
+				},
 				body: formData,
 				signingServiceInfo: {},
 			},
@@ -141,9 +144,9 @@ describe('internal post', () => {
 			{
 				url: apiGatewayUrl,
 				method: 'POST',
-				headers: {
-					'content-type': 'multipart/form-data',
-				},
+				headers: expect.not.objectContaining({
+					'content-type': expect.anything(),
+				}),
 				body: formData,
 			},
 			expect.anything()
