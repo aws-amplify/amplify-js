@@ -69,6 +69,11 @@
 			"import": "./dist/esm/auth/server.mjs",
 			"require": "./dist/cjs/auth/server.js"
 		},
+		"./auth/enable-oauth-listener": {
+			"types": "./dist/esm/auth/enableOAuthListener.d.ts",
+			"import": "./dist/esm/auth/enableOAuthListener.mjs",
+			"require": "./dist/cjs/auth/enableOAuthListener.js"
+		},
 		"./analytics": {
 			"types": "./dist/esm/analytics/index.d.ts",
 			"import": "./dist/esm/analytics/index.mjs",
@@ -178,6 +183,9 @@
 			"auth/server": [
 				"./dist/esm/auth/server.d.ts"
 			],
+			"auth/enable-oauth-listener": [
+				"./dist/esm/auth/enableOAuthListener.ts.d.ts"
+			],
 			"analytics": [
 				"./dist/esm/analytics/index.d.ts"
 			],
@@ -222,7 +230,7 @@
 			]
 		}
 	},
-	"sideEffects": false,
+	"sideEffects": ["./dist/esm/auth/enableOAuthListener.mjs", "./dist/cjs/auth/enableOAuthListener.js"],
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:size": "size-limit",
