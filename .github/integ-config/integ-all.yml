@@ -441,6 +441,13 @@ tests:
     sample_name: [optimistic-ui]
     spec: optimistic-ui
     browser: *minimal_browser_list
+  - test_name: integ_next_api_data_client_gen2
+    desc: Next.js Data Client Gen 2
+    framework: next
+    category: api
+    sample_name: [data-client-gen2]
+    spec: data-client-gen2
+    browser: [chrome] # Issues using Auth category / setting secure cookies in FF using Cypress with a Next.js app. Manual testing in FF works as expected
 
   # AUTH
   - test_name: integ_react_javascript_authentication
