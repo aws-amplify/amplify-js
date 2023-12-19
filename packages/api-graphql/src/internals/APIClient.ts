@@ -479,6 +479,14 @@ export function selectionSetIRToString(
 	return res.join(' ');
 }
 
+/**
+ * Recursively merges selection set objects from `source` onto `target`.
+ *
+ * `target` will be updated. `source` will be left alone.
+ *
+ * @param source The object to merge into target.
+ * @param target The object to be mutated.
+ */
 function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 	source: T,
 	target: T
@@ -490,10 +498,7 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 		const sourceValue = source[key];
 
 		if (isObject(targetValue) && isObject(sourceValue)) {
-			target[key] = deepMergeSelectionSetObjects(
-				Object.assign({}, targetValue),
-				sourceValue
-			);
+			target[key] = deepMergeSelectionSetObjects(sourceValue, targetValue);
 		} else {
 			target[key] = sourceValue;
 		}
