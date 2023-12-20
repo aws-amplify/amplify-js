@@ -493,19 +493,16 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 ) {
 	const isObject = (obj: any) => obj && typeof obj === 'object';
 
-	Object.keys(source).forEach((key: keyof T) => {
-		const targetValue = target[key];
-		const sourceValue = source[key];
+	for (let key in source) {
+		// This verification avoids 'Prototype Pollution' issue
+		if (!source.hasOwnProperty(key)) continue;
 
-		if (isObject(targetValue) && isObject(sourceValue)) {
-			target[key] = deepMergeSelectionSetObjects(sourceValue, targetValue);
+		if (target.hasOwnProperty(key) && isObject(target[key])) {
+			deepMergeSelectionSetObjects(source[key], target[key]);
 		} else {
-			// This verification avoids 'Prototype Pollution' issue
-			if (source.hasOwnProperty(key)) {
-				target[key] = sourceValue;
-			}
+			target[key] = source[key];
 		}
-	});
+	}
 
 	return target;
 }
