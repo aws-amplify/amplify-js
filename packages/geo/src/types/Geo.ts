@@ -32,6 +32,7 @@ export interface SearchByTextOptionsBase {
 	maxResults?: number;
 	searchIndexName?: string;
 	providerName?: string;
+	language?: string;
 }
 
 // SearchByText options with a bias position
