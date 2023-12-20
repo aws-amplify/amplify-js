@@ -82,6 +82,21 @@ class PostHarness {
 		this.harness = harness;
 	}
 
+	/**
+	 * Revise this post with a title value.
+	 *
+	 * This revision will be delayed by 200ms when
+	 * ```
+	 * harness.userInputLatency = 'slowerThanOutbox';
+	 * ```
+	 *
+	 * This revision will wait for the outbox to settle when
+	 * ```
+	 * harness.settleOutboxAfterRevisions = true;
+	 * ```
+	 *
+	 * @param title The title value to update this post to
+	 */
 	async revise(title: string) {
 		await this.harness.revisePost(this.original.id, title);
 	}
@@ -200,13 +215,6 @@ export class UpdateSequenceHarness {
 	 * @param expectedCallCount The number of graphql update Post calls expected.
 	 */
 	async expectGraphqlSettledWithUpdateCallCount(expectedCallCount: number) {
-		/**
-		 * Because we have increased the latency, and don't wait for the outbox
-		 * to clear on each mutation, the outbox will merge some of the mutations.
-		 * In this example, we expect the number of requests received to be one less than
-		 * the actual number of updates. If we were running this test without
-		 * increased latency, we'd expect more requests to be received.
-		 */
 		await waitForExpectModelUpdateGraphqlCallCount({
 			graphqlService: this.datastoreFake.graphqlService,
 			expectedCallCount,
@@ -216,9 +224,12 @@ export class UpdateSequenceHarness {
 
 	/**
 	 * Create a new Post and decorate it in the post harness, returning the decorated Post
+	 * By default, this will wait for the outbox to clear unle
 	 *
 	 * @param postInputs The input arguments to create the new Post with
-	 * @returns
+	 * @param settleOutbox Should the outbox be settled after create? Defaults to `true`
+	 *
+	 * @returns A post harness wrapped around a newly created post
 	 */
 	async createPostHarness(
 		args: ConstructorParameters<typeof Post>[0],
