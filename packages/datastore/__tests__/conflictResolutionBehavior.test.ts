@@ -71,7 +71,6 @@ describe('DataStore sync engine', () => {
 						blogId: 'blog id',
 					});
 
-					harness.userInputLatency = 'fasterThanOutbox';
 					harness.latency = 'high';
 
 					await postHarness.revise('post title 0');
@@ -100,7 +99,7 @@ describe('DataStore sync engine', () => {
 						blogId: 'blog id',
 					});
 
-					harness.userInputLatency = 'slowerThanOutbox';
+					harness.userInputDelayed();
 					harness.latency = 'low';
 
 					await postHarness.revise('post title 0');
@@ -132,7 +131,6 @@ describe('DataStore sync engine', () => {
 						false
 					);
 
-					harness.userInputLatency = 'fasterThanOutbox';
 					harness.latency = 'high';
 
 					await postHarness.revise('post title 0');
@@ -163,7 +161,7 @@ describe('DataStore sync engine', () => {
 						false
 					);
 
-					harness.userInputLatency = 'slowerThanOutbox';
+					harness.userInputDelayed();
 					harness.latency = 'low';
 
 					// Note: We do NOT wait for the outbox to be empty here, because
@@ -193,9 +191,8 @@ describe('DataStore sync engine', () => {
 						blogId: 'blog id',
 					});
 
-					harness.userInputLatency = 'fasterThanOutbox';
 					harness.latency = 'high';
-					harness.settleOutboxAfterRevisions = true;
+					harness.settleOutboxAfterRevisions();
 
 					/**
 					 * We wait for the empty outbox on each mutation, because
@@ -231,7 +228,7 @@ describe('DataStore sync engine', () => {
 					});
 
 					harness.latency = 'low';
-					harness.settleOutboxAfterRevisions = true;
+					harness.settleOutboxAfterRevisions();
 
 					await postHarness.revise('post title 0');
 					await postHarness.revise('post title 1');
@@ -271,7 +268,6 @@ describe('DataStore sync engine', () => {
 							blogId: 'blog id',
 						});
 
-						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
 
 						await postHarness.revise('post title 0');
@@ -304,7 +300,7 @@ describe('DataStore sync engine', () => {
 							blogId: 'blog id',
 						});
 
-						harness.userInputLatency = 'slowerThanOutbox';
+						harness.userInputDelayed();
 						harness.latency = 'low';
 
 						await postHarness.revise('post title 0');
@@ -338,9 +334,8 @@ describe('DataStore sync engine', () => {
 							blogId: 'blog id',
 						});
 
-						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
-						harness.settleOutboxAfterRevisions = true;
+						harness.settleOutboxAfterRevisions();
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -377,9 +372,8 @@ describe('DataStore sync engine', () => {
 							blogId: 'blog id',
 						});
 
-						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'low';
-						harness.settleOutboxAfterRevisions = true;
+						harness.settleOutboxAfterRevisions();
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -429,7 +423,6 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 						});
 
-						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
 
 						await postHarness.revise('post title 0');
@@ -468,7 +461,6 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 						});
 
-						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
 
 						await postHarness.revise('post title 0');
@@ -513,7 +505,7 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 						});
 
-						harness.userInputLatency = 'slowerThanOutbox';
+						harness.userInputDelayed();
 						harness.latency = 'low';
 
 						await postHarness.revise('post title 0');
@@ -559,7 +551,7 @@ describe('DataStore sync engine', () => {
 							blogId: 'original blogId',
 						});
 
-						harness.userInputLatency = 'slowerThanOutbox';
+						harness.userInputDelayed();
 						harness.latency = 'low';
 
 						await postHarness.revise('post title 0');
@@ -598,9 +590,8 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 						});
 
-						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
-						harness.settleOutboxAfterRevisions = true;
+						harness.settleOutboxAfterRevisions();
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -640,9 +631,8 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 						});
 
-						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'low';
-						harness.settleOutboxAfterRevisions = true;
+						harness.settleOutboxAfterRevisions();
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');

@@ -128,18 +128,25 @@ class PostHarness {
 export class UpdateSequenceHarness {
 	private datastoreFake: ReturnType<typeof getDataStore>;
 
+	private isUserInputDelayed: boolean = false;
+
 	/**
 	 * Should we inject latency before each standard client `Post` revision?
 	 *
 	 * `slowerThanOutbox` will add 200ms of latency before each revision against datastore
 	 */
-	userInputLatency: 'fasterThanOutbox' | 'slowerThanOutbox' =
-		'fasterThanOutbox';
+	userInputDelayed() {
+		this.isUserInputDelayed = true;
+	}
+
+	private isOutboxSettledAfterRevisions: boolean = false;
 
 	/**
 	 * Do we want to settle the outbox after each `Post` revision call?
 	 */
-	settleOutboxAfterRevisions: boolean = false;
+	settleOutboxAfterRevisions() {
+		this.isOutboxSettledAfterRevisions = true;
+	}
 
 	/**
 	 * All observed updates. Also includes "updates" from initial record creation,
@@ -296,7 +303,7 @@ export class UpdateSequenceHarness {
 	 * @param updatedTitle - title to update the post with
 	 */
 	async revisePost(postId: string, updatedTitle: string) {
-		if (this.userInputLatency === 'slowerThanOutbox') {
+		if (this.isUserInputDelayed) {
 			await pause(200);
 		}
 		const retrieved = await this.datastoreFake.DataStore.query(
@@ -310,7 +317,7 @@ export class UpdateSequenceHarness {
 				})
 			);
 		}
-		if (this.settleOutboxAfterRevisions) {
+		if (this.isOutboxSettledAfterRevisions) {
 			await this.outboxSettled();
 		}
 	}
