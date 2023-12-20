@@ -338,7 +338,7 @@ describe('DataStore sync engine', () => {
 							blogId: 'blog id',
 						});
 
-						harness.userInputLatency = 'slowerThanOutbox';
+						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
 						harness.settleOutboxAfterRevisions = true;
 
