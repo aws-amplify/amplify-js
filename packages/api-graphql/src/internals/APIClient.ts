@@ -500,7 +500,10 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 		if (isObject(targetValue) && isObject(sourceValue)) {
 			target[key] = deepMergeSelectionSetObjects(sourceValue, targetValue);
 		} else {
-			target[key] = sourceValue;
+			// This verification avoids 'Prototype Pollution' issue
+			if (source.hasOwnProperty(key)) {
+				target[key] = sourceValue;
+			}
 		}
 	});
 
