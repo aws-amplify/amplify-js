@@ -111,8 +111,6 @@ export type CodeDeliveryDetails<
 	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
 > = AuthCodeDeliveryDetails<CognitoUserAttributeKey>;
 
-export type AuthPasswordlessFlow = 'SIGN_IN' | 'SIGN_UP_AND_SIGN_IN';
-
 interface PasswordlessCodeDeliveryDetails<
 	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
 > extends AuthCodeDeliveryDetails<CognitoUserAttributeKey> {

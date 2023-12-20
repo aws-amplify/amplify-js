@@ -21,9 +21,3 @@ export type AuthSignUpOptions<
 };
 
 export type SignInWithWebUIOptions<ServiceOptions> = ServiceOptions;
-
-export type AuthPasswordlessSignInOptions = AuthServiceOptions;
-
-export type AuthPasswordlessSignUpAndSignInOptions<
-	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = AuthSignUpOptions<UserAttributeKey> & AuthPasswordlessSignInOptions;

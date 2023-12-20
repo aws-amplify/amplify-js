@@ -3,10 +3,6 @@
 
 import { SignInOutput } from '../providers/cognito';
 import { AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
-import {
-	ConfirmSignInWithMagicLinkStep,
-	ConfirmSignInWithOTPStep,
-} from '../providers/cognito/types/models';
 
 /**
  * Additional data that may be returned from Auth APIs.

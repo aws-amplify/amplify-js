@@ -12,24 +12,36 @@ import {
 	SignUpPasswordlessWithSMSAndOTPOutput,
 } from '../types/outputs';
 
-type SignUpPasswordlessApi = {
-	(
-		input: SignUpPasswordlessWithEmailAndMagicLinkInput
-	): Promise<SignUpPasswordlessWithEmailAndMagicLinkOutput>;
-
-	(
-		input: SignUpPasswordlessWithEmailAndOTPInput
-	): Promise<SignUpPasswordlessWithEmailAndOTPOutput>;
-
-	(
-		input: SignUpPasswordlessWithSMSAndOTPInput
-	): Promise<SignUpPasswordlessWithSMSAndOTPOutput>;
-};
+/**
+ * @internal
+ */
+export function signUpPasswordless(
+	input: SignUpPasswordlessWithEmailAndMagicLinkInput
+): Promise<SignUpPasswordlessWithEmailAndMagicLinkOutput>;
 
 /**
  * @internal
  */
-export const signUpPasswordless: SignUpPasswordlessApi = async input => {
+export function signUpPasswordless(
+	input: SignUpPasswordlessWithEmailAndOTPInput
+): Promise<SignUpPasswordlessWithEmailAndOTPOutput>;
+
+/**
+ * @internal
+ */
+export function signUpPasswordless(
+	input: SignUpPasswordlessWithSMSAndOTPInput
+): Promise<SignUpPasswordlessWithSMSAndOTPOutput>;
+
+/**
+ * @internal
+ */
+export function signUpPasswordless(
+	input:
+		| SignUpPasswordlessWithEmailAndMagicLinkInput
+		| SignUpPasswordlessWithEmailAndOTPInput
+		| SignUpPasswordlessWithSMSAndOTPInput
+) {
 	// TODO: needs implementation
 	return {} as any;
-};
+}

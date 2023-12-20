@@ -170,7 +170,10 @@ export type SignInWithRedirectInput = AuthSignInWithRedirectInput;
  */
 export type SignOutInput = AuthSignOutInput;
 
-type SignUpWithPasswordInput = AuthSignUpInput<
+/**
+ * @internal
+ */
+export type SignUpWithOptionalPasswordInput = AuthSignUpInput<
 	SignUpOptions<UserAttributeKey>
 > & {
 	passwordless?: never;
@@ -179,7 +182,7 @@ type SignUpWithPasswordInput = AuthSignUpInput<
 /**
  * Input type for Cognito signUp API.
  */
-export type SignUpInput = SignUpWithPasswordInput;
+export type SignUpInput = SignUpWithOptionalPasswordInput;
 
 type SignUpPasswordlessInput<
 	DeliveryMedium extends 'EMAIL' | 'SMS',

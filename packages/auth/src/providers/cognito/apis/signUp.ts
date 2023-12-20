@@ -30,6 +30,7 @@ import {
 	SignUpPasswordlessWithEmailAndMagicLinkInput,
 	SignUpPasswordlessWithEmailAndOTPInput,
 	SignUpPasswordlessWithSMSAndOTPInput,
+	SignUpWithOptionalPasswordInput,
 } from '../types/inputs';
 import {
 	SignUpPasswordlessWithEmailAndMagicLinkOutput,
@@ -37,41 +38,138 @@ import {
 	SignUpPasswordlessWithSMSAndOTPOutput,
 } from '../types/outputs';
 import { signUpPasswordless } from './signUpPasswordless';
+import { SignUpPasswordlessOptions } from '../types/options';
 
-type SignUpApi = {
-	/**
-	 * Creates a user
-	 *
-	 * @param input - The SignUpInput object
-	 * @returns SignUpOutput
-	 * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
-	 * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
-	 *  are not defined.
-	 * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
-	 */
-	(input: SignUpInput): Promise<SignUpOutput>;
+/**
+ * Creates a user
+ *
+ * @param input - The {@link SignUpInput} object
+ * @returns - {@link SignUpOutput}
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
+ *  are not defined.
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ */
+export function signUp(
+	input: SignUpWithOptionalPasswordInput
+): Promise<SignUpOutput>;
 
-	(
-		input: SignUpPasswordlessWithEmailAndMagicLinkInput
-	): Promise<SignUpPasswordlessWithEmailAndMagicLinkOutput>;
-
-	(
-		input: SignUpPasswordlessWithSMSAndOTPInput
-	): Promise<SignUpPasswordlessWithSMSAndOTPOutput>;
-
-	(
-		input: SignUpPasswordlessWithEmailAndOTPInput
-	): Promise<SignUpPasswordlessWithEmailAndOTPOutput>;
-};
-
-export const signUp: SignUpApi = async input => {
-	const { username, password, options, passwordless } = input;
+/**
+ * Creates a user with an email instead of a password. The sign-up must be confirmed by the Magic Link delivered to the
+ * email.
+ * @param input - The {@link SignUpPasswordlessWithEmailAndMagicLinkInput} object
+ * @returns - {@link SignUpPasswordlessWithEmailAndMagicLinkOutput}
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
+ *  are not defined.
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ */
+export function signUp(
+	input: SignUpPasswordlessWithEmailAndMagicLinkInput
+): Promise<SignUpPasswordlessWithEmailAndMagicLinkOutput>;
+/**
+ * Creates a user with an email instead of a password. The sign-up must be confirmed by an One-time pin
+ * delivered to the email.
+ * @param input - The {@link SignUpPasswordlessWithSMSAndOTPInput} object
+ * @returns - {@link SignUpPasswordlessWithSMSAndOTPOutput}
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
+ *  are not defined.
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ */
+export function signUp(
+	input: SignUpPasswordlessWithSMSAndOTPInput
+): Promise<SignUpPasswordlessWithSMSAndOTPOutput>;
+/**
+ * Creates a user with a phone number instead of a password. The sign-up must be confirmed by an One-time pin
+ * delivered to the email.
+ * @param input - The {@link SignUpPasswordlessWithEmailAndOTPInput} object
+ * @returns - {@link SignUpPasswordlessWithEmailAndOTPOutput}
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
+ *  are not defined.
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ */
+export function signUp(
+	input: SignUpPasswordlessWithEmailAndOTPInput
+): Promise<SignUpPasswordlessWithEmailAndOTPOutput>;
+/**
+ * @internal
+ */
+export async function signUp(
+	input:
+		| SignUpPasswordlessWithEmailAndMagicLinkInput
+		| SignUpPasswordlessWithSMSAndOTPInput
+		| SignUpPasswordlessWithEmailAndOTPInput
+		| SignUpWithOptionalPasswordInput
+) {
+	const { options, passwordless } = input;
 	if (passwordless) {
-		return signUpPasswordless(
-			input as Parameters<typeof signUpPasswordless>[0]
-			// TODO: fix this
-		) as any;
+		// Iterate through signUpPasswordless calls to make TypeScript happy
+		const { deliveryMedium, method } = passwordless;
+		if (deliveryMedium === 'EMAIL' && method === 'MAGIC_LINK') {
+			assertSignUpPasswordlessWithEmailOption(options);
+			return signUpPasswordless({
+				...input,
+				passwordless: {
+					deliveryMedium,
+					method,
+				},
+				options,
+			});
+		} else if (deliveryMedium === 'EMAIL' && method === 'OTP') {
+			assertSignUpPasswordlessWithEmailOption(options);
+			return signUpPasswordless({
+				...input,
+				passwordless: {
+					deliveryMedium,
+					method,
+				},
+				options,
+			});
+		} else if (deliveryMedium === 'SMS' && method === 'OTP') {
+			assertSignUpPasswordlessWithSMSOption(options);
+			return signUpPasswordless({
+				...input,
+				passwordless: {
+					deliveryMedium,
+					method,
+				},
+				options,
+			});
+		} else {
+			// TODO: implement validation error
+			throw new Error('SMS does not support MagicLink');
+		}
+	} else {
+		return signUpPasswordful(input);
 	}
+}
+
+// Assert function cannot be arrow function. See https://github.com/microsoft/TypeScript/issues/34523
+function assertSignUpPasswordlessWithEmailOption(options: {
+	userAttributes: Record<string, string>;
+}): asserts options is SignUpPasswordlessOptions<'email'> {
+	if (!options.userAttributes.email) {
+		// TODO: create validation error
+		throw new Error('Missing email user attribute');
+	}
+}
+
+// Assert function cannot be arrow function. See https://github.com/microsoft/TypeScript/issues/34523
+function assertSignUpPasswordlessWithSMSOption(options: {
+	userAttributes: Record<string, string>;
+}): asserts options is SignUpPasswordlessOptions<'phone_number'> {
+	if (!options.userAttributes['phone_number']) {
+		// TODO: create validation error
+		throw new Error('Missing phone_number user attribute');
+	}
+}
+
+const signUpPasswordful = async (
+	input: SignUpWithOptionalPasswordInput
+): Promise<SignUpOutput> => {
+	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =
 		authConfig?.signUpVerificationMethod ?? 'code';
@@ -80,6 +178,10 @@ export const signUp: SignUpApi = async input => {
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername
+	);
+	assertValidationError(
+		!!password,
+		AuthValidationErrorCode.EmptySignUpPassword
 	);
 
 	const signInServiceOptions =

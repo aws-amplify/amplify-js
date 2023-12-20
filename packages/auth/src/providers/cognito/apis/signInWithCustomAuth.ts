@@ -50,7 +50,7 @@ export async function signInWithCustomAuth(
 ): Promise<SignInWithCustomAuthOutput> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { username, options } = input;
+	const { username, password, options } = input;
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
 		authFlowType: 'CUSTOM_WITHOUT_SRP',
@@ -59,6 +59,10 @@ export async function signInWithCustomAuth(
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignInUsername
+	);
+	assertValidationError(
+		!password,
+		AuthValidationErrorCode.CustomAuthSignInPassword
 	);
 
 	try {
