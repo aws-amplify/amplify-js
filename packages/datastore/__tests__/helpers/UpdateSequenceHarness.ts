@@ -197,8 +197,6 @@ export class UpdateSequenceHarness {
 			isNode: false,
 		});
 
-		this.latency = 'low';
-
 		this.subscriptionLogSubscription = this.datastoreFake.DataStore.observe(
 			this.datastoreFake.Post
 		).subscribe(({ opType, element }) => {
@@ -247,7 +245,6 @@ export class UpdateSequenceHarness {
 		const original = await this.datastoreFake.DataStore.save(
 			new this.datastoreFake.Post(args)
 		);
-        // We set this to `false` when we want to test updating a record that is still in the outbox.
 		if (settleOutbox) {
 			await this.outboxSettled();
 		}
