@@ -16,7 +16,7 @@ import {
 	parseSigningInfo,
 	resolveCredentials,
 } from '../../utils';
-import { normalizeHeaders } from '../../utils/normalizeHeaders';
+import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse } from '../../types';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
@@ -51,17 +51,7 @@ export const transferHandler = async (
 			? body
 			: JSON.stringify(body ?? '')
 		: undefined;
-	const resolvedHeaders: Headers = {
-		...normalizeHeaders(headers),
-		...(resolvedBody
-			? {
-					'content-type':
-						body instanceof FormData
-							? 'multipart/form-data'
-							: 'application/json; charset=UTF-8',
-			  }
-			: {}),
-	};
+	const resolvedHeaders: Headers = resolveHeaders(headers, body);
 	const request = {
 		url,
 		headers: resolvedHeaders,
