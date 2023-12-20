@@ -66,20 +66,20 @@ describe('DataStore sync engine', () => {
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
 			describe('single client updates', () => {
 				test('rapid mutations on poor connection when initial create is not pending', async () => {
-					harness.userInputLatency = 'fasterThanOutbox';
-					harness.latency = 'high';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
 						blogId: 'blog id',
 					});
-					await harness.outboxSettled();
-					// Note: We do NOT wait for the outbox to be empty here, because
-					// we want to test concurrent updates being processed by the outbox.
+
+					harness.userInputLatency = 'fasterThanOutbox';
+					harness.latency = 'high';
+
 					await postHarness.revise('post title 0');
 					await postHarness.revise('post title 1');
 					await postHarness.revise('post title 2');
+
 					await harness.outboxSettled();
-					await harness.expectUpdateCallCount(2);
+					await harness.expectGraphqlSettledWithUpdateCallCount(2);
 
 					expect(harness.subscriptionLogs()).toEqual([
 						['original title', 1],
@@ -95,22 +95,20 @@ describe('DataStore sync engine', () => {
 					});
 				});
 				test('rapid mutations on fast connection when initial create is not pending', async () => {
-					harness.userInputLatency = 'slowerThanOutbox';
-					harness.latency = 'low';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
 						blogId: 'blog id',
 					});
-					await harness.outboxSettled();
 
-					// Note: We do NOT wait for the outbox to be empty here, because
-					// we want to test concurrent updates being processed by the outbox.
+					harness.userInputLatency = 'slowerThanOutbox';
+					harness.latency = 'low';
+
 					await postHarness.revise('post title 0');
 					await postHarness.revise('post title 1');
 					await postHarness.revise('post title 2');
 
 					await harness.outboxSettled();
-					await harness.expectUpdateCallCount(3);
+					await harness.expectGraphqlSettledWithUpdateCallCount(3);
 
 					expect(harness.subscriptionLogs()).toEqual([
 						['original title', 1],
@@ -126,21 +124,23 @@ describe('DataStore sync engine', () => {
 					});
 				});
 				test('rapid mutations on poor connection when initial create is pending', async () => {
+					const postHarness = await harness.createPostHarness(
+						{
+							title: 'original title',
+							blogId: 'blog id',
+						},
+						false
+					);
+
 					harness.userInputLatency = 'fasterThanOutbox';
 					harness.latency = 'high';
-					const postHarness = await harness.createPostHarness({
-						title: 'original title',
-						blogId: 'blog id',
-					});
 
-					// Note: We do NOT wait for the outbox to be empty here, because
-					// we want to test concurrent updates being processed by the outbox.
 					await postHarness.revise('post title 0');
 					await postHarness.revise('post title 1');
 					await postHarness.revise('post title 2');
 
 					await harness.outboxSettled();
-					await harness.expectUpdateCallCount(0);
+					await harness.expectGraphqlSettledWithUpdateCallCount(0);
 
 					expect(harness.subscriptionLogs()).toEqual([
 						['post title 0', undefined],
@@ -155,12 +155,16 @@ describe('DataStore sync engine', () => {
 					});
 				});
 				test('rapid mutations on fast connection when initial create is pending', async () => {
+					const postHarness = await harness.createPostHarness(
+						{
+							title: 'original title',
+							blogId: 'blog id',
+						},
+						false
+					);
+
 					harness.userInputLatency = 'slowerThanOutbox';
 					harness.latency = 'low';
-					const postHarness = await harness.createPostHarness({
-						title: 'original title',
-						blogId: 'blog id',
-					});
 
 					// Note: We do NOT wait for the outbox to be empty here, because
 					// we want to test concurrent updates being processed by the outbox.
@@ -169,7 +173,7 @@ describe('DataStore sync engine', () => {
 					await postHarness.revise('post title 2');
 
 					await harness.outboxSettled();
-					await harness.expectUpdateCallCount(0);
+					await harness.expectGraphqlSettledWithUpdateCallCount(0);
 
 					expect(harness.subscriptionLogs()).toEqual([
 						['post title 0', undefined],
@@ -184,13 +188,14 @@ describe('DataStore sync engine', () => {
 					});
 				});
 				test('observe on poor connection with awaited outbox', async () => {
-					harness.userInputLatency = 'fasterThanOutbox';
-					harness.latency = 'high';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
 						blogId: 'blog id',
 					});
-					await harness.outboxSettled();
+
+					harness.userInputLatency = 'fasterThanOutbox';
+					harness.latency = 'high';
+					harness.settleOutboxAfterRevisions = true;
 
 					/**
 					 * We wait for the empty outbox on each mutation, because
@@ -199,13 +204,10 @@ describe('DataStore sync engine', () => {
 					 */
 
 					await postHarness.revise('post title 0');
-					await harness.outboxSettled();
 					await postHarness.revise('post title 1');
-					await harness.outboxSettled();
 					await postHarness.revise('post title 2');
 
-					await harness.outboxSettled();
-					await harness.expectUpdateCallCount(3);
+					await harness.expectGraphqlSettledWithUpdateCallCount(3);
 
 					expect(harness.subscriptionLogs()).toEqual([
 						['original title', 1],
@@ -223,21 +225,19 @@ describe('DataStore sync engine', () => {
 					});
 				});
 				test('observe on fast connection with awaited outbox', async () => {
-					harness.latency = 'low';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
 						blogId: 'blog id',
 					});
-					await harness.outboxSettled();
+
+					harness.latency = 'low';
+					harness.settleOutboxAfterRevisions = true;
 
 					await postHarness.revise('post title 0');
-					await harness.outboxSettled();
 					await postHarness.revise('post title 1');
-					await harness.outboxSettled();
 					await postHarness.revise('post title 2');
-					await harness.outboxSettled();
 
-					await harness.expectUpdateCallCount(3);
+					await harness.expectGraphqlSettledWithUpdateCallCount(3);
 
 					expect(harness.subscriptionLogs()).toEqual([
 						['original title', 1],
@@ -266,13 +266,13 @@ describe('DataStore sync engine', () => {
 			describe('Multi-client updates', () => {
 				describe('Updates to the same field', () => {
 					test('rapid mutations on poor connection when initial create is not pending', async () => {
-						harness.userInputLatency = 'fasterThanOutbox';
-						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 							blogId: 'blog id',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'fasterThanOutbox';
+						harness.latency = 'high';
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -284,7 +284,7 @@ describe('DataStore sync engine', () => {
 						await postHarness.revise('post title 2');
 
 						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(3);
+						await harness.expectGraphqlSettledWithUpdateCallCount(3);
 						expect(harness.subscriptionLogs()).toEqual([
 							['original title', 1],
 							['post title 0', 1],
@@ -299,13 +299,13 @@ describe('DataStore sync engine', () => {
 						});
 					});
 					test('rapid mutations on fast connection when initial create is not pending', async () => {
-						harness.userInputLatency = 'slowerThanOutbox';
-						harness.latency = 'low';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 							blogId: 'blog id',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'slowerThanOutbox';
+						harness.latency = 'low';
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -317,7 +317,7 @@ describe('DataStore sync engine', () => {
 						await postHarness.revise('post title 2');
 
 						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(4);
+						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(harness.subscriptionLogs()).toEqual([
 							['original title', 1],
@@ -333,19 +333,17 @@ describe('DataStore sync engine', () => {
 						});
 					});
 					test('observe on poor connection with awaited outbox', async () => {
-						harness.userInputLatency = 'slowerThanOutbox';
-						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 							blogId: 'blog id',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'slowerThanOutbox';
+						harness.latency = 'high';
+						harness.settleOutboxAfterRevisions = true;
 
 						await postHarness.revise('post title 0');
-						await harness.outboxSettled();
-
 						await postHarness.revise('post title 1');
-						await harness.outboxSettled();
 
 						await harness.externalPostUpdate({
 							originalPostId: postHarness.original.id,
@@ -355,8 +353,7 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(4);
+						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(harness.subscriptionLogs()).toEqual([
 							['original title', 1],
@@ -375,20 +372,17 @@ describe('DataStore sync engine', () => {
 						});
 					});
 					test('observe on fast connection with awaited outbox', async () => {
-						harness.userInputLatency = 'slowerThanOutbox';
-						harness.latency = 'low';
-
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 							blogId: 'blog id',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'fasterThanOutbox';
+						harness.latency = 'low';
+						harness.settleOutboxAfterRevisions = true;
 
 						await postHarness.revise('post title 0');
-						await harness.outboxSettled();
-
 						await postHarness.revise('post title 1');
-						await harness.outboxSettled();
 
 						await harness.externalPostUpdate({
 							originalPostId: postHarness.original.id,
@@ -398,8 +392,7 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(4);
+						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(harness.subscriptionLogs()).toEqual([
 							['original title', 1],
@@ -432,12 +425,12 @@ describe('DataStore sync engine', () => {
 					 * ultimately resulting in different final states.
 					 */
 					test('poor connection, initial create is not pending, external request is first received update', async () => {
-						harness.userInputLatency = 'slowerThanOutbox';
-						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'fasterThanOutbox';
+						harness.latency = 'high';
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -452,7 +445,7 @@ describe('DataStore sync engine', () => {
 						await postHarness.revise('post title 2');
 
 						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(3);
+						await harness.expectGraphqlSettledWithUpdateCallCount(3);
 
 						expect(
 							harness.subscriptionLogs(['title', 'blogId', '_version'])
@@ -471,19 +464,19 @@ describe('DataStore sync engine', () => {
 						});
 					});
 					test('poor connection, initial create is not pending, external request is second received update', async () => {
-						harness.userInputLatency = 'fasterThanOutbox';
-						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'fasterThanOutbox';
+						harness.latency = 'high';
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
 
 						/**
 						 * Ensure that the external update is received after the
-						 * primary client's first update. TODO - Can we just settle the outbox?
+						 * primary client's first update.
 						 */
 						await pause(3000);
 
@@ -497,7 +490,7 @@ describe('DataStore sync engine', () => {
 						await postHarness.revise('post title 2');
 
 						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(4);
+						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(
 							harness.subscriptionLogs(['title', 'blogId', '_version'])
@@ -516,13 +509,12 @@ describe('DataStore sync engine', () => {
 						});
 					});
 					test('rapid mutations on fast connection when initial create is not pending (second field is `null`)', async () => {
-						harness.userInputLatency = 'slowerThanOutbox';
-						harness.latency = 'low';
-
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'slowerThanOutbox';
+						harness.latency = 'low';
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -537,7 +529,7 @@ describe('DataStore sync engine', () => {
 						await postHarness.revise('post title 2');
 
 						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(4);
+						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(
 							harness.subscriptionLogs(['title', 'blogId', '_version'])
@@ -562,14 +554,13 @@ describe('DataStore sync engine', () => {
 					 * in different behavior.
 					 */
 					test('rapid mutations on fast connection when initial create is not pending (second field has initial value)', async () => {
-						harness.userInputLatency = 'slowerThanOutbox';
-						harness.latency = 'low';
-
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 							blogId: 'original blogId',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'slowerThanOutbox';
+						harness.latency = 'low';
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -584,7 +575,7 @@ describe('DataStore sync engine', () => {
 						await postHarness.revise('post title 2');
 
 						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(4);
+						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(
 							harness.subscriptionLogs(['title', 'blogId', '_version' ?? null])
@@ -603,18 +594,16 @@ describe('DataStore sync engine', () => {
 						});
 					});
 					test('observe on poor connection with awaited outbox', async () => {
-						harness.userInputLatency = 'fasterThanOutbox';
-						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'fasterThanOutbox';
+						harness.latency = 'high';
+						harness.settleOutboxAfterRevisions = true;
 
 						await postHarness.revise('post title 0');
-						await harness.outboxSettled();
-
 						await postHarness.revise('post title 1');
-						await harness.outboxSettled();
 
 						await harness.externalPostUpdate({
 							originalPostId: postHarness.original.id,
@@ -625,8 +614,7 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(4);
+						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(
 							harness.subscriptionLogs(['title', 'blogId', '_version'])
@@ -648,18 +636,16 @@ describe('DataStore sync engine', () => {
 						});
 					});
 					test('observe on fast connection with awaited outbox', async () => {
-						harness.userInputLatency = 'fasterThanOutbox';
-						harness.latency = 'low';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 						});
-						await harness.outboxSettled();
+
+						harness.userInputLatency = 'fasterThanOutbox';
+						harness.latency = 'low';
+						harness.settleOutboxAfterRevisions = true;
 
 						await postHarness.revise('post title 0');
-						await harness.outboxSettled();
-
 						await postHarness.revise('post title 1');
-						await harness.outboxSettled();
 
 						await harness.externalPostUpdate({
 							originalPostId: postHarness.original.id,
@@ -670,8 +656,7 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
-						await harness.expectUpdateCallCount(4);
+						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(
 							harness.subscriptionLogs(['title', 'blogId', '_version'])

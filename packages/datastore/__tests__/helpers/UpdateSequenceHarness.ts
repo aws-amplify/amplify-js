@@ -175,8 +175,6 @@ export class UpdateSequenceHarness {
 			isNode: false,
 		});
 
-		this.latency = 'low';
-
 		this.subscriptionLogSubscription = this.datastoreFake.DataStore.observe(
 			this.datastoreFake.Post
 		).subscribe(({ opType, element }) => {
@@ -201,7 +199,7 @@ export class UpdateSequenceHarness {
 	 *
 	 * @param expectedCallCount The number of graphql update Post calls expected.
 	 */
-	async expectUpdateCallCount(expectedCallCount: number) {
+	async expectGraphqlSettledWithUpdateCallCount(expectedCallCount: number) {
 		/**
 		 * Because we have increased the latency, and don't wait for the outbox
 		 * to clear on each mutation, the outbox will merge some of the mutations.
@@ -222,10 +220,16 @@ export class UpdateSequenceHarness {
 	 * @param postInputs The input arguments to create the new Post with
 	 * @returns
 	 */
-	async createPostHarness(...args: ConstructorParameters<typeof Post>) {
+	async createPostHarness(
+		args: ConstructorParameters<typeof Post>[0],
+		settleOutbox: boolean = true
+	) {
 		const original = await this.datastoreFake.DataStore.save(
-			new this.datastoreFake.Post(...args)
+			new this.datastoreFake.Post(args)
 		);
+		if (settleOutbox) {
+			await this.outboxSettled();
+		}
 		return new PostHarness(original, this);
 	}
 
