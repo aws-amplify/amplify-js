@@ -99,7 +99,6 @@ describe('DataStore sync engine', () => {
 						blogId: 'blog id',
 					});
 
->>>>>>> 0bcbf76d6 (Updates from comments)
 					harness.latency = 'low';
 
 					await postHarness.revise('post title 0');
@@ -592,7 +591,6 @@ describe('DataStore sync engine', () => {
 
 						harness.latency = 'high';
 						harness.settleOutboxAfterRevisions();
->>>>>>> 0bcbf76d6 (Updates from comments)
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
