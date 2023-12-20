@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse } from '@aws-amplify/core/src/clients/types';
+import { AuthError } from '../../../../src/errors/AuthError';
 
 // Common
-const region = 'us-east-1';
-
 export const MOCK_REQUEST_ID = 'requestId';
 export const MOCK_EXTENDED_REQUEST_ID = 'requestId2';
 export const DEFAULT_RESPONSE_HEADERS = {
@@ -78,3 +77,12 @@ export function buildMockErrorResponse(errorName: string): {
 		},
 	};
 }
+
+export const getMockError = (name: string) =>
+	new AuthError({
+		name,
+		message: 'Error message',
+	});
+
+export const mockAccessToken =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';

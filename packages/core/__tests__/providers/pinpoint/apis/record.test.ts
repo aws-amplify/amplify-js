@@ -60,8 +60,8 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		expect(mockUpdateEndpoint).not.toBeCalled();
-		expect(mockBufferPush).toBeCalledWith(
+		expect(mockUpdateEndpoint).not.toHaveBeenCalled();
+		expect(mockBufferPush).toHaveBeenCalledWith(
 			expect.objectContaining({
 				endpointId,
 				event,
@@ -81,7 +81,7 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		expect(mockClientPutEvents).not.toBeCalled();
+		expect(mockClientPutEvents).not.toHaveBeenCalled();
 	});
 
 	it('reuses an existing session if it exists', async () => {
@@ -105,7 +105,7 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		expect(mockBufferPush).toBeCalledWith(
+		expect(mockBufferPush).toHaveBeenCalledWith(
 			expect.objectContaining({
 				endpointId,
 				event,
@@ -134,7 +134,7 @@ describe('Pinpoint Provider API: record', () => {
 			region,
 		});
 
-		expect(mockBufferPush).toBeCalledWith(
+		expect(mockBufferPush).toHaveBeenCalledWith(
 			expect.objectContaining({
 				endpointId,
 				event: mockStartEvent,

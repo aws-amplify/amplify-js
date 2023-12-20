@@ -31,7 +31,7 @@ describe('[Web] Session Listener', () => {
 		const mockStateListener = jest.fn();
 		sessionListener.addStateChangeListener(mockStateListener, true);
 
-		expect(mockStateListener).toBeCalledWith('started');
+		expect(mockStateListener).toHaveBeenCalledWith('started');
 		expect(mockStateListener).toHaveBeenCalledTimes(1);
 	});
 
@@ -43,13 +43,13 @@ describe('[Web] Session Listener', () => {
 		jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
 		eventListenerCallback();
 
-		expect(mockStateListener).toBeCalledWith('ended');
+		expect(mockStateListener).toHaveBeenCalledWith('ended');
 
 		// Simulate a visible table
 		jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
 		eventListenerCallback();
 
-		expect(mockStateListener).toBeCalledWith('started');
+		expect(mockStateListener).toHaveBeenCalledWith('started');
 	});
 
 	it('Should remove subscribers correctly', () => {
@@ -58,11 +58,11 @@ describe('[Web] Session Listener', () => {
 
 		// Check that the listener is working
 		eventListenerCallback();
-		expect(mockStateListener).toBeCalledWith('started');
+		expect(mockStateListener).toHaveBeenCalledWith('started');
 
 		// Remove the listener and confirm it stops receiving updates
 		sessionListener.removeStateChangeListener(mockStateListener);
 		eventListenerCallback();
-		expect(mockStateListener).toBeCalledTimes(1);
+		expect(mockStateListener).toHaveBeenCalledTimes(1);
 	});
 });

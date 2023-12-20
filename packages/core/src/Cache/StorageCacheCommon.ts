@@ -544,7 +544,7 @@ export abstract class StorageCacheCommon {
 	 * @return The remaining valid keys
 	 */
 	private async clearInvalidAndGetRemainingKeys(): Promise<string[]> {
-		const remainingKeys = [];
+		const remainingKeys: string[] = [];
 		const keys = await this.getAllCacheKeys({
 			omitSizeKey: true,
 		});

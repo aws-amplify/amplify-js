@@ -38,7 +38,7 @@ describe('uploadData', () => {
 					key: 'key',
 					data: { size: MAX_OBJECT_SIZE + 1 } as any,
 				})
-			).toThrowError(
+			).toThrow(
 				expect.objectContaining(
 					validationErrorMap[StorageValidationErrorCode.ObjectIsTooLarge]
 				)
@@ -50,7 +50,7 @@ describe('uploadData', () => {
 				key: 'key',
 				data: {} as any,
 			});
-			expect(mockCreateUploadTask).toBeCalled();
+			expect(mockCreateUploadTask).toHaveBeenCalled();
 		});
 	});
 
@@ -61,8 +61,8 @@ describe('uploadData', () => {
 				key: 'key',
 				data: smallData,
 			});
-			expect(mockPutObjectJob).toBeCalled();
-			expect(mockGetMultipartUploadHandlers).not.toBeCalled();
+			expect(mockPutObjectJob).toHaveBeenCalled();
+			expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
 		});
 
 		it('should use uploadTask', async () => {
@@ -73,7 +73,7 @@ describe('uploadData', () => {
 				data: smallData,
 			});
 			expect(task).toBe('uploadTask');
-			expect(mockCreateUploadTask).toBeCalledWith(
+			expect(mockCreateUploadTask).toHaveBeenCalledWith(
 				expect.objectContaining({
 					job: 'putObjectJob',
 					onCancel: expect.any(Function),
@@ -90,8 +90,8 @@ describe('uploadData', () => {
 				key: 'key',
 				data: biggerData,
 			});
-			expect(mockPutObjectJob).not.toBeCalled();
-			expect(mockGetMultipartUploadHandlers).toBeCalled();
+			expect(mockPutObjectJob).not.toHaveBeenCalled();
+			expect(mockGetMultipartUploadHandlers).toHaveBeenCalled();
 		});
 
 		it('should use uploadTask', async () => {
@@ -101,7 +101,7 @@ describe('uploadData', () => {
 				data: biggerData,
 			});
 			expect(task).toBe('uploadTask');
-			expect(mockCreateUploadTask).toBeCalledWith(
+			expect(mockCreateUploadTask).toHaveBeenCalledWith(
 				expect.objectContaining({
 					job: expect.any(Function),
 					onCancel: expect.any(Function),
@@ -117,7 +117,7 @@ describe('uploadData', () => {
 				key: 'key',
 				data: biggerData,
 			});
-			expect(mockGetMultipartUploadHandlers).toBeCalled();
+			expect(mockGetMultipartUploadHandlers).toHaveBeenCalled();
 		});
 	});
 });

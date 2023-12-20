@@ -8,11 +8,13 @@ import {
 import { autoSignIn } from '../../../src/providers/cognito/apis/autoSignIn';
 import * as signUpClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { authAPITestParams } from './testUtils/authApiTestParams';
-import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import {
+	RespondToAuthChallengeCommandOutput,
+	SignUpCommandOutput,
+} from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { Amplify } from 'aws-amplify';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { AuthError } from '../../../src/errors/AuthError';
-jest.mock('@aws-amplify/core/dist/cjs/clients/handlers/fetch');
 
 const authConfig = {
 	Cognito: {
@@ -31,11 +33,9 @@ describe('Auto sign-in API Happy Path Cases:', () => {
 	beforeEach(async () => {
 		signUpSpy = jest
 			.spyOn(signUpClient, 'signUp')
-			.mockImplementationOnce(async () => {
-				return {
-					UserConfirmed: true,
-				};
-			});
+			.mockImplementationOnce(
+				async () => ({ UserConfirmed: true } as SignUpCommandOutput)
+			);
 
 		handleUserSRPAuthflowSpy = jest
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
@@ -63,13 +63,13 @@ describe('Auto sign-in API Happy Path Cases:', () => {
 				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 			},
 		});
-		expect(signUpSpy).toBeCalledTimes(1);
+		expect(signUpSpy).toHaveBeenCalledTimes(1);
 	});
 
 	test('Auto sign-in should resolve to a signIn output', async () => {
 		const signInOutput = await autoSignIn();
 		expect(signInOutput).toEqual(authAPITestParams.signInResult());
-		expect(handleUserSRPAuthflowSpy).toBeCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 	});
 });
 
@@ -77,7 +77,7 @@ describe('Auto sign-in API Error Path Cases:', () => {
 	test('autoSignIn should throw an error when autoSignIn is not enabled', async () => {
 		try {
 			await autoSignIn();
-		} catch (error) {
+		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe('AutoSignInException');
 		}

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.2.8 (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.7 (2023-12-12)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.6 (2023-12-05)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.5 (2023-11-22)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.4 (2023-11-20)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
 ## 1.2.3 (2023-11-16)
 
 **Note:** Version bump only for package @aws-amplify/rtn-push-notification

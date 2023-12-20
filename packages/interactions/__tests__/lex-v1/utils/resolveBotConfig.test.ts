@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	generateRandomLexV1Config,
 	generateRandomLexV2Config,
-} from '../../testUtils/randomConfigGeneration.test';
+} from '../../testUtils/randomConfigGeneration';
 import { resolveBotConfig } from '../../../src/lex-v1/utils';
 
 describe('Interactions LexV1 Util: resolveBotConfig', () => {

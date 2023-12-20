@@ -50,6 +50,7 @@ import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
+import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
 
 const logger = new ConsoleLogger('AWSAppSyncRealTimeProvider');
 
@@ -97,10 +98,8 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
 	region?: string;
-	graphql_headers?: () => {} | (() => Promise<{}>);
-	additionalHeaders?:
-		| Record<string, string>
-		| (() => Promise<Record<string, string>>);
+	libraryConfigHeaders?: () => {} | (() => Promise<{}>);
+	additionalHeaders?: CustomHeaders;
 	additionalCustomHeaders?: Record<string, string>;
 	authToken?: string;
 }
@@ -203,6 +202,7 @@ export class AWSAppSyncRealTimeProvider {
 			additionalHeaders,
 			apiKey,
 			authToken,
+			libraryConfigHeaders,
 		} = options || {};
 
 		return new Observable(observer => {
@@ -235,6 +235,7 @@ export class AWSAppSyncRealTimeProvider {
 									additionalHeaders,
 									apiKey,
 									authToken,
+									libraryConfigHeaders,
 								},
 								observer,
 								subscriptionId,
@@ -313,7 +314,7 @@ export class AWSAppSyncRealTimeProvider {
 			variables,
 			apiKey,
 			region,
-			graphql_headers = () => ({}),
+			libraryConfigHeaders = () => ({}),
 			additionalHeaders = {},
 			authToken,
 		} = options;
@@ -321,7 +322,11 @@ export class AWSAppSyncRealTimeProvider {
 		let additionalCustomHeaders: Record<string, string> = {};
 
 		if (typeof additionalHeaders === 'function') {
-			additionalCustomHeaders = await additionalHeaders();
+			const requestOptions: RequestOptions = {
+				url: appSyncGraphqlEndpoint || '',
+				queryString: query || '',
+			};
+			additionalCustomHeaders = await additionalHeaders(requestOptions);
 		} else {
 			additionalCustomHeaders = additionalHeaders;
 		}
@@ -361,7 +366,7 @@ export class AWSAppSyncRealTimeProvider {
 				region,
 				additionalCustomHeaders,
 			})),
-			...(await graphql_headers()),
+			...(await libraryConfigHeaders()),
 			...additionalCustomHeaders,
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};

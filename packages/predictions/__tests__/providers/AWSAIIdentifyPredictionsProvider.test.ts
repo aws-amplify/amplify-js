@@ -691,7 +691,7 @@ describe('Predictions identify provider test', () => {
 				.mockImplementationOnce(command => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.Bytes
-					).toMatchObject(fileInput);
+					).toStrictEqual(fileInput);
 					return {};
 				});
 			await predictionsProvider.identify(detectLabelInput);

@@ -1,7 +1,7 @@
 import { urlSafeEncode, urlSafeDecode } from '../src/utils';
 import { TextDecoder, TextEncoder } from 'util';
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+(global as any).TextEncoder = TextEncoder;
+(global as any).TextDecoder = TextDecoder;
 
 const complexCustomState = 'https://amplify-app:300/?empty=&list=1,a,%,@';
 

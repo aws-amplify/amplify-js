@@ -84,7 +84,7 @@ describe('resolveS3ConfigAndInput', () => {
 			{}
 		);
 		expect(resolvedBucket).toEqual(bucket);
-		expect(mockGetConfig).toBeCalled();
+		expect(mockGetConfig).toHaveBeenCalled();
 	});
 
 	it('should throw if bucket is not available', async () => {
@@ -103,7 +103,7 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should resolve region from S3 config', async () => {
 		const { s3Config } = await resolveS3ConfigAndInput(Amplify, {});
 		expect(s3Config.region).toEqual(region);
-		expect(mockGetConfig).toBeCalled();
+		expect(mockGetConfig).toHaveBeenCalled();
 	});
 
 	it('should throw if region is not available', async () => {
@@ -132,7 +132,7 @@ describe('resolveS3ConfigAndInput', () => {
 		const { s3Config } = await resolveS3ConfigAndInput(Amplify, {});
 		expect(s3Config.customEndpoint).toEqual('http://localhost:20005');
 		expect(s3Config.forcePathStyle).toEqual(true);
-		expect(mockGetConfig).toBeCalled();
+		expect(mockGetConfig).toHaveBeenCalled();
 	});
 
 	it('should resolve isObjectLockEnabled from S3 library options', async () => {
@@ -150,7 +150,7 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should use default prefix resolver', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
 		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {});
-		expect(mockDefaultResolvePrefix).toBeCalled();
+		expect(mockDefaultResolvePrefix).toHaveBeenCalled();
 		expect(keyPrefix).toEqual('prefix');
 	});
 
@@ -164,9 +164,9 @@ describe('resolveS3ConfigAndInput', () => {
 			},
 		};
 		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {});
-		expect(customResolvePrefix).toBeCalled();
+		expect(customResolvePrefix).toHaveBeenCalled();
 		expect(keyPrefix).toEqual('prefix');
-		expect(mockDefaultResolvePrefix).not.toBeCalled();
+		expect(mockDefaultResolvePrefix).not.toHaveBeenCalled();
 	});
 
 	it('should resolve prefix with given access level', async () => {
@@ -174,7 +174,7 @@ describe('resolveS3ConfigAndInput', () => {
 		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {
 			accessLevel: 'someLevel' as any,
 		});
-		expect(mockDefaultResolvePrefix).toBeCalledWith({
+		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
 			accessLevel: 'someLevel',
 			targetIdentityId,
 		});
@@ -191,7 +191,7 @@ describe('resolveS3ConfigAndInput', () => {
 			},
 		};
 		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {});
-		expect(mockDefaultResolvePrefix).toBeCalledWith({
+		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
 			accessLevel: 'someLevel',
 			targetIdentityId,
 		});
@@ -201,7 +201,7 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should resolve prefix with `guest` access level if no access level is given', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
 		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {});
-		expect(mockDefaultResolvePrefix).toBeCalledWith({
+		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
 			accessLevel: 'guest', // default access level
 			targetIdentityId,
 		});

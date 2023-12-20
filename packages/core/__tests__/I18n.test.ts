@@ -61,11 +61,11 @@ describe('I18n test', () => {
 		});
 	});
 
-	describe('getByLangurage test', () => {
+	describe('getByLanguage test', () => {
 		test('happy case', () => {
 			const i18n = new I18n();
 
-			expect(i18n.getByLanguage('key', undefined)).toBeNull();
+			expect(i18n.getByLanguage('key', '')).toBeNull();
 		});
 
 		test('has dict', () => {

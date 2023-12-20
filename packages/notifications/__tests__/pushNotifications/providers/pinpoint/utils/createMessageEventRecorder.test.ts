@@ -59,7 +59,7 @@ describe('createMessageEventRecorder', () => {
 	it('accepts and invokes a callback', done => {
 		const callback = jest.fn();
 		callback.mockImplementation(() => {
-			expect(callback).toBeCalled();
+			expect(callback).toHaveBeenCalled();
 			done();
 		});
 		const recorder = createMessageEventRecorder(
@@ -72,7 +72,7 @@ describe('createMessageEventRecorder', () => {
 	describe('created message event recorder', () => {
 		it('records a message event', done => {
 			mockRecord.mockImplementation(() => {
-				expect(mockRecord).toBeCalledWith(
+				expect(mockRecord).toHaveBeenCalledWith(
 					expect.objectContaining({ event: analyticsEvent })
 				);
 				done();

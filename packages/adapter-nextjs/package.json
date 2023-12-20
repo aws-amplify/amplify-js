@@ -1,10 +1,10 @@
 {
 	"author": "Amazon Web Services",
 	"name": "@aws-amplify/adapter-nextjs",
-	"version": "1.0.3",
+	"version": "1.0.8",
 	"description": "The adapter for the supporting of using Amplify APIs in Next.js.",
 	"peerDependencies": {
-		"aws-amplify": "^6.0.0",
+		"aws-amplify": "^6.0.7",
 		"next": ">=13.5.0 <15.0.0"
 	},
 	"dependencies": {
@@ -16,7 +16,7 @@
 		"@types/node": "^20.3.1",
 		"@types/react": "^18.2.13",
 		"@types/react-dom": "^18.2.6",
-		"aws-amplify": "6.0.3",
+		"aws-amplify": "6.0.8",
 		"jest-fetch-mock": "3.0.3",
 		"next": ">= 13.5.0 < 15.0.0",
 		"rollup": "3.29.4",
@@ -50,7 +50,8 @@
 		"dist/cjs",
 		"dist/esm",
 		"src",
-		"api"
+		"api",
+		"data"
 	],
 	"homepage": "https://aws-amplify.github.io/",
 	"license": "Apache-2.0",
@@ -68,56 +69,7 @@
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
-		"test": "npm run lint && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
-	},
-	"jest": {
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm",
-			"__tests__/mocks"
-		],
-		"coverageThreshold": {
-			"global": {
-				"branches": 88,
-				"functions": 90,
-				"lines": 92,
-				"statements": 93
-			}
-		},
-		"globals": {
-			"ts-jest": {
-				"diagnostics": {
-					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
-				},
-				"tsConfig": {
-					"allowJs": true,
-					"types": [
-						"@types/jest"
-					]
-				}
-			}
-		},
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "node",
-		"testPathIgnorePatterns": [
-			"xmlParser-fixture.ts",
-			"testUtils",
-			"cases",
-			"mocks"
-		],
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testURL": "http://localhost/",
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		}
 	}
 }

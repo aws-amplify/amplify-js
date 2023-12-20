@@ -52,7 +52,9 @@ describe('Analytics Personalize Provider Util: resolveConfig', () => {
 
 	it('throws if region is missing', () => {
 		getConfigSpy.mockReturnValue({
-			Analytics: { Personalize: { ...providedConfig, region: undefined } },
+			Analytics: {
+				Personalize: { ...providedConfig, region: undefined as any },
+			},
 		});
 
 		expect(resolveConfig).toThrow();

@@ -180,6 +180,7 @@ export function mapSearchOptions(options, locationServiceInput) {
 	const locationServiceModifiedInput = { ...locationServiceInput };
 	locationServiceModifiedInput.FilterCountries = options.countries;
 	locationServiceModifiedInput.MaxResults = options.maxResults;
+	locationServiceModifiedInput.Language = options.language;
 
 	if (options.searchIndexName) {
 		locationServiceModifiedInput.IndexName = options.searchIndexName;

@@ -29,7 +29,7 @@ describe('onNotificationReceivedInForeground (native)', () => {
 
 	it('adds an event listener', () => {
 		onNotificationReceivedInForeground(mockHandler);
-		expect(mockAddEventListener).toBeCalledWith(
+		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'foregroundMessageReceived',
 			mockHandler
 		);

@@ -175,7 +175,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, unknown>;
 	apiKey?: string;
 	region?: string;
-	graphql_headers?: () => {} | (() => Promise<{}>);
+	libraryConfigHeaders?: () => {} | (() => Promise<{}>);
 	additionalHeaders?: CustomHeaders;
 }
 
@@ -448,6 +448,12 @@ export type ListArgs = {
 };
 
 export type AuthModeParams = {
+	authMode?: GraphQLAuthMode;
+	authToken?: string;
+};
+
+export type GenerateServerClientParams = {
+	config: ResourcesConfig;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
 };

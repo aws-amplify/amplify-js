@@ -1,14 +1,7 @@
-const mockRestPost = jest.fn(() => {
-	return Promise.reject(serverError);
+const mockRetry = jest.fn(async (fn, args) => {
+	await fn(...args);
 });
-
-jest.mock('@aws-amplify/api/internals', () => {
-	const apiInternals = jest.requireActual('@aws-amplify/api/internals');
-	apiInternals.InternalAPI._graphqlApi._api.post = mockRestPost;
-	return {
-		...apiInternals,
-	};
-});
+const mockRestPost = jest.fn(() => Promise.reject(serverError));
 
 import { Amplify } from '@aws-amplify/core';
 
@@ -36,6 +29,21 @@ import {
 } from '../src/types';
 import { createMutationInstanceFromModelOperation } from '../src/sync/utils';
 import { SyncEngine, MutationEvent } from '../src/sync/';
+
+jest.mock('@aws-amplify/api/internals', () => {
+	const apiInternals = jest.requireActual('@aws-amplify/api/internals');
+	apiInternals.InternalAPI._graphqlApi._api.post = mockRestPost;
+	return {
+		...apiInternals,
+	};
+});
+// mocking jitteredBackoff to prevent it from retrying
+// endlessly in the mutation processor and so that we can expect the thrown result in our test
+// should throw a Network Error
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	retry: mockRetry,
+}));
 
 let syncClasses: any;
 let modelInstanceCreator: any;
@@ -302,20 +310,6 @@ describe('error handler', () => {
 			})
 		);
 	});
-});
-
-// mocking jitteredBackoff to prevent it from retrying
-// endlessly in the mutation processor and so that we can expect the thrown result in our test
-// should throw a Network Error
-let mockRetry;
-jest.mock('@aws-amplify/core/internals/utils', () => {
-	mockRetry = jest.fn().mockImplementation(async (fn, args) => {
-		await fn(...args);
-	});
-	return {
-		...jest.requireActual('@aws-amplify/core/internals/utils'),
-		retry: mockRetry,
-	};
 });
 
 // Mocking just enough dependencies for us to be able to
