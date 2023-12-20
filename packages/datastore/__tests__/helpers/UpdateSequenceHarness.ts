@@ -33,6 +33,21 @@ type FinalAssertionParams = {
 	blogId?: string | null;
 };
 
+const MUTATION_QUERY = `
+mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {
+	updatePost(input: $input, condition: $condition) {
+		id
+		title
+		blogId
+		updatedAt
+		createdAt
+		_version
+		_lastChangedAt
+		_deleted
+	}
+}
+`;
+
 /**
  * Since we're essentially testing race conditions, we want to test the outbox logic
  * exactly the same each time the tests are run. Minor fluctuations in test runs can
@@ -42,6 +57,23 @@ const jitter: number = 0;
 const highLatency = 1000;
 const lowLatency = 15;
 
+/**
+ * The PostHarness is a decorator that wraps a `Post` model and offers common operations
+ * such as `revise` and `expectCurrentToMatch` for the tester to interact with.
+ *
+ * Example use:
+ * ```
+ * const postHarness = await harness.createPostHarness({
+ *		title: 'original title',
+ *		blogId: 'blog id',
+ * });
+ * await postHarness.revise('post title 0');
+ * postHarness.expectCurrentToMatch({
+ *		version: 4,
+ *		title: 'update from second client',
+ * });
+ * ```
+ */
 class PostHarness {
 	harness: UpdateSequenceHarness;
 	original: Post;
@@ -54,20 +86,44 @@ class PostHarness {
 		await this.harness.revisePost(this.original.id, title);
 	}
 
-	expectCurrentToMatch(values: { version; title; blogId? }) {
-		this.harness.expectFinalRecordsToMatch({
-			postId: this.original.id,
-			...values,
-		});
+	get currentContents() {
+		return this.harness.getCurrentRecord(this.original.id);
 	}
 }
 
+/**
+ * The UpdateSequenceHarness is a decorator for a Datastore instance connected to a graphql fake
+ * that offers configuration options and convenience functions for clear testing.
+ *
+ * It is specific to the creation of `Post` models and subsequent updates.
+ *
+ * Example use:
+ * ```
+ * harness = new UpdateSequenceHarness();
+ * harness.userInputLatency = 'slowerThanOutbox';
+ * harness.latency = 'low';
+ * const postHarness = await harness.createPostHarness({
+ * 	title: 'original title',
+ * });
+ * await harness.outboxSettled();
+ * await harness.expectUpdateCallCount(0);
+ * expect(harness.subscriptionLogs()).toEqual([]);
+ * ```
+ */
 export class UpdateSequenceHarness {
-	datastoreFake: ReturnType<typeof getDataStore>;
-	expectedNumberOfInternalUpdates = 0;
-	expectedNumberOfExternalUpdates = 0;
-	private latencyValue: 'low' | 'high' = 'low';
-	connectionSpeed: 'slow' | 'fast' = 'slow';
+	private datastoreFake: ReturnType<typeof getDataStore>;
+
+	/**
+	 * Should we inject latency before each standard client `Post` revision?
+	 *
+	 * `slowerThanOutbox` will add 200ms of latency before each revision against datastore
+	 */
+	userInputLatency: 'fasterThanOutbox' | 'slowerThanOutbox' =
+		'fasterThanOutbox';
+
+	/**
+	 * Do we want to settle the outbox after each `Post` revision call?
+	 */
 	settleOutboxAfterRevisions: boolean = false;
 
 	/**
@@ -84,10 +140,17 @@ export class UpdateSequenceHarness {
 		);
 	}
 
-	get latency(): 'low' | 'high' {
-		return this.latencyValue;
-	}
-
+	/**
+	 * Should there be latency in the datastore sync process?
+	 * Latency will be added:
+	 * - Before the request is made from datastore to graphql
+	 * - Before the response is processed from graphql
+	 * - Before the subscription update is sent to update subscriber
+	 *
+	 * Values:
+	 * - `low` will add 15ms of latency for each of these events
+	 * - `high` will add 1000ms of latency for each of these events
+	 */
 	set latency(value: 'low' | 'high') {
 		if (value === 'low') {
 			this.datastoreFake.graphqlService.setLatencies({
@@ -104,7 +167,6 @@ export class UpdateSequenceHarness {
 				jitter,
 			});
 		}
-		this.latencyValue = value;
 	}
 
 	constructor() {
@@ -113,26 +175,32 @@ export class UpdateSequenceHarness {
 			isNode: false,
 		});
 
+		this.latency = 'low';
+
 		this.subscriptionLogSubscription = this.datastoreFake.DataStore.observe(
 			this.datastoreFake.Post
 		).subscribe(({ opType, element }) => {
 			if (opType === 'UPDATE') {
-				// const response: SubscriptionLogTuple = [
-				// 	element.title,
-				// 	// No, TypeScript, there is a version:
-				// 	// @ts-ignore
-				// 	element._version,
-				// ];
-				// Track sequence of versions and titles
 				this.subscriptionLog.push(element);
 			}
 		});
 	}
 
+	/**
+	 * Wait for the Hub event to be fired indicating that the outbox is empty.
+	 *
+	 * NOTICE: If the outbox is *already* empty, this will not resolve.
+	 */
 	async outboxSettled() {
 		await waitForEmptyOutbox();
 	}
 
+	/**
+	 * Watch the graphql fake for an expected number of calls to ensure we've
+	 * seen all of the expected behavior resolve before proceeding
+	 *
+	 * @param expectedCallCount The number of graphql update Post calls expected.
+	 */
 	async expectUpdateCallCount(expectedCallCount: number) {
 		/**
 		 * Because we have increased the latency, and don't wait for the outbox
@@ -148,6 +216,12 @@ export class UpdateSequenceHarness {
 		});
 	}
 
+	/**
+	 * Create a new Post and decorate it in the post harness, returning the decorated Post
+	 *
+	 * @param postInputs The input arguments to create the new Post with
+	 * @returns
+	 */
 	async createPostHarness(...args: ConstructorParameters<typeof Post>) {
 		const original = await this.datastoreFake.DataStore.save(
 			new this.datastoreFake.Post(...args)
@@ -155,6 +229,9 @@ export class UpdateSequenceHarness {
 		return new PostHarness(original, this);
 	}
 
+	/**
+	 * Teardown this harness instance
+	 */
 	async destroy() {
 		this.subscriptionLogSubscription.unsubscribe();
 		await this.clearDatastore();
@@ -168,6 +245,11 @@ export class UpdateSequenceHarness {
 		await this.datastoreFake.DataStore.clear();
 	}
 
+	/**
+	 * Make a call directly to the graphl service fake which tries to update the given PostId with the given field changes.
+	 *
+	 * @param args The input args `{originalPostId, updatedFields, version}` with which to make the external update call
+	 */
 	async externalPostUpdate({
 		originalPostId,
 		updatedFields,
@@ -175,20 +257,7 @@ export class UpdateSequenceHarness {
 	}: ExternalPostUpdateParams) {
 		await this.datastoreFake.graphqlService.externalGraphql(
 			{
-				query: `
-                    mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput) {
-                        updatePost(input: $input, condition: $condition) {
-                            id
-                            title
-                            blogId
-                            updatedAt
-                            createdAt
-                            _version
-                            _lastChangedAt
-                            _deleted
-                        }
-                    }
-                `,
+				query: MUTATION_QUERY,
 				variables: {
 					input: {
 						id: originalPostId,
@@ -203,7 +272,6 @@ export class UpdateSequenceHarness {
 			// For now we always ignore latency for external mutations. This could be a param if needed.
 			true
 		);
-		this.expectedNumberOfExternalUpdates += 1;
 	}
 
 	/**
@@ -212,7 +280,7 @@ export class UpdateSequenceHarness {
 	 * @param updatedTitle - title to update the post with
 	 */
 	async revisePost(postId: string, updatedTitle: string) {
-		if (this.connectionSpeed === 'fast') {
+		if (this.userInputLatency === 'slowerThanOutbox') {
 			await pause(200);
 		}
 		const retrieved = await this.datastoreFake.DataStore.query(
@@ -229,38 +297,16 @@ export class UpdateSequenceHarness {
 		if (this.settleOutboxAfterRevisions) {
 			await this.outboxSettled();
 		}
-
-		this.expectedNumberOfInternalUpdates++;
 	}
 
-	async expectFinalRecordsToMatch({
-		postId,
-		version,
-		title,
-		blogId = undefined,
-	}: FinalAssertionParams) {
-		// Validate that the record was saved to the service:
+	/**
+	 * Get the current stored Post content from the graphql fake
+	 *
+	 * @param postId The id of the post to fetch from the graphql fake
+	 * @returns The fields stored in the graphql service fake for a given post
+	 */
+	async getCurrentRecord(postId: string) {
 		const table = this.datastoreFake.graphqlService.tables.get('Post')!;
-		expect(table.size).toEqual(1);
-
-		// Validate that the title was updated successfully:
-		const savedItem = table.get(JSON.stringify([postId])) as any;
-		expect(savedItem.title).toEqual(title);
-
-		if (blogId) expect(savedItem.blogId).toEqual(blogId);
-
-		// Validate that the `_version` was incremented correctly:
-		expect(savedItem._version).toEqual(version);
-
-		// Validate that `query` returns the latest `title` and `_version`:
-		const queryResult = await this.datastoreFake.DataStore.query(
-			this.datastoreFake.Post,
-			postId
-		);
-		expect(queryResult?.title).toEqual(title);
-		// @ts-ignore
-		expect(queryResult?._version).toEqual(version);
-
-		if (blogId) expect(queryResult?.blogId).toEqual(blogId);
+		return table.get(JSON.stringify([postId]));
 	}
 }

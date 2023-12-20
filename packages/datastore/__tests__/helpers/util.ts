@@ -463,6 +463,13 @@ type GraphQLServiceSettledParams = {
 	modelName: string;
 };
 
+/**
+ * Given a service fake, an expected call count and a modelName, this function observes the number
+ * of calls against the fake service and raises an error if the expected result isn't observed after
+ * 5 seconds of trying.
+ *
+ * @param inputs: Tells us the service fake, expected call count and model to observe
+ */
 export async function waitForExpectModelUpdateGraphqlCallCount({
 	graphqlService,
 	expectedCallCount,
@@ -475,6 +482,7 @@ export async function waitForExpectModelUpdateGraphqlCallCount({
 	 */
 	await pause(1);
 
+	// Keep track of the observed count for each retry so we can tell the developer what was observed last
 	let lastObservedCount: number | undefined = undefined;
 
 	/**
@@ -488,13 +496,14 @@ export async function waitForExpectModelUpdateGraphqlCallCount({
 				const subscriptionMessagesNotStopped =
 					!graphqlService.stopSubscriptionMessages;
 
-				// Ensure the service has received all the requests:
 				lastObservedCount = graphqlService.requests.filter(
 					({ operation, type, tableName }) =>
 						operation === 'mutation' &&
 						type === 'update' &&
 						tableName === modelName
 				).length;
+
+				// Ensure the service has received all expected requests:
 				const allUpdatesSent = lastObservedCount === expectedCallCount;
 
 				// Ensure all mutations are complete:
@@ -523,10 +532,12 @@ export async function waitForExpectModelUpdateGraphqlCallCount({
 				}
 			},
 			[null],
+			// Only retry up to 5 seconds
 			5_000,
 			undefined
 		);
 	} catch {
+		// If the expected call count isn't observed after 5 seconds, raise an error describing the discrepency
 		throw new Error(
 			`Expected ${expectedCallCount} update calls for ${modelName}, but received ${
 				lastObservedCount ?? 'unknown'

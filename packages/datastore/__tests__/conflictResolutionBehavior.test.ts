@@ -66,7 +66,7 @@ describe('DataStore sync engine', () => {
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
 			describe('single client updates', () => {
 				test('rapid mutations on poor connection when initial create is not pending', async () => {
-					harness.connectionSpeed = 'slow';
+					harness.userInputLatency = 'fasterThanOutbox';
 					harness.latency = 'high';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
@@ -89,13 +89,13 @@ describe('DataStore sync engine', () => {
 						['post title 0', 3],
 					]);
 
-					postHarness.expectCurrentToMatch({
-						version: 3,
+					expect(await postHarness.currentContents).toMatchObject({
+						_version: 3,
 						title: 'post title 0',
 					});
 				});
 				test('rapid mutations on fast connection when initial create is not pending', async () => {
-					harness.connectionSpeed = 'fast';
+					harness.userInputLatency = 'slowerThanOutbox';
 					harness.latency = 'low';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
@@ -120,13 +120,13 @@ describe('DataStore sync engine', () => {
 						['post title 0', 4],
 					]);
 
-					postHarness.expectCurrentToMatch({
-						version: 4,
+					expect(await postHarness.currentContents).toMatchObject({
+						_version: 4,
 						title: 'post title 0',
 					});
 				});
 				test('rapid mutations on poor connection when initial create is pending', async () => {
-					harness.connectionSpeed = 'slow';
+					harness.userInputLatency = 'fasterThanOutbox';
 					harness.latency = 'high';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
@@ -149,13 +149,13 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					postHarness.expectCurrentToMatch({
-						version: 1,
+					expect(await postHarness.currentContents).toMatchObject({
+						_version: 1,
 						title: 'post title 2',
 					});
 				});
 				test('rapid mutations on fast connection when initial create is pending', async () => {
-					harness.connectionSpeed = 'fast';
+					harness.userInputLatency = 'slowerThanOutbox';
 					harness.latency = 'low';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
@@ -178,13 +178,13 @@ describe('DataStore sync engine', () => {
 						['post title 2', 1],
 					]);
 
-					postHarness.expectCurrentToMatch({
-						version: 1,
+					expect(await postHarness.currentContents).toMatchObject({
+						_version: 1,
 						title: 'post title 2',
 					});
 				});
 				test('observe on poor connection with awaited outbox', async () => {
-					harness.connectionSpeed = 'slow';
+					harness.userInputLatency = 'fasterThanOutbox';
 					harness.latency = 'high';
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
@@ -217,8 +217,8 @@ describe('DataStore sync engine', () => {
 						['post title 2', 4],
 					]);
 
-					postHarness.expectCurrentToMatch({
-						version: 4,
+					expect(await postHarness.currentContents).toMatchObject({
+						_version: 4,
 						title: 'post title 2',
 					});
 				});
@@ -249,8 +249,8 @@ describe('DataStore sync engine', () => {
 						['post title 2', 4],
 					]);
 
-					postHarness.expectCurrentToMatch({
-						version: 4,
+					expect(await postHarness.currentContents).toMatchObject({
+						_version: 4,
 						title: 'post title 2',
 					});
 				});
@@ -266,7 +266,7 @@ describe('DataStore sync engine', () => {
 			describe('Multi-client updates', () => {
 				describe('Updates to the same field', () => {
 					test('rapid mutations on poor connection when initial create is not pending', async () => {
-						harness.connectionSpeed = 'slow';
+						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
@@ -293,13 +293,13 @@ describe('DataStore sync engine', () => {
 							['update from second client', 4],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 4,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 4,
 							title: 'update from second client',
 						});
 					});
 					test('rapid mutations on fast connection when initial create is not pending', async () => {
-						harness.connectionSpeed = 'fast';
+						harness.userInputLatency = 'slowerThanOutbox';
 						harness.latency = 'low';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
@@ -327,13 +327,13 @@ describe('DataStore sync engine', () => {
 							['post title 0', 5],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 5,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 5,
 							title: 'post title 0',
 						});
 					});
 					test('observe on poor connection with awaited outbox', async () => {
-						harness.connectionSpeed = 'fast';
+						harness.userInputLatency = 'slowerThanOutbox';
 						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
@@ -369,13 +369,13 @@ describe('DataStore sync engine', () => {
 							['post title 2', 5],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 5,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 5,
 							title: 'post title 2',
 						});
 					});
 					test('observe on fast connection with awaited outbox', async () => {
-						harness.connectionSpeed = 'fast';
+						harness.userInputLatency = 'slowerThanOutbox';
 						harness.latency = 'low';
 
 						const postHarness = await harness.createPostHarness({
@@ -412,8 +412,8 @@ describe('DataStore sync engine', () => {
 							['post title 2', 5],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 5,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 5,
 							title: 'post title 2',
 						});
 					});
@@ -432,7 +432,7 @@ describe('DataStore sync engine', () => {
 					 * ultimately resulting in different final states.
 					 */
 					test('poor connection, initial create is not pending, external request is first received update', async () => {
-						harness.connectionSpeed = 'fast';
+						harness.userInputLatency = 'slowerThanOutbox';
 						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
@@ -464,14 +464,14 @@ describe('DataStore sync engine', () => {
 							['original title', 'update from second client', 4],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 4,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 4,
 							title: 'original title',
 							blogId: 'update from second client',
 						});
 					});
 					test('poor connection, initial create is not pending, external request is second received update', async () => {
-						harness.connectionSpeed = 'slow';
+						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
@@ -509,14 +509,14 @@ describe('DataStore sync engine', () => {
 							['post title 0', 'update from second client', 5],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 5,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 5,
 							title: 'post title 0',
 							blogId: 'update from second client',
 						});
 					});
 					test('rapid mutations on fast connection when initial create is not pending (second field is `null`)', async () => {
-						harness.connectionSpeed = 'fast';
+						harness.userInputLatency = 'slowerThanOutbox';
 						harness.latency = 'low';
 
 						const postHarness = await harness.createPostHarness({
@@ -549,8 +549,8 @@ describe('DataStore sync engine', () => {
 							['post title 0', 'update from second client', 5],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 5,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 5,
 							title: 'post title 0',
 							blogId: 'update from second client',
 						});
@@ -562,7 +562,7 @@ describe('DataStore sync engine', () => {
 					 * in different behavior.
 					 */
 					test('rapid mutations on fast connection when initial create is not pending (second field has initial value)', async () => {
-						harness.connectionSpeed = 'fast';
+						harness.userInputLatency = 'slowerThanOutbox';
 						harness.latency = 'low';
 
 						const postHarness = await harness.createPostHarness({
@@ -596,14 +596,14 @@ describe('DataStore sync engine', () => {
 							['post title 0', 'original blogId', 5],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 5,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 5,
 							title: 'post title 0',
 							blogId: 'original blogId',
 						});
 					});
 					test('observe on poor connection with awaited outbox', async () => {
-						harness.connectionSpeed = 'slow';
+						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'high';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
@@ -641,14 +641,14 @@ describe('DataStore sync engine', () => {
 							['post title 2', 'update from second client', 5],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 5,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 5,
 							title: 'post title 2',
 							blogId: 'update from second client',
 						});
 					});
 					test('observe on fast connection with awaited outbox', async () => {
-						harness.connectionSpeed = 'slow';
+						harness.userInputLatency = 'fasterThanOutbox';
 						harness.latency = 'low';
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
@@ -686,8 +686,8 @@ describe('DataStore sync engine', () => {
 							['post title 2', 'update from second client', 5],
 						]);
 
-						postHarness.expectCurrentToMatch({
-							version: 5,
+						expect(await postHarness.currentContents).toMatchObject({
+							_version: 5,
 							title: 'post title 2',
 							blogId: 'update from second client',
 						});
