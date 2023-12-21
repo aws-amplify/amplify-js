@@ -7,7 +7,7 @@ const schema = a.schema({
 			description: a.string(),
 			notes: a.hasMany('Note'),
 			meta: a.hasOne('TodoMetadata'),
-			status: a.enum(["NOT_STARTED", "STARTED", "DONE", "CANCELED"]),
+			status: a.enum(['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED']),
 			tags: a.string().array(),
 		})
 		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
@@ -52,6 +52,24 @@ const schema = a.schema({
 			otherField: a.string(),
 		})
 		.identifier(['cpk_cluster_key', 'cpk_sort_key']),
+
+	CommunityPost: a.model({
+		id: a.id().required(),
+		poll: a.hasOne('CommunityPoll'),
+	}),
+	CommunityPoll: a.model({
+		id: a.id().required(),
+		question: a.string().required(),
+		answers: a.hasMany('CommunityPollAnswer').arrayRequired().valueRequired(),
+	}),
+	CommunityPollAnswer: a.model({
+		id: a.id().required(),
+		answer: a.string().required(),
+		votes: a.hasMany('CommunityPollVote').arrayRequired().valueRequired(),
+	}),
+	CommunityPollVote: a
+		.model({ id: a.id().required() })
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

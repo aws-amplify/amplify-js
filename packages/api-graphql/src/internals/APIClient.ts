@@ -360,57 +360,64 @@ export function customSelectionSetToIR(
 	modelName: string,
 	selectionSet: string[]
 ): Record<string, string | object> {
-	const modelDefinition = modelDefinitions[modelName];
-	const { fields: modelFields } = modelDefinition;
+	const dotNotationToObject = (
+		path: string,
+		modelName: string
+	): Record<string, any> => {
+		const [fieldName, ...rest] = path.split('.');
 
-	return selectionSet.reduce((resultObj: Record<string, any>, path) => {
-		const [fieldName, nested, ...rest] = path.split('.');
+		let result: Record<string, any> = {};
 
-		if (nested) {
-			const fieldType = modelFields[fieldName]?.type as ModelFieldType;
-			const relatedModel = fieldType.model;
+		if (rest.length === 0) {
+			result = { [fieldName]: FIELD_IR };
+		} else {
+			const nested = rest[0];
+			const modelDefinition = modelDefinitions[modelName];
+			const modelFields = modelDefinition.fields;
+			const relatedModel = (modelFields[fieldName]?.type as ModelFieldType)?.model;
 
 			if (!relatedModel) {
 				// TODO: may need to change this to support custom types
 				throw Error(`${fieldName} is not a model field`);
 			}
 
-			const relatedModelDefinition = modelDefinitions[relatedModel];
+			if (nested === SELECTION_SET_WILDCARD) {
+				const relatedModelDefinition = modelDefinitions[relatedModel];
 
-			const selectionSet =
-				nested === SELECTION_SET_WILDCARD
-					? defaultSelectionSetIR(relatedModelDefinition)
-					: // if we have a path like 'field.anotherField' recursively build up selection set IR
-					  customSelectionSetToIR(modelDefinitions, relatedModel, [
-							[nested, ...rest].join('.'),
-					  ]);
-
-			if (modelFields[fieldName]?.isArray) {
-				const existing = resultObj[fieldName] || {
-					items: {},
+				result = {
+					[fieldName]: defaultSelectionSetIR(relatedModelDefinition),
 				};
-				const merged = { ...existing.items, ...selectionSet };
+			} else {
+				const exists = Boolean(modelFields[fieldName]);
+				if (!exists) {
+					throw Error(`${fieldName} is not a field of model ${modelName}`);
+				}
 
-				resultObj[fieldName] = { items: merged };
-				return resultObj;
+				result = {
+					[fieldName]: dotNotationToObject(rest.join('.'), relatedModel),
+				};
 			}
 
-			const existingItems = resultObj[fieldName] || {};
-			const merged = { ...existingItems, ...selectionSet };
-
-			resultObj[fieldName] = merged;
-			return resultObj;
+			if (modelFields[fieldName]?.isArray) {
+				result = {
+					[fieldName]: {
+						items: result[fieldName],
+					},
+				};
+			}
 		}
 
-		const exists = Boolean(modelFields[fieldName]);
+		return result;
+	};
 
-		if (!exists) {
-			throw Error(`${fieldName} is not a field of model ${modelName}`);
-		}
-
-		resultObj[fieldName] = FIELD_IR;
-		return resultObj;
-	}, {});
+	return selectionSet.reduce(
+		(resultObj, path) =>
+			deepMergeSelectionSetObjects(
+				dotNotationToObject(path, modelName),
+				resultObj
+			),
+		{} as Record<string, any>
+	);
 }
 
 const defaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
@@ -470,6 +477,34 @@ export function selectionSetIRToString(
 	});
 
 	return res.join(' ');
+}
+
+/**
+ * Recursively merges selection set objects from `source` onto `target`.
+ *
+ * `target` will be updated. `source` will be left alone.
+ *
+ * @param source The object to merge into target.
+ * @param target The object to be mutated.
+ */
+function deepMergeSelectionSetObjects<T extends Record<string, any>>(
+	source: T,
+	target: T
+) {
+	const isObject = (obj: any) => obj && typeof obj === 'object';
+
+	for (const key in source) {
+		// This verification avoids 'Prototype Pollution' issue
+		if (!source.hasOwnProperty(key)) continue;
+
+		if (target.hasOwnProperty(key) && isObject(target[key])) {
+			deepMergeSelectionSetObjects(source[key], target[key]);
+		} else {
+			target[key] = source[key];
+		}
+	}
+
+	return target;
 }
 
 export function generateSelectionSet(
