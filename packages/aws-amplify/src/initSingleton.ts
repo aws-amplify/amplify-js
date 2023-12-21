@@ -6,6 +6,7 @@ import {
 	LibraryOptions,
 	ResourcesConfig,
 	defaultStorage,
+	consoleProvider,
 } from '@aws-amplify/core';
 import {
 	LegacyConfig,
@@ -22,6 +23,18 @@ export const DefaultAmplify = {
 		libraryOptions?: LibraryOptions
 	) {
 		let resolvedResourceConfig: ResourcesConfig;
+
+		// add console logger provider by default
+		if (!Amplify.libraryOptions?.Logger) {
+			const customProviders = libraryOptions?.Logger?.providers ?? [];
+			libraryOptions = {
+				...libraryOptions,
+				Logger: {
+					...libraryOptions?.Logger,
+					providers: [consoleProvider, ...customProviders],
+				},
+			};
+		}
 
 		if (Object.keys(resourceConfig).some(key => key.startsWith('aws_'))) {
 			resolvedResourceConfig = parseAWSExports(resourceConfig);

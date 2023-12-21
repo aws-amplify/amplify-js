@@ -12,6 +12,7 @@ import {
 	GetCredentialsOptions,
 	CognitoIdentityPoolConfig,
 } from './Auth/types';
+import { LibraryLoggerOptions } from './Logger/types';
 import { GeoConfig } from './Geo/types';
 import { PredictionsConfig } from './Predictions/types';
 import {
@@ -47,6 +48,7 @@ export type LibraryOptions = {
 	API?: LibraryAPIOptions;
 	Auth?: LibraryAuthOptions;
 	Storage?: LibraryStorageOptions;
+	Logger?: LibraryLoggerOptions;
 	ssr?: boolean;
 };
 

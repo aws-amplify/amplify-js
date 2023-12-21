@@ -1,8 +1,41 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InputLogEvent, Logger, LoggingProvider, LogType } from './types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../constants';
+import { consoleProvider } from './providers/console/console';
+
+// legacy logger types
+enum LogType {
+	DEBUG = 'DEBUG',
+	ERROR = 'ERROR',
+	INFO = 'INFO',
+	WARN = 'WARN',
+	VERBOSE = 'VERBOSE',
+}
+interface LoggingProvider {
+	// return the name of you provider
+	getProviderName(): string;
+
+	// return the name of you category
+	getCategoryName(): string;
+
+	// configure the plugin
+	configure(config?: object): object;
+
+	// take logs and push to provider
+	pushLogs(logs: InputLogEvent[]): void;
+}
+interface InputLogEvent {
+	timestamp: number | undefined;
+	message: string | undefined;
+}
+interface Logger {
+	debug(msg: string): void;
+	info(msg: string): void;
+	warn(msg: string): void;
+	error(msg: string): void;
+	addPluggable(pluggable: LoggingProvider): void;
+}
 
 const LOG_LEVELS: Record<string, number> = {
 	VERBOSE: 1,
@@ -32,7 +65,14 @@ export class ConsoleLogger implements Logger {
 		this._pluggables = [];
 	}
 
-	static LOG_LEVEL: string | null = null;
+	private static _logLevel: string | null = null;
+	static get LOG_LEVEL(): string | null {
+		return this._logLevel;
+	}
+	static set LOG_LEVEL(level: string | null) {
+		consoleProvider.LOG_LEVEL = level;
+		this._logLevel = level;
+	}
 
 	_padding(n: number) {
 		return n < 10 ? '0' + n : '' + n;

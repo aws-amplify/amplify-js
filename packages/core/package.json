@@ -51,6 +51,7 @@
 	],
 	"dependencies": {
 		"@aws-crypto/sha256-js": "5.2.0",
+		"@aws-sdk/client-cloudwatch-logs": "3.398.0",
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/util-hex-encoding": "2.0.0",
 		"@types/uuid": "^9.0.0",

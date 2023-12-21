@@ -49,3 +49,15 @@ export type DelayFunction = (
 	args?: any[],
 	error?: unknown
 ) => number | false;
+
+export type AmplifyLoggingCategory =
+	| 'Analytics'
+	| 'API'
+	| 'Auth'
+	| 'DataStore'
+	| 'Geo'
+	| 'Hub'
+	| 'Logging'
+	| 'Predictions'
+	| 'PushNotifications'
+	| 'Storage';

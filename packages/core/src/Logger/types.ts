@@ -1,40 +1,33 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-/**
- * Taken from @aws-sdk/client-cloudwatch-logs@3.6.1
- */
-export interface InputLogEvent {
-	timestamp: number | undefined;
-	message: string | undefined;
-}
+import { AmplifyLoggingCategory } from '../types';
 
-export interface LoggingProvider {
-	// return the name of you provider
-	getProviderName(): string;
+export type LogLevel = 'DEBUG' | 'ERROR' | 'INFO' | 'WARN' | 'VERBOSE' | 'NONE';
 
-	// return the name of you category
-	getCategoryName(): string;
+export type LogParams = {
+	namespace: string;
+	logLevel: LogLevel;
+	message: string;
+	category?: AmplifyLoggingCategory;
+};
 
-	// configure the plugin
-	configure(config?: object): object;
-
-	// take logs and push to provider
-	pushLogs(logs: InputLogEvent[]): void;
+export interface LoggerProvider {
+	log: (logParams: LogParams) => void;
+	flushLogs: () => Promise<void>;
 }
 
 export interface Logger {
-	debug(msg: string): void;
-	info(msg: string): void;
-	warn(msg: string): void;
-	error(msg: string): void;
-	addPluggable(pluggable: LoggingProvider): void;
+	verbose: (message: string) => void;
+	debug: (message: string) => void;
+	info: (message: string) => void;
+	warn: (message: string) => void;
+	error: (message: string) => void;
+	log: (message: string, level?: LogLevel) => void;
 }
 
-export enum LogType {
-	DEBUG = 'DEBUG',
-	ERROR = 'ERROR',
-	INFO = 'INFO',
-	WARN = 'WARN',
-	VERBOSE = 'VERBOSE',
-}
+type GenerateLoggerInput = {
+	namespace: string;
+	category?: AmplifyLoggingCategory;
+};
+export type GenerateLogger = (input: GenerateLoggerInput) => Logger;
