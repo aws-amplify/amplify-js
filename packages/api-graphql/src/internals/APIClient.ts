@@ -493,7 +493,7 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 ) {
 	const isObject = (obj: any) => obj && typeof obj === 'object';
 
-	for (let key in source) {
+	for (const key in source) {
 		// This verification avoids 'Prototype Pollution' issue
 		if (!source.hasOwnProperty(key)) continue;
 
