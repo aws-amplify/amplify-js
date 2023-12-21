@@ -91,6 +91,7 @@ export class FakeGraphQLService {
 			this.tables.set(model.name, new Map<string, any[]>());
 			this.tableDefinitions.set(model.name, model);
 			let CPKFound = false;
+
 			for (const attribute of model.attributes || []) {
 				if (isModelAttributePrimaryKey(attribute)) {
 					this.PKFields.set(model.name, attribute!.properties!.fields);
@@ -257,6 +258,22 @@ export class FakeGraphQLService {
 			],
 			message:
 				'The conditional request failed (Service: DynamoDb, Status Code: 400, Request ID: 123456789123456789012345678901234567890)',
+		};
+	}
+
+	private makeOCCConflictUnhandeled(existingObject, call) {
+		return {
+			data: existingObject,
+			errorType: 'ConflictUnhandled',
+			message: 'Conflict resolver rejects mutation.',
+			locations: [
+				{
+					line: 2,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			path: [call],
 		};
 	}
 

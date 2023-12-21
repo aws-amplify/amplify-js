@@ -268,6 +268,7 @@ describe('Geo', () => {
 				countries: ['USA'],
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
+				language: 'en',
 			};
 			const results = await geo.searchByText(testString, searchOptions);
 			expect(results).toEqual([testPlaceCamelCase]);
@@ -280,6 +281,7 @@ describe('Geo', () => {
 				BiasPosition: searchOptions.biasPosition,
 				FilterCountries: searchOptions.countries,
 				MaxResults: searchOptions.maxResults,
+				Language: searchOptions.language,
 			});
 		});
 
