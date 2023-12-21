@@ -77,7 +77,7 @@ describe('DataStore sync engine', () => {
 					await postHarness.revise('post title 1');
 					await postHarness.revise('post title 2');
 
-					await harness.outboxSettled();
+					await harness.fullSettle();
 					await harness.expectGraphqlSettledWithUpdateCallCount(2);
 
 					expect(harness.subscriptionLogs()).toEqual([
@@ -107,7 +107,7 @@ describe('DataStore sync engine', () => {
 					await postHarness.revise('post title 1');
 					await postHarness.revise('post title 2');
 
-					await harness.outboxSettled();
+					await harness.fullSettle();
 					await harness.expectGraphqlSettledWithUpdateCallCount(3);
 
 					expect(harness.subscriptionLogs()).toEqual([
@@ -138,7 +138,7 @@ describe('DataStore sync engine', () => {
 					await postHarness.revise('post title 1');
 					await postHarness.revise('post title 2');
 
-					await harness.outboxSettled();
+					await harness.fullSettle();
 					await harness.expectGraphqlSettledWithUpdateCallCount(0);
 
 					expect(harness.subscriptionLogs()).toEqual([
@@ -172,7 +172,7 @@ describe('DataStore sync engine', () => {
 					await postHarness.revise('post title 1');
 					await postHarness.revise('post title 2');
 
-					await harness.outboxSettled();
+					await harness.fullSettle();
 					await harness.expectGraphqlSettledWithUpdateCallCount(0);
 
 					expect(harness.subscriptionLogs()).toEqual([
@@ -194,7 +194,7 @@ describe('DataStore sync engine', () => {
 					});
 
 					harness.latency = 'high';
-					harness.settleOutboxAfterRevisions();
+					harness.settleAfterRevisions();
 
 					/**
 					 * We wait for the empty outbox on each mutation, because
@@ -233,7 +233,7 @@ describe('DataStore sync engine', () => {
 					});
 
 					harness.latency = 'low';
-					harness.settleOutboxAfterRevisions();
+					harness.settleAfterRevisions();
 
 					await postHarness.revise('post title 0');
 					await postHarness.revise('post title 1');
@@ -284,7 +284,7 @@ describe('DataStore sync engine', () => {
 						});
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
+						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithUpdateCallCount(3);
 						expect(harness.subscriptionLogs()).toEqual([
 							['original title', 1],
@@ -318,7 +318,7 @@ describe('DataStore sync engine', () => {
 						});
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
+						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(harness.subscriptionLogs()).toEqual([
@@ -341,7 +341,7 @@ describe('DataStore sync engine', () => {
 						});
 
 						harness.latency = 'high';
-						harness.settleOutboxAfterRevisions();
+						harness.settleAfterRevisions();
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -382,7 +382,7 @@ describe('DataStore sync engine', () => {
 						});
 
 						harness.latency = 'low';
-						harness.settleOutboxAfterRevisions();
+						harness.settleAfterRevisions();
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -446,7 +446,7 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
+						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithUpdateCallCount(3);
 
 						expect(
@@ -491,7 +491,7 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
+						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(
@@ -531,7 +531,7 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
+						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(
@@ -577,7 +577,7 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 2');
 
-						await harness.outboxSettled();
+						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithUpdateCallCount(4);
 
 						expect(
@@ -602,7 +602,7 @@ describe('DataStore sync engine', () => {
 						});
 
 						harness.latency = 'high';
-						harness.settleOutboxAfterRevisions();
+						harness.settleAfterRevisions();
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
@@ -646,7 +646,7 @@ describe('DataStore sync engine', () => {
 						});
 
 						harness.latency = 'low';
-						harness.settleOutboxAfterRevisions();
+						harness.settleAfterRevisions();
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
