@@ -220,6 +220,20 @@ export class UpdateSequenceHarness {
 	 */
 	async outboxSettled() {
 		await waitForEmptyOutbox();
+	}
+
+	/**
+	 * Wait for all subscription events to be delivered
+	 */
+	async subscriptionDeliverySettled() {
+		await Promise.all(subscriptionDeliveryPromiseList);
+	}
+
+	/**
+	 * Wait for the outbox and all subscription events to settle
+	 */
+	async fullSettle() {
+		await waitForEmptyOutbox();
 		await Promise.all(subscriptionDeliveryPromiseList);
 	}
 

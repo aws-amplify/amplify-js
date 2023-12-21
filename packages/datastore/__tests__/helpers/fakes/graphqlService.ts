@@ -39,6 +39,13 @@ const defaultLatencies: FakeLatencies = {
 	jitter: 5,
 };
 
+/**
+ * Keep a list of all subscription delivery promises where each promise
+ * resolves after the related message is delivered to all subscribers.
+ *
+ * This helps us track that all messages are delivered before proceeding
+ * with tests. The lists should be cleared between tests.
+ */
 export let subscriptionDeliveryPromiseList: Promise<void>[] = [];
 
 /**
