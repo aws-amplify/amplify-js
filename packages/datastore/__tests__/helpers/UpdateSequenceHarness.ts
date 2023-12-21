@@ -6,6 +6,10 @@ import {
 	pause,
 	waitForEmptyOutbox,
 } from './util';
+import {
+	clearSubscriptionDeliveryPromiseList,
+	subscriptionDeliveryPromiseList,
+} from './fakes/graphqlService';
 
 /**
  * Simulate a second client updating the original post
@@ -55,6 +59,7 @@ mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput
  */
 const jitter: number = 0;
 const highLatency = 1000;
+const highSubscriptionLatency = 1100;
 const lowLatency = 15;
 
 /**
@@ -185,7 +190,7 @@ export class UpdateSequenceHarness {
 			this.datastoreFake.graphqlService.setLatencies({
 				request: highLatency,
 				response: highLatency,
-				subscriber: highLatency,
+				subscriber: highSubscriptionLatency,
 				jitter,
 			});
 		}
@@ -213,6 +218,7 @@ export class UpdateSequenceHarness {
 	 */
 	async outboxSettled() {
 		await waitForEmptyOutbox();
+		await Promise.all(subscriptionDeliveryPromiseList);
 	}
 
 	/**
@@ -245,7 +251,7 @@ export class UpdateSequenceHarness {
 		const original = await this.datastoreFake.DataStore.save(
 			new this.datastoreFake.Post(args)
 		);
-        // We set this to `false` when we want to test updating a record that is still in the outbox.
+		// We set this to `false` when we want to test updating a record that is still in the outbox.
 		if (settleOutbox) {
 			await this.outboxSettled();
 		}
@@ -311,7 +317,7 @@ export class UpdateSequenceHarness {
 			postId
 		);
 		if (retrieved) {
-			const x = await this.datastoreFake.DataStore.save(
+			await this.datastoreFake.DataStore.save(
 				this.datastoreFake.Post.copyOf(retrieved, updated => {
 					updated.title = updatedTitle;
 				})

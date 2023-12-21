@@ -39,6 +39,15 @@ const defaultLatencies: FakeLatencies = {
 	jitter: 5,
 };
 
+export let subscriptionDeliveryPromiseList: Promise<void>[] = [];
+
+/**
+ * Clear the subscription delivery promise list
+ */
+export function clearSubscriptionDeliveryPromiseList() {
+	subscriptionDeliveryPromiseList = [];
+}
+
 /**
  * Statefully pretends to be AppSync, with minimal built-in assertions with
  * error callbacks and settings to help simulate various conditions.
@@ -495,29 +504,33 @@ export class FakeGraphQLService {
 		selection,
 		ignoreLatency = false
 	) {
-		!ignoreLatency && (await this.jitteredPause(this.latencies.subscriber));
-		const observers = this.getObservers(tableName, type);
-		const typeName = {
-			create: 'Create',
-			update: 'Update',
-			delete: 'Delete',
-		}[type];
-		const observerMessageName = `on${typeName}${tableName}`;
-		observers.forEach(observer => {
-			const message = {
-				data: {
-					[observerMessageName]: data[selection],
-				},
-			};
-			if (!this.stopSubscriptionMessages) {
-				this.log('API subscription message', {
-					observerMessageName,
-					message,
-				});
-				this.subscriptionMessagesSent.push([observerMessageName, message]);
-				observer.next(message);
-			}
+		const deliveryPromise = new Promise<void>(async resolve => {
+			!ignoreLatency && (await this.jitteredPause(this.latencies.subscriber));
+			const observers = this.getObservers(tableName, type);
+			const typeName = {
+				create: 'Create',
+				update: 'Update',
+				delete: 'Delete',
+			}[type];
+			const observerMessageName = `on${typeName}${tableName}`;
+			observers.forEach(observer => {
+				const message = {
+					data: {
+						[observerMessageName]: data[selection],
+					},
+				};
+				if (!this.stopSubscriptionMessages) {
+					this.log('API subscription message', {
+						observerMessageName,
+						message,
+					});
+					this.subscriptionMessagesSent.push([observerMessageName, message]);
+					observer.next(message);
+				}
+			});
+			resolve();
 		});
+		subscriptionDeliveryPromiseList.push(deliveryPromise);
 	}
 
 	public graphql(request: GraphQLRequest, ignoreLatency: boolean = false) {
