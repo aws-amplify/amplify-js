@@ -11,6 +11,7 @@ import { oAuthStore } from './oAuthStore';
 import { completeOAuthFlow } from './completeOAuthFlow';
 import { getAuthUserAgentValue } from '../../../../utils';
 import { getRedirectUrl } from './getRedirectUrl';
+import { handleFailure } from './handleFailure';
 
 export const attemptCompleteOAuthFlow = async (
 	authConfig: AuthConfig['Cognito']
@@ -46,10 +47,6 @@ export const attemptCompleteOAuthFlow = async (
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
 		});
 	} catch (err) {
-		// no-op
-		// Possible errors:
-		// 1. redirect url has `error` query param - error sent via Hub
-		// 2. validateState - error sent via Hub
-		// 3. fetch call to `/oauth2/token` - error sent via Hub
+		await handleFailure(err);
 	}
 };

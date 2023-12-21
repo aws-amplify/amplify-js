@@ -7,14 +7,13 @@ import {
 	USER_AGENT_HEADER,
 	urlSafeDecode,
 } from '@aws-amplify/core/internals/utils';
-import { AuthError } from '../../../../errors/AuthError';
 import { oAuthStore } from './oAuthStore';
 import { Hub, decodeJWT } from '@aws-amplify/core';
 import { validateState } from './validateState';
-import { handleFailure } from './handleFailure';
 import { resolveAndClearInflightPromises } from './inflightPromise';
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
 import { getCurrentUser } from '../../apis/getCurrentUser';
+import { createOAuthError } from './createOAuthError';
 
 export const completeOAuthFlow = async ({
 	currentUrl,
@@ -38,8 +37,7 @@ export const completeOAuthFlow = async ({
 	const errorMessage = urlParams.searchParams.get('error_description');
 
 	if (error) {
-		resolveAndClearInflightPromises();
-		return handleFailure(errorMessage);
+		throw createOAuthError(errorMessage ?? error);
 	}
 
 	if (responseType === 'code') {
@@ -78,24 +76,19 @@ const handleCodeFlow = async ({
 	/* Convert URL into an object with parameters as keys
 { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
 	const url = new AmplifyUrl(currentUrl);
-	let validatedState: string;
-	try {
-		validatedState = await validateState(url.searchParams.get('state'));
-	} catch (err) {
-		resolveAndClearInflightPromises();
-		// validateState method will always throw an AuthError when the state is not valid. The if statement is making TS happy.
-		if (err instanceof AuthError) {
-			await handleFailure(err.message);
-		}
-		return;
-	}
 	const code = url.searchParams.get('code');
+	const state = url.searchParams.get('state');
 
-	if (!code) {
-		await oAuthStore.clearOAuthData();
-		resolveAndClearInflightPromises();
-		return;
+	// if `code` or `state` is not presented in the redirect url, most likely
+	// that the end user cancelled the inflight oauth flow by:
+	// 1. clicking the back button of browser
+	// 2. closing the provider hosted UI page and coming back to the app
+	if (!code || !state) {
+		throw createOAuthError('The inflight OAuth flow has been cancelled.');
 	}
+
+	// may throw error is being caught in attemptCompleteOAuthFlow.ts
+	const validatedState = await validateState(state);
 
 	const oAuthTokenEndpoint = 'https://' + domain + '/oauth2/token';
 
@@ -107,7 +100,6 @@ const handleCodeFlow = async ({
 	// );
 
 	const codeVerifier = await oAuthStore.loadPKCE();
-
 	const oAuthTokenBody = {
 		grant_type: 'authorization_code',
 		code,
@@ -119,7 +111,6 @@ const handleCodeFlow = async ({
 	const body = Object.entries(oAuthTokenBody)
 		.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
 		.join('&');
-
 	const {
 		access_token,
 		refresh_token,
@@ -140,8 +131,8 @@ const handleCodeFlow = async ({
 	).json();
 
 	if (error) {
-		resolveAndClearInflightPromises();
-		await handleFailure(error_message ?? error);
+		// error is being caught in attemptCompleteOAuthFlow.ts
+		throw createOAuthError(error_message ?? error);
 	}
 
 	const username =
@@ -173,7 +164,6 @@ const handleImplicitFlow = async ({
 	preferPrivateSession?: boolean;
 }) => {
 	// hash is `null` if `#` doesn't exist on URL
-
 	const url = new AmplifyUrl(currentUrl);
 
 	const {
@@ -200,22 +190,11 @@ const handleImplicitFlow = async ({
 		});
 
 	if (!access_token) {
-		await oAuthStore.clearOAuthData();
-		resolveAndClearInflightPromises();
-		return;
-	}
-	let validatedState;
-	try {
-		validatedState = await validateState(state);
-	} catch (error) {
-		resolveAndClearInflightPromises();
-		// validateState method will always throw an AuthError when the state is not valid. The if statement is making TS happy.
-		if (error instanceof AuthError) {
-			await handleFailure(error.message);
-		}
-		return;
+		// error is being caught in attemptCompleteOAuthFlow.ts
+		throw createOAuthError('No access token returned from OAuth flow.');
 	}
 
+	const validatedState = await validateState(state);
 	const username =
 		(access_token && decodeJWT(access_token).payload.username) ?? 'username';
 

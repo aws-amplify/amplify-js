@@ -21,6 +21,8 @@ import {
 	completeOAuthFlow,
 	oAuthStore,
 } from '../utils/oauth';
+import { AuthError } from '../../../errors/AuthError';
+import { createOAuthError } from '../utils/oauth/createOAuthError';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -106,27 +108,30 @@ const oauthSignIn = async ({
 
 	// TODO(v6): use URL object instead
 	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
+
+	// the following is effective only in react-native as openAuthSession resolves only in react-native
 	const { type, error, url } =
 		(await openAuthSession(oAuthUrl, redirectSignIn, preferPrivateSession)) ??
 		{};
-	// This code will run in RN applications only as calling signInWithRedirect will
-	// resolve the promise.
-	if (type === 'success' && url) {
-		// ensure the code exchange completion resolves the signInWithRedirect
-		// returned promise in react-native
-		await completeOAuthFlow({
-			currentUrl: url,
-			clientId,
-			domain,
-			redirectUri,
-			responseType,
-			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
-			preferPrivateSession,
-		});
-	}
-	// This code will run in RN applications only as calling signInWithRedirect will
-	// resolve the promise.
-	if (type === 'error') {
-		await handleFailure(String(error));
+
+	try {
+		if (type === 'error') {
+			throw createOAuthError(String(error));
+		}
+		if (type === 'success' && url) {
+			await completeOAuthFlow({
+				currentUrl: url,
+				clientId,
+				domain,
+				redirectUri,
+				responseType,
+				userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
+				preferPrivateSession,
+			});
+		}
+	} catch (error) {
+		await handleFailure(error);
+		// rethrow the error so it can be caught by `await signInWithRedirect()` in react-native
+		throw error;
 	}
 };

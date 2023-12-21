@@ -2,20 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Hub } from '@aws-amplify/core';
-import { authErrorMessages } from '../../../../Errors';
-import { AuthErrorCodes } from '../../../../common/AuthErrorStrings';
-import { AuthError } from '../../../../errors/AuthError';
-import { oAuthStore } from './oAuthStore';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
+import { AuthError } from '../../../../errors/AuthError';
+import { oAuthStore } from './oAuthStore';
+import { resolveAndClearInflightPromises } from './inflightPromise';
+
 export const handleFailure = async (
-	errorMessage: string | null
+	error: AuthError | unknown
 ): Promise<void> => {
-	const error = new AuthError({
-		message: errorMessage ?? 'An error has occurred during the oauth process.',
-		name: AuthErrorCodes.OAuthSignInError,
-		recoverySuggestion: authErrorMessages.oauthSignInError.log,
-	});
+	resolveAndClearInflightPromises();
 	await oAuthStore.clearOAuthInflightData();
 	Hub.dispatch(
 		'auth',
@@ -23,9 +19,4 @@ export const handleFailure = async (
 		'Auth',
 		AMPLIFY_SYMBOL
 	);
-	throw new AuthError({
-		message: errorMessage ?? '',
-		name: AuthErrorCodes.OAuthSignInError,
-		recoverySuggestion: authErrorMessages.oauthSignInError.log,
-	});
 };

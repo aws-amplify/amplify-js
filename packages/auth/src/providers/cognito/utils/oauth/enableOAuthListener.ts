@@ -12,6 +12,7 @@ import { addInflightPromise } from './inflightPromise';
 import { attemptCompleteOAuthFlow } from './attemptCompleteOAuthFlow';
 
 // attach the side effect for handling the completion of an inflight oauth flow
+// this side effect works only on Web
 isBrowser() &&
 	(() => {
 		// add the listener to the singleton for triggering
