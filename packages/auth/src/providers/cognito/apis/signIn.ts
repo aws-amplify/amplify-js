@@ -5,7 +5,6 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import type { confirmSignIn } from './confirmSignIn';
 import { signInPasswordless } from './signInPasswordless';
 import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
@@ -32,6 +31,9 @@ import {
 	SignInWithOptionalPasswordOutput,
 } from '../types/outputs';
 
+import type { AuthValidationErrorCode } from '../../../errors/types/validation';
+import type { confirmSignIn } from './confirmSignIn';
+
 /**
  * Signs a user in with optional password. It uses either of the following sign-in flow:
  * * 'USER_SRP_AUTH'
@@ -43,9 +45,9 @@ import {
  * @returns - {@link SignInWithOptionalPasswordInput}
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
- * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `password` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signIn(
 	input: SignInWithOptionalPasswordInput
@@ -60,9 +62,9 @@ export function signIn(
  * @returns - {@link SignInPasswordlessWithEmailAndMagicLinkOutput}
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
- * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown username or passwordless
- *   option is invalid
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signIn(
 	input: SignInPasswordlessWithEmailAndMagicLinkInput
@@ -77,9 +79,9 @@ export function signIn(
  * @returns SignInPasswordlessWithEmailAndOTPOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
- * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown username or passwordless
- *   option is invalid
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signIn(
 	input: SignInPasswordlessWithEmailAndOTPInput
@@ -94,9 +96,9 @@ export function signIn(
  * @returns SignInPasswordlessWithSMSAndOTPOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
- * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown username or passwordless
- *   option is invalid
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signIn(
 	input: SignInPasswordlessWithSMSAndOTPInput
@@ -109,9 +111,9 @@ export function signIn(
  * @returns - {@link SignInOutput}
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
- * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `password` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signIn(input: SignInInput): Promise<SignInOutput>;
 

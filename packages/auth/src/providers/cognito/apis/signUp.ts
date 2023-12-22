@@ -8,7 +8,6 @@ import {
 	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
 
-import type { confirmSignIn } from './confirmSignIn';
 import { AuthDeliveryMedium } from '../../../types';
 import { SignUpInput, SignUpOutput, SignInInput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
@@ -45,15 +44,17 @@ import {
 } from '../types/outputs';
 import { signUpPasswordless } from './signUpPasswordless';
 
+import type { confirmSignIn } from './confirmSignIn';
+
 /**
  * Creates a user
  *
  * @param input - The {@link SignUpWithOptionalPasswordInput} object
  * @returns - {@link SignUpWithOptionalPasswordOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `password` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signUp(
 	input: SignUpWithOptionalPasswordInput
@@ -67,9 +68,10 @@ export function signUp(
  * @param input - The {@link SignUpPasswordlessWithEmailAndMagicLinkInput} object
  * @returns - {@link SignUpPasswordlessWithEmailAndMagicLinkOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
+ *   see {@link AuthValidationErrorCode}
  */
 export function signUp(
 	input: SignUpPasswordlessWithEmailAndMagicLinkInput
@@ -81,9 +83,9 @@ export function signUp(
  * @param input - The {@link SignUpPasswordlessWithSMSAndOTPInput} object
  * @returns - {@link SignUpPasswordlessWithSMSAndOTPOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signUp(
 	input: SignUpPasswordlessWithSMSAndOTPInput
@@ -96,9 +98,9 @@ export function signUp(
  * @param input - The {@link SignUpPasswordlessWithEmailAndOTPInput} object
  * @returns - {@link SignUpPasswordlessWithEmailAndOTPOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signUp(
 	input: SignUpPasswordlessWithEmailAndOTPInput
@@ -110,9 +112,9 @@ export function signUp(
  * @param input - The {@link SignUpInput} object
  * @returns - {@link SignUpInput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `password` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signUp(input: SignUpInput): Promise<SignUpOutput>;
 
