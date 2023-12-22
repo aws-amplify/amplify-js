@@ -5,6 +5,12 @@ import { HubInternal } from '@aws-amplify/core/internals/utils';
 import { signIn } from '../apis/signIn';
 import { SignInInput, SignInOutput } from '../types';
 import { AutoSignInEventData } from '../types/models';
+import {
+	SignUpPasswordlessWithEmailAndMagicLinkInput,
+	SignUpPasswordlessWithEmailAndOTPInput,
+	SignUpPasswordlessWithSMSAndOTPInput,
+	SignUpWithOptionalPasswordInput,
+} from '../types';
 import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
 import { SignUpCommandOutput } from './clients/CognitoIdentityProvider/types';
@@ -168,3 +174,69 @@ function autoSignInWithCode(signInInput: SignInInput): AutoSignInCallback {
 }
 
 export const autoSignInUserConfirmed = autoSignInWithCode;
+
+const assertSignUpPasswordlessWithEmailOption = (options: {
+	userAttributes: Record<string, string>;
+}) => {
+	if (!options.userAttributes.email) {
+		// TODO: create validation error
+		throw new Error('Missing email user attribute');
+	}
+};
+
+const assertSignUpPasswordlessWithSMSOption = (options: {
+	userAttributes: Record<string, string>;
+}) => {
+	if (!options.userAttributes['phone_number']) {
+		// TODO: create validation error
+		throw new Error('Missing phone_number user attribute');
+	}
+};
+
+type SignUpInputTypeUnion =
+	| SignUpWithOptionalPasswordInput
+	| SignUpPasswordlessWithEmailAndMagicLinkInput
+	| SignUpPasswordlessWithEmailAndOTPInput
+	| SignUpPasswordlessWithSMSAndOTPInput;
+
+export const isSignUpPasswordlessWithEmailAndMagicLinkInput = (
+	input: SignUpInputTypeUnion
+): input is SignUpPasswordlessWithEmailAndMagicLinkInput => {
+	if (
+		!input.passwordless ||
+		input.passwordless.deliveryMedium !== 'EMAIL' ||
+		input.passwordless.method !== 'MAGIC_LINK'
+	) {
+		return false;
+	}
+	assertSignUpPasswordlessWithEmailOption(input.options);
+	return true;
+};
+
+export const isSignUpPasswordlessWithEmailAndOTPInput = (
+	input: SignUpInputTypeUnion
+): input is SignUpPasswordlessWithEmailAndOTPInput => {
+	if (
+		!input.passwordless ||
+		input.passwordless.deliveryMedium !== 'EMAIL' ||
+		input.passwordless.method !== 'OTP'
+	) {
+		return false;
+	}
+	assertSignUpPasswordlessWithEmailOption(input.options);
+	return true;
+};
+
+export const isSignUpPasswordlessWithSMSAndOTPInput = (
+	input: SignUpInputTypeUnion
+): input is SignUpPasswordlessWithSMSAndOTPInput => {
+	if (
+		!input.passwordless ||
+		input.passwordless.deliveryMedium !== 'SMS' ||
+		input.passwordless.method !== 'OTP'
+	) {
+		return false;
+	}
+	assertSignUpPasswordlessWithSMSOption(input.options);
+	return true;
+};

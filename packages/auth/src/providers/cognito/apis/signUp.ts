@@ -7,6 +7,8 @@ import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
+
+import type { confirmSignIn } from './confirmSignIn';
 import { AuthDeliveryMedium } from '../../../types';
 import { SignUpInput, SignUpOutput, SignInInput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
@@ -23,6 +25,9 @@ import {
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
 	setUsernameUsedForAutoSignIn,
+	isSignUpPasswordlessWithEmailAndMagicLinkInput,
+	isSignUpPasswordlessWithEmailAndOTPInput,
+	isSignUpPasswordlessWithSMSAndOTPInput,
 } from '../utils/signUpHelpers';
 import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -38,7 +43,6 @@ import {
 	SignUpPasswordlessWithSMSAndOTPOutput,
 } from '../types/outputs';
 import { signUpPasswordless } from './signUpPasswordless';
-import { SignUpPasswordlessOptions } from '../types/options';
 
 /**
  * Creates a user
@@ -55,8 +59,10 @@ export function signUp(
 ): Promise<SignUpOutput>;
 
 /**
- * Creates a user with an email instead of a password. The sign-up must be confirmed by the Magic Link delivered to the
- * email.
+ * Creates a user with an email address instead of a password, and signs the user in automatically. The sign-up flow is
+ * completed by calling the {@link confirmSignIn} API with the code extracted from the MagicLink delivered to the email
+ * address.
+ *
  * @param input - The {@link SignUpPasswordlessWithEmailAndMagicLinkInput} object
  * @returns - {@link SignUpPasswordlessWithEmailAndMagicLinkOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
@@ -68,8 +74,9 @@ export function signUp(
 	input: SignUpPasswordlessWithEmailAndMagicLinkInput
 ): Promise<SignUpPasswordlessWithEmailAndMagicLinkOutput>;
 /**
- * Creates a user with an email instead of a password. The sign-up must be confirmed by an One-time pin
- * delivered to the email.
+ * Creates a user with an email address instead of a password, and signs the user in automatically. The sign-up flow is
+ * completed by calling the {@link confirmSignIn} API with the one-time password delivered to the email address.
+ *
  * @param input - The {@link SignUpPasswordlessWithSMSAndOTPInput} object
  * @returns - {@link SignUpPasswordlessWithSMSAndOTPOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
@@ -81,8 +88,10 @@ export function signUp(
 	input: SignUpPasswordlessWithSMSAndOTPInput
 ): Promise<SignUpPasswordlessWithSMSAndOTPOutput>;
 /**
- * Creates a user with a phone number instead of a password. The sign-up must be confirmed by an One-time pin
- * delivered to the email.
+ * Creates a user with a phone number instead of a password, and signs the user in automatically. The sign-up flow is
+ * completed by calling the {@link confirmSignIn} API with the the one-time password delivered to the phone number via
+ * SMS.
+ *
  * @param input - The {@link SignUpPasswordlessWithEmailAndOTPInput} object
  * @returns - {@link SignUpPasswordlessWithEmailAndOTPOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
@@ -107,66 +116,22 @@ export async function signUp(
 	if (passwordless) {
 		// Iterate through signUpPasswordless calls to make TypeScript happy
 		const { deliveryMedium, method } = passwordless;
-		if (deliveryMedium === 'EMAIL' && method === 'MAGIC_LINK') {
-			assertSignUpPasswordlessWithEmailOption(options);
-			return signUpPasswordless({
-				...input,
-				passwordless: {
-					deliveryMedium,
-					method,
-				},
-				options,
-			});
-		} else if (deliveryMedium === 'EMAIL' && method === 'OTP') {
-			assertSignUpPasswordlessWithEmailOption(options);
-			return signUpPasswordless({
-				...input,
-				passwordless: {
-					deliveryMedium,
-					method,
-				},
-				options,
-			});
-		} else if (deliveryMedium === 'SMS' && method === 'OTP') {
-			assertSignUpPasswordlessWithSMSOption(options);
-			return signUpPasswordless({
-				...input,
-				passwordless: {
-					deliveryMedium,
-					method,
-				},
-				options,
-			});
+		if (isSignUpPasswordlessWithEmailAndMagicLinkInput(input)) {
+			return signUpPasswordless(input);
+		} else if (isSignUpPasswordlessWithEmailAndOTPInput(input)) {
+			return signUpPasswordless(input);
+		} else if (isSignUpPasswordlessWithSMSAndOTPInput(input)) {
+			return signUpPasswordless(input);
 		} else {
 			// TODO: implement validation error
 			throw new Error('SMS does not support MagicLink');
 		}
 	} else {
-		return signUpPasswordful(input);
+		return signUpWithPassword(input);
 	}
 }
 
-// Assert function cannot be arrow function. See https://github.com/microsoft/TypeScript/issues/34523
-function assertSignUpPasswordlessWithEmailOption(options: {
-	userAttributes: Record<string, string>;
-}): asserts options is SignUpPasswordlessOptions<'email'> {
-	if (!options.userAttributes.email) {
-		// TODO: create validation error
-		throw new Error('Missing email user attribute');
-	}
-}
-
-// Assert function cannot be arrow function. See https://github.com/microsoft/TypeScript/issues/34523
-function assertSignUpPasswordlessWithSMSOption(options: {
-	userAttributes: Record<string, string>;
-}): asserts options is SignUpPasswordlessOptions<'phone_number'> {
-	if (!options.userAttributes['phone_number']) {
-		// TODO: create validation error
-		throw new Error('Missing phone_number user attribute');
-	}
-}
-
-const signUpPasswordful = async (
+const signUpWithPassword = async (
 	input: SignUpWithOptionalPasswordInput
 ): Promise<SignUpOutput> => {
 	const { username, password, options } = input;

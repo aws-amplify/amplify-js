@@ -17,7 +17,14 @@ import {
 	getSignatureString,
 } from './srp';
 
-import { ClientMetadata, ConfirmSignInOptions } from '../types';
+import {
+	ClientMetadata,
+	ConfirmSignInOptions,
+	SignInPasswordlessWithEmailAndMagicLinkInput,
+	SignInPasswordlessWithSMSAndOTPInput,
+	SignInPasswordlessWithEmailAndOTPInput,
+	SignInWithOptionalPasswordInput,
+} from '../types';
 import {
 	AuthAdditionalInfo,
 	AuthSignInOutput,
@@ -1115,3 +1122,30 @@ export function getActiveSignInUsername(username: string): string {
 	const state = signInStore.getState();
 	return state.username ?? username;
 }
+
+type SignInInputTypeUnion =
+	| SignInWithOptionalPasswordInput
+	| SignInPasswordlessWithEmailAndMagicLinkInput
+	| SignInPasswordlessWithEmailAndOTPInput
+	| SignInPasswordlessWithSMSAndOTPInput;
+
+export const isSignInPasswordlessWithEmailAndMagicLinkInput = (
+	input: SignInInputTypeUnion
+): input is SignInPasswordlessWithEmailAndMagicLinkInput =>
+	!!input.passwordless &&
+	input.passwordless.deliveryMedium === 'EMAIL' &&
+	input.passwordless.method === 'MAGIC_LINK';
+
+export const isSignInPasswordlessWithEmailAndOTPInput = (
+	input: SignInInputTypeUnion
+): input is SignInPasswordlessWithEmailAndOTPInput =>
+	!!input.passwordless &&
+	input.passwordless.deliveryMedium === 'EMAIL' &&
+	input.passwordless.method === 'OTP';
+
+export const isSignInPasswordlessWithSMSAndOTPInput = (
+	input: SignInInputTypeUnion
+): input is SignInPasswordlessWithSMSAndOTPInput =>
+	!!input.passwordless &&
+	input.passwordless.deliveryMedium === 'SMS' &&
+	input.passwordless.method === 'OTP';

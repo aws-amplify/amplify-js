@@ -146,8 +146,3 @@ export type SignInPasswordlessWithSMSAndOTPOutput = {
 	isSignedIn: boolean;
 	nextStep: ConfirmSignInWithOTPStep;
 };
-
-export type ConfirmSignInWithMagicLinkOutput = {
-	isSignedIn: boolean;
-	nextStep: DoneSignInStep;
-};

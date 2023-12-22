@@ -78,9 +78,12 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 /**
  * Input type for Cognito signIn API.
  */
-export type SignInInput = SignInInputWithOptionalPassword;
+export type SignInInput = SignInWithOptionalPasswordInput;
+// | SignInPasswordlessWithEmailAndMagicLinkInput
+// | SignInPasswordlessWithEmailAndOTPInput
+// | SignInPasswordlessWithSMSAndOTPInput;
 
-export type SignInInputWithOptionalPassword = AuthSignInInput<SignInOptions> & {
+export type SignInWithOptionalPasswordInput = AuthSignInInput<SignInOptions> & {
 	passwordless?: never;
 };
 
@@ -106,10 +109,10 @@ export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions> & {
 	passwordless?: never;
 };
 
-type SignInPasswordlessInput<
+interface SignInPasswordlessInput<
 	DeliveryMedium extends 'EMAIL' | 'SMS',
 	Method extends 'MAGIC_LINK' | 'OTP',
-> = {
+> {
 	username: string;
 	password?: never;
 	passwordless: {
@@ -117,7 +120,7 @@ type SignInPasswordlessInput<
 		method: Method;
 	};
 	options?: SignInPasswordlessOptions;
-};
+}
 
 /**
  * The parameters to construct sign-in input without a password. Users will be
@@ -133,7 +136,7 @@ export type SignInPasswordlessWithEmailAndMagicLinkInput =
 
 /**
  * The parameters to construct sign-in input without a password. Users will be
- * signed-in with an One-time pin sent to their device via registered email.
+ * signed-in with an one-time password sent to their device via registered email.
  *
  * This input interface can only be used with proper passwordless configuration
  * in the backend.
@@ -147,7 +150,7 @@ export type SignInPasswordlessWithEmailAndOTPInput = SignInPasswordlessInput<
 
 /**
  * The parameters to construct sign-in input without a password. Users will be
- * signed-in with an One-time pin sent to their device via SMS.
+ * signed-in with an one-time password sent to their device via SMS.
  *
  * This input interface can only be used with proper passwordless configuration
  * in the backend.
@@ -173,11 +176,10 @@ export type SignOutInput = AuthSignOutInput;
 /**
  * @internal
  */
-export type SignUpWithOptionalPasswordInput = AuthSignUpInput<
-	SignUpOptions<UserAttributeKey>
-> & {
+export interface SignUpWithOptionalPasswordInput
+	extends AuthSignUpInput<SignUpOptions<UserAttributeKey>> {
 	passwordless?: never;
-};
+}
 
 /**
  * Input type for Cognito signUp API.
@@ -212,7 +214,7 @@ export type SignUpPasswordlessWithEmailAndMagicLinkInput =
 
 /**
  * The parameters to construct sign-up input without a password. Users will be
- * signed-up with an One-time pin sent to their device via registered email.
+ * signed-up with an one-time password sent to their device via registered email.
  *
  * This input interface can only be used with proper passwordless configuration
  * in the backend.
@@ -227,7 +229,7 @@ export type SignUpPasswordlessWithEmailAndOTPInput = SignUpPasswordlessInput<
 
 /**
  * The parameters to construct sign-up input without a password. Users will be
- * signed-up with an One-time pin sent to their device via SMS.
+ * signed-up with an one-time password sent to their device via SMS.
  *
  * This input interface can only be used with proper passwordless configuration
  * in the backend.
