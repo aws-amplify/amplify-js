@@ -20,9 +20,9 @@ import {
 import {
 	ClientMetadata,
 	ConfirmSignInOptions,
-	SignInPasswordlessWithEmailAndMagicLinkInput,
-	SignInPasswordlessWithSMSAndOTPInput,
-	SignInPasswordlessWithEmailAndOTPInput,
+	SignInWithEmailAndMagicLinkInput,
+	SignInWithSMSAndOTPInput,
+	SignInWithEmailAndOTPInput,
 	SignInInput,
 } from '../types';
 import {
@@ -1125,27 +1125,27 @@ export function getActiveSignInUsername(username: string): string {
 
 type SignInInputTypes =
 	| SignInInput
-	| SignInPasswordlessWithEmailAndMagicLinkInput
-	| SignInPasswordlessWithEmailAndOTPInput
-	| SignInPasswordlessWithSMSAndOTPInput;
+	| SignInWithEmailAndMagicLinkInput
+	| SignInWithEmailAndOTPInput
+	| SignInWithSMSAndOTPInput;
 
-export const isSignInPasswordlessWithEmailAndMagicLinkInput = (
+export const isSignInWithEmailAndMagicLinkInput = (
 	input: SignInInputTypes
-): input is SignInPasswordlessWithEmailAndMagicLinkInput =>
+): input is SignInWithEmailAndMagicLinkInput =>
 	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'EMAIL' &&
 	input.passwordless.method === 'MAGIC_LINK';
 
-export const isSignInPasswordlessWithEmailAndOTPInput = (
+export const isSignInWithEmailAndOTPInput = (
 	input: SignInInputTypes
-): input is SignInPasswordlessWithEmailAndOTPInput =>
+): input is SignInWithEmailAndOTPInput =>
 	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'EMAIL' &&
 	input.passwordless.method === 'OTP';
 
-export const isSignInPasswordlessWithSMSAndOTPInput = (
+export const isSignInWithSMSAndOTPInput = (
 	input: SignInInputTypes
-): input is SignInPasswordlessWithSMSAndOTPInput =>
+): input is SignInWithSMSAndOTPInput =>
 	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'SMS' &&
 	input.passwordless.method === 'OTP';

@@ -6,9 +6,9 @@ import { signIn } from '../apis/signIn';
 import { SignInInput, SignInOutput, SignUpInput } from '../types';
 import { AutoSignInEventData } from '../types/models';
 import {
-	SignUpPasswordlessWithEmailAndMagicLinkInput,
-	SignUpPasswordlessWithEmailAndOTPInput,
-	SignUpPasswordlessWithSMSAndOTPInput,
+	SignUpWithEmailAndMagicLinkInput,
+	SignUpWithEmailAndOTPInput,
+	SignUpWithSMSAndOTPInput,
 } from '../types';
 import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
@@ -174,7 +174,7 @@ function autoSignInWithCode(signInInput: SignInInput): AutoSignInCallback {
 
 export const autoSignInUserConfirmed = autoSignInWithCode;
 
-const assertSignUpPasswordlessWithEmailOption = (options: {
+const assertSignUpWithEmailOption = (options: {
 	userAttributes: Record<string, string>;
 }) => {
 	if (!options.userAttributes.email) {
@@ -183,7 +183,7 @@ const assertSignUpPasswordlessWithEmailOption = (options: {
 	}
 };
 
-const assertSignUpPasswordlessWithSMSOption = (options: {
+const assertSignUpWithSMSOption = (options: {
 	userAttributes: Record<string, string>;
 }) => {
 	if (!options.userAttributes['phone_number']) {
@@ -194,13 +194,13 @@ const assertSignUpPasswordlessWithSMSOption = (options: {
 
 type SignUpInputTypes =
 	| SignUpInput
-	| SignUpPasswordlessWithEmailAndMagicLinkInput
-	| SignUpPasswordlessWithEmailAndOTPInput
-	| SignUpPasswordlessWithSMSAndOTPInput;
+	| SignUpWithEmailAndMagicLinkInput
+	| SignUpWithEmailAndOTPInput
+	| SignUpWithSMSAndOTPInput;
 
-export const isSignUpPasswordlessWithEmailAndMagicLinkInput = (
+export const isSignUpWithEmailAndMagicLinkInput = (
 	input: SignUpInputTypes
-): input is SignUpPasswordlessWithEmailAndMagicLinkInput => {
+): input is SignUpWithEmailAndMagicLinkInput => {
 	if (
 		!input.passwordless ||
 		input.passwordless.deliveryMedium !== 'EMAIL' ||
@@ -208,13 +208,13 @@ export const isSignUpPasswordlessWithEmailAndMagicLinkInput = (
 	) {
 		return false;
 	}
-	assertSignUpPasswordlessWithEmailOption(input.options);
+	assertSignUpWithEmailOption(input.options);
 	return true;
 };
 
-export const isSignUpPasswordlessWithEmailAndOTPInput = (
+export const isSignUpWithEmailAndOTPInput = (
 	input: SignUpInputTypes
-): input is SignUpPasswordlessWithEmailAndOTPInput => {
+): input is SignUpWithEmailAndOTPInput => {
 	if (
 		!input.passwordless ||
 		input.passwordless.deliveryMedium !== 'EMAIL' ||
@@ -222,13 +222,13 @@ export const isSignUpPasswordlessWithEmailAndOTPInput = (
 	) {
 		return false;
 	}
-	assertSignUpPasswordlessWithEmailOption(input.options);
+	assertSignUpWithEmailOption(input.options);
 	return true;
 };
 
-export const isSignUpPasswordlessWithSMSAndOTPInput = (
+export const isSignUpWithSMSAndOTPInput = (
 	input: SignUpInputTypes
-): input is SignUpPasswordlessWithSMSAndOTPInput => {
+): input is SignUpWithSMSAndOTPInput => {
 	if (
 		!input.passwordless ||
 		input.passwordless.deliveryMedium !== 'SMS' ||
@@ -236,6 +236,6 @@ export const isSignUpPasswordlessWithSMSAndOTPInput = (
 	) {
 		return false;
 	}
-	assertSignUpPasswordlessWithSMSOption(input.options);
+	assertSignUpWithSMSOption(input.options);
 	return true;
 };

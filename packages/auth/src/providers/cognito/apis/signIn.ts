@@ -12,21 +12,21 @@ import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
 import {
 	assertUserNotAuthenticated,
-	isSignInPasswordlessWithEmailAndMagicLinkInput,
-	isSignInPasswordlessWithEmailAndOTPInput,
-	isSignInPasswordlessWithSMSAndOTPInput,
+	isSignInWithEmailAndMagicLinkInput,
+	isSignInWithEmailAndOTPInput,
+	isSignInWithSMSAndOTPInput,
 } from '../utils/signInHelpers';
 
 import { SignInInput, SignInOutput } from '../types';
 import {
-	SignInPasswordlessWithEmailAndMagicLinkInput,
-	SignInPasswordlessWithEmailAndOTPInput,
-	SignInPasswordlessWithSMSAndOTPInput,
+	SignInWithEmailAndMagicLinkInput,
+	SignInWithEmailAndOTPInput,
+	SignInWithSMSAndOTPInput,
 } from '../types/inputs';
 import {
-	SignInPasswordlessWithEmailAndMagicLinkOutput,
-	SignInPasswordlessWithEmailAndOTPOutput,
-	SignInPasswordlessWithSMSAndOTPOutput,
+	SignInWithEmailAndMagicLinkOutput,
+	SignInWithEmailAndOTPOutput,
+	SignInWithSMSAndOTPOutput,
 } from '../types/outputs';
 
 import type { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -54,8 +54,8 @@ export function signIn(input: SignInInput): Promise<SignInOutput>;
  * completed by calling the {@link confirmSignIn} API with the code extracted from the MagicLink delivered to the
  * registered email address.
  *
- * @param input -  The {@link SignInPasswordlessWithEmailAndMagicLinkInput} object
- * @returns - {@link SignInPasswordlessWithEmailAndMagicLinkOutput}
+ * @param input -  The {@link SignInWithEmailAndMagicLinkInput} object
+ * @returns - {@link SignInWithEmailAndMagicLinkOutput}
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
@@ -63,16 +63,16 @@ export function signIn(input: SignInInput): Promise<SignInOutput>;
  * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signIn(
-	input: SignInPasswordlessWithEmailAndMagicLinkInput
-): Promise<SignInPasswordlessWithEmailAndMagicLinkOutput>;
+	input: SignInWithEmailAndMagicLinkInput
+): Promise<SignInWithEmailAndMagicLinkOutput>;
 
 /**
  * Initiates a passwordless sign-in flow by sending a one-time password to a registered email address. The sign-in flow
  * is completed by calling the {@link confirmSignIn} API with the one-time password delivered to the registered email
  * address.
  *
- * @param input -  The SignInPasswordlessWithEmailAndOTPInput object
- * @returns SignInPasswordlessWithEmailAndOTPOutput
+ * @param input -  The SignInWithEmailAndOTPInput object
+ * @returns SignInWithEmailAndOTPOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
@@ -80,16 +80,16 @@ export function signIn(
  * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signIn(
-	input: SignInPasswordlessWithEmailAndOTPInput
-): Promise<SignInPasswordlessWithEmailAndOTPOutput>;
+	input: SignInWithEmailAndOTPInput
+): Promise<SignInWithEmailAndOTPOutput>;
 
 /**
  * Initiates a passwordless sign-in flow by sending a one-time password to a registered phone number via SMS. The
  * sign-in flow is completed by calling the {@link confirmSignIn} API with the one-time password delivered to the
  * registered phone number via SMS.
  *
- * @param input -  The SignInPasswordlessWithSMSAndOTPInput object
- * @returns SignInPasswordlessWithSMSAndOTPOutput
+ * @param input -  The SignInWithSMSAndOTPInput object
+ * @returns SignInWithSMSAndOTPOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
@@ -97,23 +97,23 @@ export function signIn(
  * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signIn(
-	input: SignInPasswordlessWithSMSAndOTPInput
-): Promise<SignInPasswordlessWithSMSAndOTPOutput>;
+	input: SignInWithSMSAndOTPInput
+): Promise<SignInWithSMSAndOTPOutput>;
 
 export async function signIn(
 	input:
 		| SignInInput
-		| SignInPasswordlessWithEmailAndMagicLinkInput
-		| SignInPasswordlessWithEmailAndOTPInput
-		| SignInPasswordlessWithSMSAndOTPInput
+		| SignInWithEmailAndMagicLinkInput
+		| SignInWithEmailAndOTPInput
+		| SignInWithSMSAndOTPInput
 ) {
 	await assertUserNotAuthenticated();
 	if (input.passwordless) {
-		if (isSignInPasswordlessWithEmailAndMagicLinkInput(input)) {
+		if (isSignInWithEmailAndMagicLinkInput(input)) {
 			return signInPasswordless(input);
-		} else if (isSignInPasswordlessWithEmailAndOTPInput(input)) {
+		} else if (isSignInWithEmailAndOTPInput(input)) {
 			return signInPasswordless(input);
-		} else if (isSignInPasswordlessWithSMSAndOTPInput(input)) {
+		} else if (isSignInWithSMSAndOTPInput(input)) {
 			return signInPasswordless(input);
 		} else {
 			// TODO: implement validation error

@@ -24,21 +24,21 @@ import {
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
 	setUsernameUsedForAutoSignIn,
-	isSignUpPasswordlessWithEmailAndMagicLinkInput,
-	isSignUpPasswordlessWithEmailAndOTPInput,
-	isSignUpPasswordlessWithSMSAndOTPInput,
+	isSignUpWithEmailAndMagicLinkInput,
+	isSignUpWithEmailAndOTPInput,
+	isSignUpWithSMSAndOTPInput,
 } from '../utils/signUpHelpers';
 import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
 import {
-	SignUpPasswordlessWithEmailAndMagicLinkInput,
-	SignUpPasswordlessWithEmailAndOTPInput,
-	SignUpPasswordlessWithSMSAndOTPInput,
+	SignUpWithEmailAndMagicLinkInput,
+	SignUpWithEmailAndOTPInput,
+	SignUpWithSMSAndOTPInput,
 } from '../types/inputs';
 import {
-	SignUpPasswordlessWithEmailAndMagicLinkOutput,
-	SignUpPasswordlessWithEmailAndOTPOutput,
-	SignUpPasswordlessWithSMSAndOTPOutput,
+	SignUpWithEmailAndMagicLinkOutput,
+	SignUpWithEmailAndOTPOutput,
+	SignUpWithSMSAndOTPOutput,
 } from '../types/outputs';
 import { signUpPasswordless } from './signUpPasswordless';
 
@@ -61,8 +61,8 @@ export function signUp(input: SignUpInput): Promise<SignUpOutput>;
  * completed by calling the {@link confirmSignIn} API with the code extracted from the MagicLink delivered to the email
  * address.
  *
- * @param input - The {@link SignUpPasswordlessWithEmailAndMagicLinkInput} object
- * @returns - {@link SignUpPasswordlessWithEmailAndMagicLinkOutput}
+ * @param input - The {@link SignUpWithEmailAndMagicLinkInput} object
+ * @returns - {@link SignUpWithEmailAndMagicLinkOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
  *   see {@link AuthValidationErrorCode}
@@ -70,37 +70,37 @@ export function signUp(input: SignUpInput): Promise<SignUpOutput>;
  *   see {@link AuthValidationErrorCode}
  */
 export function signUp(
-	input: SignUpPasswordlessWithEmailAndMagicLinkInput
-): Promise<SignUpPasswordlessWithEmailAndMagicLinkOutput>;
+	input: SignUpWithEmailAndMagicLinkInput
+): Promise<SignUpWithEmailAndMagicLinkOutput>;
 /**
  * Creates a user with an email address instead of a password, and signs the user in automatically. The sign-up flow is
  * completed by calling the {@link confirmSignIn} API with the one-time password delivered to the email address.
  *
- * @param input - The {@link SignUpPasswordlessWithSMSAndOTPInput} object
- * @returns - {@link SignUpPasswordlessWithSMSAndOTPOutput}
+ * @param input - The {@link SignUpWithSMSAndOTPInput} object
+ * @returns - {@link SignUpWithSMSAndOTPOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
  *   see {@link AuthValidationErrorCode}
  * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signUp(
-	input: SignUpPasswordlessWithSMSAndOTPInput
-): Promise<SignUpPasswordlessWithSMSAndOTPOutput>;
+	input: SignUpWithSMSAndOTPInput
+): Promise<SignUpWithSMSAndOTPOutput>;
 /**
  * Creates a user with a phone number instead of a password, and signs the user in automatically. The sign-up flow is
  * completed by calling the {@link confirmSignIn} API with the the one-time password delivered to the phone number via
  * SMS.
  *
- * @param input - The {@link SignUpPasswordlessWithEmailAndOTPInput} object
- * @returns - {@link SignUpPasswordlessWithEmailAndOTPOutput}
+ * @param input - The {@link SignUpWithEmailAndOTPInput} object
+ * @returns - {@link SignUpWithEmailAndOTPOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
  *   see {@link AuthValidationErrorCode}
  * @throws AuthTokenConfigException when the token provider config is invalid.
  */
 export function signUp(
-	input: SignUpPasswordlessWithEmailAndOTPInput
-): Promise<SignUpPasswordlessWithEmailAndOTPOutput>;
+	input: SignUpWithEmailAndOTPInput
+): Promise<SignUpWithEmailAndOTPOutput>;
 
 /**
  * @internal
@@ -108,18 +108,18 @@ export function signUp(
 export async function signUp(
 	input:
 		| SignUpInput
-		| SignUpPasswordlessWithEmailAndMagicLinkInput
-		| SignUpPasswordlessWithEmailAndOTPInput
-		| SignUpPasswordlessWithSMSAndOTPInput
+		| SignUpWithEmailAndMagicLinkInput
+		| SignUpWithEmailAndOTPInput
+		| SignUpWithSMSAndOTPInput
 ) {
 	const { options, passwordless } = input;
 	if (passwordless) {
 		// Iterate through signUpPasswordless calls to make TypeScript happy
-		if (isSignUpPasswordlessWithEmailAndMagicLinkInput(input)) {
+		if (isSignUpWithEmailAndMagicLinkInput(input)) {
 			return signUpPasswordless(input);
-		} else if (isSignUpPasswordlessWithEmailAndOTPInput(input)) {
+		} else if (isSignUpWithEmailAndOTPInput(input)) {
 			return signUpPasswordless(input);
-		} else if (isSignUpPasswordlessWithSMSAndOTPInput(input)) {
+		} else if (isSignUpWithSMSAndOTPInput(input)) {
 			return signUpPasswordless(input);
 		} else {
 			// TODO: implement validation error

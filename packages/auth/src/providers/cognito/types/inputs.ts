@@ -139,8 +139,10 @@ interface SignInPasswordlessInput<
  *
  * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
  */
-export type SignInPasswordlessWithEmailAndMagicLinkInput =
-	SignInPasswordlessInput<'EMAIL', 'MAGIC_LINK'>;
+export type SignInWithEmailAndMagicLinkInput = SignInPasswordlessInput<
+	'EMAIL',
+	'MAGIC_LINK'
+>;
 
 /**
  * The parameters to construct sign-in input without a password. Users will be
@@ -151,7 +153,7 @@ export type SignInPasswordlessWithEmailAndMagicLinkInput =
  *
  * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
  */
-export type SignInPasswordlessWithEmailAndOTPInput = SignInPasswordlessInput<
+export type SignInWithEmailAndOTPInput = SignInPasswordlessInput<
 	'EMAIL',
 	'OTP'
 >;
@@ -166,10 +168,7 @@ export type SignInPasswordlessWithEmailAndOTPInput = SignInPasswordlessInput<
  * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
  */
 
-export type SignInPasswordlessWithSMSAndOTPInput = SignInPasswordlessInput<
-	'SMS',
-	'OTP'
->;
+export type SignInWithSMSAndOTPInput = SignInPasswordlessInput<'SMS', 'OTP'>;
 
 /**
  * Input type for Cognito signInWithRedirect API.
@@ -224,8 +223,11 @@ interface SignUpPasswordlessInput<
  *
  * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
  */
-export type SignUpPasswordlessWithEmailAndMagicLinkInput =
-	SignUpPasswordlessInput<'EMAIL', 'MAGIC_LINK', 'email'>;
+export type SignUpWithEmailAndMagicLinkInput = SignUpPasswordlessInput<
+	'EMAIL',
+	'MAGIC_LINK',
+	'email'
+>;
 
 /**
  * The parameters to construct sign-up input without a password. Users will be
@@ -236,7 +238,7 @@ export type SignUpPasswordlessWithEmailAndMagicLinkInput =
  *
  * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
  */
-export type SignUpPasswordlessWithEmailAndOTPInput = SignUpPasswordlessInput<
+export type SignUpWithEmailAndOTPInput = SignUpPasswordlessInput<
 	'EMAIL',
 	'OTP',
 	'email'
@@ -251,7 +253,7 @@ export type SignUpPasswordlessWithEmailAndOTPInput = SignUpPasswordlessInput<
  *
  * See {@link https://docs.amplify.aws/gen2/build-a-backend/auth/}
  */
-export type SignUpPasswordlessWithSMSAndOTPInput = SignUpPasswordlessInput<
+export type SignUpWithSMSAndOTPInput = SignUpPasswordlessInput<
 	'SMS',
 	'OTP',
 	'phone_number'

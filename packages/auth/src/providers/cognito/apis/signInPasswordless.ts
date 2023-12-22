@@ -2,45 +2,45 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	SignInPasswordlessWithEmailAndMagicLinkInput,
-	SignInPasswordlessWithEmailAndOTPInput,
-	SignInPasswordlessWithSMSAndOTPInput,
+	SignInWithEmailAndMagicLinkInput,
+	SignInWithEmailAndOTPInput,
+	SignInWithSMSAndOTPInput,
 } from '../types/inputs';
 import {
-	SignInPasswordlessWithEmailAndMagicLinkOutput,
-	SignInPasswordlessWithEmailAndOTPOutput,
-	SignInPasswordlessWithSMSAndOTPOutput,
+	SignInWithEmailAndMagicLinkOutput,
+	SignInWithEmailAndOTPOutput,
+	SignInWithSMSAndOTPOutput,
 } from '../types/outputs';
 
 /**
  * @internal
  */
 export function signInPasswordless(
-	input: SignInPasswordlessWithEmailAndMagicLinkInput
-): Promise<SignInPasswordlessWithEmailAndMagicLinkOutput>;
+	input: SignInWithEmailAndMagicLinkInput
+): Promise<SignInWithEmailAndMagicLinkOutput>;
 
 /**
  * @internal
  */
 export function signInPasswordless(
-	input: SignInPasswordlessWithEmailAndOTPInput
-): Promise<SignInPasswordlessWithEmailAndOTPOutput>;
+	input: SignInWithEmailAndOTPInput
+): Promise<SignInWithEmailAndOTPOutput>;
 
 /**
  * @internal
  */
 export function signInPasswordless(
-	input: SignInPasswordlessWithSMSAndOTPInput
-): Promise<SignInPasswordlessWithSMSAndOTPOutput>;
+	input: SignInWithSMSAndOTPInput
+): Promise<SignInWithSMSAndOTPOutput>;
 
 /**
  * @internal
  */
 export async function signInPasswordless(
 	input:
-		| SignInPasswordlessWithEmailAndMagicLinkInput
-		| SignInPasswordlessWithEmailAndOTPInput
-		| SignInPasswordlessWithSMSAndOTPInput
+		| SignInWithEmailAndMagicLinkInput
+		| SignInWithEmailAndOTPInput
+		| SignInWithSMSAndOTPInput
 ) {
 	// TODO: needs implementation
 	return {} as any;

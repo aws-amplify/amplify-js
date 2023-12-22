@@ -98,17 +98,17 @@ export type SignUpOutput = SignUpWithOptionalPasswordOutput;
 type SignUpWithOptionalPasswordOutput =
 	AuthSignUpOutput<AuthVerifiableAttributeKey>;
 
-export type SignUpPasswordlessWithEmailAndMagicLinkOutput = {
+export type SignUpWithEmailAndMagicLinkOutput = {
 	isSignUpComplete: boolean;
 	nextStep: ConfirmSignInWithMagicLinkSignUpStep;
 };
 
-export type SignUpPasswordlessWithEmailAndOTPOutput = {
+export type SignUpWithEmailAndOTPOutput = {
 	isSignUpComplete: boolean;
 	nextStep: ConfirmSignInWithOTPSignUpStep;
 };
 
-export type SignUpPasswordlessWithSMSAndOTPOutput = {
+export type SignUpWithSMSAndOTPOutput = {
 	isSignUpComplete: boolean;
 	nextStep: ConfirmSignInWithOTPSignUpStep;
 };
@@ -136,17 +136,17 @@ export type UpdateUserAttributeOutput =
  */
 export type FetchDevicesOutput = AWSAuthDevice[];
 
-export type SignInPasswordlessWithEmailAndMagicLinkOutput = {
+export type SignInWithEmailAndMagicLinkOutput = {
 	isSignedIn: boolean;
 	nextStep: ConfirmSignInWithMagicLinkStep;
 };
 
-export type SignInPasswordlessWithEmailAndOTPOutput = {
+export type SignInWithEmailAndOTPOutput = {
 	isSignedIn: boolean;
 	nextStep: ConfirmSignInWithOTPStep;
 };
 
-export type SignInPasswordlessWithSMSAndOTPOutput = {
+export type SignInWithSMSAndOTPOutput = {
 	isSignedIn: boolean;
 	nextStep: ConfirmSignInWithOTPStep;
 };
