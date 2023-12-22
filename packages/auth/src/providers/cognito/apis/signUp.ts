@@ -34,13 +34,11 @@ import {
 	SignUpPasswordlessWithEmailAndMagicLinkInput,
 	SignUpPasswordlessWithEmailAndOTPInput,
 	SignUpPasswordlessWithSMSAndOTPInput,
-	SignUpWithOptionalPasswordInput,
 } from '../types/inputs';
 import {
 	SignUpPasswordlessWithEmailAndMagicLinkOutput,
 	SignUpPasswordlessWithEmailAndOTPOutput,
 	SignUpPasswordlessWithSMSAndOTPOutput,
-	SignUpWithOptionalPasswordOutput,
 } from '../types/outputs';
 import { signUpPasswordless } from './signUpPasswordless';
 
@@ -49,16 +47,14 @@ import type { confirmSignIn } from './confirmSignIn';
 /**
  * Creates a user
  *
- * @param input - The {@link SignUpWithOptionalPasswordInput} object
- * @returns - {@link SignUpWithOptionalPasswordOutput}
+ * @param input - The {@link SignUpInput} object
+ * @returns - {@link SignUpOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
  * @throws AuthValidationErrorCode when `username` or `password` is invalid.
  *   see {@link AuthValidationErrorCode}
  * @throws AuthTokenConfigException when the token provider config is invalid.
  */
-export function signUp(
-	input: SignUpWithOptionalPasswordInput
-): Promise<SignUpWithOptionalPasswordOutput>;
+export function signUp(input: SignUpInput): Promise<SignUpOutput>;
 
 /**
  * Creates a user with an email address instead of a password, and signs the user in automatically. The sign-up flow is
@@ -107,21 +103,15 @@ export function signUp(
 ): Promise<SignUpPasswordlessWithEmailAndOTPOutput>;
 
 /**
- * Creates a user to be authenticated with Cognito user pool flow, or passwordless flows.
- *
- * @param input - The {@link SignUpInput} object
- * @returns - {@link SignUpInput}
- * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws AuthValidationErrorCode when `username` or `password` or `passwordless` is invalid.
- *   see {@link AuthValidationErrorCode}
- * @throws AuthTokenConfigException when the token provider config is invalid.
- */
-export function signUp(input: SignUpInput): Promise<SignUpOutput>;
-
-/**
  * @internal
  */
-export async function signUp(input: SignUpInput) {
+export async function signUp(
+	input:
+		| SignUpInput
+		| SignUpPasswordlessWithEmailAndMagicLinkInput
+		| SignUpPasswordlessWithEmailAndOTPInput
+		| SignUpPasswordlessWithSMSAndOTPInput
+) {
 	const { options, passwordless } = input;
 	if (passwordless) {
 		// Iterate through signUpPasswordless calls to make TypeScript happy
@@ -141,7 +131,7 @@ export async function signUp(input: SignUpInput) {
 }
 
 const signUpWithPassword = async (
-	input: SignUpWithOptionalPasswordInput
+	input: SignUpInput
 ): Promise<SignUpOutput> => {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;

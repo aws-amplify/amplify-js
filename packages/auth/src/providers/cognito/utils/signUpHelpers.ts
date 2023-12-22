@@ -3,13 +3,12 @@
 
 import { HubInternal } from '@aws-amplify/core/internals/utils';
 import { signIn } from '../apis/signIn';
-import { SignInInput, SignInOutput } from '../types';
+import { SignInInput, SignInOutput, SignUpInput } from '../types';
 import { AutoSignInEventData } from '../types/models';
 import {
 	SignUpPasswordlessWithEmailAndMagicLinkInput,
 	SignUpPasswordlessWithEmailAndOTPInput,
 	SignUpPasswordlessWithSMSAndOTPInput,
-	SignUpWithOptionalPasswordInput,
 } from '../types';
 import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
@@ -193,14 +192,14 @@ const assertSignUpPasswordlessWithSMSOption = (options: {
 	}
 };
 
-type SignUpInputTypeUnion =
-	| SignUpWithOptionalPasswordInput
+type SignUpInputTypes =
+	| SignUpInput
 	| SignUpPasswordlessWithEmailAndMagicLinkInput
 	| SignUpPasswordlessWithEmailAndOTPInput
 	| SignUpPasswordlessWithSMSAndOTPInput;
 
 export const isSignUpPasswordlessWithEmailAndMagicLinkInput = (
-	input: SignUpInputTypeUnion
+	input: SignUpInputTypes
 ): input is SignUpPasswordlessWithEmailAndMagicLinkInput => {
 	if (
 		!input.passwordless ||
@@ -214,7 +213,7 @@ export const isSignUpPasswordlessWithEmailAndMagicLinkInput = (
 };
 
 export const isSignUpPasswordlessWithEmailAndOTPInput = (
-	input: SignUpInputTypeUnion
+	input: SignUpInputTypes
 ): input is SignUpPasswordlessWithEmailAndOTPInput => {
 	if (
 		!input.passwordless ||
@@ -228,7 +227,7 @@ export const isSignUpPasswordlessWithEmailAndOTPInput = (
 };
 
 export const isSignUpPasswordlessWithSMSAndOTPInput = (
-	input: SignUpInputTypeUnion
+	input: SignUpInputTypes
 ): input is SignUpPasswordlessWithSMSAndOTPInput => {
 	if (
 		!input.passwordless ||

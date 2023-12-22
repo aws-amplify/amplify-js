@@ -14,7 +14,6 @@ import {
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
 import { AWSAuthDevice, AuthUser, UserAttributeKey } from '../types';
-import { DoneSignInStep } from '../../../types/models';
 import {
 	ConfirmSignInWithMagicLinkSignUpStep,
 	ConfirmSignInWithMagicLinkStep,
@@ -67,13 +66,9 @@ export type SetUpTOTPOutput = AuthTOTPSetupDetails;
 /**
  * Output type for Cognito signIn API.
  */
-export type SignInOutput =
-	| SignInWithOptionalPasswordOutput
-	| SignInPasswordlessWithEmailAndMagicLinkOutput
-	| SignInPasswordlessWithEmailAndOTPOutput
-	| SignInPasswordlessWithSMSAndOTPOutput;
+export type SignInOutput = SignInWithOptionalPasswordOutput;
 
-export type SignInWithOptionalPasswordOutput = AuthSignInOutput;
+type SignInWithOptionalPasswordOutput = AuthSignInOutput;
 
 /**
  * Output type for Cognito signInWithCustomAuth API.
@@ -98,13 +93,9 @@ export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
 /**
  * Output type for Cognito signUp API.
  */
-export type SignUpOutput =
-	| SignUpWithOptionalPasswordOutput
-	| SignUpPasswordlessWithEmailAndMagicLinkOutput
-	| SignUpPasswordlessWithEmailAndOTPOutput
-	| SignUpPasswordlessWithSMSAndOTPOutput;
+export type SignUpOutput = SignUpWithOptionalPasswordOutput;
 
-export type SignUpWithOptionalPasswordOutput =
+type SignUpWithOptionalPasswordOutput =
 	AuthSignUpOutput<AuthVerifiableAttributeKey>;
 
 export type SignUpPasswordlessWithEmailAndMagicLinkOutput = {

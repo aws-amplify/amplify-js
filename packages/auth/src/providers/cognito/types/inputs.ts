@@ -78,13 +78,9 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 /**
  * Input type for Cognito signIn API.
  */
-export type SignInInput =
-	| SignInWithOptionalPasswordInput
-	| SignInPasswordlessWithEmailAndMagicLinkInput
-	| SignInPasswordlessWithEmailAndOTPInput
-	| SignInPasswordlessWithSMSAndOTPInput;
+export type SignInInput = SignInWithOptionalPasswordInput;
 
-export interface SignInWithOptionalPasswordInput
+interface SignInWithOptionalPasswordInput
 	extends AuthSignInInput<SignInOptions> {
 	/**
 	 * `passwordless` cannot be set when using Cognito built-in authentication
@@ -185,10 +181,7 @@ export type SignInWithRedirectInput = AuthSignInWithRedirectInput;
  */
 export type SignOutInput = AuthSignOutInput;
 
-/**
- * @internal
- */
-export interface SignUpWithOptionalPasswordInput
+interface SignUpWithOptionalPasswordInput
 	extends AuthSignUpInput<SignUpOptions<UserAttributeKey>> {
 	/**
 	 * `passwordless` cannot be set when using Cognito built-in authentication
@@ -201,11 +194,7 @@ export interface SignUpWithOptionalPasswordInput
 /**
  * Input type for Cognito signUp API.
  */
-export type SignUpInput =
-	| SignUpWithOptionalPasswordInput
-	| SignUpPasswordlessWithEmailAndMagicLinkInput
-	| SignUpPasswordlessWithEmailAndOTPInput
-	| SignUpPasswordlessWithSMSAndOTPInput;
+export type SignUpInput = SignUpWithOptionalPasswordInput;
 
 interface SignUpPasswordlessInput<
 	DeliveryMedium extends 'EMAIL' | 'SMS',
@@ -218,7 +207,7 @@ interface SignUpPasswordlessInput<
 	 * flow. This is required to prevent {@link SignUpInput} interface breaking
 	 * change.
 	 */
-	password: never;
+	password?: never;
 	passwordless: {
 		deliveryMedium: DeliveryMedium;
 		method: Method;
