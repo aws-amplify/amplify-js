@@ -363,6 +363,9 @@ describe('DataStore sync engine', () => {
 							['post title 0', 2],
 							['post title 1', 2],
 							['post title 1', 3],
+							// Note: The subscription event for post title 1
+							// is processed after the second client update
+							// and the updated content is observed (below)
 							['update from second client', 4],
 							['update from second client', 4],
 							['post title 2', 4],
