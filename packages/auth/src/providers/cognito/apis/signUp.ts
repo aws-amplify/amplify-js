@@ -41,14 +41,15 @@ import {
 	SignUpPasswordlessWithEmailAndMagicLinkOutput,
 	SignUpPasswordlessWithEmailAndOTPOutput,
 	SignUpPasswordlessWithSMSAndOTPOutput,
+	SignUpWithOptionalPasswordOutput,
 } from '../types/outputs';
 import { signUpPasswordless } from './signUpPasswordless';
 
 /**
  * Creates a user
  *
- * @param input - The {@link SignUpInput} object
- * @returns - {@link SignUpOutput}
+ * @param input - The {@link SignUpWithOptionalPasswordInput} object
+ * @returns - {@link SignUpWithOptionalPasswordOutput}
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
  * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
  *  are not defined.
@@ -56,7 +57,7 @@ import { signUpPasswordless } from './signUpPasswordless';
  */
 export function signUp(
 	input: SignUpWithOptionalPasswordInput
-): Promise<SignUpOutput>;
+): Promise<SignUpWithOptionalPasswordOutput>;
 
 /**
  * Creates a user with an email address instead of a password, and signs the user in automatically. The sign-up flow is
@@ -102,20 +103,26 @@ export function signUp(
 export function signUp(
 	input: SignUpPasswordlessWithEmailAndOTPInput
 ): Promise<SignUpPasswordlessWithEmailAndOTPOutput>;
+
+/**
+ * Creates a user to be authenticated with Cognito user pool flow, or passwordless flows.
+ *
+ * @param input - The {@link SignUpInput} object
+ * @returns - {@link SignUpInput}
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
+ *  are not defined.
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ */
+export function signUp(input: SignUpInput): Promise<SignUpOutput>;
+
 /**
  * @internal
  */
-export async function signUp(
-	input:
-		| SignUpPasswordlessWithEmailAndMagicLinkInput
-		| SignUpPasswordlessWithSMSAndOTPInput
-		| SignUpPasswordlessWithEmailAndOTPInput
-		| SignUpWithOptionalPasswordInput
-) {
+export async function signUp(input: SignUpInput) {
 	const { options, passwordless } = input;
 	if (passwordless) {
 		// Iterate through signUpPasswordless calls to make TypeScript happy
-		const { deliveryMedium, method } = passwordless;
 		if (isSignUpPasswordlessWithEmailAndMagicLinkInput(input)) {
 			return signUpPasswordless(input);
 		} else if (isSignUpPasswordlessWithEmailAndOTPInput(input)) {

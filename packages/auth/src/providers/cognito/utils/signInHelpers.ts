@@ -24,6 +24,7 @@ import {
 	SignInPasswordlessWithSMSAndOTPInput,
 	SignInPasswordlessWithEmailAndOTPInput,
 	SignInWithOptionalPasswordInput,
+	SignInInput,
 } from '../types';
 import {
 	AuthAdditionalInfo,
@@ -1123,28 +1124,22 @@ export function getActiveSignInUsername(username: string): string {
 	return state.username ?? username;
 }
 
-type SignInInputTypeUnion =
-	| SignInWithOptionalPasswordInput
-	| SignInPasswordlessWithEmailAndMagicLinkInput
-	| SignInPasswordlessWithEmailAndOTPInput
-	| SignInPasswordlessWithSMSAndOTPInput;
-
 export const isSignInPasswordlessWithEmailAndMagicLinkInput = (
-	input: SignInInputTypeUnion
+	input: SignInInput
 ): input is SignInPasswordlessWithEmailAndMagicLinkInput =>
 	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'EMAIL' &&
 	input.passwordless.method === 'MAGIC_LINK';
 
 export const isSignInPasswordlessWithEmailAndOTPInput = (
-	input: SignInInputTypeUnion
+	input: SignInInput
 ): input is SignInPasswordlessWithEmailAndOTPInput =>
 	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'EMAIL' &&
 	input.passwordless.method === 'OTP';
 
 export const isSignInPasswordlessWithSMSAndOTPInput = (
-	input: SignInInputTypeUnion
+	input: SignInInput
 ): input is SignInPasswordlessWithSMSAndOTPInput =>
 	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'SMS' &&

@@ -29,13 +29,18 @@ import {
 	SignInPasswordlessWithEmailAndMagicLinkOutput,
 	SignInPasswordlessWithEmailAndOTPOutput,
 	SignInPasswordlessWithSMSAndOTPOutput,
+	SignInWithOptionalPasswordOutput,
 } from '../types/outputs';
 
 /**
- * Signs a user in
+ * Signs a user in with optional password. It uses either of the following sign-in flow:
+ * * 'USER_SRP_AUTH'
+ * * 'CUSTOM_WITH_SRP'
+ * * 'CUSTOM_WITHOUT_SRP'
+ * * 'USER_PASSWORD_AUTH'
  *
- * @param input -  The {@link SignInInput} object
- * @returns - {@link SignInOutput}
+ * @param input -  The {@link SignInWithOptionalPasswordInput} object
+ * @returns - {@link SignInWithOptionalPasswordInput}
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
@@ -44,7 +49,7 @@ import {
  */
 export function signIn(
 	input: SignInWithOptionalPasswordInput
-): Promise<SignInOutput>;
+): Promise<SignInWithOptionalPasswordOutput>;
 
 /**
  * Initiates a passwordless sign-in flow by sending a MagicLink to a registered email address. The sign-in flow is
@@ -97,17 +102,22 @@ export function signIn(
 	input: SignInPasswordlessWithSMSAndOTPInput
 ): Promise<SignInPasswordlessWithSMSAndOTPOutput>;
 
-export async function signIn(
-	input:
-		| SignInWithOptionalPasswordInput
-		| SignInPasswordlessWithEmailAndMagicLinkInput
-		| SignInPasswordlessWithEmailAndOTPInput
-		| SignInPasswordlessWithSMSAndOTPInput
-) {
+/**
+ * Signs a user in.
+ *
+ * @param input -  The {@link SignInInput} object
+ * @returns - {@link SignInOutput}
+ * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
+ *   during the sign-in process.
+ * @throws validation: {@link AuthValidationErrorCode  } - Validation errors thrown when either username or password
+ *  are not defined.
+ * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ */
+export function signIn(input: SignInInput): Promise<SignInOutput>;
+
+export async function signIn(input: SignInInput) {
 	await assertUserNotAuthenticated();
 	if (input.passwordless) {
-		// Iterate through signInPasswordless calls to make TypeScript happy
-		const { deliveryMedium, method } = input.passwordless;
 		if (isSignInPasswordlessWithEmailAndMagicLinkInput(input)) {
 			return signInPasswordless(input);
 		} else if (isSignInPasswordlessWithEmailAndOTPInput(input)) {

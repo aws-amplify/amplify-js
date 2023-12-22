@@ -67,7 +67,13 @@ export type SetUpTOTPOutput = AuthTOTPSetupDetails;
 /**
  * Output type for Cognito signIn API.
  */
-export type SignInOutput = AuthSignInOutput;
+export type SignInOutput =
+	| SignInWithOptionalPasswordOutput
+	| SignInPasswordlessWithEmailAndMagicLinkOutput
+	| SignInPasswordlessWithEmailAndOTPOutput
+	| SignInPasswordlessWithSMSAndOTPOutput;
+
+export type SignInWithOptionalPasswordOutput = AuthSignInOutput;
 
 /**
  * Output type for Cognito signInWithCustomAuth API.
@@ -92,7 +98,14 @@ export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
 /**
  * Output type for Cognito signUp API.
  */
-export type SignUpOutput = AuthSignUpOutput<AuthVerifiableAttributeKey>;
+export type SignUpOutput =
+	| SignUpWithOptionalPasswordOutput
+	| SignUpPasswordlessWithEmailAndMagicLinkOutput
+	| SignUpPasswordlessWithEmailAndOTPOutput
+	| SignUpPasswordlessWithSMSAndOTPOutput;
+
+export type SignUpWithOptionalPasswordOutput =
+	AuthSignUpOutput<AuthVerifiableAttributeKey>;
 
 export type SignUpPasswordlessWithEmailAndMagicLinkOutput = {
 	isSignUpComplete: boolean;

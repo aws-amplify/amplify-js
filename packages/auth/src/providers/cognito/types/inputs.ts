@@ -78,14 +78,21 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 /**
  * Input type for Cognito signIn API.
  */
-export type SignInInput = SignInWithOptionalPasswordInput;
-// | SignInPasswordlessWithEmailAndMagicLinkInput
-// | SignInPasswordlessWithEmailAndOTPInput
-// | SignInPasswordlessWithSMSAndOTPInput;
+export type SignInInput =
+	| SignInWithOptionalPasswordInput
+	| SignInPasswordlessWithEmailAndMagicLinkInput
+	| SignInPasswordlessWithEmailAndOTPInput
+	| SignInPasswordlessWithSMSAndOTPInput;
 
-export type SignInWithOptionalPasswordInput = AuthSignInInput<SignInOptions> & {
+export interface SignInWithOptionalPasswordInput
+	extends AuthSignInInput<SignInOptions> {
+	/**
+	 * `passwordless` cannot be set when using Cognito built-in authentication
+	 * flow. This is required to prevent {@link SignInInput} interface breaking
+	 * change.
+	 */
 	passwordless?: never;
-};
+}
 
 /**
  * Input type for Cognito signInWithCustomAuth API.
@@ -114,6 +121,11 @@ interface SignInPasswordlessInput<
 	Method extends 'MAGIC_LINK' | 'OTP',
 > {
 	username: string;
+	/**
+	 * `passwordless` cannot be set when using Cognito built-in authentication
+	 * flow. This is required to prevent {@link SignInInput} interface breaking
+	 * change.
+	 */
 	password?: never;
 	passwordless: {
 		deliveryMedium: DeliveryMedium;
@@ -178,27 +190,41 @@ export type SignOutInput = AuthSignOutInput;
  */
 export interface SignUpWithOptionalPasswordInput
 	extends AuthSignUpInput<SignUpOptions<UserAttributeKey>> {
+	/**
+	 * `passwordless` cannot be set when using Cognito built-in authentication
+	 * flow. This is required to prevent {@link SignUpInput} interface breaking
+	 * change.
+	 */
 	passwordless?: never;
 }
 
 /**
  * Input type for Cognito signUp API.
  */
-export type SignUpInput = SignUpWithOptionalPasswordInput;
+export type SignUpInput =
+	| SignUpWithOptionalPasswordInput
+	| SignUpPasswordlessWithEmailAndMagicLinkInput
+	| SignUpPasswordlessWithEmailAndOTPInput
+	| SignUpPasswordlessWithSMSAndOTPInput;
 
-type SignUpPasswordlessInput<
+interface SignUpPasswordlessInput<
 	DeliveryMedium extends 'EMAIL' | 'SMS',
 	Method extends 'MAGIC_LINK' | 'OTP',
 	RequiredAttribute extends VerifiableUserAttributeKey,
-> = {
+> {
 	username: string;
-	password?: never;
+	/**
+	 * `password` cannot be set when using Cognito built-in authentication
+	 * flow. This is required to prevent {@link SignUpInput} interface breaking
+	 * change.
+	 */
+	password: never;
 	passwordless: {
 		deliveryMedium: DeliveryMedium;
 		method: Method;
 	};
 	options: SignUpPasswordlessOptions<RequiredAttribute>;
-};
+}
 
 /**
  * The parameters to construct sign-up input without a password. Users will be
