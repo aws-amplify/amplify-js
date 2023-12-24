@@ -163,7 +163,7 @@ describe('flattenItems', () => {
 
 	describe('customSelectionSetToIR', () => {
 		test('specific fields on the model', () => {
-			const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Todo', [
+			const selSet = customSelectionSetToIR(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 			]);
@@ -177,7 +177,7 @@ describe('flattenItems', () => {
 		});
 
 		test('specific fields on the model and related model', () => {
-			const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Todo', [
+			const selSet = customSelectionSetToIR(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 				'notes.id',
@@ -198,8 +198,39 @@ describe('flattenItems', () => {
 			expect(selSet).toEqual(expected);
 		});
 
+		test('related property without any specified field in selectionSet should throw an error', () => {
+			expect(() =>
+				customSelectionSetToIR(modelIntroSchema, 'Todo', [
+					'id',
+					'name',
+					'notes',
+				])
+			).toThrow('notes must declare a wildcard (*) or a field of model Note');
+		});
+
+		test('inexistent field should throw an error', () => {
+			expect(() =>
+				customSelectionSetToIR(modelIntroSchema, 'Todo', [
+					'id',
+					'name',
+					'inexistentField',
+					'notes.*',
+				])
+			).toThrow('inexistentField is not a field of model Todo');
+		});
+
+		test('related inexistent field should throw an error', () => {
+			expect(() =>
+				customSelectionSetToIR(modelIntroSchema, 'Todo', [
+					'id',
+					'name',
+					'notes.inexistentField',
+				])
+			).toThrow('inexistentField is not a field of model Note');
+		});
+
 		test('specific fields on the model; all fields on related model', () => {
-			const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Todo', [
+			const selSet = customSelectionSetToIR(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 				'notes.*',
@@ -224,7 +255,7 @@ describe('flattenItems', () => {
 		});
 
 		test('deeply nested on a bi-directional model', () => {
-			const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Todo', [
+			const selSet = customSelectionSetToIR(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 				'notes.todo.notes.todo.notes.todo.notes.*',
@@ -267,7 +298,7 @@ describe('flattenItems', () => {
 		});
 
 		test("subsequent wildcard doesn't overwrite existing nested object", () => {
-			const selSet = customSelectionSetToIR(modelIntroSchema.models, 'Todo', [
+			const selSet = customSelectionSetToIR(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 				'notes.todo.name',
@@ -295,12 +326,71 @@ describe('flattenItems', () => {
 			expect(selSet).toEqual(expected);
 		});
 
-		test('mix of related and non-related fields in a nested model creates a nested object with all necessary fields', () => {
-			const selSet = customSelectionSetToIR(
-				modelIntroSchema.models,
-				'CommunityPost',
-				['poll.question', 'poll.answers.answer', 'poll.answers.votes.id']
+		test('custom type works properly', () => {
+			const selSet = customSelectionSetToIR(modelIntroSchema, 'CommunityPost', [
+				'metadata.type',
+				'poll.question',
+			]);
+
+			const expected = {
+				metadata: {
+					type: '',
+				},
+				poll: {
+					question: '',
+				},
+			};
+
+			expect(selSet).toEqual(expected);
+		});
+
+		test('custom type with wildcard works properly', () => {
+			const selSet = customSelectionSetToIR(modelIntroSchema, 'CommunityPost', [
+				'metadata.*',
+				'poll.question',
+			]);
+
+			const expected = {
+				metadata: {
+					type: '',
+					deleted: '',
+				},
+				poll: {
+					question: '',
+				},
+			};
+
+			expect(selSet).toEqual(expected);
+		});
+
+		test('custom type with invalid property throws an error', () => {
+			expect(() =>
+				customSelectionSetToIR(modelIntroSchema, 'CommunityPost', [
+					'metadata.inexistentField',
+					'poll.question',
+				])
+			).toThrow(
+				'inexistentField is not a field of custom type CommunityPostMetadata'
 			);
+		});
+
+		test('custom type without any properties throws an error', () => {
+			expect(() =>
+				customSelectionSetToIR(modelIntroSchema, 'CommunityPost', [
+					'metadata',
+					'poll.question',
+				])
+			).toThrow(
+				'metadata must declare a wildcard (*) or a field of custom type CommunityPostMetadata'
+			);
+		});
+
+		test('mix of related and non-related fields in a nested model creates a nested object with all necessary fields', () => {
+			const selSet = customSelectionSetToIR(modelIntroSchema, 'CommunityPost', [
+				'poll.question',
+				'poll.answers.answer',
+				'poll.answers.votes.id',
+			]);
 
 			const expected = {
 				poll: {
@@ -324,7 +414,7 @@ describe('flattenItems', () => {
 
 	describe('generateSelectionSet', () => {
 		test('it should generate default selection set', () => {
-			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo');
+			const selSet = generateSelectionSet(modelIntroSchema, 'Todo');
 
 			const expected =
 				'id name description status tags createdAt updatedAt todoMetaId owner';
@@ -333,7 +423,7 @@ describe('flattenItems', () => {
 		});
 
 		test('it should generate custom selection set - top-level fields', () => {
-			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo', [
+			const selSet = generateSelectionSet(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 			]);
@@ -344,7 +434,7 @@ describe('flattenItems', () => {
 		});
 
 		test('it should generate custom selection set - specific nested fields', () => {
-			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo', [
+			const selSet = generateSelectionSet(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 				'notes.id',
@@ -357,7 +447,7 @@ describe('flattenItems', () => {
 		});
 
 		test('it should generate custom selection set - all nested fields', () => {
-			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo', [
+			const selSet = generateSelectionSet(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 				'notes.*',
@@ -370,7 +460,7 @@ describe('flattenItems', () => {
 		});
 
 		test('deeply nested on a bi-directional model', () => {
-			const selSet = generateSelectionSet(modelIntroSchema.models, 'Todo', [
+			const selSet = generateSelectionSet(modelIntroSchema, 'Todo', [
 				'id',
 				'name',
 				'notes.todo.notes.todo.notes.todo.notes.*',

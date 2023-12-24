@@ -39,6 +39,7 @@ export {
 	DocumentType,
 	GraphQLAuthMode,
 	ModelFieldType,
+	NonModelFieldType,
 	ModelIntrospectionSchema,
 	SchemaModel,
 	SchemaModels,

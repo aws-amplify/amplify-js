@@ -153,6 +153,7 @@ export type Field = {
 };
 
 export type ModelFieldType = { model: string };
+export type NonModelFieldType = { nonModel: string };
 
 export type FieldType =
 	| 'ID'
@@ -171,7 +172,7 @@ export type FieldType =
 	| 'AWSPhone'
 	| { enum: string }
 	| ModelFieldType
-	| { nonModel: string };
+	| NonModelFieldType;
 export type FieldAttribute = ModelAttribute;
 
 /**

@@ -67,7 +67,7 @@ async function _get(
 	const { name } = model;
 
 	const query = generateGraphQLDocument(
-		modelIntrospection.models,
+		modelIntrospection,
 		name,
 		operation,
 		options
