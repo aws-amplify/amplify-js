@@ -167,7 +167,7 @@ npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
   watchman watch node_modules/wml/src
   ```
 
-- When using VScode, for the script to open a new terminal and tabs you will need to provide the editor accessiblity permissions.
+- When using VScode, for the script to open a new terminal and tabs you will need to provide the editor accessibility permissions.
 
 #### Verdaccio
 
