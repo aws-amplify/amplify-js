@@ -35,11 +35,25 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	[AuthValidationErrorCode.EmptySignInUsername]: {
 		message: 'username is required to signIn',
 	},
+	[AuthValidationErrorCode.PasswordlessSignInHasPassword]: {
+		message: 'A password is not needed when signing in with passwordless flows',
+		recoverySuggestion: 'Do not include a password in your signIn call.',
+	},
+	[AuthValidationErrorCode.IncorrectPasswordlessMethod]: {
+		message: 'Incorrect passwordless method was chosen.',
+		recoverySuggestion:
+			'If passwordless delivery medium is SMS, use OTP as the passwordless method. ' +
+			'If passwordless delivery medium is EMAIL, use OTP or MAGIC_LINK as the passwordless method.',
+	},
 	[AuthValidationErrorCode.EmptySignUpPassword]: {
 		message: 'password is required to signUp',
 	},
 	[AuthValidationErrorCode.EmptySignUpUsername]: {
 		message: 'username is required to signUp',
+	},
+	[AuthValidationErrorCode.PasswordlessSignUpHasPassword]: {
+		message: 'A password is not needed when signing up with passwordless flows',
+		recoverySuggestion: 'Do not include a password in your signUp call.',
 	},
 	[AuthValidationErrorCode.CustomAuthSignInPassword]: {
 		message: 'A password is not needed when signing in with CUSTOM_WITHOUT_SRP',
