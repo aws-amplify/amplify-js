@@ -1,6 +1,6 @@
 Symbol = undefined as any; // this should be undefined before loading Hub
-import { Hub } from '../src/Hub';
-import { ConsoleLogger } from '../src/Logger';
+import { Hub } from '../src';
+import { ConsoleLogger } from '../src';
 
 describe('Symbol undefined before load Hub', () => {
 	test('Symbol not supported', () => {

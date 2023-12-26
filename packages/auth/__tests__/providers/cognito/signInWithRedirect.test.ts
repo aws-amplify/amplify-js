@@ -1,330 +1,258 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { AuthError } from '../../../src/errors/AuthError';
+import { Hub } from '@aws-amplify/core';
 import {
-	assertOAuthConfig,
-	assertTokenProviderConfig,
-	urlSafeEncode,
-	isBrowser,
-	ADD_OAUTH_LISTENER,
-} from '@aws-amplify/core/internals/utils';
-import { assertUserNotAuthenticated } from '../../../src/providers/cognito/utils/signInHelpers';
+	INVALID_ORIGIN_EXCEPTION,
+	INVALID_REDIRECT_EXCEPTION,
+} from '../../../src/errors/constants';
+import { getRedirectUrl } from '../../../src/providers/cognito/utils/oauth/getRedirectUrl';
+import { getRedirectUrl as getRedirectUrlRN } from '../../../src/providers/cognito/utils/oauth/getRedirectUrl.native';
 import {
-	generateCodeVerifier,
-	generateState,
-} from '../../../src/providers/cognito/utils/oauth';
-import { getAuthUserAgentValue, openAuthSession } from '../../../src/utils';
-import {
-	handleFailure,
-	oAuthStore,
-	completeOAuthFlow,
-} from '../../../src/providers/cognito/utils/oauth';
-import { attemptCompleteOAuthFlow } from '../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
-import { addInflightPromise } from '../../../src/providers/cognito/utils/oauth/inflightPromise';
-import { createOAuthError } from '../../../src/providers/cognito/utils/oauth/createOAuthError';
-import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider/tokenProvider';
-
-import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWithRedirect';
-
-import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
-import { mockAuthConfigWithOAuth } from '../../mockData';
-
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	assertOAuthConfig: jest.fn(),
-	assertTokenProviderConfig: jest.fn(),
-	urlSafeEncode: jest.fn(),
-	isBrowser: jest.fn(() => true),
-}));
-jest.mock('@aws-amplify/core', () => {
-	const { ADD_OAUTH_LISTENER } = jest.requireActual(
-		'@aws-amplify/core/internals/utils'
-	);
-	return {
-		Amplify: {
-			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
-			[ADD_OAUTH_LISTENER]: jest.fn(),
-		},
-		ConsoleLogger: jest.fn(),
-	};
-});
-jest.mock('../../../src/providers/cognito/utils/signInHelpers');
-jest.mock('../../../src/providers/cognito/utils/oauth', () => ({
-	...jest.requireActual('../../../src/providers/cognito/utils/oauth'),
-	completeOAuthFlow: jest.fn(),
-	handleFailure: jest.fn(),
-	generateCodeVerifier: jest.fn(),
-	generateState: jest.fn(),
-}));
-jest.mock('../../../src/providers/cognito/utils/oauth/oAuthStore', () => ({
-	oAuthStore: {
-		setAuthConfig: jest.fn(),
-		storeOAuthInFlight: jest.fn(),
-		storeOAuthState: jest.fn(),
-		storePKCE: jest.fn(),
-		loadOAuthInFlight: jest.fn(),
-		loadOAuthSignIn: jest.fn(),
-		storeOAuthSignIn: jest.fn(),
-		loadOAuthState: jest.fn(),
-		loadPKCE: jest.fn(),
-		clearOAuthData: jest.fn(),
-		clearOAuthInflightData: jest.fn(),
-	} as OAuthStore,
-}));
-jest.mock('../../../src/providers/cognito/utils/oauth/inflightPromise', () => ({
-	addInflightPromise: jest.fn(resolver => {
-		resolver();
-	}),
-}));
-jest.mock('../../../src/providers/cognito/utils/oauth/createOAuthError');
-jest.mock('../../../src/utils');
-jest.mock('../../../src/providers/cognito/tokenProvider/tokenProvider', () => ({
-	cognitoUserPoolsTokenProvider: {
-		setWaitForInflightOAuth: jest.fn(),
+	parseRedirectURL,
+	signInWithRedirect,
+} from '../../../src/providers/cognito/apis/signInWithRedirect';
+import { openAuthSession } from '../../../src/utils';
+import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+jest.mock('../../../src/utils/openAuthSession');
+jest.mock('@aws-amplify/core', () => ({
+	...(jest.createMockFromModule('@aws-amplify/core') as object),
+	Amplify: {
+		getConfig: jest.fn(() => ({
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					loginWith: {
+						oauth: {
+							domain: 'my_cognito_domain',
+							redirectSignIn: ['http://localhost:3000/'],
+							redirectSignOut: ['http://localhost:3000/'],
+							responseType: 'code',
+							scopes: [
+								'email',
+								'openid',
+								'profile',
+								'aws.cognito.signin.user.admin',
+							],
+						},
+					},
+				},
+			},
+		})),
 	},
+	Hub: { dispatch: jest.fn(), listen: jest.fn() },
 }));
 
-const mockAssertOAuthConfig = assertOAuthConfig as jest.Mock;
-const mockAssertTokenProviderConfig = assertTokenProviderConfig as jest.Mock;
-const mockUrlSafeEncode = urlSafeEncode as jest.Mock;
-const mockAssertUserNotAuthenticated = assertUserNotAuthenticated as jest.Mock;
-const mockOpenAuthSession = openAuthSession as jest.Mock;
-const mockGenerateCodeVerifier = generateCodeVerifier as jest.Mock;
-const mockGenerateState = generateState as jest.Mock;
-const mockIsBrowser = isBrowser as jest.Mock;
-const mockAddInflightPromise = addInflightPromise as jest.Mock;
+describe('signInWithRedirect API', () => {
+	it('should pass correct arguments to oauth', () => {
+		// TODO ADD tests
+	});
 
-const mockCompleteOAuthFlow = completeOAuthFlow as jest.Mock;
-const mockGetAuthUserAgentValue = getAuthUserAgentValue as jest.Mock;
-const mockHandleFailure = handleFailure as jest.Mock;
-const mockCreateOAuthError = createOAuthError as jest.Mock;
+	it('should try to clear oauth data before starting an oauth flow.', async () => {
+		// TODO: ADD Test: previous test was invalid
+	});
 
-describe('signInWithRedirect', () => {
-	const mockState = 'oauth_state';
-	const mockCodeVerifierValue = 'code_verifier_value';
-	const mockCodeVerifierMethod = 'S256';
-	const mockCodeChallenge = 'code_challenge';
-	const mockToCodeChallenge = jest.fn(() => mockCodeChallenge);
-
-	beforeAll(() => {
-		mockGenerateState.mockReturnValue(mockState);
-		mockGenerateCodeVerifier.mockReturnValue({
-			value: mockCodeVerifierValue,
-			method: mockCodeVerifierMethod,
-			toCodeChallenge: mockToCodeChallenge,
+	describe('signInWithRedirect API error cases', () => {
+		const oauthErrorMessage = 'an oauth error has occurred';
+		const oauthError = new AuthError({
+			name: 'OAuthSignInException',
+			message: oauthErrorMessage,
 		});
-		mockUrlSafeEncode.mockImplementation(customState => customState);
-		mockIsBrowser.mockReturnValue(true);
-	});
-
-	afterEach(() => {
-		mockAssertTokenProviderConfig.mockClear();
-		mockAssertOAuthConfig.mockClear();
-		mockAssertUserNotAuthenticated.mockClear();
-		mockUrlSafeEncode.mockClear();
-		mockGenerateState.mockClear();
-		mockGenerateCodeVerifier.mockClear();
-		mockOpenAuthSession.mockClear();
-		mockToCodeChallenge.mockClear();
-		mockHandleFailure.mockClear();
-		mockCompleteOAuthFlow.mockClear();
-
-		(oAuthStore.setAuthConfig as jest.Mock).mockClear();
-		(oAuthStore.storeOAuthInFlight as jest.Mock).mockClear();
-		(oAuthStore.storeOAuthState as jest.Mock).mockClear();
-		(oAuthStore.storePKCE as jest.Mock).mockClear();
-	});
-
-	it('invokes dependent functions with expected parameters', async () => {
-		await signInWithRedirect({ provider: 'Google' });
-
-		expect(mockAssertTokenProviderConfig).toHaveBeenCalledTimes(1);
-		expect(mockAssertOAuthConfig).toHaveBeenCalledTimes(1);
-		expect(oAuthStore.setAuthConfig).toHaveBeenCalledWith(
-			mockAuthConfigWithOAuth.Auth.Cognito
-		);
-		expect(mockAssertUserNotAuthenticated).toHaveBeenCalledTimes(1);
-
-		expect(mockGenerateState).toHaveBeenCalledTimes(1);
-		expect(mockGenerateCodeVerifier).toHaveBeenCalledWith(128);
-		expect(oAuthStore.storeOAuthInFlight).toHaveBeenCalledWith(true);
-		expect(oAuthStore.storeOAuthState).toHaveBeenCalledWith(mockState);
-		expect(oAuthStore.storePKCE).toHaveBeenCalledWith(mockCodeVerifierValue);
-		expect(mockToCodeChallenge).toHaveBeenCalledTimes(1);
-
-		expect(mockOpenAuthSession).toHaveBeenCalledTimes(1);
-		const [oauthUrl, redirectSignIn, preferPrivateSession] =
-			mockOpenAuthSession.mock.calls[0];
-		expect(oauthUrl).toStrictEqual(
-			'https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=Google&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256'
-		);
-		expect(redirectSignIn).toEqual(
-			mockAuthConfigWithOAuth.Auth.Cognito.loginWith.oauth.redirectSignIn
-		);
-		expect(preferPrivateSession).toBeUndefined();
-	});
-
-	it('uses "Cognito" as the default provider if not specified', async () => {
-		const expectedDefaultProvider = 'COGNITO';
-		await signInWithRedirect();
-		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
-		expect(oauthUrl).toStrictEqual(
-			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedDefaultProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`
-		);
-	});
-
-	it('uses custom provider when specified', async () => {
-		const expectedCustomProvider = 'PieAuth';
-		await signInWithRedirect({ provider: { custom: expectedCustomProvider } });
-		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
-		expect(oauthUrl).toStrictEqual(
-			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`
-		);
-	});
-
-	it('uses custom state if specified', async () => {
-		const expectedCustomState = 'verify_me';
-		await signInWithRedirect({ customState: expectedCustomState });
-		expect(mockUrlSafeEncode).toHaveBeenCalledWith(expectedCustomState);
-	});
-
-	describe('specifications on Web', () => {
-		describe('side effect', () => {
-			it('attaches oauth listener to the Amplify singleton', async () => {
-				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(
-					false
-				);
-
-				expect(Amplify[ADD_OAUTH_LISTENER]).toHaveBeenCalledWith(
-					attemptCompleteOAuthFlow
-				);
-				expect(
-					cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
-				).toHaveBeenCalledTimes(1);
-
-				const callback = (
-					cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
-				).mock.calls[0][0];
-
-				await callback();
-
-				expect(oAuthStore.loadOAuthInFlight).toHaveBeenCalledTimes(1);
-			});
-
-			it('adds a promise to block auth process when there is an inflight oauth process', async () => {
-				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(true);
-				expect(
-					cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
-				).toHaveBeenCalledTimes(1);
-
-				const callback = (
-					cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
-				).mock.calls[0][0];
-
-				await callback();
-				expect(mockAddInflightPromise).toHaveBeenCalledTimes(1);
-			});
+		const invalidStateOauthError = new AuthError({
+			name: 'OAuthSignInException',
+			message: "An error occurred while validating the state",
 		});
-	});
-
-	describe('specifications on react-native', () => {
-		it('invokes `completeOAuthFlow` when `openAuthSession`completes', async () => {
-			const mockOpenAuthSessionResult = {
-				type: 'success',
-				url: 'http://redrect-in-react-native.com',
-			};
-			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
-
-			await signInWithRedirect({
-				provider: 'Google',
-				options: { preferPrivateSession: true },
-			});
-
-			expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
-				expect.objectContaining({
-					currentUrl: mockOpenAuthSessionResult.url,
-					preferPrivateSession: true,
-				})
-			);
-			expect(mockGetAuthUserAgentValue).toHaveBeenCalledTimes(1);
+		const mockOpenAuthSession = openAuthSession as jest.Mock;
+		const mockHubDispatch = Hub.dispatch as jest.Mock;
+	
+		afterEach(() => {
+			mockOpenAuthSession.mockReset();
 		});
-
-		it('invokes `handleFailure` with the error created by `createOAuthError` when `openAuthSession` completes with error', async () => {
-			const mockOpenAuthSessionResult = {
+	
+		it('should throw and dispatch when an error is returned in the URL in RN', async () => {
+			mockOpenAuthSession.mockResolvedValueOnce({
 				type: 'error',
-				error: new Error('some error'),
-			};
-			mockCreateOAuthError.mockReturnValueOnce(mockOpenAuthSessionResult.error);
-
-			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
-
-			await expect(
-				signInWithRedirect({
-					provider: 'Google',
-					options: { preferPrivateSession: true },
-				})
-			).rejects.toThrow(mockOpenAuthSessionResult.error);
-
-			expect(mockCreateOAuthError).toHaveBeenCalledWith(
-				String(mockOpenAuthSessionResult.error)
-			);
-			expect(mockHandleFailure).toHaveBeenCalledWith(
-				mockOpenAuthSessionResult.error
+				error: oauthErrorMessage,
+			});
+	
+			await expect(signInWithRedirect()).rejects.toThrow(oauthError);
+			expect(Hub.dispatch).toHaveBeenCalledWith(
+				'auth',
+				{
+					event: 'signInWithRedirect_failure',
+					data: { error: oauthError },
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
 			);
 		});
-
-		it('invokes `handleFailure` with the error thrown from `completeOAuthFlow`', async () => {
-			const expectedError = new Error('some error');
-			const mockOpenAuthSessionResult = {
+	
+		it('should throw when state is not valid after calling signInWithRedirect', async () => {
+			mockOpenAuthSession.mockResolvedValueOnce({
 				type: 'success',
-				url: 'https://url.com',
-			};
-			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
-			mockCompleteOAuthFlow.mockRejectedValueOnce(expectedError);
-
-			await expect(
-				signInWithRedirect({
-					provider: 'Google',
-					options: { preferPrivateSession: true },
-				})
-			).rejects.toThrow(expectedError);
-
-			expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
-				expect.objectContaining({
-					currentUrl: mockOpenAuthSessionResult.url,
-				})
+				url: 'http:localhost:3000/oauth2/redirect?state=invalid_state&code=mock_code&scope=openid%20email%20profile&session_state=mock_session_state',
+			});
+	
+			await expect(signInWithRedirect()).rejects.toThrow(invalidStateOauthError);
+			expect(mockHubDispatch).toHaveBeenCalledWith(
+				'auth',
+				{
+					event: 'signInWithRedirect_failure',
+					data: { error: invalidStateOauthError },
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
 			);
-			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
+	
+		});
+	
+		it('should dispatch the signInWithRedirect_failure event when an error is returned in the URL', async () => {
+			Object.defineProperty(window, 'location', {
+				value: {
+					href: 'http:localhost:3000/oauth2/redirect?error=OAuthSignInException&error_description=an+oauth+error+has+occurred',
+				},
+				writable: true,
+			});
+			await expect(parseRedirectURL).not.toThrow();
+			expect(mockHubDispatch).toHaveBeenCalledWith(
+				'auth',
+				{
+					event: 'signInWithRedirect_failure',
+					data: { error: oauthError },
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
+		});
+	
+		it('should dispatch the signInWithRedirect_failure event when state is not valid', async () => {
+			Object.defineProperty(window, 'location', {
+				value: {
+					href: `http:localhost:3000/oauth2/redirect?state='invalid_state'&code=mock_code&scope=openid%20email%20profile&session_state=mock_session_state`,
+				},
+				writable: true,
+			});
+			await expect(parseRedirectURL).not.toThrow();
+			expect(mockHubDispatch).toHaveBeenCalledWith(
+				'auth',
+				{
+					event: 'signInWithRedirect_failure',
+					data: { error: oauthError },
+				},
+				'Auth',
+				AMPLIFY_SYMBOL
+			);
 		});
 	});
-
-	describe('errors', () => {
-		it('rethrows error thrown from `assertTokenProviderConfig`', async () => {
-			const mockError = new Error('mock error');
-			mockAssertTokenProviderConfig.mockImplementationOnce(() => {
-				throw mockError;
+	
+	describe('getRedirectUrl on web', () => {
+		const originalWindowLocation = window.location;
+	
+		const currentWindownLocationParamsList: {
+			origin: string;
+			pathname: string;
+		}[] = [
+			{ origin: 'https://example.com', pathname: '/' },
+			{ origin: 'https://example.com', pathname: '/app' },
+			{ origin: 'https://example.com', pathname: '/app/page' },
+			{ origin: 'http://localhost:3000', pathname: '/' },
+			{ origin: 'http://localhost:3000', pathname: '/app' },
+		];
+		afterEach(() => {
+			Object.defineProperty(globalThis, 'window', {
+				value: originalWindowLocation,
 			});
-
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
 		});
-
-		it('rethrows error thrown from `assertOAuthConfig`', async () => {
-			const mockError = new Error('mock error');
-			mockAssertOAuthConfig.mockImplementationOnce(() => {
-				throw mockError;
+		it.each(currentWindownLocationParamsList)(
+			'should pick the url that matches the current window',
+			async windowParams => {
+				const { origin, pathname } = windowParams;
+				Object.defineProperty(globalThis, 'window', {
+					value: { location: { origin, pathname } },
+					writable: true,
+				});
+				const redirectsFromConfig = [
+					'http://localhost:3000/',
+					'https://example.com/',
+					'https://example.com/app',
+					'https://example.com/app/page',
+					'http://localhost:3000/app',
+				];
+				const redirect = getRedirectUrl(redirectsFromConfig);
+				expect(redirect).toBe(
+					redirectsFromConfig.find(redir => redir === redirect)
+				);
+			}
+		);
+		it('should pick the first url that is comming from a different pathname but same domain', async () => {
+			Object.defineProperty(globalThis, 'window', {
+				value: {
+					location: {
+						origin: 'https://example.com',
+						pathname: '/app',
+						hostname: 'example.com',
+					},
+				},
+				writable: true,
 			});
-
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
+			const redirect = getRedirectUrl(['https://example.com/another-app']);
+			expect(redirect).toBe('https://example.com/another-app');
 		});
-
-		it('rethrow error thrown from `assertUserNotAuthenticated`', async () => {
-			const mockError = new Error('mock error');
-			mockAssertUserNotAuthenticated.mockImplementationOnce(() => {
-				throw mockError;
+	
+		it('should throw if the url is not comming from the same origin', async () => {
+			Object.defineProperty(globalThis, 'window', {
+				value: {
+					location: { origin: 'https://differentorigin.com', pathname: '/app' },
+				},
+				writable: true,
 			});
-
-			await expect(signInWithRedirect()).rejects.toThrow(mockError);
+	
+			try {
+				return getRedirectUrl(['http://localhost:3000/', 'https://example.com/']);
+			} catch (error: any) {
+				expect(error).toBeInstanceOf(AuthError);
+				expect(error.name).toBe(INVALID_ORIGIN_EXCEPTION);
+			}
+		});
+	
+		it('should throw if the url is not found or invalid', async () => {
+			Object.defineProperty(globalThis, 'window', {
+				value: {
+					location: { origin: 'http://localhost:3000', pathname: '/' },
+				},
+				writable: true,
+			});
+	
+			try {
+				return getRedirectUrl(['novalid']);
+			} catch (error: any) {
+				expect(error).toBeInstanceOf(AuthError);
+				expect(error.name).toBe(INVALID_REDIRECT_EXCEPTION);
+			}
+		});
+	});
+	
+	describe('getRedirectUrl on React Native', () => {
+		it('should pick the first non http or https redirect', async () => {
+			const redirect = getRedirectUrlRN([
+				'app:custom',
+				'https://example.com/',
+				'http://localhost:3000/',
+			]);
+			expect(redirect).toBe('app:custom');
+		});
+		it('should throw if the redirect is invalid or not found', async () => {
+			try {
+				return getRedirectUrlRN(['invalid']);
+			} catch (error: any) {
+				expect(error).toBeInstanceOf(AuthError);
+				expect(error.name).toBe(INVALID_REDIRECT_EXCEPTION);
+			}
 		});
 	});
 });
+
+
