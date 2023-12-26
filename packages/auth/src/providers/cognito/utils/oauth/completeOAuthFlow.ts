@@ -14,6 +14,7 @@ import { resolveAndClearInflightPromises } from './inflightPromise';
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
 import { getCurrentUser } from '../../apis/getCurrentUser';
 import { createOAuthError } from './createOAuthError';
+import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
 
 export const completeOAuthFlow = async ({
 	currentUrl,
@@ -84,7 +85,7 @@ const handleCodeFlow = async ({
 	// 1. clicking the back button of browser
 	// 2. closing the provider hosted UI page and coming back to the app
 	if (!code || !state) {
-		throw createOAuthError('The inflight OAuth flow has been cancelled.');
+		throw createOAuthError('User cancelled OAuth flow.');
 	}
 
 	// may throw error is being caught in attemptCompleteOAuthFlow.ts
@@ -172,9 +173,8 @@ const handleImplicitFlow = async ({
 		state,
 		token_type,
 		expires_in,
-		// the following have been handled at line 40
-		// error_description,
-		// error,
+		error_description,
+		error,
 	} = (url.hash ?? '#')
 		.substring(1) // Remove # from returned code
 		.split('&')
@@ -188,6 +188,10 @@ const handleImplicitFlow = async ({
 			error_description: undefined,
 			error: undefined,
 		});
+
+	if (error) {
+		throw createOAuthError(error_description ?? error);
+	}
 
 	if (!access_token) {
 		// error is being caught in attemptCompleteOAuthFlow.ts
@@ -224,6 +228,16 @@ const completeFlow = async ({
 }) => {
 	await oAuthStore.clearOAuthData();
 	await oAuthStore.storeOAuthSignIn(true, preferPrivateSession);
+
+	// this should be called before any call that involves `fetchAuthSession`
+	// e.g. `getCurrentUser()` below, so it allows every inflight async calls to
+	//  `fetchAuthSession` can be resolved
+	resolveAndClearInflightPromises();
+
+	// when the oauth flow is completed, there should be nothing to block the async calls
+	// that involves fetchAuthSession in the `TokenOrchestrator`
+	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(async () => {});
+
 	if (isCustomState(state)) {
 		Hub.dispatch(
 			'auth',
@@ -243,7 +257,6 @@ const completeFlow = async ({
 		AMPLIFY_SYMBOL
 	);
 	clearHistory(redirectUri);
-	resolveAndClearInflightPromises();
 };
 
 const isCustomState = (state: string): Boolean => {

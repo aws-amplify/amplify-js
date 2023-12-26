@@ -10,7 +10,6 @@ import { attemptCompleteOAuthFlow } from '../../../../../src/providers/cognito/u
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 import { getRedirectUrl } from '../../../../../src/providers/cognito/utils/oauth/getRedirectUrl';
 import { oAuthStore } from '../../../../../src/providers/cognito/utils/oauth/oAuthStore';
-import { addInflightPromise } from '../../../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { cognitoUserPoolsTokenProvider } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 import { mockAuthConfigWithOAuth } from '../../../../mockData';
 
@@ -58,7 +57,6 @@ const mockAssertOAuthConfig = assertOAuthConfig as jest.Mock;
 const mockAssertTokenProviderConfig = assertTokenProviderConfig as jest.Mock;
 const mockCompleteOAuthFlow = completeOAuthFlow as jest.Mock;
 const mockGetRedirectUrl = getRedirectUrl as jest.Mock;
-const mockAddInflightPromise = addInflightPromise as jest.Mock;
 
 describe('attemptCompleteOAuthFlow', () => {
 	let windowSpy = jest.spyOn(window, 'window', 'get');

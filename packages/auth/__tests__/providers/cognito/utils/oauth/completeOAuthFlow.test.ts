@@ -4,14 +4,13 @@
 import { Hub, decodeJWT } from '@aws-amplify/core';
 import { handleFailure } from '../../../../../src/providers/cognito/utils/oauth/handleFailure';
 import { validateState } from '../../../../../src/providers/cognito/utils/oauth/validateState';
-// import { createOAuthError } from '../../../../../src/providers/cognito/utils/oauth/createOAuthError';
 import { resolveAndClearInflightPromises } from '../../../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { oAuthStore } from '../../../../../src/providers/cognito/utils/oauth/oAuthStore';
 import { cacheCognitoTokens } from '../../../../../src/providers/cognito/tokenProvider/cacheTokens';
 import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
-import { getCurrentUser } from '../../../../../src/providers/cognito/apis/getCurrentUser';
+import { cognitoUserPoolsTokenProvider } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 
@@ -25,7 +24,6 @@ jest.mock('@aws-amplify/core', () => ({
 jest.mock('../../../../../src/providers/cognito/utils/oauth//handleFailure');
 jest.mock('../../../../../src/providers/cognito/utils/oauth/validateState');
 jest.mock('../../../../../src/providers/cognito/utils/oauth/inflightPromise');
-// jest.mock('../../../../../src/providers/cognito/utils/oauth/createOAuthError');
 jest.mock('../../../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock('../../../../../src/providers/cognito/tokenProvider/cacheTokens');
 jest.mock(
@@ -44,6 +42,14 @@ jest.mock(
 			clearOAuthData: jest.fn(),
 			clearOAuthInflightData: jest.fn(),
 		} as OAuthStore,
+	})
+);
+jest.mock(
+	'../../../../../src/providers/cognito/tokenProvider/tokenProvider',
+	() => ({
+		cognitoUserPoolsTokenProvider: {
+			setWaitForInflightOAuth: jest.fn(),
+		},
 	})
 );
 
@@ -84,6 +90,9 @@ describe('completeOAuthFlow', () => {
 		(oAuthStore.clearOAuthInflightData as jest.Mock).mockClear();
 		(oAuthStore.clearOAuthData as jest.Mock).mockClear();
 		(oAuthStore.storeOAuthSignIn as jest.Mock).mockClear();
+		(
+			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
+		).mockClear();
 	});
 
 	it('handles error presented in the redirect url', async () => {
@@ -118,7 +127,7 @@ describe('completeOAuthFlow', () => {
 					...testInput,
 					currentUrl: `http://localhost:3000?state=someState123`,
 				})
-			).rejects.toThrow('The inflight OAuth flow has been cancelled.');
+			).rejects.toThrow('User cancelled OAuth flow.');
 		});
 
 		it('throws when `state` is not presented in the redirect url', async () => {
@@ -127,7 +136,7 @@ describe('completeOAuthFlow', () => {
 					...testInput,
 					currentUrl: `http://localhost:3000?code=123`,
 				})
-			).rejects.toThrow('The inflight OAuth flow has been cancelled.');
+			).rejects.toThrow('User cancelled OAuth flow.');
 		});
 
 		it('handles error when `validateState` fails', async () => {
@@ -221,6 +230,16 @@ describe('completeOAuthFlow', () => {
 			domain: 'oauth.domain.com',
 		};
 
+		it('throws when error and error_description are presented in the redirect url', () => {
+			const expectedErrorMessage = 'invalid_scope';
+			expect(
+				completeOAuthFlow({
+					...testInput,
+					currentUrl: `http://localhost:3000#error_description=${expectedErrorMessage}&error=invalid_request`,
+				})
+			).rejects.toThrow(expectedErrorMessage);
+		});
+
 		it('throws when access_token is not presented in the redirect url', () => {
 			expect(
 				completeOAuthFlow({
@@ -269,17 +288,25 @@ describe('completeOAuthFlow', () => {
 				ExpiresIn: expectedExpiresIn,
 			});
 
+			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
+			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
+			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
+			expect(
+				cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
+			).toHaveBeenCalledTimes(1);
+
+			const waitForInflightOAuth = (
+				cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
+			).mock.calls[0][0];
+			expect(typeof waitForInflightOAuth).toBe('function');
+			expect(waitForInflightOAuth()).resolves.toBeUndefined();
+
+			expect(mockHubDispatch).toHaveBeenCalledTimes(2);
 			expect(mockReplaceState).toHaveBeenCalledWith(
 				{},
 				'',
 				testInput.redirectUri
 			);
-
-			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
-			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
-
-			expect(mockHubDispatch).toHaveBeenCalledTimes(2);
-			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
 		});
 	});
 });
