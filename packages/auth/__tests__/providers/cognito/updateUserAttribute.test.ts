@@ -12,10 +12,6 @@ jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
 	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	isBrowser: jest.fn(() => false),
-}));
 jest.mock('../../../src/providers/cognito/apis/updateUserAttributes');
 
 describe('updateUserAttribute API happy path cases', () => {
