@@ -17,6 +17,17 @@ isBrowser() &&
 	(() => {
 		// add the listener to the singleton for triggering
 		Amplify[ADD_OAUTH_LISTENER](attemptCompleteOAuthFlow);
+
+		cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
+			() =>
+				new Promise(async (res, _rej) => {
+					if (!(await oAuthStore.loadOAuthInFlight())) {
+						res();
+					} else {
+						addInflightPromise(res);
+					}
+				})
+		);
 	})();
 
 // required to present for module loaders

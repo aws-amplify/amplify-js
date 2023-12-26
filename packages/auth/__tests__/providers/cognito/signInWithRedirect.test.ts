@@ -21,7 +21,9 @@ import {
 	completeOAuthFlow,
 } from '../../../src/providers/cognito/utils/oauth';
 import { attemptCompleteOAuthFlow } from '../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
+import { addInflightPromise } from '../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { createOAuthError } from '../../../src/providers/cognito/utils/oauth/createOAuthError';
+import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider/tokenProvider';
 
 import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWithRedirect';
 
@@ -70,8 +72,18 @@ jest.mock('../../../src/providers/cognito/utils/oauth/oAuthStore', () => ({
 		clearOAuthInflightData: jest.fn(),
 	} as OAuthStore,
 }));
+jest.mock('../../../src/providers/cognito/utils/oauth/inflightPromise', () => ({
+	addInflightPromise: jest.fn(resolver => {
+		resolver();
+	}),
+}));
 jest.mock('../../../src/providers/cognito/utils/oauth/createOAuthError');
 jest.mock('../../../src/utils');
+jest.mock('../../../src/providers/cognito/tokenProvider/tokenProvider', () => ({
+	cognitoUserPoolsTokenProvider: {
+		setWaitForInflightOAuth: jest.fn(),
+	},
+}));
 
 const mockAssertOAuthConfig = assertOAuthConfig as jest.Mock;
 const mockAssertTokenProviderConfig = assertTokenProviderConfig as jest.Mock;
@@ -81,6 +93,7 @@ const mockOpenAuthSession = openAuthSession as jest.Mock;
 const mockGenerateCodeVerifier = generateCodeVerifier as jest.Mock;
 const mockGenerateState = generateState as jest.Mock;
 const mockIsBrowser = isBrowser as jest.Mock;
+const mockAddInflightPromise = addInflightPromise as jest.Mock;
 
 const mockCompleteOAuthFlow = completeOAuthFlow as jest.Mock;
 const mockGetAuthUserAgentValue = getAuthUserAgentValue as jest.Mock;
@@ -186,6 +199,31 @@ describe('signInWithRedirect', () => {
 				expect(Amplify[ADD_OAUTH_LISTENER]).toHaveBeenCalledWith(
 					attemptCompleteOAuthFlow
 				);
+				expect(
+					cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
+				).toHaveBeenCalledTimes(1);
+
+				const callback = (
+					cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
+				).mock.calls[0][0];
+
+				await callback();
+
+				expect(oAuthStore.loadOAuthInFlight).toHaveBeenCalledTimes(1);
+			});
+
+			it('adds a promise to block auth process when there is an inflight oauth process', async () => {
+				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(true);
+				expect(
+					cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
+				).toHaveBeenCalledTimes(1);
+
+				const callback = (
+					cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
+				).mock.calls[0][0];
+
+				await callback();
+				expect(mockAddInflightPromise).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

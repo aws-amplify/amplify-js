@@ -10,8 +10,6 @@ import { attemptCompleteOAuthFlow } from '../../../../../src/providers/cognito/u
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 import { getRedirectUrl } from '../../../../../src/providers/cognito/utils/oauth/getRedirectUrl';
 import { oAuthStore } from '../../../../../src/providers/cognito/utils/oauth/oAuthStore';
-import { addInflightPromise } from '../../../../../src/providers/cognito/utils/oauth/inflightPromise';
-import { cognitoUserPoolsTokenProvider } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 import { mockAuthConfigWithOAuth } from '../../../../mockData';
 
 import type { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
@@ -37,28 +35,11 @@ jest.mock(
 		} as OAuthStore,
 	})
 );
-jest.mock(
-	'../../../../../src/providers/cognito/tokenProvider/tokenProvider',
-	() => ({
-		cognitoUserPoolsTokenProvider: {
-			setWaitForInflightOAuth: jest.fn(),
-		},
-	})
-);
-jest.mock(
-	'../../../../../src/providers/cognito/utils/oauth/inflightPromise',
-	() => ({
-		addInflightPromise: jest.fn(resolver => {
-			resolver();
-		}),
-	})
-);
 
 const mockAssertOAuthConfig = assertOAuthConfig as jest.Mock;
 const mockAssertTokenProviderConfig = assertTokenProviderConfig as jest.Mock;
 const mockCompleteOAuthFlow = completeOAuthFlow as jest.Mock;
 const mockGetRedirectUrl = getRedirectUrl as jest.Mock;
-const mockAddInflightPromise = addInflightPromise as jest.Mock;
 
 describe('attemptCompleteOAuthFlow', () => {
 	let windowSpy = jest.spyOn(window, 'window', 'get');
@@ -109,7 +90,7 @@ describe('attemptCompleteOAuthFlow', () => {
 		expect(mockCompleteOAuthFlow).not.toHaveBeenCalled();
 	});
 
-	it('sets inflight oauth promise and invokes `completeOAuthFlow` to complete an inflight oauth process', async () => {
+	it('invokes `completeOAuthFlow` to complete an inflight oauth process', async () => {
 		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(true);
 
 		await attemptCompleteOAuthFlow(mockAuthConfigWithOAuth.Auth.Cognito);
@@ -120,17 +101,6 @@ describe('attemptCompleteOAuthFlow', () => {
 				redirectUri: 'http://localhost:3000/',
 			})
 		);
-
-		expect(
-			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
-		).toHaveBeenCalledTimes(1);
-
-		const callback = (
-			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
-		).mock.calls[0][0];
-
-		// the blocking promise should resolve
-		expect(callback()).resolves.toBeUndefined();
 	});
 
 	test.each([
