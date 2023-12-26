@@ -2,20 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AuthClass } from './Auth';
 import { Hub, AMPLIFY_SYMBOL } from '../Hub';
-import {
-	AuthConfig,
-	LegacyConfig,
-	LibraryOptions,
-	ResourcesConfig,
-} from './types';
+import { LegacyConfig, LibraryOptions, ResourcesConfig } from './types';
 import { parseAWSExports } from '../parseAWSExports';
 import { deepFreeze } from '../utils';
-import { ADD_OAUTH_LISTENER } from './constants';
 
 export class AmplifyClass {
-	private oAuthListener:
-		| ((authConfig: AuthConfig['Cognito']) => void)
-		| undefined = undefined;
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
 
@@ -77,8 +68,6 @@ export class AmplifyClass {
 			'Configure',
 			AMPLIFY_SYMBOL
 		);
-
-		this.notifyOAuthListener();
 	}
 
 	/**
@@ -88,30 +77,6 @@ export class AmplifyClass {
 	 */
 	getConfig(): Readonly<ResourcesConfig> {
 		return this.resourcesConfig;
-	}
-
-	/** @internal */
-	[ADD_OAUTH_LISTENER](listener: (authConfig: AuthConfig['Cognito']) => void) {
-		if (this.resourcesConfig.Auth?.Cognito.loginWith?.oauth) {
-			// when Amplify has been configured with a valid OAuth config while adding the listener, run it directly
-			listener(this.resourcesConfig.Auth?.Cognito);
-		} else {
-			// otherwise register the listener and run it later when Amplify gets configured with a valid oauth config
-			this.oAuthListener = listener;
-		}
-	}
-
-	private notifyOAuthListener() {
-		if (
-			!this.resourcesConfig.Auth?.Cognito.loginWith?.oauth ||
-			!this.oAuthListener
-		) {
-			return;
-		}
-
-		this.oAuthListener(this.resourcesConfig.Auth?.Cognito);
-		// the listener should only be notified once with a valid oauth config
-		this.oAuthListener = undefined;
 	}
 }
 
