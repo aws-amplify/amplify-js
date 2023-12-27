@@ -1,7 +1,0 @@
-{
-	"name": "@aws-amplify/auth/enable-oauth-listener",
-	"types": "../dist/esm/providers/cognito/utils/oauth/enableOAuthListener.d.ts",
-	"main": "../dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js",
-	"module": "../dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs",
-	"sideEffects": true
-}
