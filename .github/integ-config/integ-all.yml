@@ -389,8 +389,8 @@ tests:
     browser: *minimal_browser_list
     spec: vanilla-js-basic-crud
     amplifyjs_dir: true
-    timeout_minutes: 45
-    retry_count: 10
+    # timeout_minutes: 45
+    # retry_count: 10
   - test_name: integ_next_datastore_13_basic
     desc: 'DataStore - Nextjs 13 build with SWC - basic JS app'
     framework: next
@@ -413,8 +413,8 @@ tests:
     spec: vite-basic-crud
     # TODO: run on firefox
     browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
+    # timeout_minutes: 45
+    # retry_count: 10
   - test_name: integ_rollup_datastore_basic_crud
     desc: 'Rollup + DataStore - Basic CRUD'
     framework: rollup
@@ -423,8 +423,8 @@ tests:
     spec: rollup-basic-crud
     # TODO: run on firefox
     browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
+    # timeout_minutes: 45
+    # retry_count: 10
 
   # API
   - test_name: integ_react_graphql_api
