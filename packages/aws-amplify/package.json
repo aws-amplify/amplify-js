@@ -150,6 +150,24 @@
 			"import": "./dist/esm/adapterCore/index.mjs",
 			"require": "./dist/cjs/adapterCore/index.js"
 		},
+		"./logger": {
+			"types": "./dist/esm/logger/index.d.ts",
+			"import": "./dist/esm/logger/index.mjs",
+			"require": "./dist/cjs/logger/index.js",
+			"react-native": "./src/logger/index.ts"
+		},
+		"./logger/console": {
+			"types": "./dist/esm/logger/console/index.d.ts",
+			"import": "./dist/esm/logger/console/index.mjs",
+			"require": "./dist/cjs/logger/console/index.js",
+			"react-native": "./src/logger/console/index.ts"
+		},
+		"./logger/cloudwatch": {
+			"types": "./dist/esm/logger/cloudwatch/index.d.ts",
+			"import": "./dist/esm/logger/cloudwatch/index.mjs",
+			"require": "./dist/cjs/logger/cloudwatch/index.js",
+			"react-native": "./src/logger/cloudwatch/index.ts"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -219,6 +237,15 @@
 			],
 			"adapter-core": [
 				"./dist/esm/adapterCore/index.d.ts"
+			],
+			"logger": [
+				"./dist/esm/logger/index.d.ts"
+			],
+			"logger/console": [
+				"./dist/esm/logger/console/index.d.ts"
+			],
+			"logger/cloudwatch": [
+				"./dist/esm/logger/cloudwatch/index.d.ts"
 			]
 		}
 	},
@@ -261,7 +288,8 @@
 		"datastore",
 		"in-app-messaging",
 		"push-notifications",
-		"utils"
+		"utils",
+		"logger"
 	],
 	"dependencies": {
 		"@aws-amplify/analytics": "7.0.9",
@@ -271,6 +299,7 @@
 		"@aws-amplify/datastore": "5.0.9",
 		"@aws-amplify/notifications": "2.0.9",
 		"@aws-amplify/storage": "6.0.9",
+		"@aws-amplify/logger": "6.0.9",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {

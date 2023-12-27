@@ -1,0 +1,89 @@
+{
+	"name": "@aws-amplify/logger",
+	"version": "6.0.9",
+	"description": "Logger category of aws-amplify",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./src/index.ts",
+	"typings": "./dist/esm/index.d.ts",
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "npm run lint && jest -w 1 --coverage",
+		"build-with-test": "npm test && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
+		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
+	},
+	"typesVersions": {
+		">=4.2": {
+			"console": [
+				"./dist/esm/providers/console/index.d.ts"
+			],
+			"cloudwatch": [
+				"./dist/esm/providers/cloudwatch/index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
+		},
+		"./console": {
+			"types": "./dist/esm/providers/console/index.d.ts",
+			"import": "./dist/esm/providers/console/index.mjs",
+			"require": "./dist/cjs/providers/console/index.js",
+			"react-native": "./src/providers/console/index.ts"
+		},
+		"./cloudwatch": {
+			"types": "./dist/esm/providers/cloudwatch/index.d.ts",
+			"import": "./dist/esm/providers/cloudwatch/index.mjs",
+			"require": "./dist/cjs/providers/cloudwatch/index.js",
+			"react-native": "./src/providers/cloudwatch/index.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"dist/cjs",
+		"dist/esm",
+		"src",
+		"console",
+		"cloudwatch"		
+	],
+	"dependencies": {
+		"tslib": "^2.5.0"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/core": "6.0.9",
+		"@aws-amplify/react-native": "1.0.9",
+		"@aws-sdk/types": "3.398.0",
+		"@rollup/plugin-typescript": "11.1.5",
+		"rollup": "3.29.4",
+		"typescript": "5.0.2"
+	}
+}
