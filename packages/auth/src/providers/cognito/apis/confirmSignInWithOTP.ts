@@ -13,7 +13,7 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { RespondToAuthChallengeCommandInput } from '../utils/clients/CognitoIdentityProvider/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { getAuthUserAgentValue } from '../../../utils';
-import { SignInWithOTPOutput } from '../types/outputs';
+import { ConfirmSignInOutput } from '../types/outputs';
 import { cleanActiveSignInState, signInStore } from '../utils/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
@@ -27,7 +27,7 @@ export type ConfirmSignInWithOTPInput = {
 
 export const confirmSignInWithOTP = async (
 	input: ConfirmSignInWithOTPInput
-): Promise<SignInWithOTPOutput> => {
+): Promise<ConfirmSignInOutput> => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolId, userPoolClientId } = authConfig;
@@ -62,8 +62,8 @@ export const confirmSignInWithOTP = async (
 		},
 		Session: signInSession,
 		ClientMetadata: {
-			"Amplify.Passwordless.signInMethod": "OTP",
-			"Amplify.Passwordless.action": "CONFIRM",
+			'Amplify.Passwordless.signInMethod': 'OTP',
+			'Amplify.Passwordless.action': 'CONFIRM',
 		},
 		ClientId: userPoolClientId,
 	};

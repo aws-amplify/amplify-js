@@ -42,7 +42,7 @@ import {
 	SignUpWithPasswordOutput,
 	SignUpWithSMSAndOTPOutput,
 } from '../types/outputs';
-import { signUpPasswordless } from './signUpPasswordless';
+import { signUpPasswordless } from './passwordless';
 
 import type { confirmSignIn } from './confirmSignIn';
 

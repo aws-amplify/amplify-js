@@ -192,12 +192,19 @@ const assertSignUpWithSMSOptions = (options: {
 	}
 };
 
-type SignUpInputTypes =
-	| SignUpInput
-	| SignUpWithEmailAndMagicLinkInput
-	| SignUpWithEmailAndOTPInput
-	| SignUpWithSMSAndOTPInput;
+/**
+ * General type that could be resolved to either of:
+ * * {@link SignUpWithEmailAndMagicLinkInput},
+ * * {@link SignUpWithEmailAndOTPInput},
+ * * {@link SignUpWithSMSAndOTPInput}.
+ */
+type PossibleSignUpPasswordlessInput = {
+	passwordless?: Record<string, unknown>;
+	options: { userAttributes: Record<string, string> };
+};
+type SignUpInputTypes = SignUpInput | PossibleSignUpPasswordlessInput;
 
+// TODO: move to passwordless folder
 export const isSignUpWithEmailAndMagicLinkInput = (
 	input: SignUpInputTypes
 ): input is SignUpWithEmailAndMagicLinkInput => {
@@ -212,6 +219,7 @@ export const isSignUpWithEmailAndMagicLinkInput = (
 	return true;
 };
 
+// TODO: move to passwordless folder
 export const isSignUpWithEmailAndOTPInput = (
 	input: SignUpInputTypes
 ): input is SignUpWithEmailAndOTPInput => {
@@ -226,6 +234,7 @@ export const isSignUpWithEmailAndOTPInput = (
 	return true;
 };
 
+// TODO: move to passwordless folder
 export const isSignUpWithSMSAndOTPInput = (
 	input: SignUpInputTypes
 ): input is SignUpWithSMSAndOTPInput => {

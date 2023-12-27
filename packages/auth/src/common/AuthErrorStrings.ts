@@ -72,6 +72,12 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	[AuthValidationErrorCode.EmptyConfirmUserAttributeCode]: {
 		message: 'confirmation code is required to confirmUserAttribute',
 	},
+	[AuthValidationErrorCode.EmptyPasswordlessRedirectURI]: {
+		message: 'redirectURI is required for passwordless sign in',
+		recoverySuggestion:
+			'Configure the magicLinkRedirectURL library option: ' +
+			"` Amplify.configure(amplifyconfiguration, { Auth: { magicLinkRedirectURL: '[URL_PATTERN]' } }) `",
+	},
 };
 
 // TODO: delete this code when the Auth class is removed.

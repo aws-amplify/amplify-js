@@ -6,6 +6,7 @@ export enum AuthValidationErrorCode {
 	EmptySignInPassword = 'EmptySignInPassword',
 	PasswordlessSignInHasPassword = 'PasswordlessSignInHasPassword',
 	IncorrectPasswordlessMethod = 'IncorrectPasswordlessMethod',
+	EmptyPasswordlessRedirectURI = 'EmptyPasswordlessRedirectURI',
 	CustomAuthSignInPassword = 'CustomAuthSignInPassword',
 	EmptySignUpUsername = 'EmptySignUpUsername',
 	EmptySignUpPassword = 'EmptySignUpPassword',

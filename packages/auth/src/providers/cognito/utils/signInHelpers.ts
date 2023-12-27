@@ -24,6 +24,7 @@ import {
 	SignInWithSMSAndOTPInput,
 	SignInWithEmailAndOTPInput,
 	SignInInput,
+	SignInOptions,
 } from '../types';
 import {
 	AuthAdditionalInfo,
@@ -1123,12 +1124,18 @@ export function getActiveSignInUsername(username: string): string {
 	return state.username ?? username;
 }
 
-type SignInInputTypes =
-	| SignInInput
-	| SignInWithEmailAndMagicLinkInput
-	| SignInWithEmailAndOTPInput
-	| SignInWithSMSAndOTPInput;
+/**
+ * General type that could be resolved to either of:
+ * * {@link SignInWithEmailAndMagicLinkInput},
+ * * {@link SignInWithEmailAndOTPInput},
+ * * {@link SignInWithSMSAndOTPInput}.
+ */
+type PossibleSignInPasswordlessInput = {
+	passwordless?: Record<string, unknown>;
+};
+type SignInInputTypes = SignInInput | PossibleSignInPasswordlessInput;
 
+// TODO: move to passwordless folder
 export const isSignInWithEmailAndMagicLinkInput = (
 	input: SignInInputTypes
 ): input is SignInWithEmailAndMagicLinkInput =>
@@ -1136,6 +1143,7 @@ export const isSignInWithEmailAndMagicLinkInput = (
 	input.passwordless.deliveryMedium === 'EMAIL' &&
 	input.passwordless.method === 'MAGIC_LINK';
 
+// TODO: move to passwordless folder
 export const isSignInWithEmailAndOTPInput = (
 	input: SignInInputTypes
 ): input is SignInWithEmailAndOTPInput =>
@@ -1143,6 +1151,7 @@ export const isSignInWithEmailAndOTPInput = (
 	input.passwordless.deliveryMedium === 'EMAIL' &&
 	input.passwordless.method === 'OTP';
 
+// TODO: move to passwordless folder
 export const isSignInWithSMSAndOTPInput = (
 	input: SignInInputTypes
 ): input is SignInWithSMSAndOTPInput =>

@@ -17,6 +17,9 @@ import {
 import { getRegion } from '../../utils/clients/CognitoIdentityProvider/utils';
 import {
 	getActiveSignInUsername,
+	isSignInWithEmailAndMagicLinkInput,
+	isSignInWithEmailAndOTPInput,
+	isSignInWithSMSAndOTPInput,
 	setActiveSignInUsername,
 } from '../../utils/signInHelpers';
 import { AuthAction } from '@aws-amplify/core/internals/utils';
@@ -39,7 +42,10 @@ import {
 	KEY_PASSWORDLESS_ACTION,
 	KEY_PASSWORDLESS_DELIVERY_MEDIUM,
 	KEY_PASSWORDLESS_SIGN_IN_METHOD,
+	KEY_PASSWORDLESS_REDIRECT_URI,
+	DUMMY_COGNITO_CHALLENGE_ANSWER,
 } from './constants';
+import { validatePasswordlessInput } from './utils';
 
 /**
  * @internal
@@ -63,6 +69,14 @@ export function signInPasswordless(
 ): Promise<SignInWithSMSAndOTPOutput>;
 
 /**
+ * Initiate the passwordless sign-in flow by requesting a code/link to be sent via the delivery medium.
+ *
+ * Note: It does not re-use the internal {@link handleCustomAuthFlowWithoutSRP} API because the passwordless sign-in flow
+ * does not yet support device key or Cognito Advanced Security Features.
+ *
+ * TODO: check if device key and Cognito Advanced Security Features are supported by the passwordless sign-in flow.
+ * If so, we can re-use the internal {@link handleCustomAuthFlowWithoutSRP} API.
+ *
  * @internal
  */
 export async function signInPasswordless(
@@ -72,7 +86,10 @@ export async function signInPasswordless(
 		| SignInWithSMSAndOTPInput
 ) {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
+
 	assertTokenProviderConfig(authConfig);
+	validatePasswordlessInput(input, Amplify);
+
 	const { userPoolId, userPoolClientId } = authConfig;
 	const {
 		username,
@@ -80,22 +97,6 @@ export async function signInPasswordless(
 		password,
 		options: { clientMetadata } = {},
 	} = input;
-
-	assertValidationError(
-		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
-	);
-	assertValidationError(
-		!password,
-		AuthValidationErrorCode.PasswordlessSignInHasPassword
-	);
-	assertValidationError(
-		(deliveryMedium === 'EMAIL' && ['MAGIC_LINK', 'OTP'].includes(method)) ||
-			(deliveryMedium === 'SMS' && method === 'OTP'),
-		AuthValidationErrorCode.IncorrectPasswordlessMethod
-	);
-	// TODO: validate passwordless deliveryMedium to be EMAIL or SMS when method is OTP
-	// TODO: validate passwordless deliveryMedium to be EMAIL when method is MAGIC_LINK
 
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
@@ -108,7 +109,7 @@ export async function signInPasswordless(
 	};
 
 	// Initiate Auth with a custom flow
-	const { Session, ChallengeParameters } = await initiateAuth(
+	const { Session, ChallengeParameters = {} } = await initiateAuth(
 		{
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
@@ -119,13 +120,11 @@ export async function signInPasswordless(
 
 	setActiveSignInUsername(activeUsername);
 
-	// The answer is not used by the service. It is just a placeholder to make the request happy.
-	const dummyAnswer = 'dummyAnswer';
 	const jsonReqRespondToAuthChallenge: RespondToAuthChallengeCommandInput = {
 		ChallengeName: 'CUSTOM_CHALLENGE',
 		ChallengeResponses: {
 			USERNAME: activeUsername,
-			ANSWER: dummyAnswer,
+			ANSWER: DUMMY_COGNITO_CHALLENGE_ANSWER,
 		},
 		Session,
 		ClientMetadata: {
@@ -133,7 +132,11 @@ export async function signInPasswordless(
 			[KEY_PASSWORDLESS_SIGN_IN_METHOD]: method,
 			[KEY_PASSWORDLESS_ACTION]: 'REQUEST',
 			[KEY_PASSWORDLESS_DELIVERY_MEDIUM]: deliveryMedium,
-			...(deliveryMedium === 'EMAIL' && {}),
+			// TODO: move this a standalone utility function
+			...(deliveryMedium === 'EMAIL' && {
+				[KEY_PASSWORDLESS_REDIRECT_URI]:
+					Amplify.libraryOptions.Auth?.magicLinkRedirectURL!,
+			}),
 		},
 		ClientId: userPoolClientId,
 	};
@@ -159,16 +162,32 @@ export async function signInPasswordless(
 		signInDetails,
 	});
 
-	return {
-		isSignedIn: false,
-		nextStep: {
-			signInStep: 'CONFIRM_SIGN_IN_WITH_OTP',
-			additionalInfo: ChallengeParameters as AuthAdditionalInfo,
-			codeDeliveryDetails: {
-				deliveryMedium:
-					ChallengeParameters?.deliveryMedium as AuthDeliveryMedium,
-				destination: ChallengeParameters?.destination,
-			},
-		},
+	const responseAdditionalInfo = ChallengeParameters;
+	const responseCodeDeliveryDetails = {
+		// TODO: add typeguard for deliveryMedium to be SMS or EMAIL
+		deliveryMedium: ChallengeParameters?.deliveryMedium,
+		destination: ChallengeParameters?.destination,
 	};
+	if (isSignInWithEmailAndMagicLinkInput(input)) {
+		return {
+			isSignedIn: false,
+			nextStep: {
+				signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK',
+				additionalInfo: responseAdditionalInfo,
+				codeDeliveryDetails: responseCodeDeliveryDetails,
+			},
+		} as SignInWithEmailAndMagicLinkOutput;
+	} else if (
+		isSignInWithEmailAndOTPInput(input) ||
+		isSignInWithSMSAndOTPInput(input)
+	) {
+		return {
+			isSignedIn: false,
+			nextStep: {
+				signInStep: 'CONFIRM_SIGN_IN_WITH_OTP',
+				additionalInfo: responseAdditionalInfo,
+				codeDeliveryDetails: responseCodeDeliveryDetails,
+			},
+		} as SignInWithSMSAndOTPOutput;
+	}
 }

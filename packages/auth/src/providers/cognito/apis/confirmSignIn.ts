@@ -35,6 +35,7 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
+import { attemptConfirmSignInWithMagicLink } from './passwordless/confirmSignInWithMagicLink';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -67,6 +68,9 @@ export async function confirmSignIn(
 		!!challengeResponse,
 		AuthValidationErrorCode.EmptyChallengeResponse
 	);
+
+	// TODO: verify confirm signInWithMagicLink flow
+	// attemptConfirmSignInWithMagicLink(input);
 
 	if (!username || !challengeName || !signInSession)
 		// TODO: remove this error message for production apps
