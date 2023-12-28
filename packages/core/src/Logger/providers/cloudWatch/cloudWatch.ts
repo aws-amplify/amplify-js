@@ -25,7 +25,7 @@ const defaultConfig = {
 export const cloudWatchProvider: CloudWatchProvider = {
 	initialize: (config: CloudWatchConfig) => {
 		if (cloudWatchConfig)
-			throw new Error('CloudWatch provider already initialised');
+			throw new Error('CloudWatch provider has already been initialized');
 		cloudWatchConfig = { ...defaultConfig, ...config };
 	},
 	log: (input: LogParams) => {
