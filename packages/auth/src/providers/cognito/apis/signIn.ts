@@ -15,9 +15,9 @@ import {
 	isSignInWithEmailAndMagicLinkInput,
 	isSignInWithEmailAndOTPInput,
 	isSignInWithSMSAndOTPInput,
+	isSignInWithPasswordInput,
 } from '../utils/signInHelpers';
 
-import { SignInInput, SignInOutput } from '../types';
 import {
 	SignInWithPasswordInput,
 	SignInWithEmailAndMagicLinkInput,
@@ -41,8 +41,8 @@ import type { confirmSignIn } from './confirmSignIn';
  * * 'CUSTOM_WITHOUT_SRP'
  * * 'USER_PASSWORD_AUTH'
  *
- * @param input -  The {@link SignInInput} object
- * @returns - {@link SignInOutput}
+ * @param input -  The {@link SignInWithPasswordInput} object
+ * @returns - {@link SignInWithPasswordOutput}
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws AuthValidationErrorCode when `username` or `password` is invalid.
@@ -112,7 +112,7 @@ export async function signIn(
 		| SignInWithSMSAndOTPInput
 ) {
 	await assertUserNotAuthenticated();
-	if (input.passwordless) {
+	if (!isSignInWithPasswordInput(input)) {
 		if (isSignInWithEmailAndMagicLinkInput(input)) {
 			return signInPasswordless(input);
 		} else if (isSignInWithEmailAndOTPInput(input)) {
