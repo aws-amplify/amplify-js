@@ -41,6 +41,12 @@ export type AuthSession = {
 export type LibraryAuthOptions = {
 	tokenProvider?: TokenProvider;
 	credentialsProvider?: CredentialsAndIdentityIdProvider;
+	/**
+	 * The URL pattern to generate a Magic Link when passwordless auth is
+	 * enabled. The pattern looks like 'https://example.com/sign-in/##code##'.
+	 * The ##code## in Magic Link pattern will be replaced by a hash.
+	 */
+	magicLinkRedirectURL?: string;
 };
 
 export type Identity = {

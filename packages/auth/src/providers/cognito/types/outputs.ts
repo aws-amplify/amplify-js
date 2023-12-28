@@ -14,7 +14,12 @@ import {
 	AuthUpdateUserAttributeOutput,
 } from '../../../types';
 import { AWSAuthDevice, AuthUser, UserAttributeKey } from '../types';
-import { SignInWithOTPNextStep } from './models';
+import {
+	ConfirmSignInWithMagicLinkSignUpStep,
+	ConfirmSignInWithMagicLinkStep,
+	ConfirmSignInWithOTPSignUpStep,
+	ConfirmSignInWithOTPStep,
+} from './models';
 
 export type FetchMFAPreferenceOutput = {
 	enabled?: AuthMFAType[];
@@ -61,7 +66,25 @@ export type SetUpTOTPOutput = AuthTOTPSetupDetails;
 /**
  * Output type for Cognito signIn API.
  */
-export type SignInOutput = AuthSignInOutput;
+export type SignInOutput = SignInWithPasswordOutput;
+
+/**
+ * Internal-only output type for Cognito signIn APIs. This type is a generic type for sign-in
+ * output types with password, including
+ * * {@link SignInWithCustomAuthOutput}
+ * * {@link SignInWithCustomSRPAuthOutput}
+ * * {@link SignInWithSRPOutput}
+ * * {@link SignInWithUserPasswordOutput}
+ *
+ * The name of this type differs from the output type for the passwordless flows, including
+ * * {@link SignInWithEmailAndMagicLinkOutput}
+ * * {@link SignInWithEmailAndOTPOutput}
+ * * {@link SignInWithSMSAndOTPOutput}.
+ *
+ * Use {@link SignInOutput} for public usage.
+ * @internal
+ */
+export type SignInWithPasswordOutput = AuthSignInOutput;
 
 /**
  * Output type for Cognito signInWithCustomAuth API.
@@ -86,7 +109,35 @@ export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
 /**
  * Output type for Cognito signUp API.
  */
-export type SignUpOutput = AuthSignUpOutput<AuthVerifiableAttributeKey>;
+export type SignUpOutput = SignUpWithPasswordOutput;
+
+/**
+ * Internal-only output type for Cognito signIn APIs. The name of this type differs from the output type for the
+ * passwordless flows, including
+ * * {@link SignUpWithEmailAndMagicLinkOutput}
+ * * {@link SignUpWithEmailAndOTPOutput}
+ * * {@link SignUpWithSMSAndOTPOutput}.
+ *
+ * Use {@link SignUpOutput} for public usage.
+ * @internal
+ */
+export type SignUpWithPasswordOutput =
+	AuthSignUpOutput<AuthVerifiableAttributeKey>;
+
+export type SignUpWithEmailAndMagicLinkOutput = {
+	isSignUpComplete: boolean;
+	nextStep: ConfirmSignInWithMagicLinkSignUpStep;
+};
+
+export type SignUpWithEmailAndOTPOutput = {
+	isSignUpComplete: boolean;
+	nextStep: ConfirmSignInWithOTPSignUpStep;
+};
+
+export type SignUpWithSMSAndOTPOutput = {
+	isSignUpComplete: boolean;
+	nextStep: ConfirmSignInWithOTPSignUpStep;
+};
 
 /**
  * Output type for Cognito updateUserAttributes API.
@@ -111,7 +162,17 @@ export type UpdateUserAttributeOutput =
  */
 export type FetchDevicesOutput = AWSAuthDevice[];
 
-export type SignInWithOTPOutput = {
+export type SignInWithEmailAndMagicLinkOutput = {
 	isSignedIn: boolean;
-	nextStep: SignInWithOTPNextStep;
+	nextStep: ConfirmSignInWithMagicLinkStep;
+};
+
+export type SignInWithEmailAndOTPOutput = {
+	isSignedIn: boolean;
+	nextStep: ConfirmSignInWithOTPStep;
+};
+
+export type SignInWithSMSAndOTPOutput = {
+	isSignedIn: boolean;
+	nextStep: ConfirmSignInWithOTPStep;
 };

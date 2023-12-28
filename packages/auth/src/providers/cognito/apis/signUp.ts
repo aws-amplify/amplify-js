@@ -7,8 +7,9 @@ import {
 	AuthAction,
 	AuthVerifiableAttributeKey,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthDeliveryMedium } from '../../../types';
-import { SignUpInput, SignUpOutput, SignInInput } from '../types';
+import { SignInInput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -23,21 +24,119 @@ import {
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
 	setUsernameUsedForAutoSignIn,
+	isSignUpWithEmailAndMagicLinkInput,
+	isSignUpWithEmailAndOTPInput,
+	isSignUpWithSMSAndOTPInput,
 } from '../utils/signUpHelpers';
 import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
+import {
+	SignUpWithEmailAndMagicLinkInput,
+	SignUpWithEmailAndOTPInput,
+	SignUpWithPasswordInput,
+	SignUpWithSMSAndOTPInput,
+} from '../types/inputs';
+import {
+	SignUpWithEmailAndMagicLinkOutput,
+	SignUpWithEmailAndOTPOutput,
+	SignUpWithPasswordOutput,
+	SignUpWithSMSAndOTPOutput,
+} from '../types/outputs';
+import { signUpPasswordless } from './signUpPasswordless';
+
+import type { confirmSignIn } from './confirmSignIn';
 
 /**
  * Creates a user
  *
- * @param input - The SignUpInput object
- * @returns SignUpOutput
+ * @param input - The {@link SignUpWithPasswordInput} object
+ * @returns The {@link SignUpWithPasswordOutput} object
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
- * @throws validation: {@link AuthValidationErrorCode } - Validation errors thrown either username or password
- *  are not defined.
- * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
+ * @throws AuthValidationErrorCode when `username` or `password` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
  */
-export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
+export function signUp(
+	input: SignUpWithPasswordInput
+): Promise<SignUpWithPasswordOutput>;
+
+/**
+ * Creates a user with an email address instead of a password, and signs the user in automatically. The sign-up flow is
+ * completed by calling the {@link confirmSignIn} API with the code extracted from the MagicLink delivered to the email
+ * address.
+ *
+ * @param input - The {@link SignUpWithEmailAndMagicLinkInput} object
+ * @returns - {@link SignUpWithEmailAndMagicLinkOutput}
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
+ *   see {@link AuthValidationErrorCode}
+ */
+export function signUp(
+	input: SignUpWithEmailAndMagicLinkInput
+): Promise<SignUpWithEmailAndMagicLinkOutput>;
+/**
+ * Creates a user with an email address instead of a password, and signs the user in automatically. The sign-up flow is
+ * completed by calling the {@link confirmSignIn} API with the one-time password delivered to the email address.
+ *
+ * @param input - The {@link SignUpWithSMSAndOTPInput} object
+ * @returns - {@link SignUpWithSMSAndOTPOutput}
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
+ */
+export function signUp(
+	input: SignUpWithSMSAndOTPInput
+): Promise<SignUpWithSMSAndOTPOutput>;
+/**
+ * Creates a user with a phone number instead of a password, and signs the user in automatically. The sign-up flow is
+ * completed by calling the {@link confirmSignIn} API with the the one-time password delivered to the phone number via
+ * SMS.
+ *
+ * @param input - The {@link SignUpWithEmailAndOTPInput} object
+ * @returns - {@link SignUpWithEmailAndOTPOutput}
+ * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
+ * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
+ *   see {@link AuthValidationErrorCode}
+ * @throws AuthTokenConfigException when the token provider config is invalid.
+ */
+export function signUp(
+	input: SignUpWithEmailAndOTPInput
+): Promise<SignUpWithEmailAndOTPOutput>;
+
+/**
+ * @internal
+ */
+export async function signUp(
+	input:
+		| SignUpWithPasswordInput
+		| SignUpWithEmailAndMagicLinkInput
+		| SignUpWithEmailAndOTPInput
+		| SignUpWithSMSAndOTPInput
+) {
+	const { passwordless } = input;
+	if (passwordless) {
+		// Iterate through signUpPasswordless calls to make TypeScript happy
+		if (isSignUpWithEmailAndMagicLinkInput(input)) {
+			return signUpPasswordless(input);
+		} else if (isSignUpWithEmailAndOTPInput(input)) {
+			return signUpPasswordless(input);
+		} else if (isSignUpWithSMSAndOTPInput(input)) {
+			return signUpPasswordless(input);
+		} else {
+			// TODO: implement validation error
+			throw new Error('SMS does not support MagicLink');
+		}
+	} else {
+		return signUpWithPassword(input);
+	}
+}
+
+const signUpWithPassword = async (
+	input: SignUpWithPasswordInput
+): Promise<SignUpWithPasswordOutput> => {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =
@@ -143,4 +242,4 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		},
 		userId: UserSub,
 	};
-}
+};

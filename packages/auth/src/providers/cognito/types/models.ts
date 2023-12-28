@@ -16,10 +16,6 @@ import {
 
 import { AuthProvider } from '../../../types/inputs';
 import { SignUpOutput } from './outputs';
-import {
-	AuthPasswordlessSignInAndSignUpOptions,
-	AuthPasswordlessSignInOptions,
-} from './options';
 
 /**
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
@@ -115,31 +111,38 @@ export type CodeDeliveryDetails<
 	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
 > = AuthCodeDeliveryDetails<CognitoUserAttributeKey>;
 
-type ConfirmSignInWithOTPStep = {
+interface PasswordlessCodeDeliveryDetails<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> extends AuthCodeDeliveryDetails<CognitoUserAttributeKey> {
+	deliveryMedium?: 'SMS' | 'EMAIL';
+}
+
+export type ConfirmSignInWithOTPStep<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> = {
 	signInStep: 'CONFIRM_SIGN_IN_WITH_OTP';
-	codeDeliveryDetails: CodeDeliveryDetails;
+	codeDeliveryDetails: PasswordlessCodeDeliveryDetails<CognitoUserAttributeKey>;
 	additionalInfo: AuthAdditionalInfo;
 };
 
-type ConfirmSignInWithMagicLinkStep = {
+export type ConfirmSignInWithMagicLinkStep<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> = {
 	signInStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK';
-	codeDeliveryDetails: CodeDeliveryDetails;
+	codeDeliveryDetails: PasswordlessCodeDeliveryDetails<CognitoUserAttributeKey>;
 	additionalInfo: AuthAdditionalInfo;
 };
 
-type PasswordlessWithOTPDoneStep = {
-	signInStep: 'DONE';
+export type ConfirmSignInWithOTPSignUpStep<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> = {
+	signUpStep: 'CONFIRM_SIGN_IN_WITH_OTP';
+	codeDeliveryDetails: PasswordlessCodeDeliveryDetails<CognitoUserAttributeKey>;
 };
 
-export type SignInWithOTPNextStep =
-	| ConfirmSignInWithMagicLinkStep
-	| ConfirmSignInWithOTPStep
-	| PasswordlessWithOTPDoneStep;
-
-export type AuthPasswordlessFlow = 'SIGN_IN' | 'SIGN_UP_AND_SIGN_IN';
-
-export type AuthPasswordlessDeliveryDestination = 'PHONE' | 'EMAIL';
-
-export type GetOptions<T extends AuthPasswordlessFlow> = T extends 'SIGN_IN'
-	? AuthPasswordlessSignInOptions
-	: AuthPasswordlessSignInAndSignUpOptions;
+export type ConfirmSignInWithMagicLinkSignUpStep<
+	CognitoUserAttributeKey extends UserAttributeKey = UserAttributeKey,
+> = {
+	signUpStep: 'CONFIRM_SIGN_IN_WITH_MAGIC_LINK';
+	codeDeliveryDetails: PasswordlessCodeDeliveryDetails<CognitoUserAttributeKey>;
+};

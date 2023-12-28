@@ -7,7 +7,12 @@ import {
 	AuthUserAttributes,
 	AuthUserAttributeKey,
 } from '../../../types';
-import { ClientMetadata, AuthFlowType, ValidationData } from './models';
+import {
+	ClientMetadata,
+	AuthFlowType,
+	ValidationData,
+	VerifiableUserAttributeKey,
+} from './models';
 
 /**
  * Options specific to Cognito Confirm Reset Password.
@@ -33,8 +38,12 @@ export type ResetPasswordOptions = AuthServiceOptions & {
 /**
  * Options specific to Cognito Sign In.
  */
-export type SignInOptions = AuthServiceOptions & {
+export type SignInOptions = {
 	authFlowType?: AuthFlowType;
+	clientMetadata?: ClientMetadata;
+};
+
+export type SignInPasswordlessOptions = {
 	clientMetadata?: ClientMetadata;
 };
 
@@ -47,6 +56,17 @@ export type SignUpOptions<UserAttributeKey extends AuthUserAttributeKey> =
 		clientMetadata?: ClientMetadata;
 		autoSignIn?: SignInOptions | boolean; // default is false;
 	};
+
+/**
+ * Options specific to Sign Up with passwordless configurations.
+ */
+export type SignUpPasswordlessOptions<
+	RequiredAttribute extends VerifiableUserAttributeKey,
+> = {
+	userAttributes: Required<AuthUserAttributes<RequiredAttribute>>;
+	validationData?: ValidationData;
+	clientMetadata?: ClientMetadata;
+};
 
 /**
  * Options specific to Cognito Confirm Sign Up.
@@ -91,12 +111,4 @@ export type SendUserAttributeVerificationCodeOptions = AuthServiceOptions & {
  */
 export type UpdateUserAttributeOptions = AuthServiceOptions & {
 	clientMetadata?: ClientMetadata;
-};
-
-export type AuthPasswordlessSignInOptions = {
-	clientMetadata?: ClientMetadata;
-};
-export type AuthPasswordlessSignInAndSignUpOptions = {
-	clientMetadata?: ClientMetadata;
-	userAttributes?: AuthUserAttributes;
 };

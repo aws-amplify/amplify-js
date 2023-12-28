@@ -27,8 +27,6 @@ export { rememberDevice } from './apis/rememberDevice';
 export { forgetDevice } from './apis/forgetDevice';
 export { fetchDevices } from './apis/fetchDevices';
 export { autoSignIn } from './apis/autoSignIn';
-export { signInWithOTP } from './apis/signInWithOTP';
-export { confirmSignInWithOTP } from './apis/confirmSignInWithOTP';
 export {
 	ConfirmResetPasswordInput,
 	ConfirmSignInInput,
@@ -38,8 +36,14 @@ export {
 	ResetPasswordInput,
 	SignInInput,
 	SignInWithRedirectInput,
+	SignInWithEmailAndMagicLinkInput,
+	SignInWithEmailAndOTPInput,
+	SignInWithSMSAndOTPInput,
 	SignOutInput,
 	SignUpInput,
+	SignUpWithEmailAndMagicLinkInput,
+	SignUpWithEmailAndOTPInput,
+	SignUpWithSMSAndOTPInput,
 	UpdateMFAPreferenceInput,
 	UpdatePasswordInput,
 	UpdateUserAttributesInput,
@@ -59,7 +63,13 @@ export {
 	ResetPasswordOutput,
 	SetUpTOTPOutput,
 	SignInOutput,
+	SignInWithEmailAndMagicLinkOutput,
+	SignInWithEmailAndOTPOutput,
+	SignInWithSMSAndOTPOutput,
 	SignUpOutput,
+	SignUpWithEmailAndMagicLinkOutput,
+	SignUpWithEmailAndOTPOutput,
+	SignUpWithSMSAndOTPOutput,
 	UpdateUserAttributesOutput,
 	UpdateUserAttributeOutput,
 	SendUserAttributeVerificationCodeOutput,
