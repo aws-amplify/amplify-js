@@ -50,7 +50,7 @@ export type DelayFunction = (
 	error?: unknown
 ) => number | false;
 
-export type AmplifyLoggingCategory =
+export type LoggerCategory =
 	| 'Analytics'
 	| 'API'
 	| 'Auth'
