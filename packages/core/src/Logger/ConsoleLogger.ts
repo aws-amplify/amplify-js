@@ -16,7 +16,7 @@ interface LoggingProvider {
 	// return the name of the provider
 	getProviderName(): string;
 
-	// return the name of you category
+	// return the name of the category
 	getCategoryName(): string;
 
 	// configure the plugin
