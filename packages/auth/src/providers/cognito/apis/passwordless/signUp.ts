@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyUrl,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	SignUpWithEmailAndMagicLinkInput,
@@ -63,9 +66,7 @@ export async function signUpPasswordless(
 	} = input;
 
 	// TODO: support resolving create user handler endpoint from Amplify config
-	const createUserHandlerEndpoint = new URL(
-		'https://fp8tsthr4d.execute-api.us-east-1.amazonaws.com/prod'
-	);
+	const createUserHandlerEndpoint = new AmplifyUrl('');
 	const response = await createUser(
 		createUserHandlerEndpoint,
 		userPoolId,

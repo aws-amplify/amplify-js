@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	HttpRequest,
+	HttpResponse,
 	unauthenticatedHandler,
 	getRetryDecider,
+	parseJsonBody,
 	parseJsonError,
 	jitteredBackoff,
+	Endpoint,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { PreInitiateAuthPayload } from './types';
 import {
@@ -19,6 +21,59 @@ import {
 	isSignUpWithEmailAndOTPInput,
 	isSignUpWithSMSAndOTPInput,
 } from '../../utils/signUpHelpers';
+import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+import { AuthError } from '../../../../errors/AuthError';
+
+const createUserApiHandlerDeserializer = async (response: HttpResponse) => {
+	if (response.statusCode >= 300) {
+		// Parse error from API Gateway service itself
+		const error = await parseJsonError(response);
+		try {
+			// Parse errors from The create user Lambda.
+			const body = await parseJsonBody(response);
+			if (error?.name === 'UnknownError' && body.error) {
+				// Error from create user lambda returns in shape like this:
+				// {"error":"User already exists"}
+				error.name = 'CreateUserError';
+				error.message = body.error;
+			}
+		} catch (e) {
+			/** SKIP */
+		}
+		throw new AuthError({ name: error!.name, message: error!.message });
+	} else {
+		const body = await parseJsonBody(response);
+		return body;
+	}
+};
+
+const createUserApiHandlerSerializer = (
+	input: PreInitiateAuthPayload,
+	endpoint: Endpoint
+) => ({
+	url: endpoint.url,
+	headers: {
+		'content-type': 'application/json; charset=UTF-8',
+	},
+	method: 'PUT',
+	body: JSON.stringify(input),
+});
+
+const getCreateUserApiHandler = (url: URL) =>
+	composeServiceApi(
+		unauthenticatedHandler,
+		createUserApiHandlerSerializer,
+		createUserApiHandlerDeserializer,
+		{
+			region: '',
+			endpointResolver: () => ({
+				url,
+			}),
+			retryDecider: getRetryDecider(parseJsonError),
+			computeDelay: jitteredBackoff,
+			withCrossDomainCredentials: false,
+		}
+	);
 
 /**
  * Internal method to create a user when signing up passwordless.
@@ -46,21 +101,7 @@ export const createUser = async (
 		userPoolId: userPoolId,
 	};
 
-	const request: HttpRequest = {
-		url: createUserHandlerEndpoint,
-		headers: {
-			'content-type': 'application/json; charset=UTF-8',
-		},
-		method: 'PUT',
-		body: JSON.stringify(body),
-	};
-
 	// creating a new user on Cognito via API endpoint
-	return unauthenticatedHandler(request, {
-		// TODO: confirm the error shape thrown by the create user Lambda
-		// TODO: expose the error message and code if the error shape does not follow the AWS service error shape.
-		retryDecider: getRetryDecider(parseJsonError),
-		computeDelay: jitteredBackoff,
-		withCrossDomainCredentials: false,
-	});
+	const handleCreateUser = getCreateUserApiHandler(createUserHandlerEndpoint);
+	return handleCreateUser({}, body);
 };
