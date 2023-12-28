@@ -69,7 +69,7 @@ export type SetUpTOTPOutput = AuthTOTPSetupDetails;
 export type SignInOutput = SignInWithPasswordOutput;
 
 /**
- * Output type for Cognito signIn APIs. This type is a generic type for sign-in
+ * Internal-only output type for Cognito signIn APIs. This type is a generic type for sign-in
  * output types with password, including
  * * {@link SignInWithCustomAuthOutput}
  * * {@link SignInWithCustomSRPAuthOutput}
@@ -81,7 +81,7 @@ export type SignInOutput = SignInWithPasswordOutput;
  * * {@link SignInWithEmailAndOTPOutput}
  * * {@link SignInWithSMSAndOTPOutput}.
  *
- * Use {@link SignInOutput} interface publicly for backward compatibility.
+ * Use {@link SignInOutput} for public usage.
  * @internal
  */
 export type SignInWithPasswordOutput = AuthSignInOutput;
@@ -112,13 +112,13 @@ export type SignInWithCustomSRPAuthOutput = AuthSignInOutput;
 export type SignUpOutput = SignUpWithPasswordOutput;
 
 /**
- * Output type for Cognito signIn APIs. The name of this type differs from the output type for the passwordless flows,
- * including
+ * Internal-only output type for Cognito signIn APIs. The name of this type differs from the output type for the
+ * passwordless flows, including
  * * {@link SignUpWithEmailAndMagicLinkOutput}
  * * {@link SignUpWithEmailAndOTPOutput}
  * * {@link SignUpWithSMSAndOTPOutput}.
  *
- * Use {@link SignUpOutput} interface publicly for backward compatibility.
+ * Use {@link SignUpOutput} for public usage.
  * @internal
  */
 export type SignUpWithPasswordOutput =

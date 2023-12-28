@@ -17,7 +17,6 @@ import {
 	isSignInWithSMSAndOTPInput,
 } from '../utils/signInHelpers';
 
-import { SignInInput, SignInOutput } from '../types';
 import {
 	SignInWithPasswordInput,
 	SignInWithEmailAndMagicLinkInput,
@@ -41,8 +40,8 @@ import type { confirmSignIn } from './confirmSignIn';
  * * 'CUSTOM_WITHOUT_SRP'
  * * 'USER_PASSWORD_AUTH'
  *
- * @param input -  The {@link SignInInput} object
- * @returns - {@link SignInOutput}
+ * @param input -  The {@link SignInWithPasswordInput} object
+ * @returns The {@link SignInWithPasswordOutput} object
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws AuthValidationErrorCode when `username` or `password` is invalid.
@@ -59,7 +58,7 @@ export function signIn(
  * registered email address.
  *
  * @param input -  The {@link SignInWithEmailAndMagicLinkInput} object
- * @returns - {@link SignInWithEmailAndMagicLinkOutput}
+ * @returns The {@link SignInWithEmailAndMagicLinkOutput} object
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
@@ -75,8 +74,8 @@ export function signIn(
  * is completed by calling the {@link confirmSignIn} API with the one-time password delivered to the registered email
  * address.
  *
- * @param input -  The SignInWithEmailAndOTPInput object
- * @returns SignInWithEmailAndOTPOutput
+ * @param input -  The {@link SignInWithEmailAndOTPInput} object
+ * @returns The {@link SignInWithEmailAndOTPOutput} object
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.
@@ -92,8 +91,8 @@ export function signIn(
  * sign-in flow is completed by calling the {@link confirmSignIn} API with the one-time password delivered to the
  * registered phone number via SMS.
  *
- * @param input -  The SignInWithSMSAndOTPInput object
- * @returns SignInWithSMSAndOTPOutput
+ * @param input -  The {@link SignInWithSMSAndOTPInput} object
+ * @returns The {@link SignInWithSMSAndOTPOutput} object
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException } for Cognito service errors
  *   during the sign-in process.
  * @throws AuthValidationErrorCode when `username` or `passwordless` is invalid.

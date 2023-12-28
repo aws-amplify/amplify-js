@@ -9,7 +9,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthDeliveryMedium } from '../../../types';
-import { SignUpInput, SignUpOutput, SignInInput } from '../types';
+import { SignInInput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -49,8 +49,8 @@ import type { confirmSignIn } from './confirmSignIn';
 /**
  * Creates a user
  *
- * @param input - The {@link SignUpInput} object
- * @returns - {@link SignUpOutput}
+ * @param input - The {@link SignUpWithPasswordInput} object
+ * @returns The {@link SignUpWithPasswordOutput} object
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.
  * @throws AuthValidationErrorCode when `username` or `password` is invalid.
  *   see {@link AuthValidationErrorCode}
@@ -116,7 +116,7 @@ export async function signUp(
 		| SignUpWithEmailAndOTPInput
 		| SignUpWithSMSAndOTPInput
 ) {
-	const { options, passwordless } = input;
+	const { passwordless } = input;
 	if (passwordless) {
 		// Iterate through signUpPasswordless calls to make TypeScript happy
 		if (isSignUpWithEmailAndMagicLinkInput(input)) {
@@ -135,8 +135,8 @@ export async function signUp(
 }
 
 const signUpWithPassword = async (
-	input: SignUpInput
-): Promise<SignUpOutput> => {
+	input: SignUpWithPasswordInput
+): Promise<SignUpWithPasswordOutput> => {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const signUpVerificationMethod =

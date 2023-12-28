@@ -81,7 +81,7 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 export type SignInInput = SignInWithPasswordInput;
 
 /**
- * Input type for Cognito signIn API. This type is a generic type for sign-in
+ * Internal-only input type for Cognito signIn API. This type is a generic type for sign-in
  * input types with password, including
  * * {@link SignInWithCustomAuthInput}
  * * {@link SignInWithCustomSRPAuthInput}
@@ -93,7 +93,7 @@ export type SignInInput = SignInWithPasswordInput;
  * * {@link SignInWithEmailAndOTPInput}
  * * {@link SignInWithSMSAndOTPInput}.
  *
- * Use {@link SignInInput} interface publicly for backward compatibility.
+ * Use {@link SignInInput} for public usage.
  * @internal
  */
 export type SignInWithPasswordInput = AuthSignInInput<SignInOptions> & {
@@ -196,13 +196,13 @@ export type SignInWithRedirectInput = AuthSignInWithRedirectInput;
 export type SignOutInput = AuthSignOutInput;
 
 /**
- * Input type for Cognito signUp API. The name of this type differs from the input type for the passwordless flows,
- * including
+ * Internal-only input type for Cognito signUp API. The name of this type differs from the input type for the
+ * passwordless flows, including
  * * {@link SignUpWithEmailAndMagicLinkInput}
  * * {@link SignUpWithEmailAndOTPInput}
  * * {@link SignUpWithSMSAndOTPInput}.
  *
- * Use {@link SignUpInput} interface publicly for backward compatibility.
+ * Use {@link SignUpInput} for public usage.
  * @internal
  */
 export interface SignUpWithPasswordInput
