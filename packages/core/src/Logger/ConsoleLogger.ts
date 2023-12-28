@@ -13,7 +13,7 @@ enum LogType {
 	VERBOSE = 'VERBOSE',
 }
 interface LoggingProvider {
-	// return the name of you provider
+	// return the name of the provider
 	getProviderName(): string;
 
 	// return the name of you category
