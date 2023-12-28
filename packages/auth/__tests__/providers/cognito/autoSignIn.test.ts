@@ -16,6 +16,11 @@ import { Amplify } from 'aws-amplify';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { AuthError } from '../../../src/errors/AuthError';
 
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	isBrowser: jest.fn(() => false),
+}));
+
 const authConfig = {
 	Cognito: {
 		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
@@ -34,7 +39,7 @@ describe('Auto sign-in API Happy Path Cases:', () => {
 		signUpSpy = jest
 			.spyOn(signUpClient, 'signUp')
 			.mockImplementationOnce(
-				async () => ({ UserConfirmed: true } as SignUpCommandOutput)
+				async () => ({ UserConfirmed: true }) as SignUpCommandOutput
 			);
 
 		handleUserSRPAuthflowSpy = jest
