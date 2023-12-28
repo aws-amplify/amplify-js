@@ -174,7 +174,7 @@ function autoSignInWithCode(signInInput: SignInInput): AutoSignInCallback {
 
 export const autoSignInUserConfirmed = autoSignInWithCode;
 
-const assertSignUpWithEmailOption = (options: {
+const assertSignUpWithEmailOptions = (options: {
 	userAttributes: Record<string, string>;
 }) => {
 	if (!options.userAttributes.email) {
@@ -183,7 +183,7 @@ const assertSignUpWithEmailOption = (options: {
 	}
 };
 
-const assertSignUpWithSMSOption = (options: {
+const assertSignUpWithSMSOptions = (options: {
 	userAttributes: Record<string, string>;
 }) => {
 	if (!options.userAttributes['phone_number']) {
@@ -208,7 +208,7 @@ export const isSignUpWithEmailAndMagicLinkInput = (
 	) {
 		return false;
 	}
-	assertSignUpWithEmailOption(input.options);
+	assertSignUpWithEmailOptions(input.options);
 	return true;
 };
 
@@ -222,7 +222,7 @@ export const isSignUpWithEmailAndOTPInput = (
 	) {
 		return false;
 	}
-	assertSignUpWithEmailOption(input.options);
+	assertSignUpWithEmailOptions(input.options);
 	return true;
 };
 
@@ -236,6 +236,6 @@ export const isSignUpWithSMSAndOTPInput = (
 	) {
 		return false;
 	}
-	assertSignUpWithSMSOption(input.options);
+	assertSignUpWithSMSOptions(input.options);
 	return true;
 };

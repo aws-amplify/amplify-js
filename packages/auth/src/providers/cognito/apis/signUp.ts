@@ -33,11 +33,13 @@ import { getAuthUserAgentValue } from '../../../utils';
 import {
 	SignUpWithEmailAndMagicLinkInput,
 	SignUpWithEmailAndOTPInput,
+	SignUpWithPasswordInput,
 	SignUpWithSMSAndOTPInput,
 } from '../types/inputs';
 import {
 	SignUpWithEmailAndMagicLinkOutput,
 	SignUpWithEmailAndOTPOutput,
+	SignUpWithPasswordOutput,
 	SignUpWithSMSAndOTPOutput,
 } from '../types/outputs';
 import { signUpPasswordless } from './signUpPasswordless';
@@ -54,7 +56,9 @@ import type { confirmSignIn } from './confirmSignIn';
  *   see {@link AuthValidationErrorCode}
  * @throws AuthTokenConfigException when the token provider config is invalid.
  */
-export function signUp(input: SignUpInput): Promise<SignUpOutput>;
+export function signUp(
+	input: SignUpWithPasswordInput
+): Promise<SignUpWithPasswordOutput>;
 
 /**
  * Creates a user with an email address instead of a password, and signs the user in automatically. The sign-up flow is
@@ -107,7 +111,7 @@ export function signUp(
  */
 export async function signUp(
 	input:
-		| SignUpInput
+		| SignUpWithPasswordInput
 		| SignUpWithEmailAndMagicLinkInput
 		| SignUpWithEmailAndOTPInput
 		| SignUpWithSMSAndOTPInput

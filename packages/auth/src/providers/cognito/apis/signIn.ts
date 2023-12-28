@@ -19,6 +19,7 @@ import {
 
 import { SignInInput, SignInOutput } from '../types';
 import {
+	SignInWithPasswordInput,
 	SignInWithEmailAndMagicLinkInput,
 	SignInWithEmailAndOTPInput,
 	SignInWithSMSAndOTPInput,
@@ -26,6 +27,7 @@ import {
 import {
 	SignInWithEmailAndMagicLinkOutput,
 	SignInWithEmailAndOTPOutput,
+	SignInWithPasswordOutput,
 	SignInWithSMSAndOTPOutput,
 } from '../types/outputs';
 
@@ -47,7 +49,9 @@ import type { confirmSignIn } from './confirmSignIn';
  *   see {@link AuthValidationErrorCode}
  * @throws AuthTokenConfigException when the token provider config is invalid.
  */
-export function signIn(input: SignInInput): Promise<SignInOutput>;
+export function signIn(
+	input: SignInWithPasswordInput
+): Promise<SignInWithPasswordOutput>;
 
 /**
  * Initiates a passwordless sign-in flow by sending a MagicLink to a registered email address. The sign-in flow is
@@ -102,7 +106,7 @@ export function signIn(
 
 export async function signIn(
 	input:
-		| SignInInput
+		| SignInWithPasswordInput
 		| SignInWithEmailAndMagicLinkInput
 		| SignInWithEmailAndOTPInput
 		| SignInWithSMSAndOTPInput
