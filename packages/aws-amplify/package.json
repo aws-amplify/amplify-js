@@ -299,7 +299,7 @@
 		"@aws-amplify/datastore": "5.0.9",
 		"@aws-amplify/notifications": "2.0.9",
 		"@aws-amplify/storage": "6.0.9",
-		"@aws-amplify/logger": "6.0.9",
+		"@aws-amplify/logger": "1.0.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
