@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/logger",
-	"version": "6.0.9",
+	"version": "1.0.0",
 	"description": "Logger category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
