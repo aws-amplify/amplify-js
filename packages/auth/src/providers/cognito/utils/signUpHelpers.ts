@@ -15,7 +15,6 @@ import { AuthError } from '../../../errors/AuthError';
 import { SignUpCommandOutput } from './clients/CognitoIdentityProvider/types';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
-import { SignUpWithPasswordInput } from '../types/inputs';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
@@ -194,23 +193,16 @@ const assertSignUpWithSMSOptions = (options: {
 };
 
 type SignUpInputTypes =
-	| SignUpWithPasswordInput
+	| SignUpInput
 	| SignUpWithEmailAndMagicLinkInput
 	| SignUpWithEmailAndOTPInput
 	| SignUpWithSMSAndOTPInput;
-
-export const isSignUpWithPasswordInput = (
-	input: SignUpInputTypes
-): input is SignUpWithPasswordInput => {
-	// @ts-expect-error passwordless does not exist on SignUpWithPasswordInput
-	return !input.passwordless;
-};
 
 export const isSignUpWithEmailAndMagicLinkInput = (
 	input: SignUpInputTypes
 ): input is SignUpWithEmailAndMagicLinkInput => {
 	if (
-		isSignUpWithPasswordInput(input) ||
+		!input.passwordless ||
 		input.passwordless.deliveryMedium !== 'EMAIL' ||
 		input.passwordless.method !== 'MAGIC_LINK'
 	) {
@@ -224,7 +216,7 @@ export const isSignUpWithEmailAndOTPInput = (
 	input: SignUpInputTypes
 ): input is SignUpWithEmailAndOTPInput => {
 	if (
-		isSignUpWithPasswordInput(input) ||
+		!input.passwordless ||
 		input.passwordless.deliveryMedium !== 'EMAIL' ||
 		input.passwordless.method !== 'OTP'
 	) {
@@ -238,7 +230,7 @@ export const isSignUpWithSMSAndOTPInput = (
 	input: SignUpInputTypes
 ): input is SignUpWithSMSAndOTPInput => {
 	if (
-		isSignUpWithPasswordInput(input) ||
+		!input.passwordless ||
 		input.passwordless.deliveryMedium !== 'SMS' ||
 		input.passwordless.method !== 'OTP'
 	) {

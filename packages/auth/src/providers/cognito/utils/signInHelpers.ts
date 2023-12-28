@@ -66,7 +66,6 @@ import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from './userContextData';
-import { SignInWithPasswordInput } from '../types/inputs';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -1125,35 +1124,28 @@ export function getActiveSignInUsername(username: string): string {
 }
 
 type SignInInputTypes =
-	| SignInWithPasswordInput
+	| SignInInput
 	| SignInWithEmailAndMagicLinkInput
 	| SignInWithEmailAndOTPInput
 	| SignInWithSMSAndOTPInput;
 
-export const isSignInWithPasswordInput = (
-	input: SignInInputTypes
-): input is SignInWithPasswordInput => {
-	// @ts-expect-error passwordless does not exist on SignInWithPasswordInput
-	return !input.passwordless;
-};
-
 export const isSignInWithEmailAndMagicLinkInput = (
 	input: SignInInputTypes
 ): input is SignInWithEmailAndMagicLinkInput =>
-	!isSignInWithPasswordInput(input) &&
+	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'EMAIL' &&
 	input.passwordless.method === 'MAGIC_LINK';
 
 export const isSignInWithEmailAndOTPInput = (
 	input: SignInInputTypes
 ): input is SignInWithEmailAndOTPInput =>
-	!isSignInWithPasswordInput(input) &&
+	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'EMAIL' &&
 	input.passwordless.method === 'OTP';
 
 export const isSignInWithSMSAndOTPInput = (
 	input: SignInInputTypes
 ): input is SignInWithSMSAndOTPInput =>
-	!isSignInWithPasswordInput(input) &&
+	!!input.passwordless &&
 	input.passwordless.deliveryMedium === 'SMS' &&
 	input.passwordless.method === 'OTP';

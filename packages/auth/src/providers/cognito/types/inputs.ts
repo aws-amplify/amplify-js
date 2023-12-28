@@ -81,7 +81,7 @@ export type ResetPasswordInput = AuthResetPasswordInput<ResetPasswordOptions>;
 export type SignInInput = SignInWithPasswordInput;
 
 /**
- * Internal-only input type for Cognito signIn API. This type is a generic type for sign-in
+ * Input type for Cognito signIn API. This type is a generic type for sign-in
  * input types with password, including
  * * {@link SignInWithCustomAuthInput}
  * * {@link SignInWithCustomSRPAuthInput}
@@ -93,11 +93,17 @@ export type SignInInput = SignInWithPasswordInput;
  * * {@link SignInWithEmailAndOTPInput}
  * * {@link SignInWithSMSAndOTPInput}.
  *
- * Use {@link SignInInput} for public usage.
- *
+ * Use {@link SignInInput} interface publicly for backward compatibility.
  * @internal
  */
-export type SignInWithPasswordInput = AuthSignInInput<SignInOptions>;
+export type SignInWithPasswordInput = AuthSignInInput<SignInOptions> & {
+	/**
+	 * `passwordless` cannot be set when using Cognito built-in authentication
+	 * flow. This is required to prevent {@link SignInInput} interface breaking
+	 * change.
+	 */
+	passwordless?: never;
+};
 
 /**
  * Input type for Cognito signInWithCustomAuth API.
@@ -117,13 +123,21 @@ export type SignInWithSRPInput = AuthSignInInput<SignInOptions>;
 /**
  * Input type for Cognito signInWithUserPasswordInput API.
  */
-export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions>;
+export type SignInWithUserPasswordInput = AuthSignInInput<SignInOptions> & {
+	passwordless?: never;
+};
 
 interface SignInPasswordlessInput<
 	DeliveryMedium extends 'EMAIL' | 'SMS',
 	Method extends 'MAGIC_LINK' | 'OTP',
 > {
 	username: string;
+	/**
+	 * `passwordless` cannot be set when using Cognito built-in authentication
+	 * flow. This is required to prevent {@link SignInInput} interface breaking
+	 * change.
+	 */
+	password?: never;
 	passwordless: {
 		deliveryMedium: DeliveryMedium;
 		method: Method;
@@ -182,18 +196,24 @@ export type SignInWithRedirectInput = AuthSignInWithRedirectInput;
 export type SignOutInput = AuthSignOutInput;
 
 /**
- * Internal-only input type for Cognito signUp API. The name of this type differs from the input type for the
- * passwordless flows, including
+ * Input type for Cognito signUp API. The name of this type differs from the input type for the passwordless flows,
+ * including
  * * {@link SignUpWithEmailAndMagicLinkInput}
  * * {@link SignUpWithEmailAndOTPInput}
  * * {@link SignUpWithSMSAndOTPInput}.
  *
- * Use {@link SignUpInput} for public usage
+ * Use {@link SignUpInput} interface publicly for backward compatibility.
  * @internal
  */
-export type SignUpWithPasswordInput = AuthSignUpInput<
-	SignUpOptions<UserAttributeKey>
->;
+export interface SignUpWithPasswordInput
+	extends AuthSignUpInput<SignUpOptions<UserAttributeKey>> {
+	/**
+	 * `passwordless` cannot be set when using Cognito built-in authentication
+	 * flow. This is required to prevent {@link SignUpInput} interface breaking
+	 * change.
+	 */
+	passwordless?: never;
+}
 
 /**
  * Input type for Cognito signUp API.
@@ -206,12 +226,12 @@ interface SignUpPasswordlessInput<
 	RequiredAttribute extends VerifiableUserAttributeKey,
 > {
 	username: string;
-	// /**
-	//  * `password` cannot be set when using Cognito built-in authentication
-	//  * flow. This is required to prevent {@link SignUpInput} interface breaking
-	//  * change.
-	//  */
-	// password?: never;
+	/**
+	 * `password` cannot be set when using Cognito built-in authentication
+	 * flow. This is required to prevent {@link SignUpInput} interface breaking
+	 * change.
+	 */
+	password?: never;
 	passwordless: {
 		deliveryMedium: DeliveryMedium;
 		method: Method;
