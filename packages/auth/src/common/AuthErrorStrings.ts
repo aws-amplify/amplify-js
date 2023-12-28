@@ -51,6 +51,12 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 	[AuthValidationErrorCode.EmptySignUpUsername]: {
 		message: 'username is required to signUp',
 	},
+	[AuthValidationErrorCode.EmptySignUpEmail]: {
+		message: 'An email is required to signUp',
+	},
+	[AuthValidationErrorCode.EmptySignUpPhoneNumber]: {
+		message: 'A phone number is required to signUp',
+	},
 	[AuthValidationErrorCode.PasswordlessSignUpHasPassword]: {
 		message: 'A password is not needed when signing up with passwordless flows',
 		recoverySuggestion: 'Do not include a password in your signUp call.',

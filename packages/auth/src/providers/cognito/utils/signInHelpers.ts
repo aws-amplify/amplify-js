@@ -1123,38 +1123,3 @@ export function getActiveSignInUsername(username: string): string {
 	const state = signInStore.getState();
 	return state.username ?? username;
 }
-
-/**
- * General type that could be resolved to either of:
- * * {@link SignInWithEmailAndMagicLinkInput},
- * * {@link SignInWithEmailAndOTPInput},
- * * {@link SignInWithSMSAndOTPInput}.
- */
-type PossibleSignInPasswordlessInput = {
-	passwordless?: Record<string, unknown>;
-};
-type SignInInputTypes = SignInInput | PossibleSignInPasswordlessInput;
-
-// TODO: move to passwordless folder
-export const isSignInWithEmailAndMagicLinkInput = (
-	input: SignInInputTypes
-): input is SignInWithEmailAndMagicLinkInput =>
-	!!input.passwordless &&
-	input.passwordless.deliveryMedium === 'EMAIL' &&
-	input.passwordless.method === 'MAGIC_LINK';
-
-// TODO: move to passwordless folder
-export const isSignInWithEmailAndOTPInput = (
-	input: SignInInputTypes
-): input is SignInWithEmailAndOTPInput =>
-	!!input.passwordless &&
-	input.passwordless.deliveryMedium === 'EMAIL' &&
-	input.passwordless.method === 'OTP';
-
-// TODO: move to passwordless folder
-export const isSignInWithSMSAndOTPInput = (
-	input: SignInInputTypes
-): input is SignInWithSMSAndOTPInput =>
-	!!input.passwordless &&
-	input.passwordless.deliveryMedium === 'SMS' &&
-	input.passwordless.method === 'OTP';

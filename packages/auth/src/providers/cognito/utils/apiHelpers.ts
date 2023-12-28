@@ -33,12 +33,3 @@ export function toAuthUserAttribute<T extends string = string>(
 	});
 	return userAttributes;
 }
-
-
-export const normalizeHeaders = (headers?: Record<string, string>) => {
-	const normalizedHeaders: Record<string, string> = {};
-	for (const key in headers) {
-		normalizedHeaders[key.toLowerCase()] = headers[key];
-	}
-	return normalizedHeaders;
-};

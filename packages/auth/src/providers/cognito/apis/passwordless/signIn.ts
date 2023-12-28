@@ -17,9 +17,6 @@ import {
 import { getRegion } from '../../utils/clients/CognitoIdentityProvider/utils';
 import {
 	getActiveSignInUsername,
-	isSignInWithEmailAndMagicLinkInput,
-	isSignInWithEmailAndOTPInput,
-	isSignInWithSMSAndOTPInput,
 	setActiveSignInUsername,
 } from '../../utils/signInHelpers';
 import { AuthAction } from '@aws-amplify/core/internals/utils';
@@ -35,9 +32,6 @@ import {
 	SignInWithEmailAndOTPOutput,
 	SignInWithSMSAndOTPOutput,
 } from '../../types/outputs';
-
-import { assertValidationError } from '../../../../errors/utils/assertValidationError';
-import { AuthValidationErrorCode } from '../../../../errors/types/validation';
 import {
 	KEY_PASSWORDLESS_ACTION,
 	KEY_PASSWORDLESS_DELIVERY_MEDIUM,
@@ -45,7 +39,12 @@ import {
 	KEY_PASSWORDLESS_REDIRECT_URI,
 	DUMMY_COGNITO_CHALLENGE_ANSWER,
 } from './constants';
-import { validatePasswordlessInput } from './utils';
+import {
+	validatePasswordlessInput,
+	isSignInWithEmailAndMagicLinkInput,
+	isSignInWithEmailAndOTPInput,
+	isSignInWithSMSAndOTPInput,
+} from './utils';
 
 /**
  * @internal

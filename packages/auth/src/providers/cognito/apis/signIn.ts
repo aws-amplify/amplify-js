@@ -5,17 +5,17 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { signInPasswordless } from './passwordless';
+import {
+	signInPasswordless,
+	isSignInWithEmailAndMagicLinkInput,
+	isSignInWithEmailAndOTPInput,
+	isSignInWithSMSAndOTPInput,
+} from './passwordless';
 import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
-import {
-	assertUserNotAuthenticated,
-	isSignInWithEmailAndMagicLinkInput,
-	isSignInWithEmailAndOTPInput,
-	isSignInWithSMSAndOTPInput,
-} from '../utils/signInHelpers';
+import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 
 import {
 	SignInWithPasswordInput,

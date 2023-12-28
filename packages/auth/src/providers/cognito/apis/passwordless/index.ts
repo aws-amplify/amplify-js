@@ -3,3 +3,13 @@
 
 export { signUpPasswordless } from './signUp';
 export { signInPasswordless } from './signIn';
+export {
+	assertSignUpWithEmailOptions,
+	assertSignUpWithSMSOptions,
+	isSignInWithEmailAndMagicLinkInput,
+	isSignInWithEmailAndOTPInput,
+	isSignInWithSMSAndOTPInput,
+	isSignUpWithEmailAndMagicLinkInput,
+	isSignUpWithEmailAndOTPInput,
+	isSignUpWithSMSAndOTPInput,
+} from './utils';

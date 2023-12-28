@@ -20,7 +20,7 @@ import {
 	isSignUpWithEmailAndMagicLinkInput,
 	isSignUpWithEmailAndOTPInput,
 	isSignUpWithSMSAndOTPInput,
-} from '../../utils/signUpHelpers';
+} from './utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { AuthError } from '../../../../errors/AuthError';
 

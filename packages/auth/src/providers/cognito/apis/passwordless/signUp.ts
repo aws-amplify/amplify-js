@@ -18,12 +18,12 @@ import {
 	SignUpWithSMSAndOTPOutput,
 } from '../../types/outputs';
 import { createUser } from './createUser';
-import { signInPasswordless } from './signIn';
 import {
 	isSignUpWithEmailAndMagicLinkInput,
 	isSignUpWithEmailAndOTPInput,
 	isSignUpWithSMSAndOTPInput,
-} from '../../utils/signUpHelpers';
+} from './utils';
+import { signInPasswordless } from './signIn';
 
 /**
  * @internal

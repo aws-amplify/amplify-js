@@ -24,9 +24,6 @@ import {
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
 	setUsernameUsedForAutoSignIn,
-	isSignUpWithEmailAndMagicLinkInput,
-	isSignUpWithEmailAndOTPInput,
-	isSignUpWithSMSAndOTPInput,
 } from '../utils/signUpHelpers';
 import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -42,7 +39,14 @@ import {
 	SignUpWithPasswordOutput,
 	SignUpWithSMSAndOTPOutput,
 } from '../types/outputs';
-import { signUpPasswordless } from './passwordless';
+import {
+	signUpPasswordless,
+	isSignUpWithEmailAndMagicLinkInput,
+	isSignUpWithEmailAndOTPInput,
+	isSignUpWithSMSAndOTPInput,
+	assertSignUpWithEmailOptions,
+	assertSignUpWithSMSOptions,
+} from './passwordless';
 
 import type { confirmSignIn } from './confirmSignIn';
 
@@ -120,10 +124,13 @@ export async function signUp(
 	if (passwordless) {
 		// Iterate through signUpPasswordless calls to make TypeScript happy
 		if (isSignUpWithEmailAndMagicLinkInput(input)) {
+			assertSignUpWithEmailOptions(input.options);
 			return signUpPasswordless(input);
 		} else if (isSignUpWithEmailAndOTPInput(input)) {
+			assertSignUpWithEmailOptions(input.options);
 			return signUpPasswordless(input);
 		} else if (isSignUpWithSMSAndOTPInput(input)) {
+			assertSignUpWithSMSOptions(input.options);
 			return signUpPasswordless(input);
 		} else {
 			// TODO: implement validation error

@@ -11,6 +11,8 @@ export enum AuthValidationErrorCode {
 	EmptySignUpUsername = 'EmptySignUpUsername',
 	EmptySignUpPassword = 'EmptySignUpPassword',
 	PasswordlessSignUpHasPassword = 'PasswordlessSignUpHasPassword',
+	EmptySignUpEmail = 'EmptySignUpEmail',
+	EmptySignUpPhoneNumber = 'EmptySignUpPhoneNumber',
 	EmptyConfirmSignUpUsername = 'EmptyConfirmSignUpUsername',
 	EmptyConfirmSignUpCode = 'EmptyConfirmSignUpCode',
 	EmptyResendSignUpCodeUsername = 'EmptyresendSignUpCodeUsername',
