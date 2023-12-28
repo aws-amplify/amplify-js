@@ -118,6 +118,3 @@ export {
 	SESSION_START_EVENT,
 	SESSION_STOP_EVENT,
 } from './utils/sessionListener';
-
-// logger
-export { generateLogger } from './Logger';

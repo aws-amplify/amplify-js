@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyLoggingCategory } from '../types';
+import { LoggerCategory } from '../types';
 
 export type LogLevel = 'DEBUG' | 'ERROR' | 'INFO' | 'WARN' | 'VERBOSE' | 'NONE';
 
@@ -9,7 +9,7 @@ export type LogParams = {
 	namespace: string;
 	logLevel: LogLevel;
 	message: string;
-	category?: AmplifyLoggingCategory;
+	category?: LoggerCategory;
 };
 
 export interface LoggerProvider {
@@ -28,6 +28,6 @@ export interface Logger {
 
 type GenerateLoggerInput = {
 	namespace: string;
-	category?: AmplifyLoggingCategory;
+	category?: LoggerCategory;
 };
 export type GenerateLogger = (input: GenerateLoggerInput) => Logger;

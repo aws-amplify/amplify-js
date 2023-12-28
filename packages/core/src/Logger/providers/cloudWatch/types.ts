@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LogLevel, LoggerProvider } from '../../types';
-import { AmplifyLoggingCategory } from '../../../types';
+import { LoggerCategory } from '../../../types';
 
 export interface CloudWatchProvider extends LoggerProvider {
 	initialize: (config: CloudWatchConfig) => void;
@@ -35,5 +35,5 @@ type LoggingConstraints = {
 };
 
 type CategoryLogLevel = {
-	[Category in AmplifyLoggingCategory]?: LogLevel;
+	[Category in LoggerCategory]?: LogLevel;
 };

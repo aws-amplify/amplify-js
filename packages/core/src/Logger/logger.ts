@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LogLevel, Logger as ILogger } from './types';
-import { administrateLogger } from './AdministrateLogger';
+import { administrateLogger } from './administrateLogger';
 import { GenerateLogger } from './types';
-import { AmplifyLoggingCategory } from '../types';
+import { LoggerCategory } from '../types';
 
 /**
  * Write logs
@@ -12,9 +12,9 @@ import { AmplifyLoggingCategory } from '../types';
  **/
 class Logger implements ILogger {
 	namespace: string;
-	category?: AmplifyLoggingCategory;
+	category?: LoggerCategory;
 
-	constructor(namespace: string, category?: AmplifyLoggingCategory) {
+	constructor(namespace: string, category?: LoggerCategory) {
 		this.namespace = namespace;
 		this.category = category;
 	}
