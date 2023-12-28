@@ -15,6 +15,9 @@ import * as analyticsKinesisFirehoseExports from '../src/analytics/kinesis-fireh
 import * as analyticsPersonalizeExports from '../src/analytics/personalize';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
+import * as loggerTopLevelExports from '../src/logger';
+import * as loggerConsoleExports from '../src/logger/console';
+import * as loggerCloudwatchExports from '../src/logger/cloudwatch';
 
 /**
  * Describes exports from the aws-amplify umbrella package to ensure we're not polluting the export surface.
@@ -250,6 +253,26 @@ describe('aws-amplify Exports', () => {
 					'copy',
 					'getUrl',
 				].sort()
+			);
+		});
+	});
+
+	describe('Logger exports', () => {
+		it('should only export expected symbols from the top-level', () => {
+			expect(Object.keys(loggerTopLevelExports).sort()).toEqual(
+				['disable', 'enable', 'flushLogs', 'generateLogger'].sort()
+			);
+		});
+
+		it('should only export expected symbols from the Console provider', () => {
+			expect(Object.keys(loggerConsoleExports).sort()).toEqual(
+				['disable', 'enable', 'getConsoleProvider'].sort()
+			);
+		});
+
+		it('should only export expected symbols from the Cloudwatch provider', () => {
+			expect(Object.keys(loggerCloudwatchExports).sort()).toEqual(
+				['disable', 'enable', 'getCloudWatchProvider'].sort()
 			);
 		});
 	});
