@@ -738,7 +738,7 @@ tests:
   - test_name: integ_in_app_messaging
     desc: 'React InApp Messaging'
     framework: react
-    category: notifications
+    category: in-app-messaging
     sample_name: [in-app-messaging-app]
     spec: in-app-messaging
     browser: *minimal_browser_list
