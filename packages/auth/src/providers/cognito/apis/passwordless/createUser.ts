@@ -2,27 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	Endpoint,
 	HttpResponse,
-	unauthenticatedHandler,
 	getRetryDecider,
+	jitteredBackoff,
 	parseJsonBody,
 	parseJsonError,
-	jitteredBackoff,
-	Endpoint,
+	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { PreInitiateAuthPayload } from './types';
+import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+
+import { AuthError } from '../../../../errors/AuthError';
 import {
 	SignUpWithEmailAndMagicLinkInput,
 	SignUpWithEmailAndOTPInput,
 	SignUpWithSMSAndOTPInput,
 } from '../../types';
+import { PreInitiateAuthPayload } from './types';
 import {
 	isSignUpWithEmailAndMagicLinkInput,
 	isSignUpWithEmailAndOTPInput,
 	isSignUpWithSMSAndOTPInput,
 } from './utils';
-import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import { AuthError } from '../../../../errors/AuthError';
 
 const createUserApiHandlerDeserializer = async (response: HttpResponse) => {
 	if (response.statusCode >= 300) {

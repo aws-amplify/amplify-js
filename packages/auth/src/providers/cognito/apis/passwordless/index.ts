@@ -13,3 +13,7 @@ export {
 	isSignUpWithEmailAndOTPInput,
 	isSignUpWithSMSAndOTPInput,
 } from './utils';
+export {
+	isMagicLinkFragment,
+	loadMagicLinkSignInState,
+} from './confirmSignInWithMagicLink';

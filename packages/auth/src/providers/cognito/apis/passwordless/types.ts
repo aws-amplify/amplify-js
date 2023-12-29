@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthUserAttributes } from '../../../../types';
-import { ClientMetadata } from '../../types/models';
 
 /**
  * Payload sent to the backend when signing a user in.

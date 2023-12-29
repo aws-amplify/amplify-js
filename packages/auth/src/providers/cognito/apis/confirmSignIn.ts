@@ -35,7 +35,14 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
-import { attemptConfirmSignInWithMagicLink } from './passwordless/confirmSignInWithMagicLink';
+import {
+	isMagicLinkFragment,
+	loadMagicLinkSignInState,
+} from './passwordless/confirmSignInWithMagicLink';
+import {
+	KEY_PASSWORDLESS_ACTION,
+	KEY_PASSWORDLESS_SIGN_IN_METHOD,
+} from './passwordless/constants';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -56,21 +63,24 @@ export async function confirmSignIn(
 	input: ConfirmSignInInput
 ): Promise<ConfirmSignInOutput> {
 	const { challengeResponse, options } = input;
+	const clientMetaData = { ...options?.clientMetadata };
+
+	if (isMagicLinkFragment(challengeResponse)) {
+		await loadMagicLinkSignInState(challengeResponse);
+		clientMetaData[KEY_PASSWORDLESS_ACTION] = 'CONFIRM';
+		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] = 'MAGIC_LINK';
+	}
+
 	const { username, challengeName, signInSession, signInDetails } =
 		signInStore.getState();
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
-	const clientMetaData = options?.clientMetadata;
-
 	assertValidationError(
 		!!challengeResponse,
 		AuthValidationErrorCode.EmptyChallengeResponse
 	);
-
-	// TODO: verify confirm signInWithMagicLink flow
-	// attemptConfirmSignInWithMagicLink(input);
 
 	if (!username || !challengeName || !signInSession)
 		// TODO: remove this error message for production apps
