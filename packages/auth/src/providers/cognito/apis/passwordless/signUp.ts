@@ -19,37 +19,37 @@ import {
 } from '../../types/outputs';
 import { createUser } from './createUser';
 import {
+	convertSignInOutputToSignUpOutput,
 	isSignUpWithEmailAndMagicLinkInput,
 	isSignUpWithEmailAndOTPInput,
-	isSignUpWithSMSAndOTPInput,
 } from './utils';
-import { signInPasswordless } from './signIn';
+import { signIn as signInPasswordless } from './signIn';
 
 /**
  * @internal
  */
-export function signUpPasswordless(
+export function signUp(
 	input: SignUpWithEmailAndMagicLinkInput
 ): Promise<SignUpWithEmailAndMagicLinkOutput>;
 
 /**
  * @internal
  */
-export function signUpPasswordless(
+export function signUp(
 	input: SignUpWithEmailAndOTPInput
 ): Promise<SignUpWithEmailAndOTPOutput>;
 
 /**
  * @internal
  */
-export function signUpPasswordless(
+export function signUp(
 	input: SignUpWithSMSAndOTPInput
 ): Promise<SignUpWithSMSAndOTPOutput>;
 
 /**
  * @internal
  */
-export async function signUpPasswordless(
+export async function signUp(
 	input:
 		| SignUpWithEmailAndMagicLinkInput
 		| SignUpWithEmailAndOTPInput
@@ -65,7 +65,7 @@ export async function signUpPasswordless(
 		options: { userAttributes, clientMetadata, validationData },
 	} = input;
 
-	// TODO: support resolving create user handler endpoint from Amplify config
+	// TODO: support resolving create user handler endpoint from Amplify config when design is finalized.
 	const createUserHandlerEndpoint = new AmplifyUrl('');
 	const response = await createUser(
 		createUserHandlerEndpoint,
@@ -73,41 +73,28 @@ export async function signUpPasswordless(
 		input
 	);
 
-	console.log('response: ', response);
-
-	// Iterate through the overload signatures to make TypeScript happy.
+	/**
+	 * Passwordless sign up always triggers a sign in. The sign-up is completed by the delivery medium is verified
+	 * in the sign in step. Otherwise, the temporary user is invalidated after the a given expiration configured
+	 * in the backend.
+	 *
+	 * Iterate through the overload signatures to make TypeScript happy.
+	 * The returns needs cast to satisfy the overload signature.
+	 */
 	if (isSignUpWithEmailAndMagicLinkInput(input)) {
-		const { isSignedIn, nextStep: nextSignInStep } =
-			await signInPasswordless(input);
-		return {
-			isSignUpComplete: isSignedIn,
-			nextStep: {
-				...nextSignInStep,
-				signUpStep: nextSignInStep.signInStep,
-			},
-		} as SignUpWithEmailAndMagicLinkOutput;
+		const signInOutput = await signInPasswordless(input);
+		return convertSignInOutputToSignUpOutput(
+			signInOutput
+		) satisfies SignUpWithEmailAndMagicLinkOutput as SignUpWithEmailAndMagicLinkOutput;
 	} else if (isSignUpWithEmailAndOTPInput(input)) {
-		const { isSignedIn, nextStep: nextSignInStep } =
-			await signInPasswordless(input);
-		return {
-			isSignUpComplete: isSignedIn,
-			nextStep: {
-				...nextSignInStep,
-				signUpStep: nextSignInStep.signInStep,
-			},
-		} as SignUpWithEmailAndOTPOutput;
-	} else if (isSignUpWithSMSAndOTPInput(input)) {
-		const { isSignedIn, nextStep: nextSignInStep } =
-			await signInPasswordless(input);
-		return {
-			isSignUpComplete: isSignedIn,
-			nextStep: {
-				...nextSignInStep,
-				signUpStep: nextSignInStep.signInStep,
-			},
-		} as SignUpWithSMSAndOTPOutput;
+		const signInOutput = await signInPasswordless(input);
+		return convertSignInOutputToSignUpOutput(
+			signInOutput
+		) satisfies SignUpWithEmailAndOTPOutput as SignUpWithEmailAndOTPOutput;
 	} else {
-		// Not possible to reach this branch, but TypeScript doesn't know that.
-		throw new Error('Invalid input');
+		const signInOutput = await signInPasswordless(input);
+		return convertSignInOutputToSignUpOutput(
+			signInOutput
+		) satisfies SignUpWithSMSAndOTPOutput as SignUpWithSMSAndOTPOutput;
 	}
 }

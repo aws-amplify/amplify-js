@@ -21,7 +21,6 @@ import {
 } from '../../utils/signInHelpers';
 import { AuthAction } from '@aws-amplify/core/internals/utils';
 import { setActiveSignInState } from '../../utils/signInStore';
-
 import {
 	SignInWithEmailAndMagicLinkInput,
 	SignInWithEmailAndOTPInput,
@@ -49,21 +48,21 @@ import {
 /**
  * @internal
  */
-export function signInPasswordless(
+export function signIn(
 	input: SignInWithEmailAndMagicLinkInput
 ): Promise<SignInWithEmailAndMagicLinkOutput>;
 
 /**
  * @internal
  */
-export function signInPasswordless(
+export function signIn(
 	input: SignInWithEmailAndOTPInput
 ): Promise<SignInWithEmailAndOTPOutput>;
 
 /**
  * @internal
  */
-export function signInPasswordless(
+export function signIn(
 	input: SignInWithSMSAndOTPInput
 ): Promise<SignInWithSMSAndOTPOutput>;
 
@@ -78,7 +77,7 @@ export function signInPasswordless(
  *
  * @internal
  */
-export async function signInPasswordless(
+export async function signIn(
 	input:
 		| SignInWithEmailAndMagicLinkInput
 		| SignInWithEmailAndOTPInput
@@ -131,7 +130,6 @@ export async function signInPasswordless(
 			[KEY_PASSWORDLESS_SIGN_IN_METHOD]: method,
 			[KEY_PASSWORDLESS_ACTION]: 'REQUEST',
 			[KEY_PASSWORDLESS_DELIVERY_MEDIUM]: deliveryMedium,
-			// TODO: move this a standalone utility function
 			...(deliveryMedium === 'EMAIL' && {
 				[KEY_PASSWORDLESS_REDIRECT_URI]:
 					Amplify.libraryOptions.Auth?.magicLinkRedirectURL!,
@@ -163,7 +161,6 @@ export async function signInPasswordless(
 
 	const responseAdditionalInfo = ChallengeParameters;
 	const responseCodeDeliveryDetails = {
-		// TODO: add typeguard for deliveryMedium to be SMS or EMAIL
 		deliveryMedium: ChallengeParameters?.deliveryMedium,
 		destination: ChallengeParameters?.destination,
 	};

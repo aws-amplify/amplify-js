@@ -24,6 +24,7 @@ import {
 	isSignUpWithEmailAndOTPInput,
 	isSignUpWithSMSAndOTPInput,
 } from './utils';
+import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 
 const createUserApiHandlerDeserializer = async (response: HttpResponse) => {
 	if (response.statusCode >= 300) {
@@ -35,13 +36,13 @@ const createUserApiHandlerDeserializer = async (response: HttpResponse) => {
 			if (error?.name === 'UnknownError' && body.error) {
 				// Error from create user lambda returns in shape like this:
 				// {"error":"User already exists"}
-				error.name = 'CreateUserError';
+				error.name = 'Error';
 				error.message = body.error;
 			}
 		} catch (e) {
 			/** SKIP */
 		}
-		throw new AuthError({ name: error!.name, message: error!.message });
+		assertServiceError(error);
 	} else {
 		const body = await parseJsonBody(response);
 		return body;
@@ -102,7 +103,6 @@ export const createUser = async (
 		userPoolId: userPoolId,
 	};
 
-	// creating a new user on Cognito via API endpoint
 	const handleCreateUser = getCreateUserApiHandler(createUserHandlerEndpoint);
 	return handleCreateUser({}, body);
 };

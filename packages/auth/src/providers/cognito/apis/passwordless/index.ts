@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { signUpPasswordless } from './signUp';
-export { signInPasswordless } from './signIn';
+export { signUp } from './signUp';
+export { signIn } from './signIn';
 export {
 	assertSignUpWithEmailOptions,
 	assertSignUpWithSMSOptions,
@@ -17,3 +17,7 @@ export {
 	isMagicLinkFragment,
 	loadMagicLinkSignInState,
 } from './confirmSignInWithMagicLink';
+export {
+	KEY_PASSWORDLESS_ACTION,
+	KEY_PASSWORDLESS_SIGN_IN_METHOD,
+} from './constants';

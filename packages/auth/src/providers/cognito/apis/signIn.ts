@@ -5,18 +5,17 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import {
-	signInPasswordless,
-	isSignInWithEmailAndMagicLinkInput,
-	isSignInWithEmailAndOTPInput,
-	isSignInWithSMSAndOTPInput,
-} from './passwordless';
 import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
-
+import {
+	signIn as signInPasswordless,
+	isSignInWithEmailAndMagicLinkInput,
+	isSignInWithEmailAndOTPInput,
+	isSignInWithSMSAndOTPInput,
+} from './passwordless';
 import {
 	SignInWithPasswordInput,
 	SignInWithEmailAndMagicLinkInput,
@@ -29,8 +28,10 @@ import {
 	SignInWithPasswordOutput,
 	SignInWithSMSAndOTPOutput,
 } from '../types/outputs';
+import { validationErrorMap } from '../../../common/AuthErrorStrings';
+import { AuthError } from '../../../errors/AuthError';
+import { AuthValidationErrorCode } from '../../../errors/types/validation';
 
-import type { AuthValidationErrorCode } from '../../../errors/types/validation';
 import type { confirmSignIn } from './confirmSignIn';
 
 /**
@@ -119,8 +120,11 @@ export async function signIn(
 		} else if (isSignInWithSMSAndOTPInput(input)) {
 			return signInPasswordless(input);
 		} else {
-			// TODO: implement validation error
-			throw new Error('SMS does not support MagicLink');
+			const errorCode = AuthValidationErrorCode.IncorrectPasswordlessMethod;
+			throw new AuthError({
+				name: errorCode,
+				...validationErrorMap[errorCode],
+			});
 		}
 	}
 	const authFlowType = input.options?.authFlowType;

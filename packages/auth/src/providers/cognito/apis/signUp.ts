@@ -40,13 +40,15 @@ import {
 	SignUpWithSMSAndOTPOutput,
 } from '../types/outputs';
 import {
-	signUpPasswordless,
+	signUp as signUpPasswordless,
 	isSignUpWithEmailAndMagicLinkInput,
 	isSignUpWithEmailAndOTPInput,
 	isSignUpWithSMSAndOTPInput,
 	assertSignUpWithEmailOptions,
 	assertSignUpWithSMSOptions,
 } from './passwordless';
+import { AuthError } from '../../../errors/AuthError';
+import { validationErrorMap } from '../../../common/AuthErrorStrings';
 
 import type { confirmSignIn } from './confirmSignIn';
 
@@ -133,8 +135,11 @@ export async function signUp(
 			assertSignUpWithSMSOptions(input.options);
 			return signUpPasswordless(input);
 		} else {
-			// TODO: implement validation error
-			throw new Error('SMS does not support MagicLink');
+			const errorCode = AuthValidationErrorCode.IncorrectPasswordlessMethod;
+			throw new AuthError({
+				name: errorCode,
+				...validationErrorMap[errorCode],
+			});
 		}
 	} else {
 		return signUpWithPassword(input);

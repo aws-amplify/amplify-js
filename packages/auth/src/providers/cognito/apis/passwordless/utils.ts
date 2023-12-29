@@ -6,8 +6,11 @@ import { AuthValidationErrorCode } from '../../../../errors/types/validation';
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	SignInWithEmailAndMagicLinkInput,
+	SignInWithEmailAndMagicLinkOutput,
 	SignInWithEmailAndOTPInput,
+	SignInWithEmailAndOTPOutput,
 	SignInWithSMSAndOTPInput,
+	SignInWithSMSAndOTPOutput,
 } from '../../types';
 import {
 	SignInWithPasswordInput,
@@ -16,7 +19,6 @@ import {
 	SignUpWithPasswordInput,
 	SignUpWithSMSAndOTPInput,
 } from '../../types/inputs';
-import { AuthError } from '../../../../errors/AuthError';
 
 export const validatePasswordlessInput = (
 	input:
@@ -119,3 +121,25 @@ export const assertSignUpWithSMSOptions = (options: {
 		AuthValidationErrorCode.EmptySignUpPhoneNumber
 	);
 };
+
+type SignInPasswordlessOutputTypes =
+	| SignInWithEmailAndMagicLinkOutput
+	| SignInWithSMSAndOTPOutput
+	| SignInWithEmailAndOTPOutput;
+export function convertSignInOutputToSignUpOutput<
+	T extends SignInPasswordlessOutputTypes,
+>({
+	isSignedIn,
+	nextStep: nextSignInStep,
+}: T): {
+	isSignUpComplete: T['isSignedIn'];
+	nextStep: T['nextStep'] & { signUpStep: T['nextStep']['signInStep'] };
+} {
+	return {
+		isSignUpComplete: isSignedIn,
+		nextStep: {
+			...nextSignInStep,
+			signUpStep: nextSignInStep.signInStep,
+		},
+	};
+}

@@ -6,7 +6,7 @@ import {
 	assertTokenProviderConfig,
 	base64Decoder,
 } from '@aws-amplify/core/internals/utils';
-import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { setActiveSignInState } from '../../utils/signInStore';
 import { initiateAuth } from '../../utils/clients/CognitoIdentityProvider';
 import { InitiateAuthCommandInput } from '../../utils/clients/CognitoIdentityProvider/types';
@@ -17,8 +17,18 @@ import {
 	setActiveSignInUsername,
 } from '../../utils/signInHelpers';
 
-const logger = new ConsoleLogger('MagicLinkListener');
-
+/**
+ * Verifies that the challenge response is a valid Magic Link URL fragment, which is
+ * denoted by a period-separated string with two fragments. The first fragment is
+ * a base64 encoded JSON object with the following properties:
+ * - username: string
+ * - iat: number
+ * - exp: number
+ * The second fragment is a base64 encoded string obscured to the client.
+ *
+ * @param challengeResponse  The code fragment from a valid Magic Link URL.
+ * @returns
+ */
 export const isMagicLinkFragment = (challengeResponse: string) => {
 	const challangeResponseFragments = challengeResponse.split('.');
 	if (challangeResponseFragments.length !== 2) {
@@ -39,6 +49,7 @@ export const isMagicLinkFragment = (challengeResponse: string) => {
 };
 
 /**
+ * Initiate a custom auth flow to before responding to the custom challenge that asking for a Magic Link code.
  * @param challengeResponse The code fragment from a valid Magic Link URL.
  */
 export const loadMagicLinkSignInState = async (challengeResponse: string) => {

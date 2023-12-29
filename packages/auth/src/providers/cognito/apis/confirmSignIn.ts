@@ -36,13 +36,11 @@ import {
 import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
 import {
-	isMagicLinkFragment,
-	loadMagicLinkSignInState,
-} from './passwordless/confirmSignInWithMagicLink';
-import {
 	KEY_PASSWORDLESS_ACTION,
 	KEY_PASSWORDLESS_SIGN_IN_METHOD,
-} from './passwordless/constants';
+	isMagicLinkFragment,
+	loadMagicLinkSignInState,
+} from './passwordless';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -70,6 +68,8 @@ export async function confirmSignIn(
 		clientMetaData[KEY_PASSWORDLESS_ACTION] = 'CONFIRM';
 		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] = 'MAGIC_LINK';
 	}
+
+	// TODO: implement confirm sign-in with OTP
 
 	const { username, challengeName, signInSession, signInDetails } =
 		signInStore.getState();
