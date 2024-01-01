@@ -290,7 +290,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 			}
 
 			matchedTopicObservers.forEach(observersForTopic => {
-				observersForTopic.forEach(observer => observer.next(parsedMessage));
+				observersForTopic.forEach(observer => observer.next({topic:topic,msg:parsedMessage}));
 			});
 		} catch (error) {
 			logger.warn('Error handling message', error, msg);
