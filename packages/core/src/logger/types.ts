@@ -19,7 +19,7 @@ export interface LoggerProvider {
 	disable: () => void;
 }
 
-export interface Logger {
+export interface LoggerType {
 	verbose: (message: string) => void;
 	debug: (message: string) => void;
 	info: (message: string) => void;
@@ -28,8 +28,9 @@ export interface Logger {
 	log: (message: string, level?: LogLevel) => void;
 }
 
-interface GenerateLoggerInput {
+export interface GenerateLoggerInput {
 	namespace: string;
 	category?: LoggerCategory;
 }
-export type GenerateLogger = (input: GenerateLoggerInput) => Logger;
+
+export type GenerateLoggerOutput = LoggerType;

@@ -70,6 +70,7 @@ export class ConsoleLogger implements Logger {
 		return this._logLevel;
 	}
 	static set LOG_LEVEL(level: string | null) {
+		// To ensure backwards compatibility, apply the global LOG_LEVEL override to the consoleProvider
 		consoleProvider.LOG_LEVEL = level;
 		this._logLevel = level;
 	}

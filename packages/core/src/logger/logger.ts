@@ -1,16 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { LogLevel, Logger as ILogger } from './types';
+import {
+	LogLevel,
+	LoggerType,
+	GenerateLoggerInput,
+	GenerateLoggerOutput,
+} from './types';
 import { dispatchLogsToProviders } from './administrateLogger';
-import { GenerateLogger } from './types';
 import { LoggerCategory } from '../types';
 
 /**
- * Write logs
- * @class Logger
+ * Amplify Logger. Accepts log events and disseminates to configured logging providers.
  **/
-class Logger implements ILogger {
+class Logger implements LoggerType {
 	namespace: string;
 	category?: LoggerCategory;
 
@@ -20,20 +23,18 @@ class Logger implements ILogger {
 	}
 
 	/**
-	 * Write log
-	 * @method
-	 * @memeberof Logger
+	 * Records a general log event.
+	 *
 	 * @param {string} message - Logging message
 	 * @param {LogLevel} level - Logging level, optional defaults to 'INFO'
-z	 */
+	 */
 	log(message: string, level: LogLevel = 'INFO') {
 		this._log(level, message);
 	}
 
 	/**
-	 * Write INFO log
-	 * @method
-	 * @memeberof Logger
+	 * Records an INFO level log event.
+	 *
 	 * @param {string} message - Logging message
 	 */
 	info(message: string) {
@@ -41,9 +42,8 @@ z	 */
 	}
 
 	/**
-	 * Write WARN log
-	 * @method
-	 * @memeberof Logger
+	 * Records an WARN level log event.
+	 *
 	 * @param {string} message - Logging message
 	 */
 	warn(message: string) {
@@ -51,9 +51,8 @@ z	 */
 	}
 
 	/**
-	 * Write ERROR log
-	 * @method
-	 * @memeberof Logger
+	 * Records an ERROR level log event.
+	 *
 	 * @param {string} message - Logging message
 	 * */
 	error(message: string) {
@@ -61,9 +60,8 @@ z	 */
 	}
 
 	/**
-	 * Write DEBUG log
-	 * @method
-	 * @memeberof Logger
+	 * Records an DEBUG level log event.
+	 *
 	 * @param {string} message - Logging message
 	 */
 	debug(message: string) {
@@ -71,19 +69,39 @@ z	 */
 	}
 
 	/**
-	 * Write VERBOSE log
-	 * @method
-	 * @memeberof Logger
+	 * Records an VERBOSE level log event.
+	 *
 	 * @param {string} message - Logging message
 	 */
 	verbose(message: string) {
 		this._log('VERBOSE', message);
 	}
 
+	/**
+	 * Sends log event to configured logging providers
+	 *
+	 * @param {LogLevel} level - Logging level
+	 * @param {string} message - Logging message
+	 */
 	_log(logLevel: LogLevel, message: string) {
-		dispatchLogsToProviders({ namespace: this.namespace, logLevel, message });
+		dispatchLogsToProviders({
+			namespace: this.namespace,
+			category: this.category,
+			logLevel,
+			message,
+		});
 	}
 }
 
-export const generateLogger: GenerateLogger = ({ namespace, category }) =>
-	new Logger(namespace, category);
+/**
+ * Generates a new Logger which can be used to record log events for the specified.
+ *
+ * @param input - The {@link GenerateLoggerInput} object containing the namespace and an optional category name.
+ * @returns Output containing the {@link GenerateLoggerOutput} object.
+ */
+export const generateLogger = (
+	input: GenerateLoggerInput
+): GenerateLoggerOutput => {
+	const { namespace, category } = input;
+	return new Logger(namespace, category);
+};

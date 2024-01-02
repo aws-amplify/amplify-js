@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// PENDING: complete implementation of cloudWatchProvider
+// TODO(ashwinkumar6): PENDING complete implementation of cloudWatchProvider
 import { fetchAuthSession } from '../../../index';
 import { checkLogLevel, DEFAULT_LOG_LEVEL } from '../../utils';
 import {
@@ -10,7 +10,6 @@ import {
 } from '@aws-sdk/client-cloudwatch-logs';
 import { LogParams } from '../../types';
 import { CloudWatchProvider, CloudWatchConfig } from './types';
-// import { generateRandomString } from '@aws-amplify/core/internals/utils';
 
 let cloudWatchConfig: CloudWatchConfig;
 const defaultConfig = {
@@ -23,11 +22,23 @@ const defaultConfig = {
 };
 
 export const cloudWatchProvider: CloudWatchProvider = {
+	/**
+	 * set the initial configuration
+	 * @internal
+	 */
 	initialize: (config: CloudWatchConfig) => {
+		// TODO(ashwinkumar6): rename 'initialize' to 'configure'. Allow configuring multiple times
 		if (cloudWatchConfig)
+			// TODO(ashwinkumar6): create and use LoggerError
 			throw new Error('CloudWatch provider has already been initialized');
+		// TODO(ashwinkumar6): fix merge logic, support nested
 		cloudWatchConfig = { ...defaultConfig, ...config };
 	},
+	/**
+	 * logs are enqueued to local store and persisted
+	 * logs are periodically flushed from store and send to CloudWatch
+	 * @internal
+	 */
 	log: (input: LogParams) => {
 		const { namespace, category, logLevel, message } = input;
 		const categoryPrefix = category ? `/${category}` : '';
@@ -38,12 +49,25 @@ export const cloudWatchProvider: CloudWatchProvider = {
 		if (checkLogLevel(logLevel, currentLevel))
 			putLogEvents(`${prefix} ${message}`);
 	},
+	/**
+	 * send locally persisted logs to CloudWatch on demand
+	 * @internal
+	 */
 	flushLogs: function (): Promise<void> {
-		return Promise.resolve(); // TODO
+		// TODO(ashwinkumar6): pending impl
+		return Promise.resolve();
 	},
+	/**
+	 * enable cloudwatch provider
+	 * @internal
+	 */
 	enable: function (): void {
 		cloudWatchConfig.enable = true;
 	},
+	/**
+	 * disable cloudwatch provider
+	 * @internal
+	 */
 	disable: function (): void {
 		cloudWatchConfig.enable = false;
 	},
