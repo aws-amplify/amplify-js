@@ -1,6 +1,6 @@
 import { ResourcesConfig } from 'aws-amplify';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { generateClient } from '@aws-amplify/api';
+import { generateClient, CONNECTION_STATE_CHANGE } from '@aws-amplify/api';
 import { AmplifyClassV6 } from '@aws-amplify/core';
 // import { runWithAmplifyServerContext } from 'aws-amplify/internals/adapter-core';
 
@@ -38,6 +38,9 @@ describe('API generateClient', () => {
 		);
 	});
 
+	test('CONNECTION_STATE_CHANGE importable as a value, not a type', async () => {
+		expect(CONNECTION_STATE_CHANGE).toBe('ConnectionStateChange');
+	})
 	// test('server-side client.graphql', async () => {
 	// 	const config: ResourcesConfig = {
 	// 		API: {
