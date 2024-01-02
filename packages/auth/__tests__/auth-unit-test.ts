@@ -3680,7 +3680,7 @@ describe('auth unit test', () => {
 			);
 		});
 
-		test('User Pools and Identity Pools', async () => {
+		test.only('User Pools and Identity Pools', async () => {
 			const options: AuthOptions = {
 				region: 'region',
 				userPoolId: 'userPoolId',

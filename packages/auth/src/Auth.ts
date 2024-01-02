@@ -2552,8 +2552,8 @@ export class AuthClass {
 
 					if (window && typeof window.history !== 'undefined') {
 						window.history.replaceState(
-							{},
-							null,
+							window.history.state,
+							'',
 							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
 						);
 					}
