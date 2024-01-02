@@ -2588,8 +2588,8 @@ export class AuthClass {
 					// Otherwise, reloading the page will throw errors as the `code` has already been spent.
 					if (window && typeof window.history !== 'undefined') {
 						window.history.replaceState(
-							{},
-							null,
+							window.history.state,
+							'',
 							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
 						);
 					}
