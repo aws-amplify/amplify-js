@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '../Logger';
+import { ConsoleLogger } from '../logger';
 import { isBrowser } from '../utils';
 import { AmplifyError } from '../errors';
 import { assert, ServiceWorkerErrorCode } from './errorHelpers';

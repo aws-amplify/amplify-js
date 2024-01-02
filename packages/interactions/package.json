@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "6.0.5",
+	"version": "6.0.9",
 	"description": "Interactions category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -11,7 +11,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
@@ -81,7 +81,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.5",
+		"@aws-amplify/core": "6.0.9",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "^5.0.2"

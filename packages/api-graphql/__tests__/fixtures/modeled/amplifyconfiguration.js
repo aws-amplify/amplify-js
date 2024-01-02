@@ -4,6 +4,7 @@
  * Cognito fields etc. omitted.
  */
 const amplifyConfig = {
+	aws_project_region: 'us-east-2',
 	aws_appsync_graphqlEndpoint: 'https://localhost/graphql',
 	aws_appsync_region: 'us-west-1',
 	aws_appsync_authenticationType: 'API_KEY',
@@ -62,6 +63,23 @@ const amplifyConfig = {
 							associatedWith: ['id'],
 							targetNames: ['todoMetaId'],
 						},
+					},
+					status: {
+						name: 'status',
+						isArray: false,
+						type: {
+							enum: 'Status',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+					tags: {
+						name: 'tags',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
 					},
 					createdAt: {
 						name: 'createdAt',
@@ -605,8 +623,349 @@ const amplifyConfig = {
 					sortKeyFieldNames: ['cpk_sort_key'],
 				},
 			},
+
+			//
+
+			CommunityPoll: {
+				name: 'CommunityPoll',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					question: {
+						name: 'question',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					answers: {
+						name: 'answers',
+						isArray: true,
+						type: {
+							model: 'CommunityPollAnswer',
+						},
+						isRequired: true,
+						attributes: [],
+						isArrayNullable: false,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['communityPollAnswersId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'CommunityPolls',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									allow: 'public',
+									provider: 'apiKey',
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
+			CommunityPollAnswer: {
+				name: 'CommunityPollAnswer',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					answer: {
+						name: 'answer',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					votes: {
+						name: 'votes',
+						isArray: true,
+						type: {
+							model: 'CommunityPollVote',
+						},
+						isRequired: true,
+						attributes: [],
+						isArrayNullable: false,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['communityPollAnswerVotesId'],
+						},
+					},
+					communityPollAnswersId: {
+						name: 'communityPollAnswersId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'CommunityPollAnswers',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'gsi-CommunityPoll.answers',
+							fields: ['communityPollAnswersId'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									allow: 'public',
+									provider: 'apiKey',
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
+			CommunityPollVote: {
+				name: 'CommunityPollVote',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					communityPollAnswerVotesId: {
+						name: 'communityPollAnswerVotesId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					owner: {
+						name: 'owner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'CommunityPollVotes',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'gsi-CommunityPollAnswer.votes',
+							fields: ['communityPollAnswerVotesId'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
+			CommunityPost: {
+				name: 'CommunityPost',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					poll: {
+						name: 'poll',
+						isArray: false,
+						type: {
+							model: 'CommunityPoll',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: ['id'],
+							targetNames: ['communityPostPollId'],
+						},
+					},
+
+					communityPostPollId: {
+						name: 'communityPostPollId',
+						isArray: false,
+						type: 'ID',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'CommunityPosts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									allow: 'public',
+									provider: 'apiKey',
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
 		},
-		enums: {},
+		enums: {
+			Status: {
+				name: 'Status',
+				values: ['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED'],
+			},
+		},
 		nonModels: {},
 	},
 };

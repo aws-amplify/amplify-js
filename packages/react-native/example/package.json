@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/react-native-example",
-	"version": "0.0.6",
+	"version": "0.0.10",
 	"private": true,
 	"scripts": {
 		"android": "react-native run-android",

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWS_CLOUDWATCH_CATEGORY } from '../constants';
-import { consoleProvider } from './providers/console/console';
+import { consoleProvider } from './providers/console';
 
 // legacy logger types
 enum LogType {

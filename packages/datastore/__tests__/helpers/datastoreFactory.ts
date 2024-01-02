@@ -62,6 +62,10 @@ export function getDataStore({
 	online = false,
 	isNode = true,
 	storageAdapterFactory = () => undefined as any,
+}: {
+	online?: boolean;
+	isNode?: boolean;
+	storageAdapterFactory?: () => any;
 } = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();

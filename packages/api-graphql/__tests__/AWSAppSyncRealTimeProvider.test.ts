@@ -1055,6 +1055,34 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						);
 					});
 
+					test('authenticating with userPool / custom library options token', async () => {
+						expect.assertions(1);
+
+						provider
+							.subscribe({
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								authenticationType: 'userPool',
+								/**
+								 * When Amplify is configured with a `header` function
+								 * that returns an `Authorization` token, the GraphQL
+								 * API will pass this function as the `libraryConfigHeaders`
+								 * option to the AWSAppSyncRealTimeProvider's `subscribe`
+								 * function.
+								 */
+								libraryConfigHeaders: async () => ({
+									Authorization: 'test',
+								}),
+							})
+							.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface?.readyForUse;
+
+						expect(loggerSpy).toHaveBeenCalledWith(
+							'DEBUG',
+							'Authenticating with "userPool"'
+						);
+					});
+
 					test('authenticating with AWS_LAMBDA/custom w/ custom header function', async () => {
 						expect.assertions(1);
 
@@ -1071,6 +1099,33 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await fakeWebSocketInterface?.readyForUse;
 
 						expect(loggerSpy).toBeCalledWith(
+							'DEBUG',
+							'Authenticating with "none"'
+						);
+					});
+
+					test('authenticating with AWS_LAMBDA/custom w/ custom header function that accepts request options', async () => {
+						expect.assertions(2);
+
+						provider
+							.subscribe({
+								appSyncGraphqlEndpoint: 'ws://localhost:8080',
+								authenticationType: 'none',
+								additionalHeaders: async requestOptions => {
+									expect(requestOptions).toEqual(
+										expect.objectContaining({
+											queryString: '',
+											url: 'ws://localhost:8080',
+										})
+									);
+									return { Authorization: 'test' };
+								},
+							})
+							.subscribe({ error: () => {} });
+
+						await fakeWebSocketInterface?.readyForUse;
+
+						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							'Authenticating with "none"'
 						);

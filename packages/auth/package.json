@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/auth",
-	"version": "6.0.5",
+	"version": "6.0.9",
 	"description": "Auth category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -14,7 +14,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "yarn lint --fix && jest -w 1 --coverage",
+		"test": "yarn lint --fix && jest -w 1 --coverage --logHeapUsage",
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup -c rollup.config.mjs",
@@ -89,8 +89,8 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.5",
-		"@aws-amplify/react-native": "1.0.5",
+		"@aws-amplify/core": "6.0.9",
+		"@aws-amplify/react-native": "1.0.9",
 		"@jest/test-sequencer": "^29.7.0",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",

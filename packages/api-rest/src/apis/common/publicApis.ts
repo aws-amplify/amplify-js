@@ -39,14 +39,14 @@ const publicHandler = (
 			apiPath,
 			apiOptions?.queryParams
 		);
-		const libraryOptionsHeaders =
+		const libraryConfigHeaders =
 			await amplify.libraryOptions?.API?.REST?.headers?.({
 				apiName,
 			});
 		const { headers: invocationHeaders = {} } = apiOptions;
 		const headers = {
 			// custom headers from invocation options should precede library options
-			...libraryOptionsHeaders,
+			...libraryConfigHeaders,
 			...invocationHeaders,
 		};
 		const signingServiceInfo = parseSigningInfo(url, {

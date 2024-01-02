@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { LoggerProvider } from '../../Logger/types';
-import { ConsoleProvider } from '../../Logger/providers/console';
+import { LoggerProvider } from '../../logger/types';
+import { ConsoleProvider } from '../../logger/providers/console';
 
 export interface LibraryLoggerOptions {
 	console?: ConsoleProvider;

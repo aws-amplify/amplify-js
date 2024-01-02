@@ -18,10 +18,22 @@ import {
 } from './auth/cognito';
 
 export const DefaultAmplify = {
+	/**
+	 * Configures Amplify with the {@link resourceConfig} and {@link libraryOptions}.
+	 *
+	 * @param resourceConfig The {@link ResourcesConfig} object that is typically imported from the
+	 * `amplifyconfiguration.json` file. It can also be an object literal created inline when calling `Amplify.configure`.
+	 * @param libraryOptions The {@link LibraryOptions} additional options for the library.
+	 *
+	 * @example
+	 * import config from './amplifyconfiguration.json';
+	 *
+	 * Amplify.configure(config);
+	 */
 	configure(
 		resourceConfig: ResourcesConfig | LegacyConfig,
 		libraryOptions?: LibraryOptions
-	) {
+	): void {
 		let resolvedResourceConfig: ResourcesConfig;
 
 		// add console logger provider by default
@@ -100,6 +112,12 @@ export const DefaultAmplify = {
 		// configured libraryOptions.
 		Amplify.configure(resolvedResourceConfig);
 	},
+	/**
+	 * Returns the {@link ResourcesConfig} object passed in as the `resourceConfig` parameter when calling
+	 * `Amplify.configure`.
+	 *
+	 * @returns An {@link ResourcesConfig} object.
+	 */
 	getConfig(): ResourcesConfig {
 		return Amplify.getConfig();
 	},
