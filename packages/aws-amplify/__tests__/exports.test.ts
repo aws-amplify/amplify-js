@@ -51,6 +51,7 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the top level', () => {
 			expect(Object.keys(apiTopLevelExports).sort()).toEqual(
 				[
+					'CONNECTION_STATE_CHANGE',
 					'ConnectionState',
 					'GraphQLAuthError',
 					'del',
