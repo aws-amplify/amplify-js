@@ -1,6 +1,5 @@
 allow-licenses:
   - 'Apache-2.0'
-  - '0BSD'
   - 'BSL-1.0'
   - 'BSD-1-Clause'
   - 'BSD-2-Clause-FreeBSD'
