@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { consoleProvider } from './console';
-export { ConsoleConfig } from './types';
+export { ConsoleConfig, ConsoleProvider } from './types';

@@ -5,16 +5,18 @@ import { LoggerCategory } from '../types';
 
 export type LogLevel = 'DEBUG' | 'ERROR' | 'INFO' | 'WARN' | 'VERBOSE' | 'NONE';
 
-export type LogParams = {
+export interface LogParams {
 	namespace: string;
 	logLevel: LogLevel;
 	message: string;
 	category?: LoggerCategory;
-};
+}
 
 export interface LoggerProvider {
 	log: (logParams: LogParams) => void;
 	flushLogs: () => Promise<void>;
+	enable: () => void;
+	disable: () => void;
 }
 
 export interface Logger {
@@ -26,8 +28,8 @@ export interface Logger {
 	log: (message: string, level?: LogLevel) => void;
 }
 
-type GenerateLoggerInput = {
+interface GenerateLoggerInput {
 	namespace: string;
 	category?: LoggerCategory;
-};
+}
 export type GenerateLogger = (input: GenerateLoggerInput) => Logger;

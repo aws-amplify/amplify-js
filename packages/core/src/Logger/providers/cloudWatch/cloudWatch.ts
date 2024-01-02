@@ -41,6 +41,12 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	flushLogs: function (): Promise<void> {
 		return Promise.resolve(); // TODO
 	},
+	enable: function (): void {
+		cloudWatchConfig.enable = true;
+	},
+	disable: function (): void {
+		cloudWatchConfig.enable = false;
+	},
 };
 
 async function putLogEvents(message: string) {

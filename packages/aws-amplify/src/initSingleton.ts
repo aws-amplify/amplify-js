@@ -26,12 +26,11 @@ export const DefaultAmplify = {
 
 		// add console logger provider by default
 		if (!Amplify.libraryOptions?.Logger) {
-			const customProviders = libraryOptions?.Logger?.providers ?? [];
 			libraryOptions = {
 				...libraryOptions,
 				Logger: {
 					...libraryOptions?.Logger,
-					providers: [consoleProvider, ...customProviders],
+					console: libraryOptions?.Logger?.console ?? consoleProvider,
 				},
 			};
 		}
@@ -87,6 +86,13 @@ export const DefaultAmplify = {
 			return Amplify.configure(resolvedResourceConfig, {
 				Auth: Amplify.libraryOptions.Auth,
 				...libraryOptions,
+				// console logger is always present
+				Logger: {
+					...libraryOptions?.Logger,
+					console:
+						libraryOptions?.Logger?.console ??
+						Amplify.libraryOptions.Logger?.console,
+				},
 			});
 		}
 

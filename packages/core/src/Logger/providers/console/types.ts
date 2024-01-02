@@ -9,7 +9,7 @@ export interface ConsoleProvider extends LoggerProvider {
 	initialize: (config: ConsoleConfig) => void;
 }
 
-export type ConsoleConfig = {
-	enable: boolean;
+export interface ConsoleConfig {
+	enable?: boolean;
 	defaultLogLevel: LogLevel;
-};
+}

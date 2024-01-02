@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LogLevel, Logger as ILogger } from './types';
-import { administrateLogger } from './administrateLogger';
+import { dispatchLogsToProviders } from './administrateLogger';
 import { GenerateLogger } from './types';
 import { LoggerCategory } from '../types';
 
@@ -81,7 +81,7 @@ z	 */
 	}
 
 	_log(logLevel: LogLevel, message: string) {
-		administrateLogger({ namespace: this.namespace, logLevel, message });
+		dispatchLogsToProviders({ namespace: this.namespace, logLevel, message });
 	}
 }
 

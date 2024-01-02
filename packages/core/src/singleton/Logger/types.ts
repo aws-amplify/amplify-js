@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LoggerProvider } from '../../Logger/types';
+import { ConsoleProvider } from '../../Logger/providers/console';
 
-export type LibraryLoggerOptions = {
-	providers: [LoggerProvider, ...LoggerProvider[]];
-};
+export interface LibraryLoggerOptions {
+	console?: ConsoleProvider;
+	additionalProviders?: LoggerProvider[];
+}

@@ -41,6 +41,12 @@ export const consoleProvider: ConsoleProvider = {
 	flushLogs: function (): Promise<void> {
 		return Promise.resolve();
 	},
+	enable: function (): void {
+		consoleConfig.enable = true;
+	},
+	disable: function (): void {
+		consoleConfig.enable = false;
+	},
 };
 
 const getConsoleLogFcn = (logLevel: LogLevel) => {

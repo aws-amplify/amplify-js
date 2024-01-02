@@ -57,7 +57,7 @@ export type LoggerCategory =
 	| 'DataStore'
 	| 'Geo'
 	| 'Hub'
-	| 'Logging'
+	| 'Logger'
 	| 'Predictions'
 	| 'PushNotifications'
 	| 'Storage';

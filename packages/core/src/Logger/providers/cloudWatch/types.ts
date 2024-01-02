@@ -5,10 +5,13 @@ import { LogLevel, LoggerProvider } from '../../types';
 import { LoggerCategory } from '../../../types';
 
 export interface CloudWatchProvider extends LoggerProvider {
-	initialize: (config: CloudWatchConfig) => void;
+	initialize: (
+		config: CloudWatchConfig,
+		options?: CloudWatchRemoteLoggingConstraints
+	) => void;
 }
 
-export type CloudWatchConfig = {
+export interface CloudWatchConfig {
 	enable?: boolean;
 	logGroupName: string;
 	region: string;
@@ -16,14 +19,14 @@ export type CloudWatchConfig = {
 	flushIntervalInSeconds?: number;
 	defaultRemoteConfiguration?: RemoteConfiguration;
 	loggingConstraints?: LoggingConstraints;
-};
+}
 
-type RemoteConfiguration = {
+interface RemoteConfiguration {
 	endpoint: string;
-	refreshIntervalInSeconds: number;
-};
+	refreshIntervalInSeconds?: number;
+}
 
-type LoggingConstraints = {
+interface LoggingConstraints {
 	defaultLogLevel: LogLevel;
 	categoryLogLevel?: CategoryLogLevel;
 	userLogLevel?: {
@@ -32,8 +35,13 @@ type LoggingConstraints = {
 			categoryLogLevel: CategoryLogLevel;
 		};
 	};
-};
+}
 
 type CategoryLogLevel = {
 	[Category in LoggerCategory]?: LogLevel;
 };
+
+interface CloudWatchRemoteLoggingConstraints {
+	fetchLoggingConstraints: () => Promise<LoggingConstraints>;
+	getIntervalInSeconds: () => number;
+}
