@@ -61,21 +61,21 @@ export const consoleProvider: ConsoleProvider = {
 	 * performs no operation
 	 * @internal
 	 */
-	flushLogs: function (): Promise<void> {
+	flushLogs: (): Promise<void> => {
 		return Promise.resolve();
 	},
 	/**
 	 * enable console provider
 	 * @internal
 	 */
-	enable: function (): void {
+	enable: (): void => {
 		consoleConfig.enable = true;
 	},
 	/**
 	 * disable console provider
 	 * @internal
 	 */
-	disable: function (): void {
+	disable: (): void => {
 		consoleConfig.enable = false;
 	},
 };

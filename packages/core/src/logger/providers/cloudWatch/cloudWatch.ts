@@ -53,7 +53,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	 * send locally persisted logs to CloudWatch on demand
 	 * @internal
 	 */
-	flushLogs: function (): Promise<void> {
+	flushLogs: (): Promise<void> => {
 		// TODO(ashwinkumar6): pending impl
 		return Promise.resolve();
 	},
@@ -61,14 +61,14 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	 * enable cloudwatch provider
 	 * @internal
 	 */
-	enable: function (): void {
+	enable: (): void => {
 		cloudWatchConfig.enable = true;
 	},
 	/**
 	 * disable cloudwatch provider
 	 * @internal
 	 */
-	disable: function (): void {
+	disable: (): void => {
 		cloudWatchConfig.enable = false;
 	},
 };
