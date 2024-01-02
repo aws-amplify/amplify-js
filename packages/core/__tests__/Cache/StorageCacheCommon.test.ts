@@ -2,7 +2,7 @@ import { CacheConfig } from '../../src/Cache/types';
 import { defaultConfig } from '../../src/Cache/constants';
 import { StorageCacheCommon } from '../../src/Cache/StorageCacheCommon';
 import { KeyValueStorageInterface } from '../../src/types';
-import { ConsoleLogger } from '../../src/Logger';
+import { ConsoleLogger } from '../../src/logger';
 import {
 	getByteLength,
 	getCurrentSizeKey,

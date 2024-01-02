@@ -3,7 +3,7 @@
 
 import { I18n as I18nClass } from './I18n';
 
-import { ConsoleLogger } from '../Logger';
+import { ConsoleLogger } from '../logger';
 import { I18nConfig } from './types';
 import { assert, I18nErrorCode } from './errorHelpers';
 

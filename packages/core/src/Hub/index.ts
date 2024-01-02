@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '../Logger';
+import { ConsoleLogger } from '../logger';
 import { NO_HUBCALLBACK_PROVIDED_EXCEPTION } from '../constants';
 import { AmplifyError } from '../errors';
 import {
