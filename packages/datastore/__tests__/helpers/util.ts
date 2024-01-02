@@ -459,15 +459,20 @@ export async function waitForSyncQueriesReady(verbose = false) {
  */
 type GraphQLServiceSettledParams = {
 	graphqlService: any;
-	expectedNumberOfUpdates: number;
-	externalNumberOfUpdates: number;
+	expectedCallCount: number;
 	modelName: string;
 };
 
-export async function graphqlServiceSettled({
+/**
+ * Given a service fake, an expected call count and a modelName, this function observes the number
+ * of calls against the fake service and raises an error if the expected result isn't observed after
+ * 5 seconds of trying.
+ *
+ * @param inputs: Tells us the service fake, expected call count and model to observe
+ */
+export async function waitForExpectModelUpdateGraphqlCallCount({
 	graphqlService,
-	expectedNumberOfUpdates,
-	externalNumberOfUpdates,
+	expectedCallCount,
 	modelName,
 }: GraphQLServiceSettledParams) {
 	/**
@@ -477,54 +482,66 @@ export async function graphqlServiceSettled({
 	 */
 	await pause(1);
 
+	// Keep track of the observed count for each retry so we can tell the developer what was observed last
+	let lastObservedCount: number | undefined = undefined;
+
 	/**
 	 * Due to the addition of artificial latencies, the service may not be
 	 * done, so we retry:
 	 */
-	await jitteredExponentialRetry(
-		() => {
-			// The test should fail if we haven't ended the simulated disruption:
-			const subscriptionMessagesNotStopped =
-				!graphqlService.stopSubscriptionMessages;
+	try {
+		await jitteredExponentialRetry(
+			() => {
+				// The test should fail if we haven't ended the simulated disruption:
+				const subscriptionMessagesNotStopped =
+					!graphqlService.stopSubscriptionMessages;
 
-			// Ensure the service has received all the requests:
-			const allUpdatesSent =
-				graphqlService.requests.filter(
+				lastObservedCount = graphqlService.requests.filter(
 					({ operation, type, tableName }) =>
 						operation === 'mutation' &&
 						type === 'update' &&
 						tableName === modelName
-				).length ===
-				expectedNumberOfUpdates + externalNumberOfUpdates;
+				).length;
 
-			// Ensure all mutations are complete:
-			const allRunningMutationsComplete =
-				graphqlService.runningMutations.size === 0;
+				// Ensure the service has received all expected requests:
+				const allUpdatesSent = lastObservedCount === expectedCallCount;
 
-			// Ensure we've notified subscribers:
-			const allSubscriptionsSent =
-				graphqlService.subscriptionMessagesSent.filter(
-					([observerMessageName, message]) => {
-						return observerMessageName === `onUpdate${modelName}`;
-					}
-				).length ===
-				expectedNumberOfUpdates + externalNumberOfUpdates;
+				// Ensure all mutations are complete:
+				const allRunningMutationsComplete =
+					graphqlService.runningMutations.size === 0;
 
-			if (
-				allUpdatesSent &&
-				allRunningMutationsComplete &&
-				allSubscriptionsSent &&
-				subscriptionMessagesNotStopped
-			) {
-				return true;
-			} else {
-				throw new Error(
-					'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
-				);
-			}
-		},
-		[null],
-		undefined,
-		undefined
-	);
+				// Ensure we've notified subscribers:
+				const allSubscriptionsSent =
+					graphqlService.subscriptionMessagesSent.filter(
+						([observerMessageName, message]) => {
+							return observerMessageName === `onUpdate${modelName}`;
+						}
+					).length === expectedCallCount;
+
+				if (
+					allUpdatesSent &&
+					allRunningMutationsComplete &&
+					allSubscriptionsSent &&
+					subscriptionMessagesNotStopped
+				) {
+					return true;
+				} else {
+					throw new Error(
+						'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
+					);
+				}
+			},
+			[null],
+			// Only retry up to 5 seconds
+			5_000,
+			undefined
+		);
+	} catch {
+		// If the expected call count isn't observed after 5 seconds, raise an error describing the discrepency
+		throw new Error(
+			`Expected ${expectedCallCount} update calls for ${modelName}, but received ${
+				lastObservedCount ?? 'unknown'
+			}`
+		);
+	}
 }

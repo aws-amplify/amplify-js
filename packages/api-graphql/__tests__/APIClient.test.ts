@@ -294,6 +294,32 @@ describe('flattenItems', () => {
 
 			expect(selSet).toEqual(expected);
 		});
+
+		test('mix of related and non-related fields in a nested model creates a nested object with all necessary fields', () => {
+			const selSet = customSelectionSetToIR(
+				modelIntroSchema.models,
+				'CommunityPost',
+				['poll.question', 'poll.answers.answer', 'poll.answers.votes.id']
+			);
+
+			const expected = {
+				poll: {
+					question: '',
+					answers: {
+						items: {
+							answer: '',
+							votes: {
+								items: {
+									id: '',
+								},
+							},
+						},
+					},
+				},
+			};
+
+			expect(selSet).toEqual(expected);
+		});
 	});
 
 	describe('generateSelectionSet', () => {
