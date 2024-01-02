@@ -8,4 +8,7 @@ module.exports = {
 			statements: 95,
 		},
 	},
+	moduleNameMapper: {
+		uuid: require.resolve('uuid'),
+	},
 };
