@@ -1,5 +1,5 @@
 import { ConsoleLogger } from '../src';
-import { LoggingProvider } from '../src/logger/types';
+import { LoggingProvider } from '../src/logger/ConsoleLogger';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {

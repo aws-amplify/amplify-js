@@ -12,7 +12,7 @@ enum LogType {
 	WARN = 'WARN',
 	VERBOSE = 'VERBOSE',
 }
-interface LoggingProvider {
+export interface LoggingProvider {
 	// return the name of the provider
 	getProviderName(): string;
 
