@@ -91,6 +91,16 @@ body:
       required: true
   - type: dropdown
     attributes:
+      label: Amplify Version
+      description: |
+        Which major version of `aws-amplify` are you using?
+      multiple: false
+      options:
+      - v6
+      - v5
+      - Older than v5
+  - type: dropdown
+    attributes:
       label: Amplify Categories
       description: |
         What [Amplify categories](https://github.com/aws-amplify/amplify-cli#category-specific-commands) are being used?
@@ -107,6 +117,17 @@ body:
         - interactions
         - predictions
         - Not applicable
+  - type: dropdown
+    attributes:
+      label: Backend
+      description: |
+        How have you deployed the backend resources?
+      multiple: false
+      options:
+      - Amplify CLI
+      - Amplify Gen 2 (Preview)
+      - CDK
+      - Other
   - type: textarea
     attributes:
       label: Environment information
