@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { createCancellableOperation } from './createCancellableOperation';
-export { resolveCredentials } from './resolveCredentials';
 export { parseSigningInfo } from './parseSigningInfo';
 export { parseRestApiServiceError } from './serviceError';
 export { resolveApiUrl } from './resolveApiUrl';
