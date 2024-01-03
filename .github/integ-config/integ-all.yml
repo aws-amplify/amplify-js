@@ -454,7 +454,7 @@ tests:
     category: api
     sample_name: [rest]
     spec: restful
-    browser: [chrome, firefox]
+    browser: *minimal_browser_list
 
   # AUTH
   - test_name: integ_react_javascript_authentication
