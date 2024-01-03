@@ -149,7 +149,7 @@ export class UpdateSequenceHarness {
 	private isSettledAfterRevisions: boolean = false;
 
 	/**
-	 * Do we want to settle the outbox after each `Post` revision call?
+	 * Determines whether we settle the outbox and await for the subscription response after each mutation.
 	 */
 	settleAfterRevisions() {
 		this.isSettledAfterRevisions = true;
