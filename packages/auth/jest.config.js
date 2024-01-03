@@ -2,10 +2,10 @@ module.exports = {
 	...require('../../jest.config'),
 	coverageThreshold: {
 		global: {
-			branches: 64,
-			functions: 74,
-			lines: 83,
-			statements: 83,
+			branches: 69,
+			functions: 78,
+			lines: 87,
+			statements: 86,
 		},
 	},
 };
