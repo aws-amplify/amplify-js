@@ -52,6 +52,7 @@ export {
 	AuthVerifiableAttributeKey,
 	AWSCredentials,
 } from './singleton/Auth/types';
+export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
 
 // Platform & user-agent utilities
 export {

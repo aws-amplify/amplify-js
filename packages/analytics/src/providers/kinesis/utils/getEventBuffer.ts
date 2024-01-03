@@ -1,14 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
+import {
+	AWSCredentials, 
+	haveCredentialsChanged 
+} from '@aws-amplify/core/internals/utils';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { KinesisBufferEvent, KinesisEventBufferConfig } from '../types';
 import { 
 	EventBuffer, 
 	groupBy, 
-	IAnalyticsClient, 
-	haveCredentialsChanged 
+	IAnalyticsClient
 } from '../../../utils';
 
 /**
@@ -73,12 +75,12 @@ export const getEventBuffer = ({
 	userAgentValue,
 }: KinesisEventBufferConfig): EventBuffer<KinesisBufferEvent> => {
 	const sessionIdentityKey = [region, identityId].filter(x => !!x).join('-');
-	const cachedClient = cachedClients[sessionIdentityKey];
+	const [ cachedClient, cachedCredentials ] = cachedClients[sessionIdentityKey] ?? [];
 	let credentialsHaveChanged = false;
 
 	// Check if credentials have changed for the cached client
 	if (cachedClient) {
-		credentialsHaveChanged = haveCredentialsChanged(cachedClient[1], credentials);
+		credentialsHaveChanged = haveCredentialsChanged(cachedCredentials, credentials);
 	}
 
 	if (!eventBufferMap[sessionIdentityKey] || credentialsHaveChanged) {

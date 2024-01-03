@@ -19,4 +19,3 @@ export {
 } from './userAgent';
 export { updateProviderTrackers } from './trackerHelpers';
 export { validateTrackerConfiguration } from './trackerConfigHelpers';
-export { haveCredentialsChanged } from './haveCredentialsChanged';

@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
+import { 
+	AWSCredentials, 
+	haveCredentialsChanged 
+} from '@aws-amplify/core/internals/utils';
 import {
 	FirehoseClient,
 	PutRecordBatchCommand,
@@ -9,8 +12,7 @@ import {
 import { 
 	EventBuffer, 
 	groupBy, 
-	IAnalyticsClient, 
-	haveCredentialsChanged 
+	IAnalyticsClient
 } from '../../../utils';
 import {
 	KinesisFirehoseBufferEvent,
@@ -82,17 +84,17 @@ export const getEventBuffer = ({
 	userAgentValue,
 }: KinesisFirehoseEventBufferConfig): EventBuffer<KinesisFirehoseBufferEvent> => {
 	const sessionIdentityKey = [region, identityId].filter(id => !!id).join('-');
-	const cachedClient = cachedClients[sessionIdentityKey];
+	const [ cachedClient, cachedCredentials ] = cachedClients[sessionIdentityKey] ?? [];
 	let credentialsHaveChanged = false;
 
 	// Check if credentials have changed for the cached client
 	if (cachedClient) {
-		credentialsHaveChanged = haveCredentialsChanged(cachedClient[1], credentials);
+		credentialsHaveChanged = haveCredentialsChanged(cachedCredentials, credentials);
 	}
 
 	if (!eventBufferMap[sessionIdentityKey] || credentialsHaveChanged) {
 		const getClient = (): IAnalyticsClient<KinesisFirehoseBufferEvent> => {
-			if (!cachedClients[sessionIdentityKey] || credentialsHaveChanged) {
+			if (!cachedClient || credentialsHaveChanged) {
 				cachedClients[sessionIdentityKey] = [
 					new FirehoseClient({
 						region,

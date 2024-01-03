@@ -7,10 +7,28 @@ const MOCK_AWS_CREDS = {
 };
 
 describe('haveCredentialsChanged', () => {
-	it('returns true if credentials have changed', () => {
+	it('returns true if access key has changed', () => {
 		const credentialsHaveChanged = haveCredentialsChanged(MOCK_AWS_CREDS, {
 			...MOCK_AWS_CREDS,
 			secretAccessKey: 'mock-secret-key-alt',
+		});
+
+		expect(credentialsHaveChanged).toBe(true);
+	});
+
+	it('returns true if access key has changed', () => {
+		const credentialsHaveChanged = haveCredentialsChanged(MOCK_AWS_CREDS, {
+			...MOCK_AWS_CREDS,
+			accessKeyId: 'mock-access-key-alt',
+		});
+
+		expect(credentialsHaveChanged).toBe(true);
+	});
+
+	it('returns true if session token has changed', () => {
+		const credentialsHaveChanged = haveCredentialsChanged(MOCK_AWS_CREDS, {
+			...MOCK_AWS_CREDS,
+			sessionToken: 'mock-session-token-alt',
 		});
 
 		expect(credentialsHaveChanged).toBe(true);
