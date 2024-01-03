@@ -102,7 +102,6 @@ describe('DataStore sync engine', () => {
 						blogId: 'blog id',
 					});
 
-					harness.userInputDelayed();
 					harness.latency = 'low';
 
 					await postHarness.revise('post title 0');

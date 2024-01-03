@@ -204,8 +204,6 @@ export class UpdateSequenceHarness {
 			isNode: false,
 		});
 
-		this.latency = 'low';
-
 		this.subscriptionLogSubscription = this.datastoreFake.DataStore.observe(
 			this.datastoreFake.Post
 		).subscribe(({ opType, element }) => {
