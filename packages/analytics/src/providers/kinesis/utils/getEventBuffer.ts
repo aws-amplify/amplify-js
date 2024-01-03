@@ -96,8 +96,10 @@ export const getEventBuffer = ({
 				];
 			}
 
+			const [ kinesisClient ] = cachedClients[sessionIdentityKey];
+
 			return events =>
-				submitEvents(events, cachedClients[sessionIdentityKey][0], resendLimit);
+				submitEvents(events, kinesisClient, resendLimit);
 		};
 
 		// create new session

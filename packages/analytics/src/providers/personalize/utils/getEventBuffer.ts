@@ -99,7 +99,10 @@ export const getEventBuffer = ({
 					credentials
 				];
 			}
-			return events => submitEvents(events, cachedClients[sessionIdentityKey][0]);
+
+			const [ personalizeClient ] = cachedClients[sessionIdentityKey];
+
+			return events => submitEvents(events, personalizeClient);
 		};
 
 		eventBufferMap[sessionIdentityKey] =

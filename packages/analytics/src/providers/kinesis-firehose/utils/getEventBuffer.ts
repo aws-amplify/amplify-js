@@ -105,7 +105,8 @@ export const getEventBuffer = ({
 				];
 			}
 
-			const firehoseClient = cachedClients[sessionIdentityKey][0];
+			const [ firehoseClient ] = cachedClients[sessionIdentityKey];
+			
 			return events => submitEvents(events, firehoseClient, resendLimit);
 		};
 
