@@ -66,6 +66,8 @@ describe('DataStore sync engine', () => {
 		describe('observed rapid single-field mutations with variable connection latencies', () => {
 			describe('single client updates', () => {
 				test('no input delay, high latency where we wait for the create to clear the outbox', async () => {
+					// By default, no delay is added before mutation requests. Human scale interaction are more closely matched by pausing
+					// for a period of time before each revision (which is set in other tests by calling `harness.userInputDelayed()`)
 					const postHarness = await harness.createPostHarness({
 						title: 'original title',
 						blogId: 'blog id',
