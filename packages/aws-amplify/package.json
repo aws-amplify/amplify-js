@@ -301,7 +301,7 @@
 			"name": "[Analytics] record (Personalize)",
 			"path": "./dist/esm/analytics/personalize/index.mjs",
 			"import": "{ record }",
-			"limit": "45.12 kB"
+			"limit": "45.29 kB"
 		},
 		{
 			"name": "[Analytics] identifyUser (Pinpoint)",
