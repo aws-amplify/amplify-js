@@ -220,6 +220,7 @@ export class UpdateSequenceHarness {
 	 */
 	async outboxSettled() {
 		await waitForEmptyOutbox();
+		await Promise.all(subscriptionDeliveryPromiseList);
 	}
 
 	/**
@@ -267,7 +268,7 @@ export class UpdateSequenceHarness {
 		const original = await this.datastoreFake.DataStore.save(
 			new this.datastoreFake.Post(args)
 		);
-        // We set this to `false` when we want to test updating a record that is still in the outbox.
+		// We set this to `false` when we want to test updating a record that is still in the outbox.
 		if (settleOutbox) {
 			await this.outboxSettled();
 		}

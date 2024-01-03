@@ -39,6 +39,15 @@ const defaultLatencies: FakeLatencies = {
 	jitter: 5,
 };
 
+export let subscriptionDeliveryPromiseList: Promise<void>[] = [];
+
+/**
+ * Clear the subscription delivery promise list
+ */
+export function clearSubscriptionDeliveryPromiseList() {
+	subscriptionDeliveryPromiseList = [];
+}
+
 /**
  * Keep a list of all subscription delivery promises where each promise
  * resolves after the related message is delivered to all subscribers.

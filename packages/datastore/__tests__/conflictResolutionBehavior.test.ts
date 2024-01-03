@@ -102,6 +102,7 @@ describe('DataStore sync engine', () => {
 						blogId: 'blog id',
 					});
 
+					harness.userInputDelayed();
 					harness.latency = 'low';
 
 					await postHarness.revise('post title 0');
@@ -367,6 +368,7 @@ describe('DataStore sync engine', () => {
 							// Note: The subscription event for post title 1
 							// is processed after the second client update
 							// and the updated content is observed (below)
+							['update from second client', 4],
 							['update from second client', 4],
 							['update from second client', 4],
 							['post title 2', 4],
