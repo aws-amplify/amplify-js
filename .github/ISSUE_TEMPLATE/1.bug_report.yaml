@@ -99,6 +99,8 @@ body:
       - v6
       - v5
       - Older than v5
+    validations:
+      required: true
   - type: dropdown
     attributes:
       label: Amplify Categories
