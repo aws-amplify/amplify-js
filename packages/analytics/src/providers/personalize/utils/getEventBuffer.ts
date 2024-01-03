@@ -1,12 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventBuffer, groupBy, IAnalyticsClient } from '../../../utils';
-import { PersonalizeBufferConfig, PersonalizeBufferEvent } from '../types';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import {
 	PersonalizeEventsClient,
 	PutEventsCommand,
 } from '@aws-sdk/client-personalize-events';
+import { 
+	EventBuffer, 
+	groupBy, 
+	IAnalyticsClient, 
+	haveCredentialsChanged 
+} from '../../../utils';
+import { PersonalizeBufferConfig, PersonalizeBufferEvent } from '../types';
 
 /**
  * These Records hold cached event buffers and AWS clients.
@@ -17,7 +23,7 @@ import {
  * When a new session is initiated, the previous ones should be released.
  * */
 const eventBufferMap: Record<string, EventBuffer<PersonalizeBufferEvent>> = {};
-const cachedClients: Record<string, PersonalizeEventsClient> = {};
+const cachedClients: Record<string, [PersonalizeEventsClient, AWSCredentials]> = {};
 
 const DELIMITER = '#';
 
@@ -71,17 +77,27 @@ export const getEventBuffer = ({
 	userAgentValue,
 }: PersonalizeBufferConfig): EventBuffer<PersonalizeBufferEvent> => {
 	const sessionIdentityKey = [region, identityId].filter(x => !!x).join('-');
+	const cachedClient = cachedClients[sessionIdentityKey];
+	let credentialsHaveChanged = false;
 
-	if (!eventBufferMap[sessionIdentityKey]) {
+	// Check if credentials have changed for the cached client
+	if (cachedClient) {
+		credentialsHaveChanged = haveCredentialsChanged(cachedClient[1], credentials);
+	}
+
+	if (!eventBufferMap[sessionIdentityKey] || credentialsHaveChanged) {
 		const getClient = (): IAnalyticsClient<PersonalizeBufferEvent> => {
-			if (!cachedClients[sessionIdentityKey]) {
-				cachedClients[sessionIdentityKey] = new PersonalizeEventsClient({
-					region,
-					credentials,
-					customUserAgent: userAgentValue,
-				});
+			if (!cachedClients[sessionIdentityKey] || credentialsHaveChanged) {
+				cachedClients[sessionIdentityKey] = [
+					new PersonalizeEventsClient({
+						region,
+						credentials,
+						customUserAgent: userAgentValue,
+					}),
+					credentials
+				];
 			}
-			return events => submitEvents(events, cachedClients[sessionIdentityKey]);
+			return events => submitEvents(events, cachedClients[sessionIdentityKey][0]);
 		};
 
 		eventBufferMap[sessionIdentityKey] =

@@ -1,11 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventBuffer, groupBy, IAnalyticsClient } from '../../../utils';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import {
 	FirehoseClient,
 	PutRecordBatchCommand,
 } from '@aws-sdk/client-firehose';
+import { 
+	EventBuffer, 
+	groupBy, 
+	IAnalyticsClient, 
+	haveCredentialsChanged 
+} from '../../../utils';
 import {
 	KinesisFirehoseBufferEvent,
 	KinesisFirehoseEventBufferConfig,
@@ -23,7 +29,7 @@ const eventBufferMap: Record<
 	string,
 	EventBuffer<KinesisFirehoseBufferEvent>
 > = {};
-const cachedClients: Record<string, FirehoseClient> = {};
+const cachedClients: Record<string, [FirehoseClient, AWSCredentials]> = {};
 
 const createPutRecordsBatchCommand = (
 	streamName: string,
@@ -76,18 +82,28 @@ export const getEventBuffer = ({
 	userAgentValue,
 }: KinesisFirehoseEventBufferConfig): EventBuffer<KinesisFirehoseBufferEvent> => {
 	const sessionIdentityKey = [region, identityId].filter(id => !!id).join('-');
+	const cachedClient = cachedClients[sessionIdentityKey];
+	let credentialsHaveChanged = false;
 
-	if (!eventBufferMap[sessionIdentityKey]) {
+	// Check if credentials have changed for the cached client
+	if (cachedClient) {
+		credentialsHaveChanged = haveCredentialsChanged(cachedClient[1], credentials);
+	}
+
+	if (!eventBufferMap[sessionIdentityKey] || credentialsHaveChanged) {
 		const getClient = (): IAnalyticsClient<KinesisFirehoseBufferEvent> => {
-			if (!cachedClients[sessionIdentityKey]) {
-				cachedClients[sessionIdentityKey] = new FirehoseClient({
-					region,
-					credentials,
-					customUserAgent: userAgentValue,
-				});
+			if (!cachedClients[sessionIdentityKey] || credentialsHaveChanged) {
+				cachedClients[sessionIdentityKey] = [
+					new FirehoseClient({
+						region,
+						credentials,
+						customUserAgent: userAgentValue,
+					}),
+					credentials
+				];
 			}
 
-			const firehoseClient = cachedClients[sessionIdentityKey];
+			const firehoseClient = cachedClients[sessionIdentityKey][0];
 			return events => submitEvents(events, firehoseClient, resendLimit);
 		};
 
