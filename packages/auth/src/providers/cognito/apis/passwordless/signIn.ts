@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	AuthAction,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 
 import { getAuthUserAgentValue } from '../../../../utils';
 import { CognitoAuthSignInDetails } from '../../types/models';
@@ -19,7 +22,6 @@ import {
 	getActiveSignInUsername,
 	setActiveSignInUsername,
 } from '../../utils/signInHelpers';
-import { AuthAction } from '@aws-amplify/core/internals/utils';
 import { setActiveSignInState } from '../../utils/signInStore';
 import {
 	SignInWithEmailAndMagicLinkInput,
@@ -81,7 +83,6 @@ export async function signIn(
 		| SignInWithSMSAndOTPInput
 ) {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-
 	assertTokenProviderConfig(authConfig);
 	validatePasswordlessInput(input, Amplify);
 
@@ -126,10 +127,11 @@ export async function signIn(
 			[KEY_PASSWORDLESS_SIGN_IN_METHOD]: method,
 			[KEY_PASSWORDLESS_ACTION]: 'REQUEST',
 			[KEY_PASSWORDLESS_DELIVERY_MEDIUM]: deliveryMedium,
-			...(deliveryMedium === 'EMAIL' && {
-				[KEY_PASSWORDLESS_REDIRECT_URI]:
-					Amplify.libraryOptions.Auth?.magicLinkRedirectURL!,
-			}),
+			...(deliveryMedium === 'EMAIL' &&
+				method === 'MAGIC_LINK' && {
+					[KEY_PASSWORDLESS_REDIRECT_URI]:
+						Amplify.libraryOptions.Auth?.magicLinkRedirectURL!,
+				}),
 		},
 		ClientId: userPoolClientId,
 	};

@@ -12,7 +12,6 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { AuthError } from '../../../../errors/AuthError';
 import {
 	SignUpWithEmailAndMagicLinkInput,
 	SignUpWithEmailAndOTPInput,

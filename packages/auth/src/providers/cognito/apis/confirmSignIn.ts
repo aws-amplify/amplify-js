@@ -61,7 +61,7 @@ export async function confirmSignIn(
 	input: ConfirmSignInInput
 ): Promise<ConfirmSignInOutput> {
 	const { challengeResponse, options } = input;
-	const clientMetaData = { ...options?.clientMetadata };
+	let clientMetaData = options?.clientMetadata;
 
 	if (isMagicLinkFragment(challengeResponse)) {
 		await loadMagicLinkSignInState(challengeResponse);
@@ -71,6 +71,9 @@ export async function confirmSignIn(
 		signInStore.getState();
 
 	if (signInDetails?.passwordlessMethod) {
+		if (!clientMetaData) {
+			clientMetaData = {};
+		}
 		clientMetaData[KEY_PASSWORDLESS_ACTION] = 'CONFIRM';
 		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] =
 			signInDetails?.passwordlessMethod;
