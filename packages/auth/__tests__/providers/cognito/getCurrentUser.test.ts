@@ -13,6 +13,10 @@ jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
 	Amplify: { Auth: { getTokens: jest.fn() }, getConfig: jest.fn(() => ({})) },
 }));
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	isBrowser: jest.fn(() => false),
+}));
 
 describe('getCurrentUser', () => {
 	const mockedSub = 'mockedSub';
