@@ -71,6 +71,7 @@ export { I18n } from './I18n';
 
 // Logging utilities
 export { ConsoleLogger, generateLogger, consoleProvider } from './logger';
+export { cloudWatchProvider } from './logger/providers/cloudWatch';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';

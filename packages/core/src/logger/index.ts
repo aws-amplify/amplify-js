@@ -4,4 +4,4 @@
 export { ConsoleLogger } from './ConsoleLogger';
 export { LoggerProvider } from './types';
 export { generateLogger } from './logger';
-export { cloudWatchProvider, consoleProvider } from './providers';
+export { consoleProvider } from './providers';
