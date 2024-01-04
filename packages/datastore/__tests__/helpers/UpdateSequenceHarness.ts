@@ -2,11 +2,12 @@ import { Subscription } from 'rxjs';
 import { getDataStore } from './datastoreFactory';
 import { Post } from './schemas';
 import {
-	waitForExpectModelUpdateGraphqlCallCount,
+	waitForExpectModelUpdateGraphqlEventCount,
 	pause,
 	waitForEmptyOutbox,
 } from './util';
 import {
+	MergeStrategy,
 	clearSubscriptionDeliveryPromiseList,
 	subscriptionDeliveryPromiseList,
 } from './fakes/graphqlService';
@@ -198,10 +199,11 @@ export class UpdateSequenceHarness {
 		}
 	}
 
-	constructor() {
+	constructor(mergeStrategy: MergeStrategy) {
 		this.datastoreFake = getDataStore({
 			online: true,
 			isNode: false,
+			mergeStrategy,
 		});
 
 		this.subscriptionLogSubscription = this.datastoreFake.DataStore.observe(
@@ -238,30 +240,41 @@ export class UpdateSequenceHarness {
 	}
 
 	/**
-	 * Wait for all subscription events to be delivered
-	 */
-	async subscriptionDeliverySettled() {
-		await Promise.all(subscriptionDeliveryPromiseList);
-	}
-
-	/**
-	 * Wait for the outbox and all subscription events to settle
-	 */
-	async fullSettle() {
-		await waitForEmptyOutbox();
-		await Promise.all(subscriptionDeliveryPromiseList);
-	}
-
-	/**
 	 * Watch the graphql fake for an expected number of calls to ensure we've
 	 * seen all of the expected behavior resolve before proceeding
 	 *
-	 * @param expectedCallCount The number of graphql update Post calls expected.
+	 * @param expectedEventCount The number of graphql update Post calls expected -OR- an object defining how many
+	 * update, updateError and subscription events are expected. When a number is given, the same number of
+	 * updates and subscription messages are expected with 0 errors.
 	 */
-	async expectGraphqlSettledWithUpdateCallCount(expectedCallCount: number) {
-		await waitForExpectModelUpdateGraphqlCallCount({
+	async expectGraphqlSettledWithEventCount(
+		expectedEventCount:
+			| number
+			| {
+					update: number;
+					updateSubscriptionMessage: number;
+					updateError?: number;
+			  }
+	) {
+		let updateCount: number;
+		let updateSubscriptionMessageCount: number;
+		let updateErrorCount: number;
+		if (typeof expectedEventCount === 'number') {
+			updateCount = expectedEventCount;
+			updateSubscriptionMessageCount = expectedEventCount;
+			updateErrorCount = 0;
+		} else {
+			updateCount = expectedEventCount.update;
+			updateSubscriptionMessageCount =
+				expectedEventCount.updateSubscriptionMessage;
+			updateErrorCount = expectedEventCount.updateError ?? 0;
+		}
+
+		await waitForExpectModelUpdateGraphqlEventCount({
 			graphqlService: this.datastoreFake.graphqlService,
-			expectedCallCount,
+			expectedUpdateCallCount: updateCount,
+			expectedUpdateSubscriptionMessageCount: updateSubscriptionMessageCount,
+			expectedUpdateErrorCount: updateErrorCount,
 			modelName: 'Post',
 		});
 	}

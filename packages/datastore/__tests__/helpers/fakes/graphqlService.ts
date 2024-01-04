@@ -40,20 +40,10 @@ const defaultLatencies: FakeLatencies = {
 };
 
 /**
- * Keep a list of all subscription delivery promises where each promise
- * resolves after the related message is delivered to all subscribers.
- *
- * This helps us track that all messages are delivered before proceeding
- * with tests. The lists should be cleared between tests.
+ * Fake mirrors logic from multiple merge strategies
+ * https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html#automerge
  */
-export let subscriptionDeliveryPromiseList: Promise<void>[] = [];
-
-/**
- * Clear the subscription delivery promise list
- */
-export function clearSubscriptionDeliveryPromiseList() {
-	subscriptionDeliveryPromiseList = [];
-}
+export type MergeStrategy = 'Automerge' | 'OptimisticConcurrency';
 
 /**
  * Keep a list of all subscription delivery promises where each promise
@@ -79,6 +69,7 @@ export class FakeGraphQLService {
 	public isConnected = true;
 	public log: (channel: string, ...etc: any) => void = s => undefined;
 	public requests = [] as any[];
+	public errors = new Map<string, any[]>();
 	public tables = new Map<string, Map<string, any[]>>();
 	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
@@ -118,10 +109,19 @@ export class FakeGraphQLService {
 	 */
 	public latencies: FakeLatencies = defaultLatencies;
 
-	constructor(public schema: Schema) {
+	/**
+	 * The merge strategy used for conflict resolution in the fake service
+	 */
+	public mergeStrategy: MergeStrategy;
+
+	constructor(
+		public schema: Schema,
+		mergeStrategy: MergeStrategy = 'Automerge'
+	) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
 			this.tableDefinitions.set(model.name, model);
+			this.mergeStrategy = mergeStrategy;
 			let CPKFound = false;
 
 			for (const attribute of model.attributes || []) {
@@ -490,6 +490,29 @@ export class FakeGraphQLService {
 		return merged;
 	}
 
+	private canOccMerge(existing, updated) {
+		return updated._version === existing._version;
+	}
+
+	private occMerge(existing, updated) {
+		let merged;
+		if (updated._version === existing._version) {
+			merged = {
+				...this.populatedFields(existing),
+				...this.populatedFields(updated),
+				_version: updated._version + 1,
+				_lastChangedAt: new Date().getTime(),
+				updatedAt: new Date().toISOString(),
+			};
+		} else {
+			merged = {
+				...this.populatedFields(existing),
+			};
+		}
+		this.log('occ merged', { existing, updated, merged });
+		return merged;
+	}
+
 	public simulateDisconnect() {
 		this.isConnected = false;
 	}
@@ -622,7 +645,7 @@ export class FakeGraphQLService {
 			});
 		}
 
-		return new Promise(async resolve => {
+		return new Promise(async (resolve, reject) => {
 			!ignoreLatency && (await this.jitteredPause(this.latencies.request));
 
 			if (operation === 'query') {
@@ -691,11 +714,28 @@ export class FakeGraphQLService {
 						};
 						errors = [this.makeMissingUpdateTarget(selection)];
 					} else {
-						const updated = this.autoMerge(existing, record);
-						data = {
-							[selection]: updated,
-						};
-						table.set(this.getPK(tableName, record), updated);
+						if (this.mergeStrategy === 'OptimisticConcurrency') {
+							if (!this.canOccMerge(existing, record)) {
+								// When OCC returns an error, we still need a data to include
+								// with the error, but the actual data content is null
+								data = {
+									[selection]: null,
+								};
+								errors = [this.makeOCCConflictUnhandeled(existing, selection)];
+							} else {
+								const updated = this.occMerge(existing, record);
+								table.set(this.getPK(tableName, record), updated);
+								data = {
+									[selection]: updated,
+								};
+							}
+						} else {
+							const updated = this.autoMerge(existing, record);
+							data = {
+								[selection]: updated,
+							};
+							table.set(this.getPK(tableName, record), updated);
+						}
 					}
 				} else if (type === 'delete') {
 					const existing = table.get(this.getPK(tableName, record));
@@ -746,16 +786,38 @@ export class FakeGraphQLService {
 					}
 				}
 
-				this.notifySubscribers(tableName, type, data, selection, ignoreLatency);
+				// Only notify subscribers when the change was made without errors
+				if (errors.length === 0) {
+					this.notifySubscribers(
+						tableName,
+						type,
+						data,
+						selection,
+						ignoreLatency
+					);
+				} else {
+					if (!Array.isArray(this.errors.get(type))) {
+						this.errors.set(type, []);
+					}
+					this.errors.get(type)?.push([selection, errors]);
+				}
 
 				!ignoreLatency && (await this.jitteredPause(this.latencies.response));
 
 				this.log('API Response', { data, errors });
-				resolve({
-					data,
+
+				const response = {
+					data: data,
 					errors,
 					extensions: {},
-				});
+				};
+
+				// Relove unless there are errors, in which case reject/throw
+				if (response.errors && response.errors.length) {
+					reject(response);
+				} else {
+					resolve(response);
+				}
 			}
 
 			!ignoreLatency && (await this.jitteredPause(this.latencies.response));
