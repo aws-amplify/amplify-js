@@ -32,5 +32,5 @@ async function debouncedFetchAuhtSession(
 export const fetchAuthSession = (
 	options?: FetchAuthSessionOptions
 ): Promise<AuthSession> => {
-	return debouncedFetchAuhtSession(options);
+	return debouncedFetchAuhtSession(options)
 };
