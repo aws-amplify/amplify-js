@@ -1190,192 +1190,192 @@ describe('DataStore sync engine', () => {
 							title: 'post title 2',
 						});
 					});
-					test('delayed input, low latency where we wait for the create to clear the outbox (second field is `null`)', async () => {
-						const postHarness = await harness.createPostHarness({
-							title: 'original title',
-						});
+				});
+			});
+			test('delayed input, low latency where we wait for the create to clear the outbox (second field is `null`)', async () => {
+				const postHarness = await harness.createPostHarness({
+					title: 'original title',
+				});
 
-						harness.userInputDelayed();
-						harness.latency = 'low';
+				harness.userInputDelayed();
+				harness.latency = 'low';
 
-						await postHarness.revise('post title 0');
-						await postHarness.revise('post title 1');
+				await postHarness.revise('post title 0');
+				await postHarness.revise('post title 1');
 
-						await harness.externalPostUpdate({
-							originalPostId: postHarness.original.id,
-							// External client performs a mutation against a different field:
-							updatedFields: { blogId: 'update from second client' },
-							version: 2,
-						});
+				await harness.externalPostUpdate({
+					originalPostId: postHarness.original.id,
+					// External client performs a mutation against a different field:
+					updatedFields: { blogId: 'update from second client' },
+					version: 2,
+				});
 
-						await postHarness.revise('post title 2');
+				await postHarness.revise('post title 2');
 
-						await harness.fullSettle();
-						await harness.expectGraphqlSettledWithEventCount({
-							update: 5,
-							updateSubscriptionMessage: 4,
-							updateError: 1,
-						});
+				await harness.fullSettle();
+				await harness.expectGraphqlSettledWithEventCount({
+					update: 5,
+					updateSubscriptionMessage: 4,
+					updateError: 1,
+				});
 
-						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
-						).toEqual([
-							['original title', null, 1],
-							['post title 0', null, 1],
-							['post title 1', null, 1],
-							['post title 2', null, 1],
-							// The 'post title 2' change fails and is retried
-							// The retry fills in null for the blogId, which
-							// overwrites the externally set value
-							['post title 2', null, 5],
-						]);
+				expect(
+					harness.subscriptionLogs(['title', 'blogId', '_version'])
+				).toEqual([
+					['original title', null, 1],
+					['post title 0', null, 1],
+					['post title 1', null, 1],
+					['post title 2', null, 1],
+					// The 'post title 2' change fails and is retried
+					// The retry fills in null for the blogId, which
+					// overwrites the externally set value
+					['post title 2', null, 5],
+				]);
 
-						expect(await postHarness.currentContents).toMatchObject({
-							_version: 5,
-							title: 'post title 2',
-						});
+				expect(await postHarness.currentContents).toMatchObject({
+					_version: 5,
+					title: 'post title 2',
+				});
+			});
+			/**
+			 * All other multi-client tests begin with a `null` value to the field that is being
+			 * updated by the external client (`blogId`).
+			 * This is the only scenario where providing an inital value to `blogId` will result
+			 * in different behavior.
+			 */
+			test('delayed input, low latency where we wait for the create to clear the outbox (second field has initial value)', async () => {
+				const postHarness = await harness.createPostHarness({
+					title: 'original title',
+					blogId: 'original blogId',
+				});
+
+				harness.userInputDelayed();
+				harness.latency = 'low';
+
+				await postHarness.revise('post title 0');
+				await postHarness.revise('post title 1');
+
+				try {
+					await harness.externalPostUpdate({
+						originalPostId: postHarness.original.id,
+						// External client performs a mutation against a different field:
+						updatedFields: { blogId: 'update from second client' },
+						version: 1,
 					});
-					/**
-					 * All other multi-client tests begin with a `null` value to the field that is being
-					 * updated by the external client (`blogId`).
-					 * This is the only scenario where providing an inital value to `blogId` will result
-					 * in different behavior.
-					 */
-					test('delayed input, low latency where we wait for the create to clear the outbox (second field has initial value)', async () => {
-						const postHarness = await harness.createPostHarness({
-							title: 'original title',
-							blogId: 'original blogId',
-						});
+				} catch (e) {
+					expect(e).toEqual(occRejectionError);
+				}
 
-						harness.userInputDelayed();
-						harness.latency = 'low';
+				await postHarness.revise('post title 2');
 
-						await postHarness.revise('post title 0');
-						await postHarness.revise('post title 1');
+				await harness.fullSettle();
+				await harness.expectGraphqlSettledWithEventCount({
+					update: 5,
+					updateSubscriptionMessage: 3,
+					updateError: 2,
+				});
 
-						try {
-							await harness.externalPostUpdate({
-								originalPostId: postHarness.original.id,
-								// External client performs a mutation against a different field:
-								updatedFields: { blogId: 'update from second client' },
-								version: 1,
-							});
-						} catch (e) {
-							expect(e).toEqual(occRejectionError);
-						}
+				expect(
+					harness.subscriptionLogs(['title', 'blogId', '_version' ?? null])
+				).toEqual([
+					['original title', 'original blogId', 1],
+					['post title 0', 'original blogId', 1],
+					['post title 1', 'original blogId', 1],
+					['post title 2', 'original blogId', 1],
+					// The 'post title 2' change fails and is retried
+					// The retry fills in null for the blogId, which
+					// overwrites the externally set value
+					['post title 2', null, 4],
+				]);
 
-						await postHarness.revise('post title 2');
+				expect(await postHarness.currentContents).toMatchObject({
+					_version: 4,
+					title: 'post title 2',
+				});
+			});
+			test('no input delay, high latency where we wait for the create and all revisions to clear the outbox', async () => {
+				const postHarness = await harness.createPostHarness({
+					title: 'original title',
+				});
 
-						await harness.fullSettle();
-						await harness.expectGraphqlSettledWithEventCount({
-							update: 5,
-							updateSubscriptionMessage: 3,
-							updateError: 2,
-						});
+				harness.latency = 'high';
+				harness.settleAfterRevisions();
 
-						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version' ?? null])
-						).toEqual([
-							['original title', 'original blogId', 1],
-							['post title 0', 'original blogId', 1],
-							['post title 1', 'original blogId', 1],
-							['post title 2', 'original blogId', 1],
-							// The 'post title 2' change fails and is retried
-							// The retry fills in null for the blogId, which
-							// overwrites the externally set value
-							['post title 2', null, 4],
-						]);
+				await postHarness.revise('post title 0');
+				await postHarness.revise('post title 1');
 
-						expect(await postHarness.currentContents).toMatchObject({
-							_version: 4,
-							title: 'post title 2',
-						});
-					});
-					test('no input delay, high latency where we wait for the create and all revisions to clear the outbox', async () => {
-						const postHarness = await harness.createPostHarness({
-							title: 'original title',
-						});
+				await harness.externalPostUpdate({
+					originalPostId: postHarness.original.id,
+					// External client performs a mutation against a different field:
+					updatedFields: { blogId: 'update from second client' },
+					version: 3,
+				});
 
-						harness.latency = 'high';
-						harness.settleAfterRevisions();
+				await postHarness.revise('post title 2');
 
-						await postHarness.revise('post title 0');
-						await postHarness.revise('post title 1');
+				await harness.expectGraphqlSettledWithEventCount(4);
 
-						await harness.externalPostUpdate({
-							originalPostId: postHarness.original.id,
-							// External client performs a mutation against a different field:
-							updatedFields: { blogId: 'update from second client' },
-							version: 3,
-						});
+				expect(
+					harness.subscriptionLogs(['title', 'blogId', '_version'])
+				).toEqual([
+					['original title', null, 1],
+					['post title 0', null, 1],
+					['post title 0', null, 2],
+					['post title 0', null, 2],
+					['post title 1', null, 2],
+					['post title 1', null, 3],
+					['post title 1', 'update from second client', 4],
+					['post title 1', 'update from second client', 4],
+					['post title 2', 'update from second client', 4],
+					['post title 2', 'update from second client', 5],
+					['post title 2', 'update from second client', 5],
+				]);
 
-						await postHarness.revise('post title 2');
+				expect(await postHarness.currentContents).toMatchObject({
+					_version: 5,
+					title: 'post title 2',
+					blogId: 'update from second client',
+				});
+			});
+			test('no input delay, low latency where we wait for the create and all revisions to clear the outbox', async () => {
+				const postHarness = await harness.createPostHarness({
+					title: 'original title',
+				});
 
-						await harness.expectGraphqlSettledWithEventCount(4);
+				harness.latency = 'low';
+				harness.settleAfterRevisions();
 
-						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
-						).toEqual([
-							['original title', null, 1],
-							['post title 0', null, 1],
-							['post title 0', null, 2],
-							['post title 0', null, 2],
-							['post title 1', null, 2],
-							['post title 1', null, 3],
-							['post title 1', 'update from second client', 4],
-							['post title 1', 'update from second client', 4],
-							['post title 2', 'update from second client', 4],
-							['post title 2', 'update from second client', 5],
-							['post title 2', 'update from second client', 5],
-						]);
+				await postHarness.revise('post title 0');
+				await postHarness.revise('post title 1');
 
-						expect(await postHarness.currentContents).toMatchObject({
-							_version: 5,
-							title: 'post title 2',
-							blogId: 'update from second client',
-						});
-					});
-					test('no input delay, low latency where we wait for the create and all revisions to clear the outbox', async () => {
-						const postHarness = await harness.createPostHarness({
-							title: 'original title',
-						});
+				await harness.externalPostUpdate({
+					originalPostId: postHarness.original.id,
+					// External client performs a mutation against a different field:
+					updatedFields: { blogId: 'update from second client' },
+					version: 3,
+				});
 
-						harness.latency = 'low';
-						harness.settleAfterRevisions();
+				await postHarness.revise('post title 2');
 
-						await postHarness.revise('post title 0');
-						await postHarness.revise('post title 1');
+				await harness.expectGraphqlSettledWithEventCount(4);
 
-						await harness.externalPostUpdate({
-							originalPostId: postHarness.original.id,
-							// External client performs a mutation against a different field:
-							updatedFields: { blogId: 'update from second client' },
-							version: 3,
-						});
+				expect(
+					harness.subscriptionLogs(['title', 'blogId', '_version'])
+				).toEqual([
+					['original title', null, 1],
+					['post title 0', null, 1],
+					['post title 0', null, 2],
+					['post title 1', null, 2],
+					['post title 1', null, 3],
+					['post title 1', 'update from second client', 4],
+					['post title 2', 'update from second client', 4],
+					['post title 2', 'update from second client', 5],
+				]);
 
-						await postHarness.revise('post title 2');
-
-						await harness.expectGraphqlSettledWithEventCount(4);
-
-						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
-						).toEqual([
-							['original title', null, 1],
-							['post title 0', null, 1],
-							['post title 0', null, 2],
-							['post title 1', null, 2],
-							['post title 1', null, 3],
-							['post title 1', 'update from second client', 4],
-							['post title 2', 'update from second client', 4],
-							['post title 2', 'update from second client', 5],
-						]);
-
-						expect(await postHarness.currentContents).toMatchObject({
-							_version: 5,
-							title: 'post title 2',
-							blogId: 'update from second client',
-						});
-					});
+				expect(await postHarness.currentContents).toMatchObject({
+					_version: 5,
+					title: 'post title 2',
+					blogId: 'update from second client',
 				});
 			});
 		});
