@@ -69,11 +69,8 @@ export function signIn(
 /**
  * Initiate the passwordless sign-in flow by requesting a code/link to be sent via the delivery medium.
  *
- * Note: It does not re-use the internal {@link handleCustomAuthFlowWithoutSRP} API because the passwordless sign-in flow
- * does not yet support device key or Cognito Advanced Security Features.
- *
- * TODO: check if device key and Cognito Advanced Security Features are supported by the passwordless sign-in flow.
- * If so, we can re-use the internal {@link handleCustomAuthFlowWithoutSRP} API.
+ * Note: It does not re-use the internal {@link signInWithCustomAuth} API because of the the difference that
+ * passwordless sign-in flow does not support device key(to skip MFA) or Cognito Advanced Security Features.
  *
  * @internal
  */
@@ -149,6 +146,7 @@ export async function signIn(
 	const signInDetails: CognitoAuthSignInDetails = {
 		loginId: username,
 		authFlowType: 'CUSTOM_WITHOUT_SRP',
+		passwordlessMethod: method,
 	};
 
 	// sets up local state used during the sign-in process
@@ -157,7 +155,6 @@ export async function signIn(
 		username: getActiveSignInUsername(username),
 		signInDetails,
 		challengeName: 'CUSTOM_CHALLENGE',
-		signInMethod: method,
 	});
 
 	const responseAdditionalInfo = ChallengeParameters;

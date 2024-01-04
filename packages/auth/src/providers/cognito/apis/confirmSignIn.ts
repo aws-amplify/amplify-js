@@ -67,17 +67,13 @@ export async function confirmSignIn(
 		await loadMagicLinkSignInState(challengeResponse);
 	}
 
-	const {
-		username,
-		challengeName,
-		signInSession,
-		signInDetails,
-		signInMethod,
-	} = signInStore.getState();
+	const { username, challengeName, signInSession, signInDetails } =
+		signInStore.getState();
 
-	if (signInMethod) {
+	if (signInDetails?.passwordlessMethod) {
 		clientMetaData[KEY_PASSWORDLESS_ACTION] = 'CONFIRM';
-		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] = signInMethod;
+		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] =
+			signInDetails?.passwordlessMethod;
 	}
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;

@@ -25,69 +25,25 @@ import {
 	isSignUpWithSMSAndOTPInput,
 } from './utils';
 import { assertServiceError } from '../../../../errors/utils/assertServiceError';
-
-const createUserApiHandlerDeserializer = async (response: HttpResponse) => {
-	if (response.statusCode >= 300) {
-		// Parse error from API Gateway service itself
-		const error = await parseJsonError(response);
-		try {
-			// Parse errors from The create user Lambda.
-			const body = await parseJsonBody(response);
-			if (error?.name === 'UnknownError' && body.error) {
-				// Error from create user lambda returns in shape like this:
-				// {"error":"User already exists"}
-				error.name = 'Error';
-				error.message = body.error;
-			}
-		} catch (e) {
-			/** SKIP */
-		}
-		assertServiceError(error);
-	} else {
-		const body = await parseJsonBody(response);
-		return body;
-	}
-};
-
-const createUserApiHandlerSerializer = (
-	input: PreInitiateAuthPayload,
-	endpoint: Endpoint
-) => ({
-	url: endpoint.url,
-	headers: {
-		'content-type': 'application/json; charset=UTF-8',
-	},
-	method: 'PUT',
-	body: JSON.stringify(input),
-});
-
-const getCreateUserApiHandler = (url: URL) =>
-	composeServiceApi(
-		unauthenticatedHandler,
-		createUserApiHandlerSerializer,
-		createUserApiHandlerDeserializer,
-		{
-			region: '',
-			endpointResolver: () => ({
-				url,
-			}),
-			retryDecider: getRetryDecider(parseJsonError),
-			computeDelay: jitteredBackoff,
-			withCrossDomainCredentials: false,
-		}
-	);
+import { getRegion } from '../../utils/clients/CognitoIdentityProvider/utils';
 
 /**
  * Internal method to create a user when signing up passwordless.
+ *
+ * @param createUserHandlerEndpoint The endpoint for the create user handler.
+ * @param userPoolId The user pool id.
+ * @param input The sign up input.
+ *
+ * @internal
  */
 export const createUser = async (
-	createUserHandlerEndpoint: URL,
+	endpoint: URL,
 	userPoolId: string,
 	input:
 		| SignUpWithEmailAndMagicLinkInput
 		| SignUpWithEmailAndOTPInput
 		| SignUpWithSMSAndOTPInput
-) => {
+): Promise<HttpResponse> => {
 	const { username } = input;
 
 	// pre-auth api request
@@ -103,6 +59,59 @@ export const createUser = async (
 		userPoolId: userPoolId,
 	};
 
-	const handleCreateUser = getCreateUserApiHandler(createUserHandlerEndpoint);
-	return handleCreateUser({}, body);
+	const createUserHandler = composeCreateUserHandler(
+		endpoint,
+		getRegion(userPoolId)
+	);
+	return createUserHandler({}, body);
 };
+
+const createUserDeserializer = async (response: HttpResponse) => {
+	if (response.statusCode >= 300) {
+		// Parse error from API Gateway service itself
+		const error = await parseJsonError(response);
+		try {
+			// Parse errors from The create user Lambda.
+			const body = await parseJsonBody(response);
+			if (error?.name === 'UnknownError' && body.error) {
+				// Error from create user lambda returns in shape like this: {"error":"User already exists"}
+				error.name = 'Error';
+				error.message = body.error;
+			}
+		} catch (e) {
+			// SKIP
+		}
+		assertServiceError(error);
+	} else {
+		const body = await parseJsonBody(response);
+		return body;
+	}
+};
+
+const createUserSerializer = (
+	input: PreInitiateAuthPayload,
+	endpoint: Endpoint
+) => ({
+	url: endpoint.url,
+	headers: {
+		'content-type': 'application/json; charset=UTF-8',
+	},
+	method: 'PUT',
+	body: JSON.stringify(input),
+});
+
+const composeCreateUserHandler = (url: URL, region: string) =>
+	composeServiceApi(
+		unauthenticatedHandler,
+		createUserSerializer,
+		createUserDeserializer,
+		{
+			region,
+			endpointResolver: () => ({
+				url,
+			}),
+			retryDecider: getRetryDecider(parseJsonError),
+			computeDelay: jitteredBackoff,
+			withCrossDomainCredentials: false,
+		}
+	);

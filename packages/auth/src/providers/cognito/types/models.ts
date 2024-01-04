@@ -95,6 +95,7 @@ export type AWSAuthDevice = AuthDevice & {
 export type CognitoAuthSignInDetails = {
 	loginId?: string;
 	authFlowType?: AuthFlowType;
+	passwordlessMethod?: 'OTP' | 'MAGIC_LINK';
 };
 
 /**

@@ -60,7 +60,7 @@ export async function signUp(
 	assertTokenProviderConfig(authConfig);
 	const userPoolId = authConfig.userPoolId;
 
-	// TODO: support resolving create user handler endpoint from Amplify config when design is finalized.
+	// TODO(allanzhengyp): support resolving create user handler endpoint from Amplify config when design is finalized.
 	const createUserHandlerEndpoint = new AmplifyUrl('');
 	const response = await createUser(
 		createUserHandlerEndpoint,
