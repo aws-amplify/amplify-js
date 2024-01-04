@@ -4,6 +4,7 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	authenticatedHandler,
+	unauthenticatedHandler,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
@@ -25,6 +26,7 @@ import {
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
 const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
+const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
 const mockFetchAuthSession = jest.fn();
 let mockConfig = {
 	API: {
@@ -60,6 +62,17 @@ const credentials = {
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
+const mockSuccessResponse = {
+	statusCode: 200,
+	headers: {
+		'response-header': 'response-header-value',
+	},
+	body: {
+		blob: jest.fn(),
+		json: jest.fn(),
+		text: jest.fn(),
+	},
+};
 
 describe('public APIs', () => {
 	beforeEach(() => {
@@ -67,17 +80,9 @@ describe('public APIs', () => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 		});
-		mockAuthenticatedHandler.mockResolvedValue({
-			statusCode: 200,
-			headers: {
-				'response-header': 'response-header-value',
-			},
-			body: {
-				blob: jest.fn(),
-				json: jest.fn().mockResolvedValue({ foo: 'bar' }),
-				text: jest.fn(),
-			},
-		});
+		mockSuccessResponse.body.json.mockResolvedValue({ foo: 'bar' });
+		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
+		mockUnauthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockGetConfig.mockReturnValue(mockConfig);
 	});
 	const APIs = [
@@ -266,20 +271,21 @@ describe('public APIs', () => {
 				}
 			});
 
-			it('should throw if credentials are not available', async () => {
-				expect.assertions(2);
+			it('should use unauthenticated request if credentials are not available', async () => {
+				expect.assertions(1);
 				mockFetchAuthSession.mockResolvedValueOnce({});
-				try {
-					await fn(mockAmplifyInstance, {
-						apiName: 'restApi1',
-						path: '/items',
-					}).response;
-				} catch (error) {
-					expect(error).toBeInstanceOf(RestApiError);
-					expect(error).toMatchObject(
-						validationErrorMap[RestApiValidationErrorCode.NoCredentials]
-					);
-				}
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/items',
+				}).response;
+				expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: new URL(
+							'https://123.execute-api.us-west-2.amazonaws.com/development/items/123'
+						),
+					}),
+					expect.anything()
+				);
 			});
 
 			it('should throw when response is not ok', async () => {
