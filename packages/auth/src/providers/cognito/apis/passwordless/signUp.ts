@@ -59,11 +59,6 @@ export async function signUp(
 
 	assertTokenProviderConfig(authConfig);
 	const userPoolId = authConfig.userPoolId;
-	const {
-		username,
-		passwordless: { deliveryMedium, method },
-		options: { userAttributes, clientMetadata, validationData },
-	} = input;
 
 	// TODO: support resolving create user handler endpoint from Amplify config when design is finalized.
 	const createUserHandlerEndpoint = new AmplifyUrl('');

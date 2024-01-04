@@ -69,10 +69,17 @@ export async function confirmSignIn(
 		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] = 'MAGIC_LINK';
 	}
 
-	// TODO: implement confirm sign-in with OTP
-
-	const { username, challengeName, signInSession, signInDetails } =
-		signInStore.getState();
+	const {
+		username,
+		challengeName,
+		signInSession,
+		signInDetails,
+		signInMethod,
+	} = signInStore.getState();
+	if (signInMethod) {
+		clientMetaData[KEY_PASSWORDLESS_ACTION] = 'CONFIRM';
+		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] = signInMethod;
+	}
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

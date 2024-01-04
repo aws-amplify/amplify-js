@@ -92,7 +92,6 @@ export async function signIn(
 	const {
 		username,
 		passwordless: { deliveryMedium, method },
-		password,
 		options: { clientMetadata } = {},
 	} = input;
 
@@ -157,6 +156,8 @@ export async function signIn(
 		signInSession: responseFromAuthChallenge.Session,
 		username: getActiveSignInUsername(username),
 		signInDetails,
+		challengeName: 'CUSTOM_CHALLENGE',
+		signInMethod: method,
 	});
 
 	const responseAdditionalInfo = ChallengeParameters;

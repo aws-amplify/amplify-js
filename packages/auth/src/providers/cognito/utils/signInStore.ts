@@ -10,6 +10,7 @@ type SignInState = {
 	challengeName?: ChallengeName;
 	signInSession?: string;
 	signInDetails?: CognitoAuthSignInDetails;
+	signInMethod?: 'OTP' | 'MAGIC_LINK';
 };
 
 type SignInAction =

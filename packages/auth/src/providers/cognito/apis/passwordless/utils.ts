@@ -35,7 +35,10 @@ export const validatePasswordlessInput = (
 		!input.password,
 		AuthValidationErrorCode.PasswordlessSignInHasPassword
 	);
-	if (input.passwordless?.deliveryMedium === 'EMAIL') {
+	if (
+		input.passwordless?.deliveryMedium === 'EMAIL' &&
+		input.passwordless?.method === 'MAGIC_LINK'
+	) {
 		assertValidationError(
 			!!amplify.libraryOptions.Auth?.magicLinkRedirectURL,
 			AuthValidationErrorCode.EmptyPasswordlessRedirectURI
