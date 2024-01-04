@@ -1,4 +1,4 @@
-import { warpTime, unwarpTime, pause, occRejectionError } from './helpers';
+import { warpTime, unwarpTime, pause } from './helpers';
 import { UpdateSequenceHarness } from './helpers/UpdateSequenceHarness';
 
 /**
@@ -962,22 +962,19 @@ describe('DataStore sync engine', () => {
 
 						await postHarness.revise('post title 0');
 						await postHarness.revise('post title 1');
-						try {
-							await harness.externalPostUpdate({
-								originalPostId: postHarness.original.id,
-								updatedFields: { title: 'update from second client' },
-								version: 1,
-							});
-						} catch (e) {
-							expect(e).toEqual(occRejectionError);
-						}
+						await harness.externalPostUpdate({
+							originalPostId: postHarness.original.id,
+							updatedFields: { title: 'update from second client' },
+							version: 2,
+						});
+
 						await postHarness.revise('post title 2');
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
 							update: 5,
-							updateSubscriptionMessage: 3,
-							updateError: 2,
+							updateSubscriptionMessage: 4,
+							updateError: 1,
 						});
 
 						expect(harness.subscriptionLogs()).toEqual([
@@ -985,11 +982,11 @@ describe('DataStore sync engine', () => {
 							['post title 0', 1],
 							['post title 1', 1],
 							['post title 2', 1],
-							['post title 2', 4],
+							['post title 2', 5],
 						]);
 
 						expect(await postHarness.currentContents).toMatchObject({
-							_version: 4,
+							_version: 5,
 							title: 'post title 2',
 						});
 					});
@@ -1151,23 +1148,19 @@ describe('DataStore sync engine', () => {
 						 */
 						await pause(3000);
 
-						try {
-							await harness.externalPostUpdate({
-								originalPostId: postHarness.original.id,
-								// External client performs a mutation against a different field:
-								updatedFields: { blogId: 'update from second client' },
-								version: 1,
-							});
-						} catch (e) {
-							expect(e).toEqual(occRejectionError);
-						}
+						await harness.externalPostUpdate({
+							originalPostId: postHarness.original.id,
+							// External client performs a mutation against a different field:
+							updatedFields: { blogId: 'update from second client' },
+							version: 2,
+						});
 
 						await postHarness.revise('post title 2');
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 4,
-							updateSubscriptionMessage: 3,
+							update: 5,
+							updateSubscriptionMessage: 4,
 							updateError: 1,
 						});
 
@@ -1181,12 +1174,12 @@ describe('DataStore sync engine', () => {
 							// The 'post title 2' change fails and is retried
 							// The retry fills in null for the blogId, which
 							// overwrites the externally set value
-							['post title 2', null, 4],
-							['post title 2', null, 4],
+							['post title 2', null, 5],
+							['post title 2', null, 5],
 						]);
 
 						expect(await postHarness.currentContents).toMatchObject({
-							_version: 4,
+							_version: 5,
 							title: 'post title 2',
 						});
 					});
@@ -1255,24 +1248,20 @@ describe('DataStore sync engine', () => {
 				await postHarness.revise('post title 0');
 				await postHarness.revise('post title 1');
 
-				try {
-					await harness.externalPostUpdate({
-						originalPostId: postHarness.original.id,
-						// External client performs a mutation against a different field:
-						updatedFields: { blogId: 'update from second client' },
-						version: 1,
-					});
-				} catch (e) {
-					expect(e).toEqual(occRejectionError);
-				}
+				await harness.externalPostUpdate({
+					originalPostId: postHarness.original.id,
+					// External client performs a mutation against a different field:
+					updatedFields: { blogId: 'update from second client' },
+					version: 2,
+				});
 
 				await postHarness.revise('post title 2');
 
 				await harness.fullSettle();
 				await harness.expectGraphqlSettledWithEventCount({
 					update: 5,
-					updateSubscriptionMessage: 3,
-					updateError: 2,
+					updateSubscriptionMessage: 4,
+					updateError: 1,
 				});
 
 				expect(
@@ -1285,11 +1274,11 @@ describe('DataStore sync engine', () => {
 					// The 'post title 2' change fails and is retried
 					// The retry fills in null for the blogId, which
 					// overwrites the externally set value
-					['post title 2', null, 4],
+					['post title 2', null, 5],
 				]);
 
 				expect(await postHarness.currentContents).toMatchObject({
-					_version: 4,
+					_version: 5,
 					title: 'post title 2',
 				});
 			});
