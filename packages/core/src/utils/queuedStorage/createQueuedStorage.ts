@@ -3,7 +3,11 @@
 
 import { DATABASE_NAME, STORE_NAME } from './constants';
 import { getAddItemBytesSize } from './getAddItemBytesSize';
-import { AddItemWithBytesSize, QueuedItem, QueuedStorage } from './types';
+import {
+	AddItemWithAuthPropertiesWeb,
+	QueuedItem,
+	QueuedStorage,
+} from './types';
 
 export const createQueuedStorage = (): QueuedStorage => {
 	let currentBytesSize = 0;
@@ -83,7 +87,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 			const store = await getStore();
 
 			const itemBytesSize = getAddItemBytesSize(item);
-			const queuedItem: AddItemWithBytesSize = {
+			const queuedItem: AddItemWithAuthPropertiesWeb = {
 				...item,
 				bytesSize: itemBytesSize,
 			};
@@ -108,9 +112,11 @@ export const createQueuedStorage = (): QueuedStorage => {
 			const store = await getStore();
 
 			// delete by range to improve performance
-			const keyRangesToDelete = findRanges(items.map(item => item.id)).map(
-				([lower, upper]) => IDBKeyRange.bound(lower, upper)
-			);
+			const keyRangesToDelete = findRanges(
+				items
+					.map(item => item.id)
+					.filter((id): id is number => id !== undefined)
+			).map(([lower, upper]) => IDBKeyRange.bound(lower, upper));
 
 			await Promise.all(
 				keyRangesToDelete.map(range => promisifyIDBRequest(store.delete(range)))
