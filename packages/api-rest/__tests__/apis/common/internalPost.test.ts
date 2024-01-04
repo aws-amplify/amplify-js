@@ -209,6 +209,25 @@ describe('internal post', () => {
 		expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 	});
 
+	it('should call unauthenticatedHandler if credential is not set', async () => {
+		mockFetchAuthSession.mockClear();
+		mockFetchAuthSession.mockRejectedValue(
+			new Error('Mock error as credentials not configured')
+		);
+		await post(mockAmplifyInstance, {
+			url: apiGatewayUrl,
+		});
+		expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
+			{
+				url: apiGatewayUrl,
+				method: 'POST',
+				headers: {},
+			},
+			expect.anything()
+		);
+		expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
+	});
+
 	it('should abort request when cancel is called', async () => {
 		expect.assertions(4);
 		let underLyingHandlerReject;
