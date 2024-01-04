@@ -66,7 +66,7 @@ describe('completeOAuthFlow', () => {
 	let windowSpy = jest.spyOn(window, 'window', 'get');
 	const mockFetch = jest.fn();
 	const mockReplaceState = jest.fn();
-
+  
 	beforeAll(() => {
 		(global as any).fetch = mockFetch;
 		windowSpy.mockImplementation(
@@ -74,6 +74,7 @@ describe('completeOAuthFlow', () => {
 				({
 					history: {
 						replaceState: mockReplaceState,
+						state:'http://localhost:3000/?code=aaaa-111-222&state=aaaaa'
 					},
 				}) as any
 		);
@@ -192,7 +193,7 @@ describe('completeOAuthFlow', () => {
 				ExpiresIn: expectedTokens.expires_in,
 			});
 			expect(mockReplaceState).toHaveBeenCalledWith(
-				{},
+				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 				'',
 				testInput.redirectUri
 			);
@@ -303,7 +304,7 @@ describe('completeOAuthFlow', () => {
 
 			expect(mockHubDispatch).toHaveBeenCalledTimes(2);
 			expect(mockReplaceState).toHaveBeenCalledWith(
-				{},
+				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 				'',
 				testInput.redirectUri
 			);
