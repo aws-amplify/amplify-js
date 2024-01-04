@@ -65,8 +65,6 @@ export async function confirmSignIn(
 
 	if (isMagicLinkFragment(challengeResponse)) {
 		await loadMagicLinkSignInState(challengeResponse);
-		clientMetaData[KEY_PASSWORDLESS_ACTION] = 'CONFIRM';
-		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] = 'MAGIC_LINK';
 	}
 
 	const {
@@ -76,6 +74,7 @@ export async function confirmSignIn(
 		signInDetails,
 		signInMethod,
 	} = signInStore.getState();
+
 	if (signInMethod) {
 		clientMetaData[KEY_PASSWORDLESS_ACTION] = 'CONFIRM';
 		clientMetaData[KEY_PASSWORDLESS_SIGN_IN_METHOD] = signInMethod;

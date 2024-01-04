@@ -89,5 +89,6 @@ export const loadMagicLinkSignInState = async (challengeResponse: string) => {
 			loginId: username,
 			authFlowType: 'CUSTOM_WITHOUT_SRP',
 		},
+		signInMethod: 'MAGIC_LINK',
 	});
 };
