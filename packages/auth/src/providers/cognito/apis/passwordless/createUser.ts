@@ -23,8 +23,8 @@ import {
 	isSignUpWithEmailAndOTPInput,
 	isSignUpWithSMSAndOTPInput,
 } from './utils';
-import { assertServiceError } from '../../../../errors/utils/assertServiceError';
 import { getRegion } from '../../utils/clients/CognitoIdentityProvider/utils';
+import { AuthError } from '../../../../errors/AuthError';
 
 /**
  * Internal method to create a user when signing up passwordless.
@@ -73,14 +73,18 @@ const createUserDeserializer = async (response: HttpResponse) => {
 			// Parse errors from The create user Lambda.
 			const body = await parseJsonBody(response);
 			if (error?.name === 'UnknownError' && body.error) {
-				// Error from create user lambda returns in shape like this: {"error":"User already exists"}
+				// Error from create user lambda. Its error has shape like this: {"error":"User already exists"}
 				error.name = 'Error';
 				error.message = body.error;
 			}
 		} catch (e) {
 			// SKIP
 		}
-		assertServiceError(error);
+		throw new AuthError({
+			...error,
+			name: error?.name ?? 'UnknownError',
+			message: error?.message ?? 'Unknown error',
+		});
 	} else {
 		const body = await parseJsonBody(response);
 		return body;

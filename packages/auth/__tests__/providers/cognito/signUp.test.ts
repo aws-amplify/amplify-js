@@ -10,6 +10,11 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { SignUpException } from '../../../src/providers/cognito/types/errors';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
+import {
+	signUp as signUpPasswordless,
+	assertSignUpWithEmailOptions,
+	assertSignUpWithSMSOptions,
+} from '../../../src/providers/cognito/apis/passwordless';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -18,6 +23,12 @@ jest.mock('@aws-amplify/core', () => ({
 jest.mock(
 	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
 );
+jest.mock('../../../src/providers/cognito/apis/passwordless', () => ({
+	...jest.requireActual('../../../src/providers/cognito/apis/passwordless'),
+	signUp: jest.fn(),
+	assertSignUpWithEmailOptions: jest.fn(),
+	assertSignUpWithSMSOptions: jest.fn(),
+}));
 
 describe('signUp', () => {
 	const { user1 } = authAPITestParams;
@@ -104,5 +115,78 @@ describe('signUp', () => {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(SignUpException.InvalidParameterException);
 		}
+	});
+
+	describe('with passwordless options', () => {
+		it('should call signUp passwordless if passwordless delivery medium is EMAIL and method is Magic Link', async () => {
+			const input = {
+				username: user1.username,
+				passwordless: {
+					deliveryMedium: 'EMAIL' as const,
+					method: 'MAGIC_LINK' as const,
+				},
+				options: {
+					userAttributes: { email: user1.email },
+				},
+			};
+			await signUp(input);
+			expect(assertSignUpWithEmailOptions).toHaveBeenCalledWith(input.options);
+			expect(signUpPasswordless).toHaveBeenCalledWith(input);
+		});
+
+		it('should call signUp passwordless if passwordless delivery medium is SMS and method is OTP', async () => {
+			const input = {
+				username: user1.username,
+				passwordless: {
+					deliveryMedium: 'SMS' as const,
+					method: 'OTP' as const,
+				},
+				options: {
+					userAttributes: { phone_number: '123' },
+				},
+			};
+			await signUp(input);
+			expect(assertSignUpWithSMSOptions).toHaveBeenCalledWith(input.options);
+			expect(signUpPasswordless).toHaveBeenCalledWith(input);
+		});
+
+		it('should call signUp passwordless if passwordless delivery medium is EMAIL and method is OTP', async () => {
+			const input = {
+				username: user1.username,
+				passwordless: {
+					deliveryMedium: 'EMAIL' as const,
+					method: 'OTP' as const,
+				},
+				options: {
+					userAttributes: { email: user1.email },
+				},
+			};
+			await signUp(input);
+			expect(assertSignUpWithEmailOptions).toHaveBeenCalledWith(input.options);
+			expect(signUpPasswordless).toHaveBeenCalledWith(input);
+		});
+
+		it('should throw error if passwordless delivery medium is SMS and method is Magic Link', async () => {
+			expect.assertions(2);
+			const input = {
+				username: user1.username,
+				passwordless: {
+					deliveryMedium: 'SMS' as const,
+					method: 'MAGIC_LINK' as const,
+				},
+				options: {
+					userAttributes: { phone_number: '123' },
+				},
+			};
+			try {
+				// @ts-expect-error testing invalid input
+				await signUp(input);
+			} catch (error: any) {
+				expect(error).toBeInstanceOf(AuthError);
+				expect(error.name).toBe(
+					AuthValidationErrorCode.IncorrectPasswordlessMethod
+				);
+			}
+		});
 	});
 });
