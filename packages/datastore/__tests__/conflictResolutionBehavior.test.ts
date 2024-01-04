@@ -472,7 +472,7 @@ describe('DataStore sync engine', () => {
 							blogId: 'update from second client',
 						});
 					});
-					test('no input delay, high latency where we wait for the create to clear the outbox', async () => {
+					test('no input delay, high latency where we wait for the create to clear the outbox with pause to change sequence', async () => {
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 						});
@@ -1135,7 +1135,7 @@ describe('DataStore sync engine', () => {
 							title: 'post title 2',
 						});
 					});
-					test('no input delay, high latency where we wait for the create to clear the outbox', async () => {
+					test('no input delay, high latency where we wait for the create to clear the outbox with pause to change sequence', async () => {
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
 						});
