@@ -491,8 +491,6 @@ export async function waitForExpectModelUpdateGraphqlEventCount({
 	let lastObservedSubscriptionCount: number | undefined = undefined;
 	let lastObservedUpdateErrorCount: number | undefined = undefined;
 
-	expectedUpdateSubscriptionMessageCount ??= expectedUpdateCallCount;
-
 	/**
 	 * Due to the addition of artificial latencies, the service may not be
 	 * done, so we retry:

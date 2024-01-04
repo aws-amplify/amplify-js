@@ -807,7 +807,7 @@ export class FakeGraphQLService {
 				this.log('API Response', { data, errors });
 
 				const response = {
-					data: data,
+					data,
 					errors,
 					extensions: {},
 				};
