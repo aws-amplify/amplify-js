@@ -1371,7 +1371,6 @@ describe('DataStore sync engine', () => {
 					['post title 2', 'update from second client', 4],
 					['post title 2', 'update from second client', 5],
 				]);
-
 				expect(await postHarness.currentContents).toMatchObject({
 					_version: 5,
 					title: 'post title 2',
