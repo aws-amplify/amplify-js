@@ -25,4 +25,4 @@ export const invalidOriginException = new AuthError({
 	recoverySuggestion: 'Please call signInWithRedirect from the same origin.',
 });
 export const OAUTH_SIGNOUT_EXCEPTION = 'OAuthSignOutException';
-export const TOKEN_REFRESH_EXCEPTION = 'TOKEN_REFRESH_EXCEPTION';
+export const TOKEN_REFRESH_EXCEPTION = 'TokenRefreshException';
