@@ -12,6 +12,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { CognitoAuthTokens, DeviceMetadata } from '../tokenProvider/types';
 import {
 	DEVICE_METADATA_NOT_FOUND_EXCEPTION,
+	TOKEN_REFRESH_EXCEPTION,
 	USER_UNAUTHENTICATED_EXCEPTION,
 } from '../../../errors/constants';
 
@@ -53,15 +54,28 @@ export function assertIdTokenInAuthTokens(
 	}
 }
 
+export const oAuthTokenRefreshException = new AuthError({
+	name: TOKEN_REFRESH_EXCEPTION,
+	message: `Token refresh is not supported once authenticated with 'implicit grant'(token) oauth flow. 
+	Please change your oauth configuration to use 'code grant' flow.`,
+	recoverySuggestion: `Please logout and change your Amplify configuration to use "code grant" flow. 
+	E.g { responseType: 'code' }`,
+});
+
+export const tokenRefreshException = new AuthError({
+	name: USER_UNAUTHENTICATED_EXCEPTION,
+	message: 'User needs to be authenticated to call this API.',
+	recoverySuggestion: 'Sign in before calling this API again.',
+});
+
 export function assertAuthTokensWithRefreshToken(
 	tokens?: CognitoAuthTokens | null
 ): asserts tokens is CognitoAuthTokens & { refreshToken: string } {
-	if (!tokens || !tokens.accessToken || !tokens.refreshToken) {
-		throw new AuthError({
-			name: USER_UNAUTHENTICATED_EXCEPTION,
-			message: 'User needs to be authenticated to call this API.',
-			recoverySuggestion: 'Sign in before calling this API again.',
-		});
+	if (isAuthenticatedWithImplicitOauthFlow(tokens)) {
+		throw oAuthTokenRefreshException;
+	}
+	if (!isAuthenticatedWithRefreshToken(tokens)) {
+		throw tokenRefreshException;
 	}
 }
 type NonNullableDeviceMetadata = DeviceMetadata & {
@@ -112,4 +126,17 @@ export interface OAuthStore {
 	storePKCE(pkce: string): Promise<void>;
 	clearOAuthInflightData(): Promise<void>;
 	clearOAuthData(): Promise<void>;
+}
+function isAuthenticated(tokens?: CognitoAuthTokens | null) {
+	return tokens?.accessToken && tokens?.idToken;
+}
+
+function isAuthenticatedWithRefreshToken(tokens?: CognitoAuthTokens | null) {
+	return isAuthenticated(tokens) && tokens?.refreshToken;
+}
+
+function isAuthenticatedWithImplicitOauthFlow(
+	tokens?: CognitoAuthTokens | null
+) {
+	return isAuthenticated(tokens) && !tokens?.refreshToken;
 }
