@@ -129,7 +129,6 @@ describe('refreshToken', () => {
 
 		afterEach(() => {
 			mockInitiateAuth.mockReset();
-			mockHubDispatch.mockClear();
 		});
 
 		it('should throw an exception when refresh_token is not available', async () => {
