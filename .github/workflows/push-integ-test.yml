@@ -7,7 +7,8 @@ concurrency:
 
 on:
   push:
-    branches: [next/main, rest-api-e2e]
+    branches:
+      - next/main
 
 jobs:
   e2e:
