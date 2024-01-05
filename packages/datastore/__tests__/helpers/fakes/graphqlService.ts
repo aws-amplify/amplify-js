@@ -812,7 +812,7 @@ export class FakeGraphQLService {
 					extensions: {},
 				};
 
-				// Relove unless there are errors, in which case reject/throw
+				// Resolve unless there are errors, in which case reject/throw
 				if (response.errors && response.errors.length) {
 					reject(response);
 				} else {
