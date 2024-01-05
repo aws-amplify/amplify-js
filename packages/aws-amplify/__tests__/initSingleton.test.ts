@@ -6,7 +6,15 @@ import {
 	CookieStorage,
 	ResourcesConfig,
 	defaultStorage,
+	LibraryOptions,
+	consoleProvider,
+	cloudWatchProvider,
 } from '@aws-amplify/core';
+import {
+	ConsoleConfig,
+	ConsoleProvider as ConsoleProviderType,
+} from '@aws-amplify/core/src/logger/providers/console';
+import { LogParams } from '@aws-amplify/core/src/logger/types';
 import {
 	cognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
@@ -43,6 +51,11 @@ const mockResourceConfig: ResourcesConfig = {
 			bucket: 'bucket',
 			region: 'us-west-2',
 		},
+	},
+};
+const libraryLoggerOptions: LibraryOptions = {
+	Logger: {
+		console: consoleProvider,
 	},
 };
 
@@ -133,7 +146,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 			expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 				resourceConfig,
-				libraryOptions
+				{ ...libraryLoggerOptions, ...libraryOptions }
 			);
 		});
 
@@ -146,7 +159,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 					mockResourceConfig,
-					libraryOptions
+					{ ...libraryLoggerOptions, ...libraryOptions }
 				);
 			});
 
@@ -165,6 +178,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
+							...libraryLoggerOptions,
 							...libraryOptions,
 							Auth: {
 								tokenProvider: cognitoUserPoolsTokenProvider,
@@ -187,6 +201,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
+							...libraryLoggerOptions,
 							...libraryOptions,
 							Auth: {
 								tokenProvider: cognitoUserPoolsTokenProvider,
@@ -200,6 +215,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 			describe('when the singleton libraryOptions have been previously configured with Auth', () => {
 				beforeEach(() => {
 					AmplifySingleton.libraryOptions = {
+						...libraryLoggerOptions,
 						Auth: {
 							tokenProvider: cognitoUserPoolsTokenProvider,
 							credentialsProvider: cognitoCredentialsProvider,
@@ -221,6 +237,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
+							Logger: AmplifySingleton.libraryOptions.Logger,
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
 						}
@@ -240,6 +257,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
+							Logger: AmplifySingleton.libraryOptions.Logger,
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
 						}
@@ -262,6 +280,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
+							Logger: AmplifySingleton.libraryOptions.Logger,
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
 						}
@@ -304,8 +323,142 @@ describe('initSingleton (DefaultAmplify)', () => {
 							credentialsProvider: cognitoCredentialsProvider,
 						},
 						...libraryOptionsWithStorage,
+						...libraryLoggerOptions,
 					}
 				);
+			});
+		});
+
+		describe('when configuring logger providers', () => {
+			const resourceConfig = { Auth: mockResourceConfig.Auth };
+			describe('when the singleton libraryOptions has not yet been configured with logger', () => {
+				it('should configure default console provider', () => {
+					Amplify.configure(resourceConfig);
+
+					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+						resourceConfig,
+						{
+							Auth: AmplifySingleton.libraryOptions.Auth,
+							...libraryLoggerOptions,
+						}
+					);
+				});
+
+				it('should configure console provider', () => {
+					Amplify.configure(resourceConfig, {
+						Logger: {
+							console: consoleProvider,
+						},
+					});
+					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+						resourceConfig,
+						{
+							Auth: AmplifySingleton.libraryOptions.Auth,
+							Logger: {
+								console: consoleProvider,
+							},
+						}
+					);
+				});
+
+				it('should configure additional providers and default console provider', () => {
+					Amplify.configure(resourceConfig, {
+						Logger: {
+							additionalProviders: [cloudWatchProvider],
+						},
+					});
+
+					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+						resourceConfig,
+						{
+							Auth: AmplifySingleton.libraryOptions.Auth,
+							Logger: {
+								console: consoleProvider,
+								additionalProviders: [cloudWatchProvider],
+							},
+						}
+					);
+				});
+
+				it('should configure additional providers and console provider', () => {
+					Amplify.configure(resourceConfig, {
+						Logger: {
+							console: consoleProvider,
+							additionalProviders: [cloudWatchProvider],
+						},
+					});
+
+					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+						resourceConfig,
+						{
+							Auth: AmplifySingleton.libraryOptions.Auth,
+							Logger: {
+								console: consoleProvider,
+								additionalProviders: [cloudWatchProvider],
+							},
+						}
+					);
+				});
+			});
+
+			describe('when the singleton libraryOptions has been configured with Logger', () => {
+				beforeEach(() => {
+					AmplifySingleton.libraryOptions = {
+						Auth: {
+							tokenProvider: cognitoUserPoolsTokenProvider,
+							credentialsProvider: cognitoCredentialsProvider,
+						},
+						...libraryLoggerOptions,
+					};
+				});
+
+				it('should override configured console provider', () => {
+					const mockConsoleProvider: ConsoleProviderType = {
+						LOG_LEVEL: null,
+						initialize: function (): void {},
+						log: function (): void {},
+						flushLogs: function (): Promise<void> {
+							return Promise.resolve();
+						},
+						enable: function (): void {},
+						disable: function (): void {},
+					};
+
+					Amplify.configure(resourceConfig, {
+						Logger: {
+							console: mockConsoleProvider,
+						},
+					});
+
+					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+						resourceConfig,
+						{
+							Auth: AmplifySingleton.libraryOptions.Auth,
+							Logger: {
+								console: mockConsoleProvider,
+							},
+						}
+					);
+				});
+
+				it('should configure additional providers and preserve configured console provider', () => {
+					Amplify.configure(resourceConfig, {
+						Logger: {
+							additionalProviders: [cloudWatchProvider],
+						},
+					});
+
+					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
+						resourceConfig,
+						{
+							Auth: AmplifySingleton.libraryOptions.Auth,
+							Logger: {
+								console: AmplifySingleton.libraryOptions.Logger?.console,
+								additionalProviders: [cloudWatchProvider],
+							},
+						}
+					);
+				});
 			});
 		});
 	});
