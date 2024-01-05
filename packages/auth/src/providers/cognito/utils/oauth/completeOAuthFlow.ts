@@ -269,6 +269,6 @@ const getCustomState = (state: string): string => {
 
 const clearHistory = (redirectUri: string) => {
 	if (typeof window !== 'undefined' && typeof window.history !== 'undefined') {
-		window.history.replaceState({}, '', redirectUri);
+		window.history.replaceState(window.history.state, '', redirectUri);
 	}
 };

@@ -1,9 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KinesisBufferEvent, KinesisEventBufferConfig } from '../types';
-import { EventBuffer, groupBy, IAnalyticsClient } from '../../../utils';
+import {
+	AWSCredentials, 
+	haveCredentialsChanged 
+} from '@aws-amplify/core/internals/utils';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
+import { KinesisBufferEvent, KinesisEventBufferConfig } from '../types';
+import { 
+	EventBuffer, 
+	groupBy, 
+	IAnalyticsClient
+} from '../../../utils';
 
 /**
  * These Records hold cached event buffers and AWS clients.
@@ -14,7 +22,7 @@ import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
  * When a new session is initiated, the previous ones should be released.
  * */
 const eventBufferMap: Record<string, EventBuffer<KinesisBufferEvent>> = {};
-const cachedClients: Record<string, KinesisClient> = {};
+const cachedClients: Record<string, [KinesisClient, AWSCredentials]> = {};
 
 const createKinesisPutRecordsCommand = (
 	streamName: string,
@@ -67,19 +75,31 @@ export const getEventBuffer = ({
 	userAgentValue,
 }: KinesisEventBufferConfig): EventBuffer<KinesisBufferEvent> => {
 	const sessionIdentityKey = [region, identityId].filter(x => !!x).join('-');
+	const [ cachedClient, cachedCredentials ] = cachedClients[sessionIdentityKey] ?? [];
+	let credentialsHaveChanged = false;
 
-	if (!eventBufferMap[sessionIdentityKey]) {
+	// Check if credentials have changed for the cached client
+	if (cachedClient) {
+		credentialsHaveChanged = haveCredentialsChanged(cachedCredentials, credentials);
+	}
+
+	if (!eventBufferMap[sessionIdentityKey] || credentialsHaveChanged) {
 		const getKinesisClient = (): IAnalyticsClient<KinesisBufferEvent> => {
-			if (!cachedClients[sessionIdentityKey]) {
-				cachedClients[sessionIdentityKey] = new KinesisClient({
-					credentials,
-					region,
-					customUserAgent: userAgentValue,
-				});
+			if (!cachedClient || credentialsHaveChanged) {
+				cachedClients[sessionIdentityKey] = [
+					new KinesisClient({
+						credentials,
+						region,
+						customUserAgent: userAgentValue,
+					}),
+					credentials
+				];
 			}
 
+			const [ kinesisClient ] = cachedClients[sessionIdentityKey];
+
 			return events =>
-				submitEvents(events, cachedClients[sessionIdentityKey], resendLimit);
+				submitEvents(events, kinesisClient, resendLimit);
 		};
 
 		// create new session
