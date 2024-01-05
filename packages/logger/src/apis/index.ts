@@ -4,4 +4,4 @@
 export { enable } from './enable';
 export { disable } from './disable';
 export { flushLogs } from './flushLogs';
-export { generateLogger } from './generateLogger';
+export { createLogger } from './createLogger';

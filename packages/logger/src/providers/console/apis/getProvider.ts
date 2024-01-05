@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // TODO: pending implementation
-export const generateLogger = (): void => {};
+export const getProvider = (config: any): any => {};

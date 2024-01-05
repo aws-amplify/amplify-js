@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // TODO: pending implementation
-export const getConsoleProvider = (config: any): any => {};
+export const getProvider = (config: any): any => {};

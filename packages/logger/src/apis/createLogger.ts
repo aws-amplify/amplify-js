@@ -2,4 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // TODO: pending implementation
-export const getCloudWatchProvider = (config: any): any => {};
+export const createLogger = (): void => {};

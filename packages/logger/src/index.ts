@@ -1,4 +1,4 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { enable, disable, flushLogs, generateLogger } from './apis';
+export { enable, disable, flushLogs, createLogger } from './apis';

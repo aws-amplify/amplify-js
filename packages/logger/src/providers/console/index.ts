@@ -3,4 +3,4 @@
 
 export { enable } from './apis/enable';
 export { disable } from './apis/disable';
-export { getConsoleProvider } from './apis//getConsoleProvider';
+export { getProvider } from './apis/getProvider';

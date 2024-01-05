@@ -3,4 +3,4 @@
 
 export { enable } from './apis/enable';
 export { disable } from './apis/disable';
-export { getCloudWatchProvider } from './apis/getCloudWatchProvider';
+export { getProvider } from './apis/getProvider';
