@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.3.8 (2024-01-05)
+
+### Bug Fixes
+
+- **auth:** replace window history with current browser session's state ([#12782](https://github.com/aws-amplify/amplify-js/issues/12782)) ([c393316](https://github.com/aws-amplify/amplify-js/commit/c3933168d156023e634a83382d3c035118061195))
+
 ## 2.3.7 (2023-12-04)
 
 ### Bug Fixes
