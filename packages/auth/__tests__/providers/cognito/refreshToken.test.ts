@@ -11,8 +11,6 @@ jest.mock(
 	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
 );
 
-const mockHubDispatch = Hub.dispatch as jest.Mock;
-
 describe('refreshToken', () => {
 	const mockedUsername = 'mockedUsername';
 	const mockedRefreshToken = 'mockedRefreshToken';
