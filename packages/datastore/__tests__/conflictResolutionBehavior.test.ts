@@ -1075,18 +1075,6 @@ describe('DataStore sync engine', () => {
 					});
 				});
 				describe('Updates to different fields', () => {
-					/**
-					 * NOTE: Even though the primary client is updating `title`,
-					 * the second client's update to `blogId` "reverts" the primary
-					 * client's changes. This is because the external update takes
-					 * effect while the primary client's updates are still in flight.
-					 * By the time the primary client's update reaches the service,
-					 * the `_version` has changed. As a result, auto-merge chooses
-					 * the existing server-side `title` over the proposed updated
-					 * `title`. The following two tests demonstrate this behavior,
-					 * with a difference in the timing of the external request,
-					 * ultimately resulting in different final states.
-					 */
 					test('no input delay, high latency where we wait for the create to clear the outbox', async () => {
 						const postHarness = await harness.createPostHarness({
 							title: 'original title',
