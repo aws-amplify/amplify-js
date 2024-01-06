@@ -310,7 +310,7 @@
 		"@aws-amplify/datastore": "5.0.10",
 		"@aws-amplify/notifications": "2.0.10",
 		"@aws-amplify/storage": "6.0.10",
-		"@aws-amplify/logging": "1.0.0",		
+		"@aws-amplify/logging": "1.0.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
