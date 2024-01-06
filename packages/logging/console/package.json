@@ -6,4 +6,3 @@
 	"react-native": "../src/providers/console/index.ts",
 	"typings": "../dist/esm/providers/console/index.d.ts"
 }
-  
