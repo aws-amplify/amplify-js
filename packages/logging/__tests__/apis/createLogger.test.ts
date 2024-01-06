@@ -4,7 +4,7 @@
 import { createLogger } from '../../src/apis';
 
 // TODO: pending implementation
-describe('Logger APIs: generateLogger', () => {
+describe('Logging APIs: generateLogger', () => {
 	it('should generate logger', () => {
 		const logger = createLogger();
 	});

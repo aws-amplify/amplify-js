@@ -1,8 +1,0 @@
-{
-	"name": "aws-amplify/logger/cloudwatch",
-	"main": "../../dist/cjs/logger/cloudwatch/index.js",
-	"react-native": "../../src/logger/cloudwatch/index.ts",
-	"browser": "../../dist/esm/logger/cloudwatch/index.mjs",
-	"module": "../../dist/esm/logger/cloudwatch/index.mjs",
-	"typings": "../../dist/esm/logger/cloudwatch/index.d.ts"
-}

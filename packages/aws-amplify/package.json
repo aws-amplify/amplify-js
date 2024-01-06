@@ -150,23 +150,23 @@
 			"import": "./dist/esm/adapterCore/index.mjs",
 			"require": "./dist/cjs/adapterCore/index.js"
 		},
-		"./logger": {
-			"types": "./dist/esm/logger/index.d.ts",
-			"import": "./dist/esm/logger/index.mjs",
-			"require": "./dist/cjs/logger/index.js",
-			"react-native": "./src/logger/index.ts"
+		"./logging": {
+			"types": "./dist/esm/logging/index.d.ts",
+			"import": "./dist/esm/logging/index.mjs",
+			"require": "./dist/cjs/logging/index.js",
+			"react-native": "./src/logging/index.ts"
 		},
-		"./logger/console": {
-			"types": "./dist/esm/logger/console/index.d.ts",
-			"import": "./dist/esm/logger/console/index.mjs",
-			"require": "./dist/cjs/logger/console/index.js",
-			"react-native": "./src/logger/console/index.ts"
+		"./logging/console": {
+			"types": "./dist/esm/logging/console/index.d.ts",
+			"import": "./dist/esm/logging/console/index.mjs",
+			"require": "./dist/cjs/logging/console/index.js",
+			"react-native": "./src/logging/console/index.ts"
 		},
-		"./logger/cloudwatch": {
-			"types": "./dist/esm/logger/cloudwatch/index.d.ts",
-			"import": "./dist/esm/logger/cloudwatch/index.mjs",
-			"require": "./dist/cjs/logger/cloudwatch/index.js",
-			"react-native": "./src/logger/cloudwatch/index.ts"
+		"./logging/cloudwatch": {
+			"types": "./dist/esm/logging/cloudwatch/index.d.ts",
+			"import": "./dist/esm/logging/cloudwatch/index.mjs",
+			"require": "./dist/cjs/logging/cloudwatch/index.js",
+			"react-native": "./src/logging/cloudwatch/index.ts"
 		},
 		"./package.json": "./package.json"
 	},
@@ -238,14 +238,14 @@
 			"adapter-core": [
 				"./dist/esm/adapterCore/index.d.ts"
 			],
-			"logger": [
-				"./dist/esm/logger/index.d.ts"
+			"logging": [
+				"./dist/esm/logging/index.d.ts"
 			],
-			"logger/console": [
-				"./dist/esm/logger/console/index.d.ts"
+			"logging/console": [
+				"./dist/esm/logging/console/index.d.ts"
 			],
-			"logger/cloudwatch": [
-				"./dist/esm/logger/cloudwatch/index.d.ts"
+			"logging/cloudwatch": [
+				"./dist/esm/logging/cloudwatch/index.d.ts"
 			]
 		}
 	},
@@ -289,7 +289,7 @@
 		"in-app-messaging",
 		"push-notifications",
 		"utils",
-		"logger"
+		"logging"
 	],
 	"dependencies": {
 		"@aws-amplify/analytics": "7.0.9",
@@ -299,7 +299,7 @@
 		"@aws-amplify/datastore": "5.0.9",
 		"@aws-amplify/notifications": "2.0.9",
 		"@aws-amplify/storage": "6.0.9",
-		"@aws-amplify/logger": "1.0.0",
+		"@aws-amplify/logging": "1.0.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {

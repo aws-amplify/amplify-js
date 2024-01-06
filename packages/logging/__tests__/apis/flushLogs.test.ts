@@ -4,7 +4,7 @@
 import { flushLogs } from '../../src/apis';
 
 // TODO: pending implementation
-describe('Logger APIs: flushLogs', () => {
+describe('Logging APIs: flushLogs', () => {
 	it('should call flushLogs on all providers', () => {
 		flushLogs();
 	});

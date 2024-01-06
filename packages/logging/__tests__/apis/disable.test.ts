@@ -4,7 +4,7 @@
 import { disable } from '../../src/apis';
 
 // TODO: pending implementation
-describe('Logger APIs: disable', () => {
+describe('Logging APIs: disable', () => {
 	it('should disable logging for all providers', () => {
 		disable();
 	});

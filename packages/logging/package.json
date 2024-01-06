@@ -1,7 +1,7 @@
 {
-	"name": "@aws-amplify/logger",
+	"name": "@aws-amplify/logging",
 	"version": "1.0.0",
-	"description": "Logger category of aws-amplify",
+	"description": "Logging category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
 	"react-native": "./src/index.ts",

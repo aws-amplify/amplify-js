@@ -1,5 +1,5 @@
 {
-	"name": "@aws-amplify/logger/console",
+	"name": "@aws-amplify/logging/console",
 	"main": "../dist/cjs/providers/console/index.js",
 	"browser": "../dist/esm/providers/console/index.mjs",
 	"module": "../dist/esm/providers/console/index.mjs",

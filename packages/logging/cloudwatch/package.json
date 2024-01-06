@@ -1,5 +1,5 @@
 {
-	"name": "@aws-amplify/logger/cloudwatch",
+	"name": "@aws-amplify/logging/cloudwatch",
 	"main": "../dist/cjs/providers/cloudwatch/index.js",
 	"browser": "../dist/esm/providers/cloudwatch/index.mjs",
 	"module": "../dist/esm/providers/cloudwatch/index.mjs",

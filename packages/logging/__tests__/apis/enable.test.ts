@@ -4,7 +4,7 @@
 import { enable } from '../../src/apis';
 
 // TODO: pending implementation
-describe('Logger APIs: enable', () => {
+describe('Logging APIs: enable', () => {
 	it('should enable logging for all providers', () => {
 		enable();
 	});

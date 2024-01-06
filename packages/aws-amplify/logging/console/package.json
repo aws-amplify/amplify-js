@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/logging/console",
+	"main": "../../dist/cjs/logging/console/index.js",
+	"react-native": "../../src/logging/console/index.ts",
+	"browser": "../../dist/esm/logging/console/index.mjs",
+	"module": "../../dist/esm/logging/console/index.mjs",
+	"typings": "../../dist/esm/logging/console/index.d.ts"
+}
