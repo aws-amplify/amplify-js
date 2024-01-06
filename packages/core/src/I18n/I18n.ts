@@ -65,6 +65,8 @@ export class I18n {
 	 * @param {String} defVal - Default value
 	 */
 	get(key: string, defVal: string | undefined = undefined) {
+		this.setDefaultLanguage();
+
 		if (!this._lang) {
 			return typeof defVal !== 'undefined' ? defVal : key;
 		}

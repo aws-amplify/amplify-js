@@ -15,6 +15,11 @@ import { AuthError } from '../../../src';
 import { createKeysForAuthStorage } from '../../../src/providers/cognito/tokenProvider/TokenStore';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	isBrowser: jest.fn(() => false),
+}));
+
 const authConfig = {
 	Cognito: {
 		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',

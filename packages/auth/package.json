@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/auth",
-	"version": "6.0.9",
+	"version": "6.0.10",
 	"description": "Auth category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -8,7 +8,9 @@
 	"react-native": "./src/index.ts",
 	"sideEffects": [
 		"./dist/cjs/providers/cognito/apis/signInWithRedirect.js",
-		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs"
+		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs",
+		"./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js",
+		"./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -63,6 +65,11 @@
 			"import": "./dist/esm/server.mjs",
 			"require": "./dist/cjs/server.js"
 		},
+		"./enable-oauth-listener": {
+			"types": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.d.ts",
+			"import": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs",
+			"require": "./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"repository": {
@@ -80,7 +87,8 @@
 		"dist/esm",
 		"src",
 		"cognito",
-		"server"
+		"server",
+		"enable-oauth-listener"
 	],
 	"dependencies": {
 		"tslib": "^2.5.0"
@@ -89,8 +97,8 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.9",
-		"@aws-amplify/react-native": "1.0.9",
+		"@aws-amplify/core": "6.0.10",
+		"@aws-amplify/react-native": "1.0.10",
 		"@jest/test-sequencer": "^29.7.0",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
