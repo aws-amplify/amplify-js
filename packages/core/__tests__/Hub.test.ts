@@ -1,3 +1,10 @@
+jest.mock('../src/logger', () => {
+	const module = jest.requireActual('../src/logger/ConsoleLogger');
+	return {
+		ConsoleLogger: module.ConsoleLogger,
+	};
+});
+
 import { Hub, AMPLIFY_SYMBOL } from '../src/Hub';
 import { ConsoleLogger } from '../src';
 

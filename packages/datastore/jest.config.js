@@ -3,7 +3,8 @@ module.exports = {
 	moduleNameMapper: {
 		...require('../../jest.config').moduleNameMapper,
 		'^dexie$': require.resolve('dexie'),
-		uuid: require.resolve('uuid'),
+		'^uuid$': require.resolve('uuid'),
+		'^uuid-validate$': require.resolve('uuid-validate'),
 	},
 	coverageThreshold: {
 		global: {
