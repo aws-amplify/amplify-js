@@ -6,6 +6,10 @@ import {
 	pause,
 	waitForEmptyOutbox,
 } from './util';
+import {
+	clearSubscriptionDeliveryPromiseList,
+	subscriptionDeliveryPromiseList,
+} from './fakes/graphqlService';
 
 /**
  * Simulate a second client updating the original post
@@ -55,6 +59,9 @@ mutation operation($input: UpdatePostInput!, $condition: ModelPostConditionInput
  */
 const jitter: number = 0;
 const highLatency = 1000;
+// When there is latency, add extra latency to subscription events so that they arrive
+// after the mutation response is processed out of the outbox.
+const highSubscriptionLatency = 1100;
 const lowLatency = 15;
 
 /**
@@ -139,13 +146,13 @@ export class UpdateSequenceHarness {
 		this.isUserInputDelayed = true;
 	}
 
-	private isOutboxSettledAfterRevisions: boolean = false;
+	private isSettledAfterRevisions: boolean = false;
 
 	/**
-	 * Do we want to settle the outbox after each `Post` revision call?
+	 * Determines whether we settle the outbox and await for the subscription response after each mutation.
 	 */
-	settleOutboxAfterRevisions() {
-		this.isOutboxSettledAfterRevisions = true;
+	settleAfterRevisions() {
+		this.isSettledAfterRevisions = true;
 	}
 
 	/**
@@ -185,7 +192,7 @@ export class UpdateSequenceHarness {
 			this.datastoreFake.graphqlService.setLatencies({
 				request: highLatency,
 				response: highLatency,
-				subscriber: highLatency,
+				subscriber: highSubscriptionLatency,
 				jitter,
 			});
 		}
@@ -213,6 +220,21 @@ export class UpdateSequenceHarness {
 	 */
 	async outboxSettled() {
 		await waitForEmptyOutbox();
+	}
+
+	/**
+	 * Wait for all subscription events to be delivered
+	 */
+	async subscriptionDeliverySettled() {
+		await Promise.all(subscriptionDeliveryPromiseList);
+	}
+
+	/**
+	 * Wait for the outbox and all subscription events to settle
+	 */
+	async fullSettle() {
+		await waitForEmptyOutbox();
+		await Promise.all(subscriptionDeliveryPromiseList);
 	}
 
 	/**
@@ -245,7 +267,7 @@ export class UpdateSequenceHarness {
 		const original = await this.datastoreFake.DataStore.save(
 			new this.datastoreFake.Post(args)
 		);
-        // We set this to `false` when we want to test updating a record that is still in the outbox.
+		// We set this to `false` when we want to test updating a record that is still in the outbox.
 		if (settleOutbox) {
 			await this.outboxSettled();
 		}
@@ -311,14 +333,15 @@ export class UpdateSequenceHarness {
 			postId
 		);
 		if (retrieved) {
-			const x = await this.datastoreFake.DataStore.save(
+			await this.datastoreFake.DataStore.save(
 				this.datastoreFake.Post.copyOf(retrieved, updated => {
 					updated.title = updatedTitle;
 				})
 			);
 		}
-		if (this.isOutboxSettledAfterRevisions) {
+		if (this.isSettledAfterRevisions) {
 			await this.outboxSettled();
+			await this.subscriptionDeliverySettled();
 		}
 	}
 
