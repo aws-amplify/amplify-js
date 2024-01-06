@@ -20,6 +20,7 @@ export {
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { LegacyConfig } from './singleton/types';
+export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
 
@@ -53,6 +54,7 @@ export {
 	AuthVerifiableAttributeKey,
 	AWSCredentials,
 } from './singleton/Auth/types';
+export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
 
 // Platform & user-agent utilities
 export {

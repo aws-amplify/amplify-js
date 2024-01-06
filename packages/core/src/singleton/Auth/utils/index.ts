@@ -6,7 +6,6 @@ import {
 	AuthConfig,
 	JWT,
 	AuthUserPoolAndIdentityPoolConfig,
-	CognitoUserPoolWithOAuthConfig,
 	CognitoUserPoolConfig,
 	CognitoUserPoolAndIdentityPoolConfig,
 	CognitoIdentityPoolConfig,
