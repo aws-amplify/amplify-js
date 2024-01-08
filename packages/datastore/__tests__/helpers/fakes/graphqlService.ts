@@ -491,11 +491,12 @@ export class FakeGraphQLService {
 	}
 
 	private canOccMerge(existing, updated) {
-		return updated._version === existing._version;
+		return;
 	}
 
-	private occMerge(existing, updated) {
-		let merged;
+	private occMerge(selection, existing, updated) {
+		let errors: any[] = [];
+		let merged: any = null;
 		if (updated._version === existing._version) {
 			merged = {
 				...this.populatedFields(existing),
@@ -505,12 +506,14 @@ export class FakeGraphQLService {
 				updatedAt: new Date().toISOString(),
 			};
 		} else {
-			merged = {
-				...this.populatedFields(existing),
-			};
+			errors = [this.makeOCCConflictUnhandeled(existing, selection)];
 		}
-		this.log('occ merged', { existing, updated, merged });
-		return merged;
+		const data = {
+			[selection]: merged,
+		};
+
+		this.log('occ merged', { existing, updated, merged, errors });
+		return [data, errors];
 	}
 
 	public simulateDisconnect() {
@@ -715,19 +718,9 @@ export class FakeGraphQLService {
 						errors = [this.makeMissingUpdateTarget(selection)];
 					} else {
 						if (this.mergeStrategy === 'OptimisticConcurrency') {
-							if (!this.canOccMerge(existing, record)) {
-								// When OCC returns an error, we still need a data to include
-								// with the error, but the actual data content is null
-								data = {
-									[selection]: null,
-								};
-								errors = [this.makeOCCConflictUnhandeled(existing, selection)];
-							} else {
-								const updated = this.occMerge(existing, record);
-								table.set(this.getPK(tableName, record), updated);
-								data = {
-									[selection]: updated,
-								};
+							[data, errors] = this.occMerge(selection, existing, record);
+							if (data[selection]) {
+								table.set(this.getPK(tableName, record), data[selection]);
 							}
 						} else {
 							const updated = this.autoMerge(existing, record);
