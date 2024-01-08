@@ -1,5 +1,16 @@
-import { cloudWatchProvider } from '../../../../src/logging/providers/cloudWatch';
+import {
+	cloudWatchProvider,
+	CloudWatchConfig,
+} from '../../../../src/logging/providers/cloudWatch';
 import { LogParams, LogLevel } from '../../../../src/logging/types';
+
+const cloudWatchConfig: CloudWatchConfig = {
+	logGroupName: 'logGroupName',
+	region: 'region',
+	loggingConstraints: {
+		defaultLogLevel: 'WARN',
+	},
+};
 
 const logParams: LogParams = {
 	namespace: 'namespace',
@@ -14,12 +25,9 @@ const logLevels: LogLevel[] = ['VERBOSE', 'DEBUG', 'INFO', 'WARN', 'ERROR'];
 describe('logging cloudwatch provider', () => {
 	it.each(logLevels)('should log to console with %p log level', level => {
 		cloudWatchProvider.initialize({
-			enable: true,
-			localStoreMaxSizeInMB: 5,
-			flushIntervalInSeconds: 60,
-			logGroupName: 'logGroupName',
-			region: 'region',
+			...cloudWatchConfig,
 			loggingConstraints: {
+				...cloudWatchConfig.loggingConstraints,
 				defaultLogLevel: level,
 			},
 		});
