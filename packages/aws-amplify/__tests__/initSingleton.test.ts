@@ -10,11 +10,7 @@ import {
 	consoleProvider,
 	cloudWatchProvider,
 } from '@aws-amplify/core';
-import {
-	ConsoleConfig,
-	ConsoleProvider as ConsoleProviderType,
-} from '@aws-amplify/core/src/logger/providers/console';
-import { LogParams } from '@aws-amplify/core/src/logger/types';
+import { ConsoleProvider as ConsoleProviderType } from '@aws-amplify/core/src/logging/providers/console';
 import {
 	cognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
@@ -329,9 +325,9 @@ describe('initSingleton (DefaultAmplify)', () => {
 			});
 		});
 
-		describe('when configuring logger providers', () => {
+		describe('when configuring logging providers', () => {
 			const resourceConfig = { Auth: mockResourceConfig.Auth };
-			describe('when the singleton libraryOptions has not yet been configured with logger', () => {
+			describe('when the singleton libraryOptions has not yet been configured with logging', () => {
 				it('should configure default console provider', () => {
 					Amplify.configure(resourceConfig);
 
