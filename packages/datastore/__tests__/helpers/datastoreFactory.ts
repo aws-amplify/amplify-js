@@ -47,6 +47,7 @@ import {
 	ModelWithMultipleCustomOwner,
 	ModelWithIndexes,
 } from './schemas';
+import { MergeStrategy } from './fakes/graphqlService';
 
 type initSchemaType = typeof _initSchema;
 type DataStoreType = typeof DataStoreInstance;
@@ -62,16 +63,18 @@ export function getDataStore({
 	online = false,
 	isNode = true,
 	storageAdapterFactory = () => undefined as any,
+	mergeStrategy = 'Automerge',
 }: {
 	online?: boolean;
 	isNode?: boolean;
 	storageAdapterFactory?: () => any;
+	mergeStrategy?: MergeStrategy;
 } = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();
 
 	const connectivityMonitor = new FakeDataStoreConnectivity();
-	const graphqlService = new FakeGraphQLService(testSchema());
+	const graphqlService = new FakeGraphQLService(testSchema(), mergeStrategy);
 
 	/**
 	 * Simulates the (re)connection of all returned fakes/mocks that

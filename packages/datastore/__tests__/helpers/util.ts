@@ -459,7 +459,9 @@ export async function waitForSyncQueriesReady(verbose = false) {
  */
 type GraphQLServiceSettledParams = {
 	graphqlService: any;
-	expectedCallCount: number;
+	expectedUpdateCallCount: number;
+	expectedUpdateSubscriptionMessageCount: number;
+	expectedUpdateErrorCount: number;
 	modelName: string;
 };
 
@@ -470,9 +472,11 @@ type GraphQLServiceSettledParams = {
  *
  * @param inputs: Tells us the service fake, expected call count and model to observe
  */
-export async function waitForExpectModelUpdateGraphqlCallCount({
+export async function waitForExpectModelUpdateGraphqlEventCount({
 	graphqlService,
-	expectedCallCount,
+	expectedUpdateCallCount,
+	expectedUpdateSubscriptionMessageCount,
+	expectedUpdateErrorCount,
 	modelName,
 }: GraphQLServiceSettledParams) {
 	/**
@@ -483,7 +487,9 @@ export async function waitForExpectModelUpdateGraphqlCallCount({
 	await pause(1);
 
 	// Keep track of the observed count for each retry so we can tell the developer what was observed last
-	let lastObservedCount: number | undefined = undefined;
+	let lastObservedUpdateCount: number | undefined = undefined;
+	let lastObservedSubscriptionCount: number | undefined = undefined;
+	let lastObservedUpdateErrorCount: number | undefined = undefined;
 
 	/**
 	 * Due to the addition of artificial latencies, the service may not be
@@ -496,7 +502,7 @@ export async function waitForExpectModelUpdateGraphqlCallCount({
 				const subscriptionMessagesNotStopped =
 					!graphqlService.stopSubscriptionMessages;
 
-				lastObservedCount = graphqlService.requests.filter(
+				lastObservedUpdateCount = graphqlService.requests.filter(
 					({ operation, type, tableName }) =>
 						operation === 'mutation' &&
 						type === 'update' &&
@@ -504,24 +510,38 @@ export async function waitForExpectModelUpdateGraphqlCallCount({
 				).length;
 
 				// Ensure the service has received all expected requests:
-				const allUpdatesSent = lastObservedCount === expectedCallCount;
+				const allUpdatesSent =
+					lastObservedUpdateCount === expectedUpdateCallCount;
 
 				// Ensure all mutations are complete:
 				const allRunningMutationsComplete =
 					graphqlService.runningMutations.size === 0;
 
 				// Ensure we've notified subscribers:
-				const allSubscriptionsSent =
+				lastObservedSubscriptionCount =
 					graphqlService.subscriptionMessagesSent.filter(
 						([observerMessageName, message]) => {
 							return observerMessageName === `onUpdate${modelName}`;
 						}
-					).length === expectedCallCount;
+					).length;
+				const allSubscriptionsSent =
+					lastObservedSubscriptionCount ===
+					expectedUpdateSubscriptionMessageCount;
+
+				lastObservedUpdateErrorCount =
+					graphqlService.errors
+						.get('update')
+						?.filter(([observerMessageName, _message]) => {
+							return observerMessageName === `update${modelName}`;
+						})?.length ?? 0;
+				const allErrorsReceived =
+					lastObservedUpdateErrorCount === expectedUpdateErrorCount;
 
 				if (
 					allUpdatesSent &&
 					allRunningMutationsComplete &&
 					allSubscriptionsSent &&
+					allErrorsReceived &&
 					subscriptionMessagesNotStopped
 				) {
 					return true;
@@ -539,9 +559,27 @@ export async function waitForExpectModelUpdateGraphqlCallCount({
 	} catch {
 		// If the expected call count isn't observed after 5 seconds, raise an error describing the discrepency
 		throw new Error(
-			`Expected ${expectedCallCount} update calls for ${modelName}, but received ${
-				lastObservedCount ?? 'unknown'
+			`Expected ${expectedUpdateCallCount} update calls for ${modelName}, but received ${
+				lastObservedUpdateCount ?? 'unknown'
+			}. Expected ${expectedUpdateSubscriptionMessageCount} subscription messages for ${modelName}, but received ${
+				lastObservedSubscriptionCount ?? 'unknown'
+			}. Expected ${expectedUpdateErrorCount} update errors for ${modelName}, but received ${
+				lastObservedUpdateErrorCount ?? 'unknown'
 			}`
 		);
 	}
 }
+
+/**
+ * A matcher that matches the error raised when OCC merge doesn't have matched versions
+ */
+export const occRejectionError = expect.objectContaining({
+	data: {
+		updatePost: null,
+	},
+	errors: [
+		expect.objectContaining({
+			message: 'Conflict resolver rejects mutation.',
+		}),
+	],
+});
