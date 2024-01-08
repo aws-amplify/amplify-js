@@ -7,7 +7,7 @@ import {
 	GenerateLoggerInput,
 	GenerateLoggerOutput,
 } from './types';
-import { dispatchLogsToProviders } from './administrateLogger';
+import { dispatchLogsToProviders } from './dispatchLogsToProviders';
 import { LoggerCategory } from '../types';
 
 /**
