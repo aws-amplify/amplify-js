@@ -1,7 +1,13 @@
-import { Hub } from '../src';
+import { Hub, AMPLIFY_SYMBOL } from '../src/Hub';
 import { ConsoleLogger } from '../src';
 
 describe('Hub', () => {
+	const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
+
+	afterEach(() => {
+		loggerSpy.mockClear();
+	});
+
 	test('happy case', () => {
 		const listener = jest.fn(() => {});
 
@@ -23,7 +29,6 @@ describe('Hub', () => {
 
 	test('Protected channel', () => {
 		const listener = jest.fn(() => {});
-		const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
 
 		Hub.listen('auth', listener);
 
@@ -46,7 +51,6 @@ describe('Hub', () => {
 
 	test('Protected channel - ui', () => {
 		const listener = jest.fn(() => {});
-		const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
 
 		Hub.listen('ui', listener);
 
@@ -96,5 +100,44 @@ describe('Hub', () => {
 		);
 
 		expect(listener).not.toHaveBeenCalled();
+	});
+
+	describe('Symbol fallback when not supported', () => {
+		const originalSymbol = global.Symbol;
+
+		beforeAll(() => {
+			global.Symbol = undefined as any;
+			jest.resetModules();
+		});
+
+		afterAll(() => {
+			global.Symbol = originalSymbol;
+		});
+
+		it('works with Symbol fallback', () => {
+			const mockListener = jest.fn();
+
+			const {
+				Hub: HubInstance,
+				AMPLIFY_SYMBOL: amplifySymbolValue,
+			} = require('../src/Hub');
+
+			expect(amplifySymbolValue).toStrictEqual('@@amplify_default');
+
+			HubInstance.listen('auth', mockListener);
+
+			HubInstance.dispatch(
+				'auth',
+				{
+					event: 'signOut',
+					data: 'the user has been signed out',
+					message: 'User signout has taken place',
+				},
+				'Auth',
+				amplifySymbolValue
+			);
+
+			expect(loggerSpy).not.toHaveBeenCalled();
+		});
 	});
 });

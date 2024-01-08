@@ -43,6 +43,9 @@ describe('signOut', () => {
 	const cognitoAuthTokens = {
 		username: 'username',
 		clockDrift: 0,
+		idToken: {
+			payload: {},
+		},
 		accessToken,
 		refreshToken,
 	};
