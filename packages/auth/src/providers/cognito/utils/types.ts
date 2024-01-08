@@ -56,7 +56,7 @@ export function assertIdTokenInAuthTokens(
 
 export const oAuthTokenRefreshException = new AuthError({
 	name: TOKEN_REFRESH_EXCEPTION,
-	message: `Token refresh is not supported once authenticated with 'implicit grant'(token) oauth flow. 
+	message: `Token refresh is not supported when authenticated with the 'implicit grant' (token) oauth flow. 
 	Please change your oauth configuration to use 'code grant' flow.`,
 	recoverySuggestion: `Please logout and change your Amplify configuration to use "code grant" flow. 
 	E.g { responseType: 'code' }`,
