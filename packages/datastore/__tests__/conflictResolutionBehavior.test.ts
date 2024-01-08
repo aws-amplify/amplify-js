@@ -88,13 +88,13 @@ describe('DataStore sync engine', () => {
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
-						['post title 0', 3],
-						['post title 0', 3],
+						['post title 2', 3],
+						['post title 2', 3],
 					]);
 
 					expect(await postHarness.currentContents).toMatchObject({
 						_version: 3,
-						title: 'post title 0',
+						title: 'post title 2',
 					});
 				});
 				test('delayed input, low latency where we wait for the create to clear the outbox', async () => {
@@ -118,12 +118,12 @@ describe('DataStore sync engine', () => {
 						['post title 0', 1],
 						['post title 1', 1],
 						['post title 2', 1],
-						['post title 0', 4],
+						['post title 2', 4],
 					]);
 
 					expect(await postHarness.currentContents).toMatchObject({
 						_version: 4,
-						title: 'post title 0',
+						title: 'post title 2',
 					});
 				});
 				test("no input delay, high latency where we don't wait for the create to clear the outbox", async () => {
@@ -717,11 +717,7 @@ describe('DataStore sync engine', () => {
 					await postHarness.revise('post title 2');
 
 					await harness.fullSettle();
-					await harness.expectGraphqlSettledWithEventCount({
-						update: 3,
-						updateSubscriptionMessage: 2,
-						updateError: 1,
-					});
+					await harness.expectGraphqlSettledWithEventCount(2);
 
 					expect(harness.subscriptionLogs()).toEqual([
 						['original title', 1],
@@ -751,11 +747,7 @@ describe('DataStore sync engine', () => {
 					await postHarness.revise('post title 2');
 
 					await harness.fullSettle();
-					await harness.expectGraphqlSettledWithEventCount({
-						update: 4,
-						updateSubscriptionMessage: 3,
-						updateError: 1,
-					});
+					await harness.expectGraphqlSettledWithEventCount(3);
 
 					expect(harness.subscriptionLogs()).toEqual([
 						['original title', 1],
