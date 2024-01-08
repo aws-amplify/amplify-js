@@ -1,5 +1,5 @@
-jest.mock('../src/logger', () => {
-	const module = jest.requireActual('../src/logger/ConsoleLogger');
+jest.mock('../src/logging', () => {
+	const module = jest.requireActual('../src/logging/ConsoleLogger');
 	return {
 		ConsoleLogger: module.ConsoleLogger,
 	};

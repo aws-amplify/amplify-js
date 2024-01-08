@@ -1,5 +1,6 @@
-import { ConsoleLogger } from '../src';
-import { LoggingProvider } from '../src/logging/ConsoleLogger';
+import { ConsoleLogger } from '../../src';
+import { LoggingProvider } from '../../src/logging/ConsoleLogger';
+import { consoleProvider } from '../../src/logging/providers/console';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {
@@ -42,6 +43,11 @@ describe('ConsoleLogger', () => {
 			const pluggables = logger.listPluggables();
 
 			expect(pluggables).toHaveLength(0);
+		});
+		it('should update loglevel of console provider', () => {
+			const level = 'DEBUG';
+			ConsoleLogger.LOG_LEVEL = level;
+			expect(consoleProvider.LOG_LEVEL).toBe(level);
 		});
 	});
 });
