@@ -139,17 +139,20 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			// TODO(v6): Check errors on client
 			this.clearTokens();
 		}
+		Hub.dispatch(
+			'auth',
+			{
+				event: 'tokenRefresh_failure',
+				data: { error: err },
+			},
+			'Auth',
+			AMPLIFY_SYMBOL
+		);
+
 		if (err.name.startsWith('NotAuthorizedException')) {
 			return null;
-		} else {
-			Hub.dispatch(
-				'auth',
-				{ event: 'tokenRefresh_failure' },
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
-			throw err;
 		}
+		throw err;
 	}
 	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
 		return this.getTokenStore().storeTokens(tokens);
