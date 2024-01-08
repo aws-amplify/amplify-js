@@ -490,10 +490,6 @@ export class FakeGraphQLService {
 		return merged;
 	}
 
-	private canOccMerge(existing, updated) {
-		return;
-	}
-
 	private occMerge(selection, existing, updated) {
 		let errors: any[] = [];
 		let merged: any = null;
