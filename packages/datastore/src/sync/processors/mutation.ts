@@ -401,7 +401,7 @@ class MutationProcessor {
 									retryWith = DISCARD;
 								} else {
 									try {
-										retryWith = await this.conflictHandler!({
+										const conflictHandledObject = await this.conflictHandler!({
 											modelConstructor,
 											localModel: this.modelInstanceCreator(
 												modelConstructor,
@@ -414,6 +414,10 @@ class MutationProcessor {
 											operation: opType,
 											attempts: attempt,
 										});
+										retryWith = filterObjectSurface(
+											conflictHandledObject,
+											variables.input
+										);
 									} catch (err) {
 										logger.warn('conflict trycatch', err);
 										continue;
@@ -654,6 +658,33 @@ class MutationProcessor {
 	public pause() {
 		this.processing = false;
 	}
+}
+
+/**
+ * @private
+ * Internal use of Amplify only.
+ *
+ * This function creates a clone of the input object where the surface is restricted to only fields included
+ * on a given surface object.
+ *
+ * @param inputObject The input object to create a surface filtered clone of
+ * @param surfaceObject The surface object
+ * @returns
+ */
+function filterObjectSurface<SO extends Record<string, any>, IO extends SO>(
+	inputObject: IO,
+	surfaceObject: SO
+): SO {
+	// Cloning the surface object ensures the returnObject is the correct shape
+	// all fields will be overwritten before the object is returned
+	const returnObject: SO = { ...surfaceObject };
+
+	const surfaceObjectKeys = Object.keys(surfaceObject);
+	surfaceObjectKeys.forEach(sKey => {
+		// @ts-ignore - This operation isn't supported in ts-strict, but needed to clone the needed fields across
+		returnObject[sKey] = inputObject[sKey];
+	});
+	return returnObject;
 }
 
 const MAX_RETRY_DELAY_MS = 5 * 60 * 1000;

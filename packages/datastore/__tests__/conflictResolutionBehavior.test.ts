@@ -933,9 +933,9 @@ describe('DataStore sync engine', () => {
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 4,
+							update: 5,
 							updateSubscriptionMessage: 3,
-							updateError: 1,
+							updateError: 2,
 						});
 						expect(harness.subscriptionLogs()).toEqual([
 							['original title', 1],
@@ -972,9 +972,9 @@ describe('DataStore sync engine', () => {
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 5,
+							update: 6,
 							updateSubscriptionMessage: 4,
-							updateError: 1,
+							updateError: 2,
 						});
 
 						expect(harness.subscriptionLogs()).toEqual([
@@ -1096,9 +1096,9 @@ describe('DataStore sync engine', () => {
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 4,
+							update: 5,
 							updateSubscriptionMessage: 3,
-							updateError: 1,
+							updateError: 2,
 						});
 
 						expect(
@@ -1108,16 +1108,14 @@ describe('DataStore sync engine', () => {
 							['post title 0', null, 1],
 							['post title 1', null, 1],
 							['post title 2', null, 1],
-							// The 'post title 2' change fails and is retried
-							// The retry fills in null for the blogId, which
-							// overwrites the externally set value
-							['post title 2', null, 4],
-							['post title 2', null, 4],
+							['post title 2', 'update from second client', 4],
+							['post title 2', 'update from second client', 4],
 						]);
 
 						expect(await postHarness.currentContents).toMatchObject({
 							_version: 4,
 							title: 'post title 2',
+							blogId: 'update from second client',
 						});
 					});
 					test('no input delay, high latency where we wait for the create to clear the outbox with pause to change sequence', async () => {
@@ -1147,9 +1145,9 @@ describe('DataStore sync engine', () => {
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 5,
+							update: 6,
 							updateSubscriptionMessage: 4,
-							updateError: 1,
+							updateError: 2,
 						});
 
 						expect(
@@ -1159,16 +1157,14 @@ describe('DataStore sync engine', () => {
 							['post title 0', null, 1],
 							['post title 1', null, 1],
 							['post title 2', null, 1],
-							// The 'post title 2' change fails and is retried
-							// The retry fills in null for the blogId, which
-							// overwrites the externally set value
-							['post title 2', null, 5],
-							['post title 2', null, 5],
+							['post title 2', 'update from second client', 5],
+							['post title 2', 'update from second client', 5],
 						]);
 
 						expect(await postHarness.currentContents).toMatchObject({
 							_version: 5,
 							title: 'post title 2',
+							blogId: 'update from second client',
 						});
 					});
 				});
@@ -1195,9 +1191,9 @@ describe('DataStore sync engine', () => {
 
 				await harness.fullSettle();
 				await harness.expectGraphqlSettledWithEventCount({
-					update: 5,
+					update: 6,
 					updateSubscriptionMessage: 4,
-					updateError: 1,
+					updateError: 2,
 				});
 
 				expect(
@@ -1207,15 +1203,13 @@ describe('DataStore sync engine', () => {
 					['post title 0', null, 1],
 					['post title 1', null, 1],
 					['post title 2', null, 1],
-					// The 'post title 2' change fails and is retried
-					// The retry fills in null for the blogId, which
-					// overwrites the externally set value
-					['post title 2', null, 5],
+					['post title 2', 'update from second client', 5],
 				]);
 
 				expect(await postHarness.currentContents).toMatchObject({
 					_version: 5,
 					title: 'post title 2',
+					blogId: 'update from second client',
 				});
 			});
 			/**
@@ -1247,9 +1241,9 @@ describe('DataStore sync engine', () => {
 
 				await harness.fullSettle();
 				await harness.expectGraphqlSettledWithEventCount({
-					update: 5,
+					update: 6,
 					updateSubscriptionMessage: 4,
-					updateError: 1,
+					updateError: 2,
 				});
 
 				expect(
@@ -1259,15 +1253,13 @@ describe('DataStore sync engine', () => {
 					['post title 0', 'original blogId', 1],
 					['post title 1', 'original blogId', 1],
 					['post title 2', 'original blogId', 1],
-					// The 'post title 2' change fails and is retried
-					// The retry fills in null for the blogId, which
-					// overwrites the externally set value
-					['post title 2', null, 5],
+					['post title 2', 'update from second client', 5],
 				]);
 
 				expect(await postHarness.currentContents).toMatchObject({
 					_version: 5,
 					title: 'post title 2',
+					blogId: 'update from second client',
 				});
 			});
 			test('no input delay, high latency where we wait for the create and all revisions to clear the outbox', async () => {
