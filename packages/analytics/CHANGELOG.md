@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.5.9 (2024-01-09)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 ## 6.5.8 (2024-01-05)
 
 ### Bug Fixes

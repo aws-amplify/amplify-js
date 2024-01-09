@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.5.9 (2024-01-09)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
 ## 3.5.8 (2024-01-05)
 
 ### Bug Fixes
