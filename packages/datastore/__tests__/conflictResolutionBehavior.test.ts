@@ -317,6 +317,9 @@ describe('DataStore sync engine', () => {
 						await harness.externalPostUpdate({
 							originalPostId: postHarness.original.id,
 							updatedFields: { title: 'update from second client' },
+							// The fake service version will be 2, having received the 'post title 0' update
+							// Because of this, the title will not be updated, but the
+							// version number will increment to 3
 							version: 1,
 						});
 						await postHarness.revise('post title 2');
@@ -329,6 +332,16 @@ describe('DataStore sync engine', () => {
 							['post title 0', 1],
 							['post title 1', 1],
 							['post title 2', 1],
+							// The title remains 'post title 0' having failed
+							// the external update and each revision after the
+							// 'post title 0' change due to not having or matching
+							// the latest version number and not matching
+							// the response fields to the update.
+							//
+							// In other cases, waiting to process through the subscriptions
+							// clears this up, but in this instance the subscription
+							// messages arrive before the outbox mutations are processed
+							// which causes them to be dropped.
 							['post title 0', 5],
 						]);
 

@@ -473,25 +473,28 @@ export function sortCompareFunction<T extends PersistentModel>(
 	};
 }
 
-/* deep directed comparison ensuring that all fields on object A exist and are equal to values on object B
- * Note: This same guarauntee is not applied for values on object B that aren't on object A
+/* deep directed comparison ensuring that all fields on "from" object exist and
+ * are equal to values on an "against" object
  *
- * @param valA - The object that may be an equal subset of valB.
- * @param valB - The object that may be an equal superset of valA.
- * @returns True if valA is a equal subset of valB and False otherwise.
+ * Note: This same guarauntee is not applied for values on "against" that aren't on "from"
+ *
+ * @param fromObject - The object that may be an equal subset of the againstObject.
+ * @param againstObject - The object that may be an equal superset of the fromObject.
+ *
+ * @returns True if fromObject is a equal subset of againstObject and False otherwise.
  */
-export function objectMatches(
-	valA: object,
-	valB: object,
+export function directedValueEquality(
+	fromObject: object,
+	againstObject: object,
 	nullish: boolean = false
 ) {
-	const aKeys = Object.keys(valA);
+	const aKeys = Object.keys(fromObject);
 
 	for (const key of aKeys) {
-		const aVal = valA[key];
-		const bVal = valB[key];
+		const fromValue = fromObject[key];
+		const againstValue = againstObject[key];
 
-		if (!valuesEqual(aVal, bVal, nullish)) {
+		if (!valuesEqual(fromValue, againstValue, nullish)) {
 			return false;
 		}
 	}

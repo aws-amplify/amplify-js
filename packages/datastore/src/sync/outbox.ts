@@ -15,7 +15,7 @@ import {
 	QueryOne,
 	SchemaModel,
 } from '../types';
-import { USER, SYNC, objectMatches } from '../util';
+import { USER, SYNC, directedValueEquality } from '../util';
 import { getIdentifierValue, TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
@@ -198,7 +198,7 @@ class MutationEventOutbox {
 		// If all send data isn't matched in the returned data then the update was rejected
 		// by AppSync and we should not update the version on other outbox entries for this
 		// object
-		if (!objectMatches(outgoingData, incomingData, true)) {
+		if (!directedValueEquality(outgoingData, incomingData, true)) {
 			return;
 		}
 
