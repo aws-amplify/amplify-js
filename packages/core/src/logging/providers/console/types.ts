@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { LogLevel, LoggerProvider } from '../../types';
+import { LogLevel, LoggingProvider } from '../../types';
 
-export interface ConsoleProvider extends LoggerProvider {
+export interface ConsoleProvider extends LoggingProvider {
 	LOG_LEVEL: string | null;
 	initialize(config: ConsoleConfig): void;
 }

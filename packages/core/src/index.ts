@@ -70,7 +70,7 @@ export { CacheConfig } from './Cache/types';
 export { I18n } from './I18n';
 
 // Logging utilities
-export { ConsoleLogger, generateLogger, consoleProvider } from './logging';
+export { ConsoleLogger, createLogger, consoleProvider } from './logging';
 export { cloudWatchProvider } from './logging/providers/cloudWatch';
 
 // Service worker

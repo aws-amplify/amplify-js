@@ -1,4 +1,4 @@
-import { generateLogger } from '../../src/logging/logger';
+import { createLogger } from '../../src/logging/logger';
 import { dispatchLogsToProviders } from '../../src/logging/dispatchLogsToProviders';
 
 jest.mock('../../src/logging/dispatchLogsToProviders');
@@ -6,8 +6,8 @@ jest.mock('../../src/logging/dispatchLogsToProviders');
 const namespace = 'namespace';
 const category = 'Auth';
 
-describe('logging generateLogger', () => {
-	const logger = generateLogger({ namespace, category });
+describe('logging createLogger', () => {
+	const logger = createLogger({ namespace, category });
 	const mockDispatchLogsToProviders = dispatchLogsToProviders as jest.Mock;
 
 	afterEach(() => {

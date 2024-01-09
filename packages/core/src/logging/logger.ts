@@ -4,20 +4,20 @@
 import {
 	LogLevel,
 	LoggerType,
-	GenerateLoggerInput,
-	GenerateLoggerOutput,
+	CreateLoggerInput,
+	CreateLoggerOutput,
 } from './types';
 import { dispatchLogsToProviders } from './dispatchLogsToProviders';
-import { LoggerCategory } from '../types';
+import { LoggingCategory } from '../types';
 
 /**
  * Amplify Logger. Accepts log events and disseminates to configured logging providers.
  **/
 class Logger implements LoggerType {
 	namespace: string;
-	category?: LoggerCategory;
+	category?: LoggingCategory;
 
-	constructor(namespace: string, category?: LoggerCategory) {
+	constructor(namespace: string, category?: LoggingCategory) {
 		this.namespace = namespace;
 		this.category = category;
 	}
@@ -96,12 +96,10 @@ class Logger implements LoggerType {
 /**
  * Generates a new Logger which can be used to record log events for the specified.
  *
- * @param input - The {@link GenerateLoggerInput} object containing the namespace and an optional category name.
- * @returns Output containing the {@link GenerateLoggerOutput} object.
+ * @param input - The {@link CreateLoggerInput} object containing the namespace and an optional category name.
+ * @returns Output containing the {@link CreateLoggerOutput} object.
  */
-export const generateLogger = (
-	input: GenerateLoggerInput
-): GenerateLoggerOutput => {
+export const createLogger = (input: CreateLoggerInput): CreateLoggerOutput => {
 	const { namespace, category } = input;
 	return new Logger(namespace, category);
 };

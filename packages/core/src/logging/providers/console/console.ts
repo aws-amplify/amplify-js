@@ -38,7 +38,7 @@ export const consoleProvider: ConsoleProvider = {
 	 */
 	initialize: (config: ConsoleConfig = defaultConfig) => {
 		// TODO(ashwinkumar6): rename 'initialize' to 'configure'. Allow configuring multiple times
-		// TODO(ashwinkumar6): create and use LoggerError
+		// TODO(ashwinkumar6): create and use LoggingError
 		consoleConfig = config;
 	},
 	/**

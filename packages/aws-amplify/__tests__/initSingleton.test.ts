@@ -49,7 +49,7 @@ const mockResourceConfig: ResourcesConfig = {
 		},
 	},
 };
-const libraryLoggerOptions: LibraryOptions = {
+const libraryLoggingOptions: LibraryOptions = {
 	Logging: {
 		console: consoleProvider,
 	},
@@ -142,7 +142,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 			expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 				resourceConfig,
-				{ ...libraryLoggerOptions, ...libraryOptions }
+				{ ...libraryLoggingOptions, ...libraryOptions }
 			);
 		});
 
@@ -155,7 +155,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 					mockResourceConfig,
-					{ ...libraryLoggerOptions, ...libraryOptions }
+					{ ...libraryLoggingOptions, ...libraryOptions }
 				);
 			});
 
@@ -174,7 +174,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							...libraryLoggerOptions,
+							...libraryLoggingOptions,
 							...libraryOptions,
 							Auth: {
 								tokenProvider: cognitoUserPoolsTokenProvider,
@@ -197,7 +197,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							...libraryLoggerOptions,
+							...libraryLoggingOptions,
 							...libraryOptions,
 							Auth: {
 								tokenProvider: cognitoUserPoolsTokenProvider,
@@ -211,7 +211,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 			describe('when the singleton libraryOptions have been previously configured with Auth', () => {
 				beforeEach(() => {
 					AmplifySingleton.libraryOptions = {
-						...libraryLoggerOptions,
+						...libraryLoggingOptions,
 						Auth: {
 							tokenProvider: cognitoUserPoolsTokenProvider,
 							credentialsProvider: cognitoCredentialsProvider,
@@ -319,7 +319,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 							credentialsProvider: cognitoCredentialsProvider,
 						},
 						...libraryOptionsWithStorage,
-						...libraryLoggerOptions,
+						...libraryLoggingOptions,
 					}
 				);
 			});
@@ -335,7 +335,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 						resourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
-							...libraryLoggerOptions,
+							...libraryLoggingOptions,
 						}
 					);
 				});
@@ -404,7 +404,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 							tokenProvider: cognitoUserPoolsTokenProvider,
 							credentialsProvider: cognitoCredentialsProvider,
 						},
-						...libraryLoggerOptions,
+						...libraryLoggingOptions,
 					};
 				});
 

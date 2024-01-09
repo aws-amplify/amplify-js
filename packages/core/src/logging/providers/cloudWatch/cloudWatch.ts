@@ -28,7 +28,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	 */
 	initialize: (config: CloudWatchConfig) => {
 		// TODO(ashwinkumar6): rename 'initialize' to 'configure'. Allow configuring multiple times
-		// TODO(ashwinkumar6): create and use LoggerError
+		// TODO(ashwinkumar6): create and use LoggingError
 		// TODO(ashwinkumar6): fix merge logic, support nested
 		cloudWatchConfig = { ...defaultConfig, ...config };
 	},

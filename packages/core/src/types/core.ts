@@ -50,7 +50,7 @@ export type DelayFunction = (
 	error?: unknown
 ) => number | false;
 
-export type LoggerCategory =
+export type LoggingCategory =
 	| 'Analytics'
 	| 'API'
 	| 'Auth'

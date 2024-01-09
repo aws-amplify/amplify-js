@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { LogLevel, LoggerProvider } from '../../types';
-import { LoggerCategory } from '../../../types';
+import { LogLevel, LoggingProvider } from '../../types';
+import { LoggingCategory } from '../../../types';
 
-export interface CloudWatchProvider extends LoggerProvider {
+export interface CloudWatchProvider extends LoggingProvider {
 	initialize: (
 		config: CloudWatchConfig,
 		options?: CloudWatchRemoteLoggingConstraints
@@ -38,7 +38,7 @@ interface LoggingConstraints {
 }
 
 type CategoryLogLevel = {
-	[Category in LoggerCategory]?: LogLevel;
+	[Category in LoggingCategory]?: LogLevel;
 };
 
 interface CloudWatchRemoteLoggingConstraints {
