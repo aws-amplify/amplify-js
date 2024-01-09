@@ -6,7 +6,7 @@ import { LogParams } from './types';
 
 export const dispatchLogsToProviders = (params: LogParams) => {
 	const { console: consoleProvider, additionalProviders = [] } =
-		Amplify.libraryOptions.Logger ?? {};
+		Amplify.libraryOptions.Logging ?? {};
 
 	// send log to console provider
 	if (consoleProvider) consoleProvider.log(params);

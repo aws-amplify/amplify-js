@@ -50,7 +50,7 @@ const mockResourceConfig: ResourcesConfig = {
 	},
 };
 const libraryLoggerOptions: LibraryOptions = {
-	Logger: {
+	Logging: {
 		console: consoleProvider,
 	},
 };
@@ -233,7 +233,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Logger: AmplifySingleton.libraryOptions.Logger,
+							Logging: AmplifySingleton.libraryOptions.Logging,
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
 						}
@@ -253,7 +253,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Logger: AmplifySingleton.libraryOptions.Logger,
+							Logging: AmplifySingleton.libraryOptions.Logging,
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
 						}
@@ -276,7 +276,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
-							Logger: AmplifySingleton.libraryOptions.Logger,
+							Logging: AmplifySingleton.libraryOptions.Logging,
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
 						}
@@ -342,7 +342,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				it('should configure console provider', () => {
 					Amplify.configure(resourceConfig, {
-						Logger: {
+						Logging: {
 							console: consoleProvider,
 						},
 					});
@@ -350,7 +350,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 						resourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
-							Logger: {
+							Logging: {
 								console: consoleProvider,
 							},
 						}
@@ -359,7 +359,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				it('should configure additional providers and default console provider', () => {
 					Amplify.configure(resourceConfig, {
-						Logger: {
+						Logging: {
 							additionalProviders: [cloudWatchProvider],
 						},
 					});
@@ -368,7 +368,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 						resourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
-							Logger: {
+							Logging: {
 								console: consoleProvider,
 								additionalProviders: [cloudWatchProvider],
 							},
@@ -378,7 +378,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				it('should configure additional providers and console provider', () => {
 					Amplify.configure(resourceConfig, {
-						Logger: {
+						Logging: {
 							console: consoleProvider,
 							additionalProviders: [cloudWatchProvider],
 						},
@@ -388,7 +388,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 						resourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
-							Logger: {
+							Logging: {
 								console: consoleProvider,
 								additionalProviders: [cloudWatchProvider],
 							},
@@ -397,7 +397,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 				});
 			});
 
-			describe('when the singleton libraryOptions has been configured with Logger', () => {
+			describe('when the singleton libraryOptions has been configured with Logging', () => {
 				beforeEach(() => {
 					AmplifySingleton.libraryOptions = {
 						Auth: {
@@ -421,7 +421,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					};
 
 					Amplify.configure(resourceConfig, {
-						Logger: {
+						Logging: {
 							console: mockConsoleProvider,
 						},
 					});
@@ -430,7 +430,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 						resourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
-							Logger: {
+							Logging: {
 								console: mockConsoleProvider,
 							},
 						}
@@ -439,7 +439,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				it('should configure additional providers and preserve configured console provider', () => {
 					Amplify.configure(resourceConfig, {
-						Logger: {
+						Logging: {
 							additionalProviders: [cloudWatchProvider],
 						},
 					});
@@ -448,8 +448,8 @@ describe('initSingleton (DefaultAmplify)', () => {
 						resourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
-							Logger: {
-								console: AmplifySingleton.libraryOptions.Logger?.console,
+							Logging: {
+								console: AmplifySingleton.libraryOptions.Logging?.console,
 								additionalProviders: [cloudWatchProvider],
 							},
 						}

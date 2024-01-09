@@ -6,7 +6,7 @@ import { LogParams } from '../../src/logging/types';
 jest.mock('../../src/singleton/Amplify', () => ({
 	Amplify: {
 		libraryOptions: {
-			Logger: {
+			Logging: {
 				console: consoleProvider,
 				additionalProviders: [cloudWatchProvider],
 			},

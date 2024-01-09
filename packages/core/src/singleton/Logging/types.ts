@@ -4,7 +4,7 @@
 import { LoggerProvider } from '../../logging/types';
 import { ConsoleProvider } from '../../logging/providers/console';
 
-export interface LibraryLoggerOptions {
+export interface LibraryLoggingOptions {
 	console?: ConsoleProvider;
 	additionalProviders?: LoggerProvider[];
 }

@@ -38,12 +38,12 @@ export const DefaultAmplify = {
 		let resolvedLibraryOptions = libraryOptions;
 
 		// add console logger provider by default
-		if (!Amplify.libraryOptions?.Logger) {
+		if (!Amplify.libraryOptions?.Logging) {
 			resolvedLibraryOptions = {
 				...libraryOptions,
-				Logger: {
-					...libraryOptions?.Logger,
-					console: libraryOptions?.Logger?.console ?? consoleProvider,
+				Logging: {
+					...libraryOptions?.Logging,
+					console: libraryOptions?.Logging?.console ?? consoleProvider,
 				},
 			};
 		}
@@ -99,12 +99,12 @@ export const DefaultAmplify = {
 			return Amplify.configure(resolvedResourceConfig, {
 				Auth: Amplify.libraryOptions.Auth,
 				...resolvedLibraryOptions,
-				Logger: {
-					...resolvedLibraryOptions?.Logger,
+				Logging: {
+					...resolvedLibraryOptions?.Logging,
 					// preserve console logger
 					console:
-						resolvedLibraryOptions?.Logger?.console ??
-						Amplify.libraryOptions.Logger?.console,
+						resolvedLibraryOptions?.Logging?.console ??
+						Amplify.libraryOptions.Logging?.console,
 				},
 			});
 		}
