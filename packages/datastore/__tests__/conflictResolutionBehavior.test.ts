@@ -313,15 +313,17 @@ describe('DataStore sync engine', () => {
 						harness.latency = 'low';
 
 						await postHarness.revise('post title 0');
+						// Time warping is causing the 'post title 1' revision to wait
+						// until after 'post title 0' returns from the server (the setTimeout ticks are doing strange things)
 						await postHarness.revise('post title 1');
 						await harness.externalPostUpdate({
 							originalPostId: postHarness.original.id,
 							updatedFields: { title: 'update from second client' },
 							// The fake service version will be 2, having received the 'post title 0' update
-							// Because of this, the title will not be updated, but the
-							// version number will increment to 3
+							// Because of this, the title will not be updated, but the version number will increment to 3
 							version: 1,
 						});
+						// The 'post title 1' change is in flight before this happens so that they don't merge
 						await postHarness.revise('post title 2');
 
 						await harness.fullSettle();
@@ -332,16 +334,9 @@ describe('DataStore sync engine', () => {
 							['post title 0', 1],
 							['post title 1', 1],
 							['post title 2', 1],
-							// The title remains 'post title 0' having failed
-							// the external update and each revision after the
-							// 'post title 0' change due to not having or matching
-							// the latest version number and not matching
-							// the response fields to the update.
-							//
-							// In other cases, waiting to process through the subscriptions
-							// clears this up, but in this instance the subscription
-							// messages arrive before the outbox mutations are processed
-							// which causes them to be dropped.
+							// Every change starting with 'post title 1' including the external
+							// update fails to automerge update the title, but increments
+							// the version.
 							['post title 0', 5],
 						]);
 
