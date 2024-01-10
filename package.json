@@ -56,6 +56,7 @@
 			"packages/notifications",
 			"packages/rtn-push-notification",
 			"packages/aws-amplify",
+			"packages/logging",
 			"packages/rtn-web-browser",
 			"packages/react-native",
 			"packages/react-native/example",
