@@ -933,9 +933,9 @@ describe('DataStore sync engine', () => {
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 5,
+							update: 4,
 							updateSubscriptionMessage: 3,
-							updateError: 2,
+							updateError: 1,
 						});
 						expect(harness.subscriptionLogs()).toEqual([
 							['original title', 1],
@@ -972,9 +972,9 @@ describe('DataStore sync engine', () => {
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 6,
+							update: 5,
 							updateSubscriptionMessage: 4,
-							updateError: 2,
+							updateError: 1,
 						});
 
 						expect(harness.subscriptionLogs()).toEqual([
@@ -1096,9 +1096,9 @@ describe('DataStore sync engine', () => {
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 5,
+							update: 4,
 							updateSubscriptionMessage: 3,
-							updateError: 2,
+							updateError: 1,
 						});
 
 						expect(
@@ -1145,9 +1145,9 @@ describe('DataStore sync engine', () => {
 
 						await harness.fullSettle();
 						await harness.expectGraphqlSettledWithEventCount({
-							update: 6,
+							update: 5,
 							updateSubscriptionMessage: 4,
-							updateError: 2,
+							updateError: 1,
 						});
 
 						expect(
@@ -1191,9 +1191,9 @@ describe('DataStore sync engine', () => {
 
 				await harness.fullSettle();
 				await harness.expectGraphqlSettledWithEventCount({
-					update: 6,
+					update: 5,
 					updateSubscriptionMessage: 4,
-					updateError: 2,
+					updateError: 1,
 				});
 
 				expect(
@@ -1241,9 +1241,9 @@ describe('DataStore sync engine', () => {
 
 				await harness.fullSettle();
 				await harness.expectGraphqlSettledWithEventCount({
-					update: 6,
+					update: 5,
 					updateSubscriptionMessage: 4,
-					updateError: 2,
+					updateError: 1,
 				});
 
 				expect(
