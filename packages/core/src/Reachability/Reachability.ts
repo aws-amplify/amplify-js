@@ -8,15 +8,20 @@ import { isWebWorker } from '../utils';
 export class Reachability {
 	private static _observers: Array<CompletionObserver<NetworkStatus>> = [];
 
-	networkMonitor(_?: unknown): Observable<NetworkStatus> {
-		const globalObj = isWebWorker()
-			? self
-			: typeof window !== 'undefined' && window;
+	// TODO(Samaritan1011001): Add test cases for this method
+	isOnline(): boolean {
+		const globalObj = this._retreiveGlobalObject();
+		if (!globalObj) {
+			return true;
+		}
+		return globalObj.navigator.onLine;
+	}
 
+	networkMonitor(_?: unknown): Observable<NetworkStatus> {
+		const globalObj = this._retreiveGlobalObject();
 		if (!globalObj) {
 			return from([{ online: true }]);
 		}
-
 		return new Observable(observer => {
 			observer.next({ online: globalObj.navigator.onLine });
 
@@ -51,5 +56,12 @@ export class Reachability {
 
 			observer?.next && observer.next(status);
 		}
+	}
+
+	private _retreiveGlobalObject() {
+		const globalObj = isWebWorker()
+			? self
+			: typeof window !== 'undefined' && window;
+		return globalObj;
 	}
 }
