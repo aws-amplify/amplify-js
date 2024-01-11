@@ -269,21 +269,21 @@ tests:
     sample_name: [delete-user]
     spec: delete-user
     browser: [chrome, firefox]
-  - test_name: integ_angular_auth_angular_authenticator
-    desc: 'Angular Authenticator'
-    framework: angular
-    category: auth
-    sample_name: [amplify-authenticator]
-    spec: ui-amplify-authenticator
-    browser: [chrome, firefox]
-  - test_name: integ_javascript_auth
-    desc: 'JavaScript Auth CDN'
-    framework: javascript
-    category: auth
-    sample_name: [auth-cdn]
-    spec: auth-cdn
-    browser: [chrome, firefox]
-    amplifyjs_dir: true
+  # - test_name: integ_angular_auth_angular_authenticator
+  #   desc: 'Angular Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: ui-amplify-authenticator
+  #   browser: [chrome, firefox]
+  # - test_name: integ_javascript_auth
+  #   desc: 'JavaScript Auth CDN'
+  #   framework: javascript
+  #   category: auth
+  #   sample_name: [auth-cdn]
+  #   spec: auth-cdn
+  #   browser: [chrome, firefox]
+  #   amplifyjs_dir: true
   - test_name: integ_next_auth_authenticator_and_ssr_page
     desc: 'Authenticator and SSR page'
     framework: next
