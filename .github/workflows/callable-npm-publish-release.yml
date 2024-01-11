@@ -51,6 +51,5 @@ jobs:
         working-directory: ./amplify-js
         run: |
           git push origin release
-          # Disable for this release (6.0.11)
-          # if [ $(git tag -l "required-release") ]; then git push -f origin required-release; fi
-          # git push --force-with-lease origin release:main
+          if [ $(git tag -l "required-release") ]; then git push -f origin required-release; fi
+          git push --force-with-lease origin release:main
