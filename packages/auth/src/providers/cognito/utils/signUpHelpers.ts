@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HubInternal } from '@aws-amplify/core/internals/utils';
+import {
+	HubInternal,
+	debounceCallback,
+} from '@aws-amplify/core/internals/utils';
 import { signIn } from '../apis/signIn';
 import { SignInInput, SignInOutput } from '../types';
 import { AutoSignInEventData } from '../types/models';
@@ -41,33 +44,11 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 	}, MAX_AUTOSIGNIN_POLLING_MS);
 }
 
-// Debounces the auto sign-in flow with link
-// This approach avoids running the useInterval and signIn API twice in a row.
-// This issue would be common as React.18 introduced double rendering of the
-// useEffect hook on every mount.
-// https://github.com/facebook/react/issues/24502
-// https://legacy.reactjs.org/docs/strict-mode.html#ensuring-reusable-state
-type TimeOutOutput = ReturnType<typeof setTimeout>;
-function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
-	let timer: TimeOutOutput | undefined;
-	return function (
-		args: F extends (...args: infer A) => any ? A : never
-	): void {
-		if (!timer) {
-			fun(...args);
-		}
-		clearTimeout(timer as TimeOutOutput);
-		timer = setTimeout(() => {
-			timer = undefined;
-		}, delay);
-	};
-}
-
 function handleAutoSignInWithLink(
 	signInInput: SignInInput,
 	resolve: Function,
 	reject: Function
-) {
+){
 	const start = Date.now();
 	const autoSignInPollingIntervalId = setInterval(async () => {
 		const elapsedTime = Date.now() - start;
@@ -104,11 +85,6 @@ function handleAutoSignInWithLink(
 		}
 	}, 5000);
 }
-const debouncedAutoSignInWithLink = debounce(handleAutoSignInWithLink, 300);
-const debouncedAutoSignWithCodeOrUserConfirmed = debounce(
-	handleAutoSignInWithCodeOrUserConfirmed,
-	300
-);
 
 let autoSignInStarted: boolean = false;
 
@@ -135,35 +111,38 @@ export function isSignUpComplete(output: SignUpCommandOutput): boolean {
 	return !!output.UserConfirmed;
 }
 
+// Debounces the auto sign-in flow with link
+// This approach avoids running the useInterval and signIn API twice in a row.
+// This issue would be common as React.18 introduced double rendering of the
+// useEffect hook on every mount.
+// https://github.com/facebook/react/issues/24502
+// https://legacy.reactjs.org/docs/strict-mode.html#ensuring-reusable-state
+const debouncedAutoSignInWithCode = debounceCallback(
+	async (signInInput: SignInInput) => {
+		resetAutoSignIn();
+		return signIn(signInInput);
+	},
+	300
+);
+
+const debouncedAutoSignInWithLink = debounceCallback(
+	handleAutoSignInWithLink,
+	300
+);
+
 export function autoSignInWhenUserIsConfirmedWithLink(
 	signInInput: SignInInput
 ): AutoSignInCallback {
 	return async () => {
 		return new Promise<SignInOutput>(async (resolve, reject) => {
-			debouncedAutoSignInWithLink([signInInput, resolve, reject]);
+			debouncedAutoSignInWithLink(signInInput, resolve, reject);
 		});
 	};
 }
-async function handleAutoSignInWithCodeOrUserConfirmed(
-	signInInput: SignInInput,
-	resolve: Function,
-	reject: Function
-) {
-	try {
-		const output = await signIn(signInInput);
-		resolve(output);
-		resetAutoSignIn();
-	} catch (error) {
-		reject(error);
-		resetAutoSignIn();
-	}
-}
 
 function autoSignInWithCode(signInInput: SignInInput): AutoSignInCallback {
-	return async () => {
-		return new Promise<SignInOutput>(async (resolve, reject) => {
-			debouncedAutoSignWithCodeOrUserConfirmed([signInInput, resolve, reject]);
-		});
+	return () => {
+		return debouncedAutoSignInWithCode(signInInput);
 	};
 }
 
