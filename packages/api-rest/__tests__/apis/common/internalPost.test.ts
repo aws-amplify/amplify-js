@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { ApiError } from '@aws-amplify/core/internals/utils';
 import {
 	authenticatedHandler,
 	unauthenticatedHandler,
@@ -266,14 +267,14 @@ describe('internal post', () => {
 	});
 
 	it('should throw RestApiError when response is not ok', async () => {
-		expect.assertions(2);
+		expect.assertions(4);
 		const errorResponse = {
 			statusCode: 400,
 			headers: {},
 			body: {
 				blob: jest.fn(),
 				json: jest.fn(),
-				text: jest.fn(),
+				text: jest.fn().mockResolvedValueOnce('custom error message'),
 			},
 		};
 		mockParseJsonError.mockResolvedValueOnce(
@@ -288,6 +289,12 @@ describe('internal post', () => {
 		} catch (error) {
 			expect(mockParseJsonError).toHaveBeenCalledWith(errorResponse);
 			expect(error).toEqual(expect.any(RestApiError));
+			expect(error).toEqual(expect.any(ApiError));
+			expect((error as ApiError).response).toEqual({
+				statusCode: 400,
+				headers: {},
+				body: 'custom error message',
+			});
 		}
 	});
 });

@@ -89,6 +89,9 @@ export {
 	AmplifyError,
 	PlatformNotSupportedError,
 	createAssertionFunction,
+	ApiError,
+	ApiErrorParams,
+	ApiErrorResponse,
 } from './errors';
 export {
 	AmplifyErrorCode,

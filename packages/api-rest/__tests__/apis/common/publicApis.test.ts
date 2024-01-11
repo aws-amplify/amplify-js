@@ -7,6 +7,7 @@ import {
 	unauthenticatedHandler,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { ApiError } from '@aws-amplify/core/internals/utils';
 
 import {
 	get,
@@ -289,14 +290,14 @@ describe('public APIs', () => {
 			});
 
 			it('should throw when response is not ok', async () => {
-				expect.assertions(2);
+				expect.assertions(4);
 				const errorResponse = {
 					statusCode: 400,
 					headers: {},
 					body: {
 						blob: jest.fn(),
 						json: jest.fn(),
-						text: jest.fn(),
+						text: jest.fn().mockResolvedValueOnce('custom error message'),
 					},
 				};
 				mockParseJsonError.mockResolvedValueOnce(
@@ -312,6 +313,12 @@ describe('public APIs', () => {
 				} catch (error) {
 					expect(mockParseJsonError).toHaveBeenCalledWith(errorResponse);
 					expect(error).toEqual(expect.any(RestApiError));
+					expect(error).toEqual(expect.any(ApiError));
+					expect((error as ApiError).response).toEqual({
+						statusCode: 400,
+						headers: {},
+						body: 'custom error message',
+					});
 				}
 			});
 
