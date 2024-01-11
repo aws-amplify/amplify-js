@@ -112,7 +112,7 @@ describe('fetchAuthSession behavior for UserPools only', () => {
 		);
 
 		const session = await fetchAuthSession();
-		console.log(session);
+
 		expect(session).toEqual({
 			credentials: undefined,
 			identityId: undefined,
