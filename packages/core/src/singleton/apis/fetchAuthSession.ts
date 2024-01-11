@@ -3,34 +3,12 @@
 
 import { fetchAuthSession as fetchAuthSessionInternal } from './internal/fetchAuthSession';
 import { Amplify } from '../Amplify';
-import { AuthSession, FetchAuthSessionOptions } from '../Auth/types';
+import { FetchAuthSessionOptions } from '../Auth/types';
+import { debounceCallback } from '../../utils/debounceCallback';
 
-let inflightAuthSessionPromise: Promise<AuthSession>;
-let inflightAuthSessionPromiseCounter = 0;
-
-async function debouncedFetchAuhtSession(
-	options?: FetchAuthSessionOptions
-): Promise<AuthSession> {
-	if (inflightAuthSessionPromiseCounter === 0) {
-		inflightAuthSessionPromise = new Promise(async (resolve, reject) => {
-			try {
-				const session = await fetchAuthSessionInternal(Amplify, options);
-				resolve(session);
-			} catch (error) {
-				reject(error);
-			}
-		});
-	}
-	inflightAuthSessionPromiseCounter++;
-	try {
-		return await inflightAuthSessionPromise;
-	} finally {
-		inflightAuthSessionPromiseCounter--;
-	}
-}
-
-export const fetchAuthSession = (
-	options?: FetchAuthSessionOptions
-): Promise<AuthSession> => {
-	return debouncedFetchAuhtSession(options)
-};
+export const fetchAuthSession = debounceCallback(
+	async (options?: FetchAuthSessionOptions) => {
+		return fetchAuthSessionInternal(Amplify, options);
+	},
+	300
+);

@@ -7,11 +7,13 @@ import {
 } from '../../../src/providers/cognito';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
+jest.useFakeTimers();
 describe('fetchAuthSession behavior for IdentityPools only', () => {
 	let credentialsProviderSpy;
 	afterEach(() => {
 		jest.resetAllMocks();
 		jest.clearAllMocks();
+		jest.runAllTimers();
 	});
 	beforeEach(() => {
 		credentialsProviderSpy = jest
@@ -110,7 +112,7 @@ describe('fetchAuthSession behavior for UserPools only', () => {
 		);
 
 		const session = await fetchAuthSession();
-
+		console.log(session);
 		expect(session).toEqual({
 			credentials: undefined,
 			identityId: undefined,
