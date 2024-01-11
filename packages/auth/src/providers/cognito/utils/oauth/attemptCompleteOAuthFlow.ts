@@ -37,11 +37,11 @@ export const attemptCompleteOAuthFlow = async (
 	// when there is valid oauth config and there is an inflight oauth flow, try
 	// to block async calls that require fetching tokens before the oauth flow completes
 	// e.g. getCurrentUser, fetchAuthSession etc.
+	const asyncGetSessionBlocker = new Promise<void>((resolve, _) => {
+		addInflightPromise(resolve);
+	});
 	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
-		() =>
-			new Promise(async (res, _rej) => {
-				addInflightPromise(res);
-			})
+		() => asyncGetSessionBlocker
 	);
 
 	try {
