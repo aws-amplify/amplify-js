@@ -47,18 +47,21 @@ export const parseRestApiServiceError = async (
 /**
  * The response object needs to be stub here because the parseAwsJsonError assumes the response body to be valid JSON.
  * Although this is true for AWS services, it is not true for responses from user's code. Once the response body is
- * unwrapped as JSON(and failed), it cannot be read as text again. Therefore, we need to stub the response body here to
+ * unwrapped as JSON(and fail), it cannot be read as text again. Therefore, we need to stub the response body here to
  * make sure we can read the error response body as a JSON, and may fall back to read as text if it is not a valid JSON.
  */
 const stubErrorResponse = (response: HttpResponse): HttpResponse => {
-	const bodyText = response.body?.text();
+	let bodyTextPromise: Promise<string> | undefined = undefined;
 	return {
 		...response,
 		body: {
 			json: async () => {
+				if (!bodyTextPromise) {
+					bodyTextPromise = response.body?.text();
+				}
 				try {
-					return JSON.parse(await bodyText);
-				} catch (e) {
+					return JSON.parse(await bodyTextPromise!);
+				} catch (error) {
 					// If response body is not a valid JSON, we stub it to be an empty object and eventually parsed as
 					// an unknown error
 					return {};
@@ -66,7 +69,12 @@ const stubErrorResponse = (response: HttpResponse): HttpResponse => {
 			},
 			blob: async () => {},
 			// For non-AWS errors, users can access the body as a string as a fallback.
-			text: async () => bodyText,
+			text: async () => {
+				if (!bodyTextPromise) {
+					bodyTextPromise = response.body?.text();
+				}
+				return bodyTextPromise;
+			},
 		} as any,
 	};
 };
