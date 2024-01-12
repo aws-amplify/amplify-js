@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "6.0.11",
+	"version": "6.0.12",
 	"description": "Api category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -81,8 +81,8 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-amplify/api-graphql": "4.0.11",
-		"@aws-amplify/api-rest": "4.0.11",
+		"@aws-amplify/api-graphql": "4.0.12",
+		"@aws-amplify/api-rest": "4.0.12",
 		"tslib": "^2.5.0"
 	}
 }
