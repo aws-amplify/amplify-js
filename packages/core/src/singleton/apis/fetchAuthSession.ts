@@ -3,10 +3,11 @@
 
 import { fetchAuthSession as fetchAuthSessionInternal } from './internal/fetchAuthSession';
 import { Amplify } from '../Amplify';
-import { AuthSession, FetchAuthSessionOptions } from '../Auth/types';
+import { FetchAuthSessionOptions } from '../Auth/types';
+import { debounceCallback } from '../../utils/debounceCallback';
 
-export const fetchAuthSession = (
-	options?: FetchAuthSessionOptions
-): Promise<AuthSession> => {
-	return fetchAuthSessionInternal(Amplify, options);
-};
+export const fetchAuthSession = debounceCallback(
+	(options?: FetchAuthSessionOptions) => {
+		return fetchAuthSessionInternal(Amplify, options);
+	}
+);
