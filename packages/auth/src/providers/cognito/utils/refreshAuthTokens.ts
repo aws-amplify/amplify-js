@@ -14,7 +14,7 @@ import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
 import { getUserContextData } from './userContextData';
 
-export const refreshAuthTokens: TokenRefresher = async ({
+const refreshAuthTokensCallback: TokenRefresher = async ({
 	tokens,
 	authConfig,
 	username,
@@ -41,8 +41,7 @@ export const refreshAuthTokens: TokenRefresher = async ({
 		userPoolClientId: authConfig.Cognito.userPoolClientId,
 	});
 
-	const deDuplicatedInitiateAuth = deDupCallback(initiateAuth);
-	const { AuthenticationResult } = await deDuplicatedInitiateAuth(
+	const { AuthenticationResult } = await initiateAuth(
 		{ region },
 		{
 			ClientId: authConfig?.Cognito?.userPoolClientId,
@@ -74,3 +73,5 @@ export const refreshAuthTokens: TokenRefresher = async ({
 		username,
 	};
 };
+
+export const refreshAuthTokens = deDupCallback(refreshAuthTokensCallback);
