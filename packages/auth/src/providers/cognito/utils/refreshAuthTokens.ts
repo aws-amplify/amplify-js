@@ -6,6 +6,7 @@ import { AuthConfig } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
 	decodeJWT,
+	deDupCallback,
 } from '@aws-amplify/core/internals/utils';
 import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
@@ -40,7 +41,8 @@ export const refreshAuthTokens: TokenRefresher = async ({
 		userPoolClientId: authConfig.Cognito.userPoolClientId,
 	});
 
-	const { AuthenticationResult } = await initiateAuth(
+	const deDuplicatedInitiateAuth = deDupCallback(initiateAuth);
+	const { AuthenticationResult } = await deDuplicatedInitiateAuth(
 		{ region },
 		{
 			ClientId: authConfig?.Cognito?.userPoolClientId,
