@@ -8,7 +8,6 @@ import {
 	getRetryDecider,
 	jitteredBackoff,
 	authenticatedHandler,
-	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	AWSCredentials,
@@ -63,9 +62,7 @@ export const transferHandler = async (
 		body: resolvedBody,
 	};
 	const baseOptions = {
-		// The retry decider assumes AWS service error with JSON payload(APIGateway, Bedrock etc.). It can only detect
-		// retryable errors conforming to the AWS error structure.
-		retryDecider: getRetryDecider(parseJsonError),
+		retryDecider: getRetryDecider(parseRestApiServiceError),
 		computeDelay: jitteredBackoff,
 		withCrossDomainCredentials: withCredentials,
 		abortSignal,
