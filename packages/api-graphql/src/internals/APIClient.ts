@@ -342,12 +342,17 @@ function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
 	const { fields } = modelDefinition;
 	const explicitFields = Object.values<any>(fields)
 		// Default selection set omits model fields
-		.map(
-			({ type, name }) =>
-				(typeof type === 'string' ||
-					(typeof type === 'object' && typeof type?.enum === 'string')) &&
-				name
-		)
+		.map(({ type, name }) => {
+			if (typeof type === 'string') return name;
+
+			if (typeof type === 'object') {
+				if (typeof type?.enum === 'string') {
+					return name;
+				} else if (typeof type?.nonModel === 'string') {
+					return `${name}.${SELECTION_SET_WILDCARD}`;
+				}
+			}
+		})
 		.filter(Boolean);
 
 	// fields used for owner auth rules that may or may not also
@@ -466,7 +471,10 @@ export function customSelectionSetToIR(
 			const nonModelField = nonModelDefinition?.fields?.[fieldName];
 
 			if (!nonModelDefinition) {
-				if (!modelField) {
+				const isOwnerField =
+					resolveOwnerFields(modelDefinition).includes(fieldName);
+
+				if (!modelField && !isOwnerField) {
 					throw Error(
 						`${fieldName} is not a field of model ${modelOrNonModelName}`
 					);
@@ -605,14 +613,10 @@ export function generateSelectionSet(
 ) {
 	const modelDefinition = modelInstrospection.models[modelName];
 
-	if (!selectionSet) {
-		return defaultSelectionSetForModel(modelDefinition).join(' ');
-	}
-
 	const selSetIr = customSelectionSetToIR(
 		modelInstrospection,
 		modelName,
-		selectionSet
+		selectionSet ?? defaultSelectionSetForModel(modelDefinition)
 	);
 	const selSetString = selectionSetIRToString(selSetIr);
 

@@ -25,7 +25,13 @@ export function subscriptionFactory(
 	const { name } = model as any;
 
 	const subscription = (args?: any) => {
-		const query = generateGraphQLDocument(modelIntrospection, name, operation);
+		const query = generateGraphQLDocument(
+			modelIntrospection,
+			name,
+			operation,
+			args
+		);
+
 		const variables = buildGraphQLVariables(
 			model,
 			operation,
