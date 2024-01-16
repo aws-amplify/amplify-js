@@ -17,7 +17,7 @@ export {
 	retry,
 	urlSafeDecode,
 	urlSafeEncode,
-	deDupCallback,
+	deDupeAsyncRequests,
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { LegacyConfig } from './singleton/types';

@@ -13821,10 +13821,10 @@ tuf-js@^1.1.7:
     debug "^4.3.4"
     make-fetch-happen "^11.1.1"
 
-type-coverage-core@^2.17.2:
-  version "2.26.3"
-  resolved "https://registry.yarnpkg.com/type-coverage-core/-/type-coverage-core-2.26.3.tgz#47e2c8225f582d1ca9551c2bace20836b295c944"
-  integrity sha512-rzNdW/tClHJvsUiy787b/UX53bNh1Dn7A5KqZDQjkL3j7iKFv/KnTolxDBBgTPcK4Zn9Ab7WLrik7cXw2oZZqw==
+type-coverage-core@^2.23.0:
+  version "2.27.1"
+  resolved "https://registry.yarnpkg.com/type-coverage-core/-/type-coverage-core-2.27.1.tgz#f552cdabfcbe71408a4cd3886a2c9e4e50cbdbc7"
+  integrity sha512-W+PMYbhUsq+UWkrb7UkmyO7zF3zt4qZuQukyDM6eaiCIkMJclcVmR3O02clDk4FKpKPbzHictOmoIu3fYp+53g==
   dependencies:
     fast-glob "3"
     minimatch "6 || 7 || 8 || 9"
@@ -13905,10 +13905,10 @@ typedoc@^0.17.0:
     shelljs "^0.8.4"
     typedoc-default-themes "^0.10.2"
 
-typescript-coverage-report@^0.6.4:
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/typescript-coverage-report/-/typescript-coverage-report-0.6.4.tgz#3a7a7724c0f27de50d2a0708c7b7b7088bed2055"
-  integrity sha512-G+0OFYxwN5oRbORlU1nKYtO00G567lcl4+nbg3MU3Y9ayFnh677dMHmAL4JGP/4Cb1IBN5h/DUQDr/z9X+9lag==
+typescript-coverage-report@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/typescript-coverage-report/-/typescript-coverage-report-0.8.0.tgz#d189f7074c1c91ea5c4014c2c7b507037975ff91"
+  integrity sha512-qYUrPt2CISyXTzwwyD7g6lciovvb2qQGMZKC7zHf2TiLg8QJ6cybYKX1/TETB/BzxaSU7+2FVjiIq3q1TG8A0w==
   dependencies:
     chalk "^4.0.0"
     cli-table3 "^0.6.1"
@@ -13918,7 +13918,7 @@ typescript-coverage-report@^0.6.4:
     react-dom "^16.13.1"
     rimraf "^3.0.2"
     semantic-ui-react "^0.88.2"
-    type-coverage-core "^2.17.2"
+    type-coverage-core "^2.23.0"
 
 typescript@4.2.x:
   version "4.2.4"

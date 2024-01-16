@@ -7,11 +7,11 @@
  * @param callback - callback to be deDup.
  * @returns - the return type of the callback
  */
-export const deDupCallback = <F extends (...args: any[]) => any>(
-	callback: F
+export const deDupeAsyncRequests = <A extends any[], R>(
+	callback: (...args: A) => Promise<R>
 ) => {
-	let inflightPromise: Promise<Awaited<ReturnType<F>>> | undefined;
-	return async (...args: Parameters<F>): Promise<Awaited<ReturnType<F>>> => {
+	let inflightPromise: Promise<Awaited<R>> | undefined;
+	return async (...args: A): Promise<Awaited<R>> => {
 		if (inflightPromise) return inflightPromise;
 
 		if (!inflightPromise) {

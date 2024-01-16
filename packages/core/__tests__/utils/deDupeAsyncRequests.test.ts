@@ -1,22 +1,25 @@
-import { debounceCallback } from '../../src/utils/debounceCallback';
+import { deDupeAsyncRequests } from '../../src/utils/deDupeAsyncRequests';
 
 describe('test debounce callback', () => {
 	const numberOfConcurrentCalls = 10;
 	const mockServiceCallback = jest.fn();
 
+	beforeEach(() => {
+		mockServiceCallback.mockImplementation(async () => {});
+	});
 	afterEach(() => {
 		mockServiceCallback.mockClear();
 	});
 
 	it('should allow to invoke the callback when there is no concurrent calls', async () => {
-		const debouncedCallback = debounceCallback(mockServiceCallback);
+		const debouncedCallback = deDupeAsyncRequests(mockServiceCallback);
 
 		debouncedCallback();
 		expect(mockServiceCallback).toHaveBeenCalledTimes(1);
 	});
 
 	it('should invoke the callback one time during concurrent sync calls', () => {
-		const debouncedCallback = debounceCallback(mockServiceCallback);
+		const debouncedCallback = deDupeAsyncRequests(mockServiceCallback);
 		for (let i = 0; i < numberOfConcurrentCalls; i++) {
 			debouncedCallback();
 		}
@@ -24,7 +27,7 @@ describe('test debounce callback', () => {
 	});
 
 	it('should allow to invoke the callback again after the promise has being resolved', async () => {
-		const debouncedCallback = debounceCallback(mockServiceCallback);
+		const debouncedCallback = deDupeAsyncRequests(mockServiceCallback);
 		for (let i = 0; i < numberOfConcurrentCalls; i++) {
 			debouncedCallback();
 		}
@@ -37,8 +40,9 @@ describe('test debounce callback', () => {
 
 	it('should return a value once the callback is resolved', async () => {
 		const mockReturnValue = { id: 1 };
-		mockServiceCallback.mockImplementation(() => mockReturnValue);
-		const debouncedCallback = debounceCallback(mockServiceCallback);
+		
+		mockServiceCallback.mockImplementation(async () => mockReturnValue);
+		const debouncedCallback = deDupeAsyncRequests(mockServiceCallback);
 		const result = await debouncedCallback();
 		expect(result).toEqual(mockReturnValue);
 		expect(mockServiceCallback).toHaveBeenCalledTimes(1);

@@ -384,7 +384,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "25.89 kB"
+			"limit": "25.94 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",

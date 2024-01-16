@@ -15,4 +15,4 @@ export {
 export { urlSafeDecode } from './urlSafeDecode';
 export { urlSafeEncode } from './urlSafeEncode';
 export { deepFreeze } from './deepFreeze';
-export { deDupCallback } from './deDupCallback';
+export { deDupeAsyncRequests } from './deDupeAsyncRequests';
