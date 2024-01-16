@@ -32,7 +32,7 @@ export class ApiError extends AmplifyError {
 	/**
 	 * The unwrapped HTTP response causing the given API error.
 	 */
-	public get response(): ApiErrorResponse | undefined {
+	get response(): ApiErrorResponse | undefined {
 		return this._response
 			? replicateApiErrorResponse(this._response)
 			: undefined;

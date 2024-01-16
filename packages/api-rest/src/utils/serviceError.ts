@@ -30,12 +30,7 @@ export const parseRestApiServiceError = async (
 		// Response is not considered an error.
 		return;
 	} else {
-		let bodyText: string | undefined = undefined;
-		try {
-			bodyText = await response.body?.text();
-		} catch (error) {
-			// SKIP: error response may not have a body
-		}
+		const bodyText = await response.body?.text();
 		return buildRestApiError(parsedAwsError, {
 			statusCode: response.statusCode,
 			headers: response.headers,
@@ -52,31 +47,45 @@ export const parseRestApiServiceError = async (
  */
 const stubErrorResponse = (response: HttpResponse): HttpResponse => {
 	let bodyTextPromise: Promise<string> | undefined = undefined;
-	return {
-		...response,
-		body: {
-			json: async () => {
-				if (!bodyTextPromise) {
-					bodyTextPromise = response.body?.text();
-				}
-				try {
-					return JSON.parse(await bodyTextPromise!);
-				} catch (error) {
-					// If response body is not a valid JSON, we stub it to be an empty object and eventually parsed as
-					// an unknown error
-					return {};
-				}
-			},
-			blob: async () => {},
-			// For non-AWS errors, users can access the body as a string as a fallback.
-			text: async () => {
-				if (!bodyTextPromise) {
-					bodyTextPromise = response.body?.text();
-				}
-				return bodyTextPromise;
-			},
-		} as any,
-	};
+	const bodyProxy = new Proxy(response.body, {
+		get(target, prop, receiver) {
+			if (prop === 'json') {
+				// For potential AWS errors, error parser will try to parse the body as JSON first.
+				return async () => {
+					if (!bodyTextPromise) {
+						bodyTextPromise = target.text();
+					}
+					try {
+						return JSON.parse(await bodyTextPromise!);
+					} catch (error) {
+						// If response body is not a valid JSON, we stub it to be an empty object and eventually parsed
+						// as an unknown error
+						return {};
+					}
+				};
+			} else if (prop === 'text') {
+				// For non-AWS errors, users can access the body as a string as a fallback.
+				return async () => {
+					if (!bodyTextPromise) {
+						bodyTextPromise = target.text();
+					}
+					return bodyTextPromise;
+				};
+			} else {
+				return Reflect.get(target, prop, receiver);
+			}
+		},
+	});
+	const responseProxy = new Proxy(response, {
+		get(target, prop, receiver) {
+			if (prop === 'body') {
+				return bodyProxy;
+			} else {
+				return Reflect.get(target, prop, receiver);
+			}
+		},
+	});
+	return responseProxy;
 };
 
 /**
