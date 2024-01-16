@@ -128,7 +128,7 @@ export interface OAuthStore {
 	clearOAuthData(): Promise<void>;
 }
 function isAuthenticated(tokens?: CognitoAuthTokens | null) {
-	return tokens?.accessToken && tokens?.idToken;
+	return tokens?.accessToken || tokens?.idToken;
 }
 
 function isAuthenticatedWithRefreshToken(tokens?: CognitoAuthTokens | null) {
