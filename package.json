@@ -114,7 +114,7 @@
 		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "^0.17.0",
 		"typescript": "^4.3.5",
-		"typescript-coverage-report": "^0.8.0",
+		"typescript-coverage-report": "^0.6.4",
 		"uuid-validate": "^0.0.3",
 		"webpack": "^5.75.0",
 		"webpack-bundle-analyzer": "^4.7.0",

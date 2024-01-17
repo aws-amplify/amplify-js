@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// this will make the tsc-complience-test to pass
+// this will make the tsc-compliance-test to pass
 type Awaited<T> = T extends null | undefined
 	? T // special case for `null | undefined` when not in `--strictNullChecks` mode
 	: T extends object & { then(onfulfilled: infer F, ...args: infer _): any } // `await` only unwraps object types with a callable `then`. Non-object types are not unwrapped
@@ -10,33 +10,29 @@ type Awaited<T> = T extends null | undefined
 			: never // the argument to `then` was not callable
 	  : T; //
 /**
- * returns inflight promise if there hasn't been resolved yet
+ * returns in-flight promise if there is one
  *
- * @param callback - callback to be deDup.
+ * @param callback - callback to be deduped.
  * @returns - the return type of the callback
  */
-export const deDupeAsyncRequests = <A extends any[], R>(
-	callback: (...args: A) => Promise<R>
+export const deDupeAsyncFunction = <A extends any[], R>(
+	fun: (...args: A) => Promise<R>
 ) => {
 	let inflightPromise: Promise<Awaited<R>> | undefined;
 	return async (...args: A): Promise<Awaited<R>> => {
 		if (inflightPromise) return inflightPromise;
 
-		if (!inflightPromise) {
-			inflightPromise = new Promise(async (resolve, reject) => {
-				try {
-					const result = await callback(...args);
-					resolve(result);
-				} catch (error) {
-					reject(error);
-				}
-			});
-		}
+		inflightPromise = new Promise(async (resolve, reject) => {
+			try {
+				const result = await fun(...args);
+				resolve(result);
+			} catch (error) {
+				reject(error);
+			} finally {
+				inflightPromise = undefined;
+			}
+		});
 
-		try {
-			return await inflightPromise;
-		} finally {
-			inflightPromise = undefined;
-		}
+		return await inflightPromise;
 	};
 };

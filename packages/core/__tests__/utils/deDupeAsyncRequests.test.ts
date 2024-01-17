@@ -1,50 +1,50 @@
-import { deDupeAsyncRequests } from '../../src/utils/deDupeAsyncRequests';
+import { deDupeAsyncFunction } from '../../src/utils/deDupeAsyncFunction';
 
-describe('test debounce callback', () => {
+describe('dedupeAsyncFunction()', () => {
 	const numberOfConcurrentCalls = 10;
-	const mockServiceCallback = jest.fn();
+	const mockServiceFunction = jest.fn();
+	const mockReturnValue = { id: 1 };
 
 	beforeEach(() => {
-		mockServiceCallback.mockImplementation(async () => {});
+		mockServiceFunction.mockImplementation(async () => mockReturnValue);
 	});
 	afterEach(() => {
-		mockServiceCallback.mockClear();
+		mockServiceFunction.mockClear();
 	});
 
-	it('should allow to invoke the callback when there is no concurrent calls', async () => {
-		const debouncedCallback = deDupeAsyncRequests(mockServiceCallback);
+	it('should invoke the mockServiceFunction', async () => {
+		const deDupedFunction = deDupeAsyncFunction(mockServiceFunction);
 
-		debouncedCallback();
-		expect(mockServiceCallback).toHaveBeenCalledTimes(1);
+		deDupedFunction();
+		expect(mockServiceFunction).toHaveBeenCalledTimes(1);
 	});
 
-	it('should invoke the callback one time during concurrent sync calls', () => {
-		const debouncedCallback = deDupeAsyncRequests(mockServiceCallback);
+	it('should invoke the mockServiceFunction one time during concurrent sync calls', () => {
+		const deDupedFunction = deDupeAsyncFunction(mockServiceFunction);
 		for (let i = 0; i < numberOfConcurrentCalls; i++) {
-			debouncedCallback();
+			deDupedFunction();
 		}
-		expect(mockServiceCallback).toHaveBeenCalledTimes(1);
+		expect(mockServiceFunction).toHaveBeenCalledTimes(1);
 	});
 
-	it('should allow to invoke the callback again after the promise has being resolved', async () => {
-		const debouncedCallback = deDupeAsyncRequests(mockServiceCallback);
+	it('should return a value once the mockServiceFunction is resolved', async () => {
+		const deDupedFunction = deDupeAsyncFunction(mockServiceFunction);
+		expect(await deDupedFunction()).toEqual(mockReturnValue);
+		expect(mockServiceFunction).toHaveBeenCalledTimes(1);
+	});
+
+	it('should allow to invoke the mockServiceFunction again after the promise has being resolved', async () => {
+		const deDupedFunction = deDupeAsyncFunction(mockServiceFunction);
 		for (let i = 0; i < numberOfConcurrentCalls; i++) {
-			debouncedCallback();
+			expect(deDupedFunction()).toBeInstanceOf(Promise);
 		}
 
-		await debouncedCallback();
+		// resolves the promise
+		expect(await deDupedFunction()).toEqual(mockReturnValue);
 
-		debouncedCallback();
-		expect(mockServiceCallback).toHaveBeenCalledTimes(2);
-	});
+		// should allow to call the mockServiceFunction again
+		deDupedFunction();
 
-	it('should return a value once the callback is resolved', async () => {
-		const mockReturnValue = { id: 1 };
-		
-		mockServiceCallback.mockImplementation(async () => mockReturnValue);
-		const debouncedCallback = deDupeAsyncRequests(mockServiceCallback);
-		const result = await debouncedCallback();
-		expect(result).toEqual(mockReturnValue);
-		expect(mockServiceCallback).toHaveBeenCalledTimes(1);
+		expect(mockServiceFunction).toHaveBeenCalledTimes(2);
 	});
 });
