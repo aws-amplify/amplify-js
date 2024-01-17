@@ -12,11 +12,11 @@ type Awaited<T> = T extends null | undefined
 /**
  * returns in-flight promise if there is one
  *
- * @param callback - callback to be deduped.
+ * @param asyncFunction - asyncFunction to be deduped.
  * @returns - the return type of the callback
  */
 export const deDupeAsyncFunction = <A extends any[], R>(
-	fun: (...args: A) => Promise<R>
+	asyncFunction: (...args: A) => Promise<R>
 ) => {
 	let inflightPromise: Promise<Awaited<R>> | undefined;
 	return async (...args: A): Promise<Awaited<R>> => {
@@ -24,7 +24,7 @@ export const deDupeAsyncFunction = <A extends any[], R>(
 
 		inflightPromise = new Promise(async (resolve, reject) => {
 			try {
-				const result = await fun(...args);
+				const result = await asyncFunction(...args);
 				resolve(result);
 			} catch (error) {
 				reject(error);
@@ -33,6 +33,6 @@ export const deDupeAsyncFunction = <A extends any[], R>(
 			}
 		});
 
-		return await inflightPromise;
+		return inflightPromise;
 	};
 };
