@@ -13822,9 +13822,9 @@ tuf-js@^1.1.7:
     make-fetch-happen "^11.1.1"
 
 type-coverage-core@^2.17.2:
-  version "2.27.1"
-  resolved "https://registry.yarnpkg.com/type-coverage-core/-/type-coverage-core-2.27.1.tgz#f552cdabfcbe71408a4cd3886a2c9e4e50cbdbc7"
-  integrity sha512-W+PMYbhUsq+UWkrb7UkmyO7zF3zt4qZuQukyDM6eaiCIkMJclcVmR3O02clDk4FKpKPbzHictOmoIu3fYp+53g==
+  version "2.26.3"
+  resolved "https://registry.yarnpkg.com/type-coverage-core/-/type-coverage-core-2.26.3.tgz#47e2c8225f582d1ca9551c2bace20836b295c944"
+  integrity sha512-rzNdW/tClHJvsUiy787b/UX53bNh1Dn7A5KqZDQjkL3j7iKFv/KnTolxDBBgTPcK4Zn9Ab7WLrik7cXw2oZZqw==
   dependencies:
     fast-glob "3"
     minimatch "6 || 7 || 8 || 9"
