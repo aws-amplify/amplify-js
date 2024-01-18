@@ -279,7 +279,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					const session = await fetchAuthSession();
+					const session = await await fetchAuthSession();
 					oidcTokenPayload = session.tokens?.idToken?.payload;
 				} catch (err) {
 					// best effort to get jwt from Cognito
