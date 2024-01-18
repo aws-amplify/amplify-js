@@ -300,13 +300,13 @@
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./dist/esm/analytics/kinesis/index.mjs",
 			"import": "{ record }",
-			"limit": "44.48 kB"
+			"limit": "44.47 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
 			"path": "./dist/esm/analytics/kinesis-firehose/index.mjs",
 			"import": "{ record }",
-			"limit": "41.54 kB"
+			"limit": "41.50 kB"
 		},
 		{
 			"name": "[Analytics] record (Personalize)",
@@ -384,7 +384,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "25.94 kB"
+			"limit": "25.89 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -396,19 +396,19 @@
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchMFAPreference }",
-			"limit": "8.35 kB"
+			"limit": "8.30 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "9.18 kB"
+			"limit": "9.13 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "9.19 kB"
+			"limit": "9.14 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -420,7 +420,7 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "8.46 kB"
+			"limit": "8.41 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
@@ -432,7 +432,7 @@
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmUserAttribute }",
-			"limit": "9.19 kB"
+			"limit": "9.15 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
