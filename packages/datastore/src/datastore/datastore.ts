@@ -1553,10 +1553,17 @@ class DataStore {
 						.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 						.subscribe({
 							next: ({ type, data }) => {
-								// In the Browser, we can begin returning data once subscriptions are in place.
-								const readyType = isBrowser()
-									? ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED
-									: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY;
+								const isNode =
+									typeof process !== 'undefined' &&
+									process.versions != null &&
+									process.versions.node != null;
+
+								// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
+								// In non-Node environments (the browser or React Native), we can begin returning data
+								// once subscriptions are in place.
+								const readyType = isNode
+									? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
+									: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
 
 								if (type === readyType) {
 									this.initResolve();
