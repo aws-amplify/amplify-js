@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - next/main
+      - revert/fetch-auth-session-dedupe
 
 jobs:
   e2e:
