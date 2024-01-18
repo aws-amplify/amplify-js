@@ -3,10 +3,8 @@
 
 import { fetchAuthSession as fetchAuthSessionInternal } from './internal/fetchAuthSession';
 import { Amplify } from '../Amplify';
-import { AuthSession, FetchAuthSessionOptions } from '../Auth/types';
+import { FetchAuthSessionOptions } from '../Auth/types';
 
-export const fetchAuthSession = (
-	options?: FetchAuthSessionOptions
-): Promise<AuthSession> => {
+export const fetchAuthSession = (options?: FetchAuthSessionOptions) => {
 	return fetchAuthSessionInternal(Amplify, options);
 };
