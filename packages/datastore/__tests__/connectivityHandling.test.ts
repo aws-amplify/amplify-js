@@ -10,7 +10,7 @@ import {
 } from './helpers';
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
-import { isNode } from '../src/util';
+import { isNode } from '../src/datastore/utils';
 
 /**
  * When DataStore starts, DataStore will send Control Messages based on the
@@ -18,10 +18,9 @@ import { isNode } from '../src/util';
  * `isNode` and `isBrowser` incorrectly evaluate to `true`. Here we set `isNode`
  * to `false`, without mocking the other utils.
  */
-jest.mock('../src/util', () => {
-	const originalModule = jest.requireActual('../src/util');
+jest.mock('../src/datastore/utils', () => {
+	const originalModule = jest.requireActual('../src/datastore/utils');
 
-	// Mock the named export 'isNode'
 	return {
 		__esModule: true,
 		...originalModule,

@@ -22,7 +22,6 @@ import {
 	USER,
 	isNonModelConstructor,
 	isModelConstructor,
-	isNode,
 } from './util';
 
 export { NAMESPACES } from './util';
@@ -33,7 +32,6 @@ export const utils = {
 	validatePredicate,
 	isNonModelConstructor,
 	isModelConstructor,
-	isNode,
 };
 
 export * from './types';

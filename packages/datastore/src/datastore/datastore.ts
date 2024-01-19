@@ -72,7 +72,7 @@ import {
 } from '../types';
 // tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
-import { isNode } from '../util';
+import { isNode } from './utils';
 
 import {
 	DATASTORE,
@@ -1563,7 +1563,6 @@ class DataStore {
 									? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
 									: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
 
-								// debugger;
 								if (type === readyType) {
 									this.initResolve();
 								}
