@@ -6,7 +6,7 @@ jobs:
   get-package-list:
     uses: ./.github/workflows/callable-get-package-list.yml
   unit_test:
-    name: Unit Test - ${{ matrix.package }}
+    name: Unit Test - ${{ matrix.package.name }}
     runs-on: ubuntu-latest
     needs: get-package-list
     strategy:
@@ -25,11 +25,16 @@ jobs:
         env:
           TEST_PACKAGE: ${{ matrix.package.name }}
         run: npx lerna exec --scope $TEST_PACKAGE yarn test
+      - name: Get coverage report flag
+        env:
+          PACKAGE_PATH: ${{ matrix.package.path }}
+        id: split-path
+        run: echo "REPORT_FLAG=${PACKAGE_PATH##*/}" >> $GITHUB_OUTPUT
       - name: Upload coverage report
         uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
         env:
           PACKAGE_DIRECTORY: ${{ matrix.package.path }}
         with:
           files: ./amplify-js/${{ env.PACKAGE_DIRECTORY }}/coverage/coverage-final.json
-          flags: ${{ env.PACKAGE_DIRECTORY }}
+          flags: ${{ steps.split-path.outputs.REPORT_FLAG }}
           fail_ci_if_error: true
