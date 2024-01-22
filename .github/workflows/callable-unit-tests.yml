@@ -30,6 +30,6 @@ jobs:
         env:
           PACKAGE_DIRECTORY: ${{ matrix.package.path }}
         with:
-          files: ./amplify-js/packages/${{ env.PACKAGE_DIRECTORY }}/coverage/coverage-final.json
+          files: ./amplify-js/${{ env.PACKAGE_DIRECTORY }}/coverage/coverage-final.json
           flags: ${{ env.PACKAGE_DIRECTORY }}
           fail_ci_if_error: true

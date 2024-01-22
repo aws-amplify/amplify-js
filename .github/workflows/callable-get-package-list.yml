@@ -31,11 +31,11 @@ jobs:
       - name: Dump Package List
         if: steps.cache-package-list.outputs.cache-hit != 'true'
         run: |
-          echo "packages=$(yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({ name: split(" ")[0], path: split(" ")[-1]})')" > package-list.json
+          echo "packages=$(yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({ name: split(" ")[0], path: split(" ")[-1]})')" > package-list.txt
       - name: Get Package List
         id: get_package_list
         run: |
-          cat package-list.json >> $GITHUB_OUTPUT
-          cat package-list.json
+          cat package-list.txt >> $GITHUB_OUTPUT
+          cat package-list.txt
     outputs:
       packages: ${{ steps.get_package_list.outputs.packages }}
