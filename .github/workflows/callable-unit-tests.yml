@@ -23,17 +23,12 @@ jobs:
       - name: Run tests
         working-directory: ./amplify-js
         env:
-          TEST_PACKAGE: ${{ matrix.package }}
+          TEST_PACKAGE: ${{ matrix.package.name }}
         run: npx lerna exec --scope $TEST_PACKAGE yarn test
-      - name: Get package directory name
-        env:
-          PACAKAGE_NAME: ${{ matrix.package }}
-        id: split
-        run: echo "::set-output name=packageDirectory::${PACAKAGE_NAME##*/}"
       - name: Upload coverage report
         uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
         env:
-          PACKAGE_DIRECTORY: ${{ steps.split.outputs.packageDirectory }}
+          PACKAGE_DIRECTORY: ${{ matrix.package.path }}
         with:
           files: ./amplify-js/packages/${{ env.PACKAGE_DIRECTORY }}/coverage/coverage-final.json
           flags: ${{ env.PACKAGE_DIRECTORY }}
