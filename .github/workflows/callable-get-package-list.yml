@@ -24,18 +24,18 @@ jobs:
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
       - name: Install
-        if: steps.cache-package-list.outputs.cache-hit != 'true'
+        # if: steps.cache-package-list.outputs.cache-hit != 'true'
         run: yarn
         shell: bash
       # Need the repo checked out in order to read the file
       - name: Dump Package List
-        if: steps.cache-package-list.outputs.cache-hit != 'true'
+        # if: steps.cache-package-list.outputs.cache-hit != 'true'
         run: |
-          echo "packages=$(yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({ name: split(" ")[0], path: split(" ")[-1]})')" > package-list.txt
+          echo "packages=$(yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({name: split(" ")[0], path: split(" ")[-1]})')" > package-list.json
       - name: Get Package List
         id: get_package_list
         run: |
-          cat package-list.txt >> $GITHUB_OUTPUT
-          cat package-list.txt
+          cat package-list.json >> $GITHUB_OUTPUT
+          cat package-list.json
     outputs:
       packages: ${{ steps.get_package_list.outputs.packages }}
