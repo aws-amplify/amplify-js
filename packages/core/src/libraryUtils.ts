@@ -24,6 +24,7 @@ export { LegacyConfig } from './singleton/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
+export { getDeviceId } from './utils';
 
 // Auth utilities
 export {

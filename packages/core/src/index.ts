@@ -74,3 +74,6 @@ export { ConsoleLogger } from './logging';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
+
+// Queued storage utilities
+export { createQueuedStorage, QueuedStorage } from './utils/queuedStorage';
