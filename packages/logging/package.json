@@ -25,9 +25,6 @@
 	},
 	"typesVersions": {
 		">=4.2": {
-			"console": [
-				"./dist/esm/providers/console/index.d.ts"
-			],
 			"cloudwatch": [
 				"./dist/esm/providers/cloudwatch/index.d.ts"
 			]
@@ -39,12 +36,6 @@
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
 			"react-native": "./src/index.ts"
-		},
-		"./console": {
-			"types": "./dist/esm/providers/console/index.d.ts",
-			"import": "./dist/esm/providers/console/index.mjs",
-			"require": "./dist/cjs/providers/console/index.js",
-			"react-native": "./src/providers/console/index.ts"
 		},
 		"./cloudwatch": {
 			"types": "./dist/esm/providers/cloudwatch/index.d.ts",
@@ -68,7 +59,6 @@
 		"dist/cjs",
 		"dist/esm",
 		"src",
-		"console",
 		"cloudwatch"		
 	],
 	"dependencies": {

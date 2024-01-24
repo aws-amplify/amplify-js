@@ -161,12 +161,6 @@
 			"require": "./dist/cjs/logging/index.js",
 			"react-native": "./src/logging/index.ts"
 		},
-		"./logging/console": {
-			"types": "./dist/esm/logging/console/index.d.ts",
-			"import": "./dist/esm/logging/console/index.mjs",
-			"require": "./dist/cjs/logging/console/index.js",
-			"react-native": "./src/logging/console/index.ts"
-		},
 		"./logging/cloudwatch": {
 			"types": "./dist/esm/logging/cloudwatch/index.d.ts",
 			"import": "./dist/esm/logging/cloudwatch/index.mjs",
@@ -248,9 +242,6 @@
 			],
 			"logging": [
 				"./dist/esm/logging/index.d.ts"
-			],
-			"logging/console": [
-				"./dist/esm/logging/console/index.d.ts"
 			],
 			"logging/cloudwatch": [
 				"./dist/esm/logging/cloudwatch/index.d.ts"
