@@ -62,7 +62,8 @@
 		"cloudwatch"		
 	],
 	"dependencies": {
-		"tslib": "^2.5.0"
+		"tslib": "^2.5.0",
+		"@aws-sdk/client-cloudwatch-logs": "3.398.0"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.0.0"

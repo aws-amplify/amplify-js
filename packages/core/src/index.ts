@@ -71,6 +71,9 @@ export { I18n } from './I18n';
 
 // Logging utilities
 export { ConsoleLogger } from './logging';
+export { LogLevel, LogParams, LoggingProvider } from './logging/types';
+export { checkLogLevel } from './logging/utils';
+export { LoggingCategory } from './types';
 
 // Service worker
 export { ServiceWorker } from './ServiceWorker';
