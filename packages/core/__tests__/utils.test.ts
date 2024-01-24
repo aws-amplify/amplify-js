@@ -8,7 +8,7 @@ import {
 } from '../src/utils';
 import { Reachability as ReachabilityNative } from '../src/Reachability/Reachability.native';
 import { Reachability } from '../src/Reachability/Reachability';
-import { ConsoleLogger } from '../src/logger';
+import { ConsoleLogger } from '../src/logging';
 import { DateUtils } from '../src/Signer/DateUtils';
 
 ConsoleLogger.LOG_LEVEL = 'DEBUG';
