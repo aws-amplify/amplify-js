@@ -3,5 +3,5 @@
 
 export { enable } from './enable';
 export { disable } from './disable';
-export { flushLogs } from './flushLogs';
-export { createLogger } from './createLogger';
+export { flushLogs } from '../providers/cloudwatch/apis/flushLogs';
+export { createLogger } from '../providers/cloudwatch/apis/createLogger';
