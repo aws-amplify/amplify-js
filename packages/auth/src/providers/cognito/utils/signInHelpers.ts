@@ -90,7 +90,7 @@ export async function handleCustomChallenge({
 }: HandleAuthChallengeRequest & {
 	tokenOrchestrator: AuthTokenOrchestrator;
 }): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
 		ANSWER: challengeResponse,
@@ -114,6 +114,9 @@ export async function handleCustomChallenge({
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	const response = await respondToAuthChallenge(
@@ -145,7 +148,7 @@ export async function handleMFASetupChallenge({
 	deviceName,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 	const challengeResponses = {
 		USERNAME: username,
 	};
@@ -173,6 +176,9 @@ export async function handleMFASetupChallenge({
 		Session,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
@@ -184,7 +190,7 @@ export async function handleSelectMFATypeChallenge({
 	session,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 	assertValidationError(
 		challengeResponse === 'TOTP' || challengeResponse === 'SMS',
 		AuthValidationErrorCode.IncorrectMFAMethod
@@ -208,6 +214,9 @@ export async function handleSelectMFATypeChallenge({
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	return respondToAuthChallenge(
@@ -226,7 +235,7 @@ export async function handleSMSMFAChallenge({
 	username,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 	const challengeResponses = {
 		USERNAME: username,
 		SMS_MFA_CODE: challengeResponse,
@@ -243,6 +252,9 @@ export async function handleSMSMFAChallenge({
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	return respondToAuthChallenge(
@@ -260,7 +272,7 @@ export async function handleSoftwareTokenMFAChallenge({
 	username,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 	const challengeResponses = {
 		USERNAME: username,
 		SOFTWARE_TOKEN_MFA_CODE: challengeResponse,
@@ -279,6 +291,9 @@ export async function handleSoftwareTokenMFAChallenge({
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 	return respondToAuthChallenge(
 		{
@@ -296,7 +311,7 @@ export async function handleCompleteNewPasswordChallenge({
 	requiredAttributes,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 	const challengeResponses = {
 		...createAttributes(requiredAttributes),
 		NEW_PASSWORD: challengeResponse,
@@ -316,6 +331,9 @@ export async function handleCompleteNewPasswordChallenge({
 		Session: session,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	return respondToAuthChallenge(
@@ -392,7 +410,7 @@ export async function handleUserSRPAuthFlow(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = await getAuthenticationHelper(userPoolName);
 
@@ -412,6 +430,9 @@ export async function handleUserSRPAuthFlow(
 		AuthParameters: authParameters,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 		UserContextData,
 	};
 
@@ -500,7 +521,7 @@ export async function handleCustomSRPAuthFlow(
 	tokenOrchestrator: AuthTokenOrchestrator
 ) {
 	assertTokenProviderConfig(config);
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = await getAuthenticationHelper(userPoolName);
@@ -523,6 +544,9 @@ export async function handleCustomSRPAuthFlow(
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	const { ChallengeParameters: challengeParameters, Session: session } =
@@ -601,7 +625,7 @@ async function handleDevicePasswordVerifier(
 	clientMetadata: ClientMetadata | undefined,
 	session: string | undefined,
 	authenticationHelper: AuthenticationHelper,
-	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig,
+	{ userPoolId, userPoolClientId, analyticsMetadata }: CognitoUserPoolConfig,
 	tokenOrchestrator?: AuthTokenOrchestrator
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
@@ -646,6 +670,9 @@ async function handleDevicePasswordVerifier(
 		Session: session,
 		ClientMetadata: clientMetadata,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	return respondToAuthChallenge(
@@ -663,7 +690,7 @@ export async function handlePasswordVerifierChallenge(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const serverBValue = new (BigInteger as any)(challengeParameters?.SRP_B, 16);
 	const salt = new (BigInteger as any)(challengeParameters?.SALT, 16);
@@ -713,6 +740,9 @@ export async function handlePasswordVerifierChallenge(
 		Session: session,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	const response = await respondToAuthChallenge(

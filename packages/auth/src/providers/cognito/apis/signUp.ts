@@ -82,6 +82,9 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			ClientMetadata: clientMetadata,
 			ValidationData: validationData && toAttributeType(validationData),
 			ClientId: authConfig.userPoolClientId,
+			AnalyticsMetadata: {
+				AnalyticsEndpointId: authConfig.analyticsMetadata?.analyticsEndpointId,
+			},
 		}
 	);
 	const { UserSub, CodeDeliveryDetails } = clientOutput;
