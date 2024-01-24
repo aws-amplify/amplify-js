@@ -114,4 +114,12 @@ describe('Util', () => {
 
 		expect(subscribe).not.toThrow();
 	});
+	test('Web Reachability isOnline method should return true when device is online', () => {
+		jest.spyOn(window.navigator, 'onLine', 'get').mockReturnValue(true);
+		expect(new Reachability().isOnline()).toBe(true);
+	});
+	test('Web Reachability isOnline method should return false when device is offline', () => {
+		jest.spyOn(window.navigator, 'onLine', 'get').mockReturnValue(false);
+		expect(new Reachability().isOnline()).toBe(false);
+	});
 });

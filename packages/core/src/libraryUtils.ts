@@ -24,6 +24,7 @@ export { LegacyConfig } from './singleton/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
+export { getDeviceId } from './utils/deviceId';
 
 // Auth utilities
 export {
@@ -105,7 +106,7 @@ export {
 // Other utilities & constants
 export { BackgroundProcessManager } from './BackgroundProcessManager';
 export { Mutex } from './Mutex';
-export { Reachability } from './Reachability';
+export { Reachability, NetworkConnectionMonitor } from './Reachability';
 export { USER_AGENT_HEADER } from './constants';
 export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
@@ -124,3 +125,18 @@ export {
 	SESSION_START_EVENT,
 	SESSION_STOP_EVENT,
 } from './utils/sessionListener';
+
+// Queued storage utilities
+export {
+	createQueuedStorage,
+	QueuedStorage,
+	QueuedItem,
+} from './utils/queuedStorage';
+
+// Logging utilities
+export {
+	LogLevel,
+	LogParams,
+	LoggingProvider,
+	LoggingCategory,
+} from './logging';

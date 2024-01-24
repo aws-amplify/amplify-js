@@ -6,3 +6,4 @@ export {
 	setLoggingConstraints,
 } from './loggingConstraints';
 export { setUpRemoteConfigurationRefresh } from './setUpRemoteConfigurationRefresh';
+export { getDefaultStreamName } from './utils';
