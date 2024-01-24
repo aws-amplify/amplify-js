@@ -25,3 +25,7 @@ jobs:
         env:
           TEST_PACKAGE: ${{ matrix.package }}
         run: npx lerna exec --scope $TEST_PACKAGE yarn test
+      - name: Upload test result
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        with:
+          files: ./amplify-js/packages/adapter-nextjs/coverage/coverage-final.json
