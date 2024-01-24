@@ -25,3 +25,5 @@ jobs:
         env:
           TEST_PACKAGE: ${{ matrix.package }}
         run: npx lerna exec --scope $TEST_PACKAGE yarn test
+      - name: Upload test result
+        run: echo 'hello'
