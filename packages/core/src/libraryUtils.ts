@@ -25,7 +25,7 @@ export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
 export { getDeviceId } from './utils';
-
+export { NetworkConnectionMonitor } from './logger';
 // Auth utilities
 export {
 	decodeJWT,

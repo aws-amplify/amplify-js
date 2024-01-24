@@ -16,7 +16,10 @@ import {
 	QueuedStorage,
 } from '@aws-amplify/core';
 import { QueuedItem } from '@aws-amplify/core/dist/esm/utils/queuedStorage/types';
-import { getDeviceId } from '@aws-amplify/core/internals/utils';
+import {
+	getDeviceId,
+	NetworkConnectionMonitor,
+} from '@aws-amplify/core/internals/utils';
 import { AwsCredentialIdentity } from '@aws-sdk/types/dist-types/identity/AwsCredentialIdentity';
 
 export const DEFAULT_LOG_LEVEL: LogLevel = 'INFO';
@@ -24,6 +27,8 @@ const GUEST_USER_ID_FOR_LOG_STREAM_NAME: string = 'INFO';
 let cloudWatchConfig: CloudWatchConfig;
 let queuedStorage: QueuedStorage;
 let cloudWatchSDKClient: CloudWatchLogsClient;
+let networkMonitor: NetworkConnectionMonitor;
+
 const defaultConfig = {
 	enable: true,
 	localStoreMaxSizeInMB: 5,
@@ -57,6 +62,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 			region,
 			credentials: _changeAwareCredentialsProvider,
 		});
+		networkMonitor = new NetworkConnectionMonitor();
 		// TODO: start a timer for flushIntervalInSeconds and start the sync to CW -- call startSyncIfNotInProgress
 	},
 	/**
@@ -132,8 +138,10 @@ async function _sendToCloudWatch(messages: InputLogEvent[]) {
 			logStreamName,
 		};
 		if (sdkClientConstraintsSatisfied(logBatch)) {
-			// TODO: Add connectivity monitor to try when the device is online
-			await cloudWatchSDKClient.send(new PutLogEventsCommand(logBatch));
+			networkMonitor.enableNetworkMonitoringFor(async () => {
+				// TODO: Add connectivity monitor to try when the device is online
+				await cloudWatchSDKClient.send(new PutLogEventsCommand(logBatch));
+			});
 			// TODO: retry with failed logs
 		}
 	} catch (error) {

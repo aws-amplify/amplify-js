@@ -4,6 +4,8 @@
 import { Observable, Subscription } from 'rxjs';
 import { Reachability } from '../../Reachability';
 import { NetworkStatus } from '../../Reachability/types';
+
+// TODO: Move this to types
 type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extends (
 	...args: any
 ) => Promise<infer R>
