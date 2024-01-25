@@ -35,7 +35,7 @@ export async function resendSignUpCode(
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { userPoolClientId, userPoolId } = authConfig;
+	const { userPoolClientId, userPoolId, analyticsMetadata } = authConfig;
 	const clientMetadata = input.options?.clientMetadata;
 
 	const UserContextData = getUserContextData({
@@ -54,6 +54,9 @@ export async function resendSignUpCode(
 			ClientMetadata: clientMetadata,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
+			AnalyticsMetadata: {
+				AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+			},
 		}
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {
