@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ConsoleLogger } from './logger';
+import { ConsoleLogger } from './logging';
 import { AmplifyError } from './errors';
 import {
 	AuthConfigUserAttributes,
@@ -147,7 +147,7 @@ export const parseAWSExports = (
 					aws_cognito_mfa_configuration.toLowerCase(),
 				totpEnabled: aws_cognito_mfa_types?.includes('TOTP') ?? false,
 				smsEnabled: aws_cognito_mfa_types?.includes('SMS') ?? false,
-		  }
+			}
 		: undefined;
 	const passwordFormatConfig = aws_cognito_password_protection_settings
 		? {
@@ -169,7 +169,7 @@ export const parseAWSExports = (
 					aws_cognito_password_protection_settings.passwordPolicyCharacters?.includes(
 						'REQUIRES_SYMBOLS'
 					) ?? false,
-		  }
+			}
 		: undefined;
 	const mergedUserAttributes: LegacyUserAttributeKey[] = Array.from(
 		new Set([
@@ -250,7 +250,7 @@ export const parseAWSExports = (
 						searchIndices: amazon_location_service.search_indices,
 						region: amazon_location_service.region,
 					},
-			  }
+				}
 			: { ...geo };
 	}
 
@@ -290,7 +290,7 @@ export const parseAWSExports = (
 							defaults: { voiceId },
 						},
 					},
-			  }
+				}
 			: predictions;
 	}
 

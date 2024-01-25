@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '../logger';
+import { ConsoleLogger } from '../logging';
 import { KeyValueStorage } from '../storage/KeyValueStorage';
 import { getLocalStorageWithFallback } from '../storage/utils';
 import { defaultConfig } from './constants';
