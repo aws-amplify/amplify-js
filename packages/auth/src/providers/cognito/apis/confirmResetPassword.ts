@@ -29,7 +29,7 @@ export async function confirmResetPassword(
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { userPoolClientId, userPoolId } = authConfig;
+	const { userPoolClientId, userPoolId, analyticsMetadata } = authConfig;
 	const { username, newPassword } = input;
 	assertValidationError(
 		!!username,
@@ -65,6 +65,9 @@ export async function confirmResetPassword(
 			ClientMetadata: metadata,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData: UserContextData,
+			AnalyticsMetadata: {
+				AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+			},
 		}
 	);
 }
