@@ -3,5 +3,3 @@
 
 export { enable } from './enable';
 export { disable } from './disable';
-export { flushLogs } from './flushLogs';
-export { createLogger } from './createLogger';
