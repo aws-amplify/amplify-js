@@ -352,7 +352,7 @@ export async function handleUserPasswordAuthFlow(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<InitiateAuthCommandOutput> {
-	const { userPoolClientId, userPoolId } = config;
+	const { userPoolClientId, userPoolId, analyticsMetadata } = config;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 		PASSWORD: password,
@@ -375,6 +375,9 @@ export async function handleUserPasswordAuthFlow(
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	const response = await initiateAuth(
@@ -468,7 +471,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator
 ): Promise<InitiateAuthCommandOutput> {
-	const { userPoolClientId, userPoolId } = config;
+	const { userPoolClientId, userPoolId, analyticsMetadata } = config;
 	const { dispatch } = signInStore;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
@@ -491,6 +494,9 @@ export async function handleCustomAuthFlowWithoutSRP(
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 		UserContextData,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 
 	const response = await initiateAuth(
@@ -585,6 +591,7 @@ async function handleDeviceSRPAuth({
 }: HandleDeviceSRPInput): Promise<RespondToAuthChallengeCommandOutput> {
 	const userPoolId = config.userPoolId;
 	const clientId = config.userPoolClientId;
+	const analyticsMetadata = config.analyticsMetadata;
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	assertDeviceMetadata(deviceMetadata);
 	const authenticationHelper = await getAuthenticationHelper(
@@ -602,6 +609,9 @@ async function handleDeviceSRPAuth({
 		ChallengeResponses: challengeResponses,
 		ClientMetadata: clientMetadata,
 		Session: session,
+		AnalyticsMetadata: {
+			AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+		},
 	};
 	const { ChallengeParameters, Session } = await respondToAuthChallenge(
 		{ region: getRegion(userPoolId) },
