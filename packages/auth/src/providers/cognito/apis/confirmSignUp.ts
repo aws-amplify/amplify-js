@@ -40,7 +40,7 @@ export async function confirmSignUp(
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { userPoolId, userPoolClientId } = authConfig;
+	const { userPoolId, userPoolClientId, analyticsMetadata } = authConfig;
 	const clientMetadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -69,6 +69,9 @@ export async function confirmSignUp(
 			ForceAliasCreation: options?.forceAliasCreation,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
+			AnalyticsMetadata: {
+				AnalyticsEndpointId: analyticsMetadata?.analyticsEndpointId,
+			},
 		}
 	);
 
