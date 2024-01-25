@@ -63,8 +63,7 @@
 		"dexie-export-import": "1.0.3",
 		"fake-indexeddb": "^4.0.2",
 		"graphql": "15.8.0",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"rollup": "3.29.4"
 	},
 	"size-limit": [
 		{

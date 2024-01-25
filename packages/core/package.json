@@ -64,8 +64,7 @@
 		"@rollup/plugin-typescript": "11.1.5",
 		"@types/js-cookie": "3.0.2",
 		"genversion": "^2.2.0",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"rollup": "3.29.4"
 	},
 	"size-limit": [
 		{

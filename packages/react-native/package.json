@@ -41,8 +41,7 @@
 		"@types/base-64": "1.0.0",
 		"react-native": "0.71.0",
 		"react-native-get-random-values": "1.9.0",
-		"rollup": "3.29.4",
-		"typescript": "5.1.6"
+		"rollup": "3.29.4"
 	},
 	"repository": {
 		"type": "git",

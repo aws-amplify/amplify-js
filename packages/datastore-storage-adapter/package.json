@@ -44,7 +44,6 @@
 		"expo-sqlite": "10.1.0",
 		"react-native-sqlite-storage": "5.0.0",
 		"rollup": "3.29.4",
-		"sqlite3": "^5.0.2",
-		"typescript": "5.0.2"
+		"sqlite3": "^5.0.2"
 	}
 }

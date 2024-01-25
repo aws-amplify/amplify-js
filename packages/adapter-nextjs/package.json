@@ -19,8 +19,7 @@
 		"aws-amplify": "6.0.13",
 		"jest-fetch-mock": "3.0.3",
 		"next": ">= 13.5.0 < 15.0.0",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"rollup": "3.29.4"
 	},
 	"publishConfig": {
 		"access": "public"
