@@ -34,7 +34,7 @@ runs:
       env:
         BRANCH: ${{ github.ref_name }}
       run: |
-        (git ls-remote --exit-code --heads origin refs/heads/$BRANCH)
+        queryOutput=$(git ls-remote --exit-code --heads origin refs/heads/$BRANCH)
         branchQueryCode=$?
         if [ "$branchQueryCode" -eq 0 ]; then
             # Corresponding branch on sample repo exists, check it out
