@@ -16,7 +16,6 @@ import * as analyticsPersonalizeExports from '../src/analytics/personalize';
 import * as storageTopLevelExports from '../src/storage';
 import * as storageS3Exports from '../src/storage/s3';
 import * as loggingTopLevelExports from '../src/logging';
-import * as loggingConsoleExports from '../src/logging/console';
 import * as loggingCloudwatchExports from '../src/logging/cloudwatch';
 
 /**
@@ -262,12 +261,6 @@ describe('aws-amplify Exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(loggingTopLevelExports).sort()).toEqual(
 				['disable', 'enable', 'flushLogs', 'createLogger'].sort()
-			);
-		});
-
-		it('should only export expected symbols from the Console provider', () => {
-			expect(Object.keys(loggingConsoleExports).sort()).toEqual(
-				['disable', 'enable', 'getProvider'].sort()
 			);
 		});
 
