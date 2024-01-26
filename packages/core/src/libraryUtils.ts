@@ -25,7 +25,7 @@ export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
 export { getDeviceId } from './utils';
-export { NetworkConnectionMonitor } from './logger';
+
 // Auth utilities
 export {
 	decodeJWT,
@@ -106,7 +106,7 @@ export {
 // Other utilities & constants
 export { BackgroundProcessManager } from './BackgroundProcessManager';
 export { Mutex } from './Mutex';
-export { Reachability } from './Reachability';
+export { Reachability, NetworkConnectionMonitor } from './Reachability';
 export { USER_AGENT_HEADER } from './constants';
 export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';

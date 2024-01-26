@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { LogLevel, LoggingCategory, LoggingProvider } from '../../types';
+import { LogLevel, LoggingCategory, LoggingProvider } from '../../../types';
 
 export interface CloudWatchProvider extends LoggingProvider {
 	configure: (

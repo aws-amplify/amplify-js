@@ -2,15 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Observable, Subscription } from 'rxjs';
-import { Reachability } from '../../Reachability';
-import { NetworkStatus } from '../../Reachability/types';
-
-// TODO: Move this to types
-type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extends (
-	...args: any
-) => Promise<infer R>
-	? R
-	: any;
+import { Reachability } from '..';
+import { AsyncReturnType, NetworkStatus } from '../types';
 
 export class NetworkConnectionMonitor {
 	/**

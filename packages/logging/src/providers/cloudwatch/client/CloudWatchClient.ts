@@ -10,20 +10,14 @@ import {
 } from '@aws-sdk/client-cloudwatch-logs';
 import { LogLevel, LogParams } from '../../../types';
 import { CloudWatchConfig, CloudWatchProvider } from '../types';
-import {
-	fetchAuthSession,
-	createQueuedStorage,
-	QueuedStorage,
-} from '@aws-amplify/core';
+import { createQueuedStorage, QueuedStorage } from '@aws-amplify/core';
 import { QueuedItem } from '@aws-amplify/core/dist/esm/utils/queuedStorage/types';
-import {
-	getDeviceId,
-	NetworkConnectionMonitor,
-} from '@aws-amplify/core/internals/utils';
-import { AwsCredentialIdentity } from '@aws-sdk/types/dist-types/identity/AwsCredentialIdentity';
+import { NetworkConnectionMonitor } from '@aws-amplify/core/internals/utils';
+import { getDefaultStreamName } from '../utils';
+import { resolveCredentials } from '../../../utils/resolveCredentials';
 
-export const DEFAULT_LOG_LEVEL: LogLevel = 'INFO';
-const GUEST_USER_ID_FOR_LOG_STREAM_NAME: string = 'INFO';
+const DEFAULT_LOG_LEVEL: LogLevel = 'INFO';
+
 let cloudWatchConfig: CloudWatchConfig;
 let queuedStorage: QueuedStorage;
 let cloudWatchSDKClient: CloudWatchLogsClient;
@@ -48,20 +42,15 @@ export const cloudWatchProvider: CloudWatchProvider = {
 		// TODO(ashwinkumar6): create and use LoggingError
 		// TODO(ashwinkumar6): fix merge logic, support nested
 		cloudWatchConfig = { ...defaultConfig, ...config };
-		queuedStorage = createQueuedStorage();
-		let session;
-		try {
-			session = await fetchAuthSession();
-		} catch (error) {
-			return Promise.reject('No credentials');
-		}
 		const { region } = cloudWatchConfig;
 
 		// TODO: update this client when credentials change
 		cloudWatchSDKClient = new CloudWatchLogsClient({
 			region,
-			credentials: _changeAwareCredentialsProvider,
+			credentials: resolveCredentials,
 		});
+
+		queuedStorage = createQueuedStorage();
 		networkMonitor = new NetworkConnectionMonitor();
 		// TODO: start a timer for flushIntervalInSeconds and start the sync to CW -- call startSyncIfNotInProgress
 	},
@@ -83,7 +72,6 @@ export const cloudWatchProvider: CloudWatchProvider = {
 		queuedStorage.add(
 			{
 				content,
-				// TODO: Determine the format of the timestamp
 				timestamp: new Date().getTime().toString(),
 			},
 			{
@@ -94,6 +82,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 			}
 		);
 		// TODO: call startSyncIfNotInProgress
+		console.log('Done logging the event');
 	},
 
 	// TODO: Need a module to tie log and flushLogs together. log -> storage -> buffer -> flushLogs
@@ -106,9 +95,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	flushLogs: async (): Promise<void> => {
 		// TODO: Get these messages from buffer and not storage
 		const messages = await queuedStorage.peekAll();
-		console.log('messsages from storage: ', messages);
 		await _sendToCloudWatch(convertBufferLogsToCWLogs(messages));
-		// TODO(ashwinkumar6): pending impl
 		return Promise.resolve();
 	},
 	/**
@@ -128,25 +115,19 @@ export const cloudWatchProvider: CloudWatchProvider = {
 };
 
 async function _sendToCloudWatch(messages: InputLogEvent[]) {
-	try {
-		const { logGroupName } = cloudWatchConfig;
-		// TODO: Decide how cx can give their own logStreamName
-		const logStreamName = await _getDefaultStreamName();
-		const logBatch: PutLogEventsCommandInput = {
-			logEvents: messages,
-			logGroupName,
-			logStreamName,
-		};
-		if (sdkClientConstraintsSatisfied(logBatch)) {
-			networkMonitor.enableNetworkMonitoringFor(async () => {
-				// TODO: Add connectivity monitor to try when the device is online
-				await cloudWatchSDKClient.send(new PutLogEventsCommand(logBatch));
-			});
-			// TODO: retry with failed logs
-		}
-	} catch (error) {
-		// TODO: Handle errors and retrying if possible
-		console.error('Error putting log events:', error);
+	const { logGroupName } = cloudWatchConfig;
+	// TODO: Decide how cx can give their own logStreamName
+	const logStreamName = await getDefaultStreamName();
+	const logBatch: PutLogEventsCommandInput = {
+		logEvents: messages,
+		logGroupName,
+		logStreamName,
+	};
+	if (sdkClientConstraintsSatisfied(logBatch)) {
+		networkMonitor.enableNetworkMonitoringFor(async () => {
+			await cloudWatchSDKClient.send(new PutLogEventsCommand(logBatch));
+		});
+		// TODO: retry with failed logs
 	}
 }
 
@@ -173,31 +154,4 @@ function convertBufferLogsToCWLogs(
 			timestamp: Date.parse(bufferedLog.timestamp),
 		};
 	});
-}
-
-async function _getDefaultStreamName() {
-	let session;
-	try {
-		session = await fetchAuthSession();
-	} catch (error) {
-		return Promise.reject('No credentials');
-	}
-	const userId = session.userSub ?? GUEST_USER_ID_FOR_LOG_STREAM_NAME;
-	const deviceId = await getDeviceId();
-	const dateNow = new Date().toISOString().split('T')[0];
-	return `${dateNow}.${deviceId}.${userId}`;
-}
-
-async function _changeAwareCredentialsProvider(): Promise<AwsCredentialIdentity> {
-	let session;
-	try {
-		session = await fetchAuthSession();
-	} catch (error) {
-		return Promise.reject('Error fetching session');
-	}
-	if (session.credentials) {
-		return session.credentials;
-	} else {
-		return Promise.reject('No credentials');
-	}
 }

@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Observable, Observer } from 'rxjs';
-import { Reachability } from '../src/Reachability';
-import { NetworkConnectionMonitor } from '../src/logger';
+import { NetworkConnectionMonitor, Reachability } from '../src/Reachability';
 
 describe('NetworkConnectionMonitor', () => {
 	let reachabilityObserver: Observer<{ online: boolean }>;

@@ -9,10 +9,6 @@ import { amplifyUuid } from '../amplifyUuid';
 const _localStorageKey = 'amplify-device-id';
 
 export async function getDeviceId(): Promise<string | undefined> {
-	if (typeof window === 'undefined') {
-		return undefined;
-	}
-
 	let deviceId = (await Cache.getItem(_localStorageKey)) as string | undefined;
 	if (!!deviceId) {
 		return deviceId;
