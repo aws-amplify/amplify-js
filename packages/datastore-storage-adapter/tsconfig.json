@@ -1,4 +1,3 @@
-//WARNING: If you are manually specifying files to compile then the tsconfig.json is completely ignored, you must use command line flags
 {
 	"compilerOptions": {
 		"target": "es2020",
@@ -22,8 +21,7 @@
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
-		// temporary fix
 		"types": ["jest", "node", "lodash"]
 	},
-	"include": ["src/**/*"]
+	"include": ["src/**/*", "ExpoSQLiteAdapter", "SQLiteAdapter", "__tests__"]
 }

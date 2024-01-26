@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const defaultTSConfigPath = './tsconfig.json';
+const defaultTSConfigPath = './tsconfig.build.json';
 
 /** @type {import("rollup").OutputOptions}*/
 export const cjsOutput = {
