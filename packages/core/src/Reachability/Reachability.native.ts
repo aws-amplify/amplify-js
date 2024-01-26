@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
 import { loadNetInfo } from '@aws-amplify/react-native';
-import { ConsoleLogger } from '../logger';
+import { ConsoleLogger } from '../logging';
 import { NetworkStatus } from './types';
 
 const logger = new ConsoleLogger('Reachability', 'DEBUG');

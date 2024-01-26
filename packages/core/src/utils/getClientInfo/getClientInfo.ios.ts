@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // @ts-ignore: missing type definition
 import { Platform, Dimensions } from 'react-native';
-import { ConsoleLogger } from '../../logger';
+import { ConsoleLogger } from '../../logging';
 
 const logger = new ConsoleLogger('getClientInfo');
 
