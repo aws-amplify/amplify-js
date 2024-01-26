@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { flushLogs } from '../../src/apis';
+import { flushLogs } from '../../../../src';
 
 // TODO: pending implementation
 describe('Logging APIs: flushLogs', () => {

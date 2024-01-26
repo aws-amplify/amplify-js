@@ -260,13 +260,13 @@ describe('aws-amplify Exports', () => {
 	describe('Logging exports', () => {
 		it('should only export expected symbols from the top-level', () => {
 			expect(Object.keys(loggingTopLevelExports).sort()).toEqual(
-				['disable', 'enable', 'flushLogs', 'createLogger'].sort()
+				['disable', 'enable', 'flushLogs', 'createLogger', 'configure'].sort()
 			);
 		});
 
 		it('should only export expected symbols from the Cloudwatch provider', () => {
 			expect(Object.keys(loggingCloudwatchExports).sort()).toEqual(
-				['disable', 'enable', 'getProvider'].sort()
+				['flushLogs', 'createLogger', 'configure'].sort()
 			);
 		});
 	});
