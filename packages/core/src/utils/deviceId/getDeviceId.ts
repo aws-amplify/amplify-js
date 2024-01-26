@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // TODO: add native impl of this
-// TODO: add tests
 import { Cache } from '../../Cache';
 import { amplifyUuid } from '../amplifyUuid';
 
