@@ -7,6 +7,8 @@ import {
 	InputLogEvent,
 	PutLogEventsCommand,
 	PutLogEventsCommandInput,
+	PutLogEventsCommandOutput,
+	RejectedLogEventsInfo,
 } from '@aws-sdk/client-cloudwatch-logs';
 import { LogLevel, LogParams } from '../../../types';
 import { CloudWatchConfig, CloudWatchProvider } from '../types';
@@ -82,7 +84,6 @@ export const cloudWatchProvider: CloudWatchProvider = {
 			}
 		);
 		// TODO: call startSyncIfNotInProgress
-		console.log('Done logging the event');
 	},
 
 	// TODO: Need a module to tie log and flushLogs together. log -> storage -> buffer -> flushLogs
@@ -94,8 +95,8 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	 */
 	flushLogs: async (): Promise<void> => {
 		// TODO: Get these messages from buffer and not storage
-		const messages = await queuedStorage.peekAll();
-		await _sendToCloudWatch(convertBufferLogsToCWLogs(messages));
+		const batchedLogs = await queuedStorage.peekAll();
+		await _sendToCloudWatch(batchedLogs);
 		return Promise.resolve();
 	},
 	/**
@@ -114,20 +115,47 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	},
 };
 
-async function _sendToCloudWatch(messages: InputLogEvent[]) {
+async function _sendToCloudWatch(batchedLogs: QueuedItem[]) {
 	const { logGroupName } = cloudWatchConfig;
 	// TODO: Decide how cx can give their own logStreamName
 	const logStreamName = await getDefaultStreamName();
 	const logBatch: PutLogEventsCommandInput = {
-		logEvents: messages,
+		logEvents: convertBufferLogsToCWLogs(batchedLogs),
 		logGroupName,
 		logStreamName,
 	};
 	if (sdkClientConstraintsSatisfied(logBatch)) {
 		networkMonitor.enableNetworkMonitoringFor(async () => {
-			await cloudWatchSDKClient.send(new PutLogEventsCommand(logBatch));
+			await _handleRejectedLogEvents(
+				batchedLogs,
+				(await cloudWatchSDKClient.send(new PutLogEventsCommand(logBatch)))
+					.rejectedLogEventsInfo
+			);
 		});
-		// TODO: retry with failed logs
+	}
+}
+
+async function _handleRejectedLogEvents(
+	batchedLogs: QueuedItem[],
+	rejectedLogEventsInfo?: RejectedLogEventsInfo
+) {
+	if (!rejectedLogEventsInfo) {
+		await queuedStorage.delete(batchedLogs);
+		return;
+	}
+	const { oldOrExpiredLogsEndIndex, tooNewLogEventStartIndex } =
+		parseRejectedLogEvents(rejectedLogEventsInfo);
+	if (oldOrExpiredLogsEndIndex) {
+		await queuedStorage.delete(batchedLogs.slice(oldOrExpiredLogsEndIndex));
+	}
+	if (oldOrExpiredLogsEndIndex && tooNewLogEventStartIndex) {
+		// These are the ones that succeeded in going to CW
+		await queuedStorage.delete(
+			batchedLogs.slice(oldOrExpiredLogsEndIndex, tooNewLogEventStartIndex)
+		);
+	}
+	if (tooNewLogEventStartIndex) {
+		// TODO: Needs design clarification on how to handle too new logs
 	}
 }
 
@@ -154,4 +182,22 @@ function convertBufferLogsToCWLogs(
 			timestamp: Date.parse(bufferedLog.timestamp),
 		};
 	});
+}
+
+function parseRejectedLogEvents(rejectedLogEventsInfo: RejectedLogEventsInfo) {
+	const {
+		tooOldLogEventEndIndex,
+		tooNewLogEventStartIndex,
+		expiredLogEventEndIndex,
+	} = rejectedLogEventsInfo;
+	let oldOrExpiredLogsEndIndex;
+	if (tooOldLogEventEndIndex) {
+		oldOrExpiredLogsEndIndex = tooOldLogEventEndIndex;
+	}
+	if (expiredLogEventEndIndex) {
+		oldOrExpiredLogsEndIndex = oldOrExpiredLogsEndIndex
+			? Math.max(oldOrExpiredLogsEndIndex, expiredLogEventEndIndex)
+			: expiredLogEventEndIndex;
+	}
+	return { oldOrExpiredLogsEndIndex, tooNewLogEventStartIndex };
 }
