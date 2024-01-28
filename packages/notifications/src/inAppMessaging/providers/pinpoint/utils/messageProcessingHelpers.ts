@@ -87,8 +87,11 @@ export async function incrementMessageCounts(messageId: string): Promise<void> {
 function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
 	return messages.map(message => {
 		const { CampaignId, InAppMessage } = message;
-		const { platform } = getClientInfo();
-		const configPlatform = mapOSPlatform(platform || 'DefaultPlatform');
+		const clientInfo = getClientInfo();
+		// DefaultPlatform will map to DefaultConfig.
+		const configPlatform = mapOSPlatform(
+			clientInfo?.platform || 'DefaultPlatform'
+		);
 		return {
 			// Default to empty string in rare cases we don't have a campaignId
 			id: CampaignId ?? '',
