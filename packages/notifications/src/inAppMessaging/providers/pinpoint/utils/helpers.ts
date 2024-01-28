@@ -350,7 +350,7 @@ export const extractMetadata = ({
 	treatmentId: TreatmentId,
 });
 
-export const mapOSPlatform = (os): ConfigPlatformType => {
+export const mapOSPlatform = (os: string): ConfigPlatformType => {
 	// Check if running in a web browser
 	if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
 		return 'Web';
