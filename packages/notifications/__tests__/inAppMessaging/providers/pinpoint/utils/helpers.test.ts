@@ -10,6 +10,7 @@ import {
 	extractMetadata,
 	getStartOfDay,
 	isBeforeEndDate,
+	mapOSPlatform,
 	matchesAttributes,
 	matchesEventType,
 	matchesMetrics,
@@ -19,6 +20,9 @@ import {
 	extractedContent,
 	extractedMetadata,
 	pinpointInAppMessage,
+	pinpointInAppMessagesWithOverrides,
+	browserConfigTestCases,
+	nonBrowserConfigTestCases
 } from '../../../../testUtils/data';
 import { InAppMessagingEvent } from '../../../../../src/inAppMessaging/types';
 
@@ -271,4 +275,49 @@ describe('InAppMessaging Provider Utils', () => {
 
 		expect(extractMetadata(message)).toStrictEqual(extractedMetadata);
 	});
+
+	describe('extractContent with overrides', () => {
+		pinpointInAppMessagesWithOverrides.forEach(({ message, expectedContent, configPlatform }) => {
+			test(`correctly extracts content for ${configPlatform}`, () => {
+				const { InAppMessage } = cloneDeep(message);
+				const content = extractContent({ InAppMessage, configPlatform });
+				expect(content[0].primaryButton).toStrictEqual(expectedContent[0].primaryButton);
+				expect(content[0].secondaryButton).toStrictEqual(expectedContent[0].secondaryButton);
+			});
+		});
+	});
+	
+
+	describe('mapOSPlatform method', () => {
+		describe('when running in a browser', () => {
+			browserConfigTestCases.forEach(({ os, expectedPlatform }) => {
+				test(`correctly maps OS "${os}" to ConfigPlatformType "${expectedPlatform}"`, () => {
+					const result = mapOSPlatform(os);
+					expect(result).toBe(expectedPlatform);
+				});
+			});
+		});
+
+		describe('when running natively', () => {
+			let originalWindow = window;
+
+			beforeEach(() => {
+				//remove window object to mock behavior outside a browser
+				Object.defineProperty(global, 'window', {});
+			});
+
+			afterEach(() => {
+				//remove window object to mock behavior outside a browser
+				Object.defineProperty(global, 'window', originalWindow);
+			});
+			nonBrowserConfigTestCases.forEach(({ os, expectedPlatform }) => {
+				test(`correctly maps OS "${os}" to ConfigPlatformType "${expectedPlatform}"`, () => {
+					const result = mapOSPlatform(os);
+					expect(result).toBe(expectedPlatform);
+				});
+			});
+		});
+	});
+
+
 });

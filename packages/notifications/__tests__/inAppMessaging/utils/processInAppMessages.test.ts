@@ -19,7 +19,11 @@ import {
 import { initializeInAppMessaging } from '../../../src/inAppMessaging/providers/pinpoint/apis';
 
 jest.mock('@aws-amplify/core');
-jest.mock('@aws-amplify/core/internals/utils');
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	getClientInfo: jest.fn().mockImplementation(() => ({
+		platform: 'android',
+	})),
+}));
 jest.mock('../../../src/inAppMessaging/providers/pinpoint/utils/helpers');
 
 const mockIsBeforeEndDate = isBeforeEndDate as jest.Mock;
