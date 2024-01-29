@@ -5,7 +5,8 @@
 	"recommendations": [
 		"esbenp.prettier-vscode",
 		"tombonnike.vscode-status-bar-format-toggle",
-		"dbaeumer.vscode-eslint"
+		"dbaeumer.vscode-eslint",
+		"streetsidesoftware.code-spell-checker"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": []
