@@ -32,7 +32,7 @@ describe('ConsoleLogger', () => {
 			expect(pluggables).toHaveLength(0);
 		});
 
-		it('should update log level of console', () => {
+		it('should update the log level of the new console logger when set manually', () => {
 			const level = 'DEBUG';
 			ConsoleLogger.LOG_LEVEL = level;
 			expect(getConsoleLogLevel()).toBe(level);
