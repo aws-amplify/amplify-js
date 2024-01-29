@@ -18,8 +18,13 @@ const authTypeMapping: Record<any, any> = {
 	AMAZON_COGNITO_USER_POOLS: 'userPool',
 	OPENID_CONNECT: 'oidc',
 	NONE: 'none',
-	LAMBDA: 'lambda',
 	AWS_LAMBDA: 'lambda',
+	// `LAMBDA` is an incorrect value that was added during the v6 rewrite.
+	// Keeping it as a valid value until v7 to prevent breaking customers who might
+	// be relying on it as a workaround.
+	// ref: https://github.com/aws-amplify/amplify-js/pull/12922
+	// TODO: @v7 remove next line
+	LAMBDA: 'lambda',
 };
 
 /**
