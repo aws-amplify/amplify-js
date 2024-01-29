@@ -284,10 +284,6 @@
 		"@aws-amplify/storage": "6.0.13",
 		"tslib": "^2.5.0"
 	},
-	"devDependencies": {
-		"@rollup/plugin-typescript": "11.1.5",
-		"rollup": "3.29.4"
-	},
 	"size-limit": [
 		{
 			"name": "[Analytics] record (Pinpoint)",

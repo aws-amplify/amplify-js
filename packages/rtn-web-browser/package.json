@@ -24,10 +24,8 @@
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
 	},
 	"devDependencies": {
-		"@rollup/plugin-typescript": "11.1.5",
 		"@types/react-native": "0.70.0",
-		"react-native": "0.72.3",
-		"rollup": "3.29.4"
+		"react-native": "0.72.3"
 	},
 	"repository": {
 		"type": "git",

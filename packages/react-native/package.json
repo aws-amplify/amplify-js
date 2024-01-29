@@ -37,11 +37,9 @@
 		"@aws-amplify/rtn-web-browser": "1.0.13",
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
-		"@rollup/plugin-typescript": "11.1.5",
 		"@types/base-64": "1.0.0",
 		"react-native": "0.71.0",
-		"react-native-get-random-values": "1.9.0",
-		"rollup": "3.29.4"
+		"react-native-get-random-values": "1.9.0"
 	},
 	"repository": {
 		"type": "git",

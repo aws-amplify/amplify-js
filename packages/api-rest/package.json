@@ -88,9 +88,7 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.13",
-		"@aws-amplify/react-native": "1.0.13",
-		"@rollup/plugin-typescript": "11.1.5",
-		"rollup": "3.29.4"
+		"@aws-amplify/react-native": "1.0.13"
 	},
 	"size-limit": [
 		{

@@ -3,6 +3,7 @@
 		"target": "es2020",
 		"noImplicitAny": false,
 		"downlevelIteration": true,
+		"incremental": true,
 		"lib": [
 			"es5",
 			"es2015",

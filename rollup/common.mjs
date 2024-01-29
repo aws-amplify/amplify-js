@@ -3,6 +3,8 @@
 
 const defaultTSConfigPath = './tsconfig.build.json';
 
+const isWatch = process.env.ROLLUP_WATCH === 'true';
+
 /** @type {import("rollup").OutputOptions}*/
 export const cjsOutput = {
 	dir: 'dist/cjs',
@@ -17,9 +19,9 @@ export const cjsTSOptions = {
 	outDir: 'dist/cjs',
 	declaration: false, // declarations are handled by the ESM build
 	module: 'CommonJS',
-	sourceMap: false,
 	tsconfig: defaultTSConfigPath,
 	tsBuildInfoFile: 'dist/meta/cjs.tsbuildinfo',
+	noEmitOnError: !isWatch,
 };
 
 /** @type {import("rollup").OutputOptions}*/
@@ -34,8 +36,7 @@ export const esmOutput = {
 
 export const esmTSOptions = {
 	outDir: 'dist/esm',
-	declaration: true,
-	sourceMap: false,
 	tsconfig: defaultTSConfigPath,
 	tsBuildInfoFile: 'dist/meta/cjs.tsbuildinfo',
+	noEmitOnError: !isWatch,
 };
