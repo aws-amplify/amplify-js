@@ -1,20 +1,8 @@
-import { ConsoleLogger } from '../src';
-import { LoggingProvider } from '../src/logging/types';
+import { ConsoleLogger } from '../../src';
+import { getConsoleLogLevel } from '../../src/logging/utils';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {
-		/*it('should store pluggables correctly when addPluggable is called', () => {
-			const provider = new AWSCloudWatchProvider();
-			const logger = new Logger('name');
-			logger.addPluggable(provider);
-			const pluggables = logger.listPluggables();
-
-			expect(pluggables).toHaveLength(1);
-			expect(pluggables[0].getProviderName()).toEqual(
-				AWS_CLOUDWATCH_PROVIDER_NAME
-			);
-		});*/
-
 		it('should do nothing when no plugin is provided to addPluggable', () => {
 			const logger = new ConsoleLogger('name');
 			logger.addPluggable(null as any);
@@ -35,13 +23,19 @@ describe('ConsoleLogger', () => {
 					return {};
 				},
 				pushLogs: () => {},
-			} as LoggingProvider;
+			};
 
 			const logger = new ConsoleLogger('name');
 			logger.addPluggable(provider);
 			const pluggables = logger.listPluggables();
 
 			expect(pluggables).toHaveLength(0);
+		});
+
+		it('should update log level of console', () => {
+			const level = 'DEBUG';
+			ConsoleLogger.LOG_LEVEL = level;
+			expect(getConsoleLogLevel()).toBe(level);
 		});
 	});
 });
