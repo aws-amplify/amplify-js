@@ -18,6 +18,7 @@ const authTypeMapping: Record<any, any> = {
 	AMAZON_COGNITO_USER_POOLS: 'userPool',
 	OPENID_CONNECT: 'oidc',
 	NONE: 'none',
+	LAMBDA: 'lambda',
 	AWS_LAMBDA: 'lambda',
 };
 
