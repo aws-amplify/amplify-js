@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cloudWatchProvider } from '../../../../src/providers/cloudwatch';
-import { createQueuedStorage, QueuedStorage } from '@aws-amplify/core';
+import { createQueuedStorage } from '@aws-amplify/core';
 import { LogParams } from '../../../../src/types';
 import {
 	CloudWatchLogsClient,
@@ -10,7 +9,10 @@ import {
 } from '@aws-sdk/client-cloudwatch-logs';
 import { Reachability } from '@aws-amplify/core/internals/utils';
 import { Observable, Observer } from 'rxjs';
-import { handleRejectedLogEvents } from '../../../../src/providers/cloudwatch/client/CloudWatchClient';
+import {
+	cloudWatchProvider,
+	handleRejectedLogEvents,
+} from '../../../../src/providers/cloudwatch/client/CloudWatchClient';
 
 const mockedQueuedStorage = {
 	add: jest.fn(),
