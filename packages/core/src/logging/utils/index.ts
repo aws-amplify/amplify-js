@@ -3,6 +3,7 @@
 
 export { getTimestamp } from './timeUtils';
 export { checkLogLevel, logLevelIndex } from './log';
+export { createBaseLogger } from './createBaseLogger';
 export {
 	getConsoleLogLevel,
 	setConsoleLogLevel,

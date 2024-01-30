@@ -35,6 +35,9 @@ export interface LoggerType {
 	log: (message: string, level?: LogLevel) => void;
 }
 
-export interface CreateLogger {
-	(input: { namespace: string; category?: LoggingCategory }): LoggerType;
-}
+export type CreateLoggerInput = {
+	namespace: string;
+	category?: LoggingCategory;
+};
+
+export type CreateLoggerOutput = LoggerType;
