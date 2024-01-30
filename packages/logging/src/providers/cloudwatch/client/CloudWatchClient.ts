@@ -7,16 +7,16 @@ import {
 	InputLogEvent,
 	PutLogEventsCommand,
 	PutLogEventsCommandInput,
-	PutLogEventsCommandOutput,
 	RejectedLogEventsInfo,
 } from '@aws-sdk/client-cloudwatch-logs';
 import { LogLevel, LogParams } from '../../../types';
 import { CloudWatchConfig, CloudWatchProvider } from '../types';
 import { createQueuedStorage, QueuedStorage } from '@aws-amplify/core';
-import { QueuedItem } from '@aws-amplify/core/dist/esm/utils/queuedStorage/types';
 import { NetworkConnectionMonitor } from '@aws-amplify/core/internals/utils';
 import { getDefaultStreamName } from '../utils';
 import { resolveCredentials } from '../../../utils/resolveCredentials';
+// TODO: Fix this type import
+import { QueuedItem } from '@aws-amplify/core/dist/esm/utils/queuedStorage/types';
 
 const DEFAULT_LOG_LEVEL: LogLevel = 'INFO';
 
@@ -33,20 +33,17 @@ const defaultConfig = {
 		defaultLogLevel: DEFAULT_LOG_LEVEL,
 	},
 };
-// TODO: Needs a syncing module to chek and flushLogs
+
 export const cloudWatchProvider: CloudWatchProvider = {
 	/**
 	 * set the initial configuration
 	 * @internal
 	 */
 	configure: async (config: CloudWatchConfig) => {
-		// TODO(ashwinkumar6): rename 'initialize' to 'configure'. Allow configuring multiple times
-		// TODO(ashwinkumar6): create and use LoggingError
-		// TODO(ashwinkumar6): fix merge logic, support nested
 		cloudWatchConfig = { ...defaultConfig, ...config };
 		const { region } = cloudWatchConfig;
 
-		// TODO: update this client when credentials change
+		// TODO: Test credentials change
 		cloudWatchSDKClient = new CloudWatchLogsClient({
 			region,
 			credentials: resolveCredentials,
@@ -68,6 +65,8 @@ export const cloudWatchProvider: CloudWatchProvider = {
 		const { namespace, category, logLevel, message } = input;
 		const categoryPrefix = category ? `/${category}` : '';
 		const prefix = `[${logLevel}] ${namespace}${categoryPrefix}`;
+
+		// Final log format looks like this: `[${logLevel}] ${namespace}/${category}: ${message}`
 		const content = `${prefix}: ${message}`;
 
 		// Store log with log rotation enabled if it's full
@@ -117,7 +116,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 
 async function _sendToCloudWatch(batchedLogs: QueuedItem[]) {
 	const { logGroupName } = cloudWatchConfig;
-	// TODO: Decide how cx can give their own logStreamName
+	// TODO: how can cx give their own logStreamName?
 	const logStreamName = await getDefaultStreamName();
 	const logBatch: PutLogEventsCommandInput = {
 		logEvents: convertBufferLogsToCWLogs(batchedLogs),
@@ -126,37 +125,38 @@ async function _sendToCloudWatch(batchedLogs: QueuedItem[]) {
 	};
 	if (sdkClientConstraintsSatisfied(logBatch)) {
 		networkMonitor.enableNetworkMonitoringFor(async () => {
-			await _handleRejectedLogEvents(
-				batchedLogs,
-				(await cloudWatchSDKClient.send(new PutLogEventsCommand(logBatch)))
-					.rejectedLogEventsInfo
-			);
+			let rejectedLogEventsInfo;
+			try {
+				rejectedLogEventsInfo = (
+					await cloudWatchSDKClient.send(new PutLogEventsCommand(logBatch))
+				).rejectedLogEventsInfo;
+				await handleRejectedLogEvents(batchedLogs, rejectedLogEventsInfo);
+			} catch (e) {
+				// TODO: Should we log to console or dispatch a hub event?
+			}
 		});
 	}
 }
 
-async function _handleRejectedLogEvents(
+// Exporting this function for testing purposes
+export async function handleRejectedLogEvents(
 	batchedLogs: QueuedItem[],
 	rejectedLogEventsInfo?: RejectedLogEventsInfo
 ) {
-	if (!rejectedLogEventsInfo) {
+	// If there is tooNewLogEvents delete every log until then
+	if (rejectedLogEventsInfo?.tooNewLogEventStartIndex) {
+		await queuedStorage.delete(
+			batchedLogs.slice(rejectedLogEventsInfo.tooNewLogEventStartIndex)
+		);
+		// If there is no tooNewLogEvents then others are either tooOld, expired or successfully logged so delete them from storage
+	} else {
 		await queuedStorage.delete(batchedLogs);
 		return;
 	}
-	const { oldOrExpiredLogsEndIndex, tooNewLogEventStartIndex } =
-		parseRejectedLogEvents(rejectedLogEventsInfo);
-	if (oldOrExpiredLogsEndIndex) {
-		await queuedStorage.delete(batchedLogs.slice(oldOrExpiredLogsEndIndex));
-	}
-	if (oldOrExpiredLogsEndIndex && tooNewLogEventStartIndex) {
-		// These are the ones that succeeded in going to CW
-		await queuedStorage.delete(
-			batchedLogs.slice(oldOrExpiredLogsEndIndex, tooNewLogEventStartIndex)
-		);
-	}
-	if (tooNewLogEventStartIndex) {
-		// TODO: Needs design clarification on how to handle too new logs
-	}
+
+	// TODO:
+	// 1. Needs design clarification on how to handle tooNewLogEventStartIndex -- For now following the Android impl of keeping them in local memory(cache).
+	// 2. Retry logic for the same needs to be implemented
 }
 
 function _isLoggable(log: LogParams): boolean {
@@ -182,22 +182,4 @@ function convertBufferLogsToCWLogs(
 			timestamp: Date.parse(bufferedLog.timestamp),
 		};
 	});
-}
-
-function parseRejectedLogEvents(rejectedLogEventsInfo: RejectedLogEventsInfo) {
-	const {
-		tooOldLogEventEndIndex,
-		tooNewLogEventStartIndex,
-		expiredLogEventEndIndex,
-	} = rejectedLogEventsInfo;
-	let oldOrExpiredLogsEndIndex;
-	if (tooOldLogEventEndIndex) {
-		oldOrExpiredLogsEndIndex = tooOldLogEventEndIndex;
-	}
-	if (expiredLogEventEndIndex) {
-		oldOrExpiredLogsEndIndex = oldOrExpiredLogsEndIndex
-			? Math.max(oldOrExpiredLogsEndIndex, expiredLogEventEndIndex)
-			: expiredLogEventEndIndex;
-	}
-	return { oldOrExpiredLogsEndIndex, tooNewLogEventStartIndex };
 }

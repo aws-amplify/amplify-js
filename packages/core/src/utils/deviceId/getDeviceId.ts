@@ -5,8 +5,14 @@
 import { Cache } from '../../Cache';
 import { amplifyUuid } from '../amplifyUuid';
 
+/**
+ * Local storage key to store the device id
+ */
 const _localStorageKey = 'amplify-device-id';
 
+/**
+ * Utility to generate or return cached deviceId
+ */
 export async function getDeviceId(): Promise<string | undefined> {
 	let deviceId = (await Cache.getItem(_localStorageKey)) as string | undefined;
 	if (!!deviceId) {
