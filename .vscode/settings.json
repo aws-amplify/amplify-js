@@ -5,6 +5,9 @@
 	"prettier.requireConfig": true,
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"formattingToggle.affects": [
-		"editor.codeActionsOnSave.source.fixAll.eslint"
+		"editor.codeActionsOnSave.source.fixAll.eslint",
+		"editor.formatOnPaste",
+		"editor.formatOnSave",
+		"editor.formatOnType"
 	]
 }
