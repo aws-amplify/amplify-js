@@ -83,7 +83,7 @@ export class I18n {
 	 * @static
 	 * @method
 	 * Add vocabularies for one language
-	 * @param {String} langurage - Language of the dictionary
+	 * @param {String} language - Language of the dictionary
 	 * @param {Object} vocabularies - Object that has key-value as dictionary entry
 	 */
 	static putVocabulariesForLanguage(
