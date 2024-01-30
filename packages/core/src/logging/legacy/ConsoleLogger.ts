@@ -1,42 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWS_CLOUDWATCH_CATEGORY } from '../constants';
-import { LogLevel } from './types';
-import { setConsoleLogLevel, logLevelIndex } from './utils';
-
-// legacy logger types
-enum LogType {
-	DEBUG = 'DEBUG',
-	ERROR = 'ERROR',
-	INFO = 'INFO',
-	WARN = 'WARN',
-	VERBOSE = 'VERBOSE',
-}
-interface LoggingProvider {
-	// return the name of the provider
-	getProviderName(): string;
-
-	// return the name of the category
-	getCategoryName(): string;
-
-	// configure the plugin
-	configure(config?: object): object;
-
-	// take logs and push to provider
-	pushLogs(logs: InputLogEvent[]): void;
-}
-interface InputLogEvent {
-	timestamp: number | undefined;
-	message: string | undefined;
-}
-interface Logger {
-	debug(msg: string): void;
-	info(msg: string): void;
-	warn(msg: string): void;
-	error(msg: string): void;
-	addPluggable(pluggable: LoggingProvider): void;
-}
+import { AWS_CLOUDWATCH_CATEGORY } from '../../constants';
+import { LogLevel } from '../types';
+import { setConsoleLogLevel, logLevelIndex } from '../utils';
+import { InputLogEvent, LoggingProvider, Logger, LogType } from './types';
 
 const LOG_LEVELS: Record<string, number> = {
 	VERBOSE: 1,

@@ -1,5 +1,5 @@
-import { ConsoleLogger } from '../../src';
-import { getConsoleLogLevel } from '../../src/logging/utils';
+import { ConsoleLogger } from '../../../src';
+import { getConsoleLogLevel } from '../../../src/logging/utils';
 
 describe('ConsoleLogger', () => {
 	describe('pluggables', () => {
