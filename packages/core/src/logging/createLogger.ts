@@ -9,7 +9,7 @@ import { dispatchLogsToProviders } from './dispatchLogsToProviders';
  * Generates a new Logger which can be used to record log events for the specified namespace and category.
  *
  * @param input - The {@link CreateLoggerInput} object containing the namespace and an optional category name.
- * @returns Output containing the {@link CreateLoggerOutput} object.
+ * @returns A Logger instance which can be  used to record log events.
  */
 export const createLogger = (input: CreateLoggerInput): CreateLoggerOutput =>
 	createBaseLogger(input, dispatchLogsToProviders);
