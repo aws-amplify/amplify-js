@@ -8,7 +8,6 @@ import { isWebWorker } from '../utils';
 export class Reachability {
 	private static _observers: Array<CompletionObserver<NetworkStatus>> = [];
 
-	// TODO(Samaritan1011001): Add test cases for this method
 	isOnline(): boolean {
 		const globalObj = this._retreiveGlobalObject();
 		if (!globalObj) {
