@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { APIError } from './APIError';
+import { GraphQLApiError } from './GraphQLApiError';
 import { APIValidationErrorCode, validationErrorMap } from './validation';
 
 /**
@@ -14,6 +14,6 @@ export function assertValidationError(
 	const { message, recoverySuggestion } = validationErrorMap[name];
 
 	if (!assertion) {
-		throw new APIError({ name, message, recoverySuggestion });
+		throw new GraphQLApiError({ name, message, recoverySuggestion });
 	}
 }
