@@ -26,10 +26,10 @@ describe('CloudWatch Logging provider: logging constraint utils', () => {
 		expect(getLoggingConstraints()).toStrictEqual(loggingConstraints);
 
 		const updatedLoggingConstraints: LoggingConstraints = {
-			defaultLogLevel: 'INFO',
+			defaultLogLevel: 'WARN',
 			categoryLogLevel: {
-				API: 'INFO',
-				AUTH: 'INFO',
+				API: 'WARN',
+				AUTH: 'WARN',
 			},
 		};
 
