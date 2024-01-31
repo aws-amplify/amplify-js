@@ -10,7 +10,9 @@ import { attemptCompleteOAuthFlow } from '../../../../../src/providers/cognito/u
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 import { getRedirectUrl } from '../../../../../src/providers/cognito/utils/oauth/getRedirectUrl';
 import { oAuthStore } from '../../../../../src/providers/cognito/utils/oauth/oAuthStore';
+import { addInflightPromise } from '../../../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { cognitoUserPoolsTokenProvider } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
+
 import { mockAuthConfigWithOAuth } from '../../../../mockData';
 
 import type { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
@@ -47,9 +49,7 @@ jest.mock(
 jest.mock(
 	'../../../../../src/providers/cognito/utils/oauth/inflightPromise',
 	() => ({
-		addInflightPromise: jest.fn(resolver => {
-			resolver();
-		}),
+		addInflightPromise: jest.fn(),
 	})
 );
 
@@ -57,6 +57,7 @@ const mockAssertOAuthConfig = assertOAuthConfig as jest.Mock;
 const mockAssertTokenProviderConfig = assertTokenProviderConfig as jest.Mock;
 const mockCompleteOAuthFlow = completeOAuthFlow as jest.Mock;
 const mockGetRedirectUrl = getRedirectUrl as jest.Mock;
+const mockAddInflightPromise = addInflightPromise as jest.Mock;
 
 describe('attemptCompleteOAuthFlow', () => {
 	let windowSpy = jest.spyOn(window, 'window', 'get');
@@ -122,13 +123,15 @@ describe('attemptCompleteOAuthFlow', () => {
 		expect(
 			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
 		).toHaveBeenCalledTimes(1);
+		expect(mockAddInflightPromise).toHaveBeenCalledTimes(1);
 
-		const callback = (
+		const inflightPromiseResolver = mockAddInflightPromise.mock.calls[0][0];
+		const waitForInflightOAuthCallback = (
 			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
 		).mock.calls[0][0];
 
-		// the blocking promise should resolve
-		expect(callback()).resolves.toBeUndefined();
+		inflightPromiseResolver();
+		expect(waitForInflightOAuthCallback()).resolves.toBeUndefined();
 	});
 
 	test.each([

@@ -23,7 +23,7 @@ const logger = new ConsoleLogger('Analytics');
 /**
  * Records an Analytic event to Pinpoint. Events will be buffered and periodically sent to Pinpoint.
  *
- * @param {RecordInput} params The input object used to construct the request.
+ * @param params The input object used to construct the request.
  *
  * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library
  *  configuration is incorrect.

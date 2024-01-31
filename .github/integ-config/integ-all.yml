@@ -440,6 +440,13 @@ tests:
     sample_name: [data-client-gen2]
     spec: data-client-gen2
     browser: [chrome] # Issues using Auth category / setting secure cookies in FF using Cypress with a Next.js app. Manual testing in FF works as expected
+  - test_name: integ_react_rest_api
+    desc: 'Vite + React REST API'
+    framework: vite
+    category: api
+    sample_name: [rest]
+    spec: restful
+    browser: *minimal_browser_list
 
   # AUTH
   - test_name: integ_react_javascript_authentication

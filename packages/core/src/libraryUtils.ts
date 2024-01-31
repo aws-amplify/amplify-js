@@ -17,6 +17,7 @@ export {
 	retry,
 	urlSafeDecode,
 	urlSafeEncode,
+	deDupeAsyncFunction,
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { LegacyConfig } from './singleton/types';
@@ -53,6 +54,7 @@ export {
 	AuthVerifiableAttributeKey,
 	AWSCredentials,
 } from './singleton/Auth/types';
+export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
 
 // Platform & user-agent utilities
 export {
@@ -88,6 +90,9 @@ export {
 	AmplifyError,
 	PlatformNotSupportedError,
 	createAssertionFunction,
+	ApiError,
+	ApiErrorParams,
+	ApiErrorResponse,
 } from './errors';
 export {
 	AmplifyErrorCode,

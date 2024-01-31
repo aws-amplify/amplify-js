@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "2.0.9",
+	"version": "2.0.13",
 	"description": "Notifications category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -98,8 +98,8 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.9",
-		"@aws-amplify/react-native": "1.0.9",
+		"@aws-amplify/core": "6.0.13",
+		"@aws-amplify/react-native": "1.0.13",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "3.29.4",
 		"typescript": "5.0.2"

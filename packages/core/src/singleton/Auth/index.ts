@@ -44,6 +44,15 @@ export class AuthClass {
 		this.authOptions = authOptions;
 	}
 
+	/**
+	 * Fetch the auth tokens, and the temporary AWS credentials and identity if they are configured. By default it
+	 * does not refresh the auth tokens or credentials if they are loaded in storage already. You can force a refresh
+	 * with `{ forceRefresh: true }` input.
+	 *
+	 * @param options - Options configuring the fetch behavior.
+	 *
+	 * @returns Promise of current auth session {@link AuthSession}.
+	 */
 	async fetchAuthSession(
 		options: FetchAuthSessionOptions = {}
 	): Promise<AuthSession> {

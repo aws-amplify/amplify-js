@@ -40,6 +40,12 @@ const defaultLatencies: FakeLatencies = {
 };
 
 /**
+ * Fake mirrors logic from multiple merge strategies
+ * https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html#automerge
+ */
+export type MergeStrategy = 'Automerge' | 'OptimisticConcurrency';
+
+/**
  * Keep a list of all subscription delivery promises where each promise
  * resolves after the related message is delivered to all subscribers.
  *
@@ -63,6 +69,7 @@ export class FakeGraphQLService {
 	public isConnected = true;
 	public log: (channel: string, ...etc: any) => void = s => undefined;
 	public requests = [] as any[];
+	public errors = new Map<string, any[]>();
 	public tables = new Map<string, Map<string, any[]>>();
 	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
@@ -102,10 +109,19 @@ export class FakeGraphQLService {
 	 */
 	public latencies: FakeLatencies = defaultLatencies;
 
-	constructor(public schema: Schema) {
+	/**
+	 * The merge strategy used for conflict resolution in the fake service
+	 */
+	public mergeStrategy: MergeStrategy;
+
+	constructor(
+		public schema: Schema,
+		mergeStrategy: MergeStrategy = 'Automerge'
+	) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
 			this.tableDefinitions.set(model.name, model);
+			this.mergeStrategy = mergeStrategy;
 			let CPKFound = false;
 
 			for (const attribute of model.attributes || []) {
@@ -474,6 +490,28 @@ export class FakeGraphQLService {
 		return merged;
 	}
 
+	private occMerge(selection, existing, updated) {
+		let errors: any[] = [];
+		let merged: any = null;
+		if (updated._version === existing._version) {
+			merged = {
+				...this.populatedFields(existing),
+				...this.populatedFields(updated),
+				_version: updated._version + 1,
+				_lastChangedAt: new Date().getTime(),
+				updatedAt: new Date().toISOString(),
+			};
+		} else {
+			errors = [this.makeOCCConflictUnhandeled(existing, selection)];
+		}
+		const data = {
+			[selection]: merged,
+		};
+
+		this.log('occ merged', { existing, updated, merged, errors });
+		return [data, errors];
+	}
+
 	public simulateDisconnect() {
 		this.isConnected = false;
 	}
@@ -606,7 +644,7 @@ export class FakeGraphQLService {
 			});
 		}
 
-		return new Promise(async resolve => {
+		return new Promise(async (resolve, reject) => {
 			!ignoreLatency && (await this.jitteredPause(this.latencies.request));
 
 			if (operation === 'query') {
@@ -675,11 +713,18 @@ export class FakeGraphQLService {
 						};
 						errors = [this.makeMissingUpdateTarget(selection)];
 					} else {
-						const updated = this.autoMerge(existing, record);
-						data = {
-							[selection]: updated,
-						};
-						table.set(this.getPK(tableName, record), updated);
+						if (this.mergeStrategy === 'OptimisticConcurrency') {
+							[data, errors] = this.occMerge(selection, existing, record);
+							if (data[selection]) {
+								table.set(this.getPK(tableName, record), data[selection]);
+							}
+						} else {
+							const updated = this.autoMerge(existing, record);
+							data = {
+								[selection]: updated,
+							};
+							table.set(this.getPK(tableName, record), updated);
+						}
 					}
 				} else if (type === 'delete') {
 					const existing = table.get(this.getPK(tableName, record));
@@ -730,16 +775,38 @@ export class FakeGraphQLService {
 					}
 				}
 
-				this.notifySubscribers(tableName, type, data, selection, ignoreLatency);
+				// Only notify subscribers when the change was made without errors
+				if (errors.length === 0) {
+					this.notifySubscribers(
+						tableName,
+						type,
+						data,
+						selection,
+						ignoreLatency
+					);
+				} else {
+					if (!Array.isArray(this.errors.get(type))) {
+						this.errors.set(type, []);
+					}
+					this.errors.get(type)?.push([selection, errors]);
+				}
 
 				!ignoreLatency && (await this.jitteredPause(this.latencies.response));
 
 				this.log('API Response', { data, errors });
-				resolve({
+
+				const response = {
 					data,
 					errors,
 					extensions: {},
-				});
+				};
+
+				// Resolve unless there are errors, in which case reject/throw
+				if (response.errors && response.errors.length) {
+					reject(response);
+				} else {
+					resolve(response);
+				}
 			}
 
 			!ignoreLatency && (await this.jitteredPause(this.latencies.response));
