@@ -37,6 +37,8 @@ export interface Logger {
 
 export type CreateLoggerInput = {
 	namespace: string;
+	// todo(ashwinkumar6): should LoggingCategory only be used internally
+	// and externally this can just be string
 	category?: LoggingCategory;
 };
 
