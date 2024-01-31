@@ -9,5 +9,5 @@ import { logToConsole } from './console';
 export const dispatchLogsToProviders = (params: LogParams) => {
 	const { additionalProviders = [] } = Amplify.libraryOptions.Logging ?? {};
 	logToConsole(params);
-	Object.values(additionalProviders).forEach(logger => logger.log(params));
+	additionalProviders.forEach(logger => logger.log(params));
 };

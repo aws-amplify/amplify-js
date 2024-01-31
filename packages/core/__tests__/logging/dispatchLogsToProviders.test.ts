@@ -40,7 +40,7 @@ describe('logging dispatchLogsToProviders', () => {
 
 	const mockLogToConsole = logToConsole as jest.Mock;
 
-	it('should dispatch internal logs to console and all configured logging providers ', () => {
+	it('should dispatch amplify generated logs to console and all configured logging providers ', () => {
 		dispatchLogsToProviders(sampleLog);
 
 		expect(mockLogToConsole).toHaveBeenCalledTimes(1);

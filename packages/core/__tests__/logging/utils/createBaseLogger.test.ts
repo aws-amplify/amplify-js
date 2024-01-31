@@ -7,7 +7,7 @@ const namespace = 'namespace';
 const category = 'Auth';
 const mockDispatchLogsToProviders = dispatchLogsToProviders as jest.Mock;
 
-describe('logging createLogger', () => {
+describe('logging createBaseLogger', () => {
 	const logger = createBaseLogger(
 		{ namespace, category },
 		dispatchLogsToProviders

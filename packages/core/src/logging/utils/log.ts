@@ -15,7 +15,7 @@ export const logLevelIndex = [
 /**
  * Checks if a given input log level is equal to or higher than the current log level.
  */
-export const checkLogLevel = (
+export const isWithinCurrentLogLevel = (
 	inputLevel: LogLevel,
 	currentLevel: LogLevel
 ): boolean => {

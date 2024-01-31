@@ -1,15 +1,22 @@
 import { logToConsole } from '../../src/logging/console';
-import { setConsoleLogLevel } from '../../src/logging/utils';
+import {
+	setConsoleLogLevel,
+	getConsoleLogFunction,
+} from '../../src/logging/utils';
 import { LogParams, LogLevel } from '../../src/logging/types';
-import * as loggingUtils from '../../src/logging/utils';
-
-const logFunction = jest.fn();
-jest
-	.spyOn(loggingUtils, 'getConsoleLogFunction')
-	.mockImplementation(() => logFunction);
 
 const mockDate = new Date('2024-01-01T17:30:00Z');
 jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
+
+jest.mock('../../src/logging/utils', () => {
+	return {
+		...jest.requireActual('../../src/logging/utils'),
+		getConsoleLogFunction: jest.fn(),
+	};
+});
+
+const mockGetConsoleLogFunction = getConsoleLogFunction as jest.Mock;
+const logFunction = jest.fn();
 
 const logLevel: LogLevel = 'VERBOSE';
 const sampleLog: LogParams = {
@@ -20,11 +27,15 @@ const sampleLog: LogParams = {
 };
 
 describe('logToConsole', () => {
+	beforeEach(() => {
+		mockGetConsoleLogFunction.mockImplementation(() => logFunction);
+	});
+
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
-	it('Should log message to console', () => {
+	it('Should log the message to console', () => {
 		setConsoleLogLevel(logLevel);
 		logToConsole(sampleLog);
 		expect(logFunction).toHaveBeenCalledTimes(1);

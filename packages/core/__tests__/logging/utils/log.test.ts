@@ -1,4 +1,4 @@
-import { checkLogLevel } from '../../../src/logging/utils';
+import { isWithinCurrentLogLevel } from '../../../src/logging/utils';
 import { LogLevel } from '../../../src/logging/types';
 
 const levelVerbose: [LogLevel, LogLevel, boolean][] = [
@@ -55,7 +55,7 @@ describe('logging utils', () => {
 	])(
 		'can user log %p log event if current level is %p',
 		(inputLevel, currentLevel, result) => {
-			expect(checkLogLevel(inputLevel, currentLevel)).toBe(result);
+			expect(isWithinCurrentLogLevel(inputLevel, currentLevel)).toBe(result);
 		}
 	);
 });

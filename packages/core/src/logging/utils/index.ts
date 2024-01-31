@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { getTimestamp } from './timeUtils';
-export { checkLogLevel, logLevelIndex } from './log';
+export { isWithinCurrentLogLevel, logLevelIndex } from './log';
 export { createBaseLogger } from './createBaseLogger';
 export {
 	getConsoleLogLevel,

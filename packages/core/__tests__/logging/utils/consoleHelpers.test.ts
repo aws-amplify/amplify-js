@@ -3,6 +3,7 @@ import {
 	getConsoleLogLevel,
 	getConsoleLogFunction,
 } from '../../../src/logging/utils';
+import { LogLevel } from '../../../src/logging/types';
 
 describe('logging utils', () => {
 	describe('consoleLogLevel', () => {
@@ -29,15 +30,13 @@ describe('logging utils', () => {
 			jest.clearAllMocks();
 		});
 
-		it.each([
-			['log', 'UNKNOWN'],
+		it.each<[string, LogLevel]>([
 			['error', 'ERROR'],
 			['warn', 'WARN'],
 			['info', 'INFO'],
 			['debug', 'DEBUG'],
 			['debug', 'VERBOSE'],
 		])('should return console.%p for %p log level', (event, logLevel) => {
-			// @ts-expect-error
 			const logFunction = getConsoleLogFunction(logLevel);
 			logFunction();
 			expect(console[event]).toHaveBeenCalledTimes(1);

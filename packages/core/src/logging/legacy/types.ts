@@ -1,6 +1,27 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+/*
+ * ---------------------------------------------------------------------------------
+ * LEGACY CONSOLE LOGGER CLASS TYPES
+ * ---------------------------------------------------------------------------------
+ *
+ * Context:
+ * The 'ConsoleLogger' class is a legacy component in this codebase.
+ * It has been superseded by a new console logging utility.
+ * While 'ConsoleLogger' remains functional and supported for the time being,
+ * it is scheduled for deprecation.
+ *
+ * Future:
+ * This class is marked for deprecation and will be removed in the next major
+ * version.
+ *
+ * Note to Maintainers:
+ * Please ensure that any updates or bug fixes to 'ConsoleLogger' during its
+ * deprecation period are critical and necessary.
+ * ---------------------------------------------------------------------------------
+ */
+
 /**
  * Taken from @aws-sdk/client-cloudwatch-logs@3.6.1
  */

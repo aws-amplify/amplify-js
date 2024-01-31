@@ -21,25 +21,25 @@ export const getConsoleLogLevel = (): LogLevel => logLevel;
  * Returns a function to write logs onto the console.
  */
 export const getConsoleLogFunction = (logLevel: LogLevel) => {
-	let fcn = console.log.bind(console);
+	let logFunction = console.log.bind(console);
 	switch (logLevel) {
 		case 'ERROR': {
-			fcn = console.error?.bind(console) ?? fcn;
+			logFunction = console.error?.bind(console) ?? logFunction;
 			break;
 		}
 		case 'WARN': {
-			fcn = console.warn?.bind(console) ?? fcn;
+			logFunction = console.warn?.bind(console) ?? logFunction;
 			break;
 		}
 		case 'INFO': {
-			fcn = console.info?.bind(console) ?? fcn;
+			logFunction = console.info?.bind(console) ?? logFunction;
 			break;
 		}
 		case 'VERBOSE':
 		case 'DEBUG': {
-			fcn = console.debug?.bind(console) ?? fcn;
+			logFunction = console.debug?.bind(console) ?? logFunction;
 			break;
 		}
 	}
-	return fcn;
+	return logFunction;
 };

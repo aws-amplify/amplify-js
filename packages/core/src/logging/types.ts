@@ -26,7 +26,7 @@ export interface LoggingProvider {
 	log: (logParams: LogParams) => void;
 }
 
-export interface LoggerType {
+export interface Logger {
 	verbose: (message: string) => void;
 	debug: (message: string) => void;
 	info: (message: string) => void;
@@ -40,4 +40,9 @@ export type CreateLoggerInput = {
 	category?: LoggingCategory;
 };
 
-export type CreateLoggerOutput = LoggerType;
+export type CreateLoggerOutput = Logger;
+
+export type CreateBaseLogger = (
+	logContext: CreateLoggerInput,
+	logFunction: (input: LogParams) => void
+) => Logger;
