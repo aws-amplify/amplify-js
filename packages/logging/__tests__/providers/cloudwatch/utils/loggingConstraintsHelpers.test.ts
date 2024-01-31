@@ -5,9 +5,9 @@ import { LoggingConstraints } from '../../../../src/providers/cloudwatch/types/c
 import {
 	getLoggingConstraints,
 	setLoggingConstraints,
-} from '../../../../src/providers/cloudwatch/utils/loggingConstraints';
+} from '../../../../src/providers/cloudwatch/utils/loggingConstraintsHelpers';
 
-describe('CloudWatch Logging provider: logging constraint utils', () => {
+describe('CloudWatch Logging provider: logging constraints helpers', () => {
 	const loggingConstraints: LoggingConstraints = {
 		defaultLogLevel: 'INFO',
 		categoryLogLevel: {

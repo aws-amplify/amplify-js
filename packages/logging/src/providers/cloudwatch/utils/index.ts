@@ -4,5 +4,7 @@
 export {
 	getLoggingConstraints,
 	setLoggingConstraints,
-} from './loggingConstraints';
-export { setUpRemoteConfigurationRefresh } from './setUpRemoteConfigurationRefresh';
+} from './loggingConstraintsHelpers';
+export { resolveConfig } from './resolveConfig';
+export { resolveCredentials } from './resolveCredentials';
+export { setUpRemoteLoggingConstraintsRefresh } from './setUpRemoteLoggingConstraintsRefresh';

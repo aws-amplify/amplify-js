@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LoggingConstraints } from '../../../../src/providers/cloudwatch/types/configuration';
-import { setLoggingConstraints } from '../../../../src/providers/cloudwatch/utils/loggingConstraints';
+import { setLoggingConstraints } from '../../../../src/providers/cloudwatch/utils/loggingConstraintsHelpers';
 
 jest.mock('../../../../src/providers/cloudwatch/utils/loggingConstraints');
 
