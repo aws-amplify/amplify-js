@@ -4,5 +4,5 @@
 import { LoggingProvider } from '../../logging/types';
 
 export interface LibraryLoggingOptions {
-	additionalProviders?: LoggingProvider[];
+	providers?: LoggingProvider[];
 }

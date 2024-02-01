@@ -3,7 +3,7 @@ import { LoggingProvider } from '../../src/logging';
 import { dispatchLogsToProviders } from '../../src/logging/dispatchLogsToProviders';
 import { LogParams } from '../../src/logging/types';
 
-const additionalProviders: LoggingProvider[] = [
+const providers: LoggingProvider[] = [
 	{
 		log: jest.fn(),
 	},
@@ -22,8 +22,8 @@ jest.mock('../../src/singleton/Amplify', () => ({
 	Amplify: {
 		libraryOptions: {
 			Logging: {
-				get additionalProviders() {
-					return additionalProviders;
+				get providers() {
+					return providers;
 				},
 			},
 		},
@@ -33,7 +33,7 @@ jest.mock('../../src/logging/console', () => ({
 	logToConsole: jest.fn(),
 }));
 
-describe('logging dispatchLogsToProviders', () => {
+describe('dispatchLogsToProviders', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
@@ -46,7 +46,7 @@ describe('logging dispatchLogsToProviders', () => {
 		expect(mockLogToConsole).toHaveBeenCalledTimes(1);
 		expect(mockLogToConsole).toHaveBeenCalledWith(sampleLog);
 
-		additionalProviders.forEach(provider => {
+		providers.forEach(provider => {
 			expect(provider.log).toHaveBeenCalledTimes(1);
 			expect(provider.log).toHaveBeenCalledWith(sampleLog);
 		});

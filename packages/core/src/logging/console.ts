@@ -21,6 +21,7 @@ export const logToConsole = ({
 	const logFunction = getConsoleLogFunction(logLevel);
 	const categoryPrefix = category ? `/${category}` : '';
 	const prefix = `[${logLevel}] ${getTimestamp()} ${namespace}${categoryPrefix}`;
-	if (isWithinCurrentLogLevel(logLevel, getConsoleLogLevel()))
+	if (isWithinCurrentLogLevel(logLevel, getConsoleLogLevel())) {
 		logFunction(prefix, message);
+	}
 };

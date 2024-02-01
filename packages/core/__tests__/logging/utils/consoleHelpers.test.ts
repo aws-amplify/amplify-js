@@ -5,7 +5,7 @@ import {
 } from '../../../src/logging/utils';
 import { LogLevel } from '../../../src/logging/types';
 
-describe('logging utils', () => {
+describe('consoleHelpers', () => {
 	describe('consoleLogLevel', () => {
 		it('should get default console log level', () => {
 			expect(getConsoleLogLevel()).toEqual('WARN');

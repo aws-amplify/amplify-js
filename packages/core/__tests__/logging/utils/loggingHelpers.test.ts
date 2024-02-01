@@ -44,7 +44,7 @@ const levelNone: [LogLevel, LogLevel, boolean][] = [
 	['ERROR', 'NONE', false],
 ];
 
-describe('logging utils', () => {
+describe('isWithinCurrentLogLevel', () => {
 	it.each([
 		...levelVerbose,
 		...levelDebug,
