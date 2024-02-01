@@ -169,7 +169,7 @@ class MutationEventOutbox {
 		head: PersistentModel,
 		recordOp: string
 	): Promise<void> {
-		if (head.operation !== recordOp) {
+		if (head?.operation !== recordOp) {
 			return;
 		}
 
