@@ -199,7 +199,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
+				IndexName: awsConfig.geo.amazon_location_service.searchIndices.default,
 			});
 		});
 
@@ -367,7 +367,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
+				IndexName: awsConfig.geo.amazon_location_service.searchIndices.default,
 			});
 		});
 
@@ -527,7 +527,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
-				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
+				IndexName: awsConfig.geo.amazon_location_service.searchIndices.default,
 			});
 		});
 
@@ -609,7 +609,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
-				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
+				IndexName: awsConfig.geo.amazon_location_service.searchIndices.default,
 			});
 		});
 
