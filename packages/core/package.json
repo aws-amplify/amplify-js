@@ -21,8 +21,7 @@
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup -c rollup.config.mjs",
-		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
-		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run generate-version && npm run build:esm-cjs && npm run build:umd",
 		"generate-version": "genversion src/Platform/version.ts --es6 --semi --source ../aws-amplify",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
@@ -30,7 +29,7 @@
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"prepublishOnly": "npm run build",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 92.36"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 92.36"
 	},
 	"repository": {
 		"type": "git",
@@ -61,11 +60,8 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/react-native": "1.0.13",
-		"@rollup/plugin-typescript": "11.1.5",
 		"@types/js-cookie": "3.0.2",
-		"genversion": "^2.2.0",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"genversion": "^2.2.0"
 	},
 	"size-limit": [
 		{
