@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { DelayFunction } from '../../types';
-import { ConsoleLogger } from '../../logging/ConsoleLogger';
+import { ConsoleLogger } from '../../logging';
 import { isNonRetryableError } from './isNonRetryableError';
 
 const logger = new ConsoleLogger('retryUtil');

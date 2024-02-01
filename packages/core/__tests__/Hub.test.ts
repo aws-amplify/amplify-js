@@ -1,6 +1,7 @@
-import { Hub, AMPLIFY_SYMBOL } from '../src/Hub';
+import { Hub } from '../src/Hub';
 import { ConsoleLogger } from '../src';
 
+jest.mock('../src/singleton/Amplify');
 describe('Hub', () => {
 	const loggerSpy = jest.spyOn(ConsoleLogger.prototype, '_log');
 

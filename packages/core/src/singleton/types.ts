@@ -21,6 +21,7 @@ import {
 } from './Storage/types';
 import { NotificationsConfig } from './Notifications/types';
 import { InteractionsConfig } from './Interactions/types';
+import { LibraryLoggingOptions } from './Logging/types';
 
 export type LegacyConfig = {
 	/**
@@ -47,6 +48,7 @@ export type LibraryOptions = {
 	API?: LibraryAPIOptions;
 	Auth?: LibraryAuthOptions;
 	Storage?: LibraryStorageOptions;
+	Logging?: LibraryLoggingOptions;
 	ssr?: boolean;
 };
 

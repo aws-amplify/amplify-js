@@ -1,8 +1,31 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InputLogEvent, Logger, LoggingProvider, LogType } from './types';
-import { AWS_CLOUDWATCH_CATEGORY } from '../constants';
+/*
+ * ---------------------------------------------------------------------------------
+ * LEGACY CONSOLE LOGGER CLASS
+ * ---------------------------------------------------------------------------------
+ *
+ * Context:
+ * The 'ConsoleLogger' class is a legacy component in this codebase.
+ * It has been superseded by a new console logging utility.
+ * While 'ConsoleLogger' remains functional and supported for the time being,
+ * it is scheduled for deprecation.
+ *
+ * Future:
+ * This class is marked for deprecation and will be removed in the next major
+ * version.
+ *
+ * Note to Maintainers:
+ * Please ensure that any updates or bug fixes to 'ConsoleLogger' during its
+ * deprecation period are critical and necessary.
+ * ---------------------------------------------------------------------------------
+ */
+
+import { AWS_CLOUDWATCH_CATEGORY } from '../../constants';
+import { LogLevel } from '../types';
+import { setConsoleLogLevel, logLevelIndex } from '../utils';
+import { InputLogEvent, LoggingProvider, Logger, LogType } from './types';
 
 const LOG_LEVELS: Record<string, number> = {
 	VERBOSE: 1,
@@ -11,6 +34,9 @@ const LOG_LEVELS: Record<string, number> = {
 	WARN: 4,
 	ERROR: 5,
 };
+
+const isValidLogLevel = (logLevel: string | null): logLevel is LogLevel =>
+	logLevel !== null && logLevelIndex.includes(logLevel);
 
 /**
  * Write logs
@@ -32,7 +58,15 @@ export class ConsoleLogger implements Logger {
 		this._pluggables = [];
 	}
 
-	static LOG_LEVEL: string | null = null;
+	private static _logLevel: string | null = null;
+	static get LOG_LEVEL(): string | null {
+		return this._logLevel;
+	}
+	static set LOG_LEVEL(level: string | null) {
+		// To ensure backwards compatibility, apply the global LOG_LEVEL override to the console logger
+		isValidLogLevel(level) && setConsoleLogLevel(level);
+		this._logLevel = level;
+	}
 
 	_padding(n: number) {
 		return n < 10 ? '0' + n : '' + n;
