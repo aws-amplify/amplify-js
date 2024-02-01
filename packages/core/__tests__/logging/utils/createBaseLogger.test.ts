@@ -30,7 +30,7 @@ describe('createBaseLogger', () => {
 		expect(mockDispatchLogsToProviders).toHaveBeenCalledWith({
 			namespace,
 			category,
-			logLevel: logLevel,
+			logLevel,
 			message,
 		});
 	});
