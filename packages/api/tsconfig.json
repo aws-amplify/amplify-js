@@ -1,11 +1,7 @@
 {
-	"extends": "../tsconfig.base.json",
+	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"importHelpers": true,
-		"strict": true,
-		"noImplicitAny": true,
-		"strictNullChecks": true,
-		"skipLibCheck": true
+		"strictNullChecks": true
 	},
-	"include": ["./src"]
+	"include": ["./src", "__tests__", "__mocks__"]
 }

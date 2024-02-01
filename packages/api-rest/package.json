@@ -16,14 +16,13 @@
 		"build-with-test": "npm test && npm build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup -c rollup.config.mjs",
-		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
-		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 70.0"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 70.0"
 	},
 	"exports": {
 		".": {
@@ -88,10 +87,7 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.13",
-		"@aws-amplify/react-native": "1.0.13",
-		"@rollup/plugin-typescript": "11.1.5",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"@aws-amplify/react-native": "1.0.13"
 	},
 	"size-limit": [
 		{
