@@ -1,5 +1,5 @@
 import * as raw from '../../src';
-import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
+import { Amplify, AmplifyClassV6, Hub } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
@@ -53,7 +53,9 @@ function makeAppSyncStreams() {
 		);
 		if (matchedType) {
 			return new Observable(subscriber => {
-				streams[matchedType[1].toLowerCase()] = subscriber;
+				streams[
+					matchedType[1].toLowerCase() as 'create' | 'update' | 'delete'
+				] = subscriber;
 			});
 		}
 	});
@@ -103,15 +105,52 @@ const USER_AGENT_DETAILS = {
 };
 
 describe('generateClient', () => {
-	// test('raises clear error when API GraphQL isnt configured', () => {
-	// 	const getConfig = jest.fn().mockReturnValue({});
-	// 	const amplify = {
-	// 		getConfig,
-	// 	} as unknown as AmplifyClassV6;
-	// 	expect(() => generateClient({ amplify })).toThrow(
-	// 		'The API configuration is missing. This is likely due to Amplify.configure() not being called prior to generateClient()'
-	// 	);
-	// });
+	describe('client `models` property', () => {
+		const expectedModelsProperties = [
+			'Todo',
+			'Note',
+			'TodoMetadata',
+			'ThingWithCustomerOwnerField',
+			'ThingWithOwnerFieldSpecifiedInModel',
+			'ThingWithAPIKeyAuth',
+			'ThingWithoutExplicitAuth',
+			'ThingWithCustomPk',
+			'CommunityPoll',
+			'CommunityPollAnswer',
+			'CommunityPollVote',
+			'CommunityPost',
+		];
+
+		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
+			Amplify.configure(configFixture); // clear the resource config
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(Object.keys(client.models)).toEqual(expectedModelsProperties);
+		});
+
+		it('generates `models` property when Amplify.configure() is called later with a valid GraphQL provider config', async () => {
+			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(Object.keys(client.models)).toHaveLength(0);
+
+			Amplify.configure(configFixture);
+
+			expect(Object.keys(client.models)).toEqual(expectedModelsProperties);
+		});
+
+		it('generates `models` property throwing error when there is no valid GraphQL provider config can be resolved', () => {
+			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(() => {
+				client.models.Todo.create({ name: 'todo' });
+			}).toThrow(
+				'Could not generate client. This is likely due to Amplify.configure() not being called prior to generateClient().',
+			);
+		});
+	});
 
 	test('can produce a client bound to an arbitrary amplify object for getConfig()', async () => {
 		// TS lies: We don't care what `amplify` is or does. We want want to make sure

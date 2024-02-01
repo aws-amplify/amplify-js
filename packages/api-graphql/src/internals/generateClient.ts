@@ -10,6 +10,8 @@ import {
 	__headers,
 } from '../types';
 import { ClientGenerationParams } from './types';
+import { ModelTypes } from '@aws-amplify/data-schema-types';
+import { Hub, ResourcesConfig } from '@aws-amplify/core';
 
 /**
  * @private
@@ -34,7 +36,50 @@ export function generateClient<T extends Record<any, any> = never>(
 		models: {},
 	} as any;
 
-	client.models = generateModelsProperty<T>(client, params);
+	const config = params.amplify.getConfig();
+
+	if (!config.API?.GraphQL) {
+		client.models = emptyModels as ModelTypes<never>;
+		generateModelsPropertyOnAmplifyConfigure<T>(client);
+	} else {
+		client.models = generateModelsProperty<T>(
+			client,
+			config.API?.GraphQL,
+		);
+	}
 
 	return client as V6Client<T>;
 }
+
+const generateModelsPropertyOnAmplifyConfigure = <
+	T extends Record<any, any> = never,
+>(clientRef: any) => {
+	Hub.listen('core', coreEvent => {
+		const { event, data } = coreEvent.payload;
+
+		if (event !== 'configure') {
+			return;
+		}
+
+		// data is guaranteed to be `ResourcesConfig` when the event is `configure`
+		const resourceConfig = data as ResourcesConfig;
+
+		if (resourceConfig.API?.GraphQL) {
+			clientRef.models = generateModelsProperty<T>(
+				clientRef,
+				resourceConfig.API?.GraphQL,
+			);
+		}
+	});
+};
+
+const emptyModels = new Proxy(
+	{},
+	{
+		get() {
+			throw new Error(
+				'Could not generate client. This is likely due to Amplify.configure() not being called prior to generateClient().',
+			);
+		},
+	},
+);
