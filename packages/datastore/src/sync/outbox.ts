@@ -111,7 +111,9 @@ class MutationEventOutbox {
 			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp!);
 		}
 
-		await storage.delete(head);
+		if (head) {
+			await storage.delete(head);
+		}
 		this.inProgressMutationEventId = undefined!;
 
 		return head;
