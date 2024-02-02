@@ -1,10 +1,4 @@
 {
-	"extends": "../tsconfig.base.json",
-	"compilerOptions": {
-		"importHelpers": true,
-		"strict": true,
-		"noImplicitAny": true,
-		"resolveJsonModule": true
-	},
-	"include": ["./src"]
+	"extends": "../../tsconfig.json",
+	"include": ["./src", "__tests__"]
 }

@@ -107,6 +107,7 @@ export const parseAWSExports = (
 		if (Push?.AWSPinpoint) {
 			const { appId, region } = Push.AWSPinpoint;
 			amplifyConfig.Notifications = {
+				...amplifyConfig.Notifications,
 				PushNotification: {
 					Pinpoint: {
 						appId,

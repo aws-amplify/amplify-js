@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/pubsub",
-	"version": "6.0.13",
+	"version": "6.0.14",
 	"description": "Pubsub category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -16,14 +16,13 @@
 		"build-with-test": "npm run clean && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup -c rollup.config.mjs && cp -R src/vendor dist/cjs/vendor && cp -R src/vendor dist/esm/vendor",
-		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
-		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build:watch": "mkdirp dist/esm/vendor && mkdirp dist/cjs/vendor && cp -R src/vendor dist/cjs/vendor && cp -R src/vendor dist/esm/vendor && rollup -c rollup.config.mjs --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 93.0 -i src/vendor/paho-mqtt.js"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 93.0 -i src/vendor/paho-mqtt.js"
 	},
 	"typesVersions": {
 		">=4.2": {
@@ -73,7 +72,7 @@
 		"mqtt"
 	],
 	"dependencies": {
-		"@aws-amplify/auth": "6.0.13",
+		"@aws-amplify/auth": "6.0.14",
 		"buffer": "4.9.2",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
@@ -84,10 +83,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.13",
-		"@rollup/plugin-typescript": "11.1.5",
-		"rollup": "3.29.4",
-		"typescript": "5.0.2"
+		"@aws-amplify/core": "6.0.14"
 	},
 	"size-limit": [
 		{
