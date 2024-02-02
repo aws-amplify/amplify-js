@@ -5049,4 +5049,85 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 	});
+
+	describe('index queries', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+			Amplify.configure(configFixture);
+		});
+
+		test('PK-only index query', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listByTitle: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								title: 'Hello World',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } = await client.models.SecondaryIndexModel.listByTitle({
+				title: 'Hello World',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data.length).toBe(1);
+			expect(data[0]).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					title: 'Hello World',
+					description: 'something something',
+				}),
+			);
+		});
+
+		test('PK and SK index query', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listByDescriptionAndViewCount: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								title: 'Hello World',
+								description: 'something something',
+								viewCount: 5,
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } =
+				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount({
+					description: 'something something',
+					viewCount: { gt: 4 },
+				});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data.length).toBe(1);
+			expect(data[0]).toEqual(
+				expect.objectContaining({
+					__typename: 'Todo',
+					id: 'some-id',
+					title: 'Hello World',
+					description: 'something something',
+					viewCount: 5,
+				}),
+			);
+		});
+	});
 });

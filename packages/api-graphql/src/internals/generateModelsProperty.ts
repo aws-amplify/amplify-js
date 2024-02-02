@@ -6,10 +6,14 @@ import { ClientGenerationParams } from './types';
 import { V6Client, __authMode, __authToken } from '../types';
 
 import { listFactory } from './operations/list';
+import { indexQueryFactory } from './operations/indexQuery';
 import { getFactory } from './operations/get';
 import { subscriptionFactory } from './operations/subscription';
 import { observeQueryFactory } from './operations/observeQuery';
-import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
+import {
+	ModelIntrospectionSchema,
+	SchemaModel,
+} from '@aws-amplify/core/internals/utils';
 import { GraphQLProviderConfig } from '@aws-amplify/core';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
@@ -40,14 +44,14 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 					models[name][operationPrefix] = listFactory(
 						client,
 						modelIntrospection,
-						model
+						model,
 					);
 				} else if (SUBSCRIPTION_OPS.includes(operation)) {
 					models[name][operationPrefix] = subscriptionFactory(
 						client,
 						modelIntrospection,
 						model,
-						operation
+						operation,
 					);
 				} else if (operation === 'OBSERVE_QUERY') {
 					models[name][operationPrefix] = observeQueryFactory(models, model);
@@ -56,11 +60,46 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 						client,
 						modelIntrospection,
 						model,
-						operation
+						operation,
 					);
 				}
-			}
+			},
 		);
+
+		const getSecondaryIndexesFromSchemaModel = (model: SchemaModel) => {
+			const idxs = model.attributes
+				?.filter(
+					attr =>
+						attr.type === 'key' &&
+						// presence of `name` property distinguishes GSI from primary index
+						attr.properties?.name &&
+						attr.properties?.queryField &&
+						attr.properties?.fields.length > 0,
+				)
+				.map(attr => {
+					const queryField: string = attr.properties?.queryField;
+					const [pk, ...sk] = attr.properties?.fields;
+
+					return {
+						queryField,
+						pk,
+						sk,
+					};
+				});
+
+			return idxs || [];
+		};
+
+		const secondaryIdxs = getSecondaryIndexesFromSchemaModel(model);
+
+		for (const idx of secondaryIdxs) {
+			models[name][idx.queryField] = indexQueryFactory(
+				client,
+				modelIntrospection,
+				model,
+				idx,
+			);
+		}
 	}
 
 	return models;
