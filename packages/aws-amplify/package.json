@@ -283,6 +283,9 @@
 		"@aws-amplify/storage": "6.0.14",
 		"tslib": "^2.5.0"
 	},
+	"devDependencies": {
+		"typescript": "5.0.2"
+	},
 	"size-limit": [
 		{
 			"name": "[Analytics] record (Pinpoint)",

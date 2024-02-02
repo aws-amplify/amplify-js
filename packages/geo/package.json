@@ -75,7 +75,8 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.14"
+		"@aws-amplify/core": "6.0.14",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
