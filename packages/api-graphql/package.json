@@ -71,7 +71,10 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@aws-amplify/data-schema": "^0.12.11"
+		"@aws-amplify/data-schema": "^0.12.11",
+		"typescript": "5.0.2",
+		"@rollup/plugin-typescript": "11.1.5",
+		"rollup": "^4.9.6"
 	},
 	"files": [
 		"dist/cjs",
