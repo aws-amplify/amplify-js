@@ -11,7 +11,7 @@ import {
 } from '../types';
 import { ClientGenerationParams } from './types';
 import { ModelTypes } from '@aws-amplify/data-schema-types';
-import { Hub, ResourcesConfig } from '@aws-amplify/core';
+import { Hub, HubCapsule, ResourcesConfig } from '@aws-amplify/core';
 
 /**
  * @private
@@ -55,14 +55,11 @@ const generateModelsPropertyOnAmplifyConfigure = <
 	T extends Record<any, any> = never,
 >(clientRef: any) => {
 	Hub.listen('core', coreEvent => {
-		const { event, data } = coreEvent.payload;
-
-		if (event !== 'configure') {
+		if (!isConfigureEvent(coreEvent.payload)) {
 			return;
 		}
 
-		// data is guaranteed to be `ResourcesConfig` when the event is `configure`
-		const resourceConfig = data as ResourcesConfig;
+		const { data: resourceConfig } = coreEvent.payload;
 
 		if (resourceConfig.API?.GraphQL) {
 			clientRef.models = generateModelsProperty<T>(
@@ -72,6 +69,15 @@ const generateModelsPropertyOnAmplifyConfigure = <
 		}
 	});
 };
+
+function isConfigureEvent(
+	payload: HubCapsule<'core', { event: string; data?: unknown }>['payload'],
+): payload is {
+	event: 'configure';
+	data: ResourcesConfig;
+} {
+	return payload.event === 'configure';
+}
 
 const emptyModels = new Proxy(
 	{},
