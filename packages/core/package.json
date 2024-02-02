@@ -61,7 +61,8 @@
 	"devDependencies": {
 		"@aws-amplify/react-native": "1.0.14",
 		"@types/js-cookie": "3.0.2",
-		"genversion": "^2.2.0"
+		"genversion": "^2.2.0",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
