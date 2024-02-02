@@ -39,6 +39,18 @@ export function generateClient<T extends Record<any, any> = never>(
 	const config = params.amplify.getConfig();
 
 	if (!config.API?.GraphQL) {
+		// This happens when the `Amplify.configure()` call gets evaluated after the `generateClient()` call.
+		//
+		// Cause: when the `generateClient()` and the `Amplify.configure()` calls are located in
+		// different source files, script bundlers may randomly arrange their orders in the production
+		// bundle.
+		//
+		// With the current implementation, the `client.models` instance created by `generateClient()`
+		// will be rebuilt on every `Amplify.configure()` call that's provided with a valid GraphQL
+		// provider configuration.
+		//
+		// TODO: revisit, and reverify this approach when enabling multiple clients for multi-endpoints
+		// configuration.
 		client.models = emptyModels as ModelTypes<never>;
 		generateModelsPropertyOnAmplifyConfigure<T>(client);
 	} else {
