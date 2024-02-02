@@ -2,16 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server.js';
-import { NextServer } from '../types';
 import {
 	AmplifyServerContextError,
 	CookieStorage,
 } from '@aws-amplify/core/internals/adapter-core';
 
+import { NextServer } from '../types';
+
 export const DATE_IN_THE_PAST = new Date(0);
 
 export const createCookieStorageAdapterFromNextServerContext = (
-	context: NextServer.Context
+	context: NextServer.Context,
 ): CookieStorage.Adapter => {
 	const { request: req, response: res } =
 		context as Partial<NextServer.GetServerSidePropsContext>;
@@ -45,12 +46,12 @@ export const createCookieStorageAdapterFromNextServerContext = (
 		if (response instanceof NextResponse) {
 			return createCookieStorageAdapterFromNextRequestAndNextResponse(
 				request,
-				response
+				response,
 			);
 		} else {
 			return createCookieStorageAdapterFromNextRequestAndHttpResponse(
 				request,
-				response
+				response,
 			);
 		}
 	}
@@ -72,7 +73,7 @@ export const createCookieStorageAdapterFromNextServerContext = (
 
 const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 	request: NextRequest,
-	response: NextResponse
+	response: NextResponse,
 ): CookieStorage.Adapter => {
 	const readonlyCookieStore = request.cookies;
 	const mutableCookieStore = response.cookies;
@@ -93,11 +94,11 @@ const createCookieStorageAdapterFromNextRequestAndNextResponse = (
 
 const createCookieStorageAdapterFromNextRequestAndHttpResponse = (
 	request: NextRequest,
-	response: Response
+	response: Response,
 ): CookieStorage.Adapter => {
 	const readonlyCookieStore = request.cookies;
 	const mutableCookieStore = createMutableCookieStoreFromHeaders(
-		response.headers
+		response.headers,
 	);
 
 	return {
@@ -110,7 +111,7 @@ const createCookieStorageAdapterFromNextRequestAndHttpResponse = (
 };
 
 const createCookieStorageAdapterFromNextCookies = (
-	cookies: NextServer.ServerComponentContext['cookies']
+	cookies: NextServer.ServerComponentContext['cookies'],
 ): CookieStorage.Adapter => {
 	const cookieStore = cookies();
 
@@ -147,7 +148,7 @@ const createCookieStorageAdapterFromNextCookies = (
 
 const createCookieStorageAdapterFromGetServerSidePropsContext = (
 	request: NextServer.GetServerSidePropsContext['request'],
-	response: NextServer.GetServerSidePropsContext['response']
+	response: NextServer.GetServerSidePropsContext['response'],
 ): CookieStorage.Adapter => {
 	const cookiesMap = { ...request.cookies };
 	const allCookies = Object.entries(cookiesMap).map(([name, value]) => ({
@@ -158,6 +159,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 	return {
 		get(name) {
 			const value = cookiesMap[ensureEncodedForJSCookie(name)];
+
 			return value
 				? {
 						name,
@@ -173,39 +175,40 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 				'Set-Cookie',
 				`${ensureEncodedForJSCookie(name)}=${value};${
 					options ? serializeSetCookieOptions(options) : ''
-				}`
+				}`,
 			);
 		},
 		delete(name) {
 			response.setHeader(
 				'Set-Cookie',
 				`${ensureEncodedForJSCookie(
-					name
-				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+					name,
+				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
 			);
 		},
 	};
 };
 
 const createMutableCookieStoreFromHeaders = (
-	headers: Headers
+	headers: Headers,
 ): Pick<CookieStorage.Adapter, 'set' | 'delete'> => {
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
 		headers.append(
 			'Set-Cookie',
 			`${ensureEncodedForJSCookie(name)}=${value};${
 				options ? serializeSetCookieOptions(options) : ''
-			}`
+			}`,
 		);
 	};
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
 		headers.append(
 			'Set-Cookie',
 			`${ensureEncodedForJSCookie(
-				name
-			)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+				name,
+			)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
 		);
 	};
+
 	return {
 		set: setFunc,
 		delete: deleteFunc,
@@ -213,7 +216,7 @@ const createMutableCookieStoreFromHeaders = (
 };
 
 const serializeSetCookieOptions = (
-	options: CookieStorage.SetCookieOptions
+	options: CookieStorage.SetCookieOptions,
 ): string => {
 	const { expires, domain, httpOnly, sameSite, secure } = options;
 	const serializedOptions: string[] = [];
@@ -232,6 +235,7 @@ const serializeSetCookieOptions = (
 	if (secure) {
 		serializedOptions.push(`Secure`);
 	}
+
 	return serializedOptions.join(';');
 };
 
