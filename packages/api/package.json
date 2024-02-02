@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "6.0.13",
+	"version": "6.0.14",
 	"description": "Api category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -66,6 +66,9 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
+	"devDependencies": {
+		"typescript": "5.0.2"
+	},
 	"files": [
 		"dist/cjs",
 		"dist/esm",
@@ -75,8 +78,8 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-amplify/api-graphql": "4.0.13",
-		"@aws-amplify/api-rest": "4.0.13",
+		"@aws-amplify/api-graphql": "4.0.14",
+		"@aws-amplify/api-rest": "4.0.14",
 		"tslib": "^2.5.0"
 	}
 }
