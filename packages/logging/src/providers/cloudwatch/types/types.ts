@@ -2,7 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // TODO: fix import
-import { LogLevel, LoggingCategory } from '@aws-amplify/core/internals/logging';
+import {
+	LogLevel,
+	LoggingCategory,
+	LoggingProvider,
+	LogParams,
+} from '@aws-amplify/core/internals/utils';
+
+export interface CloudWatchProvider extends LoggingProvider {
+	configure: (
+		config: CloudWatchConfig,
+		options?: CloudWatchRemoteLoggingConstraints
+	) => void;
+	log: (input: LogParams) => void;
+	flushLogs: () => Promise<void>;
+	enable: () => void;
+	disable: () => void;
+}
 
 export interface CloudWatchConfig {
 	enable?: boolean;

@@ -1,7 +1,0 @@
-{
-	"name": "@aws-amplify/core/internals/logging",
-	"types": "../../dist/esm/logging.d.ts",
-	"main": "../../dist/cjs/logging.js",
-	"module": "../../dist/esm/logging.mjs",
-	"react-native": "../../src/logging.ts"
-}

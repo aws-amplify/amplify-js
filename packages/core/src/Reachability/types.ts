@@ -5,5 +5,6 @@ export type NetworkStatus = {
 	online: boolean;
 };
 
+// TODO: can reuse the type defined at packages/core/src/utils/deDupeAsyncFunction.ts#L5
 export type AsyncReturnType<T extends (...args: any) => Promise<any>> =
 	T extends (...args: any) => Promise<infer R> ? R : any;

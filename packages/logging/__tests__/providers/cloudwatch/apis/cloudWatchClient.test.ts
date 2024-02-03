@@ -1,13 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createQueuedStorage } from '@aws-amplify/core';
-import { LogParams } from '../../../../src/types';
 import {
 	CloudWatchLogsClient,
 	PutLogEventsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
-import { Reachability } from '@aws-amplify/core/internals/utils';
+import {
+	Reachability,
+	LogParams,
+	createQueuedStorage,
+} from '@aws-amplify/core/internals/utils';
 import { Observable, Observer } from 'rxjs';
 import {
 	cloudWatchProvider,
@@ -20,12 +22,13 @@ const mockedQueuedStorage = {
 	peekAll: jest.fn(),
 	delete: jest.fn(),
 };
-jest.mock('@aws-amplify/core', () => ({
-	...jest.requireActual('@aws-amplify/core'),
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	createQueuedStorage: jest.fn(() => mockedQueuedStorage),
 }));
 const mockCreateQueuedStorage = createQueuedStorage as jest.Mock;
 
+// TODO: add tests for advanced cases
 describe('Cloudwatch provider APIs:', () => {
 	let testLog: LogParams = {
 		logLevel: 'INFO',

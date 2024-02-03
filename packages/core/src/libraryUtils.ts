@@ -132,3 +132,11 @@ export {
 	QueuedStorage,
 	QueuedItem,
 } from './utils/queuedStorage';
+
+// Logging utilities
+export {
+	LogLevel,
+	LogParams,
+	LoggingProvider,
+	LoggingCategory,
+} from './logging';

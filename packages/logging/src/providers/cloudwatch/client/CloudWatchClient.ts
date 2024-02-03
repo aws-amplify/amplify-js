@@ -9,20 +9,18 @@ import {
 	PutLogEventsCommandInput,
 	RejectedLogEventsInfo,
 } from '@aws-sdk/client-cloudwatch-logs';
-import { CloudWatchConfig, CloudWatchProvider } from '../types';
+import { CloudWatchConfig } from '../types';
 import {
 	NetworkConnectionMonitor,
 	createQueuedStorage,
 	QueuedStorage,
 	QueuedItem,
+	LogLevel,
+	LogParams,
 } from '@aws-amplify/core/internals/utils';
 import { getDefaultStreamName } from '../utils';
 import { resolveCredentials } from '../../../utils/resolveCredentials';
-import {
-	LogLevel,
-	LogParams,
-	LoggingProvider,
-} from '@aws-amplify/core/internals/logging';
+import { CloudWatchProvider } from '../types/types';
 
 const DEFAULT_LOG_LEVEL: LogLevel = 'INFO';
 
@@ -40,7 +38,7 @@ const defaultConfig = {
 	},
 };
 
-export const cloudWatchProvider: LoggingProvider = {
+export const cloudWatchProvider: CloudWatchProvider = {
 	/**
 	 * set the initial configuration
 	 * @internal
@@ -154,14 +152,16 @@ export async function handleRejectedLogEvents(
 		await queuedStorage.delete(
 			batchedLogs.slice(rejectedLogEventsInfo.tooNewLogEventStartIndex)
 		);
-		// If there is no tooNewLogEvents then others are either tooOld, expired or successfully logged so delete them from storage
+		// If there is no tooNewLogEvents then others are either tooOld,
+		// expired or successfully logged so delete them from storage
 	} else {
 		await queuedStorage.delete(batchedLogs);
 		return;
 	}
 
 	// TODO:
-	// 1. Needs design clarification on how to handle tooNewLogEventStartIndex -- For now following the Android impl of keeping them in local memory(cache).
+	// 1. Needs design clarification on how to
+	// handle tooNewLogEventStartIndex -- For now following the Android impl of keeping them in local memory(cache).
 	// 2. Retry logic for the same needs to be implemented
 }
 
