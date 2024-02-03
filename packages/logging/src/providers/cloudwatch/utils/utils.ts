@@ -15,6 +15,7 @@ export async function getDefaultStreamName() {
 	return `${dateNow}.${deviceId}.${userId}`;
 }
 
+// TODO: can be used when retry logic is added
 export function parseRejectedLogEvents(
 	rejectedLogEventsInfo: RejectedLogEventsInfo
 ) {

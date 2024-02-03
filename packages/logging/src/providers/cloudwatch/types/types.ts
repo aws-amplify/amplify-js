@@ -1,14 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { LogLevel, LoggingCategory, LoggingProvider } from '../../../types';
-
-export interface CloudWatchProvider extends LoggingProvider {
-	configure: (
-		config: CloudWatchConfig,
-		options?: CloudWatchRemoteLoggingConstraints
-	) => void;
-}
+// TODO: fix import
+import { LogLevel, LoggingCategory } from '@aws-amplify/core/internals/logging';
 
 export interface CloudWatchConfig {
 	enable?: boolean;

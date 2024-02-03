@@ -161,6 +161,12 @@
 			"require": "./dist/cjs/libraryUtils.js",
 			"react-native": "./src/libraryUtils.ts"
 		},
+		"./internals/logging": {
+			"types": "./dist/esm/logging/index.d.ts",
+			"import": "./dist/esm/logging/index.mjs",
+			"require": "./dist/cjs/logging/index.js",
+			"react-native": "./src/logging/index.ts"
+		},
 		"./package.json": "./package.json"
 	},
 	"typesVersions": {
@@ -188,6 +194,9 @@
 			],
 			"internals/utils": [
 				"./dist/esm/libraryUtils.d.ts"
+			],
+			"internals/logging": [
+				"./dist/esm/logging/index.d.ts"
 			]
 		}
 	}

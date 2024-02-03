@@ -70,7 +70,7 @@ describe('Cloudwatch provider APIs:', () => {
 				{ dequeueBeforeEnqueue: false }
 			);
 		});
-		it('should store the intented log message format', () => {
+		it('should store the intended log message format', () => {
 			expect(mockCreateQueuedStorage).toHaveBeenCalled();
 			mockedQueuedStorage.isFull.mockReturnValue(false);
 			cloudWatchProvider.log(testLog);

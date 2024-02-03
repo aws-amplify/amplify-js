@@ -125,3 +125,10 @@ export {
 	SESSION_START_EVENT,
 	SESSION_STOP_EVENT,
 } from './utils/sessionListener';
+
+// Queued storage utilities
+export {
+	createQueuedStorage,
+	QueuedStorage,
+	QueuedItem,
+} from './utils/queuedStorage';

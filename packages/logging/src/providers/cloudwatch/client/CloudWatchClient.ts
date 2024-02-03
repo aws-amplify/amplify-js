@@ -9,14 +9,20 @@ import {
 	PutLogEventsCommandInput,
 	RejectedLogEventsInfo,
 } from '@aws-sdk/client-cloudwatch-logs';
-import { LogLevel, LogParams } from '../../../types';
 import { CloudWatchConfig, CloudWatchProvider } from '../types';
-import { createQueuedStorage, QueuedStorage } from '@aws-amplify/core';
-import { NetworkConnectionMonitor } from '@aws-amplify/core/internals/utils';
+import {
+	NetworkConnectionMonitor,
+	createQueuedStorage,
+	QueuedStorage,
+	QueuedItem,
+} from '@aws-amplify/core/internals/utils';
 import { getDefaultStreamName } from '../utils';
 import { resolveCredentials } from '../../../utils/resolveCredentials';
-// TODO: Fix this type import
-import { QueuedItem } from '@aws-amplify/core/dist/esm/utils/queuedStorage/types';
+import {
+	LogLevel,
+	LogParams,
+	LoggingProvider,
+} from '@aws-amplify/core/internals/logging';
 
 const DEFAULT_LOG_LEVEL: LogLevel = 'INFO';
 
@@ -34,7 +40,7 @@ const defaultConfig = {
 	},
 };
 
-export const cloudWatchProvider: CloudWatchProvider = {
+export const cloudWatchProvider: LoggingProvider = {
 	/**
 	 * set the initial configuration
 	 * @internal
