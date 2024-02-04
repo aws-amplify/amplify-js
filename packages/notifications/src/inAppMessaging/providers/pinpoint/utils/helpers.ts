@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger } from '@aws-amplify/core';
+import { ConsoleLogger, InAppMessageButton } from '@aws-amplify/core';
 import {
 	InAppMessagingAction,
-	getClientInfo,
+	getClientInfo
 } from '@aws-amplify/core/internals/utils';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty.js';
@@ -259,13 +259,13 @@ export const extractContent = ({
 				SecondaryBtn,
 			} = content;
 
-			const getButtonConfig = (button: any) => ({
+			const getButtonConfig = (button?: InAppMessageButton) => ({
 				...button?.DefaultConfig,
 				...button?.[configPlatform],
 			});
 
-			const defaultPrimaryButton = getButtonConfig(PrimaryBtn);
-			const defaultSecondaryButton = getButtonConfig(SecondaryBtn);
+			const defaultPrimaryButton = PrimaryBtn ? getButtonConfig(PrimaryBtn) : undefined;
+			const defaultSecondaryButton = SecondaryBtn ? getButtonConfig(SecondaryBtn) : undefined;
 
 			const extractedContent: InAppMessageContent = {};
 			if (BackgroundColor) {

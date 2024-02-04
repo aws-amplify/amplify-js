@@ -49,3 +49,5 @@ export type DelayFunction = (
 	args?: any[],
 	error?: unknown
 ) => number | false;
+
+export { InAppMessageButton } from "../awsClients/pinpoint/types";
