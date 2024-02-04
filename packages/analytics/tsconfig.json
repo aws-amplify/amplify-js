@@ -1,9 +1,4 @@
 {
-	"extends": "../tsconfig.base.json",
-	"compilerOptions": {
-		"importHelpers": true,
-		"strict": true,
-		"noImplicitAny": true
-	},
-	"include": ["./src", "../core/src/utils/haveCredentialsChanged.ts"]
+	"extends": "../../tsconfig.json",
+	"include": ["./src", "__tests__"]
 }
