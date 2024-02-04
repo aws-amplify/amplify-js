@@ -346,7 +346,7 @@ export const extractMetadata = ({
 });
 
 export const mapOSPlatform = (os?: string): ButtonConfigPlatform => {
-	if(!os) return 'DefaultConfig'
+	if(!os) return 'DefaultConfig';
 	// Check if running in a web browser
 	if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
 		return 'Web';
