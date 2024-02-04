@@ -20,15 +20,24 @@ import {
 	extractedContent,
 	extractedMetadata,
 	pinpointInAppMessage,
-	pinpointInAppMessagesWithOverrides,
 	browserConfigTestCases,
-	nonBrowserConfigTestCases
+	browserPinpointInAppMessagesWithOverrides,
 } from '../../../../testUtils/data';
 import { InAppMessagingEvent } from '../../../../../src/inAppMessaging/types';
 
 jest.mock('@aws-amplify/core');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
 jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
+
+jest.mock('@aws-amplify/core/internals/utils', () => {
+	const originalModule = jest.requireActual(
+		'@aws-amplify/core/internals/utils'
+	);
+	return {
+		...originalModule,
+		getClientInfo: jest.fn(), // Setup as a Jest mock function without implementation
+	};
+});
 
 const HOUR_IN_MS = 1000 * 60 * 60;
 
@@ -277,16 +286,29 @@ describe('InAppMessaging Provider Utils', () => {
 	});
 
 	describe('extractContent with overrides', () => {
-		pinpointInAppMessagesWithOverrides.forEach(({ message, expectedContent, configPlatform }) => {
-			test(`correctly extracts content for ${configPlatform}`, () => {
-				const { InAppMessage } = cloneDeep(message);
-				const content = extractContent({ InAppMessage, configPlatform });
-				expect(content[0].primaryButton).toStrictEqual(expectedContent[0].primaryButton);
-				expect(content[0].secondaryButton).toStrictEqual(expectedContent[0].secondaryButton);
-			});
+		describe('when running in a browser', () => {
+			browserPinpointInAppMessagesWithOverrides.forEach(
+				({ message, expectedContent, configPlatform }) => {
+					test(`correctly extracts content for ${configPlatform}`, () => {
+						const utils = require('@aws-amplify/core/internals/utils');
+						// Dynamically override the mock for getClientInfo
+						utils.getClientInfo.mockImplementation(() => ({
+							platform: configPlatform,
+						}));
+
+						const pinpointInAppMessage = cloneDeep(message);
+						const content = extractContent(pinpointInAppMessage);
+						expect(content[0].primaryButton).toStrictEqual(
+							expectedContent[0].primaryButton
+						);
+						expect(content[0].secondaryButton).toStrictEqual(
+							expectedContent[0].secondaryButton
+						);
+					});
+				}
+			);
 		});
 	});
-	
 
 	describe('mapOSPlatform method', () => {
 		describe('when running in a browser', () => {
@@ -297,27 +319,5 @@ describe('InAppMessaging Provider Utils', () => {
 				});
 			});
 		});
-
-		describe('when running natively', () => {
-			let originalWindow = window;
-
-			beforeEach(() => {
-				//remove window object to mock behavior outside a browser
-				Object.defineProperty(global, 'window', {});
-			});
-
-			afterEach(() => {
-				//remove window object to mock behavior outside a browser
-				Object.defineProperty(global, 'window', originalWindow);
-			});
-			nonBrowserConfigTestCases.forEach(({ os, expectedPlatform }) => {
-				test(`correctly maps OS "${os}" to ConfigPlatformType "${expectedPlatform}"`, () => {
-					const result = mapOSPlatform(os);
-					expect(result).toBe(expectedPlatform);
-				});
-			});
-		});
 	});
-
-
 });

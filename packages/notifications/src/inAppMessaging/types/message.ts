@@ -13,7 +13,7 @@ export type InAppMessageAction = 'CLOSE' | 'DEEP_LINK' | 'LINK';
 
 export type InAppMessageTextAlign = 'center' | 'left' | 'right';
 
-export type ConfigPlatformType = 'Android' | 'IOS' | 'Web' | 'DefaultConfig';
+export type ButtonConfigPlatform = 'Android' | 'IOS' | 'Web' | 'DefaultConfig';
 
 interface InAppMessageContainer {
 	style?: InAppMessageStyle;

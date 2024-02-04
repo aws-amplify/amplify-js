@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
-import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
+import {
+	InAppMessagingAction,
+	getClientInfo,
+} from '@aws-amplify/core/internals/utils';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty.js';
 import {
@@ -19,7 +22,7 @@ import { resolveConfig } from './resolveConfig';
 import { resolveCredentials } from './resolveCredentials';
 import { CATEGORY } from './constants';
 import { getInAppMessagingUserAgentString } from './userAgent';
-import { ConfigPlatformType } from '../../../types/message';
+import { ButtonConfigPlatform } from '../../../types/message';
 
 const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 
@@ -242,10 +245,9 @@ export const interpretLayout = (
 
 export const extractContent = ({
 	InAppMessage: message,
-	configPlatform,
-}: PinpointInAppMessage & {
-	configPlatform?: ConfigPlatformType;
-}): InAppMessageContent[] => {
+}: PinpointInAppMessage): InAppMessageContent[] => {
+	const clientInfo = getClientInfo();
+	const configPlatform = mapOSPlatform(clientInfo?.platform);
 	return (
 		message?.Content?.map(content => {
 			const {
@@ -256,21 +258,14 @@ export const extractContent = ({
 				PrimaryBtn,
 				SecondaryBtn,
 			} = content;
-			// Determine the button configuration based on the platform config or use default
-			const getButtonConfig = (button: any, defaultConfig: any) => {
-				return configPlatform && button && button[configPlatform]
-					? { ...defaultConfig, ...button[configPlatform] }
-					: defaultConfig;
-			};
 
-			const defaultPrimaryButton = getButtonConfig(
-				PrimaryBtn,
-				PrimaryBtn?.DefaultConfig
-			);
-			const defaultSecondaryButton = getButtonConfig(
-				SecondaryBtn,
-				SecondaryBtn?.DefaultConfig
-			);
+			const getButtonConfig = (button: any) => ({
+				...button?.DefaultConfig,
+				...button?.[configPlatform],
+			});
+
+			const defaultPrimaryButton = getButtonConfig(PrimaryBtn);
+			const defaultSecondaryButton = getButtonConfig(SecondaryBtn);
 
 			const extractedContent: InAppMessageContent = {};
 			if (BackgroundColor) {
@@ -350,7 +345,7 @@ export const extractMetadata = ({
 	treatmentId: TreatmentId,
 });
 
-export const mapOSPlatform = (os: string): ConfigPlatformType => {
+export const mapOSPlatform = (os?: string): ButtonConfigPlatform => {
 	// Check if running in a web browser
 	if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
 		return 'Web';

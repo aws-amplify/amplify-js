@@ -12,14 +12,13 @@ import {
 	extractMetadata,
 	interpretLayout,
 	isBeforeEndDate,
-	mapOSPlatform,
 	matchesAttributes,
 	matchesEventType,
 	matchesMetrics,
 } from './helpers';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { defaultStorage, ConsoleLogger } from '@aws-amplify/core';
-import { SessionState, getClientInfo } from '@aws-amplify/core/internals/utils';
+import { SessionState } from '@aws-amplify/core/internals/utils';
 
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
@@ -87,15 +86,10 @@ export async function incrementMessageCounts(messageId: string): Promise<void> {
 function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
 	return messages.map(message => {
 		const { CampaignId, InAppMessage } = message;
-		const clientInfo = getClientInfo();
-		// DefaultPlatform will map to DefaultConfig.
-		const configPlatform = mapOSPlatform(
-			clientInfo?.platform || 'DefaultPlatform'
-		);
 		return {
 			// Default to empty string in rare cases we don't have a campaignId
 			id: CampaignId ?? '',
-			content: extractContent({ InAppMessage, configPlatform }),
+			content: extractContent(message),
 			// Default to TOP_BANNER layout in rare cases we don't have a Layout
 			layout: InAppMessage?.Layout
 				? interpretLayout(InAppMessage.Layout)
