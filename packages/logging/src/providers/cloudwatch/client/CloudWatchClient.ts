@@ -29,6 +29,7 @@ let queuedStorage: QueuedStorage;
 let cloudWatchSDKClient: CloudWatchLogsClient;
 let networkMonitor: NetworkConnectionMonitor;
 
+// TODO: these defaults need to be decided for both web/RN
 const defaultConfig = {
 	enable: true,
 	localStoreMaxSizeInMB: 5,
@@ -44,6 +45,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	 * @internal
 	 */
 	configure: async (config: CloudWatchConfig) => {
+		// TODO: deep merge
 		cloudWatchConfig = { ...defaultConfig, ...config };
 		const { region } = cloudWatchConfig;
 
@@ -62,11 +64,11 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	 * logs are periodically flushed from store and send to CloudWatch
 	 * @internal
 	 */
-	log: (input: LogParams) => {
-		if (!_isLoggable(input)) {
+	log: (logParams: LogParams) => {
+		if (!_isLoggable(logParams)) {
 			return;
 		}
-		const { namespace, category, logLevel, message } = input;
+		const { namespace, category, logLevel, message } = logParams;
 		const categoryPrefix = category ? `/${category}` : '';
 		const prefix = `[${logLevel}] ${namespace}${categoryPrefix}`;
 

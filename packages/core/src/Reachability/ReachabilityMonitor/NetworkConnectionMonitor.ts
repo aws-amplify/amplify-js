@@ -37,6 +37,7 @@ export class NetworkConnectionMonitor {
 				});
 				if (!this._networkMonitoringSubscriptions) {
 					this._networkMonitoringSubscriptions = subscription;
+					return;
 				}
 				this._networkMonitoringSubscriptions.add(subscription);
 			});

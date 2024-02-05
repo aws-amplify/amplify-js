@@ -10,11 +10,9 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 export interface CloudWatchProvider extends LoggingProvider {
-	configure: (
-		config: CloudWatchConfig,
-		options?: CloudWatchRemoteLoggingConstraints
-	) => void;
-	log: (input: LogParams) => void;
+	// TODO: configure method needs another param case handled options?: CloudWatchRemoteLoggingConstraints
+	configure: (config: CloudWatchConfig) => void;
+	log: (logParams: LogParams) => void;
 	flushLogs: () => Promise<void>;
 	enable: () => void;
 	disable: () => void;

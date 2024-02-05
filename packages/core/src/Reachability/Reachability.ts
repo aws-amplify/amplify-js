@@ -11,7 +11,7 @@ export class Reachability {
 	isOnline(): boolean {
 		const globalObj = this._retreiveGlobalObject();
 		if (!globalObj) {
-			return true;
+			return false;
 		}
 		return globalObj.navigator.onLine;
 	}
