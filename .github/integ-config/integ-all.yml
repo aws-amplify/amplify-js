@@ -365,9 +365,7 @@ tests:
     category: datastore
     sample_name: [v2/amplify-docs-examples]
     spec: amplify-docs-examples
-    browser: *minimal_browser_list
-    timeout_minutes: 45
-    retry_count: 10
+    browser: [chrome]
   - test_name: integ_react_datastore_websocket_disruption
     desc: 'DataStore - WebSocket Disruption'
     framework: react
