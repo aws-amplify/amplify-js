@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "5.0.12",
+	"version": "5.0.14",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -19,14 +19,13 @@
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup -c rollup.config.mjs",
-		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
-		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"  && npm run ts-coverage",
 		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 92.05"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 92.05"
 	},
 	"repository": {
 		"type": "git",
@@ -44,7 +43,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/api": "6.0.12",
+		"@aws-amplify/api": "6.0.14",
 		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
@@ -55,15 +54,13 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.12",
-		"@aws-amplify/react-native": "1.0.12",
-		"@rollup/plugin-typescript": "11.1.5",
+		"@aws-amplify/core": "6.0.14",
+		"@aws-amplify/react-native": "1.0.14",
 		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
 		"dexie-export-import": "1.0.3",
 		"fake-indexeddb": "^4.0.2",
 		"graphql": "15.8.0",
-		"rollup": "3.29.4",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [
