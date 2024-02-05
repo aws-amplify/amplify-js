@@ -8,7 +8,7 @@ const yaml = require('js-yaml');
 
 function parseYamlFile(file) {
 	const fileContents = fs.readFileSync(file, 'utf8');
-	return yaml.load(fileContents);
+	return yaml.safeLoad(fileContents);
 }
 
 function getKeyValuesFor(targetKey, yamlObject) {

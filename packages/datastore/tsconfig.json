@@ -1,9 +1,10 @@
 {
-	"extends": "../../tsconfig.json",
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"importHelpers": false,
 		"strict": false,
-		"noImplicitAny": false
+		"noImplicitAny": false,
+		"skipLibCheck": true
 	},
-	"include": ["./src", "__tests__"]
+	"include": ["./src"]
 }

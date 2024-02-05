@@ -9,9 +9,8 @@ import {
 	runWithAmplifyServerContext as runWithAmplifyServerContextCore,
 } from 'aws-amplify/adapter-core';
 
-import { NextServer } from '../types';
-
 import { createCookieStorageAdapterFromNextServerContext } from './createCookieStorageAdapterFromNextServerContext';
+import { NextServer } from '../types';
 
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
@@ -32,16 +31,16 @@ export const createRunWithAmplifyServerContext = ({
 						? sharedInMemoryStorage
 						: createKeyValueStorageFromCookieStorageAdapter(
 								createCookieStorageAdapterFromNextServerContext(
-									nextServerContext,
-								),
+									nextServerContext
+								)
 						  );
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,
-					keyValueStorage,
+					keyValueStorage
 				);
 				const tokenProvider = createUserPoolsTokenProvider(
 					resourcesConfig.Auth,
-					keyValueStorage,
+					keyValueStorage
 				);
 
 				return runWithAmplifyServerContextCore(
@@ -49,7 +48,7 @@ export const createRunWithAmplifyServerContext = ({
 					{
 						Auth: { credentialsProvider, tokenProvider },
 					},
-					operation,
+					operation
 				);
 			}
 

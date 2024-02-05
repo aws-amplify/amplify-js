@@ -72,7 +72,6 @@ import {
 } from '../types';
 // tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
-import { isNode } from './utils';
 
 import {
 	DATASTORE,
@@ -1554,14 +1553,10 @@ class DataStore {
 						.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 						.subscribe({
 							next: ({ type, data }) => {
-								/**
-								 * In Node, we need to wait for queries to be synced to prevent returning empty arrays.
-								 * In non-Node environments (the browser or React Native), we can begin returning data
-								 * once subscriptions are in place.
-								 */
-								const readyType = isNode()
-									? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
-									: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
+								// In the Browser, we can begin returning data once subscriptions are in place.
+								const readyType = isBrowser()
+									? ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED
+									: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY;
 
 								if (type === readyType) {
 									this.initResolve();

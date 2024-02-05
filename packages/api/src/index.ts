@@ -30,5 +30,3 @@ export {
 	patch,
 	isCancelError,
 } from '@aws-amplify/api-rest';
-
-export { ApiError } from '@aws-amplify/core/internals/utils';

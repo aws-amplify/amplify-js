@@ -5,6 +5,7 @@ docs
 package.json
 yarn.lock
 package-lock.json
+.eslintrc.js
 www
 .stencil
 PULL_REQUEST_TEMPLATE.md

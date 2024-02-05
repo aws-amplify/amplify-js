@@ -262,43 +262,4 @@ describe('parseAWSExports', () => {
 			'Invalid config parameter.'
 		);
 	});
-	it('should append Notification configs when both Push and InApp configs are available', () => {
-		const testConfig = {
-			aws_project_region: 'us-west-2',
-			aws_user_pools_id: userPoolId,
-			Notifications: {
-				Push: {
-					AWSPinpoint: {
-						appId: "appId",
-						region: "region"
-					}
-				},
-				InAppMessaging: {
-					AWSPinpoint: {
-						appId: "appId",
-						region: "region"
-					}
-				}
-			}
-		};
-
-		expect(parseAWSExports(testConfig)).toMatchObject(
-			{
-				Notifications: {
-					PushNotification: {
-						Pinpoint: {
-							appId: "appId",
-							region: "region"
-						}
-					},
-					InAppMessaging: {
-						Pinpoint: {
-							appId: "appId",
-							region: "region"
-						}
-					}
-				}	
-			}
-		);
-	});
 });

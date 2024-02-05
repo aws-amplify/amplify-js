@@ -1,7 +1,11 @@
 {
-	"extends": "../../tsconfig.json",
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"importHelpers": false
+		"target": "esnext",
+		"lib": ["dom", "es2019", "esnext.asynciterable", "esnext"],
+		"importHelpers": false,
+		"strict": true,
+		"noImplicitAny": true
 	},
-	"include": ["./src", "__tests__"]
+	"include": ["./src"]
 }

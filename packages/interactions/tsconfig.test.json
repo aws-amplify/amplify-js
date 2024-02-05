@@ -1,7 +1,0 @@
-{
-	"extends": "./tsconfig.json",
-	"compilerOptions": {
-		// TODO(test): enable noImplicitAny for tests
-		"noImplicitAny": false
-	}
-}

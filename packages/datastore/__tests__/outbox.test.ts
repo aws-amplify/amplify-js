@@ -90,24 +90,6 @@ describe('Outbox tests', () => {
 		});
 	});
 
-	it('Should not throw errors when Outbox.dequeue is called on an empty outbox', async () => {
-		const modelData: ModelType = JSON.parse('{}');
-		const response = {
-			...modelData,
-			_version: 1,
-			_lastChangedAt: Date.now(),
-			_deleted: false,
-		};
-
-		await Storage.runExclusive(async s => {
-			const head = await outbox.peek(s);
-
-			expect(head).toBeFalsy();
-			await expect(outbox.dequeue(s, response, TransformerMutationType.CREATE))
-				.resolves;
-		});
-	});
-
 	it('Should sync the _version from a mutation response to other items with the same `id` in the queue', async () => {
 		const last = await DataStore.query(Model, modelId);
 

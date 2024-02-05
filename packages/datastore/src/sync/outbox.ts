@@ -111,9 +111,7 @@ class MutationEventOutbox {
 			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp!);
 		}
 
-		if (head) {
-			await storage.delete(head);
-		}
+		await storage.delete(head);
 		this.inProgressMutationEventId = undefined!;
 
 		return head;
@@ -171,7 +169,7 @@ class MutationEventOutbox {
 		head: PersistentModel,
 		recordOp: string
 	): Promise<void> {
-		if (head?.operation !== recordOp) {
+		if (head.operation !== recordOp) {
 			return;
 		}
 

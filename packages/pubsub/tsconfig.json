@@ -1,4 +1,10 @@
 {
-	"extends": "../../tsconfig.json",
-	"include": ["./src", "__tests__", "__mocks__"]
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"importHelpers": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"outDir": "./lib/"
+	},
+	"include": ["./src/**/*.ts"]
 }

@@ -1,21 +1,10 @@
 import { Amplify } from '../../src/singleton';
-import { Hub, AMPLIFY_SYMBOL } from '../../src/Hub';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { CredentialsAndIdentityId } from '../../src/singleton/Auth/types';
 import { TextEncoder, TextDecoder } from 'util';
 import { fetchAuthSession, ResourcesConfig } from '../../src';
 Object.assign(global, { TextDecoder, TextEncoder });
-
-jest.mock('../../src/Hub', () => ({
-	...jest.requireActual('../../src/Hub'),
-	Hub: {
-		dispatch: jest.fn(),
-	},
-}));
-
-const mockHubDispatch = Hub.dispatch as jest.Mock;
-
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 	? A
 	: never;
@@ -96,82 +85,64 @@ const modelIntrospection: ModelIntrospection = {
 };
 
 describe('Amplify.configure() and Amplify.getConfig()', () => {
-	const mockLegacyConfig = {
-		aws_project_region: 'us-west-2',
-		aws_cognito_identity_pool_id: 'aws_cognito_identity_pool_id',
-		aws_cognito_region: 'aws_cognito_region',
-		aws_user_pools_id: 'aws_user_pools_id',
-		aws_user_pools_web_client_id: 'aws_user_pools_web_client_id',
-		oauth: {},
-		aws_cognito_username_attributes: [],
-		aws_cognito_social_providers: [],
-		aws_cognito_signup_attributes: [],
-		aws_cognito_mfa_configuration: 'OFF',
-		aws_cognito_mfa_types: ['SMS'],
-		aws_cognito_password_protection_settings: {
-			passwordPolicyMinLength: 8,
-			passwordPolicyCharacters: [],
-		},
-		aws_cognito_verification_mechanisms: ['PHONE_NUMBER'],
-		aws_appsync_graphqlEndpoint: 'https://some.domain.com/graphql',
-		aws_appsync_region: 'us-west-1',
-		aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
-		aws_appsync_apiKey: 'some-key',
-		modelIntrospection,
-	};
-	const expectedResourceConfig: ResourcesConfig = {
-		Auth: {
-			Cognito: {
-				allowGuestAccess: true,
-				identityPoolId: 'aws_cognito_identity_pool_id',
-				userPoolClientId: 'aws_user_pools_web_client_id',
-				userPoolId: 'aws_user_pools_id',
-				loginWith: { email: false, phone: false, username: true },
-				mfa: { smsEnabled: true, status: 'off', totpEnabled: false },
-				passwordFormat: {
-					minLength: 8,
-					requireLowercase: false,
-					requireNumbers: false,
-					requireSpecialCharacters: false,
-					requireUppercase: false,
-				},
-				userAttributes: { phone_number: { required: true } },
-			},
-		},
-		API: {
-			GraphQL: {
-				apiKey: 'some-key',
-				defaultAuthMode: 'userPool',
-				endpoint: 'https://some.domain.com/graphql',
-				region: 'us-west-1',
-				modelIntrospection,
-			},
-		},
-	};
-
-	afterEach(() => {
-		mockHubDispatch.mockClear();
-	});
-
 	it('should take the legacy CLI shaped config object for configuring and return it from getConfig()', () => {
+		const mockLegacyConfig = {
+			aws_project_region: 'us-west-2',
+			aws_cognito_identity_pool_id: 'aws_cognito_identity_pool_id',
+			aws_cognito_region: 'aws_cognito_region',
+			aws_user_pools_id: 'aws_user_pools_id',
+			aws_user_pools_web_client_id: 'aws_user_pools_web_client_id',
+			oauth: {},
+			aws_cognito_username_attributes: [],
+			aws_cognito_social_providers: [],
+			aws_cognito_signup_attributes: [],
+			aws_cognito_mfa_configuration: 'OFF',
+			aws_cognito_mfa_types: ['SMS'],
+			aws_cognito_password_protection_settings: {
+				passwordPolicyMinLength: 8,
+				passwordPolicyCharacters: [],
+			},
+			aws_cognito_verification_mechanisms: ['PHONE_NUMBER'],
+			aws_appsync_graphqlEndpoint: 'https://some.domain.com/graphql',
+			aws_appsync_region: 'us-west-1',
+			aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+			aws_appsync_apiKey: 'some-key',
+			modelIntrospection,
+		};
+
 		Amplify.configure(mockLegacyConfig);
 		const result = Amplify.getConfig();
-
-		expect(result).toEqual(expectedResourceConfig);
-	});
-
-	it('dispatches hub event with parsed ResourceConfig from the legacy config', () => {
-		Amplify.configure(mockLegacyConfig);
-
-		expect(mockHubDispatch).toHaveBeenCalledWith(
-			'core',
-			{
-				event: 'configure',
-				data: expectedResourceConfig,
+		const expected: ResourcesConfig = {
+			Auth: {
+				Cognito: {
+					allowGuestAccess: true,
+					identityPoolId: 'aws_cognito_identity_pool_id',
+					userPoolClientId: 'aws_user_pools_web_client_id',
+					userPoolId: 'aws_user_pools_id',
+					loginWith: { email: false, phone: false, username: true },
+					mfa: { smsEnabled: true, status: 'off', totpEnabled: false },
+					passwordFormat: {
+						minLength: 8,
+						requireLowercase: false,
+						requireNumbers: false,
+						requireSpecialCharacters: false,
+						requireUppercase: false,
+					},
+					userAttributes: { phone_number: { required: true } },
+				},
 			},
-			'Configure',
-			AMPLIFY_SYMBOL
-		);
+			API: {
+				GraphQL: {
+					apiKey: 'some-key',
+					defaultAuthMode: 'userPool',
+					endpoint: 'https://some.domain.com/graphql',
+					region: 'us-west-1',
+					modelIntrospection,
+				},
+			},
+		};
+
+		expect(result).toEqual(expected);
 	});
 
 	it('should take the v6 shaped config object for configuring and return it from getConfig()', () => {

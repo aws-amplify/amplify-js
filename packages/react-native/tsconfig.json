@@ -1,12 +1,16 @@
+//WARNING: If you are manually specifying files to compile then the tsconfig.json is completely ignored, you must use command line flags
 {
-	"extends": "../../tsconfig.json",
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"rootDirs": ["src"],
-		"baseUrl": ".",
 		"paths": {
 			"@aws-amplify/react-native": ["./src/index"]
 		},
-		"jsx": "react"
-	},
-	"include": ["./src", "example"]
+		"allowSyntheticDefaultImports": true,
+		"noImplicitAny": true,
+		"jsx": "react",
+		"lib": ["esnext"],
+		"resolveJsonModule": true,
+		"strict": true,
+		"skipLibCheck": true
+	}
 }

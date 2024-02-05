@@ -1,4 +1,8 @@
 {
-	"extends": "./tsconfig.json",
-	"exclude": ["__tests__", "coverage", "coverage-ts", "dist"]
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"strict": true,
+		"noImplicitAny": true
+	},
+	"include": ["./src"]
 }
