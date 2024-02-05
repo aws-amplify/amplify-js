@@ -34,13 +34,13 @@ runs:
       env:
         BRANCH: ${{ github.ref_name }}
       run: |
-        if git ls-remote origin $BRANCH | grep -q refs/heads/next/$BRANCH$; then
-            # Branch exists, checkout and echo success message
+        if git ls-remote --exit-code --heads origin refs/heads/$BRANCH; then
+            # Corresponding branch on sample repo exists, check it out
             git fetch origin $BRANCH
             git checkout $BRANCH
             echo "Checked out branch: $BRANCH"
         else
-            # Branch doesn't exist, echo error message
+            # Corresponding branch doesn't exist, default to main
             echo "Branch '$BRANCH' does not exist"
         fi
 

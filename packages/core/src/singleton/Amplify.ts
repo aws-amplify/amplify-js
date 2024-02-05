@@ -72,7 +72,7 @@ export class AmplifyClass {
 			'core',
 			{
 				event: 'configure',
-				data: resourcesConfig,
+				data: this.resourcesConfig,
 			},
 			'Configure',
 			AMPLIFY_SYMBOL
