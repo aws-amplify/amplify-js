@@ -1,13 +1,12 @@
 {
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"editor.detectIndentation": false,
+	"editor.formatOnSave": true,
 	"editor.insertSpaces": false,
 	"editor.tabSize": 4,
 	"prettier.requireConfig": true,
-	"typescript.tsdk": "node_modules/typescript/lib",
-	"formattingToggle.affects": [
-		"editor.codeActionsOnSave.source.fixAll.eslint",
-		"editor.formatOnPaste",
-		"editor.formatOnSave",
-		"editor.formatOnType"
-	]
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

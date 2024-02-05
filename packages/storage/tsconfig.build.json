@@ -1,4 +1,5 @@
 {
-	"extends": "./tsconfig.json",
-	"exclude": ["__tests__", "coverage", "coverage-ts", "dist"]
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {},
+	"include": ["lib*/**/*.ts", "src"]
 }

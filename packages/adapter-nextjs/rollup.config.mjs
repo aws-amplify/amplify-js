@@ -18,13 +18,23 @@ const config = defineConfig([
 	{
 		input: input,
 		output: cjsOutput,
-		plugins: [typescript(cjsTSOptions)],
+		plugins: [
+			typescript({
+				...cjsTSOptions,
+				tsconfig: 'tsconfig.build.json',
+			}),
+		],
 	},
 	// ESM config
 	{
 		input: input,
 		output: esmOutput,
-		plugins: [typescript(esmTSOptions)],
+		plugins: [
+			typescript({
+				...esmTSOptions,
+				tsconfig: 'tsconfig.build.json',
+			}),
+		],
 	},
 ]);
 

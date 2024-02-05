@@ -1,4 +1,0 @@
-{
-	"extends": "./tsconfig.json",
-	"exclude": ["__tests__", "coverage", "coverage-ts", "dist"]
-}

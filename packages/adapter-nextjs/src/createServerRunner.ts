@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from 'aws-amplify';
-
 import { createRunWithAmplifyServerContext, getAmplifyConfig } from './utils';
 import { NextServer } from './types';
 

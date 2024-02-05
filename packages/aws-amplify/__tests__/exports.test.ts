@@ -64,7 +64,6 @@ describe('aws-amplify Exports', () => {
 					'patch',
 					'post',
 					'put',
-					'ApiError',
 				].sort()
 			);
 		});

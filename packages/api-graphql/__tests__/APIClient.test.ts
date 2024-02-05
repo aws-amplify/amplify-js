@@ -7,14 +7,9 @@ import {
 	flattenItems,
 	generateSelectionSet,
 	customSelectionSetToIR,
-	generateGraphQLDocument,
-} from '../../src/internals/APIClient';
+} from '../src/internals/APIClient';
 
-import config from '../fixtures/modeled/amplifyconfiguration';
-import {
-	productSchemaModel,
-	userSchemaModel,
-} from '../fixtures/schema-models/with-custom-primary-key/models';
+import config from './fixtures/modeled/amplifyconfiguration';
 const modelIntroSchema = config.modelIntrospection as ModelIntrospectionSchema;
 
 describe('APIClient', () => {
@@ -43,7 +38,7 @@ describe('APIClient', () => {
 			const normalized = normalizeMutationInput(
 				note,
 				noteModelDef,
-				modelIntroSchema,
+				modelIntroSchema
 			);
 
 			expect(normalized).toEqual(expectedInput);
@@ -304,7 +299,7 @@ describe('flattenItems', () => {
 			const selSet = customSelectionSetToIR(
 				modelIntroSchema.models,
 				'CommunityPost',
-				['poll.question', 'poll.answers.answer', 'poll.answers.votes.id'],
+				['poll.question', 'poll.answers.answer', 'poll.answers.votes.id']
 			);
 
 			const expected = {
@@ -386,32 +381,5 @@ describe('flattenItems', () => {
 
 			expect(selSet).toEqual(expected);
 		});
-	});
-});
-
-describe('generateGraphQLDocument()', () => {
-	describe('for `READ` operation', () => {
-		const modelOperation = 'READ';
-		const mockModelDefinitions = {
-			User: userSchemaModel,
-			Product: productSchemaModel,
-		};
-
-		test.each([
-			['User', '$userId: ID!'],
-			['Product', '$sku: String!,$factoryId: String!,$warehouseId: String!'],
-		])(
-			'generates arguments for model %s to be %s',
-			(modelName, expectedArgs) => {
-				const document = generateGraphQLDocument(
-					mockModelDefinitions,
-					modelName,
-					modelOperation,
-				);
-
-				console.log(document);
-				expect(document.includes(expectedArgs)).toBe(true);
-			},
-		);
 	});
 });

@@ -10,23 +10,6 @@ import {
 } from './helpers';
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
-import { isNode } from '../src/datastore/utils';
-
-/**
- * When DataStore starts, DataStore will send Control Messages based on the
- * environment that tell it what to do. In this testing environment, both
- * `isNode` and `isBrowser` incorrectly evaluate to `true`. Here we set `isNode`
- * to `false`, without mocking the other utils.
- */
-jest.mock('../src/datastore/utils', () => {
-	const originalModule = jest.requireActual('../src/datastore/utils');
-
-	return {
-		__esModule: true,
-		...originalModule,
-		isNode: () => false,
-	};
-});
 
 /**
  * Surfaces errors sooner and outputs them more clearly if/when
