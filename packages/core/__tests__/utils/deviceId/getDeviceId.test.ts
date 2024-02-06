@@ -1,5 +1,5 @@
 import { Cache } from '../../../src';
-import { getDeviceId } from '../../../src/utils';
+import { getDeviceId } from '../../../src/utils/deviceId/getDeviceId';
 
 describe('getDeviceId: ', () => {
 	const testDeviceId = 'test-device-id';

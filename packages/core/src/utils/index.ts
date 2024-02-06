@@ -17,4 +17,3 @@ export { urlSafeEncode } from './urlSafeEncode';
 export { deepFreeze } from './deepFreeze';
 export { deDupeAsyncFunction } from './deDupeAsyncFunction';
 export { createQueuedStorage, QueuedStorage } from './queuedStorage';
-export { getDeviceId } from './deviceId';
