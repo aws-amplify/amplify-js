@@ -24,6 +24,6 @@ export const validationErrorMap: AmplifyErrorMap<InAppMessagingValidationErrorCo
 		[InAppMessagingValidationErrorCode.NotInitialized]: {
 			message: 'In-app messaging has not been initialized.',
 			recoverySuggestion:
-				'Please make sure to first call `initializePushNotifications`.',
+				'Please make sure to first call `initializeInAppMessaging`.',
 		},
 	};

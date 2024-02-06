@@ -66,6 +66,9 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
+	"devDependencies": {
+		"typescript": "5.0.2"
+	},
 	"files": [
 		"dist/cjs",
 		"dist/esm",
