@@ -312,7 +312,6 @@ export type ModelOperation = keyof typeof graphQLOperationsInfo;
 type OperationPrefix =
 	(typeof graphQLOperationsInfo)[ModelOperation]['operationPrefix'];
 
-const graphQLDocumentsCache = new Map<string, Map<ModelOperation, string>>();
 const SELECTION_SET_WILDCARD = '*';
 
 function defaultSelectionSetForNonModel(
@@ -645,18 +644,8 @@ export function generateGraphQLDocument(
 	const { operationPrefix, usePlural } = graphQLOperationsInfo[modelOperation];
 
 	const { selectionSet } = listArgs || {};
-
-	const fromCache = graphQLDocumentsCache.get(name)?.get(modelOperation);
-
-	if (fromCache !== undefined) {
-		return fromCache;
-	}
-
-	if (!graphQLDocumentsCache.has(name)) {
-		graphQLDocumentsCache.set(name, new Map());
-	}
-
 	const graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
+
 	let graphQLOperationType: 'mutation' | 'query' | 'subscription' | undefined;
 	let graphQLSelectionSet: string | undefined;
 	let graphQLArguments: Record<string, any> | undefined;
@@ -734,8 +723,6 @@ export function generateGraphQLDocument(
 			  )})`
 			: ''
 	} { ${graphQLSelectionSet} } }`;
-
-	graphQLDocumentsCache.get(name)?.set(modelOperation, graphQLDocument);
 
 	return graphQLDocument;
 }
