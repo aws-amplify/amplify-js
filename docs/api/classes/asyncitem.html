@@ -928,6 +928,9 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
 				<a href="asyncitem.html#catch" class="tsd-kind-icon">catch</a>
 			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<a href="asyncitem.html#finally" class="tsd-kind-icon">finally</a>
+			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited">
 				<a href="asyncitem.html#then" class="tsd-kind-icon">then</a>
 			</li>
@@ -980,6 +983,7 @@ img { max-width: 100%; }
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited"><a href="asyncitem.html#catch" class="tsd-kind-icon">catch</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="asyncitem.html#finally" class="tsd-kind-icon">finally</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited"><a href="asyncitem.html#then" class="tsd-kind-icon">then</a></li>
 					</ul>
 				</section>
@@ -1047,6 +1051,40 @@ img { max-width: 100%; }
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TResult</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<p>A Promise for the completion of the callback.</p>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+			<a name="finally" class="tsd-anchor"></a>
+			<h3>finally</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<li class="tsd-signature tsd-kind-icon">finally<span class="tsd-signature-symbol">(</span>onfinally<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="asyncitem.html">AsyncItem</a>.<a href="asyncitem.html#finally">finally</a></p>
+						<ul>
+							<li>Defined in node_modules/typescript/lib/lib.es2018.promise.d.ts:31</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+							resolved value cannot be modified from the callback.</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> onfinally: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>The callback to execute when the Promise is settled (fulfilled or rejected).</p>
+							</div>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<p>A Promise for the completion of the callback.</p>
 				</li>
 			</ul>
