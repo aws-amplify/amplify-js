@@ -10,7 +10,11 @@ export function getRedirectUrl(redirects: string[]): string {
 			!redirect.startsWith('http://') && !redirect.startsWith('https://')
 	);
 	if (!redirect) {
-		throw invalidRedirectException;
-	}
+		if (redirects.length === 0) {
+			throw invalidRedirectException;
+		} else {
+			return redirects[0];
+		}
+	} 
 	return redirect;
 }
