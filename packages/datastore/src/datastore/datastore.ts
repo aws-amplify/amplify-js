@@ -1400,6 +1400,7 @@ class DataStore {
 	private storage?: Storage;
 	private sync?: SyncEngine;
 	private syncPageSize!: number;
+	private perModelSyncPageSize?: { [modelName: string]: number };
 	private syncExpressions!: SyncExpression[];
 	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any> | null> =
 		new WeakMap<SchemaModel, ModelPredicate<any>>();
@@ -2510,6 +2511,9 @@ class DataStore {
 
 		// store on config object, so that Sync, Subscription, and Mutation processors can have access
 		this.amplifyConfig.syncPageSize = this.syncPageSize;
+
+		// also store perModelSyncPageSize on config object, so that Sync, Subscription, and Mutation processors can have access
+		this.amplifyConfig.perModelSyncPageSize = this.perModelSyncPageSize;
 
 		this.fullSyncInterval =
 			(configDataStore && configDataStore.fullSyncInterval) ||

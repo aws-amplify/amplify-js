@@ -306,6 +306,55 @@ describe('Sync', () => {
 		});
 	});
 
+	/*
+	 *  This is where new tests would be added for per-model syncPageSize
+	 *  Proposed test cases are added below with // comments
+	 */
+
+	// describe('syncPageSize', () => {
+	// 	test('should use default syncPageSize if not specified (null, undefined or zero)', async () => {
+	// 		const resolveResponse = {
+	// 			data: {
+	// 				syncPosts: {
+	// 					items: [
+	// 						{
+	// 							id: '1',
+	// 							title: 'Item 1',
+	// 						},
+	// 						{
+	// 							id: '2',
+	// 							title: 'Item 2',
+	// 						},
+	// 					],
+	// 				},
+	// 			},
+	// 		};
+
+	// 		const SyncProcessor = jitteredRetrySyncProcessorSetup({
+	// 			resolveResponse,
+	// 		});
+
+	// 		await SyncProcessor.jitteredRetry({
+	// 			query: defaultQuery,
+	// 			variables: defaultVariables,
+	// 			opName: defaultOpName,
+	// 			modelDefinition: defaultModelDefinition,
+	// 		});
+
+	// 		expect(mockGraphQl).toHaveBeenCalledWith(
+	// 			expect.objectContaining({
+	// 				variables: {
+	// 					syncPageSize: DEFAULT_SYNC_PAGE_SIZE,
+	// 				},
+	// 			})
+	// 		);
+	// 	});
+	// 	test('the limit for the sync query should equal syncPageSize if it is defined as a natural number', async () => {});
+	// 	test('a meaningful error should be thrown if syncPageSize is not defined as a natural number', async () => {});
+	// 	test('the limit for the sync query should equal perModelSyncPageSize[`modelName`] if it is defined as a natural number', async () => {});
+	// 	test('a meaningful error should be thrown if perModelSyncPageSize[`modelName`] is not a natural number', async () => {});
+	// }
+
 	describe('error handler', () => {
 		const errorHandler = jest.fn();
 		const data = {

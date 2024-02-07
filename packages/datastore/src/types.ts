@@ -934,6 +934,7 @@ export type DataStoreConfig = {
 		errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
+		perModelSyncPageSize?: { [modelName: string]: number }; // over-ride syncPageSize for specific models
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
 		authProviders?: AuthProviders;
@@ -944,6 +945,7 @@ export type DataStoreConfig = {
 	errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
+	perModelSyncPageSize?: { [modelName: string]: number }; // over-ride syncPageSize for specific models
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
 	authProviders?: AuthProviders;
