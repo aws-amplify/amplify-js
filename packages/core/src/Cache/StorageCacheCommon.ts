@@ -3,10 +3,11 @@
 
 import { ConsoleLogger } from '../Logger';
 import { KeyValueStorageInterface } from '../types';
+
 import { currentSizeKey, defaultConfig } from './constants';
 import { CacheConfig, CacheItem, CacheItemOptions } from './types';
-import { getCurrentSizeKey, getCurrentTime, getByteLength } from './utils';
-import { assert, CacheErrorCode } from './utils/errorHelpers';
+import { getByteLength, getCurrentSizeKey, getCurrentTime } from './utils';
+import { CacheErrorCode, assert } from './utils/errorHelpers';
 
 const logger = new ConsoleLogger('StorageCache');
 
@@ -58,7 +59,7 @@ export abstract class StorageCacheCommon {
 		if (config) {
 			if ((config as CacheConfig).keyPrefix) {
 				logger.warn(
-					'keyPrefix can not be re-configured on an existing Cache instance.'
+					'keyPrefix can not be re-configured on an existing Cache instance.',
 				);
 			}
 
@@ -79,15 +80,16 @@ export abstract class StorageCacheCommon {
 	 */
 	public async getCurrentCacheSize() {
 		let size = await this.getStorage().getItem(
-			getCurrentSizeKey(this.config.keyPrefix)
+			getCurrentSizeKey(this.config.keyPrefix),
 		);
 		if (!size) {
 			await this.getStorage().setItem(
 				getCurrentSizeKey(this.config.keyPrefix),
-				'0'
+				'0',
 			);
 			size = '0';
 		}
+
 		return Number(size);
 	}
 
@@ -112,21 +114,23 @@ export abstract class StorageCacheCommon {
 	public async setItem(
 		key: string,
 		value: any,
-		options?: Record<string, any>
+		options?: Record<string, any>,
 	): Promise<void> {
 		logger.debug(
-			`Set item: key is ${key}, value is ${value} with options: ${options}`
+			`Set item: key is ${key}, value is ${value} with options: ${options}`,
 		);
 
 		if (!key || key === currentSizeKey) {
 			logger.warn(
-				`Invalid key: should not be empty or reserved key: '${currentSizeKey}'`
+				`Invalid key: should not be empty or reserved key: '${currentSizeKey}'`,
 			);
+
 			return;
 		}
 
 		if (typeof value === 'undefined') {
 			logger.warn(`The value of item should not be undefined!`);
+
 			return;
 		}
 
@@ -143,8 +147,9 @@ export abstract class StorageCacheCommon {
 
 		if (cacheItemOptions.priority < 1 || cacheItemOptions.priority > 5) {
 			logger.warn(
-				`Invalid parameter: priority due to out or range. It should be within 1 and 5.`
+				`Invalid parameter: priority due to out or range. It should be within 1 and 5.`,
 			);
+
 			return;
 		}
 
@@ -154,8 +159,9 @@ export abstract class StorageCacheCommon {
 		// check whether this item is too big;
 		if (item.byteSize > this.config.itemMaxSize) {
 			logger.warn(
-				`Item with key: ${key} you are trying to put into is too big!`
+				`Item with key: ${key} you are trying to put into is too big!`,
 			);
+
 			return;
 		}
 
@@ -174,6 +180,7 @@ export abstract class StorageCacheCommon {
 					await this.popOutItems(validKeys, sizeToPop);
 				}
 			}
+
 			// put item in the cache
 			return this.setCacheItem(prefixedKey, item);
 		} catch (e) {
@@ -198,15 +205,16 @@ export abstract class StorageCacheCommon {
 	 */
 	public async getItem(
 		key: string,
-		options?: CacheItemOptions
+		options?: CacheItemOptions,
 	): Promise<CacheItem['data']> {
 		logger.debug(`Get item: key is ${key} with options ${options}`);
 		let cached;
 
 		if (!key || key === currentSizeKey) {
 			logger.warn(
-				`Invalid key: should not be empty or reserved key: '${currentSizeKey}'`
+				`Invalid key: should not be empty or reserved key: '${currentSizeKey}'`,
 			);
+
 			return null;
 		}
 
@@ -222,8 +230,9 @@ export abstract class StorageCacheCommon {
 					// if not expired, update its visitedTime and return the value
 					const item = await this.updateVisitedTime(
 						JSON.parse(cached),
-						prefixedKey
+						prefixedKey,
 					);
+
 					return item.data;
 				}
 			}
@@ -233,11 +242,14 @@ export abstract class StorageCacheCommon {
 				if (val !== null) {
 					await this.setItem(key, val, options);
 				}
+
 				return val;
 			}
+
 			return null;
 		} catch (e) {
 			logger.warn(`getItem failed! ${e}`);
+
 			return null;
 		}
 	}
@@ -254,8 +266,9 @@ export abstract class StorageCacheCommon {
 
 		if (!key || key === currentSizeKey) {
 			logger.warn(
-				`Invalid key: should not be empty or reserved key: '${currentSizeKey}'`
+				`Invalid key: should not be empty or reserved key: '${currentSizeKey}'`,
 			);
+
 			return;
 		}
 
@@ -282,6 +295,7 @@ export abstract class StorageCacheCommon {
 			return await this.getAllCacheKeys();
 		} catch (e) {
 			logger.warn(`getAllkeys failed! ${e}`);
+
 			return [];
 		}
 	}
@@ -304,6 +318,7 @@ export abstract class StorageCacheCommon {
 		if (getCurrentTime() >= item.expires) {
 			return true;
 		}
+
 		return false;
 	}
 
@@ -315,7 +330,7 @@ export abstract class StorageCacheCommon {
 	 */
 	protected async removeCacheItem(
 		prefixedKey: string,
-		size?: number
+		size?: number,
 	): Promise<void> {
 		const item = await this.getStorage().getItem(prefixedKey);
 		assert(item !== null, CacheErrorCode.NoCacheItem, `Key: ${prefixedKey}`);
@@ -343,7 +358,7 @@ export abstract class StorageCacheCommon {
 	protected fillCacheItem(
 		key: string,
 		value: object | number | string | boolean,
-		options: CacheItemOptions
+		options: CacheItemOptions,
 	): CacheItem {
 		const item: CacheItem = {
 			key,
@@ -359,20 +374,21 @@ export abstract class StorageCacheCommon {
 		item.byteSize = getByteLength(JSON.stringify(item));
 		// re-calculate using cache item with updated byteSize property
 		item.byteSize = getByteLength(JSON.stringify(item));
+
 		return item;
 	}
 
 	private sanitizeConfig(): void {
 		if (this.config.itemMaxSize > this.config.capacityInBytes) {
 			logger.error(
-				'Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.'
+				'Invalid parameter: itemMaxSize. It should be smaller than capacityInBytes. Setting back to default.',
 			);
 			this.config.itemMaxSize = defaultConfig.itemMaxSize;
 		}
 
 		if (this.config.defaultPriority > 5 || this.config.defaultPriority < 1) {
 			logger.error(
-				'Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.'
+				'Invalid parameter: defaultPriority. It should be between 1 and 5. Setting back to default.',
 			);
 			this.config.defaultPriority = defaultConfig.defaultPriority;
 		}
@@ -382,7 +398,7 @@ export abstract class StorageCacheCommon {
 			Number(this.config.warningThreshold) < 0
 		) {
 			logger.error(
-				'Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.'
+				'Invalid parameter: warningThreshold. It should be between 0 and 1. Setting back to default.',
 			);
 			this.config.warningThreshold = defaultConfig.warningThreshold;
 		}
@@ -391,7 +407,7 @@ export abstract class StorageCacheCommon {
 		const cacheLimit: number = 5 * 1024 * 1024;
 		if (this.config.capacityInBytes > cacheLimit) {
 			logger.error(
-				'Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.'
+				'Cache Capacity should be less than 5MB. Setting back to default. Setting back to default.',
 			);
 			this.config.capacityInBytes = defaultConfig.capacityInBytes;
 		}
@@ -406,7 +422,7 @@ export abstract class StorageCacheCommon {
 		const size = await this.getCurrentCacheSize();
 		await this.getStorage().setItem(
 			getCurrentSizeKey(this.config.keyPrefix),
-			(size + amount).toString()
+			(size + amount).toString(),
 		);
 	}
 
@@ -419,7 +435,7 @@ export abstract class StorageCacheCommon {
 		const size = await this.getCurrentCacheSize();
 		await this.getStorage().setItem(
 			getCurrentSizeKey(this.config.keyPrefix),
-			(size - amount).toString()
+			(size - amount).toString(),
 		);
 	}
 
@@ -433,10 +449,11 @@ export abstract class StorageCacheCommon {
 	 */
 	private async updateVisitedTime(
 		item: CacheItem,
-		prefixedKey: string
+		prefixedKey: string,
 	): Promise<CacheItem> {
 		item.visitedTime = getCurrentTime();
 		await this.getStorage().setItem(prefixedKey, JSON.stringify(item));
+
 		return item;
 	}
 
@@ -449,7 +466,7 @@ export abstract class StorageCacheCommon {
 	 */
 	private async setCacheItem(
 		prefixedKey: string,
-		item: CacheItem
+		item: CacheItem,
 	): Promise<void> {
 		// first try to update the current size of the cache.
 		await this.increaseCurrentSizeInBytes(item.byteSize);
@@ -476,6 +493,7 @@ export abstract class StorageCacheCommon {
 		const spaceItemNeed = cur + itemSize - this.config.capacityInBytes;
 		const cacheThresholdSpace =
 			(1 - this.config.warningThreshold) * this.config.capacityInBytes;
+
 		return spaceItemNeed > cacheThresholdSpace
 			? spaceItemNeed
 			: cacheThresholdSpace;
@@ -490,6 +508,7 @@ export abstract class StorageCacheCommon {
 	 */
 	private async isCacheFull(itemSize: number): Promise<boolean> {
 		const cur = await this.getCurrentCacheSize();
+
 		return itemSize + cur > this.config.capacityInBytes;
 	}
 
@@ -555,6 +574,7 @@ export abstract class StorageCacheCommon {
 				remainingKeys.push(key);
 			}
 		}
+
 		return remainingKeys;
 	}
 

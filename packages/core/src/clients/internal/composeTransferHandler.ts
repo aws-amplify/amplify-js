@@ -4,9 +4,9 @@
 import {
 	Middleware,
 	MiddlewareHandler,
-	TransferHandler,
 	Request as RequestBase,
 	Response as ResponseBase,
+	TransferHandler,
 } from '../types';
 
 /**
@@ -29,23 +29,24 @@ export const composeTransferHandler =
 		> = TransferHandler<Request, Response, {}>,
 	>(
 		coreHandler: CoreHandler,
-		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>
+		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>,
 	) =>
 	(
 		request: Request,
 		options: MergeNoConflictKeys<
 			[...MiddlewareOptionsArr, InferOptionTypeFromTransferHandler<CoreHandler>]
-		>
+		>,
 	) => {
 		const context = {};
 		let composedHandler: MiddlewareHandler<Request, Response> = (
-			request: Request
+			request: Request,
 		) => coreHandler(request, options);
 		for (let i = middleware.length - 1; i >= 0; i--) {
 			const m = middleware[i];
 			const resolvedMiddleware = m(options);
 			composedHandler = resolvedMiddleware(composedHandler, context);
 		}
+
 		return composedHandler(request);
 	};
 

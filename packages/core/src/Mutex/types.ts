@@ -10,11 +10,7 @@ export interface MutexInterface {
 }
 
 export namespace MutexInterface {
-	export interface Releaser {
-		(): void;
-	}
+	export type Releaser = () => void;
 
-	export interface Worker<T> {
-		(): Promise<T> | T;
-	}
+	export type Worker<T> = () => Promise<T> | T;
 }

@@ -1,7 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Presignable, PresignUrlOptions } from './types';
+import { AmplifyUrl } from '../../../../../utils/amplifyUrl';
+
+import { PresignUrlOptions, Presignable } from './types';
 import {
 	ALGORITHM_QUERY_PARAM,
 	AMZ_DATE_QUERY_PARAM,
@@ -15,7 +17,6 @@ import {
 } from './constants';
 import { getSigningValues } from './utils/getSigningValues';
 import { getSignature } from './utils/getSignature';
-import { AmplifyUrl } from '../../../../../utils/amplifyUrl';
 
 /**
  * Given a `Presignable` object, returns a Signature Version 4 presigned `URL` object.
@@ -26,7 +27,7 @@ import { AmplifyUrl } from '../../../../../utils/amplifyUrl';
  */
 export const presignUrl = (
 	{ body, method = 'GET', url }: Presignable,
-	{ expiration, ...options }: PresignUrlOptions
+	{ expiration, ...options }: PresignUrlOptions,
 ): URL => {
 	const signingValues = getSigningValues(options);
 	const { accessKeyId, credentialScope, longDate, sessionToken } =

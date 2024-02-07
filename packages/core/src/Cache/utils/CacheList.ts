@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { assert, CacheErrorCode } from './errorHelpers';
+import { CacheErrorCode, assert } from './errorHelpers';
 
 class DoubleLinkedNode {
 	key: string;
@@ -9,7 +9,7 @@ class DoubleLinkedNode {
 	nextNode: DoubleLinkedNode | null;
 
 	constructor(keyVal?: string) {
-		this.key = keyVal ? keyVal : '';
+		this.key = keyVal || '';
 		this.prevNode = null;
 		this.nextNode = null;
 	}
@@ -112,6 +112,7 @@ export class CacheList {
 	 */
 	public getLastItem(): string {
 		assert(this.tail.prevNode !== null, CacheErrorCode.NullPreviousNode);
+
 		return this.tail.prevNode.key;
 	}
 
@@ -169,6 +170,7 @@ export class CacheList {
 	 */
 	public isHeadNode(key: string): boolean {
 		const node = this.hashtable[key];
+
 		return node.prevNode === this.head;
 	}
 
@@ -180,6 +182,7 @@ export class CacheList {
 	 */
 	public isTailNode(key: string): boolean {
 		const node = this.hashtable[key];
+
 		return node.nextNode === this.tail;
 	}
 }

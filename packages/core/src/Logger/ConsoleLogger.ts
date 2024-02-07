@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InputLogEvent, Logger, LoggingProvider, LogType } from './types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../constants';
+
+import { InputLogEvent, LogType, Logger, LoggingProvider } from './types';
 
 const LOG_LEVELS: Record<string, number> = {
 	VERBOSE: 1,
@@ -41,9 +42,10 @@ export class ConsoleLogger implements Logger {
 
 	_ts() {
 		const dt = new Date();
+
 		return (
 			[this._padding(dt.getMinutes()), this._padding(dt.getSeconds())].join(
-				':'
+				':',
 			) +
 			'.' +
 			dt.getMilliseconds()
@@ -70,8 +72,8 @@ export class ConsoleLogger implements Logger {
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
 		}
-		if (typeof (<any>window) !== 'undefined' && (<any>window).LOG_LEVEL) {
-			logger_level_name = (<any>window).LOG_LEVEL;
+		if (typeof (window as any) !== 'undefined' && (window as any).LOG_LEVEL) {
+			logger_level_name = (window as any).LOG_LEVEL;
 		}
 		const logger_level = LOG_LEVELS[logger_level_name];
 		const type_level = LOG_LEVELS[type];

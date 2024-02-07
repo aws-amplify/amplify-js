@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CacheConfig } from '../../singleton/Cache/types';
+
 export { CacheConfig };
 
 /**

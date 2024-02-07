@@ -5,25 +5,23 @@ import { AmplifyClass } from '../../../singleton';
 import { LibraryOptions, ResourcesConfig } from '../../../singleton/types';
 
 export namespace AmplifyServer {
-	export type ContextToken = {
-		readonly value: Symbol;
-	};
-
-	export type ContextSpec = {
-		readonly token: ContextToken;
-	};
-
-	export type Context = {
-		amplify: AmplifyClass;
-	};
-
-	export interface RunOperationWithContext {
-		<Result>(
-			amplifyConfig: ResourcesConfig,
-			libraryOptions: LibraryOptions,
-			operation: (
-				contextSpec: AmplifyServer.ContextSpec
-			) => Result | Promise<Result>
-		): Promise<Result>;
+	export interface ContextToken {
+		readonly value: symbol;
 	}
+
+	export interface ContextSpec {
+		readonly token: ContextToken;
+	}
+
+	export interface Context {
+		amplify: AmplifyClass;
+	}
+
+	export type RunOperationWithContext = <Result>(
+		amplifyConfig: ResourcesConfig,
+		libraryOptions: LibraryOptions,
+		operation: (
+			contextSpec: AmplifyServer.ContextSpec,
+		) => Result | Promise<Result>,
+	) => Promise<Result>;
 }

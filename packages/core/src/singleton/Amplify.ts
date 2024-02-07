@@ -1,21 +1,23 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AuthClass } from './Auth';
-import { Hub, AMPLIFY_SYMBOL } from '../Hub';
+import { AMPLIFY_SYMBOL, Hub } from '../Hub';
+import { parseAWSExports } from '../parseAWSExports';
+import { deepFreeze } from '../utils';
+
 import {
 	AuthConfig,
 	LegacyConfig,
 	LibraryOptions,
 	ResourcesConfig,
 } from './types';
-import { parseAWSExports } from '../parseAWSExports';
-import { deepFreeze } from '../utils';
+import { AuthClass } from './Auth';
 import { ADD_OAUTH_LISTENER } from './constants';
 
 export class AmplifyClass {
 	private oAuthListener:
 		| ((authConfig: AuthConfig['Cognito']) => void)
 		| undefined = undefined;
+
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
 
@@ -47,7 +49,7 @@ export class AmplifyClass {
 	 */
 	configure(
 		resourcesConfig: ResourcesConfig | LegacyConfig,
-		libraryOptions?: LibraryOptions
+		libraryOptions?: LibraryOptions,
 	): void {
 		let resolvedResourceConfig: ResourcesConfig;
 
@@ -75,7 +77,7 @@ export class AmplifyClass {
 				data: this.resourcesConfig,
 			},
 			'Configure',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
 
 		this.notifyOAuthListener();

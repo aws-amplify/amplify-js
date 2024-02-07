@@ -16,9 +16,10 @@ type Awaited<T> = T extends null | undefined
  * @returns - the return type of the callback
  */
 export const deDupeAsyncFunction = <A extends any[], R>(
-	asyncFunction: (...args: A) => Promise<R>
+	asyncFunction: (...args: A) => Promise<R>,
 ) => {
 	let inflightPromise: Promise<Awaited<R>> | undefined;
+
 	return async (...args: A): Promise<Awaited<R>> => {
 		if (inflightPromise) return inflightPromise;
 

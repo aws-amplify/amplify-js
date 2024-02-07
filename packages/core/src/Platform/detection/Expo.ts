@@ -7,5 +7,5 @@ import { globalExists } from './helpers';
 
 export function expoDetect() {
 	// @ts-ignore
-	return globalExists() && typeof global['expo'] !== 'undefined';
+	return globalExists() && typeof global.expo !== 'undefined';
 }

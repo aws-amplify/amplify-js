@@ -25,7 +25,7 @@ const customUserAgentState: CustomUserAgentStateMap = {};
  * @param input - SetCustomUserAgentInput that defines custom state to apply to the specified APIs.
  */
 export const setCustomUserAgent = (
-	input: SetCustomUserAgentInput
+	input: SetCustomUserAgentInput,
 ): (() => void) => {
 	// Save custom user-agent state & increment reference counter
 	// TODO Remove `any` when we upgrade to TypeScript 5.2, see: https://github.com/microsoft/TypeScript/issues/44373
@@ -37,7 +37,7 @@ export const setCustomUserAgent = (
 				additionalDetails: input.additionalDetails,
 			},
 		}),
-		customUserAgentState[input.category] ?? {}
+		customUserAgentState[input.category] ?? {},
 	);
 
 	// Callback that cleans up state for APIs recorded by this call
@@ -70,6 +70,6 @@ export const setCustomUserAgent = (
 
 export const getCustomUserAgent = (
 	category: string,
-	api: string
+	api: string,
 ): AdditionalDetails | undefined =>
 	customUserAgentState[category]?.[api]?.additionalDetails;

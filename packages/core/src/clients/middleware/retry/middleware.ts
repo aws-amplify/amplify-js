@@ -21,14 +21,14 @@ export interface RetryOptions<TResponse = Response> {
 	 * @param error Optional error thrown from previous attempts.
 	 * @returns True if the request should be retried.
 	 */
-	retryDecider: (response?: TResponse, error?: unknown) => Promise<boolean>;
+	retryDecider(response?: TResponse, error?: unknown): Promise<boolean>;
 	/**
 	 * Function to compute the delay in milliseconds before the next retry based
 	 * on the number of attempts.
 	 * @param attempt Current number of attempts, including the first attempt.
 	 * @returns Delay in milliseconds.
 	 */
-	computeDelay: (attempt: number) => number;
+	computeDelay(attempt: number): number;
 	/**
 	 * Maximum number of retry attempts, starting from 1. Defaults to 3.
 	 */
@@ -51,9 +51,10 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 	if (maxAttempts < 1) {
 		throw new Error('maxAttempts must be greater than 0');
 	}
+
 	return (
 		next: MiddlewareHandler<TInput, TOutput>,
-		context: MiddlewareContext
+		context: MiddlewareContext,
 	) =>
 		async function retryMiddleware(request: TInput) {
 			let error: unknown;
@@ -64,6 +65,7 @@ export const retryMiddleware = <TInput = Request, TOutput = Response>({
 			const handleTerminalErrorOrResponse = () => {
 				if (response) {
 					addOrIncrementMetadataAttempts(response, attemptsCount);
+
 					return response;
 				} else {
 					addOrIncrementMetadataAttempts(error as object, attemptsCount);
@@ -120,18 +122,19 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 		abortSignal?.removeEventListener('abort', cancelSleep);
 		sleepPromiseResolveFn();
 	});
+
 	return sleepPromise;
 };
 
 const addOrIncrementMetadataAttempts = (
 	nextHandlerOutput: Record<string, any>,
-	attempts: number
+	attempts: number,
 ) => {
 	if (Object.prototype.toString.call(nextHandlerOutput) !== '[object Object]') {
 		return;
 	}
-	nextHandlerOutput['$metadata'] = {
-		...(nextHandlerOutput['$metadata'] ?? {}),
+	nextHandlerOutput.$metadata = {
+		...(nextHandlerOutput.$metadata ?? {}),
 		attempts,
 	};
 };

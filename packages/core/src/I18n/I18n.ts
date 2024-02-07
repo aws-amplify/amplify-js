@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '../Logger';
+
 import { I18nConfig } from './types';
 
 const logger = new ConsoleLogger('I18n');
@@ -115,7 +116,7 @@ export class I18n {
 	 */
 	putVocabulariesForLanguage(
 		language: string,
-		vocabularies: Record<string, any>
+		vocabularies: Record<string, any>,
 	) {
 		let lang_dict = this._dict[language];
 		if (!lang_dict) {

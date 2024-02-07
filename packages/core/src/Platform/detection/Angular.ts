@@ -7,12 +7,13 @@ import { documentExists, processExists, windowExists } from './helpers';
 
 export function angularWebDetect() {
 	const angularVersionSetInDocument = Boolean(
-		documentExists() && document.querySelector('[ng-version]')
+		documentExists() && document.querySelector('[ng-version]'),
 	);
 	const angularContentSetInWindow = Boolean(
 		// @ts-ignore
-		windowExists() && typeof window['ng'] !== 'undefined'
+		windowExists() && typeof window.ng !== 'undefined',
 	);
+
 	return angularVersionSetInDocument || angularContentSetInWindow;
 }
 
@@ -20,7 +21,7 @@ export function angularSSRDetect() {
 	return (
 		(processExists() &&
 			typeof process.env === 'object' &&
-			process.env['npm_lifecycle_script']?.startsWith('ng ')) ||
+			process.env.npm_lifecycle_script?.startsWith('ng ')) ||
 		false
 	);
 }

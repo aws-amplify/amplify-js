@@ -28,6 +28,7 @@ export const userAgentMiddleware: Middleware<
 		return async function userAgentMiddleware(request) {
 			if (userAgentValue.trim().length === 0) {
 				const result = await next(request);
+
 				return result;
 			} else {
 				const headerName = userAgentHeader.toLowerCase();
@@ -35,6 +36,7 @@ export const userAgentMiddleware: Middleware<
 					? `${request.headers[headerName]} ${userAgentValue}`
 					: userAgentValue;
 				const response = await next(request);
+
 				return response;
 			}
 		};

@@ -8,16 +8,16 @@
  */
 
 const FIVE_MINUTES_IN_MS = 1000 * 60 * 5;
-type DateUtils = {
+interface DateUtils {
 	clockOffset: number;
-	getDateWithClockOffset: () => Date;
-	getClockOffset: () => number;
-	getHeaderStringFromDate: (date: Date) => string;
-	getDateFromHeaderString: (header: string) => Date;
-	isClockSkewed: (serverDate: Date) => boolean;
-	isClockSkewError: (error: any) => boolean;
-	setClockOffset: (offset: number) => void;
-};
+	getDateWithClockOffset(): Date;
+	getClockOffset(): number;
+	getHeaderStringFromDate(date: Date): string;
+	getDateFromHeaderString(header: string): Date;
+	isClockSkewed(serverDate: Date): boolean;
+	isClockSkewError(error: any): boolean;
+	setClockOffset(offset: number): void;
+}
 
 /**
  * This utility is intended to be deprecated and replaced by `signRequest` and `presignUrl` functions from
@@ -55,7 +55,7 @@ export const DateUtils: DateUtils = {
 
 	getDateFromHeaderString(header: string) {
 		const [, year, month, day, hour, minute, second] = header.match(
-			/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}).+/
+			/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}).+/,
 		) as any[];
 
 		return new Date(
@@ -65,8 +65,8 @@ export const DateUtils: DateUtils = {
 				Number(day),
 				Number(hour),
 				Number(minute),
-				Number(second)
-			)
+				Number(second),
+			),
 		);
 	},
 
@@ -74,7 +74,7 @@ export const DateUtils: DateUtils = {
 		// API gateway permits client calls that are off by no more than ±5 minutes
 		return (
 			Math.abs(
-				serverDate.getTime() - DateUtils.getDateWithClockOffset().getTime()
+				serverDate.getTime() - DateUtils.getDateWithClockOffset().getTime(),
 			) >= FIVE_MINUTES_IN_MS
 		);
 	},
@@ -88,9 +88,9 @@ export const DateUtils: DateUtils = {
 
 		return Boolean(
 			['BadRequestException', 'InvalidSignatureException'].includes(
-				headers['x-amzn-errortype']
+				headers['x-amzn-errortype'],
 			) &&
-				(headers.date || headers.Date)
+				(headers.date || headers.Date),
 		);
 	},
 

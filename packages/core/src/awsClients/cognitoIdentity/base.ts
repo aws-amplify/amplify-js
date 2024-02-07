@@ -9,13 +9,13 @@ import {
 	HttpResponse,
 	Middleware,
 	getDnsSuffix,
-	unauthenticatedHandler,
 	parseJsonError,
+	unauthenticatedHandler,
 } from '../../clients';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
 import {
-	jitteredBackoff,
 	getRetryDecider,
+	jitteredBackoff,
 } from '../../clients/middleware/retry';
 import { getAmplifyUserAgent } from '../../Platform';
 import { observeFrameworkChanges } from '../../Platform/detectFramework';
@@ -31,7 +31,7 @@ const SERVICE_NAME = 'cognito-identity';
  */
 const endpointResolver = ({ region }: EndpointResolverOptions) => ({
 	url: new AmplifyUrl(
-		`https://cognito-identity.${region}.${getDnsSuffix(region)}`
+		`https://cognito-identity.${region}.${getDnsSuffix(region)}`,
 	),
 });
 
@@ -42,6 +42,7 @@ const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
 	() => (next, context) =>
 		async function disableCacheMiddleware(request) {
 			request.headers['cache-control'] = 'no-store';
+
 			return next(request);
 		};
 
@@ -88,7 +89,7 @@ export const getSharedHeaders = (operation: string): Headers => ({
 export const buildHttpRpcRequest = (
 	{ url }: Endpoint,
 	headers: Headers,
-	body: any
+	body: any,
 ): HttpRequest => ({
 	headers,
 	url,
