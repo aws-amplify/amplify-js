@@ -1,5 +1,5 @@
 import * as raw from '../../src';
-import { Amplify, AmplifyClassV6, Hub } from '@aws-amplify/core';
+import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
@@ -148,7 +148,41 @@ describe('generateClient', () => {
 			expect(() => {
 				client.models.Todo.create({ name: 'todo' });
 			}).toThrow(
-				'Could not generate client. This is likely due to Amplify.configure() not being called prior to generateClient().',
+				'Client is not generate. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
+			);
+		});
+	});
+
+	describe('client `enums` property', () => {
+		const expectedEnumsProperties = ['Status'];
+
+		it('generates `enums` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
+			Amplify.configure(configFixture); // clear the resource config
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(Object.keys(client.enums)).toEqual(expectedEnumsProperties);
+		});
+
+		it('generates `enums` property when Amplify.configure() is called later with a valid GraphQL provider config', async () => {
+			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(Object.keys(client.enums)).toHaveLength(0);
+
+			Amplify.configure(configFixture);
+
+			expect(Object.keys(client.enums)).toEqual(expectedEnumsProperties);
+		});
+
+		it('generates `models` property throwing error when there is no valid GraphQL provider config can be resolved', () => {
+			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(() => {
+				client.enums.Status.values()
+			}).toThrow(
+				'Client is not generate. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
 		});
 	});
