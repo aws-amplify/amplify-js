@@ -9,7 +9,7 @@ on:
   push:
     branches:
       # Change this to your branch name where "example-preid" corresponds to the preid you want your changes released on
-      - fix/signinwith-redirect
+      - feat/example-preid-branch/main
 
 jobs:
   e2e:

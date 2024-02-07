@@ -13,6 +13,7 @@ export function getRedirectUrl(redirects: string[]): string {
 		if (redirects.length === 0) {
 			throw invalidRedirectException;
 		} else {
+			// fallsback to available URL https://github.com/aws-amplify/amplify-js/issues/12890
 			return redirects[0];
 		}
 	} 
