@@ -10,27 +10,16 @@ import { getFactory } from './operations/get';
 import { subscriptionFactory } from './operations/subscription';
 import { observeQueryFactory } from './operations/observeQuery';
 import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
+import { GraphQLProviderConfig } from '@aws-amplify/core';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client<Record<string, any>>,
-	params: ClientGenerationParams
+	graphqlConfig: GraphQLProviderConfig['GraphQL'],
 ): ModelTypes<T> {
 	const models = {} as any;
-	const config = params.amplify.getConfig();
-
-	if (!config.API?.GraphQL) {
-		// breaks compatibility with certain bundler, e.g. Vite where component files are evaluated before
-		// the entry point causing false positive errors. Revisit how to better handle this post-launch
-
-		// throw new Error(
-		// 	'The API configuration is missing. This is likely due to Amplify.configure() not being called
-		// prior to generateClient().'
-		// );
-		return {} as ModelTypes<never>;
-	}
 
 	const modelIntrospection: ModelIntrospectionSchema | undefined =
-		config.API.GraphQL.modelIntrospection;
+		graphqlConfig.modelIntrospection;
 
 	if (!modelIntrospection) {
 		return {} as ModelTypes<never>;
