@@ -7,6 +7,7 @@ import { NextServer } from '../types';
 
 export const createServerRunnerForAPI = ({
 	config,
+	libraryOptions,
 }: NextServer.CreateServerRunnerInput): NextServer.CreateServerRunnerOutput & {
 	resourcesConfig: ResourcesConfig;
 } => {
@@ -15,6 +16,7 @@ export const createServerRunnerForAPI = ({
 	return {
 		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
 			config: amplifyConfig,
+			libraryOptions,
 		}),
 		resourcesConfig: amplifyConfig,
 	};

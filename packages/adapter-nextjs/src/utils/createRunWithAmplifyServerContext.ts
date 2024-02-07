@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
+import { LibraryOptions, ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
 import {
 	createAWSCredentialsAndIdentityIdProvider,
 	createKeyValueStorageFromCookieStorageAdapter,
@@ -15,8 +15,10 @@ import { createCookieStorageAdapterFromNextServerContext } from './createCookieS
 
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
+	libraryOptions,
 }: {
 	config: ResourcesConfig;
+	libraryOptions?: LibraryOptions
 }) => {
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		async ({ nextServerContext, operation }) => {
@@ -55,7 +57,7 @@ export const createRunWithAmplifyServerContext = ({
 
 			// Otherwise it may be the case that auth is not used, e.g. API key.
 			// Omitting the `Auth` in the second parameter.
-			return runWithAmplifyServerContextCore(resourcesConfig, {}, operation);
+			return runWithAmplifyServerContextCore(resourcesConfig, libraryOptions, operation);
 		};
 
 	return runWithAmplifyServerContext;
