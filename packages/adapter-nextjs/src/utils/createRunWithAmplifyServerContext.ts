@@ -50,6 +50,7 @@ export const createRunWithAmplifyServerContext = ({
 					resourcesConfig,
 					{
 						Auth: { credentialsProvider, tokenProvider },
+						...libraryOptions,
 					},
 					operation,
 				);
