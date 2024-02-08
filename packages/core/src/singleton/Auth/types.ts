@@ -50,7 +50,7 @@ export type Identity = {
 
 export interface CredentialsAndIdentityIdProvider {
 	getCredentialsAndIdentityId: (
-		getCredentialsOptions: GetCredentialsOptions
+		getCredentialsOptions: GetCredentialsOptions,
 	) => Promise<CredentialsAndIdentityId | undefined>;
 	clearCredentialsAndIdentityId: () => void;
 }
@@ -70,6 +70,11 @@ export type FetchAuthSessionOptions = {
 export type AuthTokens = {
 	idToken?: JWT;
 	accessToken: JWT;
+	/**
+	 * @deprecated
+	 * Use getCurrentUser to access signInDetails
+	 */
+	signInDetails?: AWSAuthSignInDetails;
 };
 
 export type AuthStandardAttributeKey =
@@ -230,3 +235,22 @@ export type AWSCredentials = {
 	sessionToken?: string;
 	expiration?: Date;
 };
+
+// copied from packages/auth/src/providers/cognito/types/models.ts#L94
+/**
+ * @deprecated
+ */
+type AWSAuthSignInDetails = {
+	loginId?: string;
+	authFlowType?: AuthFlowType;
+};
+
+// copied from packages/auth/src/providers/cognito/types/models.ts#L22
+/**
+ * @deprecated
+ */
+type AuthFlowType =
+	| 'USER_SRP_AUTH'
+	| 'CUSTOM_WITH_SRP'
+	| 'CUSTOM_WITHOUT_SRP'
+	| 'USER_PASSWORD_AUTH';
