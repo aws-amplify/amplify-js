@@ -4,37 +4,61 @@
 import { LoggingConstraints } from '../../../../src/providers/cloudwatch/types/configuration';
 import {
 	getLoggingConstraints,
+	getLoggingConstraintsETag,
 	setLoggingConstraints,
-} from '../../../../src/providers/cloudwatch/utils/loggingConstraintsHelpers';
+	setLoggingConstraintsETag,
+} from '../../../../src/providers/cloudwatch/utils';
 
-describe('CloudWatch Logging provider: logging constraints helpers', () => {
-	const loggingConstraints: LoggingConstraints = {
-		defaultLogLevel: 'INFO',
-		categoryLogLevel: {
-			API: 'INFO',
-			AUTH: 'INFO',
-		},
-	};
-
-	it('should be undefined until set', () => {
-		expect(getLoggingConstraints()).toBeUndefined();
-	});
-
-	it('should set logging constraints', () => {
-		setLoggingConstraints(loggingConstraints);
-
-		expect(getLoggingConstraints()).toStrictEqual(loggingConstraints);
-
-		const updatedLoggingConstraints: LoggingConstraints = {
-			defaultLogLevel: 'WARN',
+describe('CloudWatch Logging utils: logging constraints helpers', () => {
+	describe('Constraints helpers', () => {
+		const loggingConstraints: LoggingConstraints = {
+			defaultLogLevel: 'INFO',
 			categoryLogLevel: {
-				API: 'WARN',
-				AUTH: 'WARN',
+				API: 'INFO',
+				AUTH: 'INFO',
 			},
 		};
 
-		setLoggingConstraints(updatedLoggingConstraints);
+		it('should be undefined until set', () => {
+			expect(getLoggingConstraints()).toBeUndefined();
+		});
 
-		expect(getLoggingConstraints()).toStrictEqual(updatedLoggingConstraints);
+		it('should set logging constraints', () => {
+			setLoggingConstraints(loggingConstraints);
+
+			expect(getLoggingConstraints()).toStrictEqual(loggingConstraints);
+
+			const updatedLoggingConstraints: LoggingConstraints = {
+				defaultLogLevel: 'WARN',
+				categoryLogLevel: {
+					API: 'WARN',
+					AUTH: 'WARN',
+				},
+			};
+
+			setLoggingConstraints(updatedLoggingConstraints);
+
+			expect(getLoggingConstraints()).toStrictEqual(updatedLoggingConstraints);
+		});
+	});
+
+	describe('Constraints ETag helpers', () => {
+		const eTag = 'e-tag';
+
+		it('should be undefined until set', () => {
+			expect(getLoggingConstraintsETag()).toBeUndefined();
+		});
+
+		it('should set logging constraints ETag', () => {
+			setLoggingConstraintsETag(eTag);
+
+			expect(getLoggingConstraintsETag()).toStrictEqual(eTag);
+
+			const updatedETag = 'updated-e-tag';
+
+			setLoggingConstraintsETag(updatedETag);
+
+			expect(getLoggingConstraintsETag()).toStrictEqual(updatedETag);
+		});
 	});
 });
