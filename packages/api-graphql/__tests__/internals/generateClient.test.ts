@@ -119,6 +119,7 @@ describe('generateClient', () => {
 			'CommunityPollAnswer',
 			'CommunityPollVote',
 			'CommunityPost',
+			'SecondaryIndexModel',
 		];
 
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {

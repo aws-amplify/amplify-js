@@ -22,6 +22,7 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
+import { model } from '@aws-amplify/data-schema/lib-esm/src';
 
 export type IndexMeta = {
 	queryField: string;
@@ -64,6 +65,53 @@ export function indexQueryFactory(
 	return context ? indexQueryWithContext : indexQuery;
 }
 
+async function processGraphQlResponse(
+	result: GraphQLResult<any>,
+	selectionSet: undefined | string[],
+	modelInitializer: (flattenedResult: any[]) => any[],
+) {
+	const { data, extensions } = result;
+
+	const [key] = Object.keys(data);
+
+	if (data[key].items) {
+		const flattenedResult = flattenItems(data)[key];
+
+		if (selectionSet) {
+			// don't initialize models if custom selection set specified; return resolved values
+			return {
+				data: flattenedResult,
+				nextToken: data[key].nextToken,
+				extensions,
+			};
+		} else {
+			const initialized = modelInitializer(flattenedResult);
+
+			return {
+				data: initialized,
+				nextToken: data[key].nextToken,
+				extensions,
+			};
+		}
+	}
+
+	return {
+		data: data[key],
+		nextToken: data[key].nextToken,
+		extensions,
+	};
+}
+
+function handleGraphQlError(error: any) {
+	if (error.errors) {
+		// graphql errors pass through
+		return error as any;
+	} else {
+		// non-graphql errors re re-thrown
+		throw error;
+	}
+}
+
 async function _indexQuery(
 	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
@@ -89,76 +137,46 @@ async function _indexQuery(
 		indexMeta,
 	);
 
-	try {
-		const auth = authModeParams(client, args);
+	const auth = authModeParams(client, args);
 
+	const modelInitializer = (flattenedResult: any[]) =>
+		initializeModel(
+			client,
+			name,
+			flattenedResult,
+			modelIntrospection,
+			auth.authMode,
+			auth.authToken,
+			!!contextSpec,
+		);
+
+	try {
 		const headers = getCustomHeaders(client, args?.headers);
 
-		const { data, extensions } = !!contextSpec
-			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
-					contextSpec,
-					{
-						...auth,
-						query,
-						variables,
-					},
-					headers,
-			  )) as GraphQLResult<any>)
-			: ((await (client as V6Client<Record<string, any>>).graphql(
-					{
-						...auth,
-						query,
-						variables,
-					},
-					headers,
-			  )) as GraphQLResult<any>);
+		const graphQlParams = {
+			...auth,
+			query,
+			variables,
+		};
 
-		// flatten response
-		if (data !== undefined) {
-			const [key] = Object.keys(data);
+		const requestArgs: [any, any] = [graphQlParams, headers];
 
-			if (data[key].items) {
-				const flattenedResult = flattenItems(data)[key];
+		if (contextSpec !== undefined) {
+			requestArgs.unshift(contextSpec);
+		}
 
-				// don't init if custom selection set
-				if (args?.selectionSet) {
-					return {
-						data: flattenedResult,
-						nextToken: data[key].nextToken,
-						extensions,
-					};
-				} else {
-					const initialized = initializeModel(
-						client,
-						name,
-						flattenedResult,
-						modelIntrospection,
-						auth.authMode,
-						auth.authToken,
-						!!contextSpec,
-					);
+		const response = (await (
+			client as V6ClientSSRRequest<Record<string, any>>
+		).graphql(...requestArgs)) as GraphQLResult<any>;
 
-					return {
-						data: initialized,
-						nextToken: data[key].nextToken,
-						extensions,
-					};
-				}
-			}
-
-			return {
-				data: data[key],
-				nextToken: data[key].nextToken,
-				extensions,
-			};
+		if (response.data !== undefined) {
+			return processGraphQlResponse(
+				response,
+				args?.selectionSet,
+				modelInitializer,
+			);
 		}
 	} catch (error: any) {
-		if (error.errors) {
-			// graphql errors pass through
-			return error as any;
-		} else {
-			// non-graphql errors re re-thrown
-			throw error;
-		}
+		return handleGraphQlError(error);
 	}
 }

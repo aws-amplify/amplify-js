@@ -10,11 +10,9 @@ import { indexQueryFactory } from './operations/indexQuery';
 import { getFactory } from './operations/get';
 import { subscriptionFactory } from './operations/subscription';
 import { observeQueryFactory } from './operations/observeQuery';
-import {
-	ModelIntrospectionSchema,
-	SchemaModel,
-} from '@aws-amplify/core/internals/utils';
+import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
 import { GraphQLProviderConfig } from '@aws-amplify/core';
+import { getSecondaryIndexesFromSchemaModel } from './clientUtils';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client<Record<string, any>>,
@@ -65,30 +63,6 @@ export function generateModelsProperty<T extends Record<any, any> = never>(
 				}
 			},
 		);
-
-		const getSecondaryIndexesFromSchemaModel = (model: SchemaModel) => {
-			const idxs = model.attributes
-				?.filter(
-					attr =>
-						attr.type === 'key' &&
-						// presence of `name` property distinguishes GSI from primary index
-						attr.properties?.name &&
-						attr.properties?.queryField &&
-						attr.properties?.fields.length > 0,
-				)
-				.map(attr => {
-					const queryField: string = attr.properties?.queryField;
-					const [pk, ...sk] = attr.properties?.fields;
-
-					return {
-						queryField,
-						pk,
-						sk,
-					};
-				});
-
-			return idxs || [];
-		};
 
 		const secondaryIdxs = getSecondaryIndexesFromSchemaModel(model);
 
