@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { APIConfig, LibraryAPIOptions } from './API/types';
+import {
+	APIConfig,
+	LibraryAPIOptions,
+	GraphQLProviderConfig,
+} from './API/types';
 import { AnalyticsConfig } from './Analytics/types';
 import {
 	AuthConfig,
@@ -57,6 +61,7 @@ export {
 	AuthIdentityPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
 	GetCredentialsOptions,
+	GraphQLProviderConfig,
 	InteractionsConfig,
 	PredictionsConfig,
 	StorageAccessLevel,
