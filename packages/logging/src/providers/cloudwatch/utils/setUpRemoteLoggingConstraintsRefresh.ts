@@ -6,8 +6,8 @@ import {
 	RemoteLoggingConstraintsRefreshConfiguration,
 } from '../types/configuration';
 
-import { setLoggingConstraints } from './loggingConstraintsHelpers';
 import { fetchRemoteLoggingConstraints as defaultFetchRemoteLoggingConstraints } from './fetchRemoteLoggingConstraints';
+import { setLoggingConstraints } from './loggingConstraintsHelpers';
 
 let interval: ReturnType<typeof setInterval> | undefined;
 

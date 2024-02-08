@@ -13,7 +13,7 @@ export const fetchRemoteLoggingConstraints: FetchRemoteLoggingConstraints =
 		const { credentials } = await resolveCredentials();
 		const { region } = resolveConfig();
 		try {
-			return fetchRemoteLoggingConstraintsFromApiGateway(
+			return await fetchRemoteLoggingConstraintsFromApiGateway(
 				{ credentials, region },
 				endpoint,
 			);

@@ -9,7 +9,7 @@ import { LoggingValidationErrorCode, validationErrorMap } from './validation';
  */
 export function assertValidationError(
 	assertion: boolean,
-	name: LoggingValidationErrorCode
+	name: LoggingValidationErrorCode,
 ): asserts assertion {
 	const { message, recoverySuggestion } = validationErrorMap[name];
 

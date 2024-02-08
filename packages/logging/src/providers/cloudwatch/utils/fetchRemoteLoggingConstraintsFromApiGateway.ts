@@ -4,13 +4,16 @@
 import {
 	HttpRequest,
 	HttpResponse,
-	authenticatedHandler,
-	getRetryDecider,
-	jitteredBackoff,
+	SigningOptions,
+	fetchTransferHandler,
 	parseJsonBody,
 	parseJsonError,
+	signingMiddleware,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+import {
+	composeServiceApi,
+	composeTransferHandler,
+} from '@aws-amplify/core/internals/aws-client-utils/composers';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
 import { LoggingConstraints } from '../types/configuration';
@@ -18,6 +21,7 @@ import { LoggingConstraints } from '../types/configuration';
 import {
 	getLoggingConstraints,
 	getLoggingConstraintsETag,
+	setLoggingConstraintsETag,
 } from './loggingConstraintsHelpers';
 
 /**
@@ -43,33 +47,39 @@ const fetchRemoteLoggingConstraintsFromApiGatewaySerializer = (
 const fetchRemoteLoggingConstraintsFromApiGatewayDeserializer = async (
 	response: HttpResponse,
 ): Promise<LoggingConstraints> => {
-	if (response.statusCode === 304) {
+	const { headers, statusCode } = response;
+	if (statusCode === 304) {
 		const cachedConstraints = getLoggingConstraints();
 		if (cachedConstraints) {
 			return cachedConstraints;
 		}
 	}
-	if (response.statusCode >= 300) {
+	if (statusCode >= 300) {
 		const error = await parseJsonError(response);
 		throw error;
 	} else {
+		if (headers.etag) {
+			setLoggingConstraintsETag(headers.etag);
+		}
 		const body = await parseJsonBody(response);
 
 		return body;
 	}
 };
 
+const signedTransferHandler = composeTransferHandler<
+	[SigningOptions],
+	HttpRequest,
+	HttpResponse,
+	typeof fetchTransferHandler
+>(fetchTransferHandler, [signingMiddleware]);
+
 /**
  * @internal
  */
 export const fetchRemoteLoggingConstraintsFromApiGateway = composeServiceApi(
-	authenticatedHandler,
+	signedTransferHandler,
 	fetchRemoteLoggingConstraintsFromApiGatewaySerializer,
 	fetchRemoteLoggingConstraintsFromApiGatewayDeserializer,
-	{
-		service: SERVICE_NAME,
-		endpointResolver: () => '',
-		retryDecider: getRetryDecider(parseJsonError),
-		computeDelay: jitteredBackoff,
-	},
+	{ service: SERVICE_NAME, endpointResolver: () => '' },
 );

@@ -12,5 +12,6 @@ import {
 export class LoggingError extends AmplifyError {
 	constructor(params: AmplifyErrorParams) {
 		super(params);
+		Object.setPrototypeOf(this, LoggingError.prototype);
 	}
 }

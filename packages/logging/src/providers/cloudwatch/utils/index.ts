@@ -3,7 +3,9 @@
 
 export {
 	getLoggingConstraints,
+	getLoggingConstraintsETag,
 	setLoggingConstraints,
+	setLoggingConstraintsETag,
 } from './loggingConstraintsHelpers';
 export { resolveConfig } from './resolveConfig';
 export { resolveCredentials } from './resolveCredentials';
