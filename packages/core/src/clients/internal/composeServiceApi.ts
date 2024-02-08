@@ -51,7 +51,7 @@ export const composeServiceApi = <
 			...resolvedConfig,
 		});
 
-		return await deserializer(response);
+		return deserializer(response);
 	};
 };
 

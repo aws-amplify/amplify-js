@@ -170,7 +170,7 @@ export class PinpointEventBuffer {
 		const { Results = {} } = data.EventsResponse ?? {};
 		const retryableEvents: BufferedEvent[] = [];
 
-		Object.entries(Results).forEach(([endpointId, endpointValues]) => {
+		Object.entries(Results).forEach(([_, endpointValues]) => {
 			const responses = endpointValues.EventsItemResponse ?? {};
 
 			Object.entries(responses).forEach(([eventId, eventValues]) => {
@@ -180,19 +180,6 @@ export class PinpointEventBuffer {
 				}
 
 				const { StatusCode, Message } = eventValues ?? {};
-
-				// manually crafting handlers response to keep API consistant
-				const response = {
-					EventsResponse: {
-						Results: {
-							[endpointId]: {
-								EventsItemResponse: {
-									[eventId]: { StatusCode, Message },
-								},
-							},
-						},
-					},
-				};
 
 				if (StatusCode && ACCEPTED_CODES.includes(StatusCode)) {
 					return;

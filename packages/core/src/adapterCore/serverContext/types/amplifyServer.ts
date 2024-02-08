@@ -4,7 +4,7 @@
 import { AmplifyClass } from '../../../singleton';
 import { LibraryOptions, ResourcesConfig } from '../../../singleton/types';
 
-export namespace AmplifyServer {
+export declare namespace AmplifyServer {
 	export interface ContextToken {
 		readonly value: symbol;
 	}

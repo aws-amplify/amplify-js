@@ -22,11 +22,15 @@ export async function retry<T>(
 		throw Error('functionToRetry must be a function');
 	}
 
+	// TODO(eslint): remove this linter suppression with refactoring.
+	// eslint-disable-next-line no-async-promise-executor
 	return new Promise(async (resolve, reject) => {
 		let attempt = 0;
 		let terminated = false;
 		let timeout: any;
-		let wakeUp: any = () => {}; // will be replaced with a resolver()
+		let wakeUp: any = () => {
+			// no-op
+		}; // will be replaced with a resolver()
 
 		// used after the loop if terminated while waiting for a timer.
 		let lastError: unknown;
@@ -41,6 +45,8 @@ export async function retry<T>(
 				wakeUp();
 			});
 
+		// TODO(eslint): remove this linter suppression with refactoring.
+		// eslint-disable-next-line no-unmodified-loop-condition
 		while (!terminated) {
 			attempt++;
 
@@ -76,8 +82,8 @@ export async function retry<T>(
 
 					return;
 				} else {
-					await new Promise(r => {
-						wakeUp = r; // export wakeUp for onTerminate handling
+					await new Promise(_resolve => {
+						wakeUp = _resolve; // export wakeUp for onTerminate handling
 						timeout = setTimeout(wakeUp, retryIn);
 					});
 				}

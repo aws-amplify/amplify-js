@@ -33,7 +33,6 @@ export const Platform = new PlatformBuilder();
 export const getAmplifyUserAgentObject = ({
 	category,
 	action,
-	framework,
 }: CustomUserAgentDetails = {}): AWSUserAgent => {
 	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (category) {

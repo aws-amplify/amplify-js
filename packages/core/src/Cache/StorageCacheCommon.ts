@@ -523,8 +523,8 @@ export abstract class StorageCacheCommon {
 	private async popOutItems(keys: string[], sizeToPop: number): Promise<void> {
 		const items: any[] = [];
 		let remainedSize = sizeToPop;
-		for (let i = 0; i < keys.length; i += 1) {
-			const val = await this.getStorage().getItem(keys[i]);
+		for (const key of keys) {
+			const val = await this.getStorage().getItem(key);
 			if (val != null) {
 				const item = JSON.parse(val);
 				items.push(item);
@@ -545,10 +545,10 @@ export abstract class StorageCacheCommon {
 			}
 		});
 
-		for (let i = 0; i < items.length; i += 1) {
+		for (const item of items) {
 			// pop out items until we have enough room for new item
-			await this.removeCacheItem(items[i].key, items[i].byteSize);
-			remainedSize -= items[i].byteSize;
+			await this.removeCacheItem(item.key, item.byteSize);
+			remainedSize -= item.byteSize;
 			if (remainedSize <= 0) {
 				return;
 			}

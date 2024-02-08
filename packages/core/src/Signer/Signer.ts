@@ -12,7 +12,7 @@ import { DateUtils } from './DateUtils';
 
 const IOT_SERVICE_NAME = 'iotdevicegateway';
 // Best practice regex to parse the service and region from an AWS endpoint
-const AWS_ENDPOINT_REGEX = /([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com(.cn)?$/;
+const AWS_ENDPOINT_REGEX = /([^.]+)\.(?:([^.]*)\.)?amazonaws\.com(.cn)?$/;
 
 /**
  * This class is intended to be deprecated and replaced by `signRequest` and `presignUrl` functions from

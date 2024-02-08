@@ -48,5 +48,5 @@ export interface CacheItem {
 export interface CacheItemOptions {
 	priority?: number;
 	expires?: number;
-	callback?: Function;
+	callback?(): unknown;
 }

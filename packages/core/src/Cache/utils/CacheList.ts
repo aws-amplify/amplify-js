@@ -146,7 +146,7 @@ export class CacheList {
 	 */
 	public clearList(): void {
 		for (const key of Object.keys(this.hashtable)) {
-			if (this.hashtable.hasOwnProperty(key)) {
+			if (Object.prototype.hasOwnProperty.call(this.hashtable, key)) {
 				delete this.hashtable[key];
 			}
 		}

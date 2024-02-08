@@ -38,8 +38,6 @@ export class ServiceWorkerClass {
 	// The AWS Amplify logger
 	private _logger: ConsoleLogger = new ConsoleLogger('ServiceWorker');
 
-	constructor() {}
-
 	/**
 	 * Get the currently active service worker
 	 */
@@ -150,12 +148,12 @@ export class ServiceWorkerClass {
 							userVisibleOnly: true,
 							applicationServerKey: this._urlB64ToUint8Array(publicKey),
 						})
-							.then(subscription => {
-								this._subscription = subscription;
+							.then(pushManagerSubscription => {
+								this._subscription = pushManagerSubscription;
 								this._logger.debug(
-									`User subscribed: ${JSON.stringify(subscription)}`,
+									`User subscribed: ${JSON.stringify(pushManagerSubscription)}`,
 								);
-								resolve(subscription);
+								resolve(pushManagerSubscription);
 							})
 							.catch(error => {
 								this._logger.error(error);
@@ -180,7 +178,7 @@ export class ServiceWorkerClass {
 	private _urlB64ToUint8Array(base64String: string) {
 		const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 		const base64 = (base64String + padding)
-			.replace(/\-/g, '+')
+			.replace(/-/g, '+')
 			.replace(/_/g, '/');
 
 		const rawData = window.atob(base64);
@@ -214,7 +212,7 @@ export class ServiceWorkerClass {
 	 * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state
 	 **/
 	_setupListeners() {
-		this.serviceWorker.addEventListener('statechange', async event => {
+		this.serviceWorker.addEventListener('statechange', async () => {
 			const currentState = this.serviceWorker.state;
 			this._logger.debug(`ServiceWorker statechange: ${currentState}`);
 

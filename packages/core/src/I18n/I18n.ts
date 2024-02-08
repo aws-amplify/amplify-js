@@ -27,13 +27,6 @@ export class I18n {
 	_dict: Record<string, any> = {};
 
 	/**
-	 * @constructor
-	 * Initialize with configurations
-	 * @param {Object} options
-	 */
-	constructor() {}
-
-	/**
 	 * Sets the default language from the configuration when required.
 	 */
 	setDefaultLanguage() {
@@ -100,12 +93,12 @@ export class I18n {
 			return defVal;
 		}
 
-		const lang_dict = this._dict[language];
-		if (!lang_dict) {
+		const langDict = this._dict[language];
+		if (!langDict) {
 			return defVal;
 		}
 
-		return lang_dict[key];
+		return langDict[key];
 	}
 
 	/**
@@ -118,11 +111,11 @@ export class I18n {
 		language: string,
 		vocabularies: Record<string, any>,
 	) {
-		let lang_dict = this._dict[language];
-		if (!lang_dict) {
-			lang_dict = this._dict[language] = {};
+		let langDict = this._dict[language];
+		if (!langDict) {
+			langDict = this._dict[language] = {};
 		}
-		this._dict[language] = { ...lang_dict, ...vocabularies };
+		this._dict[language] = { ...langDict, ...vocabularies };
 	}
 
 	/**
@@ -132,7 +125,7 @@ export class I18n {
 	 *                                vocabularies of each language as value
 	 */
 	putVocabularies(vocabularies: Record<string, Record<string, string>>) {
-		Object.keys(vocabularies).map(key => {
+		Object.keys(vocabularies).forEach(key => {
 			this.putVocabulariesForLanguage(key, vocabularies[key]);
 		});
 	}

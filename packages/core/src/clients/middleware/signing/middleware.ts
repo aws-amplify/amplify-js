@@ -33,7 +33,7 @@ export interface SigningOptions {
  * Middleware that SigV4 signs request with AWS credentials, and correct system clock offset.
  * This middleware is expected to be placed after retry middleware.
  */
-export const signingMiddleware = ({
+export const signingMiddlewareFactory = ({
 	credentials,
 	region,
 	service,

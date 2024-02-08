@@ -10,8 +10,7 @@ export function angularWebDetect() {
 		documentExists() && document.querySelector('[ng-version]'),
 	);
 	const angularContentSetInWindow = Boolean(
-		// @ts-ignore
-		windowExists() && typeof window.ng !== 'undefined',
+		windowExists() && typeof (window as any).ng !== 'undefined',
 	);
 
 	return angularVersionSetInDocument || angularContentSetInWindow;

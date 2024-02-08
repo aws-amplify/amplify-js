@@ -15,7 +15,7 @@ export interface UserAgentOptions {
  *
  * TODO: incorporate new user agent design
  */
-export const userAgentMiddleware: Middleware<
+export const userAgentMiddlewareFactory: Middleware<
 	HttpRequest,
 	HttpResponse,
 	UserAgentOptions

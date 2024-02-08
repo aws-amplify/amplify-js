@@ -26,7 +26,7 @@ export const composeTransferHandler =
 			Request,
 			Response,
 			any
-		> = TransferHandler<Request, Response, {}>,
+		> = TransferHandler<Request, Response, Record<string, unknown>>,
 	>(
 		coreHandler: CoreHandler,
 		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>,
@@ -39,8 +39,8 @@ export const composeTransferHandler =
 	) => {
 		const context = {};
 		let composedHandler: MiddlewareHandler<Request, Response> = (
-			request: Request,
-		) => coreHandler(request, options);
+			composeHandlerRequest: Request,
+		) => coreHandler(composeHandlerRequest, options);
 		for (let i = middleware.length - 1; i >= 0; i--) {
 			const m = middleware[i];
 			const resolvedMiddleware = m(options);

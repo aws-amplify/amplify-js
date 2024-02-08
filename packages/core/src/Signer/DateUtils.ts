@@ -50,7 +50,7 @@ export const DateUtils: DateUtils = {
 	},
 
 	getHeaderStringFromDate(date: Date = DateUtils.getDateWithClockOffset()) {
-		return date.toISOString().replace(/[:\-]|\.\d{3}/g, '');
+		return date.toISOString().replace(/[:-]|\.\d{3}/g, '');
 	},
 
 	getDateFromHeaderString(header: string) {

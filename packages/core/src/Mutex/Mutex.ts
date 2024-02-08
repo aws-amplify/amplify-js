@@ -55,7 +55,11 @@ export class Mutex implements MutexInterface {
 			}
 
 			return Promise.resolve(result).then(
-				(x: T) => (release(), x),
+				(x: T) => {
+					release();
+
+					return x;
+				},
 				e => {
 					release();
 					throw e;

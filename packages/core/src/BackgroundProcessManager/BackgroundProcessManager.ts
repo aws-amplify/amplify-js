@@ -30,13 +30,6 @@ export class BackgroundProcessManager {
 	private jobs = new Set<JobEntry>();
 
 	/**
-	 * Creates a new manager for promises, observables, and other types
-	 * of work that may be running in the background. This manager provides
-	 * a centralized mechanism to request termination and await completion.
-	 */
-	constructor() {}
-
-	/**
 	 * Executes an async `job` function, passing the return value through to
 	 * the caller, registering it as a running job in the manager. When the
 	 * manager *closes*, it will `await` the job.
@@ -196,7 +189,7 @@ export class BackgroundProcessManager {
 	}
 
 	private addManager(manager: BackgroundProcessManager, description?: string) {
-		this.addCleaner(async () => await manager.close(), description);
+		this.addCleaner(async () => manager.close(), description);
 	}
 
 	/**
@@ -212,22 +205,22 @@ export class BackgroundProcessManager {
 	private addHook(description?: string) {
 		// the resolve/reject functions we'll provide to the caller to signal
 		// the state of the job.
-		let resolve!: (value?: unknown) => void;
-		let reject!: (reason?: any) => void;
+		let promiseResolve!: (value?: unknown) => void;
+		let promiseReject!: (reason?: any) => void;
 
 		// the underlying promise we'll use to manage it, pretty much like
 		// any other promise.
-		const promise = new Promise((res, rej) => {
-			resolve = res;
-			reject = rej;
+		const promise = new Promise((resolve, reject) => {
+			promiseResolve = resolve;
+			promiseReject = reject;
 		});
 
 		// the function we call when we want to try to terminate this job.
 		let terminate;
 
 		// the promise the job can opt into listening to for termination.
-		const onTerminate = new Promise(resolveTerminate => {
-			terminate = resolveTerminate;
+		const onTerminate = new Promise(resolve => {
+			terminate = resolve;
 		});
 
 		this.registerPromise(
@@ -237,8 +230,8 @@ export class BackgroundProcessManager {
 		);
 
 		return {
-			resolve,
-			reject,
+			resolve: promiseResolve,
+			reject: promiseReject,
 			onTerminate,
 		};
 	}

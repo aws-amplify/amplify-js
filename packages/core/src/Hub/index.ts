@@ -134,10 +134,7 @@ export class HubClass {
 	 * @returns A function which can be called to cancel the listener.
 	 *
 	 */
-	listen<
-		Channel extends AmplifyChannel,
-		EventData extends EventDataMap = EventDataMap,
-	>(
+	listen<Channel extends AmplifyChannel>(
 		channel: Channel,
 		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
 		listenerName?: string,

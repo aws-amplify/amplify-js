@@ -19,7 +19,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 
 	const openDBPromise = new Promise<
 		ReturnType<typeof loadAsyncStorage> | undefined
-	>((resolve, _) => {
+	>((resolve, _reject) => {
 		try {
 			const asyncStorage = loadAsyncStorage();
 
@@ -32,7 +32,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 
 					return undefined;
 				})
-				.then(_ => {
+				.then(__ => {
 					resolve(asyncStorage);
 				});
 		} catch (err) {

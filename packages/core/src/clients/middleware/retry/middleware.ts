@@ -42,7 +42,7 @@ export interface RetryOptions<TResponse = Response> {
 /**
  * Retry middleware
  */
-export const retryMiddleware = <TInput = Request, TOutput = Response>({
+export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
 	maxAttempts = DEFAULT_RETRY_ATTEMPTS,
 	retryDecider,
 	computeDelay,
@@ -112,12 +112,12 @@ const cancellableSleep = (timeoutMs: number, abortSignal?: AbortSignal) => {
 		return Promise.resolve();
 	}
 	let timeoutId: ReturnType<typeof setTimeout>;
-	let sleepPromiseResolveFn: Function;
+	let sleepPromiseResolveFn: () => void;
 	const sleepPromise = new Promise<void>(resolve => {
 		sleepPromiseResolveFn = resolve;
 		timeoutId = setTimeout(resolve, timeoutMs);
 	});
-	abortSignal?.addEventListener('abort', function cancelSleep(event) {
+	abortSignal?.addEventListener('abort', function cancelSleep(_) {
 		clearTimeout(timeoutId);
 		abortSignal?.removeEventListener('abort', cancelSleep);
 		sleepPromiseResolveFn();

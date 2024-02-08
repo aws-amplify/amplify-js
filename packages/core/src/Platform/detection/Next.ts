@@ -6,8 +6,11 @@ import { globalExists, keyPrefixMatch, windowExists } from './helpers';
 // Tested with next 13.4 / react 18.2
 
 export function nextWebDetect() {
-	// @ts-ignore
-	return windowExists() && window.next && typeof window.next === 'object';
+	return (
+		windowExists() &&
+		(window as any).next &&
+		typeof (window as any).next === 'object'
+	);
 }
 
 export function nextSSRDetect() {

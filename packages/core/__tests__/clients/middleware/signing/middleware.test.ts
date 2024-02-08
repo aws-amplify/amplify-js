@@ -3,7 +3,7 @@
 
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
 import {
-	signingMiddleware,
+	signingMiddlewareFactory,
 	SigningOptions,
 } from '../../../../src/clients/middleware/signing';
 import { getSkewCorrectedDate } from '../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate';
@@ -50,7 +50,7 @@ describe('Signing middleware', () => {
 	const getSignableHandler = (nextHandler: MiddlewareHandler<any, any>) =>
 		composeTransferHandler<[SigningOptions], HttpRequest, HttpResponse>(
 			nextHandler,
-			[signingMiddleware]
+			[signingMiddlewareFactory]
 		);
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -125,7 +125,7 @@ describe('Signing middleware', () => {
 			},
 		});
 
-		const middlewareFunction = signingMiddleware(defaultSigningOptions)(
+		const middlewareFunction = signingMiddlewareFactory(defaultSigningOptions)(
 			nextHandler
 		);
 

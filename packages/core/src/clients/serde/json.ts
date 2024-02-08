@@ -18,7 +18,7 @@ export const parseJsonError: ErrorParser = async (response?: HttpResponse) => {
 	}
 	const body = await parseJsonBody(response);
 	const sanitizeErrorCode = (rawValue: string | number): string => {
-		const [cleanValue] = rawValue.toString().split(/[\,\:]+/);
+		const [cleanValue] = rawValue.toString().split(/[,:]+/);
 		if (cleanValue.includes('#')) {
 			return cleanValue.split('#')[1];
 		}
