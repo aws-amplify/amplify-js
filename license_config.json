@@ -1,0 +1,53 @@
+{
+	"ignore": [
+		"NOTICE",
+		".github",
+		"yarn.lock",
+		"**/*.config.dev.js",
+		"**/*.config.js",
+		"**/*.d.ts",
+		"**/*.html",
+		"**/*.jar",
+		"**/jest.setup.js",
+		"**/*.json",
+		"**/*.md",
+		"**/*.plist",
+		"**/*.podspec",
+		"**/*.properties",
+		"**/*.sh",
+		"**/*.snap",
+		"**/*.tsx",
+		"**/*.xml",
+		"**/*.yml",
+		"**/.*",
+		"**/android",
+		"**/coverage",
+		"**/coverage-ts",
+		"**/dist",
+		"**/docs",
+		"**/ios",
+		"**/lib",
+		"**/lib-esm",
+		"**/node_modules",
+		"**/pushnotification",
+		"**/polyfills/URL/*.js",
+		"**/BigInteger.ts",
+		"**/vendor",
+		"**/__tests__",
+		"**/__mocks__",
+		"**/Gemfile",
+		"**/.rollup.cache",
+		"**/rollup.config.mjs",
+		"rollup"
+	],
+	"ignoreFile": ".gitignore",
+	"license": "license_header.txt",
+	"licenseFormats": {
+		"js|ts|kt|java": {
+			"eachLine": {
+				"prepend": "// "
+			}
+		}
+	},
+	"trailingWhitespace": "TRIM"
+}

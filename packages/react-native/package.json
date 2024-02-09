@@ -1,0 +1,63 @@
+{
+	"name": "@aws-amplify/react-native",
+	"version": "1.0.16",
+	"description": "React Native core module for aws-amplify",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./src/index.ts",
+	"typings": "./dist/esm/index.d.ts",
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "tslint 'src/**/*.ts'",
+		"test:android": "./android/gradlew test -p ./android",
+		"build-with-test": "npm run clean && npm test && tsc",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs",
+		"clean": "rimraf lib-esm lib dist",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
+	},
+	"dependencies": {
+		"base-64": "^1.0.0",
+		"buffer": "^6.0.3",
+		"react-native-url-polyfill": "^2.0.0"
+	},
+	"peerDependencies": {
+		"react-native": ">=0.70",
+		"react-native-get-random-values": ">=1.9.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/rtn-push-notification": "1.2.16",
+		"@aws-amplify/rtn-web-browser": "1.0.16",
+		"@react-native-async-storage/async-storage": "^1.17.12",
+		"@react-native-community/netinfo": "4.7.0",
+		"@types/base-64": "1.0.0",
+		"react-native": "0.71.0",
+		"react-native-get-random-values": "1.9.0",
+		"typescript": "5.1.6"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws-amplify/amplify-js/issues"
+	},
+	"homepage": "https://docs.amplify.aws/",
+	"files": [
+		"Amplify*.podspec",
+		"android",
+		"ios",
+		"dist/cjs",
+		"dist/esm",
+		"src"
+	],
+	"source": "src/index"
+}

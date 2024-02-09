@@ -1,0 +1,48 @@
+name: Set Node and Build
+description: Checks out Amplify and builds the package
+inputs:
+  is-prebuild:
+    required: false
+    default: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js 18
+      uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+      with:
+        node-version: 18
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+    - uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+      id: cache-build-artifacts
+      with:
+        path: |
+          **/node_modules
+          **/dist
+          **/lib
+          **/lib-esm/
+          **/es/
+          **/esm/
+          **/cjs/
+          **/packages/core/src/Platform/version.ts
+        key: ${{ runner.os }}-build-artifacts-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-artifacts-
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+    # TODO We should be able to skip yarn / bootstrap if we cache enough things. Leaving because skipping causes issues.
+    - name: Install
+      if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
+      run: yarn
+      shell: bash
+      working-directory: ./amplify-js
+    - name: Bootstrap
+      if: inputs.is-prebuild != 'true' || steps.cache-build-artifacts.outputs.cache-hit != 'true'
+      run: yarn bootstrap
+      shell: bash
+      working-directory: ./amplify-js
+    - name: Build packages
+      if: steps.cache-build-artifacts.outputs.cache-hit != 'true'
+      run: yarn build
+      shell: bash
+      working-directory: ./amplify-js

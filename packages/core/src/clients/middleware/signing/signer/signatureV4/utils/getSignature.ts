@@ -27,10 +27,11 @@ export const getSignature = (
 		shortDate,
 		signingRegion,
 		signingService,
+		uriEscapePath,
 	}: SigningValues
 ): string => {
 	// step 1: create a canonical request
-	const canonicalRequest = getCanonicalRequest(request);
+	const canonicalRequest = getCanonicalRequest(request, uriEscapePath);
 
 	// step 2: create a hash of the canonical request
 	const hashedRequest = getHashedDataAsHex(null, canonicalRequest);

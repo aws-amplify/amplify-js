@@ -1,7 +1,10 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import {
+	AmplifyError,
+	Category,
+	DataStoreAction,
+} from '@aws-amplify/core/internals/utils';
 import { defaultAuthStrategy } from '../src/authModeStrategies';
-import { USER_AGENT_SUFFIX_DATASTORE } from '../src/util';
 let mockGraphQl;
 
 const sessionStorageMock = (() => {
@@ -43,7 +46,7 @@ const defaultQuery = `query {
 const defaultVariables = {};
 const defaultOpName = 'syncPosts';
 const defaultModelDefinition = { name: 'Post' };
-const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
+const defaultAuthMode = 'userPool';
 
 describe('Sync', () => {
 	describe('jitteredRetry', () => {
@@ -177,6 +180,7 @@ describe('Sync', () => {
 			});
 		});
 
+		// TODO(v6) Re-enable test
 		it('should throw error if no data is returned', async () => {
 			const rejectResponse = {
 				data: null,
@@ -209,7 +213,11 @@ describe('Sync', () => {
 				data: null,
 				errors: [
 					{
-						message: 'Request failed with status code 403',
+						originalError: {
+							$metadata: {
+								httpStatusCode: 403,
+							},
+						},
 					},
 				],
 			};
@@ -262,7 +270,7 @@ describe('Sync', () => {
 			});
 		});
 
-		it('should send user agent suffix with graphql request', async () => {
+		it('should send datastore user agent details with graphql request', async () => {
 			const resolveResponse = {
 				data: {
 					syncPosts: {
@@ -291,11 +299,10 @@ describe('Sync', () => {
 				modelDefinition: defaultModelDefinition,
 			});
 
-			expect(mockGraphQl).toHaveBeenCalledWith(
-				expect.objectContaining({
-					userAgentSuffix: USER_AGENT_SUFFIX_DATASTORE,
-				})
-			);
+			expect(mockGraphQl).toHaveBeenCalledWith(expect.anything(), undefined, {
+				category: Category.DataStore,
+				action: DataStoreAction.GraphQl,
+			});
 		});
 	});
 
@@ -389,7 +396,11 @@ describe('Sync', () => {
 					data,
 					errors: [
 						{
-							message: 'Error: Request failed with status code 500',
+							originalError: {
+								$metadata: {
+									httpStatusCode: 500,
+								},
+							},
 						},
 					],
 				},
@@ -435,24 +446,30 @@ function jitteredRetrySyncProcessorSetup({
 			})
 	);
 	// mock graphql to return a mockable observable
-	jest.mock('@aws-amplify/api', () => {
-		const actualAPIModule = jest.requireActual('@aws-amplify/api');
-		const actualAPIInstance = actualAPIModule.API;
+	jest.mock('@aws-amplify/api/internals', () => {
+		const actualInternalAPIModule = jest.requireActual(
+			'@aws-amplify/api/internals'
+		);
+		const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
 		return {
-			...actualAPIModule,
-			API: {
-				...actualAPIInstance,
+			...actualInternalAPIModule,
+			InternalAPI: {
+				...actualInternalAPIInstance,
 				graphql: mockGraphQl,
 			},
 		};
 	});
 
-	jest.mock('@aws-amplify/core', () => ({
-		...jest.requireActual('@aws-amplify/core'),
+	jest.mock('@aws-amplify/core/internals/utils', () => ({
+		...jest.requireActual('@aws-amplify/core/internals/utils'),
 		// No need to retry any thrown errors right now,
 		// so we're overriding jitteredExponentialRetry
 		jitteredExponentialRetry: (fn, args) => fn(...args),
+	}));
+
+	jest.mock('@aws-amplify/core', () => ({
+		...jest.requireActual('@aws-amplify/core'),
 		...coreMocks,
 	}));
 

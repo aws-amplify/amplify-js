@@ -1,110 +1,104 @@
 {
-  "name": "@aws-amplify/auth",
-  "version": "5.3.6",
-  "description": "Auth category of aws-amplify",
-  "main": "./lib/index.js",
-  "module": "./lib-esm/index.js",
-  "typings": "./lib-esm/index.d.ts",
-  "react-native": {
-    "./lib/index": "./lib-esm/index.js"
-  },
-  "sideEffects": [
-    "./lib/Auth.js",
-    "./lib-esm/Auth.js"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "test": "yarn lint --fix && jest -w 1 --coverage",
-    "test:size": "size-limit",
-    "build-with-test": "npm test && npm run build",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
-    "build:cjs:watch": "node ./build es5 --watch",
-    "build:esm:watch": "node ./build es6 --watch",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "npm run clean:size && rimraf lib-esm lib dist",
-    "clean:size": "rimraf dual-publish-tmp tmp*",
-    "format": "echo \"Not implemented\"",
-    "lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
-    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 77.44"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
-  },
-  "homepage": "https://aws-amplify.github.io/",
-  "files": [
-    "lib",
-    "lib-esm",
-    "src"
-  ],
-  "dependencies": {
-    "@aws-amplify/core": "5.3.0",
-    "amazon-cognito-identity-js": "6.2.0",
-    "tslib": "^1.8.0"
-  },
-  "devDependencies": {
-    "@jest/test-sequencer": "^24.9.0"
-  },
-  "size-limit": [
-    {
-      "name": "Auth (top-level class)",
-      "path": "./lib-esm/index.js",
-      "import": "{ Amplify, Auth }",
-      "limit": "73 kB"
-    }
-  ],
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": true,
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
-        }
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "preset": "ts-jest",
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "dist",
-      "lib",
-      "lib-esm"
-    ],
-    "testSequencer": "./testSequencer.js"
-  }
+	"name": "@aws-amplify/auth",
+	"version": "6.0.16",
+	"description": "Auth category of aws-amplify",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./src/index.ts",
+	"sideEffects": [
+		"./dist/cjs/providers/cognito/apis/signInWithRedirect.js",
+		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs",
+		"./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js",
+		"./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "yarn lint --fix && jest -w 1 --coverage --logHeapUsage",
+		"build-with-test": "npm test && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint '{src}/**/*.ts' && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 91.18"
+	},
+	"typesVersions": {
+		">=4.2": {
+			"cognito": [
+				"./dist/esm/providers/cognito/index.d.ts"
+			],
+			"cognito/server": [
+				"./dist/esm/providers/cognito/apis/server/index.d.ts"
+			],
+			"server": [
+				"./dist/esm/server.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
+		},
+		"./cognito": {
+			"types": "./dist/esm/providers/cognito/index.d.ts",
+			"import": "./dist/esm/providers/cognito/index.mjs",
+			"require": "./dist/cjs/providers/cognito/index.js",
+			"react-native": "./src/providers/cognito/index.ts"
+		},
+		"./cognito/server": {
+			"types": "./dist/esm/providers/cognito/apis/server/index.d.ts",
+			"import": "./dist/esm/providers/cognito/apis/server/index.mjs",
+			"require": "./dist/cjs/providers/cognito/apis/server/index.js"
+		},
+		"./server": {
+			"types": "./dist/esm/server.d.ts",
+			"import": "./dist/esm/server.mjs",
+			"require": "./dist/cjs/server.js"
+		},
+		"./enable-oauth-listener": {
+			"types": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.d.ts",
+			"import": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs",
+			"require": "./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"dist/cjs",
+		"dist/esm",
+		"src",
+		"cognito",
+		"server",
+		"enable-oauth-listener"
+	],
+	"dependencies": {
+		"tslib": "^2.5.0"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/core": "6.0.16",
+		"@aws-amplify/react-native": "1.0.16",
+		"@jest/test-sequencer": "^29.7.0",
+		"typescript": "5.0.2"
+	}
 }

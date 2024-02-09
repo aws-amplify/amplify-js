@@ -48,12 +48,12 @@ Our work is done directly on Github and PR's are sent to the GitHub repo by core
 
 ## Setting up for local development
 
+This section should get you running with **Amplify JS** and get you familiar with the basics of the codebase. You will need [Node.js](https://nodejs.org/en/) on your system and developing locally also requires `yarn` workspaces. You can install it [here](https://classic.yarnpkg.com/en/docs/install#mac-stable).
+
 The recommended version of Node JS to work with this project is [`16.19.0`](https://nodejs.org/en/blog/release/v16.19.0/) with Yarn version [`1.22.x`](https://github.com/yarnpkg/yarn/blob/master/CHANGELOG.md).
 
 > Note: newer versions of Yarn (2+) remove support for lerna's `--mutex` flag
 > so be sure to use Yarn v1.22.x
-
-This section should get you running with **Amplify JS** and get you familiar with the basics of the codebase. You will need the latest version of [Node.js](https://nodejs.org/en/) on your system and developing locally also requires `yarn` workspaces. You can install it [here](https://classic.yarnpkg.com/en/docs/install#mac-stable).
 
 Start by [forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the main branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
 
@@ -153,7 +153,7 @@ Optionally, you can use the shorthands flags `-p` and `-t` for packages and targ
 To develop multiple/all packages, provide the package names separated by a comma or the flag `--all` or `-a`:
 
 ```
-npm run setup-dev:react-native -- --packages @aws-amplify/auth,aws-amplify-react-native --target ~/path/to/your/rn/app/root
+npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
 npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
 ```
 
@@ -177,7 +177,7 @@ To publish in Verdaccio, start a Verdaccio instance and then,
 
 ```
 yarn config set registry http://localhost:4873/
-yarn lerna publish --no-git-tag-version --no-push --force-publish
+yarn publish:verdaccio
 ```
 
 To publish a local version of a specific package,

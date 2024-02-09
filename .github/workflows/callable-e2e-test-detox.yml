@@ -1,0 +1,77 @@
+name: E2E Test - Detox
+run-name: e2e-detox.${{ inputs.test_name }}
+
+on:
+  workflow_call:
+    inputs:
+      test_name:
+        required: true
+        type: string
+      working_directory:
+        required: true
+        type: string
+      timeout_minutes:
+        required: true
+        type: number
+
+jobs:
+  e2e-test:
+    name: E2E-Detox ${{ inputs.test_name }}
+    runs-on: macos-latest
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+      - name: Setup samples staging repository
+        uses: ./amplify-js/.github/actions/setup-samples-staging
+        with:
+          GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
+      - name: Load Verdaccio with AmplifyJs
+        uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
+      - name: Yarn Install
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          echo "Current NPM registry: " $(yarn config get registry)
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
+        shell: bash
+      - name: Install CocoaPods
+        run: |
+          cd ios && pod install
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
+      - name: Start iOS simulator (background)
+        run: |
+          xcrun simctl boot "iPhone 11" &
+        shell: bash
+      - name: Start Metro Packager (background)
+        run: |
+          yarn start &
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
+      - name: Configure Detox
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
+          yarn global add detox-cli
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
+      - name: Detox Build
+        run: |
+          detox build -c ios.sim.debug
+        env:
+          JEST_JUNIT_OUTPUT_DIR: reports/junit
+          JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
+      - name: Detox run
+        run: |
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash

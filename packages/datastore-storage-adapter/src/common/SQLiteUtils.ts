@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	InternalSchema,
 	SchemaModel,
@@ -410,7 +412,7 @@ export function orderByClauseFromSort<T extends PersistentModel>(
 ): string {
 	const orderByParts = sortPredicate.map(
 		({ field, sortDirection }) =>
-			`"${field}" ${sortDirectionMap[sortDirection]}`
+			`"${String(field)}" ${sortDirectionMap[sortDirection]}`
 	);
 
 	// We always sort by _rowid_ last

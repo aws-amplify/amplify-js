@@ -1,4 +1,5 @@
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import * as idb from 'idb';
 import {
 	isPredicateObj,
@@ -23,8 +24,9 @@ import {
 	isSafariCompatabilityMode,
 } from '../../util';
 import { StorageAdapterBase } from './StorageAdapterBase';
+import { ConsoleLogger } from '@aws-amplify/core';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 /**
  * The point after which queries composed of multiple simple OR conditions

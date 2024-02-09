@@ -12,7 +12,7 @@
 				"limit": 120
 			}
 		],
-		"no-empty-interface": true,
+		"no-empty-interface": false,
 		"no-var-keyword": true,
 		"object-literal-shorthand": true,
 		"no-eval": true,

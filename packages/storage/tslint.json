@@ -1,19 +1,27 @@
 {
+	"linterOptions": {
+		"exclude": ["src/providers/s3/utils/client/types.ts"]
+	},
 	"defaultSeverity": "error",
 	"plugins": ["prettier"],
 	"extends": [],
 	"jsRules": {},
 	"rules": {
 		"prefer-const": true,
-		"max-line-length": [true, 120],
-		"no-empty-interface": true,
+		"max-line-length": [
+			true,
+			{
+				"limit": 120,
+				"ignore-pattern": "//"
+			}
+		],
 		"no-var-keyword": true,
 		"object-literal-shorthand": true,
 		"no-eval": true,
 		"space-before-function-paren": [
 			true,
 			{
-				"anonymous": "never",
+				"anonymous": "ignore",
 				"named": "never"
 			}
 		],

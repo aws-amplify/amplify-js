@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/storage",
+	"main": "../dist/cjs/storage/index.js",
+	"react-native": "../src/storage/index.ts",
+	"browser": "../dist/esm/storage/index.mjs",
+	"module": "../dist/esm/storage/index.mjs",
+	"typings": "../dist/esm/storage/index.d.ts"
+}

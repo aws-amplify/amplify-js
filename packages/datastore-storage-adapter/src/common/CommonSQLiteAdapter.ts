@@ -1,4 +1,6 @@
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	generateSchemaStatements,
 	queryByIdStatement,
@@ -37,7 +39,7 @@ import {
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 export class CommonSQLiteAdapter implements StorageAdapter {
 	private schema: InternalSchema;
@@ -83,8 +85,8 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			const usesCPKCodegen = Object.values(
 				this.schema.namespaces.user.models
 			).some(model =>
-				Object.values(model.fields).some(field =>
-					field.association?.hasOwnProperty('targetNames')
+				Object.values(model.fields).some(
+					field => field.association?.hasOwnProperty('targetNames')
 				)
 			);
 			if (usesCPKCodegen) {

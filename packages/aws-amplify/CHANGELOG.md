@@ -3,6 +3,132 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.0.16 (2024-02-09)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.15 (2024-02-06)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.14 (2024-02-01)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.13 (2024-01-22)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.12 (2024-01-12)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.11 (2024-01-10)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.10 (2024-01-04)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.9 (2023-12-22)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.8 (2023-12-18)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.7 (2023-12-12)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.6 (2023-12-05)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.5 (2023-11-22)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.4 (2023-11-20)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.3 (2023-11-16)
+
+**Note:** Version bump only for package aws-amplify
+
+## 6.0.2 (2023-11-13)
+
+**Note:** Version bump only for package aws-amplify
+
+## 5.3.10 (2023-08-23)
+
+**Note:** Version bump only for package aws-amplify
+
+## 5.3.9 (2023-08-22)
+
+**Note:** Version bump only for package aws-amplify
+
+## 5.3.8 (2023-08-17)
+
+**Note:** Version bump only for package aws-amplify
+
+## 5.3.7 (2023-08-10)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.3.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.5...aws-amplify@5.3.6) (2023-07-31)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.3.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.4...aws-amplify@5.3.5) (2023-07-20)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.3.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.3...aws-amplify@5.3.4) (2023-07-13)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.3.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.2...aws-amplify@5.3.3) (2023-06-28)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.3.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.1...aws-amplify@5.3.2) (2023-06-27)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.3.0...aws-amplify@5.3.1) (2023-06-21)
+
+**Note:** Version bump only for package aws-amplify
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.7...aws-amplify@5.3.0) (2023-06-20)
+
+### Features
+
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+
+## [5.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.6...aws-amplify@5.2.7) (2023-06-15)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.5...aws-amplify@5.2.6) (2023-06-14)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.4...aws-amplify@5.2.5) (2023-06-05)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.3...aws-amplify@5.2.4) (2023-05-27)
+
+**Note:** Version bump only for package aws-amplify
+
+## [5.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.2...aws-amplify@5.2.3) (2023-05-25)
+
+**Note:** Version bump only for package aws-amplify
+
 ## [5.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@5.2.1...aws-amplify@5.2.2) (2023-05-18)
 
 **Note:** Version bump only for package aws-amplify

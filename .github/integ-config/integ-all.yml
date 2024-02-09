@@ -1,0 +1,748 @@
+minimal_browser_list: &minimal_browser_list
+  - chrome
+  - firefox
+
+extended_browser_list: &extended_browser_list
+  - chrome
+  - firefox
+  - edge
+
+tests:
+  # DATASTORE
+  - test_name: integ_datastore_auth-owner-based-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: owner-based-default
+    spec: owner-based-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-static-user-pool-groups-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: static-user-pool-groups-default
+    spec: static-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-static-user-pool-groups-operations
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: static-user-pool-groups-operations
+    spec: static-user-pool-groups-operations
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-owner-and-group-different-models-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: owner-and-group-different-models-default
+    spec: owner-and-group-different-models-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-owner-and-group-same-model-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: owner-and-group-same-model-default
+    spec: owner-and-group-same-model-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-owner-and-group-same-model-operations
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: owner-and-group-same-model-operations
+    spec: owner-and-group-same-model-operations
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-dynamic-user-pool-groups-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: dynamic-user-pool-groups-default
+    spec: dynamic-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-dynamic-user-pool-groups-owner-based-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: dynamic-user-pool-groups-owner-based-default
+    spec: dynamic-user-pool-groups-owner-based-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-private-auth-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: private-auth-default
+    spec: private-auth-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-private-auth-iam
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: private-auth-iam
+    spec: private-auth-iam
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-public-auth-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: public-auth-default
+    spec: public-auth-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-public-auth-iam
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: public-auth-iam
+    spec: public-auth-iam
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-owner-custom-claim-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: owner-custom-claim-default
+    spec: owner-custom-claim-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth-owner-custom-field-default
+    desc: 'DataStore Auth'
+    framework: react
+    category: datastore
+    sample_name: owner-custom-field-default
+    spec: owner-custom-field-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-based-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-based-default-v2
+    spec: owner-based-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-static-user-pool-groups-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/static-user-pool-groups-default-v2
+    spec: static-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-static-user-pool-groups-operations
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/static-user-pool-groups-operations-v2
+    spec: static-user-pool-groups-operations
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-and-group-different-models-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-and-group-different-models-default-v2
+    spec: owner-and-group-different-models-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-and-group-same-model-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-and-group-same-model-default-v2
+    spec: owner-and-group-same-model-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-and-group-same-model-operations
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-and-group-same-model-operations-v2
+    spec: owner-and-group-same-model-operations
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-dynamic-user-pool-groups-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/dynamic-user-pool-groups-default-v2
+    spec: dynamic-user-pool-groups-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-dynamic-user-pool-groups-owner-based-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/dynamic-user-pool-groups-owner-based-default-v2
+    spec: dynamic-user-pool-groups-owner-based-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-private-auth-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/private-auth-default-v2
+    spec: private-auth-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-private-auth-iam
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/private-auth-iam-v2
+    spec: private-auth-iam
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-public-auth-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/public-auth-default-v2
+    spec: public-auth-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-public-auth-iam
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/public-auth-iam-v2
+    spec: public-auth-iam
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-custom-claim-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-custom-claim-default-v2
+    spec: owner-custom-claim-default
+    browser: *minimal_browser_list
+  - test_name: integ_datastore_auth_v2-owner-custom-field-default
+    desc: 'DataStore Auth CLI v2'
+    framework: react
+    category: datastore
+    sample_name: v2/owner-custom-field-default-v2
+    spec: owner-custom-field-default
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore
+    desc: 'React DataStore'
+    framework: react
+    category: datastore
+    sample_name: [many-to-many]
+    spec: many-to-many
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_v2
+    desc: 'React DataStore CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/many-to-many-v2]
+    spec: many-to-many
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_one_rule
+    desc: 'React DataStore Multi-Auth - One Rule'
+    framework: react
+    category: datastore
+    sample_name: [multi-auth]
+    spec: multi-auth-one-rule
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_one_rule_v2
+    desc: 'React DataStore Multi-Auth - One Rule CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-v2]
+    spec: multi-auth-one-rule
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_one_rule_oidc_v2
+    desc: 'React DataStore Multi-Auth OIDC - One Rule CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-oidc-v2]
+    spec: multi-auth-one-rule-oidc
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_two_rules
+    desc: 'React DataStore Multi-Auth - Two Rules'
+    framework: react
+    category: datastore
+    sample_name: [multi-auth]
+    spec: multi-auth-two-rules
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_two_rules_v2
+    desc: 'React DataStore Multi-Auth - Two Rules CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-v2]
+    spec: multi-auth-two-rules
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_two_rules_oidc_v2
+    desc: 'React DataStore Multi-Auth OIDC - Two Rules CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-oidc-v2]
+    spec: multi-auth-two-rules-oidc
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_three_plus_rules
+    desc: 'React DataStore Multi-Auth - Three Plus Rules'
+    framework: react
+    category: datastore
+    sample_name: [multi-auth]
+    spec: multi-auth-three-plus-rules
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_multi_auth_three_plus_rules_v2
+    desc: 'React DataStore Multi-Auth - Three Plus Rules CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/multi-auth-v2]
+    spec: multi-auth-three-plus-rules
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_subs_disabled
+    desc: 'DataStore - Subs Disabled'
+    framework: react
+    category: datastore
+    sample_name: [subs-disabled]
+    spec: subs-disabled
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_subs_disabled_v2
+    desc: 'DataStore - Subs Disabled CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/subs-disabled-v2]
+    spec: subs-disabled
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_consecutive_saves
+    desc: 'DataStore - Subs Disabled'
+    framework: react
+    category: datastore
+    sample_name: [consecutive-saves]
+    spec: consecutive-saves
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_consecutive_saves_v2
+    desc: 'DataStore - Subs Disabled CLI v2'
+    framework: react
+    category: datastore
+    sample_name: [v2/consecutive-saves-v2]
+    spec: consecutive-saves
+    browser: *minimal_browser_list
+  # - test_name: integ_react_datastore_observe_query
+  #   desc: 'DataStore - Observe Query'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [observe-query]
+  #   spec: observe-query
+  #   browser: *minimal_browser_list
+  # - test_name: integ_react_datastore_observe_query_v2
+  #   desc: 'DataStore - Observe Query CLI v2'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [v2/observe-query-v2]
+  #   spec: observe-query
+  #   browser: *minimal_browser_list
+  - test_name: integ_react_datastore_schema_drift
+    desc: 'DataStore - Schema Drift'
+    framework: react
+    category: datastore
+    sample_name: [schema-drift]
+    spec: schema-drift
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_background_process_manager
+    desc: 'DataStore - Background Process Manager'
+    framework: react
+    category: datastore
+    sample_name: [v2/background-process-manager]
+    spec: background-process-manager
+    browser: *extended_browser_list
+  # - test_name: integ_react_datastore_background_process_manager_webkit
+  #   desc: 'DataStore - Background Process Manager'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [v2/background-process-manager]
+  #   spec: background-process-manager
+  #   browser: [webkit]
+  - test_name: integ_react_datastore_cpk_related_models
+    desc: 'DataStore - Custom Primary Key + Related Models'
+    framework: react
+    category: datastore
+    sample_name: [v2/related-models]
+    spec: cpk-related-models
+    browser: *extended_browser_list
+  - test_name: integ_react_datastore_selective_sync
+    desc: 'DataStore - Selective Sync'
+    framework: react
+    category: datastore
+    sample_name: [selective-sync-v5]
+    spec: selective-sync-v5
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_nested_predicate
+    desc: 'DataStore - Nested Predicate'
+    framework: react
+    category: datastore
+    sample_name: [nested-predicate]
+    spec: nested-predicate
+    browser: *minimal_browser_list
+  - test_name: integ_react_datastore_docs_examples
+    desc: 'DataStore - Docs Examples'
+    framework: react
+    category: datastore
+    sample_name: [v2/amplify-docs-examples]
+    spec: amplify-docs-examples
+    browser: [chrome]
+  - test_name: integ_react_datastore_websocket_disruption
+    desc: 'DataStore - WebSocket Disruption'
+    framework: react
+    category: datastore
+    sample_name: [websocket-disruption]
+    spec: websocket-disruption
+    browser: *minimal_browser_list
+  - test_name: integ_vanilla_js_datastore_basic_crud
+    desc: 'Vanilla JS + Webpack 4 + DataStore - Basic CRUD'
+    framework: javascript
+    category: datastore
+    sample_name: [basic-crud]
+    browser: [chrome]
+    spec: vanilla-js-basic-crud
+    amplifyjs_dir: true
+  - test_name: integ_next_datastore_13_basic
+    desc: 'DataStore - Nextjs 13 build with SWC - basic JS app'
+    framework: next
+    category: datastore
+    sample_name: [next-13-basic]
+    spec: nextjs-13-basic
+    browser: *minimal_browser_list
+  - test_name: integ_next_datastore_13_js
+    desc: 'DataStore - Nextjs 13 build with SWC - JS app'
+    framework: next
+    category: datastore
+    sample_name: [next-13-js]
+    spec: nextjs-13
+    browser: *minimal_browser_list
+  - test_name: integ_vite_datastore_basic_crud
+    desc: 'Vite + DataStore - Basic CRUD'
+    framework: vite
+    category: datastore
+    sample_name: [v2/basic-crud]
+    spec: vite-basic-crud
+    browser: [chrome]
+  - test_name: integ_rollup_datastore_basic_crud
+    desc: 'Rollup + DataStore - Basic CRUD'
+    framework: rollup
+    category: datastore
+    sample_name: [rollup-basic-crud]
+    spec: rollup-basic-crud
+    browser: [chrome]
+
+  # API
+  - test_name: integ_react_graphql_api
+    desc: React GraphQL API
+    framework: react
+    category: api
+    sample_name: [graphql]
+    spec: graphql
+    browser: *minimal_browser_list
+  - test_name: integ_react_api_optimistic_ui
+    desc: React GraphQL API Optimistic UI with Tan/ReactQuery
+    framework: react
+    category: api
+    sample_name: [optimistic-ui]
+    spec: optimistic-ui
+    browser: *minimal_browser_list
+  - test_name: integ_next_api_data_client_gen2
+    desc: Next.js Data Client Gen 2
+    framework: next
+    category: api
+    sample_name: [data-client-gen2]
+    spec: data-client-gen2
+    browser: [chrome] # Issues using Auth category / setting secure cookies in FF using Cypress with a Next.js app. Manual testing in FF works as expected
+  - test_name: integ_react_rest_api
+    desc: 'Vite + React REST API'
+    framework: vite
+    category: api
+    sample_name: [rest]
+    spec: restful
+    browser: *minimal_browser_list
+
+  # AUTH
+  - test_name: integ_react_javascript_authentication
+    desc: 'React Authentication'
+    framework: react
+    category: auth
+    sample_name: [javascript-auth]
+    spec: functional-auth
+    browser: *minimal_browser_list
+  - test_name: integ_react_auth_1_guest_to_authenticated_user
+    desc: 'Guest to Authenticated User'
+    framework: react
+    category: auth
+    sample_name: [guest-to-auth-user]
+    spec: guest-to-auth-user
+    browser: *minimal_browser_list
+  - test_name: integ_react_typescript_authentication
+    desc: 'React Typescript Authentication'
+    framework: react
+    category: auth
+    sample_name: [typescript-auth]
+    spec: functional-auth
+    browser: *minimal_browser_list
+  - test_name: integ_react_credentials_different_region
+    desc: 'React Credentials Different Region'
+    framework: react
+    category: auth
+    sample_name: [credentials-auth]
+    spec: credentials-auth
+    browser: *minimal_browser_list
+  - test_name: integ_react_auth_2_sign_in_after_sign_up
+    desc: 'Sign In after Sign Up'
+    framework: react
+    category: auth
+    sample_name: [auto-signin-after-signup]
+    spec: auto-signin-after-signup
+    browser: *minimal_browser_list
+  - test_name: integ_react_device_tracking
+    desc: 'cognito-device-tracking'
+    framework: react
+    category: auth
+    sample_name: [device-tracking]
+    spec: device-tracking
+    browser: *minimal_browser_list
+  - test_name: integ_react_delete_user
+    desc: 'delete-user'
+    framework: react
+    category: auth
+    sample_name: [delete-user]
+    spec: delete-user
+    browser: *minimal_browser_list
+  - test_name: integ_next_auth_authenticator_and_ssr_page
+    desc: 'Authenticator and SSR page'
+    framework: next
+    category: auth
+    sample_name: [auth-ssr]
+    spec: auth-ssr
+    browser: [chrome]
+  - test_name: integ_next_auth_authenticator_and_rsc_page
+    desc: 'Authenticator and RSC page'
+    framework: next
+    category: auth
+    sample_name: [auth-rsc]
+    spec: auth-rsc
+    browser: [chrome]
+  - test_name: integ_next_sign_in_with_oauth
+    desc: 'Sign-in with the OAuth flow'
+    framework: next
+    category: auth
+    sample_name: [sign-in-with-oauth]
+    spec: sign-in-with-oauth
+    browser: [chrome]
+
+  # DISABLED Angular/Vue tests:
+  # TODO: delete tests or add custom ui logic to support them.
+
+  # - test_name: integ_angular_auth_angular_authenticator
+  #   desc: 'Angular Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: ui-amplify-authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_angular_auth_angular_custom_authenticator
+  #   desc: 'Angular Custom Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: custom-authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_auth_legacy_vue_authenticator
+  #   desc: 'Legacy Vue Authenticator'
+  #   framework: vue
+  #   category: auth
+  #   sample_name: [amplify-authenticator-legacy]
+  #   spec: authenticator
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_auth_vue_3_authenticator
+  #   desc: 'Vue 3 Authenticator'
+  #   framework: vue
+  #   category: auth
+  #   sample_name: [authenticator-vue3]
+  #   spec: new-ui-authenticator
+  #   browser: *minimal_browser_list
+
+  # DISABLED CDN test:
+  # TODO: delete this test after making sure CDN won't be supported
+
+  # - test_name: integ_javascript_auth
+  #   desc: 'JavaScript Auth CDN'
+  #   framework: javascript
+  #   category: auth
+  #   sample_name: [auth-cdn]
+  #   spec: auth-cdn
+  #   browser: *minimal_browser_list
+  #   amplifyjs_dir: true
+
+  # ANALYTICS
+  - test_name: integ_react_analytics_pinpoint
+    desc: 'Test record and identifyUser calls for pinpoint'
+    framework: react
+    category: analytics
+    sample_name: [pinpoint-test]
+    spec: pinpoint
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_personalize_auth
+    desc: 'Test record API for Personalize with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_personalize_unauth
+    desc: 'Test record API for Personalize with guest user'
+    framework: react
+    category: analytics
+    sample_name: [personalize-test]
+    spec: personalize-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_kinesis_data_firehose_auth
+    desc: 'Test record API for KDF with authenticated user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-firehose-test]
+    spec: kinesis-firehose
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  - test_name: integ_react_analytics_kinesis_data_firehose_unauth
+    desc: 'Test record API for KDF with guest user'
+    framework: react
+    category: analytics
+    sample_name: [kinesis-firehose-test]
+    spec: kinesis-firehose-unauth
+    # Temp fix:
+    browser: *minimal_browser_list
+
+  # GEO
+  - test_name: integ_react_geo_display_map
+    desc: 'Display Map'
+    framework: react
+    category: geo
+    sample_name: [display-map]
+    spec: display-map
+    # Temp fix:
+    browser: [chrome]
+  - test_name: integ_react_geo_search_outside_map
+    desc: 'Search Outside Map'
+    framework: react
+    category: geo
+    sample_name: [search-outside-map]
+    spec: search-outside-map
+    # Temp fix:
+    browser: [chrome]
+  # - test_name: integ_javascript_geo_display_map
+  #   desc: 'Display Map'
+  #   framework: javascript
+  #   category: geo
+  #   sample_name: [display-map-static]
+  #   spec: display-map-static
+  #   browser: *minimal_browser_list
+  #   amplifyjs_dir: true
+  # - test_name: integ_javascript_geo_search_outside_map
+  #   desc: 'Search Outside Map'
+  #   framework: javascript
+  #   category: geo
+  #   sample_name: [search-outside-map-static]
+  #   spec: search-outside-map-static
+  #   browser: *minimal_browser_list
+  #   amplifyjs_dir: true
+
+  # INTERACTIONS
+  # - test_name: integ_react_interactions_react_interactions
+  #   desc: 'React Interactions'
+  #   framework: react
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: *minimal_browser_list
+  - test_name: integ_react_interactions_chatbot_v1
+    desc: 'Chatbot V1'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v1
+    browser: *minimal_browser_list
+  - test_name: integ_react_interactions_chatbot_v2
+    desc: 'Chatbot V2'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v2
+    browser: *minimal_browser_list
+  # - test_name: integ_angular_interactions
+  #   desc: 'Angular Interactions'
+  #   framework: angular
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_interactions_vue_2_interactions
+  #   desc: 'Vue 2 Interactions'
+  #   framework: vue
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: [chrome]
+  # - test_name: integ_vue_interactionsvue_3_interactions
+  #   desc: 'Vue 3 Interactions'
+  #   framework: vue
+  #   category: interactions
+  #   sample_name: [chatbot-component-vue3]
+  #   spec: chatbot-component
+  #   browser: [chrome]
+
+  # PREDICTIONS
+  - test_name: integ_react_predictions
+    desc: 'React Predictions'
+    framework: react
+    category: predictions
+    sample_name: [multi-user-translation]
+    spec: multiuser-translation
+    browser: *minimal_browser_list
+
+  # PUBSUB
+  - test_name: integ_react_iot_reconnect
+    desc: 'PubSub - Reconnection for IoT'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-iot]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
+  - test_name: integ_react_api_reconnect
+    desc: 'PubSub - Reconnection for API'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-api]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
+
+  # STORAGE
+  - test_name: integ_react_storage
+    desc: 'React Storage'
+    framework: react
+    category: storage
+    sample_name: [storageApp]
+    spec: storage
+    browser: *minimal_browser_list
+  - test_name: integ_react_storage_multipart_progress
+    desc: 'React Storage Multi-Part Upload with Progress'
+    framework: react
+    category: storage
+    sample_name: [multi-part-upload-with-progress]
+    spec: multi-part-upload-with-progress
+    browser: *minimal_browser_list
+  - test_name: integ_react_storage_copy
+    desc: 'React Storage Copy'
+    framework: react
+    category: storage
+    sample_name: [multi-part-copy]
+    spec: multi-part-copy
+    browser: *minimal_browser_list
+
+  # INAPPMESSAGING
+  - test_name: integ_in_app_messaging
+    desc: 'React InApp Messaging'
+    framework: react
+    category: in-app-messaging
+    sample_name: [in-app-messaging-app]
+    spec: in-app-messaging
+    browser: *minimal_browser_list
+
+  # - test_name: integ_duplicate_packages
+  #   desc: 'Duplicate Package Errors'
+  #   framework: react
+  #   category: version-conflict
+  #   sample_name: duplicate-packages
+  #   spec: duplicate-packages
+  #   browser: *minimal_browser_list

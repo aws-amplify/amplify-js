@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { MutationEvent } from './index';
 import { ModelPredicateCreator } from '../predicates';
 import {
@@ -13,7 +15,7 @@ import {
 	QueryOne,
 	SchemaModel,
 } from '../types';
-import { USER, SYNC, valuesEqual } from '../util';
+import { USER, SYNC, directedValueEquality } from '../util';
 import { getIdentifierValue, TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
@@ -109,7 +111,9 @@ class MutationEventOutbox {
 			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp!);
 		}
 
-		await storage.delete(head);
+		if (head) {
+			await storage.delete(head);
+		}
 		this.inProgressMutationEventId = undefined!;
 
 		return head;
@@ -167,7 +171,7 @@ class MutationEventOutbox {
 		head: PersistentModel,
 		recordOp: string
 	): Promise<void> {
-		if (head.operation !== recordOp) {
+		if (head?.operation !== recordOp) {
 			return;
 		}
 
@@ -191,10 +195,12 @@ class MutationEventOutbox {
 		// Don't sync the version when the data in the response does not match the data
 		// in the request, i.e., when there's a handled conflict
 		//
-		// NOTE: `incomingData` contains all the fields in the record, and `outgoingData`
-		// only contains updated fields, resulting in an error when doing a comparison
-		// of two equal mutations. Fix this, or mitigate otherwise.
-		if (!valuesEqual(incomingData, outgoingData, true)) {
+		// NOTE: `incomingData` contains all the fields in the record received from AppSync
+		// and `outgoingData` only contains updated fields sent to AppSync
+		// If all send data isn't matched in the returned data then the update was rejected
+		// by AppSync and we should not update the version on other outbox entries for this
+		// object
+		if (!directedValueEquality(outgoingData, incomingData, true)) {
 			return;
 		}
 

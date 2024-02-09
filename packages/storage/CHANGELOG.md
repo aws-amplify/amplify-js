@@ -3,6 +3,174 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.0.16 (2024-02-09)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.15 (2024-02-06)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.14 (2024-02-01)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.13 (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.12 (2024-01-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.11 (2024-01-10)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.10 (2024-01-04)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.9 (2023-12-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.8 (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.7 (2023-12-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.6 (2023-12-05)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.5 (2023-11-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.4 (2023-11-20)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.3 (2023-11-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.2 (2023-11-13)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 5.9.4 (2023-08-23)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 5.9.3 (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 5.9.2 (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 5.9.1 (2023-08-10)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [5.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.8.0...@aws-amplify/storage@5.9.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+- custom user agent Storage changes for UI handoff ([#11627](https://github.com/aws-amplify/amplify-js/issues/11627)) ([b0231af](https://github.com/aws-amplify/amplify-js/commit/b0231af9d7fe631ef9e0e669df7a20802e3a21b3)), closes [#11656](https://github.com/aws-amplify/amplify-js/issues/11656) [#11657](https://github.com/aws-amplify/amplify-js/issues/11657)
+
+# [5.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.7.0...@aws-amplify/storage@5.8.0) (2023-07-20)
+
+### Features
+
+- **storage:** supporting put api when the objectLock is enabled ([#11611](https://github.com/aws-amplify/amplify-js/issues/11611)) ([817a08c](https://github.com/aws-amplify/amplify-js/commit/817a08c8b36efbe103ca2dd25cf65d5369418a4c))
+
+# [5.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.6.3...@aws-amplify/storage@5.7.0) (2023-07-13)
+
+### Bug Fixes
+
+- **s3:** add missing default content-type & support body.text() in RN & optimize retry ([#11537](https://github.com/aws-amplify/amplify-js/issues/11537)) ([33d858d](https://github.com/aws-amplify/amplify-js/commit/33d858d8d0ea112822e8b8289fc15761a053301d))
+- **storage:** custom client base64 encoded SSE-C headers ([#11567](https://github.com/aws-amplify/amplify-js/issues/11567)) ([ee19046](https://github.com/aws-amplify/amplify-js/commit/ee190460c01250b693c163f83be412abf3acc234))
+- **storage:** fail to avoid double signing for presigned URL ([cf51899](https://github.com/aws-amplify/amplify-js/commit/cf51899bee30de86ee9ea583e7cd9225ebcf2dfe))
+- **storage:** missing Size in listParts output ([679d78a](https://github.com/aws-amplify/amplify-js/commit/679d78a3f36fa995a787afb9c802720025e7ef69))
+- **storage:** multipart upload cannot complete ([0175d3d](https://github.com/aws-amplify/amplify-js/commit/0175d3d358bcdf1a5e39bc862f383ed3d44d6135))
+- **storage:** not pass the input to SSE-C serializer output ([#11607](https://github.com/aws-amplify/amplify-js/issues/11607)) ([28bc873](https://github.com/aws-amplify/amplify-js/commit/28bc8739ed6e6e941f893c2d7cf1354ebd65ba9d))
+- **storage:** vault uploads with public level with multipart upload ([416d797](https://github.com/aws-amplify/amplify-js/commit/416d797b0ab2e538bef37b7eb33851c7774ad6b9))
+
+### Features
+
+- **s3:** add s3 transfer handler ([#11482](https://github.com/aws-amplify/amplify-js/issues/11482)) ([53aa94f](https://github.com/aws-amplify/amplify-js/commit/53aa94f95a3959d5e490b17d91c9b65b52847359))
+- **s3:** custom xhr transfer handler ([#11471](https://github.com/aws-amplify/amplify-js/issues/11471)) ([e1f2ca1](https://github.com/aws-amplify/amplify-js/commit/e1f2ca11f0179e51126e42360de19169ffc7c6e2))
+- **s3:** dom based xml parser ([#11300](https://github.com/aws-amplify/amplify-js/issues/11300)) ([f54b603](https://github.com/aws-amplify/amplify-js/commit/f54b603991200ca37cfabd1629f6c5584227e5a8))
+- **s3:** implement listObjectsV2 ([#11504](https://github.com/aws-amplify/amplify-js/issues/11504)) ([0c43bb3](https://github.com/aws-amplify/amplify-js/commit/0c43bb3c3eaff0ed287953b44186a82da9169cd4))
+- **s3:** implement multiparts upload APIs ([#11514](https://github.com/aws-amplify/amplify-js/issues/11514)) ([835b74f](https://github.com/aws-amplify/amplify-js/commit/835b74fa15a143f7490ffcfb7f5811594d5c5a8e))
+- **s3:** implement putObject ([#11513](https://github.com/aws-amplify/amplify-js/issues/11513)) ([9efe09a](https://github.com/aws-amplify/amplify-js/commit/9efe09a3c13a4b51cdd8d8bd1f24599aeb3760e2))
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+- **s3:** support copy/delete/get/head object APIs ([#11515](https://github.com/aws-amplify/amplify-js/issues/11515)) ([3e2c1a9](https://github.com/aws-amplify/amplify-js/commit/3e2c1a94ddcc3cfea1db81ca6a5c3b8075e738b8))
+- **storage:** integrate custom s3 client ([#11542](https://github.com/aws-amplify/amplify-js/issues/11542)) ([fe05494](https://github.com/aws-amplify/amplify-js/commit/fe05494c75ab6d1561863f4dfaf1107bc1f256a6))
+
+## [5.6.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.6.2...@aws-amplify/storage@5.6.3) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.6.1...@aws-amplify/storage@5.6.2) (2023-06-27)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [5.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.6.0...@aws-amplify/storage@5.6.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [5.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.5.0...@aws-amplify/storage@5.6.0) (2023-06-20)
+
+### Bug Fixes
+
+- Storage action enum update ([82a96c9](https://github.com/aws-amplify/amplify-js/commit/82a96c9804797891a2b604ae3d6c82ea48f0a18c))
+- **storage:** Add getProperties user agent action ([#11501](https://github.com/aws-amplify/amplify-js/issues/11501)) ([019b5b1](https://github.com/aws-amplify/amplify-js/commit/019b5b1115bebc92f2c44bbf285d1d916cb08492))
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- Custom user agent improvements for Storage ([#11425](https://github.com/aws-amplify/amplify-js/issues/11425)) ([fd04df4](https://github.com/aws-amplify/amplify-js/commit/fd04df40b6a07a864e2ded443a53f3efdf74931f))
+- user agent enhancements: part1 core ([#11121](https://github.com/aws-amplify/amplify-js/issues/11121)) ([66d1fb5](https://github.com/aws-amplify/amplify-js/commit/66d1fb5a7c3d82621ce9a8c1e880fe81573387ba))
+
+# [5.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.4.1...@aws-amplify/storage@5.5.0) (2023-06-15)
+
+### Features
+
+- **storage:** add getProperties API ([#11469](https://github.com/aws-amplify/amplify-js/issues/11469)) ([f47d472](https://github.com/aws-amplify/amplify-js/commit/f47d472ea021dadb1a04d03295c3c6065155f0c0))
+
+## [5.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.4.0...@aws-amplify/storage@5.4.1) (2023-06-14)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.3.1...@aws-amplify/storage@5.4.0) (2023-06-05)
+
+### Features
+
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.3.0...@aws-amplify/storage@5.3.1) (2023-05-27)
+
+### Reverts
+
+- Revert "feat(storage): getProperties API (#11378)" ([7179636](https://github.com/aws-amplify/amplify-js/commit/7179636b183282c299304501cb5aad2cee942a86)), closes [#11378](https://github.com/aws-amplify/amplify-js/issues/11378)
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.6...@aws-amplify/storage@5.3.0) (2023-05-25)
+
+### Features
+
+- **storage:** getProperties API ([#11378](https://github.com/aws-amplify/amplify-js/issues/11378)) ([3bed12b](https://github.com/aws-amplify/amplify-js/commit/3bed12b6960c676095689ee895c60ae55a041c8c))
+
 ## [5.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.2.5...@aws-amplify/storage@5.2.6) (2023-05-12)
 
 **Note:** Version bump only for package @aws-amplify/storage

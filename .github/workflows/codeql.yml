@@ -1,9 +1,14 @@
 # Ref: https://tinyurl.com/5d6rr8s7
-name: 'CodeQL'
+name: CodeQL
 
 on:
   push:
+    branches: ['*']
   pull_request:
+    branches: ['main', 'next/main', 'next/release']
+  schedule:
+    # Run every Tuesday at midnight GMT
+    - cron: '0 0 * * 2'
 
 jobs:
   analyze:
@@ -21,23 +26,23 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           # Minimal depth 2 so we can checkout the commit before possible merge commit.
           fetch-depth: 2
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@d23060145bc9131d50558d5d4185494a20208101 # v2.12.5 https://github.com/github/codeql-action/commit/d23060145bc9131d50558d5d4185494a20208101
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
 
       # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@d23060145bc9131d50558d5d4185494a20208101 # v2.12.5 https://github.com/github/codeql-action/commit/d23060145bc9131d50558d5d4185494a20208101
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@d23060145bc9131d50558d5d4185494a20208101 # v2.12.5 https://github.com/github/codeql-action/commit/d23060145bc9131d50558d5d4185494a20208101
         with:
-          category: '/language:${{matrix.language}}'
+          category: '/language:${{ matrix.language }}'

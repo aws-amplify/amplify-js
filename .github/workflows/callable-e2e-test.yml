@@ -1,0 +1,123 @@
+name: E2E Test
+run-name: e2e.${{ inputs.test_name }}
+
+on:
+  workflow_call:
+    inputs:
+      test_name:
+        required: true
+        type: string
+      framework:
+        required: true
+        type: string
+      category:
+        required: true
+        type: string
+      sample_name:
+        required: true
+        type: string
+      spec:
+        required: true
+        type: string
+      browser:
+        required: true
+        type: string
+      amplifyjs_dir:
+        required: true
+        type: boolean
+      timeout_minutes:
+        required: true
+        type: number
+      retry_count:
+        required: true
+        type: number
+
+env:
+  AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
+  CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
+  CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
+  CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
+
+jobs:
+  e2e-test:
+    name: E2E ${{ inputs.test_name }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser:
+          - ${{ fromJson(inputs.browser) }}
+        sample_name:
+          - ${{ fromJson(inputs.sample_name) }}
+      fail-fast: false
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+      - name: Setup samples staging repository
+        uses: ./amplify-js/.github/actions/setup-samples-staging
+        with:
+          GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
+      - name: Load Verdaccio with AmplifyJs
+        uses: ./amplify-js/.github/actions/load-verdaccio-with-amplify-js
+      - name: Run cypress tests for ${{ inputs.test_name }} dev
+        shell: bash
+        working-directory: amplify-js-samples-staging
+        env:
+          E2E_FRAMEWORK: ${{ inputs.framework }}
+          E2E_CATEGORY: ${{ inputs.category }}
+          E2E_SAMPLE_NAME: ${{ matrix.sample_name }}
+          E2E_SPEC: ${{ inputs.spec }}
+          E2E_BROWSER: ${{ matrix.browser }}
+          E2E_AMPLIFY_JS_DIR: ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}
+          E2E_RETRY_COUNT: ${{ inputs.retry_count }}
+          E2E_TEST_NAME: ${{ inputs.test_name }}
+        run: |
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          $E2E_FRAMEWORK \
+          $E2E_CATEGORY \
+          $E2E_SAMPLE_NAME \
+          $E2E_SPEC \
+          $E2E_BROWSER \
+          dev \
+          $E2E_AMPLIFY_JS_DIR" \
+          -n $E2E_RETRY_COUNT
+
+      - name: Run cypress tests for ${{ inputs.test_name }} prod
+        shell: bash
+        working-directory: amplify-js-samples-staging
+        env:
+          E2E_FRAMEWORK: ${{ inputs.framework }}
+          E2E_CATEGORY: ${{ inputs.category }}
+          E2E_SAMPLE_NAME: ${{ matrix.sample_name }}
+          E2E_SPEC: ${{ inputs.spec }}
+          E2E_BROWSER: ${{ matrix.browser }}
+          E2E_AMPLIFY_JS_DIR: ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}
+          E2E_RETRY_COUNT: ${{ inputs.retry_count }}
+          E2E_TEST_NAME: ${{ inputs.test_name }}
+        run: |
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          $E2E_FRAMEWORK \
+          $E2E_CATEGORY \
+          $E2E_SAMPLE_NAME \
+          $E2E_SPEC \
+          $E2E_BROWSER \
+          prod \
+          $E2E_AMPLIFY_JS_DIR" \
+          -n $E2E_RETRY_COUNT
+      - name: Upload artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        if: failure()
+        with:
+          name: ${{ inputs.test_name }}
+          if-no-files-found: ignore
+          path: |
+            amplify-js-samples-staging/cypress/videos
+            amplify-js-samples-staging/cypress/screenshots
+          retention-days: 14

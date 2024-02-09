@@ -1,0 +1,12 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"rootDirs": ["src"],
+		"baseUrl": ".",
+		"paths": {
+			"@aws-amplify/react-native": ["./src/index"]
+		},
+		"jsx": "react"
+	},
+	"include": ["./src", "example"]
+}

@@ -1,34 +1,57 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "5.0.32",
+	"version": "6.0.16",
 	"description": "Interactions category of aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
-	},
-	"sideEffects": [
-		"./lib/Interactions.js",
-		"./lib-esm/Interactions.js"
-	],
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./src/index.ts",
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:size": "size-limit",
-		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
-		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"build-with-test": "npm run clean && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.6"
+	},
+	"typesVersions": {
+		">=4.2": {
+			"lex-v1": [
+				"./dist/esm/lex-v1/index.d.ts"
+			],
+			"lex-v2": [
+				"./dist/esm/lex-v2/index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js"
+		},
+		"./lex-v1": {
+			"types": "./dist/esm/lex-v1/index.d.ts",
+			"import": "./dist/esm/lex-v1/index.mjs",
+			"require": "./dist/cjs/lex-v1/index.js",
+			"react-native": "./src/lex-v1/index.ts"
+		},
+		"./lex-v2": {
+			"types": "./dist/esm/lex-v2/index.d.ts",
+			"import": "./dist/esm/lex-v2/index.mjs",
+			"require": "./dist/cjs/lex-v2/index.js",
+			"react-native": "./src/lex-v2/index.ts"
+		}
 	},
 	"repository": {
 		"type": "git",
@@ -41,69 +64,43 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"files": [
-		"lib",
-		"lib-esm",
-		"src"
+		"dist/cjs",
+		"dist/esm",
+		"src",
+		"lex-v1",
+		"lex-v2"
 	],
 	"dependencies": {
-		"@aws-amplify/core": "5.3.0",
-		"@aws-sdk/client-lex-runtime-service": "3.186.1",
-		"@aws-sdk/client-lex-runtime-v2": "3.186.1",
+		"@aws-sdk/client-lex-runtime-service": "3.398.0",
+		"@aws-sdk/client-lex-runtime-v2": "3.398.0",
 		"base-64": "1.0.0",
 		"fflate": "0.7.3",
 		"pako": "2.0.4",
-		"tslib": "^1.8.0"
+		"tslib": "^2.5.0",
+		"uuid": "^9.0.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/core": "6.0.16",
+		"typescript": "^5.0.2"
 	},
 	"size-limit": [
 		{
-			"name": "Interactions (top-level class with Lex v2)",
-			"path": "./lib-esm/index.js",
-			"import": "{ Amplify, Interactions, AWSLexV2Provider }",
-			"limit": "87 kB"
+			"name": "Interactions (default to Lex v2)",
+			"path": "./dist/esm/index.mjs",
+			"import": "{ Interactions }",
+			"limit": "52.00 kB"
+		},
+		{
+			"name": "Interactions (Lex v2)",
+			"path": "./dist/esm/lex-v2/index.mjs",
+			"import": "{ Interactions }",
+			"limit": "52.00 kB"
+		},
+		{
+			"name": "Interactions (Lex v1)",
+			"path": "./dist/esm/lex-v1/index.mjs",
+			"import": "{ Interactions }",
+			"limit": "47.00 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": false,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2017.object"
-					],
-					"allowJs": true
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
-		]
-	}
+	]
 }

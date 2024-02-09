@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import {
 	PersistentModel,
 	SchemaModel,
@@ -28,7 +30,9 @@ export class ModelSortPredicateCreator {
 
 					if (!fieldNames.has(field)) {
 						throw new Error(
-							`Invalid field for model. field: ${field}, model: ${modelName}`
+							`Invalid field for model. field: ${String(
+								field
+							)}, model: ${modelName}`
 						);
 					}
 

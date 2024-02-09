@@ -1,0 +1,40 @@
+name: 'Canary E2E Test Runner'
+
+on:
+  workflow_call:
+
+jobs:
+  e2e-prep:
+    name: Get required configs to run canary e2e tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout AmplifyJs
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: read canary config files
+        id: load_config
+        run: |
+          echo "CANARY_CONFIG=$(cat .github/canary-config/canary-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
+        working-directory: ./amplify-js
+    outputs:
+      canary-config: ${{steps.load_config.outputs.CANARY_CONFIG}}
+  canary-e2e-test-runner:
+    name: canary e2e test runner
+    needs: e2e-prep
+    secrets: inherit
+    strategy:
+      matrix:
+        canary-config: ${{ fromJson(needs.e2e-prep.outputs.canary-config) }}
+      fail-fast: false
+    uses: ./.github/workflows/callable-canary-e2e-tests.yml
+    with:
+      test_name: ${{ matrix.canary-config.test_name }}
+      framework: ${{ matrix.canary-config.framework }}
+      category: ${{ matrix.canary-config.category }}
+      spec: ${{ matrix.canary-config.spec || '' }}
+      amplifyjs_dir: ${{ matrix.canary-config.amplifyjs_dir || false }}
+      sample_name: ${{ toJSON(matrix.canary-config.sample_name) || '[""]' }}
+      browser: ${{ toJSON(matrix.canary-config.browser) || '[""]' }}
+      timeout_minutes: ${{ matrix.canary-config.timeout_minutes || 35 }}
+      retry_count: ${{ matrix.canary-config.retry_count || 3 }}

@@ -1,115 +1,107 @@
 {
-  "name": "@aws-amplify/storage",
-  "version": "5.2.6",
-  "description": "Storage category of aws-amplify",
-  "main": "./lib/index.js",
-  "module": "./lib-esm/index.js",
-  "typings": "./lib-esm/index.d.ts",
-  "react-native": {
-    "./lib/index": "./lib-esm/index.js"
-  },
-  "sideEffects": [
-    "./lib/Storage.js",
-    "./lib-esm/Storage.js"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "test": "npm run lint && jest -w 1 --coverage",
-    "test:size": "size-limit",
-    "build-with-test": "npm test && npm run build",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
-    "build:cjs:watch": "node ./build es5 --watch",
-    "build:esm:watch": "node ./build es6 --watch",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "npm run clean:size && rimraf lib-esm lib dist",
-    "clean:size": "rimraf dual-publish-tmp tmp*",
-    "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
-    "ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
-  },
-  "homepage": "https://aws-amplify.github.io/",
-  "files": [
-    "lib",
-    "lib-esm",
-    "src"
-  ],
-  "dependencies": {
-    "@aws-amplify/core": "5.3.0",
-    "@aws-sdk/client-s3": "3.6.2",
-    "@aws-sdk/s3-request-presigner": "3.6.1",
-    "@aws-sdk/util-create-request": "3.6.1",
-    "@aws-sdk/util-format-url": "3.6.1",
-    "axios": "0.26.0",
-    "events": "^3.1.0",
-    "tslib": "^1.8.0"
-  },
-  "size-limit": [
-    {
-      "name": "Storage (top-level class)",
-      "path": "./lib-esm/index.js",
-      "import": "{ Amplify, Storage }",
-      "limit": "87 kB"
-    }
-  ],
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": {
-          "pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
-        },
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
-        }
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "dist",
-      "lib",
-      "lib-esm"
-    ]
-  },
-  "devDependencies": {
-    "@types/sinon": "^7.5.1"
-  }
+	"name": "@aws-amplify/storage",
+	"version": "6.0.16",
+	"description": "Storage category of aws-amplify",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": {
+		"./dist/cjs/index": "./src/index.ts",
+		"fast-xml-parser": "fast-xml-parser",
+		"buffer": "buffer"
+	},
+	"typings": "./dist/esm/index.d.ts",
+	"browser": {
+		"./dist/esm/providers/s3/utils/client/runtime/base64/index.native.mjs": "./dist/esm/providers/s3/utils/client/runtime/base64/index.browser.mjs",
+		"./dist/esm/providers/s3/utils/client/runtime/s3TransferHandler/fetch.mjs": "./dist/esm/providers/s3/utils/client/runtime/s3TransferHandler/xhr.mjs",
+		"./dist/esm/providers/s3/utils/client/runtime/xmlParser/pureJs.mjs": "./dist/esm/providers/s3/utils/client/runtime/xmlParser/dom.mjs",
+		"fast-xml-parser": false,
+		"buffer": false
+	},
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
+		"build-with-test": "npm test && npm run build",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"clean:size": "rimraf dual-publish-tmp tmp*",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
+	},
+	"typesVersions": {
+		">=4.2": {
+			"s3": [
+				"./dist/esm/providers/s3/index.d.ts"
+			],
+			"server": [
+				"./dist/esm/server.d.ts"
+			],
+			"s3/server": [
+				"./dist/esm/providers/s3/server.d.ts"
+			]
+		}
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"dist/cjs",
+		"dist/esm",
+		"src",
+		"server",
+		"s3"
+	],
+	"dependencies": {
+		"@aws-sdk/types": "3.398.0",
+		"@smithy/md5-js": "2.0.7",
+		"buffer": "4.9.2",
+		"fast-xml-parser": "^4.2.5",
+		"tslib": "^2.5.0"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js",
+			"react-native": "./src/index.ts"
+		},
+		"./server": {
+			"types": "./dist/esm/server.d.ts",
+			"import": "./dist/esm/server.mjs",
+			"require": "./dist/cjs/server.js"
+		},
+		"./s3": {
+			"types": "./dist/esm/providers/s3/index.d.ts",
+			"import": "./dist/esm/providers/s3/index.mjs",
+			"require": "./dist/cjs/providers/s3/index.js",
+			"react-native": "./src/providers/s3/index.ts"
+		},
+		"./s3/server": {
+			"types": "./dist/esm/providers/s3/server.d.ts",
+			"import": "./dist/esm/providers/s3/server.mjs",
+			"require": "./dist/cjs/providers/s3/server.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
+	},
+	"devDependencies": {
+		"@aws-amplify/core": "6.0.16",
+		"@aws-amplify/react-native": "1.0.16",
+		"typescript": "5.0.2"
+	}
 }

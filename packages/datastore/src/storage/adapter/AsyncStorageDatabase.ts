@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ULID } from 'ulid';
 import {
 	ModelInstanceMetadata,
@@ -168,9 +170,8 @@ class AsyncStorageDatabase {
 			}
 		}
 
-		const existingRecordsMap: [string, string][] = await this.storage.multiGet(
-			allItemsKeys
-		);
+		const existingRecordsMap: [string, string][] =
+			await this.storage.multiGet(allItemsKeys);
 		const existingRecordsKeys = existingRecordsMap
 			.filter(([, v]) => !!v)
 			.reduce((set, [k]) => set.add(k), new Set<string>());

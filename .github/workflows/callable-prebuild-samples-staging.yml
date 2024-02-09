@@ -1,0 +1,20 @@
+name: Prebuild AmplifyJsSamplesStaging
+
+on:
+  workflow_call:
+    secrets:
+      GH_TOKEN_STAGING_READ:
+        required: true
+jobs:
+  pre-staging:
+    name: Prebuild Staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup samples staging
+        uses: ./amplify-js/.github/actions/setup-samples-staging
+        with:
+          GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}

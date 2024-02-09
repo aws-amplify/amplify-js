@@ -1,0 +1,293 @@
+tests:
+  # DATASTORE
+  - test_name: integ_datastore_auth-owner-based-default
+    desc: 'DataStore Auth - Chrome'
+    framework: react
+    category: datastore
+    sample_name: owner-based-default
+    spec: owner-based-default
+    browser: [chrome, firefox]
+  - test_name: integ_react_datastore
+    desc: 'React DataStore'
+    framework: react
+    category: datastore
+    sample_name: [many-to-many]
+    spec: many-to-many
+    browser: [chrome, firefox]
+  - test_name: integ_react_datastore_multi_auth_one_rule
+    desc: 'React DataStore Multi-Auth - One Rule'
+    framework: react
+    category: datastore
+    sample_name: [multi-auth]
+    spec: multi-auth-one-rule
+    browser: [chrome, firefox]
+  - test_name: integ_react_datastore_multi_auth_three_plus_rules
+    desc: 'React DataStore Multi-Auth - Three Plus Rules'
+    framework: react
+    category: datastore
+    sample_name: [multi-auth]
+    spec: multi-auth-three-plus-rules
+    browser: [chrome, firefox]
+  - test_name: integ_react_datastore_subs_disabled
+    desc: 'DataStore - Subs Disabled'
+    framework: react
+    category: datastore
+    sample_name: [subs-disabled]
+    spec: subs-disabled
+    browser: [chrome, firefox]
+  - test_name: integ_react_datastore_consecutive_saves
+    desc: 'DataStore - Subs Disabled'
+    framework: react
+    category: datastore
+    sample_name: [consecutive-saves]
+    spec: consecutive-saves
+    browser: [chrome, firefox]
+  - test_name: integ_react_datastore_schema_drift
+    desc: 'DataStore - Schema Drift'
+    framework: react
+    category: datastore
+    sample_name: [schema-drift]
+    spec: schema-drift
+    browser: [chrome, firefox]
+  - test_name: integ_react_datastore_background_process_manager
+    desc: 'DataStore - Background Process Manager'
+    framework: react
+    category: datastore
+    sample_name: [v2/background-process-manager]
+    spec: background-process-manager
+    browser: [chrome, edge, firefox]
+  # TODO: remove when updated CPK + related models tests are added
+  # - test_name: integ_react_datastore_related_models
+  #   desc: 'DataStore - Related Models'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [related-models]
+  #   spec: related-models
+  #   browser: *minimal_browser_list
+  #   timeout_minutes: 45
+  #   retry_count: 10
+  # - test_name: integ_react_datastore_cpk_related_models
+  #   desc: 'DataStore - Custom Primary Key + Related Models'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [v2/related-models]
+  #   spec: cpk-related-models
+  #   browser: *minimal_browser_list
+  #   timeout_minutes: 45
+  #   retry_count: 10
+  - test_name: integ_react_datastore_selective_sync
+    desc: 'DataStore - Selective Sync'
+    framework: react
+    category: datastore
+    sample_name: [selective-sync-v5]
+    spec: selective-sync-v5
+    browser: [chrome, firefox]
+  - test_name: integ_react_datastore_docs_examples
+    desc: 'DataStore - Docs Examples'
+    framework: react
+    category: datastore
+    sample_name: [v2/amplify-docs-examples]
+    spec: amplify-docs-examples
+    browser: [chrome, firefox]
+    timeout_minutes: 45
+    retry_count: 10
+  - test_name: integ_react_datastore_websocket_disruption
+    desc: 'DataStore - WebSocket Disruption'
+    framework: react
+    category: datastore
+    sample_name: [websocket-disruption]
+    spec: websocket-disruption
+    browser: [chrome, firefox]
+  #   can un comment when ever fixed
+  # - test_name: integ_next_datastore_owner_auth
+  #   desc: 'next owner auth'
+  #   framework: next
+  #   category: datastore
+  #   sample_name: [owner-based-default]
+  #   spec: next-owner-based-default
+  #   browser: [chrome, firefox]
+  - test_name: integ_next_datastore_13_js
+    desc: 'DataStore - Nextjs 13 build with SWC - JS app'
+    framework: next
+    category: datastore
+    sample_name: [next-13-js]
+    spec: nextjs-13
+    browser: [chrome, firefox]
+    timeout_minutes: 45
+    retry_count: 10
+  - test_name: integ_rollup_datastore_basic_crud
+    desc: 'Rollup + DataStore - Basic CRUD'
+    framework: rollup
+    category: datastore
+    sample_name: [rollup-basic-crud]
+    spec: rollup-basic-crud
+    browser: [chrome]
+    timeout_minutes: 45
+    retry_count: 10
+  - test_name: integ_vite_datastore_basic_crud
+    desc: 'Vite + DataStore - Basic CRUD'
+    framework: vite
+    category: datastore
+    sample_name: [v2/basic-crud]
+    spec: vite-basic-crud
+    browser: [chrome]
+    timeout_minutes: 45
+    retry_count: 10
+
+    # GEO
+  - test_name: integ_react_geo_display_map
+    desc: 'Display Map'
+    framework: react
+    category: geo
+    sample_name: [display-map]
+    spec: display-map
+    # Temp fix:
+    browser: [chrome]
+  - test_name: integ_react_geo_search_outside_map
+    desc: 'Search Outside Map'
+    framework: react
+    category: geo
+    sample_name: [search-outside-map]
+    spec: search-outside-map
+    # Temp fix:
+    browser: [chrome]
+
+    # INTERACTIONS
+  # - test_name: integ_react_interactions_react_interactions
+  #   desc: 'React Interactions'
+  #   framework: react
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: *minimal_browser_list
+  - test_name: integ_react_interactions_chatbot_v1
+    desc: 'Chatbot V1'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v1
+    browser: [chrome, firefox]
+  - test_name: integ_react_interactions_chatbot_v2
+    desc: 'Chatbot V2'
+    framework: react
+    category: interactions
+    sample_name: [lex-test-component]
+    spec: chatbot-v2
+    browser: [chrome, firefox]
+  # - test_name: integ_angular_interactions
+  #   desc: 'Angular Interactions'
+  #   framework: angular
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: *minimal_browser_list
+  # - test_name: integ_vue_interactions_vue_2_interactions
+  #   desc: 'Vue 2 Interactions'
+  #   framework: vue
+  #   category: interactions
+  #   sample_name: [chatbot-component]
+  #   spec: chatbot-component
+  #   browser: [chrome]
+  # PREDICTIONS
+  - test_name: integ_react_predictions
+    desc: 'React Predictions'
+    framework: react
+    category: predictions
+    sample_name: [multi-user-translation]
+    spec: multiuser-translation
+    browser: [chrome, firefox]
+
+    # PUBSUB
+  - test_name: integ_react_iot_reconnect
+    desc: 'PubSub - Reconnection for IoT'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-iot]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
+  - test_name: integ_react_api_reconnect
+    desc: 'PubSub - Reconnection for API'
+    framework: react
+    category: pubsub
+    sample_name: [reconnection-api]
+    spec: reconnection
+    # Firefox doesn't support network state management in cypress
+    browser: [chrome]
+
+    # STORAGE
+  - test_name: integ_react_storage
+    desc: 'React Storage'
+    framework: react
+    category: storage
+    sample_name: [storageApp]
+    spec: storage
+    browser: [chrome, firefox]
+  - test_name: integ_react_storage_multipart_progress
+    desc: 'React Storage Multi-Part Upload with Progress'
+    framework: react
+    category: storage
+    sample_name: [multi-part-upload-with-progress]
+    spec: multi-part-upload-with-progress
+    browser: [chrome, firefox]
+  - test_name: integ_react_storage_copy
+    desc: 'React Storage Copy'
+    framework: react
+    category: storage
+    sample_name: [multi-part-copy]
+    spec: multi-part-copy
+    browser: [chrome, firefox]
+
+    # API
+  - test_name: integ_react_graphql_api
+    desc: 'React GraphQL API'
+    framework: react
+    category: api
+    sample_name: [graphql]
+    spec: graphql
+    browser: [chrome, firefox]
+
+    # AUTH
+  - test_name: integ_react_auth_2_react_credentials_different_region
+    desc: 'React Credentials Different Region'
+    framework: react
+    category: auth
+    sample_name: [credentials-auth]
+    spec: credentials-auth
+    browser: [chrome, firefox]
+  - test_name: integ_react_device_tracking
+    desc: 'cognito-device-tracking'
+    framework: react
+    category: auth
+    sample_name: [device-tracking]
+    spec: device-tracking
+    browser: [chrome, firefox]
+  - test_name: integ_react_delete_user
+    desc: 'delete-user'
+    framework: react
+    category: auth
+    sample_name: [delete-user]
+    spec: delete-user
+    browser: [chrome, firefox]
+  # - test_name: integ_angular_auth_angular_authenticator
+  #   desc: 'Angular Authenticator'
+  #   framework: angular
+  #   category: auth
+  #   sample_name: [amplify-authenticator]
+  #   spec: ui-amplify-authenticator
+  #   browser: [chrome, firefox]
+  # - test_name: integ_javascript_auth
+  #   desc: 'JavaScript Auth CDN'
+  #   framework: javascript
+  #   category: auth
+  #   sample_name: [auth-cdn]
+  #   spec: auth-cdn
+  #   browser: [chrome, firefox]
+  #   amplifyjs_dir: true
+  - test_name: integ_next_auth_authenticator_and_ssr_page
+    desc: 'Authenticator and SSR page'
+    framework: next
+    category: auth
+    sample_name: [auth-ssr]
+    spec: auth-ssr
+    browser: [chrome, edge]

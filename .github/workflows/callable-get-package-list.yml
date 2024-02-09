@@ -1,0 +1,41 @@
+name: Capture Package Names List to Outputs
+
+on:
+  workflow_call:
+    outputs:
+      packages:
+        description: The json encoded package list
+        value: ${{ jobs.get-package-list.outputs.packages }}
+jobs:
+  get-package-list:
+    name: Get packages list
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout AmplifyJs
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # 4.0.0
+        id: cache-package-list
+        with:
+          path: |
+            **/package-list.json
+          key: ${{ runner.os }}-package-list-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-package-list-
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+      - name: Install
+        if: steps.cache-package-list.outputs.cache-hit != 'true'
+        run: yarn
+        shell: bash
+      # Need the repo checked out in order to read the file
+      - name: Dump Package List
+        if: steps.cache-package-list.outputs.cache-hit != 'true'
+        run: |
+          echo "packages=$(yarn lerna ll | egrep -v "lerna|Done|yarn" | jq -R -s -c 'split("\n")[:-1] | map({name: split(" ")[0], path: split(" ")[-1]})')" > package-list.json
+      - name: Get Package List
+        id: get_package_list
+        run: |
+          cat package-list.json >> $GITHUB_OUTPUT
+          cat package-list.json
+    outputs:
+      packages: ${{ steps.get_package_list.outputs.packages }}

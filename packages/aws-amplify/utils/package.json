@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/utils",
+	"main": "../dist/cjs/utils/index.js",
+	"react-native": "../src/utils/index.ts",
+	"browser": "../dist/esm/utils/index.mjs",
+	"module": "../dist/esm/utils/index.mjs",
+	"typings": "../dist/esm/utils/index.d.ts"
+}

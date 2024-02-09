@@ -1,0 +1,77 @@
+name: PR Validation
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-${{ github.event.sender.login }} # This is to make the group name unique for a PR.
+  cancel-in-progress: true
+
+on: pull_request
+
+permissions: read-all
+
+jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+        with:
+          is-prebuild: true
+  unit-tests:
+    needs:
+      - prebuild
+    uses: ./.github/workflows/callable-unit-tests.yml
+  bundle-size-tests:
+    needs: prebuild
+    uses: ./.github/workflows/callable-bundle-size-tests.yml
+  license-test:
+    needs: prebuild
+    uses: ./.github/workflows/callable-test-license.yml
+  github-actions-test:
+    needs: prebuild
+    uses: ./.github/workflows/callable-test-github-actions.yml
+  tsc-compliance-test:
+    needs: prebuild
+    uses: ./.github/workflows/callable-test-tsc-compliance.yml
+  dependency-review:
+    needs: prebuild
+    uses: ./.github/workflows/callable-dependency-review.yml
+  all-unit-tests-pass:
+    name: Unit and Bundle tests have passed
+    needs:
+      - unit-tests
+      - bundle-size-tests
+      - license-test
+      - github-actions-test
+      - tsc-compliance-test
+      - dependency-review
+    runs-on: ubuntu-latest
+    if: success() # only run when all checks have passed
+    # store success output flag for ci job
+    outputs:
+      success: ${{ steps.setoutput.outputs.success }}
+    steps:
+      - id: setoutput
+        run: echo "success=true" >> $GITHUB_OUTPUT
+  ci:
+    runs-on: ubuntu-latest
+    if: always() # always run, so we never skip the check
+    name: ci - Unit and Bundle tests have passed
+    needs: all-unit-tests-pass
+    env:
+      PASSED: ${{ needs.all-unit-tests-pass.outputs.success }}
+    steps:
+      # this job passes only when output of all-unit-tests-pass job is set
+      # in case at least one of the checks fails, all-unit-tests-pass is skipped
+      # and the output will not be set, which will then cause the ci job to fail
+      - run: |
+          if [[ $PASSED == "true" ]]; then
+          echo "All checks have passed"
+          exit 0
+          else
+          echo "One or more checks have failed"
+          exit 1
+          fi

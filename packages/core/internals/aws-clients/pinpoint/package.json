@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/core/internals/aws-clients/pinpoint",
+	"types": "../../../dist/esm/awsClients/pinpoint/index.d.ts",
+	"main": "../../../dist/cjs/awsClients/pinpoint/index.js",
+	"module": "../../../dist/esm/awsClients/pinpoint/index.mjs",
+	"react-native": "../../../src/awsClients/pinpoint/index.ts",
+	"sideEffects": false
+}

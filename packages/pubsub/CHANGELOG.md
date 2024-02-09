@@ -3,6 +3,137 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.0.16 (2024-02-09)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.15 (2024-02-06)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.14 (2024-02-01)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.13 (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.12 (2024-01-12)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.11 (2024-01-10)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.10 (2024-01-04)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.9 (2023-12-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.8 (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.7 (2023-12-12)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.6 (2023-12-05)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.5 (2023-11-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.4 (2023-11-20)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.3 (2023-11-16)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.2 (2023-11-13)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 5.5.4 (2023-08-23)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 5.5.3 (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 5.5.2 (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 5.5.1 (2023-08-10)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+# [5.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.4.1...@aws-amplify/pubsub@5.5.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+- custom user agent InAppMessaging changes for UI handoff ([#11639](https://github.com/aws-amplify/amplify-js/issues/11639)) ([4d389da](https://github.com/aws-amplify/amplify-js/commit/4d389da22c9f39d5a5d7cd6df9116327a9d6a04e))
+
+## [5.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.4.0...@aws-amplify/pubsub@5.4.1) (2023-07-20)
+
+### Bug Fixes
+
+- duplicate entry in connection states ([#11579](https://github.com/aws-amplify/amplify-js/issues/11579)) ([88a74e7](https://github.com/aws-amplify/amplify-js/commit/88a74e71c0875cc2baae3f7f99bffb9a9be2bcd0))
+
+# [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.3...@aws-amplify/pubsub@5.4.0) (2023-07-13)
+
+### Features
+
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+
+## [5.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.2...@aws-amplify/pubsub@5.3.3) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [5.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.1...@aws-amplify/pubsub@5.3.2) (2023-06-27)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.0...@aws-amplify/pubsub@5.3.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.2.1...@aws-amplify/pubsub@5.3.0) (2023-06-20)
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.2.0...@aws-amplify/pubsub@5.2.1) (2023-06-14)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.16...@aws-amplify/pubsub@5.2.0) (2023-06-05)
+
+### Features
+
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
+## [5.1.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.15...@aws-amplify/pubsub@5.1.16) (2023-05-27)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
 ## [5.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.14...@aws-amplify/pubsub@5.1.15) (2023-05-12)
 
 **Note:** Version bump only for package @aws-amplify/pubsub

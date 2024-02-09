@@ -1,14 +1,16 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import SQLite from 'react-native-sqlite-storage';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
 import { DB_NAME } from '../common/constants';
 import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 
-const logger = new Logger('SQLiteDatabase');
+const logger = new ConsoleLogger('SQLiteDatabase');
 
 SQLite.enablePromise(true);
 
-if (Logger.LOG_LEVEL === 'DEBUG') {
+if (ConsoleLogger.LOG_LEVEL === 'DEBUG') {
 	SQLite.DEBUG(true);
 }
 

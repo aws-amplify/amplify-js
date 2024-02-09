@@ -1,0 +1,39 @@
+name: Validate changes to "aws-amplify" package.json file
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened]
+jobs:
+  checkUmbrellaDependencies:
+    permissions:
+      pull-requests: write # Used to add comment to PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: true
+      - name: Determine if "aws-amplify" package.json has been changed
+        id: aws-amplify-package-check
+        uses: tj-actions/changed-files@54479c37f5eb47a43e595c6b71e1df2c112ce7f1 # v36 https://github.com/tj-actions/changed-files/commit/54479c37f5eb47a43e595c6b71e1df2c112ce7f1
+        with:
+          files: packages/aws-amplify/package.json
+      - name: Write a PR comment
+        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0 https://github.com/actions/github-script/commit/98814c53be79b1d30f795b907e553d8679345975
+        if: steps.aws-amplify-package-check.outputs.any_changed == 'true'
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `⚠️ This PR includes manual changes to the "aws-amplify" package.json file, which can have library-wide implications. 
+
+              Please ensure that this PR:
+              - Does not modify "@aws-amplify/*" dependency versions, which may misalign core dependencies across the library.
+              
+              A repository administrator **is required** to review & merge this change.`
+            })
+      - name: Fail status check
+        if: steps.aws-amplify-package-check.outputs.any_changed == 'true'
+        run: exit 1

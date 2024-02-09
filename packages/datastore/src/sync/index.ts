@@ -1,15 +1,9 @@
-import {
-	browserOrNode,
-	ConsoleLogger as Logger,
-	BackgroundProcessManager,
-	Hub,
-} from '@aws-amplify/core';
-import {
-	CONTROL_MSG as PUBSUB_CONTROL_MSG,
-	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
-	ConnectionState,
-} from '@aws-amplify/pubsub';
-import Observable, { ZenObservable } from 'zen-observable-ts';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { BackgroundProcessManager } from '@aws-amplify/core/internals/utils';
+import { Hub, ConsoleLogger } from '@aws-amplify/core';
+
+import { filter, Observable, of, SubscriptionLike } from 'rxjs';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import { ExclusiveStorage as Storage } from '../storage/storage';
@@ -51,8 +45,13 @@ import {
 	TransformerMutationType,
 } from './utils';
 
-const { isNode } = browserOrNode();
-const logger = new Logger('DataStore');
+import {
+	CONTROL_MSG as PUBSUB_CONTROL_MSG,
+	ConnectionState,
+	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
+} from '@aws-amplify/api-graphql';
+
+const logger = new ConsoleLogger('DataStore');
 
 const ownSymbol = Symbol('sync');
 
@@ -213,7 +212,7 @@ export class SyncEngine {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
 
-			let subscriptions: ZenObservable.Subscription[] = [];
+			let subscriptions: SubscriptionLike[] = [];
 
 			this.runningProcesses.add(async () => {
 				try {
@@ -247,52 +246,46 @@ export class SyncEngine {
 											[TransformerMutationType, SchemaModel, PersistentModel]
 										>;
 
-										// NOTE: need a way to override this conditional for testing.
-										if (isNode) {
-											logger.warn(
-												'Realtime disabled when in a server-side environment'
-											);
-										} else {
-											this.stopDisruptionListener =
-												this.startDisruptionListener();
-											//#region GraphQL Subscriptions
-											[ctlSubsObservable, dataSubsObservable] =
-												this.subscriptionsProcessor.start();
+										this.stopDisruptionListener =
+											this.startDisruptionListener();
+										//#region GraphQL Subscriptions
+										[ctlSubsObservable, dataSubsObservable] =
+											this.subscriptionsProcessor.start();
 
-											try {
-												await new Promise<void>((resolve, reject) => {
-													onTerminate.then(reject);
-													const ctlSubsSubscription =
-														ctlSubsObservable.subscribe({
-															next: msg => {
-																if (msg === CONTROL_MSG.CONNECTED) {
-																	resolve();
-																}
-															},
-															error: err => {
-																reject(err);
-																const handleDisconnect =
-																	this.disconnectionHandler();
-																handleDisconnect(err);
-															},
-														});
+										try {
+											await new Promise<void>((resolve, reject) => {
+												onTerminate.then(reject);
+												const ctlSubsSubscription = ctlSubsObservable.subscribe(
+													{
+														next: msg => {
+															if (msg === CONTROL_MSG.CONNECTED) {
+																resolve();
+															}
+														},
+														error: err => {
+															reject(err);
+															const handleDisconnect =
+																this.disconnectionHandler();
+															handleDisconnect(err);
+														},
+													}
+												);
 
-													subscriptions.push(ctlSubsSubscription);
-												});
-											} catch (err) {
-												observer.error(err);
-												failedStarting();
-												return;
-											}
-
-											logger.log('Realtime ready');
-
-											observer.next({
-												type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+												subscriptions.push(ctlSubsSubscription);
 											});
-
-											//#endregion
+										} catch (err) {
+											observer.error(err);
+											failedStarting();
+											return;
 										}
+
+										logger.log('Realtime ready');
+
+										observer.next({
+											type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+										});
+
+										//#endregion
 
 										//#region Base & Sync queries
 										try {
@@ -374,32 +367,29 @@ export class SyncEngine {
 										//#endregion
 
 										//#region Merge subscriptions buffer
-										// TODO: extract to function
-										if (!isNode) {
-											subscriptions.push(
-												dataSubsObservable!.subscribe(
-													([_transformerMutationType, modelDefinition, item]) =>
-														this.runningProcesses.add(async () => {
-															const modelConstructor = this.userModelClasses[
-																modelDefinition.name
-															] as PersistentModelConstructor<any>;
+										subscriptions.push(
+											dataSubsObservable!.subscribe(
+												([_transformerMutationType, modelDefinition, item]) =>
+													this.runningProcesses.add(async () => {
+														const modelConstructor = this.userModelClasses[
+															modelDefinition.name
+														] as PersistentModelConstructor<any>;
 
-															const model = this.modelInstanceCreator(
-																modelConstructor,
-																item
-															);
+														const model = this.modelInstanceCreator(
+															modelConstructor,
+															item
+														);
 
-															await this.storage.runExclusive(storage =>
-																this.modelMerger.merge(
-																	storage,
-																	model,
-																	modelDefinition
-																)
-															);
-														}, 'subscription dataSubsObservable event')
-												)
-											);
-										}
+														await this.storage.runExclusive(storage =>
+															this.modelMerger.merge(
+																storage,
+																model,
+																modelDefinition
+															)
+														);
+													}, 'subscription dataSubsObservable event')
+											)
+										);
 										//#endregion
 									} else if (!online) {
 										this.online = online;
@@ -423,10 +413,12 @@ export class SyncEngine {
 
 				this.storage
 					.observe(null, null, ownSymbol)
-					.filter(({ model }) => {
-						const modelDefinition = this.getModelDefinition(model);
-						return modelDefinition.syncable === true;
-					})
+					.pipe(
+						filter(({ model }) => {
+							const modelDefinition = this.getModelDefinition(model);
+							return modelDefinition.syncable === true;
+						})
+					)
 					.subscribe({
 						next: async ({ opType, model, element, condition }) =>
 							this.runningProcesses.add(async () => {
@@ -538,11 +530,11 @@ export class SyncEngine {
 		ControlMessageType<ControlMessage>
 	> {
 		if (!this.online) {
-			return Observable.of<ControlMessageType<ControlMessage>>();
+			return of<ControlMessageType<ControlMessage>>({} as any); // TODO(v6): fix this
 		}
 
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
-			let syncQueriesSubscription: ZenObservable.Subscription;
+			let syncQueriesSubscription: SubscriptionLike;
 
 			this.runningProcesses.isOpen &&
 				this.runningProcesses.add(async onTerminate => {
@@ -606,9 +598,8 @@ export class SyncEngine {
 										 * merged individually. Otherwise, we can merge them in batches.
 										 */
 										await this.storage.runExclusive(async storage => {
-											const idsInOutbox = await this.outbox.getModelIds(
-												storage
-											);
+											const idsInOutbox =
+												await this.outbox.getModelIds(storage);
 
 											const oneByOne: ModelInstanceMetadata[] = [];
 											const page = items.filter(item => {

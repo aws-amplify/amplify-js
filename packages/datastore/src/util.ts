@@ -1,6 +1,11 @@
-import { Buffer } from 'buffer';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { monotonicFactory, ULID } from 'ulid';
-import { v4 as uuid } from 'uuid';
+import {
+	amplifyUuid,
+	AmplifyUrl,
+	WordArray,
+} from '@aws-amplify/core/internals/utils';
 import { produce, applyPatches, Patch } from 'immer';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
@@ -31,7 +36,6 @@ import {
 	IndexesType,
 	ModelAssociation,
 } from './types';
-import { WordArray } from 'amazon-cognito-identity-js';
 import { ModelSortPredicateCreator } from './predicates';
 
 export const ID = 'id';
@@ -75,7 +79,6 @@ const SYNC = NAMESPACES.SYNC;
 const STORAGE = NAMESPACES.STORAGE;
 
 export { USER, SYNC, STORAGE, DATASTORE };
-export const USER_AGENT_SUFFIX_DATASTORE = '/DataStore';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -247,7 +250,7 @@ let privateModeCheckResult;
 
 export const isPrivateMode = () => {
 	return new Promise(resolve => {
-		const dbname = uuid();
+		const dbname = amplifyUuid();
 		let db;
 
 		const isPrivate = () => {
@@ -298,7 +301,7 @@ let safariCompatabilityModeResult;
  */
 export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 	try {
-		const dbName = uuid();
+		const dbName = amplifyUuid();
 		const storeName = 'indexedDBFeatureProbeStore';
 		const indexName = 'idx';
 
@@ -374,10 +377,45 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 	return safariCompatabilityModeResult;
 };
 
-const randomBytes = (nBytes: number): Buffer => {
-	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
+const HEX_TO_SHORT: Record<string, number> = {};
+
+for (let i = 0; i < 256; i++) {
+	let encodedByte = i.toString(16).toLowerCase();
+	if (encodedByte.length === 1) {
+		encodedByte = `0${encodedByte}`;
+	}
+
+	HEX_TO_SHORT[encodedByte] = i;
+}
+
+const getBytesFromHex = (encoded: string): Uint8Array => {
+	if (encoded.length % 2 !== 0) {
+		throw new Error('Hex encoded strings must have an even number length');
+	}
+
+	const out = new Uint8Array(encoded.length / 2);
+	for (let i = 0; i < encoded.length; i += 2) {
+		const encodedByte = encoded.slice(i, i + 2).toLowerCase();
+		if (encodedByte in HEX_TO_SHORT) {
+			out[i / 2] = HEX_TO_SHORT[encodedByte];
+		} else {
+			throw new Error(
+				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`
+			);
+		}
+	}
+
+	return out;
 };
-const prng = () => randomBytes(1).readUInt8(0) / 0xff;
+
+const randomBytes = (nBytes: number): Uint8Array => {
+	const str = new WordArray().random(nBytes).toString();
+
+	return getBytesFromHex(str);
+};
+
+const prng = () => randomBytes(1)[0] / 0xff;
+
 export function monotonicUlidFactory(seed?: number): ULID {
 	const ulid = monotonicFactory(prng);
 
@@ -433,6 +471,35 @@ export function sortCompareFunction<T extends PersistentModel>(
 
 		return 0;
 	};
+}
+
+/* deep directed comparison ensuring that all fields on "from" object exist and
+ * are equal to values on an "against" object
+ *
+ * Note: This same guarauntee is not applied for values on "against" that aren't on "from"
+ *
+ * @param fromObject - The object that may be an equal subset of the againstObject.
+ * @param againstObject - The object that may be an equal superset of the fromObject.
+ *
+ * @returns True if fromObject is a equal subset of againstObject and False otherwise.
+ */
+export function directedValueEquality(
+	fromObject: object,
+	againstObject: object,
+	nullish: boolean = false
+) {
+	const aKeys = Object.keys(fromObject);
+
+	for (const key of aKeys) {
+		const fromValue = fromObject[key];
+		const againstValue = againstObject[key];
+
+		if (!valuesEqual(fromValue, againstValue, nullish)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 // deep compare any 2 values
@@ -642,7 +709,7 @@ export const isAWSJSON = (val: string): boolean => {
 
 export const isAWSURL = (val: string): boolean => {
 	try {
-		return !!new URL(val);
+		return !!new AmplifyUrl(val);
 	} catch {
 		return false;
 	}

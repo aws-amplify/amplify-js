@@ -919,20 +919,26 @@ img { max-width: 100%; }
 	<li class="current tsd-kind-class">
 		<a href="autherror.html" class="tsd-kind-icon">Auth<wbr>Error</a>
 		<ul>
-			<li class=" tsd-kind-constructor tsd-parent-kind-class">
+			<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 				<a href="autherror.html#constructor" class="tsd-kind-icon">constructor</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class">
 				<a href="autherror.html#log" class="tsd-kind-icon">log</a>
 			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 				<a href="autherror.html#message" class="tsd-kind-icon">message</a>
 			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 				<a href="autherror.html#name" class="tsd-kind-icon">name</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+				<a href="autherror.html#recoverysuggestion" class="tsd-kind-icon">recovery<wbr>Suggestion</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 				<a href="autherror.html#stack" class="tsd-kind-icon">stack</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+				<a href="autherror.html#underlyingerror" class="tsd-kind-icon">underlying<wbr>Error</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
 				<a href="autherror.html#error" class="tsd-kind-icon">Error</a>
@@ -948,6 +954,9 @@ img { max-width: 100%; }
 		<ul class="tsd-hierarchy">
 			<li>
 				<a href="autherror.html#error" class="tsd-signature-type">Error</a>
+			</li>
+			<li>
+				<span class="tsd-signature-type">AmplifyError</span>
 				<ul class="tsd-hierarchy">
 					<li>
 						<span class="target">AuthError</span>
@@ -968,16 +977,18 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Constructors</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="autherror.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="autherror.html#constructor" class="tsd-kind-icon">constructor</a></li>
 					</ul>
 				</section>
 				<section class="tsd-index-section ">
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-class"><a href="autherror.html#log" class="tsd-kind-icon">log</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="autherror.html#message" class="tsd-kind-icon">message</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="autherror.html#name" class="tsd-kind-icon">name</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="autherror.html#message" class="tsd-kind-icon">message</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="autherror.html#name" class="tsd-kind-icon">name</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="autherror.html#recoverysuggestion" class="tsd-kind-icon">recovery<wbr>Suggestion</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited"><a href="autherror.html#stack" class="tsd-kind-icon">stack</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="autherror.html#underlyingerror" class="tsd-kind-icon">underlying<wbr>Error</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="autherror.html#error" class="tsd-kind-icon">Error</a></li>
 					</ul>
 				</section>
@@ -986,17 +997,18 @@ img { max-width: 100%; }
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Constructors</h2>
-		<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+		<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
-			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 				<li class="tsd-signature tsd-kind-icon">new <wbr>Auth<wbr>Error<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../enums/autherrortypes.html" class="tsd-signature-type">AuthErrorTypes</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="autherror.html" class="tsd-signature-type">AuthError</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
+						<p>Overrides AmplifyError.__constructor</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6094ed380/packages/auth/src/Errors.ts#L11">packages/auth/src/Errors.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/auth/src/Errors.ts#L13">packages/auth/src/Errors.ts:13</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1018,41 +1030,65 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">log<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/6094ed380/packages/auth/src/Errors.ts#L11">packages/auth/src/Errors.ts:11</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/auth/src/Errors.ts#L13">packages/auth/src/Errors.ts:13</a></li>
 				</ul>
 			</aside>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 			<a name="message" class="tsd-anchor"></a>
 			<h3>message</h3>
 			<div class="tsd-signature tsd-kind-icon">message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
-				<p>Inherited from <a href="autherror.html">AuthError</a>.<a href="autherror.html#message">message</a></p>
+				<p>Inherited from <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#message">message</a></p>
+				<p>Overrides <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#message">message</a></p>
 				<ul>
-					<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:974</li>
+					<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:1054</li>
 				</ul>
 			</aside>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 			<a name="name" class="tsd-anchor"></a>
 			<h3>name</h3>
 			<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
-				<p>Inherited from <a href="autherror.html">AuthError</a>.<a href="autherror.html#name">name</a></p>
+				<p>Inherited from <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#name">name</a></p>
+				<p>Overrides <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#name">name</a></p>
 				<ul>
-					<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:973</li>
+					<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:1053</li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+			<a name="recoverysuggestion" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> recovery<wbr>Suggestion</h3>
+			<div class="tsd-signature tsd-kind-icon">recovery<wbr>Suggestion<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#recoverysuggestion">recoverySuggestion</a></p>
+				<ul>
+					<li>Defined in packages/core/dist/esm/errors/AmplifyError.d.ts:4</li>
 				</ul>
 			</aside>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited">
 			<a name="stack" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> stack</h3>
-			<div class="tsd-signature tsd-kind-icon">stack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<div class="tsd-signature tsd-kind-icon">stack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
-				<p>Inherited from <a href="autherror.html">AuthError</a>.<a href="autherror.html#stack">stack</a></p>
-				<p>Overrides <a href="autherror.html">AuthError</a>.<a href="autherror.html#stack">stack</a></p>
+				<p>Inherited from <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#stack">stack</a></p>
+				<p>Overrides <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#stack">stack</a></p>
 				<ul>
-					<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:975</li>
+					<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:1055</li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+			<a name="underlyingerror" class="tsd-anchor"></a>
+			<h3><span class="tsd-flag ts-flagOptional">Optional</span> underlying<wbr>Error</h3>
+			<div class="tsd-signature tsd-kind-icon">underlying<wbr>Error<span class="tsd-signature-symbol">:</span> <a href="autherror.html#error" class="tsd-signature-type">Error</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">unknown</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#underlyingerror">underlyingError</a></p>
+				<ul>
+					<li>Defined in packages/core/dist/esm/errors/AmplifyError.d.ts:3</li>
 				</ul>
 			</aside>
 		</section>
@@ -1062,7 +1098,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">Error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ErrorConstructor</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:984</li>
+					<li>Defined in node_modules/typescript/lib/lib.es5.d.ts:1064</li>
 				</ul>
 			</aside>
 		</section>

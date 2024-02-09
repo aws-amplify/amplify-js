@@ -2,7 +2,6 @@
 /packages/api @aws-amplify/amplify-js @aws-amplify/amplify-data
 /packages/api-graphql @aws-amplify/amplify-data
 /packages/api-rest @aws-amplify/amplify-js @aws-amplify/amplify-data
-/packages/aws-amplify-react-native @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /packages/core @aws-amplify/amplify-js @aws-amplify/amplify-data
 /packages/datastore @aws-amplify/amplify-data
 /packages/datastore-storage-adapter @aws-amplify/amplify-data

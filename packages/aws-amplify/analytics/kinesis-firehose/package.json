@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/analytics/kinesis-firehose",
+	"main": "../../dist/cjs/analytics/kinesis-firehose/index.js",
+	"react-native": "../../src/analytics/kinesis-firehose/index.ts",
+	"browser": "../../dist/esm/analytics/kinesis-firehose/index.mjs",
+	"module": "../../dist/esm/analytics/kinesis-firehose/index.mjs",
+	"typings": "../../dist/esm/analytics/kinesis-firehose/index.d.ts"
+}

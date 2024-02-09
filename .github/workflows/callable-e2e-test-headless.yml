@@ -1,0 +1,76 @@
+name: E2E Test - Headless
+run-name: e2e-headless.${{ inputs.test_name }}
+
+on:
+  workflow_call:
+    inputs:
+      test_name:
+        required: true
+        type: string
+      category:
+        required: true
+        type: string
+      spec:
+        required: true
+        type: string
+      timeout_minutes:
+        required: true
+        type: number
+      retry_count:
+        required: true
+        type: number
+
+jobs:
+  e2e-test:
+    name: E2E-Headless ${{ inputs.test_name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Setup samples staging repository
+        uses: ./amplify-js/.github/actions/setup-samples-staging
+        with:
+          GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
+
+      - name: Change directory into build and run link
+        run: |
+          yarn link-all
+        working-directory: amplify-js
+
+      - name: Link packages into samples staging root
+        run: |
+          yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
+        working-directory: amplify-js-samples-staging
+
+      - name: Run cypress tests for ${{ inputs.test_name }}
+        shell: bash
+        working-directory: amplify-js-samples-staging
+        env:
+          E2E_CATEGORY: ${{ inputs.category }}
+          E2E_SPEC: ${{ inputs.spec }}
+          E2E_RETRY_COUNT: ${{ inputs.retry_count }}
+        run: |
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "cypress run \          
+          --headless \
+          --spec ./cypress/integration/$E2E_CATEGORY/$E2E_SPEC.spec.js \
+          --config baseUrl=https://aws.amazon.com/" \
+          -n $E2E_RETRY_COUNT
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        if: failure()
+        with:
+          name: ${{ inputs.test_name }}
+          if-no-files-found: ignore
+          path: |
+            amplify-js-samples-staging/cypress/videos
+            amplify-js-samples-staging/cypress/screenshots
+          retention-days: 14

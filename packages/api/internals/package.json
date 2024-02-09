@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/api/internals",
+	"types": "../dist/esm/internals/index.d.ts",
+	"main": "../dist/cjs/internals/index.js",
+	"module": "../dist/esm/internals/index.mjs",
+	"react-native": "../src/internals/index.ts",
+	"sideEffects": false
+}

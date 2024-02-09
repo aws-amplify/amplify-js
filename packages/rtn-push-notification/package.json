@@ -1,30 +1,30 @@
 {
 	"name": "@aws-amplify/rtn-push-notification",
-	"version": "1.1.1",
+	"version": "1.2.16",
 	"description": "React Native module for aws-amplify push notifications",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./src/index.ts",
+	"typings": "./dist/esm/index.d.ts",
 	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	},
 	"scripts": {
-		"test": "tslint 'src/**/*.ts'",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:android": "./android/gradlew test -p ./android",
-		"build-with-test": "npm run clean && npm test && tsc && webpack",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "node ./build es6 --watch",
-		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"build-with-test": "npm run clean && npm test && tsc",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 99"
 	},
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
+	"devDependencies": {
+		"@types/react-native": "0.70.0",
+		"typescript": "5.0.2"
 	},
 	"repository": {
 		"type": "git",
@@ -40,8 +40,8 @@
 		"Amplify*.podspec",
 		"android",
 		"ios",
-		"lib",
-		"lib-esm",
+		"dist/cjs",
+		"dist/esm",
 		"src"
 	]
 }

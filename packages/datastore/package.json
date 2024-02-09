@@ -1,30 +1,27 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "4.3.0",
+	"version": "5.0.16",
 	"description": "AppSyncLocal support for aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
-	"typings": "./lib-esm/index.d.ts",
-	"react-native": {
-		"./lib/index": "./lib-esm/index.js"
-	},
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"typings": "./dist/esm/index.d.ts",
+	"react-native": "./src/index.ts",
 	"publishConfig": {
 		"access": "public"
 	},
 	"sideEffects": [
-		"./lib/datastore/datastore.js",
-		"./lib-esm/datastore/datastore.js"
+		"./dist/cjs/datastore/datastore.js",
+		"./dist/esm/datastore/datastore.mjs"
 	],
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --coverage",
+		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
-		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm": "node ./build es6",
-		"build:cjs:watch": "node ./build es5 --watch",
-		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
-		"build": "yarn clean && yarn build:esm && npm run build:cjs",
-		"clean": "npm run clean:size && rimraf lib-esm lib dist",
+		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"  && npm run ts-coverage",
 		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
@@ -40,93 +37,38 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
+	"files": [
+		"dist/cjs",
+		"dist/esm",
+		"src"
+	],
+	"dependencies": {
+		"@aws-amplify/api": "6.0.16",
+		"buffer": "4.9.2",
+		"idb": "5.0.6",
+		"immer": "9.0.6",
+		"rxjs": "^7.8.1",
+		"ulid": "^2.3.0"
+	},
+	"peerDependencies": {
+		"@aws-amplify/core": "^6.0.0"
+	},
 	"devDependencies": {
-		"@react-native-community/netinfo": "4.7.0",
-		"@types/uuid": "3.4.6",
+		"@aws-amplify/core": "6.0.16",
+		"@aws-amplify/react-native": "1.0.16",
 		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
 		"dexie-export-import": "1.0.3",
-		"fake-indexeddb": "3.0.0"
-	},
-	"files": [
-		"lib",
-		"lib-esm",
-		"src",
-		"ssr"
-	],
-	"dependencies": {
-		"@aws-amplify/api": "5.1.0",
-		"@aws-amplify/auth": "5.3.6",
-		"@aws-amplify/core": "5.3.0",
-		"@aws-amplify/pubsub": "5.1.15",
-		"amazon-cognito-identity-js": "6.2.0",
-		"idb": "5.0.6",
-		"immer": "9.0.6",
-		"ulid": "2.3.0",
-		"uuid": "3.4.0",
-		"zen-observable-ts": "0.8.19",
-		"zen-push": "0.2.1"
+		"fake-indexeddb": "^4.0.2",
+		"graphql": "15.8.0",
+		"typescript": "5.0.2"
 	},
 	"size-limit": [
 		{
 			"name": "DataStore (top-level class)",
-			"path": "./lib-esm/index.js",
+			"path": "./dist/esm/index.mjs",
 			"import": "{ Amplify, DataStore }",
-			"limit": "155 kB"
+			"limit": "65.25 kB"
 		}
-	],
-	"jest": {
-		"globals": {
-			"ts-jest": {
-				"diagnostics": true,
-				"tsConfig": {
-					"lib": [
-						"es5",
-						"es2015",
-						"dom",
-						"esnext.asynciterable",
-						"es2019"
-					],
-					"target": "es5",
-					"allowJs": true,
-					"esModuleInterop": true,
-					"downlevelIteration": true,
-					"strictNullChecks": true
-				}
-			}
-		},
-		"transform": {
-			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-		},
-		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-		"testPathIgnorePatterns": [
-			"__tests__/model.ts",
-			"__tests__/schema.ts",
-			"__tests__/helpers/",
-			"__tests__/commonAdapterTests.ts"
-		],
-		"moduleFileExtensions": [
-			"ts",
-			"tsx",
-			"js",
-			"json",
-			"jsx"
-		],
-		"testEnvironment": "jsdom",
-		"testURL": "http://localhost/",
-		"coverageThreshold": {
-			"global": {
-				"branches": 0,
-				"functions": 0,
-				"lines": 0,
-				"statements": 0
-			}
-		},
-		"coveragePathIgnorePatterns": [
-			"/node_modules/",
-			"dist",
-			"lib",
-			"lib-esm"
-		]
-	}
+	]
 }

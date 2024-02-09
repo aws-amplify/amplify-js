@@ -1,6 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import booleanClockwise from '@turf/boolean-clockwise';
+import {
+	Category,
+	GeoAction,
+	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
+} from '@aws-amplify/core/internals/utils';
+import { UserAgent } from '@aws-sdk/types';
 
 import {
 	Longitude,
@@ -48,12 +55,12 @@ export function validateLinearRing(
 	}
 
 	// Validate all coordinates are valid, error with which ones are bad
-	const badCoordinates = [];
+	const badCoordinates: any[] = [];
 	linearRing.forEach(coordinates => {
 		try {
 			validateCoordinates(coordinates[0], coordinates[1]);
 		} catch (error) {
-			badCoordinates.push({ coordinates, error: error.message });
+			badCoordinates.push({ coordinates, error: (error as Error).message });
 		}
 	});
 	if (badCoordinates.length > 0) {
@@ -153,7 +160,7 @@ export function validateGeofencesInput(geofences: GeofenceInput[]) {
 			validatePolygon(polygon, geofenceId);
 		} catch (error) {
 			if (
-				error.message.includes(
+				(error as Error).message.includes(
 					'Polygon has more than the maximum 1000 vertices.'
 				)
 			) {
@@ -173,6 +180,7 @@ export function mapSearchOptions(options, locationServiceInput) {
 	const locationServiceModifiedInput = { ...locationServiceInput };
 	locationServiceModifiedInput.FilterCountries = options.countries;
 	locationServiceModifiedInput.MaxResults = options.maxResults;
+	locationServiceModifiedInput.Language = options.language;
 
 	if (options.searchIndexName) {
 		locationServiceModifiedInput.IndexName = options.searchIndexName;
@@ -190,4 +198,18 @@ export function mapSearchOptions(options, locationServiceInput) {
 		locationServiceModifiedInput.FilterBBox = options['searchAreaConstraints'];
 	}
 	return locationServiceModifiedInput;
+}
+
+export function getGeoUserAgent(action: GeoAction): UserAgent {
+	return getAmplifyUserAgentObject({
+		category: Category.Geo,
+		action,
+	});
+}
+
+export function getGeoUserAgentString(action: GeoAction) {
+	return getAmplifyUserAgent({
+		category: Category.Geo,
+		action,
+	});
 }

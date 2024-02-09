@@ -1,13 +1,8 @@
-import { API } from '@aws-amplify/api';
-import { Auth } from '@aws-amplify/auth';
-import { Cache } from '@aws-amplify/cache';
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	Hub,
-	browserOrNode,
-	BackgroundProcessManager,
-} from '@aws-amplify/core';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { InternalAPI } from '@aws-amplify/api/internals';
+import { Amplify, Hub, Cache, ConsoleLogger } from '@aws-amplify/core';
+
 import {
 	Draft,
 	immerable,
@@ -16,8 +11,8 @@ import {
 	enablePatches,
 	Patch,
 } from 'immer';
-import { v4 as uuid4 } from 'uuid';
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { amplifyUuid, isBrowser } from '@aws-amplify/core/internals/utils';
+import { Observable, SubscriptionLike, filter } from 'rxjs';
 import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
 	isPredicatesAll,
@@ -77,6 +72,7 @@ import {
 } from '../types';
 // tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
+import { isNode } from './utils';
 
 import {
 	DATASTORE,
@@ -108,14 +104,14 @@ import {
 } from '../predicates/next';
 import { getIdentifierValue } from '../sync/utils';
 import DataStoreConnectivity from '../sync/datastoreConnectivity';
+import { BackgroundProcessManager } from '@aws-amplify/core/internals/utils';
 
 setAutoFreeze(true);
 enablePatches();
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
-const { isNode } = browserOrNode();
 
 type SettingMetaData = {
 	identifier: ManagedIdentifier<Setting, 'id'>;
@@ -490,7 +486,6 @@ const checkSchemaCodegenVersion = (codegenVersion: string) => {
 	const majorVersion = 3;
 	const minorVersion = 2;
 	let isValid = false;
-
 	try {
 		const versionParts = codegenVersion.split('.');
 		const [major, minor, patch, patchrevision] = versionParts;
@@ -841,13 +836,14 @@ const createModelClass = <T extends PersistentModel>(
 						const id = isInternalModel
 							? _id
 							: modelDefinition.syncable
-							? uuid4()
-							: ulid();
+							  ? amplifyUuid()
+							  : ulid();
 
 						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
 					} else if (isIdOptionallyManaged(modelDefinition)) {
 						// only auto-populate if the id was not provided
-						(<ModelWithIDIdentifier>(<unknown>draft)).id = draft.id || uuid4();
+						(<ModelWithIDIdentifier>(<unknown>draft)).id =
+							draft.id || amplifyUuid();
 					}
 
 					if (!isInternallyInitialized) {
@@ -1329,7 +1325,7 @@ async function checkSchemaVersion(
 	});
 }
 
-let syncSubscription: ZenObservable.Subscription;
+let syncSubscription: SubscriptionLike;
 
 function getNamespace(): SchemaNamespace {
 	const namespace: SchemaNamespace = {
@@ -1381,8 +1377,7 @@ enum DataStoreState {
 // https://github.com/aws-amplify/amplify-js/pull/10477/files#r1007363485
 class DataStore {
 	// reference to configured category instances. Used for preserving SSR context
-	private Auth = Auth;
-	private API = API;
+	private InternalAPI = InternalAPI;
 	private Cache = Cache;
 
 	// Non-null assertions (bang operator) have been added to most of these properties
@@ -1412,9 +1407,7 @@ class DataStore {
 	private storageAdapter!: Adapter;
 	// object that gets passed to descendent classes. Allows us to pass these down by reference
 	private amplifyContext: AmplifyContext = {
-		Auth: this.Auth,
-		API: this.API,
-		Cache: this.Cache,
+		InternalAPI: this.InternalAPI,
 	};
 	private connectivityMonitor?: DataStoreConnectivity;
 
@@ -1529,6 +1522,7 @@ class DataStore {
 				await this.storage.init();
 				checkSchemaInitialized();
 				await checkSchemaVersion(this.storage, schema.version);
+
 				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
 				if (aws_appsync_graphqlEndpoint) {
@@ -1538,7 +1532,6 @@ class DataStore {
 					);
 
 					this.syncPredicates = await this.processSyncExpressions();
-
 					this.sync = new SyncEngine(
 						schema,
 						namespaceResolver,
@@ -1561,9 +1554,12 @@ class DataStore {
 						.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 						.subscribe({
 							next: ({ type, data }) => {
-								// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
-								// In the Browser, we can begin returning data once subscriptions are in place.
-								const readyType = isNode
+								/**
+								 * In Node, we need to wait for queries to be synced to prevent returning empty arrays.
+								 * In non-Node environments (the browser or React Native), we can begin returning data
+								 * once subscriptions are in place.
+								 */
+								const readyType = isNode()
 									? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
 									: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
 
@@ -1735,7 +1731,6 @@ class DataStore {
 		return this.runningProcesses
 			.add(async () => {
 				await this.start();
-
 				if (!this.storage) {
 					throw new Error('No storage to save to');
 				}
@@ -1750,7 +1745,7 @@ class DataStore {
 				const initPatchesTuple = initPatches.has(model)
 					? ([initPatches.get(model)!, {}] as [
 							Patch[],
-							Readonly<Record<string, any>>
+							Readonly<Record<string, any>>,
 					  ])
 					: undefined;
 
@@ -2126,7 +2121,7 @@ class DataStore {
 		}
 
 		return new Observable<SubscriptionMessage<T>>(observer => {
-			let source: ZenObservable.Subscription;
+			let source: SubscriptionLike;
 
 			this.runningProcesses
 				.add(async () => {
@@ -2135,7 +2130,7 @@ class DataStore {
 					// Filter the events returned by Storage according to namespace,
 					// append original element data, and subscribe to the observable
 					source = this.storage!.observe(modelConstructor)
-						.filter(({ model }) => namespaceResolver(model) === USER)
+						.pipe(filter(({ model }) => namespaceResolver(model) === USER))
 						.subscribe({
 							next: item =>
 								this.runningProcesses.isOpen &&
@@ -2209,7 +2204,7 @@ class DataStore {
 			const items = new Map<string, T>();
 			const itemsChanged = new Map<string, T>();
 			let deletedItemIds: string[] = [];
-			let handle: ZenObservable.Subscription;
+			let handle: SubscriptionLike;
 			// let predicate: ModelPredicate<T> | undefined;
 			let executivePredicate: GroupCondition | undefined;
 
@@ -2424,10 +2419,10 @@ class DataStore {
 					data?.model?.name === model.name
 				) {
 					generateAndEmitSnapshot();
-					Hub.remove('datastore', hubCallback);
+					hubRemove();
 				}
 			};
-			Hub.listen('datastore', hubCallback);
+			const hubRemove = Hub.listen('datastore', hubCallback);
 
 			return this.runningProcesses.addCleaner(async () => {
 				if (handle) {
@@ -2438,9 +2433,7 @@ class DataStore {
 	};
 
 	configure = (config: DataStoreConfig = {}) => {
-		this.amplifyContext.Auth = this.Auth;
-		this.amplifyContext.API = this.API;
-		this.amplifyContext.Cache = this.Cache;
+		this.amplifyContext.InternalAPI = this.InternalAPI;
 
 		const {
 			DataStore: configDataStore,
@@ -2456,9 +2449,19 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
+		const currentAppSyncConfig = Amplify.getConfig().API?.GraphQL;
+
+		const appSyncConfig = {
+			aws_appsync_graphqlEndpoint: currentAppSyncConfig?.endpoint,
+			aws_appsync_authenticationType: currentAppSyncConfig?.defaultAuthMode,
+			aws_appsync_region: currentAppSyncConfig?.region,
+			aws_appsync_apiKey: currentAppSyncConfig?.apiKey,
+		};
+
 		this.amplifyConfig = {
-			...configFromAmplify,
 			...this.amplifyConfig,
+			...configFromAmplify,
+			...(currentAppSyncConfig && appSyncConfig),
 		};
 
 		this.conflictHandler = this.setConflictHandler(config);
@@ -2750,6 +2753,11 @@ class DataStore {
 }
 
 const instance = new DataStore();
-Amplify.register(instance);
+instance.configure({});
+Hub.listen('core', capsule => {
+	if (capsule.payload.event === 'configure') {
+		instance.configure({});
+	}
+});
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };

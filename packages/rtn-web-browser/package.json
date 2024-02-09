@@ -1,0 +1,48 @@
+{
+	"name": "@aws-amplify/rtn-web-browser",
+	"version": "1.0.16",
+	"description": "React Native module for aws-amplify web browser",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.mjs",
+	"react-native": "./src/index.ts",
+	"typings": "./dist/esm/index.d.ts",
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "tslint 'src/**/*.ts'",
+		"test:android": "./android/gradlew test -p ./android",
+		"build-with-test": "npm run clean && npm test && tsc",
+		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:watch": "npm run build:esm-cjs -- --watch",
+		"build": "npm run clean && npm run build:esm-cjs",
+		"clean": "rimraf dist lib lib-esm",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
+	},
+	"devDependencies": {
+		"@types/react-native": "0.70.0",
+		"react-native": "0.72.3",
+		"typescript": "5.1.6"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://docs.amplify.aws/",
+	"files": [
+		"Amplify*.podspec",
+		"android",
+		"ios",
+		"dist/cjs",
+		"dist/esm",
+		"src"
+	]
+}

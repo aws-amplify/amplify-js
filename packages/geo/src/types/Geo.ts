@@ -1,23 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 // configuration shape for the Geo class
-export interface GeoConfig {
-	region?: string;
-	AmazonLocationService?: {
-		maps?: {
-			items: {};
-			default: string;
-		};
-		search_indices?: {
-			items: string[];
-			default: string;
-		};
-		geofenceCollections?: {
-			items: string[];
-			default: string;
-		};
-	};
-}
+export { GeoConfig } from '@aws-amplify/core';
 
 // Data held about maps in aws-exports
 export interface MapStyle {
@@ -48,6 +32,7 @@ export interface SearchByTextOptionsBase {
 	maxResults?: number;
 	searchIndexName?: string;
 	providerName?: string;
+	language?: string;
 }
 
 // SearchByText options with a bias position
