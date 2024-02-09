@@ -13,7 +13,6 @@ import {
 	AuthModeParams,
 	ClientWithModels,
 	ListArgs,
-	V6Client,
 	V6ClientSSRRequest,
 	GraphQLResult,
 	QueryArgs,
@@ -22,7 +21,6 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
-import { model } from '@aws-amplify/data-schema/lib-esm/src';
 
 export type IndexMeta = {
 	queryField: string;
@@ -65,7 +63,7 @@ export function indexQueryFactory(
 	return context ? indexQueryWithContext : indexQuery;
 }
 
-async function processGraphQlResponse(
+function processGraphQlResponse(
 	result: GraphQLResult<any>,
 	selectionSet: undefined | string[],
 	modelInitializer: (flattenedResult: any[]) => any[],

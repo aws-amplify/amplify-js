@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { ModelTypes } from '@aws-amplify/data-schema-types';
 import { graphQLOperationsInfo, ModelOperation } from './APIClient';
-import { ClientGenerationParams } from './types';
 import { V6Client, __authMode, __authToken } from '../types';
-
 import { listFactory } from './operations/list';
 import { indexQueryFactory } from './operations/indexQuery';
 import { getFactory } from './operations/get';
