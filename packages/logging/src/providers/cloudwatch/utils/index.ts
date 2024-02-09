@@ -3,6 +3,10 @@
 
 export {
 	getLoggingConstraints,
+	getLoggingConstraintsETag,
 	setLoggingConstraints,
-} from './loggingConstraints';
-export { setUpRemoteConfigurationRefresh } from './setUpRemoteConfigurationRefresh';
+	setLoggingConstraintsETag,
+} from './loggingConstraintsHelpers';
+export { resolveConfig } from './resolveConfig';
+export { resolveCredentials } from './resolveCredentials';
+export { setUpRemoteLoggingConstraintsRefresh } from './setUpRemoteLoggingConstraintsRefresh';
