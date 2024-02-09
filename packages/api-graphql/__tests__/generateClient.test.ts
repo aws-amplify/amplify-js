@@ -5010,4 +5010,52 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 	});
+
+	describe('custom operations', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+			Amplify.configure(configFixture as any);
+
+			jest
+				.spyOn(Amplify.Auth, 'fetchAuthSession')
+				.mockImplementation(async () => {
+					return {
+						tokens: {
+							accessToken: {
+								toString: () => 'test',
+							},
+						},
+						credentials: {
+							accessKeyId: 'test',
+							secretAccessKey: 'test',
+						},
+					} as any;
+				});
+		});
+
+		test('can create()', async () => {
+			const spy = mockApiResponse({
+				data: {
+					createTodo: {
+						__typename: 'Todo',
+						...serverManagedFields,
+						name: 'some name',
+						description: 'something something',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				authMode: 'lambda',
+				authToken: 'some-token',
+			});
+			await client.models.Todo.create({
+				name: 'some name',
+				description: 'something something',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+	});
 });

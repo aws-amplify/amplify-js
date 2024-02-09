@@ -32,9 +32,13 @@ export function generateClient<T extends Record<any, any> = never>(
 		cancel,
 		isCancelError,
 		models: {},
+		queries: {},
+		mutations: {},
 	} as any;
 
 	client.models = generateModelsProperty<T>(client, params);
+	client.queries = generateQueriesProperty<T>(client, params);
+	// client.queries = generateMutationsProperty<T>(client, params);
 
 	return client as V6Client<T>;
 }

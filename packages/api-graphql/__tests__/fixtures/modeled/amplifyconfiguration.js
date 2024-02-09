@@ -959,6 +959,86 @@ const amplifyConfig = {
 					sortKeyFieldNames: [],
 				},
 			},
+
+			// for custom queries and mutations
+			Post: {
+				name: 'Post',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					owner: {
+						name: 'owner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'Posts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									allow: 'public',
+									provider: 'apiKey',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
 		},
 		enums: {
 			Status: {
@@ -966,7 +1046,98 @@ const amplifyConfig = {
 				values: ['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED'],
 			},
 		},
-		nonModels: {},
+		nonModels: {
+			EchoResult: {
+				name: 'EchoResult',
+				fields: {
+					resultContent: {
+						name: 'resultContent',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+			},
+			PostLikeResult: {
+				name: 'PostLikeResult',
+				fields: {
+					likes: {
+						name: 'likes',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+			},
+		},
+		queries: {
+			echo: {
+				name: 'echo',
+				isArray: false,
+				type: {
+					nonModel: 'EchoResult',
+				},
+				isRequired: false,
+				arguments: {
+					argumentContent: {
+						name: 'argumentContent',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+					},
+				},
+			},
+			echoString: {
+				name: 'echoString',
+				isArray: false,
+				type: 'String',
+				isRequired: false,
+				arguments: {
+					inputString: {
+						name: 'inputString',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+					},
+				},
+			},
+		},
+		mutations: {
+			likePost: {
+				name: 'likePost',
+				isArray: false,
+				type: {
+					nonModel: 'PostLikeResult',
+				},
+				isRequired: false,
+				arguments: {
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+					},
+				},
+			},
+			listPostReturnPost: {
+				name: 'listPostReturnPost',
+				isArray: false,
+				type: {
+					model: 'Post',
+				},
+				isRequired: false,
+				arguments: {
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+					},
+				},
+			},
+		},
 	},
 };
 export default amplifyConfig;
