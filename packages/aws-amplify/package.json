@@ -317,13 +317,13 @@
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./dist/esm/analytics/kinesis/index.mjs",
 			"import": "{ record }",
-			"limit": "44.50 kB"
+			"limit": "44.52 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
 			"path": "./dist/esm/analytics/kinesis-firehose/index.mjs",
 			"import": "{ record }",
-			"limit": "41.55 kB"
+			"limit": "41.57 kB"
 		},
 		{
 			"name": "[Analytics] record (Personalize)",
@@ -401,7 +401,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "25.95 kB"
+			"limit": "26.02 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -419,13 +419,13 @@
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "9.19 kB"
+			"limit": "9.21 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "9.20 kB"
+			"limit": "9.23 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -449,7 +449,7 @@
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmUserAttribute }",
-			"limit": "9.20 kB"
+			"limit": "9.22 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
@@ -461,13 +461,13 @@
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "8.29 kB"
+			"limit": "8.31 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "28.05 kB"
+			"limit": "28.10 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
@@ -485,7 +485,7 @@
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "14.05 kB"
+			"limit": "14.08 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
