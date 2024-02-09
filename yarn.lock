@@ -15,17 +15,17 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@aws-amplify/data-schema-types@*", "@aws-amplify/data-schema-types@^0.6.10":
-  version "0.6.10"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.6.10.tgz#e208e57dd2e7de0b9d479d19c1d8459b578df506"
-  integrity sha512-o893k1tNJ0iR9w9Q/jymhSQZmgNdH/L5tz+RXyWcQO+qgN3XhGaayqjYKcQ22XkB1pBgGkXtRLO6Jg74KriBWg==
+"@aws-amplify/data-schema-types@*", "@aws-amplify/data-schema-types@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.7.1.tgz#cbfe40672faf3cfe95297f990b10d8f83cca457c"
+  integrity sha512-SPIGJkMFGgiZaIO0fkWWnj0jmG90qffQhQ0RrEKSZ+Y66WUlglFe3GjLw8LMm5bvKVPMvQNFg5i5qRsTTKE1qQ==
   dependencies:
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema@^0.12.11":
-  version "0.12.11"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.12.11.tgz#bc43ada620a2b7311c2523891f96a0bc66ca50c3"
-  integrity sha512-wc7bHMrmw1+gFcY36BaZsPd08vJisfCZjjYzuXREitMHmy97HYbvva22nPbDUciQWTk+87InYflYoS5NJnKspg==
+"@aws-amplify/data-schema@^0.13.2":
+  version "0.13.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.13.2.tgz#6e9739bce7f66596e7b11c57014339e8524f2c06"
+  integrity sha512-N30C14Vd7D/0+GmCZKNDYOi/9gPSOH8GDR9AUCigee0RJLfYHvI0IAuOsGR1/06wZutN9stwYU8jsTm58jNHBA==
   dependencies:
     "@aws-amplify/data-schema-types" "*"
 
