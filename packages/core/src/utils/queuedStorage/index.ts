@@ -2,3 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { createQueuedStorage } from './createQueuedStorage';
+export { QueuedStorage, QueuedItem } from './types';

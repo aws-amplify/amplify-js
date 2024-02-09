@@ -2,3 +2,4 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { Reachability } from './Reachability';
+export { NetworkConnectionMonitor } from '../Reachability/ReachabilityMonitor/NetworkConnectionMonitor';
