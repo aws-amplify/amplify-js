@@ -77,22 +77,11 @@ async function processGraphQlResponse(
 	if (data[key].items) {
 		const flattenedResult = flattenItems(data)[key];
 
-		if (selectionSet) {
-			// don't initialize models if custom selection set specified; return resolved values
-			return {
-				data: flattenedResult,
-				nextToken: data[key].nextToken,
-				extensions,
-			};
-		} else {
-			const initialized = modelInitializer(flattenedResult);
-
-			return {
-				data: initialized,
-				nextToken: data[key].nextToken,
-				extensions,
-			};
-		}
+		return {
+			data: selectionSet ? flattenedResult : modelInitializer(flattenedResult),
+			nextToken: data[key].nextToken,
+			extensions,
+		};
 	}
 
 	return {
