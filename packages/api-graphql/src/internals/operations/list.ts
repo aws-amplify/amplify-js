@@ -130,7 +130,10 @@ async function _list(
 	} catch (error: any) {
 		if (error.errors) {
 			// graphql errors pass through
-			return error as any;
+			return {
+				...error,
+				data: [],
+			} as any;
 		} else {
 			// non-graphql errors re re-thrown
 			throw error;
