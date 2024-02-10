@@ -137,6 +137,15 @@ export type ModelAttribute = {
 	properties?: { [key: string]: any };
 };
 
+export type SecondaryIndexAttribute = {
+	type: 'key';
+	properties: {
+		name: string;
+		queryField: string;
+		fields: string[];
+	};
+};
+
 /**
  * Field Definition
  */

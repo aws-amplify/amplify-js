@@ -26,6 +26,7 @@ import {
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
 import { SchemaNonModel } from '@aws-amplify/core/dist/esm/singleton/API/types';
+import type { IndexMeta } from './operations/indexQuery';
 
 type LazyLoadOptions = {
 	authMode?: GraphQLAuthMode;
@@ -53,7 +54,7 @@ export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
 		if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
 			if (value.items !== undefined) {
 				res[prop] = value.items.map((item: Record<string, any>) =>
-					flattenItems(item)
+					flattenItems(item),
 				);
 				return;
 			}
@@ -75,7 +76,7 @@ export function initializeModel(
 	modelIntrospection: ModelIntrospectionSchema,
 	authMode: GraphQLAuthMode | undefined,
 	authToken: string | undefined,
-	context = false
+	context = false,
 ): any[] {
 	const introModel = modelIntrospection.models[modelName];
 	const introModelFields = introModel.fields;
@@ -124,13 +125,13 @@ export function initializeModel(
 								return (acc[curVal] = record[curVal]);
 							}
 						},
-						{}
+						{},
 					);
 
 					if (context) {
 						initializedRelationalFields[fieldName] = (
 							contextSpec: AmplifyServer.ContextSpec,
-							options?: LazyLoadOptions
+							options?: LazyLoadOptions,
 						) => {
 							if (record[targetNames[0]]) {
 								return (
@@ -144,14 +145,14 @@ export function initializeModel(
 									{
 										authMode: options?.authMode || authMode,
 										authToken: options?.authToken || authToken,
-									}
+									},
 								);
 							}
 							return undefined;
 						};
 					} else {
 						initializedRelationalFields[fieldName] = (
-							options?: LazyLoadOptions
+							options?: LazyLoadOptions,
 						) => {
 							if (record[targetNames[0]]) {
 								return (client as V6Client<Record<string, any>>).models[
@@ -164,7 +165,7 @@ export function initializeModel(
 									{
 										authMode: options?.authMode || authMode,
 										authToken: options?.authToken || authToken,
-									}
+									},
 								);
 							}
 							return undefined;
@@ -196,13 +197,13 @@ export function initializeModel(
 								}
 
 								return { [field]: { eq: record[parentSK[idx - 1]] } };
-							}
+							},
 						);
 
 						if (context) {
 							initializedRelationalFields[fieldName] = (
 								contextSpec: AmplifyServer.ContextSpec,
-								options?: LazyLoadOptions
+								options?: LazyLoadOptions,
 							) => {
 								if (record[parentPk]) {
 									return (
@@ -219,7 +220,7 @@ export function initializeModel(
 							};
 						} else {
 							initializedRelationalFields[fieldName] = (
-								options?: LazyLoadOptions
+								options?: LazyLoadOptions,
 							) => {
 								if (record[parentPk]) {
 									return (client as V6Client<Record<string, any>>).models[
@@ -246,13 +247,13 @@ export function initializeModel(
 							}
 
 							return { [field]: { eq: record[parentSK[idx - 1]] } };
-						}
+						},
 					);
 
 					if (context) {
 						initializedRelationalFields[fieldName] = (
 							contextSpec: AmplifyServer.ContextSpec,
-							options?: LazyLoadOptions
+							options?: LazyLoadOptions,
 						) => {
 							if (record[parentPk]) {
 								return (
@@ -269,7 +270,7 @@ export function initializeModel(
 						};
 					} else {
 						initializedRelationalFields[fieldName] = (
-							options?: LazyLoadOptions
+							options?: LazyLoadOptions,
 						) => {
 							if (record[parentPk]) {
 								return (client as V6Client<Record<string, any>>).models[
@@ -297,16 +298,17 @@ export function initializeModel(
 }
 
 export const graphQLOperationsInfo = {
-	CREATE: { operationPrefix: 'create' as const, usePlural: false },
-	READ: { operationPrefix: 'get' as const, usePlural: false },
-	UPDATE: { operationPrefix: 'update' as const, usePlural: false },
-	DELETE: { operationPrefix: 'delete' as const, usePlural: false },
-	LIST: { operationPrefix: 'list' as const, usePlural: true },
-	ONCREATE: { operationPrefix: 'onCreate' as const, usePlural: false },
-	ONUPDATE: { operationPrefix: 'onUpdate' as const, usePlural: false },
-	ONDELETE: { operationPrefix: 'onDelete' as const, usePlural: false },
-	OBSERVE_QUERY: { operationPrefix: 'observeQuery' as const, usePlural: false },
-};
+	CREATE: { operationPrefix: 'create', usePlural: false },
+	READ: { operationPrefix: 'get', usePlural: false },
+	UPDATE: { operationPrefix: 'update', usePlural: false },
+	DELETE: { operationPrefix: 'delete', usePlural: false },
+	LIST: { operationPrefix: 'list', usePlural: true },
+	INDEX_QUERY: { operationPrefix: '', usePlural: false },
+	ONCREATE: { operationPrefix: 'onCreate', usePlural: false },
+	ONUPDATE: { operationPrefix: 'onUpdate', usePlural: false },
+	ONDELETE: { operationPrefix: 'onDelete', usePlural: false },
+	OBSERVE_QUERY: { operationPrefix: 'observeQuery', usePlural: false },
+} as const;
 export type ModelOperation = keyof typeof graphQLOperationsInfo;
 
 type OperationPrefix =
@@ -325,7 +327,7 @@ function defaultSelectionSetForNonModel(
 			({ type, name }) =>
 				(typeof type === 'string' ||
 					(typeof type === 'object' && typeof type?.enum === 'string')) &&
-				name
+				name,
 		)
 		.filter(Boolean);
 
@@ -385,7 +387,7 @@ const FIELD_IR = '';
 export function customSelectionSetToIR(
 	modelInstrospection: ModelIntrospectionSchema,
 	modelName: string,
-	selectionSet: string[]
+	selectionSet: string[],
 ): Record<string, string | object> {
 	const dotNotationToObject = (path: string, modelOrNonModelName: string) => {
 		const [fieldName, ...rest] = path.split('.');
@@ -494,15 +496,15 @@ export function customSelectionSetToIR(
 		(resultObj, path) =>
 			deepMergeSelectionSetObjects(
 				dotNotationToObject(path, modelName),
-				resultObj
+				resultObj,
 			),
-		{} as Record<string, any>
+		{} as Record<string, any>,
 	);
 }
 
 const modelsDefaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 	const defaultSelectionSet = defaultSelectionSetForModel(
-		relatedModelDefinition
+		relatedModelDefinition,
 	);
 
 	const reduced = defaultSelectionSet.reduce(
@@ -510,7 +512,7 @@ const modelsDefaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 			acc[curVal] = FIELD_IR;
 			return acc;
 		},
-		{}
+		{},
 	);
 
 	return reduced;
@@ -550,7 +552,7 @@ const nonModelsDefaultSelectionSetIR = (
  * `'id comments { items { post { id } } }'`
  */
 export function selectionSetIRToString(
-	obj: Record<string, string | any>
+	obj: Record<string, string | any>,
 ): string {
 	const res: string[] = [];
 
@@ -566,7 +568,7 @@ export function selectionSetIRToString(
 					'{',
 					selectionSetIRToString(value.items),
 					'}',
-					'}'
+					'}',
 				);
 			} else {
 				res.push(fieldName, '{', selectionSetIRToString(value), '}');
@@ -587,7 +589,7 @@ export function selectionSetIRToString(
  */
 function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 	source: T,
-	target: T
+	target: T,
 ) {
 	const isObject = (obj: any) => obj && typeof obj === 'object';
 
@@ -608,7 +610,7 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 export function generateSelectionSet(
 	modelInstrospection: ModelIntrospectionSchema,
 	modelName: string,
-	selectionSet?: string[]
+	selectionSet?: string[],
 ) {
 	const modelDefinition = modelInstrospection.models[modelName];
 
@@ -626,7 +628,8 @@ export function generateGraphQLDocument(
 	modelInstrospection: ModelIntrospectionSchema,
 	modelName: string,
 	modelOperation: ModelOperation,
-	listArgs?: ListArgs
+	listArgs?: ListArgs | QueryArgs,
+	indexMeta?: IndexMeta,
 ): string {
 	const modelDefinition = modelInstrospection.models[modelName];
 
@@ -644,7 +647,33 @@ export function generateGraphQLDocument(
 	const { operationPrefix, usePlural } = graphQLOperationsInfo[modelOperation];
 
 	const { selectionSet } = listArgs || {};
-	const graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
+
+	let graphQLFieldName;
+	let indexQueryArgs: Record<string, string>;
+
+	if (operationPrefix) {
+		graphQLFieldName = `${operationPrefix}${usePlural ? pluralName : name}`;
+	} else if (indexMeta) {
+		const { queryField, pk, sk = [] } = indexMeta;
+		graphQLFieldName = queryField;
+
+		const skQueryArgs = sk.reduce((acc: Record<string, any>, fieldName) => {
+			const fieldType = fields[fieldName].type;
+			acc[fieldName] = `Model${fieldType}KeyConditionInput`;
+			return acc;
+		}, {});
+
+		indexQueryArgs = {
+			[pk]: `${fields[pk].type}!`,
+			...skQueryArgs,
+		};
+	} else {
+		throw new Error(
+			'Error generating GraphQL Document - invalid operation name',
+		);
+	}
+
+	console.log('indexQueryArgs', indexQueryArgs!);
 
 	let graphQLOperationType: 'mutation' | 'query' | 'subscription' | undefined;
 	let graphQLSelectionSet: string | undefined;
@@ -653,7 +682,7 @@ export function generateGraphQLDocument(
 	const selectionSetFields = generateSelectionSet(
 		modelInstrospection,
 		modelName,
-		selectionSet
+		selectionSet as ListArgs['selectionSet'],
 	);
 
 	switch (modelOperation) {
@@ -677,7 +706,7 @@ export function generateGraphQLDocument(
 
 								return acc;
 							},
-							{}
+							{},
 					  )
 					: {
 							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
@@ -686,6 +715,17 @@ export function generateGraphQLDocument(
 		case 'LIST':
 			graphQLArguments ??
 				(graphQLArguments = {
+					filter: `Model${name}FilterInput`,
+					limit: 'Int',
+					nextToken: 'String',
+				});
+			graphQLOperationType ?? (graphQLOperationType = 'query');
+			graphQLSelectionSet ??
+				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken __typename`);
+		case 'INDEX_QUERY':
+			graphQLArguments ??
+				(graphQLArguments = {
+					...indexQueryArgs!,
 					filter: `Model${name}FilterInput`,
 					limit: 'Int',
 					nextToken: 'String',
@@ -706,20 +746,20 @@ export function generateGraphQLDocument(
 		case 'OBSERVE_QUERY':
 		default:
 			throw new Error(
-				'Internal error: Attempted to generate graphql document for observeQuery. Please report this error.'
+				'Internal error: Attempted to generate graphql document for observeQuery. Please report this error.',
 			);
 	}
 
 	const graphQLDocument = `${graphQLOperationType}${
 		graphQLArguments
 			? `(${Object.entries(graphQLArguments).map(
-					([fieldName, type]) => `\$${fieldName}: ${type}`
+					([fieldName, type]) => `\$${fieldName}: ${type}`,
 			  )})`
 			: ''
 	} { ${graphQLFieldName}${
 		graphQLArguments
 			? `(${Object.keys(graphQLArguments).map(
-					fieldName => `${fieldName}: \$${fieldName}`
+					fieldName => `${fieldName}: \$${fieldName}`,
 			  )})`
 			: ''
 	} { ${graphQLSelectionSet} } }`;
@@ -731,7 +771,8 @@ export function buildGraphQLVariables(
 	modelDefinition: SchemaModel,
 	operation: ModelOperation,
 	arg: QueryArgs | undefined,
-	modelIntrospection: ModelIntrospectionSchema
+	modelIntrospection: ModelIntrospectionSchema,
+	indexMeta?: IndexMeta,
 ): object {
 	const {
 		fields,
@@ -759,12 +800,16 @@ export function buildGraphQLVariables(
 				input: arg
 					? Object.fromEntries(
 							Object.entries(
-								normalizeMutationInput(arg, modelDefinition, modelIntrospection)
+								normalizeMutationInput(
+									arg,
+									modelDefinition,
+									modelIntrospection,
+								),
 							).filter(([fieldName]) => {
 								const { isReadOnly } = fields[fieldName];
 
 								return !isReadOnly;
-							})
+							}),
 					  )
 					: {},
 			};
@@ -780,7 +825,7 @@ export function buildGraphQLVariables(
 
 								return acc;
 							},
-							{}
+							{},
 					  )
 					: { [primaryKeyFieldName]: arg[primaryKeyFieldName] };
 			}
@@ -800,6 +845,25 @@ export function buildGraphQLVariables(
 				variables.limit = arg.limit;
 			}
 			break;
+		case 'INDEX_QUERY':
+			const { pk, sk = [] } = indexMeta!;
+
+			variables[pk] = arg![pk];
+
+			for (const skField of sk) {
+				variables[skField] = arg![skField];
+			}
+
+			if (arg?.filter) {
+				variables.filter = arg.filter;
+			}
+			if (arg?.nextToken) {
+				variables.nextToken = arg.nextToken;
+			}
+			if (arg?.limit) {
+				variables.limit = arg.limit;
+			}
+			break;
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':
@@ -809,7 +873,7 @@ export function buildGraphQLVariables(
 			break;
 		case 'OBSERVE_QUERY':
 			throw new Error(
-				'Internal error: Attempted to build variables for observeQuery. Please report this error.'
+				'Internal error: Attempted to build variables for observeQuery. Please report this error.',
 			);
 			break;
 		default:
@@ -837,7 +901,7 @@ export function buildGraphQLVariables(
 export function normalizeMutationInput(
 	mutationInput: QueryArgs,
 	model: SchemaModel,
-	modelIntrospection: ModelIntrospectionSchema
+	modelIntrospection: ModelIntrospectionSchema,
 ): QueryArgs {
 	const { fields } = model;
 
@@ -898,7 +962,7 @@ export function normalizeMutationInput(
  */
 export function authModeParams(
 	client: ClientWithModels,
-	options: AuthModeParams = {}
+	options: AuthModeParams = {},
 ): AuthModeParams {
 	return {
 		authMode: options.authMode || client[__authMode],
@@ -914,7 +978,7 @@ export function authModeParams(
  */
 export function getCustomHeaders(
 	client: V6Client | ClientWithModels,
-	requestHeaders?: CustomHeaders
+	requestHeaders?: CustomHeaders,
 ): CustomHeaders {
 	let headers: CustomHeaders = client[__headers] || {};
 

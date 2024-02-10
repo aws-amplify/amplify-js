@@ -4613,6 +4613,102 @@ exports[`generateClient graphql default auth default iam produces expected signi
 ]
 `;
 
+exports[`generateClient index queries PK and SK index query 1`] = `
+[
+  [
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($description: String!, $viewCount: ModelIntKeyConditionInput, $filter: ModelSecondaryIndexModelFilterInput, $limit: Int, $nextToken: String) {
+  listByDescriptionAndViewCount(
+    description: $description
+    viewCount: $viewCount
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      title
+      description
+      viewCount
+      status
+      createdAt
+      updatedAt
+    }
+    nextToken
+    __typename
+  }
+}
+",
+          "variables": {
+            "description": "something something",
+            "viewCount": {
+              "gt": 4,
+            },
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient index queries PK-only index query 1`] = `
+[
+  [
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($title: String!, $filter: ModelSecondaryIndexModelFilterInput, $limit: Int, $nextToken: String) {
+  listByTitle(
+    title: $title
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      title
+      description
+      viewCount
+      status
+      createdAt
+      updatedAt
+    }
+    nextToken
+    __typename
+  }
+}
+",
+          "variables": {
+            "title": "Hello World",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
 exports[`generateClient observeQuery can paginate through initial results 1`] = `
 [
   [
