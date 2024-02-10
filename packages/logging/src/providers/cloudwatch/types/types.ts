@@ -4,18 +4,18 @@
 // TODO: fix import
 import {
 	LogLevel,
+	LogParams,
 	LoggingCategory,
 	LoggingProvider,
-	LogParams,
 } from '@aws-amplify/core/internals/utils';
 
 export interface CloudWatchProvider extends LoggingProvider {
 	// TODO: configure method needs another param case handled options?: CloudWatchRemoteLoggingConstraints
-	configure: (config: CloudWatchConfig) => void;
-	log: (logParams: LogParams) => void;
-	flushLogs: () => Promise<void>;
-	enable: () => void;
-	disable: () => void;
+	configure(config: CloudWatchConfig): void;
+	log(logParams: LogParams): void;
+	flushLogs(): Promise<void>;
+	enable(): void;
+	disable(): void;
 }
 
 export interface CloudWatchConfig {
@@ -33,22 +33,20 @@ interface RemoteConfiguration {
 	refreshIntervalInSeconds?: number;
 }
 
-interface LoggingConstraints {
+export interface LoggingConstraint {
 	defaultLogLevel: LogLevel;
 	categoryLogLevel?: CategoryLogLevel;
-	userLogLevel?: {
-		[Usersub: string]: {
-			defaultLogLevel: LogLevel;
-			categoryLogLevel: CategoryLogLevel;
-		};
-	};
 }
 
-type CategoryLogLevel = {
+export interface LoggingConstraints extends LoggingConstraint {
+	userLogLevel?: Record<string, LoggingConstraint>;
+}
+
+export type CategoryLogLevel = {
 	[Category in LoggingCategory]?: LogLevel;
 };
 
 interface CloudWatchRemoteLoggingConstraints {
-	fetchLoggingConstraints: () => Promise<LoggingConstraints>;
-	getIntervalInSeconds: () => number;
+	fetchLoggingConstraints(): Promise<LoggingConstraints>;
+	getIntervalInSeconds(): number;
 }

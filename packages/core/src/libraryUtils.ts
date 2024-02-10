@@ -139,4 +139,5 @@ export {
 	LogParams,
 	LoggingProvider,
 	LoggingCategory,
+	isWithinCurrentLogLevel,
 } from './logging';

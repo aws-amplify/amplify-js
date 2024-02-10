@@ -4,3 +4,4 @@
 export { ConsoleLogger } from './legacy/ConsoleLogger';
 export { LoggingProvider, LogLevel, LogParams, LoggingCategory } from './types';
 export { createLogger } from './createLogger';
+export { isWithinCurrentLogLevel } from './utils';

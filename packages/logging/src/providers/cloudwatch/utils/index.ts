@@ -11,3 +11,4 @@ export { resolveConfig } from './resolveConfig';
 export { resolveCredentials } from './resolveCredentials';
 export { setUpRemoteLoggingConstraintsRefresh } from './setUpRemoteLoggingConstraintsRefresh';
 export { getDefaultStreamName } from './utils';
+export { isLoggable } from './loggableHelpers';

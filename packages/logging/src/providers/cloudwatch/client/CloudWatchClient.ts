@@ -9,16 +9,17 @@ import {
 	PutLogEventsCommandInput,
 	RejectedLogEventsInfo,
 } from '@aws-sdk/client-cloudwatch-logs';
-import { CloudWatchConfig } from '../types';
 import {
-	NetworkConnectionMonitor,
-	createQueuedStorage,
-	QueuedStorage,
-	QueuedItem,
 	LogLevel,
 	LogParams,
+	NetworkConnectionMonitor,
+	QueuedItem,
+	QueuedStorage,
+	createQueuedStorage,
 } from '@aws-amplify/core/internals/utils';
-import { getDefaultStreamName } from '../utils';
+
+import { CloudWatchConfig } from '../types';
+import { getDefaultStreamName, isLoggable } from '../utils';
 import { resolveCredentials } from '../../../utils/resolveCredentials';
 import { CloudWatchProvider } from '../types/types';
 
@@ -65,7 +66,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 	 * @internal
 	 */
 	log: (logParams: LogParams) => {
-		if (!_isLoggable(logParams)) {
+		if (!isLoggable(logParams, cloudWatchConfig)) {
 			return;
 		}
 		const { namespace, category, logLevel, message } = logParams;
@@ -84,9 +85,9 @@ export const cloudWatchProvider: CloudWatchProvider = {
 			{
 				dequeueBeforeEnqueue: queuedStorage.isFull(
 					cloudWatchConfig.localStoreMaxSizeInMB ??
-						defaultConfig.localStoreMaxSizeInMB
+						defaultConfig.localStoreMaxSizeInMB,
 				),
-			}
+			},
 		);
 		// TODO: call startSyncIfNotInProgress
 	},
@@ -102,6 +103,7 @@ export const cloudWatchProvider: CloudWatchProvider = {
 		// TODO: Get these messages from buffer and not storage
 		const batchedLogs = await queuedStorage.peekAll();
 		await _sendToCloudWatch(batchedLogs);
+
 		return Promise.resolve();
 	},
 	/**
@@ -147,18 +149,17 @@ async function _sendToCloudWatch(batchedLogs: QueuedItem[]) {
 // Exporting this function for testing purposes
 export async function handleRejectedLogEvents(
 	batchedLogs: QueuedItem[],
-	rejectedLogEventsInfo?: RejectedLogEventsInfo
+	rejectedLogEventsInfo?: RejectedLogEventsInfo,
 ) {
 	// If there is tooNewLogEvents delete every log until then
 	if (rejectedLogEventsInfo?.tooNewLogEventStartIndex) {
 		await queuedStorage.delete(
-			batchedLogs.slice(rejectedLogEventsInfo.tooNewLogEventStartIndex)
+			batchedLogs.slice(rejectedLogEventsInfo.tooNewLogEventStartIndex),
 		);
 		// If there is no tooNewLogEvents then others are either tooOld,
 		// expired or successfully logged so delete them from storage
 	} else {
 		await queuedStorage.delete(batchedLogs);
-		return;
 	}
 
 	// TODO:
@@ -167,22 +168,17 @@ export async function handleRejectedLogEvents(
 	// 2. Retry logic for the same needs to be implemented
 }
 
-function _isLoggable(log: LogParams): boolean {
-	// TODO: Log filtering function
-	return true;
-}
-
 // TODO: Add the constraints for log batches based on sdk API
 // https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutLogEvents.html
 function sdkClientConstraintsSatisfied(
-	logBatch: PutLogEventsCommandInput
-): Boolean {
+	logBatch: PutLogEventsCommandInput,
+): boolean {
 	return true;
 }
 
 // TODO: Input should be buffered logs type not QueuedItem from storage
 function convertBufferLogsToCWLogs(
-	bufferedLogs: QueuedItem[]
+	bufferedLogs: QueuedItem[],
 ): InputLogEvent[] {
 	return bufferedLogs.map(bufferedLog => {
 		return {
