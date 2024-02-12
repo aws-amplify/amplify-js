@@ -148,7 +148,7 @@ describe('generateClient', () => {
 			expect(() => {
 				client.models.Todo.create({ name: 'todo' });
 			}).toThrow(
-				'Client is not generate. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
 		});
 	});
@@ -182,7 +182,7 @@ describe('generateClient', () => {
 			expect(() => {
 				client.enums.Status.values()
 			}).toThrow(
-				'Client is not generate. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
 		});
 	});
