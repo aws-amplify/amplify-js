@@ -12,4 +12,4 @@ export {
 	UpdateEndpointInput,
 	UpdateEndpointOutput,
 } from './updateEndpoint';
-export { Event, InAppMessageCampaign, EventsBatch } from './types';
+export { Event, InAppMessageCampaign, EventsBatch, InAppMessageButton, OverrideButtonConfiguration } from './types';

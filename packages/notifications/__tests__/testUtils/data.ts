@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
-import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import { type InAppMessageCampaign as PinpointInAppMessage, OverrideButtonConfiguration } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import {
 	InAppMessage,
 	InAppMessageContent,
@@ -184,354 +184,7 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 	TreatmentId: 'T1',
 };
 
-export const browserPinpointInAppMessagesWithOverrides: {
-	message: PinpointInAppMessage;
-	expectedContent: InAppMessageContent[];
-	configPlatform?: string; // should match the
-}[] = [
-	{
-		configPlatform: 'web',
-		expectedContent: [
-			{
-				body: {
-					content: 'Body content',
-					style: { color: '#FF8888', textAlign: 'left' },
-				},
-				container: { style: { backgroundColor: '#FFFF88' } },
-				header: {
-					content: 'Header content',
-					style: { color: '#88FF88', textAlign: 'center' },
-				},
-				image: { src: imageUrl },
-				primaryButton: {
-					action: 'LINK',
-					style: {
-						backgroundColor: '#8888FF',
-						borderRadius: 4,
-						color: '#FF88FF',
-					},
-					title: 'Close button',
-					url: 'https://webPrimaryButtonLink.com',
-				},
-				secondaryButton: {
-					action: 'LINK',
-					style: {
-						backgroundColor: '#88FFFF',
-						borderRadius: 4,
-						color: '#FFFFFF',
-					},
-					title: 'Link button',
-					url: 'https://webSecondaryButtonLink.com',
-				},
-			},
-		],
-		message: {
-			CampaignId: 'uuid-3',
-			InAppMessage: {
-				Content: [
-					{
-						BackgroundColor: '#FFFF88',
-						BodyConfig: {
-							Alignment: 'LEFT',
-							Body: 'Body content',
-							TextColor: '#FF8888',
-						},
-						HeaderConfig: {
-							Alignment: 'CENTER',
-							Header: 'Header content',
-							TextColor: '#88FF88',
-						},
-						ImageUrl: imageUrl,
-						PrimaryBtn: {
-							DefaultConfig: {
-								BackgroundColor: '#8888FF',
-								BorderRadius: 4,
-								ButtonAction: 'CLOSE',
-								Link: undefined,
-								Text: 'Close button',
-								TextColor: '#FF88FF',
-							},
-							Web: {
-								ButtonAction: 'LINK',
-								Link: 'https://webPrimaryButtonLink.com',
-							},
-						},
-						SecondaryBtn: {
-							DefaultConfig: {
-								BackgroundColor: '#88FFFF',
-								BorderRadius: 4,
-								ButtonAction: 'LINK',
-								Link: 'http://link.fakeurl',
-								Text: 'Link button',
-								TextColor: '#FFFFFF',
-							},
-							Web: {
-								ButtonAction: 'LINK',
-								Link: 'https://webSecondaryButtonLink.com',
-							},
-						},
-					},
-				],
-				Layout: 'TOP_BANNER',
-				CustomConfig: { foo: 'bar' },
-			},
-			Priority: 3,
-			Schedule: {
-				EndDate: '2021-01-01T00:00:00Z',
-				EventFilter: {
-					FilterType: 'SYSTEM',
-					Dimensions: {
-						Attributes: {},
-						EventType: {
-							DimensionType: 'INCLUSIVE',
-							Values: ['clicked', 'swiped'],
-						},
-						Metrics: {},
-					},
-				},
-				QuietTime: {
-					End: undefined,
-					Start: undefined,
-				},
-			},
-			SessionCap: 0,
-			DailyCap: 0,
-			TotalCap: 0,
-			TreatmentId: 'T1',
-		},
-	},
-];
-
-export const nativePinpointInAppMessagesWithOverrides: {
-	message: PinpointInAppMessage;
-	expectedContent: InAppMessageContent[];
-	configPlatform?: string; // should match the
-}[] = [
-	{
-		configPlatform: 'android',
-		expectedContent: [
-			{
-				body: {
-					content: 'Body content',
-					style: { color: '#FF8888', textAlign: 'left' },
-				},
-				container: { style: { backgroundColor: '#FFFF88' } },
-				header: {
-					content: 'Header content',
-					style: { color: '#88FF88', textAlign: 'center' },
-				},
-				image: { src: imageUrl },
-				primaryButton: {
-					action: 'DEEP_LINK',
-					style: {
-						backgroundColor: '#8888FF',
-						borderRadius: 4,
-						color: '#FF88FF',
-					},
-					title: 'Close button',
-					url: 'android-app://primaryButtonLink',
-				},
-				secondaryButton: {
-					action: 'DEEP_LINK',
-					style: {
-						backgroundColor: '#88FFFF',
-						borderRadius: 4,
-						color: '#FFFFFF',
-					},
-					title: 'Link button',
-					url: 'android-app://secondaryButtonLink',
-				},
-			},
-		],
-		message: {
-			CampaignId: 'uuid-1',
-			InAppMessage: {
-				Content: [
-					{
-						BackgroundColor: '#FFFF88',
-						BodyConfig: {
-							Alignment: 'LEFT',
-							Body: 'Body content',
-							TextColor: '#FF8888',
-						},
-						HeaderConfig: {
-							Alignment: 'CENTER',
-							Header: 'Header content',
-							TextColor: '#88FF88',
-						},
-						ImageUrl: imageUrl,
-						PrimaryBtn: {
-							DefaultConfig: {
-								BackgroundColor: '#8888FF',
-								BorderRadius: 4,
-								ButtonAction: 'CLOSE',
-								Link: undefined,
-								Text: 'Close button',
-								TextColor: '#FF88FF',
-							},
-							Android: {
-								ButtonAction: 'DEEP_LINK',
-								Link: 'android-app://primaryButtonLink',
-							},
-						},
-						SecondaryBtn: {
-							DefaultConfig: {
-								BackgroundColor: '#88FFFF',
-								BorderRadius: 4,
-								ButtonAction: 'LINK',
-								Link: 'http://link.fakeurl',
-								Text: 'Link button',
-								TextColor: '#FFFFFF',
-							},
-							Android: {
-								ButtonAction: 'DEEP_LINK',
-								Link: 'android-app://secondaryButtonLink',
-							},
-						},
-					},
-				],
-				Layout: 'TOP_BANNER',
-				CustomConfig: { foo: 'bar' },
-			},
-			Priority: 3,
-			Schedule: {
-				EndDate: '2021-01-01T00:00:00Z',
-				EventFilter: {
-					FilterType: 'SYSTEM',
-					Dimensions: {
-						Attributes: {},
-						EventType: {
-							DimensionType: 'INCLUSIVE',
-							Values: ['clicked', 'swiped'],
-						},
-						Metrics: {},
-					},
-				},
-				QuietTime: {
-					End: undefined,
-					Start: undefined,
-				},
-			},
-			SessionCap: 0,
-			DailyCap: 0,
-			TotalCap: 0,
-			TreatmentId: 'T1',
-		},
-	},
-	{
-		configPlatform: 'ios',
-		expectedContent: [
-			{
-				body: {
-					content: 'Body content',
-					style: { color: '#FF8888', textAlign: 'left' },
-				},
-				container: { style: { backgroundColor: '#FFFF88' } },
-				header: {
-					content: 'Header content',
-					style: { color: '#88FF88', textAlign: 'center' },
-				},
-				image: { src: imageUrl },
-				primaryButton: {
-					action: 'DEEP_LINK',
-					style: {
-						backgroundColor: '#8888FF',
-						borderRadius: 4,
-						color: '#FF88FF',
-					},
-					title: 'Close button',
-					url: 'ios-app://primaryButtonLink',
-				},
-				secondaryButton: {
-					action: 'DEEP_LINK',
-					style: {
-						backgroundColor: '#88FFFF',
-						borderRadius: 4,
-						color: '#FFFFFF',
-					},
-					title: 'Link button',
-					url: 'ios-app://secondaryButtonLink',
-				},
-			},
-		],
-		message: {
-			CampaignId: 'uuid-2',
-			InAppMessage: {
-				Content: [
-					{
-						BackgroundColor: '#FFFF88',
-						BodyConfig: {
-							Alignment: 'LEFT',
-							Body: 'Body content',
-							TextColor: '#FF8888',
-						},
-						HeaderConfig: {
-							Alignment: 'CENTER',
-							Header: 'Header content',
-							TextColor: '#88FF88',
-						},
-						ImageUrl: imageUrl,
-						PrimaryBtn: {
-							DefaultConfig: {
-								BackgroundColor: '#8888FF',
-								BorderRadius: 4,
-								ButtonAction: 'CLOSE',
-								Link: undefined,
-								Text: 'Close button',
-								TextColor: '#FF88FF',
-							},
-							IOS: {
-								ButtonAction: 'DEEP_LINK',
-								Link: 'ios-app://primaryButtonLink',
-							},
-						},
-						SecondaryBtn: {
-							DefaultConfig: {
-								BackgroundColor: '#88FFFF',
-								BorderRadius: 4,
-								ButtonAction: 'LINK',
-								Link: 'http://link.fakeurl',
-								Text: 'Link button',
-								TextColor: '#FFFFFF',
-							},
-							IOS: {
-								ButtonAction: 'DEEP_LINK',
-								Link: 'ios-app://secondaryButtonLink',
-							},
-						},
-					},
-				],
-				Layout: 'TOP_BANNER',
-				CustomConfig: { foo: 'bar' },
-			},
-			Priority: 3,
-			Schedule: {
-				EndDate: '2021-01-01T00:00:00Z',
-				EventFilter: {
-					FilterType: 'SYSTEM',
-					Dimensions: {
-						Attributes: {},
-						EventType: {
-							DimensionType: 'INCLUSIVE',
-							Values: ['clicked', 'swiped'],
-						},
-						Metrics: {},
-					},
-				},
-				QuietTime: {
-					End: undefined,
-					Start: undefined,
-				},
-			},
-			SessionCap: 0,
-			DailyCap: 0,
-			TotalCap: 0,
-			TreatmentId: 'T1',
-		},
-	},
-];
-
-export const extractedContent = [
+export const extractedContent:InAppMessageContent[] = [
 	{
 		body: {
 			content: 'Body content',
@@ -557,6 +210,64 @@ export const extractedContent = [
 		},
 	},
 ];
+
+
+export const nativeButtonOverrides:{
+	configPlatform:'ios' | 'android';
+	buttonOverrides:{
+		primaryButton:OverrideButtonConfiguration,
+		secondaryButton:OverrideButtonConfiguration
+	};
+}[] = [
+	{
+		configPlatform:'android',
+		buttonOverrides:{
+			primaryButton:{
+				ButtonAction:'DEEP_LINK',
+				Link:'android-app://primaryButtonLink',
+			},
+			secondaryButton:{
+				ButtonAction:'LINK',
+				Link:'android-app://secondaryButtonLink',
+			}
+		}
+	},
+	{
+		configPlatform:'ios',
+		buttonOverrides:{
+			primaryButton:{
+				ButtonAction:'DEEP_LINK',
+				Link:'ios-app://primaryButtonLink',
+			},
+			secondaryButton:{
+				ButtonAction:'LINK',
+				Link:'ios-app://secondaryButtonLink',
+			}
+		}
+
+	}
+]
+export const browserButtonOverrides:{
+	configPlatform:'web';
+	buttonOverrides:{
+		primaryButton:OverrideButtonConfiguration,
+		secondaryButton:OverrideButtonConfiguration
+	};
+}[] = [{
+		configPlatform:'web',
+		buttonOverrides:{
+			primaryButton:{
+				ButtonAction:'LINK',
+				Link:'https://webPrimaryButtonLink.com',
+			},
+			secondaryButton:{
+				ButtonAction:'LINK',
+				Link:'https://webSecondaryButtonLink.com',
+			}
+		}
+
+	}
+]
 
 export const extractedMetadata = {
 	customData: { foo: 'bar' },

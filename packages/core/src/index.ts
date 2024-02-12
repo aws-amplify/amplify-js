@@ -60,7 +60,7 @@ export {
 	sessionStorage,
 	sharedInMemoryStorage,
 } from './storage';
-export { KeyValueStorageInterface, InAppMessageButton } from './types';
+export { KeyValueStorageInterface } from './types';
 
 // Cache exports
 export { Cache } from './Cache';

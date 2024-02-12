@@ -4,8 +4,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import cloneDeep from 'lodash/cloneDeep';
-
 import {
 	extractContent,
 	mapOSPlatform,
@@ -13,8 +11,11 @@ import {
 
 import {
 	nonBrowserConfigTestCases,
-	nativePinpointInAppMessagesWithOverrides,
+	pinpointInAppMessage,
+	extractedContent,
+	nativeButtonOverrides,
 } from '../../../../testUtils/data';
+import { mergeExpectedContentWithExpectedOverride, mergeInAppMessageWithOverrides } from '../../../../testUtils/mergeInAppMessageWithOverrides';
 
 jest.mock('@aws-amplify/core');
 
@@ -29,31 +30,6 @@ jest.mock('@aws-amplify/core/internals/utils', () => {
 });
 
 describe('InAppMessaging Provider Utils', () => {
-	describe('extractContent with overrides', () => {
-		describe('when running natively', () => {
-			nativePinpointInAppMessagesWithOverrides.forEach(
-				({ message, expectedContent, configPlatform }) => {
-					test(`correctly extracts content for ${configPlatform}`, () => {
-						const utils = require('@aws-amplify/core/internals/utils');
-						// Dynamically override the mock for getClientInfo
-						utils.getClientInfo.mockImplementation(() => ({
-							platform: configPlatform,
-						}));
-
-						const pinpointInAppMessage = cloneDeep(message);
-						const content = extractContent(pinpointInAppMessage);
-						expect(content[0].primaryButton).toStrictEqual(
-							expectedContent[0].primaryButton
-						);
-						expect(content[0].secondaryButton).toStrictEqual(
-							expectedContent[0].secondaryButton
-						);
-					});
-				}
-			);
-		});
-	});
-
 	describe('mapOSPlatform method', () => {
 		describe('when running natively', () => {
 			nonBrowserConfigTestCases.forEach(({ os, expectedPlatform }) => {
@@ -62,6 +38,33 @@ describe('InAppMessaging Provider Utils', () => {
 					expect(result).toBe(expectedPlatform);
 				});
 			});
+		});
+	});
+
+	describe('extractContent with overrides', () => {
+		describe('when running natively', () => {
+			nativeButtonOverrides.forEach(
+				({buttonOverrides, configPlatform }) => {
+					const message=mergeInAppMessageWithOverrides(pinpointInAppMessage,configPlatform, buttonOverrides);
+					const expectedContent = mergeExpectedContentWithExpectedOverride(extractedContent[0],buttonOverrides);
+
+					test(`correctly extracts content for ${configPlatform}`, () => {
+						const utils = require('@aws-amplify/core/internals/utils');
+						// Dynamically override the mock for getClientInfo
+						utils.getClientInfo.mockImplementation(() => ({
+							platform: configPlatform,
+						}));
+
+						const content = extractContent(message);
+						expect(content[0].primaryButton).toStrictEqual(
+							expectedContent.primaryButton
+						);
+						expect(content[0].secondaryButton).toStrictEqual(
+							expectedContent.secondaryButton
+						);
+					});
+				}
+			);
 		});
 	});
 });
