@@ -54,7 +54,6 @@ import {
  *   },
  * });
  * ```
- * @see {@link clientGet}
  */
 export const get = (
 	contextSpec: AmplifyServer.ContextSpec,
