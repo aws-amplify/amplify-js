@@ -26,6 +26,7 @@ export {
 	AuthUserPoolConfig,
 	AuthUserPoolAndIdentityPoolConfig,
 	APIConfig,
+	GraphQLProviderConfig,
 	PredictionsConfig,
 	StorageAccessLevel,
 	StorageConfig,

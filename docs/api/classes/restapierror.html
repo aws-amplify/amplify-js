@@ -937,6 +937,9 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a href="restapierror.html#underlyingerror" class="tsd-kind-icon">underlying<wbr>Error</a>
 			</li>
+			<li class=" tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
+				<a href="restapierror.html#response" class="tsd-kind-icon">response</a>
+			</li>
 		</ul>
 	</li>
 </ul>
@@ -947,7 +950,7 @@ img { max-width: 100%; }
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
-				<span class="tsd-signature-type">AmplifyError</span>
+				<span class="tsd-signature-type">ApiError</span>
 				<ul class="tsd-hierarchy">
 					<li>
 						<span class="target">RestApiError</span>
@@ -981,6 +984,12 @@ img { max-width: 100%; }
 						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="restapierror.html#underlyingerror" class="tsd-kind-icon">underlying<wbr>Error</a></li>
 					</ul>
 				</section>
+				<section class="tsd-index-section tsd-is-inherited">
+					<h3>Accessors</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited"><a href="restapierror.html#response" class="tsd-kind-icon">response</a></li>
+					</ul>
+				</section>
 			</div>
 		</section>
 	</section>
@@ -990,20 +999,20 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>Rest<wbr>Api<wbr>Error<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><a href="../globals.html#amplifyerrorparams" class="tsd-signature-type">AmplifyErrorParams</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="restapierror.html" class="tsd-signature-type">RestApiError</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>Rest<wbr>Api<wbr>Error<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ApiErrorParams</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="restapierror.html" class="tsd-signature-type">RestApiError</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
-						<p>Overrides AmplifyError.__constructor</p>
+						<p>Overrides ApiError.__constructor</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/09816e5df/packages/api-rest/src/errors/RestApiError.ts#L9">packages/api-rest/src/errors/RestApiError.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/api-rest/src/errors/RestApiError.ts#L6">packages/api-rest/src/errors/RestApiError.ts:6</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>params: <a href="../globals.html#amplifyerrorparams" class="tsd-signature-type">AmplifyErrorParams</a></h5>
+							<h5>params: <span class="tsd-signature-type">ApiErrorParams</span></h5>
 						</li>
 					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="restapierror.html" class="tsd-signature-type">RestApiError</a></h4>
@@ -1038,7 +1047,7 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 			<a name="recoverysuggestion" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> recovery<wbr>Suggestion</h3>
-			<div class="tsd-signature tsd-kind-icon">recovery<wbr>Suggestion<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<div class="tsd-signature tsd-kind-icon">recovery<wbr>Suggestion<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#recoverysuggestion">recoverySuggestion</a></p>
 				<ul>
@@ -1049,7 +1058,7 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 			<a name="stack" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> stack</h3>
-			<div class="tsd-signature tsd-kind-icon">stack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<div class="tsd-signature tsd-kind-icon">stack<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="analyticserror.html">AnalyticsError</a>.<a href="analyticserror.html#stack">stack</a></p>
 				<ul>
@@ -1067,6 +1076,25 @@ img { max-width: 100%; }
 					<li>Defined in packages/core/dist/esm/errors/AmplifyError.d.ts:3</li>
 				</ul>
 			</aside>
+		</section>
+	</section>
+	<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+		<h2>Accessors</h2>
+		<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class tsd-is-inherited">
+			<a name="response" class="tsd-anchor"></a>
+			<h3>response</h3>
+			<div class="tsd-signature tsd-kind-icon">response<span class="tsd-signature-symbol">:</span></div>
+			<aside class="tsd-sources">
+				<p>Inherited from <a href="restapierror.html">RestApiError</a>.<a href="restapierror.html#response">response</a></p>
+				<ul>
+					<li>Defined in packages/core/dist/esm/errors/APIError.d.ts:28</li>
+				</ul>
+			</aside>
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>The unwrapped HTTP response causing the given API error.</p>
+				</div>
+			</div>
 		</section>
 	</section>
 	<footer>
