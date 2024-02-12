@@ -42,8 +42,8 @@ const submitEvents = async (
 		groupBy(event => event.streamName, events),
 	);
 	const requests = groupedByStreamName
-		.map(([streamName, events]) =>
-			createKinesisPutRecordsCommand(streamName, events),
+		.map(([streamName, groupedEvents]) =>
+			createKinesisPutRecordsCommand(streamName, groupedEvents),
 		)
 		.map(command => client.send(command));
 

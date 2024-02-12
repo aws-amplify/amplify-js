@@ -13,6 +13,7 @@ import {
 	isAnalyticsEnabled,
 	resolveCredentials,
 } from '../../../utils';
+import { AnalyticsValidationErrorCode } from '../../../errors';
 
 const logger = new ConsoleLogger('Kinesis');
 

@@ -71,21 +71,18 @@ const startIframeAutoTracking = (
 		clearInterval(timer);
 	});
 
-	// @ts-ignore
-	window.onYouTubeIframeAPIReady = () => {
-		// @ts-ignore
-		delete window.onYouTubeIframeAPIReady;
+	(window as any).onYouTubeIframeAPIReady = () => {
+		delete (window as any).onYouTubeIframeAPIReady;
 
-		// @ts-ignore
-		player = new window.YT.Player(element.id, {
+		player = new (window as any).YT.Player(element.id, {
 			events: {
 				onStateChange: (event: any) => {
-					const iframeEventMapping = {
+					const iframeEventMapping: Record<number, EVENT_TYPE> = {
 						0: EVENT_TYPE.ENDED,
 						1: EVENT_TYPE.PLAY,
 						2: EVENT_TYPE.PAUSE,
 					};
-					// @ts-ignore
+
 					const eventType = iframeEventMapping[event.data];
 					switch (eventType) {
 						case EVENT_TYPE.ENDED:
@@ -144,7 +141,7 @@ const startHTMLMediaAutoTracking = (
 
 const checkElementLoaded = (interval: number, maxTries: number) => {
 	let retryCount = 0;
-	const wait = () => new Promise(r => setTimeout(r, interval));
+	const wait = () => new Promise(resolve => setTimeout(resolve, interval));
 	const check = async (elementId: string): Promise<boolean> => {
 		if (retryCount >= maxTries) {
 			return false;
@@ -157,7 +154,7 @@ const checkElementLoaded = (interval: number, maxTries: number) => {
 			retryCount += 1;
 			await wait();
 
-			return await check(elementId);
+			return check(elementId);
 		}
 	};
 

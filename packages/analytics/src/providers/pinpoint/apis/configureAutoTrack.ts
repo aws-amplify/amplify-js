@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { AnalyticsValidationErrorCode } from '../../../errors';
 import {
 	TrackerAttributes,

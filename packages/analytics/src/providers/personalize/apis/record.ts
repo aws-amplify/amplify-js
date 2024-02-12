@@ -21,6 +21,7 @@ import {
 	IDENTIFY_EVENT_TYPE,
 	MEDIA_AUTO_TRACK_EVENT_TYPE,
 } from '../utils/constants';
+import { AnalyticsValidationErrorCode } from '../../../errors';
 
 const logger = new ConsoleLogger('Personalize');
 

@@ -51,8 +51,8 @@ const submitEvents = async (
 	);
 
 	const requests = groupedByStreamName
-		.map(([streamName, events]) =>
-			createPutRecordsBatchCommand(streamName, events),
+		.map(([streamName, groupedEvents]) =>
+			createPutRecordsBatchCommand(streamName, groupedEvents),
 		)
 		.map(command => client.send(command));
 

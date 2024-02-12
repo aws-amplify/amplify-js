@@ -61,7 +61,7 @@ const submitEvents = async (
 	);
 
 	const requests = groupedByIds
-		.map(([ids, events]) => createPutEventsCommand(ids, events))
+		.map(([ids, groupedEvents]) => createPutEventsCommand(ids, groupedEvents))
 		.map(command => client.send(command));
 
 	await Promise.allSettled(requests);
