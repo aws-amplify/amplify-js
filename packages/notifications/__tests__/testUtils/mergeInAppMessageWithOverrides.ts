@@ -34,26 +34,23 @@ export const mergeInAppMessageWithOverrides:(
 
 export const mergeExpectedContentWithExpectedOverride:(
 	inAppMessage:InAppMessageContent,
-	expectedButtonConfig:		{
+	expectedButtonConfig: {
 		primaryButton:OverrideButtonConfiguration,
 		secondaryButton:OverrideButtonConfiguration
 	}
 )=>InAppMessageContent = (inAppMessage, expectedButtonConfig)=>{
 	let expectedContent = cloneDeep(inAppMessage);
 	if (expectedContent) {
-		expectedContent ={
-			...expectedContent,
-			primaryButton:{
-				...expectedContent.primaryButton,
-				action:expectedButtonConfig.primaryButton.ButtonAction,
-				url:expectedButtonConfig.primaryButton.Link
-			} as InAppMessageButton,
-			secondaryButton:{
-				...expectedContent.secondaryButton,
-				action:expectedButtonConfig.secondaryButton.ButtonAction,
-				url:expectedButtonConfig.secondaryButton.Link
-			} as InAppMessageButton
-		}
+		expectedContent.primaryButton = {
+			...expectedContent.primaryButton,
+			action:expectedButtonConfig.primaryButton.ButtonAction,
+			url:expectedButtonConfig.primaryButton.Link
+		} as InAppMessageButton
+		expectedContent.secondaryButton = {
+			...expectedContent.secondaryButton,
+			action:expectedButtonConfig.secondaryButton.ButtonAction,
+			url:expectedButtonConfig.secondaryButton.Link
+		} as InAppMessageButton
 	}
 	return expectedContent
 }
