@@ -10,7 +10,7 @@ import {
 	OperationTypeNode,
 } from '@aws-amplify/api-graphql';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { Amplify, Cache, ConsoleLogger } from '@aws-amplify/core';
+import { Amplify, Cache } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
@@ -28,7 +28,6 @@ import { CustomHeaders } from '@aws-amplify/data-schema-types';
  * state as possible for V6 to reduce number of potentially impactful changes to DataStore.
  */
 
-const logger = new ConsoleLogger('API');
 /**
  * @deprecated
  * Use RestApi or GraphQLAPI to reduce your application bundle size
@@ -78,7 +77,7 @@ export class InternalAPIClass {
 		    }>
 		  : Promise<GraphQLResult<any>> | Observable<object>;
 
-	graphql<T = any>(
+	graphql<_ = any>(
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails,
