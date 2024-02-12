@@ -40,17 +40,15 @@ export const mergeExpectedContentWithExpectedOverride:(
 	}
 )=>InAppMessageContent = (inAppMessage, expectedButtonConfig)=>{
 	let expectedContent = cloneDeep(inAppMessage);
-	if (expectedContent) {
-		expectedContent.primaryButton = {
-			...expectedContent.primaryButton,
-			action:expectedButtonConfig.primaryButton.ButtonAction,
-			url:expectedButtonConfig.primaryButton.Link
-		} as InAppMessageButton
-		expectedContent.secondaryButton = {
-			...expectedContent.secondaryButton,
-			action:expectedButtonConfig.secondaryButton.ButtonAction,
-			url:expectedButtonConfig.secondaryButton.Link
-		} as InAppMessageButton
-	}
+	expectedContent.primaryButton = {
+		...expectedContent.primaryButton,
+		action:expectedButtonConfig.primaryButton.ButtonAction,
+		url:expectedButtonConfig.primaryButton.Link
+	} as InAppMessageButton
+	expectedContent.secondaryButton = {
+		...expectedContent.secondaryButton,
+		action:expectedButtonConfig.secondaryButton.ButtonAction,
+		url:expectedButtonConfig.secondaryButton.Link
+	} as InAppMessageButton
 	return expectedContent
 }
