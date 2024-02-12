@@ -86,7 +86,7 @@
 	"dependencies": {
 		"@aws-amplify/api-rest": "4.0.16",
 		"@aws-amplify/core": "6.0.16",
-		"@aws-amplify/data-schema-types": "^0.7.1",
+		"@aws-amplify/data-schema-types": "^0.7.2",
 		"@aws-sdk/types": "3.387.0",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",

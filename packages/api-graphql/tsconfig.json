@@ -1,7 +1,11 @@
 {
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"strictNullChecks": true
+		"strictNullChecks": true,
+		"baseUrl": ".",
+		"paths": {
+			"@aws-amplify/data-schema-types": ["../../node_modules/@aws-amplify/data-schema-types"]
+		}
 	},
 	"include": ["./src", "__tests__"]
 }
