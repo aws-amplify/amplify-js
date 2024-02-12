@@ -3,9 +3,10 @@
 
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import {
-	updateEndpoint,
 	UpdateEndpointException,
+	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { AnalyticsValidationErrorCode } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils';
 import { IdentifyUserInput } from '../types';
