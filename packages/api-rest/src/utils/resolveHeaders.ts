@@ -3,7 +3,7 @@
 
 export const resolveHeaders = (
 	headers?: Record<string, string>,
-	body?: unknown
+	body?: unknown,
 ) => {
 	const normalizedHeaders: Record<string, string> = {};
 	const isFormData = body instanceof FormData;
@@ -22,5 +22,6 @@ export const resolveHeaders = (
 			delete normalizedHeaders['content-type'];
 		}
 	}
+
 	return normalizedHeaders;
 };
