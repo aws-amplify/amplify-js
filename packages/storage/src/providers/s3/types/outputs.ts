@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	DownloadTask,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,
 	StorageItem,
 	StorageListOutput,
-	DownloadTask,
 	UploadTask,
 } from '../../../types';
 

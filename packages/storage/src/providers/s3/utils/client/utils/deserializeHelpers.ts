@@ -48,7 +48,7 @@ type InferInstructionResultType<T extends Instruction<any>> =
  *
  * @internal
  */
-export const map = <Instructions extends { [key: string]: Instruction<any> }>(
+export const map = <Instructions extends Record<string, Instruction<any>>>(
 	obj: Record<string, any>,
 	instructions: Instructions,
 ): {
@@ -65,6 +65,7 @@ export const map = <Instructions extends { [key: string]: Instruction<any> }>(
 				: String(obj[accessor]);
 		}
 	}
+
 	return result;
 };
 
@@ -108,7 +109,7 @@ export const deserializeTimestamp = (value: string): Date | undefined => {
  *
  * @internal
  */
-export const emptyArrayGuard = <T extends Array<any>>(
+export const emptyArrayGuard = <T extends any[]>(
 	value: any,
 	deserializer: (value: any[]) => T,
 ): T => {
@@ -118,6 +119,7 @@ export const emptyArrayGuard = <T extends Array<any>>(
 	const valueArray = (Array.isArray(value) ? value : [value]).filter(
 		e => e != null,
 	);
+
 	return deserializer(valueArray);
 };
 
@@ -132,8 +134,10 @@ export const deserializeMetadata = (
 		.filter(header => header.startsWith(objectMetadataHeaderPrefix))
 		.reduce((acc, header) => {
 			acc[header.replace(objectMetadataHeaderPrefix, '')] = headers[header];
+
 			return acc;
 		}, {} as any);
+
 	return Object.keys(deserialized).length > 0 ? deserialized : undefined;
 };
 
@@ -154,5 +158,6 @@ export const buildStorageServiceError = (
 		storageError.recoverySuggestion =
 			'Please add the object with this key to the bucket as the key is not found.';
 	}
+
 	return storageError;
 };

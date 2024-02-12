@@ -3,30 +3,31 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
+
 import {
 	ListAllInput,
-	ListPaginateInput,
 	ListAllOutput,
-	ListPaginateOutput,
 	ListOutputItem,
+	ListPaginateInput,
+	ListPaginateOutput,
 } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { ResolvedS3Config } from '../../types/options';
 import {
-	listObjectsV2,
 	ListObjectsV2Input,
 	ListObjectsV2Output,
+	listObjectsV2,
 } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 
 const MAX_PAGE_SIZE = 1000;
 
-type ListInputArgs = {
+interface ListInputArgs {
 	s3Config: ResolvedS3Config;
 	listParams: ListObjectsV2Input;
 	prefix: string;
-};
+}
 
 export const list = async (
 	amplify: AmplifyClassV6,
@@ -54,6 +55,7 @@ export const list = async (
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
+
 	return options.listAll
 		? await _listAll({ s3Config, listParams, prefix })
 		: await _list({ s3Config, listParams, prefix });
@@ -116,6 +118,7 @@ const _list = async ({
 		lastModified: item.LastModified,
 		size: item.Size,
 	}));
+
 	return {
 		items: listResult,
 		nextToken: response.NextContinuationToken,

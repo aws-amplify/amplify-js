@@ -4,7 +4,6 @@
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { getDataChunker } from './getDataChunker';
 import { UploadDataInput } from '../../../types';
 import { resolveS3ConfigAndInput } from '../../../utils';
 import { Item as S3Item } from '../../../types/outputs';
@@ -12,11 +11,7 @@ import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
 } from '../../../utils/constants';
-import { loadOrCreateMultipartUpload } from './initialUpload';
 import { ResolvedS3Config } from '../../../types/options';
-import { getConcurrentUploadsProgressTracker } from './progressTracker';
-import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
-import { uploadPartExecutor } from './uploadPartExecutor';
 import { StorageError } from '../../../../../errors/StorageError';
 import { CanceledError } from '../../../../../errors/CanceledError';
 import {
@@ -27,6 +22,12 @@ import {
 } from '../../../utils/client';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
+
+import { uploadPartExecutor } from './uploadPartExecutor';
+import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
+import { getConcurrentUploadsProgressTracker } from './progressTracker';
+import { loadOrCreateMultipartUpload } from './initialUpload';
+import { getDataChunker } from './getDataChunker';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -54,7 +55,7 @@ export const getMultipartUploadHandlers = (
 	// Special flag that differentiates HTTP requests abort error caused by pause() from ones caused by cancel().
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
-	let isAbortSignalFromPause: boolean = false;
+	let isAbortSignalFromPause = false;
 
 	const startUpload = async (): Promise<S3Item> => {
 		const resolvedS3Options = await resolveS3ConfigAndInput(
@@ -241,6 +242,7 @@ export const getMultipartUploadHandlers = (
 			new CanceledError(message ? { message } : undefined),
 		);
 	};
+
 	return {
 		multipartUploadJob,
 		onPause,

@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	retryMiddlewareFactory,
-	RetryOptions,
-	signingMiddlewareFactory,
-	SigningOptions,
-	userAgentMiddlewareFactory,
-	UserAgentOptions,
 	HttpRequest,
 	HttpResponse,
+	RetryOptions,
+	SigningOptions,
+	UserAgentOptions,
+	retryMiddlewareFactory,
+	signingMiddlewareFactory,
+	userAgentMiddlewareFactory,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 

@@ -3,10 +3,11 @@
 
 import {
 	HttpRequest,
-	getHashedPayload,
-	MiddlewareHandler,
 	HttpResponse,
+	MiddlewareHandler,
+	getHashedPayload,
 } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { CONTENT_SHA256_HEADER } from './constants';
 
 /**
@@ -24,6 +25,7 @@ export const contentSha256Middleware =
 			} else {
 				const hash = await getHashedPayload(request.body);
 				request.headers[CONTENT_SHA256_HEADER] = hash;
+
 				return next(request);
 			}
 		};

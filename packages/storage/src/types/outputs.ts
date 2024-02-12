@@ -3,7 +3,7 @@
 
 import { ResponseBodyMixin } from '@aws-amplify/core/internals/aws-client-utils';
 
-export type StorageItem = {
+export interface StorageItem {
 	/**
 	 * Key of the object
 	 */
@@ -26,13 +26,13 @@ export type StorageItem = {
 	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
 	 */
 	metadata?: Record<string, string>;
-};
+}
 
 export type StorageDownloadDataOutput<T extends StorageItem> = T & {
 	body: ResponseBodyMixin;
 };
 
-export type StorageGetUrlOutput = {
+export interface StorageGetUrlOutput {
 	/**
 	 * presigned URL of the given object.
 	 */
@@ -41,10 +41,10 @@ export type StorageGetUrlOutput = {
 	 * expiresAt is date in which generated URL expires.
 	 */
 	expiresAt: Date;
-};
+}
 
 export type StorageUploadOutput<Item extends StorageItem> = Item;
 
-export type StorageListOutput<Item extends StorageItem> = {
+export interface StorageListOutput<Item extends StorageItem> {
 	items: Item[];
-};
+}

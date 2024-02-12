@@ -4,11 +4,15 @@
 import {
 	HttpRequest,
 	HttpResponse,
-	TransferHandler,
 	ResponseBodyMixin,
+	TransferHandler,
 	withMemoization,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ConsoleLogger } from '@aws-amplify/core';
+
+import { TransferProgressEvent } from '../../../../../types/common';
+import { CanceledError } from '../../../../../errors/CanceledError';
+
 import {
 	ABORT_ERROR_CODE,
 	ABORT_ERROR_MESSAGE,
@@ -17,8 +21,6 @@ import {
 	NETWORK_ERROR_CODE,
 	NETWORK_ERROR_MESSAGE,
 } from './constants';
-import { TransferProgressEvent } from '../../../../../types/common';
-import { CanceledError } from '../../../../../errors/CanceledError';
 
 const logger = new ConsoleLogger('xhr-http-handler');
 
@@ -30,8 +32,8 @@ export interface XhrTransferHandlerOptions {
 	// download binary data. Otherwise, use `text` to return the response as a string.
 	responseType: 'text' | 'blob';
 	abortSignal?: AbortSignal;
-	onDownloadProgress?: (event: TransferProgressEvent) => void;
-	onUploadProgress?: (event: TransferProgressEvent) => void;
+	onDownloadProgress?(event: TransferProgressEvent): void;
+	onUploadProgress?(event: TransferProgressEvent): void;
 }
 
 /**
@@ -113,7 +115,7 @@ export const xhrTransferHandler: TransferHandler<
 				const responseHeaders = convertResponseHeaders(
 					xhr.getAllResponseHeaders(),
 				);
-				const responseType = xhr.responseType;
+				const { responseType } = xhr;
 				const responseBlob = xhr.response as Blob;
 				const responseText = responseType === 'text' ? xhr.responseText : '';
 				const bodyMixIn: ResponseBodyMixin = {
@@ -193,6 +195,7 @@ const convertToTransferProgressEvent = (
 const buildHandlerError = (message: string, name: string): Error => {
 	const error = new Error(message);
 	error.name = name;
+
 	return error;
 };
 
@@ -205,6 +208,7 @@ const convertResponseHeaders = (xhrHeaders: string): Record<string, string> => {
 	if (!xhrHeaders) {
 		return {};
 	}
+
 	return xhrHeaders
 		.split('\r\n')
 		.reduce((headerMap: Record<string, string>, line: string) => {
@@ -212,12 +216,14 @@ const convertResponseHeaders = (xhrHeaders: string): Record<string, string> => {
 			const header = parts.shift()!;
 			const value = parts.join(': ');
 			headerMap[header.toLowerCase()] = value;
+
 			return headerMap;
 		}, {});
 };
 
 const readBlobAsText = (blob: Blob) => {
 	const reader = new FileReader();
+
 	return new Promise<string>((resolve, reject) => {
 		reader.onloadend = () => {
 			if (reader.readyState !== FileReader.DONE) {

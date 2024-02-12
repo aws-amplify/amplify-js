@@ -9,10 +9,10 @@ import {
 } from '../../../types/common';
 import { logger } from '../../../utils';
 
-type CreateCancellableTaskOptions<Result> = {
-	job: () => Promise<Result>;
-	onCancel: (message?: string) => void;
-};
+interface CreateCancellableTaskOptions<Result> {
+	job(): Promise<Result>;
+	onCancel(message?: string): void;
+}
 
 type CancellableTask<Result> = DownloadTask<Result>;
 
@@ -21,12 +21,13 @@ const createCancellableTask = <Result>({
 	onCancel,
 }: CreateCancellableTaskOptions<Result>): CancellableTask<Result> => {
 	const state = 'IN_PROGRESS' as TransferTaskState;
-	let canceledErrorMessage: string | undefined = undefined;
+	let canceledErrorMessage: string | undefined;
 	const cancelableTask = {
 		cancel: (message?: string) => {
 			const { state } = cancelableTask;
 			if (state === 'CANCELED' || state === 'ERROR' || state === 'SUCCESS') {
 				logger.debug(`This task cannot be canceled. State: ${state}`);
+
 				return;
 			}
 			cancelableTask.state = 'CANCELED';
@@ -40,6 +41,7 @@ const createCancellableTask = <Result>({
 		try {
 			const result = await job();
 			cancelableTask.state = 'SUCCESS';
+
 			return result;
 		} catch (e) {
 			if (isCancelError(e)) {
@@ -58,13 +60,13 @@ const createCancellableTask = <Result>({
 
 export const createDownloadTask = createCancellableTask;
 
-type CreateUploadTaskOptions<Result> = {
-	job: () => Promise<Result>;
-	onCancel: (message?: string) => void;
-	onResume?: () => void;
-	onPause?: () => void;
+interface CreateUploadTaskOptions<Result> {
+	job(): Promise<Result>;
+	onCancel(message?: string): void;
+	onResume?(): void;
+	onPause?(): void;
 	isMultipartUpload?: boolean;
-};
+}
 
 export const createUploadTask = <Result>({
 	job,
@@ -83,6 +85,7 @@ export const createUploadTask = <Result>({
 			const { state } = uploadTask;
 			if (!isMultipartUpload || state !== 'IN_PROGRESS') {
 				logger.debug(`This task cannot be paused. State: ${state}`);
+
 				return;
 			}
 			// @ts-ignore
@@ -93,6 +96,7 @@ export const createUploadTask = <Result>({
 			const { state } = uploadTask;
 			if (!isMultipartUpload || state !== 'PAUSED') {
 				logger.debug(`This task cannot be resumed. State: ${state}`);
+
 				return;
 			}
 			// @ts-ignore

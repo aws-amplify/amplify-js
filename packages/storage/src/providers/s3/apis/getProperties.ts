@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { GetPropertiesOutput, GetPropertiesInput, S3Exception } from '../types';
+
+import { GetPropertiesInput, GetPropertiesOutput, S3Exception } from '../types';
+
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
 
 /**

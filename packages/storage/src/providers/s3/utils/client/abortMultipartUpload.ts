@@ -13,8 +13,8 @@ import {
 	AmplifyUrlSearchParams,
 } from '@aws-amplify/core/internals/utils';
 import { MetadataBearer } from '@aws-sdk/types';
-import type { AbortMultipartUploadCommandInput } from './types';
 
+import type { AbortMultipartUploadCommandInput } from './types';
 import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
@@ -42,6 +42,7 @@ const abortMultipartUploadSerializer = (
 	url.search = new AmplifyUrlSearchParams({
 		uploadId: input.UploadId,
 	}).toString();
+
 	return {
 		method: 'DELETE',
 		headers: {},

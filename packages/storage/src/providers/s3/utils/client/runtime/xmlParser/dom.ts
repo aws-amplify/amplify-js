@@ -12,6 +12,7 @@ export const parser = {
 		const xml = domParser.parseFromString(xmlStr, 'text/xml');
 		const parsedObj = parseXmlNode(xml);
 		const rootKey = Object.keys(parsedObj)[0];
+
 		return parsedObj[rootKey];
 	},
 };
@@ -85,6 +86,7 @@ const hasOnlyNamespaceAttributes = (node: Element): boolean => {
 			return false;
 		}
 	}
+
 	return true;
 };
 

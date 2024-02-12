@@ -33,6 +33,7 @@ export const parser = {
 			parsedObjToReturn[key] = parsedObjToReturn[textNodeName];
 			delete parsedObjToReturn[textNodeName];
 		}
+
 		return getValueFromTextNode(parsedObjToReturn);
 	},
 };
@@ -51,5 +52,6 @@ const getValueFromTextNode = (obj: any) => {
 			obj[key] = getValueFromTextNode(obj[key]);
 		}
 	}
+
 	return obj;
 };
