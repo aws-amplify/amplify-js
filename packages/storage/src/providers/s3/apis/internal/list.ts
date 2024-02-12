@@ -57,8 +57,8 @@ export const list = async (
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
 	return options.listAll
-		? await _listAll({ s3Config, listParams, prefix })
-		: await _list({ s3Config, listParams, prefix });
+		? _listAll({ s3Config, listParams, prefix })
+		: _list({ s3Config, listParams, prefix });
 };
 
 const _listAll = async ({

@@ -16,10 +16,10 @@ import {
 
 import { getProperties } from './getProperties';
 
-export const getUrl = async function (
+export const getUrl = async (
 	amplify: AmplifyClassV6,
 	input: GetUrlInput,
-): Promise<GetUrlOutput> {
+): Promise<GetUrlOutput> => {
 	const { key, options } = input;
 
 	if (options?.validateObjectExistence) {

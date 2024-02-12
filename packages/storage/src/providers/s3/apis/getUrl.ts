@@ -5,6 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { GetUrlInput, GetUrlOutput, S3Exception } from '../types';
+import { StorageError } from '../../../errors/StorageError';
 
 import { getUrl as getUrlInternal } from './internal/getUrl';
 

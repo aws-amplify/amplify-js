@@ -10,11 +10,11 @@ import { headObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 
-export const getProperties = async function (
+export const getProperties = async (
 	amplify: AmplifyClassV6,
 	input: GetPropertiesInput,
 	action?: StorageAction,
-): Promise<GetPropertiesOutput> {
+): Promise<GetPropertiesOutput> => {
 	const { key, options } = input;
 	const { s3Config, bucket, keyPrefix } = await resolveS3ConfigAndInput(
 		amplify,

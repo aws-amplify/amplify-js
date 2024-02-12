@@ -8,7 +8,9 @@ import {
 	ListAllOutput,
 	ListPaginateInput,
 	ListPaginateOutput,
+	S3Exception,
 } from '../types';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 import { list as listInternal } from './internal/list';
 

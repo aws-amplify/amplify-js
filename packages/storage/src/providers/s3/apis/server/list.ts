@@ -11,8 +11,10 @@ import {
 	ListAllOutput,
 	ListPaginateInput,
 	ListPaginateOutput,
+	S3Exception,
 } from '../../types';
 import { list as listInternal } from '../internal/list';
+import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 
 interface ListApi {
 	/**

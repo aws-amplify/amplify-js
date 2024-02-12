@@ -115,13 +115,14 @@ export const xhrTransferHandler: TransferHandler<
 				const responseHeaders = convertResponseHeaders(
 					xhr.getAllResponseHeaders(),
 				);
-				const { responseType } = xhr;
+				const { responseType: loadEndResponseType } = xhr;
 				const responseBlob = xhr.response as Blob;
-				const responseText = responseType === 'text' ? xhr.responseText : '';
+				const responseText =
+					loadEndResponseType === 'text' ? xhr.responseText : '';
 				const bodyMixIn: ResponseBodyMixin = {
 					blob: () => Promise.resolve(responseBlob),
 					text: withMemoization(() =>
-						responseType === 'blob'
+						loadEndResponseType === 'blob'
 							? readBlobAsText(responseBlob)
 							: Promise.resolve(responseText),
 					),

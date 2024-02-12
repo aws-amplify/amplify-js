@@ -4,6 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { GetPropertiesInput, GetPropertiesOutput, S3Exception } from '../types';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
 

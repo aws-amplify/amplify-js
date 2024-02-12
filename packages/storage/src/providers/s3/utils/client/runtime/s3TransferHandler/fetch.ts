@@ -8,9 +8,9 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { contentSha256Middleware } from '../contentSha256middleware';
+import { contentSha256MiddlewareFactory } from '../contentSha256middleware';
 
-import type { s3TransferHandler as s3BrowserTransferhandler } from './xhr';
+import type { s3TransferHandler as s3BrowserTransferHandler } from './xhr';
 
 /**
  * S3 transfer handler for node based on Node-fetch. On top of basic transfer handler, it also supports
@@ -18,10 +18,10 @@ import type { s3TransferHandler as s3BrowserTransferhandler } from './xhr';
  *
  * @internal
  */
-export const s3TransferHandler: typeof s3BrowserTransferhandler =
+export const s3TransferHandler: typeof s3BrowserTransferHandler =
 	composeTransferHandler<
-		[{}],
+		[object],
 		HttpRequest,
 		HttpResponse,
 		typeof authenticatedHandler
-	>(authenticatedHandler, [contentSha256Middleware]);
+	>(authenticatedHandler, [contentSha256MiddlewareFactory]);

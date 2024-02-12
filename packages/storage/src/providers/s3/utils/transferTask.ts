@@ -24,9 +24,13 @@ const createCancellableTask = <Result>({
 	let canceledErrorMessage: string | undefined;
 	const cancelableTask = {
 		cancel: (message?: string) => {
-			const { state } = cancelableTask;
-			if (state === 'CANCELED' || state === 'ERROR' || state === 'SUCCESS') {
-				logger.debug(`This task cannot be canceled. State: ${state}`);
+			const { state: taskState } = cancelableTask;
+			if (
+				taskState === 'CANCELED' ||
+				taskState === 'ERROR' ||
+				taskState === 'SUCCESS'
+			) {
+				logger.debug(`This task cannot be canceled. State: ${taskState}`);
 
 				return;
 			}
@@ -88,6 +92,8 @@ export const createUploadTask = <Result>({
 
 				return;
 			}
+			// TODO(eslint): remove this linter suppression.
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			uploadTask.state = 'PAUSED';
 			onPause?.();
@@ -99,6 +105,8 @@ export const createUploadTask = <Result>({
 
 				return;
 			}
+			// TODO(eslint): remove this linter suppression.
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			uploadTask.state = 'IN_PROGRESS';
 			onResume?.();

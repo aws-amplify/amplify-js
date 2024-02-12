@@ -17,8 +17,8 @@ import { CONTENT_SHA256_HEADER } from './constants';
  *
  * @internal
  */
-export const contentSha256Middleware =
-	(options: {}) => (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
+export const contentSha256MiddlewareFactory =
+	() => (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
 		async function contentSha256Middleware(request: HttpRequest) {
 			if (request.headers[CONTENT_SHA256_HEADER]) {
 				return next(request);

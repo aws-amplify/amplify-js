@@ -59,7 +59,7 @@ export const map = <Instructions extends Record<string, Instruction<any>>>(
 		const [accessor, deserializer] = Array.isArray(instruction)
 			? instruction
 			: [instruction];
-		if (obj.hasOwnProperty(accessor)) {
+		if (Object.prototype.hasOwnProperty.call(obj, accessor)) {
 			result[key as keyof Instructions] = deserializer
 				? deserializer(obj[accessor])
 				: String(obj[accessor]);
