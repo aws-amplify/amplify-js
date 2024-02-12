@@ -10,6 +10,7 @@ const LOG_LEVELS: Record<string, number> = {
 	INFO: 3,
 	WARN: 4,
 	ERROR: 5,
+	NONE: 6,
 };
 
 /**

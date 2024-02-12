@@ -43,6 +43,8 @@ export {
 	ModelIntrospectionSchema,
 	SchemaModel,
 	SchemaModels,
+	ModelAttribute,
+	SecondaryIndexAttribute,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {
