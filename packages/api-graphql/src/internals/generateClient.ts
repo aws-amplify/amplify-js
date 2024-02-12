@@ -84,7 +84,7 @@ const emptyProperty = new Proxy(
 	{
 		get() {
 			throw new Error(
-				'Client is not generate. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
 		},
 	},

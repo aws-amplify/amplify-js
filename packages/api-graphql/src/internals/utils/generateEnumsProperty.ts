@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ModelIntrospectionSchema, GraphQLProviderConfig } from '@aws-amplify/core/internals/utils';
+import {
+	ModelIntrospectionSchema,
+	GraphQLProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 import { EnumTypes } from '@aws-amplify/data-schema-types';
 
 export const generateEnumsProperty = <T extends Record<any, any> = never>(
@@ -15,7 +18,7 @@ export const generateEnumsProperty = <T extends Record<any, any> = never>(
 	}
 
 	const enums: {
-		[EnumName in keyof typeof modelIntrospection.enums]: {
+		[EnumName: string]: {
 			values: () => string[];
 		};
 	} = {};
