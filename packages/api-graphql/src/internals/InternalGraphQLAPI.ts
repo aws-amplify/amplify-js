@@ -40,7 +40,7 @@ const logger = new ConsoleLogger('GraphQLAPI');
 const isAmplifyInstance = (
 	amplify:
 		| AmplifyClassV6
-		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>)
+		| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
 ): amplify is AmplifyClassV6 => {
 	return typeof amplify !== 'function';
 };
@@ -68,7 +68,7 @@ export class InternalGraphQLAPIClass {
 	private async _headerBasedAuth(
 		amplify: AmplifyClassV6,
 		authMode: GraphQLAuthMode,
-		additionalHeaders: Record<string, string> = {}
+		additionalHeaders: Record<string, string> = {},
 	) {
 		const {
 			region: region,
@@ -159,7 +159,7 @@ export class InternalGraphQLAPIClass {
 			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
 		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
-		customUserAgentDetails?: CustomUserAgentDetails
+		customUserAgentDetails?: CustomUserAgentDetails,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
 			typeof paramQuery === 'string'
@@ -167,7 +167,7 @@ export class InternalGraphQLAPIClass {
 				: parse(print(paramQuery));
 
 		const [operationDef = {}] = query.definitions.filter(
-			def => def.kind === 'OperationDefinition'
+			def => def.kind === 'OperationDefinition',
 		);
 		const { operation: operationType } =
 			operationDef as OperationDefinitionNode;
@@ -188,18 +188,23 @@ export class InternalGraphQLAPIClass {
 						headers,
 						abortController,
 						customUserAgentDetails,
-						authToken
+						authToken,
 					);
 				} else {
-					const wrapper = (amplifyInstance: AmplifyClassV6) =>
-						this._graphql<T>(
+					// NOTE: this wrapper function must be await-able so the Amplify server context manager can
+					// destroy the context only after it completes
+					const wrapper = async (amplifyInstance: AmplifyClassV6) => {
+						const result = await this._graphql<T>(
 							amplifyInstance,
 							{ query, variables, authMode },
 							headers,
 							abortController,
 							customUserAgentDetails,
-							authToken
+							authToken,
 						);
+
+						return result;
+					};
 
 					responsePromise = amplify(wrapper) as unknown as Promise<
 						GraphQLResult<T>
@@ -208,7 +213,7 @@ export class InternalGraphQLAPIClass {
 
 				this._api.updateRequestToBeCancellable(
 					responsePromise,
-					abortController
+					abortController,
 				);
 				return responsePromise;
 			case 'subscription':
@@ -217,7 +222,7 @@ export class InternalGraphQLAPIClass {
 					{ query, variables, authMode },
 					headers,
 					customUserAgentDetails,
-					authToken
+					authToken,
 				);
 			default:
 				throw new Error(`invalid operation type: ${operationType}`);
@@ -230,7 +235,7 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails,
-		authToken?: string
+		authToken?: string,
 	): Promise<GraphQLResult<T>> {
 		const {
 			region: region,
@@ -263,7 +268,7 @@ export class InternalGraphQLAPIClass {
 			const requestOptions: RequestOptions = {
 				method: 'POST',
 				url: new AmplifyUrl(
-					customEndpoint || appSyncGraphqlEndpoint || ''
+					customEndpoint || appSyncGraphqlEndpoint || '',
 				).toString(),
 				queryString: print(query as DocumentNode),
 			};
@@ -287,7 +292,7 @@ export class InternalGraphQLAPIClass {
 				(await this._headerBasedAuth(
 					amplify,
 					authMode!,
-					additionalCustomHeaders
+					additionalCustomHeaders,
 				))),
 			/**
 			 * Custom endpoint headers.
@@ -300,7 +305,7 @@ export class InternalGraphQLAPIClass {
 					? await this._headerBasedAuth(
 							amplify,
 							authMode!,
-							additionalCustomHeaders
+							additionalCustomHeaders,
 					  )
 					: {})) ||
 				{}),
@@ -361,7 +366,7 @@ export class InternalGraphQLAPIClass {
 		let response: any;
 
 		try {
-			const { body: responseBody } = await this._api.post({
+			const { body: responseBody } = await this._api.post(amplify, {
 				url: new AmplifyUrl(endpoint),
 				options: {
 					headers,
@@ -392,7 +397,7 @@ export class InternalGraphQLAPIClass {
 						null,
 						null,
 						null,
-						err as any
+						err as any,
 					),
 				],
 			};
@@ -430,7 +435,7 @@ export class InternalGraphQLAPIClass {
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails,
-		authToken?: string
+		authToken?: string,
 	): Observable<any> {
 		const config = resolveConfig(amplify);
 
@@ -457,7 +462,7 @@ export class InternalGraphQLAPIClass {
 					authToken,
 					libraryConfigHeaders,
 				},
-				customUserAgentDetails
+				customUserAgentDetails,
 			)
 			.pipe(
 				catchError(e => {
@@ -465,7 +470,7 @@ export class InternalGraphQLAPIClass {
 						throw repackageUnauthError(e);
 					}
 					throw e;
-				})
+				}),
 			);
 	}
 }
