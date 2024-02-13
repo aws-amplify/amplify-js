@@ -2167,11 +2167,11 @@ export class AuthClass {
 				await this._storageSync;
 			} catch (e) {
 				logger.debug('Failed to sync cache info into memory', e);
-				throw new Error(e);
+				throw e;
 			}
 			storedCurrUser = this.userPool.getCurrentUser();
 			if (storedCurrUser) {
-				await this.cognitoIdentitySignOut(opts??{}, storedCurrUser);
+				await this.cognitoIdentitySignOut(opts ?? {}, storedCurrUser);
 			} else {
 				logger.debug('no current Cognito user');
 			}
