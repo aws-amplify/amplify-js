@@ -3,7 +3,4 @@
 
 export class NonRetryableError extends Error {
 	public readonly nonRetryable = true;
-	constructor(message: string) {
-		super(message);
-	}
 }

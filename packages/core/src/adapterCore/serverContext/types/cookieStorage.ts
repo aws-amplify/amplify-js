@@ -3,7 +3,7 @@
 
 import { CookieSerializeOptions } from 'cookie';
 
-export namespace CookieStorage {
+export declare namespace CookieStorage {
 	export type SetCookieOptions = Partial<
 		Pick<
 			CookieSerializeOptions,

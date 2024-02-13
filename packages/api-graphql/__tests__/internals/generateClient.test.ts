@@ -89,13 +89,18 @@ function makeAppSyncStreams() {
  */
 function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
 	return spy.mock.calls.map((call: any) => {
-		const [postOptions] = call;
+		// The 1st param in `call` is an instance of `AmplifyClassV6`
+		// The 2nd param in `call` is the actual `postOptions`
+		const [_, postOptions] = call;
 		const userAgent = postOptions?.options?.headers?.['x-amz-user-agent'];
 		if (userAgent) {
 			const staticUserAgent = userAgent.replace(/\/[\d.]+/g, '/latest');
 			postOptions.options.headers['x-amz-user-agent'] = staticUserAgent;
 		}
-		return call;
+		// Calling of `post` API with an instance of `AmplifyClassV6` has been
+		// unit tested in other test suites. To reduce the noise in the generated
+		// snapshot, we hide the details of the instance here.
+		return ['AmplifyClassV6', postOptions];
 	});
 }
 
@@ -2956,6 +2961,7 @@ describe('generateClient', () => {
 
 			// Request headers should overwrite client headers:
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.not.objectContaining({
@@ -3211,6 +3217,7 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -3890,6 +3897,7 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({

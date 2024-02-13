@@ -35,7 +35,7 @@ export interface AddItemWithAuthPropertiesNative
 export interface QueuedStorage {
 	add(
 		item: ItemToAdd,
-		options?: { dequeueBeforeEnqueue: boolean }
+		options?: { dequeueBeforeEnqueue: boolean },
 	): Promise<void>;
 	peek(n?: number): Promise<QueuedItem[]>;
 	peekAll(): Promise<QueuedItem[]>;

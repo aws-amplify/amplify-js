@@ -9,13 +9,13 @@ import {
 	HttpResponse,
 	Middleware,
 	getDnsSuffix,
-	unauthenticatedHandler,
 	parseJsonError,
+	unauthenticatedHandler,
 } from '../../clients';
 import { composeTransferHandler } from '../../clients/internal/composeTransferHandler';
 import {
-	jitteredBackoff,
 	getRetryDecider,
+	jitteredBackoff,
 } from '../../clients/middleware/retry';
 import { getAmplifyUserAgent } from '../../Platform';
 import { observeFrameworkChanges } from '../../Platform/detectFramework';
@@ -31,19 +31,23 @@ const SERVICE_NAME = 'cognito-identity';
  */
 const endpointResolver = ({ region }: EndpointResolverOptions) => ({
 	url: new AmplifyUrl(
-		`https://cognito-identity.${region}.${getDnsSuffix(region)}`
+		`https://cognito-identity.${region}.${getDnsSuffix(region)}`,
 	),
 });
 
 /**
  * A Cognito Identity-specific middleware that disables caching for all requests.
  */
-const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
-	() => (next, context) =>
-		async function disableCacheMiddleware(request) {
-			request.headers['cache-control'] = 'no-store';
-			return next(request);
-		};
+const disableCacheMiddlewareFactory: Middleware<
+	HttpRequest,
+	HttpResponse,
+	Record<string, unknown>
+> = () => next =>
+	async function disableCacheMiddleware(request) {
+		request.headers['cache-control'] = 'no-store';
+
+		return next(request);
+	};
 
 /**
  * A Cognito Identity-specific transfer handler that does NOT sign requests, and
@@ -52,11 +56,11 @@ const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
  * @internal
  */
 export const cognitoIdentityTransferHandler = composeTransferHandler<
-	[Parameters<typeof disableCacheMiddleware>[0]],
+	[Parameters<typeof disableCacheMiddlewareFactory>[0]],
 	HttpRequest,
 	HttpResponse,
 	typeof unauthenticatedHandler
->(unauthenticatedHandler, [disableCacheMiddleware]);
+>(unauthenticatedHandler, [disableCacheMiddlewareFactory]);
 
 /**
  * @internal
@@ -88,7 +92,7 @@ export const getSharedHeaders = (operation: string): Headers => ({
 export const buildHttpRpcRequest = (
 	{ url }: Endpoint,
 	headers: Headers,
-	body: any
+	body: any,
 ): HttpRequest => ({
 	headers,
 	url,

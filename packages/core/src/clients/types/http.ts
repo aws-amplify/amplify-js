@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Request, Response, TransferHandler } from './core';
 import type { fetchTransferHandler } from '../handlers/fetch';
+
+import { Request, Response, TransferHandler } from './core';
 
 /**
  * Use basic Record interface to workaround fetch Header class not available in Node.js

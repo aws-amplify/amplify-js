@@ -673,8 +673,6 @@ export function generateGraphQLDocument(
 		);
 	}
 
-	console.log('indexQueryArgs', indexQueryArgs!);
-
 	let graphQLOperationType: 'mutation' | 'query' | 'subscription' | undefined;
 	let graphQLSelectionSet: string | undefined;
 	let graphQLArguments: Record<string, any> | undefined;

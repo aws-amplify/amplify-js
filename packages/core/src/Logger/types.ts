@@ -37,5 +37,5 @@ export enum LogType {
 	INFO = 'INFO',
 	WARN = 'WARN',
 	VERBOSE = 'VERBOSE',
-	NONE = 'NONE'
+	NONE = 'NONE',
 }

@@ -12,5 +12,5 @@ const PROVIDER_NAME = 'pinpoint';
  */
 export const getCacheKey = (
 	appId: string,
-	category: SupportedCategory
+	category: SupportedCategory,
 ): string => `${category}:${PROVIDER_NAME}:${appId}`;

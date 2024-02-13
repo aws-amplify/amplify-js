@@ -8,7 +8,7 @@ import { currentSizeKey } from '../constants';
  * @param str
  */
 export function getByteLength(str: string): number {
-	let ret: number = 0;
+	let ret = 0;
 	ret = str.length;
 
 	for (let i = str.length; i >= 0; i -= 1) {
@@ -32,6 +32,7 @@ export function getByteLength(str: string): number {
  */
 export function getCurrentTime(): number {
 	const currentTime = new Date();
+
 	return currentTime.getTime();
 }
 

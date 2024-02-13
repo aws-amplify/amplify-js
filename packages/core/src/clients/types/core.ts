@@ -13,34 +13,32 @@ export interface Response {
 	body: unknown;
 }
 
-export interface TransferHandler<
+export type TransferHandler<
 	Input extends Request,
 	Output extends Response,
 	TransferOptions,
-> {
-	(request: Input, options: TransferOptions): Promise<Output>;
-}
+> = (request: Input, options: TransferOptions) => Promise<Output>;
 
 /**
  * A slimmed down version of the AWS SDK v3 middleware handler, only handling instantiated requests
  */
 export type MiddlewareHandler<Input, Output> = (
-	request: Input
+	request: Input,
 ) => Promise<Output>;
 
 /**
  * The context object to store states across the middleware chain.
  */
-export type MiddlewareContext = {
+export interface MiddlewareContext {
 	/**
 	 * The number of times the request has been attempted. This is set by retry middleware
 	 */
 	attemptsCount?: number;
-};
+}
 
 type ConfiguredMiddleware<Input extends Request, Output extends Response> = (
 	next: MiddlewareHandler<Input, Output>,
-	context: MiddlewareContext
+	context: MiddlewareContext,
 ) => MiddlewareHandler<Input, Output>;
 
 /**
