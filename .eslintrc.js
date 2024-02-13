@@ -44,7 +44,7 @@ module.exports = {
 		'api-graphql',
 		'auth',
 		'aws-amplify',
-		'core',
+		// 'core',
 		'datastore',
 		'datastore-storage-adapter',
 		'geo',

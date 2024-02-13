@@ -3,6 +3,7 @@
 
 import { SignRequestOptions } from '../types';
 import { SigningValues } from '../types/signer';
+
 import { getCredentialScope } from './getCredentialScope';
 import { getFormattedDates } from './getFormattedDates';
 
@@ -29,8 +30,9 @@ export const getSigningValues = ({
 	const credentialScope = getCredentialScope(
 		shortDate,
 		signingRegion,
-		signingService
+		signingService,
 	);
+
 	return {
 		accessKeyId,
 		credentialScope,

@@ -18,13 +18,14 @@ export const serverContextRegistry = {
 	register(context: AmplifyServer.Context): AmplifyServer.ContextSpec {
 		const token = createToken();
 		storage.set(token, context);
+
 		return { token };
 	},
 	deregister(contextSpec: AmplifyServer.ContextSpec): boolean {
 		return storage.delete(contextSpec.token);
 	},
 	get(
-		contextSpec: AmplifyServer.ContextSpec
+		contextSpec: AmplifyServer.ContextSpec,
 	): AmplifyServer.Context | undefined {
 		return storage.get(contextSpec.token);
 	},

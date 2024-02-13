@@ -5,6 +5,7 @@ import { assert } from '../../../errors';
 import { AmplifyErrorCode } from '../../../types';
 import { updateEndpoint } from '../apis/updateEndpoint';
 import { PinpointUpdateEndpointInput } from '../types';
+
 import { getEndpointId } from './getEndpointId';
 
 /**

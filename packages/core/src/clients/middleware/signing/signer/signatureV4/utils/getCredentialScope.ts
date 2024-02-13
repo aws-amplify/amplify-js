@@ -17,5 +17,5 @@ import { KEY_TYPE_IDENTIFIER } from '../constants';
 export const getCredentialScope = (
 	date: string,
 	region: string,
-	service: string
+	service: string,
 ): string => `${date}/${region}/${service}/${KEY_TYPE_IDENTIFIER}`;

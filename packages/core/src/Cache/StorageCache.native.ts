@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAsyncStorage } from '@aws-amplify/react-native';
+
 import { ConsoleLogger } from '../Logger';
+
 import { defaultConfig } from './constants';
 import { StorageCacheCommon } from './StorageCacheCommon';
 import { Cache, CacheConfig } from './types';
@@ -38,6 +40,7 @@ export class StorageCache extends StorageCacheCommon implements Cache {
 				keys.push(key.substring(this.config.keyPrefix.length));
 			}
 		}
+
 		return keys;
 	}
 
@@ -46,6 +49,7 @@ export class StorageCache extends StorageCacheCommon implements Cache {
 			return AsyncStorage.getAllKeys();
 		} catch (e) {
 			logger.warn(`getAllKeys failed! ${e}`);
+
 			return [];
 		}
 	}
@@ -60,6 +64,7 @@ export class StorageCache extends StorageCacheCommon implements Cache {
 			logger.error('invalid keyPrefix, setting keyPrefix with timeStamp');
 			config.keyPrefix = getCurrentTime.toString();
 		}
+
 		return new StorageCache(config);
 	}
 }

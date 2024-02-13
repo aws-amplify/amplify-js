@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	retryMiddleware,
+	retryMiddlewareFactory,
 	RetryOptions,
-	signingMiddleware,
+	signingMiddlewareFactory,
 	SigningOptions,
-	userAgentMiddleware,
+	userAgentMiddlewareFactory,
 	UserAgentOptions,
 	HttpRequest,
 	HttpResponse,
@@ -29,7 +29,7 @@ export const s3TransferHandler = composeTransferHandler<
 	typeof xhrTransferHandler
 >(xhrTransferHandler, [
 	contentSha256Middleware,
-	userAgentMiddleware,
-	retryMiddleware,
-	signingMiddleware,
+	userAgentMiddlewareFactory,
+	retryMiddlewareFactory,
+	signingMiddlewareFactory,
 ]);

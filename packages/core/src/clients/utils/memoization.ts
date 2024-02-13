@@ -11,6 +11,7 @@
  */
 export const withMemoization = <T>(payloadAccessor: () => Promise<T>) => {
 	let cached: Promise<T>;
+
 	return () => {
 		if (!cached) {
 			// Explicitly not awaiting. Intermediate await would add overhead and
@@ -18,6 +19,7 @@ export const withMemoization = <T>(payloadAccessor: () => Promise<T>) => {
 			// again before the first `payloadAccessor` call resolves.
 			cached = payloadAccessor();
 		}
+
 		return cached;
 	};
 };
