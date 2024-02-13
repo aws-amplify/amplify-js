@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	CredentialsAndIdentityId,
 	AuthConfig,
 	AuthSession,
 	AuthTokens,
+	CredentialsAndIdentityId,
 	FetchAuthSessionOptions,
 	LibraryAuthOptions,
 } from './types';
@@ -17,6 +17,7 @@ export function isTokenExpired({
 	clockDrift: number;
 }): boolean {
 	const currentTime = Date.now();
+
 	return currentTime + clockDrift > expiresAt;
 }
 
@@ -38,7 +39,7 @@ export class AuthClass {
 	 */
 	configure(
 		authResourcesConfig: AuthConfig,
-		authOptions?: LibraryAuthOptions
+		authOptions?: LibraryAuthOptions,
 	): void {
 		this.authConfig = authResourcesConfig;
 		this.authOptions = authOptions;
@@ -54,7 +55,7 @@ export class AuthClass {
 	 * @returns Promise of current auth session {@link AuthSession}.
 	 */
 	async fetchAuthSession(
-		options: FetchAuthSessionOptions = {}
+		options: FetchAuthSessionOptions = {},
 	): Promise<AuthSession> {
 		let tokens: AuthTokens | undefined;
 		let credentialsAndIdentityId: CredentialsAndIdentityId | undefined;
@@ -74,7 +75,7 @@ export class AuthClass {
 						tokens,
 						authenticated: true,
 						forceRefresh: options.forceRefresh,
-					}
+					},
 				);
 		} else {
 			// getCredentialsAndIdentityId will throw if cannot get credentials (network or service error)
@@ -84,7 +85,7 @@ export class AuthClass {
 						authConfig: this.authConfig,
 						authenticated: false,
 						forceRefresh: options.forceRefresh,
-					}
+					},
 				);
 		}
 
@@ -98,12 +99,12 @@ export class AuthClass {
 
 	async clearCredentials(): Promise<void> {
 		if (this.authOptions?.credentialsProvider) {
-			return await this.authOptions.credentialsProvider.clearCredentialsAndIdentityId();
+			await this.authOptions.credentialsProvider.clearCredentialsAndIdentityId();
 		}
 	}
 
 	async getTokens(
-		options: FetchAuthSessionOptions
+		options: FetchAuthSessionOptions,
 	): Promise<AuthTokens | undefined> {
 		return (
 			(await this.authOptions?.tokenProvider?.getTokens(options)) ?? undefined

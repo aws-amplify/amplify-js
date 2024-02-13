@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import JsCookie from 'js-cookie';
+
 import {
 	CookieStorageData,
 	KeyValueStorageInterface,
@@ -18,19 +19,19 @@ export class CookieStorage implements KeyValueStorageInterface {
 	constructor(data: CookieStorageData = {}) {
 		const { path, domain, expires, sameSite, secure } = data;
 		this.domain = domain;
-		this.path = path ? path : '/';
+		this.path = path || '/';
 		this.expires = data.hasOwnProperty('expires') ? expires : 365;
 		this.secure = data.hasOwnProperty('secure') ? secure : true;
 
 		if (data.hasOwnProperty('sameSite')) {
 			if (!sameSite || !['strict', 'lax', 'none'].includes(sameSite)) {
 				throw new Error(
-					'The sameSite value of cookieStorage must be "lax", "strict" or "none".'
+					'The sameSite value of cookieStorage must be "lax", "strict" or "none".',
 				);
 			}
 			if (sameSite === 'none' && !this.secure) {
 				throw new Error(
-					'sameSite = None requires the Secure attribute in latest browser versions.'
+					'sameSite = None requires the Secure attribute in latest browser versions.',
 				);
 			}
 			this.sameSite = sameSite;
@@ -43,6 +44,7 @@ export class CookieStorage implements KeyValueStorageInterface {
 
 	async getItem(key: string) {
 		const item = JsCookie.get(key);
+
 		return item ?? null;
 	}
 
