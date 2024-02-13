@@ -56,6 +56,9 @@ describe('resendSignUpCode', () => {
 				ClientMetadata: undefined,
 				Username: user1.username,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				AnalyticsMetadata: {
+					AnalyticsEndpointId: undefined,
+				},
 			}
 		);
 		expect(mockResendConfirmationCode).toHaveBeenCalledTimes(1);
@@ -106,6 +109,9 @@ describe('resendSignUpCode', () => {
 				Username: user1.username,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				UserContextData: { EncodedData: 'abcd' },
+				AnalyticsMetadata: {
+					AnalyticsEndpointId: undefined,
+				},
 			}
 		);
 		expect(mockResendConfirmationCode).toHaveBeenCalledTimes(1);

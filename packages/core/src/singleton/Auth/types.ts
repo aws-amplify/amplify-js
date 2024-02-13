@@ -126,6 +126,7 @@ export type AuthIdentityPoolConfig = {
 		userAttributes?: never;
 		mfa?: never;
 		passwordFormat?: never;
+		analyticsMetadata?: never;
 	};
 };
 
@@ -164,6 +165,9 @@ export type CognitoUserPoolConfig = {
 		requireUppercase?: boolean;
 		requireNumbers?: boolean;
 		requireSpecialCharacters?: boolean;
+	};
+	analyticsMetadata?: {
+		analyticsEndpointId?: string;
 	};
 };
 

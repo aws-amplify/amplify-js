@@ -132,6 +132,9 @@ describe('Cognito ASF', () => {
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				ClientMetadata: undefined,
 				UserContextData: { EncodedData: 'abcd' },
+				AnalyticsMetadata: {
+					AnalyticsEndpointId: undefined,
+				},
 			}
 		);
 	});

@@ -61,6 +61,9 @@ describe('confirmSignUp', () => {
 				Username: user1.username,
 				ForceAliasCreation: undefined,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+				AnalyticsMetadata: {
+					AnalyticsEndpointId: undefined,
+				},
 			}
 		);
 		expect(mockConfirmSignUp).toHaveBeenCalledTimes(1);
@@ -166,6 +169,9 @@ describe('confirmSignUp', () => {
 				ForceAliasCreation: undefined,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				UserContextData: { EncodedData: 'abcd' },
+				AnalyticsMetadata: {
+					AnalyticsEndpointId: undefined,
+				},
 			}
 		);
 		expect(mockConfirmSignUp).toHaveBeenCalledTimes(1);
