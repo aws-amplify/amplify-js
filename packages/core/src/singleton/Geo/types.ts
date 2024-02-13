@@ -7,7 +7,7 @@ export interface LocationServiceConfig {
 	LocationService: {
 		region: string;
 		maps?: {
-			items: {};
+			items: Record<string, unknown>;
 			default: string;
 		};
 		searchIndices?: {

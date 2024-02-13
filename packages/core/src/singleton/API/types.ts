@@ -9,7 +9,7 @@ export interface LibraryAPIOptions {
 		headers?(options?: {
 			query?: string;
 			variables?: Record<string, DocumentType>;
-		}): Promise<Headers | {}>;
+		}): Promise<Headers | Record<string, unknown>>;
 		withCredentials?: boolean;
 	};
 	REST?: {

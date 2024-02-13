@@ -25,8 +25,6 @@ export class AuthClass {
 	private authConfig?: AuthConfig;
 	private authOptions?: LibraryAuthOptions;
 
-	constructor() {}
-
 	/**
 	 * Configure Auth category
 	 *
@@ -57,12 +55,11 @@ export class AuthClass {
 	async fetchAuthSession(
 		options: FetchAuthSessionOptions = {},
 	): Promise<AuthSession> {
-		let tokens: AuthTokens | undefined;
 		let credentialsAndIdentityId: CredentialsAndIdentityId | undefined;
 		let userSub: string | undefined;
 
 		// Get tokens will throw if session cannot be refreshed (network or service error) or return null if not available
-		tokens = await this.getTokens(options);
+		const tokens = await this.getTokens(options);
 
 		if (tokens) {
 			userSub = tokens.accessToken?.payload?.sub;
@@ -98,9 +95,7 @@ export class AuthClass {
 	}
 
 	async clearCredentials(): Promise<void> {
-		if (this.authOptions?.credentialsProvider) {
-			await this.authOptions.credentialsProvider.clearCredentialsAndIdentityId();
-		}
+		await this.authOptions?.credentialsProvider?.clearCredentialsAndIdentityId();
 	}
 
 	async getTokens(

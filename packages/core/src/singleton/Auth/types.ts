@@ -16,11 +16,15 @@ interface JwtPayloadStandardFields {
 	sub?: string; // JWT sub https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2
 }
 
-/** JSON type */
-type Json = null | string | number | boolean | Json[] | JsonObject;
+type JsonPrimitive = null | string | number | boolean;
+
+/** JSON array type */
+type JsonArray = JsonPrimitive[];
 
 /** JSON Object type */
-type JsonObject = Record<string, Json>;
+interface JsonObject {
+	[x: string]: JsonPrimitive | JsonArray | JsonObject;
+}
 
 export type JwtPayload = JwtPayloadStandardFields & JsonObject;
 
@@ -181,8 +185,8 @@ interface CustomProvider {
 	custom: string;
 }
 
-type CustomScope = string & {};
-type OAuthScope =
+type CustomScope = string & Record<string, string>;
+export type OAuthScope =
 	| 'email'
 	| 'openid'
 	| 'phone'

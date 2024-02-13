@@ -3,7 +3,6 @@
 import { base64Decoder } from '../../../utils/convert';
 import {
 	AuthConfig,
-	AuthUserPoolAndIdentityPoolConfig,
 	CognitoIdentityPoolConfig,
 	CognitoUserPoolAndIdentityPoolConfig,
 	CognitoUserPoolConfig,
@@ -64,18 +63,6 @@ export function assertIdentityPoolIdConfig(
 	assert(
 		validConfig,
 		AuthConfigurationErrorCode.InvalidIdentityPoolIdException,
-	);
-}
-
-function assertUserPoolAndIdentityPoolConfig(
-	authConfig: AuthConfig,
-): asserts authConfig is AuthUserPoolAndIdentityPoolConfig {
-	const validConfig =
-		!!authConfig?.Cognito.identityPoolId && !!authConfig?.Cognito.userPoolId;
-
-	assert(
-		validConfig,
-		AuthConfigurationErrorCode.AuthUserPoolAndIdentityPoolException,
 	);
 }
 

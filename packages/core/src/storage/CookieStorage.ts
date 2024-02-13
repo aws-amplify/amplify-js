@@ -20,10 +20,14 @@ export class CookieStorage implements KeyValueStorageInterface {
 		const { path, domain, expires, sameSite, secure } = data;
 		this.domain = domain;
 		this.path = path || '/';
-		this.expires = data.hasOwnProperty('expires') ? expires : 365;
-		this.secure = data.hasOwnProperty('secure') ? secure : true;
+		this.expires = Object.prototype.hasOwnProperty.call(data, 'expires')
+			? expires
+			: 365;
+		this.secure = Object.prototype.hasOwnProperty.call(data, 'secure')
+			? secure
+			: true;
 
-		if (data.hasOwnProperty('sameSite')) {
+		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
 			if (!sameSite || !['strict', 'lax', 'none'].includes(sameSite)) {
 				throw new Error(
 					'The sameSite value of cookieStorage must be "lax", "strict" or "none".',
