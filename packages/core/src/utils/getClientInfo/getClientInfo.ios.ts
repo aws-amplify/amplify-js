@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-// @ts-ignore: missing type definition
-import { Platform, Dimensions } from 'react-native';
+
+import { Dimensions, Platform } from 'react-native';
+
 import { ConsoleLogger } from '../../Logger';
 
 const logger = new ConsoleLogger('getClientInfo');
@@ -12,6 +13,7 @@ export const getClientInfo = () => {
 	const OS = 'ios';
 	const { Version } = Platform;
 	const { make, model } = dimToMake(dim);
+
 	return {
 		platform: OS,
 		version: String(Version),

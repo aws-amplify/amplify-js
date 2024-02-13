@@ -5,10 +5,13 @@ import { AWSCredentials } from '../libraryUtils';
 
 /**
  * Utility for determining if credentials have changed.
- * 
+ *
  * @internal
  */
-export const haveCredentialsChanged = (cachedCredentials: AWSCredentials, credentials: AWSCredentials) => {
+export const haveCredentialsChanged = (
+	cachedCredentials: AWSCredentials,
+	credentials: AWSCredentials,
+) => {
 	return (
 		cachedCredentials.accessKeyId !== credentials.accessKeyId ||
 		cachedCredentials.sessionToken !== credentials.sessionToken ||

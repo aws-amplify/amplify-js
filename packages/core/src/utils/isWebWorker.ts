@@ -6,6 +6,7 @@ export const isWebWorker = () => {
 		return false;
 	}
 	const selfContext = self as { WorkerGlobalScope?: any };
+
 	return (
 		typeof selfContext.WorkerGlobalScope !== 'undefined' &&
 		self instanceof selfContext.WorkerGlobalScope

@@ -1,11 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResponseMetadata, MetadataBearer } from '@aws-sdk/types';
+import { MetadataBearer, ResponseMetadata } from '@aws-sdk/types';
+
 import { HttpResponse } from '../types/http';
 
 export const parseMetadata = (response: HttpResponse): ResponseMetadata => {
 	const { headers, statusCode } = response;
+
 	return {
 		...(isMetadataBearer(response) ? response.$metadata : {}),
 		httpStatusCode: statusCode,
@@ -18,6 +20,8 @@ export const parseMetadata = (response: HttpResponse): ResponseMetadata => {
 	};
 };
 
-type IsResponse = { $metadata: any };
+interface IsResponse {
+	$metadata: any;
+}
 const isMetadataBearer = (response: unknown): response is MetadataBearer =>
 	typeof (response as IsResponse)?.$metadata === 'object';

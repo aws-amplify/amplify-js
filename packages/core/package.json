@@ -27,7 +27,8 @@
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"prepublishOnly": "npm run build",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 92.36"
 	},

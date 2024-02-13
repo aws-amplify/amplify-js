@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export type KinesisFirehoseProviderConfig = {
+export interface KinesisFirehoseProviderConfig {
 	KinesisFirehose: {
 		region: string;
 		bufferSize?: number;
@@ -9,4 +9,4 @@ export type KinesisFirehoseProviderConfig = {
 		flushInterval?: number;
 		resendLimit?: number;
 	};
-};
+}

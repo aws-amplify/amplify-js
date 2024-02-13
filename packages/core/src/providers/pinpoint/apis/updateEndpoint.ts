@@ -4,8 +4,8 @@
 import { amplifyUuid } from '../../../utils/amplifyUuid';
 import { getClientInfo } from '../../../utils/getClientInfo';
 import {
-	updateEndpoint as clientUpdateEndpoint,
 	UpdateEndpointInput,
+	updateEndpoint as clientUpdateEndpoint,
 } from '../../../awsClients/pinpoint';
 import { PinpointUpdateEndpointInput } from '../types';
 import { cacheEndpointId } from '../utils/cacheEndpointId';
@@ -93,7 +93,7 @@ export const updateEndpoint = async ({
 	};
 	await clientUpdateEndpoint({ credentials, region, userAgentValue }, input);
 	// if we had to create an endpoint id, we need to now cache it
-	if (!!createdEndpointId) {
+	if (createdEndpointId) {
 		return cacheEndpointId(appId, category, createdEndpointId);
 	}
 };

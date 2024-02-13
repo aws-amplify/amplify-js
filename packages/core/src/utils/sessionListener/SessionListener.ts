@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { isBrowser } from '../isBrowser';
-import { SessionStateChangeListener, SessionListenerInterface } from './types';
+
+import { SessionListenerInterface, SessionStateChangeListener } from './types';
 
 const stateChangeListeners = new Set<SessionStateChangeListener>();
 
@@ -18,7 +19,7 @@ export class SessionListener implements SessionListenerInterface {
 			document.addEventListener(
 				'visibilitychange',
 				this.handleVisibilityChange,
-				false
+				false,
 			);
 
 			this.listenerActive = true;
@@ -27,7 +28,7 @@ export class SessionListener implements SessionListenerInterface {
 
 	public addStateChangeListener(
 		listener: SessionStateChangeListener,
-		notifyOnAdd: boolean = false
+		notifyOnAdd = false,
 	) {
 		// No-op if document listener is not active
 		if (!this.listenerActive) {

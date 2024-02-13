@@ -13,10 +13,11 @@ import { isClockSkewed } from './isClockSkewed';
  */
 export const getUpdatedSystemClockOffset = (
 	clockTimeInMilliseconds: number,
-	currentSystemClockOffset: number
+	currentSystemClockOffset: number,
 ): number => {
 	if (isClockSkewed(clockTimeInMilliseconds, currentSystemClockOffset)) {
 		return clockTimeInMilliseconds - Date.now();
 	}
+
 	return currentSystemClockOffset;
 };
