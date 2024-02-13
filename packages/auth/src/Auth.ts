@@ -2154,8 +2154,7 @@ export class AuthClass {
 	 * @
 	 * @return - A promise resolved if success
 	 */
-	public async signOut(opts?: SignOutOpts): Promise<any> {
-		let storedCurrUser;
+	public async signOut(opts: SignOutOpts = {}): Promise<any> {
 		try {
 			await this.cleanCachedItems();
 		} catch (e) {
@@ -2169,9 +2168,9 @@ export class AuthClass {
 				logger.debug('Failed to sync cache info into memory', e);
 				throw e;
 			}
-			storedCurrUser = this.userPool.getCurrentUser();
-			if (storedCurrUser) {
-				await this.cognitoIdentitySignOut(opts ?? {}, storedCurrUser);
+			const user = this.userPool.getCurrentUser();
+			if (user) {
+				await this.cognitoIdentitySignOut(opts ?? {}, user);
 			} else {
 				logger.debug('no current Cognito user');
 			}
@@ -2185,7 +2184,7 @@ export class AuthClass {
 		 * This is why we need a well structured session object that can be inspected
 		 * and information passed back in the message below for Hub dispatch
 		 */
-		dispatchAuthEvent('signOut', storedCurrUser, `A user has been signed out`);
+		dispatchAuthEvent('signOut', this.user, `A user has been signed out`);
 		this.user = null;
 	}
 
