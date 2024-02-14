@@ -185,7 +185,9 @@ interface CustomProvider {
 	custom: string;
 }
 
-type CustomScope = string & Record<string, string>;
+// CustomScope is a non-nullish string, using `& NonNullable<unknown>` to ensure
+// `OAuthScope` is not resolved as a `string`
+type CustomScope = string & NonNullable<unknown>;
 export type OAuthScope =
 	| 'email'
 	| 'openid'
