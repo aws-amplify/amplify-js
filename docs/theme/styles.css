@@ -1,0 +1,21 @@
+/*
+This document contains styles that modify the default TypeDoc theme.
+*/
+body {
+	background: white;
+}
+
+.tsd-page-toolbar {
+	background: white;
+	box-shadow: 0 1px 3px rgba(0,0,0,.1);
+	border: none;
+}
+
+.tsd-page-toolbar a.title {
+	font-weight: 400;
+	font-size: 1.2em;
+}
+
+.tsd-navigation a.current, .tsd-page-navigation a.current {
+	background: #eeeeee;
+}
