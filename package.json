@@ -5,7 +5,6 @@
 	"description": "",
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
-		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
 		"test": "yarn test:no-datastore && yarn test:datastore && yarn test:license && yarn test:github-actions && yarn test:tsc-compliance",
 		"test:no-datastore": "lerna run test --stream --ignore @aws-amplify/datastore",
@@ -126,7 +125,6 @@
 		"webpack": "^5.75.0",
 		"webpack-bundle-analyzer": "^4.7.0",
 		"webpack-cli": "^5.0.0",
-		"wml": "0.0.83",
 		"winston": "3.11.0"
 	},
 	"resolutions": {
