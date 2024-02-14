@@ -991,31 +991,20 @@ img { max-width: 100%; }
 			<a name="constructor" class="tsd-anchor"></a>
 			<h3>constructor</h3>
 			<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">new <wbr>InternalAPIClass<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="internalapiclass.html" class="tsd-signature-type">InternalAPIClass</a></li>
+				<li class="tsd-signature tsd-kind-icon">new <wbr>InternalAPIClass<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="internalapiclass.html" class="tsd-signature-type">InternalAPIClass</a></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d505105/packages/api/src/internals/InternalAPI.ts#L44">packages/api/src/internals/InternalAPI.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/api/src/internals/InternalAPI.ts#L40">packages/api/src/internals/InternalAPI.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Initialize API with AWS configuration</p>
+							<p>Initialize API</p>
 						</div>
 					</div>
-					<h4 class="tsd-parameters-title">Parameters</h4>
-					<ul class="tsd-parameters">
-						<li>
-							<h5>options: <span class="tsd-signature-type">any</span></h5>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Configuration object for API</p>
-								</div>
-							</div>
-						</li>
-					</ul>
 					<h4 class="tsd-returns-title">Returns <a href="internalapiclass.html" class="tsd-signature-type">InternalAPIClass</a></h4>
 				</li>
 			</ul>
@@ -1029,7 +1018,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">Cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">StorageCache</span><span class="tsd-signature-symbol"> = Cache</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d505105/packages/api/src/internals/InternalAPI.ts#L44">packages/api/src/internals/InternalAPI.ts:44</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/api/src/internals/InternalAPI.ts#L40">packages/api/src/internals/InternalAPI.ts:40</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1046,7 +1035,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d505105/packages/api/src/internals/InternalAPI.ts#L64">packages/api/src/internals/InternalAPI.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/api/src/internals/InternalAPI.ts#L57">packages/api/src/internals/InternalAPI.ts:57</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1076,7 +1065,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d505105/packages/api/src/internals/InternalAPI.ts#L56">packages/api/src/internals/InternalAPI.ts:56</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/api/src/internals/InternalAPI.ts#L49">packages/api/src/internals/InternalAPI.ts:49</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1087,13 +1076,13 @@ img { max-width: 100%; }
 			<a name="graphql" class="tsd-anchor"></a>
 			<h3>graphql</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-				<li class="tsd-signature tsd-kind-icon">graphql&lt;T&gt;<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLOptions</span>, additionalHeaders<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T extends GraphQLQuery&lt;T&gt; ? Promise&lt;GraphQLResult&lt;T&gt;&gt; : T extends GraphQLSubscription&lt;T&gt; ? Observable&lt;object&gt; : Promise&lt;GraphQLResult&lt;any&gt;&gt; | Observable&lt;object&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">graphql&lt;T&gt;<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLOptions</span>, additionalHeaders<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">CustomHeaders</span>, customUserAgentDetails<span class="tsd-signature-symbol">?: </span><a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T extends GraphQLQuery&lt;T&gt; ? Promise&lt;GraphQLResult&lt;T&gt;&gt; : T extends GraphQLSubscription&lt;T&gt; ? Observable&lt;object&gt; : Promise&lt;GraphQLResult&lt;any&gt;&gt; | Observable&lt;object&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d505105/packages/api/src/internals/InternalAPI.ts#L75">packages/api/src/internals/InternalAPI.ts:75</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/api/src/internals/InternalAPI.ts#L68">packages/api/src/internals/InternalAPI.ts:68</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1116,12 +1105,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 						<li>
-							<h5><span class="tsd-flag ts-flagOptional">Optional</span> additionalHeaders: <span class="tsd-signature-type">object</span></h5>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-index-signature">
-									<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> additionalHeaders: <span class="tsd-signature-type">CustomHeaders</span></h5>
 						</li>
 						<li>
 							<h5><span class="tsd-flag ts-flagOptional">Optional</span> customUserAgentDetails: <a href="../globals.html#customuseragentdetails" class="tsd-signature-type">CustomUserAgentDetails</a></h5>

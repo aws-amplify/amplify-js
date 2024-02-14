@@ -916,8 +916,20 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 <ul>
-	<li class=" tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
-		<a href="nextserver.runoperationwithcontext.html" class="tsd-kind-icon">Run<wbr>Operation<wbr>With<wbr>Context</a>
+	<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+		<a href="nextserver.createserverrunnerinput.html" class="tsd-kind-icon">Create<wbr>Server<wbr>Runner<wbr>Input</a>
+	</li>
+	<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+		<a href="nextserver.createserverrunneroutput.html" class="tsd-kind-icon">Create<wbr>Server<wbr>Runner<wbr>Output</a>
+	</li>
+	<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+		<a href="nextserver.getserversidepropscontext.html" class="tsd-kind-icon">Get<wbr>Server<wbr>Side<wbr>Props<wbr>Context</a>
+	</li>
+	<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+		<a href="nextserver.nextrequestandnextresponsecontext.html" class="tsd-kind-icon">Next<wbr>Request<wbr>And<wbr>Next<wbr>Response<wbr>Context</a>
+	</li>
+	<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+		<a href="nextserver.nextrequestandresponsecontext.html" class="tsd-kind-icon">Next<wbr>Request<wbr>And<wbr>Response<wbr>Context</a>
 	</li>
 	<li class="current tsd-kind-interface tsd-parent-kind-namespace tsd-has-type-parameter">
 		<a href="nextserver.runwithcontextinput.html" class="tsd-kind-icon">Run<wbr>With<wbr>Context<wbr>Input</a>
@@ -925,40 +937,30 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="nextserver.runwithcontextinput.html#nextservercontext" class="tsd-kind-icon">next<wbr>Server<wbr>Context</a>
 			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="nextserver.runwithcontextinput.html#operation" class="tsd-kind-icon">operation</a>
 			</li>
 		</ul>
+	</li>
+	<li class=" tsd-kind-interface tsd-parent-kind-namespace">
+		<a href="nextserver.servercomponentcontext.html" class="tsd-kind-icon">Server<wbr>Component<wbr>Context</a>
 	</li>
 	<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 		<a href="../modules/nextserver.html#context" class="tsd-kind-icon">Context</a>
 	</li>
 	<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-		<a href="../modules/nextserver.html#getserversidepropscontext" class="tsd-kind-icon">Get<wbr>Server<wbr>Side<wbr>Props<wbr>Context</a>
+		<a href="../modules/nextserver.html#createserverrunner" class="tsd-kind-icon">Create<wbr>Server<wbr>Runner</a>
 	</li>
 	<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-		<a href="../modules/nextserver.html#nextrequestandnextresponsecontext" class="tsd-kind-icon">Next<wbr>Request<wbr>And<wbr>Next<wbr>Response<wbr>Context</a>
-	</li>
-	<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-		<a href="../modules/nextserver.html#nextrequestandresponsecontext" class="tsd-kind-icon">Next<wbr>Request<wbr>And<wbr>Response<wbr>Context</a>
+		<a href="../modules/nextserver.html#runoperationwithcontext" class="tsd-kind-icon">Run<wbr>Operation<wbr>With<wbr>Context</a>
 	</li>
 	<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
 		<a href="../modules/nextserver.html#serveractioncontext" class="tsd-kind-icon">Server<wbr>Action<wbr>Context</a>
-	</li>
-	<li class=" tsd-kind-type-alias tsd-parent-kind-namespace">
-		<a href="../modules/nextserver.html#servercomponentcontext" class="tsd-kind-icon">Server<wbr>Component<wbr>Context</a>
 	</li>
 </ul>
 </nav>
 <div class="container container-main">
 <div class="content-wrap">
-	<section class="tsd-panel tsd-comment">
-		<div class="tsd-comment tsd-typography">
-			<div class="lead">
-				<p>The interface of the input of <a href="nextserver.runoperationwithcontext.html">RunOperationWithContext</a>.</p>
-			</div>
-		</div>
-	</section>
 	<section class="tsd-panel tsd-type-parameters">
 		<h3>Type parameters</h3>
 		<ul class="tsd-type-parameters">
@@ -983,7 +985,12 @@ img { max-width: 100%; }
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="nextserver.runwithcontextinput.html#nextservercontext" class="tsd-kind-icon">next<wbr>Server<wbr>Context</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="nextserver.runwithcontextinput.html#operation" class="tsd-kind-icon">operation</a></li>
+					</ul>
+				</section>
+				<section class="tsd-index-section ">
+					<h3>Methods</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="nextserver.runwithcontextinput.html#operation" class="tsd-kind-icon">operation</a></li>
 					</ul>
 				</section>
 			</div>
@@ -997,43 +1004,38 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">next<wbr>Server<wbr>Context<span class="tsd-signature-symbol">:</span> <a href="../modules/nextserver.html#context" class="tsd-signature-type">Context</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d505105/packages/adapter-nextjs/src/types/NextServer.ts#L67">packages/adapter-nextjs/src/types/NextServer.ts:67</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/adapter-nextjs/src/types/NextServer.ts#L66">packages/adapter-nextjs/src/types/NextServer.ts:66</a></li>
 				</ul>
 			</aside>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+	</section>
+	<section class="tsd-panel-group tsd-member-group ">
+		<h2>Methods</h2>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 			<a name="operation" class="tsd-anchor"></a>
 			<h3>operation</h3>
-			<div class="tsd-signature tsd-kind-icon">operation<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/d505105/packages/adapter-nextjs/src/types/NextServer.ts#L68">packages/adapter-nextjs/src/types/NextServer.ts:68</a></li>
-				</ul>
-			</aside>
-			<div class="tsd-type-declaration">
-				<h4>Type declaration</h4>
-				<ul class="tsd-parameters">
-					<li class="tsd-parameter-siganture">
-						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>contextSpec<span class="tsd-signature-symbol">: </span><a href="../modules/amplifyserver.html#contextspec" class="tsd-signature-type">ContextSpec</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">OperationResult</span><span class="tsd-signature-symbol"> | </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">OperationResult</span><span class="tsd-signature-symbol">&gt;</span></li>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">operation<span class="tsd-signature-symbol">(</span>contextSpec<span class="tsd-signature-symbol">: </span><a href="../modules/amplifyserver.html#contextspec" class="tsd-signature-type">ContextSpec</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">OperationResult</span><span class="tsd-signature-symbol"> | </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">OperationResult</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/adapter-nextjs/src/types/NextServer.ts#L67">packages/adapter-nextjs/src/types/NextServer.ts:67</a></li>
 						</ul>
-						<ul class="tsd-descriptions">
-							<li class="tsd-description">
-								<h4 class="tsd-parameters-title">Parameters</h4>
-								<ul class="tsd-parameters">
-									<li>
-										<h5>contextSpec: <a href="../modules/amplifyserver.html#contextspec" class="tsd-signature-type">ContextSpec</a></h5>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">OperationResult</span>
-									<span class="tsd-signature-symbol"> | </span>
-									<a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">OperationResult</span><span class="tsd-signature-symbol">&gt;</span>
-								</h4>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>contextSpec: <a href="../modules/amplifyserver.html#contextspec" class="tsd-signature-type">ContextSpec</a></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">OperationResult</span>
+						<span class="tsd-signature-symbol"> | </span>
+						<a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">OperationResult</span><span class="tsd-signature-symbol">&gt;</span>
+					</h4>
+				</li>
+			</ul>
 		</section>
 	</section>
 	<footer>
