@@ -3,22 +3,22 @@
 import { Headers } from '../../clients';
 import { AtLeastOne } from '../types';
 
-export type LibraryAPIOptions = {
+export interface LibraryAPIOptions {
 	GraphQL?: {
 		// custom headers for given GraphQL service. Will be applied to all operations.
-		headers?: (options?: {
+		headers?(options?: {
 			query?: string;
 			variables?: Record<string, DocumentType>;
-		}) => Promise<Headers | {}>;
+		}): Promise<Headers | Record<string, unknown>>;
 		withCredentials?: boolean;
 	};
 	REST?: {
 		// custom headers for given REST service. Will be applied to all operations.
-		headers?: (options: { apiName: string }) => Promise<Headers>;
+		headers?(options: { apiName: string }): Promise<Headers>;
 	};
-};
+}
 
-type APIGraphQLConfig = {
+interface APIGraphQLConfig {
 	/**
 	 * Required GraphQL endpoint, must be a valid URL string.
 	 */
@@ -45,9 +45,9 @@ type APIGraphQLConfig = {
 	 */
 	defaultAuthMode: GraphQLAuthMode;
 	modelIntrospection?: ModelIntrospectionSchema;
-};
+}
 
-type APIRestConfig = {
+interface APIRestConfig {
 	/**
 	 * Required REST endpoint, must be a valid URL string.
 	 */
@@ -65,15 +65,15 @@ type APIRestConfig = {
 	 * @default 'execute-api'
 	 */
 	service?: string;
-};
+}
 
-export type RESTProviderConfig = {
+export interface RESTProviderConfig {
 	REST: Record<string, APIRestConfig>;
-};
+}
 
-export type GraphQLProviderConfig = {
+export interface GraphQLProviderConfig {
 	GraphQL: APIGraphQLConfig;
-};
+}
 
 export type APIConfig = AtLeastOne<RESTProviderConfig & GraphQLProviderConfig>;
 
@@ -101,12 +101,12 @@ export type DocumentType =
  *
  * Borrowed from: https://github.com/aws-amplify/samsara-cli/pull/377/commits/c08ea2c1a43f36aafe63b6d14d03f884e9c0c671#diff-21ae6faa2f22c15bb25ff9b272eaab7846c0650e2d267ab720546c19559583d0R4-R108
  */
-export type ModelIntrospectionSchema = {
+export interface ModelIntrospectionSchema {
 	version: 1;
 	models: SchemaModels;
 	nonModels: SchemaNonModels;
 	enums: SchemaEnums;
-};
+}
 
 /**
  * Top-level Entities on a Schema
@@ -115,42 +115,42 @@ export type SchemaModels = Record<string, SchemaModel>;
 export type SchemaNonModels = Record<string, SchemaNonModel>;
 export type SchemaEnums = Record<string, SchemaEnum>;
 
-export type SchemaModel = {
+export interface SchemaModel {
 	name: string;
 	attributes?: ModelAttribute[];
 	fields: Fields;
 	pluralName: string;
 	syncable?: boolean;
 	primaryKeyInfo: PrimaryKeyInfo;
-};
-export type SchemaNonModel = {
+}
+export interface SchemaNonModel {
 	name: string;
 	fields: Fields;
-};
-export type SchemaEnum = {
+}
+export interface SchemaEnum {
 	name: string;
 	values: string[];
-};
+}
 
-export type ModelAttribute = {
+export interface ModelAttribute {
 	type: string;
-	properties?: { [key: string]: any };
-};
+	properties?: Record<string, any>;
+}
 
-export type SecondaryIndexAttribute = {
+export interface SecondaryIndexAttribute {
 	type: 'key';
 	properties: {
 		name: string;
 		queryField: string;
 		fields: string[];
 	};
-};
+}
 
 /**
  * Field Definition
  */
 export type Fields = Record<string, Field>;
-export type Field = {
+export interface Field {
 	name: string;
 	type: FieldType;
 	isArray: boolean;
@@ -159,9 +159,11 @@ export type Field = {
 	isArrayNullable?: boolean;
 	attributes?: FieldAttribute[];
 	association?: AssociationType;
-};
+}
 
-export type ModelFieldType = { model: string };
+export interface ModelFieldType {
+	model: string;
+}
 
 export type FieldType =
 	| 'ID'
@@ -191,9 +193,9 @@ export enum CodeGenConnectionType {
 	BELONGS_TO = 'BELONGS_TO',
 	HAS_MANY = 'HAS_MANY',
 }
-export type AssociationBaseType = {
+export interface AssociationBaseType {
 	connectionType: CodeGenConnectionType;
-};
+}
 
 export type AssociationHasMany = AssociationBaseType & {
 	connectionType: CodeGenConnectionType.HAS_MANY;
@@ -214,8 +216,8 @@ export type AssociationType =
 	| AssociationHasOne
 	| AssociationBelongsTo;
 
-export type PrimaryKeyInfo = {
+export interface PrimaryKeyInfo {
 	isCustomPrimaryKey: boolean;
 	primaryKeyFieldName: string;
 	sortKeyFieldNames: string[];
-};
+}
