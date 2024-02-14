@@ -6,8 +6,4 @@ import { KeyValueStorage } from './KeyValueStorage';
 /**
  * @internal
  */
-export class CookieStorage extends KeyValueStorage {
-	constructor() {
-		super();
-	}
-}
+export class CookieStorage extends KeyValueStorage {}
