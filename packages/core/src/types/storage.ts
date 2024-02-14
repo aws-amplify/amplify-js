@@ -10,7 +10,7 @@ export interface KeyValueStorageInterface {
 
 export type SameSite = 'strict' | 'lax' | 'none';
 
-export type CookieStorageData = {
+export interface CookieStorageData {
 	domain?: string;
 	path?: string;
 
@@ -20,4 +20,4 @@ export type CookieStorageData = {
 	expires?: number;
 	secure?: boolean;
 	sameSite?: SameSite;
-};
+}

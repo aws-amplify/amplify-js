@@ -9,14 +9,17 @@ import {
 	jitteredBackoff,
 	authenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { DocumentType } from '@aws-amplify/core/internals/utils';
+import {
+	AWSCredentials,
+	DocumentType,
+} from '@aws-amplify/core/internals/utils';
 
 import {
+	logger,
 	parseRestApiServiceError,
 	parseSigningInfo,
-	resolveCredentials,
 } from '../../utils';
-import { normalizeHeaders } from '../../utils/normalizeHeaders';
+import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse } from '../../types';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
@@ -51,17 +54,7 @@ export const transferHandler = async (
 			? body
 			: JSON.stringify(body ?? '')
 		: undefined;
-	const resolvedHeaders: Headers = {
-		...normalizeHeaders(headers),
-		...(resolvedBody
-			? {
-					'content-type':
-						body instanceof FormData
-							? 'multipart/form-data'
-							: 'application/json; charset=UTF-8',
-			  }
-			: {}),
-	};
+	const resolvedHeaders: Headers = resolveHeaders(headers, body);
 	const request = {
 		url,
 		headers: resolvedHeaders,
@@ -77,13 +70,13 @@ export const transferHandler = async (
 
 	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
 	let response: RestApiResponse;
-	if (isIamAuthApplicable) {
+	const credentials = await resolveCredentials(amplify);
+	if (isIamAuthApplicable && credentials) {
 		const signingInfoFromUrl = parseSigningInfo(url);
 		const signingService =
 			signingServiceInfo?.service ?? signingInfoFromUrl.service;
 		const signingRegion =
 			signingServiceInfo?.region ?? signingInfoFromUrl.region;
-		const credentials = await resolveCredentials(amplify);
 		response = await authenticatedHandler(request, {
 			...baseOptions,
 			credentials,
@@ -107,3 +100,17 @@ const iamAuthApplicable = (
 	{ headers }: HttpRequest,
 	signingServiceInfo?: SigningServiceInfo
 ) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;
+
+const resolveCredentials = async (
+	amplify: AmplifyClassV6
+): Promise<AWSCredentials | null> => {
+	try {
+		const { credentials } = await amplify.Auth.fetchAuthSession();
+		if (credentials) {
+			return credentials;
+		}
+	} catch (e) {
+		logger.debug('No credentials available, the request will be unsigned.');
+	}
+	return null;
+};

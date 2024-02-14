@@ -21,5 +21,6 @@ export const getDnsSuffix = (region: string): string => {
 			return outputs.dnsSuffix;
 		}
 	}
+
 	return defaultPartition.outputs.dnsSuffix;
 };

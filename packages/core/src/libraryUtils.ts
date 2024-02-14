@@ -17,9 +17,11 @@ export {
 	retry,
 	urlSafeDecode,
 	urlSafeEncode,
+	deDupeAsyncFunction,
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { LegacyConfig } from './singleton/types';
+export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
 
@@ -41,6 +43,9 @@ export {
 	ModelIntrospectionSchema,
 	SchemaModel,
 	SchemaModels,
+	ModelAttribute,
+	SecondaryIndexAttribute,
+	GraphQLProviderConfig,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {
@@ -52,6 +57,7 @@ export {
 	AuthVerifiableAttributeKey,
 	AWSCredentials,
 } from './singleton/Auth/types';
+export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
 
 // Platform & user-agent utilities
 export {
@@ -87,6 +93,9 @@ export {
 	AmplifyError,
 	PlatformNotSupportedError,
 	createAssertionFunction,
+	ApiError,
+	ApiErrorParams,
+	ApiErrorResponse,
 } from './errors';
 export {
 	AmplifyErrorCode,

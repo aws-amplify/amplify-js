@@ -9,8 +9,9 @@ export { GraphQLAuthError, ConnectionState } from '@aws-amplify/api-graphql';
 export type {
 	GraphQLResult,
 	GraphQLReturnType,
-	CONNECTION_STATE_CHANGE,
 } from '@aws-amplify/api-graphql';
+
+export { CONNECTION_STATE_CHANGE } from '@aws-amplify/api-graphql';
 
 import type { V6Client } from '@aws-amplify/api-graphql';
 
@@ -29,3 +30,5 @@ export {
 	patch,
 	isCancelError,
 } from '@aws-amplify/api-rest';
+
+export { ApiError } from '@aws-amplify/core/internals/utils';

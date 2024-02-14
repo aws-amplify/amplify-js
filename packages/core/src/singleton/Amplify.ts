@@ -1,12 +1,23 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AuthClass } from './Auth';
-import { Hub, AMPLIFY_SYMBOL } from '../Hub';
-import { LegacyConfig, LibraryOptions, ResourcesConfig } from './types';
+import { AMPLIFY_SYMBOL, Hub } from '../Hub';
 import { parseAWSExports } from '../parseAWSExports';
 import { deepFreeze } from '../utils';
 
+import {
+	AuthConfig,
+	LegacyConfig,
+	LibraryOptions,
+	ResourcesConfig,
+} from './types';
+import { AuthClass } from './Auth';
+import { ADD_OAUTH_LISTENER } from './constants';
+
 export class AmplifyClass {
+	private oAuthListener:
+		| ((authConfig: AuthConfig['Cognito']) => void)
+		| undefined = undefined;
+
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
 
@@ -38,7 +49,7 @@ export class AmplifyClass {
 	 */
 	configure(
 		resourcesConfig: ResourcesConfig | LegacyConfig,
-		libraryOptions?: LibraryOptions
+		libraryOptions?: LibraryOptions,
 	): void {
 		let resolvedResourceConfig: ResourcesConfig;
 
@@ -63,11 +74,13 @@ export class AmplifyClass {
 			'core',
 			{
 				event: 'configure',
-				data: resourcesConfig,
+				data: this.resourcesConfig,
 			},
 			'Configure',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
+
+		this.notifyOAuthListener();
 	}
 
 	/**
@@ -77,6 +90,30 @@ export class AmplifyClass {
 	 */
 	getConfig(): Readonly<ResourcesConfig> {
 		return this.resourcesConfig;
+	}
+
+	/** @internal */
+	[ADD_OAUTH_LISTENER](listener: (authConfig: AuthConfig['Cognito']) => void) {
+		if (this.resourcesConfig.Auth?.Cognito.loginWith?.oauth) {
+			// when Amplify has been configured with a valid OAuth config while adding the listener, run it directly
+			listener(this.resourcesConfig.Auth?.Cognito);
+		} else {
+			// otherwise register the listener and run it later when Amplify gets configured with a valid oauth config
+			this.oAuthListener = listener;
+		}
+	}
+
+	private notifyOAuthListener() {
+		if (
+			!this.resourcesConfig.Auth?.Cognito.loginWith?.oauth ||
+			!this.oAuthListener
+		) {
+			return;
+		}
+
+		this.oAuthListener(this.resourcesConfig.Auth?.Cognito);
+		// the listener should only be notified once with a valid oauth config
+		this.oAuthListener = undefined;
 	}
 }
 

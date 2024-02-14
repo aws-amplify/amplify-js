@@ -156,3 +156,30 @@ export const transformedMockData = [
 		name: 'react-native',
 	},
 ];
+
+export const mockAuthConfigWithOAuth = {
+	Auth: {
+		Cognito: {
+			identityPoolId: 'identityPoolId',
+			userPoolClientId: 'userPoolClientId',
+			userPoolId: 'userPoolId',
+			loginWith: {
+				username: true,
+				oauth: {
+					domain: 'oauth.domain.com',
+					scopes: [
+						'phone' as const,
+						'email' as const,
+						'openid' as const,
+						'profile' as const,
+						'aws.cognito.signin.user.admin' as const,
+					],
+					redirectSignIn: ['http://localhost:3000/'],
+					redirectSignOut: ['http://localhost:3000/'],
+					responseType: 'code' as const,
+					providers: ['Google' as const],
+				},
+			},
+		},
+	},
+};

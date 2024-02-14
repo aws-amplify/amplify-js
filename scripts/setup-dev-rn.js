@@ -48,7 +48,7 @@ const sanatizeCommand = (base, args) => `("${base}${WHITE_SPACE}" & "${args}")`;
 const getDelay = seconds =>
 	`${MULTILINE_FLAG}  ${singleQuotedFormOf(`delay ${seconds}`)}`;
 const openNewTab = `${MULTILINE_FLAG} ${singleQuotedFormOf(
-	'tell application "System Events" to tell process "Terminal" to keystroke "t" using command down'
+	'tell application "System Events" to tell process "Terminal" to keystroke "t" using command down',
 )}`;
 
 const logger = winston.createLogger({
@@ -57,7 +57,7 @@ const logger = winston.createLogger({
 		new winston.transports.Console({
 			format: winston.format.combine(
 				winston.format.prettyPrint(2),
-				winston.format.colorize({ all: true })
+				winston.format.colorize({ all: true }),
 			),
 		}),
 	],
@@ -70,7 +70,7 @@ const createDoCommand = command =>
 // OSA script to open a new terminal and tabs for each command execution
 function openTerminalWithTabs(commands, pkgRootPath) {
 	let osaScript = `${OSA_SCRIPT_BASE} ${MULTILINE_FLAG} ${singleQuotedFormOf(
-		'tell application "Terminal" to activate'
+		'tell application "Terminal" to activate',
 	)} `;
 	const goToPackageRoot = sanatizeCommand('cd', pkgRootPath);
 
@@ -80,7 +80,7 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 		const hasTwoOrMoreCommands = splitCommands.length >= 2;
 
 		osaScript += `${openNewTab} ${getDelay(1)} ${createDoCommand(
-			goToPackageRoot
+			goToPackageRoot,
 		)}${WHITE_SPACE}`;
 
 		if (hasTwoOrMoreCommands) {
@@ -125,7 +125,7 @@ function setupDevReactNative() {
 	// Exit if dependent app path is given but does not exist
 	if (!existsSync(targetAppPath)) {
 		logger.error(
-			'Dependent app path given does not exist. Please provide a valid path'
+			'Dependent app path given does not exist. Please provide a valid path',
 		);
 		return;
 	}
@@ -133,14 +133,14 @@ function setupDevReactNative() {
 	// Exit for unsupported OS
 	if (os.platform() !== 'darwin') {
 		logger.error(
-			'No support for this operating system. Currently only supports OSX.'
+			'No support for this operating system. Currently only supports OSX.',
 		);
 		return;
 	}
 
 	// Exclude unrelated packages
 	const supportedPackages = getPackageNames('./packages/').filter(
-		packages => !EXCLUDED_PACKAGES.includes(packages)
+		packages => !EXCLUDED_PACKAGES.includes(packages),
 	);
 
 	// ALL Packages list formation
@@ -153,7 +153,7 @@ function setupDevReactNative() {
 		// Exit if the package is not within the supported list of packages
 		if (!supportedPackages.includes(pack)) {
 			logger.error(
-				`Package ${pack} is not supported by this script or does not exist. Here is a list of supported packages: ${supportedPackages}`
+				`Package ${pack} is not supported by this script or does not exist. Here is a list of supported packages: ${supportedPackages}`,
 			);
 			process.exit(0);
 		}
@@ -181,7 +181,7 @@ function setupDevReactNative() {
 
 	// WML add command formation
 	finalCommands.push(
-		createWmlCommand(requestedPackages, targetAppPath, pkgRootPath)
+		createWmlCommand(requestedPackages, targetAppPath, pkgRootPath),
 	);
 
 	// Open each command in a new tab in a new terminal
@@ -191,20 +191,20 @@ function setupDevReactNative() {
 // Form the lerna sommand for the specific package type with the given list of packages
 const createLernaCommand = (packageType, packages) =>
 	`${LERNA_BASE} --scope={${packages.join(
-		','
-	)},} ${NPM_BASE} build:${packageType}:watch ${PARALLEL_FLAG}`;
+		',',
+	)},} ${NPM_BASE} build:watch ${PARALLEL_FLAG}`;
 
 // Form the wml command for the specific packages list with the target path
 const createWmlCommand = (requestedPackages, targetAppPath, pkgRootPath) => {
 	const wmlAddcommand = buildWmlAddStrings(
 		requestedPackages,
 		targetAppPath,
-		pkgRootPath
+		pkgRootPath,
 	);
 
 	// Use char ; to separate commands to be run on the same tab
 	return `${doubleQuotedFormOf(WATCHMAN_WATCH_SRC)} ; ${doubleQuotedFormOf(
-		WML_REMOVE_ALL_LINKS
+		WML_REMOVE_ALL_LINKS,
 	)} ; ${wmlAddcommand} ; ${doubleQuotedFormOf(WML_START)}`;
 };
 
@@ -220,7 +220,7 @@ const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
 	const packagesDirectory = path.resolve(pkgRootPath, 'packages');
 	const sampleAppNodeModulesDirectory = path.join(
 		targetAppPath,
-		'node_modules'
+		'node_modules',
 	);
 	packages.forEach(pack => {
 		const packageName = pack.split('/')[1] ?? pack;
@@ -229,9 +229,9 @@ const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
 		const source = path.resolve(packagesDirectory, sourceDirectoryName);
 		const target = path.resolve(sampleAppNodeModulesDirectory, pack);
 		wmlAddCommands += `${doubleQuotedFormOf(
-			`${WML_ADD_LINK}${WHITE_SPACE}`
+			`${WML_ADD_LINK}${WHITE_SPACE}`,
 		)} & ${doubleQuotedFormOf(
-			`${source}${WHITE_SPACE}`
+			`${source}${WHITE_SPACE}`,
 		)} & ${doubleQuotedFormOf(`${target}${WHITE_SPACE}&&${WHITE_SPACE}`)} & `;
 	});
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyErrorCode } from '../types';
+
 import { AmplifyError } from './AmplifyError';
 
 export class PlatformNotSupportedError extends AmplifyError {

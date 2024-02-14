@@ -1,4 +1,5 @@
 import { parseAWSExports } from '../src/parseAWSExports';
+import { OAuthScope } from '../src/singleton/Auth/types';
 import { ResourcesConfig } from '../src/singleton/types';
 
 // TODO: Add API category tests
@@ -64,7 +65,7 @@ describe('parseAWSExports', () => {
 	const appsyncEndpoint = 'https://123.appsync-api.com';
 	const apiKey = 'api-key';
 	const oAuthDomain = 'test.auth.us-west-2.amazoncognito.com';
-	const oAuthScopes = [
+	const oAuthScopes: OAuthScope[] = [
 		'phone',
 		'email',
 		'openid',
@@ -184,7 +185,7 @@ describe('parseAWSExports', () => {
 				Notifications: {
 					InAppMessaging: { AWSPinpoint: { appId, region } },
 				},
-			})
+			}),
 		).toStrictEqual(expected);
 	});
 
@@ -196,7 +197,7 @@ describe('parseAWSExports', () => {
 				aws_appsync_apiKey: apiKey,
 				aws_appsync_region: region,
 				aws_appsync_authenticationType: 'INVALID_AUTH_TYPE',
-			})
+			}),
 		).toStrictEqual({
 			API: {
 				GraphQL: {
@@ -219,7 +220,7 @@ describe('parseAWSExports', () => {
 					scope: oAuthScopes,
 					responseType: oAuthResponseType,
 				},
-			})
+			}),
 		).toStrictEqual({
 			Auth: {
 				Cognito: {
@@ -259,7 +260,44 @@ describe('parseAWSExports', () => {
 		};
 
 		expect(() => parseAWSExports(testConfig)).toThrow(
-			'Invalid config parameter.'
+			'Invalid config parameter.',
 		);
+	});
+	it('should append Notification configs when both Push and InApp configs are available', () => {
+		const testConfig = {
+			aws_project_region: 'us-west-2',
+			aws_user_pools_id: userPoolId,
+			Notifications: {
+				Push: {
+					AWSPinpoint: {
+						appId: 'appId',
+						region: 'region',
+					},
+				},
+				InAppMessaging: {
+					AWSPinpoint: {
+						appId: 'appId',
+						region: 'region',
+					},
+				},
+			},
+		};
+
+		expect(parseAWSExports(testConfig)).toMatchObject({
+			Notifications: {
+				PushNotification: {
+					Pinpoint: {
+						appId: 'appId',
+						region: 'region',
+					},
+				},
+				InAppMessaging: {
+					Pinpoint: {
+						appId: 'appId',
+						region: 'region',
+					},
+				},
+			},
+		});
 	});
 });

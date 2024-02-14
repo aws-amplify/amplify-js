@@ -4,6 +4,7 @@
 import { ConsoleLogger } from '../Logger';
 import { KeyValueStorage } from '../storage/KeyValueStorage';
 import { getLocalStorageWithFallback } from '../storage/utils';
+
 import { defaultConfig } from './constants';
 import { StorageCacheCommon } from './StorageCacheCommon';
 import { Cache, CacheConfig } from './types';
@@ -42,6 +43,7 @@ export class StorageCache extends StorageCacheCommon implements Cache {
 				keys.push(key.substring(this.config.keyPrefix.length));
 			}
 		}
+
 		return keys;
 	}
 

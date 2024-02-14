@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/auth/enable-oauth-listener",
+	"main": "../../dist/cjs/auth/enableOAuthListener.js",
+	"browser": "../../dist/esm/auth/enableOAuthListener.mjs",
+	"module": "../../dist/esm/auth/enableOAuthListener.mjs",
+	"typings": "../../dist/esm/auth/enableOAuthListener.d.ts",
+	"sideEffects": true
+}

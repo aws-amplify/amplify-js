@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
 import { loadNetInfo } from '@aws-amplify/react-native';
+
 import { ConsoleLogger } from '../Logger';
+
 import { NetworkStatus } from './types';
 
 const logger = new ConsoleLogger('Reachability', 'DEBUG');
 
 export class Reachability {
 	networkMonitor(
-		netInfo?: ReturnType<typeof loadNetInfo>
+		netInfo?: ReturnType<typeof loadNetInfo>,
 	): Observable<NetworkStatus> {
 		/**
 		 * Here netinfo refers to @react-native-community/netinfo
@@ -20,9 +22,10 @@ export class Reachability {
 		 */
 		if (!(netInfo && netInfo.addEventListener)) {
 			throw new Error(
-				'NetInfo must be passed to networkMonitor to enable reachability in React Native'
+				'NetInfo must be passed to networkMonitor to enable reachability in React Native',
 			);
 		}
+
 		return new Observable(observer => {
 			logger.log('subscribing to reachability in React Native');
 
@@ -35,7 +38,7 @@ export class Reachability {
 						logger.log('Notifying reachability change', online);
 						observer.next({ online });
 					}
-				}
+				},
 			);
 
 			return () => {

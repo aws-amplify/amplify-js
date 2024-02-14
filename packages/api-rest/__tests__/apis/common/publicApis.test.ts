@@ -4,8 +4,10 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	authenticatedHandler,
+	unauthenticatedHandler,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { ApiError } from '@aws-amplify/core/internals/utils';
 
 import {
 	get,
@@ -25,6 +27,7 @@ import {
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
 const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
+const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
 const mockFetchAuthSession = jest.fn();
 let mockConfig = {
 	API: {
@@ -60,6 +63,17 @@ const credentials = {
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
+const mockSuccessResponse = {
+	statusCode: 200,
+	headers: {
+		'response-header': 'response-header-value',
+	},
+	body: {
+		blob: jest.fn(),
+		json: jest.fn(),
+		text: jest.fn(),
+	},
+};
 
 describe('public APIs', () => {
 	beforeEach(() => {
@@ -67,17 +81,9 @@ describe('public APIs', () => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
 		});
-		mockAuthenticatedHandler.mockResolvedValue({
-			statusCode: 200,
-			headers: {
-				'response-header': 'response-header-value',
-			},
-			body: {
-				blob: jest.fn(),
-				json: jest.fn().mockResolvedValue({ foo: 'bar' }),
-				text: jest.fn(),
-			},
-		});
+		mockSuccessResponse.body.json.mockResolvedValue({ foo: 'bar' });
+		mockAuthenticatedHandler.mockResolvedValue(mockSuccessResponse);
+		mockUnauthenticatedHandler.mockResolvedValue(mockSuccessResponse);
 		mockGetConfig.mockReturnValue(mockConfig);
 	});
 	const APIs = [
@@ -266,36 +272,42 @@ describe('public APIs', () => {
 				}
 			});
 
-			it('should throw if credentials are not available', async () => {
-				expect.assertions(2);
+			it('should use unauthenticated request if credentials are not available', async () => {
+				expect.assertions(1);
 				mockFetchAuthSession.mockResolvedValueOnce({});
-				try {
-					await fn(mockAmplifyInstance, {
-						apiName: 'restApi1',
-						path: '/items',
-					}).response;
-				} catch (error) {
-					expect(error).toBeInstanceOf(RestApiError);
-					expect(error).toMatchObject(
-						validationErrorMap[RestApiValidationErrorCode.NoCredentials]
-					);
-				}
+				await fn(mockAmplifyInstance, {
+					apiName: 'restApi1',
+					path: '/items',
+				}).response;
+				expect(mockUnauthenticatedHandler).toHaveBeenCalledWith(
+					expect.objectContaining({
+						url: new URL(
+							'https://123.execute-api.us-west-2.amazonaws.com/development/items/123'
+						),
+					}),
+					expect.anything()
+				);
 			});
 
-			it('should throw when response is not ok', async () => {
-				expect.assertions(2);
+			it('should throw when error response conforms to AWS service errors', async () => {
+				expect.assertions(4);
+				const errorResponseObj = { message: 'fooMessage', name: 'badRequest' };
 				const errorResponse = {
 					statusCode: 400,
 					headers: {},
 					body: {
 						blob: jest.fn(),
 						json: jest.fn(),
-						text: jest.fn(),
+						text: jest.fn().mockResolvedValue(JSON.stringify(errorResponseObj)),
 					},
 				};
-				mockParseJsonError.mockResolvedValueOnce(
-					new RestApiError({ message: 'fooMessage', name: 'badRequest' })
-				);
+				mockParseJsonError.mockImplementationOnce(async response => {
+					const errorResponsePayload = await response.body?.json();
+					const error = new Error(errorResponsePayload.message);
+					return Object.assign(error, {
+						name: errorResponsePayload.name,
+					});
+				});
 				mockAuthenticatedHandler.mockResolvedValueOnce(errorResponse);
 				try {
 					await fn(mockAmplifyInstance, {
@@ -304,8 +316,66 @@ describe('public APIs', () => {
 					}).response;
 					fail('should throw RestApiError');
 				} catch (error) {
-					expect(mockParseJsonError).toHaveBeenCalledWith(errorResponse);
+					expect(mockParseJsonError).toHaveBeenCalledWith({
+						...errorResponse,
+						body: {
+							json: expect.any(Function),
+							blob: expect.any(Function),
+							text: expect.any(Function),
+						},
+					});
 					expect(error).toEqual(expect.any(RestApiError));
+					expect(error).toEqual(expect.any(ApiError));
+					expect((error as ApiError).response).toEqual({
+						statusCode: 400,
+						headers: {},
+						body: JSON.stringify(errorResponseObj),
+					});
+				}
+			});
+
+			it('should throw when error response has custom payload', async () => {
+				expect.assertions(4);
+				const errorResponseStr = 'custom error message';
+				const errorResponse = {
+					statusCode: 400,
+					headers: {},
+					body: {
+						blob: jest.fn(),
+						json: jest.fn(),
+						text: jest.fn().mockResolvedValue(errorResponseStr),
+					},
+				};
+				mockParseJsonError.mockImplementationOnce(async response => {
+					const errorResponsePayload = await response.body?.json();
+					const error = new Error(errorResponsePayload.message);
+					return Object.assign(error, {
+						name: errorResponsePayload.name,
+					});
+				});
+				mockAuthenticatedHandler.mockResolvedValueOnce(errorResponse);
+				try {
+					await fn(mockAmplifyInstance, {
+						apiName: 'restApi1',
+						path: '/items',
+					}).response;
+					fail('should throw RestApiError');
+				} catch (error) {
+					expect(mockParseJsonError).toHaveBeenCalledWith({
+						...errorResponse,
+						body: {
+							json: expect.any(Function),
+							blob: expect.any(Function),
+							text: expect.any(Function),
+						},
+					});
+					expect(error).toEqual(expect.any(RestApiError));
+					expect(error).toEqual(expect.any(ApiError));
+					expect((error as ApiError).response).toEqual({
+						statusCode: 400,
+						headers: {},
+						body: errorResponseStr,
+					});
 				}
 			});
 

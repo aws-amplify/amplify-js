@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.0.16 (2024-02-09)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 6.0.15 (2024-02-06)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 6.0.14 (2024-02-01)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 6.0.13 (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 6.0.12 (2024-01-12)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 6.0.11 (2024-01-10)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 6.0.10 (2024-01-04)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## 6.0.9 (2023-12-22)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
 ## 6.0.8 (2023-12-18)
 
 **Note:** Version bump only for package @aws-amplify/predictions

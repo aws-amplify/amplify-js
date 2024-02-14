@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/auth",
-	"version": "6.0.8",
+	"version": "6.0.16",
 	"description": "Auth category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -8,7 +8,9 @@
 	"react-native": "./src/index.ts",
 	"sideEffects": [
 		"./dist/cjs/providers/cognito/apis/signInWithRedirect.js",
-		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs"
+		"./dist/esm/providers/cognito/apis/signInWithRedirect.mjs",
+		"./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js",
+		"./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs"
 	],
 	"publishConfig": {
 		"access": "public"
@@ -18,14 +20,13 @@
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup -c rollup.config.mjs",
-		"build:cjs:watch": "rimraf dist/cjs && tsc -m commonjs --outDir dist/cjs --watch",
-		"build:esm:watch": "rimraf dist/esm && tsc -m esnext --outDir dist/esm --watch",
+		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
 		"lint": "tslint '{src}/**/*.ts' && npm run ts-coverage",
-		"ts-coverage": "typescript-coverage-report -p ./tsconfig.json -t 91.18"
+		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 91.18"
 	},
 	"typesVersions": {
 		">=4.2": {
@@ -63,6 +64,11 @@
 			"import": "./dist/esm/server.mjs",
 			"require": "./dist/cjs/server.js"
 		},
+		"./enable-oauth-listener": {
+			"types": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.d.ts",
+			"import": "./dist/esm/providers/cognito/utils/oauth/enableOAuthListener.mjs",
+			"require": "./dist/cjs/providers/cognito/utils/oauth/enableOAuthListener.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"repository": {
@@ -80,7 +86,8 @@
 		"dist/esm",
 		"src",
 		"cognito",
-		"server"
+		"server",
+		"enable-oauth-listener"
 	],
 	"dependencies": {
 		"tslib": "^2.5.0"
@@ -89,11 +96,9 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.8",
-		"@aws-amplify/react-native": "1.0.8",
+		"@aws-amplify/core": "6.0.16",
+		"@aws-amplify/react-native": "1.0.16",
 		"@jest/test-sequencer": "^29.7.0",
-		"@rollup/plugin-typescript": "11.1.5",
-		"rollup": "3.29.4",
 		"typescript": "5.0.2"
 	}
 }

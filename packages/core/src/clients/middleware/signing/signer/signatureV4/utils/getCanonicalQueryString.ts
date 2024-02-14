@@ -13,13 +13,14 @@
  * @internal
  */
 export const getCanonicalQueryString = (
-	searchParams: URLSearchParams
+	searchParams: URLSearchParams,
 ): string =>
 	Array.from(searchParams)
 		.sort(([keyA, valA], [keyB, valB]) => {
 			if (keyA === keyB) {
 				return valA < valB ? -1 : 1;
 			}
+
 			return keyA < keyB ? -1 : 1;
 		})
 		.map(([key, val]) => `${escapeUri(key)}=${escapeUri(val)}`)
