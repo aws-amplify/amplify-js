@@ -10,6 +10,9 @@ import {
 } from '../../../errors/constants';
 import { AuthError } from '../../../errors/AuthError';
 
+export const ERROR_MESSAGE =
+	'Unable to get user session following successful sign-in.';
+
 export const dispatchSignedInHubEvent = async () => {
 	try {
 		Hub.dispatch(
@@ -25,8 +28,7 @@ export const dispatchSignedInHubEvent = async () => {
 		if ((error as AuthError).name === USER_UNAUTHENTICATED_EXCEPTION) {
 			throw new AuthError({
 				name: UNEXPECTED_SIGN_IN_INTERRUPTION_EXCEPTION,
-				message:
-					'Unable to get user session following successful sign-in.',
+				message: ERROR_MESSAGE,
 				recoverySuggestion:
 					'This most likely is due to auth tokens not being persisted. If you are using cookie store, please ensure cookies can be correctly set from your server.',
 			});

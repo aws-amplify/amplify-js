@@ -3,10 +3,12 @@
 
 import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
-import { dispatchSignedInHubEvent } from '../../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
+import {
+	dispatchSignedInHubEvent,
+	ERROR_MESSAGE,
+} from '../../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
 import { getCurrentUser } from '../../../../src/providers/cognito/apis/getCurrentUser';
 import { assertAuthTokens } from '../../../../src/providers/cognito/utils/types';
-import { UNEXPECTED_SIGN_IN_INTERRUPTION_EXCEPTION } from '../../../../src/errors/constants';
 
 jest.mock('../../../../src/providers/cognito/apis/getCurrentUser', () => ({
 	getCurrentUser: jest.fn(),
@@ -50,9 +52,7 @@ describe('dispatchSignedInHubEvent()', () => {
 			assertAuthTokens(null);
 		});
 
-		expect(() => dispatchSignedInHubEvent()).rejects.toThrow(
-			'Could not get user session right after signing in successfully.',
-		);
+		expect(() => dispatchSignedInHubEvent()).rejects.toThrow(ERROR_MESSAGE);
 	});
 
 	it('rethrows error if the error is not handled by itself', () => {
