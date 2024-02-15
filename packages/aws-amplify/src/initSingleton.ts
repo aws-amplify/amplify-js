@@ -11,9 +11,10 @@ import {
 	LegacyConfig,
 	parseAWSExports,
 } from '@aws-amplify/core/internals/utils';
+
 import {
-	cognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
+	cognitoUserPoolsTokenProvider,
 } from './auth/cognito';
 
 export const DefaultAmplify = {
@@ -31,7 +32,7 @@ export const DefaultAmplify = {
 	 */
 	configure(
 		resourceConfig: ResourcesConfig | LegacyConfig,
-		libraryOptions?: LibraryOptions
+		libraryOptions?: LibraryOptions,
 	): void {
 		let resolvedResourceConfig: ResourcesConfig;
 
@@ -44,13 +45,17 @@ export const DefaultAmplify = {
 		// If no Auth config is provided, no special handling will be required, configure as is.
 		// Otherwise, we can assume an Auth config is provided from here on.
 		if (!resolvedResourceConfig.Auth) {
-			return Amplify.configure(resolvedResourceConfig, libraryOptions);
+			Amplify.configure(resolvedResourceConfig, libraryOptions);
+
+			return;
 		}
 
 		// If Auth options are provided, always just configure as is.
 		// Otherwise, we can assume no Auth libraryOptions were provided from here on.
 		if (libraryOptions?.Auth) {
-			return Amplify.configure(resolvedResourceConfig, libraryOptions);
+			Amplify.configure(resolvedResourceConfig, libraryOptions);
+
+			return;
 		}
 
 		// If no Auth libraryOptions were previously configured, then always add default providers.
@@ -60,15 +65,18 @@ export const DefaultAmplify = {
 				// TODO: allow configure with a public interface
 				libraryOptions?.ssr
 					? new CookieStorage({ sameSite: 'lax' })
-					: defaultStorage
+					: defaultStorage,
 			);
-			return Amplify.configure(resolvedResourceConfig, {
+
+			Amplify.configure(resolvedResourceConfig, {
 				...libraryOptions,
 				Auth: {
 					tokenProvider: cognitoUserPoolsTokenProvider,
 					credentialsProvider: cognitoCredentialsProvider,
 				},
 			});
+
+			return;
 		}
 
 		// At this point, Auth libraryOptions would have been previously configured and no overriding
@@ -80,13 +88,16 @@ export const DefaultAmplify = {
 					// TODO: allow configure with a public interface
 					libraryOptions.ssr
 						? new CookieStorage({ sameSite: 'lax' })
-						: defaultStorage
+						: defaultStorage,
 				);
 			}
-			return Amplify.configure(resolvedResourceConfig, {
+
+			Amplify.configure(resolvedResourceConfig, {
 				Auth: Amplify.libraryOptions.Auth,
 				...libraryOptions,
 			});
+
+			return;
 		}
 
 		// Finally, if there were no libraryOptions given at all, we should simply not touch the currently

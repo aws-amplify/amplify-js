@@ -244,7 +244,8 @@
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"generate-docs-local": "typedoc --out docs src",
 		"generate-docs-root": "typedoc --out ../../docs src",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 93.26"
