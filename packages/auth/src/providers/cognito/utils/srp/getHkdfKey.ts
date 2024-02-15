@@ -17,7 +17,7 @@ import { Sha256 } from '@aws-crypto/sha256-js';
 export const getHkdfKey = (
 	ikm: Uint8Array,
 	salt: Uint8Array,
-	info: Uint8Array
+	info: Uint8Array,
 ): Uint8Array => {
 	const awsCryptoHash = new Sha256(salt);
 	awsCryptoHash.update(ikm);

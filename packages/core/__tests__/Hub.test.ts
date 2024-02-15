@@ -21,7 +21,7 @@ describe('Hub', () => {
 				message: 'User singout has taken place',
 			},
 			'Auth',
-			Symbol.for('amplify_default')
+			Symbol.for('amplify_default'),
 		);
 
 		expect(listener).toHaveBeenCalled();
@@ -39,13 +39,13 @@ describe('Hub', () => {
 				data: 'the user has been signed out',
 				message: 'User singout has taken place',
 			},
-			'Auth'
+			'Auth',
 		);
 
 		expect(listener).toHaveBeenCalled();
 		expect(loggerSpy).toHaveBeenCalledWith(
 			'WARN',
-			'WARNING: auth is protected and dispatching on it can have unintended consequences'
+			'WARNING: auth is protected and dispatching on it can have unintended consequences',
 		);
 	});
 
@@ -63,7 +63,7 @@ describe('Hub', () => {
 		expect(listener).toHaveBeenCalled();
 		expect(loggerSpy).toHaveBeenCalledWith(
 			'WARN',
-			'WARNING: ui is protected and dispatching on it can have unintended consequences'
+			'WARNING: ui is protected and dispatching on it can have unintended consequences',
 		);
 	});
 	test('Remove listener', () => {
@@ -79,7 +79,7 @@ describe('Hub', () => {
 				message: 'User signout has taken place',
 			},
 			'Auth',
-			Symbol.for('amplify_default')
+			Symbol.for('amplify_default'),
 		);
 
 		expect(listener).toHaveBeenCalled();
@@ -96,7 +96,7 @@ describe('Hub', () => {
 				message: 'User signout has taken place',
 			},
 			'Auth',
-			Symbol.for('amplify_default')
+			Symbol.for('amplify_default'),
 		);
 
 		expect(listener).not.toHaveBeenCalled();
@@ -134,7 +134,7 @@ describe('Hub', () => {
 					message: 'User signout has taken place',
 				},
 				'Auth',
-				amplifySymbolValue
+				amplifySymbolValue,
 			);
 
 			expect(loggerSpy).not.toHaveBeenCalled();

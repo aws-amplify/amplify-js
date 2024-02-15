@@ -22,7 +22,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 }));
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('signIn API error path cases:', () => {

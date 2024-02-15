@@ -52,7 +52,7 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
  */
 const endpointResolver = (
 	options: S3EndpointResolverOptions,
-	apiInput?: { Bucket?: string }
+	apiInput?: { Bucket?: string },
 ) => {
 	const { region, useAccelerateEndpoint, customEndpoint, forcePathStyle } =
 		options;
@@ -63,7 +63,7 @@ const endpointResolver = (
 	} else if (useAccelerateEndpoint) {
 		if (forcePathStyle) {
 			throw new Error(
-				'Path style URLs are not supported with S3 Transfer Acceleration.'
+				'Path style URLs are not supported with S3 Transfer Acceleration.',
 			);
 		}
 		endpoint = new AmplifyUrl(`https://s3-accelerate.${getDnsSuffix(region)}`);

@@ -15,7 +15,7 @@ const ANDROID_CAMPAIGN_TREATMENT_ID_KEY = 'pinpoint.campaign.treatment_id';
  */
 export const getAnalyticsEvent = (
 	{ data }: PushNotificationMessage,
-	event: PinpointMessageEvent
+	event: PinpointMessageEvent,
 ): PinpointAnalyticsEvent | null => {
 	if (!data) {
 		return null;
@@ -32,7 +32,7 @@ export const getAnalyticsEvent = (
 };
 
 const getAnalyticsEventAttributes = (
-	data: PushNotificationMessage['data']
+	data: PushNotificationMessage['data'],
 ): AnalyticsEventAttributes | undefined => {
 	if (!data) {
 		return;

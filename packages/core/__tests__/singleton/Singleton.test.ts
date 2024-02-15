@@ -170,7 +170,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 				data: expectedResourceConfig,
 			},
 			'Configure',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
 	});
 
@@ -296,7 +296,7 @@ describe('Session tests', () => {
 						clearCredentialsAndIdentityId: () => {},
 					},
 				},
-			}
+			},
 		);
 
 		const session = await fetchAuthSession();
@@ -373,7 +373,7 @@ describe('Session tests', () => {
 					},
 					identityId: 'identityIdValue',
 				};
-			}
+			},
 		);
 		const token =
 			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
@@ -468,7 +468,7 @@ describe('Session tests', () => {
 					},
 					identityId: 'identityIdValue',
 				};
-			}
+			},
 		);
 
 		const spyTokenProvider = jest.fn(async () => {
@@ -538,7 +538,7 @@ describe('Session tests', () => {
 				tokenProvider: {
 					getTokens: tokenProvider,
 				},
-			}
+			},
 		);
 
 		await auth.fetchAuthSession({ forceRefresh: true });
@@ -566,7 +566,7 @@ describe('Session tests', () => {
 				tokenProvider: {
 					getTokens: tokenProvider,
 				},
-			}
+			},
 		);
 
 		const action = async () =>

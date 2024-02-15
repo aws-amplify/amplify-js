@@ -32,7 +32,7 @@ describe('CookieStorage', () => {
 					sameSite: 'none',
 				});
 			}).toThrow(
-				'sameSite = None requires the Secure attribute in latest browser versions.'
+				'sameSite = None requires the Secure attribute in latest browser versions.',
 			);
 		});
 
@@ -68,7 +68,7 @@ describe('CookieStorage', () => {
 				const tempReference = await cookieStore.getItem('testKey2');
 				await cookieStore.clear();
 				expect(await cookieStore.getItem('testKey2')).not.toEqual(
-					tempReference
+					tempReference,
 				);
 			});
 		});

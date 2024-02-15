@@ -11,7 +11,7 @@ import {
 } from '../../types';
 
 export const getCurrentUser = async (
-	amplify: AmplifyClassV6
+	amplify: AmplifyClassV6,
 ): Promise<GetCurrentUserOutput> => {
 	const authConfig = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -33,7 +33,7 @@ export const getCurrentUser = async (
 };
 
 function getSignInDetailsFromTokens(
-	tokens: AuthTokens & { signInDetails?: CognitoAuthSignInDetails }
+	tokens: AuthTokens & { signInDetails?: CognitoAuthSignInDetails },
 ): CognitoAuthSignInDetails | undefined {
 	return tokens?.signInDetails;
 }

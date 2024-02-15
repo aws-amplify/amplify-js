@@ -37,11 +37,11 @@ describe('uploadData', () => {
 				uploadData({
 					key: 'key',
 					data: { size: MAX_OBJECT_SIZE + 1 } as any,
-				})
+				}),
 			).toThrow(
 				expect.objectContaining(
-					validationErrorMap[StorageValidationErrorCode.ObjectIsTooLarge]
-				)
+					validationErrorMap[StorageValidationErrorCode.ObjectIsTooLarge],
+				),
 			);
 		});
 
@@ -78,7 +78,7 @@ describe('uploadData', () => {
 					job: 'putObjectJob',
 					onCancel: expect.any(Function),
 					isMultipartUpload: false,
-				})
+				}),
 			);
 		});
 	});
@@ -108,7 +108,7 @@ describe('uploadData', () => {
 					onResume: expect.any(Function),
 					onPause: expect.any(Function),
 					isMultipartUpload: true,
-				})
+				}),
 			);
 		});
 

@@ -29,7 +29,7 @@ describe('addMessageEventListener', () => {
 
 		expect(mockAddListenerNative).toHaveBeenCalledWith(
 			event,
-			expect.any(Function)
+			expect.any(Function),
 		);
 	});
 
@@ -48,7 +48,7 @@ describe('addMessageEventListener', () => {
 			expect.objectContaining({
 				body: `normalized-${nativeMessage.body}`,
 			}),
-			undefined
+			undefined,
 		);
 	});
 
@@ -69,7 +69,7 @@ describe('addMessageEventListener', () => {
 			expect.objectContaining({
 				body: `normalized-${nativeMessage.body}`,
 			}),
-			completionHandlerId
+			completionHandlerId,
 		);
 	});
 });

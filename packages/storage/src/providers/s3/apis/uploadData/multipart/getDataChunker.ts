@@ -17,7 +17,7 @@ export type PartToUpload = {
 
 export const getDataChunker = (
 	data: StorageUploadDataPayload,
-	totalSize?: number
+	totalSize?: number,
 ): Generator<PartToUpload, void, undefined> => {
 	const partSize = calculatePartSize(totalSize);
 
@@ -42,7 +42,7 @@ const helper = function* (
 	buffer: ArrayBuffer | Blob,
 	byteOffset: number,
 	byteLength: number,
-	partSize: number
+	partSize: number,
 ): Generator<PartToUpload, void, undefined> {
 	let partNumber = 1;
 	let startByte = byteOffset;

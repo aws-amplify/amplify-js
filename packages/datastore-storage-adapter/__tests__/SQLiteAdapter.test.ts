@@ -168,7 +168,7 @@ describe('SQLiteAdapter', () => {
 						null!,
 						null!,
 						null!,
-					]
+					],
 				);
 
 				const queries = new Set<ParameterizedStatement>();

@@ -103,7 +103,7 @@ export const loadOrCreateMultipartUpload = async ({
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
-			}
+			},
 		);
 		if (size === undefined) {
 			logger.debug('uploaded data size cannot be determined, skipping cache.');

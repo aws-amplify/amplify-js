@@ -113,13 +113,13 @@ describe('Storage tests', () => {
 					new Model({
 						field1: 'Some value',
 						dateCreated,
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						draft.field1 = 'edited';
-					})
+					}),
 				);
 
 				const [modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -141,13 +141,13 @@ describe('Storage tests', () => {
 					new Model({
 						field1: 'Some value',
 						dateCreated,
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						draft.field1 = 'Some value';
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -165,13 +165,13 @@ describe('Storage tests', () => {
 						field1: 'Some value',
 						optionalField1: 'Some optional value',
 						dateCreated: new Date().toISOString(),
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						draft.optionalField1 = null!;
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -186,13 +186,13 @@ describe('Storage tests', () => {
 						field1: 'Some value',
 						optionalField1: 'Some optional value',
 						dateCreated: new Date().toISOString(),
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						draft.optionalField1 = undefined;
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -208,13 +208,13 @@ describe('Storage tests', () => {
 						field1: 'Some value',
 						dateCreated: new Date().toISOString(),
 						emails: ['john@doe.com', 'jane@doe.com'],
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						draft.emails = [...draft.emails!, 'joe@doe.com'];
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -238,13 +238,13 @@ describe('Storage tests', () => {
 						field1: 'Some value',
 						dateCreated: new Date().toISOString(),
 						emails: ['john@doe.com', 'jane@doe.com'],
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						draft.emails!.push('joe@doe.com');
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -268,7 +268,7 @@ describe('Storage tests', () => {
 						field1: 'Some value',
 						dateCreated: new Date().toISOString(),
 						emails: ['john@doe.com', 'jane@doe.com'],
-					})
+					}),
 				);
 
 				await DataStore.save(
@@ -276,7 +276,7 @@ describe('Storage tests', () => {
 						draft.field1 = 'Updated value';
 						// same as above. should not be included in mutation input
 						draft.emails = ['john@doe.com', 'jane@doe.com'];
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -295,14 +295,14 @@ describe('Storage tests', () => {
 						field1: 'Some value',
 						dateCreated: new Date().toISOString(),
 						emails: ['john@doe.com', 'jane@doe.com'],
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						// same as above. should not result in mutation event
 						draft.emails = ['john@doe.com', 'jane@doe.com'];
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -318,13 +318,13 @@ describe('Storage tests', () => {
 						field1: 'Some value',
 						dateCreated: new Date().toISOString(),
 						emails: ['john@doe.com', 'jane@doe.com'],
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						draft.emails = null!;
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -345,7 +345,7 @@ describe('Storage tests', () => {
 							penNames: [],
 							nominations: [],
 						},
-					})
+					}),
 				);
 
 				await DataStore.save(
@@ -354,7 +354,7 @@ describe('Storage tests', () => {
 							...draft.metadata,
 							penNames: ['bob'],
 						} as any;
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -369,7 +369,7 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toBeUndefined();
 				expect(modelUpdate.element.metadata).toMatchObject(
-					expectedValueMetadata
+					expectedValueMetadata,
 				);
 			});
 
@@ -386,13 +386,13 @@ describe('Storage tests', () => {
 							penNames: [],
 							nominations: [],
 						},
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Model.copyOf(model, draft => {
 						draft.metadata!.penNames = ['bob'];
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -406,7 +406,7 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toBeUndefined();
 				expect(modelUpdate.element.metadata).toMatchObject(
-					expectedValueMetadata
+					expectedValueMetadata,
 				);
 			});
 
@@ -416,32 +416,32 @@ describe('Storage tests', () => {
 				const originalPost = await DataStore.save(
 					new Post({
 						title: 'my best post ever',
-					})
+					}),
 				);
 
 				const newPost = await DataStore.save(
 					new Post({
 						title: 'oops. i mean this is my best post',
-					})
+					}),
 				);
 
 				const comment = await DataStore.save(
 					new Comment({
 						content: 'your post is not that great, actually ....',
 						post: originalPost,
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Comment.copyOf(comment, draft => {
 						draft.post = newPost;
-					})
+					}),
 				);
 
 				const updatedComment = await DataStore.query(Comment, comment.id);
 
 				expect((await updatedComment!.post).title).toEqual(
-					'oops. i mean this is my best post'
+					'oops. i mean this is my best post',
 				);
 			});
 
@@ -453,14 +453,14 @@ describe('Storage tests', () => {
 				const post = await DataStore.save(
 					new Post({
 						title: 'my best post ever',
-					})
+					}),
 				);
 
 				const comment = await DataStore.save(
 					new Comment({
 						content: 'comment 1',
 						post,
-					})
+					}),
 				);
 
 				new Comment({
@@ -476,7 +476,7 @@ describe('Storage tests', () => {
 								content: 'comment 2',
 							} as any),
 						];
-					})
+					}),
 				);
 
 				const test = await DataStore.query(Post, post.id);
@@ -501,7 +501,7 @@ describe('Storage tests', () => {
 							penNames: [],
 							nominations: [],
 						},
-					})
+					}),
 				);
 
 				await DataStore.save(
@@ -513,7 +513,7 @@ describe('Storage tests', () => {
 							penNames: [],
 							nominations: [],
 						};
-					})
+					}),
 				);
 
 				const [_modelSave, modelUpdate] = processZenPushCalls(zenNext);
@@ -529,26 +529,26 @@ describe('Storage tests', () => {
 				const post = await DataStore.save(
 					new Post({
 						title: 'New Post',
-					})
+					}),
 				);
 
 				const comment = await DataStore.save(
 					new Comment({
 						content: 'Hello world',
 						post,
-					})
+					}),
 				);
 
 				const anotherPost = await DataStore.save(
 					new Post({
 						title: 'Another Post',
-					})
+					}),
 				);
 
 				await DataStore.save(
 					Comment.copyOf(comment, updated => {
 						updated.post = anotherPost;
-					})
+					}),
 				);
 
 				const [_postSave, commentSave, _anotherPostSave, commentUpdate] =
@@ -577,7 +577,7 @@ describe('Storage tests', () => {
 						description: 'Desc',
 						created: createdTimestamp,
 						sort: 100,
-					})
+					}),
 				);
 
 				// `sort` is part of the key's composite sort key.
@@ -585,21 +585,21 @@ describe('Storage tests', () => {
 				const updated1 = await DataStore.save(
 					PostComposite.copyOf(post, updated => {
 						updated.sort = 101;
-					})
+					}),
 				);
 
 				// `title` is the HK, so `sort` and `created` should NOT be included in the input
 				const updated2 = await DataStore.save(
 					PostComposite.copyOf(updated1, updated => {
 						updated.title = 'Updated Title';
-					})
+					}),
 				);
 
 				// `description` does not belong to a key. No other fields should be included
 				await DataStore.save(
 					PostComposite.copyOf(updated2, updated => {
 						updated.description = 'Updated Desc';
-					})
+					}),
 				);
 
 				const [_postSave, postUpdate1, postUpdate2, postUpdate3] =
@@ -632,13 +632,13 @@ describe('Storage tests', () => {
 						title: 'New Post',
 						description: 'Desc',
 						dateCreated: new Date().toISOString(),
-					})
+					}),
 				);
 
 				await DataStore.save(
 					PostCustomPK.copyOf(post, updated => {
 						updated.title = 'Updated';
-					})
+					}),
 				);
 
 				const [_postSave, postUpdate] = processZenPushCalls(zenNext);
@@ -658,13 +658,13 @@ describe('Storage tests', () => {
 						id: 'abcdef',
 						postId: '100',
 						title: 'New Post',
-					})
+					}),
 				);
 
 				await DataStore.save(
 					PostCustomPKSort.copyOf(post, updated => {
 						updated.title = 'Updated';
-					})
+					}),
 				);
 
 				const [_postSave, postUpdate] = processZenPushCalls(zenNext);
@@ -687,13 +687,13 @@ describe('Storage tests', () => {
 						title: 'New Post',
 						description: 'Desc',
 						sort: 1,
-					})
+					}),
 				);
 
 				await DataStore.save(
 					PostCustomPKComposite.copyOf(post, updated => {
 						updated.title = 'Updated';
-					})
+					}),
 				);
 
 				const [_postSave, postUpdate] = processZenPushCalls(zenNext);

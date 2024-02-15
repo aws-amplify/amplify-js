@@ -11,7 +11,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema-types';
 export function expectMutation(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
-	item: Record<string, any>
+	item: Record<string, any>,
 ) {
 	expect(spy).toHaveBeenCalledWith({
 		abortController: expect.any(AbortController),
@@ -20,7 +20,7 @@ export function expectMutation(
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
 			body: expect.objectContaining({
 				query: expect.stringContaining(
-					`${opName}(input: $input, condition: $condition)`
+					`${opName}(input: $input, condition: $condition)`,
 				),
 				variables: expect.objectContaining({
 					input: expect.objectContaining(item),
@@ -41,14 +41,15 @@ export function expectMutation(
 export function expectGet(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
-	item: Record<string, any>
+	item: Record<string, any>,
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
 			Auth: expect.any(Object),
 			configure: expect.any(Function),
 			getConfig: expect.any(Function),
-		}), {
+		}),
+		{
 			abortController: expect.any(AbortController),
 			url: new URL('https://localhost/graphql'),
 			options: expect.objectContaining({
@@ -58,7 +59,7 @@ export function expectGet(
 					variables: expect.objectContaining(item),
 				}),
 			}),
-		}
+		},
 	);
 }
 
@@ -73,7 +74,7 @@ export function expectGet(
 export function expectList(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
-	item: Record<string, any>
+	item: Record<string, any>,
 ) {
 	expect(spy).toHaveBeenCalledWith({
 		abortController: expect.any(AbortController),
@@ -82,7 +83,7 @@ export function expectList(
 			headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
 			body: expect.objectContaining({
 				query: expect.stringContaining(
-					`${opName}(filter: $filter, limit: $limit, nextToken: $nextToken)`
+					`${opName}(filter: $filter, limit: $limit, nextToken: $nextToken)`,
 				),
 				variables: expect.objectContaining(item),
 			}),
@@ -101,7 +102,7 @@ export function expectList(
 export function expectSub(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
-	item: Record<string, any>
+	item: Record<string, any>,
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
@@ -115,7 +116,7 @@ export function expectSub(
 		{
 			action: '1',
 			category: 'api',
-		}
+		},
 	);
 }
 
@@ -133,7 +134,7 @@ export function expectSubWithHeaders(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
-	headers?: CustomHeaders
+	headers?: CustomHeaders,
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
@@ -148,7 +149,7 @@ export function expectSubWithHeaders(
 		{
 			action: '1',
 			category: 'api',
-		}
+		},
 	);
 }
 
@@ -164,7 +165,7 @@ export function expectSubWithHeaders(
 export function expectSubWithHeadersFn(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
-	item: Record<string, any>
+	item: Record<string, any>,
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
@@ -179,7 +180,7 @@ export function expectSubWithHeadersFn(
 		{
 			action: '1',
 			category: 'api',
-		}
+		},
 	);
 }
 
@@ -197,7 +198,7 @@ export function expectSubWithlibraryConfigHeaders(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
-	headers?: CustomHeaders
+	headers?: CustomHeaders,
 ) {
 	expect(spy).toHaveBeenCalledWith(
 		expect.objectContaining({
@@ -214,6 +215,6 @@ export function expectSubWithlibraryConfigHeaders(
 		{
 			action: '1',
 			category: 'api',
-		}
+		},
 	);
 }

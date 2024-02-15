@@ -42,7 +42,7 @@ export type ListPartsOutput = Pick<
 
 const listPartsSerializer = async (
 	input: ListPartsInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {};
 	const url = new AmplifyUrl(endpoint.url.toString());
@@ -60,7 +60,7 @@ const listPartsSerializer = async (
 };
 
 const listPartsDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<ListPartsOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -87,12 +87,12 @@ const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
 			PartNumber: ['PartNumber', deserializeNumber],
 			ETag: 'ETag',
 			Size: ['Size', deserializeNumber],
-		})
+		}),
 	);
 
 export const listParts = composeServiceApi(
 	s3TransferHandler,
 	listPartsSerializer,
 	listPartsDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

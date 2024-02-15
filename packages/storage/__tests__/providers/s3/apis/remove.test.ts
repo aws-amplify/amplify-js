@@ -86,7 +86,7 @@ describe('remove API', () => {
 			it(`should remove object with ${accessLevel} accessLevel`, async () => {
 				expect.assertions(3);
 				expect(
-					await remove({ key, options: options as StorageOptions })
+					await remove({ key, options: options as StorageOptions }),
 				).toEqual(removeResult);
 				expect(deleteObject).toHaveBeenCalledTimes(1);
 				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
@@ -106,7 +106,7 @@ describe('remove API', () => {
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
 					name: 'NotFound',
-				})
+				}),
 			);
 			expect.assertions(3);
 			const key = 'wrongKey';

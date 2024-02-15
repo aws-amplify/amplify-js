@@ -57,7 +57,7 @@ describe('SQLiteUtils tests', () => {
 			const schema: InternalSchema = internalTestSchema();
 
 			expect(generateSchemaStatements(schema)).toEqual(
-				INTERNAL_TEST_SCHEMA_STATEMENTS
+				INTERNAL_TEST_SCHEMA_STATEMENTS,
 			);
 		});
 	});
@@ -65,19 +65,19 @@ describe('SQLiteUtils tests', () => {
 	describe('modelCreateTableStatement', () => {
 		it('should generate a valid CREATE TABLE statement from a M:N join table model with implicit FKs', () => {
 			expect(modelCreateTableStatement(postEditorImplicit, true)).toEqual(
-				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
+				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT,
 			);
 		});
 
 		it('should generate a valid CREATE TABLE statement from a M:N join table model with explicit FKs', () => {
 			expect(modelCreateTableStatement(postEditorExplicit, true)).toEqual(
-				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
+				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT,
 			);
 		});
 
 		it('should generate a valid CREATE TABLE statement from a 1:M join table model', () => {
 			expect(modelCreateTableStatement(postWithRequiredComments, true)).toEqual(
-				INTERNAL_TEST_SCHEMA_ONE_TO_MANY_STATEMENT
+				INTERNAL_TEST_SCHEMA_ONE_TO_MANY_STATEMENT,
 			);
 		});
 	});
@@ -171,8 +171,8 @@ describe('SQLiteUtils tests', () => {
 					predicateGroup as any,
 					sortPredicateGroup as any,
 					limit,
-					page
-				)
+					page,
+				),
 			).toEqual(expected);
 		});
 	});
@@ -295,7 +295,7 @@ describe('SQLiteUtils tests', () => {
 			const expected = [`instr("name", ?) = 1`, ['%']];
 
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
-				expected
+				expected,
 			);
 		});
 		it('should generate valid `contains` condition from predicate object', () => {
@@ -308,7 +308,7 @@ describe('SQLiteUtils tests', () => {
 			const expected = [`instr("name", ?) > 0`, ['%']];
 
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
-				expected
+				expected,
 			);
 		});
 		it('should generate valid `notContains` condition from predicate object', () => {
@@ -321,7 +321,7 @@ describe('SQLiteUtils tests', () => {
 			const expected = [`instr("name", ?) = 0`, ['%']];
 
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
-				expected
+				expected,
 			);
 		});
 		it('should generate valid `between` condition from predicate object', () => {
@@ -334,7 +334,7 @@ describe('SQLiteUtils tests', () => {
 			const expected = [`"name" BETWEEN ? AND ?`, ['a', 'b']];
 
 			expect(whereConditionFromPredicateObject(predicate as any)).toEqual(
-				expected
+				expected,
 			);
 		});
 	});
@@ -370,7 +370,7 @@ describe('SQLiteUtils tests', () => {
 			const expected = 'ORDER BY "sortOrder" ASC, _rowid_ ASC';
 
 			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
-				expected
+				expected,
 			);
 		});
 
@@ -389,7 +389,7 @@ describe('SQLiteUtils tests', () => {
 			const expected = 'ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC';
 
 			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
-				expected
+				expected,
 			);
 		});
 	});
@@ -431,7 +431,7 @@ describe('SQLiteUtils tests', () => {
 			];
 
 			expect(
-				deleteByPredicateStatement('Model', predicateGroup as any)
+				deleteByPredicateStatement('Model', predicateGroup as any),
 			).toEqual(expected);
 		});
 	});

@@ -40,7 +40,7 @@ export type HeadObjectOutput = Pick<
 
 const headObjectSerializer = async (
 	input: HeadObjectInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
@@ -53,7 +53,7 @@ const headObjectSerializer = async (
 };
 
 const headObjectDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
@@ -81,5 +81,5 @@ export const headObject = composeServiceApi(
 	s3TransferHandler,
 	headObjectSerializer,
 	headObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

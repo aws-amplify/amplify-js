@@ -56,7 +56,7 @@ function isAuthAttribute(attribute: any): attribute is AuthAttribute {
 		if (typeof attribute?.properties === 'object') {
 			if (Array.isArray(attribute?.properties?.rules)) {
 				return (attribute?.properties?.rules as Array<any>).every(
-					rule => !!rule.allow
+					rule => !!rule.allow,
 				);
 			}
 		}

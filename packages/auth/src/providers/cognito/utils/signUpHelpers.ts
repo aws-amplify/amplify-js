@@ -29,7 +29,7 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 					}
 				}
 			}
-		}
+		},
 	);
 
 	// This will stop the listener if confirmSignUp is not resolved.
@@ -51,7 +51,7 @@ type TimeOutOutput = ReturnType<typeof setTimeout>;
 function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
 	let timer: TimeOutOutput | undefined;
 	return function (
-		args: F extends (...args: infer A) => any ? A : never
+		args: F extends (...args: infer A) => any ? A : never,
 	): void {
 		if (!timer) {
 			fun(...args);
@@ -66,7 +66,7 @@ function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
 function handleAutoSignInWithLink(
 	signInInput: SignInInput,
 	resolve: Function,
-	reject: Function
+	reject: Function,
 ) {
 	const start = Date.now();
 	const autoSignInPollingIntervalId = setInterval(async () => {
@@ -81,7 +81,7 @@ function handleAutoSignInWithLink(
 					message: 'The account was not confirmed on time.',
 					recoverySuggestion:
 						'Try to verify your account by clicking the link sent your email or phone and then login manually.',
-				})
+				}),
 			);
 			resetAutoSignIn();
 			return;
@@ -107,7 +107,7 @@ function handleAutoSignInWithLink(
 const debouncedAutoSignInWithLink = debounce(handleAutoSignInWithLink, 300);
 const debouncedAutoSignWithCodeOrUserConfirmed = debounce(
 	handleAutoSignInWithCodeOrUserConfirmed,
-	300
+	300,
 );
 
 let autoSignInStarted: boolean = false;
@@ -136,7 +136,7 @@ export function isSignUpComplete(output: SignUpCommandOutput): boolean {
 }
 
 export function autoSignInWhenUserIsConfirmedWithLink(
-	signInInput: SignInInput
+	signInInput: SignInInput,
 ): AutoSignInCallback {
 	return async () => {
 		return new Promise<SignInOutput>(async (resolve, reject) => {
@@ -147,7 +147,7 @@ export function autoSignInWhenUserIsConfirmedWithLink(
 async function handleAutoSignInWithCodeOrUserConfirmed(
 	signInInput: SignInInput,
 	resolve: Function,
-	reject: Function
+	reject: Function,
 ) {
 	try {
 		const output = await signIn(signInInput);

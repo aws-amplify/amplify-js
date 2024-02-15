@@ -32,23 +32,23 @@ export type IdentifyUser = (input: IdentifyUserInput) => Promise<void>;
 export type InitializePushNotifications = () => void;
 
 export type RequestPermissions = (
-	input?: RequestPermissionsInput
+	input?: RequestPermissionsInput,
 ) => Promise<RequestPermissionsOutput>;
 
 export type SetBadgeCount = (input: SetBadgeCountInput) => void;
 
 export type OnNotificationOpened = (
-	input: OnNotificationOpenedInput
+	input: OnNotificationOpenedInput,
 ) => OnNotificationOpenedOutput;
 
 export type OnNotificationReceivedInBackground = (
-	input: OnNotificationReceivedInBackgroundInput
+	input: OnNotificationReceivedInBackgroundInput,
 ) => OnNotificationReceivedInBackgroundOutput;
 
 export type OnNotificationReceivedInForeground = (
-	input: OnNotificationReceivedInForegroundInput
+	input: OnNotificationReceivedInForegroundInput,
 ) => OnNotificationReceivedInForegroundOutput;
 
 export type OnTokenReceived = (
-	input: OnTokenReceivedInput
+	input: OnTokenReceivedInput,
 ) => OnTokenReceivedOutput;
