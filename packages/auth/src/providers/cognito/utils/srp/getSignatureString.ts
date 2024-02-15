@@ -31,14 +31,14 @@ export const getSignatureString = ({
 		bufUPIDaToB.byteLength +
 			bufUNaToB.byteLength +
 			bufSBaToB.byteLength +
-			bufDNaToB.byteLength
+			bufDNaToB.byteLength,
 	);
 	bufConcat.set(bufUPIDaToB, 0);
 	bufConcat.set(bufUNaToB, bufUPIDaToB.byteLength);
 	bufConcat.set(bufSBaToB, bufUPIDaToB.byteLength + bufUNaToB.byteLength);
 	bufConcat.set(
 		bufDNaToB,
-		bufUPIDaToB.byteLength + bufUNaToB.byteLength + bufSBaToB.byteLength
+		bufUPIDaToB.byteLength + bufUNaToB.byteLength + bufSBaToB.byteLength,
 	);
 
 	const awsCryptoHash = new Sha256(hkdf);

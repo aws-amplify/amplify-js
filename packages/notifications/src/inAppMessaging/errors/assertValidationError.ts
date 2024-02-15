@@ -12,7 +12,7 @@ import {
  */
 export function assertValidationError(
 	assertion: boolean,
-	name: InAppMessagingValidationErrorCode
+	name: InAppMessagingValidationErrorCode,
 ): asserts assertion {
 	const { message, recoverySuggestion } = validationErrorMap[name];
 

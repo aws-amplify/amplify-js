@@ -25,14 +25,14 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmUserAttribute(
-	input: ConfirmUserAttributeInput
+	input: ConfirmUserAttributeInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { confirmationCode, userAttributeKey } = input;
 	assertValidationError(
 		!!confirmationCode,
-		AuthValidationErrorCode.EmptyConfirmUserAttributeCode
+		AuthValidationErrorCode.EmptyConfirmUserAttributeCode,
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
@@ -45,6 +45,6 @@ export async function confirmUserAttribute(
 			AccessToken: tokens.accessToken.toString(),
 			AttributeName: userAttributeKey,
 			Code: confirmationCode,
-		}
+		},
 	);
 }

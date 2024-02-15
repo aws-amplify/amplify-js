@@ -58,13 +58,13 @@ describe('Pinpoint - getInAppMessages', () => {
 			}),
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(successfulResponse)
+			mockJsonResponse(successfulResponse),
 		);
 		const response = await getInAppMessages(pinpointHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
 		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
-			expect.anything()
+			expect.anything(),
 		);
 	});
 
@@ -74,7 +74,7 @@ describe('Pinpoint - getInAppMessages', () => {
 			message: mockFailureResponse.body.message,
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(mockFailureResponse)
+			mockJsonResponse(mockFailureResponse),
 		);
 		expect.assertions(1);
 		try {

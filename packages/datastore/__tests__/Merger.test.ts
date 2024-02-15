@@ -208,7 +208,7 @@ describe('Merger', () => {
 						storage,
 						PostCustomPK,
 						items,
-						modelDefinition
+						modelDefinition,
 					);
 				});
 
@@ -255,7 +255,7 @@ describe('Merger', () => {
 						storage,
 						PostCustomPK,
 						items,
-						modelDefinition
+						modelDefinition,
 					);
 				});
 
@@ -303,7 +303,7 @@ describe('Merger', () => {
 						storage,
 						PostCustomPK,
 						items,
-						modelDefinition
+						modelDefinition,
 					);
 				});
 

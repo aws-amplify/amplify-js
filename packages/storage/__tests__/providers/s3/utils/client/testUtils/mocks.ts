@@ -48,7 +48,7 @@ export const mockXhrResponse = (
 		// XHR's raw header string. @see https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/getAllResponseHeaders#return_value
 		headerString: string;
 		body: Blob | string;
-	}
+	},
 ) => {
 	mockXhr.readyState = XMLHttpRequest.DONE;
 	mockXhr.status = response.status;
@@ -58,14 +58,14 @@ export const mockXhrResponse = (
 				return response.body as string;
 			}
 			throw new Error(
-				`Cannot read responseText when responseType is ${mockXhr.responseType}`
+				`Cannot read responseText when responseType is ${mockXhr.responseType}`,
 			);
 		},
 		configurable: true,
 	});
 	mockXhr.response = response.body;
 	(mockXhr.getAllResponseHeaders as jest.Mock).mockReturnValue(
-		response.headerString
+		response.headerString,
 	);
 	mockXhr.listeners.readystatechange?.forEach(cb => {
 		cb({} as any);

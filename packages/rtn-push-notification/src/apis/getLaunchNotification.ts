@@ -8,5 +8,5 @@ import { normalizeNativeMessage } from '../utils';
 export const getLaunchNotification =
 	async (): Promise<PushNotificationMessage | null> =>
 		normalizeNativeMessage(
-			(await nativeModule.getLaunchNotification()) ?? undefined
+			(await nativeModule.getLaunchNotification()) ?? undefined,
 		);

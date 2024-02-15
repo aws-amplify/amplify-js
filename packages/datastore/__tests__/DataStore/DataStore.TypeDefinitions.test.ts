@@ -67,7 +67,7 @@ describe('Type definitions', () => {
 		});
 		test('with criteria', async () => {
 			const multiModelWithCriteria = await DataStore.query(Model, c =>
-				c.field1.contains('something')
+				c.field1.contains('something'),
 			);
 			expectType<Model[]>(multiModelWithCriteria);
 			const [one] = multiModelWithCriteria;
@@ -109,7 +109,7 @@ describe('Type definitions', () => {
 		});
 		test('with criteria', async () => {
 			const multiModelWithCriteria = await DataStore.query<Model>(Model, c =>
-				c.field1.contains('something')
+				c.field1.contains('something'),
 			);
 			expectType<Model[]>(multiModelWithCriteria);
 			const [one] = multiModelWithCriteria;
@@ -120,7 +120,7 @@ describe('Type definitions', () => {
 			const allModelsPaginated = await DataStore.query<Model>(
 				Model,
 				Predicates.ALL,
-				{ page: 0, limit: 20 }
+				{ page: 0, limit: 20 },
 			);
 			expectType<Model[]>(allModelsPaginated);
 			const [one] = allModelsPaginated;
@@ -164,7 +164,7 @@ describe('Type definitions', () => {
 				({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
 					expectType<Model>(element);
-				}
+				},
 			);
 		});
 	});
@@ -192,7 +192,7 @@ describe('Type definitions', () => {
 				({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
 					expectType<Model>(element);
-				}
+				},
 			);
 		});
 		test('subscribe to model with criteria', async () => {
@@ -200,7 +200,7 @@ describe('Type definitions', () => {
 				({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
 					expectType<Model>(element);
-				}
+				},
 			);
 		});
 	});

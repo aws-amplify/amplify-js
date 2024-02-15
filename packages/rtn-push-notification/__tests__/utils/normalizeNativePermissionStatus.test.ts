@@ -6,10 +6,10 @@ import { normalizeNativePermissionStatus } from '../../src/utils';
 describe('normalizeNativePermissionStatus', () => {
 	it('normalizes android statuses', () => {
 		expect(normalizeNativePermissionStatus('ShouldRequest')).toBe(
-			'shouldRequest'
+			'shouldRequest',
 		);
 		expect(normalizeNativePermissionStatus('ShouldExplainThenRequest')).toBe(
-			'shouldExplainThenRequest'
+			'shouldExplainThenRequest',
 		);
 		expect(normalizeNativePermissionStatus('Granted')).toBe('granted');
 		expect(normalizeNativePermissionStatus('Denied')).toBe('denied');
@@ -17,7 +17,7 @@ describe('normalizeNativePermissionStatus', () => {
 
 	it('normalizes ios statuses', () => {
 		expect(normalizeNativePermissionStatus('NotDetermined')).toBe(
-			'shouldExplainThenRequest'
+			'shouldExplainThenRequest',
 		);
 		expect(normalizeNativePermissionStatus('Authorized')).toBe('granted');
 		expect(normalizeNativePermissionStatus('Denied')).toBe('denied');

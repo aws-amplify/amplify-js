@@ -26,14 +26,14 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function verifyTOTPSetup(
-	input: VerifyTOTPSetupInput
+	input: VerifyTOTPSetupInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { code, options } = input;
 	assertValidationError(
 		!!code,
-		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode
+		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode,
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
@@ -46,6 +46,6 @@ export async function verifyTOTPSetup(
 			AccessToken: tokens.accessToken.toString(),
 			UserCode: code,
 			FriendlyDeviceName: options?.friendlyDeviceName,
-		}
+		},
 	);
 }

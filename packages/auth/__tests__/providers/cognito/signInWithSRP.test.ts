@@ -41,18 +41,18 @@ const mockedDeviceMetadata = {
 const lastAuthUser = 'lastAuthUser';
 const authKeys = createKeysForAuthStorage(
 	'CognitoIdentityServiceProvider',
-	`${authConfig.Cognito.userPoolClientId}.${lastAuthUser}`
+	`${authConfig.Cognito.userPoolClientId}.${lastAuthUser}`,
 );
 
 function setDeviceKeys() {
 	localStorage.setItem(authKeys.deviceKey, mockedDeviceMetadata.deviceKey);
 	localStorage.setItem(
 		authKeys.deviceGroupKey,
-		mockedDeviceMetadata.deviceGrouKey
+		mockedDeviceMetadata.deviceGrouKey,
 	);
 	localStorage.setItem(
 		authKeys.randomPasswordKey,
-		mockedDeviceMetadata.randomPasswordKey
+		mockedDeviceMetadata.randomPasswordKey,
 	);
 }
 
@@ -64,7 +64,7 @@ describe('signIn API happy path cases', () => {
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementation(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
-					authAPITestParams.RespondToAuthChallengeCommandOutput
+					authAPITestParams.RespondToAuthChallengeCommandOutput,
 			);
 	});
 
@@ -93,7 +93,7 @@ describe('signIn API happy path cases', () => {
 						Session: 'aaabbbcccddd',
 						$metadata: {},
 					};
-				}
+				},
 			);
 
 		const result = await signIn({
@@ -159,7 +159,7 @@ describe('signIn API happy path cases', () => {
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 	});
 });
@@ -211,7 +211,7 @@ describe('Cognito ASF', () => {
 				UserContextData: {
 					EncodedData: 'abcd',
 				},
-			})
+			}),
 		);
 	});
 });

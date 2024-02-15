@@ -66,7 +66,7 @@ const addNativeListeners = (): void => {
 			// keep headless task running until handlers have completed their work
 			await notifyEventListenersAndAwaitHandlers(
 				'backgroundMessageReceived',
-				message
+				message,
 			);
 		});
 	} else if (BACKGROUND_MESSAGE_RECEIVED) {
@@ -80,7 +80,7 @@ const addNativeListeners = (): void => {
 					await Promise.race([
 						notifyEventListenersAndAwaitHandlers(
 							'backgroundMessageReceived',
-							message
+							message,
 						),
 						// background tasks will get suspended and all future tasks be deprioritized by the OS if they run for
 						// more than 30 seconds so we reject with a error in a shorter amount of time to prevent this from
@@ -89,9 +89,9 @@ const addNativeListeners = (): void => {
 							setTimeout(
 								() =>
 									reject(
-										`onNotificationReceivedInBackground handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`
+										`onNotificationReceivedInBackground handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`,
 									),
-								BACKGROUND_TASK_TIMEOUT * 1000
+								BACKGROUND_TASK_TIMEOUT * 1000,
 							);
 						}),
 					]);
@@ -103,7 +103,7 @@ const addNativeListeners = (): void => {
 						completeNotification(completionHandlerId);
 					}
 				}
-			}
+			},
 		);
 	}
 
@@ -112,7 +112,7 @@ const addNativeListeners = (): void => {
 		FOREGROUND_MESSAGE_RECEIVED,
 		message => {
 			notifyEventListeners('foregroundMessageReceived', message);
-		}
+		},
 	);
 
 	launchNotificationOpenedListener = LAUNCH_NOTIFICATION_OPENED
@@ -125,8 +125,8 @@ const addNativeListeners = (): void => {
 					notifyEventListeners('launchNotificationOpened', message);
 					// once we are done with it we can remove the listener
 					launchNotificationOpenedListener?.remove();
-				}
-		  )
+				},
+			)
 		: null;
 
 	addMessageEventListener(
@@ -137,7 +137,7 @@ const addNativeListeners = (): void => {
 			notifyEventListeners('notificationOpened', message);
 			// if we are in this state, we no longer need the listener as the app was launched via some other means
 			launchNotificationOpenedListener?.remove();
-		}
+		},
 	);
 
 	addTokenEventListener(
@@ -157,7 +157,7 @@ const addNativeListeners = (): void => {
 				logger.error('Failed to register device for push notifications', err);
 				throw err;
 			}
-		}
+		},
 	);
 };
 
@@ -167,27 +167,27 @@ const addAnalyticsListeners = (): void => {
 	// wire up default Pinpoint message event handling
 	addEventListener(
 		'backgroundMessageReceived',
-		createMessageEventRecorder('received_background')
+		createMessageEventRecorder('received_background'),
 	);
 	addEventListener(
 		'foregroundMessageReceived',
-		createMessageEventRecorder('received_foreground')
+		createMessageEventRecorder('received_foreground'),
 	);
 	launchNotificationOpenedListenerRemover = addEventListener(
 		'launchNotificationOpened',
 		createMessageEventRecorder(
 			'opened_notification',
 			// once we are done with it we can remove the listener
-			launchNotificationOpenedListenerRemover?.remove
-		)
+			launchNotificationOpenedListenerRemover?.remove,
+		),
 	);
 	addEventListener(
 		'notificationOpened',
 		createMessageEventRecorder(
 			'opened_notification',
 			// if we are in this state, we no longer need the listener as the app was launched via some other means
-			launchNotificationOpenedListenerRemover?.remove
-		)
+			launchNotificationOpenedListenerRemover?.remove,
+		),
 	);
 };
 
@@ -203,7 +203,7 @@ const registerDevice = async (address: string): Promise<void> => {
 		channelType: getChannelType(),
 		identityId,
 		userAgentValue: getPushNotificationUserAgentString(
-			PushNotificationAction.InitializePushNotifications
+			PushNotificationAction.InitializePushNotifications,
 		),
 	});
 };

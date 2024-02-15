@@ -49,7 +49,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				({
 					get: mockGetFunc,
 					getAll: mockGetAllFunc,
-				}) as any
+				}) as any,
 		);
 
 		jest.spyOn(response, 'cookies', 'get').mockImplementation(() => ({
@@ -75,7 +75,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		it('gets cookie by calling `get` method of the underlying cookie store with a encoded cookie name', () => {
 			result.get(mockKeyWithEncoding);
 			expect(mockGetFunc).toHaveBeenCalledWith(
-				encodeURIComponent(mockKeyWithEncoding)
+				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
 
@@ -89,7 +89,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			expect(mockSetFunc).toHaveBeenCalledWith(
 				mockKey,
 				mockValue,
-				undefined /* didn't specify the options param in the call */
+				undefined /* didn't specify the options param in the call */,
 			);
 		});
 
@@ -98,7 +98,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			expect(mockSetFunc).toHaveBeenCalledWith(
 				encodeURIComponent(mockKeyWithEncoding),
 				mockValue,
-				{ sameSite: 'lax' }
+				{ sameSite: 'lax' },
 			);
 		});
 
@@ -110,7 +110,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store with a encoded cookie name', () => {
 			result.delete(mockKeyWithEncoding);
 			expect(mockDeleteFunc).toHaveBeenCalledWith(
-				encodeURIComponent(mockKeyWithEncoding)
+				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
 	});
@@ -124,13 +124,13 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				({
 					get: mockGetFunc,
 					getAll: mockGetAllFunc,
-				}) as any
+				}) as any,
 		);
 		jest.spyOn(response, 'headers', 'get').mockImplementation(
 			() =>
 				({
 					append: mockAppend,
-				}) as any
+				}) as any,
 		);
 
 		const mockContext = {
@@ -156,7 +156,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		it('gets cookie by calling `get` method of the underlying cookie store with a encoded cookie name', () => {
 			result.get(mockKeyWithEncoding);
 			expect(mockGetFunc).toHaveBeenCalledWith(
-				encodeURIComponent(mockKeyWithEncoding)
+				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
 
@@ -173,7 +173,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 					mockSerializeOptions.domain
 				};Expires=${mockSerializeOptions.expires.toUTCString()};HttpOnly;SameSite=${
 					mockSerializeOptions.sameSite
-				};Secure`
+				};Secure`,
 			);
 		});
 
@@ -185,7 +185,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 					mockSerializeOptions.domain
 				};Expires=${mockSerializeOptions.expires.toUTCString()};HttpOnly;SameSite=${
 					mockSerializeOptions.sameSite
-				};Secure`
+				};Secure`,
 			);
 		});
 
@@ -193,7 +193,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			result.set(mockKey, mockValue, undefined);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
-				`${mockKey}=${mockValue};`
+				`${mockKey}=${mockValue};`,
 			);
 		});
 
@@ -205,7 +205,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			});
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
-				`${mockKey}=${mockValue};`
+				`${mockKey}=${mockValue};`,
 			);
 		});
 
@@ -213,7 +213,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			result.delete(mockKey);
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
-				`${mockKey}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+				`${mockKey}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
 			);
 		});
 
@@ -222,8 +222,8 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			expect(mockAppend).toHaveBeenCalledWith(
 				'Set-Cookie',
 				`${encodeURIComponent(
-					mockKeyWithEncoding
-				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+					mockKeyWithEncoding,
+				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
 			);
 		});
 	});
@@ -241,7 +241,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		it('gets cookie by calling `get` method of the underlying cookie store with a encoded cookie name', () => {
 			result.get(mockKeyWithEncoding);
 			expect(mockNextCookiesFuncReturn.get).toHaveBeenCalledWith(
-				encodeURIComponent(mockKeyWithEncoding)
+				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
 
@@ -255,7 +255,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			expect(mockNextCookiesFuncReturn.set).toHaveBeenCalledWith(
 				mockKey,
 				mockValue,
-				undefined
+				undefined,
 			);
 		});
 
@@ -264,7 +264,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			expect(mockNextCookiesFuncReturn.set).toHaveBeenCalledWith(
 				encodeURIComponent(mockKeyWithEncoding),
 				mockValue,
-				undefined
+				undefined,
 			);
 		});
 
@@ -276,7 +276,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 		it('deletes cookie by calling  the `delete` method of the underlying cookie store with a encoded cookie name', () => {
 			result.delete(mockKeyWithEncoding);
 			expect(mockNextCookiesFuncReturn.delete).toHaveBeenCalledWith(
-				encodeURIComponent(mockKeyWithEncoding)
+				encodeURIComponent(mockKeyWithEncoding),
 			);
 		});
 	});
@@ -318,13 +318,13 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			});
 			expect(setHeaderSpy).toHaveBeenCalledWith(
 				'Set-Cookie',
-				'key4=value4;HttpOnly'
+				'key4=value4;HttpOnly',
 			);
 
 			result.delete('key3');
 			expect(setHeaderSpy).toHaveBeenCalledWith(
 				'Set-Cookie',
-				`key3=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+				`key3=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
 			);
 		});
 
@@ -332,7 +332,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			// these the auth keys generated by Amplify
 			const encodedCookieName1 = encodeURIComponent('test@email.com.idToken');
 			const encodedCookieName2 = encodeURIComponent(
-				'test@email.com.refreshToken'
+				'test@email.com.refreshToken',
 			);
 
 			const mockCookies = {
@@ -375,18 +375,18 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			});
 
 			const encodedCookieName = encodeURIComponent(
-				'test@email.com.somethingElse'
+				'test@email.com.somethingElse',
 			);
 			result.set(encodeURIComponent('test@email.com.somethingElse'), 'value5');
 			expect(setHeaderSpy).toHaveBeenCalledWith(
 				'Set-Cookie',
-				`${encodeURIComponent(encodedCookieName)}=value5;`
+				`${encodeURIComponent(encodedCookieName)}=value5;`,
 			);
 
 			result.delete('key3');
 			expect(setHeaderSpy).toHaveBeenCalledWith(
 				'Set-Cookie',
-				`key3=;Expires=${DATE_IN_THE_PAST.toUTCString()}`
+				`key3=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
 			);
 		});
 	});
@@ -396,7 +396,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			createCookieStorageAdapterFromNextServerContext({
 				request: undefined,
 				response: new ServerResponse({} as any),
-			} as any)
+			} as any),
 		).toThrow();
 	});
 });

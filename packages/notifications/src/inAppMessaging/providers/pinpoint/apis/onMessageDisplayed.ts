@@ -22,7 +22,7 @@ import { assertIsInitialized } from '../../../utils';
  * ```
  */
 export function onMessageDisplayed(
-	input: OnMessageDisplayedInput
+	input: OnMessageDisplayedInput,
 ): OnMessageDisplayedOutput {
 	assertIsInitialized();
 	return addEventListener('messageDisplayed', input);

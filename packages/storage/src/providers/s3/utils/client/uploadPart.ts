@@ -39,7 +39,7 @@ export type UploadPartOutput = Pick<
 
 const uploadPartSerializer = async (
 	input: UploadPartInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
@@ -63,7 +63,7 @@ const uploadPartSerializer = async (
 };
 
 const uploadPartDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<UploadPartOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -82,5 +82,5 @@ export const uploadPart = composeServiceApi(
 	s3TransferHandler,
 	uploadPartSerializer,
 	uploadPartDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

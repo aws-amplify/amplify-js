@@ -9,7 +9,7 @@ import {
 
 export const getAuthUserAgentDetails = (
 	action: AuthAction,
-	customUserAgentDetails?: CustomUserAgentDetails
+	customUserAgentDetails?: CustomUserAgentDetails,
 ): CustomUserAgentDetails => ({
 	category: Category.Auth,
 	action,

@@ -36,7 +36,7 @@ describe('test getNewDeviceMetadata API', () => {
 				DeviceKey: mockedDeviceKey,
 				DeviceGroupKey: mockedGroupDeviceKey,
 			},
-			mockedAccessToken
+			mockedAccessToken,
 		);
 
 		expect(deviceMetadata?.deviceKey).toBe(mockedDeviceKey);
@@ -46,7 +46,7 @@ describe('test getNewDeviceMetadata API', () => {
 			expect.objectContaining({
 				AccessToken: mockedAccessToken,
 				DeviceKey: mockedDeviceKey,
-			})
+			}),
 		);
 
 		confirmDeviceClientSpy.mockClear();
@@ -69,7 +69,7 @@ describe('test getNewDeviceMetadata API', () => {
 				DeviceKey: mockedDeviceKey,
 				DeviceGroupKey: mockedGroupDeviceKey,
 			},
-			mockedAccessToken
+			mockedAccessToken,
 		);
 
 		expect(deviceMetadata).toBeUndefined();
@@ -78,7 +78,7 @@ describe('test getNewDeviceMetadata API', () => {
 			expect.objectContaining({
 				AccessToken: mockedAccessToken,
 				DeviceKey: mockedDeviceKey,
-			})
+			}),
 		);
 
 		confirmDeviceClientSpy.mockClear();

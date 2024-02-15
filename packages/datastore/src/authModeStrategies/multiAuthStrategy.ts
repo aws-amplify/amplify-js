@@ -11,7 +11,7 @@ import {
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 function getProviderFromRule(
-	rule: ModelAttributeAuthProperty
+	rule: ModelAttributeAuthProperty,
 ): ModelAttributeAuthProvider {
 	// private with no provider means userPools
 	if (rule.allow === 'private' && !rule.provider) {
@@ -51,7 +51,7 @@ function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
 			return (
 				allowSortPriority.indexOf(a.allow) - allowSortPriority.indexOf(b.allow)
 			);
-		}
+		},
 	);
 }
 
@@ -136,7 +136,7 @@ function getAuthRules({
  * @returns A sorted array of auth modes to attempt.
  */
 export const multiAuthStrategy: (
-	amplifyContext: AmplifyContext
+	amplifyContext: AmplifyContext,
 ) => AuthModeStrategy =
 	(amplifyContext: AmplifyContext) =>
 	async ({ schema, modelName }) => {
@@ -158,7 +158,7 @@ export const multiAuthStrategy: (
 
 			if (authAttribute?.properties?.rules) {
 				const sortedRules = sortAuthRulesWithPriority(
-					authAttribute.properties.rules
+					authAttribute.properties.rules,
 				);
 
 				return getAuthRules({ currentUser, rules: sortedRules });

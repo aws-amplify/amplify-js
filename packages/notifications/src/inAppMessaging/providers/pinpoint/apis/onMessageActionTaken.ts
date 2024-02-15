@@ -22,7 +22,7 @@ import { OnMessageActionTakenOutput } from '../types/outputs';
  * ```
  */
 export function onMessageActionTaken(
-	input: OnMessageActionTakenInput
+	input: OnMessageActionTakenInput,
 ): OnMessageActionTakenOutput {
 	assertIsInitialized();
 	return addEventListener('messageActionTaken', input);

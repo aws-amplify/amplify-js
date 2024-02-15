@@ -12,7 +12,7 @@ describe(fetchTransferHandler.name, () => {
 			headers: { forEach: jest.fn() },
 			body: {},
 		},
-		mockBody
+		mockBody,
 	);
 	const mockRequest = {
 		method: 'GET' as const,
@@ -36,7 +36,7 @@ describe(fetchTransferHandler.name, () => {
 		await fetchTransferHandler(mockRequest, { abortSignal: signal });
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
-			expect.objectContaining({ signal })
+			expect.objectContaining({ signal }),
 		);
 	});
 
@@ -45,7 +45,7 @@ describe(fetchTransferHandler.name, () => {
 		await fetchTransferHandler(mockRequest, { cache: cacheMode });
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
-			expect.objectContaining({ cache: cacheMode })
+			expect.objectContaining({ cache: cacheMode }),
 		);
 	});
 
@@ -55,7 +55,7 @@ describe(fetchTransferHandler.name, () => {
 		});
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
-			expect.objectContaining({ credentials: 'include' })
+			expect.objectContaining({ credentials: 'include' }),
 		);
 	});
 
@@ -63,7 +63,7 @@ describe(fetchTransferHandler.name, () => {
 		await fetchTransferHandler(mockRequest, {});
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
-			expect.objectContaining({ credentials: 'same-origin' })
+			expect.objectContaining({ credentials: 'same-origin' }),
 		);
 	});
 
@@ -113,10 +113,10 @@ describe(fetchTransferHandler.name, () => {
 		async method => {
 			await fetchTransferHandler(
 				{ ...mockRequest, method, body: 'Mock Body' },
-				{}
+				{},
 			);
 			expect(mockFetch).toHaveBeenCalledTimes(1);
 			expect(mockFetch.mock.calls[0][0].body).toBeUndefined();
-		}
+		},
 	);
 });

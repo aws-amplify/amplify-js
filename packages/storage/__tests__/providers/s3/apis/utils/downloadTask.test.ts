@@ -72,6 +72,6 @@ describe('createDownloadTask', () => {
 			task.cancel();
 			expect(onCancel).not.toHaveBeenCalled();
 			expect(task.state).toBe(state);
-		}
+		},
 	);
 });

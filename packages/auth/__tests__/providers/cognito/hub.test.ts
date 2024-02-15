@@ -36,7 +36,7 @@ describe('Hub API happy path cases', () => {
 				'auth',
 				{ event: 'signInWithRedirect' },
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
 		}
 
@@ -67,7 +67,7 @@ describe('Hub API negative path cases', () => {
 					'auth',
 					{ event: 'tokenRefresh_failure' },
 					'Auth',
-					AMPLIFY_SYMBOL
+					AMPLIFY_SYMBOL,
 				);
 			}
 		}
@@ -88,7 +88,7 @@ describe('Hub API negative path cases', () => {
 					'auth',
 					{ event: 'signInWithRedirect_failure' },
 					'Auth',
-					AMPLIFY_SYMBOL
+					AMPLIFY_SYMBOL,
 				);
 			}
 		}

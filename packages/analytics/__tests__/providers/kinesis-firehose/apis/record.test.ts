@@ -35,7 +35,7 @@ describe('Analytics KinesisFirehose API: record', () => {
 		mockIsAnalyticsEnabled.mockReturnValue(true);
 		mockResolveConfig.mockReturnValue(mockKinesisConfig);
 		mockResolveCredentials.mockReturnValue(
-			Promise.resolve(mockCredentialConfig)
+			Promise.resolve(mockCredentialConfig),
 		);
 		mockGetEventBuffer.mockImplementation(() => ({
 			append: mockAppend,
@@ -60,7 +60,7 @@ describe('Analytics KinesisFirehose API: record', () => {
 				streamName: mockRecordInput.streamName,
 				event: mockRecordInput.data,
 				retryCount: 0,
-			})
+			}),
 		);
 	});
 
@@ -72,7 +72,7 @@ describe('Analytics KinesisFirehose API: record', () => {
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),
-			expect.any(Error)
+			expect.any(Error),
 		);
 	});
 

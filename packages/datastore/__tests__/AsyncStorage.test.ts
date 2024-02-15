@@ -57,7 +57,7 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 		multiGet = async (keys: string[]) => {
 			return keys.reduce(
 				(res, k) => (res.push([k, inmemoryMap.get(k)!]), res),
-				[] as [string, string][]
+				[] as [string, string][],
 			);
 		};
 		multiRemove = async (keys: string[]) => {
@@ -84,7 +84,7 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 
 jest.mock(
 	'../src/storage/adapter/getDefaultAdapter/index',
-	() => () => AsyncStorageAdapter
+	() => () => AsyncStorageAdapter,
 );
 
 /**
@@ -151,24 +151,24 @@ describe('AsyncStorage tests', () => {
 		owner = await DataStore.save(
 			new BlogOwner({
 				name: 'Owner 1',
-			})
+			}),
 		);
 		owner2 = await DataStore.save(
 			new BlogOwner({
 				name: 'Owner 2',
-			})
+			}),
 		);
 		blog = await DataStore.save(
 			new Blog({
 				name: 'Avatar: Last Airbender',
 				owner,
-			})
+			}),
 		);
 		blog2 = await DataStore.save(
 			new Blog({
 				name: 'blog2',
 				owner: owner2,
-			})
+			}),
 		);
 		blog3 = await DataStore.save(
 			new Blog({
@@ -176,9 +176,9 @@ describe('AsyncStorage tests', () => {
 				owner: await DataStore.save(
 					new BlogOwner({
 						name: 'owner 3',
-					})
+					}),
 				),
-			})
+			}),
 		);
 
 		await DataStore.start();
@@ -193,8 +193,8 @@ describe('AsyncStorage tests', () => {
 		expect(allKeys).not.toHaveLength(0); // At leaset the settings entry should be present
 		expect(allKeys[0]).toMatch(
 			new RegExp(
-				`@AmplifyDatastore::${DATASTORE}_Setting::Data::\\w{26}::\\w{26}`
-			)
+				`@AmplifyDatastore::${DATASTORE}_Setting::Data::\\w{26}::\\w{26}`,
+			),
 		);
 	});
 
@@ -205,8 +205,8 @@ describe('AsyncStorage tests', () => {
 
 		const get1 = JSON.parse(
 			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
+				getKeyForAsyncStorage(USER, Blog.name, blog.id),
+			),
 		);
 
 		expect({
@@ -218,8 +218,8 @@ describe('AsyncStorage tests', () => {
 
 		const get2 = JSON.parse(
 			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, BlogOwner.name, owner.id)
-			)
+				getKeyForAsyncStorage(USER, BlogOwner.name, owner.id),
+			),
 		);
 
 		expect(owner).toMatchObject(get2);
@@ -228,8 +228,8 @@ describe('AsyncStorage tests', () => {
 
 		const get3 = JSON.parse(
 			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog2.id)
-			)
+				getKeyForAsyncStorage(USER, Blog.name, blog2.id),
+			),
 		);
 
 		expect({
@@ -254,7 +254,7 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(p);
 
 		const postFromDB = JSON.parse(
-			await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Post.name, p.id))
+			await AsyncStorage.getItem(getKeyForAsyncStorage(USER, Post.name, p.id)),
 		);
 
 		expect(postFromDB.metadata).toMatchObject({
@@ -272,8 +272,8 @@ describe('AsyncStorage tests', () => {
 
 		const get1 = JSON.parse(
 			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
+				getKeyForAsyncStorage(USER, Blog.name, blog.id),
+			),
 		);
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
@@ -284,8 +284,8 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(updated);
 		const get2 = JSON.parse(
 			await AsyncStorage.getItem(
-				getKeyForAsyncStorage(USER, Blog.name, blog.id)
-			)
+				getKeyForAsyncStorage(USER, Blog.name, blog.id),
+			),
 		);
 
 		expect(get2.name).toEqual(updated.name);
@@ -305,7 +305,7 @@ describe('AsyncStorage tests', () => {
 				if (item.owner) {
 					expect(await item.owner).toHaveProperty('name');
 				}
-			})
+			}),
 		);
 	});
 
@@ -404,7 +404,7 @@ describe('AsyncStorage tests', () => {
 						.firstName(SortDirection.ASCENDING)
 						.lastName(SortDirection.ASCENDING)
 						.username(SortDirection.ASCENDING),
-			}
+			},
 		);
 
 		expect(sortedPersons[0].username).toEqual('johnsnow');
@@ -428,7 +428,7 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(
 			Blog.copyOf(blog, draft => {
 				draft;
-			})
+			}),
 		);
 		await DataStore.save(blog2);
 		await DataStore.save(blog3);
@@ -506,17 +506,17 @@ describe('AsyncStorage tests', () => {
 		const a1 = await DataStore.save(
 			new Author({
 				name: 'author1',
-			})
+			}),
 		);
 		const a2 = await DataStore.save(
 			new Author({
 				name: 'author2',
-			})
+			}),
 		);
 		const a3 = await DataStore.save(
 			new Author({
 				name: 'author3',
-			})
+			}),
 		);
 		const blog = await DataStore.save(
 			new Blog({
@@ -524,9 +524,9 @@ describe('AsyncStorage tests', () => {
 				owner: await DataStore.save(
 					new BlogOwner({
 						name: 'O1',
-					})
+					}),
 				),
-			})
+			}),
 		);
 
 		await DataStore.save(blog);
@@ -562,7 +562,7 @@ describe('AsyncStorage tests', () => {
 		expect(deleted).toStrictEqual(author);
 
 		const fromDB = await AsyncStorage.getItem(
-			getKeyForAsyncStorage(USER, Author.name, author.id)
+			getKeyForAsyncStorage(USER, Author.name, author.id),
 		);
 
 		expect(fromDB).toBeUndefined();
@@ -611,7 +611,7 @@ describe('AsyncStorage tests', () => {
 function getKeyForAsyncStorage(
 	namespaceName: string,
 	modelName: string,
-	id: string
+	id: string,
 ) {
 	const collectionInMemoryIndex: Map<string, Map<string, string>> = (<any>(
 		AsyncStorageAdapter

@@ -101,7 +101,7 @@ export class FakeGraphQLService {
 	 */
 	public intercept: (request: GraphQLRequest, next: () => any) => any = (
 		request,
-		next
+		next,
 	) => next();
 
 	/**
@@ -116,7 +116,7 @@ export class FakeGraphQLService {
 
 	constructor(
 		public schema: Schema,
-		mergeStrategy: MergeStrategy = 'Automerge'
+		mergeStrategy: MergeStrategy = 'Automerge',
 	) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
@@ -163,7 +163,7 @@ export class FakeGraphQLService {
 		 * "Materialized" jitter from -jitter to +jitter.
 		 */
 		const jitter = Math.floor(
-			Math.random() * this.latencies.jitter * 2 - this.latencies.jitter
+			Math.random() * this.latencies.jitter * 2 - this.latencies.jitter,
 		);
 		const jitteredMs = Math.max(ms + jitter, 0);
 		return pause(jitteredMs);
@@ -176,7 +176,7 @@ export class FakeGraphQLService {
 	 */
 	private findSingularName(pluralName: string): string {
 		const model = Object.values(this.schema.models).find(
-			m => m.pluralName === pluralName
+			m => m.pluralName === pluralName,
 		);
 		if (!model) throw new Error(`No model found for plural name ${pluralName}`);
 		return model.name;
@@ -192,7 +192,7 @@ export class FakeGraphQLService {
 		const selections = q.selectionSet.selections[0];
 		const selection = selections.name.value;
 		const type = selection.match(
-			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/,
 		)[1];
 
 		let table;
@@ -200,20 +200,20 @@ export class FakeGraphQLService {
 		if (type === 'sync' || type === 'list') {
 			// e.g. `Models`
 			const pluralName = selection.match(
-				/^(create|sync|get|list)([A-Za-z]+)$/
+				/^(create|sync|get|list)([A-Za-z]+)$/,
 			)[2];
 			table = this.findSingularName(pluralName);
 		} else {
 			table = selection.match(
-				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/,
 			)[2];
 		}
 
 		const items =
 			operation === 'query'
 				? selections?.selectionSet?.selections[0]?.selectionSet?.selections?.map(
-						i => i.name.value
-				  )
+						i => i.name.value,
+					)
 				: selections?.selectionSet?.selections?.map(i => i.name.value);
 
 		return { operation, name, selection, type, table, items };
@@ -229,7 +229,7 @@ export class FakeGraphQLService {
 		if (!condition) {
 			this.log(
 				'checking satisfiesCondition',
-				'matches all for `null` conditions'
+				'matches all for `null` conditions',
 			);
 			return true;
 		}
@@ -237,7 +237,7 @@ export class FakeGraphQLService {
 		const modelDefinition = this.schema.models[tableName];
 		const predicate = ModelPredicateCreator.createFromAST(
 			modelDefinition,
-			condition
+			condition,
 		);
 		const isMatch = validatePredicate(item, 'and', [
 			ModelPredicateCreator.getPredicates(predicate)!,
@@ -245,7 +245,7 @@ export class FakeGraphQLService {
 
 		this.log('satisfiesCondition result', {
 			effectivePredicate: JSON.stringify(
-				ModelPredicateCreator.getPredicates(predicate)
+				ModelPredicateCreator.getPredicates(predicate),
 			),
 			isMatch,
 		});
@@ -346,7 +346,7 @@ export class FakeGraphQLService {
 
 	private makeExtraFieldInputError(tableName, operation, fields) {
 		const properOperationName = `${operation[0].toUpperCase()}${operation.substring(
-			1
+			1,
 		)}`;
 		const inputName = `${properOperationName}${tableName}Input`;
 		return {
@@ -401,7 +401,7 @@ export class FakeGraphQLService {
 	private writeableFields(tableName) {
 		const def = this.tableDefinitions.get(tableName)!;
 		return Object.keys(def.fields).filter(
-			field => !def.fields[field]?.isReadOnly
+			field => !def.fields[field]?.isReadOnly,
 		);
 	}
 
@@ -428,13 +428,13 @@ export class FakeGraphQLService {
 			case 'update':
 				const unexpectedFields = this.identifyExtraValues(
 					[...writeableFields, '_version'],
-					Object.keys(record)
+					Object.keys(record),
 				);
 				if (unexpectedFields.length > 0) {
 					error = this.makeExtraFieldInputError(
 						tableName,
 						operation,
-						unexpectedFields
+						unexpectedFields,
 					);
 				}
 				for (const ownerField of this.ownerFields(tableName)) {
@@ -464,7 +464,7 @@ export class FakeGraphQLService {
 
 	private populatedFields(record) {
 		return Object.fromEntries(
-			Object.entries(record).filter(([key, value]) => value !== undefined)
+			Object.entries(record).filter(([key, value]) => value !== undefined),
 		);
 	}
 
@@ -547,7 +547,7 @@ export class FakeGraphQLService {
 		type,
 		data,
 		selection,
-		ignoreLatency = false
+		ignoreLatency = false,
 	) {
 		const deliveryPromise = new Promise<void>(async resolve => {
 			!ignoreLatency && (await this.jitteredPause(this.latencies.subscriber));
@@ -600,7 +600,7 @@ export class FakeGraphQLService {
 
 	public request(
 		{ query, variables, authMode, authToken },
-		ignoreLatency = false
+		ignoreLatency = false,
 	) {
 		this.log('API Request', {
 			query,
@@ -655,7 +655,7 @@ export class FakeGraphQLService {
 					data = {
 						[selection]: {
 							items: [...table.values()].filter(item =>
-								this.satisfiesCondition(tableName, item, variables.filter)
+								this.satisfiesCondition(tableName, item, variables.filter),
 							),
 							nextToken: null,
 							startedAt: new Date().getTime(),
@@ -782,7 +782,7 @@ export class FakeGraphQLService {
 						type,
 						data,
 						selection,
-						ignoreLatency
+						ignoreLatency,
 					);
 				} else {
 					if (!Array.isArray(this.errors.get(type))) {

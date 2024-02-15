@@ -31,7 +31,7 @@ describe('onTokenReceived (native)', () => {
 		onTokenReceived(mockHandler);
 		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'tokenReceived',
-			mockHandler
+			mockHandler,
 		);
 	});
 });

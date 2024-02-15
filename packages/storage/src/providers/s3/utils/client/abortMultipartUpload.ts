@@ -33,7 +33,7 @@ export type AbortMultipartUploadOutput = MetadataBearer;
 
 const abortMultipartUploadSerializer = (
 	input: AbortMultipartUploadInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): HttpRequest => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
@@ -50,7 +50,7 @@ const abortMultipartUploadSerializer = (
 };
 
 const abortMultipartUploadDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<AbortMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -66,5 +66,5 @@ export const abortMultipartUpload = composeServiceApi(
 	s3TransferHandler,
 	abortMultipartUploadSerializer,
 	abortMultipartUploadDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

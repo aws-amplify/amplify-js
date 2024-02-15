@@ -16,7 +16,7 @@ import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeP
 // Mock all calls to signRequest
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
 	const original = jest.requireActual(
-		'@aws-amplify/core/internals/aws-client-utils'
+		'@aws-amplify/core/internals/aws-client-utils',
 	);
 	return {
 		...original,
@@ -68,7 +68,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 		test('Custom domain returns `true`', () => {
 			const provider = new AWSAppSyncRealTimeProvider();
 			const result = (provider as any).isCustomDomain(
-				'https://unit-test.testurl.com/graphql'
+				'https://unit-test.testurl.com/graphql',
 			);
 			expect(result).toBe(true);
 		});
@@ -76,7 +76,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 		test('Non-custom domain returns `false`', () => {
 			const provider = new AWSAppSyncRealTimeProvider();
 			const result = (provider as any).isCustomDomain(
-				'https://12345678901234567890123456.appsync-api.us-west-2.amazonaws.com/graphql'
+				'https://12345678901234567890123456.appsync-api.us-west-2.amazonaws.com/graphql',
 			);
 			expect(result).toBe(false);
 		});
@@ -84,7 +84,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 		test('Non-custom domain in the amazonaws.com.cn subdomain space returns `false`', () => {
 			const provider = new AWSAppSyncRealTimeProvider();
 			const result = (provider as any).isCustomDomain(
-				'https://12345678901234567890123456.appsync-api.cn-north-1.amazonaws.com.cn/graphql'
+				'https://12345678901234567890123456.appsync-api.cn-north-1.amazonaws.com.cn/graphql',
 			);
 			expect(result).toBe(false);
 		});
@@ -108,7 +108,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				let fakeWebSocketInterface: FakeWebSocketInterface;
 				const loggerSpy: jest.SpyInstance = jest.spyOn(
 					ConsoleLogger.prototype,
-					'_log'
+					'_log',
 				);
 
 				let provider: AWSAppSyncRealTimeProvider;
@@ -177,7 +177,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 								payload: { connectionTimeoutMs: 100 },
 								id: fakeWebSocketInterface?.webSocket.subscriptionId,
 							}),
-						})
+						}),
 					);
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
@@ -214,11 +214,11 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						provider.subscribe({}).subscribe({
 							error(err) {
 								expect(err.errors[0].message).toEqual(
-									'Subscribe only available for AWS AppSync endpoint'
+									'Subscribe only available for AWS AppSync endpoint',
 								);
 								mockError();
 							},
-						})
+						}),
 					);
 
 					expect(mockError).toHaveBeenCalled();
@@ -246,7 +246,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
 						'ws://localhost:8080/realtime?header=&payload=e30=',
-						'graphql-ws'
+						'graphql-ws',
 					);
 				});
 
@@ -272,7 +272,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
 						'wss://localhost:8080/realtime?header=&payload=e30=',
-						'graphql-ws'
+						'graphql-ws',
 					);
 				});
 
@@ -299,7 +299,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
 						'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql?header=&payload=e30=',
-						'graphql-ws'
+						'graphql-ws',
 					);
 				});
 
@@ -314,7 +314,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.triggerError();
 					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
-						'WebSocket connection error'
+						'WebSocket connection error',
 					);
 				});
 
@@ -339,7 +339,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						expect.stringContaining('error on bound '),
 						expect.objectContaining({
 							message: expect.stringMatching('Connection handshake error'),
-						})
+						}),
 					);
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
 						CS.Connecting,
@@ -421,7 +421,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					// When the socket throws an error during handshake
 					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
-						'WebSocket error {"isTrusted":false}'
+						'WebSocket error {"isTrusted":false}',
 					);
 				});
 
@@ -447,7 +447,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						expect.stringContaining('error on bound '),
 						expect.objectContaining({
 							message: expect.stringMatching('{"isTrusted":false}'),
-						})
+						}),
 					);
 				});
 
@@ -546,7 +546,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
-						'Connection failed: {"data":{}}'
+						'Connection failed: {"data":{}}',
 					);
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
 						CS.Connecting,
@@ -558,7 +558,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					const socketCloseSpy = jest.spyOn(
 						fakeWebSocketInterface.webSocket,
-						'close'
+						'close',
 					);
 					fakeWebSocketInterface.webSocket.readyState = WebSocket.OPEN;
 
@@ -569,7 +569,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					observer.subscribe({
 						error: e => {
 							expect(e.errors[0].message).toEqual(
-								'Connection failed: Non-retriable Test'
+								'Connection failed: Non-retriable Test',
 							);
 						},
 					});
@@ -589,7 +589,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 									},
 								],
 							},
-						})
+						}),
 					);
 
 					// Watching for raised exception to be caught and logged
@@ -598,7 +598,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						expect.stringContaining('error on bound '),
 						expect.objectContaining({
 							message: expect.stringMatching('Non-retriable Test'),
-						})
+						}),
 					);
 
 					expect(socketCloseSpy).toHaveBeenNthCalledWith(1, 3001);
@@ -619,7 +619,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					await fakeWebSocketInterface?.triggerError();
 					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
-						'Disconnect error: Connection closed'
+						'Disconnect error: Connection closed',
 					);
 				});
 
@@ -650,7 +650,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 										},
 									],
 								},
-							})
+							}),
 						);
 						await fakeWebSocketInterface?.resetWebsocket();
 					};
@@ -665,7 +665,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						expect.stringContaining('error on bound '),
 						expect.objectContaining({
 							message: expect.stringMatching('Retriable Test'),
-						})
+						}),
 					);
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
@@ -674,7 +674,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
-						'Connection failed: Retriable Test'
+						'Connection failed: Retriable Test',
 					);
 				});
 
@@ -700,7 +700,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							await fakeWebSocketInterface?.startAckMessage();
 
 							await fakeWebSocketInterface?.keepAlive();
-						}
+						},
 					);
 
 					await fakeWebSocketInterface?.waitUntilConnectionStateIn([
@@ -713,12 +713,12 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					]);
 
 					expect(fakeWebSocketInterface?.observedConnectionStates).toContain(
-						CS.ConnectedPendingKeepAlive
+						CS.ConnectedPendingKeepAlive,
 					);
 
 					expect(loggerSpy).toHaveBeenCalledWith(
 						'DEBUG',
-						'Disconnect error: Timeout disconnect'
+						'Disconnect error: Timeout disconnect',
 					);
 				});
 
@@ -884,7 +884,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
 							'timeoutStartSubscription',
-							expect.anything()
+							expect.anything(),
 						);
 					});
 				});
@@ -910,7 +910,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						// Wait until the socket is automatically disconnected
 						await expect(
 							fakeWebSocketInterface?.hubConnectionListener
-								?.currentConnectionState
+								?.currentConnectionState,
 						).toBe(CS.Connecting);
 
 						// Watching for raised exception to be caught and logged
@@ -919,9 +919,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							expect.stringContaining('error on bound '),
 							expect.objectContaining({
 								message: expect.stringMatching(
-									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
+									'Connection timeout: ack from AWSAppSyncRealTime was not received after',
 								),
-							})
+							}),
 						);
 					});
 				});
@@ -954,9 +954,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 							expect.stringContaining('error on bound '),
 							expect.objectContaining({
 								message: expect.stringMatching(
-									'Connection timeout: ack from AWSAppSyncRealTime was not received after'
+									'Connection timeout: ack from AWSAppSyncRealTime was not received after',
 								),
-							})
+							}),
 						);
 					});
 				});
@@ -977,7 +977,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'Authenticating with "apiKey"'
+							'Authenticating with "apiKey"',
 						);
 					});
 
@@ -995,7 +995,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'Authenticating with "iam"'
+							'Authenticating with "iam"',
 						);
 					});
 
@@ -1013,7 +1013,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'Authenticating with "oidc"'
+							'Authenticating with "oidc"',
 						);
 					});
 
@@ -1030,7 +1030,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						await fakeWebSocketInterface?.readyForUse;
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'Authenticating with "oidc"'
+							'Authenticating with "oidc"',
 						);
 					});
 
@@ -1051,7 +1051,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'Authenticating with "none"'
+							'Authenticating with "none"',
 						);
 					});
 
@@ -1079,7 +1079,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'Authenticating with "userPool"'
+							'Authenticating with "userPool"',
 						);
 					});
 
@@ -1100,7 +1100,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toBeCalledWith(
 							'DEBUG',
-							'Authenticating with "none"'
+							'Authenticating with "none"',
 						);
 					});
 
@@ -1116,7 +1116,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 										expect.objectContaining({
 											queryString: '',
 											url: 'ws://localhost:8080',
-										})
+										}),
 									);
 									return { Authorization: 'test' };
 								},
@@ -1127,7 +1127,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'Authenticating with "none"'
+							'Authenticating with "none"',
 						);
 					});
 
@@ -1149,7 +1149,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 						expect(loggerSpy).toHaveBeenCalledWith(
 							'DEBUG',
-							'AppSync Realtime subscription init error: Error: No auth token specified'
+							'AppSync Realtime subscription init error: Error: No auth token specified',
 						);
 					});
 				});

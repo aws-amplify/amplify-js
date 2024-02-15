@@ -109,7 +109,7 @@
 		"lerna": "^7.4.2",
 		"license-check-and-add": "^4.0.5",
 		"mkdirp": "^3.0.1",
-		"prettier": "^3.1.0",
+		"prettier": "^3.2.5",
 		"rimraf": "^2.6.2",
 		"rollup": "^4.9.6",
 		"size-limit": "^8.1.0",

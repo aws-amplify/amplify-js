@@ -255,7 +255,7 @@ describe('Interactions', () => {
 			mockFetchAuthSession.mockReturnValue(Promise.reject(new Error()));
 
 			await expect(
-				provider.sendMessage(botConfig.BookTrip, 'hi')
+				provider.sendMessage(botConfig.BookTrip, 'hi'),
 			).rejects.toEqual('No credentials');
 			expect.assertions(1);
 		});
@@ -268,7 +268,7 @@ describe('Interactions', () => {
 					options: {
 						messageType: 'text',
 					},
-				})
+				}),
 			).rejects.toEqual('invalid content type');
 
 			// obj voice in wrong format
@@ -278,7 +278,7 @@ describe('Interactions', () => {
 					options: {
 						messageType: 'voice',
 					},
-				})
+				}),
 			).rejects.toEqual('invalid content type');
 		});
 	});
@@ -299,7 +299,7 @@ describe('Interactions', () => {
 
 		test('Configure onComplete callback for a configured bot successfully', () => {
 			expect(() =>
-				provider.onComplete(botConfig.BookTrip, callback)
+				provider.onComplete(botConfig.BookTrip, callback),
 			).not.toThrow();
 			expect.assertions(1);
 		});
@@ -324,7 +324,7 @@ describe('Interactions', () => {
 
 			// mock callbacks
 			inProgressCallback = jest.fn((err, confirmation) =>
-				fail(`callback shouldn't be called`)
+				fail(`callback shouldn't be called`),
 			);
 
 			completeSuccessCallback = jest.fn((err, confirmation) => {
@@ -340,23 +340,23 @@ describe('Interactions', () => {
 			});
 
 			completeFailCallback = jest.fn((err, confirmation) =>
-				expect(err).toEqual(new Error('Bot conversation failed'))
+				expect(err).toEqual(new Error('Bot conversation failed')),
 			);
 
 			// mock responses
 			inProgressResp = (await provider.sendMessage(
 				botConfig.BookTrip,
-				'hi'
+				'hi',
 			)) as PostTextCommandOutput;
 
 			completeSuccessResp = (await provider.sendMessage(
 				botConfig.BookTrip,
-				'done'
+				'done',
 			)) as PostTextCommandOutput;
 
 			completeFailResp = (await provider.sendMessage(
 				botConfig.BookTrip,
-				'error'
+				'error',
 			)) as PostTextCommandOutput;
 		});
 

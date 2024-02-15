@@ -15,8 +15,8 @@ describe('getCredentialScope', () => {
 			getCredentialScope(
 				formattedDates.shortDate,
 				signingRegion,
-				signingService
-			)
+				signingService,
+			),
 		).toBe(credentialScope);
 	});
 });

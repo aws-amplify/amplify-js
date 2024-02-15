@@ -55,13 +55,13 @@ describe('CognitoIdentity - getId', () => {
 			}),
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(succeedResponse)
+			mockJsonResponse(succeedResponse),
 		);
 		const response = await getId(cognitoIdentityHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
 		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
-			expect.anything()
+			expect.anything(),
 		);
 	});
 
@@ -82,7 +82,7 @@ describe('CognitoIdentity - getId', () => {
 			message: failureResponse.body.message,
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(failureResponse)
+			mockJsonResponse(failureResponse),
 		);
 		expect.assertions(1);
 		try {

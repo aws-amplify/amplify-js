@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('resendSignUpCode', () => {
@@ -34,7 +34,7 @@ describe('resendSignUpCode', () => {
 
 	beforeEach(() => {
 		mockResendConfirmationCode.mockResolvedValue(
-			authAPITestParams.resendSignUpClientResult
+			authAPITestParams.resendSignUpClientResult,
 		);
 	});
 
@@ -56,7 +56,7 @@ describe('resendSignUpCode', () => {
 				ClientMetadata: undefined,
 				Username: user1.username,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			}
+			},
 		);
 		expect(mockResendConfirmationCode).toHaveBeenCalledTimes(1);
 	});
@@ -81,7 +81,7 @@ describe('resendSignUpCode', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				ResendConfirmationException.InvalidParameterException
+				ResendConfirmationException.InvalidParameterException,
 			);
 		}
 	});
@@ -106,7 +106,7 @@ describe('resendSignUpCode', () => {
 				Username: user1.username,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				UserContextData: { EncodedData: 'abcd' },
-			}
+			},
 		);
 		expect(mockResendConfirmationCode).toHaveBeenCalledTimes(1);
 		window['AmazonCognitoAdvancedSecurityData'] = undefined;
