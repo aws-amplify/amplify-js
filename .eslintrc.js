@@ -40,9 +40,9 @@ module.exports = {
 		// will enable lint by packages
 		// 'adapter-nextjs',
 		// 'packages/analytics',
-		'packages/api',
+		// 'packages/api',
 		'packages/api-graphql',
-		'packages/api-rest',
+		// 'packages/api-rest',
 		'packages/auth',
 		// 'packages/aws-amplify',
 		// 'packages/core',

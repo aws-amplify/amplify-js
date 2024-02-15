@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { CanceledError } from '../errors';
 import { Operation } from '../types';
+
 import { parseRestApiServiceError } from './serviceError';
 import { logger } from './logger';
 
@@ -13,7 +15,7 @@ import { logger } from './logger';
  */
 export function createCancellableOperation(
 	handler: () => Promise<HttpResponse>,
-	abortController: AbortController
+	abortController: AbortController,
 ): Promise<HttpResponse>;
 
 /**
@@ -21,7 +23,7 @@ export function createCancellableOperation(
  * @internal
  */
 export function createCancellableOperation(
-	handler: (signal: AbortSignal) => Promise<HttpResponse>
+	handler: (signal: AbortSignal) => Promise<HttpResponse>,
 ): Operation<HttpResponse>;
 
 /**
@@ -31,13 +33,13 @@ export function createCancellableOperation(
 	handler:
 		| ((signal: AbortSignal) => Promise<HttpResponse>)
 		| (() => Promise<HttpResponse>),
-	abortController?: AbortController
+	abortController?: AbortController,
 ): Operation<HttpResponse> | Promise<HttpResponse> {
 	const isInternalPost = (
-		handler:
+		targetHandler:
 			| ((signal: AbortSignal) => Promise<HttpResponse>)
-			| (() => Promise<HttpResponse>)
-	): handler is () => Promise<HttpResponse> => !!abortController;
+			| (() => Promise<HttpResponse>),
+	): targetHandler is () => Promise<HttpResponse> => !!abortController;
 
 	// For creating a cancellable operation for public REST APIs, we need to create an AbortController
 	// internally. Whereas for internal POST APIs, we need to accept in the AbortController from the
@@ -56,6 +58,7 @@ export function createCancellableOperation(
 			if (response.statusCode >= 300) {
 				throw await parseRestApiServiceError(response)!;
 			}
+
 			return response;
 		} catch (error: any) {
 			const abortSignal = internalPostAbortSignal ?? publicApisAbortSignal;
@@ -87,6 +90,7 @@ export function createCancellableOperation(
 				abortReason = abortMessage;
 			}
 		};
+
 		return { response: job(), cancel };
 	}
 }
