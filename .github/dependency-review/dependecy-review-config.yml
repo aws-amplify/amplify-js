@@ -20,3 +20,4 @@ allow-licenses:
   - 'Unlicense'
   - 'WTFPL'
   - 'Zlib'
+  - 'CC0-1'
