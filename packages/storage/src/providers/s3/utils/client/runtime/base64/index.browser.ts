@@ -16,6 +16,6 @@ export function toBase64(input: string | ArrayBufferView): string {
 	}
 
 	return bytesToBase64(
-		new Uint8Array(input.buffer, input.byteOffset, input.byteLength)
+		new Uint8Array(input.buffer, input.byteOffset, input.byteLength),
 	);
 }

@@ -57,13 +57,13 @@ describe('Pinpoint - putEvents', () => {
 			}),
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(successfulResponse)
+			mockJsonResponse(successfulResponse),
 		);
 		const response = await putEvents(pinpointHandlerOptions, params);
 		expect(response).toEqual(expectedOutput);
 		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
-			expect.anything()
+			expect.anything(),
 		);
 	});
 
@@ -73,7 +73,7 @@ describe('Pinpoint - putEvents', () => {
 			message: mockFailureResponse.body.message,
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(mockFailureResponse)
+			mockJsonResponse(mockFailureResponse),
 		);
 		expect.assertions(1);
 		try {

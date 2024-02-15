@@ -21,7 +21,7 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function deleteUserAttributes(
-	input: DeleteUserAttributesInput
+	input: DeleteUserAttributesInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -36,6 +36,6 @@ export async function deleteUserAttributes(
 		{
 			AccessToken: tokens.accessToken.toString(),
 			UserAttributeNames: userAttributeKeys,
-		}
+		},
 	);
 }

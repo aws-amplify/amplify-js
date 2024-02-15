@@ -15,7 +15,7 @@ export const onComplete = (input: OnCompleteInput): void => {
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
-		`Bot ${botName} does not exist.`
+		`Bot ${botName} does not exist.`,
 	);
 	lexProvider.onComplete(botConfig, callback);
 };

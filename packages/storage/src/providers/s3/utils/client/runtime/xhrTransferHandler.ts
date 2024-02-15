@@ -80,7 +80,7 @@ export const xhrTransferHandler: TransferHandler<
 		xhr.addEventListener('error', () => {
 			const networkError = buildHandlerError(
 				NETWORK_ERROR_MESSAGE,
-				NETWORK_ERROR_CODE
+				NETWORK_ERROR_CODE,
 			);
 			logger.error(NETWORK_ERROR_MESSAGE);
 			reject(networkError);
@@ -111,7 +111,7 @@ export const xhrTransferHandler: TransferHandler<
 				// The load event is triggered after the error/abort/load event. So we need to check if the xhr is null.
 				if (!xhr) return;
 				const responseHeaders = convertResponseHeaders(
-					xhr.getAllResponseHeaders()
+					xhr.getAllResponseHeaders(),
 				);
 				const responseType = xhr.responseType;
 				const responseBlob = xhr.response as Blob;
@@ -121,14 +121,14 @@ export const xhrTransferHandler: TransferHandler<
 					text: withMemoization(() =>
 						responseType === 'blob'
 							? readBlobAsText(responseBlob)
-							: Promise.resolve(responseText)
+							: Promise.resolve(responseText),
 					),
 					json: () =>
 						Promise.reject(
 							// S3 does not support JSON response. So fail-fast here with nicer error message.
 							new Error(
-								'Parsing response to JSON is not implemented. Please use response.text() instead.'
-							)
+								'Parsing response to JSON is not implemented. Please use response.text() instead.',
+							),
 						),
 				};
 				const response: HttpResponse = {
@@ -184,7 +184,7 @@ export const xhrTransferHandler: TransferHandler<
 };
 
 const convertToTransferProgressEvent = (
-	event: ProgressEvent
+	event: ProgressEvent,
 ): TransferProgressEvent => ({
 	transferredBytes: event.loaded,
 	totalBytes: event.lengthComputable ? event.total : undefined,

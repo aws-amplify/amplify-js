@@ -35,7 +35,7 @@ type ResolvedS3ConfigAndInput = {
  */
 export const resolveS3ConfigAndInput = async (
 	amplify: AmplifyClassV6,
-	apiOptions?: S3ApiOptions
+	apiOptions?: S3ApiOptions,
 ): Promise<ResolvedS3ConfigAndInput> => {
 	// identityId is always cached in memory if forceRefresh is not set. So we can safely make calls here.
 	const { credentials, identityId } = await amplify.Auth.fetchAuthSession({
@@ -43,7 +43,7 @@ export const resolveS3ConfigAndInput = async (
 	});
 	assertValidationError(
 		!!credentials,
-		StorageValidationErrorCode.NoCredentials
+		StorageValidationErrorCode.NoCredentials,
 	);
 	assertValidationError(!!identityId, StorageValidationErrorCode.NoIdentityId);
 
@@ -77,7 +77,7 @@ export const resolveS3ConfigAndInput = async (
 				? {
 						customEndpoint: LOCAL_TESTING_S3_ENDPOINT,
 						forcePathStyle: true,
-				  }
+					}
 				: {}),
 		},
 		bucket,

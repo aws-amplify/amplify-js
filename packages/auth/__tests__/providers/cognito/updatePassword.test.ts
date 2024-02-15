@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('updatePassword', () => {
@@ -55,7 +55,7 @@ describe('updatePassword', () => {
 				AccessToken: mockAccessToken,
 				PreviousPassword: oldPassword,
 				ProposedPassword: newPassword,
-			})
+			}),
 		);
 	});
 
@@ -90,7 +90,7 @@ describe('updatePassword', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				ChangePasswordException.InvalidParameterException
+				ChangePasswordException.InvalidParameterException,
 			);
 		}
 	});

@@ -42,7 +42,7 @@ export class PredictionsClass {
 	public convert(input: TextToSpeechInput): Promise<TextToSpeechOutput>;
 	public convert(input: SpeechToTextInput): Promise<SpeechToTextOutput>;
 	public convert(
-		input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput
+		input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput,
 	): Promise<TranslateTextOutput | TextToSpeechOutput | SpeechToTextOutput> {
 		return this.convertProvider.convert(input);
 	}
@@ -50,10 +50,10 @@ export class PredictionsClass {
 	public identify(input: IdentifyTextInput): Promise<IdentifyTextOutput>;
 	public identify(input: IdentifyLabelsInput): Promise<IdentifyLabelsOutput>;
 	public identify(
-		input: IdentifyEntitiesInput
+		input: IdentifyEntitiesInput,
 	): Promise<IdentifyEntitiesOutput>;
 	public identify(
-		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
+		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput,
 	): Promise<
 		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
 	> {

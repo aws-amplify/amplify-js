@@ -10,10 +10,10 @@ import { getProperties as getPropertiesInternal } from '../internal/getPropertie
 
 export const getProperties = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: GetPropertiesInput
+	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput> => {
 	return getPropertiesInternal(
 		getAmplifyServerContext(contextSpec).amplify,
-		input
+		input,
 	);
 };

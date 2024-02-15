@@ -38,7 +38,7 @@ describe('signIn API happy path cases', () => {
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> => {
 					return authAPITestParams.CustomChallengeResponse;
-				}
+				},
 			);
 	});
 
@@ -84,7 +84,7 @@ describe('signIn API happy path cases', () => {
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 	});
 });
@@ -139,7 +139,7 @@ describe('Cognito ASF', () => {
 				UserContextData: {
 					EncodedData: 'abcd',
 				},
-			})
+			}),
 		);
 	});
 });

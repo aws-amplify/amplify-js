@@ -12,7 +12,6 @@
 	},
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
-		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
 		"build-with-test": "npm run clean && npm run test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup -c rollup.config.mjs",
@@ -21,7 +20,8 @@
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 71.4"
 	},
 	"typesVersions": {

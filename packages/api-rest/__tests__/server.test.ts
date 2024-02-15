@@ -37,7 +37,7 @@ describe('REST API handlers', () => {
 		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 		expect(commonGet).toHaveBeenCalledWith(
 			'mockedAmplifyServerSideContext',
-			input
+			input,
 		);
 	});
 
@@ -46,7 +46,7 @@ describe('REST API handlers', () => {
 		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 		expect(commonPost).toHaveBeenCalledWith(
 			'mockedAmplifyServerSideContext',
-			input
+			input,
 		);
 	});
 
@@ -55,7 +55,7 @@ describe('REST API handlers', () => {
 		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 		expect(commonPut).toHaveBeenCalledWith(
 			'mockedAmplifyServerSideContext',
-			input
+			input,
 		);
 	});
 
@@ -64,7 +64,7 @@ describe('REST API handlers', () => {
 		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 		expect(commonDel).toHaveBeenCalledWith(
 			'mockedAmplifyServerSideContext',
-			input
+			input,
 		);
 	});
 
@@ -73,7 +73,7 @@ describe('REST API handlers', () => {
 		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 		expect(commonPatch).toHaveBeenCalledWith(
 			'mockedAmplifyServerSideContext',
-			input
+			input,
 		);
 	});
 
@@ -82,7 +82,7 @@ describe('REST API handlers', () => {
 		expect(mockGetAmplifyServerContext).toHaveBeenCalledWith(contextSpec);
 		expect(commonHead).toHaveBeenCalledWith(
 			'mockedAmplifyServerSideContext',
-			input
+			input,
 		);
 	});
 });

@@ -21,7 +21,7 @@ describe('getPushNotificationUserAgentString', () => {
 	it('gets an Amplify user agent', () => {
 		mockGetAmplifyUserAgent.mockReturnValue(userAgentValue);
 		expect(
-			getPushNotificationUserAgentString(PushNotificationAction.IdentifyUser)
+			getPushNotificationUserAgentString(PushNotificationAction.IdentifyUser),
 		).toBe(userAgentValue);
 		expect(mockGetAmplifyUserAgent).toHaveBeenCalledWith({
 			category: Category.PushNotification,

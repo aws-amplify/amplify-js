@@ -58,7 +58,7 @@ describe('createQueuedStorage', () => {
 				mockQueuedItems.map((item, index) => [
 					mockKeys[index],
 					JSON.stringify(item),
-				])
+				]),
 			);
 
 			queuedStorage = createQueuedStorage();
@@ -159,7 +159,7 @@ describe('createQueuedStorage', () => {
 					timestamp: mockTimestamp,
 					bytesSize: getAddItemBytesSize(testInput),
 					key: `${keyPrefix}_123`,
-				})
+				}),
 			);
 		});
 
@@ -173,7 +173,7 @@ describe('createQueuedStorage', () => {
 				},
 			];
 			mockMultiGet.mockResolvedValueOnce(
-				mockQueuedItems.map(item => [item.key, JSON.stringify(item)])
+				mockQueuedItems.map(item => [item.key, JSON.stringify(item)]),
 			);
 
 			await queuedStorage.add(testInput, { dequeueBeforeEnqueue: true });
@@ -188,7 +188,7 @@ describe('createQueuedStorage', () => {
 					timestamp: mockTimestamp,
 					bytesSize: getAddItemBytesSize(testInput),
 					key: `${keyPrefix}_123`,
-				})
+				}),
 			);
 		});
 	});
@@ -228,7 +228,7 @@ describe('createQueuedStorage', () => {
 
 		test('peek() returns specified number of queued items', async () => {
 			mockGetAllKeys.mockResolvedValueOnce(
-				mockQueuedItems.map(item => item.key)
+				mockQueuedItems.map(item => item.key),
 			);
 			mockMultiGet.mockResolvedValueOnce([
 				[mockQueuedItems[0].key, JSON.stringify(mockQueuedItems[0])],
@@ -244,17 +244,17 @@ describe('createQueuedStorage', () => {
 
 		test('peekAll() returns all queued items', async () => {
 			mockGetAllKeys.mockResolvedValueOnce(
-				mockQueuedItems.map(item => item.key)
+				mockQueuedItems.map(item => item.key),
 			);
 			mockMultiGet.mockResolvedValueOnce(
-				mockQueuedItems.map(item => [item.key, JSON.stringify(item)])
+				mockQueuedItems.map(item => [item.key, JSON.stringify(item)]),
 			);
 
 			const result = await queuedStorage.peekAll();
 			expect(mockGetAllKeys).toHaveBeenCalledTimes(1);
 			expect(mockMultiGet).toHaveBeenCalledTimes(1);
 			expect(mockMultiGet).toHaveBeenCalledWith(
-				mockQueuedItems.map(item => item.key)
+				mockQueuedItems.map(item => item.key),
 			);
 			expect(result).toHaveLength(mockQueuedItems.length);
 		});
@@ -298,7 +298,7 @@ describe('createQueuedStorage', () => {
 
 			expect(mockMultiRemove).toHaveBeenCalledTimes(1);
 			expect(mockMultiRemove).toHaveBeenCalledWith(
-				testItems.map(item => item.key)
+				testItems.map(item => item.key),
 			);
 		});
 	});
@@ -326,7 +326,7 @@ describe('createQueuedStorage', () => {
 			expect(mockGetAllKeys).toHaveBeenCalledTimes(1);
 			expect(mockMultiRemove).toHaveBeenCalledTimes(1);
 			expect(mockMultiRemove).toHaveBeenCalledWith(
-				testAllKeys.filter(key => key.startsWith(keyPrefix))
+				testAllKeys.filter(key => key.startsWith(keyPrefix)),
 			);
 		});
 	});

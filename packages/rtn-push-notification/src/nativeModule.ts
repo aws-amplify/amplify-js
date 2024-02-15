@@ -14,7 +14,7 @@ export const nativeModule: PushNotificationNativeModule =
 					get() {
 						throw new Error(LINKING_ERROR);
 					},
-				}
-		  );
+				},
+			);
 
 export const nativeEventEmitter = new NativeEventEmitter(nativeModule);

@@ -36,7 +36,7 @@ import { logger } from '../../../../../utils';
  */
 export const getMultipartUploadHandlers = (
 	{ options: uploadDataOptions, key, data }: UploadDataInput,
-	size?: number
+	size?: number,
 ) => {
 	let resolveCallback: ((value: S3Item) => void) | undefined;
 	let rejectCallback: ((reason?: any) => void) | undefined;
@@ -59,7 +59,7 @@ export const getMultipartUploadHandlers = (
 	const startUpload = async (): Promise<S3Item> => {
 		const resolvedS3Options = await resolveS3ConfigAndInput(
 			Amplify,
-			uploadDataOptions
+			uploadDataOptions,
 		);
 		s3Config = resolvedS3Options.s3Config;
 		bucket = resolvedS3Options.bucket;
@@ -107,12 +107,12 @@ export const getMultipartUploadHandlers = (
 					bucket: bucket!,
 					size,
 					key,
-			  })
+				})
 			: undefined;
 
 		const dataChunker = getDataChunker(data, size);
 		const completedPartNumberSet = new Set<number>(
-			inProgressUpload.completedParts.map(({ PartNumber }) => PartNumber!)
+			inProgressUpload.completedParts.map(({ PartNumber }) => PartNumber!),
 		);
 		const onPartUploadCompletion = (partNumber: number, eTag: string) => {
 			inProgressUpload?.completedParts.push({
@@ -140,7 +140,7 @@ export const getMultipartUploadHandlers = (
 					onPartUploadCompletion,
 					onProgress: concurrentUploadsProgressTracker.getOnProgressListener(),
 					isObjectLockEnabled: resolvedS3Options.isObjectLockEnabled,
-				})
+				}),
 			);
 		}
 
@@ -158,10 +158,10 @@ export const getMultipartUploadHandlers = (
 				UploadId: inProgressUpload.uploadId,
 				MultipartUpload: {
 					Parts: inProgressUpload.completedParts.sort(
-						(partA, partB) => partA.PartNumber! - partB.PartNumber!
+						(partA, partB) => partA.PartNumber! - partB.PartNumber!,
 					),
 				},
-			}
+			},
 		);
 
 		if (size) {
@@ -238,7 +238,7 @@ export const getMultipartUploadHandlers = (
 		rejectCallback!(
 			// Internal error that should not be exposed to the users. They should use isCancelError() to check if
 			// the error is caused by cancel().
-			new CanceledError(message ? { message } : undefined)
+			new CanceledError(message ? { message } : undefined),
 		);
 	};
 	return {

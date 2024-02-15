@@ -5,7 +5,7 @@ import { Md5 } from '@smithy/md5-js';
 import { toBase64, utf8Encode } from './client/utils';
 
 export const calculateContentMd5 = async (
-	content: Blob | string | ArrayBuffer | ArrayBufferView
+	content: Blob | string | ArrayBuffer | ArrayBufferView,
 ): Promise<string> => {
 	const hasher = new Md5();
 	if (typeof content === 'string') {

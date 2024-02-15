@@ -42,7 +42,7 @@ jest.mock(
 			clearOAuthData: jest.fn(),
 			clearOAuthInflightData: jest.fn(),
 		} as OAuthStore,
-	})
+	}),
 );
 jest.mock(
 	'../../../../../src/providers/cognito/tokenProvider/tokenProvider',
@@ -50,7 +50,7 @@ jest.mock(
 		cognitoUserPoolsTokenProvider: {
 			setWaitForInflightOAuth: jest.fn(),
 		},
-	})
+	}),
 );
 
 const mockHandleFailure = handleFailure as jest.Mock;
@@ -66,7 +66,7 @@ describe('completeOAuthFlow', () => {
 	let windowSpy = jest.spyOn(window, 'window', 'get');
 	const mockFetch = jest.fn();
 	const mockReplaceState = jest.fn();
-  
+
 	beforeAll(() => {
 		(global as any).fetch = mockFetch;
 		windowSpy.mockImplementation(
@@ -74,9 +74,9 @@ describe('completeOAuthFlow', () => {
 				({
 					history: {
 						replaceState: mockReplaceState,
-						state:'http://localhost:3000/?code=aaaa-111-222&state=aaaaa'
+						state: 'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 					},
-				}) as any
+				}) as any,
 		);
 	});
 
@@ -107,7 +107,7 @@ describe('completeOAuthFlow', () => {
 				redirectUri: 'http://localhost:3000/',
 				responseType: 'code',
 				domain: 'localhost:3000',
-			})
+			}),
 		).rejects.toThrow(expectedErrorMessage);
 	});
 
@@ -127,7 +127,7 @@ describe('completeOAuthFlow', () => {
 				completeOAuthFlow({
 					...testInput,
 					currentUrl: `http://localhost:3000?state=someState123`,
-				})
+				}),
 			).rejects.toThrow('User cancelled OAuth flow.');
 		});
 
@@ -136,7 +136,7 @@ describe('completeOAuthFlow', () => {
 				completeOAuthFlow({
 					...testInput,
 					currentUrl: `http://localhost:3000?code=123`,
-				})
+				}),
 			).rejects.toThrow('User cancelled OAuth flow.');
 		});
 
@@ -150,7 +150,7 @@ describe('completeOAuthFlow', () => {
 			});
 
 			await expect(completeOAuthFlow(testInput)).rejects.toThrow(
-				expectedErrorMessage
+				expectedErrorMessage,
 			);
 			expect(mockValidateState).toHaveBeenCalledWith(expectedState);
 		});
@@ -182,7 +182,7 @@ describe('completeOAuthFlow', () => {
 				expect.objectContaining({
 					method: 'POST',
 					body: 'grant_type=authorization_code&code=12345&client_id=clientId&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&code_verifier=pkce23234a',
-				})
+				}),
 			);
 			expect(mockCacheCognitoTokens).toHaveBeenLastCalledWith({
 				username: 'testuser',
@@ -195,7 +195,7 @@ describe('completeOAuthFlow', () => {
 			expect(mockReplaceState).toHaveBeenCalledWith(
 				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 				'',
-				testInput.redirectUri
+				testInput.redirectUri,
 			);
 
 			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
@@ -216,7 +216,7 @@ describe('completeOAuthFlow', () => {
 			});
 
 			expect(completeOAuthFlow(testInput)).rejects.toThrow(
-				mockError.error_message
+				mockError.error_message,
 			);
 		});
 	});
@@ -237,7 +237,7 @@ describe('completeOAuthFlow', () => {
 				completeOAuthFlow({
 					...testInput,
 					currentUrl: `http://localhost:3000#error_description=${expectedErrorMessage}&error=invalid_request`,
-				})
+				}),
 			).rejects.toThrow(expectedErrorMessage);
 		});
 
@@ -246,7 +246,7 @@ describe('completeOAuthFlow', () => {
 				completeOAuthFlow({
 					...testInput,
 					currentUrl: `http://localhost:3000#`,
-				})
+				}),
 			).rejects.toThrow('No access token returned from OAuth flow.');
 		});
 
@@ -260,7 +260,7 @@ describe('completeOAuthFlow', () => {
 			});
 
 			await expect(completeOAuthFlow(testInput)).rejects.toThrow(
-				expectedErrorMessage
+				expectedErrorMessage,
 			);
 		});
 
@@ -293,7 +293,7 @@ describe('completeOAuthFlow', () => {
 			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
 			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
 			expect(
-				cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
+				cognitoUserPoolsTokenProvider.setWaitForInflightOAuth,
 			).toHaveBeenCalledTimes(1);
 
 			const waitForInflightOAuth = (
@@ -306,7 +306,7 @@ describe('completeOAuthFlow', () => {
 			expect(mockReplaceState).toHaveBeenCalledWith(
 				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 				'',
-				testInput.redirectUri
+				testInput.redirectUri,
 			);
 		});
 	});

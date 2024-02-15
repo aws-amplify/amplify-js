@@ -52,7 +52,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignIn(
-	input: ConfirmSignInInput
+	input: ConfirmSignInInput,
 ): Promise<ConfirmSignInOutput> {
 	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession, signInDetails } =
@@ -65,7 +65,7 @@ export async function confirmSignIn(
 
 	assertValidationError(
 		!!challengeResponse,
-		AuthValidationErrorCode.EmptyChallengeResponse
+		AuthValidationErrorCode.EmptyChallengeResponse,
 	);
 
 	if (!username || !challengeName || !signInSession)
@@ -99,7 +99,7 @@ export async function confirmSignIn(
 			authConfig,
 			tokenOrchestrator,
 			clientMetaData,
-			options
+			options,
 		);
 
 		// sets up local state used during the sign-in process
@@ -118,7 +118,7 @@ export async function confirmSignIn(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
@@ -129,7 +129,7 @@ export async function confirmSignIn(
 					data: await getCurrentUser(),
 				},
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
 			return {
 				isSignedIn: true,

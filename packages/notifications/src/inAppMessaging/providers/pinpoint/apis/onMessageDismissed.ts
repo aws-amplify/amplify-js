@@ -22,7 +22,7 @@ import { assertIsInitialized } from '../../../utils';
  * ```
  */
 export function onMessageDismissed(
-	input: OnMessageDismissedInput
+	input: OnMessageDismissedInput,
 ): OnMessageDismissedOutput {
 	assertIsInitialized();
 	return addEventListener('messageDismissed', input);

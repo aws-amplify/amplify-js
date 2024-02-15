@@ -30,7 +30,7 @@ describe('Interaction events', () => {
 
 		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'messageReceived',
-			handler
+			handler,
 		);
 	});
 
@@ -39,7 +39,7 @@ describe('Interaction events', () => {
 
 		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'messageDisplayed',
-			handler
+			handler,
 		);
 	});
 
@@ -48,7 +48,7 @@ describe('Interaction events', () => {
 
 		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'messageDismissed',
-			handler
+			handler,
 		);
 	});
 
@@ -57,7 +57,7 @@ describe('Interaction events', () => {
 
 		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'messageActionTaken',
-			handler
+			handler,
 		);
 	});
 	it('can be notified by notifyMessageInteraction', () => {
@@ -70,7 +70,7 @@ describe('Interaction events', () => {
 
 		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
 			'messageReceived',
-			message
+			message,
 		);
 	});
 });

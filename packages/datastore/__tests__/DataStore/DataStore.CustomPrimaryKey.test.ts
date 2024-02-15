@@ -82,7 +82,7 @@ describe('DataStore Custom PK tests', () => {
 			};
 
 			expect(PostCustomPK).toHaveProperty(
-				nameOf<PersistentModelConstructor<any>>('copyOf')
+				nameOf<PersistentModelConstructor<any>>('copyOf'),
 			);
 
 			expect(typeof PostCustomPK.copyOf).toBe('function');
@@ -169,9 +169,9 @@ describe('DataStore Custom PK tests', () => {
 			// the record's PK, or creating a new record are all breaking changes.
 			expect(consoleWarn).toHaveBeenCalledWith(
 				expect.stringContaining(
-					"copyOf() does not update PK fields. The 'postId' update is being ignored."
+					"copyOf() does not update PK fields. The 'postId' update is being ignored.",
 				),
-				expect.objectContaining({ source: model1 })
+				expect.objectContaining({ source: model1 }),
 			);
 		});
 
@@ -389,7 +389,7 @@ describe('DataStore Custom PK tests', () => {
 
 			expect(result).toMatchObject(model);
 			expect(patches[0].map(p => p.path.join(''))).toEqual(
-				expectedPatchedFields
+				expectedPatchedFields,
 			);
 		});
 
@@ -626,7 +626,7 @@ describe('DataStore Custom PK tests', () => {
 					dateCreated: 'not-a-date',
 				});
 			}).toThrow(
-				'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
+				'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date',
 			);
 
 			expect(() => {
@@ -637,7 +637,7 @@ describe('DataStore Custom PK tests', () => {
 					emails: [null as any], // because we're trying to trigger JS error
 				});
 			}).toThrow(
-				'All elements in the emails array should be of type string, [null] received. '
+				'All elements in the emails array should be of type string, [null] received. ',
 			);
 
 			expect(() => {
@@ -657,7 +657,7 @@ describe('DataStore Custom PK tests', () => {
 					emails: ['not-an-email'],
 				});
 			}).toThrow(
-				'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
+				'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email',
 			);
 
 			expect(<any>{
@@ -680,21 +680,21 @@ describe('DataStore Custom PK tests', () => {
 
 		test('Delete params', async () => {
 			await expect(DataStore.delete(<any>undefined)).rejects.toThrow(
-				'Model or Model Constructor required'
+				'Model or Model Constructor required',
 			);
 
 			await expect(DataStore.delete(<any>PostCustomPK)).rejects.toThrow(
-				'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL'
+				'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL',
 			);
 
 			await expect(
-				DataStore.delete(PostCustomPK, <any>(() => {}))
+				DataStore.delete(PostCustomPK, <any>(() => {})),
 			).rejects.toThrow(
-				"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
+				"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`.",
 			);
 
 			await expect(DataStore.delete(<any>{})).rejects.toThrow(
-				'Object is not an instance of a valid model'
+				'Object is not an instance of a valid model',
 			);
 
 			await expect(
@@ -704,8 +704,8 @@ describe('DataStore Custom PK tests', () => {
 						title: 'somevalue',
 						dateCreated: new Date().toISOString(),
 					}),
-					<any>{}
-				)
+					<any>{},
+				),
 			).rejects.toThrow('Invalid criteria');
 		});
 
@@ -752,17 +752,17 @@ describe('DataStore Custom PK tests', () => {
 							postId: `${i}`,
 							title: 'someField',
 							dateCreated: new Date().toISOString(),
-						})
+						}),
 					);
-				})
+				}),
 			);
 
 			const deleted = await DataStore.delete(PostCustomPK, m =>
-				m.title.eq('someField')
+				m.title.eq('someField'),
 			);
 
 			const sortedRecords = deleted.sort((a, b) =>
-				a.postId < b.postId ? -1 : 1
+				a.postId < b.postId ? -1 : 1,
 			);
 
 			expect(sortedRecords.length).toEqual(10);
@@ -810,12 +810,12 @@ describe('DataStore Custom PK tests', () => {
 					postId: '12345',
 					title: 'someField',
 					dateCreated: new Date().toISOString(),
-				})
+				}),
 			);
 
 			const deleted: PostCustomPKType[] = await DataStore.delete(
 				PostCustomPK,
-				saved.postId
+				saved.postId,
 			);
 
 			expect(deleted.length).toEqual(1);
@@ -860,13 +860,13 @@ describe('DataStore Custom PK tests', () => {
 					postId: '12345',
 					title: 'someField',
 					dateCreated: new Date().toISOString(),
-				})
+				}),
 			);
 
 			const deleted: PostCustomPKType[] = await DataStore.delete(
 				PostCustomPK,
 
-				m => m.postId.eq(saved.postId)
+				m => m.postId.eq(saved.postId),
 			);
 
 			expect(deleted.length).toEqual(1);
@@ -875,40 +875,40 @@ describe('DataStore Custom PK tests', () => {
 
 		test('Query params', async () => {
 			await expect(DataStore.query(<any>undefined)).rejects.toThrow(
-				'Constructor is not for a valid model'
+				'Constructor is not for a valid model',
 			);
 
 			await expect(DataStore.query(<any>undefined)).rejects.toThrow(
-				'Constructor is not for a valid model'
+				'Constructor is not for a valid model',
 			);
 
 			await expect(
-				DataStore.query(PostCustomPK, <any>'someid', { page: 0 })
+				DataStore.query(PostCustomPK, <any>'someid', { page: 0 }),
 			).rejects.toThrow('Limit is required when requesting a page');
 
 			await expect(
 				DataStore.query(PostCustomPK, <any>'someid', {
 					page: <any>'a',
 					limit: 10,
-				})
+				}),
 			).rejects.toThrow('Page should be a number');
 
 			await expect(
-				DataStore.query(PostCustomPK, <any>'someid', { page: -1, limit: 10 })
+				DataStore.query(PostCustomPK, <any>'someid', { page: -1, limit: 10 }),
 			).rejects.toThrow("Page can't be negative");
 
 			await expect(
 				DataStore.query(PostCustomPK, <any>'someid', {
 					page: 0,
 					limit: <any>'avalue',
-				})
+				}),
 			).rejects.toThrow('Limit should be a number');
 
 			await expect(
 				DataStore.query(PostCustomPK, <any>'someid', {
 					page: 0,
 					limit: -1,
-				})
+				}),
 			).rejects.toThrow("Limit can't be negative");
 		});
 
@@ -960,7 +960,7 @@ describe('DataStore Custom PK tests', () => {
 				test('one by custom PK', async () => {
 					const onePostCustomPKById = await DataStore.query(
 						PostCustomPK,
-						'someid'
+						'someid',
 					);
 
 					expectType<PostCustomPKType>(onePostCustomPKById!);
@@ -970,7 +970,7 @@ describe('DataStore Custom PK tests', () => {
 				test('with criteria', async () => {
 					const multiPostCustomPKWithCriteria = await DataStore.query(
 						PostCustomPK,
-						c => c.title.contains('something')
+						c => c.title.contains('something'),
 					);
 
 					expectType<PostCustomPKType[]>(multiPostCustomPKWithCriteria);
@@ -983,7 +983,7 @@ describe('DataStore Custom PK tests', () => {
 					const allPostCustomPKsPaginated = await DataStore.query(
 						PostCustomPK,
 						Predicates.ALL,
-						{ page: 0, limit: 20 }
+						{ page: 0, limit: 20 },
 					);
 
 					expectType<PostCustomPKType[]>(allPostCustomPKsPaginated);
@@ -1007,7 +1007,7 @@ describe('DataStore Custom PK tests', () => {
 				test('one by postId', async () => {
 					const onePostCustomPKById = await DataStore.query<PostCustomPKType>(
 						PostCustomPK,
-						'someid'
+						'someid',
 					);
 					expectType<PostCustomPKType>(onePostCustomPKById!);
 					expect(onePostCustomPKById!.title).toBeDefined();
@@ -1016,7 +1016,7 @@ describe('DataStore Custom PK tests', () => {
 				test('with criteria', async () => {
 					const multiPostCustomPKWithCriteria =
 						await DataStore.query<PostCustomPKType>(PostCustomPK, c =>
-							c.title.contains('something')
+							c.title.contains('something'),
 						);
 
 					expectType<PostCustomPKType[]>(multiPostCustomPKWithCriteria);
@@ -1030,7 +1030,7 @@ describe('DataStore Custom PK tests', () => {
 						await DataStore.query<PostCustomPKType>(
 							PostCustomPK,
 							Predicates.ALL,
-							{ page: 0, limit: 20 }
+							{ page: 0, limit: 20 },
 						);
 
 					expectType<PostCustomPKType[]>(allPostCustomPKsPaginated);

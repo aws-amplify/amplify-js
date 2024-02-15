@@ -49,19 +49,19 @@ describe('Indexed db storage test', () => {
 			new Blog({
 				name: 'Avatar: Last Airbender',
 				owner,
-			})
+			}),
 		);
 		blog2 = await DataStore.save(
 			new Blog({
 				name: 'blog2',
 				owner: owner2,
-			})
+			}),
 		);
 		blog3 = await DataStore.save(
 			new Blog({
 				name: 'Avatar 101',
 				owner: await DataStore.save(new BlogOwner({ name: 'owner 3' })),
-			})
+			}),
 		);
 	});
 
@@ -97,10 +97,10 @@ describe('Indexed db storage test', () => {
 
 		// TODO: better way to get this
 		const commentStore = (<any>db)._rawDatabase.rawObjectStores.get(
-			`${USER}_Comment`
+			`${USER}_Comment`,
 		);
 		const postAuthorStore = (<any>db)._rawDatabase.rawObjectStores.get(
-			`${USER}_PostAuthorJoin`
+			`${USER}_PostAuthorJoin`,
 		);
 
 		expect(commentStore.rawIndexes.has('byPk')).toBe(true); // checks byPkIndex
@@ -123,7 +123,7 @@ describe('Indexed db storage test', () => {
 		expect(get1).toBeDefined();
 
 		expect([...Object.keys(blog).sort(), 'blogOwnerId']).toEqual(
-			expect.arrayContaining(Object.keys(get1).sort())
+			expect.arrayContaining(Object.keys(get1).sort()),
 		);
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
@@ -135,7 +135,7 @@ describe('Indexed db storage test', () => {
 			.get([owner.id]);
 
 		expect([...Object.keys(owner)].sort()).toEqual(
-			expect.arrayContaining(Object.keys(get2).sort())
+			expect.arrayContaining(Object.keys(get2).sort()),
 		);
 
 		await DataStore.save(blog2);
@@ -146,7 +146,7 @@ describe('Indexed db storage test', () => {
 			.get([blog2.id]);
 
 		expect([...Object.keys(blog2).sort(), 'blogOwnerId']).toEqual(
-			expect.arrayContaining(Object.keys(get3).sort())
+			expect.arrayContaining(Object.keys(get3).sort()),
 		);
 	});
 
@@ -186,7 +186,7 @@ describe('Indexed db storage test', () => {
 			new Post({
 				title: 'Avatar',
 				blog,
-			})
+			}),
 		);
 		const c1 = new Comment({ content: 'comment 1', post: p });
 		await DataStore.save(c1);
@@ -197,7 +197,7 @@ describe('Indexed db storage test', () => {
 			.get([c1.id]);
 
 		expect([...Object.keys(c1), 'commentPostId'].sort()).toEqual(
-			expect.arrayContaining(Object.keys(getComment).sort())
+			expect.arrayContaining(Object.keys(getComment).sort()),
 		);
 
 		const checkIndex = await db
@@ -214,7 +214,7 @@ describe('Indexed db storage test', () => {
 			new Post({
 				title: 'Avatar',
 				blog,
-			})
+			}),
 		);
 
 		const getPost = await db
@@ -356,28 +356,28 @@ describe('Indexed db storage test', () => {
 		const post = await DataStore.save(
 			new Post({
 				title: 'some title',
-			})
+			}),
 		);
 
 		const comment1 = await DataStore.save(
 			new Comment({
 				content: 'some really impressive comment',
 				post,
-			})
+			}),
 		);
 
 		const comment2 = await DataStore.save(
 			new Comment({
 				content: 'a less impressive comment',
 				post,
-			})
+			}),
 		);
 
 		const comment3 = await DataStore.save(
 			new Comment({
 				content: 'just a regular comment',
 				post,
-			})
+			}),
 		);
 
 		const queriedPost = await DataStore.query(Post, post.id);
@@ -400,19 +400,19 @@ describe('Indexed db storage test', () => {
 			new ForumEditorJoin({
 				forum: f1 as any,
 				editor: e1 as any,
-			})
+			}),
 		);
 		const f1e2 = await DataStore.save(
 			new ForumEditorJoin({
 				forum: f1 as any,
 				editor: e2 as any,
-			})
+			}),
 		);
 		const f2e2 = await DataStore.save(
 			new ForumEditorJoin({
 				forum: f2 as any,
 				editor: e2 as any,
-			})
+			}),
 		);
 
 		const q1 = (await DataStore.query(Forum, f1.id))!;
@@ -468,10 +468,10 @@ describe('Indexed db storage test', () => {
 
 		await DataStore.save(album1);
 		await DataStore.save(
-			new Song({ name: 'Put you on Game', songID: album1.id })
+			new Song({ name: 'Put you on Game', songID: album1.id }),
 		);
 		await DataStore.save(
-			new Song({ name: 'Streets on Fire', songID: album1.id })
+			new Song({ name: 'Streets on Fire', songID: album1.id }),
 		);
 		await DataStore.save(new Song({ name: 'Superstar', songID: album1.id }));
 
@@ -518,7 +518,7 @@ describe('Indexed db storage test', () => {
 				editor: f2 as any,
 			});
 		}).toThrow(
-			'Value passed to ForumEditorJoin.editor is not an instance of Editor'
+			'Value passed to ForumEditorJoin.editor is not an instance of Editor',
 		);
 	});
 
@@ -597,7 +597,7 @@ describe('Indexed db storage test', () => {
 						.firstName(SortDirection.ASCENDING)
 						.lastName(SortDirection.ASCENDING)
 						.username(SortDirection.ASCENDING),
-			}
+			},
 		);
 
 		expect(sortedPersons[0].username).toEqual('johnsnow');
@@ -612,22 +612,22 @@ describe('Indexed db storage test', () => {
 		const owner = await DataStore.save(
 			new BlogOwner({
 				name: "yep. doesn't matter",
-			})
+			}),
 		);
 
 		const blog = await DataStore.save(
-			new Blog({ name: 'Avatar, the last whatever', owner })
+			new Blog({ name: 'Avatar, the last whatever', owner }),
 		);
 
 		const decoyOwner = await DataStore.save(
-			new BlogOwner({ name: 'another one' })
+			new BlogOwner({ name: 'another one' }),
 		);
 
 		const decoyBlog = await DataStore.save(
 			new Blog({
 				name: 'this one should still exist later',
 				owner: decoyOwner,
-			})
+			}),
 		);
 
 		await DataStore.delete(Blog, blog.id);
@@ -856,7 +856,7 @@ describe('DB versions migration', () => {
 					// PostMetadata,
 					// Nested,
 				].map(model => `${USER}_${model.name}`),
-			].sort()
+			].sort(),
 		);
 
 		for (const storeName of db.objectStoreNames) {

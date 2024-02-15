@@ -56,7 +56,7 @@ describe('BackgroundProcessManager', () => {
 		await expect(
 			manager.add(async () => {
 				throw new Error('not today, friend!');
-			})
+			}),
 		).rejects.toThrow('not today, friend!');
 	});
 
@@ -66,7 +66,7 @@ describe('BackgroundProcessManager', () => {
 		await expect(
 			manager.add(async () => {
 				throw new Error('Enough shenanigans!');
-			})
+			}),
 		).rejects.toThrow();
 
 		await expect(manager.close()).resolves.not.toThrow();
@@ -126,7 +126,9 @@ describe('BackgroundProcessManager', () => {
 		await manager.close();
 
 		expect(
-			manager.add(async () => Promise.resolve('This should never be returned.'))
+			manager.add(async () =>
+				Promise.resolve('This should never be returned.'),
+			),
 		).rejects.toThrow('BackgroundManagerNotOpenError');
 	});
 
@@ -487,7 +489,7 @@ describe('BackgroundProcessManager', () => {
 						terminateSignalCount++;
 						setTimeout(resolve, 150);
 					});
-				})
+				}),
 		);
 
 		// accumulate a bunch of close promises, only the first of which should
@@ -499,7 +501,7 @@ describe('BackgroundProcessManager', () => {
 
 		expect(terminateSignalCount).toEqual(1);
 		expect(resolved.map(r => r.status).every(v => v === 'fulfilled')).toBe(
-			true
+			true,
 		);
 	});
 
@@ -516,8 +518,8 @@ describe('BackgroundProcessManager', () => {
 					setTimeout(() => {
 						proof = true;
 						resolve();
-					}, 10)
-				)
+					}, 10),
+				),
 		);
 
 		await outer.close();
@@ -538,8 +540,8 @@ describe('BackgroundProcessManager', () => {
 					onTerminate.then(() => {
 						proof = true;
 						resolve();
-					})
-				)
+					}),
+				),
 		);
 
 		await new Promise(resolve => setTimeout(resolve, 1));
@@ -555,7 +557,7 @@ describe('BackgroundProcessManager', () => {
 
 		manager.add(
 			async () => new Promise(unsleep => setTimeout(unsleep, 1)),
-			'async function'
+			'async function',
 		);
 
 		expect(manager.pending.length).toBe(1);
@@ -573,7 +575,7 @@ describe('BackgroundProcessManager', () => {
 				new Promise(finishJob => {
 					onTerminate.then(finishJob);
 				}),
-			'cancelable async function'
+			'cancelable async function',
 		);
 
 		expect(manager.pending.length).toBe(1);
@@ -626,7 +628,7 @@ describe('BackgroundProcessManager', () => {
 		await manager.close();
 
 		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow(
-			'some job'
+			'some job',
 		);
 	});
 
@@ -636,13 +638,13 @@ describe('BackgroundProcessManager', () => {
 		let unblock;
 		manager.add(
 			() => new Promise(_unblock => (unblock = _unblock)),
-			'blocking job'
+			'blocking job',
 		);
 
 		const close = manager.close();
 
 		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow(
-			'blocking job'
+			'blocking job',
 		);
 
 		unblock();

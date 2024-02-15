@@ -2,16 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AWSCredentials, 
-	haveCredentialsChanged 
+	AWSCredentials,
+	haveCredentialsChanged,
 } from '@aws-amplify/core/internals/utils';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
+
 import { KinesisBufferEvent, KinesisEventBufferConfig } from '../types';
-import { 
-	EventBuffer, 
-	groupBy, 
-	IAnalyticsClient
-} from '../../../utils';
+import { EventBuffer, IAnalyticsClient, groupBy } from '../../../utils';
 
 /**
  * These Records hold cached event buffers and AWS clients.
@@ -26,7 +23,7 @@ const cachedClients: Record<string, [KinesisClient, AWSCredentials]> = {};
 
 const createKinesisPutRecordsCommand = (
 	streamName: string,
-	events: KinesisBufferEvent[]
+	events: KinesisBufferEvent[],
 ): PutRecordsCommand =>
 	new PutRecordsCommand({
 		StreamName: streamName,
@@ -39,23 +36,24 @@ const createKinesisPutRecordsCommand = (
 const submitEvents = async (
 	events: KinesisBufferEvent[],
 	client: KinesisClient,
-	resendLimit?: number
+	resendLimit?: number,
 ): Promise<KinesisBufferEvent[]> => {
 	const groupedByStreamName = Object.entries(
-		groupBy(event => event.streamName, events)
+		groupBy(event => event.streamName, events),
 	);
 	const requests = groupedByStreamName
-		.map(([streamName, events]) =>
-			createKinesisPutRecordsCommand(streamName, events)
+		.map(([streamName, groupedEvents]) =>
+			createKinesisPutRecordsCommand(streamName, groupedEvents),
 		)
 		.map(command => client.send(command));
 
 	const responses = await Promise.allSettled(requests);
 	const failedEvents = responses
 		.map((response, i) =>
-			response.status === 'rejected' ? groupedByStreamName[i][1] : []
+			response.status === 'rejected' ? groupedByStreamName[i][1] : [],
 		)
 		.flat();
+
 	return resendLimit
 		? failedEvents
 				.filter(event => event.retryCount < resendLimit)
@@ -75,12 +73,16 @@ export const getEventBuffer = ({
 	userAgentValue,
 }: KinesisEventBufferConfig): EventBuffer<KinesisBufferEvent> => {
 	const sessionIdentityKey = [region, identityId].filter(x => !!x).join('-');
-	const [ cachedClient, cachedCredentials ] = cachedClients[sessionIdentityKey] ?? [];
+	const [cachedClient, cachedCredentials] =
+		cachedClients[sessionIdentityKey] ?? [];
 	let credentialsHaveChanged = false;
 
 	// Check if credentials have changed for the cached client
 	if (cachedClient) {
-		credentialsHaveChanged = haveCredentialsChanged(cachedCredentials, credentials);
+		credentialsHaveChanged = haveCredentialsChanged(
+			cachedCredentials,
+			credentials,
+		);
 	}
 
 	if (!eventBufferMap[sessionIdentityKey] || credentialsHaveChanged) {
@@ -92,14 +94,13 @@ export const getEventBuffer = ({
 						region,
 						customUserAgent: userAgentValue,
 					}),
-					credentials
+					credentials,
 				];
 			}
 
-			const [ kinesisClient ] = cachedClients[sessionIdentityKey];
+			const [kinesisClient] = cachedClients[sessionIdentityKey];
 
-			return events =>
-				submitEvents(events, kinesisClient, resendLimit);
+			return events => submitEvents(events, kinesisClient, resendLimit);
 		};
 
 		// create new session
@@ -109,12 +110,12 @@ export const getEventBuffer = ({
 				flushSize,
 				bufferSize,
 			},
-			getKinesisClient
+			getKinesisClient,
 		);
 
 		// release other sessions
 		const releaseSessionKeys = Object.keys(eventBufferMap).filter(
-			x => x !== sessionIdentityKey
+			x => x !== sessionIdentityKey,
 		);
 		for (const releaseSessionKey of releaseSessionKeys) {
 			eventBufferMap[releaseSessionKey].flushAll().finally(() => {

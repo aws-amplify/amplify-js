@@ -10,10 +10,10 @@ describe('getStringToSign', () => {
 			getStringToSign(
 				formattedDates.longDate,
 				credentialScope,
-				'hashed-request'
-			)
+				'hashed-request',
+			),
 		).toStrictEqual(
-			'AWS4-HMAC-SHA256\n20200918T181818Z\n20200918/signing-region/signing-service/aws4_request\nhashed-request'
+			'AWS4-HMAC-SHA256\n20200918T181818Z\n20200918/signing-region/signing-service/aws4_request\nhashed-request',
 		);
 	});
 });

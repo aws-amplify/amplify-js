@@ -34,13 +34,13 @@ describe('API generateClient', () => {
 			{
 				action: '1',
 				category: 'api',
-			}
+			},
 		);
 	});
 
 	test('CONNECTION_STATE_CHANGE importable as a value, not a type', async () => {
 		expect(CONNECTION_STATE_CHANGE).toBe('ConnectionStateChange');
-	})
+	});
 	// test('server-side client.graphql', async () => {
 	// 	const config: ResourcesConfig = {
 	// 		API: {

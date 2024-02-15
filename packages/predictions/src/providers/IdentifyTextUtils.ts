@@ -29,7 +29,7 @@ function getPolygon(geometry?: Geometry): Polygon | undefined {
  * @return {IdentifyTextOutput} -  Object that categorizes each block and its information.
  */
 export function categorizeRekognitionBlocks(
-	blocks: TextDetectionList
+	blocks: TextDetectionList,
 ): IdentifyTextOutput {
 	// Skeleton IdentifyText API response. We will populate it as we iterate through blocks.
 	const response: IdentifyTextOutput = {
@@ -67,7 +67,7 @@ export function categorizeRekognitionBlocks(
 	// remove trailing space of fullText
 	response.text.fullText = response.text.fullText.substr(
 		0,
-		response.text.fullText.length - 1
+		response.text.fullText.length - 1,
 	);
 	return response;
 }
@@ -79,7 +79,7 @@ export function categorizeRekognitionBlocks(
  * @return {IdentifyTextOutput} -  Object that categorizes each block and its information.
  */
 export function categorizeTextractBlocks(
-	blocks: BlockList
+	blocks: BlockList,
 ): IdentifyTextOutput {
 	// Skeleton IdentifyText API response. We will populate it as we iterate through blocks.
 	const response: IdentifyTextOutput = {
@@ -161,7 +161,7 @@ export function categorizeTextractBlocks(
 	// remove trailing space in fullText
 	response.text.fullText = response.text.fullText.substr(
 		0,
-		response.text.fullText.length - 1
+		response.text.fullText.length - 1,
 	);
 
 	// Post-process complex structures if they exist.
@@ -195,7 +195,7 @@ export function categorizeTextractBlocks(
  */
 function constructTable(
 	table: Block,
-	blockMap: { [key: string]: Block }
+	blockMap: { [key: string]: Block },
 ): Table {
 	let tableMatrix: TableCell[][];
 	tableMatrix = [];
@@ -241,7 +241,7 @@ function constructTable(
  */
 function constructKeyValue(
 	keyBlock: Block,
-	blockMap: { [key: string]: Block }
+	blockMap: { [key: string]: Block },
 ): KeyValue {
 	let keyText: string = '';
 	let valueText: string = '';
@@ -276,7 +276,7 @@ function constructKeyValue(
  */
 function extractContentsFromBlock(
 	block: Block,
-	blockMap: { [id: string]: Block }
+	blockMap: { [id: string]: Block },
 ): Content {
 	let words: string = '';
 	let isSelected: boolean = false;

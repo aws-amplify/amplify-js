@@ -122,7 +122,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 			expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 				resourcesConfig,
-				expect.anything()
+				expect.anything(),
 			);
 		});
 
@@ -133,7 +133,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 			expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 				resourceConfig,
-				libraryOptions
+				libraryOptions,
 			);
 		});
 
@@ -146,7 +146,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 				expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 					mockResourceConfig,
-					libraryOptions
+					libraryOptions,
 				);
 			});
 
@@ -156,11 +156,11 @@ describe('initSingleton (DefaultAmplify)', () => {
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
-						mockCognitoUserPoolsTokenProviderSetAuthConfig
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
 					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(MockCookieStorage).toHaveBeenCalledWith({ sameSite: 'lax' });
 					expect(
-						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
+						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).toHaveBeenCalledWith(mockCookieStorageInstance);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
@@ -170,7 +170,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 								tokenProvider: cognitoUserPoolsTokenProvider,
 								credentialsProvider: cognitoCredentialsProvider,
 							},
-						}
+						},
 					);
 				});
 
@@ -179,10 +179,10 @@ describe('initSingleton (DefaultAmplify)', () => {
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
-						mockCognitoUserPoolsTokenProviderSetAuthConfig
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
 					).toHaveBeenCalledWith(mockResourceConfig.Auth);
 					expect(
-						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
+						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).toHaveBeenCalledWith(defaultStorage);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
@@ -192,7 +192,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 								tokenProvider: cognitoUserPoolsTokenProvider,
 								credentialsProvider: cognitoCredentialsProvider,
 							},
-						}
+						},
 					);
 				});
 			});
@@ -212,18 +212,18 @@ describe('initSingleton (DefaultAmplify)', () => {
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
-						mockCognitoUserPoolsTokenProviderSetAuthConfig
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
 					).not.toHaveBeenCalled();
 					expect(MockCookieStorage).toHaveBeenCalledWith({ sameSite: 'lax' });
 					expect(
-						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
+						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).toHaveBeenCalledWith(mockCookieStorageInstance);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
-						}
+						},
 					);
 				});
 
@@ -232,17 +232,17 @@ describe('initSingleton (DefaultAmplify)', () => {
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
-						mockCognitoUserPoolsTokenProviderSetAuthConfig
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
 					).not.toHaveBeenCalled();
 					expect(
-						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
+						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).toHaveBeenCalledWith(defaultStorage);
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
-						}
+						},
 					);
 				});
 
@@ -253,18 +253,18 @@ describe('initSingleton (DefaultAmplify)', () => {
 					Amplify.configure(mockResourceConfig, libraryOptions);
 
 					expect(
-						mockCognitoUserPoolsTokenProviderSetAuthConfig
+						mockCognitoUserPoolsTokenProviderSetAuthConfig,
 					).not.toHaveBeenCalled();
 					expect(MockCookieStorage).not.toHaveBeenCalled();
 					expect(
-						mockCognitoUserPoolsTokenProviderSetKeyValueStorage
+						mockCognitoUserPoolsTokenProviderSetKeyValueStorage,
 					).not.toHaveBeenCalled();
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
 						mockResourceConfig,
 						{
 							Auth: AmplifySingleton.libraryOptions.Auth,
 							...libraryOptions,
-						}
+						},
 					);
 				});
 
@@ -272,7 +272,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 					Amplify.configure(mockResourceConfig);
 
 					expect(mockAmplifySingletonConfigure).toHaveBeenCalledWith(
-						mockResourceConfig
+						mockResourceConfig,
 					);
 				});
 			});
@@ -304,7 +304,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 							credentialsProvider: cognitoCredentialsProvider,
 						},
 						...libraryOptionsWithStorage,
-					}
+					},
 				);
 			});
 		});
