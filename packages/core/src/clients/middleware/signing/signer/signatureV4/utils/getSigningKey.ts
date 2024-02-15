@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KEY_TYPE_IDENTIFIER, SIGNATURE_IDENTIFIER } from '../constants';
+
 import { getHashedData } from './dataHashHelpers';
 
 /**
@@ -20,12 +21,13 @@ export const getSigningKey = (
 	secretAccessKey: string,
 	date: string,
 	region: string,
-	service: string
+	service: string,
 ): Uint8Array => {
 	const key = `${SIGNATURE_IDENTIFIER}${secretAccessKey}`;
 	const dateKey = getHashedData(key, date);
 	const regionKey = getHashedData(dateKey, region);
 	const serviceKey = getHashedData(regionKey, service);
 	const signingKey = getHashedData(serviceKey, KEY_TYPE_IDENTIFIER);
+
 	return signingKey;
 };

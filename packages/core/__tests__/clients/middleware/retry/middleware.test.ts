@@ -4,14 +4,14 @@
 import { HttpResponse, MiddlewareHandler } from '../../../../src/clients/types';
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
 import {
-	retryMiddleware,
+	retryMiddlewareFactory,
 	RetryOptions,
 } from '../../../../src/clients/middleware/retry';
 
 jest.spyOn(global, 'setTimeout');
 jest.spyOn(global, 'clearTimeout');
 
-describe(`${retryMiddleware.name} middleware`, () => {
+describe(`${retryMiddlewareFactory.name} middleware`, () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -27,7 +27,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 		headers: {},
 	};
 	const getRetryableHandler = (nextHandler: MiddlewareHandler<any, any>) =>
-		composeTransferHandler<[RetryOptions]>(nextHandler, [retryMiddleware]);
+		composeTransferHandler<[RetryOptions]>(nextHandler, [retryMiddlewareFactory]);
 
 	test('should retry specified times', async () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
@@ -189,7 +189,7 @@ describe(`${retryMiddleware.name} middleware`, () => {
 
 		const doubleRetryableHandler = composeTransferHandler<
 			[RetryOptions, {}, RetryOptions]
-		>(coreHandler, [retryMiddleware, betweenRetryMiddleware, retryMiddleware]);
+		>(coreHandler, [retryMiddlewareFactory, betweenRetryMiddleware, retryMiddlewareFactory]);
 
 		const retryDecider = jest
 			.fn()

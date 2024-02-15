@@ -199,6 +199,11 @@ describe('MutationProcessor', () => {
 			await mutationProcessor.resume();
 			expect(mockRestPost).toHaveBeenCalledWith(
 				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
+				}),
+				expect.objectContaining({
 					url: new URL(
 						'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql'
 					),

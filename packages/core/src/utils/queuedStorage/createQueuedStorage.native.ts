@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAsyncStorage } from '@aws-amplify/react-native';
+
 import {
 	AddItemWithAuthPropertiesNative,
 	QueuedItem,
@@ -18,7 +19,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 
 	const openDBPromise = new Promise<
 		ReturnType<typeof loadAsyncStorage> | undefined
-	>((resolve, _) => {
+	>((resolve, _reject) => {
 		try {
 			const asyncStorage = loadAsyncStorage();
 
@@ -28,9 +29,10 @@ export const createQueuedStorage = (): QueuedStorage => {
 					for (const item of items) {
 						currentBytesSize += item.bytesSize;
 					}
+
 					return undefined;
 				})
-				.then(_ => {
+				.then(__ => {
 					resolve(asyncStorage);
 				});
 		} catch (err) {
@@ -60,7 +62,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 	return {
 		async add(
 			item,
-			{ dequeueBeforeEnqueue } = { dequeueBeforeEnqueue: false }
+			{ dequeueBeforeEnqueue } = { dequeueBeforeEnqueue: false },
 		) {
 			if (dequeueBeforeEnqueue) {
 				const itemsToDelete = await this.peek(1);
@@ -112,7 +114,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 
 const getQueuedItemKeys = async (
 	as: ReturnType<typeof loadAsyncStorage>,
-	sortKeys: boolean = false
+	sortKeys = false,
 ): Promise<string[]> => {
 	const keys = (await as.getAllKeys()).filter(key => key.startsWith(keyPrefix));
 
@@ -120,6 +122,7 @@ const getQueuedItemKeys = async (
 		? keys.sort((a, b) => {
 				const timestampA = a.split('_').pop() as string;
 				const timestampB = b.split('_').pop() as string;
+
 				return parseInt(timestampA) - parseInt(timestampB);
 		  })
 		: keys;
@@ -127,7 +130,7 @@ const getQueuedItemKeys = async (
 
 const getQueuedItems = async (
 	as: ReturnType<typeof loadAsyncStorage>,
-	keys: string[]
+	keys: string[],
 ): Promise<QueuedItem[]> =>
 	(await as.multiGet(keys))
 		.filter((item): item is [string, string] => item[1] !== null)

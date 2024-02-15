@@ -21,8 +21,8 @@ import { SHA256_ALGORITHM_IDENTIFIER } from '../constants';
 export const getStringToSign = (
 	date: string,
 	credentialScope: string,
-	hashedRequest: string
+	hashedRequest: string,
 ): string =>
 	[SHA256_ALGORITHM_IDENTIFIER, date, credentialScope, hashedRequest].join(
-		'\n'
+		'\n',
 	);

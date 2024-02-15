@@ -185,7 +185,7 @@ describe('API test', () => {
 					expect.objectContaining({
 						message: 'Unauthorized',
 						recoverySuggestion: expect.stringContaining(
-							`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
+							`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`,
 						),
 					}),
 				]);
@@ -296,19 +296,26 @@ describe('API test', () => {
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({
-						Authorization: 'mock-access-token',
-					}),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'mock-access-token',
+						}),
+						signingServiceInfo: expect.objectContaining({
+							region: 'local-host-h4x',
+							service: 'appsync',
+						}),
+					}),
+				},
+			);
 		});
 
 		test('happy-case-query-oidc with auth storage federated token', async () => {
@@ -358,19 +365,26 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({
-						Authorization: 'mock-access-token',
-					}),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'mock-access-token',
+						}),
+						signingServiceInfo: expect.objectContaining({
+							region: 'local-host-h4x',
+							service: 'appsync',
+						}),
+					}),
+				},
+			);
 		});
 
 		test('happy case query with AWS_LAMBDA', async () => {
@@ -421,19 +435,26 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({
-						Authorization: 'myAuthToken',
-					}),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'myAuthToken',
+						}),
+						signingServiceInfo: expect.objectContaining({
+							region: 'local-host-h4x',
+							service: 'appsync',
+						}),
+					}),
+				},
+			);
 		});
 
 		test('additional headers with AWS_LAMBDA', async () => {
@@ -480,7 +501,7 @@ describe('API test', () => {
 				},
 				{
 					Authorization: 'additional-header-auth-token',
-				}
+				},
 			);
 
 			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
@@ -488,19 +509,26 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({
-						Authorization: 'additional-header-auth-token',
-					}),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'additional-header-auth-token',
+						}),
+						signingServiceInfo: expect.objectContaining({
+							region: 'local-host-h4x',
+							service: 'appsync',
+						}),
+					}),
+				},
+			);
 		});
 
 		test('multi-auth default case AWS_IAM, using API_KEY as auth mode', async () => {
@@ -551,14 +579,21 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
-					signingServiceInfo: undefined,
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+						signingServiceInfo: undefined,
+					}),
+				},
+			);
 		});
 
 		test('multi-auth default case api-key, using AWS_IAM as auth mode', async () => {
@@ -610,17 +645,24 @@ describe('API test', () => {
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
 
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.not.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.not.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+						signingServiceInfo: expect.objectContaining({
+							region: 'local-host-h4x',
+							service: 'appsync',
+						}),
+					}),
+				},
+			);
 		});
 
 		test('multi-auth default case api-key, using AWS_LAMBDA as auth mode', async () => {
@@ -672,19 +714,27 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({
-						Authorization: 'myAuthToken',
-					}),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'myAuthToken',
+						}),
+						signingServiceInfo: expect.objectContaining({
+							region: 'local-host-h4x',
+							service: 'appsync',
+						}),
+					}),
+				},
+			);
 		});
 
 		test('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
@@ -754,7 +804,7 @@ describe('API test', () => {
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 					authMode: 'oidc',
-				})
+				}),
 			).rejects.toThrow('No current user');
 
 			// Cleanup:
@@ -806,7 +856,7 @@ describe('API test', () => {
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 					authMode: 'userPool',
-				})
+				}),
 			).rejects.toThrow();
 
 			// Cleanup:
@@ -831,7 +881,7 @@ describe('API test', () => {
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 					authMode: 'lambda',
-				})
+				}),
 			).rejects.toThrow(GraphQLAuthError.NO_AUTH_TOKEN);
 		});
 
@@ -853,7 +903,7 @@ describe('API test', () => {
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 					authMode: 'apiKey',
-				})
+				}),
 			).rejects.toThrow(GraphQLAuthError.NO_API_KEY);
 		});
 
@@ -879,7 +929,7 @@ describe('API test', () => {
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 					authMode: 'iam',
-				})
+				}),
 			).rejects.toThrow(GraphQLAuthError.NO_CREDENTIALS);
 
 			// Cleanup:
@@ -934,19 +984,26 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({
-						Authorization: 'mock-access-token',
-					}),
-					signingServiceInfo: expect.objectContaining({
-						region: 'local-host-h4x',
-						service: 'appsync',
-					}),
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							Authorization: 'mock-access-token',
+						}),
+						signingServiceInfo: expect.objectContaining({
+							region: 'local-host-h4x',
+							service: 'appsync',
+						}),
+					}),
+				},
+			);
 		});
 
 		test('authMode on subscription', async () => {
@@ -979,7 +1036,7 @@ describe('API test', () => {
 				expect.objectContaining({
 					authenticationType: 'oidc',
 				}),
-				expect.anything()
+				expect.anything(),
 			);
 		});
 
@@ -1029,7 +1086,7 @@ describe('API test', () => {
 								],
 							});
 						});
-					})
+					}),
 				);
 
 			const query = `subscription SubscribeToEventComments($eventId: String!) {
@@ -1051,7 +1108,7 @@ describe('API test', () => {
 						expect.objectContaining({
 							message: 'Unauthorized',
 							recoverySuggestion: expect.stringContaining(
-								`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`
+								`If you're calling an Amplify-generated API, make sure to set the "authMode" in generateClient`,
 							),
 						}),
 					]);
@@ -1084,7 +1141,7 @@ describe('API test', () => {
 			const observable = (
 				client.graphql(
 					{ query, variables },
-					additionalHeaders
+					additionalHeaders,
 				) as unknown as Observable<object>
 			).subscribe({
 				next: () => {
@@ -1131,7 +1188,7 @@ describe('API test', () => {
 								}),
 						},
 					},
-				}
+				},
 			);
 
 			const threadToGet = {
@@ -1169,7 +1226,7 @@ describe('API test', () => {
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 				},
-				additionalHeaders
+				additionalHeaders,
 			);
 
 			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
@@ -1177,18 +1234,25 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({
-						someAdditionalHeader: 'foo',
-						someHeaderSetAtConfigThatWillBeOverridden: 'expectedValue',
-						someOtherHeaderSetAtConfig: 'expectedValue',
-					}),
-					signingServiceInfo: undefined,
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							someAdditionalHeader: 'foo',
+							someHeaderSetAtConfigThatWillBeOverridden: 'expectedValue',
+							someOtherHeaderSetAtConfig: 'expectedValue',
+						}),
+						signingServiceInfo: undefined,
+					}),
+				},
+			);
 		});
 
 		test('sends cookies with request', async () => {
@@ -1220,7 +1284,7 @@ describe('API test', () => {
 							withCredentials: true,
 						},
 					},
-				}
+				},
 			);
 
 			const threadToGet = {
@@ -1253,7 +1317,7 @@ describe('API test', () => {
 					query: typedQueries.getThread,
 					variables: graphqlVariables,
 					authMode: 'apiKey',
-				}
+				},
 			);
 
 			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
@@ -1261,15 +1325,22 @@ describe('API test', () => {
 
 			expect(errors).toBe(undefined);
 			expect(thread).toEqual(graphqlResponse.data.getThread);
-			expect(spy).toHaveBeenCalledWith({
-				abortController: expect.any(AbortController),
-				url: new URL('https://localhost/graphql'),
-				options: expect.objectContaining({
-					headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
-					signingServiceInfo: undefined,
-					withCredentials: true,
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
 				}),
-			});
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+						signingServiceInfo: undefined,
+						withCredentials: true,
+					}),
+				},
+			);
 		});
 	});
 });

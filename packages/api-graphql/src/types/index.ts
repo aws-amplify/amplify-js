@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
-import { ModelTypes, CustomHeaders } from '@aws-amplify/data-schema-types';
+import { ModelTypes, CustomHeaders, EnumTypes } from '@aws-amplify/data-schema-types';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -382,6 +382,7 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	cancel: (promise: Promise<any>, message?: string) => boolean;
 	isCancelError: (error: any) => boolean;
 	models: ModelTypes<T>;
+	enums: EnumTypes<T>;
 }>;
 
 export type V6ClientSSRRequest<T extends Record<any, any> = never> =
