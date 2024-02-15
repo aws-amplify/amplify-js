@@ -3,6 +3,7 @@
 
 import { Cache } from '../../../Cache';
 import { SupportedCategory } from '../types';
+
 import { getCacheKey } from './getCacheKey';
 
 /**
@@ -12,9 +13,10 @@ import { getCacheKey } from './getCacheKey';
  */
 export const getEndpointId = async (
 	appId: string,
-	category: SupportedCategory
+	category: SupportedCategory,
 ): Promise<string | undefined> => {
 	const cacheKey = getCacheKey(appId, category);
 	const cachedEndpointId = await Cache.getItem(cacheKey);
+
 	return cachedEndpointId ?? undefined;
 };

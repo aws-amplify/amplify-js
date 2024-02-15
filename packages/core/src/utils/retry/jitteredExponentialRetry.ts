@@ -13,6 +13,6 @@ export const jitteredExponentialRetry = <T>(
 	functionToRetry: (...args: any[]) => T,
 	args: any[],
 	maxDelayMs: number = MAX_DELAY_MS,
-	onTerminate?: Promise<void>
+	onTerminate?: Promise<void>,
 ): Promise<T> =>
 	retry(functionToRetry, args, jitteredBackoff(maxDelayMs), onTerminate);

@@ -5,5 +5,6 @@ import { NonRetryableError } from './NonRetryableError';
 
 export const isNonRetryableError = (obj: any): obj is NonRetryableError => {
 	const key: keyof NonRetryableError = 'nonRetryable';
+
 	return obj && obj[key];
 };

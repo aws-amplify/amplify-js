@@ -12,8 +12,8 @@ import { cryptoSecureRandomInt } from './cryptoSecureRandomInt';
  */
 function hexStringify(wordArray: WordArray): string {
 	// Shortcuts
-	const words = wordArray.words;
-	const sigBytes = wordArray.sigBytes;
+	const { words } = wordArray;
+	const { sigBytes } = wordArray;
 
 	// Convert
 	const hexChars: string[] = [];

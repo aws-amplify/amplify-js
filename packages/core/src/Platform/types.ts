@@ -122,7 +122,7 @@ export enum StorageAction {
 	GetUrl = '7',
 }
 
-type ActionMap = {
+interface ActionMap {
 	[Category.Auth]: AuthAction;
 	[Category.API]: ApiAction;
 	[Category.Analytics]: AnalyticsAction;
@@ -134,7 +134,7 @@ type ActionMap = {
 	[Category.PubSub]: PubSubAction;
 	[Category.PushNotification]: PushNotificationAction;
 	[Category.Storage]: StorageAction;
-};
+}
 
 type UserAgentDetailsWithCategory<T extends Category> =
 	CustomUserAgentDetailsBase & {
@@ -142,9 +142,9 @@ type UserAgentDetailsWithCategory<T extends Category> =
 		action: T extends keyof ActionMap ? ActionMap[T] : never;
 	};
 
-type CustomUserAgentDetailsBase = {
+interface CustomUserAgentDetailsBase {
 	framework?: Framework;
-};
+}
 
 export type CustomUserAgentDetails =
 	| (CustomUserAgentDetailsBase & { category?: never; action?: never })
@@ -174,29 +174,29 @@ export type CustomUserAgentStateMap = Record<string, CategoryUserAgentStateMap>;
 
 export type AdditionalDetails = [string, string?][];
 
-export type StorageUserAgentInput = {
+export interface StorageUserAgentInput {
 	category: Category.Storage;
 	apis: StorageAction[];
 	additionalDetails: AdditionalDetails;
-};
+}
 
-export type AuthUserAgentInput = {
+export interface AuthUserAgentInput {
 	category: Category.Auth;
 	apis: AuthAction[];
 	additionalDetails: AdditionalDetails;
-};
+}
 
-export type InAppMessagingUserAgentInput = {
+export interface InAppMessagingUserAgentInput {
 	category: Category.InAppMessaging;
 	apis: InAppMessagingAction[];
 	additionalDetails: AdditionalDetails;
-};
+}
 
-export type GeoUserAgentInput = {
+export interface GeoUserAgentInput {
 	category: Category.Geo;
 	apis: GeoAction[];
 	additionalDetails: AdditionalDetails;
-};
+}
 
 export type SetCustomUserAgentInput =
 	| StorageUserAgentInput

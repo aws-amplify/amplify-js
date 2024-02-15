@@ -7,10 +7,10 @@ import { fetchAuthSession as fetchAuthSessionInternal } from '../internal/fetchA
 
 export const fetchAuthSession = (
 	contextSpec: AmplifyServer.ContextSpec,
-	options?: FetchAuthSessionOptions
+	options?: FetchAuthSessionOptions,
 ): Promise<AuthSession> => {
 	return fetchAuthSessionInternal(
 		getAmplifyServerContext(contextSpec).amplify,
-		options
+		options,
 	);
 };

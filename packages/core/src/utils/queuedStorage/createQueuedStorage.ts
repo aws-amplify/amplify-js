@@ -46,6 +46,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 		};
 	}).catch(err => {
 		error = err;
+
 		return undefined;
 	});
 
@@ -62,6 +63,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 	const getStore = async (): Promise<IDBObjectStore> => {
 		const db = await getDB();
 		const transaction = db.transaction(STORE_NAME, 'readwrite');
+
 		return transaction.objectStore(STORE_NAME);
 	};
 
@@ -77,7 +79,7 @@ export const createQueuedStorage = (): QueuedStorage => {
 	return {
 		async add(
 			item,
-			{ dequeueBeforeEnqueue } = { dequeueBeforeEnqueue: false }
+			{ dequeueBeforeEnqueue } = { dequeueBeforeEnqueue: false },
 		) {
 			if (dequeueBeforeEnqueue) {
 				const itemsToDelete = await this.peek(1);
@@ -115,11 +117,13 @@ export const createQueuedStorage = (): QueuedStorage => {
 			const keyRangesToDelete = findRanges(
 				items
 					.map(item => item.id)
-					.filter((id): id is number => id !== undefined)
+					.filter((id): id is number => id !== undefined),
 			).map(([lower, upper]) => IDBKeyRange.bound(lower, upper));
 
 			await Promise.all(
-				keyRangesToDelete.map(range => promisifyIDBRequest(store.delete(range)))
+				keyRangesToDelete.map(range =>
+					promisifyIDBRequest(store.delete(range)),
+				),
 			);
 
 			for (const item of items) {
