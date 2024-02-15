@@ -297,13 +297,13 @@
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./dist/esm/analytics/kinesis/index.mjs",
 			"import": "{ record }",
-			"limit": "44.48 kB"
+			"limit": "44.56 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
 			"path": "./dist/esm/analytics/kinesis-firehose/index.mjs",
 			"import": "{ record }",
-			"limit": "41.54 kB"
+			"limit": "41.62 kB"
 		},
 		{
 			"name": "[Analytics] record (Personalize)",

@@ -13,7 +13,7 @@ module.exports = {
 		'plugin:import/typescript',
 		'plugin:@typescript-eslint/stylistic',
 		'plugin:@typescript-eslint/recommended',
-		"plugin:prettier/recommended",
+		'plugin:prettier/recommended',
 	],
 	plugins: [
 		'@stylistic',
@@ -39,7 +39,7 @@ module.exports = {
 		'__tests__',
 		// will enable lint by packages
 		// 'adapter-nextjs',
-		'packages/analytics',
+		// 'packages/analytics',
 		'packages/api',
 		'packages/api-graphql',
 		'packages/api-rest',
