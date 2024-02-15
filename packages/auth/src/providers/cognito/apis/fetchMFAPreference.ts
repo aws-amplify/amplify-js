@@ -34,7 +34,7 @@ export async function fetchMFAPreference(): Promise<FetchMFAPreferenceOutput> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 
 	return {

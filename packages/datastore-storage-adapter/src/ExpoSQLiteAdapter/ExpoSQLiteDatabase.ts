@@ -53,7 +53,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 
 	public async get<T extends PersistentModel>(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<T> {
 		const results: T[] = await this.getAll(statement, params);
 		return results[0];
@@ -61,7 +61,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 
 	public getAll<T extends PersistentModel>(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<T[]> {
 		return new Promise((resolve, reject) => {
 			this.db.readTransaction(transaction => {
@@ -75,7 +75,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 						reject(error);
 						logger.warn(error);
 						return true;
-					}
+					},
 				);
 			});
 		});
@@ -94,14 +94,14 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 						reject(error);
 						logger.warn(error);
 						return true;
-					}
+					},
 				);
 			});
 		});
 	}
 
 	public batchQuery<T = any>(
-		queryParameterizedStatements: Set<ParameterizedStatement> = new Set()
+		queryParameterizedStatements: Set<ParameterizedStatement> = new Set(),
 	): Promise<T[]> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
 			this.db.transaction(async transaction => {
@@ -120,10 +120,10 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 											reject(error);
 											logger.warn(error);
 											return true;
-										}
+										},
 									);
-								})
-						)
+								}),
+						),
 					);
 					resolveTransaction(results);
 				} catch (error) {
@@ -136,7 +136,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 
 	public batchSave(
 		saveParameterizedStatements: Set<ParameterizedStatement> = new Set(),
-		deleteParameterizedStatements?: Set<ParameterizedStatement>
+		deleteParameterizedStatements?: Set<ParameterizedStatement>,
 	): Promise<void> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
 			this.db.transaction(async transaction => {
@@ -156,10 +156,10 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 											reject(error);
 											logger.warn(error);
 											return true;
-										}
+										},
 									);
-								})
-						)
+								}),
+						),
 					);
 					if (deleteParameterizedStatements) {
 						await Promise.all(
@@ -176,10 +176,10 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 												reject(error);
 												logger.warn(error);
 												return true;
-											}
-										)
-									)
-							)
+											},
+										),
+									),
+							),
 						);
 					}
 					resolveTransaction(null);
@@ -193,7 +193,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 
 	public selectAndDelete<T = any>(
 		queryParameterizedStatement: ParameterizedStatement,
-		deleteParameterizedStatement: ParameterizedStatement
+		deleteParameterizedStatement: ParameterizedStatement,
 	): Promise<T[]> {
 		const [queryStatement, queryParams] = queryParameterizedStatement;
 		const [deleteStatement, deleteParams] = deleteParameterizedStatement;
@@ -212,7 +212,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 								reject(error);
 								logger.warn(error);
 								return true;
-							}
+							},
 						);
 					});
 					await new Promise((resolve, reject) => {
@@ -226,7 +226,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 								reject(error);
 								logger.warn(error);
 								return true;
-							}
+							},
 						);
 					});
 					resolveTransaction(result);
@@ -255,10 +255,10 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 										(_, error) => {
 											reject(error);
 											return true;
-										}
+										},
 									);
-								})
-						)
+								}),
+						),
 					);
 					resolveTransaction(null);
 				} catch (error) {

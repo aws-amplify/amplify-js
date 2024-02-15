@@ -252,7 +252,7 @@ describe('list API', () => {
 						Prefix: expectedPath,
 						MaxKeys: 1000,
 						ContinuationToken: undefined,
-					}
+					},
 				);
 				// last input recieves TEST_TOKEN as the Continuation Token
 				expect(listObjectsV2).toHaveBeenNthCalledWith(
@@ -263,7 +263,7 @@ describe('list API', () => {
 						Prefix: expectedPath,
 						MaxKeys: 1000,
 						ContinuationToken: nextToken,
-					}
+					},
 				);
 			});
 		});
@@ -278,7 +278,7 @@ describe('list API', () => {
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
 					name: 'NotFound',
-				})
+				}),
 			);
 			expect.assertions(3);
 			try {

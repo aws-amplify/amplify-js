@@ -58,16 +58,16 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 		};
 
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(succeedResponse)
+			mockJsonResponse(succeedResponse),
 		);
 		const response = await getCredentialsForIdentity(
 			cognitoIdentityHandlerOptions,
-			params
+			params,
 		);
 		expect(response).toEqual(expectedOutput);
 		expect(fetchTransferHandler).toHaveBeenCalledWith(
 			expectedRequest,
-			expect.anything()
+			expect.anything(),
 		);
 	});
 
@@ -88,7 +88,7 @@ describe('CognitoIdentity - getCredentialsForIdentity', () => {
 			message: failureResponse.body.message,
 		};
 		(fetchTransferHandler as jest.Mock).mockResolvedValue(
-			mockJsonResponse(failureResponse)
+			mockJsonResponse(failureResponse),
 		);
 		expect.assertions(1);
 		try {

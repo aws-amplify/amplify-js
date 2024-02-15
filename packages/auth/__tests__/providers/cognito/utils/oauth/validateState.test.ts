@@ -28,7 +28,7 @@ jest.mock(
 			clearOAuthData: jest.fn(),
 			clearOAuthInflightData: jest.fn(),
 		} as OAuthStore,
-	})
+	}),
 );
 
 describe('validateState', () => {

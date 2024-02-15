@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 export const graphqlOperation = (
 	query: any,
 	variables = {},
-	authToken?: string
+	authToken?: string,
 ) => ({
 	query,
 	variables,
@@ -35,7 +35,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	graphql<T = any>(
 		amplify: AmplifyClassV6 | (() => Promise<AmplifyClassV6>),
 		options: GraphQLOptions,
-		additionalHeaders?: CustomHeaders
+		additionalHeaders?: CustomHeaders,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		return super.graphql(amplify, options, additionalHeaders, {
 			category: Category.API,

@@ -62,7 +62,7 @@ for (const file of [...workflowYmlFiles, ...actionYmlFiles]) {
 			continue;
 		}
 		console.log(
-			`In ${file} the uses reference ${val} must either be local to the project or fully reference a specific action commit on an external project`
+			`In ${file} the uses reference ${val} must either be local to the project or fully reference a specific action commit on an external project`,
 		);
 		exitCode = 1;
 	}

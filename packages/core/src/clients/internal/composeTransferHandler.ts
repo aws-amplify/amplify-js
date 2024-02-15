@@ -61,13 +61,13 @@ type OptionToMiddleware<
 > = Options extends []
 	? []
 	: Options extends [infer LastOption]
-	  ? [Middleware<Request, Response, LastOption>]
-	  : Options extends [infer FirstOption, ...infer RestOptions]
-	    ? [
+		? [Middleware<Request, Response, LastOption>]
+		: Options extends [infer FirstOption, ...infer RestOptions]
+			? [
 					Middleware<Request, Response, FirstOption>,
 					...OptionToMiddleware<Request, Response, RestOptions>,
-	      ]
-	    : never;
+				]
+			: never;
 
 /**
  * Type to intersect multiple types if they have no conflict keys.
@@ -77,10 +77,10 @@ type MergeNoConflictKeys<Options extends any[]> = Options extends [
 ]
 	? OnlyOption
 	: Options extends [infer FirstOption, infer SecondOption]
-	  ? FirstOption & SecondOption
-	  : Options extends [infer FirstOption, ...infer RestOptions]
-	    ? FirstOption & MergeNoConflictKeys<RestOptions>
-	    : never;
+		? FirstOption & SecondOption
+		: Options extends [infer FirstOption, ...infer RestOptions]
+			? FirstOption & MergeNoConflictKeys<RestOptions>
+			: never;
 
 /**
  * Type to infer the option type of a transfer handler type.

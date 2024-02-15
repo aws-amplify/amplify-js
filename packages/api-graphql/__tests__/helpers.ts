@@ -200,7 +200,7 @@ export class FakeWebSocketInterface {
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
 					payload: payload,
 				}),
-			})
+			}),
 		);
 	}
 
@@ -214,7 +214,7 @@ export class FakeWebSocketInterface {
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
 					payload: payload,
 				}),
-			})
+			}),
 		);
 	}
 
@@ -226,7 +226,7 @@ export class FakeWebSocketInterface {
 					payload: payload,
 					id: this.webSocket.subscriptionId,
 				}),
-			})
+			}),
 		);
 	}
 
@@ -240,7 +240,7 @@ export class FakeWebSocketInterface {
 					...data,
 					id: this.webSocket.subscriptionId,
 				}),
-			})
+			}),
 		);
 	}
 
@@ -288,7 +288,7 @@ export class FakeWebSocketInterface {
 	 */
 	async waitUntilConnectionStateIn(connectionStates: CS[]) {
 		return this.hubConnectionListener.waitUntilConnectionStateIn(
-			connectionStates
+			connectionStates,
 		);
 	}
 }
@@ -318,12 +318,12 @@ class FakeWebSocket implements WebSocket {
 	addEventListener<K extends keyof WebSocketEventMap>(
 		type: K,
 		listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
-		options?: boolean | AddEventListenerOptions
+		options?: boolean | AddEventListenerOptions,
 	): void;
 	addEventListener(
 		type: string,
 		listener: EventListenerOrEventListenerObject,
-		options?: boolean | AddEventListenerOptions
+		options?: boolean | AddEventListenerOptions,
 	): void;
 	addEventListener(type: unknown, listener: unknown, options?: unknown): void {
 		throw new Error('Method not implemented addEventListener.');
@@ -331,17 +331,17 @@ class FakeWebSocket implements WebSocket {
 	removeEventListener<K extends keyof WebSocketEventMap>(
 		type: K,
 		listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
-		options?: boolean | EventListenerOptions
+		options?: boolean | EventListenerOptions,
 	): void;
 	removeEventListener(
 		type: string,
 		listener: EventListenerOrEventListenerObject,
-		options?: boolean | EventListenerOptions
+		options?: boolean | EventListenerOptions,
 	): void;
 	removeEventListener(
 		type: unknown,
 		listener: unknown,
-		options?: unknown
+		options?: unknown,
 	): void {
 		throw new Error('Method not implemented removeEventListener.');
 	}
@@ -361,7 +361,7 @@ class FakeWebSocket implements WebSocket {
 export async function replaceConstant(
 	name: string,
 	replacementValue: any,
-	testFn: () => Promise<void>
+	testFn: () => Promise<void>,
 ) {
 	const initialValue = constants[name];
 	Object.defineProperty(constants, name, {

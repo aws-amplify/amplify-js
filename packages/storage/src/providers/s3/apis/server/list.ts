@@ -24,7 +24,7 @@ type ListApi = {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListPaginateInput
+		input?: ListPaginateInput,
 	): Promise<ListPaginateOutput>;
 	/**
 	 * Lists all bucket objects.
@@ -35,16 +35,16 @@ type ListApi = {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListAllInput
+		input?: ListAllInput,
 	): Promise<ListAllOutput>;
 };
 
 export const list: ListApi = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input?: ListAllInput | ListPaginateInput
+	input?: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	return listInternal(
 		getAmplifyServerContext(contextSpec).amplify,
-		input ?? {}
+		input ?? {},
 	);
 };

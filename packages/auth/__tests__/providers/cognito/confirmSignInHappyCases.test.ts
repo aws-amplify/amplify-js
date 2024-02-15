@@ -52,7 +52,7 @@ describe('confirmSignIn API happy path cases', () => {
 					},
 					Session: 'aaabbbcccddd',
 					$metadata: {},
-				})
+				}),
 			);
 	});
 
@@ -80,7 +80,7 @@ describe('confirmSignIn API happy path cases', () => {
 						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
 						CODE_DELIVERY_DESTINATION: '*******9878',
 					},
-				})
+				}),
 			);
 
 		const signInResult = await signIn({ username, password });
@@ -132,7 +132,7 @@ describe('confirmSignIn API happy path cases', () => {
 					Session: '1234234232',
 					$metadata: {},
 					ChallengeParameters: {},
-				})
+				}),
 			);
 
 		const signInResult = await signIn({ username, password });
@@ -175,7 +175,7 @@ describe('confirmSignIn API happy path cases', () => {
 					ChallengeParameters: {
 						MFAS_CAN_CHOOSE: '["SMS_MFA","SOFTWARE_TOKEN_MFA"]',
 					},
-				})
+				}),
 			);
 		// overrides handleChallengeNameSpy
 		handleChallengeNameSpy.mockImplementation(
@@ -187,7 +187,7 @@ describe('confirmSignIn API happy path cases', () => {
 					CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
 					CODE_DELIVERY_DESTINATION: '*******9878',
 				},
-			})
+			}),
 		);
 
 		const signInResult = await signIn({ username, password });
@@ -244,7 +244,7 @@ describe('confirmSignIn API happy path cases', () => {
 						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
 						CODE_DELIVERY_DESTINATION: '*******9878',
 					},
-				})
+				}),
 			);
 		await signIn({
 			username,
@@ -266,7 +266,7 @@ describe('confirmSignIn API happy path cases', () => {
 			authConfig.Cognito,
 			tokenOrchestrator,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
-			options
+			options,
 		);
 		initiateAuthSpy.mockClear();
 	});
@@ -308,7 +308,7 @@ describe('Cognito ASF', () => {
 							RefreshToken: 'qwersfsafsfssfasf',
 						},
 					};
-				}
+				},
 			);
 	});
 
@@ -334,7 +334,7 @@ describe('Cognito ASF', () => {
 						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS_MFA',
 						CODE_DELIVERY_DESTINATION: 'aaa@awsamplify.com',
 					},
-				})
+				}),
 			);
 		const result = await signIn({ username, password });
 
@@ -359,7 +359,7 @@ describe('Cognito ASF', () => {
 				ClientMetadata: undefined,
 				Session: '1234234232',
 				UserContextData: { EncodedData: 'abcd' },
-			})
+			}),
 		);
 	});
 
@@ -374,13 +374,13 @@ describe('Cognito ASF', () => {
 						MFAS_CAN_CHOOSE: '["SMS_MFA","SOFTWARE_TOKEN_MFA"]',
 					},
 					$metadata: {},
-				})
+				}),
 			);
 		const result = await signIn({ username, password });
 
 		expect(result.isSignedIn).toBe(false);
 		expect(result.nextStep.signInStep).toBe(
-			'CONTINUE_SIGN_IN_WITH_MFA_SELECTION'
+			'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
 		);
 		try {
 			await confirmSignIn({
@@ -404,7 +404,7 @@ describe('Cognito ASF', () => {
 				ClientMetadata: undefined,
 				Session: '1234234232',
 				UserContextData: { EncodedData: 'abcd' },
-			})
+			}),
 		);
 	});
 
@@ -420,7 +420,7 @@ describe('Cognito ASF', () => {
 					Session: '1234234232',
 					$metadata: {},
 					ChallengeParameters: {},
-				})
+				}),
 			);
 
 		const result = await signIn({ username, password });
@@ -449,7 +449,7 @@ describe('Cognito ASF', () => {
 				ClientMetadata: undefined,
 				Session: '1234234232',
 				UserContextData: { EncodedData: 'abcd' },
-			})
+			}),
 		);
 	});
 
@@ -465,14 +465,14 @@ describe('Cognito ASF', () => {
 					Session: '1234234232',
 					$metadata: {},
 					ChallengeParameters: {},
-				})
+				}),
 			);
 
 		const result = await signIn({ username, password });
 
 		expect(result.isSignedIn).toBe(false);
 		expect(result.nextStep.signInStep).toBe(
-			'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED'
+			'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
 		);
 		try {
 			await confirmSignIn({
@@ -496,7 +496,7 @@ describe('Cognito ASF', () => {
 				ClientMetadata: undefined,
 				Session: '1234234232',
 				UserContextData: { EncodedData: 'abcd' },
-			})
+			}),
 		);
 	});
 	test(`confirmSignIn tests CUSTOM_CHALLENGE sends UserContextData`, async () => {
@@ -511,14 +511,14 @@ describe('Cognito ASF', () => {
 					Session: '1234234232',
 					$metadata: {},
 					ChallengeParameters: {},
-				})
+				}),
 			);
 
 		const result = await signIn({ username, password });
 
 		expect(result.isSignedIn).toBe(false);
 		expect(result.nextStep.signInStep).toBe(
-			'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE'
+			'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
 		);
 		try {
 			await confirmSignIn({
@@ -542,7 +542,7 @@ describe('Cognito ASF', () => {
 				ClientMetadata: undefined,
 				Session: '1234234232',
 				UserContextData: { EncodedData: 'abcd' },
-			})
+			}),
 		);
 	});
 });

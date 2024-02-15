@@ -30,7 +30,7 @@ describe('Pinpoint Provider Util: cacheEndpointId', () => {
 		expect(setItemSpy).toHaveBeenCalledWith(
 			cacheKey,
 			endpointId,
-			expect.objectContaining({ priority: 1 })
+			expect.objectContaining({ priority: 1 }),
 		);
 	});
 });

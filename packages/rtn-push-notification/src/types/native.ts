@@ -21,7 +21,7 @@ export interface PushNotificationNativeModule extends NativeModule {
 	setBadgeCount?: (count: number) => void;
 	getPermissionStatus: () => Promise<NativePermissionStatus>;
 	requestPermissions: (
-		permissions: PushNotificationPermissions
+		permissions: PushNotificationPermissions,
 	) => Promise<boolean>;
 }
 

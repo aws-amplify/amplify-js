@@ -16,7 +16,7 @@ export class ModelSortPredicateCreator {
 	>();
 
 	private static createPredicateBuilder<T extends PersistentModel>(
-		modelDefinition: SchemaModel
+		modelDefinition: SchemaModel,
 	) {
 		const { name: modelName } = modelDefinition;
 		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
@@ -31,8 +31,8 @@ export class ModelSortPredicateCreator {
 					if (!fieldNames.has(field)) {
 						throw new Error(
 							`Invalid field for model. field: ${String(
-								field
-							)}, model: ${modelName}`
+								field,
+							)}, model: ${modelName}`,
 						);
 					}
 
@@ -45,7 +45,7 @@ export class ModelSortPredicateCreator {
 					};
 					return result;
 				},
-			})
+			}),
 		);
 
 		ModelSortPredicateCreator.sortPredicateGroupsMap.set(predicate, []);
@@ -54,14 +54,14 @@ export class ModelSortPredicateCreator {
 	}
 
 	static isValidPredicate<T extends PersistentModel>(
-		predicate: any
+		predicate: any,
 	): predicate is SortPredicate<T> {
 		return ModelSortPredicateCreator.sortPredicateGroupsMap.has(predicate);
 	}
 
 	static getPredicates<T extends PersistentModel>(
 		predicate: SortPredicate<T>,
-		throwOnInvalid: boolean = true
+		throwOnInvalid: boolean = true,
 	): SortPredicatesGroup<T> {
 		if (
 			throwOnInvalid &&
@@ -82,14 +82,14 @@ export class ModelSortPredicateCreator {
 	// transforms cb-style predicate into Proxy
 	static createFromExisting<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		existing: ProducerSortPredicate<T>
+		existing: ProducerSortPredicate<T>,
 	) {
 		if (!existing || !modelDefinition) {
 			return undefined;
 		}
 
 		return existing(
-			ModelSortPredicateCreator.createPredicateBuilder(modelDefinition)
+			ModelSortPredicateCreator.createPredicateBuilder(modelDefinition),
 		);
 	}
 }

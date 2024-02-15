@@ -67,7 +67,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 
 		expect(MockEventTracker).toHaveBeenCalledWith(
 			expect.any(Function),
-			MOCK_INPUT.options
+			MOCK_INPUT.options,
 		);
 	});
 
@@ -87,7 +87,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 
 		expect(MockSessionTracker).toHaveBeenCalledWith(
 			expect.any(Function),
-			testInput.options
+			testInput.options,
 		);
 	});
 
@@ -107,7 +107,7 @@ describe('Pinpoint API: configureAutoTrack', () => {
 
 		expect(MockPageViewTracker).toHaveBeenCalledWith(
 			expect.any(Function),
-			testInput.options
+			testInput.options,
 		);
 	});
 
@@ -121,13 +121,13 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			configureAutoTrack(MOCK_INPUT);
 			expect(MockEventTracker).toHaveBeenCalledWith(
 				expect.any(Function),
-				MOCK_INPUT.options
+				MOCK_INPUT.options,
 			);
 
 			// Reconfigure the tracker
 			configureAutoTrack(MOCK_INPUT);
 			expect(
-				MockEventTracker.mock.instances[0].configure
+				MockEventTracker.mock.instances[0].configure,
 			).toHaveBeenCalledTimes(1);
 		});
 	});
@@ -147,13 +147,13 @@ describe('Pinpoint API: configureAutoTrack', () => {
 			configureAutoTrack(MOCK_INPUT);
 			expect(MockEventTracker).toHaveBeenCalledWith(
 				expect.any(Function),
-				MOCK_INPUT.options
+				MOCK_INPUT.options,
 			);
 
 			// Disable the tracker
 			configureAutoTrack(testInput);
 			expect(MockEventTracker.mock.instances[0].cleanup).toHaveBeenCalledTimes(
-				1
+				1,
 			);
 		});
 	});

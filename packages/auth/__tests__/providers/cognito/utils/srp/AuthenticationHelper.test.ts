@@ -104,7 +104,7 @@ describe('AuthenticationHelper', () => {
 			await instance.generateHashDevice(deviceGroupKey, username);
 
 			expect(mockGetHashFromData).toHaveBeenCalledWith(
-				`${deviceGroupKey}${username}:${randomString}`
+				`${deviceGroupKey}${username}:${randomString}`,
 			);
 			expect(instance.getVerifierDevices()).toBeDefined();
 		});
@@ -115,7 +115,7 @@ describe('AuthenticationHelper', () => {
 			});
 
 			await expect(
-				instance.generateHashDevice(deviceGroupKey, username)
+				instance.generateHashDevice(deviceGroupKey, username),
 			).rejects.toThrow();
 		});
 	});
@@ -159,7 +159,7 @@ describe('AuthenticationHelper', () => {
 					password,
 					serverBValue,
 					salt,
-				})
+				}),
 			).toBe(hkdfKey);
 			expect(mockCalculateU).toHaveBeenCalledWith({ A, B: serverBValue });
 			expect(mockGetPaddedHex).toHaveBeenCalledWith(salt);
@@ -185,7 +185,7 @@ describe('AuthenticationHelper', () => {
 					password,
 					serverBValue,
 					salt,
-				})
+				}),
 			).rejects.toThrow();
 		});
 
@@ -199,7 +199,7 @@ describe('AuthenticationHelper', () => {
 					password,
 					serverBValue,
 					salt,
-				})
+				}),
 			).rejects.toThrow();
 		});
 
@@ -210,7 +210,7 @@ describe('AuthenticationHelper', () => {
 					password,
 					serverBValue: BigInteger.ZERO,
 					salt,
-				})
+				}),
 			).rejects.toThrow('B cannot be zero');
 		});
 	});

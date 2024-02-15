@@ -27,7 +27,9 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		headers: {},
 	};
 	const getRetryableHandler = (nextHandler: MiddlewareHandler<any, any>) =>
-		composeTransferHandler<[RetryOptions]>(nextHandler, [retryMiddlewareFactory]);
+		composeTransferHandler<[RetryOptions]>(nextHandler, [
+			retryMiddlewareFactory,
+		]);
 
 	test('should retry specified times', async () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
@@ -89,7 +91,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const retryDecider = jest
 			.fn()
 			.mockImplementation(
-				(resp, error) => error.message !== 'UnretryableError'
+				(resp, error) => error.message !== 'UnretryableError',
 			);
 		try {
 			const resp = await retryableHandler(defaultRequest, {
@@ -117,7 +119,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 				computeDelay,
 			});
 			expect(res).toEqual(
-				expect.objectContaining({ $metadata: { attempts: 6 } })
+				expect.objectContaining({ $metadata: { attempts: 6 } }),
 			);
 			expect(nextHandler).toHaveBeenCalledTimes(6);
 			expect(computeDelay).toHaveBeenCalledTimes(5); // no interval after last attempt
@@ -189,7 +191,11 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 
 		const doubleRetryableHandler = composeTransferHandler<
 			[RetryOptions, {}, RetryOptions]
-		>(coreHandler, [retryMiddlewareFactory, betweenRetryMiddleware, retryMiddlewareFactory]);
+		>(coreHandler, [
+			retryMiddlewareFactory,
+			betweenRetryMiddleware,
+			retryMiddlewareFactory,
+		]);
 
 		const retryDecider = jest
 			.fn()

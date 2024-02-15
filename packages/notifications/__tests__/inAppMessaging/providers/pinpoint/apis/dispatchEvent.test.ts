@@ -34,40 +34,40 @@ describe('dispatchEvent', () => {
 	it('gets in-app messages from store and notifies listeners', async () => {
 		const [message] = inAppMessages;
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
-			JSON.stringify(simpleInAppMessages)
+			JSON.stringify(simpleInAppMessages),
 		);
 		mockProcessInAppMessages.mockReturnValueOnce([message]);
 		await dispatchEvent(simpleInAppMessagingEvent);
 		expect(mockProcessInAppMessages).toHaveBeenCalledWith(
 			simpleInAppMessages,
-			simpleInAppMessagingEvent
+			simpleInAppMessagingEvent,
 		);
 		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
 			'messageReceived',
-			message
+			message,
 		);
 	});
 
 	it('handles conflicts through default conflict handler', async () => {
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
-			JSON.stringify(simpleInAppMessages)
+			JSON.stringify(simpleInAppMessages),
 		);
 		mockProcessInAppMessages.mockReturnValueOnce(inAppMessages);
 		await dispatchEvent(simpleInAppMessagingEvent);
 		expect(mockProcessInAppMessages).toHaveBeenCalledWith(
 			simpleInAppMessages,
-			simpleInAppMessagingEvent
+			simpleInAppMessagingEvent,
 		);
 		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
 			'messageReceived',
-			inAppMessages[4]
+			inAppMessages[4],
 		);
 	});
 
 	it('does not notify listeners if no messages are returned', async () => {
 		mockProcessInAppMessages.mockReturnValueOnce([]);
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
-			JSON.stringify(simpleInAppMessages)
+			JSON.stringify(simpleInAppMessages),
 		);
 
 		await dispatchEvent(simpleInAppMessagingEvent);
@@ -78,7 +78,7 @@ describe('dispatchEvent', () => {
 	it('logs error if storage retrieval fails', async () => {
 		mockDefaultStorage.getItem.mockRejectedValueOnce(Error);
 		await expect(
-			dispatchEvent(simpleInAppMessagingEvent)
+			dispatchEvent(simpleInAppMessagingEvent),
 		).rejects.toStrictEqual(expect.any(InAppMessagingError));
 	});
 });

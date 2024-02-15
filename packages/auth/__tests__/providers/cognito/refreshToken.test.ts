@@ -8,7 +8,7 @@ import {
 	tokenRefreshException,
 } from '../../../src/providers/cognito/utils/types';
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('refreshToken', () => {
@@ -65,7 +65,7 @@ describe('refreshToken', () => {
 
 			// stringify and re-parse for JWT equality
 			expect(JSON.parse(JSON.stringify(response))).toMatchObject(
-				JSON.parse(JSON.stringify(expectedOutput))
+				JSON.parse(JSON.stringify(expectedOutput)),
 			);
 			expect(mockInitiateAuth).toHaveBeenCalledWith(
 				expect.objectContaining({ region: 'us-east-1' }),
@@ -75,7 +75,7 @@ describe('refreshToken', () => {
 					AuthParameters: {
 						REFRESH_TOKEN: mockedRefreshToken,
 					},
-				})
+				}),
 			);
 		});
 
@@ -89,10 +89,10 @@ describe('refreshToken', () => {
 				username: 'username',
 				tokens: {
 					accessToken: decodeJWT(
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
+						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
 					),
 					idToken: decodeJWT(
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0'
+						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
 					),
 					clockDrift: 0,
 					refreshToken: 'refreshtoken',
@@ -112,7 +112,7 @@ describe('refreshToken', () => {
 					AuthParameters: { REFRESH_TOKEN: 'refreshtoken' },
 					ClientId: 'aaaaaaaaaaaa',
 					UserContextData: { EncodedData: 'abcd' },
-				})
+				}),
 			);
 			window['AmazonCognitoAdvancedSecurityData'] = undefined;
 		});
@@ -147,7 +147,7 @@ describe('refreshToken', () => {
 						},
 					},
 					username: mockedUsername,
-				})
+				}),
 			).rejects.toThrow(oAuthTokenRefreshException);
 		});
 		it('should throw an exception when cognito tokens are not available', async () => {
@@ -162,7 +162,7 @@ describe('refreshToken', () => {
 						},
 					},
 					username: mockedUsername,
-				})
+				}),
 			).rejects.toThrow(tokenRefreshException);
 		});
 
@@ -183,7 +183,7 @@ describe('refreshToken', () => {
 						},
 					},
 					username: mockedUsername,
-				})
+				}),
 			).rejects.toThrow(mockedError);
 		});
 	});

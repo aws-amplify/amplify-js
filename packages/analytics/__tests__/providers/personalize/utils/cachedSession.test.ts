@@ -62,13 +62,13 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 			1,
 			sessionIdCacheKey,
 			expect.any(String),
-			expect.any(Object)
+			expect.any(Object),
 		);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			2,
 			userIdCacheKey,
 			'newUserId',
-			expect.any(Object)
+			expect.any(Object),
 		);
 	});
 
@@ -79,13 +79,13 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 			1,
 			sessionIdCacheKey,
 			expect.any(String),
-			expect.any(Object)
+			expect.any(Object),
 		);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			2,
 			userIdCacheKey,
 			undefined,
-			expect.any(Object)
+			expect.any(Object),
 		);
 	});
 
@@ -96,13 +96,13 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 			1,
 			sessionIdCacheKey,
 			expect.any(String),
-			expect.any(Object)
+			expect.any(Object),
 		);
 		expect(mockCache.setItem).toHaveBeenNthCalledWith(
 			2,
 			userIdCacheKey,
 			'newUserId',
-			expect.any(Object)
+			expect.any(Object),
 		);
 	});
 
@@ -113,7 +113,7 @@ describe('Analytics service provider Personalize utils: cachedSession', () => {
 			1,
 			userIdCacheKey,
 			'newUserId',
-			expect.any(Object)
+			expect.any(Object),
 		);
 	});
 });

@@ -124,7 +124,7 @@ const getQueuedItemKeys = async (
 				const timestampB = b.split('_').pop() as string;
 
 				return parseInt(timestampA) - parseInt(timestampB);
-		  })
+			})
 		: keys;
 };
 

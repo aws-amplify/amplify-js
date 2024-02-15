@@ -84,7 +84,7 @@ function am1(
 	w: number,
 	j: number,
 	c: number,
-	n: number
+	n: number,
 ): number {
 	while (--n >= 0) {
 		const v = x * this[i++] + w[j] + c;
@@ -102,7 +102,7 @@ function am2(
 	w: number,
 	j: number,
 	c: number,
-	n: number
+	n: number,
 ): number {
 	const xl = x & 0x7fff,
 		xh = x >> 15;
@@ -124,7 +124,7 @@ function am3(
 	w: number,
 	j: number,
 	c: number,
-	n: number
+	n: number,
 ): number {
 	const xl = x & 0x3fff,
 		xh = x >> 14;
@@ -359,7 +359,7 @@ function bnpDRShiftTo(n: number, r: BNP): void {
 // (protected) r = this << n
 function bnpLShiftTo(
 	n: number,
-	r: { s: number; t: number; clamp: Function }
+	r: { s: number; t: number; clamp: Function },
 ): void {
 	const bs = n % this.DB;
 	const cbs = this.DB - bs;
@@ -437,7 +437,7 @@ function bnpSubTo(a: BNP, r: BNP & { clamp: Function }): void {
 // "this" should be the larger one if appropriate.
 function bnpMultiplyTo(
 	a: BNP & { abs: Function },
-	r: BNP & { clamp: Function }
+	r: BNP & { clamp: Function },
 ): void {
 	const x = this.abs(),
 		y = a.abs();
@@ -481,7 +481,7 @@ function bnpDivRemTo(
 		drShiftTo: Function;
 		clamp: Function;
 		rShiftTo: Function;
-	}
+	},
 ): void {
 	var pm = m.abs();
 	if (pm.t <= 0) return;
@@ -746,7 +746,7 @@ function bnModPow(
 		DB: number;
 		t: number;
 	},
-	callback: Function
+	callback: Function,
 ) {
 	let i = e.bitLength(),
 		k: number,

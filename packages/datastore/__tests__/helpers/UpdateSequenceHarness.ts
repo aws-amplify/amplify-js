@@ -166,7 +166,7 @@ export class UpdateSequenceHarness {
 
 	subscriptionLogs(attributes: string[] = ['title', '_version']) {
 		return this.subscriptionLog.map(post =>
-			attributes.map(attribute => post[attribute])
+			attributes.map(attribute => post[attribute]),
 		);
 	}
 
@@ -207,7 +207,7 @@ export class UpdateSequenceHarness {
 		});
 
 		this.subscriptionLogSubscription = this.datastoreFake.DataStore.observe(
-			this.datastoreFake.Post
+			this.datastoreFake.Post,
 		).subscribe(({ opType, element }) => {
 			if (opType === 'UPDATE') {
 				this.subscriptionLog.push(element);
@@ -254,7 +254,7 @@ export class UpdateSequenceHarness {
 					update: number;
 					updateSubscriptionMessage: number;
 					updateError?: number;
-			  }
+			  },
 	) {
 		let updateCount: number;
 		let updateSubscriptionMessageCount: number;
@@ -290,10 +290,10 @@ export class UpdateSequenceHarness {
 	 */
 	async createPostHarness(
 		args: ConstructorParameters<typeof Post>[0],
-		settleOutbox: boolean = true
+		settleOutbox: boolean = true,
 	) {
 		const original = await this.datastoreFake.DataStore.save(
-			new this.datastoreFake.Post(args)
+			new this.datastoreFake.Post(args),
 		);
 		// We set this to `false` when we want to test updating a record that is still in the outbox.
 		if (settleOutbox) {
@@ -343,7 +343,7 @@ export class UpdateSequenceHarness {
 				authToken: undefined,
 			},
 			// For now we always ignore latency for external mutations. This could be a param if needed.
-			true
+			true,
 		);
 	}
 
@@ -358,13 +358,13 @@ export class UpdateSequenceHarness {
 		}
 		const retrieved = await this.datastoreFake.DataStore.query(
 			this.datastoreFake.Post,
-			postId
+			postId,
 		);
 		if (retrieved) {
 			await this.datastoreFake.DataStore.save(
 				this.datastoreFake.Post.copyOf(retrieved, updated => {
 					updated.title = updatedTitle;
-				})
+				}),
 			);
 		}
 		if (this.isSettledAfterRevisions) {

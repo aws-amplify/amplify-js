@@ -54,7 +54,7 @@ describe('Platform test', () => {
 				getAmplifyUserAgentObject({
 					category: Category.Auth,
 					action: AuthAction.ConfirmSignIn,
-				})
+				}),
 			).toStrictEqual([
 				['aws-amplify', version],
 				[Category.Auth, AuthAction.ConfirmSignIn],
@@ -71,7 +71,7 @@ describe('Platform test', () => {
 				getAmplifyUserAgentObject({
 					category: Category.Auth,
 					action: AuthAction.ConfirmSignIn,
-				})
+				}),
 			).toStrictEqual([
 				['aws-amplify', version],
 				[Category.Auth, AuthAction.ConfirmSignIn],
@@ -85,7 +85,7 @@ describe('Platform test', () => {
 	describe('getAmplifyUserAgent test', () => {
 		test('without customUserAgentDetails', () => {
 			expect(getAmplifyUserAgent()).toBe(
-				`${Platform.userAgent} framework/${Framework.WebUnknown}`
+				`${Platform.userAgent} framework/${Framework.WebUnknown}`,
 			);
 		});
 
@@ -94,9 +94,9 @@ describe('Platform test', () => {
 				getAmplifyUserAgent({
 					category: Category.Auth,
 					action: AuthAction.ConfirmSignIn,
-				})
+				}),
 			).toBe(
-				`${Platform.userAgent} ${Category.Auth}/${AuthAction.ConfirmSignIn} framework/${Framework.WebUnknown}`
+				`${Platform.userAgent} ${Category.Auth}/${AuthAction.ConfirmSignIn} framework/${Framework.WebUnknown}`,
 			);
 		});
 
@@ -109,9 +109,9 @@ describe('Platform test', () => {
 				getAmplifyUserAgent({
 					category: Category.Auth,
 					action: AuthAction.ConfirmSignIn,
-				})
+				}),
 			).toBe(
-				`${Platform.userAgent} ${Category.Auth}/${AuthAction.ConfirmSignIn} framework/${Framework.WebUnknown} uiversion/1.0.0 flag`
+				`${Platform.userAgent} ${Category.Auth}/${AuthAction.ConfirmSignIn} framework/${Framework.WebUnknown} uiversion/1.0.0 flag`,
 			);
 		});
 	});

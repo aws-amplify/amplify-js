@@ -45,7 +45,7 @@ describe('TokenOrchestrator', () => {
 		});
 		it('Should get tokens', async () => {
 			mockAuthTokenStore.loadTokens.mockResolvedValue(
-				authAPITestParams.ValidAuthTokens
+				authAPITestParams.ValidAuthTokens,
 			);
 
 			const tokensRes = await tokenOrchestrator.getTokens();
@@ -57,7 +57,7 @@ describe('TokenOrchestrator', () => {
 		});
 		it('Should call tokenRefresher and return valid tokens', async () => {
 			mockAuthTokenStore.loadTokens.mockResolvedValue(
-				authAPITestParams.ExpiredAuthTokens
+				authAPITestParams.ExpiredAuthTokens,
 			);
 			mockTokenRefresher.mockResolvedValue(authAPITestParams.ValidAuthTokens);
 			const tokensRes = await tokenOrchestrator.getTokens();
@@ -70,7 +70,7 @@ describe('TokenOrchestrator', () => {
 				'auth',
 				{ event: 'tokenRefresh' },
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
 		});
 	});

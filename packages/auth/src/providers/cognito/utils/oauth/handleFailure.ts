@@ -9,7 +9,7 @@ import { oAuthStore } from './oAuthStore';
 import { resolveAndClearInflightPromises } from './inflightPromise';
 
 export const handleFailure = async (
-	error: AuthError | unknown
+	error: AuthError | unknown,
 ): Promise<void> => {
 	resolveAndClearInflightPromises();
 	await oAuthStore.clearOAuthInflightData();
@@ -17,6 +17,6 @@ export const handleFailure = async (
 		'auth',
 		{ event: 'signInWithRedirect_failure', data: { error } },
 		'Auth',
-		AMPLIFY_SYMBOL
+		AMPLIFY_SYMBOL,
 	);
 };

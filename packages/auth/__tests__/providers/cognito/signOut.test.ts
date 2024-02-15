@@ -22,10 +22,10 @@ import { AuthTokenStore } from '../../../src/providers/cognito/tokenProvider/typ
 jest.mock('@aws-amplify/core');
 jest.mock('../../../src/providers/cognito/tokenProvider');
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/utils'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/utils',
 );
 jest.mock('../../../src/providers/cognito/utils/oauth');
 jest.mock('../../../src/providers/cognito/utils/signInWithRedirectStore');
@@ -80,7 +80,7 @@ describe('signOut', () => {
 				'auth',
 				{ event: 'signedOut' },
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
 		},
 		not: {
@@ -95,7 +95,7 @@ describe('signOut', () => {
 	beforeAll(() => {
 		mockGetRegion.mockReturnValue(region);
 		MockDefaultOAuthStore.mockImplementation(
-			() => mockDefaultOAuthStoreInstance
+			() => mockDefaultOAuthStoreInstance,
 		);
 	});
 
@@ -124,7 +124,7 @@ describe('signOut', () => {
 
 			expect(mockRevokeToken).toHaveBeenCalledWith(
 				{ region },
-				{ ClientId: cognitoConfig.userPoolClientId, Token: refreshToken }
+				{ ClientId: cognitoConfig.userPoolClientId, Token: refreshToken },
 			);
 			expect(mockGetRegion).toHaveBeenCalledTimes(1);
 			expect(mockGlobalSignOut).not.toHaveBeenCalled();
@@ -150,7 +150,7 @@ describe('signOut', () => {
 
 			expect(mockGlobalSignOut).toHaveBeenCalledWith(
 				{ region: 'us-west-2' },
-				{ AccessToken: accessToken.toString() }
+				{ AccessToken: accessToken.toString() },
 			);
 			expect(mockGetRegion).toHaveBeenCalledTimes(1);
 			expect(mockRevokeToken).not.toHaveBeenCalled();
@@ -163,7 +163,7 @@ describe('signOut', () => {
 			await signOut();
 
 			expect(loggerDebugSpy).toHaveBeenCalledWith(
-				expect.stringContaining('Client signOut error caught')
+				expect.stringContaining('Client signOut error caught'),
 			);
 			expect(mockGetRegion).toHaveBeenCalledTimes(1);
 			expectSignOut().toComplete();
@@ -175,7 +175,7 @@ describe('signOut', () => {
 			await signOut({ global: true });
 
 			expect(loggerDebugSpy).toHaveBeenCalledWith(
-				expect.stringContaining('Global signOut error caught')
+				expect.stringContaining('Global signOut error caught'),
 			);
 			expect(mockGetRegion).toHaveBeenCalledTimes(1);
 			expectSignOut().toComplete();
@@ -213,11 +213,11 @@ describe('signOut', () => {
 
 			expect(MockDefaultOAuthStore).toHaveBeenCalledTimes(1);
 			expect(mockDefaultOAuthStoreInstance.setAuthConfig).toHaveBeenCalledWith(
-				cognitoConfigWithOauth
+				cognitoConfigWithOauth,
 			);
 			expect(mockHandleOAuthSignOut).toHaveBeenCalledWith(
 				cognitoConfigWithOauth,
-				mockDefaultOAuthStoreInstance
+				mockDefaultOAuthStoreInstance,
 			);
 			// In cases of OAuth, token removal and Hub dispatch should be performed by the OAuth handling since
 			// these actions can be deferred or canceled out of altogether.

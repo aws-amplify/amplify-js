@@ -62,7 +62,7 @@ export const getPaddedHex = (bigInt: AuthBigInteger): string => {
 
 		/* After flipping the bits, add one to get the 2's complement representation */
 		const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(
-			BigInteger.ONE
+			BigInteger.ONE,
 		);
 
 		hexStr = flippedBitsBI.toString(16);

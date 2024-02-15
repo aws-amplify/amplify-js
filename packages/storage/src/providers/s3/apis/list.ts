@@ -31,7 +31,7 @@ type ListApi = {
 };
 
 export const list: ListApi = (
-	input?: ListAllInput | ListPaginateInput
+	input?: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	return listInternal(Amplify, input ?? {});
 };

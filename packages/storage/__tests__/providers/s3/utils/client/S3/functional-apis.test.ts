@@ -8,7 +8,7 @@ import cases from './cases';
 import { StorageError } from '../../../../../../src/errors/StorageError';
 
 jest.mock(
-	'../../../../../../src/providers/s3/utils/client/runtime/s3TransferHandler/fetch'
+	'../../../../../../src/providers/s3/utils/client/runtime/s3TransferHandler/fetch',
 );
 
 const mockS3TransferHandler = s3TransferHandler as jest.Mock;
@@ -24,7 +24,7 @@ const mockBinaryResponse = ({
 	const responseBody = {
 		json: async (): Promise<any> => {
 			throw new Error(
-				'Parsing response to JSON is not implemented. Please use response.text() instead.'
+				'Parsing response to JSON is not implemented. Please use response.text() instead.',
 			);
 		},
 		blob: async () => new Blob([body], { type: 'plain/text' }),
@@ -51,11 +51,11 @@ describe('S3 APIs functional test', () => {
 			input,
 			expectedRequest,
 			response,
-			outputOrError
+			outputOrError,
 		) => {
 			expect.assertions(2);
 			mockS3TransferHandler.mockResolvedValue(
-				mockBinaryResponse(response as any)
+				mockBinaryResponse(response as any),
 			);
 			try {
 				const output = await handler(config, input as any);
@@ -63,7 +63,7 @@ describe('S3 APIs functional test', () => {
 					expect(output).toEqual(outputOrError);
 					expect(mockS3TransferHandler).toHaveBeenCalledWith(
 						expectedRequest,
-						expect.anything()
+						expect.anything(),
 					);
 				} else {
 					fail(`${name} ${caseType} should fail`);
@@ -76,6 +76,6 @@ describe('S3 APIs functional test', () => {
 					expect(e).toEqual(expect.objectContaining(outputOrError));
 				}
 			}
-		}
+		},
 	);
 });

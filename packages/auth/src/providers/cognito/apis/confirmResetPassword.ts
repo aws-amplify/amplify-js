@@ -25,7 +25,7 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmResetPassword(
-	input: ConfirmResetPasswordInput
+	input: ConfirmResetPasswordInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -33,17 +33,17 @@ export async function confirmResetPassword(
 	const { username, newPassword } = input;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptyConfirmResetPasswordUsername
+		AuthValidationErrorCode.EmptyConfirmResetPasswordUsername,
 	);
 
 	assertValidationError(
 		!!newPassword,
-		AuthValidationErrorCode.EmptyConfirmResetPasswordNewPassword
+		AuthValidationErrorCode.EmptyConfirmResetPasswordNewPassword,
 	);
 	const code = input.confirmationCode;
 	assertValidationError(
 		!!code,
-		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
+		AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode,
 	);
 	const metadata = input.options?.clientMetadata;
 
@@ -65,6 +65,6 @@ export async function confirmResetPassword(
 			ClientMetadata: metadata,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData: UserContextData,
-		}
+		},
 	);
 }

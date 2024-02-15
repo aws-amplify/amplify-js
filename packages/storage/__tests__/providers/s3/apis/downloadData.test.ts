@@ -114,7 +114,7 @@ describe('downloadData', () => {
 				{
 					Bucket: bucket,
 					Key: expectedKey,
-				}
+				},
 			);
 		});
 	});
@@ -173,7 +173,7 @@ describe('downloadData', () => {
 			expect.anything(),
 			expect.objectContaining({
 				Range: `bytes=${start}-${end}`,
-			})
+			}),
 		);
 	});
 });

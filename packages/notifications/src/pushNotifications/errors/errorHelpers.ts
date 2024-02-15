@@ -37,7 +37,7 @@ const pushNotificationValidationErrorMap: AmplifyErrorMap<PushNotificationValida
 export const assert: AssertionFunction<PushNotificationValidationErrorCode> =
 	createAssertionFunction(
 		pushNotificationValidationErrorMap,
-		PushNotificationError
+		PushNotificationError,
 	);
 
 export const assertIsInitialized = () => {
