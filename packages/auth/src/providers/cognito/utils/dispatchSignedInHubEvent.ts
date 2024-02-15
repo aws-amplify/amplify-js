@@ -26,9 +26,9 @@ export const dispatchSignedInHubEvent = async () => {
 			throw new AuthError({
 				name: UNEXPECTED_SIGN_IN_INTERRUPTION_EXCEPTION,
 				message:
-					'Could not get user session right after signing in successfully.',
+					'Unable to get user session following successful sign-in.',
 				recoverySuggestion:
-					'This most likely is due to the auth tokens cannot be persisted. If you are using cookie store, please check if cookies can be correctly set from your server.',
+					'This most likely is due to auth tokens not being persisted. If you are using cookie store, please ensure cookies can be correctly set from your server.',
 			});
 		}
 
