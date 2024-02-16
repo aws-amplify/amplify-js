@@ -13,14 +13,14 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 import {
-	buildStorageServiceError,
-	validateS3RequiredParameter,
 	assignStringVariables,
+	buildStorageServiceError,
 	map,
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
 
 export type PutObjectInput = Pick<
@@ -60,6 +60,7 @@ const putObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+
 	return {
 		method: 'PUT',
 		headers,

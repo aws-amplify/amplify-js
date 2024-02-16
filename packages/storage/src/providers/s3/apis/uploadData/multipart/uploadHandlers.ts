@@ -4,7 +4,6 @@
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { getDataChunker } from './getDataChunker';
 import { UploadDataInput } from '../../../types';
 import { resolveS3ConfigAndInput } from '../../../utils';
 import { Item as S3Item } from '../../../types/outputs';
@@ -12,11 +11,7 @@ import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
 } from '../../../utils/constants';
-import { loadOrCreateMultipartUpload } from './initialUpload';
 import { ResolvedS3Config } from '../../../types/options';
-import { getConcurrentUploadsProgressTracker } from './progressTracker';
-import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
-import { uploadPartExecutor } from './uploadPartExecutor';
 import { StorageError } from '../../../../../errors/StorageError';
 import { CanceledError } from '../../../../../errors/CanceledError';
 import {
@@ -27,6 +22,12 @@ import {
 } from '../../../utils/client';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
+
+import { uploadPartExecutor } from './uploadPartExecutor';
+import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
+import { getConcurrentUploadsProgressTracker } from './progressTracker';
+import { loadOrCreateMultipartUpload } from './initialUpload';
+import { getDataChunker } from './getDataChunker';
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -46,24 +47,25 @@ export const getMultipartUploadHandlers = (
 				completedParts: Part[];
 		  }
 		| undefined;
-	let s3Config: ResolvedS3Config | undefined;
+	let resolvedS3Config: ResolvedS3Config | undefined;
 	let abortController: AbortController | undefined;
-	let bucket: string | undefined;
-	let keyPrefix: string | undefined;
+	let resolvedBucket: string | undefined;
+	let resolvedKeyPrefix: string | undefined;
 	let uploadCacheKey: string | undefined;
 	// Special flag that differentiates HTTP requests abort error caused by pause() from ones caused by cancel().
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
-	let isAbortSignalFromPause: boolean = false;
+	let isAbortSignalFromPause = false;
 
 	const startUpload = async (): Promise<S3Item> => {
 		const resolvedS3Options = await resolveS3ConfigAndInput(
 			Amplify,
 			uploadDataOptions,
 		);
-		s3Config = resolvedS3Options.s3Config;
-		bucket = resolvedS3Options.bucket;
-		keyPrefix = resolvedS3Options.keyPrefix;
+
+		resolvedS3Config = resolvedS3Options.s3Config;
+		resolvedBucket = resolvedS3Options.bucket;
+		resolvedKeyPrefix = resolvedS3Options.keyPrefix;
 
 		abortController = new AbortController();
 		isAbortSignalFromPause = false;
@@ -79,10 +81,10 @@ export const getMultipartUploadHandlers = (
 
 		if (!inProgressUpload) {
 			const { uploadId, cachedParts } = await loadOrCreateMultipartUpload({
-				s3Config,
+				s3Config: resolvedS3Config,
 				accessLevel: resolveAccessLevel(accessLevel),
-				bucket,
-				keyPrefix,
+				bucket: resolvedBucket,
+				keyPrefix: resolvedKeyPrefix,
 				key,
 				contentType,
 				contentDisposition,
@@ -98,13 +100,13 @@ export const getMultipartUploadHandlers = (
 			};
 		}
 
-		const finalKey = keyPrefix + key;
+		const finalKey = resolvedKeyPrefix + key;
 		uploadCacheKey = size
 			? getUploadsCacheKey({
 					file: data instanceof File ? data : undefined,
 					accessLevel: resolveAccessLevel(uploadDataOptions?.accessLevel),
 					contentType: uploadDataOptions?.contentType,
-					bucket: bucket!,
+					bucket: resolvedBucket!,
 					size,
 					key,
 				})
@@ -132,9 +134,9 @@ export const getMultipartUploadHandlers = (
 				uploadPartExecutor({
 					dataChunkerGenerator: dataChunker,
 					completedPartNumberSet,
-					s3Config,
+					s3Config: resolvedS3Config,
 					abortSignal: abortController.signal,
-					bucket,
+					bucket: resolvedBucket,
 					finalKey,
 					uploadId: inProgressUpload.uploadId,
 					onPartUploadCompletion,
@@ -148,12 +150,12 @@ export const getMultipartUploadHandlers = (
 
 		const { ETag: eTag } = await completeMultipartUpload(
 			{
-				...s3Config,
+				...resolvedS3Config,
 				abortSignal: abortController.signal,
 				userAgentValue: getStorageUserAgentValue(StorageAction.UploadData),
 			},
 			{
-				Bucket: bucket,
+				Bucket: resolvedBucket,
 				Key: finalKey,
 				UploadId: inProgressUpload.uploadId,
 				MultipartUpload: {
@@ -165,10 +167,13 @@ export const getMultipartUploadHandlers = (
 		);
 
 		if (size) {
-			const { ContentLength: uploadedObjectSize } = await headObject(s3Config, {
-				Bucket: bucket,
-				Key: finalKey,
-			});
+			const { ContentLength: uploadedObjectSize } = await headObject(
+				resolvedS3Config,
+				{
+					Bucket: resolvedBucket,
+					Key: finalKey,
+				},
+			);
 			if (uploadedObjectSize && uploadedObjectSize !== size) {
 				throw new StorageError({
 					name: 'Error',
@@ -225,9 +230,9 @@ export const getMultipartUploadHandlers = (
 				await removeCachedUpload(uploadCacheKey);
 			}
 			// 3. clear multipart upload on server side.
-			await abortMultipartUpload(s3Config!, {
-				Bucket: bucket,
-				Key: keyPrefix! + key,
+			await abortMultipartUpload(resolvedS3Config!, {
+				Bucket: resolvedBucket,
+				Key: resolvedKeyPrefix! + key,
 				UploadId: inProgressUpload?.uploadId,
 			});
 		};
@@ -241,6 +246,7 @@ export const getMultipartUploadHandlers = (
 			new CanceledError(message ? { message } : undefined),
 		);
 	};
+
 	return {
 		multipartUploadJob,
 		onPause,

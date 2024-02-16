@@ -3,6 +3,7 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
+
 import { CopyInput, CopyOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';

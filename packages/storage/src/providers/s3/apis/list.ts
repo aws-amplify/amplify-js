@@ -2,15 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import {
 	ListAllInput,
-	ListPaginateInput,
 	ListAllOutput,
+	ListPaginateInput,
 	ListPaginateOutput,
+	S3Exception,
 } from '../types';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
+
 import { list as listInternal } from './internal/list';
 
-type ListApi = {
+interface ListApi {
 	/**
 	 * List files with given prefix in pages
 	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
@@ -28,7 +32,7 @@ type ListApi = {
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
 	(input?: ListAllInput): Promise<ListAllOutput>;
-};
+}
 
 export const list: ListApi = (
 	input?: ListAllInput | ListPaginateInput,

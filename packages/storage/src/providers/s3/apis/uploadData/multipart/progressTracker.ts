@@ -3,10 +3,10 @@
 
 import { TransferProgressEvent } from '../../../../../types';
 
-type ConcurrentUploadsProgressTrackerOptions = {
+interface ConcurrentUploadsProgressTrackerOptions {
 	size?: number;
-	onProgress?: (event: TransferProgressEvent) => void;
-};
+	onProgress?(event: TransferProgressEvent): void;
+}
 
 /**
  * Track the progress from multiple concurrent uploads, and invoke the onProgress callback.
@@ -29,6 +29,7 @@ export const getConcurrentUploadsProgressTracker = ({
 		getOnProgressListener: () => {
 			transferredBytesPerListener.push(0);
 			const listenerIndex = transferredBytesPerListener.length - 1;
+
 			return (event: TransferProgressEvent) => {
 				const { transferredBytes } = event;
 				transferredBytesPerListener[listenerIndex] = transferredBytes;

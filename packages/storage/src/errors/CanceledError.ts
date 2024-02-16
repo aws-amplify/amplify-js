@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyErrorParams } from '@aws-amplify/core/internals/utils';
+
 import { StorageError } from './StorageError';
 
 /**
