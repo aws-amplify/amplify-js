@@ -382,7 +382,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "25.96 kB"
+			"limit": "26.40 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -448,7 +448,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "28.00 kB"
+			"limit": "28.50 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
