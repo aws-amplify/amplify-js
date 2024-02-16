@@ -20,7 +20,7 @@ describe(composeTransferHandler.name, () => {
 		expect(resp).toEqual({ body: 'Response' });
 		expect(coreHandler).toHaveBeenCalledWith(
 			{ url: new URL('https://a.b') },
-			{ foo: 'bar' }
+			{ foo: 'bar' },
 		);
 	});
 
@@ -47,19 +47,19 @@ describe(composeTransferHandler.name, () => {
 			.mockResolvedValueOnce({ body: '' } as Response);
 		const handler = composeTransferHandler<[OptionsType, OptionsType]>(
 			coreHandler,
-			[middlewareA, middlewareB]
+			[middlewareA, middlewareB],
 		);
 		const options = {
 			mockFnInOptions: jest.fn(),
 		};
 		const resp = await handler(
 			{ url: new URL('https://a.b'), body: '' },
-			options
+			options,
 		);
 		expect(resp).toEqual({ body: 'BA' });
 		expect(coreHandler).toHaveBeenCalledWith(
 			expect.objectContaining({ body: 'AB' }),
-			expect.anything()
+			expect.anything(),
 		);
 		// Validate middleware share a same option object
 		expect(options.mockFnInOptions).toHaveBeenNthCalledWith(1, 'A');
@@ -69,12 +69,12 @@ describe(composeTransferHandler.name, () => {
 		(coreHandler as jest.Mock).mockResolvedValueOnce({ body: '' } as Response);
 		const resp2 = await handler(
 			{ url: new URL('https://a.b'), body: '' },
-			options
+			options,
 		);
 		expect(resp2).toEqual({ body: 'BA' });
 		expect(coreHandler).toHaveBeenCalledWith(
 			expect.objectContaining({ body: 'AB' }),
-			expect.anything()
+			expect.anything(),
 		);
 	});
 });

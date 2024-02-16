@@ -52,13 +52,13 @@ export function generateClient<T extends Record<any, any> = never>({
 	const wrappedGraphql = (
 		contextSpec: AmplifyServer.ContextSpec,
 		options: GraphQLOptionsV6,
-		additionalHeaders?: CustomHeaders
+		additionalHeaders?: CustomHeaders,
 	) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },
 			options,
-			additionalHeaders as any
+			additionalHeaders as any,
 		);
 	};
 

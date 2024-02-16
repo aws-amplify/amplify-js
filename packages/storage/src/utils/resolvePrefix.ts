@@ -17,13 +17,13 @@ export const resolvePrefix = ({
 	if (accessLevel === 'private') {
 		assertValidationError(
 			!!targetIdentityId,
-			StorageValidationErrorCode.NoIdentityId
+			StorageValidationErrorCode.NoIdentityId,
 		);
 		return `private/${targetIdentityId}/`;
 	} else if (accessLevel === 'protected') {
 		assertValidationError(
 			!!targetIdentityId,
-			StorageValidationErrorCode.NoIdentityId
+			StorageValidationErrorCode.NoIdentityId,
 		);
 		return `protected/${targetIdentityId}/`;
 	} else {

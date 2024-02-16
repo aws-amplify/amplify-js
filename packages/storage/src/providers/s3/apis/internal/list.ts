@@ -30,7 +30,7 @@ type ListInputArgs = {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input?: ListAllInput | ListPaginateInput
+	input?: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	const { options = {}, prefix: path = '' } = input ?? {};
 	const {
@@ -44,7 +44,7 @@ export const list = async (
 		logger.debug(
 			`listAll is set to true, ignoring ${
 				anyOptions?.pageSize ? `pageSize: ${anyOptions?.pageSize}` : ''
-			} ${anyOptions?.nextToken ? `nextToken: ${anyOptions?.nextToken}` : ''}.`
+			} ${anyOptions?.nextToken ? `nextToken: ${anyOptions?.nextToken}` : ''}.`,
 		);
 	}
 	const listParams = {
@@ -101,7 +101,7 @@ const _list = async ({
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
 		},
-		listParamsClone
+		listParamsClone,
 	);
 
 	if (!response?.Contents) {

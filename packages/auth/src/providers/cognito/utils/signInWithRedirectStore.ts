@@ -24,7 +24,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 		await Promise.all([
 			this.keyValueStorage.removeItem(authKeys.inflightOAuth),
@@ -36,7 +36,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 		await this.clearOAuthInflightData();
 		await this.keyValueStorage.removeItem(V5_HOSTED_UI_KEY); // remove in case a customer migrated an App from v5 to v6
@@ -47,7 +47,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 
 		return this.keyValueStorage.getItem(authKeys.oauthState);
@@ -57,7 +57,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 
 		return this.keyValueStorage.setItem(authKeys.oauthState, state);
@@ -67,7 +67,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 
 		return this.keyValueStorage.getItem(authKeys.oauthPKCE);
@@ -77,7 +77,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 
 		return this.keyValueStorage.setItem(authKeys.oauthPKCE, pkce);
@@ -91,7 +91,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 
 		return (
@@ -103,12 +103,12 @@ export class DefaultOAuthStore implements OAuthStore {
 		assertTokenProviderConfig(this.cognitoConfig);
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 
 		return await this.keyValueStorage.setItem(
 			authKeys.inflightOAuth,
-			`${inflight}`
+			`${inflight}`,
 		);
 	}
 
@@ -120,7 +120,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 
 		const isLegacyHostedUISignIn =
@@ -139,18 +139,18 @@ export class DefaultOAuthStore implements OAuthStore {
 
 	async storeOAuthSignIn(
 		oauthSignIn: boolean,
-		preferPrivateSession: boolean = false
+		preferPrivateSession: boolean = false,
 	): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
 		const authKeys = createKeysForAuthStorage(
 			name,
-			this.cognitoConfig.userPoolClientId
+			this.cognitoConfig.userPoolClientId,
 		);
 
 		return await this.keyValueStorage.setItem(
 			authKeys.oauthSignIn,
-			`${oauthSignIn},${preferPrivateSession}`
+			`${oauthSignIn},${preferPrivateSession}`,
 		);
 	}
 }

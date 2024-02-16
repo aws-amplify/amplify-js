@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import type { V6Client } from '@aws-amplify/api-graphql';
+
 export { GraphQLQuery, GraphQLSubscription, SelectionSet } from './types';
 export { generateClient } from './API';
 
@@ -12,8 +14,6 @@ export type {
 } from '@aws-amplify/api-graphql';
 
 export { CONNECTION_STATE_CHANGE } from '@aws-amplify/api-graphql';
-
-import type { V6Client } from '@aws-amplify/api-graphql';
 
 // explicitly defaulting to `never` here resolves
 // TS2589: Type instantiation is excessively deep and possibly infinite.

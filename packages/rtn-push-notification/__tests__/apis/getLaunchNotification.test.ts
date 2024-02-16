@@ -34,7 +34,7 @@ describe('getLaunchNotification', () => {
 		expect(await getLaunchNotification()).toStrictEqual(
 			expect.objectContaining({
 				body: `normalized-${nativeMessage.body}`,
-			})
+			}),
 		);
 		expect(mockGetLaunchNotificationNative).toHaveBeenCalled();
 		expect(mockNormalizeNativeMessage).toHaveBeenCalledWith(nativeMessage);

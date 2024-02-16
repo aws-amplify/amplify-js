@@ -36,7 +36,7 @@ describe('Mutex', function () {
 			setTimeout(() => {
 				flag = true;
 				release();
-			}, 50)
+			}, 50),
 		);
 
 		return mutex.acquire().then(release => {
@@ -63,7 +63,7 @@ describe('Mutex', function () {
 			.runExclusive<number>(() => Promise.reject('foo'))
 			.then(
 				() => Promise.reject('should have been rejected'),
-				value => expect(value).toBe('foo')
+				value => expect(value).toBe('foo'),
 			);
 	});
 
@@ -74,7 +74,7 @@ describe('Mutex', function () {
 			})
 			.then(
 				() => Promise.reject('should have been rejected'),
-				value => expect(value).toBe('foo')
+				value => expect(value).toBe('foo'),
 			);
 	});
 
@@ -87,8 +87,8 @@ describe('Mutex', function () {
 					setTimeout(() => {
 						flag = true;
 						resolve();
-					}, 50)
-				)
+					}, 50),
+				),
 		);
 
 		return mutex.runExclusive(() => expect(flag).toBe(true));
@@ -104,7 +104,7 @@ describe('Mutex', function () {
 			})
 			.then(
 				() => undefined,
-				() => undefined
+				() => undefined,
 			);
 
 		return mutex.runExclusive(() => expect(flag).toBe(true));

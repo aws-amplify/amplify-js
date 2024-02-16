@@ -16,7 +16,7 @@ export const loadNetInfo = (): NetInfoModule => {
 		}
 
 		throw new Error(
-			'Ensure `@react-native-community/netinfo` is installed and linked.'
+			'Ensure `@react-native-community/netinfo` is installed and linked.',
 		);
 	} catch (e) {
 		// The error parsing logic cannot be extract as with metro the `require`
@@ -24,7 +24,7 @@ export const loadNetInfo = (): NetInfoModule => {
 		// another module and that causes error
 		const message = (e as Error).message.replace(
 			/undefined/g,
-			'@react-native-community/netinfo'
+			'@react-native-community/netinfo',
 		);
 		throw new Error(message);
 	}

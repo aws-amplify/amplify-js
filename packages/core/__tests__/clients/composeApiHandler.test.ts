@@ -30,7 +30,7 @@ describe(composeServiceApi.name, () => {
 			async output => ({
 				Result: 'from API',
 			}),
-			defaultConfig
+			defaultConfig,
 		);
 		const output = await api({ bar: 'baz', foo: 'foo' }, 'Input');
 		expect(mockTransferHandler).toHaveBeenCalledTimes(1);
@@ -39,7 +39,7 @@ describe(composeServiceApi.name, () => {
 			expect.objectContaining({
 				bar: 'baz',
 				foo: 'foo',
-			})
+			}),
 		);
 	});
 
@@ -55,13 +55,13 @@ describe(composeServiceApi.name, () => {
 			async output => ({
 				Result: 'from API',
 			}),
-			defaultConfig
+			defaultConfig,
 		);
 		await api(config, 'Input');
 		expect(defaultConfig.endpointResolver).toHaveBeenCalledTimes(1);
 		expect(defaultConfig.endpointResolver).toHaveBeenCalledWith(
 			config,
-			'Input'
+			'Input',
 		);
 	});
 
@@ -79,13 +79,13 @@ describe(composeServiceApi.name, () => {
 			mockTransferHandler,
 			mockSerializer,
 			mockDeserializer,
-			defaultConfig
+			defaultConfig,
 		);
 		const output = await api({ bar: 'baz', foo: 'foo' }, 'Input');
 		expect(mockSerializer).toHaveBeenCalledTimes(1);
 		expect(mockSerializer).toHaveBeenCalledWith(
 			'Input',
-			defaultConfig.endpointResolver.mock.results[0].value
+			defaultConfig.endpointResolver.mock.results[0].value,
 		);
 		expect(mockDeserializer).toHaveBeenCalledTimes(1);
 		expect(mockDeserializer).toHaveBeenCalledWith(defaultResponse);

@@ -49,7 +49,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomSRPAuth(
-	input: SignInWithCustomSRPAuthInput
+	input: SignInWithCustomSRPAuthInput,
 ): Promise<SignInWithCustomSRPAuthOutput> {
 	const { username, password, options } = input;
 	const signInDetails: CognitoAuthSignInDetails = {
@@ -61,11 +61,11 @@ export async function signInWithCustomSRPAuth(
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignInPassword
+		AuthValidationErrorCode.EmptySignInPassword,
 	);
 
 	try {
@@ -79,7 +79,7 @@ export async function signInWithCustomSRPAuth(
 			password,
 			metadata,
 			authConfig,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 
 		const activeUsername = getActiveSignInUsername(username);
@@ -97,7 +97,7 @@ export async function signInWithCustomSRPAuth(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
@@ -109,7 +109,7 @@ export async function signInWithCustomSRPAuth(
 					data: await getCurrentUser(),
 				},
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
 			return {
 				isSignedIn: true,

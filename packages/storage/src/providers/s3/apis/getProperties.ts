@@ -15,7 +15,7 @@ import { getProperties as getPropertiesInternal } from './internal/getProperties
  * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
  */
 export const getProperties = (
-	input: GetPropertiesInput
+	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput> => {
 	return getPropertiesInternal(Amplify, input);
 };

@@ -23,7 +23,7 @@ export function getUserContextData({
 	const advancedSecurityData = amazonCognitoAdvancedSecurityData.getData(
 		username,
 		userPoolId,
-		userPoolClientId
+		userPoolClientId,
 	);
 
 	if (advancedSecurityData) {

@@ -35,7 +35,7 @@ export type DeleteObjectOutput = DeleteObjectCommandOutput;
 
 const deleteObjectSerializer = (
 	input: DeleteObjectInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): HttpRequest => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
@@ -48,7 +48,7 @@ const deleteObjectSerializer = (
 };
 
 const deleteObjectDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
@@ -71,5 +71,5 @@ export const deleteObject = composeServiceApi(
 	s3TransferHandler,
 	deleteObjectSerializer,
 	deleteObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

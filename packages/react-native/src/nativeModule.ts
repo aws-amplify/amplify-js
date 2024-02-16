@@ -18,5 +18,5 @@ export const nativeModule: RTNCore = NativeModules.AmplifyRTNCore
 				get() {
 					throw new Error(LINKING_ERROR);
 				},
-			}
-	  );
+			},
+		);

@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 export function assertServiceError(
-	error: unknown
+	error: unknown,
 ): asserts error is ServiceError {
 	if (
 		!error ||

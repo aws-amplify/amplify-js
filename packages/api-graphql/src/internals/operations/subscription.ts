@@ -20,7 +20,7 @@ export function subscriptionFactory(
 	client: any,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
-	operation: ModelOperation
+	operation: ModelOperation,
 ) {
 	const { name } = model as any;
 
@@ -36,7 +36,7 @@ export function subscriptionFactory(
 			model,
 			operation,
 			args,
-			modelIntrospection
+			modelIntrospection,
 		);
 
 		const auth = authModeParams(client, args);
@@ -49,7 +49,7 @@ export function subscriptionFactory(
 				query,
 				variables,
 			},
-			headers
+			headers,
 		) as GraphqlSubscriptionResult<object>;
 
 		return observable.pipe(
@@ -62,10 +62,10 @@ export function subscriptionFactory(
 					[data],
 					modelIntrospection,
 					auth.authMode,
-					auth.authToken
+					auth.authToken,
 				);
 				return initialized;
-			})
+			}),
 		);
 	};
 

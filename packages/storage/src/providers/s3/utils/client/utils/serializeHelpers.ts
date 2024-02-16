@@ -8,7 +8,7 @@ import { StorageError } from '../../../../../errors/StorageError';
  * @internal
  */
 export const assignStringVariables = (
-	values: Record<string, { toString: () => string } | undefined>
+	values: Record<string, { toString: () => string } | undefined>,
 ): Record<string, string> => {
 	const queryParams: Record<string, string> = {};
 	for (const [key, value] of Object.entries(values)) {
@@ -39,7 +39,7 @@ interface ObjectConfigs {
  * @internal
  */
 export const serializeObjectConfigsToHeaders = async (
-	input: ObjectConfigs
+	input: ObjectConfigs,
 ) => ({
 	...assignStringVariables({
 		'x-amz-acl': input.ACL,
@@ -55,7 +55,7 @@ export const serializeObjectConfigsToHeaders = async (
 });
 
 const serializeMetadata = (
-	metadata: Record<string, string> = {}
+	metadata: Record<string, string> = {},
 ): Record<string, string> =>
 	Object.keys(metadata).reduce((acc: any, suffix: string) => {
 		acc[`x-amz-meta-${suffix.toLowerCase()}`] = metadata[suffix];
@@ -77,14 +77,14 @@ export const serializePathnameObjectKey = (url: URL, key: string) => {
 
 export function validateS3RequiredParameter(
 	assertion: boolean,
-	paramName: string
+	paramName: string,
 ): asserts assertion {
 	if (!assertion) {
 		throw new StorageError({
 			name: AmplifyErrorCode.Unknown,
 			message: 'An unknown error has occurred.',
 			underlyingError: new TypeError(
-				`Expected a non-null value for S3 parameter ${paramName}`
+				`Expected a non-null value for S3 parameter ${paramName}`,
 			),
 			recoverySuggestion:
 				'This is likely to be a bug. Please reach out to library authors.',

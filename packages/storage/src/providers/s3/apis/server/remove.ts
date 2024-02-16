@@ -10,7 +10,7 @@ import { remove as removeInternal } from '../internal/remove';
 
 export const remove = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: RemoveInput
+	input: RemoveInput,
 ): Promise<RemoveOutput> => {
 	return removeInternal(getAmplifyServerContext(contextSpec).amplify, input);
 };

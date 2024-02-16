@@ -77,7 +77,7 @@ describe('syncMessages', () => {
 
 		expect(mockDefaultStorage.setItem).toHaveBeenCalledWith(
 			expect.stringContaining(STORAGE_KEY_SUFFIX),
-			JSON.stringify(simpleInAppMessages)
+			JSON.stringify(simpleInAppMessages),
 		);
 	});
 
@@ -93,7 +93,7 @@ describe('syncMessages', () => {
 			throw new Error();
 		});
 		await expect(syncMessages()).rejects.toStrictEqual(
-			expect.any(InAppMessagingError)
+			expect.any(InAppMessagingError),
 		);
 
 		expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
@@ -102,7 +102,7 @@ describe('syncMessages', () => {
 	it('Rejects if there is a failure getting messages', async () => {
 		mockGetInAppMessages.mockRejectedValueOnce(Error);
 		await expect(syncMessages()).rejects.toStrictEqual(
-			expect.any(InAppMessagingError)
+			expect.any(InAppMessagingError),
 		);
 
 		expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
@@ -111,7 +111,7 @@ describe('syncMessages', () => {
 	it('Rejects if there is a failure storing messages', async () => {
 		mockDefaultStorage.setItem.mockRejectedValueOnce(Error);
 		await expect(syncMessages()).rejects.toStrictEqual(
-			expect.any(InAppMessagingError)
+			expect.any(InAppMessagingError),
 		);
 	});
 });

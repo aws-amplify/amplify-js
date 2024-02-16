@@ -30,7 +30,7 @@ const SERVICE_NAME = 'cognito-idp';
  */
 const endpointResolver = ({ region }: EndpointResolverOptions) => ({
 	url: new AmplifyUrl(
-		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`
+		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`,
 	),
 });
 
@@ -82,7 +82,7 @@ export const getSharedHeaders = (operation: string): Headers => ({
 export const buildHttpRpcRequest = (
 	{ url }: Endpoint,
 	headers: Headers,
-	body: any
+	body: any,
 ): HttpRequest => ({
 	headers,
 	url,

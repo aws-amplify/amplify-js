@@ -44,7 +44,7 @@ export type CompleteMultipartUploadOutput = Pick<
 
 const completeMultipartUploadSerializer = async (
 	input: CompleteMultipartUploadInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
 		'content-type': 'application/xml',
@@ -68,13 +68,13 @@ const completeMultipartUploadSerializer = async (
 };
 
 const serializeCompletedMultipartUpload = (
-	input: CompletedMultipartUpload
+	input: CompletedMultipartUpload,
 ): string => {
 	if (!input.Parts?.length) {
 		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
 	}
 	return `<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${input.Parts.map(
-		serializeCompletedPartList
+		serializeCompletedPartList,
 	).join('')}</CompleteMultipartUpload>`;
 };
 
@@ -104,7 +104,7 @@ const parseXmlBodyOrThrow = async (response: HttpResponse): Promise<any> => {
 };
 
 const completeMultipartUploadDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<CompleteMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -128,7 +128,7 @@ const completeMultipartUploadDeserializer = async (
 // Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html#API_CompleteMultipartUpload_Example_4
 const retryWhenErrorWith200StatusCode = async (
 	response?: HttpResponse,
-	error?: unknown
+	error?: unknown,
 ): Promise<boolean> => {
 	if (!response) {
 		return false;
@@ -156,5 +156,5 @@ export const completeMultipartUpload = composeServiceApi(
 		...defaultConfig,
 		responseType: 'text',
 		retryDecider: retryWhenErrorWith200StatusCode,
-	}
+	},
 );

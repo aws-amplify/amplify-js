@@ -21,7 +21,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 jest.mock('../../../src/providers/cognito/tokenProvider');
 
@@ -64,7 +64,7 @@ describe('rememberDevice', () => {
 				AccessToken: mockAccessToken,
 				DeviceKey: mockDeviceMetadata.deviceKey,
 				DeviceRememberedStatus: 'remembered',
-			})
+			}),
 		);
 		expect(mockUpdateDeviceStatus).toHaveBeenCalledTimes(1);
 	});
@@ -79,7 +79,7 @@ describe('rememberDevice', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				UpdateDeviceStatusException.InvalidParameterException
+				UpdateDeviceStatusException.InvalidParameterException,
 			);
 		}
 	});

@@ -14,5 +14,5 @@ export const nativeModule: WebBrowserNativeModule =
 					get() {
 						throw new Error(LINKING_ERROR);
 					},
-				}
-		  );
+				},
+			);

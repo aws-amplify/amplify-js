@@ -104,7 +104,7 @@ const buildUserPoolSerializer =
 	};
 
 const buildUserPoolDeserializer = <Output>(): ((
-	response: HttpResponse
+	response: HttpResponse,
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
 		if (response.statusCode >= 300) {
@@ -119,7 +119,7 @@ const buildUserPoolDeserializer = <Output>(): ((
 };
 
 const handleEmptyResponseDeserializer = <Output>(): ((
-	response: HttpResponse
+	response: HttpResponse,
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
 		if (response.statusCode >= 300) {
@@ -136,147 +136,147 @@ export const initiateAuth = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<InitiateAuthInput>('InitiateAuth'),
 	buildUserPoolDeserializer<InitiateAuthOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 
 export const revokeToken = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<RevokeTokenInput>('RevokeToken'),
 	buildUserPoolDeserializer<RevokeTokenOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 
 export const signUp = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<SignUpInput>('SignUp'),
 	buildUserPoolDeserializer<SignUpOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const confirmSignUp = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ConfirmSignUpInput>('ConfirmSignUp'),
 	buildUserPoolDeserializer<ConfirmSignUpOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const forgotPassword = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ForgotPasswordInput>('ForgotPassword'),
 	buildUserPoolDeserializer<ForgotPasswordOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const confirmForgotPassword = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ConfirmForgotPasswordInput>('ConfirmForgotPassword'),
 	buildUserPoolDeserializer<ConfirmForgotPasswordOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const respondToAuthChallenge = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<RespondToAuthChallengeInput>(
-		'RespondToAuthChallenge'
+		'RespondToAuthChallenge',
 	),
 	buildUserPoolDeserializer<RespondToAuthChallengeOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const resendConfirmationCode = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ResendConfirmationCodeInput>(
-		'ResendConfirmationCode'
+		'ResendConfirmationCode',
 	),
 	buildUserPoolDeserializer<ResendConfirmationCodeOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const verifySoftwareToken = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<VerifySoftwareTokenInput>('VerifySoftwareToken'),
 	buildUserPoolDeserializer<VerifySoftwareTokenOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const associateSoftwareToken = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<AssociateSoftwareTokenInput>(
-		'AssociateSoftwareToken'
+		'AssociateSoftwareToken',
 	),
 	buildUserPoolDeserializer<AssociateSoftwareTokenOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const setUserMFAPreference = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<SetUserMFAPreferenceInput>('SetUserMFAPreference'),
 	buildUserPoolDeserializer<SetUserMFAPreferenceOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const getUser = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<GetUserInput>('GetUser'),
 	buildUserPoolDeserializer<GetUserOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const changePassword = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ChangePasswordInput>('ChangePassword'),
 	buildUserPoolDeserializer<ChangePasswordOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const confirmDevice = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ConfirmDeviceInput>('ConfirmDevice'),
 	buildUserPoolDeserializer<ConfirmDeviceOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const forgetDevice = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ForgetDeviceInput>('ForgetDevice'),
 	handleEmptyResponseDeserializer<ForgetDeviceOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const deleteUser = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<DeleteUserInput>('DeleteUser'),
 	handleEmptyResponseDeserializer<DeleteUserOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const getUserAttributeVerificationCode = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<GetUserAttributeVerificationCodeInput>(
-		'GetUserAttributeVerificationCode'
+		'GetUserAttributeVerificationCode',
 	),
 	buildUserPoolDeserializer<GetUserAttributeVerificationCodeOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const globalSignOut = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<GlobalSignOutInput>('GlobalSignOut'),
 	buildUserPoolDeserializer<GlobalSignOutOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const updateUserAttributes = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<UpdateUserAttributesInput>('UpdateUserAttributes'),
 	buildUserPoolDeserializer<UpdateUserAttributesOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const verifyUserAttribute = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<VerifyUserAttributeInput>('VerifyUserAttribute'),
 	buildUserPoolDeserializer<VerifyUserAttributeOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const updateDeviceStatus = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<UpdateDeviceStatusInput>('UpdateDeviceStatus'),
 	buildUserPoolDeserializer<UpdateDeviceStatusOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const listDevices = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ListDevicesInput>('ListDevices'),
 	buildUserPoolDeserializer<ListDevicesOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const deleteUserAttributes = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<DeleteUserAttributesInput>('DeleteUserAttributes'),
 	buildUserPoolDeserializer<DeleteUserAttributesOutput>(),
-	defaultConfig
+	defaultConfig,
 );

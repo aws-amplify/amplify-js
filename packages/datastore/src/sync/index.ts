@@ -72,7 +72,7 @@ export declare class MutationEvent {
 	constructor(init: ModelInit<MutationEvent>);
 	static copyOf(
 		src: MutationEvent,
-		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent
+		mutator: (draft: MutableModel<MutationEvent>) => void | MutationEvent,
 	): MutationEvent;
 }
 
@@ -90,7 +90,7 @@ export declare class ModelMetadata {
 	constructor(init: ModelInit<ModelMetadata>);
 	static copyOf(
 		src: ModelMetadata,
-		mutator: (draft: MutableModel<ModelMetadata>) => void | ModelMetadata
+		mutator: (draft: MutableModel<ModelMetadata>) => void | ModelMetadata,
 	): ModelMetadata;
 }
 
@@ -123,7 +123,7 @@ export class SyncEngine {
 	private unsleepSyncQueriesObservable: (() => void) | null;
 	private waitForSleepState: Promise<void>;
 	private syncQueriesObservableStartSleeping: (
-		value?: void | PromiseLike<void>
+		value?: void | PromiseLike<void>,
 	) => void;
 	private stopDisruptionListener: () => void;
 	private connectionDisrupted = false;
@@ -131,7 +131,7 @@ export class SyncEngine {
 	private runningProcesses: BackgroundProcessManager;
 
 	public getModelSyncedStatus(
-		modelConstructor: PersistentModelConstructor<any>
+		modelConstructor: PersistentModelConstructor<any>,
 	): boolean {
 		return this.modelSyncedStatus.get(modelConstructor)!;
 	}
@@ -152,7 +152,7 @@ export class SyncEngine {
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly amplifyContext: AmplifyContext,
-		private readonly connectivityMonitor?: DataStoreConnectivity
+		private readonly connectivityMonitor?: DataStoreConnectivity,
 	) {
 		this.runningProcesses = new BackgroundProcessManager();
 		this.waitForSleepState = new Promise(resolve => {
@@ -167,7 +167,7 @@ export class SyncEngine {
 			this.schema,
 			MutationEvent,
 			modelInstanceCreator,
-			ownSymbol
+			ownSymbol,
 		);
 
 		this.modelMerger = new ModelMerger(this.outbox, ownSymbol);
@@ -178,7 +178,7 @@ export class SyncEngine {
 			this.amplifyConfig,
 			this.authModeStrategy,
 			errorHandler,
-			this.amplifyContext
+			this.amplifyContext,
 		);
 
 		this.subscriptionsProcessor = new SubscriptionProcessor(
@@ -187,7 +187,7 @@ export class SyncEngine {
 			this.amplifyConfig,
 			this.authModeStrategy,
 			errorHandler,
-			this.amplifyContext
+			this.amplifyContext,
 		);
 
 		this.mutationsProcessor = new MutationProcessor(
@@ -201,7 +201,7 @@ export class SyncEngine {
 			this.authModeStrategy,
 			errorHandler,
 			conflictHandler,
-			this.amplifyContext
+			this.amplifyContext,
 		);
 
 		this.datastoreConnectivity =
@@ -268,7 +268,7 @@ export class SyncEngine {
 																this.disconnectionHandler();
 															handleDisconnect(err);
 														},
-													}
+													},
 												);
 
 												subscriptions.push(ctlSubsSubscription);
@@ -336,15 +336,15 @@ export class SyncEngine {
 
 															const model = this.modelInstanceCreator(
 																modelConstructor,
-																item
+																item,
 															);
 
 															await this.storage.runExclusive(storage =>
 																this.modelMerger.merge(
 																	storage,
 																	model,
-																	modelDefinition
-																)
+																	modelDefinition,
+																),
 															);
 
 															observer.next({
@@ -361,8 +361,8 @@ export class SyncEngine {
 																	isEmpty: !hasMore,
 																},
 															});
-														}, 'mutation processor event')
-												)
+														}, 'mutation processor event'),
+												),
 										);
 										//#endregion
 
@@ -377,18 +377,18 @@ export class SyncEngine {
 
 														const model = this.modelInstanceCreator(
 															modelConstructor,
-															item
+															item,
 														);
 
 														await this.storage.runExclusive(storage =>
 															this.modelMerger.merge(
 																storage,
 																model,
-																modelDefinition
-															)
+																modelDefinition,
+															),
 														);
-													}, 'subscription dataSubsObservable event')
-											)
+													}, 'subscription dataSubsObservable event'),
+											),
 										);
 										//#endregion
 									} else if (!online) {
@@ -406,9 +406,9 @@ export class SyncEngine {
 									}
 
 									doneStarting();
-								}, 'datastore connectivity event')
+								}, 'datastore connectivity event'),
 						);
-					}
+					},
 				);
 
 				this.storage
@@ -417,7 +417,7 @@ export class SyncEngine {
 						filter(({ model }) => {
 							const modelDefinition = this.getModelDefinition(model);
 							return modelDefinition.syncable === true;
-						})
+						}),
 					)
 					.subscribe({
 						next: async ({ opType, model, element, condition }) =>
@@ -430,7 +430,7 @@ export class SyncEngine {
 								const modelDefinition = this.getModelDefinition(model);
 								const graphQLCondition = predicateToGraphQLCondition(
 									condition!,
-									modelDefinition
+									modelDefinition,
 								);
 								const mutationEvent = createMutationInstanceFromModelOperation(
 									namespace.relationships!,
@@ -440,7 +440,7 @@ export class SyncEngine {
 									element,
 									graphQLCondition,
 									MutationEventConstructor,
-									this.modelInstanceCreator
+									this.modelInstanceCreator,
 								);
 
 								await this.outbox.enqueue(this.storage, mutationEvent);
@@ -492,13 +492,13 @@ export class SyncEngine {
 	}
 
 	private async getModelsMetadataWithNextFullSync(
-		currentTimeStamp: number
+		currentTimeStamp: number,
 	): Promise<Map<SchemaModel, [string, number]>> {
 		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
 			(
 				await this.runningProcesses.add(
 					() => this.getModelsMetadata(),
-					'sync/index getModelsMetadataWithNextFullSync'
+					'sync/index getModelsMetadataWithNextFullSync',
 				)
 			).map(
 				({
@@ -519,8 +519,8 @@ export class SyncEngine {
 						this.schema.namespaces[namespace].models[model],
 						[namespace, syncFrom!],
 					];
-				}
-			)
+				},
+			),
 		);
 
 		return modelLastSync;
@@ -551,7 +551,7 @@ export class SyncEngine {
 						> = new WeakMap();
 
 						const modelLastSync = await this.getModelsMetadataWithNextFullSync(
-							Date.now()
+							Date.now(),
 						);
 						const paginatingModels = new Set(modelLastSync.keys());
 
@@ -605,7 +605,7 @@ export class SyncEngine {
 											const page = items.filter(item => {
 												const itemId = getIdentifierValue(
 													modelDefinition,
-													item
+													item,
 												);
 
 												if (!idsInOutbox.has(itemId)) {
@@ -622,7 +622,7 @@ export class SyncEngine {
 												const opType = await this.modelMerger.merge(
 													storage,
 													item,
-													modelDefinition
+													modelDefinition,
 												);
 
 												if (opType !== undefined) {
@@ -635,8 +635,8 @@ export class SyncEngine {
 													storage,
 													modelConstructor,
 													page,
-													modelDefinition
-												))
+													modelDefinition,
+												)),
 											);
 
 											const counts = count.get(modelConstructor)!;
@@ -664,7 +664,7 @@ export class SyncEngine {
 											//#region update last sync for type
 											let modelMetadata = await this.getModelMetadata(
 												namespace,
-												modelName
+												modelName,
 											);
 
 											const { lastFullSync, fullSyncInterval } = modelMetadata;
@@ -676,8 +676,8 @@ export class SyncEngine {
 													? lastFullSync!
 													: Math.max(
 															lastFullSyncStartedAt,
-															isFullSync ? startedAt : lastFullSync!
-													  );
+															isFullSync ? startedAt : lastFullSync!,
+														);
 
 											modelMetadata = (
 												this.modelClasses
@@ -692,7 +692,7 @@ export class SyncEngine {
 											await this.storage.save(
 												modelMetadata,
 												undefined,
-												ownSymbol
+												ownSymbol,
 											);
 											//#endregion
 
@@ -751,8 +751,8 @@ export class SyncEngine {
 
 						logger.debug(
 							`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
-								Date.now() + msNextFullSync
-							)})`
+								Date.now() + msNextFullSync,
+							)})`,
 						);
 
 						// TODO: create `BackgroundProcessManager.sleep()` ... but, need to put
@@ -874,7 +874,7 @@ export class SyncEngine {
 			const modelMetadata = await this.getModelMetadata(namespace, model.name);
 			const syncPredicate = ModelPredicateCreator.getPredicates(
 				this.syncPredicates.get(model)!,
-				false
+				false,
 			);
 			const lastSyncPredicate = syncPredicate
 				? JSON.stringify(syncPredicate)
@@ -891,7 +891,7 @@ export class SyncEngine {
 						lastSyncPredicate,
 					}),
 					undefined,
-					ownSymbol
+					ownSymbol,
 				);
 			} else {
 				const prevSyncPredicate = modelMetadata.lastSyncPredicate
@@ -909,7 +909,7 @@ export class SyncEngine {
 							draft.lastFullSync = null!;
 							(draft.lastSyncPredicate as any) = lastSyncPredicate;
 						}
-					})
+					}),
 				);
 			}
 
@@ -937,14 +937,14 @@ export class SyncEngine {
 
 	private async getModelMetadata(
 		namespace: string,
-		model: string
+		model: string,
 	): Promise<ModelMetadata> {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
 		const predicate = ModelPredicateCreator.createFromAST<ModelMetadata>(
 			this.schema.namespaces[SYNC].models[ModelMetadata.name],
-			{ and: [{ namespace: { eq: namespace } }, { model: { eq: model } }] }
+			{ and: [{ namespace: { eq: namespace } }, { model: { eq: model } }] },
 		);
 
 		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate, {
@@ -956,7 +956,7 @@ export class SyncEngine {
 	}
 
 	private getModelDefinition(
-		modelConstructor: PersistentModelConstructor<any>
+		modelConstructor: PersistentModelConstructor<any>,
 	): SchemaModel {
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -1122,7 +1122,7 @@ export class SyncEngine {
 				this.waitForSleepState.then(() => {
 					// unsleepSyncQueriesObservable will be set if waitForSleepState has resolved
 					this.unsleepSyncQueriesObservable!();
-				})
+				}),
 			)
 		);
 	}

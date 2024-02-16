@@ -17,7 +17,7 @@ export const calculateU = ({
 }): AuthBigInteger => {
 	const U = new BigInteger(
 		getHashFromHex(getPaddedHex(A) + getPaddedHex(B)),
-		16
+		16,
 	);
 
 	if (U.equals(BigInteger.ZERO)) {

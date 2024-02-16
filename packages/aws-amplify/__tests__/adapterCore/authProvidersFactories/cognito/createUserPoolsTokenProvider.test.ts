@@ -37,29 +37,29 @@ describe('createUserPoolsTokenProvider', () => {
 	it('should create a token provider with underlying dependencies', () => {
 		const tokenProvider = createUserPoolsTokenProvider(
 			mockAuthConfig,
-			mockKeyValueStorage
+			mockKeyValueStorage,
 		);
 
 		expect(MockDefaultTokenStore).toHaveBeenCalledTimes(1);
 		const mockTokenStoreInstance = MockDefaultTokenStore.mock.instances[0];
 		expect(mockTokenStoreInstance.setAuthConfig).toHaveBeenCalledWith(
-			mockAuthConfig
+			mockAuthConfig,
 		);
 		expect(mockTokenStoreInstance.setKeyValueStorage).toHaveBeenCalledWith(
-			mockKeyValueStorage
+			mockKeyValueStorage,
 		);
 
 		expect(MockTokenOrchestrator).toHaveBeenCalledTimes(1);
 		const mockTokenOrchestratorInstance =
 			MockTokenOrchestrator.mock.instances[0];
 		expect(mockTokenOrchestratorInstance.setAuthConfig).toHaveBeenCalledWith(
-			mockAuthConfig
+			mockAuthConfig,
 		);
 		expect(
-			mockTokenOrchestratorInstance.setAuthTokenStore
+			mockTokenOrchestratorInstance.setAuthTokenStore,
 		).toHaveBeenCalledWith(mockTokenStoreInstance);
 		expect(
-			mockTokenOrchestratorInstance.setTokenRefresher
+			mockTokenOrchestratorInstance.setTokenRefresher,
 		).toHaveBeenCalledWith(mockRefreshAuthTokens);
 
 		expect(tokenProvider).toBeDefined();
@@ -68,7 +68,7 @@ describe('createUserPoolsTokenProvider', () => {
 	it('should call TokenOrchestrator.getTokens method with the default forceRefresh value', async () => {
 		const tokenProvider = createUserPoolsTokenProvider(
 			mockAuthConfig,
-			mockKeyValueStorage
+			mockKeyValueStorage,
 		);
 		const mockTokenOrchestratorInstance =
 			MockTokenOrchestrator.mock.instances[0];
@@ -83,7 +83,7 @@ describe('createUserPoolsTokenProvider', () => {
 	it('should call TokenOrchestrator.getTokens method with the specified forceRefresh value', async () => {
 		const tokenProvider = createUserPoolsTokenProvider(
 			mockAuthConfig,
-			mockKeyValueStorage
+			mockKeyValueStorage,
 		);
 		const mockTokenOrchestratorInstance =
 			MockTokenOrchestrator.mock.instances[0];

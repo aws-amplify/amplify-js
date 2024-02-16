@@ -44,7 +44,7 @@ describe('registerHeadlessTask', () => {
 
 		expect(mockReactNativeRegisterHeadlessTask).toHaveBeenCalledWith(
 			nativeHeadlessTaskKey,
-			expect.any(Function)
+			expect.any(Function),
 		);
 	});
 
@@ -63,7 +63,7 @@ describe('registerHeadlessTask', () => {
 		expect(listener).toHaveBeenCalledWith(
 			expect.objectContaining({
 				body: `normalized-${nativeMessage.body}`,
-			})
+			}),
 		);
 	});
 

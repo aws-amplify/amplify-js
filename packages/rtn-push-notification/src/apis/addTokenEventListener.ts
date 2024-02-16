@@ -7,7 +7,7 @@ import { TokenPayload } from '../types';
 
 export const addTokenEventListener = (
 	event: string,
-	listener: (token: string) => void
+	listener: (token: string) => void,
 ): EmitterSubscription =>
 	nativeEventEmitter.addListener(event, ({ token }: TokenPayload) => {
 		listener(token);

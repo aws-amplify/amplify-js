@@ -40,7 +40,7 @@ describe('Pinpoint Provider Util: resolveEndpointId', () => {
 				credentials,
 				identityId,
 				region,
-			})
+			}),
 		).toBe(endpointId);
 	});
 
@@ -53,7 +53,7 @@ describe('Pinpoint Provider Util: resolveEndpointId', () => {
 				credentials,
 				identityId,
 				region,
-			})
+			}),
 		).toBe(endpointId);
 
 		expect(mockUpdateEndpoint).toHaveBeenCalledWith({
@@ -74,7 +74,7 @@ describe('Pinpoint Provider Util: resolveEndpointId', () => {
 				credentials,
 				identityId,
 				region,
-			})
+			}),
 		).rejects.toThrow('Endpoint ID');
 	});
 });

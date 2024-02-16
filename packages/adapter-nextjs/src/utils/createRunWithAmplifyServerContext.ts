@@ -34,7 +34,7 @@ export const createRunWithAmplifyServerContext = ({
 								createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
 								),
-						  );
+							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,
 					keyValueStorage,

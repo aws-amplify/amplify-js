@@ -705,10 +705,10 @@ export function generateGraphQLDocument(
 								return acc;
 							},
 							{},
-					  )
+						)
 					: {
 							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
-					  });
+						});
 			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
 		case 'LIST':
 			graphQLArguments ??
@@ -752,13 +752,13 @@ export function generateGraphQLDocument(
 		graphQLArguments
 			? `(${Object.entries(graphQLArguments).map(
 					([fieldName, type]) => `\$${fieldName}: ${type}`,
-			  )})`
+				)})`
 			: ''
 	} { ${graphQLFieldName}${
 		graphQLArguments
 			? `(${Object.keys(graphQLArguments).map(
 					fieldName => `${fieldName}: \$${fieldName}`,
-			  )})`
+				)})`
 			: ''
 	} { ${graphQLSelectionSet} } }`;
 
@@ -808,7 +808,7 @@ export function buildGraphQLVariables(
 
 								return !isReadOnly;
 							}),
-					  )
+						)
 					: {},
 			};
 			break;
@@ -824,7 +824,7 @@ export function buildGraphQLVariables(
 								return acc;
 							},
 							{},
-					  )
+						)
 					: { [primaryKeyFieldName]: arg[primaryKeyFieldName] };
 			}
 

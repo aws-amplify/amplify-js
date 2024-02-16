@@ -55,7 +55,7 @@ describe('Analytics Personalize API: record', () => {
 		mockResolveConfig.mockReturnValue(mockPersonalizeConfig);
 		mockResolveCachedSession.mockReturnValue(mockCachedSession);
 		mockResolveCredentials.mockReturnValue(
-			Promise.resolve(mockCredentialConfig)
+			Promise.resolve(mockCredentialConfig),
 		);
 		mockGetEventBuffer.mockImplementation(() => mockEventBuffer);
 	});
@@ -80,7 +80,7 @@ describe('Analytics Personalize API: record', () => {
 				trackingId: mockPersonalizeConfig.trackingId,
 				...mockCachedSession,
 				event: mockRecordInput,
-			})
+			}),
 		);
 	});
 
@@ -108,14 +108,14 @@ describe('Analytics Personalize API: record', () => {
 		expect(mockUpdateCachedSession).toHaveBeenCalledWith(
 			newSession.userId,
 			mockCachedSession.sessionId,
-			mockCachedSession.userId
+			mockCachedSession.userId,
 		);
 		expect(mockAppend).toHaveBeenCalledWith(
 			expect.objectContaining({
 				trackingId: mockPersonalizeConfig.trackingId,
 				...newSession,
 				event: updatedMockRecordInput,
-			})
+			}),
 		);
 	});
 
@@ -139,14 +139,14 @@ describe('Analytics Personalize API: record', () => {
 		expect(mockUpdateCachedSession).toHaveBeenCalledWith(
 			newSession.userId,
 			mockCachedSession.sessionId,
-			mockCachedSession.userId
+			mockCachedSession.userId,
 		);
 		expect(mockAppend).toHaveBeenCalledWith(
 			expect.objectContaining({
 				trackingId: mockPersonalizeConfig.trackingId,
 				...newSession,
 				event: mockRecordInput,
-			})
+			}),
 		);
 	});
 
@@ -165,7 +165,7 @@ describe('Analytics Personalize API: record', () => {
 				...mockCachedSession,
 				event: updatedMockRecordInput,
 			},
-			mockEventBuffer
+			mockEventBuffer,
 		);
 		expect(mockAppend).not.toHaveBeenCalled();
 	});
@@ -192,7 +192,7 @@ describe('Analytics Personalize API: record', () => {
 				trackingId: mockPersonalizeConfig.trackingId,
 				...mockCachedSession,
 				event: mockRecordInput,
-			})
+			}),
 		);
 		expect(mockGetLength).toHaveBeenCalledTimes(1);
 		expect(mockFlushAll).toHaveBeenCalledTimes(1);
@@ -206,7 +206,7 @@ describe('Analytics Personalize API: record', () => {
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),
-			expect.any(Error)
+			expect.any(Error),
 		);
 	});
 

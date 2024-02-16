@@ -64,7 +64,7 @@ export const uploadData = (input: UploadDataInput): UploadDataOutput => {
 	const dataByteLength = byteLength(data);
 	assertValidationError(
 		dataByteLength === undefined || dataByteLength <= MAX_OBJECT_SIZE,
-		StorageValidationErrorCode.ObjectIsTooLarge
+		StorageValidationErrorCode.ObjectIsTooLarge,
 	);
 
 	if (dataByteLength && dataByteLength <= DEFAULT_PART_SIZE) {

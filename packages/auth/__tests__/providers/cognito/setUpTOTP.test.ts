@@ -19,7 +19,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('setUpTOTP', () => {
@@ -56,7 +56,7 @@ describe('setUpTOTP', () => {
 			},
 			{
 				AccessToken: mockAccessToken,
-			}
+			},
 		);
 		expect(result.sharedSecret).toEqual(secretCode);
 		expect(result.getSetupUri('appName', 'amplify')).toBeInstanceOf(URL);
@@ -66,7 +66,7 @@ describe('setUpTOTP', () => {
 		expect.assertions(2);
 		mockAssociateSoftwareToken.mockImplementation(() => {
 			throw getMockError(
-				AssociateSoftwareTokenException.InvalidParameterException
+				AssociateSoftwareTokenException.InvalidParameterException,
 			);
 		});
 		try {
@@ -74,7 +74,7 @@ describe('setUpTOTP', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				AssociateSoftwareTokenException.InvalidParameterException
+				AssociateSoftwareTokenException.InvalidParameterException,
 			);
 		}
 	});

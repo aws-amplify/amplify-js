@@ -14,7 +14,7 @@ export const loadAsyncStorage = (): AsyncStorageStatic => {
 		}
 
 		throw new Error(
-			'Ensure `@react-native-async-storage/async-storage` is installed and linked.'
+			'Ensure `@react-native-async-storage/async-storage` is installed and linked.',
 		);
 	} catch (e) {
 		// The error parsing logic cannot be extracted with metro as the `require`
@@ -22,7 +22,7 @@ export const loadAsyncStorage = (): AsyncStorageStatic => {
 		// another module and that causes an error
 		const message = (e as Error).message.replace(
 			/undefined/g,
-			'@react-native-async-storage/async-storage'
+			'@react-native-async-storage/async-storage',
 		);
 		throw new Error(message);
 	}

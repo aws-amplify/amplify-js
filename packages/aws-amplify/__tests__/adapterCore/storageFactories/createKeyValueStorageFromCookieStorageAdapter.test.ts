@@ -15,7 +15,7 @@ describe('keyValueStorage', () => {
 	describe('createKeyValueStorageFromCookiesStorageAdapter', () => {
 		it('should return a key value storage', () => {
 			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
-				mockCookiesStorageAdapter
+				mockCookiesStorageAdapter,
 			);
 
 			expect(keyValueStorage).toBeDefined();
@@ -23,7 +23,7 @@ describe('keyValueStorage', () => {
 
 		describe('the returned key value storage', () => {
 			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
-				mockCookiesStorageAdapter
+				mockCookiesStorageAdapter,
 			);
 
 			it('should set item', async () => {
@@ -36,7 +36,7 @@ describe('keyValueStorage', () => {
 					{
 						...defaultSetCookieOptions,
 						expires: expect.any(Date),
-					}
+					},
 				);
 			});
 
@@ -50,7 +50,7 @@ describe('keyValueStorage', () => {
 					{
 						...defaultSetCookieOptions,
 						expires: expect.any(Date),
-					}
+					},
 				);
 			});
 

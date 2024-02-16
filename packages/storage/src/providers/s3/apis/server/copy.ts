@@ -10,7 +10,7 @@ import { copy as copyInternal } from '../internal/copy';
 
 export const copy = async (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: CopyInput
+	input: CopyInput,
 ): Promise<CopyOutput> => {
 	return copyInternal(getAmplifyServerContext(contextSpec).amplify, input);
 };

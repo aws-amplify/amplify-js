@@ -39,7 +39,7 @@ export type CreateMultipartUploadOutput = Pick<
 
 const createMultipartUploadSerializer = async (
 	input: CreateMultipartUploadInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = await serializeObjectConfigsToHeaders(input);
 	const url = new AmplifyUrl(endpoint.url.toString());
@@ -54,7 +54,7 @@ const createMultipartUploadSerializer = async (
 };
 
 const createMultipartUploadDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<CreateMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -75,5 +75,5 @@ export const createMultipartUpload = composeServiceApi(
 	s3TransferHandler,
 	createMultipartUploadSerializer,
 	createMultipartUploadDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

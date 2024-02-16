@@ -7,7 +7,7 @@ import { NativeMessage, PushNotificationMessage } from '../types';
 import { normalizeNativeMessage } from '../utils';
 
 export const registerHeadlessTask = (
-	task: (message: PushNotificationMessage | null) => Promise<void>
+	task: (message: PushNotificationMessage | null) => Promise<void>,
 ): void => {
 	const { NativeHeadlessTaskKey } = getConstants();
 	if (NativeHeadlessTaskKey) {
@@ -15,7 +15,7 @@ export const registerHeadlessTask = (
 			NativeHeadlessTaskKey,
 			() => async (nativeMessage: NativeMessage) => {
 				await task(normalizeNativeMessage(nativeMessage));
-			}
+			},
 		);
 	}
 };
