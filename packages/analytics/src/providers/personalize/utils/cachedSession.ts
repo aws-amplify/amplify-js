@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Cache } from '@aws-amplify/core';
-import { isBrowser, amplifyUuid } from '@aws-amplify/core/internals/utils';
+import { amplifyUuid, isBrowser } from '@aws-amplify/core/internals/utils';
 
 const PERSONALIZE_CACHE_USERID = '_awsct_uid';
 const PERSONALIZE_CACHE_SESSIONID = '_awsct_sid';
@@ -12,14 +12,14 @@ const CACHE_EXPIRY_IN_DAYS = 7;
 
 const normalize = (key: string): string =>
 	[key, isBrowser() ? window.location.host : DEFAULT_CACHE_PREFIX].join(
-		DELIMITER
+		DELIMITER,
 	);
 
 const getCache = (key: string) => Cache.getItem(normalize(key));
 
 const setCache = (key: string, value: unknown) => {
 	const expiredAt = new Date(
-		Date.now() + 3_600_000 * 24 * CACHE_EXPIRY_IN_DAYS
+		Date.now() + 3_600_000 * 24 * CACHE_EXPIRY_IN_DAYS,
 	);
 	Cache.setItem(normalize(key), value, {
 		expires: expiredAt.getTime(),
@@ -28,7 +28,7 @@ const setCache = (key: string, value: unknown) => {
 
 export const resolveCachedSession = async () => {
 	let sessionId: string | undefined = await getCache(
-		PERSONALIZE_CACHE_SESSIONID
+		PERSONALIZE_CACHE_SESSIONID,
 	);
 	if (!sessionId) {
 		sessionId = amplifyUuid();
@@ -46,7 +46,7 @@ export const resolveCachedSession = async () => {
 export const updateCachedSession = (
 	newUserId?: string,
 	currentSessionId?: string,
-	currentUserId?: string
+	currentUserId?: string,
 ) => {
 	const isNoCachedSession = !currentSessionId;
 	const isSignOutCase = !newUserId && !currentUserId;

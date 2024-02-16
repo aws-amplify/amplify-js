@@ -15,7 +15,7 @@ jest.mock('@aws-amplify/core', () => ({
 	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('fetchMFAPreference', () => {
@@ -56,7 +56,7 @@ describe('fetchMFAPreference', () => {
 			},
 			{
 				AccessToken: mockAccessToken,
-			}
+			},
 		);
 	});
 

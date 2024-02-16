@@ -67,7 +67,7 @@ export function isSchemaModel(obj: any): obj is SchemaModel {
 }
 
 export function isSchemaModelWithAttributes(
-	m: SchemaModel | SchemaNonModel
+	m: SchemaModel | SchemaNonModel,
 ): m is SchemaModel {
 	return isSchemaModel(m) && (m as SchemaModel).attributes !== undefined;
 }
@@ -106,7 +106,7 @@ type TargetNameAssociation = {
 };
 
 export function isTargetNameAssociation(
-	obj: any
+	obj: any,
 ): obj is TargetNameAssociation {
 	return obj?.targetName || obj?.targetNames;
 }
@@ -116,7 +116,7 @@ type FieldAssociation = {
 };
 export function isFieldAssociation(
 	obj: any,
-	fieldName: string
+	fieldName: string,
 ): obj is FieldAssociation {
 	return obj?.fields[fieldName]?.association?.connectionType;
 }
@@ -143,7 +143,7 @@ export type ModelAttributeAuth = {
 };
 
 export function isModelAttributeAuth(
-	attr: ModelAttribute
+	attr: ModelAttribute,
 ): attr is ModelAttributeAuth {
 	return (
 		attr.type === 'auth' &&
@@ -178,7 +178,7 @@ type ModelAttributeCompositeKey = {
 };
 
 export function isModelAttributeKey(
-	attr: ModelAttribute
+	attr: ModelAttribute,
 ): attr is ModelAttributeKey {
 	return (
 		attr.type === 'key' &&
@@ -189,13 +189,13 @@ export function isModelAttributeKey(
 }
 
 export function isModelAttributePrimaryKey(
-	attr: ModelAttribute
+	attr: ModelAttribute,
 ): attr is ModelAttributePrimaryKey {
 	return isModelAttributeKey(attr) && attr.properties.name === undefined;
 }
 
 export function isModelAttributeCompositeKey(
-	attr: ModelAttribute
+	attr: ModelAttribute,
 ): attr is ModelAttributeCompositeKey {
 	return (
 		isModelAttributeKey(attr) &&
@@ -253,7 +253,7 @@ export namespace GraphQLScalarType {
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
-		>
+		>,
 	) {
 		switch (scalar) {
 			case 'Boolean':
@@ -283,7 +283,7 @@ export namespace GraphQLScalarType {
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
-		>
+		>,
 	): ((val: string) => boolean) | ((val: number) => boolean) | undefined {
 		switch (scalar) {
 			case 'AWSDate':
@@ -322,7 +322,7 @@ export type AuthorizationRule = {
 };
 
 export function isGraphQLScalarType(
-	obj: any
+	obj: any,
 ): obj is keyof Omit<
 	typeof GraphQLScalarType,
 	'getJSType' | 'getValidationFunction'
@@ -335,7 +335,7 @@ export type ModelFieldType = {
 	modelConstructor?: ModelMeta<PersistentModel>;
 };
 export function isModelFieldType<T extends PersistentModel>(
-	obj: any
+	obj: any,
 ): obj is ModelFieldType {
 	const modelField: keyof ModelFieldType = 'model';
 	if (obj && obj[modelField]) return true;
@@ -388,7 +388,7 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
 	new (init: ModelInit<T, PersistentModelMetaData<T>>): T;
 	copyOf(
 		src: T,
-		mutator: (draft: MutableModel<T, PersistentModelMetaData<T>>) => void
+		mutator: (draft: MutableModel<T, PersistentModelMetaData<T>>) => void,
 	): T;
 };
 
@@ -462,9 +462,9 @@ export type IdentifierFields<
 	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<
 				T,
 				infer B
-	    >
-	  ? B[number] // B[number]
-	  : MetadataOrDefault<T, M>['identifier']['field']) &
+		  >
+		? B[number] // B[number]
+		: MetadataOrDefault<T, M>['identifier']['field']) &
 	string;
 
 export type IdentifierFieldsForInit<
@@ -477,11 +477,11 @@ export type IdentifierFieldsForInit<
 	: MetadataOrDefault<T, M>['identifier'] extends OptionallyManagedIdentifier<
 				T,
 				any
-	    >
-	  ? IdentifierFields<T, M>
-	  : MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
-	    ? IdentifierFields<T, M>
-	    : never;
+		  >
+		? IdentifierFields<T, M>
+		: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
+			? IdentifierFields<T, M>
+			: never;
 
 // Instance of model
 export declare const __modelMeta__: unique symbol;
@@ -495,23 +495,24 @@ export interface AsyncCollection<T> extends AsyncIterable<T> {
 	toArray(options?: { max?: number }): Promise<T[]>;
 }
 
-export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
-	? undefined extends InnerPromiseType
-		? InnerPromiseType | null
-		: InnerPromiseType
-	: T extends AsyncCollection<infer InnerCollectionType>
-	  ? InnerCollectionType[] | undefined
-	  : undefined extends T
-	    ? T | null
-	    : T;
+export type SettableFieldType<T> =
+	T extends Promise<infer InnerPromiseType>
+		? undefined extends InnerPromiseType
+			? InnerPromiseType | null
+			: InnerPromiseType
+		: T extends AsyncCollection<infer InnerCollectionType>
+			? InnerCollectionType[] | undefined
+			: undefined extends T
+				? T | null
+				: T;
 
 export type PredicateFieldType<T> = NonNullable<
 	Scalar<
 		T extends Promise<infer InnerPromiseType>
 			? InnerPromiseType
 			: T extends AsyncCollection<infer InnerCollectionType>
-			  ? InnerCollectionType
-			  : T
+				? InnerCollectionType
+				: T
 	>
 >;
 
@@ -598,12 +599,12 @@ type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
 		: T[P] extends Promise<infer InnerPromiseType>
-		  ? undefined extends InnerPromiseType
+			? undefined extends InnerPromiseType
 				? InnerPromiseType | null
 				: InnerPromiseType
-		  : T[P] extends AsyncCollection<infer InnerCollectionType>
-		    ? InnerCollectionType[] | undefined | null
-		    : DeepWritable<T[P]>;
+			: T[P] extends AsyncCollection<infer InnerCollectionType>
+				? InnerCollectionType[] | undefined | null
+				: DeepWritable<T[P]>;
 };
 
 export type MutableModel<
@@ -625,11 +626,12 @@ export type ModelInstanceMetadata = {
 export type IdentifierFieldValue<
 	T extends PersistentModel,
 	M extends PersistentModelMetaData<T>,
-> = MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
-	? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
-		? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
-		: never
-	: T[MetadataOrDefault<T, M>['identifier']['field']];
+> =
+	MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
+		? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
+			? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
+			: never
+		: T[MetadataOrDefault<T, M>['identifier']['field']];
 
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
@@ -638,7 +640,7 @@ export type IdentifierFieldOrIdentifierObject<
 
 export function isIdentifierObject<T extends PersistentModel>(
 	obj: any,
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): obj is IdentifierFields<T extends PersistentModel ? T : never, any> {
 	const keys = extractPrimaryKeyFieldNames(modelDefinition);
 
@@ -676,16 +678,14 @@ export type DataStoreSnapshot<T extends PersistentModel> = {
 
 //#region Predicates
 
-export type PredicateExpression<
-	M extends PersistentModel,
-	FT,
-> = TypeName<FT> extends keyof MapTypeToOperands<FT>
-	? (
-			operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
-			// make the operand type match the type they're trying to filter on
-			operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<FT>[TypeName<FT>]]
-	  ) => ModelPredicate<M>
-	: never;
+export type PredicateExpression<M extends PersistentModel, FT> =
+	TypeName<FT> extends keyof MapTypeToOperands<FT>
+		? (
+				operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
+				// make the operand type match the type they're trying to filter on
+				operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<FT>[TypeName<FT>]],
+			) => ModelPredicate<M>
+		: never;
 
 type EqualityOperators<T> = {
 	ne: T;
@@ -726,26 +726,26 @@ type MapTypeToOperands<T> = {
 type TypeName<T> = T extends string
 	? 'string'
 	: T extends number
-	  ? 'number'
-	  : T extends boolean
-	    ? 'boolean'
-	    : T extends string[]
-	      ? 'string[]'
-	      : T extends number[]
-	        ? 'number[]'
-	        : T extends boolean[]
-	          ? 'boolean[]'
-	          : never;
+		? 'number'
+		: T extends boolean
+			? 'boolean'
+			: T extends string[]
+				? 'string[]'
+				: T extends number[]
+					? 'number[]'
+					: T extends boolean[]
+						? 'boolean[]'
+						: never;
 
 export type PredicateGroups<T extends PersistentModel> = {
 	and: (
-		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
+		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>,
 	) => ModelPredicate<T>;
 	or: (
-		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
+		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>,
 	) => ModelPredicate<T>;
 	not: (
-		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
+		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>,
 	) => ModelPredicate<T>;
 };
 
@@ -754,7 +754,7 @@ export type ModelPredicate<M extends PersistentModel> = {
 } & PredicateGroups<M>;
 
 export type ProducerModelPredicate<M extends PersistentModel> = (
-	condition: ModelPredicate<M>
+	condition: ModelPredicate<M>,
 ) => ModelPredicate<M>;
 
 export type PredicatesGroup<T extends PersistentModel> = {
@@ -763,13 +763,13 @@ export type PredicatesGroup<T extends PersistentModel> = {
 };
 
 export function isPredicateObj<T extends PersistentModel>(
-	obj: any
+	obj: any,
 ): obj is PredicateObject<T> {
 	return obj && (<PredicateObject<T>>obj).field !== undefined;
 }
 
 export function isPredicateGroup<T extends PersistentModel>(
-	obj: any
+	obj: any,
 ): obj is PredicatesGroup<T> {
 	return obj && (<PredicatesGroup<T>>obj).type !== undefined;
 }
@@ -834,19 +834,17 @@ export type PaginationInput<T extends PersistentModel> = {
 };
 
 export type ProducerSortPredicate<M extends PersistentModel> = (
-	condition: SortPredicate<M>
+	condition: SortPredicate<M>,
 ) => SortPredicate<M>;
 
 export type SortPredicate<T extends PersistentModel> = {
 	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
 };
 
-export type SortPredicateExpression<
-	M extends PersistentModel,
-	FT,
-> = TypeName<FT> extends keyof MapTypeToOperands<FT>
-	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
-	: never;
+export type SortPredicateExpression<M extends PersistentModel, FT> =
+	TypeName<FT> extends keyof MapTypeToOperands<FT>
+		? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
+		: never;
 
 export enum SortDirection {
 	ASCENDING = 'ASCENDING',
@@ -872,14 +870,14 @@ export type SystemComponent = {
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
 			namsespaceName: NAMESPACES,
-			modelName: string
+			modelName: string,
 		) => PersistentModelConstructor<any>,
-		appId?: string
+		appId?: string,
 	): Promise<void>;
 };
 
 export type NamespaceResolver = (
-	modelConstructor: PersistentModelConstructor<any>
+	modelConstructor: PersistentModelConstructor<any>,
 ) => string;
 
 export type ControlMessageType<T> = {
@@ -972,7 +970,7 @@ export type AuthModeStrategyParams = {
 };
 
 export type AuthModeStrategy = (
-	authModeStrategyParams: AuthModeStrategyParams
+	authModeStrategyParams: AuthModeStrategyParams,
 ) => AuthModeStrategyReturn | Promise<AuthModeStrategyReturn>;
 
 export enum ModelOperation {
@@ -1031,7 +1029,7 @@ export async function syncExpression<
 	A extends Option<T>,
 >(
 	modelConstructor: PersistentModelConstructor<T>,
-	conditionProducer: ConditionProducer<T, A>
+	conditionProducer: ConditionProducer<T, A>,
 ): Promise<{
 	modelConstructor: PersistentModelConstructor<T>;
 	conditionProducer: ConditionProducer<T, A>;
@@ -1080,7 +1078,7 @@ export enum ProcessName {
 export const DISCARD = Symbol('DISCARD');
 
 export type ConflictHandler = (
-	conflict: SyncConflict
+	conflict: SyncConflict,
 ) =>
 	| Promise<PersistentModel | typeof DISCARD>
 	| PersistentModel
@@ -1145,7 +1143,7 @@ export type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
  * ```
  */
 export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
-	lambda: RecursiveModelPredicate<RT>
+	lambda: RecursiveModelPredicate<RT>,
 ) => PredicateInternalsKey;
 
 export type RecursiveModelPredicateAggregateExtender<
@@ -1153,11 +1151,11 @@ export type RecursiveModelPredicateAggregateExtender<
 > = (lambda: RecursiveModelPredicate<RT>) => PredicateInternalsKey[];
 
 export type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
-	predicates: RecursiveModelPredicateAggregateExtender<RT>
+	predicates: RecursiveModelPredicateAggregateExtender<RT>,
 ) => PredicateInternalsKey;
 
 export type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: RecursiveModelPredicateExtender<RT>
+	predicate: RecursiveModelPredicateExtender<RT>,
 ) => PredicateInternalsKey;
 
 export type RecursiveModelPredicate<RT extends PersistentModel> = {
@@ -1192,11 +1190,11 @@ export type RecursiveModelPredicate<RT extends PersistentModel> = {
  * ```
  */
 export type ModelPredicateExtender<RT extends PersistentModel> = (
-	lambda: V5ModelPredicate<RT>
+	lambda: V5ModelPredicate<RT>,
 ) => PredicateInternalsKey;
 
 export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
-	lambda: V5ModelPredicate<RT>
+	lambda: V5ModelPredicate<RT>,
 ) => PredicateInternalsKey[];
 
 export type ValuePredicate<
@@ -1206,8 +1204,8 @@ export type ValuePredicate<
 	[K in AllFieldOperators]: K extends 'between'
 		? (
 				inclusiveLowerBound: Scalar<MT>,
-				inclusiveUpperBound: Scalar<MT>
-		  ) => PredicateInternalsKey
+				inclusiveUpperBound: Scalar<MT>,
+			) => PredicateInternalsKey
 		: (operand: Scalar<MT>) => PredicateInternalsKey;
 };
 
@@ -1222,11 +1220,11 @@ export type V5ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 } & PredicateInternalsKey;
 
 export type ModelPredicateOperator<RT extends PersistentModel> = (
-	predicates: ModelPredicateAggregateExtender<RT>
+	predicates: ModelPredicateAggregateExtender<RT>,
 ) => PredicateInternalsKey;
 
 export type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: ModelPredicateExtender<RT>
+	predicate: ModelPredicateExtender<RT>,
 ) => PredicateInternalsKey;
 
 /**

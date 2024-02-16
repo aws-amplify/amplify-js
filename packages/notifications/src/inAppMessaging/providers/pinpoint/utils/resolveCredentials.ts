@@ -14,7 +14,7 @@ export const resolveCredentials = async () => {
 	const { credentials, identityId } = await fetchAuthSession();
 	assertValidationError(
 		!!credentials,
-		InAppMessagingValidationErrorCode.NoCredentials
+		InAppMessagingValidationErrorCode.NoCredentials,
 	);
 	return { credentials, identityId };
 };

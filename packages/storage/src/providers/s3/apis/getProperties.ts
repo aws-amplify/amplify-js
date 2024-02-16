@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { GetPropertiesOutput, GetPropertiesInput, S3Exception } from '../types';
+
+import { GetPropertiesInput, GetPropertiesOutput, S3Exception } from '../types';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
+
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
 
 /**
@@ -15,7 +18,7 @@ import { getProperties as getPropertiesInternal } from './internal/getProperties
  * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
  */
 export const getProperties = (
-	input: GetPropertiesInput
+	input: GetPropertiesInput,
 ): Promise<GetPropertiesOutput> => {
 	return getPropertiesInternal(Amplify, input);
 };

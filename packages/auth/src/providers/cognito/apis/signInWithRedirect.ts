@@ -33,7 +33,7 @@ import { createOAuthError } from '../utils/oauth/createOAuthError';
  * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
  */
 export async function signInWithRedirect(
-	input?: SignInWithRedirectInput
+	input?: SignInWithRedirectInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);

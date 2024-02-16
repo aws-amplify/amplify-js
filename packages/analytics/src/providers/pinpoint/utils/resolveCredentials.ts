@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetchAuthSession } from '@aws-amplify/core';
+
 import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
@@ -14,7 +15,8 @@ export const resolveCredentials = async () => {
 	const { credentials, identityId } = await fetchAuthSession();
 	assertValidationError(
 		!!credentials,
-		AnalyticsValidationErrorCode.NoCredentials
+		AnalyticsValidationErrorCode.NoCredentials,
 	);
+
 	return { credentials, identityId };
 };

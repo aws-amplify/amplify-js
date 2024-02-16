@@ -14,7 +14,7 @@ import { updateUserAttributes } from './updateUserAttributes';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const updateUserAttribute = async (
-	input: UpdateUserAttributeInput
+	input: UpdateUserAttributeInput,
 ): Promise<UpdateUserAttributeOutput> => {
 	const {
 		userAttribute: { attributeKey, value },

@@ -16,13 +16,13 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
 import {
-	buildStorageServiceError,
-	validateS3RequiredParameter,
 	assignStringVariables,
+	buildStorageServiceError,
 	map,
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
 
 // Content-length is ignored here because it's forbidden header
@@ -39,7 +39,7 @@ export type UploadPartOutput = Pick<
 
 const uploadPartSerializer = async (
 	input: UploadPartInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
@@ -54,6 +54,7 @@ const uploadPartSerializer = async (
 		partNumber: input.PartNumber + '',
 		uploadId: input.UploadId,
 	}).toString();
+
 	return {
 		method: 'PUT',
 		headers,
@@ -63,7 +64,7 @@ const uploadPartSerializer = async (
 };
 
 const uploadPartDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<UploadPartOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -82,5 +83,5 @@ export const uploadPart = composeServiceApi(
 	s3TransferHandler,
 	uploadPartSerializer,
 	uploadPartDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

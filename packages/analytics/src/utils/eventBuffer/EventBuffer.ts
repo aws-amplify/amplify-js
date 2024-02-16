@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
+
 import { EventBufferConfig, IAnalyticsClient } from './';
 
 const logger = new ConsoleLogger('EventBuffer');
@@ -15,7 +16,7 @@ export class EventBuffer<T> {
 
 	constructor(
 		config: EventBufferConfig,
-		getAnalyticsClient: () => IAnalyticsClient<T>
+		getAnalyticsClient: () => IAnalyticsClient<T>,
 	) {
 		this.list = [];
 		this.config = config;
@@ -27,7 +28,7 @@ export class EventBuffer<T> {
 		for (const event of events) {
 			if (this.list.length + 1 > this.config.bufferSize) {
 				logger.debug(
-					`Exceed ${typeof event} event buffer limits, event dropped`
+					`Exceed ${typeof event} event buffer limits, event dropped`,
 				);
 				continue;
 			}

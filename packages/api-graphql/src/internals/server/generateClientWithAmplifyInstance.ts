@@ -30,7 +30,7 @@ export function generateClientWithAmplifyInstance<
 		| V6ClientSSRRequest<T>
 		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>,
 >(
-	params: ServerClientGenerationParams & CommonPublicClientOptions
+	params: ServerClientGenerationParams & CommonPublicClientOptions,
 ): ClientType {
 	const client = {
 		[__amplify]: params.amplify,

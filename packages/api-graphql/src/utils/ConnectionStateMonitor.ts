@@ -69,10 +69,10 @@ export class ConnectionStateMonitor {
 		this._initialNetworkStateSubscription = ReachabilityMonitor().subscribe(
 			({ online }) => {
 				this.record(
-					online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
+					online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE,
 				);
 				this._initialNetworkStateSubscription?.unsubscribe();
-			}
+			},
 		);
 
 		this._linkedConnectionStateObservable =
@@ -94,9 +94,9 @@ export class ConnectionStateMonitor {
 			this._networkMonitoringSubscription = ReachabilityMonitor().subscribe(
 				({ online }) => {
 					this.record(
-						online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
+						online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE,
 					);
-				}
+				},
 			);
 		}
 	}
@@ -126,14 +126,14 @@ export class ConnectionStateMonitor {
 			.pipe(
 				map(value => {
 					return this.connectionStatesTranslator(value);
-				})
+				}),
 			)
 			.pipe(
 				filter(current => {
 					const toInclude = current !== previous;
 					previous = current;
 					return toInclude;
-				})
+				}),
 			);
 	}
 

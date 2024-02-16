@@ -47,13 +47,13 @@ export async function dispatchEvent(input: DispatchEventInput): Promise<void> {
 		const cachedMessages = await defaultStorage.getItem(key);
 		const messages: InAppMessage[] = await processInAppMessages(
 			cachedMessages ? JSON.parse(cachedMessages) : [],
-			input
+			input,
 		);
 		const flattenedMessages = flatten(messages);
 		if (flattenedMessages.length > 0) {
 			notifyEventListeners(
 				'messageReceived',
-				conflictHandler(flattenedMessages)
+				conflictHandler(flattenedMessages),
 			);
 		}
 	} catch (error) {

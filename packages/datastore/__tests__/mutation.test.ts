@@ -66,7 +66,7 @@ describe('Jittered backoff', () => {
 		const COUNT = 13;
 
 		const backoffs = [...Array(COUNT)].map((v, i) =>
-			safeJitteredBackoff(i)
+			safeJitteredBackoff(i),
 		) as (number | boolean)[];
 
 		const isExpectedValue = (value, attempt) => {
@@ -75,7 +75,7 @@ describe('Jittered backoff', () => {
 
 			if (lowerLimit < 2 ** 12 * 100) {
 				console.log(
-					`attempt ${attempt} (${value}) should be between ${lowerLimit} and ${upperLimit} inclusively.`
+					`attempt ${attempt} (${value}) should be between ${lowerLimit} and ${upperLimit} inclusively.`,
 				);
 				return value >= lowerLimit && value <= upperLimit;
 			} else {
@@ -98,7 +98,7 @@ describe('Jittered backoff', () => {
 		const COUNT = 1000;
 
 		const backoffs = [...Array(COUNT)].map((v, i) =>
-			safeJitteredBackoff(i, [], new Error('Network Error'))
+			safeJitteredBackoff(i, [], new Error('Network Error')),
 		) as (number | boolean)[];
 
 		backoffs.forEach(v => {
@@ -138,14 +138,14 @@ describe('MutationProcessor', () => {
 			expect(mockRetry.mock.results).toHaveLength(1);
 
 			await expect(mockRetry.mock.results[0].value).rejects.toEqual(
-				new Error('Network Error')
+				new Error('Network Error'),
 			);
 
 			expect(mutationProcessorSpy).toHaveBeenCalled();
 
 			// MutationProcessor.resume exited successfully, i.e., did not throw
 			await expect(mutationProcessorSpy.mock.results[0].value).resolves.toEqual(
-				undefined
+				undefined,
 			);
 		});
 	});
@@ -165,7 +165,7 @@ describe('MutationProcessor', () => {
 				'PostCustomPK',
 				'Delete',
 				data,
-				'{}'
+				'{}',
 			);
 
 			expect(input.postId).toEqual('100');
@@ -187,7 +187,7 @@ describe('MutationProcessor', () => {
 				'PostCustomPKSort',
 				'Delete',
 				data,
-				'{}'
+				'{}',
 			);
 
 			expect(input.id).toEqual('abcdef');
@@ -199,19 +199,24 @@ describe('MutationProcessor', () => {
 			await mutationProcessor.resume();
 			expect(mockRestPost).toHaveBeenCalledWith(
 				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
+				}),
+				expect.objectContaining({
 					url: new URL(
-						'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql'
+						'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
 					),
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
 							'x-amz-user-agent': getAmplifyUserAgent(
-								datastoreUserAgentDetails
+								datastoreUserAgentDetails,
 							),
 						}),
 						signingServiceInfo: undefined,
 						withCredentials: undefined,
 					}),
-				})
+				}),
 			);
 		});
 	});
@@ -253,7 +258,7 @@ describe('error handler', () => {
 				operation: 'Create',
 				process: 'mutate',
 				errorType: 'BadRecord',
-			})
+			}),
 		);
 	});
 
@@ -270,7 +275,7 @@ describe('error handler', () => {
 				operation: 'Create',
 				process: 'mutate',
 				errorType: 'Transient',
-			})
+			}),
 		);
 	});
 
@@ -288,7 +293,7 @@ describe('error handler', () => {
 				operation: 'Create',
 				process: 'mutate',
 				errorType: 'Transient',
-			})
+			}),
 		);
 	});
 
@@ -307,7 +312,7 @@ describe('error handler', () => {
 				operation: 'Create',
 				process: 'mutate',
 				errorType: 'Unauthorized',
-			})
+			}),
 		);
 	});
 });
@@ -382,7 +387,7 @@ async function instantiateMutationProcessor({
 		() => null,
 		errorHandler,
 		() => null as any,
-		{} as any
+		{} as any,
 	);
 
 	(mutationProcessor as any).observer = true;
@@ -407,7 +412,7 @@ async function createMutationEvent(model, opType): Promise<MutationEvent> {
 		model,
 		{},
 		MutationEventConstructor,
-		modelInstanceCreator
+		modelInstanceCreator,
 	);
 }
 

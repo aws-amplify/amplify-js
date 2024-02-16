@@ -3,6 +3,7 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
+
 import { CopyInput, CopyOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
@@ -13,7 +14,7 @@ import { logger } from '../../../../utils';
 
 export const copy = async (
 	amplify: AmplifyClassV6,
-	input: CopyInput
+	input: CopyInput,
 ): Promise<CopyOutput> => {
 	const {
 		source: { key: sourceKey },
@@ -23,7 +24,7 @@ export const copy = async (
 	assertValidationError(!!sourceKey, StorageValidationErrorCode.NoSourceKey);
 	assertValidationError(
 		!!destinationKey,
-		StorageValidationErrorCode.NoDestinationKey
+		StorageValidationErrorCode.NoDestinationKey,
 	);
 
 	const {
@@ -33,7 +34,7 @@ export const copy = async (
 	} = await resolveS3ConfigAndInput(amplify, input.source);
 	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput(
 		amplify,
-		input.destination
+		input.destination,
 	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
@@ -50,7 +51,7 @@ export const copy = async (
 			CopySource: finalCopySource,
 			Key: finalCopyDestination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
-		}
+		},
 	);
 
 	return {

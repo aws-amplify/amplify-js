@@ -3,23 +3,23 @@
 
 import {
 	StorageCopyInput,
+	StorageDownloadDataInput,
 	StorageGetPropertiesInput,
 	StorageGetUrlInput,
 	StorageListInput,
 	StorageRemoveInput,
-	StorageDownloadDataInput,
 	StorageUploadDataInput,
 } from '../../../types';
 import {
+	CopyDestinationOptions,
+	CopySourceOptions,
+	DownloadDataOptions,
 	GetPropertiesOptions,
 	GetUrlOptions,
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
-	DownloadDataOptions,
 	UploadDataOptions,
-	CopyDestinationOptions,
-	CopySourceOptions,
 } from '../types';
 
 // TODO: support use accelerate endpoint option

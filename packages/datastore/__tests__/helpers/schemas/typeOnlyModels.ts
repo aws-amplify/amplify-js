@@ -49,8 +49,8 @@ export class LegacyCustomRO {
 	static copyOf(
 		source: LegacyCustomRO,
 		mutator: (
-			draft: MutableModel<LegacyCustomRO, LegacyCustomROMETA>
-		) => MutableModel<LegacyCustomRO, LegacyCustomROMETA> | void
+			draft: MutableModel<LegacyCustomRO, LegacyCustomROMETA>,
+		) => MutableModel<LegacyCustomRO, LegacyCustomROMETA> | void,
 	): LegacyCustomRO {
 		return <LegacyCustomRO>(<unknown>undefined);
 	}
@@ -70,8 +70,8 @@ export class LegacyDefaultRO {
 	static copyOf(
 		source: LegacyDefaultRO,
 		mutator: (
-			draft: MutableModel<LegacyDefaultRO, LegacyDefaultROMETA>
-		) => MutableModel<LegacyDefaultRO, LegacyDefaultROMETA> | void
+			draft: MutableModel<LegacyDefaultRO, LegacyDefaultROMETA>,
+		) => MutableModel<LegacyDefaultRO, LegacyDefaultROMETA> | void,
 	): LegacyDefaultRO {
 		return <LegacyDefaultRO>(<unknown>undefined);
 	}
@@ -87,8 +87,8 @@ export class LegacyNoMetadata {
 	static copyOf(
 		source: LegacyNoMetadata,
 		mutator: (
-			draft: MutableModel<LegacyNoMetadata>
-		) => MutableModel<LegacyNoMetadata> | void
+			draft: MutableModel<LegacyNoMetadata>,
+		) => MutableModel<LegacyNoMetadata> | void,
 	): LegacyNoMetadata {
 		return <LegacyNoMetadata>(<unknown>undefined);
 	}
@@ -112,8 +112,8 @@ export class ManagedCustomRO {
 	static copyOf(
 		source: ManagedCustomRO,
 		mutator: (
-			draft: MutableModel<ManagedCustomRO>
-		) => MutableModel<ManagedCustomRO> | void
+			draft: MutableModel<ManagedCustomRO>,
+		) => MutableModel<ManagedCustomRO> | void,
 	): ManagedCustomRO {
 		return <ManagedCustomRO>(<unknown>undefined);
 	}
@@ -133,8 +133,8 @@ export class ManagedDefaultRO {
 	static copyOf(
 		source: ManagedDefaultRO,
 		mutator: (
-			draft: MutableModel<ManagedDefaultRO>
-		) => MutableModel<ManagedDefaultRO> | void
+			draft: MutableModel<ManagedDefaultRO>,
+		) => MutableModel<ManagedDefaultRO> | void,
 	): ManagedDefaultRO {
 		return <ManagedDefaultRO>(<unknown>undefined);
 	}
@@ -158,8 +158,8 @@ export class OptionallyManagedCustomRO {
 	static copyOf(
 		source: OptionallyManagedCustomRO,
 		mutator: (
-			draft: MutableModel<OptionallyManagedCustomRO>
-		) => MutableModel<OptionallyManagedCustomRO> | void
+			draft: MutableModel<OptionallyManagedCustomRO>,
+		) => MutableModel<OptionallyManagedCustomRO> | void,
 	): OptionallyManagedCustomRO {
 		return <OptionallyManagedCustomRO>(<unknown>undefined);
 	}
@@ -179,8 +179,8 @@ export class OptionallyManagedDefaultRO {
 	static copyOf(
 		source: OptionallyManagedDefaultRO,
 		mutator: (
-			draft: MutableModel<OptionallyManagedDefaultRO>
-		) => MutableModel<OptionallyManagedDefaultRO> | void
+			draft: MutableModel<OptionallyManagedDefaultRO>,
+		) => MutableModel<OptionallyManagedDefaultRO> | void,
 	): OptionallyManagedDefaultRO {
 		return <OptionallyManagedDefaultRO>(<unknown>undefined);
 	}
@@ -205,8 +205,8 @@ export class CompositeCustomRO {
 	static copyOf(
 		source: CompositeCustomRO,
 		mutator: (
-			draft: MutableModel<CompositeCustomRO>
-		) => MutableModel<CompositeCustomRO> | void
+			draft: MutableModel<CompositeCustomRO>,
+		) => MutableModel<CompositeCustomRO> | void,
 	): CompositeCustomRO {
 		return <CompositeCustomRO>(<unknown>undefined);
 	}
@@ -227,8 +227,8 @@ export class CompositeDefaultRO {
 	static copyOf(
 		source: CompositeDefaultRO,
 		mutator: (
-			draft: MutableModel<CompositeDefaultRO>
-		) => MutableModel<CompositeDefaultRO> | void
+			draft: MutableModel<CompositeDefaultRO>,
+		) => MutableModel<CompositeDefaultRO> | void,
 	): CompositeDefaultRO {
 		return <CompositeDefaultRO>(<unknown>undefined);
 	}
@@ -252,8 +252,8 @@ export class CustomIdentifierCustomRO {
 	static copyOf(
 		source: CustomIdentifierCustomRO,
 		mutator: (
-			draft: MutableModel<CustomIdentifierCustomRO>
-		) => MutableModel<CustomIdentifierCustomRO> | void
+			draft: MutableModel<CustomIdentifierCustomRO>,
+		) => MutableModel<CustomIdentifierCustomRO> | void,
 	): CustomIdentifierCustomRO {
 		return <CustomIdentifierCustomRO>(<unknown>undefined);
 	}
@@ -273,8 +273,8 @@ export class CustomIdentifierDefaultRO {
 	static copyOf(
 		source: CustomIdentifierDefaultRO,
 		mutator: (
-			draft: MutableModel<CustomIdentifierDefaultRO>
-		) => MutableModel<CustomIdentifierDefaultRO> | void
+			draft: MutableModel<CustomIdentifierDefaultRO>,
+		) => MutableModel<CustomIdentifierDefaultRO> | void,
 	): CustomIdentifierDefaultRO {
 		return <CustomIdentifierDefaultRO>(<unknown>undefined);
 	}
@@ -293,8 +293,8 @@ export class CustomIdentifierNoRO {
 	static copyOf(
 		source: CustomIdentifierNoRO,
 		mutator: (
-			draft: MutableModel<CustomIdentifierNoRO>
-		) => MutableModel<CustomIdentifierNoRO> | void
+			draft: MutableModel<CustomIdentifierNoRO>,
+		) => MutableModel<CustomIdentifierNoRO> | void,
 	): CustomIdentifierDefaultRO {
 		return undefined!;
 	}

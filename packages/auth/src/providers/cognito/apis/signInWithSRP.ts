@@ -36,6 +36,7 @@ import {
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Signs a user in
@@ -49,7 +50,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithSRP(
-	input: SignInWithSRPInput
+	input: SignInWithSRPInput,
 ): Promise<SignInWithSRPOutput> {
 	const { username, password } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -61,11 +62,11 @@ export async function signInWithSRP(
 	const clientMetaData = input.options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignInPassword
+		AuthValidationErrorCode.EmptySignInPassword,
 	);
 
 	try {
@@ -79,7 +80,7 @@ export async function signInWithSRP(
 			password,
 			clientMetaData,
 			authConfig,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 
 		const activeUsername = getActiveSignInUsername(username);
@@ -98,19 +99,13 @@ export async function signInWithSRP(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
-			Hub.dispatch(
-				'auth',
-				{
-					event: 'signedIn',
-					data: await getCurrentUser(),
-				},
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

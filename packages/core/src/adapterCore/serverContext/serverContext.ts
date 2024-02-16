@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyServer } from './types';
-import { serverContextRegistry } from './serverContextRegistry';
 import { AmplifyClass } from '../../singleton';
 import { LibraryOptions, ResourcesConfig } from '../../singleton/types';
 import { AmplifyServerContextError } from '../error';
+
+import { serverContextRegistry } from './serverContextRegistry';
+import { AmplifyServer } from './types';
 
 /**
  * Creates an Amplify server context.
@@ -15,7 +16,7 @@ import { AmplifyServerContextError } from '../error';
  */
 export const createAmplifyServerContext = (
 	amplifyConfig: ResourcesConfig,
-	libraryOptions: LibraryOptions
+	libraryOptions: LibraryOptions,
 ): AmplifyServer.ContextSpec => {
 	const amplify = new AmplifyClass();
 	amplify.configure(amplifyConfig, libraryOptions);
@@ -31,7 +32,7 @@ export const createAmplifyServerContext = (
  * @returns The Amplify server context.
  */
 export const getAmplifyServerContext = (
-	contextSpec: AmplifyServer.ContextSpec
+	contextSpec: AmplifyServer.ContextSpec,
 ): AmplifyServer.Context => {
 	assertContextSpec(contextSpec);
 	const context = serverContextRegistry.get(contextSpec);
@@ -53,7 +54,7 @@ export const getAmplifyServerContext = (
  * @param contextSpec The context spec used to destroy the Amplify server context.
  */
 export const destroyAmplifyServerContext = (
-	contextSpec: AmplifyServer.ContextSpec
+	contextSpec: AmplifyServer.ContextSpec,
 ): void => {
 	serverContextRegistry.deregister(contextSpec);
 };

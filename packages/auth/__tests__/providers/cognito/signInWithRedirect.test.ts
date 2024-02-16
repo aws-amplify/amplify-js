@@ -37,7 +37,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 }));
 jest.mock('@aws-amplify/core', () => {
 	const { ADD_OAUTH_LISTENER } = jest.requireActual(
-		'@aws-amplify/core/internals/utils'
+		'@aws-amplify/core/internals/utils',
 	);
 	return {
 		Amplify: {
@@ -129,7 +129,7 @@ describe('signInWithRedirect', () => {
 		expect(mockAssertTokenProviderConfig).toHaveBeenCalledTimes(1);
 		expect(mockAssertOAuthConfig).toHaveBeenCalledTimes(1);
 		expect(oAuthStore.setAuthConfig).toHaveBeenCalledWith(
-			mockAuthConfigWithOAuth.Auth.Cognito
+			mockAuthConfigWithOAuth.Auth.Cognito,
 		);
 		expect(mockAssertUserNotAuthenticated).toHaveBeenCalledTimes(1);
 
@@ -144,10 +144,10 @@ describe('signInWithRedirect', () => {
 		const [oauthUrl, redirectSignIn, preferPrivateSession] =
 			mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
-			'https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=Google&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256'
+			'https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=Google&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256',
 		);
 		expect(redirectSignIn).toEqual(
-			mockAuthConfigWithOAuth.Auth.Cognito.loginWith.oauth.redirectSignIn
+			mockAuthConfigWithOAuth.Auth.Cognito.loginWith.oauth.redirectSignIn,
 		);
 		expect(preferPrivateSession).toBeUndefined();
 	});
@@ -157,7 +157,7 @@ describe('signInWithRedirect', () => {
 		await signInWithRedirect();
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
-			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedDefaultProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`
+			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedDefaultProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
 		);
 	});
 
@@ -166,7 +166,7 @@ describe('signInWithRedirect', () => {
 		await signInWithRedirect({ provider: { custom: expectedCustomProvider } });
 		const [oauthUrl] = mockOpenAuthSession.mock.calls[0];
 		expect(oauthUrl).toStrictEqual(
-			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`
+			`https://oauth.domain.com/oauth2/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&response_type=code&client_id=userPoolClientId&identity_provider=${expectedCustomProvider}&scope=phone%20email%20openid%20profile%20aws.cognito.signin.user.admin&state=oauth_state&code_challenge=code_challenge&code_challenge_method=S256`,
 		);
 	});
 
@@ -180,11 +180,11 @@ describe('signInWithRedirect', () => {
 		describe('side effect', () => {
 			it('attaches oauth listener to the Amplify singleton', async () => {
 				(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(
-					false
+					false,
 				);
 
 				expect(Amplify[ADD_OAUTH_LISTENER]).toHaveBeenCalledWith(
-					attemptCompleteOAuthFlow
+					attemptCompleteOAuthFlow,
 				);
 			});
 		});
@@ -207,7 +207,7 @@ describe('signInWithRedirect', () => {
 				expect.objectContaining({
 					currentUrl: mockOpenAuthSessionResult.url,
 					preferPrivateSession: true,
-				})
+				}),
 			);
 			expect(mockGetAuthUserAgentValue).toHaveBeenCalledTimes(1);
 		});
@@ -225,14 +225,14 @@ describe('signInWithRedirect', () => {
 				signInWithRedirect({
 					provider: 'Google',
 					options: { preferPrivateSession: true },
-				})
+				}),
 			).rejects.toThrow(mockOpenAuthSessionResult.error);
 
 			expect(mockCreateOAuthError).toHaveBeenCalledWith(
-				String(mockOpenAuthSessionResult.error)
+				String(mockOpenAuthSessionResult.error),
 			);
 			expect(mockHandleFailure).toHaveBeenCalledWith(
-				mockOpenAuthSessionResult.error
+				mockOpenAuthSessionResult.error,
 			);
 		});
 
@@ -249,13 +249,13 @@ describe('signInWithRedirect', () => {
 				signInWithRedirect({
 					provider: 'Google',
 					options: { preferPrivateSession: true },
-				})
+				}),
 			).rejects.toThrow(expectedError);
 
 			expect(mockCompleteOAuthFlow).toHaveBeenCalledWith(
 				expect.objectContaining({
 					currentUrl: mockOpenAuthSessionResult.url,
-				})
+				}),
 			);
 			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
 		});

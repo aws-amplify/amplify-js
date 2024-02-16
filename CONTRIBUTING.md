@@ -103,6 +103,8 @@ yarn run test --scope @aws-amplify/auth
 **Yarn Linking**
 The best way to develop locally and test is to link the individual package you’re working on and run lerna in watch mode.
 
+Note: to test using the react-native framework you will need to use [Verdaccio](#verdaccio)
+
 Run watch mode while editing (auth for example):
 
 ```
@@ -125,49 +127,6 @@ yarn link @aws-amplify/auth
 ```
 
 Passing unit tests are only necessary if you’re looking to contribute a pull request. If you’re just playing locally, you don’t need them. However, if you’re contributing a pull request for anything other than making a change to the documentation, fixing a formatting issue in the code (i.e., white space, missing semi-colons) or another task that does not impact the functionality of the code, you will need to validate your proposed changes with passing unit tests.
-
-**Using the setup-dev:react-native script to work with React-Native apps**
-
-> Note: All the below commands to be run from the local amplify-js library root
-
-To develop locally alongside a React-Native app, make sure to,
-
-1. Finish the build steps mentioned in the section: `Setting up for local development` to set up your local `amplify-js` repository for development.
-
-   > Note: To set up a sample React-Native app -- configure your [development environment](https://reactnative.dev/docs/environment-setup) and [create an app](https://reactnative.dev/docs/environment-setup#creating-a-new-application). Note the path to the app as it is required in the next step.
-
-2. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
-   > Make sure to have [watchman](https://facebook.github.io/watchman/docs/install.html) installed before running the command below
-
-```
-npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
-```
-
-> Note: This script runs a continuous job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
-
-The options `--packages` is used to specify single or multiple package names and the `--target` option is used to specify the path to your sample React-Native app.
-Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
-
-> All scoped packages must be prefixed by `@aws-amplify/` . For example: `@aws-amplify/auth`
-
-To develop multiple/all packages, provide the package names separated by a comma or the flag `--all` or `-a`:
-
-```
-npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
-npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
-```
-
-> Note: `--` right after the script name is important to provide the flags with their values.
-
-**Debugging problems with the `setup-dev:react-native` script**
-
-- If the WML command does not do anything after adding the links, watch its src file using watchman. Run the below from the root of this repository:
-
-  ```
-  watchman watch node_modules/wml/src
-  ```
-
-- When using VScode, for the script to open a new terminal and tabs you will need to provide the editor accessiblity permissions.
 
 #### Verdaccio
 

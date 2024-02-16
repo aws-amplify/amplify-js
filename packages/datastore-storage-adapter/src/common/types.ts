@@ -8,23 +8,23 @@ export interface CommonSQLiteDatabase {
 	clear(): Promise<void>;
 	get<T extends PersistentModel>(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<T>;
 	getAll<T extends PersistentModel>(
 		statement: string,
-		params: (string | number)[]
+		params: (string | number)[],
 	): Promise<T[]>;
 	save(statement: string, params: (string | number)[]): Promise<void>;
 	batchQuery<T = any>(
-		queryParameterizedStatement: Set<ParameterizedStatement>
+		queryParameterizedStatement: Set<ParameterizedStatement>,
 	): Promise<T[]>;
 	batchSave(
 		saveParameterizedStatements: Set<ParameterizedStatement>,
-		deleteParameterizedStatements?: Set<ParameterizedStatement>
+		deleteParameterizedStatements?: Set<ParameterizedStatement>,
 	): Promise<void>;
 	selectAndDelete<T = any>(
 		queryParameterizedStatement: ParameterizedStatement,
-		deleteParameterizedStatement: ParameterizedStatement
+		deleteParameterizedStatement: ParameterizedStatement,
 	): Promise<T[]>;
 }
 

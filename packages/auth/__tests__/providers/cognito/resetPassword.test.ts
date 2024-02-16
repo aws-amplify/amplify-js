@@ -19,7 +19,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('resetPassword', () => {
@@ -32,7 +32,7 @@ describe('resetPassword', () => {
 
 	beforeEach(() => {
 		mockForgotPassword.mockResolvedValue(
-			authAPITestParams.resetPasswordHttpCallResult
+			authAPITestParams.resetPasswordHttpCallResult,
 		);
 	});
 
@@ -58,7 +58,7 @@ describe('resetPassword', () => {
 				Username: 'username',
 				ClientMetadata: { foo: 'foo' },
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			})
+			}),
 		);
 	});
 
@@ -69,7 +69,7 @@ describe('resetPassword', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				AuthValidationErrorCode.EmptyResetPasswordUsername
+				AuthValidationErrorCode.EmptyResetPasswordUsername,
 			);
 		}
 	});
@@ -84,7 +84,7 @@ describe('resetPassword', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				ForgotPasswordException.InvalidParameterException
+				ForgotPasswordException.InvalidParameterException,
 			);
 		}
 	});
@@ -108,7 +108,7 @@ describe('resetPassword', () => {
 				ClientMetadata: { foo: 'foo' },
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				UserContextData: { EncodedData: 'abcd' },
-			})
+			}),
 		);
 		window['AmazonCognitoAdvancedSecurityData'] = undefined;
 	});

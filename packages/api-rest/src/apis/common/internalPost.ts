@@ -4,8 +4,9 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { InternalPostInput, RestApiResponse } from '../../types';
-import { transferHandler } from './handler';
 import { createCancellableOperation } from '../../utils';
+
+import { transferHandler } from './handler';
 
 /**
  * This weak map provides functionality to cancel a request given the promise containing the `post` request.
@@ -25,7 +26,7 @@ const cancelTokenMap = new WeakMap<Promise<any>, AbortController>();
  */
 export const post = (
 	amplify: AmplifyClassV6,
-	{ url, options, abortController }: InternalPostInput
+	{ url, options, abortController }: InternalPostInput,
 ): Promise<RestApiResponse> => {
 	const controller = abortController ?? new AbortController();
 	const responsePromise = createCancellableOperation(async () => {
@@ -37,14 +38,16 @@ export const post = (
 				...options,
 				abortSignal: controller.signal,
 			},
-			options?.signingServiceInfo
+			options?.signingServiceInfo,
 		);
+
 		return response;
 	}, controller);
 
 	const responseWithCleanUp = responsePromise.finally(() => {
 		cancelTokenMap.delete(responseWithCleanUp);
 	});
+
 	return responseWithCleanUp;
 };
 
@@ -55,7 +58,7 @@ export const post = (
  */
 export const cancel = (
 	promise: Promise<RestApiResponse>,
-	message?: string
+	message?: string,
 ): boolean => {
 	const controller = cancelTokenMap.get(promise);
 	if (controller) {
@@ -63,10 +66,12 @@ export const cancel = (
 		if (message && controller.signal.reason !== message) {
 			// In runtimes where `AbortSignal.reason` is not supported, we track the reason ourselves.
 			// @ts-expect-error reason is read-only property.
-			controller.signal['reason'] = message;
+			controller.signal.reason = message;
 		}
+
 		return true;
 	}
+
 	return false;
 };
 
@@ -75,7 +80,7 @@ export const cancel = (
  */
 export const updateRequestToBeCancellable = (
 	promise: Promise<any>,
-	controller: AbortController
+	controller: AbortController,
 ) => {
 	cancelTokenMap.set(promise, controller);
 };

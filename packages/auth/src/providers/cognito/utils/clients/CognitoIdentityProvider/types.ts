@@ -201,7 +201,7 @@ declare namespace GetUserAttributeVerificationCodeRequest {
 	 * @internal
 	 */
 	const filterSensitiveLog: (
-		obj: GetUserAttributeVerificationCodeRequest
+		obj: GetUserAttributeVerificationCodeRequest,
 	) => any;
 }
 declare namespace GetUserAttributeVerificationCodeResponse {
@@ -209,7 +209,7 @@ declare namespace GetUserAttributeVerificationCodeResponse {
 	 * @internal
 	 */
 	const filterSensitiveLog: (
-		obj: GetUserAttributeVerificationCodeResponse
+		obj: GetUserAttributeVerificationCodeResponse,
 	) => any;
 }
 declare namespace GetUserRequest {

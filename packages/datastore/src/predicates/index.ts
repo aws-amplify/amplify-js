@@ -14,7 +14,7 @@ export { ModelSortPredicateCreator } from './sort';
 const predicatesAllSet = new WeakSet<ProducerModelPredicate<any>>();
 
 export function isPredicatesAll(
-	predicate: any
+	predicate: any,
 ): predicate is typeof PredicateAll {
 	return predicatesAllSet.has(predicate);
 }
@@ -122,7 +122,7 @@ export class ModelPredicateCreator {
 	 * @param predicate The storage predicate (lookup key) to test.
 	 */
 	static isValidPredicate<T extends PersistentModel>(
-		predicate: any
+		predicate: any,
 	): predicate is ModelPredicate<T> {
 		return ModelPredicateCreator.predicateGroupsMap.has(predicate);
 	}
@@ -140,7 +140,7 @@ export class ModelPredicateCreator {
 	 */
 	static getPredicates<T extends PersistentModel>(
 		predicate: ModelPredicate<T>,
-		throwOnInvalid: boolean = true
+		throwOnInvalid: boolean = true,
 	) {
 		if (throwOnInvalid && !ModelPredicateCreator.isValidPredicate(predicate)) {
 			throw new Error('The predicate is not valid');
@@ -159,7 +159,7 @@ export class ModelPredicateCreator {
 	 */
 	static createForPk<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		model: T
+		model: T,
 	) {
 		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
 		const keyValues = extractPrimaryKeyValues(model, keyFields);
@@ -185,7 +185,7 @@ export class ModelPredicateCreator {
 	 */
 	static createFromFlatEqualities<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		flatEqualities: Record<string, any>
+		flatEqualities: Record<string, any>,
 	) {
 		const ast = {
 			and: Object.entries(flatEqualities).map(([k, v]) => ({ [k]: { eq: v } })),
@@ -217,7 +217,7 @@ export class ModelPredicateCreator {
 	static transformGraphQLFilterNodeToPredicateAST(gql: any) {
 		if (!isValid(gql)) {
 			throw new Error(
-				'Invalid GraphQL Condition or subtree: ' + JSON.stringify(gql)
+				'Invalid GraphQL Condition or subtree: ' + JSON.stringify(gql),
 			);
 		}
 
@@ -229,7 +229,7 @@ export class ModelPredicateCreator {
 		} else if (isGroup(gql)) {
 			const groupkey = Object.keys(gql)[0];
 			const children = this.transformGraphQLFilterNodeToPredicateAST(
-				gql[groupkey]
+				gql[groupkey],
 			);
 			return {
 				type: groupkey,
@@ -278,13 +278,13 @@ export class ModelPredicateCreator {
 	 */
 	static createFromAST<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		ast: any
+		ast: any,
 	): ModelPredicate<T> {
 		const key = {} as ModelPredicate<T>;
 
 		ModelPredicateCreator.predicateGroupsMap.set(
 			key,
-			this.transformGraphQLFilterNodeToPredicateAST(ast)
+			this.transformGraphQLFilterNodeToPredicateAST(ast),
 		);
 
 		return key;

@@ -7,7 +7,7 @@ import { expectNotSupportedAsync } from '../../../../testUtils/expectNotSupporte
 describe('identifyUser', () => {
 	it('is only supported on React Native', async () => {
 		await expectNotSupportedAsync(
-			identifyUser({ userId: 'user-id', userProfile: {} })
+			identifyUser({ userId: 'user-id', userProfile: {} }),
 		);
 	});
 });

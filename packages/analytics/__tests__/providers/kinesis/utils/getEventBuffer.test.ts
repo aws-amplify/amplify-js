@@ -26,7 +26,7 @@ describe('Kinesis Provider Util: getEventBuffer', () => {
 
 		expect(mockEventBuffer).toHaveBeenCalledWith(
 			mockBufferConfig,
-			expect.any(Function)
+			expect.any(Function),
 		);
 		expect(testBuffer).toBeInstanceOf(EventBuffer);
 	});

@@ -19,7 +19,7 @@ import { RestApiError } from '../errors';
  *   be `UnknownError` and `Unknown error` respectively.
  */
 export const parseRestApiServiceError = async (
-	response?: HttpResponse
+	response?: HttpResponse,
 ): Promise<(RestApiError & MetadataBearer) | undefined> => {
 	if (!response) {
 		// Response is not considered an error.
@@ -28,9 +28,9 @@ export const parseRestApiServiceError = async (
 	const parsedAwsError = await parseAwsJsonError(stubErrorResponse(response));
 	if (!parsedAwsError) {
 		// Response is not considered an error.
-		return;
 	} else {
 		const bodyText = await response.body?.text();
+
 		return buildRestApiError(parsedAwsError, {
 			statusCode: response.statusCode,
 			headers: response.headers,
@@ -46,7 +46,7 @@ export const parseRestApiServiceError = async (
  * make sure we can read the error response body as a JSON, and may fall back to read as text if it is not a valid JSON.
  */
 const stubErrorResponse = (response: HttpResponse): HttpResponse => {
-	let bodyTextPromise: Promise<string> | undefined = undefined;
+	let bodyTextPromise: Promise<string> | undefined;
 	const bodyProxy = new Proxy(response.body, {
 		get(target, prop, receiver) {
 			if (prop === 'json') {
@@ -69,6 +69,7 @@ const stubErrorResponse = (response: HttpResponse): HttpResponse => {
 					if (!bodyTextPromise) {
 						bodyTextPromise = target.text();
 					}
+
 					return bodyTextPromise;
 				};
 			} else {
@@ -85,6 +86,7 @@ const stubErrorResponse = (response: HttpResponse): HttpResponse => {
 			}
 		},
 	});
+
 	return responseProxy;
 };
 
@@ -93,7 +95,7 @@ const stubErrorResponse = (response: HttpResponse): HttpResponse => {
  */
 const buildRestApiError = (
 	error: Error & MetadataBearer,
-	response?: ApiErrorResponse
+	response?: ApiErrorResponse,
 ): RestApiError & MetadataBearer => {
 	const restApiError = new RestApiError({
 		name: error?.name,
@@ -101,6 +103,7 @@ const buildRestApiError = (
 		underlyingError: error,
 		response,
 	});
+
 	// $metadata is only required for backwards compatibility.
 	return Object.assign(restApiError, { $metadata: error.$metadata });
 };
