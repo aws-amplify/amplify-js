@@ -20,10 +20,6 @@
 		"NPM": "https://www.npmjs.com/package/aws-amplify",
 		"GitHub": "https://github.com/aws-amplify/amplify-js"
 	},
-	"navigation": {
-        "includeCategories": true,
-        "includeGroups": false
-    },
 	"customCss": "./docs/theme/styles.css",
 	"favicon": "./docs/theme/favicon.ico",
 	"plugin": [

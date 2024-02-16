@@ -4,5 +4,6 @@
 	"excludePrivate": true,
 	"excludeInternal": true,
 	"skipErrorChecking": true,
+	"disableSources": true,
 	"internalModule": "<Reference Types>"
 }
