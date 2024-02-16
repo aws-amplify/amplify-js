@@ -3,17 +3,18 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-import {
-	cacheMultipartUpload,
-	findCachedUploadParts,
-	getUploadsCacheKey,
-} from './uploadCache';
 import { ResolvedS3Config } from '../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../types';
 import { Part, createMultipartUpload } from '../../../utils/client';
 import { logger } from '../../../../../utils';
 
-type LoadOrCreateMultipartUploadOptions = {
+import {
+	cacheMultipartUpload,
+	findCachedUploadParts,
+	getUploadsCacheKey,
+} from './uploadCache';
+
+interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
 	data: StorageUploadDataPayload;
 	bucket: string;
@@ -26,12 +27,12 @@ type LoadOrCreateMultipartUploadOptions = {
 	metadata?: Record<string, string>;
 	size?: number;
 	abortSignal?: AbortSignal;
-};
+}
 
-type LoadOrCreateMultipartUploadResult = {
+interface LoadOrCreateMultipartUploadResult {
 	uploadId: string;
 	cachedParts: Part[];
-};
+}
 
 /**
  * Load the in-progress multipart upload from local storage or async storage(RN) if it exists, or create a new multipart
@@ -107,6 +108,7 @@ export const loadOrCreateMultipartUpload = async ({
 		);
 		if (size === undefined) {
 			logger.debug('uploaded data size cannot be determined, skipping cache.');
+
 			return {
 				uploadId: UploadId!,
 				cachedParts: [],
@@ -126,6 +128,7 @@ export const loadOrCreateMultipartUpload = async ({
 			key,
 			fileName: data instanceof File ? data.name : '',
 		});
+
 		return {
 			uploadId: UploadId!,
 			cachedParts: [],

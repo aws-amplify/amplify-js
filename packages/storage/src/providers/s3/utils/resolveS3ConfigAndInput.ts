@@ -2,25 +2,27 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
+
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { StorageError } from '../../../errors/StorageError';
-import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
 import { ResolvedS3Config } from '../types/options';
 
-type S3ApiOptions = {
+import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
+
+interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
-};
+}
 
-type ResolvedS3ConfigAndInput = {
+interface ResolvedS3ConfigAndInput {
 	s3Config: ResolvedS3Config;
 	bucket: string;
 	keyPrefix: string;
 	isObjectLockEnabled?: boolean;
-};
+}
 
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.

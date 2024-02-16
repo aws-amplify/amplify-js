@@ -12,6 +12,7 @@ import {
 	AmplifyUrlSearchParams,
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+
 import type {
 	ListObjectsV2CommandInput,
 	ListObjectsV2CommandOutput,
@@ -54,6 +55,7 @@ const listObjectsV2Serializer = (
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
+
 	return {
 		method: 'GET',
 		headers,
@@ -90,6 +92,7 @@ const listObjectsV2Deserializer = async (
 			Prefix: 'Prefix',
 			StartAfter: 'StartAfter',
 		});
+
 		return {
 			$metadata: parseMetadata(response),
 			...contents,

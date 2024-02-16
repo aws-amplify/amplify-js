@@ -56,7 +56,7 @@ module.exports = {
 		'packages/react-native',
 		'packages/rtn-push-notification',
 		'packages/rtn-web-browser',
-		'packages/storage',
+		// 'packages/storage',
 	],
 	rules: {
 		camelcase: [

@@ -12,20 +12,21 @@ import {
 	AmplifyUrlSearchParams,
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+
 import type {
+	CompletedPart,
 	ListPartsCommandInput,
 	ListPartsCommandOutput,
-	CompletedPart,
 } from './types';
 import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
+	deserializeNumber,
 	emptyArrayGuard,
 	map,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
-	deserializeNumber,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from './utils';
@@ -52,6 +53,7 @@ const listPartsSerializer = async (
 	url.search = new AmplifyUrlSearchParams({
 		uploadId: input.UploadId,
 	}).toString();
+
 	return {
 		method: 'GET',
 		headers,
@@ -74,6 +76,7 @@ const listPartsDeserializer = async (
 				value => emptyArrayGuard(value, deserializeCompletedPartList),
 			],
 		});
+
 		return {
 			$metadata: parseMetadata(response),
 			...contents,
