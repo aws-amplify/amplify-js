@@ -33,6 +33,6 @@ describe('decodeJWT', () => {
 			const result = decodeJWT(token);
 			expect(result.payload).toEqual(decoded);
 			expect(result.toString()).toEqual(token);
-		}
+		},
 	);
 });

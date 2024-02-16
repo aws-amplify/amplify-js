@@ -8,7 +8,7 @@ describe('ServiceWorker test', () => {
 			const serviceWorker = new ServiceWorker();
 
 			return expect(serviceWorker.register()).rejects.toThrow(
-				'Service Worker not available'
+				'Service Worker not available',
 			);
 		});
 		test('fails when enablePush and serviceworker is not registered', () => {
@@ -97,7 +97,7 @@ describe('ServiceWorker test', () => {
 			serviceWorker.send('A message');
 
 			return expect(bla.installing.postMessage).toHaveBeenCalledWith(
-				'A message'
+				'A message',
 			);
 		});
 		test('can send object message after registration', async () => {
@@ -115,7 +115,7 @@ describe('ServiceWorker test', () => {
 			serviceWorker.send({ property: 'value' });
 
 			return expect(bla.installing.postMessage).toHaveBeenCalledWith(
-				JSON.stringify({ property: 'value' })
+				JSON.stringify({ property: 'value' }),
 			);
 		});
 	});
@@ -140,7 +140,7 @@ describe('ServiceWorker test', () => {
 			await serviceWorker.register();
 
 			return expect(serviceWorker.enablePush('publickKey')).resolves.toBe(
-				subscription
+				subscription,
 			);
 		});
 		test('can enable push when user is not subscribed', async () => {
@@ -162,7 +162,7 @@ describe('ServiceWorker test', () => {
 			await serviceWorker.register();
 
 			return expect(serviceWorker.enablePush('publickKey')).resolves.toBe(
-				subscription
+				subscription,
 			);
 		});
 	});

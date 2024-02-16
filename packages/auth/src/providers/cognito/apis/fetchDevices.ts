@@ -41,13 +41,13 @@ export async function fetchDevices(): Promise<FetchDevicesOutput> {
 		{
 			AccessToken: tokens.accessToken.toString(),
 			Limit: MAX_DEVICES,
-		}
+		},
 	);
 	return parseDevicesResponse(response.Devices ?? []);
 }
 
 const parseDevicesResponse = async (
-	devices: DeviceType[]
+	devices: DeviceType[],
 ): Promise<FetchDevicesOutput> => {
 	return devices.map(
 		({
@@ -64,7 +64,7 @@ const parseDevicesResponse = async (
 					}
 					return attrs;
 				},
-				{}
+				{},
 			);
 			return {
 				id,
@@ -79,6 +79,6 @@ const parseDevicesResponse = async (
 					? new Date(DeviceLastAuthenticatedDate * 1000)
 					: undefined,
 			};
-		}
+		},
 	);
 };

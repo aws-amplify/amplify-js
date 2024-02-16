@@ -42,7 +42,7 @@ export type CopyObjectOutput = CopyObjectCommandOutput;
 
 const copyObjectSerializer = async (
 	input: CopyObjectInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
 		...(await serializeObjectConfigsToHeaders(input)),
@@ -62,7 +62,7 @@ const copyObjectSerializer = async (
 };
 
 const copyObjectDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<CopyObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -79,5 +79,5 @@ export const copyObject = composeServiceApi(
 	s3TransferHandler,
 	copyObjectSerializer,
 	copyObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

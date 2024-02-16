@@ -68,7 +68,7 @@ export const uploadPartExecutor = async ({
 					ContentMD5: isObjectLockEnabled
 						? await calculateContentMd5(data)
 						: undefined,
-				}
+				},
 			);
 			transferredBytes += size;
 			// eTag will always be set even the S3 model interface marks it as optional.

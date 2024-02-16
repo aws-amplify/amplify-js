@@ -50,7 +50,7 @@ type InferInstructionResultType<T extends Instruction<any>> =
  */
 export const map = <Instructions extends { [key: string]: Instruction<any> }>(
 	obj: Record<string, any>,
-	instructions: Instructions
+	instructions: Instructions,
 ): {
 	[K in keyof Instructions]: InferInstructionResultType<Instructions[K]>;
 } => {
@@ -110,13 +110,13 @@ export const deserializeTimestamp = (value: string): Date | undefined => {
  */
 export const emptyArrayGuard = <T extends Array<any>>(
 	value: any,
-	deserializer: (value: any[]) => T
+	deserializer: (value: any[]) => T,
 ): T => {
 	if (value === '') {
 		return [] as any as T;
 	}
 	const valueArray = (Array.isArray(value) ? value : [value]).filter(
-		e => e != null
+		e => e != null,
 	);
 	return deserializer(valueArray);
 };
@@ -125,7 +125,7 @@ export const emptyArrayGuard = <T extends Array<any>>(
  * @internal
  */
 export const deserializeMetadata = (
-	headers: Headers
+	headers: Headers,
 ): Record<string, string> => {
 	const objectMetadataHeaderPrefix = 'x-amz-meta-';
 	const deserialized = Object.keys(headers)
@@ -144,7 +144,7 @@ export const deserializeMetadata = (
  */
 export const buildStorageServiceError = (
 	error: Error,
-	statusCode: number
+	statusCode: number,
 ): ServiceError => {
 	const storageError = new StorageError({
 		name: error.name,

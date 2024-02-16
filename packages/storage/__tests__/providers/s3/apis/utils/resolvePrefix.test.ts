@@ -38,7 +38,7 @@ describe('resolvePrefix', () => {
 			});
 		} catch (error) {
 			expect(error).toMatchObject(
-				validationErrorMap[StorageValidationErrorCode.NoIdentityId]
+				validationErrorMap[StorageValidationErrorCode.NoIdentityId],
 			);
 		}
 	});
@@ -50,7 +50,7 @@ describe('resolvePrefix', () => {
 			});
 		} catch (error) {
 			expect(error).toMatchObject(
-				validationErrorMap[StorageValidationErrorCode.NoIdentityId]
+				validationErrorMap[StorageValidationErrorCode.NoIdentityId],
 			);
 		}
 	});

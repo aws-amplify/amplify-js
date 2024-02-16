@@ -246,7 +246,7 @@ const completeFlow = async ({
 				data: urlSafeDecode(getCustomState(state)),
 			},
 			'Auth',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
@@ -254,7 +254,7 @@ const completeFlow = async ({
 		'auth',
 		{ event: 'signedIn', data: await getCurrentUser() },
 		'Auth',
-		AMPLIFY_SYMBOL
+		AMPLIFY_SYMBOL,
 	);
 	clearHistory(redirectUri);
 };

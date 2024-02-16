@@ -21,7 +21,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 jest.mock('../../../src/providers/cognito/tokenProvider');
 
@@ -66,7 +66,7 @@ describe('fetchMFAPreference', () => {
 			expect.objectContaining({
 				AccessToken: mockAccessToken,
 				DeviceKey: 'externalDeviceKey',
-			})
+			}),
 		);
 		expect(mockForgetDevice).toHaveBeenCalledTimes(1);
 		expect(mockClearDeviceMetadata).not.toHaveBeenCalled();
@@ -80,7 +80,7 @@ describe('fetchMFAPreference', () => {
 			expect.objectContaining({
 				AccessToken: mockAccessToken,
 				DeviceKey: mockDeviceMetadata.deviceKey,
-			})
+			}),
 		);
 		expect(mockForgetDevice).toHaveBeenCalledTimes(1);
 		expect(mockClearDeviceMetadata).toHaveBeenCalled();
@@ -94,7 +94,7 @@ describe('fetchMFAPreference', () => {
 			expect.objectContaining({
 				AccessToken: mockAccessToken,
 				DeviceKey: mockDeviceMetadata.deviceKey,
-			})
+			}),
 		);
 		expect(mockForgetDevice).toHaveBeenCalledTimes(1);
 		expect(mockClearDeviceMetadata).toHaveBeenCalled();
@@ -108,7 +108,7 @@ describe('fetchMFAPreference', () => {
 			expect.objectContaining({
 				AccessToken: mockAccessToken,
 				DeviceKey: 'externalDeviceKey',
-			})
+			}),
 		);
 		expect(mockForgetDevice).toHaveBeenCalledTimes(1);
 		expect(mockClearDeviceMetadata).not.toHaveBeenCalled();
@@ -123,7 +123,7 @@ describe('fetchMFAPreference', () => {
 			expect.objectContaining({
 				AccessToken: mockAccessToken,
 				DeviceKey: mockDeviceMetadata.deviceKey,
-			})
+			}),
 		);
 		expect(mockForgetDevice).toHaveBeenCalledTimes(1);
 		expect(mockClearDeviceMetadata).not.toHaveBeenCalled();

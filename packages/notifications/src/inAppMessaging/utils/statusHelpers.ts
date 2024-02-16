@@ -27,6 +27,6 @@ export const isInitialized = () => initialized;
 export function assertIsInitialized() {
 	assertValidationError(
 		isInitialized(),
-		InAppMessagingValidationErrorCode.NotInitialized
+		InAppMessagingValidationErrorCode.NotInitialized,
 	);
 }

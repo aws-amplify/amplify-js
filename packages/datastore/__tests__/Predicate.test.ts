@@ -72,7 +72,7 @@ function getStorageFake(collections) {
 		async query<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			predicate?: FlatModelPredicate<T>,
-			pagination?: PaginationInput<T>
+			pagination?: PaginationInput<T>,
 		) {
 			const baseSet: T[] = this.collections[modelConstructor.name].map(item => {
 				const itemCopy = { ...item };
@@ -85,7 +85,7 @@ function getStorageFake(collections) {
 			} else {
 				const predicates = ModelPredicateCreator.getPredicates(predicate)!;
 				return baseSet.filter(item =>
-					flatPredicateMatches(item, 'and', [predicates])
+					flatPredicateMatches(item, 'and', [predicates]),
 				);
 			}
 		},
@@ -110,7 +110,7 @@ describe('Predicates', () => {
 					expect(() => {
 						recursivePredicateFor(AuthorMeta).name[operator]();
 					}).toThrow(
-						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`
+						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`,
 					);
 				});
 
@@ -118,7 +118,7 @@ describe('Predicates', () => {
 					expect(() => {
 						recursivePredicateFor(AuthorMeta).name[operator]('a', 'b');
 					}).toThrow(
-						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`
+						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`,
 					);
 				});
 			});
@@ -130,7 +130,7 @@ describe('Predicates', () => {
 					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between();
 				}).toThrow(
-					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
+					'Incorrect usage of `between()`: Exactly 2 arguments are required.',
 				);
 			});
 
@@ -139,7 +139,7 @@ describe('Predicates', () => {
 					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between('z');
 				}).toThrow(
-					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
+					'Incorrect usage of `between()`: Exactly 2 arguments are required.',
 				);
 			});
 
@@ -147,7 +147,7 @@ describe('Predicates', () => {
 				expect(() => {
 					recursivePredicateFor(AuthorMeta).name.between('z', 'a');
 				}).toThrow(
-					'Incorrect usage of `between()`: The first argument must be less than or equal to the second argument.'
+					'Incorrect usage of `between()`: The first argument must be less than or equal to the second argument.',
 				);
 			});
 
@@ -156,7 +156,7 @@ describe('Predicates', () => {
 					// @ts-ignore
 					recursivePredicateFor(AuthorMeta).name.between('a', 'b', 'c');
 				}).toThrow(
-					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
+					'Incorrect usage of `between()`: Exactly 2 arguments are required.',
 				);
 			});
 		});
@@ -199,7 +199,7 @@ describe('Predicates', () => {
 				name: 'filters',
 				execute: async <T>(query: any) =>
 					asyncFilter(getFlatAuthorsArrayFixture(), i =>
-						internals(query).matches(i)
+						internals(query).matches(i),
 					),
 			},
 			{
@@ -208,7 +208,7 @@ describe('Predicates', () => {
 					return (await internals(query).fetch(
 						getStorageFake({
 							[Author.name]: getFlatAuthorsArrayFixture(),
-						}) as any
+						}) as any,
 					)) as T[];
 				},
 			},
@@ -235,7 +235,7 @@ describe('Predicates', () => {
 
 					test('match on eq - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.eq('Adam West')
+							a.name.eq('Adam West'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -266,7 +266,7 @@ describe('Predicates', () => {
 
 					test('match on ne - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.ne('Adam West')
+							a.name.ne('Adam West'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -297,7 +297,7 @@ describe('Predicates', () => {
 
 					test('match on gt - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.gt('Clarice Starling')
+							a.name.gt('Clarice Starling'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -328,7 +328,7 @@ describe('Predicates', () => {
 
 					test('match on ge - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.ge('Clarice Starling')
+							a.name.ge('Clarice Starling'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -359,7 +359,7 @@ describe('Predicates', () => {
 
 					test('match on lt - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.lt('Clarice Starling')
+							a.name.lt('Clarice Starling'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -390,7 +390,7 @@ describe('Predicates', () => {
 
 					test('match on le - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.le('Clarice Starling')
+							a.name.le('Clarice Starling'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -421,7 +421,7 @@ describe('Predicates', () => {
 
 					test('match beginsWith - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.beginsWith('Debbie')
+							a.name.beginsWith('Debbie'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -440,7 +440,7 @@ describe('Predicates', () => {
 						// `{` is immediately after `z`
 						const query = recursivePredicateFor(AuthorMeta).name.between(
 							'0',
-							'{'
+							'{',
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -458,7 +458,7 @@ describe('Predicates', () => {
 						// `0` is immediately before `A`
 						// `{` is immediately after `z`
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.between('0', '{')
+							a.name.between('0', '{'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -469,7 +469,7 @@ describe('Predicates', () => {
 					test('match between with equality at both ends', async () => {
 						const query = recursivePredicateFor(AuthorMeta).name.between(
 							'Bob Jones',
-							'Debbie Donut'
+							'Debbie Donut',
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -485,7 +485,7 @@ describe('Predicates', () => {
 
 					test('match between with equality at both ends - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.between('Bob Jones', 'Debbie Donut')
+							a.name.between('Bob Jones', 'Debbie Donut'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -502,7 +502,7 @@ describe('Predicates', () => {
 					test('match between an inner range', async () => {
 						const query = recursivePredicateFor(AuthorMeta).name.between(
 							'Az',
-							'E'
+							'E',
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -518,7 +518,7 @@ describe('Predicates', () => {
 
 					test('match between an inner range - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.between('Az', 'E')
+							a.name.between('Az', 'E'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -535,7 +535,7 @@ describe('Predicates', () => {
 					test('match nothing between a mismatching range', async () => {
 						const query = recursivePredicateFor(AuthorMeta).name.between(
 							'{',
-							'}'
+							'}',
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -545,7 +545,7 @@ describe('Predicates', () => {
 
 					test('match nothing between a mismatching range - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.between('{', '}')
+							a.name.between('{', '}'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -570,7 +570,7 @@ describe('Predicates', () => {
 
 					test('match contains - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.contains('Jones')
+							a.name.contains('Jones'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -601,7 +601,7 @@ describe('Predicates', () => {
 
 					test('match notContains - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.notContains('Jones')
+							a.name.notContains('Jones'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -633,7 +633,7 @@ describe('Predicates', () => {
 
 					test('match on eq - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.eq(true)
+							a.isActive.eq(true),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -663,7 +663,7 @@ describe('Predicates', () => {
 
 					test('match on ne - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.ne(true)
+							a.isActive.ne(true),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -687,7 +687,7 @@ describe('Predicates', () => {
 
 					test('match on gt true - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.gt(true)
+							a.isActive.gt(true),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -711,7 +711,7 @@ describe('Predicates', () => {
 
 					test('match on gt false - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.gt(false)
+							a.isActive.gt(false),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -727,7 +727,7 @@ describe('Predicates', () => {
 
 					test('match on ge true - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.ge(true)
+							a.isActive.ge(true),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -751,7 +751,7 @@ describe('Predicates', () => {
 
 					test('match on ge false - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.ge(false)
+							a.isActive.ge(false),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -775,7 +775,7 @@ describe('Predicates', () => {
 
 					test('match on lt true - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.lt(true)
+							a.isActive.lt(true),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -799,7 +799,7 @@ describe('Predicates', () => {
 
 					test('match on lt false - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.lt(false)
+							a.isActive.lt(false),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -817,7 +817,7 @@ describe('Predicates', () => {
 
 					test('match on le true - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.le(true)
+							a.isActive.le(true),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -841,7 +841,7 @@ describe('Predicates', () => {
 
 					test('match on le false - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.isActive.le(false)
+							a.isActive.le(false),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -873,7 +873,7 @@ describe('Predicates', () => {
 
 					test('match on eq - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.eq(3)
+							a.karma.eq(3),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -903,7 +903,7 @@ describe('Predicates', () => {
 
 					test('match on ne - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.ne(3)
+							a.karma.ne(3),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -933,7 +933,7 @@ describe('Predicates', () => {
 
 					test('match on gt - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.gt(3)
+							a.karma.gt(3),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -963,7 +963,7 @@ describe('Predicates', () => {
 
 					test('match on ge - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.ge(3)
+							a.karma.ge(3),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -993,7 +993,7 @@ describe('Predicates', () => {
 
 					test('match on lt - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.lt(3)
+							a.karma.lt(3),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1023,7 +1023,7 @@ describe('Predicates', () => {
 
 					test('match on le - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.le(3)
+							a.karma.le(3),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1053,7 +1053,7 @@ describe('Predicates', () => {
 
 					test('match on between - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.karma.between(1, 3)
+							a.karma.between(1, 3),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1085,7 +1085,7 @@ describe('Predicates', () => {
 
 					test('match on eq - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.eq(0.75)
+							a.rating.eq(0.75),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1115,7 +1115,7 @@ describe('Predicates', () => {
 
 					test('match on ne - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.ne(0.75)
+							a.rating.ne(0.75),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1145,7 +1145,7 @@ describe('Predicates', () => {
 
 					test('match on gt - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.gt(0.75)
+							a.rating.gt(0.75),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1175,7 +1175,7 @@ describe('Predicates', () => {
 
 					test('match on ge - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.ge(0.75)
+							a.rating.ge(0.75),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1205,7 +1205,7 @@ describe('Predicates', () => {
 
 					test('match on lt - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.lt(0.75)
+							a.rating.lt(0.75),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1235,7 +1235,7 @@ describe('Predicates', () => {
 
 					test('match on le - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.le(0.75)
+							a.rating.le(0.75),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1252,7 +1252,7 @@ describe('Predicates', () => {
 					test('match on between', async () => {
 						const query = recursivePredicateFor(AuthorMeta).rating.between(
 							0.25,
-							0.75
+							0.75,
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1268,7 +1268,7 @@ describe('Predicates', () => {
 
 					test('match on between - NEGATED', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.rating.between(0.25, 0.75)
+							a.rating.between(0.25, 0.75),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<ModelOf<typeof Author>>>(query);
@@ -1290,19 +1290,21 @@ describe('Predicates', () => {
 							// @ts-ignore
 							recursivePredicateFor(AuthorMeta).not(a => [
 								a.name.contains('Bob'),
-							])
+							]),
 						).toThrow(
-							"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
+							"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`.",
 						);
 					});
 
 					test('and group builders must return an array of child conditions - recursive/relational predicates', async () => {
 						expect(() =>
-							// TODO: @ts-expect-error doesn't work until TS 3.9 ... until then:
-							// @ts-ignore
-							recursivePredicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
+							recursivePredicateFor(AuthorMeta).and(a =>
+								// TODO: @ts-expect-error doesn't work until TS 3.9 ... until then:
+								// @ts-ignore
+								a.name.contains('Bob'),
+							),
 						).toThrow(
-							'Invalid predicate. `and` groups must return an array of child conditions.'
+							'Invalid predicate. `and` groups must return an array of child conditions.',
 						);
 					});
 
@@ -1310,9 +1312,9 @@ describe('Predicates', () => {
 						expect(() =>
 							// TODO: @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
-							recursivePredicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
+							recursivePredicateFor(AuthorMeta).or(a => a.name.contains('Bob')),
 						).toThrow(
-							'Invalid predicate. `or` groups must return an array of child conditions.'
+							'Invalid predicate. `or` groups must return an array of child conditions.',
 						);
 					});
 
@@ -1320,9 +1322,9 @@ describe('Predicates', () => {
 						expect(() =>
 							// TODO: @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
-							predicateFor(AuthorMeta).not(a => [a.name.contains('Bob')])
+							predicateFor(AuthorMeta).not(a => [a.name.contains('Bob')]),
 						).toThrow(
-							"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
+							"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`.",
 						);
 					});
 
@@ -1330,9 +1332,9 @@ describe('Predicates', () => {
 						expect(() =>
 							// TODO: @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
-							predicateFor(AuthorMeta).and(a => a.name.contains('Bob'))
+							predicateFor(AuthorMeta).and(a => a.name.contains('Bob')),
 						).toThrow(
-							'Invalid predicate. `and` groups must return an array of child conditions.'
+							'Invalid predicate. `and` groups must return an array of child conditions.',
 						);
 					});
 
@@ -1340,9 +1342,9 @@ describe('Predicates', () => {
 						expect(() =>
 							// TODO: @ts-expect-error doesn't work until TS 3.9 ... until then:
 							// @ts-ignore
-							predicateFor(AuthorMeta).or(a => a.name.contains('Bob'))
+							predicateFor(AuthorMeta).or(a => a.name.contains('Bob')),
 						).toThrow(
-							'Invalid predicate. `or` groups must return an array of child conditions.'
+							'Invalid predicate. `or` groups must return an array of child conditions.',
 						);
 					});
 				});
@@ -1365,7 +1367,7 @@ describe('Predicates', () => {
 							negated.and(a => [
 								a.name.contains('Bob'),
 								a.name.contains('Jones'),
-							])
+							]),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1390,7 +1392,7 @@ describe('Predicates', () => {
 							negated.and(a => [
 								a.name.contains('Adam'),
 								a.name.contains('Donut'),
-							])
+							]),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1418,7 +1420,7 @@ describe('Predicates', () => {
 							negated.or(a => [
 								a.name.contains('Bob'),
 								a.name.contains('Donut'),
-							])
+							]),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1445,7 +1447,7 @@ describe('Predicates', () => {
 							negated.or(a => [
 								a.name.contains('Bob'),
 								a.name.contains('Jones'),
-							])
+							]),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1524,7 +1526,7 @@ describe('Predicates', () => {
 									a.name.contains('Debbie'),
 									a.name.contains('from the Legend of Zelda'),
 								]),
-							])
+							]),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1535,7 +1537,7 @@ describe('Predicates', () => {
 
 					test('can perform simple not() logic, matching all but one item', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.eq('Bob Jones')
+							a.name.eq('Bob Jones'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1551,7 +1553,7 @@ describe('Predicates', () => {
 
 					test('can perform simple not() logic, matching no items', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a =>
-							a.name.gt('0')
+							a.name.gt('0'),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1565,7 +1567,7 @@ describe('Predicates', () => {
 								a.name.eq('Bob Jones'),
 								a.name.eq('Debbie Donut'),
 								a.name.between('C', 'D'),
-							])
+							]),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1579,7 +1581,7 @@ describe('Predicates', () => {
 
 					test('can perform 2-nots', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a1 =>
-							a1.not(a2 => a2.name.eq('Bob Jones'))
+							a1.not(a2 => a2.name.eq('Bob Jones')),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1590,7 +1592,7 @@ describe('Predicates', () => {
 
 					test('can perform 3-nots', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a1 =>
-							a1.not(a2 => a2.not(a3 => a3.name.eq('Bob Jones')))
+							a1.not(a2 => a2.not(a3 => a3.name.eq('Bob Jones'))),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1606,7 +1608,7 @@ describe('Predicates', () => {
 
 					test('can perform 4-nots', async () => {
 						const query = recursivePredicateFor(AuthorMeta).not(a1 =>
-							a1.not(a2 => a2.not(a3 => a3.not(a4 => a4.name.eq('Bob Jones'))))
+							a1.not(a2 => a2.not(a3 => a3.not(a4 => a4.name.eq('Bob Jones')))),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1625,7 +1627,7 @@ describe('Predicates', () => {
 					test('can fetch ALL with Predicates.ALL', async () => {
 						// Predicates.ALL is expected to return our base match-all predicate as-is.
 						const query = (V1Predicates.ALL as any)(
-							recursivePredicateFor(AuthorMeta)
+							recursivePredicateFor(AuthorMeta),
 						);
 						const matches =
 							await mechanism.execute<ModelOf<typeof Author>>(query);
@@ -1654,7 +1656,7 @@ describe('Predicates', () => {
 						username: name.includes('null') ? null : name,
 						age: name.includes('null') ? null : parseInt(name.split(' ')[1]),
 					});
-				}
+				},
 			);
 		};
 
@@ -1670,7 +1672,7 @@ describe('Predicates', () => {
 					return (await internals(query).fetch(
 						getStorageFake({
 							[Person.name]: getFixture(),
-						}) as any
+						}) as any,
 					)) as T[];
 				},
 			},
@@ -1688,7 +1690,7 @@ describe('Predicates', () => {
 
 				test('can select non-null values by searching for != null', async () => {
 					const query = recursivePredicateFor(PersonMeta).username.ne(
-						null as any
+						null as any,
 					);
 					const matches =
 						await mechanism.execute<ModelOf<typeof Person>>(query);
@@ -1715,7 +1717,7 @@ describe('Predicates', () => {
 
 				test('can select null values by searching for == null', async () => {
 					const query = recursivePredicateFor(PersonMeta).username.eq(
-						null as any
+						null as any,
 					);
 					const matches =
 						await mechanism.execute<ModelOf<typeof Person>>(query);
@@ -1924,7 +1926,7 @@ describe('Predicates', () => {
 							[BlogOwner.name]: owners,
 							[Blog.name]: blogs,
 							[Post.name]: posts,
-						}) as any
+						}) as any,
 					)) as T[];
 				},
 			},
@@ -1981,7 +1983,7 @@ describe('Predicates', () => {
 								o.name.contains('Debbie'),
 								o.name.contains('Starling'),
 							]),
-						])
+						]),
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
@@ -2020,7 +2022,7 @@ describe('Predicates', () => {
 								]),
 								owner.name.contains('Donut'),
 							]),
-						])
+						]),
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
@@ -2039,7 +2041,7 @@ describe('Predicates', () => {
 
 				test('can filter on child collections - NEGATED', async () => {
 					const query = recursivePredicateFor(BlogMeta).not(negated =>
-						negated.posts.title.contains('Bob Jones')
+						negated.posts.title.contains('Bob Jones'),
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
@@ -2066,14 +2068,14 @@ describe('Predicates', () => {
 						negated.or(b => [
 							b.posts.title.contains('Bob Jones'),
 							b.posts.title.contains("Zelda's Blog post"),
-						])
+						]),
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(3);
 					expect(matches.map(m => m.name)).not.toContain("Bob Jones's Blog");
 					expect(matches.map(m => m.name)).not.toContain(
-						"Zelda from the Legend of Zelda's Blog"
+						"Zelda from the Legend of Zelda's Blog",
 					);
 				});
 
@@ -2096,14 +2098,14 @@ describe('Predicates', () => {
 						negated.posts.or(p => [
 							p.title.contains('Bob Jones'),
 							p.title.contains("Zelda's Blog post"),
-						])
+						]),
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
 					expect(matches.length).toBe(3);
 					expect(matches.map(m => m.name)).not.toContain("Bob Jones's Blog");
 					expect(matches.map(m => m.name)).not.toContain(
-						"Zelda from the Legend of Zelda's Blog"
+						"Zelda from the Legend of Zelda's Blog",
 					);
 				});
 
@@ -2122,7 +2124,7 @@ describe('Predicates', () => {
 						negated.and(b => [
 							b.name.contains('Bob Jones'),
 							b.posts.title.contains('Zelda'),
-						])
+						]),
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Blog>>(query);
 
@@ -2182,14 +2184,14 @@ describe('Predicates', () => {
 					(await internals(query).fetch(
 						getStorageFake({
 							[Post.name]: posts,
-						}) as any
+						}) as any,
 					)) as T[],
 			},
 		].forEach(mechanism => {
 			describe('as ' + mechanism.name, () => {
 				test('can filter 1 level deep', async () => {
 					const query = recursivePredicateFor(PostMeta).reference.title.eq(
-						'Bob Jones post 2 layer 1'
+						'Bob Jones post 2 layer 1',
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
@@ -2199,7 +2201,7 @@ describe('Predicates', () => {
 
 				test('can filter 2 levels deep', async () => {
 					const query = recursivePredicateFor(
-						PostMeta
+						PostMeta,
 					).reference.reference.title.eq('Bob Jones post 2 layer 2');
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
@@ -2209,7 +2211,7 @@ describe('Predicates', () => {
 
 				test('can filter 3 levels deep', async () => {
 					const query = recursivePredicateFor(
-						PostMeta
+						PostMeta,
 					).reference.reference.reference.title.eq('Bob Jones post 2 layer 3');
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
@@ -2219,9 +2221,9 @@ describe('Predicates', () => {
 
 				test('safely returns [] on too many levels deep', async () => {
 					const query = recursivePredicateFor(
-						PostMeta
+						PostMeta,
 					).reference.reference.reference.reference.reference.title.eq(
-						'Bob Jones post 2 layer 4'
+						'Bob Jones post 2 layer 4',
 					);
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
@@ -2231,7 +2233,7 @@ describe('Predicates', () => {
 				test('can filter 4 levels deep to match all', async () => {
 					const query =
 						recursivePredicateFor(
-							PostMeta
+							PostMeta,
 						).reference.reference.reference.reference.title.contains('layer 4');
 					const matches = await mechanism.execute<ModelOf<typeof Post>>(query);
 
@@ -2381,30 +2383,30 @@ describe('Predicates', () => {
 
 		for (const [i, testCase] of ASTTransalationTestCases.entries()) {
 			test(`can create storage predicate from conditions AST ${i} : ${JSON.stringify(
-				testCase.gql
+				testCase.gql,
 			)}`, () => {
 				const condition = testCase.gql;
 				const builder = ModelPredicateCreator.createFromAST(
 					AuthorMeta.schema,
-					condition
+					condition,
 				);
 				const predicate = ModelPredicateCreator.getPredicates(builder)!;
 
 				const regeneratedCondition = predicateToGraphQLCondition(
 					predicate,
-					AuthorMeta.schema
+					AuthorMeta.schema,
 				);
 				const regeneratedFilter = predicateToGraphQLFilter(predicate);
 
 				for (const expectedMatch of testCase.matches) {
 					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(
-						true
+						true,
 					);
 				}
 
 				for (const expectedMismatch of testCase.mismatches) {
 					expect(
-						flatPredicateMatches(expectedMismatch, 'and', [predicate])
+						flatPredicateMatches(expectedMismatch, 'and', [predicate]),
 					).toBe(false);
 				}
 
@@ -2466,20 +2468,20 @@ describe('Predicates', () => {
 		for (const [i, testCase] of predicateTestCases.entries()) {
 			test(`nested predicate builder can produce storage predicate ${i}: ${testCase.predicate}`, () => {
 				const builder = internals(
-					testCase.predicate(predicateFor(AuthorMeta))
+					testCase.predicate(predicateFor(AuthorMeta)),
 				).toStoragePredicate();
 
 				const predicate = ModelPredicateCreator.getPredicates(builder)!;
 
 				for (const expectedMatch of testCase.matches) {
 					expect(flatPredicateMatches(expectedMatch, 'and', [predicate])).toBe(
-						true
+						true,
 					);
 				}
 
 				for (const expectedMismatch of testCase.mismatches) {
 					expect(
-						flatPredicateMatches(expectedMismatch, 'and', [predicate])
+						flatPredicateMatches(expectedMismatch, 'and', [predicate]),
 					).toBe(false);
 				}
 			});

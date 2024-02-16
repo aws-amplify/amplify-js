@@ -47,7 +47,7 @@ export function expectMutation(mutation, values) {
 	];
 	if (errors.length > 0) {
 		throw new Error(
-			`Bad mutation: ${JSON.stringify(data, null, 2)}\n${errors.join('\n')}`
+			`Bad mutation: ${JSON.stringify(data, null, 2)}\n${errors.join('\n')}`,
 		);
 	}
 }
@@ -68,7 +68,7 @@ export function dummyInstance<T extends PersistentModel>(): T {
  */
 export function errorsFrom<T extends Object>(
 	data: T,
-	matchers: Record<string, any>
+	matchers: Record<string, any>,
 ) {
 	return Object.entries(matchers).reduce((errors, [property, matcher]) => {
 		const value = data[property];
@@ -82,7 +82,7 @@ export function errorsFrom<T extends Object>(
 			)
 		) {
 			errors.push(
-				`Property '${property}' value "${value}" does not match "${matcher}"` as never
+				`Property '${property}' value "${value}" does not match "${matcher}"` as never,
 			);
 		}
 		return errors;
@@ -310,7 +310,7 @@ export async function expectIsolation(
 		cycle: number;
 	}) => Promise<any>,
 	cycles = 5,
-	focusedLogging = false
+	focusedLogging = false,
 ) {
 	try {
 		warpTime();
@@ -351,20 +351,20 @@ export async function expectIsolation(
 			// act
 			try {
 				log(
-					`start cycle:   "${expect.getState().currentTestName}" cycle ${cycle}`
+					`start cycle:   "${expect.getState().currentTestName}" cycle ${cycle}`,
 				);
 				await script({ DataStore, Post, cycle });
 				log(
-					`end cycle:     "${expect.getState().currentTestName}" cycle ${cycle}`
+					`end cycle:     "${expect.getState().currentTestName}" cycle ${cycle}`,
 				);
 			} finally {
 				// clean up
 				log(
-					`before clear: "${expect.getState().currentTestName}" cycle ${cycle}`
+					`before clear: "${expect.getState().currentTestName}" cycle ${cycle}`,
 				);
 				await DataStore.clear();
 				log(
-					`after clear:  "${expect.getState().currentTestName}" cycle ${cycle}`
+					`after clear:  "${expect.getState().currentTestName}" cycle ${cycle}`,
 				);
 			}
 
@@ -506,7 +506,7 @@ export async function waitForExpectModelUpdateGraphqlEventCount({
 					({ operation, type, tableName }) =>
 						operation === 'mutation' &&
 						type === 'update' &&
-						tableName === modelName
+						tableName === modelName,
 				).length;
 
 				// Ensure the service has received all expected requests:
@@ -522,7 +522,7 @@ export async function waitForExpectModelUpdateGraphqlEventCount({
 					graphqlService.subscriptionMessagesSent.filter(
 						([observerMessageName, message]) => {
 							return observerMessageName === `onUpdate${modelName}`;
-						}
+						},
 					).length;
 				const allSubscriptionsSent =
 					lastObservedSubscriptionCount ===
@@ -547,14 +547,14 @@ export async function waitForExpectModelUpdateGraphqlEventCount({
 					return true;
 				} else {
 					throw new Error(
-						'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions'
+						'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions',
 					);
 				}
 			},
 			[null],
 			// Only retry up to 5 seconds
 			5_000,
-			undefined
+			undefined,
 		);
 	} catch {
 		// If the expected call count isn't observed after 5 seconds, raise an error describing the discrepency
@@ -565,7 +565,7 @@ export async function waitForExpectModelUpdateGraphqlEventCount({
 				lastObservedSubscriptionCount ?? 'unknown'
 			}. Expected ${expectedUpdateErrorCount} update errors for ${modelName}, but received ${
 				lastObservedUpdateErrorCount ?? 'unknown'
-			}`
+			}`,
 		);
 	}
 }

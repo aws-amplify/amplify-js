@@ -78,7 +78,7 @@ describe('putObjectJob', () => {
 					useAccelerateEndpoint,
 				},
 			},
-			abortController.signal
+			abortController.signal,
 		);
 		const result = await job();
 		expect(result).toEqual({
@@ -107,7 +107,7 @@ describe('putObjectJob', () => {
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
 				ContentMD5: undefined,
-			}
+			},
 		);
 	});
 
@@ -124,7 +124,7 @@ describe('putObjectJob', () => {
 				key: 'key',
 				data: 'data',
 			},
-			new AbortController().signal
+			new AbortController().signal,
 		);
 		await job();
 		expect(calculateContentMd5).toHaveBeenCalledWith('data');

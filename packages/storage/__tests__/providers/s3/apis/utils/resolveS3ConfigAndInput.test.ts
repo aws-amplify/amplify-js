@@ -65,7 +65,7 @@ describe('resolveS3ConfigAndInput', () => {
 			identityId: targetIdentityId,
 		});
 		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
-			validationErrorMap[StorageValidationErrorCode.NoCredentials]
+			validationErrorMap[StorageValidationErrorCode.NoCredentials],
 		);
 	});
 
@@ -74,14 +74,14 @@ describe('resolveS3ConfigAndInput', () => {
 			credentials,
 		});
 		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
-			validationErrorMap[StorageValidationErrorCode.NoIdentityId]
+			validationErrorMap[StorageValidationErrorCode.NoIdentityId],
 		);
 	});
 
 	it('should resolve bucket from S3 config', async () => {
 		const { bucket: resolvedBucket } = await resolveS3ConfigAndInput(
 			Amplify,
-			{}
+			{},
 		);
 		expect(resolvedBucket).toEqual(bucket);
 		expect(mockGetConfig).toHaveBeenCalled();
@@ -96,7 +96,7 @@ describe('resolveS3ConfigAndInput', () => {
 			},
 		});
 		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
-			validationErrorMap[StorageValidationErrorCode.NoBucket]
+			validationErrorMap[StorageValidationErrorCode.NoBucket],
 		);
 	});
 
@@ -115,7 +115,7 @@ describe('resolveS3ConfigAndInput', () => {
 			},
 		});
 		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
-			validationErrorMap[StorageValidationErrorCode.NoRegion]
+			validationErrorMap[StorageValidationErrorCode.NoRegion],
 		);
 	});
 

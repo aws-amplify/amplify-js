@@ -55,46 +55,46 @@ describe('Legacy - backwards compatibility', () => {
 
 		// Query
 		expectType<LegacyNoMetadata | undefined>(
-			await DataStore.query(LegacyNoMetadata, 'someid')
+			await DataStore.query(LegacyNoMetadata, 'someid'),
 		);
 		expectType<LegacyNoMetadata | undefined>(
-			await DataStore.query(LegacyNoMetadata, { id: 'someid' })
+			await DataStore.query(LegacyNoMetadata, { id: 'someid' }),
 		);
 		expectType<LegacyNoMetadata[]>(await DataStore.query(LegacyNoMetadata));
 		expectType<LegacyNoMetadata[]>(
-			await DataStore.query(LegacyNoMetadata, Predicates.ALL)
+			await DataStore.query(LegacyNoMetadata, Predicates.ALL),
 		);
 		expectType<LegacyNoMetadata[]>(
-			await DataStore.query(LegacyNoMetadata, c => c.createdAt.ge('2019'))
+			await DataStore.query(LegacyNoMetadata, c => c.createdAt.ge('2019')),
 		);
 
 		// Save
 		expectType<LegacyNoMetadata>(
-			await DataStore.save(dummyInstance<LegacyNoMetadata>())
+			await DataStore.save(dummyInstance<LegacyNoMetadata>()),
 		);
 		expectType<LegacyNoMetadata>(
 			await DataStore.save(dummyInstance<LegacyNoMetadata>(), c =>
-				c.createdAt.ge('2019')
-			)
+				c.createdAt.ge('2019'),
+			),
 		);
 
 		// Delete
 		expectType<LegacyNoMetadata[]>(
-			await DataStore.delete(LegacyNoMetadata, '')
+			await DataStore.delete(LegacyNoMetadata, ''),
 		);
 		expectType<LegacyNoMetadata>(
-			await DataStore.delete(dummyInstance<LegacyNoMetadata>())
+			await DataStore.delete(dummyInstance<LegacyNoMetadata>()),
 		);
 		expectType<LegacyNoMetadata>(
 			await DataStore.delete(dummyInstance<LegacyNoMetadata>(), c =>
-				c.description.contains('something')
-			)
+				c.description.contains('something'),
+			),
 		);
 		expectType<LegacyNoMetadata[]>(
-			await DataStore.delete(LegacyNoMetadata, Predicates.ALL)
+			await DataStore.delete(LegacyNoMetadata, Predicates.ALL),
 		);
 		expectType<LegacyNoMetadata[]>(
-			await DataStore.delete(LegacyNoMetadata, c => c.createdAt.le('2019'))
+			await DataStore.delete(LegacyNoMetadata, c => c.createdAt.le('2019')),
 		);
 
 		// Observe
@@ -103,7 +103,7 @@ describe('Legacy - backwards compatibility', () => {
 			expectType<LegacyNoMetadata>(element);
 		});
 		DataStore.observe(LegacyNoMetadata, c =>
-			c.description.beginsWith('something')
+			c.description.beginsWith('something'),
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<LegacyNoMetadata>>(model);
 			expectType<LegacyNoMetadata>(element);
@@ -116,7 +116,7 @@ describe('Legacy - backwards compatibility', () => {
 				});
 				expectType<PersistentModelConstructor<LegacyNoMetadata>>(model);
 				expectType<LegacyNoMetadata>(element);
-			}
+			},
 		);
 
 		// Observe query
@@ -124,14 +124,14 @@ describe('Legacy - backwards compatibility', () => {
 			expectType<LegacyNoMetadata[]>(items);
 		});
 		DataStore.observeQuery(LegacyNoMetadata, c =>
-			c.description.notContains('something')
+			c.description.notContains('something'),
 		).subscribe(({ items }) => {
 			expectType<LegacyNoMetadata[]>(items);
 		});
 		DataStore.observeQuery(
 			LegacyNoMetadata,
 			c => c.description.notContains('something'),
-			{ sort: c => c.createdAt('ASCENDING') }
+			{ sort: c => c.createdAt('ASCENDING') },
 		).subscribe(({ items }) => {
 			expectType<LegacyNoMetadata[]>(items);
 		});
@@ -171,41 +171,41 @@ describe('Legacy - backwards compatibility', () => {
 
 		// Query
 		expectType<LegacyDefaultRO>(
-			(await DataStore.query(LegacyDefaultRO, 'someid'))!
+			(await DataStore.query(LegacyDefaultRO, 'someid'))!,
 		);
 		expectType<LegacyDefaultRO[]>(await DataStore.query(LegacyDefaultRO));
 		expectType<LegacyDefaultRO[]>(
-			await DataStore.query(LegacyDefaultRO, Predicates.ALL)
+			await DataStore.query(LegacyDefaultRO, Predicates.ALL),
 		);
 		expectType<LegacyDefaultRO[]>(
-			await DataStore.query(LegacyDefaultRO, c => c.createdAt.ge('2019'))
+			await DataStore.query(LegacyDefaultRO, c => c.createdAt.ge('2019')),
 		);
 
 		// Save
 		expectType<LegacyDefaultRO>(
-			await DataStore.save(dummyInstance<LegacyDefaultRO>())
+			await DataStore.save(dummyInstance<LegacyDefaultRO>()),
 		);
 		expectType<LegacyDefaultRO>(
 			await DataStore.save(dummyInstance<LegacyDefaultRO>(), c =>
-				c.createdAt.ge('2019')
-			)
+				c.createdAt.ge('2019'),
+			),
 		);
 
 		// Delete
 		expectType<LegacyDefaultRO[]>(await DataStore.delete(LegacyDefaultRO, ''));
 		expectType<LegacyDefaultRO>(
-			await DataStore.delete(dummyInstance<LegacyDefaultRO>())
+			await DataStore.delete(dummyInstance<LegacyDefaultRO>()),
 		);
 		expectType<LegacyDefaultRO>(
 			await DataStore.delete(dummyInstance<LegacyDefaultRO>(), c =>
-				c.description.contains('something')
-			)
+				c.description.contains('something'),
+			),
 		);
 		expectType<LegacyDefaultRO[]>(
-			await DataStore.delete(LegacyDefaultRO, Predicates.ALL)
+			await DataStore.delete(LegacyDefaultRO, Predicates.ALL),
 		);
 		expectType<LegacyDefaultRO[]>(
-			await DataStore.delete(LegacyDefaultRO, c => c.createdAt.le('2019'))
+			await DataStore.delete(LegacyDefaultRO, c => c.createdAt.le('2019')),
 		);
 
 		// Observe
@@ -214,7 +214,7 @@ describe('Legacy - backwards compatibility', () => {
 			expectType<LegacyDefaultRO>(element);
 		});
 		DataStore.observe(LegacyDefaultRO, c =>
-			c.description.beginsWith('something')
+			c.description.beginsWith('something'),
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<LegacyDefaultRO>>(model);
 			expectType<LegacyDefaultRO>(element);
@@ -223,7 +223,7 @@ describe('Legacy - backwards compatibility', () => {
 			({ model, element }) => {
 				expectType<PersistentModelConstructor<LegacyDefaultRO>>(model);
 				expectType<LegacyDefaultRO>(element);
-			}
+			},
 		);
 
 		// Observe query
@@ -231,14 +231,14 @@ describe('Legacy - backwards compatibility', () => {
 			expectType<LegacyDefaultRO[]>(items);
 		});
 		DataStore.observeQuery(LegacyDefaultRO, c =>
-			c.description.notContains('something')
+			c.description.notContains('something'),
 		).subscribe(({ items }) => {
 			expectType<LegacyDefaultRO[]>(items);
 		});
 		DataStore.observeQuery(
 			LegacyDefaultRO,
 			c => c.description.notContains('something'),
-			{ sort: c => c.createdAt('ASCENDING') }
+			{ sort: c => c.createdAt('ASCENDING') },
 		).subscribe(({ items }) => {
 			expectType<LegacyDefaultRO[]>(items);
 		});
@@ -291,41 +291,41 @@ describe('Legacy - backwards compatibility', () => {
 
 		// Query
 		expectType<LegacyCustomRO>(
-			(await DataStore.query(LegacyCustomRO, 'someid'))!
+			(await DataStore.query(LegacyCustomRO, 'someid'))!,
 		);
 		expectType<LegacyCustomRO[]>(await DataStore.query(LegacyCustomRO));
 		expectType<LegacyCustomRO[]>(
-			await DataStore.query(LegacyCustomRO, Predicates.ALL)
+			await DataStore.query(LegacyCustomRO, Predicates.ALL),
 		);
 		expectType<LegacyCustomRO[]>(
-			await DataStore.query(LegacyCustomRO, c => c.createdOn.ge('2019'))
+			await DataStore.query(LegacyCustomRO, c => c.createdOn.ge('2019')),
 		);
 
 		// Save
 		expectType<LegacyCustomRO>(
-			await DataStore.save(dummyInstance<LegacyCustomRO>())
+			await DataStore.save(dummyInstance<LegacyCustomRO>()),
 		);
 		expectType<LegacyCustomRO>(
 			await DataStore.save(dummyInstance<LegacyCustomRO>(), c =>
-				c.createdOn.ge('2019')
-			)
+				c.createdOn.ge('2019'),
+			),
 		);
 
 		// Delete
 		expectType<LegacyCustomRO[]>(await DataStore.delete(LegacyCustomRO, ''));
 		expectType<LegacyCustomRO>(
-			await DataStore.delete(dummyInstance<LegacyCustomRO>())
+			await DataStore.delete(dummyInstance<LegacyCustomRO>()),
 		);
 		expectType<LegacyCustomRO>(
 			await DataStore.delete(dummyInstance<LegacyCustomRO>(), c =>
-				c.description.contains('something')
-			)
+				c.description.contains('something'),
+			),
 		);
 		expectType<LegacyCustomRO[]>(
-			await DataStore.delete(LegacyCustomRO, Predicates.ALL)
+			await DataStore.delete(LegacyCustomRO, Predicates.ALL),
 		);
 		expectType<LegacyCustomRO[]>(
-			await DataStore.delete(LegacyCustomRO, c => c.createdOn.le('2019'))
+			await DataStore.delete(LegacyCustomRO, c => c.createdOn.le('2019')),
 		);
 
 		// Observe
@@ -334,7 +334,7 @@ describe('Legacy - backwards compatibility', () => {
 			expectType<LegacyCustomRO>(element);
 		});
 		DataStore.observe(LegacyCustomRO, c =>
-			c.description.beginsWith('something')
+			c.description.beginsWith('something'),
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<LegacyCustomRO>>(model);
 			expectType<LegacyCustomRO>(element);
@@ -343,7 +343,7 @@ describe('Legacy - backwards compatibility', () => {
 			({ model, element }) => {
 				expectType<PersistentModelConstructor<LegacyCustomRO>>(model);
 				expectType<LegacyCustomRO>(element);
-			}
+			},
 		);
 
 		// Observe query
@@ -351,14 +351,14 @@ describe('Legacy - backwards compatibility', () => {
 			expectType<LegacyCustomRO[]>(items);
 		});
 		DataStore.observeQuery(LegacyCustomRO, c =>
-			c.description.notContains('something')
+			c.description.notContains('something'),
 		).subscribe(({ items }) => {
 			expectType<LegacyCustomRO[]>(items);
 		});
 		DataStore.observeQuery(
 			LegacyCustomRO,
 			c => c.description.notContains('something'),
-			{ sort: c => c.createdOn('ASCENDING') }
+			{ sort: c => c.createdOn('ASCENDING') },
 		).subscribe(({ items }) => {
 			expectType<LegacyCustomRO[]>(items);
 		});
@@ -410,48 +410,48 @@ describe('Legacy - backwards compatibility', () => {
 
 		// Query
 		expectType<CustomIdentifierNoRO>(
-			(await DataStore.query(CustomIdentifierNoRO, 'someid'))!
+			(await DataStore.query(CustomIdentifierNoRO, 'someid'))!,
 		);
 		expectType<CustomIdentifierNoRO>(
-			(await DataStore.query(CustomIdentifierNoRO, { myId: 'someid' }))!
+			(await DataStore.query(CustomIdentifierNoRO, { myId: 'someid' }))!,
 		);
 		expectType<CustomIdentifierNoRO[]>(
-			await DataStore.query(CustomIdentifierNoRO)
+			await DataStore.query(CustomIdentifierNoRO),
 		);
 		expectType<CustomIdentifierNoRO[]>(
-			await DataStore.query(CustomIdentifierNoRO, Predicates.ALL)
+			await DataStore.query(CustomIdentifierNoRO, Predicates.ALL),
 		);
 		expectType<CustomIdentifierNoRO[]>(
-			await DataStore.query(CustomIdentifierNoRO, c => c.createdAt.ge('2019'))
+			await DataStore.query(CustomIdentifierNoRO, c => c.createdAt.ge('2019')),
 		);
 
 		// Save
 		expectType<CustomIdentifierNoRO>(
-			await DataStore.save(dummyInstance<CustomIdentifierNoRO>())
+			await DataStore.save(dummyInstance<CustomIdentifierNoRO>()),
 		);
 		expectType<CustomIdentifierNoRO>(
 			await DataStore.save(dummyInstance<CustomIdentifierNoRO>(), c =>
-				c.createdAt.ge('2019')
-			)
+				c.createdAt.ge('2019'),
+			),
 		);
 
 		// Delete
 		expectType<CustomIdentifierNoRO[]>(
-			await DataStore.delete(CustomIdentifierNoRO, '')
+			await DataStore.delete(CustomIdentifierNoRO, ''),
 		);
 		expectType<CustomIdentifierNoRO>(
-			await DataStore.delete(dummyInstance<CustomIdentifierNoRO>())
+			await DataStore.delete(dummyInstance<CustomIdentifierNoRO>()),
 		);
 		expectType<CustomIdentifierNoRO>(
 			await DataStore.delete(dummyInstance<CustomIdentifierNoRO>(), c =>
-				c.description.contains('something')
-			)
+				c.description.contains('something'),
+			),
 		);
 		expectType<CustomIdentifierNoRO[]>(
-			await DataStore.delete(CustomIdentifierNoRO, Predicates.ALL)
+			await DataStore.delete(CustomIdentifierNoRO, Predicates.ALL),
 		);
 		expectType<CustomIdentifierNoRO[]>(
-			await DataStore.delete(CustomIdentifierNoRO, c => c.createdAt.le('2019'))
+			await DataStore.delete(CustomIdentifierNoRO, c => c.createdAt.le('2019')),
 		);
 
 		// Observe
@@ -460,7 +460,7 @@ describe('Legacy - backwards compatibility', () => {
 			expectType<CustomIdentifierNoRO>(element);
 		});
 		DataStore.observe(CustomIdentifierNoRO, c =>
-			c.description.beginsWith('something')
+			c.description.beginsWith('something'),
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<CustomIdentifierNoRO>>(model);
 			expectType<CustomIdentifierNoRO>(element);
@@ -469,7 +469,7 @@ describe('Legacy - backwards compatibility', () => {
 			({ model, element }) => {
 				expectType<PersistentModelConstructor<CustomIdentifierNoRO>>(model);
 				expectType<CustomIdentifierNoRO>(element);
-			}
+			},
 		);
 
 		// Observe query
@@ -477,14 +477,14 @@ describe('Legacy - backwards compatibility', () => {
 			expectType<CustomIdentifierNoRO[]>(items);
 		});
 		DataStore.observeQuery(CustomIdentifierNoRO, c =>
-			c.description.notContains('something')
+			c.description.notContains('something'),
 		).subscribe(({ items }) => {
 			expectType<CustomIdentifierNoRO[]>(items);
 		});
 		DataStore.observeQuery(
 			CustomIdentifierNoRO,
 			c => c.description.notContains('something'),
-			{ sort: c => c.createdAt('ASCENDING') }
+			{ sort: c => c.createdAt('ASCENDING') },
 		).subscribe(({ items }) => {
 			expectType<CustomIdentifierNoRO[]>(items);
 		});

@@ -100,7 +100,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 						monitor.unsubscribe();
 						returnSaved(savedItem);
 					}
-				}
+				},
 			);
 			const savedItem = await DataStore.save(item);
 		});
@@ -134,7 +134,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			await DataStore.save(
 				new Post({
 					title: `the post ${i}`,
-				})
+				}),
 			);
 		}
 
@@ -165,14 +165,14 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				if (expecteds.length === 0) {
 					sub.unsubscribe();
 				}
-			}
+			},
 		);
 
 		for (let i = 0; i < 5; i++) {
 			await fullSave(
 				new Post({
 					title: `the post ${i}`,
-				})
+				}),
 			);
 		}
 
@@ -184,7 +184,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		const expecteds = [0, 5];
 
 		const sub = DataStore.observeQuery(Post, p =>
-			p.title.contains('include')
+			p.title.contains('include'),
 		).subscribe(({ items }) => {
 			const expected = expecteds.shift() || 0;
 			expect(items.length).toBe(expected);
@@ -202,7 +202,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			await fullSave(
 				new Post({
 					title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
-				})
+				}),
 			);
 		}
 
@@ -220,7 +220,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		const expecteds = [0, 4, 3];
 
 		const sub = DataStore.observeQuery(Post, p =>
-			p.title.contains('include')
+			p.title.contains('include'),
 		).subscribe(async ({ items }) => {
 			const expected = expecteds.shift() || 0;
 			expect(items.length).toBe(expected);
@@ -239,7 +239,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				// This sanity-checks helps confirms we're testing what we think
 				// we're testing:
 				expect(((DataStore as any).sync as any).getModelSyncedStatus({})).toBe(
-					true
+					true,
 				);
 
 				await pause(2001);
@@ -250,7 +250,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				await fullSave(
 					Post.copyOf(itemToEdit, draft => {
 						draft.title = 'second edited post - omit';
-					})
+					}),
 				);
 
 				jest.advanceTimersByTime(2000);
@@ -273,7 +273,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			await fullSave(
 				new Post({
 					title: `the post ${i} - ${Boolean(i % 2) ? 'include' : 'omit'}`,
-				})
+				}),
 			);
 		}
 
@@ -294,7 +294,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		await fullSave(
 			Post.copyOf(itemToEdit, draft => {
 				draft.title = 'first edited post - omit';
-			})
+			}),
 		);
 
 		jest.advanceTimersByTime(2000);
@@ -308,7 +308,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			await DataStore.save(
 				new Post({
 					title: `the post ${i}`,
-				})
+				}),
 			);
 		}
 
@@ -324,14 +324,14 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				if (expecteds.length === 0) {
 					sub.unsubscribe();
 				}
-			}
+			},
 		);
 
 		for (let i = 5; i < 15; i++) {
 			await fullSave(
 				new Post({
 					title: `the post ${i}`,
-				})
+				}),
 			);
 		}
 
@@ -346,7 +346,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			await DataStore.save(
 				new Post({
 					title: `the post ${i}`,
-				})
+				}),
 			);
 		}
 
@@ -366,7 +366,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					await DataStore.delete(itemToDelete);
 					jest.advanceTimersByTime(2000);
 				}
-			}
+			},
 		);
 
 		await pause(0);
@@ -381,12 +381,12 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					await DataStore.save(
 						new Post({
 							title: `the post ${i}`,
-						})
+						}),
 					);
 				}
 
 				const sub = DataStore.observeQuery(Post, p =>
-					p.title.beginsWith('the post')
+					p.title.beginsWith('the post'),
 				).subscribe(({ items, isSynced }) => {
 					const expected = expecteds.shift() || 0;
 					expect(items.length).toBe(expected);
@@ -421,9 +421,9 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					post: await DataStore.save(
 						new Post({
 							title: `new post ${i}`,
-						})
+						}),
 					),
-				})
+				}),
 			);
 		}
 
@@ -441,7 +441,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				if (expecteds.length === 0) {
 					sub.unsubscribe();
 				}
-			}
+			},
 		);
 
 		for (let i = 5; i < 15; i++) {
@@ -451,9 +451,9 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					post: await DataStore.save(
 						new Post({
 							title: `new post ${i}`,
-						})
+						}),
 					),
-				})
+				}),
 			);
 		}
 
@@ -472,9 +472,9 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 						new Profile({
 							firstName: `firstName ${i}`,
 							lastName: `lastName ${i}`,
-						})
+						}),
 					),
-				})
+				}),
 			);
 		}
 
@@ -493,7 +493,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				if (expecteds.length === 0) {
 					sub.unsubscribe();
 				}
-			}
+			},
 		);
 
 		for (let i = 5; i < 15; i++) {
@@ -504,9 +504,9 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 						new Profile({
 							firstName: `firstName ${i}`,
 							lastName: `lastName ${i}`,
-						})
+						}),
 					),
-				})
+				}),
 			);
 		}
 
@@ -527,9 +527,9 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					post: await DataStore.save(
 						new Post({
 							title: `old post ${i}`,
-						})
+						}),
 					),
-				})
+				}),
 			);
 		}
 
@@ -547,7 +547,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				if (expecteds.length === 0) {
 					sub.unsubscribe();
 				}
-			}
+			},
 		);
 
 		let postIndex = 0;
@@ -556,14 +556,14 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			const newPost = await DataStore.save(
 				new Post({
 					title: `new post ${postIndex++}`,
-				})
+				}),
 			);
 
 			await fullSave(
 				Comment.copyOf(comment, draft => {
 					draft.content = `updated: ${comment.content}`;
 					draft.post = newPost;
-				})
+				}),
 			);
 		}
 
@@ -597,9 +597,9 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 						new Profile({
 							firstName: `first name ${i}`,
 							lastName: `last name ${i}`,
-						})
+						}),
 					),
-				})
+				}),
 			);
 		}
 
@@ -617,7 +617,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				if (expecteds.length === 0) {
 					sub.unsubscribe();
 				}
-			}
+			},
 		);
 
 		let userIndex = 0;
@@ -627,14 +627,14 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 				new Profile({
 					firstName: `new first name ${userIndex++}`,
 					lastName: `new last name ${userIndex}`,
-				})
+				}),
 			);
 
 			await fullSave(
 				User.copyOf(user, draft => {
 					draft.name = `updated: ${user.name}`;
 					draft.profile = newProfile;
-				})
+				}),
 			);
 		}
 

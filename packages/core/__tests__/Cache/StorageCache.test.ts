@@ -98,7 +98,7 @@ describe('StorageCache', () => {
 			const cache = getStorageCache(config);
 
 			expect(
-				await cache.testGetAllCacheKeys({ omitSizeKey: true })
+				await cache.testGetAllCacheKeys({ omitSizeKey: true }),
 			).toStrictEqual(keys.slice(1));
 		});
 
@@ -108,7 +108,7 @@ describe('StorageCache', () => {
 				'some-other-prefixed-key',
 			];
 			mockStorageKey.mockImplementation(
-				(index: number) => extendedCachedKeys[index]
+				(index: number) => extendedCachedKeys[index],
 			);
 			mockGetLocalStorageWithFallback.mockReturnValue({
 				...mockStorage,
@@ -117,7 +117,7 @@ describe('StorageCache', () => {
 			const cache = getStorageCache(config);
 
 			expect(
-				await cache.testGetAllCacheKeys({ omitSizeKey: true })
+				await cache.testGetAllCacheKeys({ omitSizeKey: true }),
 			).toStrictEqual(keys.slice(1));
 		});
 	});

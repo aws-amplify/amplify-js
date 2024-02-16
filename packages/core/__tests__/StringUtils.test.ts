@@ -21,7 +21,7 @@ describe('StringUtils', () => {
 		const encodedState = encodeURIComponent(urlSafeState);
 
 		expect(urlSafeDecode(decodeURIComponent(encodedState))).toEqual(
-			complexCustomState
+			complexCustomState,
 		);
 	});
 });

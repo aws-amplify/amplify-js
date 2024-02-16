@@ -19,10 +19,10 @@ jest.mock(
 			.fn()
 			.mockImplementation(
 				jest.requireActual(
-					'../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getSignature'
-				).getSignature
+					'../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getSignature',
+				).getSignature,
 			),
-	})
+	}),
 );
 
 describe('signRequest', () => {
@@ -41,8 +41,8 @@ describe('signRequest', () => {
 					...options,
 				};
 				return [name, updatedRequest, updatedOptions, expectedAuthorization];
-			}
-		)
+			},
+		),
 	)('signs request with %s', (_, request, options, expected) => {
 		expect(signRequest(request, options).headers.authorization).toBe(expected);
 	});

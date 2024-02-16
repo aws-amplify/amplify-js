@@ -149,7 +149,7 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 							blogId: 'blog id',
 						},
-						false
+						false,
 					);
 
 					harness.latency = 'high';
@@ -180,7 +180,7 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 							blogId: 'blog id',
 						},
-						false
+						false,
 					);
 
 					harness.userInputDelayed();
@@ -481,7 +481,7 @@ describe('DataStore sync engine', () => {
 						await harness.expectGraphqlSettledWithEventCount(3);
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
+							harness.subscriptionLogs(['title', 'blogId', '_version']),
 						).toEqual([
 							['original title', null, 1],
 							['post title 0', null, 1],
@@ -526,7 +526,7 @@ describe('DataStore sync engine', () => {
 						await harness.expectGraphqlSettledWithEventCount(4);
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
+							harness.subscriptionLogs(['title', 'blogId', '_version']),
 						).toEqual([
 							['original title', null, 1],
 							['post title 0', null, 1],
@@ -566,7 +566,7 @@ describe('DataStore sync engine', () => {
 						await harness.expectGraphqlSettledWithEventCount(4);
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
+							harness.subscriptionLogs(['title', 'blogId', '_version']),
 						).toEqual([
 							['original title', null, 1],
 							['post title 0', null, 1],
@@ -612,7 +612,7 @@ describe('DataStore sync engine', () => {
 						await harness.expectGraphqlSettledWithEventCount(4);
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version' ?? null])
+							harness.subscriptionLogs(['title', 'blogId', '_version' ?? null]),
 						).toEqual([
 							['original title', 'original blogId', 1],
 							['post title 0', 'original blogId', 1],
@@ -650,7 +650,7 @@ describe('DataStore sync engine', () => {
 						await harness.expectGraphqlSettledWithEventCount(4);
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
+							harness.subscriptionLogs(['title', 'blogId', '_version']),
 						).toEqual([
 							['original title', null, 1],
 							['post title 0', null, 1],
@@ -694,7 +694,7 @@ describe('DataStore sync engine', () => {
 						await harness.expectGraphqlSettledWithEventCount(4);
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
+							harness.subscriptionLogs(['title', 'blogId', '_version']),
 						).toEqual([
 							['original title', null, 1],
 							['post title 0', null, 1],
@@ -793,7 +793,7 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 							blogId: 'blog id',
 						},
-						false
+						false,
 					);
 
 					harness.latency = 'high';
@@ -824,7 +824,7 @@ describe('DataStore sync engine', () => {
 							title: 'original title',
 							blogId: 'blog id',
 						},
-						false
+						false,
 					);
 
 					harness.userInputDelayed();
@@ -1119,7 +1119,7 @@ describe('DataStore sync engine', () => {
 						});
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
+							harness.subscriptionLogs(['title', 'blogId', '_version']),
 						).toEqual([
 							['original title', null, 1],
 							['post title 0', null, 1],
@@ -1170,7 +1170,7 @@ describe('DataStore sync engine', () => {
 						});
 
 						expect(
-							harness.subscriptionLogs(['title', 'blogId', '_version'])
+							harness.subscriptionLogs(['title', 'blogId', '_version']),
 						).toEqual([
 							['original title', null, 1],
 							['post title 0', null, 1],
@@ -1218,7 +1218,7 @@ describe('DataStore sync engine', () => {
 				});
 
 				expect(
-					harness.subscriptionLogs(['title', 'blogId', '_version'])
+					harness.subscriptionLogs(['title', 'blogId', '_version']),
 				).toEqual([
 					['original title', null, 1],
 					['post title 0', null, 1],
@@ -1270,7 +1270,7 @@ describe('DataStore sync engine', () => {
 				});
 
 				expect(
-					harness.subscriptionLogs(['title', 'blogId', '_version' ?? null])
+					harness.subscriptionLogs(['title', 'blogId', '_version' ?? null]),
 				).toEqual([
 					['original title', 'original blogId', 1],
 					['post title 0', 'original blogId', 1],
@@ -1310,7 +1310,7 @@ describe('DataStore sync engine', () => {
 				await harness.expectGraphqlSettledWithEventCount(4);
 
 				expect(
-					harness.subscriptionLogs(['title', 'blogId', '_version'])
+					harness.subscriptionLogs(['title', 'blogId', '_version']),
 				).toEqual([
 					['original title', null, 1],
 					['post title 0', null, 1],
@@ -1354,7 +1354,7 @@ describe('DataStore sync engine', () => {
 				await harness.expectGraphqlSettledWithEventCount(4);
 
 				expect(
-					harness.subscriptionLogs(['title', 'blogId', '_version'])
+					harness.subscriptionLogs(['title', 'blogId', '_version']),
 				).toEqual([
 					['original title', null, 1],
 					['post title 0', null, 1],

@@ -37,7 +37,7 @@ describe('normalizeNativeMessage', () => {
 			const payload = { aps: { alert: { body, title } } };
 
 			expect(normalizeNativeMessage(payload)).toStrictEqual(
-				expect.objectContaining({ body, title })
+				expect.objectContaining({ body, title }),
 			);
 		});
 
@@ -50,7 +50,7 @@ describe('normalizeNativeMessage', () => {
 			expect(normalizeNativeMessage(payload)).toStrictEqual(
 				expect.objectContaining({
 					data: pushNotificationAdhocData,
-				})
+				}),
 			);
 		});
 
@@ -92,7 +92,7 @@ describe('normalizeNativeMessage', () => {
 			expect(normalizeNativeMessage(payload)).toStrictEqual(
 				expect.objectContaining({
 					data: pushNotificationAdhocData,
-				})
+				}),
 			);
 		});
 

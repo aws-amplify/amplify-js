@@ -36,7 +36,7 @@ export type ListObjectsV2Output = ListObjectsV2CommandOutput;
 
 const listObjectsV2Serializer = (
 	input: ListObjectsV2Input,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): HttpRequest => {
 	const headers = assignStringVariables({
 		'x-amz-request-payer': input.RequestPayer,
@@ -62,7 +62,7 @@ const listObjectsV2Serializer = (
 };
 
 const listObjectsV2Deserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<ListObjectsV2Output> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
@@ -131,5 +131,5 @@ export const listObjectsV2 = composeServiceApi(
 	s3TransferHandler,
 	listObjectsV2Serializer,
 	listObjectsV2Deserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

@@ -47,7 +47,7 @@ export const findCachedUploadParts = async ({
 
 	await defaultStorage.setItem(
 		UPLOADS_STORAGE_KEY,
-		JSON.stringify(cachedUploads)
+		JSON.stringify(cachedUploads),
 	);
 
 	try {
@@ -77,7 +77,7 @@ type FileMetadata = {
 };
 
 const listCachedUploadTasks = async (
-	kvStorage: KeyValueStorageInterface
+	kvStorage: KeyValueStorageInterface,
 ): Promise<Record<string, FileMetadata>> => {
 	try {
 		return JSON.parse((await kvStorage.getItem(UPLOADS_STORAGE_KEY)) ?? '{}');
@@ -122,7 +122,7 @@ export const getUploadsCacheKey = ({
 
 export const cacheMultipartUpload = async (
 	cacheKey: string,
-	fileMetadata: Omit<FileMetadata, 'lastTouched'>
+	fileMetadata: Omit<FileMetadata, 'lastTouched'>,
 ): Promise<void> => {
 	const cachedUploads = await listCachedUploadTasks(defaultStorage);
 	cachedUploads[cacheKey] = {
@@ -131,7 +131,7 @@ export const cacheMultipartUpload = async (
 	};
 	await defaultStorage.setItem(
 		UPLOADS_STORAGE_KEY,
-		JSON.stringify(cachedUploads)
+		JSON.stringify(cachedUploads),
 	);
 };
 
@@ -140,6 +140,6 @@ export const removeCachedUpload = async (cacheKey: string): Promise<void> => {
 	delete cachedUploads[cacheKey];
 	await defaultStorage.setItem(
 		UPLOADS_STORAGE_KEY,
-		JSON.stringify(cachedUploads)
+		JSON.stringify(cachedUploads),
 	);
 };

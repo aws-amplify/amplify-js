@@ -139,7 +139,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async searchByText(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
 	): Promise<Place[]> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -187,7 +187,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
 		const PascalResults: PlaceResult[] = response.Results.map(
-			result => result.Place
+			result => result.Place,
 		);
 		const results: Place[] = camelcaseKeys(PascalResults, {
 			deep: true,
@@ -205,7 +205,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	public async searchForSuggestions(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
 	): Promise<SearchForSuggestionsResults> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -238,7 +238,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			customUserAgent: getGeoUserAgent(GeoAction.SearchForSuggestions),
 		});
 		const command = new SearchPlaceIndexForSuggestionsCommand(
-			locationServiceInput
+			locationServiceInput,
 		);
 
 		let response;
@@ -270,7 +270,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	public async searchByPlaceId(
 		placeId: string,
-		options?: searchByPlaceIdOptions
+		options?: searchByPlaceIdOptions,
 	): Promise<Place | undefined> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -317,7 +317,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async searchByCoordinates(
 		coordinates: Coordinates,
-		options?: SearchByCoordinatesOptions
+		options?: SearchByCoordinatesOptions,
 	): Promise<Place> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -344,7 +344,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			customUserAgent: getGeoUserAgent(GeoAction.SearchByCoordinates),
 		});
 		const command = new SearchPlaceIndexForPositionCommand(
-			locationServiceInput
+			locationServiceInput,
 		);
 
 		let response;
@@ -378,7 +378,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async saveGeofences(
 		geofences: GeofenceInput[],
-		options?: AmazonLocationServiceGeofenceOptions
+		options?: AmazonLocationServiceGeofenceOptions,
 	): Promise<SaveGeofencesResults> {
 		if (geofences.length < 1) {
 			throw new Error('Geofence input array is empty');
@@ -408,7 +408,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 						Polygon: polygon,
 					},
 				};
-			}
+			},
 		);
 		const results: SaveGeofencesResults = {
 			successes: [],
@@ -430,7 +430,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				try {
 					response = await this._AmazonLocationServiceBatchPutGeofenceCall(
 						batch,
-						options?.collectionName || this._config.geofenceCollections.default
+						options?.collectionName || this._config.geofenceCollections.default,
 					);
 				} catch (error) {
 					// If the API call fails, add the geofences to the errors array and move to next batch
@@ -468,7 +468,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 						geofenceId: GeofenceId!,
 					});
 				});
-			})
+			}),
 		);
 
 		return results;
@@ -482,7 +482,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async getGeofence(
 		geofenceId: GeofenceId,
-		options?: AmazonLocationServiceGeofenceOptions
+		options?: AmazonLocationServiceGeofenceOptions,
 	): Promise<AmazonLocationServiceGeofence> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -546,7 +546,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 *   nextToken: token for next page of geofences
 	 */
 	public async listGeofences(
-		options?: AmazonLocationServiceListGeofenceOptions
+		options?: AmazonLocationServiceListGeofenceOptions,
 	): Promise<ListGeofenceResults> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
@@ -577,7 +577,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		// Create Amazon Location Service command
 		const command: ListGeofencesCommand = new ListGeofencesCommand(
-			listGeofencesInput
+			listGeofencesInput,
 		);
 
 		// Make API call
@@ -604,7 +604,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 							polygon: Geometry!.Polygon as GeofencePolygon,
 						},
 					};
-				}
+				},
 			),
 			nextToken: NextToken,
 		};
@@ -622,7 +622,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	public async deleteGeofences(
 		geofenceIds: string[],
-		options?: AmazonLocationServiceGeofenceOptions
+		options?: AmazonLocationServiceGeofenceOptions,
 	): Promise<AmazonLocationServiceDeleteGeofencesResults> {
 		if (geofenceIds.length < 1) {
 			throw new Error('GeofenceId input array is empty');
@@ -665,7 +665,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				try {
 					response = await this._AmazonLocationServiceBatchDeleteGeofenceCall(
 						batch,
-						options?.collectionName || this._config.geofenceCollections.default
+						options?.collectionName || this._config.geofenceCollections.default,
 					);
 				} catch (error) {
 					// If the API call fails, add the geofences to the errors array and move to next batch
@@ -685,12 +685,12 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				}
 
 				const badGeofenceIds = response.Errors.map(
-					({ geofenceId }) => geofenceId
+					({ geofenceId }) => geofenceId,
 				);
 				results.successes.push(
-					...batch.filter(Id => !badGeofenceIds.includes(Id))
+					...batch.filter(Id => !badGeofenceIds.includes(Id)),
 				);
-			})
+			}),
 		);
 		return results;
 	}
@@ -704,7 +704,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			if (!credentials) return false;
 			logger.debug(
 				'Set credentials for storage. Credentials are:',
-				credentials
+				credentials,
 			);
 			this._credentials = credentials;
 			return true;
@@ -769,7 +769,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	private async _AmazonLocationServiceBatchPutGeofenceCall(
 		PascalGeofences: BatchPutGeofenceRequestEntry[],
-		collectionName?: string
+		collectionName?: string,
 	) {
 		// Create the BatchPutGeofence input
 		const geofenceInput: BatchPutGeofenceCommandInput = {
@@ -796,7 +796,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	private async _AmazonLocationServiceBatchDeleteGeofenceCall(
 		geofenceIds: string[],
-		collectionName?: string
+		collectionName?: string,
 	): Promise<BatchDeleteGeofenceCommandOutput> {
 		// Create the BatchDeleteGeofence input
 		const deleteGeofencesInput: BatchDeleteGeofenceCommandInput = {

@@ -7,7 +7,7 @@ import { AuthError } from '../../../../errors/AuthError';
 
 export const createOAuthError = (
 	message: string,
-	recoverySuggestion?: string
+	recoverySuggestion?: string,
 ) =>
 	new AuthError({
 		message: message ?? 'An error has occurred during the oauth process.',

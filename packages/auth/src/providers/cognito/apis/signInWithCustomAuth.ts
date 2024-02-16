@@ -46,7 +46,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws SignInWithCustomAuthOutput - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomAuth(
-	input: SignInWithCustomAuthInput
+	input: SignInWithCustomAuthInput,
 ): Promise<SignInWithCustomAuthOutput> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -58,11 +58,11 @@ export async function signInWithCustomAuth(
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!password,
-		AuthValidationErrorCode.CustomAuthSignInPassword
+		AuthValidationErrorCode.CustomAuthSignInPassword,
 	);
 
 	try {
@@ -75,7 +75,7 @@ export async function signInWithCustomAuth(
 			handleCustomAuthFlowWithoutSRP,
 			[username, metadata, authConfig, tokenOrchestrator],
 			username,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 		const activeUsername = getActiveSignInUsername(username);
 		// sets up local state used during the sign-in process
@@ -94,7 +94,7 @@ export async function signInWithCustomAuth(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
@@ -102,7 +102,7 @@ export async function signInWithCustomAuth(
 				'auth',
 				{ event: 'signedIn', data: await getCurrentUser() },
 				'Auth',
-				AMPLIFY_SYMBOL
+				AMPLIFY_SYMBOL,
 			);
 			return {
 				isSignedIn: true,

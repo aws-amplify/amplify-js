@@ -48,7 +48,7 @@ export type PutObjectOutput = Pick<
 
 const putObjectSerializer = async (
 	input: PutObjectInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
 		...(await serializeObjectConfigsToHeaders({
@@ -69,7 +69,7 @@ const putObjectSerializer = async (
 };
 
 const putObjectDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<PutObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -89,5 +89,5 @@ export const putObject = composeServiceApi(
 	s3TransferHandler,
 	putObjectSerializer,
 	putObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

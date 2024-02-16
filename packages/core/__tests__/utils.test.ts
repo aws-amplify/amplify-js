@@ -26,7 +26,7 @@ describe('Util', () => {
 							date: true,
 						},
 					},
-				})
+				}),
 			).toBeTruthy();
 		});
 
@@ -44,13 +44,13 @@ describe('Util', () => {
 	describe('StringUtils', () => {
 		test('urlSafeEncode', () => {
 			expect(urlSafeEncode('some/path?to-whatever')).toBe(
-				'736f6d652f706174683f746f2d7768617465766572'
+				'736f6d652f706174683f746f2d7768617465766572',
 			);
 		});
 
 		test('urlSafeDecode', () => {
 			expect(urlSafeDecode('736f6d652f706174683f746f2d7768617465766572')).toBe(
-				'some/path?to-whatever'
+				'some/path?to-whatever',
 			);
 		});
 	});
@@ -103,7 +103,7 @@ describe('Util', () => {
 		}
 
 		expect(subscribe).toThrow(
-			'NetInfo must be passed to networkMonitor to enable reachability in React Native'
+			'NetInfo must be passed to networkMonitor to enable reachability in React Native',
 		);
 		expect(subscribeWithNetInfo).not.toThrow();
 	});

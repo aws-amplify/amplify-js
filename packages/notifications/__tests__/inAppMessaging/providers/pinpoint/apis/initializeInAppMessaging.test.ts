@@ -27,17 +27,17 @@ describe('initializeInAppMessaging', () => {
 		expect(mockAddEventListener).toHaveBeenNthCalledWith(
 			1,
 			'messageDisplayed',
-			expect.any(Function)
+			expect.any(Function),
 		);
 		expect(mockAddEventListener).toHaveBeenNthCalledWith(
 			2,
 			'messageDismissed',
-			expect.any(Function)
+			expect.any(Function),
 		);
 		expect(mockAddEventListener).toHaveBeenNthCalledWith(
 			3,
 			'messageActionTaken',
-			expect.any(Function)
+			expect.any(Function),
 		);
 		expect(Hub.listen).toHaveBeenCalledWith('analytics', expect.any(Function));
 	});

@@ -93,7 +93,7 @@ export const isNullOrUndefined = (val: any): boolean => {
 export const validatePredicate = <T extends PersistentModel>(
 	model: T,
 	groupType: keyof PredicateGroups<T>,
-	predicatesOrGroups: (PredicateObject<T> | PredicatesGroup<T>)[]
+	predicatesOrGroups: (PredicateObject<T> | PredicatesGroup<T>)[],
 ) => {
 	let filterType: keyof Pick<any[], 'every' | 'some'>;
 	let isNegation = false;
@@ -139,7 +139,7 @@ export const validatePredicate = <T extends PersistentModel>(
 export const validatePredicateField = <T>(
 	value: T,
 	operator: keyof AllOperators,
-	operand: T | [T, T]
+	operand: T | [T, T],
 ) => {
 	switch (operator) {
 		case 'ne':
@@ -178,7 +178,7 @@ export const validatePredicateField = <T>(
 };
 
 export const isModelConstructor = <T extends PersistentModel>(
-	obj: any
+	obj: any,
 ): obj is PersistentModelConstructor<T> => {
 	return (
 		obj && typeof (<PersistentModelConstructor<T>>obj).copyOf === 'function'
@@ -192,7 +192,7 @@ export function registerNonModelClass(clazz: NonModelTypeConstructor<any>) {
 }
 
 export const isNonModelConstructor = (
-	obj: any
+	obj: any,
 ): obj is NonModelTypeConstructor<any> => {
 	return nonModelClasses.has(obj);
 };
@@ -206,12 +206,12 @@ export const traverseModel = <T extends PersistentModel>(
 	modelInstanceCreator: ModelInstanceCreator,
 	getModelConstructorByModelName: (
 		namsespaceName: NAMESPACES,
-		modelName: string
-	) => PersistentModelConstructor<any>
+		modelName: string,
+	) => PersistentModelConstructor<any>,
 ) => {
 	const modelConstructor = getModelConstructorByModelName(
 		namespace.name as NAMESPACES,
-		srcModelName
+		srcModelName,
 	);
 
 	const result: {
@@ -231,7 +231,7 @@ export const traverseModel = <T extends PersistentModel>(
 	if (!topologicallySortedModels.has(namespace)) {
 		topologicallySortedModels.set(
 			namespace,
-			Array.from(namespace.modelTopologicalOrdering!.keys())
+			Array.from(namespace.modelTopologicalOrdering!.keys()),
 		);
 	}
 
@@ -400,7 +400,7 @@ const getBytesFromHex = (encoded: string): Uint8Array => {
 			out[i / 2] = HEX_TO_SHORT[encodedByte];
 		} else {
 			throw new Error(
-				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`
+				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`,
 			);
 		}
 	}
@@ -449,7 +449,7 @@ export function getNow() {
 }
 
 export function sortCompareFunction<T extends PersistentModel>(
-	sortPredicates: SortPredicatesGroup<T>
+	sortPredicates: SortPredicatesGroup<T>,
 ) {
 	return function compareFunction(a, b) {
 		// enable multi-field sort by iterating over predicates until
@@ -486,7 +486,7 @@ export function sortCompareFunction<T extends PersistentModel>(
 export function directedValueEquality(
 	fromObject: object,
 	againstObject: object,
-	nullish: boolean = false
+	nullish: boolean = false,
 ) {
 	const aKeys = Object.keys(fromObject);
 
@@ -510,7 +510,7 @@ export function directedValueEquality(
 export function valuesEqual(
 	valA: any,
 	valB: any,
-	nullish: boolean = false
+	nullish: boolean = false,
 ): boolean {
 	let a = valA;
 	let b = valB;
@@ -590,12 +590,12 @@ export function valuesEqual(
  */
 export function inMemoryPagination<T extends PersistentModel>(
 	records: T[],
-	pagination?: PaginationInput<T>
+	pagination?: PaginationInput<T>,
 ): T[] {
 	if (pagination && records.length > 1) {
 		if (pagination.sort) {
 			const sortPredicates = ModelSortPredicateCreator.getPredicates(
-				pagination.sort
+				pagination.sort,
 			);
 
 			if (sortPredicates.length) {
@@ -622,7 +622,7 @@ export function inMemoryPagination<T extends PersistentModel>(
  */
 export async function asyncSome(
 	items: Record<string, any>[],
-	matches: (item: Record<string, any>) => Promise<boolean>
+	matches: (item: Record<string, any>) => Promise<boolean>,
 ): Promise<boolean> {
 	for (const item of items) {
 		if (await matches(item)) {
@@ -641,7 +641,7 @@ export async function asyncSome(
  */
 export async function asyncEvery(
 	items: Record<string, any>[],
-	matches: (item: Record<string, any>) => Promise<boolean>
+	matches: (item: Record<string, any>) => Promise<boolean>,
 ): Promise<boolean> {
 	for (const item of items) {
 		if (!(await matches(item))) {
@@ -661,7 +661,7 @@ export async function asyncEvery(
  */
 export async function asyncFilter<T>(
 	items: T[],
-	matches: (item: T) => Promise<boolean>
+	matches: (item: T) => Promise<boolean>,
 ): Promise<T[]> {
 	const results: T[] = [];
 	for (const item of items) {
@@ -678,13 +678,13 @@ export const isAWSDate = (val: string): boolean => {
 
 export const isAWSTime = (val: string): boolean => {
 	return !!/^\d{2}:\d{2}(:\d{2}(.\d+)?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(
-		val
+		val,
 	);
 };
 
 export const isAWSDateTime = (val: string): boolean => {
 	return !!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(.\d+)?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(
-		val
+		val,
 	);
 };
 
@@ -694,7 +694,7 @@ export const isAWSTimestamp = (val: number): boolean => {
 
 export const isAWSEmail = (val: string): boolean => {
 	return !!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.exec(
-		val
+		val,
 	);
 };
 
@@ -721,7 +721,7 @@ export const isAWSPhone = (val: string): boolean => {
 
 export const isAWSIPAddress = (val: string): boolean => {
 	return !!/((^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$)|(^((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?$))$/.exec(
-		val
+		val,
 	);
 };
 
@@ -735,7 +735,7 @@ export class DeferredPromise {
 			(resolve: (value: string | PromiseLike<string>) => void, reject) => {
 				self.resolve = resolve;
 				self.reject = reject;
-			}
+			},
 		);
 	}
 }
@@ -749,7 +749,7 @@ export class DeferredCallbackResolver {
 	private callback = () => {};
 	private errorHandler: (error: string) => void;
 	private defaultErrorHandler = (
-		msg = 'DeferredCallbackResolver error'
+		msg = 'DeferredCallbackResolver error',
 	): void => {
 		throw new Error(msg);
 	};
@@ -823,7 +823,7 @@ export class DeferredCallbackResolver {
 export function mergePatches<T>(
 	originalSource: T,
 	oldPatches: Patch[],
-	newPatches: Patch[]
+	newPatches: Patch[],
 ): Patch[] {
 	const patchesToMerge = oldPatches.concat(newPatches);
 	let patches: Patch[];
@@ -834,7 +834,7 @@ export function mergePatches<T>(
 		},
 		p => {
 			patches = p;
-		}
+		},
 	);
 	return patches!;
 }
@@ -880,7 +880,7 @@ export const getStorename = (namespace: string, modelName: string) => {
 	See 'processCompositeKeys' test in util.test.ts for more examples
 */
 export const processCompositeKeys = (
-	attributes: ModelAttributes
+	attributes: ModelAttributes,
 ): Set<string>[] => {
 	const extractCompositeSortKey = ({
 		properties: {
@@ -935,7 +935,7 @@ export const processCompositeKeys = (
 };
 
 export const extractKeyIfExists = (
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): ModelAttribute | undefined => {
 	const keyAttribute = modelDefinition?.attributes?.find(isModelAttributeKey);
 
@@ -943,7 +943,7 @@ export const extractKeyIfExists = (
 };
 
 export const extractPrimaryKeyFieldNames = (
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): string[] => {
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
@@ -955,14 +955,14 @@ export const extractPrimaryKeyFieldNames = (
 
 export const extractPrimaryKeyValues = <T extends PersistentModel>(
 	model: T,
-	keyFields: string[]
+	keyFields: string[],
 ): string[] => {
 	return keyFields.map(key => model[key]);
 };
 
 export const extractPrimaryKeysAndValues = <T extends PersistentModel>(
 	model: T,
-	keyFields: string[]
+	keyFields: string[],
 ): any => {
 	const primaryKeysAndValues = {};
 	keyFields.forEach(key => (primaryKeysAndValues[key] = model[key]));
@@ -984,7 +984,7 @@ export const isIdManaged = (modelDefinition: SchemaModel): boolean => {
 // IdentifierFields<OptionallyManagedIdentifier>
 // @primaryKey with explicit `id` in the PK. Single key or composite
 export const isIdOptionallyManaged = (
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): boolean => {
 	const keyAttribute = extractKeyIfExists(modelDefinition);
 
@@ -996,7 +996,7 @@ export const isIdOptionallyManaged = (
 };
 
 export const establishRelationAndKeys = (
-	namespace: SchemaNamespace
+	namespace: SchemaNamespace,
 ): [RelationshipType, ModelKeys] => {
 	const relationship: RelationshipType = {};
 	const keys: ModelKeys = {};
@@ -1024,13 +1024,13 @@ export const establishRelationAndKeys = (
 
 				if (connectionType === 'BELONGS_TO') {
 					const targetNames = extractTargetNamesFromSrc(
-						fieldAttribute.association
+						fieldAttribute.association,
 					);
 
 					if (targetNames) {
 						const idxName = indexNameFromKeys(targetNames);
 						const idxExists = relationship[mKey].indexes.find(
-							([index]) => index === idxName
+							([index]) => index === idxName,
 						);
 
 						if (!idxExists) {
@@ -1059,7 +1059,7 @@ export const establishRelationAndKeys = (
 				// create indexes for all other keys
 				const idxName = indexNameFromKeys(fields);
 				const idxExists = relationship[mKey].indexes.find(
-					([index]) => index === idxName
+					([index]) => index === idxName,
 				);
 
 				if (!idxExists) {
@@ -1086,7 +1086,7 @@ export const establishRelationAndKeys = (
 
 export const getIndex = (
 	rel: RelationType[],
-	src: string
+	src: string,
 ): string | undefined => {
 	let indexName;
 	rel.some((relItem: RelationType) => {
@@ -1101,7 +1101,7 @@ export const getIndex = (
 
 export const getIndexFromAssociation = (
 	indexes: IndexesType,
-	src: string | string[]
+	src: string | string[],
 ): string | undefined => {
 	let indexName: string;
 
@@ -1123,7 +1123,7 @@ the single field `targetName` has been replaced with an array of `targetNames`.
  * @returns array of targetNames, or `undefined`
  */
 export const extractTargetNamesFromSrc = (
-	src: RelationType | ModelAssociation | undefined
+	src: RelationType | ModelAssociation | undefined,
 ): string[] | undefined => {
 	const targetName = src?.targetName;
 	const targetNames = src?.targetNames;
@@ -1159,7 +1159,7 @@ export const keysEqual = (keysA, keysB): boolean => {
 // Returns primary keys for a model
 export const getIndexKeys = (
 	namespace: SchemaNamespace,
-	modelName: string
+	modelName: string,
 ): string[] => {
 	const keyPath = namespace?.keys?.[modelName]?.primaryKey;
 
@@ -1185,10 +1185,10 @@ export const getIndexKeys = (
  * @returns An object mapping `createdAt` and `updatedAt` to their field names.
  */
 export const getTimestampFields = (
-	definition: SchemaModel
+	definition: SchemaModel,
 ): { createdAt: string; updatedAt: string } => {
 	const modelAttributes = definition.attributes?.find(
-		attr => attr.type === 'model'
+		attr => attr.type === 'model',
 	);
 	const timestampFieldsMap = modelAttributes?.properties?.timestamps;
 
