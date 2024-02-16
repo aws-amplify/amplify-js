@@ -161,8 +161,12 @@ export interface Field {
 	association?: AssociationType;
 }
 
-export type ModelFieldType = { model: string };
-export type NonModelFieldType = { nonModel: string };
+export interface ModelFieldType {
+	model: string
+};
+export interface NonModelFieldType {
+	nonModel: string
+};
 
 export type FieldType =
 	| 'ID'
