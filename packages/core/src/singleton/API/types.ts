@@ -162,11 +162,11 @@ export interface Field {
 }
 
 export interface ModelFieldType {
-	model: string
-};
+	model: string;
+}
 export interface NonModelFieldType {
-	nonModel: string
-};
+	nonModel: string;
+}
 
 export type FieldType =
 	| 'ID'
