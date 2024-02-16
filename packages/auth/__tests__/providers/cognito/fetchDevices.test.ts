@@ -19,7 +19,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('fetchDevices', () => {
@@ -72,7 +72,7 @@ describe('fetchDevices', () => {
 			expect.objectContaining({
 				AccessToken: mockAccessToken,
 				Limit: 60,
-			})
+			}),
 		);
 		expect(mockListDevices).toHaveBeenCalledTimes(1);
 	});

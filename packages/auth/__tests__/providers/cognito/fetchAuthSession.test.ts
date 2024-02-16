@@ -17,7 +17,7 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 		credentialsProviderSpy = jest
 			.spyOn(
 				CognitoAWSCredentialsAndIdentityIdProvider.prototype,
-				'getCredentialsAndIdentityId'
+				'getCredentialsAndIdentityId',
 			)
 			.mockImplementation(async () => {
 				return {
@@ -45,7 +45,7 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 					credentialsProvider: cognitoCredentialsProvider,
 					tokenProvider: cognitoUserPoolsTokenProvider,
 				},
-			}
+			},
 		);
 
 		const session = await fetchAuthSession();
@@ -82,10 +82,10 @@ describe('fetchAuthSession behavior for UserPools only', () => {
 			.mockImplementation(async () => {
 				return {
 					accessToken: decodeJWT(
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y'
+						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y',
 					),
 					idToken: decodeJWT(
-						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y'
+						'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y',
 					),
 				};
 			});
@@ -106,7 +106,7 @@ describe('fetchAuthSession behavior for UserPools only', () => {
 					credentialsProvider: cognitoCredentialsProvider,
 					tokenProvider: cognitoUserPoolsTokenProvider,
 				},
-			}
+			},
 		);
 
 		const session = await fetchAuthSession();

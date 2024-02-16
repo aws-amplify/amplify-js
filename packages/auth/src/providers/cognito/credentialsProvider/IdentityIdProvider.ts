@@ -48,7 +48,7 @@ export async function cognitoIdentityIdProvider({
 
 			if (identityId && identityId.id === generatedIdentityId) {
 				logger.debug(
-					`The guest identity ${identityId.id} has become the primary identity.`
+					`The guest identity ${identityId.id} has become the primary identity.`,
 				);
 			}
 			identityId = {
@@ -75,7 +75,7 @@ export async function cognitoIdentityIdProvider({
 
 async function generateIdentityId(
 	logins: {},
-	authConfig: CognitoIdentityPoolConfig
+	authConfig: CognitoIdentityPoolConfig,
 ): Promise<string> {
 	const identityPoolId = authConfig?.identityPoolId;
 	const region = getRegionFromIdentityPoolId(identityPoolId);
@@ -92,7 +92,7 @@ async function generateIdentityId(
 				{
 					IdentityPoolId: identityPoolId,
 					Logins: logins,
-				}
+				},
 			)
 		).IdentityId;
 	if (!idResult) {

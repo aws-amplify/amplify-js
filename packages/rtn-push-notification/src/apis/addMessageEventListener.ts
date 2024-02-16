@@ -10,12 +10,12 @@ export const addMessageEventListener = (
 	event: string,
 	listener: (
 		message: PushNotificationMessage | null,
-		completionHandlerId?: string
-	) => void
+		completionHandlerId?: string,
+	) => void,
 ): EmitterSubscription =>
 	nativeEventEmitter.addListener(event, (nativeMessage: NativeMessage) => {
 		listener(
 			normalizeNativeMessage(nativeMessage),
-			nativeMessage.completionHandlerId
+			nativeMessage.completionHandlerId,
 		);
 	});

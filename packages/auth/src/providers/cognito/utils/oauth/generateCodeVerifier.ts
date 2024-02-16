@@ -19,7 +19,7 @@ const CODE_VERIFIER_CHARSET =
  * following the spec of [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636#section-4.2).
  */
 export const generateCodeVerifier = (
-	length: number
+	length: number,
 ): {
 	value: string;
 	method: 'S256';
@@ -53,7 +53,7 @@ function generateCodeChallenge(codeVerifier: string): string {
 	awsCryptoHash.update(codeVerifier);
 
 	const codeChallenge = removePaddingChar(
-		base64Encoder.convert(awsCryptoHash.digestSync(), { urlSafe: true })
+		base64Encoder.convert(awsCryptoHash.digestSync(), { urlSafe: true }),
 	);
 
 	return codeChallenge;

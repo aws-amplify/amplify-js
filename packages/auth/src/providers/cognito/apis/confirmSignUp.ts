@@ -34,7 +34,7 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignUp(
-	input: ConfirmSignUpInput
+	input: ConfirmSignUpInput,
 ): Promise<ConfirmSignUpOutput> {
 	const { username, confirmationCode, options } = input;
 
@@ -44,11 +44,11 @@ export async function confirmSignUp(
 	const clientMetadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptyConfirmSignUpUsername
+		AuthValidationErrorCode.EmptyConfirmSignUpUsername,
 	);
 	assertValidationError(
 		!!confirmationCode,
-		AuthValidationErrorCode.EmptyConfirmSignUpCode
+		AuthValidationErrorCode.EmptyConfirmSignUpCode,
 	);
 
 	const UserContextData = getUserContextData({
@@ -69,7 +69,7 @@ export async function confirmSignUp(
 			ForceAliasCreation: options?.forceAliasCreation,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
-		}
+		},
 	);
 
 	return new Promise((resolve, reject) => {
@@ -102,7 +102,7 @@ export async function confirmSignUp(
 							setAutoSignInStarted(false);
 							stopListener();
 					}
-				}
+				},
 			);
 
 			HubInternal.dispatch('auth-internal', {

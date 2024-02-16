@@ -24,19 +24,19 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updatePassword(
-	input: UpdatePasswordInput
+	input: UpdatePasswordInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { oldPassword, newPassword } = input;
 	assertValidationError(
 		!!oldPassword,
-		AuthValidationErrorCode.EmptyUpdatePassword
+		AuthValidationErrorCode.EmptyUpdatePassword,
 	);
 
 	assertValidationError(
 		!!newPassword,
-		AuthValidationErrorCode.EmptyUpdatePassword
+		AuthValidationErrorCode.EmptyUpdatePassword,
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
@@ -49,6 +49,6 @@ export async function updatePassword(
 			AccessToken: tokens.accessToken.toString(),
 			PreviousPassword: oldPassword,
 			ProposedPassword: newPassword,
-		}
+		},
 	);
 }

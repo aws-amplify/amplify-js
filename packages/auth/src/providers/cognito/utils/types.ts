@@ -17,7 +17,7 @@ import {
 } from '../../../errors/constants';
 
 export function isTypeUserPoolConfig(
-	authConfig?: AuthConfig
+	authConfig?: AuthConfig,
 ): authConfig is AuthUserPoolConfig {
 	if (
 		authConfig &&
@@ -31,7 +31,7 @@ export function isTypeUserPoolConfig(
 }
 
 export function assertAuthTokens(
-	tokens?: AuthTokens | null
+	tokens?: AuthTokens | null,
 ): asserts tokens is AuthTokens {
 	if (!tokens || !tokens.accessToken) {
 		throw new AuthError({
@@ -43,7 +43,7 @@ export function assertAuthTokens(
 }
 
 export function assertIdTokenInAuthTokens(
-	tokens?: AuthTokens
+	tokens?: AuthTokens,
 ): asserts tokens is AuthTokens {
 	if (!tokens || !tokens.idToken) {
 		throw new AuthError({
@@ -69,7 +69,7 @@ export const tokenRefreshException = new AuthError({
 });
 
 export function assertAuthTokensWithRefreshToken(
-	tokens?: CognitoAuthTokens | null
+	tokens?: CognitoAuthTokens | null,
 ): asserts tokens is CognitoAuthTokens & { refreshToken: string } {
 	if (isAuthenticatedWithImplicitOauthFlow(tokens)) {
 		throw oAuthTokenRefreshException;
@@ -83,7 +83,7 @@ type NonNullableDeviceMetadata = DeviceMetadata & {
 	deviceGroupKey: string;
 };
 export function assertDeviceMetadata(
-	deviceMetadata?: DeviceMetadata | null
+	deviceMetadata?: DeviceMetadata | null,
 ): asserts deviceMetadata is NonNullableDeviceMetadata {
 	if (
 		!deviceMetadata ||
@@ -118,7 +118,7 @@ export interface OAuthStore {
 	}>;
 	storeOAuthSignIn(
 		oauthSignIn: boolean,
-		preferPrivateSession: boolean
+		preferPrivateSession: boolean,
 	): Promise<void>;
 	loadOAuthState(): Promise<string | null>;
 	storeOAuthState(state: string): Promise<void>;
@@ -136,7 +136,7 @@ function isAuthenticatedWithRefreshToken(tokens?: CognitoAuthTokens | null) {
 }
 
 function isAuthenticatedWithImplicitOauthFlow(
-	tokens?: CognitoAuthTokens | null
+	tokens?: CognitoAuthTokens | null,
 ) {
 	return isAuthenticated(tokens) && !tokens?.refreshToken;
 }

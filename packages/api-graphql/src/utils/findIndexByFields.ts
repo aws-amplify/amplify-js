@@ -11,16 +11,16 @@
 export function findIndexByFields<T>(
 	needle: T,
 	haystack: T[],
-	keyFields: Array<keyof T>
+	keyFields: Array<keyof T>,
 ): number {
 	const searchObject = Object.fromEntries(
-		keyFields.map(fieldName => [fieldName, needle[fieldName]])
+		keyFields.map(fieldName => [fieldName, needle[fieldName]]),
 	);
 
 	for (let i = 0; i < haystack.length; i++) {
 		if (
 			Object.keys(searchObject).every(
-				k => searchObject[k] === (haystack[i] as any)[k]
+				k => searchObject[k] === (haystack[i] as any)[k],
 			)
 		) {
 			return i;

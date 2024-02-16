@@ -39,6 +39,6 @@ export async function rememberDevice(): Promise<void> {
 			AccessToken: tokens.accessToken.toString(),
 			DeviceKey: deviceMetadata.deviceKey,
 			DeviceRememberedStatus: 'remembered',
-		}
+		},
 	);
 }

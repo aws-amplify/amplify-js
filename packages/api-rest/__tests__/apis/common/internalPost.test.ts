@@ -38,7 +38,7 @@ const successResponse = {
 	},
 };
 const apiGatewayUrl = new URL(
-	'https://123.execute-api.us-west-2.amazonaws.com'
+	'https://123.execute-api.us-west-2.amazonaws.com',
 );
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -69,7 +69,7 @@ describe('internal post', () => {
 				method: 'POST',
 				headers: {},
 			},
-			expect.objectContaining({ region: 'us-east-1', service: 'execute-api' })
+			expect.objectContaining({ region: 'us-east-1', service: 'execute-api' }),
 		);
 	});
 
@@ -88,7 +88,7 @@ describe('internal post', () => {
 				method: 'POST',
 				headers: {},
 			},
-			expect.objectContaining({ region: 'us-west-2', service: 'lambda' })
+			expect.objectContaining({ region: 'us-west-2', service: 'lambda' }),
 		);
 	});
 	it('should call authenticatedHandler with empty signingServiceInfo', async () => {
@@ -104,7 +104,7 @@ describe('internal post', () => {
 				method: 'POST',
 				headers: {},
 			},
-			expect.objectContaining({ region: 'us-west-2', service: 'execute-api' })
+			expect.objectContaining({ region: 'us-west-2', service: 'execute-api' }),
 		);
 	});
 
@@ -125,7 +125,7 @@ describe('internal post', () => {
 				},
 				body: '{"foo":"bar"}',
 			},
-			expect.anything()
+			expect.anything(),
 		);
 	});
 
@@ -150,7 +150,7 @@ describe('internal post', () => {
 				}),
 				body: formData,
 			},
-			expect.anything()
+			expect.anything(),
 		);
 	});
 
@@ -164,7 +164,7 @@ describe('internal post', () => {
 				method: 'POST',
 				headers: {},
 			},
-			expect.anything()
+			expect.anything(),
 		);
 	});
 
@@ -184,7 +184,7 @@ describe('internal post', () => {
 					'x-api-key': '123',
 				},
 			}),
-			expect.anything()
+			expect.anything(),
 		);
 		expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 	});
@@ -205,7 +205,7 @@ describe('internal post', () => {
 					authorization: '123',
 				},
 			}),
-			expect.anything()
+			expect.anything(),
 		);
 		expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 	});
@@ -213,7 +213,7 @@ describe('internal post', () => {
 	it('should call unauthenticatedHandler if credential is not set', async () => {
 		mockFetchAuthSession.mockClear();
 		mockFetchAuthSession.mockRejectedValue(
-			new Error('Mock error as credentials not configured')
+			new Error('Mock error as credentials not configured'),
 		);
 		await post(mockAmplifyInstance, {
 			url: apiGatewayUrl,
@@ -224,7 +224,7 @@ describe('internal post', () => {
 				method: 'POST',
 				headers: {},
 			},
-			expect.anything()
+			expect.anything(),
 		);
 		expect(mockAuthenticatedHandler).not.toHaveBeenCalled();
 	});
@@ -236,7 +236,7 @@ describe('internal post', () => {
 		mockUnauthenticatedHandler.mockReturnValue(
 			new Promise((_, reject) => {
 				underLyingHandlerReject = reject;
-			})
+			}),
 		);
 		const abortController = new AbortController();
 		const promise = post(mockAmplifyInstance, {

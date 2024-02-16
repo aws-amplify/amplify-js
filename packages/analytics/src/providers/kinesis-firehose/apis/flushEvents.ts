@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import { getEventBuffer, resolveConfig } from '../utils';
 import {
 	getAnalyticsUserAgentString,
 	resolveCredentials,
 } from '../../../utils';
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 const logger = new ConsoleLogger('KinesisFirehose');
 
@@ -32,8 +33,10 @@ export const flushEvents = () => {
 				identityId,
 				resendLimit,
 				userAgentValue: getAnalyticsUserAgentString(AnalyticsAction.Record),
-			})
+			}),
 		)
 		.then(eventBuffer => eventBuffer.flushAll())
-		.catch(e => logger.warn('Failed to flush events.', e));
+		.catch(e => {
+			logger.warn('Failed to flush events.', e);
+		});
 };

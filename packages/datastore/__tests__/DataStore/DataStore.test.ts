@@ -93,7 +93,7 @@ describe('DataStore tests', () => {
 		await expect(DataStore.start()).rejects.toThrow(errorRegex);
 
 		expect(consoleError).toHaveBeenCalledWith(
-			expect.stringMatching(errorRegex)
+			expect.stringMatching(errorRegex),
 		);
 	});
 
@@ -102,7 +102,7 @@ describe('DataStore tests', () => {
 		await expect(DataStore.clear()).rejects.toThrow(errorRegex);
 
 		expect(consoleError).toHaveBeenCalledWith(
-			expect.stringMatching(errorRegex)
+			expect.stringMatching(errorRegex),
 		);
 	});
 
@@ -120,7 +120,7 @@ describe('DataStore tests', () => {
 		});
 
 		await expect(DataStore.save(<any>metadata)).rejects.toThrow(
-			'Object is not an instance of a valid model'
+			'Object is not an instance of a valid model',
 		);
 	});
 
@@ -135,7 +135,7 @@ describe('DataStore tests', () => {
 			};
 
 			expect(Model).toHaveProperty(
-				nameOf<PersistentModelConstructor<any>>('copyOf')
+				nameOf<PersistentModelConstructor<any>>('copyOf'),
 			);
 
 			expect(typeof Model.copyOf).toBe('function');
@@ -190,7 +190,7 @@ describe('DataStore tests', () => {
 			}).not.toThrow();
 
 			expect(consoleWarn).toHaveBeenCalledWith(
-				'The schema has already been initialized'
+				'The schema has already been initialized',
 			);
 		});
 
@@ -202,7 +202,7 @@ describe('DataStore tests', () => {
 			const { Metadata } = classes;
 
 			expect(Metadata).not.toHaveProperty(
-				nameOf<PersistentModelConstructor<any>>('copyOf')
+				nameOf<PersistentModelConstructor<any>>('copyOf'),
 			);
 		});
 
@@ -252,7 +252,7 @@ describe('DataStore tests', () => {
 						expect(() => {
 							initSchema({ ...testSchema(), codegenVersion });
 						}).toThrow(
-							'Models were generated with an unsupported version of codegen.'
+							'Models were generated with an unsupported version of codegen.',
 						);
 					});
 				});
@@ -264,7 +264,7 @@ describe('DataStore tests', () => {
 						expect(() => {
 							initSchema({ ...testSchema(), codegenVersion });
 						}).not.toThrow(
-							'Models were generated with an unsupported version of codegen.'
+							'Models were generated with an unsupported version of codegen.',
 						);
 					});
 				});
@@ -333,9 +333,9 @@ describe('DataStore tests', () => {
 			// the record's PK, or creating a new record are all breaking changes.
 			expect(consoleWarn).toHaveBeenCalledWith(
 				expect.stringContaining(
-					"copyOf() does not update PK fields. The 'id' update is being ignored."
+					"copyOf() does not update PK fields. The 'id' update is being ignored.",
 				),
-				expect.objectContaining({ source: model1 })
+				expect.objectContaining({ source: model1 }),
 			);
 		});
 

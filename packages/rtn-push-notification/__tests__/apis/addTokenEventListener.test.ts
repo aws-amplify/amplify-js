@@ -25,7 +25,7 @@ describe('addTokenEventListener', () => {
 
 		expect(mockAddListenerNative).toHaveBeenCalledWith(
 			eventType,
-			expect.any(Function)
+			expect.any(Function),
 		);
 	});
 

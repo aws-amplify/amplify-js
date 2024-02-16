@@ -306,7 +306,7 @@ export class InternalGraphQLAPIClass {
 							amplify,
 							authMode!,
 							additionalCustomHeaders,
-					  )
+						)
 					: {})) ||
 				{}),
 			// Custom headers included in Amplify configuration options:

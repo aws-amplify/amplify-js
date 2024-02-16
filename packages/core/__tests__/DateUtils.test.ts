@@ -31,7 +31,7 @@ describe('DateUtils', () => {
 		describe('getDateWithClockOffset()', () => {
 			it('should return a new Date()', () => {
 				expect(DateUtils.getDateWithClockOffset()).toEqual(
-					new Date(new Date().getTime() + 1000)
+					new Date(new Date().getTime() + 1000),
 				);
 			});
 		});
@@ -40,7 +40,7 @@ describe('DateUtils', () => {
 	describe('getHeaderStringFromDate', () => {
 		it('should return YYYYMMDDTHHMMSSZ', () => {
 			expect(
-				DateUtils.getHeaderStringFromDate(new Date())
+				DateUtils.getHeaderStringFromDate(new Date()),
 			).toMatchInlineSnapshot(`"20200101T000000Z"`);
 		});
 	});
@@ -48,7 +48,7 @@ describe('DateUtils', () => {
 	describe('getDateFromHeaderString', () => {
 		it('should return YYYYMMDDTHHMMSSZ', () => {
 			expect(
-				DateUtils.getDateFromHeaderString('20200101T000000Z')
+				DateUtils.getDateFromHeaderString('20200101T000000Z'),
 			).toMatchInlineSnapshot(`2020-01-01T00:00:00.000Z`);
 		});
 	});
@@ -97,7 +97,7 @@ describe('DateUtils', () => {
 
 		it('should be false for normal errors', () => {
 			expect(DateUtils.isClockSkewError(new Error('Response error'))).toBe(
-				false
+				false,
 			);
 		});
 	});

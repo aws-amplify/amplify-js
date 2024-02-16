@@ -61,7 +61,7 @@ declare class BlogModel {
 	constructor(init: ModelInit<BlogModel>);
 	static copyOf(
 		source: BlogModel,
-		mutator: (draft: MutableModel<BlogModel>) => MutableModel<BlogModel> | void
+		mutator: (draft: MutableModel<BlogModel>) => MutableModel<BlogModel> | void,
 	): BlogModel;
 }
 
@@ -92,7 +92,7 @@ describe('DB versions migration with destructive schema change', () => {
 
 		const blogRes = await DataStore.query(Blog);
 		const expectedCount = v1Data.data.tables.find(
-			t => t.name === 'user_Blog'
+			t => t.name === 'user_Blog',
 		).rowCount;
 
 		expect(blogRes.length).toEqual(expectedCount);

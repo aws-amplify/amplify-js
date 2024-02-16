@@ -21,7 +21,7 @@ export type InteractionsMessage =
 
 export type InteractionsOnCompleteCallback = (
 	error?: Error,
-	completion?: InteractionsResponse
+	completion?: InteractionsResponse,
 ) => void;
 
 export type InteractionsResponse = {

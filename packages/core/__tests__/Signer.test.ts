@@ -40,15 +40,15 @@ describe('Signer.sign', () => {
 					...options,
 				};
 				return [name, updatedRequest, updatedOptions, expectedAuthorization];
-			}
-		)
+			},
+		),
 	)(
 		'signs request with %s',
 		(
 			_,
 			{ url, ...request },
 			{ credentials, signingRegion, signingService },
-			expected
+			expected,
 		) => {
 			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
 			const accessInfo = {
@@ -63,10 +63,10 @@ describe('Signer.sign', () => {
 			const signedRequest = Signer.sign(
 				{ ...request, url: url.toString() },
 				accessInfo as any,
-				serviceInfo as any
+				serviceInfo as any,
 			);
 			expect(signedRequest.headers?.Authorization).toBe(expected);
-		}
+		},
 	);
 
 	describe('Error handling', () => {
@@ -121,8 +121,8 @@ describe('Signer.sign', () => {
 		} = Signer.sign(request as any, accessInfo as any, undefined as any);
 		expect(Authorization).toEqual(
 			expect.stringContaining(
-				'Credential=access-key-id/20200918/us-east-1/foo/aws4_request'
-			)
+				'Credential=access-key-id/20200918/us-east-1/foo/aws4_request',
+			),
 		);
 	});
 });
@@ -147,15 +147,15 @@ describe('Signer.signUrl', () => {
 					...options,
 				};
 				return [name, updatedRequest, updatedOptions, expectedUrl];
-			}
-		)
+			},
+		),
 	)(
 		'signs url with %s',
 		(
 			_,
 			{ url, ...request },
 			{ credentials, signingRegion, signingService },
-			expected
+			expected,
 		) => {
 			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
 			const accessInfo = {
@@ -170,10 +170,10 @@ describe('Signer.signUrl', () => {
 			const signedUrl = Signer.signUrl(
 				{ ...request, url: url.toString() },
 				accessInfo,
-				serviceInfo as any
+				serviceInfo as any,
 			);
 			expect(signedUrl).toBe(expected);
-		}
+		},
 	);
 
 	test('should populate signing region and service from url', () => {
@@ -189,8 +189,8 @@ describe('Signer.signUrl', () => {
 		const signedUrl = Signer.signUrl(request, accessInfo);
 		expect(signedUrl).toEqual(
 			expect.stringContaining(
-				'X-Amz-Credential=access-key-id%2F20200918%2Fus-east-1%2Ffoo%2Faws4_request'
-			)
+				'X-Amz-Credential=access-key-id%2F20200918%2Fus-east-1%2Ffoo%2Faws4_request',
+			),
 		);
 	});
 
@@ -212,7 +212,7 @@ describe('Signer.signUrl', () => {
 		expect(signedUrl).toEqual(expect.stringContaining('X-Amz-Security-Token'));
 		expect(getSignatureSpy).toBeCalledWith(
 			expect.anything(),
-			expect.objectContaining({ sessionToken: undefined })
+			expect.objectContaining({ sessionToken: undefined }),
 		);
 	});
 });

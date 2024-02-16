@@ -124,7 +124,7 @@ describe('generateCodeVerifier', () => {
 	it('removes padding char = from the encoded codeChallenge', () => {
 		mockSha256DigestSync.mockReturnValueOnce('digest-result');
 		mockBase64EncoderConvert.mockReturnValueOnce(
-			'base64EncodedCodeChallenge=='
+			'base64EncodedCodeChallenge==',
 		);
 		const codeVerifier = generateCodeVerifier(128);
 		const result = codeVerifier.toCodeChallenge();

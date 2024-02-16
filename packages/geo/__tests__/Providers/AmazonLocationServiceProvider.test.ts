@@ -117,7 +117,7 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 			const provider = new AmazonLocationServiceProvider();
 			expect(() => provider.getAvailableMaps()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
@@ -142,7 +142,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const provider = new AmazonLocationServiceProvider();
 
 			expect(() => provider.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
@@ -156,11 +156,11 @@ describe('AmazonLocationServiceProvider', () => {
 			};
 			(Amplify.getConfig as jest.Mock).mockReturnValue(noDefaultMapConfig);
 			const provider = new AmazonLocationServiceProvider(
-				noDefaultMapConfig as any
+				noDefaultMapConfig as any,
 			);
 
 			expect(() => provider.getDefaultMap()).toThrow(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
@@ -189,7 +189,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const results = await locationProvider.searchByText(testString);
@@ -210,7 +210,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const searchOptions: SearchByTextOptions = {
@@ -222,7 +222,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const results = await locationProvider.searchByText(
 				testString,
-				searchOptions
+				searchOptions,
 			);
 			expect(results).toEqual([testPlaceCamelCase]);
 
@@ -245,7 +245,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const searchOptions: SearchByTextOptions = {
@@ -257,7 +257,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const resultsWithConstraints = await locationProvider.searchByText(
 				testString,
-				searchOptions
+				searchOptions,
 			);
 			expect(resultsWithConstraints).toEqual([testPlaceCamelCase]);
 
@@ -279,7 +279,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const searchOptions: SearchByTextOptions = {
@@ -291,9 +291,9 @@ describe('AmazonLocationServiceProvider', () => {
 			};
 
 			await expect(
-				locationProvider.searchByText(testString, searchOptions)
+				locationProvider.searchByText(testString, searchOptions),
 			).rejects.toThrow(
-				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object',
 			);
 		});
 
@@ -305,7 +305,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No credentials'
+				'No credentials',
 			);
 		});
 
@@ -317,7 +317,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No credentials'
+				'No credentials',
 			);
 		});
 
@@ -332,7 +332,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.',
 			);
 		});
 	});
@@ -356,7 +356,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const results = await locationProvider.searchForSuggestions(testString);
@@ -378,7 +378,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const searchOptions: SearchByTextOptions = {
@@ -390,7 +390,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const results = await locationProvider.searchForSuggestions(
 				testString,
-				searchOptions
+				searchOptions,
 			);
 			expect(results).toEqual(testResults);
 
@@ -413,7 +413,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const searchOptions: SearchByTextOptions = {
@@ -445,7 +445,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const searchOptions: SearchByTextOptions = {
@@ -457,9 +457,9 @@ describe('AmazonLocationServiceProvider', () => {
 			};
 
 			await expect(
-				locationProvider.searchForSuggestions(testString, searchOptions)
+				locationProvider.searchForSuggestions(testString, searchOptions),
 			).rejects.toThrow(
-				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object',
 			);
 		});
 
@@ -471,7 +471,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchForSuggestions(testString)
+				locationProvider.searchForSuggestions(testString),
 			).rejects.toThrow('No credentials');
 		});
 
@@ -483,7 +483,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchForSuggestions(testString)
+				locationProvider.searchForSuggestions(testString),
 			).rejects.toThrow('No credentials');
 		});
 
@@ -498,9 +498,9 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchForSuggestions(testString)
+				locationProvider.searchForSuggestions(testString),
 			).rejects.toThrow(
-				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.',
 			);
 		});
 	});
@@ -516,7 +516,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const results = await locationProvider.searchByPlaceId(testPlaceId);
@@ -538,11 +538,11 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			await expect(locationProvider.searchByPlaceId('')).rejects.toThrow(
-				'PlaceId cannot be an empty string.'
+				'PlaceId cannot be an empty string.',
 			);
 		});
 
@@ -554,7 +554,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchByPlaceId(testPlaceId)
+				locationProvider.searchByPlaceId(testPlaceId),
 			).rejects.toThrow('No credentials');
 		});
 
@@ -566,7 +566,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchByPlaceId(testPlaceId)
+				locationProvider.searchByPlaceId(testPlaceId),
 			).rejects.toThrow('No credentials');
 		});
 
@@ -581,9 +581,9 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchByPlaceId(testPlaceId)
+				locationProvider.searchByPlaceId(testPlaceId),
 			).rejects.toThrow(
-				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.',
 			);
 		});
 	});
@@ -598,7 +598,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const results =
@@ -620,7 +620,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const searchOptions: SearchByCoordinatesOptions = {
@@ -629,7 +629,7 @@ describe('AmazonLocationServiceProvider', () => {
 			};
 			const results = await locationProvider.searchByCoordinates(
 				testCoordinates,
-				searchOptions
+				searchOptions,
 			);
 			expect(results).toEqual(testPlaceCamelCase);
 
@@ -650,7 +650,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchByCoordinates(testCoordinates)
+				locationProvider.searchByCoordinates(testCoordinates),
 			).rejects.toThrow('No credentials');
 		});
 
@@ -662,7 +662,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchByCoordinates(testCoordinates)
+				locationProvider.searchByCoordinates(testCoordinates),
 			).rejects.toThrow('No credentials');
 		});
 
@@ -677,9 +677,9 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.searchByCoordinates(testCoordinates)
+				locationProvider.searchByCoordinates(testCoordinates),
 			).rejects.toThrow(
-				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.',
 			);
 		});
 	});
@@ -696,7 +696,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const results = await locationProvider.saveGeofences(validGeofences);
@@ -711,7 +711,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const numberOfGeofences = 44;
@@ -739,7 +739,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const spyClientInput = spyonClient.mock.calls;
 
 			expect(spyClientInput.length).toEqual(
-				Math.ceil(spyProviderInput.length / 10)
+				Math.ceil(spyProviderInput.length / 10),
 			);
 		});
 
@@ -750,7 +750,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const input = createGeofenceInputArray(44);
@@ -812,13 +812,13 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			await expect(
-				locationProvider.saveGeofences([clockwiseGeofence])
+				locationProvider.saveGeofences([clockwiseGeofence]),
 			).rejects.toThrow(
-				'geofenceWithClockwiseGeofence: LinearRing coordinates must be wound counterclockwise'
+				'geofenceWithClockwiseGeofence: LinearRing coordinates must be wound counterclockwise',
 			);
 		});
 
@@ -833,11 +833,11 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			await expect(locationProvider.saveGeofences([])).rejects.toThrow(
-				'Geofence input array is empty'
+				'Geofence input array is empty',
 			);
 		});
 
@@ -852,9 +852,9 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
-				locationProvider.saveGeofences(validGeofences)
+				locationProvider.saveGeofences(validGeofences),
 			).rejects.toThrow(
-				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.',
 			);
 		});
 	});
@@ -871,7 +871,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const results: AmazonLocationServiceGeofence =
@@ -899,12 +899,12 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const badGeofenceId = 't|-|!$ !$ N()T V@|_!D';
 			await expect(locationProvider.getGeofence(badGeofenceId)).rejects.toThrow(
-				`Invalid geofenceId: '${badGeofenceId}' - IDs can only contain alphanumeric characters, hyphens, underscores and periods.`
+				`Invalid geofenceId: '${badGeofenceId}' - IDs can only contain alphanumeric characters, hyphens, underscores and periods.`,
 			);
 		});
 
@@ -919,7 +919,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(locationProvider.getGeofence('geofenceId')).rejects.toThrow(
-				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.',
 			);
 		});
 	});
@@ -936,7 +936,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const geofences = await locationProvider.listGeofences();
@@ -955,7 +955,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const first100Geofences = await locationProvider.listGeofences();
@@ -966,10 +966,10 @@ describe('AmazonLocationServiceProvider', () => {
 
 			expect(second100Geofences.entries.length).toEqual(100);
 			expect(second100Geofences.entries[0].geofenceId).toEqual(
-				'validGeofenceId100'
+				'validGeofenceId100',
 			);
 			expect(second100Geofences.entries[99].geofenceId).toEqual(
-				'validGeofenceId199'
+				'validGeofenceId199',
 			);
 		});
 
@@ -984,7 +984,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(locationProvider.listGeofences()).rejects.toThrow(
-				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.',
 			);
 		});
 	});
@@ -1001,7 +1001,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const geofenceIds = validGeofences.map(({ geofenceId }) => geofenceId);
@@ -1023,7 +1023,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const geofenceIds = validGeofences.map(({ geofenceId }) => geofenceId);
@@ -1045,7 +1045,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const spyClientInput = spyonClient.mock.calls;
 
 			expect(spyClientInput.length).toEqual(
-				Math.ceil(spyProviderInput.length / 10)
+				Math.ceil(spyProviderInput.length / 10),
 			);
 		});
 
@@ -1056,11 +1056,11 @@ describe('AmazonLocationServiceProvider', () => {
 
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 
 			const input = createGeofenceInputArray(44).map(
-				({ geofenceId }) => geofenceId
+				({ geofenceId }) => geofenceId,
 			);
 			input[22] = 'badId';
 			const validEntries = [...input.slice(0, 20), ...input.slice(30, 44)];
@@ -1110,16 +1110,16 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 			await expect(
 				locationProvider.deleteGeofences([
 					'thisIsAGoodId',
 					't|-|!$ !$ N()T V@|_!D',
 					'#2 t|-|!$ !$ N()T V@|_!D',
-				])
+				]),
 			).rejects.toThrow(
-				`Invalid geofence ids: t|-|!$ !$ N()T V@|_!D, #2 t|-|!$ !$ N()T V@|_!D`
+				`Invalid geofence ids: t|-|!$ !$ N()T V@|_!D, #2 t|-|!$ !$ N()T V@|_!D`,
 			);
 		});
 
@@ -1129,10 +1129,10 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const locationProvider = new AmazonLocationServiceProvider(
-				awsConfigGeoV4
+				awsConfigGeoV4,
 			);
 			await expect(locationProvider.deleteGeofences([])).rejects.toThrow(
-				`GeofenceId input array is empty`
+				`GeofenceId input array is empty`,
 			);
 		});
 
@@ -1149,9 +1149,9 @@ describe('AmazonLocationServiceProvider', () => {
 			const geofenceIds = validGeofences.map(({ geofenceId }) => geofenceId);
 
 			await expect(
-				locationProvider.deleteGeofences(geofenceIds)
+				locationProvider.deleteGeofences(geofenceIds),
 			).rejects.toThrow(
-				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.',
 			);
 		});
 	});

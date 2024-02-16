@@ -9,7 +9,7 @@ import {
 import { UserAgent } from '@aws-sdk/types';
 
 export function getInAppMessagingUserAgent(
-	action: InAppMessagingAction
+	action: InAppMessagingAction,
 ): UserAgent {
 	return getAmplifyUserAgentObject({
 		category: Category.InAppMessaging,

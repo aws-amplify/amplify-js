@@ -64,7 +64,7 @@ describe('tokenOrchestrator', () => {
 				expect.objectContaining({
 					tokens: testInputTokens,
 					username: testUsername,
-				})
+				}),
 			);
 			// async #2
 			expect(mockTokenStore.storeTokens).toHaveBeenCalledWith(mockTokens);

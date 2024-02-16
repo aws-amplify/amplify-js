@@ -22,7 +22,7 @@ export const getConcurrentUploadsProgressTracker = ({
 	const getTransferredBytes = () =>
 		transferredBytesPerListener.reduce(
 			(acc, transferredBytes) => acc + transferredBytes,
-			0
+			0,
 		);
 
 	return {

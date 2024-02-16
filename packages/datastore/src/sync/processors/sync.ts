@@ -60,7 +60,7 @@ class SyncProcessor {
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
-		private readonly amplifyContext: AmplifyContext
+		private readonly amplifyContext: AmplifyContext,
 	) {
 		amplifyContext.InternalAPI = amplifyContext.InternalAPI || InternalAPI;
 		this.generateQueries();
@@ -74,7 +74,7 @@ class SyncProcessor {
 					const [[, ...opNameQuery]] = buildGraphQLOperation(
 						namespace,
 						model,
-						'LIST'
+						'LIST',
 					);
 
 					this.typeQuery.set(model, opNameQuery);
@@ -89,7 +89,7 @@ class SyncProcessor {
 		const predicatesGroup: PredicatesGroup<any> =
 			ModelPredicateCreator.getPredicates(
 				this.syncPredicates.get(model)!,
-				false
+				false,
 			)!;
 
 		if (!predicatesGroup) {
@@ -105,7 +105,7 @@ class SyncProcessor {
 		nextToken: string,
 		limit: number = null!,
 		filter: GraphQLFilter,
-		onTerminate: Promise<void>
+		onTerminate: Promise<void>,
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
 		const [opName, query] = this.typeQuery.get(modelDefinition)!;
 
@@ -130,13 +130,13 @@ class SyncProcessor {
 		const authModeRetry = async () => {
 			if (!this.runningProcesses.isOpen) {
 				throw new Error(
-					'sync.retreievePage termination was requested. Exiting.'
+					'sync.retreievePage termination was requested. Exiting.',
 				);
 			}
 
 			try {
 				logger.debug(
-					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
+					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
 				const response = await this.jitteredRetry<T>({
 					query,
@@ -147,7 +147,7 @@ class SyncProcessor {
 					onTerminate,
 				});
 				logger.debug(
-					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`
+					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
 				return response;
 			} catch (error) {
@@ -158,7 +158,7 @@ class SyncProcessor {
 					if (getClientSideAuthError(error) || getForbiddenError(error)) {
 						// return empty list of data so DataStore will continue to sync other models
 						logger.warn(
-							`User is unauthorized to query ${opName} with auth mode ${authMode}. No data could be returned.`
+							`User is unauthorized to query ${opName} with auth mode ${authMode}. No data could be returned.`,
 						);
 
 						return {
@@ -172,7 +172,7 @@ class SyncProcessor {
 				logger.debug(
 					`Sync failed with authMode: ${
 						readAuthModes[authModeAttempts - 1]
-					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`
+					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
 				return await authModeRetry();
 			}
@@ -219,7 +219,7 @@ class SyncProcessor {
 				try {
 					const authToken = await getTokenForCustomAuth(
 						authMode,
-						this.amplifyConfig
+						this.amplifyConfig,
 					);
 
 					const customUserAgentDetails: CustomUserAgentDetails = {
@@ -235,7 +235,7 @@ class SyncProcessor {
 							authToken,
 						},
 						undefined,
-						customUserAgentDetails
+						customUserAgentDetails,
 					);
 
 					// TODO: onTerminate.then(() => API.cancel(...))
@@ -254,20 +254,20 @@ class SyncProcessor {
 					const unauthorized =
 						error?.errors &&
 						(error.errors as [any]).some(
-							err => err.errorType === 'Unauthorized'
+							err => err.errorType === 'Unauthorized',
 						);
 
 					const otherErrors =
 						error?.errors &&
 						(error.errors as [any]).filter(
-							err => err.errorType !== 'Unauthorized'
+							err => err.errorType !== 'Unauthorized',
 						);
 
 					const result = error;
 
 					if (hasItems) {
 						result.data[opName].items = result.data[opName].items.filter(
-							item => item !== null
+							item => item !== null,
 						);
 					}
 
@@ -290,7 +290,7 @@ class SyncProcessor {
 								} catch (e) {
 									logger.error('Sync error handler failed with:', e);
 								}
-							})
+							}),
 						);
 						Hub.dispatch('datastore', {
 							event: 'nonApplicableDataReceived',
@@ -350,12 +350,12 @@ class SyncProcessor {
 			},
 			[query, variables],
 			undefined,
-			onTerminate
+			onTerminate,
 		);
 	}
 
 	start(
-		typesLastSync: Map<SchemaModel, [string, number]>
+		typesLastSync: Map<SchemaModel, [string, number]>,
 	): Observable<SyncModelPage> {
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
@@ -363,14 +363,14 @@ class SyncProcessor {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
-						namespace.modelTopologicalOrdering!.keys()
+						namespace.modelTopologicalOrdering!.keys(),
 					)) {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
 						map.set(namespace.models[modelName], typeLastSync!);
 					}
 					return map;
 				},
-				new Map<SchemaModel, [string, number]>()
+				new Map<SchemaModel, [string, number]>(),
 			);
 
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
@@ -391,7 +391,7 @@ class SyncProcessor {
 								namespace
 							].modelTopologicalOrdering!.get(modelDefinition.name);
 							const promises = parents!.map(parent =>
-								parentPromises.get(`${namespace}_${parent}`)
+								parentPromises.get(`${namespace}_${parent}`),
 							);
 
 							const promise = new Promise<void>(async res => {
@@ -405,14 +405,14 @@ class SyncProcessor {
 									 */
 									if (!this.runningProcesses.isOpen) {
 										logger.debug(
-											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`
+											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`,
 										);
 										return res();
 									}
 
 									const limit = Math.min(
 										maxRecordsToSync - recordsReceived,
-										syncPageSize
+										syncPageSize,
 									);
 
 									/**
@@ -427,7 +427,7 @@ class SyncProcessor {
 											nextToken,
 											limit,
 											filter,
-											onTerminate
+											onTerminate,
 										));
 									} catch (error) {
 										try {
@@ -477,11 +477,11 @@ class SyncProcessor {
 
 							parentPromises.set(
 								`${namespace}_${modelDefinition.name}`,
-								promise
+								promise,
 							);
 
 							await promise;
-						}, `adding model ${modelDefinition.name}`)
+						}, `adding model ${modelDefinition.name}`),
 				);
 
 			Promise.all(allModelsReady as Promise<any>[]).then(() => {

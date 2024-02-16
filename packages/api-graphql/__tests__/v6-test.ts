@@ -335,7 +335,7 @@ describe('client', () => {
 				next(message: GraphqlSubscriptionMessage<OnCreateThreadSubscription>) {
 					expectSub(spy, 'onCreateThread', graphqlVariables);
 					expect(message.data?.onCreateThread).toEqual(
-						graphqlMessage.data.onCreateThread
+						graphqlMessage.data.onCreateThread,
 					);
 					done();
 				},
@@ -866,7 +866,7 @@ describe('client', () => {
 				next(message: any) {
 					expectSub(spy, 'onCreateThread', graphqlVariables);
 					expect(message.data.onCreateThread).toEqual(
-						graphqlMessage.data.onCreateThread
+						graphqlMessage.data.onCreateThread,
 					);
 					done();
 				},
@@ -1135,7 +1135,7 @@ describe('client', () => {
 				next(message) {
 					expectSub(spy, 'onCreateThread', graphqlVariables);
 					expect(message.data?.onCreateThread).toEqual(
-						graphqlMessage.data.onCreateThread
+						graphqlMessage.data.onCreateThread,
 					);
 					done();
 				},

@@ -60,7 +60,7 @@ describe('processInAppMessages', () => {
 		mockMatchesMetrics.mockReturnValueOnce(false);
 		const [result] = await processInAppMessages(
 			messages,
-			simpleInAppMessagingEvent
+			simpleInAppMessagingEvent,
 		);
 		expect(result.id).toBe('uuid-4');
 	});
@@ -68,7 +68,7 @@ describe('processInAppMessages', () => {
 	it('filters in-app messages from Pinpoint by priority', async () => {
 		const [result] = await processInAppMessages(
 			messages,
-			simpleInAppMessagingEvent
+			simpleInAppMessagingEvent,
 		);
 		expect(result.id).toBe('uuid-3');
 	});
@@ -81,7 +81,7 @@ describe('processInAppMessages', () => {
 
 		const [result] = await processInAppMessages(
 			messages,
-			simpleInAppMessagingEvent
+			simpleInAppMessagingEvent,
 		);
 		expect(result.id).toBe('uuid-4');
 	});

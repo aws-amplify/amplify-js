@@ -148,10 +148,10 @@ export const authAPITestParams = {
 	// Test values
 	ValidAuthTokens: {
 		idToken: decodeJWT(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIHRoZSBzZWNvbmQiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVzdC5jb20iLCJleHAiOjE3MTAyOTMxMzB9.kpvsHfKH4JvCecECmb26Pl6HaedVX7PNiiF_8AlAbYc'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIHRoZSBzZWNvbmQiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVzdC5jb20iLCJleHAiOjE3MTAyOTMxMzB9.kpvsHfKH4JvCecECmb26Pl6HaedVX7PNiiF_8AlAbYc',
 		),
 		accessToken: decodeJWT(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIHRoZSBzZWNvbmQiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVzdC5jb20iLCJleHAiOjE3MTAyOTMxMzB9.kpvsHfKH4JvCecECmb26Pl6HaedVX7PNiiF_8AlAbYc'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIHRoZSBzZWNvbmQiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVzdC5jb20iLCJleHAiOjE3MTAyOTMxMzB9.kpvsHfKH4JvCecECmb26Pl6HaedVX7PNiiF_8AlAbYc',
 		),
 		accessTokenExpAt: Date.UTC(2023, 8, 24, 18, 55),
 		clockDrift: undefined,
@@ -159,10 +159,10 @@ export const authAPITestParams = {
 	},
 	ExpiredAuthTokens: {
 		idToken: decodeJWT(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTAyOTMxMzB9.1o9dQV9035dCO0nKDgZ-MwFf22Ptmysymt2ENyR5Mko'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTAyOTMxMzB9.1o9dQV9035dCO0nKDgZ-MwFf22Ptmysymt2ENyR5Mko',
 		),
 		accessToken: decodeJWT(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTAyOTMxMzB9.1o9dQV9035dCO0nKDgZ-MwFf22Ptmysymt2ENyR5Mko'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTAyOTMxMzB9.1o9dQV9035dCO0nKDgZ-MwFf22Ptmysymt2ENyR5Mko',
 		),
 		accessTokenExpAt: Date.UTC(2023, 8, 24, 18, 55),
 		clockDrift: undefined,
@@ -170,10 +170,10 @@ export const authAPITestParams = {
 	},
 	NewValidAuthTokens: {
 		idToken: decodeJWT(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIHRoZSBzZWNvbmQiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVzdC5jb20ifQ.5eGzqDYCAYmagLpVDc1kqRT1da1wPu0_1FAg6ZNAuj8'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIHRoZSBzZWNvbmQiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVzdC5jb20ifQ.5eGzqDYCAYmagLpVDc1kqRT1da1wPu0_1FAg6ZNAuj8',
 		),
 		accessToken: decodeJWT(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIHRoZSBzZWNvbmQiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVzdC5jb20ifQ.5eGzqDYCAYmagLpVDc1kqRT1da1wPu0_1FAg6ZNAuj8'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIHRoZSBzZWNvbmQiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVzdC5jb20ifQ.5eGzqDYCAYmagLpVDc1kqRT1da1wPu0_1FAg6ZNAuj8',
 		),
 		accessTokenExpAt: Date.UTC(2023, 8, 24, 18, 55),
 		clockDrift: undefined,

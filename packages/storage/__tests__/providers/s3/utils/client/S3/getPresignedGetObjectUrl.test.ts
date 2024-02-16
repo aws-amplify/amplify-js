@@ -7,7 +7,7 @@ import { defaultConfig } from './cases/shared';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
 	const original = jest.requireActual(
-		'@aws-amplify/core/internals/aws-client-utils'
+		'@aws-amplify/core/internals/aws-client-utils',
 	);
 	const presignUrl = original.presignUrl;
 
@@ -32,16 +32,16 @@ describe('serializeGetObjectRequest', () => {
 			{
 				Bucket: 'bucket',
 				Key: 'key',
-			}
+			},
 		);
 		const actualUrl = actual;
 		expect(actualUrl.hostname).toEqual(
-			`bucket.s3.${defaultConfig.region}.amazonaws.com`
+			`bucket.s3.${defaultConfig.region}.amazonaws.com`,
 		);
 		expect(actualUrl.pathname).toEqual('/key');
 		expect(actualUrl.searchParams.get('X-Amz-Expires')).toEqual('900');
 		expect(actualUrl.searchParams.get('x-amz-content-sha256')).toEqual(
-			expect.any(String)
+			expect.any(String),
 		);
 		expect(actualUrl.searchParams.get('x-amz-user-agent')).toEqual('UA');
 	});
@@ -58,14 +58,14 @@ describe('serializeGetObjectRequest', () => {
 			{
 				Bucket: 'bucket',
 				Key: 'key',
-			}
+			},
 		);
 
 		expect(mockPresignUrl).toHaveBeenCalledWith(
 			expect.anything(),
 			expect.objectContaining({
 				uriEscapePath: false,
-			})
+			}),
 		);
 	});
 });

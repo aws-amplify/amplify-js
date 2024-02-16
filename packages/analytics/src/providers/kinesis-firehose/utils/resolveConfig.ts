@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
 } from '../../../errors';
+
 import { DEFAULT_KINESIS_FIREHOSE_CONFIG } from './constants';
 
 export const resolveConfig = () => {
@@ -24,8 +26,9 @@ export const resolveConfig = () => {
 	assertValidationError(!!region, AnalyticsValidationErrorCode.NoRegion);
 	assertValidationError(
 		flushSize < bufferSize,
-		AnalyticsValidationErrorCode.InvalidFlushSize
+		AnalyticsValidationErrorCode.InvalidFlushSize,
 	);
+
 	return {
 		region,
 		bufferSize,

@@ -24,7 +24,7 @@ jest.mock(
 	'../src/utils/createCookieStorageAdapterFromNextServerContext',
 	() => ({
 		createCookieStorageAdapterFromNextServerContext: jest.fn(),
-	})
+	}),
 );
 
 describe('createServerRunner', () => {
@@ -92,7 +92,7 @@ describe('createServerRunner', () => {
 				expect(mockRunWithAmplifyServerContextCore).toHaveBeenCalledWith(
 					mockAmplifyConfig,
 					{},
-					operation
+					operation,
 				);
 			});
 		});
@@ -106,11 +106,11 @@ describe('createServerRunner', () => {
 					const operation = jest.fn();
 					runWithAmplifyServerContext({ operation, nextServerContext: null });
 					expect(
-						mockCreateAWSCredentialsAndIdentityIdProvider
+						mockCreateAWSCredentialsAndIdentityIdProvider,
 					).toHaveBeenCalledWith(mockAmplifyConfig.Auth, sharedInMemoryStorage);
 					expect(mockCreateUserPoolsTokenProvider).toHaveBeenCalledWith(
 						mockAmplifyConfig.Auth,
-						sharedInMemoryStorage
+						sharedInMemoryStorage,
 					);
 				});
 			});
@@ -124,7 +124,7 @@ describe('createServerRunner', () => {
 						remove: jest.fn(),
 					};
 					mockCreateKeyValueStorageFromCookieStorageAdapter.mockReturnValueOnce(
-						mockCookieStorageAdapter
+						mockCookieStorageAdapter,
 					);
 					const mockNextServerContext = {
 						req: {
@@ -145,14 +145,14 @@ describe('createServerRunner', () => {
 							mockNextServerContext as unknown as NextServer.Context,
 					});
 					expect(
-						mockCreateAWSCredentialsAndIdentityIdProvider
+						mockCreateAWSCredentialsAndIdentityIdProvider,
 					).toHaveBeenCalledWith(
 						mockAmplifyConfig.Auth,
-						mockCookieStorageAdapter
+						mockCookieStorageAdapter,
 					);
 					expect(mockCreateUserPoolsTokenProvider).toHaveBeenCalledWith(
 						mockAmplifyConfig.Auth,
-						mockCookieStorageAdapter
+						mockCookieStorageAdapter,
 					);
 				});
 			});

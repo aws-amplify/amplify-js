@@ -73,13 +73,13 @@ export function getMetadataFields(): ReadonlyArray<string> {
 
 export function generateSelectionSet(
 	namespace: SchemaNamespace,
-	modelDefinition: SchemaModel | SchemaNonModel
+	modelDefinition: SchemaModel | SchemaNonModel,
 ): string {
 	const scalarFields = getScalarFields(modelDefinition);
 	const nonModelFields = getNonModelFields(namespace, modelDefinition);
 	const implicitOwnerField = getImplicitOwnerField(
 		modelDefinition,
-		scalarFields
+		scalarFields,
 	);
 
 	let scalarAndMetadataFields = Object.values(scalarFields)
@@ -100,7 +100,7 @@ export function generateSelectionSet(
 
 function getImplicitOwnerField(
 	modelDefinition: SchemaModel | SchemaNonModel,
-	scalarFields: ModelFields
+	scalarFields: ModelFields,
 ) {
 	const ownerFields = getOwnerFields(modelDefinition);
 
@@ -111,7 +111,7 @@ function getImplicitOwnerField(
 }
 
 function getOwnerFields(
-	modelDefinition: SchemaModel | SchemaNonModel
+	modelDefinition: SchemaModel | SchemaNonModel,
 ): string[] {
 	const ownerFields: string[] = [];
 	if (isSchemaModelWithAttributes(modelDefinition)) {
@@ -128,7 +128,7 @@ function getOwnerFields(
 }
 
 function getScalarFields(
-	modelDefinition: SchemaModel | SchemaNonModel
+	modelDefinition: SchemaModel | SchemaNonModel,
 ): ModelFields {
 	const { fields } = modelDefinition;
 
@@ -152,7 +152,7 @@ function getScalarFields(
 // Used for generating the selection set for queries and mutations
 function getConnectionFields(
 	modelDefinition: SchemaModel,
-	namespace: SchemaNamespace
+	namespace: SchemaNamespace,
 ): string[] {
 	const result: string[] = [];
 
@@ -177,7 +177,7 @@ function getConnectionFields(
 								modelDefinition.fields[name].type['model'];
 
 							const byPkIndex = relations[connectedModelName].indexes.find(
-								([name]) => name === 'byPk'
+								([name]) => name === 'byPk',
 							);
 							const keyFields = byPkIndex && byPkIndex[1];
 							const keyFieldSelectionSet = keyFields?.join(' ');
@@ -200,7 +200,7 @@ function getConnectionFields(
 
 function getNonModelFields(
 	namespace: SchemaNamespace,
-	modelDefinition: SchemaModel | SchemaNonModel
+	modelDefinition: SchemaModel | SchemaNonModel,
 ): string[] {
 	const result: string[] = [];
 
@@ -208,7 +208,7 @@ function getNonModelFields(
 		if (isNonModelFieldType(type)) {
 			const typeDefinition = namespace.nonModels![type.nonModel];
 			const scalarFields = Object.values(getScalarFields(typeDefinition)).map(
-				({ name }) => name
+				({ name }) => name,
 			);
 
 			const nested: string[] = [];
@@ -218,7 +218,7 @@ function getNonModelFields(
 				if (isNonModelFieldType(type)) {
 					const typeDefinition = namespace.nonModels![type.nonModel];
 					nested.push(
-						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
+						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`,
 					);
 				}
 			});
@@ -231,7 +231,7 @@ function getNonModelFields(
 }
 
 export function getAuthorizationRules(
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
 	const authConfig = ([] as ModelAttributes)
@@ -308,7 +308,7 @@ export function buildSubscriptionGraphQLOperation(
 	transformerMutationType: TransformerMutationType,
 	isOwnerAuthorization: boolean,
 	ownerField: string,
-	filterArg: boolean = false
+	filterArg: boolean = false,
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
@@ -346,7 +346,7 @@ export function buildSubscriptionGraphQLOperation(
 export function buildGraphQLOperation(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel,
-	graphQLOpType: keyof typeof GraphQLOperationType
+	graphQLOpType: keyof typeof GraphQLOperationType,
 ): [TransformerMutationType, string, string][] {
 	let selectionSet = generateSelectionSet(namespace, modelDefinition);
 
@@ -421,7 +421,7 @@ export function createMutationInstanceFromModelOperation<
 	condition: GraphQLCondition,
 	MutationEventConstructor: PersistentModelConstructor<MutationEvent>,
 	modelInstanceCreator: ModelInstanceCreator,
-	id?: string
+	id?: string,
 ): MutationEvent {
 	let operation: TransformerMutationType;
 
@@ -473,7 +473,7 @@ export function createMutationInstanceFromModelOperation<
 
 export function predicateToGraphQLCondition(
 	predicate: PredicatesGroup<any>,
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): GraphQLCondition {
 	const result = {};
 
@@ -511,7 +511,7 @@ export function predicateToGraphQLCondition(
 export function predicateToGraphQLFilter(
 	predicatesGroup: PredicatesGroup<any>,
 	fieldsToOmit: string[] = [],
-	root = true
+	root = true,
 ): GraphQLFilter {
 	const result: GraphQLFilter = {};
 
@@ -674,7 +674,7 @@ export function countFilterCombinations(group?: PredicatesGroup<any>): number {
  * ```
  */
 export function repeatedFieldInGroup(
-	group?: PredicatesGroup<any>
+	group?: PredicatesGroup<any>,
 ): string | null {
 	if (!group || !Array.isArray(group.predicates)) return null;
 
@@ -708,12 +708,12 @@ export function repeatedFieldInGroup(
 
 		// field value will be single object
 		const predicateObjects = values.filter(
-			v => !Array.isArray(Object.values(v)[0])
+			v => !Array.isArray(Object.values(v)[0]),
 		);
 
 		// group value will be an array
 		const predicateGroups = values.filter(v =>
-			Array.isArray(Object.values(v)[0])
+			Array.isArray(Object.values(v)[0]),
 		);
 
 		if (key === 'and') {
@@ -741,7 +741,7 @@ export enum RTFError {
 export function generateRTFRemediation(
 	errorType: RTFError,
 	modelDefinition: SchemaModel,
-	predicatesGroup: PredicatesGroup<any> | undefined
+	predicatesGroup: PredicatesGroup<any> | undefined,
 ): string {
 	const selSyncFields = filterFields(predicatesGroup);
 	const selSyncFieldStr = [...selSyncFields].join(', ');
@@ -797,7 +797,7 @@ export function generateRTFRemediation(
 
 export function getUserGroupsFromToken(
 	token: { [field: string]: any },
-	rule: AuthorizationRule
+	rule: AuthorizationRule,
 ): string[] {
 	// validate token against groupClaim
 	let userGroups: string[] | string = token[rule.groupClaim] || [];
@@ -856,7 +856,7 @@ export async function getModelAuthModes({
 					// Use default auth mode if nothing is returned from authModeStrategy
 					modelAuthModes[operation] = [defaultAuthMode];
 				}
-			})
+			}),
 		);
 	} catch (error) {
 		logger.debug(`Error getting auth modes for model: ${modelName}`, error);
@@ -869,7 +869,7 @@ export function getForbiddenError(error) {
 	let forbiddenError;
 	if (error && error.errors) {
 		forbiddenError = (error.errors as [any]).find(err =>
-			forbiddenErrorCodes.includes(resolveServiceErrorStatusCode(err))
+			forbiddenErrorCodes.includes(resolveServiceErrorStatusCode(err)),
 		);
 	} else if (error && error.message) {
 		forbiddenError = error;
@@ -879,7 +879,7 @@ export function getForbiddenError(error) {
 		return (
 			forbiddenError.message ??
 			`Request failed with status code ${resolveServiceErrorStatusCode(
-				forbiddenError
+				forbiddenError,
 			)}`
 		);
 	}
@@ -891,7 +891,7 @@ export function resolveServiceErrorStatusCode(error: unknown): number | null {
 		return Number(error?.['$metadata']?.['httpStatusCode']);
 	} else if ((error as GraphQLError)?.originalError) {
 		return resolveServiceErrorStatusCode(
-			(error as GraphQLError)?.originalError
+			(error as GraphQLError)?.originalError,
 		);
 	} else {
 		return null;
@@ -904,14 +904,14 @@ export function getClientSideAuthError(error) {
 		error &&
 		error.message &&
 		clientSideAuthErrors.find(clientError =>
-			error.message.includes(clientError)
+			error.message.includes(clientError),
 		);
 	return clientSideError || null;
 }
 
 export async function getTokenForCustomAuth(
 	authMode: GraphQLAuthMode,
-	amplifyConfig: Record<string, any> = {}
+	amplifyConfig: Record<string, any> = {},
 ): Promise<string | undefined> {
 	if (authMode === 'lambda') {
 		const {
@@ -923,13 +923,13 @@ export async function getTokenForCustomAuth(
 				return token;
 			} catch (error) {
 				throw new Error(
-					`Error retrieving token from \`functionAuthProvider\`: ${error}`
+					`Error retrieving token from \`functionAuthProvider\`: ${error}`,
 				);
 			}
 		} else {
 			// TODO: add docs link once available
 			throw new Error(
-				'You must provide a `functionAuthProvider` function to `DataStore.configure` when using lambda'
+				'You must provide a `functionAuthProvider` function to `DataStore.configure` when using lambda',
 			);
 		}
 	}
@@ -938,7 +938,7 @@ export async function getTokenForCustomAuth(
 // Util that takes a modelDefinition and model and returns either the id value(s) or the custom primary key value(s)
 export function getIdentifierValue(
 	modelDefinition: SchemaModel,
-	model: ModelInstanceMetadata | PersistentModel
+	model: ModelInstanceMetadata | PersistentModel,
 ): string {
 	const pkFieldNames = extractPrimaryKeyFieldNames(modelDefinition);
 

@@ -11,12 +11,12 @@ import { logger } from '../../../../utils';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
-	input: RemoveInput
+	input: RemoveInput,
 ): Promise<RemoveOutput> => {
 	const { key, options = {} } = input;
 	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(
 		amplify,
-		options
+		options,
 	);
 
 	const finalKey = `${keyPrefix}${key}`;
@@ -29,7 +29,7 @@ export const remove = async (
 		{
 			Bucket: bucket,
 			Key: finalKey,
-		}
+		},
 	);
 	return {
 		key,

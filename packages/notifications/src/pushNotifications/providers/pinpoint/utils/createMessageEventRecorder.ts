@@ -22,7 +22,7 @@ const logger = new ConsoleLogger('PushNotification.recordMessageEvent');
 export const createMessageEventRecorder =
 	(
 		event: PinpointMessageEvent,
-		callback?: Function
+		callback?: Function,
 	): OnPushNotificationMessageHandler =>
 	async message => {
 		const { credentials } = await resolveCredentials();

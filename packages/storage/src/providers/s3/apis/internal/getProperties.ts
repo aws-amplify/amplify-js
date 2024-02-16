@@ -12,12 +12,12 @@ import { logger } from '../../../../utils';
 export const getProperties = async function (
 	amplify: AmplifyClassV6,
 	input: GetPropertiesInput,
-	action?: StorageAction
+	action?: StorageAction,
 ): Promise<GetPropertiesOutput> {
 	const { key, options } = input;
 	const { s3Config, bucket, keyPrefix } = await resolveS3ConfigAndInput(
 		amplify,
-		options
+		options,
 	);
 	const finalKey = `${keyPrefix}${key}`;
 
@@ -26,13 +26,13 @@ export const getProperties = async function (
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(
-				action ?? StorageAction.GetProperties
+				action ?? StorageAction.GetProperties,
 			),
 		},
 		{
 			Bucket: bucket,
 			Key: finalKey,
-		}
+		},
 	);
 	return {
 		key,

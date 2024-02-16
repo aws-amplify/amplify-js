@@ -41,7 +41,7 @@ describe('local sign-in state management tests', () => {
 						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
 						CODE_DELIVERY_DESTINATION: '*******9878',
 					},
-				})
+				}),
 			);
 
 		Amplify.configure({
@@ -73,7 +73,7 @@ describe('local sign-in state management tests', () => {
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
-					authAPITestParams.RespondToAuthChallengeCommandOutput
+					authAPITestParams.RespondToAuthChallengeCommandOutput,
 			);
 
 		Amplify.configure({

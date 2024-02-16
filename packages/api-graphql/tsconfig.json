@@ -4,7 +4,9 @@
 		"strictNullChecks": true,
 		"baseUrl": ".",
 		"paths": {
-			"@aws-amplify/data-schema-types": ["../../node_modules/@aws-amplify/data-schema-types"]
+			"@aws-amplify/data-schema-types": [
+				"../../node_modules/@aws-amplify/data-schema-types"
+			]
 		}
 	},
 	"include": ["./src", "__tests__"]

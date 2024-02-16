@@ -48,7 +48,7 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 			AuthFlow: 'REFRESH_TOKEN_AUTH',
 			AuthParameters,
 			UserContextData,
-		}
+		},
 	);
 
 	const accessToken = decodeJWT(AuthenticationResult?.AccessToken ?? '');
