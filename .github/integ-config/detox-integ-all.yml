@@ -10,6 +10,18 @@
 - test_name: 'integ_rn_ios_datastore_sqlite_adapter'
   working_directory: amplify-js-samples-staging/samples/react-native/datastore/SQLiteAdapter
   timeout_minutes: 120
+- test_name: 'integ_rn_ios_datastore_api_v6_expo'
+  working_directory: amplify-js-samples-staging/samples/react-native/api/v6/expo/amplified_todo
+  timeout_minutes: 120
+- test_name: 'integ_rn_ios_datastore_api_v6_rn_cli'
+  working_directory: amplify-js-samples-staging/samples/react-native/api/v6/rn_cli/amplified_todo_rn
+  timeout_minutes: 120
+- test_name: 'integ_rn_ios_datastore_api_gen2_expo'
+  working_directory: amplify-js-samples-staging/samples/react-native/api/gen2/expo/amplified_todo_gen2_expo
+  timeout_minutes: 120
+- test_name: 'integ_rn_ios_datastore_api_v6_gen2_cli'
+  working_directory: amplify-js-samples-staging/samples/react-native/api/gen2/rn_cli/amplified_todo_gen2_rn
+  timeout_minutes: 120
 # - test_name: 'integ_rn_android_storage'
 #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
 # - test_name: 'integ_rn_android_storage_multipart_progress'
