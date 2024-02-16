@@ -35,6 +35,7 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -122,15 +123,9 @@ export async function confirmSignIn(
 				),
 				signInDetails,
 			});
-			Hub.dispatch(
-				'auth',
-				{
-					event: 'signedIn',
-					data: await getCurrentUser(),
-				},
-				'Auth',
-				AMPLIFY_SYMBOL,
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
