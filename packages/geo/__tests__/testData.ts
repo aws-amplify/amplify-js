@@ -36,7 +36,8 @@ export const awsConfig = {
 				},
 				default: 'geoJsExampleMap1',
 			},
-			searchIndices: {
+
+			search_indices: {
 				items: ['geoJSSearchExample'],
 				default: 'geoJSSearchExample',
 			},

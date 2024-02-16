@@ -111,7 +111,7 @@ describe('Geo', () => {
 			geo.addPluggable(provider);
 
 			expect(geo.getPluggable(provider.getProviderName())).toBeInstanceOf(
-				AmazonLocationServiceProvider
+				AmazonLocationServiceProvider,
 			);
 		});
 
@@ -123,7 +123,7 @@ describe('Geo', () => {
 			geo.removePluggable(provider.getProviderName());
 
 			expect(() => geo.getPluggable(provider.getProviderName())).toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -133,7 +133,7 @@ describe('Geo', () => {
 			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
 			expect(geo.getPluggable('AmazonLocationService')).toBeInstanceOf(
-				AmazonLocationServiceProvider
+				AmazonLocationServiceProvider,
 			);
 		});
 	});
@@ -149,10 +149,10 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationService');
 
 			expect(() => geo.getAvailableMaps()).toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 			expect(() => geo.getDefaultMap()).toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 
@@ -163,7 +163,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 
 			expect(() => geo.getAvailableMaps()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
@@ -188,7 +188,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No Geo configuration found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No Geo configuration found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
@@ -199,7 +199,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
@@ -214,7 +214,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
@@ -251,7 +251,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: awsConfig.geo.amazon_location_service.searchIndices.default,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
@@ -330,7 +330,7 @@ describe('Geo', () => {
 			};
 
 			await expect(geo.searchByText(testString, searchOptions)).rejects.toThrow(
-				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object',
 			);
 		});
 
@@ -344,7 +344,7 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByText(testString)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -368,7 +368,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
-				IndexName: awsConfig.geo.amazon_location_service.searchIndices.default,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
@@ -382,7 +382,7 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByPlaceId(testPlaceId)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -414,7 +414,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: awsConfig.geo.amazon_location_service.searchIndices.default,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
@@ -491,9 +491,9 @@ describe('Geo', () => {
 			};
 
 			await expect(
-				geo.searchForSuggestions(testString, searchOptions)
+				geo.searchForSuggestions(testString, searchOptions),
 			).rejects.toThrow(
-				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object',
 			);
 		});
 
@@ -507,7 +507,7 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchForSuggestions(testString)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -530,7 +530,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
-				IndexName: awsConfig.geo.amazon_location_service.searchIndices.default,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
@@ -548,7 +548,7 @@ describe('Geo', () => {
 			};
 			const results = await geo.searchByCoordinates(
 				testCoordinates,
-				searchOptions
+				searchOptions,
 			);
 			expect(results).toEqual(testPlaceCamelCase);
 
@@ -571,7 +571,7 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByCoordinates(testCoordinates)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -629,7 +629,7 @@ describe('Geo', () => {
 			// Expect that the API was called the right amount of times
 			const expectedNumberOfCalls = Math.floor(validGeofences.length / 10) + 1;
 			expect(LocationClient.prototype.send).toHaveBeenCalledTimes(
-				expectedNumberOfCalls
+				expectedNumberOfCalls,
 			);
 		});
 
@@ -643,7 +643,7 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.saveGeofences(validGeofence1)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -723,10 +723,10 @@ describe('Geo', () => {
 
 			expect(second100Geofences.entries.length).toEqual(100);
 			expect(second100Geofences.entries[0].geofenceId).toEqual(
-				'validGeofenceId100'
+				'validGeofenceId100',
 			);
 			expect(second100Geofences.entries[99].geofenceId).toEqual(
-				'validGeofenceId199'
+				'validGeofenceId199',
 			);
 		});
 	});
