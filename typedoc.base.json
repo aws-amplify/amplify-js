@@ -3,5 +3,6 @@
 	"includeVersion": true,
 	"excludePrivate": true,
 	"excludeInternal": true,
+	"skipErrorChecking": true,
 	"internalModule": "<Reference Types>"
 }
