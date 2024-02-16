@@ -106,6 +106,8 @@ export type ModelIntrospectionSchema = {
 	models: SchemaModels;
 	nonModels: SchemaNonModels;
 	enums: SchemaEnums;
+	queries: CustomOperations;
+	mutations: CustomOperation;
 };
 
 /**
@@ -114,6 +116,7 @@ export type ModelIntrospectionSchema = {
 export type SchemaModels = Record<string, SchemaModel>;
 export type SchemaNonModels = Record<string, SchemaNonModel>;
 export type SchemaEnums = Record<string, SchemaEnum>;
+export type CustomOperations = Record<string, CustomOperation>;
 
 export type SchemaModel = {
 	name: string;
@@ -135,6 +138,24 @@ export type SchemaEnum = {
 export type ModelAttribute = {
 	type: string;
 	properties?: { [key: string]: any };
+};
+
+export type CustomOperation = {
+	name: string;
+	type: FieldType;
+	isArray: boolean;
+	isRequired: boolean;
+	arguments: CustomOperationArguments;
+};
+
+export type CustomOperationArguments = Record<string, CustomOperationArgument>;
+
+export type CustomOperationArgument = {
+	name: string;
+	type: FieldType;
+	isArray: boolean;
+	isRequired: boolean;
+	isArrayNullable: boolean;
 };
 
 /**

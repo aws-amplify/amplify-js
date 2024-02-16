@@ -10,6 +10,7 @@ import {
 	__headers,
 } from '../types';
 import { ClientGenerationParams } from './types';
+import { generateQueriesProperty } from './generateQueriesProperty';
 
 /**
  * @private

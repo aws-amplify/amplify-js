@@ -43,6 +43,12 @@ export {
 	ModelIntrospectionSchema,
 	SchemaModel,
 	SchemaModels,
+	SchemaNonModel,
+	SchemaNonModels,
+	CustomOperations,
+	CustomOperation,
+	CustomOperationArguments,
+	CustomOperationArgument,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {
