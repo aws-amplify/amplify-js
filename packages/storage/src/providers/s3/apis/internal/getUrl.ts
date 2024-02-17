@@ -2,22 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
+
 import { GetUrlInput, GetUrlOutput } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client';
-import { getProperties } from './getProperties';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import {
 	DEFAULT_PRESIGN_EXPIRATION,
 	MAX_URL_EXPIRATION,
 } from '../../utils/constants';
-import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-export const getUrl = async function (
+import { getProperties } from './getProperties';
+
+export const getUrl = async (
 	amplify: AmplifyClassV6,
 	input: GetUrlInput,
-): Promise<GetUrlOutput> {
+): Promise<GetUrlOutput> => {
 	const { key, options } = input;
 
 	if (options?.validateObjectExistence) {

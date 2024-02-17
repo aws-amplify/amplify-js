@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
+
 import { StorageError } from '../../../../../errors/StorageError';
 
 /**
  * @internal
  */
 export const assignStringVariables = (
-	values: Record<string, { toString: () => string } | undefined>,
+	values: Record<string, { toString(): string } | undefined>,
 ): Record<string, string> => {
 	const queryParams: Record<string, string> = {};
 	for (const [key, value] of Object.entries(values)) {
@@ -16,6 +17,7 @@ export const assignStringVariables = (
 			queryParams[key] = value.toString();
 		}
 	}
+
 	return queryParams;
 };
 
@@ -59,6 +61,7 @@ const serializeMetadata = (
 ): Record<string, string> =>
 	Object.keys(metadata).reduce((acc: any, suffix: string) => {
 		acc[`x-amz-meta-${suffix.toLowerCase()}`] = metadata[suffix];
+
 		return acc;
 	}, {});
 

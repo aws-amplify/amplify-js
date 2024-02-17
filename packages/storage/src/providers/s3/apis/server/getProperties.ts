@@ -5,6 +5,7 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+
 import { GetPropertiesInput, GetPropertiesOutput } from '../../types';
 import { getProperties as getPropertiesInternal } from '../internal/getProperties';
 

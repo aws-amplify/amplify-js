@@ -3,6 +3,7 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
+
 import { RemoveInput, RemoveOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { deleteObject } from '../../utils/client';
@@ -31,6 +32,7 @@ export const remove = async (
 			Key: finalKey,
 		},
 	);
+
 	return {
 		key,
 	};

@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	defaultStorage,
 	KeyValueStorageInterface,
 	StorageAccessLevel,
+	defaultStorage,
 } from '@aws-amplify/core';
 
 import { UPLOADS_STORAGE_KEY } from '../../../utils/constants';
@@ -14,12 +14,12 @@ import { logger } from '../../../../../utils';
 
 const ONE_HOUR = 1000 * 60 * 60;
 
-type FindCachedUploadPartsOptions = {
+interface FindCachedUploadPartsOptions {
 	cacheKey: string;
 	s3Config: ResolvedS3Config;
 	bucket: string;
 	finalKey: string;
-};
+}
 
 /**
  * Find the cached multipart upload id and get the parts that have been uploaded
@@ -56,6 +56,7 @@ export const findCachedUploadParts = async ({
 			Key: finalKey,
 			UploadId: cachedUpload.uploadId,
 		});
+
 		return {
 			parts: Parts,
 			uploadId: cachedUpload.uploadId,
@@ -63,18 +64,19 @@ export const findCachedUploadParts = async ({
 	} catch (e) {
 		logger.debug('failed to list cached parts, removing cached upload.');
 		await removeCachedUpload(cacheKey);
+
 		return null;
 	}
 };
 
-type FileMetadata = {
+interface FileMetadata {
 	bucket: string;
 	fileName: string;
 	key: string;
 	uploadId: string;
 	// Unix timestamp in ms
 	lastTouched: number;
-};
+}
 
 const listCachedUploadTasks = async (
 	kvStorage: KeyValueStorageInterface,
@@ -83,18 +85,19 @@ const listCachedUploadTasks = async (
 		return JSON.parse((await kvStorage.getItem(UPLOADS_STORAGE_KEY)) ?? '{}');
 	} catch (e) {
 		logger.debug('failed to parse cached uploads record.');
+
 		return {};
 	}
 };
 
-type UploadsCacheKeyOptions = {
+interface UploadsCacheKeyOptions {
 	size: number;
 	contentType?: string;
 	bucket: string;
 	accessLevel: StorageAccessLevel;
 	key: string;
 	file?: File;
-};
+}
 
 /**
  * Get the cache key of a multipart upload. Data source cached by different: size, content type, bucket, access level,
