@@ -15,6 +15,7 @@ import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
 import { getCurrentUser } from '../../apis/getCurrentUser';
 import { createOAuthError } from './createOAuthError';
 import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
+import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
 
 export const completeOAuthFlow = async ({
 	currentUrl,
@@ -250,12 +251,7 @@ const completeFlow = async ({
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	Hub.dispatch(
-		'auth',
-		{ event: 'signedIn', data: await getCurrentUser() },
-		'Auth',
-		AMPLIFY_SYMBOL,
-	);
+	await dispatchSignedInHubEvent();
 	clearHistory(redirectUri);
 };
 
