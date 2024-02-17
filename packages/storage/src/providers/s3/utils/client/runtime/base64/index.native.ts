@@ -12,5 +12,5 @@ export function toBase64(input: string | ArrayBufferView): string {
 		return Buffer.from(input, 'utf-8').toString('base64');
 	}
 
-	return new Buffer(input.buffer).toString('base64');
+	return Buffer.from(input.buffer).toString('base64');
 }

@@ -9,14 +9,15 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
-	assignStringVariables,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
@@ -54,6 +55,7 @@ const copyObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+
 	return {
 		method: 'PUT',
 		headers,
@@ -69,6 +71,7 @@ const copyObjectDeserializer = async (
 		throw buildStorageServiceError(error, response.statusCode);
 	} else {
 		await parseXmlBody(response);
+
 		return {
 			$metadata: parseMetadata(response),
 		};

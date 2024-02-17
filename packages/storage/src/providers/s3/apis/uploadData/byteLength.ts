@@ -25,6 +25,7 @@ export const byteLength = (input?: any): number | undefined => {
 		// handles browser File object
 		return input.size;
 	}
+
 	// TODO: support Node.js stream size when Node.js runtime is supported out-of-box.
 	return undefined;
 };

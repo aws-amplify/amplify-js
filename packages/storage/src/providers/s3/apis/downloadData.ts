@@ -51,6 +51,7 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 			abortController.abort(message);
 		},
 	});
+
 	return downloadTask;
 };
 
@@ -91,6 +92,7 @@ const downloadDataJob =
 				}),
 			},
 		);
+
 		return {
 			key,
 			body,

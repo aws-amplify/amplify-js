@@ -7,13 +7,14 @@ import {
 	validationErrorMap,
 } from '../../../../../errors/types/validation';
 import { StorageError } from '../../../../../errors/StorageError';
+
 import { calculatePartSize } from './calculatePartSize';
 
-export type PartToUpload = {
+export interface PartToUpload {
 	partNumber: number;
 	data: Blob | ArrayBuffer | string;
 	size: number;
-};
+}
 
 export const getDataChunker = (
 	data: StorageUploadDataPayload,
@@ -29,6 +30,7 @@ export const getDataChunker = (
 		return helper(data, 0, data.byteLength, partSize);
 	} else if (typeof data === 'string') {
 		const blob = new Blob([data]);
+
 		return getDataChunker(blob, blob.size);
 	} else {
 		throw new StorageError({

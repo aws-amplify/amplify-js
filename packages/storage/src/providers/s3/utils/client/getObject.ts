@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	EMPTY_SHA256_HASH,
 	Endpoint,
 	HttpRequest,
+	HttpResponse,
+	PresignUrlOptions,
+	UserAgentOptions,
 	parseMetadata,
 	presignUrl,
-	UserAgentOptions,
-	PresignUrlOptions,
-	EMPTY_SHA256_HASH,
-	HttpResponse,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
@@ -21,6 +21,7 @@ import type {
 	GetObjectCommandOutput,
 } from './types';
 import {
+	CONTENT_SHA256_HEADER,
 	buildStorageServiceError,
 	deserializeBoolean,
 	deserializeMetadata,
@@ -30,7 +31,6 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
-	CONTENT_SHA256_HEADER,
 	validateS3RequiredParameter,
 } from './utils';
 
@@ -50,6 +50,7 @@ const getObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+
 	return {
 		method: 'GET',
 		headers: {
@@ -161,6 +162,7 @@ export const getPresignedGetObjectUrl = async (
 	)) {
 		url.searchParams.append(headerName, value);
 	}
+
 	return presignUrl(
 		{ method, url, body: undefined },
 		{
