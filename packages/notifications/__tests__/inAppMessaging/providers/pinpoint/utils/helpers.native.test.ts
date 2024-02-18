@@ -58,11 +58,11 @@ describe('InAppMessaging Provider Utils (running natively)', () => {
 					platform: configPlatform,
 				}));
 
-				const content = extractContent(message);
-				expect(content[0].primaryButton).toStrictEqual(
+				const [firstContent] = extractContent(message);
+				expect(firstContent.primaryButton).toStrictEqual(
 					expectedContent.primaryButton,
 				);
-				expect(content[0].secondaryButton).toStrictEqual(
+				expect(firstContent.secondaryButton).toStrictEqual(
 					expectedContent.secondaryButton,
 				);
 			});
