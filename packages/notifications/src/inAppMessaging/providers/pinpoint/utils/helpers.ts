@@ -4,9 +4,12 @@
 import { ConsoleLogger } from '@aws-amplify/core';
 import {
 	InAppMessagingAction,
-	getClientInfo
+	getClientInfo,
 } from '@aws-amplify/core/internals/utils';
-import type { InAppMessageCampaign as PinpointInAppMessage, InAppMessageButton } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import type { 
+	InAppMessageCampaign as PinpointInAppMessage, 
+	InAppMessageButton,
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty.js';
 import {
 	InAppMessage,
@@ -264,8 +267,12 @@ export const extractContent = ({
 				...button?.[configPlatform],
 			});
 
-			const defaultPrimaryButton = PrimaryBtn ? getButtonConfig(PrimaryBtn) : undefined;
-			const defaultSecondaryButton = SecondaryBtn ? getButtonConfig(SecondaryBtn) : undefined;
+			const defaultPrimaryButton = PrimaryBtn
+				? getButtonConfig(PrimaryBtn)
+				: undefined;
+			const defaultSecondaryButton = SecondaryBtn
+				? getButtonConfig(SecondaryBtn)
+				: undefined;
 
 			const extractedContent: InAppMessageContent = {};
 			if (BackgroundColor) {
@@ -346,7 +353,7 @@ export const extractMetadata = ({
 });
 
 export const mapOSPlatform = (os?: string): ButtonConfigPlatform => {
-	if(!os) return 'DefaultConfig';
+	if (!os) return 'DefaultConfig';
 	// Check if running in a web browser
 	if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
 		return 'Web';

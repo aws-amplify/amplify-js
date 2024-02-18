@@ -21,7 +21,7 @@ jest.mock('@aws-amplify/core');
 
 jest.mock('@aws-amplify/core/internals/utils', () => {
 	const originalModule = jest.requireActual(
-		'@aws-amplify/core/internals/utils'
+		'@aws-amplify/core/internals/utils',
 	);
 	return {
 		...originalModule,
@@ -43,28 +43,33 @@ describe('InAppMessaging Provider Utils', () => {
 
 	describe('extractContent with overrides', () => {
 		describe('when running natively', () => {
-			nativeButtonOverrides.forEach(
-				({buttonOverrides, configPlatform }) => {
-					const message=mergeInAppMessageWithOverrides(pinpointInAppMessage,configPlatform, buttonOverrides);
-					const expectedContent = mergeExpectedContentWithExpectedOverride(extractedContent[0],buttonOverrides);
+			nativeButtonOverrides.forEach(({ buttonOverrides, configPlatform }) => {
+				const message = mergeInAppMessageWithOverrides(
+					pinpointInAppMessage,
+					configPlatform,
+					buttonOverrides,
+				);
+				const expectedContent = mergeExpectedContentWithExpectedOverride(
+					extractedContent[0],
+					buttonOverrides,
+				);
 
-					test(`correctly extracts content for ${configPlatform}`, () => {
-						const utils = require('@aws-amplify/core/internals/utils');
-						// Dynamically override the mock for getClientInfo
-						utils.getClientInfo.mockImplementation(() => ({
-							platform: configPlatform,
-						}));
+				test(`correctly extracts content for ${configPlatform}`, () => {
+					const utils = require('@aws-amplify/core/internals/utils');
+					// Dynamically override the mock for getClientInfo
+					utils.getClientInfo.mockImplementation(() => ({
+						platform: configPlatform,
+					}));
 
-						const content = extractContent(message);
-						expect(content[0].primaryButton).toStrictEqual(
-							expectedContent.primaryButton
-						);
-						expect(content[0].secondaryButton).toStrictEqual(
-							expectedContent.secondaryButton
-						);
-					});
-				}
-			);
+					const content = extractContent(message);
+					expect(content[0].primaryButton).toStrictEqual(
+						expectedContent.primaryButton,
+					);
+					expect(content[0].secondaryButton).toStrictEqual(
+						expectedContent.secondaryButton,
+					);
+				});
+			});
 		});
 	});
 });

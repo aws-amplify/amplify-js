@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
-import { type InAppMessageCampaign as PinpointInAppMessage, OverrideButtonConfiguration } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import {
+	type InAppMessageCampaign as PinpointInAppMessage,
+	OverrideButtonConfiguration,
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import {
 	InAppMessage,
 	InAppMessageContent,
@@ -184,7 +187,7 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 	TreatmentId: 'T1',
 };
 
-export const extractedContent:InAppMessageContent[] = [
+export const extractedContent: InAppMessageContent[] = [
 	{
 		body: {
 			content: 'Body content',
@@ -211,63 +214,61 @@ export const extractedContent:InAppMessageContent[] = [
 	},
 ];
 
-
-export const nativeButtonOverrides:{
-	configPlatform:'ios' | 'android';
-	buttonOverrides:{
-		primaryButton:OverrideButtonConfiguration,
-		secondaryButton:OverrideButtonConfiguration
+export const nativeButtonOverrides: {
+	configPlatform: 'ios' | 'android';
+	buttonOverrides: {
+		primaryButton: OverrideButtonConfiguration;
+		secondaryButton: OverrideButtonConfiguration;
 	};
 }[] = [
 	{
-		configPlatform:'android',
-		buttonOverrides:{
-			primaryButton:{
-				ButtonAction:'DEEP_LINK',
-				Link:'android-app://primaryButtonLink',
+		configPlatform: 'android',
+		buttonOverrides: {
+			primaryButton: {
+				ButtonAction: 'DEEP_LINK',
+				Link: 'android-app://primaryButtonLink',
 			},
-			secondaryButton:{
-				ButtonAction:'LINK',
-				Link:'android-app://secondaryButtonLink',
-			}
-		}
+			secondaryButton: {
+				ButtonAction: 'LINK',
+				Link: 'android-app://secondaryButtonLink',
+			},
+		},
 	},
 	{
-		configPlatform:'ios',
-		buttonOverrides:{
-			primaryButton:{
-				ButtonAction:'DEEP_LINK',
-				Link:'ios-app://primaryButtonLink',
+		configPlatform: 'ios',
+		buttonOverrides: {
+			primaryButton: {
+				ButtonAction: 'DEEP_LINK',
+				Link: 'ios-app://primaryButtonLink',
 			},
-			secondaryButton:{
-				ButtonAction:'LINK',
-				Link:'ios-app://secondaryButtonLink',
-			}
-		}
-
-	}
-]
-export const browserButtonOverrides:{
-	configPlatform:'web';
-	buttonOverrides:{
-		primaryButton:OverrideButtonConfiguration,
-		secondaryButton:OverrideButtonConfiguration
+			secondaryButton: {
+				ButtonAction: 'LINK',
+				Link: 'ios-app://secondaryButtonLink',
+			},
+		},
+	},
+];
+export const browserButtonOverrides: {
+	configPlatform: 'web';
+	buttonOverrides: {
+		primaryButton: OverrideButtonConfiguration;
+		secondaryButton: OverrideButtonConfiguration;
 	};
-}[] = [{
-		configPlatform:'web',
-		buttonOverrides:{
-			primaryButton:{
-				ButtonAction:'LINK',
-				Link:'https://webPrimaryButtonLink.com',
+}[] = [
+	{
+		configPlatform: 'web',
+		buttonOverrides: {
+			primaryButton: {
+				ButtonAction: 'LINK',
+				Link: 'https://webPrimaryButtonLink.com',
 			},
-			secondaryButton:{
-				ButtonAction:'LINK',
-				Link:'https://webSecondaryButtonLink.com',
-			}
-		}
-
-	}
-]
+			secondaryButton: {
+				ButtonAction: 'LINK',
+				Link: 'https://webSecondaryButtonLink.com',
+			},
+		},
+	},
+];
 
 export const extractedMetadata = {
 	customData: { foo: 'bar' },
