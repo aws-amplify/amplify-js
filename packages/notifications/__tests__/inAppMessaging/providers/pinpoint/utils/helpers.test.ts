@@ -289,45 +289,41 @@ describe('InAppMessaging Provider Utils', () => {
 		expect(extractMetadata(message)).toStrictEqual(extractedMetadata);
 	});
 
-	describe('mapOSPlatform method', () => {
-		describe('when running in a browser', () => {
-			browserConfigTestCases.forEach(({ os, expectedPlatform }) => {
-				test(`correctly maps OS "${os}" to ConfigPlatformType "${expectedPlatform}"`, () => {
-					const result = mapOSPlatform(os);
-					expect(result).toBe(expectedPlatform);
-				});
+	describe('mapOSPlatform method (running in a browser)', () => {
+		browserConfigTestCases.forEach(({ os, expectedPlatform }) => {
+			test(`correctly maps OS "${os}" to ConfigPlatformType "${expectedPlatform}"`, () => {
+				const result = mapOSPlatform(os);
+				expect(result).toBe(expectedPlatform);
 			});
 		});
 	});
 
-	describe('extractContent with overrides', () => {
-		describe('when running in a browser', () => {
-			browserButtonOverrides.forEach(({ buttonOverrides, configPlatform }) => {
-				const message = mergeInAppMessageWithOverrides(
-					pinpointInAppMessage,
-					configPlatform,
-					buttonOverrides,
-				);
-				const expectedContent = mergeExpectedContentWithExpectedOverride(
-					extractedContent[0],
-					buttonOverrides,
-				);
+	describe('extractContent with overrides (running in a browser)', () => {
+		browserButtonOverrides.forEach(({ buttonOverrides, configPlatform }) => {
+			const message = mergeInAppMessageWithOverrides(
+				pinpointInAppMessage,
+				configPlatform,
+				buttonOverrides,
+			);
+			const expectedContent = mergeExpectedContentWithExpectedOverride(
+				extractedContent[0],
+				buttonOverrides,
+			);
 
-				test(`correctly extracts content for ${configPlatform}`, () => {
-					const utils = require('@aws-amplify/core/internals/utils');
-					// Dynamically override the mock for getClientInfo
-					utils.getClientInfo.mockImplementation(() => ({
-						platform: configPlatform,
-					}));
+			test(`correctly extracts content for ${configPlatform}`, () => {
+				const utils = require('@aws-amplify/core/internals/utils');
+				// Dynamically override the mock for getClientInfo
+				utils.getClientInfo.mockImplementation(() => ({
+					platform: configPlatform,
+				}));
 
-					const content = extractContent(message);
-					expect(content[0].primaryButton).toStrictEqual(
-						expectedContent.primaryButton,
-					);
-					expect(content[0].secondaryButton).toStrictEqual(
-						expectedContent.secondaryButton,
-					);
-				});
+				const content = extractContent(message);
+				expect(content[0].primaryButton).toStrictEqual(
+					expectedContent.primaryButton,
+				);
+				expect(content[0].secondaryButton).toStrictEqual(
+					expectedContent.secondaryButton,
+				);
 			});
 		});
 	});
