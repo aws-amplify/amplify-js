@@ -177,6 +177,6 @@ describe('getClientInfo', () => {
 			} as any);
 			const result = getClientInfo();
 			expect(result).toEqual(expect.objectContaining(expectedResult));
-		}
+		},
 	);
 });

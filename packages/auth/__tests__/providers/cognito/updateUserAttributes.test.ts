@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('updateUserAttributes', () => {
@@ -115,7 +115,7 @@ describe('updateUserAttributes', () => {
 				AccessToken: mockAccessToken,
 				UserAttributes: toAttributeType(userAttributes),
 				ClientMetadata: { foo: 'bar' },
-			})
+			}),
 		);
 	});
 
@@ -152,7 +152,7 @@ describe('updateUserAttributes', () => {
 				AccessToken: mockAccessToken,
 				UserAttributes: toAttributeType(userAttributes),
 				ClientMetadata: { foo: 'bar' },
-			})
+			}),
 		);
 	});
 
@@ -212,7 +212,7 @@ describe('updateUserAttributes', () => {
 				AccessToken: mockAccessToken,
 				UserAttributes: toAttributeType(userAttributes),
 				ClientMetadata: { foo: 'bar' },
-			})
+			}),
 		);
 	});
 
@@ -220,7 +220,7 @@ describe('updateUserAttributes', () => {
 		expect.assertions(2);
 		mockUpdateUserAttributes.mockImplementation(() => {
 			throw getMockError(
-				UpdateUserAttributesException.InvalidParameterException
+				UpdateUserAttributesException.InvalidParameterException,
 			);
 		});
 		try {
@@ -235,7 +235,7 @@ describe('updateUserAttributes', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				UpdateUserAttributesException.InvalidParameterException
+				UpdateUserAttributesException.InvalidParameterException,
 			);
 		}
 	});

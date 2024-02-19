@@ -62,7 +62,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	}
 
 	async getTokens(
-		options?: FetchAuthSessionOptions
+		options?: FetchAuthSessionOptions,
 	): Promise<
 		(AuthTokens & { signInDetails?: CognitoAuthSignInDetails }) | null
 	> {
@@ -146,7 +146,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				data: { error: err },
 			},
 			'Auth',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
 
 		if (err.name.startsWith('NotAuthorizedException')) {

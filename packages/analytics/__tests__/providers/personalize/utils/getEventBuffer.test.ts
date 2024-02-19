@@ -26,7 +26,7 @@ describe('Personalize Provider Util: getEventBuffer', () => {
 
 		expect(mockEventBuffer).toHaveBeenCalledWith(
 			{ ...mockBufferConfig, bufferSize: mockBufferConfig.flushSize + 1 },
-			expect.any(Function)
+			expect.any(Function),
 		);
 		expect(testBuffer).toBeInstanceOf(EventBuffer);
 	});

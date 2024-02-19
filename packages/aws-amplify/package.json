@@ -244,7 +244,8 @@
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"generate-docs-local": "typedoc --out docs src",
 		"generate-docs-root": "typedoc --out ../../docs src",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 93.26"
@@ -297,19 +298,19 @@
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./dist/esm/analytics/kinesis/index.mjs",
 			"import": "{ record }",
-			"limit": "44.48 kB"
+			"limit": "45.50 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
 			"path": "./dist/esm/analytics/kinesis-firehose/index.mjs",
 			"import": "{ record }",
-			"limit": "41.54 kB"
+			"limit": "42.50 kB"
 		},
 		{
 			"name": "[Analytics] record (Personalize)",
 			"path": "./dist/esm/analytics/personalize/index.mjs",
 			"import": "{ record }",
-			"limit": "45.50 kB"
+			"limit": "46.50 kB"
 		},
 		{
 			"name": "[Analytics] identifyUser (Pinpoint)",
@@ -333,7 +334,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "36.80 kB"
+			"limit": "37.00 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -381,7 +382,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "25.94 kB"
+			"limit": "26.40 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -447,7 +448,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "28.00 kB"
+			"limit": "28.50 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",

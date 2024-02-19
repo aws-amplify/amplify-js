@@ -71,7 +71,7 @@ const testPubSubAsync = (
 	topic,
 	message,
 	options?,
-	hubConnectionListener?
+	hubConnectionListener?,
 ) =>
 	new Promise(async (resolve, reject) => {
 		if (hubConnectionListener === undefined) {
@@ -224,7 +224,7 @@ describe('PubSub', () => {
 			expect(
 				testPubSubAsync(pubsub, 'topicA', 'my message AWSIoTProvider', {
 					provider: 'AWSIoTProvider',
-				})
+				}),
 			).rejects.toMatchObject({
 				error: new Error('Failed to connect to the network'),
 			});
@@ -300,7 +300,7 @@ describe('PubSub', () => {
 							// @ts-ignore
 							new Observable(observer => {
 								reachabilityObserver = observer;
-							})
+							}),
 					)
 					// Twice because we subscribe to get the initial state then again to monitor reachability
 					.mockImplementationOnce(
@@ -308,7 +308,7 @@ describe('PubSub', () => {
 							// @ts-ignore
 							new Observable(observer => {
 								reachabilityObserver = observer;
-							})
+							}),
 					);
 				reachabilityObserver?.next?.({ online: true });
 			});
@@ -456,7 +456,7 @@ describe('PubSub', () => {
 				{
 					provider: 'AWSIoTProvider',
 				},
-				hubConnectionListener
+				hubConnectionListener,
 			);
 
 			await testPubSubAsync(
@@ -466,7 +466,7 @@ describe('PubSub', () => {
 				{
 					provider: 'MqttOverWSProvider',
 				},
-				hubConnectionListener
+				hubConnectionListener,
 			);
 		});
 
@@ -489,7 +489,7 @@ describe('PubSub', () => {
 				iotClient.publish({
 					topics: 'topicA',
 					message: { msg: 'my message AWSIoTProvider' },
-				})
+				}),
 			).rejects.toMatch('Failed to publish');
 		});
 
@@ -566,7 +566,7 @@ describe('PubSub', () => {
 				subscription2.unsubscribe();
 				expect(spyDisconnect).not.toHaveBeenCalled();
 				spyDisconnect.mockClear();
-			}
+			},
 		);
 	});
 });

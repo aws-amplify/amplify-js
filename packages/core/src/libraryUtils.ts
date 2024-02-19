@@ -45,6 +45,7 @@ export {
 	SchemaModels,
 	ModelAttribute,
 	SecondaryIndexAttribute,
+	GraphQLProviderConfig,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {

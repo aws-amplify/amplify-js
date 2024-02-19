@@ -1,5 +1,5 @@
 import * as raw from '../../src';
-import { Amplify, AmplifyClassV6, Hub } from '@aws-amplify/core';
+import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
@@ -89,13 +89,18 @@ function makeAppSyncStreams() {
  */
 function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
 	return spy.mock.calls.map((call: any) => {
-		const [postOptions] = call;
+		// The 1st param in `call` is an instance of `AmplifyClassV6`
+		// The 2nd param in `call` is the actual `postOptions`
+		const [_, postOptions] = call;
 		const userAgent = postOptions?.options?.headers?.['x-amz-user-agent'];
 		if (userAgent) {
 			const staticUserAgent = userAgent.replace(/\/[\d.]+/g, '/latest');
 			postOptions.options.headers['x-amz-user-agent'] = staticUserAgent;
 		}
-		return call;
+		// Calling of `post` API with an instance of `AmplifyClassV6` has been
+		// unit tested in other test suites. To reduce the noise in the generated
+		// snapshot, we hide the details of the instance here.
+		return ['AmplifyClassV6', postOptions];
 	});
 }
 
@@ -148,7 +153,41 @@ describe('generateClient', () => {
 			expect(() => {
 				client.models.Todo.create({ name: 'todo' });
 			}).toThrow(
-				'Could not generate client. This is likely due to Amplify.configure() not being called prior to generateClient().',
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
+			);
+		});
+	});
+
+	describe('client `enums` property', () => {
+		const expectedEnumsProperties = ['Status'];
+
+		it('generates `enums` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
+			Amplify.configure(configFixture); // clear the resource config
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(Object.keys(client.enums)).toEqual(expectedEnumsProperties);
+		});
+
+		it('generates `enums` property when Amplify.configure() is called later with a valid GraphQL provider config', async () => {
+			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(Object.keys(client.enums)).toHaveLength(0);
+
+			Amplify.configure(configFixture);
+
+			expect(Object.keys(client.enums)).toEqual(expectedEnumsProperties);
+		});
+
+		it('generates `models` property throwing error when there is no valid GraphQL provider config can be resolved', () => {
+			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(() => {
+				client.enums.Status.values();
+			}).toThrow(
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
 		});
 	});
@@ -2922,6 +2961,7 @@ describe('generateClient', () => {
 
 			// Request headers should overwrite client headers:
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.not.objectContaining({
@@ -3177,6 +3217,7 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -3856,6 +3897,7 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({

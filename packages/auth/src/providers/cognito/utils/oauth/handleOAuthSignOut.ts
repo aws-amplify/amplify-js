@@ -9,7 +9,7 @@ import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 
 export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
-	store: DefaultOAuthStore
+	store: DefaultOAuthStore,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn } = await store.loadOAuthSignIn();
 

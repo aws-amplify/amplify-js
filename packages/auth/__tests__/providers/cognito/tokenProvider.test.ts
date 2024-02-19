@@ -26,35 +26,35 @@ describe('Loading tokens', () => {
 		const userSub = 'user123';
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`,
-			userSub
+			userSub,
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub}.accessToken`,
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub}.idToken`,
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub}.refreshToken`,
-			'dsasdasdasdasdasdasdasd'
+			'dsasdasdasdasdasdasdasd',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub}.clockDrift`,
-			'10'
+			'10',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub}.deviceKey`,
-			'device-key'
+			'device-key',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub}.deviceGroupKey`,
-			'device-group-key'
+			'device-group-key',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub}.randomPasswordKey`,
-			'random-password'
+			'random-password',
 		);
 
 		tokenStore.setKeyValueStorage(memoryStorage);
@@ -67,10 +67,10 @@ describe('Loading tokens', () => {
 		const result = await tokenStore.loadTokens();
 
 		expect(result?.accessToken.toString()).toBe(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y',
 		);
 		expect(result?.idToken?.toString()).toBe(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y',
 		);
 		expect(result?.clockDrift).toBe(10);
 		expect(result?.refreshToken).toBe('dsasdasdasdasdasdasdasd');
@@ -96,10 +96,10 @@ describe('saving tokens', () => {
 		const lastAuthUser = 'amplify@user';
 		await tokenStore.storeTokens({
 			accessToken: decodeJWT(
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA'
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA',
 			),
 			idToken: decodeJWT(
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III'
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III',
 			),
 			clockDrift: 150,
 			refreshToken: 'refresh-token',
@@ -113,53 +113,53 @@ describe('saving tokens', () => {
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`,
+			),
 		).toBe(lastAuthUser);
 
 		// Refreshed tokens
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.accessToken`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.accessToken`,
+			),
 		).toBe(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA',
 		);
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.idToken`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.idToken`,
+			),
 		).toBe(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III',
 		);
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.refreshToken`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.refreshToken`,
+			),
 		).toBe('refresh-token');
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.clockDrift`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.clockDrift`,
+			),
 		).toBe('150');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.deviceKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.deviceKey`,
+			),
 		).toBe('device-key2');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.deviceGroupKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.deviceGroupKey`,
+			),
 		).toBe('device-group-key2');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.randomPasswordKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${lastAuthUser}.randomPasswordKey`,
+			),
 		).toBe('random-password2');
 	});
 	it('should save tokens from store clear old tokens', async () => {
@@ -170,35 +170,35 @@ describe('saving tokens', () => {
 
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`,
-			oldUserName
+			oldUserName,
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.accessToken`,
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.idToken`,
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.Y',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.refreshToken`,
-			'dsasdasdasdasdasdasdasd'
+			'dsasdasdasdasdasdasdasd',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.clockDrift`,
-			'10'
+			'10',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceKey`,
-			'device-key'
+			'device-key',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceGroupKey`,
-			'device-group-key'
+			'device-group-key',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.randomPasswordKey`,
-			'random-password'
+			'random-password',
 		);
 
 		tokenStore.setKeyValueStorage(memoryStorage);
@@ -211,10 +211,10 @@ describe('saving tokens', () => {
 
 		await tokenStore.storeTokens({
 			accessToken: decodeJWT(
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA'
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA',
 			),
 			idToken: decodeJWT(
-				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III'
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III',
 			),
 			clockDrift: 150,
 			refreshToken: 'refresh-token',
@@ -228,54 +228,54 @@ describe('saving tokens', () => {
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`,
+			),
 		).toBe(oldUserName);
 
 		// Refreshed tokens
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.accessToken`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.accessToken`,
+			),
 		).toBe(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.AAA',
 		);
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.idToken`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.idToken`,
+			),
 		).toBe(
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzAsInVzZXJuYW1lIjoiYW1wbGlmeUB1c2VyIn0.III',
 		);
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.refreshToken`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.refreshToken`,
+			),
 		).toBe('refresh-token');
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.clockDrift`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.clockDrift`,
+			),
 		).toBe('150');
 
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceKey`,
+			),
 		).toBe('device-key2');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceGroupKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.deviceGroupKey`,
+			),
 		).toBe('device-group-key2');
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.randomPasswordKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${oldUserName}.randomPasswordKey`,
+			),
 		).toBe('random-password2');
 	});
 });
@@ -295,32 +295,32 @@ describe('device tokens', () => {
 
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceKey`,
-			'user1-device-key'
+			'user1-device-key',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceGroupKey`,
-			'user1-device-group-key'
+			'user1-device-group-key',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.randomPasswordKey`,
-			'user1-random-password'
+			'user1-random-password',
 		);
 
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceKey`,
-			'user2-device-key'
+			'user2-device-key',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceGroupKey`,
-			'user2-device-group-key'
+			'user2-device-group-key',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`,
-			'user2-random-password'
+			'user2-random-password',
 		);
 		memoryStorage.setItem(
 			`CognitoIdentityServiceProvider.${userPoolClientId}.LastAuthUser`,
-			userSub2
+			userSub2,
 		);
 
 		tokenStore.setKeyValueStorage(memoryStorage);
@@ -348,41 +348,41 @@ describe('device tokens', () => {
 		await tokenStore.clearDeviceMetadata(userSub1);
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceKey`,
+			),
 		).toBeUndefined();
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceGroupKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.deviceGroupKey`,
+			),
 		).toBeUndefined();
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.randomPasswordKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub1}.randomPasswordKey`,
+			),
 		).toBeUndefined();
 		expect(
 			// userSub1 cleared, userSub2 not cleared
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`,
+			),
 		).not.toBeUndefined();
 
 		await tokenStore.clearDeviceMetadata();
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceKey`,
+			),
 		).toBeUndefined();
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceGroupKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.deviceGroupKey`,
+			),
 		).toBeUndefined();
 		expect(
 			await memoryStorage.getItem(
-				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`
-			)
+				`CognitoIdentityServiceProvider.${userPoolClientId}.${userSub2}.randomPasswordKey`,
+			),
 		).toBeUndefined();
 	});
 });

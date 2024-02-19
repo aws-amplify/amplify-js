@@ -12,20 +12,21 @@ import {
 	AmplifyUrlSearchParams,
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+
 import type {
+	CompletedPart,
 	ListPartsCommandInput,
 	ListPartsCommandOutput,
-	CompletedPart,
 } from './types';
 import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
+	deserializeNumber,
 	emptyArrayGuard,
 	map,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
-	deserializeNumber,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from './utils';
@@ -42,7 +43,7 @@ export type ListPartsOutput = Pick<
 
 const listPartsSerializer = async (
 	input: ListPartsInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {};
 	const url = new AmplifyUrl(endpoint.url.toString());
@@ -52,6 +53,7 @@ const listPartsSerializer = async (
 	url.search = new AmplifyUrlSearchParams({
 		uploadId: input.UploadId,
 	}).toString();
+
 	return {
 		method: 'GET',
 		headers,
@@ -60,7 +62,7 @@ const listPartsSerializer = async (
 };
 
 const listPartsDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<ListPartsOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -74,6 +76,7 @@ const listPartsDeserializer = async (
 				value => emptyArrayGuard(value, deserializeCompletedPartList),
 			],
 		});
+
 		return {
 			$metadata: parseMetadata(response),
 			...contents,
@@ -87,12 +90,12 @@ const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
 			PartNumber: ['PartNumber', deserializeNumber],
 			ETag: 'ETag',
 			Size: ['Size', deserializeNumber],
-		})
+		}),
 	);
 
 export const listParts = composeServiceApi(
 	s3TransferHandler,
 	listPartsSerializer,
 	listPartsDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

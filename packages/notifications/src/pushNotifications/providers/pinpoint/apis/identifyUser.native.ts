@@ -33,7 +33,7 @@ export const identifyUser: IdentifyUser = async ({
 		userId,
 		userProfile,
 		userAgentValue: getPushNotificationUserAgentString(
-			PushNotificationAction.IdentifyUser
+			PushNotificationAction.IdentifyUser,
 		),
 	});
 };

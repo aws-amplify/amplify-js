@@ -10,35 +10,38 @@ import {
 	parseMetadata,
 } from '../../clients/serde';
 import { Endpoint, HttpRequest, HttpResponse } from '../../clients/types';
+import { AmplifyUrl } from '../../utils/amplifyUrl';
+
 import { defaultConfig, getSharedHeaders } from './base';
 import type {
 	GetInAppMessagesCommandInput as GetInAppMessagesInput,
 	GetInAppMessagesCommandOutput as GetInAppMessagesOutput,
 } from './types';
-import { AmplifyUrl } from '../../utils/amplifyUrl';
 
 export type { GetInAppMessagesInput, GetInAppMessagesOutput };
 
 const getInAppMessagesSerializer = (
 	{ ApplicationId = '', EndpointId = '' }: GetInAppMessagesInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): HttpRequest => {
 	const headers = getSharedHeaders();
 	const url = new AmplifyUrl(endpoint.url);
 	url.pathname = `v1/apps/${extendedEncodeURIComponent(
-		ApplicationId
+		ApplicationId,
 	)}/endpoints/${extendedEncodeURIComponent(EndpointId)}/inappmessages`;
+
 	return { method: 'GET', headers, url };
 };
 
 const getInAppMessagesDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<GetInAppMessagesOutput> => {
 	if (response.statusCode >= 300) {
 		const error = await parseJsonError(response);
 		throw error;
 	} else {
 		const { InAppMessageCampaigns } = await parseJsonBody(response);
+
 		return {
 			InAppMessagesResponse: { InAppMessageCampaigns },
 			$metadata: parseMetadata(response),
@@ -53,5 +56,5 @@ export const getInAppMessages = composeServiceApi(
 	authenticatedHandler,
 	getInAppMessagesSerializer,
 	getInAppMessagesDeserializer,
-	defaultConfig
+	defaultConfig,
 );

@@ -123,7 +123,7 @@ _lastChangedAt
 _deleted`;
 
 			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(
-				selectionSet
+				selectionSet,
 			);
 		});
 		test('explicit owner', () => {
@@ -245,7 +245,7 @@ _lastChangedAt
 _deleted`;
 
 			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(
-				selectionSet
+				selectionSet,
 			);
 		});
 		test('explicit custom owner', () => {
@@ -367,7 +367,7 @@ _lastChangedAt
 _deleted`;
 
 			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(
-				selectionSet
+				selectionSet,
 			);
 		});
 	});

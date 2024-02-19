@@ -35,6 +35,7 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -52,7 +53,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignIn(
-	input: ConfirmSignInInput
+	input: ConfirmSignInInput,
 ): Promise<ConfirmSignInOutput> {
 	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession, signInDetails } =
@@ -65,7 +66,7 @@ export async function confirmSignIn(
 
 	assertValidationError(
 		!!challengeResponse,
-		AuthValidationErrorCode.EmptyChallengeResponse
+		AuthValidationErrorCode.EmptyChallengeResponse,
 	);
 
 	if (!username || !challengeName || !signInSession)
@@ -99,7 +100,7 @@ export async function confirmSignIn(
 			authConfig,
 			tokenOrchestrator,
 			clientMetaData,
-			options
+			options,
 		);
 
 		// sets up local state used during the sign-in process
@@ -118,19 +119,13 @@ export async function confirmSignIn(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
-			Hub.dispatch(
-				'auth',
-				{
-					event: 'signedIn',
-					data: await getCurrentUser(),
-				},
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

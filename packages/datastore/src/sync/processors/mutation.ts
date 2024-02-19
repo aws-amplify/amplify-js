@@ -88,7 +88,7 @@ class MutationProcessor {
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
 		private readonly conflictHandler: ConflictHandler,
-		private readonly amplifyContext: AmplifyContext
+		private readonly amplifyContext: AmplifyContext,
 	) {
 		this.amplifyContext.InternalAPI =
 			this.amplifyContext.InternalAPI || InternalAPI;
@@ -103,17 +103,17 @@ class MutationProcessor {
 					const [createMutation] = buildGraphQLOperation(
 						namespace,
 						model,
-						'CREATE'
+						'CREATE',
 					);
 					const [updateMutation] = buildGraphQLOperation(
 						namespace,
 						model,
-						'UPDATE'
+						'UPDATE',
 					);
 					const [deleteMutation] = buildGraphQLOperation(
 						namespace,
 						model,
-						'DELETE'
+						'DELETE',
 					);
 
 					this.typeQuery.set(model, [
@@ -207,7 +207,7 @@ class MutationProcessor {
 						const authModeRetry = async () => {
 							try {
 								logger.debug(
-									`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`
+									`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`,
 								);
 								const response = await this.jitteredRetry(
 									namespaceName,
@@ -219,11 +219,11 @@ class MutationProcessor {
 									this.MutationEvent,
 									head,
 									operationAuthModes[authModeAttempts],
-									onTerminate
+									onTerminate,
 								);
 
 								logger.debug(
-									`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
+									`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`,
 								);
 
 								return response;
@@ -233,7 +233,7 @@ class MutationProcessor {
 									logger.debug(
 										`Mutation failed with authMode: ${
 											operationAuthModes[authModeAttempts - 1]
-										}`
+										}`,
 									);
 									try {
 										await this.errorHandler({
@@ -258,7 +258,7 @@ class MutationProcessor {
 										operationAuthModes[authModeAttempts - 1]
 									}. Retrying with authMode: ${
 										operationAuthModes[authModeAttempts]
-									}`
+									}`,
 								);
 								return await authModeRetry();
 							}
@@ -316,7 +316,7 @@ class MutationProcessor {
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GraphQLAuthMode,
-		onTerminate: Promise<void>
+		onTerminate: Promise<void>,
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
 	> {
@@ -328,7 +328,7 @@ class MutationProcessor {
 				condition: string,
 				modelConstructor: PersistentModelConstructor<PersistentModel>,
 				MutationEvent: PersistentModelConstructor<MutationEvent>,
-				mutationEvent: MutationEvent
+				mutationEvent: MutationEvent,
 			) => {
 				const [query, variables, graphQLCondition, opName, modelDefinition] =
 					this.createQueryVariables(
@@ -336,12 +336,12 @@ class MutationProcessor {
 						model,
 						operation,
 						data,
-						condition
+						condition,
 					);
 
 				const authToken = await getTokenForCustomAuth(
 					authMode,
-					this.amplifyConfig
+					this.amplifyConfig,
 				);
 
 				const tryWith = {
@@ -365,7 +365,7 @@ class MutationProcessor {
 							await this.amplifyContext.InternalAPI.graphql(
 								tryWith,
 								undefined,
-								customUserAgentDetails
+								customUserAgentDetails,
 							)
 						);
 
@@ -405,11 +405,11 @@ class MutationProcessor {
 											modelConstructor,
 											localModel: this.modelInstanceCreator(
 												modelConstructor,
-												variables.input
+												variables.input,
 											),
 											remoteModel: this.modelInstanceCreator(
 												modelConstructor,
-												error.data
+												error.data,
 											),
 											operation: opType,
 											attempts: attempt,
@@ -426,12 +426,12 @@ class MutationProcessor {
 									const [[, opName, query]] = buildGraphQLOperation(
 										this.schema.namespaces[namespaceName],
 										modelDefinition,
-										'GET'
+										'GET',
 									);
 
 									const authToken = await getTokenForCustomAuth(
 										authMode,
-										this.amplifyConfig
+										this.amplifyConfig,
 									);
 
 									const serverData = <
@@ -444,7 +444,7 @@ class MutationProcessor {
 											authToken,
 										},
 										undefined,
-										customUserAgentDetails
+										customUserAgentDetails,
 									);
 
 									// onTerminate cancel graphql()
@@ -465,7 +465,7 @@ class MutationProcessor {
 										graphQLCondition,
 										MutationEvent,
 										this.modelInstanceCreator,
-										mutationEvent.id
+										mutationEvent.id,
 									);
 
 								await this.storage.save(updatedMutation);
@@ -496,7 +496,7 @@ class MutationProcessor {
 												{ data: { [opName]: error.data } },
 												opName,
 												modelDefinition,
-										  ]
+											]
 										: [];
 								}
 							}
@@ -518,7 +518,7 @@ class MutationProcessor {
 				mutationEvent,
 			],
 			safeJitteredBackoff,
-			onTerminate
+			onTerminate,
 		);
 	}
 
@@ -527,7 +527,7 @@ class MutationProcessor {
 		model: string,
 		operation: TransformerMutationType,
 		data: string,
-		condition: string
+		condition: string,
 	): [string, Record<string, any>, GraphQLCondition, string, SchemaModel] {
 		const modelDefinition = this.schema.namespaces[namespaceName].models[model];
 		const { primaryKey } = this.schema.namespaces[namespaceName].keys![model];
@@ -540,7 +540,7 @@ class MutationProcessor {
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
 		const [, opName, query] = queriesTuples!.find(
-			([transformerMutationType]) => transformerMutationType === operation
+			([transformerMutationType]) => transformerMutationType === operation,
 		)!;
 
 		const { _version, ...parsedData } = <ModelInstanceMetadata>JSON.parse(data);
@@ -626,13 +626,13 @@ class MutationProcessor {
 							Object.keys(graphQLCondition).length > 0
 								? graphQLCondition
 								: null,
-				  }),
+					}),
 		};
 		return [query, variables, graphQLCondition, opName, modelDefinition];
 	}
 
 	private opTypeFromTransformerOperation(
-		operation: TransformerMutationType
+		operation: TransformerMutationType,
 	): OpType {
 		switch (operation) {
 			case TransformerMutationType.CREATE:
@@ -677,7 +677,7 @@ const originalJitteredBackoff = jitteredBackoff(MAX_RETRY_DELAY_MS);
 export const safeJitteredBackoff: typeof originalJitteredBackoff = (
 	attempt,
 	_args,
-	error
+	error,
 ) => {
 	const attemptResult = originalJitteredBackoff(attempt);
 

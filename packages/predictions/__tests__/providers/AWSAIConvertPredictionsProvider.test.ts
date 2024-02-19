@@ -173,7 +173,7 @@ describe('Predictions convert provider test', () => {
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			expect(
-				predictionsProvider.convert(validTranslateTextInput)
+				predictionsProvider.convert(validTranslateTextInput),
 			).resolves.toMatchObject({ language: 'es', text: 'translatedText' });
 		});
 		test('error case credentials do not exist', () => {
@@ -186,11 +186,11 @@ describe('Predictions convert provider test', () => {
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
 			expect(
-				predictionsProvider.convert(validTranslateTextInput)
+				predictionsProvider.convert(validTranslateTextInput),
 			).rejects.toThrow(
 				expect.objectContaining(
-					validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
-				)
+					validationErrorMap[PredictionsValidationErrorCode.NoCredentials],
+				),
 			);
 		});
 		test('error case credentials exist but service fails', () => {
@@ -208,7 +208,7 @@ describe('Predictions convert provider test', () => {
 				return Promise.reject('error');
 			});
 			expect(
-				predictionsProvider.convert(validTranslateTextInput)
+				predictionsProvider.convert(validTranslateTextInput),
 			).rejects.toMatch('error');
 		});
 	});
@@ -233,7 +233,7 @@ describe('Predictions convert provider test', () => {
 				return 'dummyURL';
 			});
 			expect(
-				predictionsProvider.convert(validTextToSpeechInput)
+				predictionsProvider.convert(validTextToSpeechInput),
 			).resolves.toMatchObject({
 				speech: {
 					url: 'dummyURL',
@@ -251,11 +251,11 @@ describe('Predictions convert provider test', () => {
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			expect(
-				predictionsProvider.convert(validTextToSpeechInput)
+				predictionsProvider.convert(validTextToSpeechInput),
 			).rejects.toThrow(
 				expect.objectContaining(
-					validationErrorMap[PredictionsValidationErrorCode.NoCredentials]
-				)
+					validationErrorMap[PredictionsValidationErrorCode.NoCredentials],
+				),
 			);
 		});
 		test('error case credentials exist but service fails', () => {
@@ -273,7 +273,7 @@ describe('Predictions convert provider test', () => {
 				return Promise.reject('error');
 			});
 			expect(
-				predictionsProvider.convert(validTextToSpeechInput)
+				predictionsProvider.convert(validTextToSpeechInput),
 			).rejects.toMatch('error');
 		});
 	});
@@ -302,17 +302,17 @@ describe('Predictions convert provider test', () => {
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
 					return 'Hello how are you';
-				}
+				},
 			);
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
 			return expect(
-				predictionsProvider.convert(validSpeechToTextInput)
+				predictionsProvider.convert(validSpeechToTextInput),
 			).rejects.toThrow(
 				expect.objectContaining(
-					validationErrorMap[PredictionsValidationErrorCode.NoRegion]
-				)
+					validationErrorMap[PredictionsValidationErrorCode.NoRegion],
+				),
 			);
 		});
 		test('Error languageCode not configured ', () => {
@@ -333,17 +333,17 @@ describe('Predictions convert provider test', () => {
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
 					return 'Hello how are you';
-				}
+				},
 			);
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
 			expect(
-				predictionsProvider.convert(validSpeechToTextInput)
+				predictionsProvider.convert(validSpeechToTextInput),
 			).rejects.toThrow(
 				expect.objectContaining(
-					validationErrorMap[PredictionsValidationErrorCode.NoLanguage]
-				)
+					validationErrorMap[PredictionsValidationErrorCode.NoLanguage],
+				),
 			);
 		});
 		test('Happy case ', () => {
@@ -359,13 +359,13 @@ describe('Predictions convert provider test', () => {
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
 					return 'Hello, how are you?';
-				}
+				},
 			);
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
 			expect(
-				predictionsProvider.convert(validSpeechToTextInput)
+				predictionsProvider.convert(validSpeechToTextInput),
 			).resolves.toMatchObject({
 				transcription: {
 					fullText: 'Hello, how are you?',
@@ -393,18 +393,18 @@ describe('Predictions convert provider test', () => {
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
 					return 'Bonjour, comment vas tu?';
-				}
+				},
 			);
 			const downsampleBufferSpyon = jest.spyOn(
 				AmazonAIConvertPredictionsProvider.prototype as any,
-				'downsampleBuffer'
+				'downsampleBuffer',
 			);
 
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 
 			await predictionsProvider.convert(validSpeechToTextInput);
 			expect(downsampleBufferSpyon).toHaveBeenCalledWith(
-				expect.objectContaining({ outputSampleRate: 8000 })
+				expect.objectContaining({ outputSampleRate: 8000 }),
 			);
 			downsampleBufferSpyon.mockClear();
 		});
@@ -435,12 +435,12 @@ describe('Predictions convert provider test', () => {
 			// pollyClient is a private property
 			// Used this strategy to easily check that the customUserAgent is set correctly on the client
 			expect(
-				(predictionsProvider as any).pollyClient.config.customUserAgent
+				(predictionsProvider as any).pollyClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
-				})
+				}),
 			);
 		});
 		test('convert translate text initializes a client with the correct custom user agent', async () => {
@@ -459,12 +459,12 @@ describe('Predictions convert provider test', () => {
 			// translateClient is a private property
 			// Used this strategy to easily check that the customUserAgent is set correctly on the client
 			expect(
-				(predictionsProvider as any).translateClient.config.customUserAgent
+				(predictionsProvider as any).translateClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Convert,
-				})
+				}),
 			);
 		});
 	});

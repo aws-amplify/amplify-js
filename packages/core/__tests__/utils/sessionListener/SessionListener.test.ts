@@ -23,7 +23,7 @@ describe('[Web] Session Listener', () => {
 		expect(document.addEventListener).toHaveBeenCalledWith(
 			'visibilitychange',
 			expect.any(Function),
-			false
+			false,
 		);
 	});
 

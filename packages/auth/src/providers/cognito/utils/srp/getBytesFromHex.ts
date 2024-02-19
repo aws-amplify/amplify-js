@@ -20,7 +20,7 @@ export const getBytesFromHex = (encoded: string): Uint8Array => {
 			out[i / 2] = HEX_TO_SHORT[encodedByte];
 		} else {
 			throw new Error(
-				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`
+				`Cannot decode unrecognized sequence ${encodedByte} as hexadecimal`,
 			);
 		}
 	}

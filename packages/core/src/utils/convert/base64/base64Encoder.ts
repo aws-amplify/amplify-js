@@ -3,6 +3,7 @@
 
 import { getBtoa } from '../../globalHelpers';
 import { Base64Encoder } from '../types';
+
 import { bytesToString } from './bytesToString';
 
 export const base64Encoder: Base64Encoder = {

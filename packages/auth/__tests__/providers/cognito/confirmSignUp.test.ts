@@ -21,7 +21,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('confirmSignUp', () => {
@@ -61,7 +61,7 @@ describe('confirmSignUp', () => {
 				Username: user1.username,
 				ForceAliasCreation: undefined,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			}
+			},
 		);
 		expect(mockConfirmSignUp).toHaveBeenCalledTimes(1);
 	});
@@ -81,7 +81,7 @@ describe('confirmSignUp', () => {
 				ConfirmationCode: confirmationCode,
 				Username: user1.username,
 				ForceAliasCreation: true,
-			})
+			}),
 		);
 	});
 
@@ -102,7 +102,7 @@ describe('confirmSignUp', () => {
 				Username: user1.username,
 				ForceAliasCreation: undefined,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			})
+			}),
 		);
 	});
 
@@ -113,7 +113,7 @@ describe('confirmSignUp', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				AuthValidationErrorCode.EmptyConfirmSignUpUsername
+				AuthValidationErrorCode.EmptyConfirmSignUpUsername,
 			);
 		}
 	});
@@ -166,7 +166,7 @@ describe('confirmSignUp', () => {
 				ForceAliasCreation: undefined,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				UserContextData: { EncodedData: 'abcd' },
-			}
+			},
 		);
 		expect(mockConfirmSignUp).toHaveBeenCalledTimes(1);
 		window['AmazonCognitoAdvancedSecurityData'] = undefined;

@@ -14,7 +14,7 @@ import { getIdentifierValue } from './utils';
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
-		private readonly ownSymbol: Symbol
+		private readonly ownSymbol: Symbol,
 	) {}
 
 	/**
@@ -26,13 +26,13 @@ class ModelMerger {
 	public async merge<T extends ModelInstanceMetadata>(
 		storage: Storage,
 		model: T,
-		modelDefinition: SchemaModel
+		modelDefinition: SchemaModel,
 	): Promise<OpType> {
 		let result: OpType;
 		const mutationsForModel = await this.outbox.getForModel(
 			storage,
 			model,
-			modelDefinition
+			modelDefinition,
 		);
 
 		const isDelete = model._deleted;
@@ -53,7 +53,7 @@ class ModelMerger {
 		storage: Storage,
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[],
-		modelDefinition: SchemaModel
+		modelDefinition: SchemaModel,
 	): Promise<[ModelInstanceMetadata, OpType][]> {
 		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
 

@@ -6,7 +6,7 @@ import { AuthSession, FetchAuthSessionOptions } from '../../Auth/types';
 
 export const fetchAuthSession = (
 	amplify: AmplifyClass,
-	options?: FetchAuthSessionOptions
+	options?: FetchAuthSessionOptions,
 ): Promise<AuthSession> => {
 	return amplify.Auth.fetchAuthSession(options);
 };

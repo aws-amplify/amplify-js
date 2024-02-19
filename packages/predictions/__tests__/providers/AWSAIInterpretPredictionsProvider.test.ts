@@ -245,7 +245,7 @@ describe('Predictions interpret provider test', () => {
 						},
 						type: 'entities',
 					},
-				})
+				}),
 			).resolves.toMatchObject({
 				textInterpretation: {
 					textEntities: [{ text: 'William', type: 'PERSON' }],
@@ -264,7 +264,7 @@ describe('Predictions interpret provider test', () => {
 			const predictionsProvider = new AmazonAIInterpretPredictionsProvider();
 			const dominantLanguageSpy = jest.spyOn(
 				ComprehendClient.prototype,
-				'send'
+				'send',
 			);
 
 			expect.assertions(2);
@@ -277,7 +277,7 @@ describe('Predictions interpret provider test', () => {
 						},
 						type: 'language',
 					},
-				})
+				}),
 			).resolves.toMatchObject({
 				textInterpretation: {
 					language: 'en-US',
@@ -306,7 +306,7 @@ describe('Predictions interpret provider test', () => {
 						},
 						type: 'sentiment',
 					},
-				})
+				}),
 			).resolves.toMatchObject({
 				textInterpretation: {
 					sentiment: {
@@ -342,7 +342,7 @@ describe('Predictions interpret provider test', () => {
 						},
 						type: 'syntax',
 					},
-				})
+				}),
 			).resolves.toMatchObject({
 				textInterpretation: {
 					syntax: [
@@ -388,7 +388,7 @@ describe('Predictions interpret provider test', () => {
 						},
 						type: 'keyPhrases',
 					},
-				})
+				}),
 			).resolves.toMatchObject({
 				textInterpretation: {
 					keyPhrases: [
@@ -417,7 +417,7 @@ describe('Predictions interpret provider test', () => {
 						},
 						type: 'all',
 					},
-				})
+				}),
 			).resolves.toMatchObject({
 				textInterpretation: {
 					keyPhrases: [
@@ -459,7 +459,7 @@ describe('Predictions interpret provider test', () => {
 			const sentimentSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 			const dominantLanguageSpy = jest.spyOn(
 				ComprehendClient.prototype,
-				'send'
+				'send',
 			);
 			const detectEntitiesSpy = jest.spyOn(ComprehendClient.prototype, 'send');
 
@@ -496,12 +496,12 @@ describe('Predictions interpret provider test', () => {
 			// comprehendClient is a private property
 			// Used this strategy to easily check that the customUserAgent is set correctly on the client
 			expect(
-				(predictionsProvider as any).comprehendClient.config.customUserAgent
+				(predictionsProvider as any).comprehendClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Interpret,
-				})
+				}),
 			);
 		});
 	});

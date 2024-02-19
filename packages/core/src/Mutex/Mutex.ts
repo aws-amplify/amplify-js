@@ -33,7 +33,7 @@ export class Mutex implements MutexInterface {
 
 	acquire(): Promise<MutexInterface.Releaser> {
 		const ticket = new Promise<MutexInterface.Releaser>(resolve =>
-			this._queue.push(resolve)
+			this._queue.push(resolve),
 		);
 
 		if (!this._pending) {
@@ -55,11 +55,15 @@ export class Mutex implements MutexInterface {
 			}
 
 			return Promise.resolve(result).then(
-				(x: T) => (release(), x),
+				(x: T) => {
+					release();
+
+					return x;
+				},
 				e => {
 					release();
 					throw e;
-				}
+				},
 			);
 		});
 	}
@@ -73,6 +77,6 @@ export class Mutex implements MutexInterface {
 		}
 	}
 
-	private _queue: Array<(release: MutexInterface.Releaser) => void> = [];
+	private _queue: ((release: MutexInterface.Releaser) => void)[] = [];
 	private _pending = false;
 }

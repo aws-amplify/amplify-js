@@ -22,7 +22,7 @@ import { OnMessageReceivedOutput } from '../types/outputs';
  * ```
  */
 export function onMessageReceived(
-	input: OnMessageReceivedInput
+	input: OnMessageReceivedInput,
 ): OnMessageReceivedOutput {
 	assertIsInitialized();
 	return addEventListener('messageReceived', input);

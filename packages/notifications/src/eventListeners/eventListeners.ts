@@ -22,12 +22,12 @@ export const notifyEventListenersAndAwaitHandlers = (
 			} catch (err) {
 				throw err;
 			}
-		})
+		}),
 	);
 
 export const addEventListener = <EventHandler extends Function>(
 	type: EventType,
-	handler: EventHandler
+	handler: EventHandler,
 ): EventListenerRemover => {
 	// If there is no listener set for the event type, just create it
 	if (!eventListeners[type]) {

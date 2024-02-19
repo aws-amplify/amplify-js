@@ -1,9 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Amplify } from '@aws-amplify/core';
 
 import { post as internalPost } from '../apis/common/internalPost';
-import { InternalPostInput } from '../types';
 
 /**
  * Internal-only REST POST handler to send GraphQL request to given endpoint. By default, it will use IAM to authorize
@@ -21,9 +19,7 @@ import { InternalPostInput } from '../types';
  *
  * @internal
  */
-export const post = (input: InternalPostInput) => {
-	return internalPost(Amplify, input);
-};
+export const post = internalPost;
 
 export {
 	cancel,

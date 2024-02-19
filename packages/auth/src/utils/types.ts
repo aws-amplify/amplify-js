@@ -4,7 +4,7 @@
 export type OpenAuthSession = (
 	url: string,
 	redirectUrls: string[],
-	preferPrivateSession?: boolean
+	preferPrivateSession?: boolean,
 ) => Promise<OpenAuthSessionResult | void>;
 
 type OpenAuthSessionResultType = 'canceled' | 'success' | 'error';
@@ -19,6 +19,6 @@ export type AmplifyWebBrowser = {
 	openAuthSessionAsync: (
 		url: string,
 		redirectUrls: string[],
-		prefersEphemeralSession?: boolean
+		prefersEphemeralSession?: boolean,
 	) => Promise<string | null>;
 };

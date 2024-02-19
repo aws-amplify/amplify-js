@@ -68,9 +68,9 @@ describe('serverContext', () => {
 
 		it('should throw an error if the context is not found', () => {
 			expect(() =>
-				getAmplifyServerContext({ token: { value: Symbol('test') } })
+				getAmplifyServerContext({ token: { value: Symbol('test') } }),
 			).toThrow(
-				'Attempted to get the Amplify Server Context that may have been destroyed.'
+				'Attempted to get the Amplify Server Context that may have been destroyed.',
 			);
 		});
 	});
@@ -87,7 +87,7 @@ describe('serverContext', () => {
 			destroyAmplifyServerContext(contextSpec);
 
 			expect(() => getAmplifyServerContext(contextSpec)).toThrow(
-				'Attempted to get the Amplify Server Context that may have been destroyed.'
+				'Attempted to get the Amplify Server Context that may have been destroyed.',
 			);
 		});
 	});
@@ -100,7 +100,7 @@ describe('serverContext', () => {
 				{ token: { value: 'bad-value' } },
 			].forEach(invalidContextSpec => {
 				expect(() =>
-					getAmplifyServerContext(invalidContextSpec as any)
+					getAmplifyServerContext(invalidContextSpec as any),
 				).toThrowError('Invalid `contextSpec`.');
 			});
 		});

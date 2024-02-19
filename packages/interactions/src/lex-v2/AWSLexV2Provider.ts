@@ -66,7 +66,7 @@ class AWSLexV2Provider {
 	 */
 	public async sendMessage(
 		botConfig: AWSLexV2ProviderOption,
-		message: string | InteractionsMessage
+		message: string | InteractionsMessage,
 	): Promise<InteractionsResponse> {
 		// check if credentials are present
 		let session;
@@ -98,14 +98,14 @@ class AWSLexV2Provider {
 				botConfig,
 				message,
 				reqBaseParams,
-				client
+				client,
 			);
 		} else {
 			response = await this._handleRecognizeUtteranceCommand(
 				botConfig,
 				message,
 				reqBaseParams,
-				client
+				client,
 			);
 		}
 		return response;
@@ -119,7 +119,7 @@ class AWSLexV2Provider {
 	 */
 	public onComplete(
 		{ name }: AWSLexV2ProviderOption,
-		callback: InteractionsOnCompleteCallback
+		callback: InteractionsOnCompleteCallback,
 	) {
 		this._botsCompleteCallback[name] = callback;
 	}
@@ -129,7 +129,7 @@ class AWSLexV2Provider {
 	 */
 	_reportBotStatus(
 		data: AWSLexV2ProviderSendResponse,
-		{ name }: AWSLexV2ProviderOption
+		{ name }: AWSLexV2ProviderOption,
 	) {
 		const sessionState = data?.sessionState;
 
@@ -159,7 +159,7 @@ class AWSLexV2Provider {
 	 * update audioStream format
 	 */
 	private async _formatUtteranceCommandOutput(
-		data: RecognizeUtteranceCommandOutput
+		data: RecognizeUtteranceCommandOutput,
 	): Promise<RecognizeUtteranceCommandOutputFormatted> {
 		return {
 			...data,
@@ -182,7 +182,7 @@ class AWSLexV2Provider {
 		botConfig: AWSLexV2ProviderOption,
 		data: string,
 		baseParams: lexV2BaseReqParams,
-		client: LexRuntimeV2Client
+		client: LexRuntimeV2Client,
 	) {
 		logger.debug('postText to lex2', data);
 
@@ -210,7 +210,7 @@ class AWSLexV2Provider {
 		botConfig: AWSLexV2ProviderOption,
 		data: InteractionsMessage,
 		baseParams: lexV2BaseReqParams,
-		client: LexRuntimeV2Client
+		client: LexRuntimeV2Client,
 	) {
 		const {
 			content,

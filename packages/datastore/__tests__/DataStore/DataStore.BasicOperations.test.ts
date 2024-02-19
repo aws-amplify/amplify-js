@@ -322,7 +322,7 @@ describe('Basic operations', () => {
 					dateCreated: new Date().toISOString(),
 				});
 			}).toThrow(
-				'Field field1 should be of type string, number received. 1234'
+				'Field field1 should be of type string, number received. 1234',
 			);
 		});
 
@@ -333,7 +333,7 @@ describe('Basic operations', () => {
 					dateCreated: 'not-a-date',
 				});
 			}).toThrow(
-				'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
+				'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date',
 			);
 		});
 
@@ -350,7 +350,7 @@ describe('Basic operations', () => {
 						penNames: [],
 						nominations: [],
 					}),
-				}).metadata.tags
+				}).metadata.tags,
 			).toBeUndefined();
 		});
 
@@ -368,7 +368,7 @@ describe('Basic operations', () => {
 					}),
 				});
 			}).toThrow(
-				'All elements in the rewards array should be of type string, [null] received. '
+				'All elements in the rewards array should be of type string, [null] received. ',
 			);
 		});
 
@@ -387,7 +387,7 @@ describe('Basic operations', () => {
 					},
 				});
 			}).toThrow(
-				'All elements in the rewards array should be of type string, [null] received. '
+				'All elements in the rewards array should be of type string, [null] received. ',
 			);
 		});
 
@@ -443,7 +443,7 @@ describe('Basic operations', () => {
 			});
 			const copied = Model.copyOf(
 				original,
-				d => (d.optionalField1 = undefined)
+				d => (d.optionalField1 = undefined),
 			);
 			expect(copied.optionalField1).toBe(null);
 		});
@@ -456,7 +456,7 @@ describe('Basic operations', () => {
 					emails: [null!],
 				});
 			}).toThrow(
-				'All elements in the emails array should be of type string, [null] received. '
+				'All elements in the emails array should be of type string, [null] received. ',
 			);
 		});
 
@@ -488,7 +488,7 @@ describe('Basic operations', () => {
 					ips: ['not.an.ip'],
 				});
 			}).toThrow(
-				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`
+				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`,
 			);
 		});
 
@@ -500,7 +500,7 @@ describe('Basic operations', () => {
 					ips: ['1.1.1.1', 'not.an.ip'],
 				});
 			}).toThrow(
-				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`
+				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`,
 			);
 		});
 
@@ -533,7 +533,7 @@ describe('Basic operations', () => {
 					emails: ['not-an-email'],
 				});
 			}).toThrow(
-				'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
+				'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email',
 			);
 		});
 
@@ -583,7 +583,7 @@ describe('Basic operations', () => {
 					}),
 				});
 			}).toThrow(
-				'All elements in the penNames array should be of type string, [undefined] received. '
+				'All elements in the penNames array should be of type string, [undefined] received. ',
 			);
 		});
 
@@ -602,7 +602,7 @@ describe('Basic operations', () => {
 					},
 				});
 			}).toThrow(
-				'All elements in the penNames array should be of type string, [undefined] received. '
+				'All elements in the penNames array should be of type string, [undefined] received. ',
 			);
 		});
 
@@ -620,7 +620,7 @@ describe('Basic operations', () => {
 					}),
 				});
 			}).toThrow(
-				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234',
 			);
 		});
 
@@ -639,7 +639,7 @@ describe('Basic operations', () => {
 					},
 				});
 			}).toThrow(
-				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
+				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234',
 			);
 		});
 
@@ -785,7 +785,7 @@ describe('Basic operations', () => {
 					}),
 				});
 			}).toThrow(
-				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123',
 			);
 		});
 
@@ -803,13 +803,13 @@ describe('Basic operations', () => {
 					},
 				});
 			}).toThrow(
-				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123',
 			);
 		});
 
 		test('allow extra attribute', () => {
 			expect(
-				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
+				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' }),
 			).toHaveProperty('extraAttribute');
 		});
 
@@ -827,7 +827,7 @@ describe('Basic operations', () => {
 				});
 				Model.copyOf(source, d => (d.field1 = <any>1234));
 			}).toThrow(
-				'Field field1 should be of type string, number received. 1234'
+				'Field field1 should be of type string, number received. 1234',
 			);
 		});
 
@@ -840,7 +840,7 @@ describe('Basic operations', () => {
 					metadata: 'invalid',
 				});
 			}).toThrow(
-				'Field metadata should be of type Metadata, string recieved. invalid'
+				'Field metadata should be of type Metadata, string recieved. invalid',
 			);
 		});
 
@@ -852,7 +852,7 @@ describe('Basic operations', () => {
 					metadata: null,
 				});
 			}).not.toThrow(
-				'Field metadata should be of type Metadata, string recieved. invalid'
+				'Field metadata should be of type Metadata, string recieved. invalid',
 			);
 		});
 
@@ -882,7 +882,7 @@ describe('Basic operations', () => {
 					logins: ['bad type', 'another bad type'],
 				});
 			}).toThrow(
-				'All elements in the logins array should be of type Login, [string] received. bad type'
+				'All elements in the logins array should be of type Login, [string] received. bad type',
 			);
 		});
 
@@ -916,7 +916,7 @@ describe('Basic operations', () => {
 					logins: 'my login',
 				});
 			}).toThrow(
-				'Field logins should be of type [Login | null | undefined], string received. my login'
+				'Field logins should be of type [Login | null | undefined], string received. my login',
 			);
 		});
 
@@ -933,19 +933,19 @@ describe('Basic operations', () => {
 
 	test('Delete params', async () => {
 		await expect(DataStore.delete(<any>undefined)).rejects.toThrow(
-			'Model or Model Constructor required'
+			'Model or Model Constructor required',
 		);
 
 		await expect(DataStore.delete(<any>Model)).rejects.toThrow(
-			'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL'
+			'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL',
 		);
 
 		await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
-			"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`."
+			"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`.",
 		);
 
 		await expect(DataStore.delete(<any>{})).rejects.toThrow(
-			'Object is not an instance of a valid model'
+			'Object is not an instance of a valid model',
 		);
 
 		await expect(
@@ -954,8 +954,8 @@ describe('Basic operations', () => {
 					field1: 'somevalue',
 					dateCreated: new Date().toISOString(),
 				}),
-				<any>{}
-			)
+				<any>{},
+			),
 		).rejects.toThrow('Invalid criteria');
 	});
 
@@ -1007,12 +1007,12 @@ describe('Basic operations', () => {
 						nominations: [],
 						misc: [null, 'ok'],
 					}),
-				})
+				}),
 			);
 		}
 
 		const deleted = await DataStore.delete(Model, m =>
-			m.field1.eq('someField')
+			m.field1.eq('someField'),
 		);
 
 		expect(deleted.length).toEqual(10);
@@ -1065,7 +1065,7 @@ describe('Basic operations', () => {
 					nominations: [],
 					misc: [null, 'ok'],
 				}),
-			})
+			}),
 		);
 
 		const deleted: Model[] = await DataStore.delete(Model, saved.id);
@@ -1076,34 +1076,34 @@ describe('Basic operations', () => {
 
 	test('Query params', async () => {
 		await expect(DataStore.query(<any>undefined)).rejects.toThrow(
-			'Constructor is not for a valid model'
+			'Constructor is not for a valid model',
 		);
 
 		await expect(DataStore.query(<any>undefined)).rejects.toThrow(
-			'Constructor is not for a valid model'
+			'Constructor is not for a valid model',
 		);
 
 		await expect(
-			DataStore.query(Model, <any>'someid', { page: 0 })
+			DataStore.query(Model, <any>'someid', { page: 0 }),
 		).rejects.toThrow('Limit is required when requesting a page');
 
 		await expect(
-			DataStore.query(Model, <any>'someid', { page: <any>'a', limit: 10 })
+			DataStore.query(Model, <any>'someid', { page: <any>'a', limit: 10 }),
 		).rejects.toThrow('Page should be a number');
 
 		await expect(
-			DataStore.query(Model, <any>'someid', { page: -1, limit: 10 })
+			DataStore.query(Model, <any>'someid', { page: -1, limit: 10 }),
 		).rejects.toThrow("Page can't be negative");
 
 		await expect(
 			DataStore.query(Model, <any>'someid', {
 				page: 0,
 				limit: <any>'avalue',
-			})
+			}),
 		).rejects.toThrow('Limit should be a number');
 
 		await expect(
-			DataStore.query(Model, <any>'someid', { page: 0, limit: -1 })
+			DataStore.query(Model, <any>'someid', { page: 0, limit: -1 }),
 		).rejects.toThrow("Limit can't be negative");
 	});
 });

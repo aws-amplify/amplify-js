@@ -26,7 +26,7 @@ import { InternalPostInput } from '../types';
  */
 export const post = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: InternalPostInput
+	input: InternalPostInput,
 ) => {
 	return internalPost(getAmplifyServerContext(contextSpec).amplify, input);
 };

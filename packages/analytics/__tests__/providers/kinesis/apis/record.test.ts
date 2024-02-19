@@ -35,7 +35,7 @@ describe('Analytics Kinesis API: record', () => {
 		mockIsAnalyticsEnabled.mockReturnValue(true);
 		mockResolveConfig.mockReturnValue(mockKinesisConfig);
 		mockResolveCredentials.mockReturnValue(
-			Promise.resolve(mockCredentialConfig)
+			Promise.resolve(mockCredentialConfig),
 		);
 		mockGetEventBuffer.mockImplementation(() => ({
 			append: mockAppend,
@@ -61,7 +61,7 @@ describe('Analytics Kinesis API: record', () => {
 				partitionKey: mockRecordInput.partitionKey,
 				event: mockRecordInput.data,
 				retryCount: 0,
-			})
+			}),
 		);
 	});
 
@@ -73,7 +73,7 @@ describe('Analytics Kinesis API: record', () => {
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),
-			expect.any(Error)
+			expect.any(Error),
 		);
 	});
 

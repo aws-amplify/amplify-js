@@ -1,5 +1,5 @@
 import * as raw from '../../../src';
-import { Amplify, ResourcesConfig } from '@aws-amplify/core';
+import { Amplify, AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import { generateClientWithAmplifyInstance } from '../../../src/internals/server';
 import configFixture from '../../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../../fixtures/modeled/schema';
@@ -97,6 +97,7 @@ describe('server generateClient', () => {
 			});
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
@@ -104,7 +105,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
 							),
 							variables: {
 								filter: {
@@ -115,10 +116,11 @@ describe('server generateClient', () => {
 							},
 						},
 					}),
-				})
+				}),
 			);
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -126,7 +128,7 @@ describe('server generateClient', () => {
 							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
-				})
+				}),
 			);
 
 			expect(data.length).toBe(1);
@@ -137,7 +139,7 @@ describe('server generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -176,6 +178,7 @@ describe('server generateClient', () => {
 			});
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
@@ -183,7 +186,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
 							),
 							variables: {
 								filter: {
@@ -195,10 +198,11 @@ describe('server generateClient', () => {
 							},
 						},
 					}),
-				})
+				}),
 			);
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -206,7 +210,7 @@ describe('server generateClient', () => {
 							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
-				})
+				}),
 			);
 		});
 
@@ -245,6 +249,7 @@ describe('server generateClient', () => {
 			});
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
@@ -252,7 +257,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
 							),
 							variables: {
 								filter: {
@@ -264,10 +269,11 @@ describe('server generateClient', () => {
 							},
 						},
 					}),
-				})
+				}),
 			);
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -275,7 +281,7 @@ describe('server generateClient', () => {
 							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
-				})
+				}),
 			);
 		});
 	});
@@ -321,7 +327,7 @@ describe('server generateClient', () => {
 				expect.objectContaining({
 					query: expect.stringContaining('listNotes'),
 				}),
-				{}
+				{},
 			);
 		});
 	});

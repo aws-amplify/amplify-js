@@ -1,11 +1,7 @@
 /** @type {import('jest').Config} */
 module.exports = {
 	workerIdleMemoryLimit: '512MB',
-	coveragePathIgnorePatterns: [
-		'/node_modules/',
-		'dist',
-		'__tests__',
-	],
+	coveragePathIgnorePatterns: ['/node_modules/', 'dist', '__tests__'],
 	setupFiles: ['../../jest.setup.js'],
 	testEnvironment: 'jsdom',
 	testRegex: '/__tests__/.*\\.(test|spec)\\.[jt]sx?$',

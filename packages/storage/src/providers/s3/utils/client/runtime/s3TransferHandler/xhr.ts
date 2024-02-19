@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	retryMiddleware,
-	RetryOptions,
-	signingMiddleware,
-	SigningOptions,
-	userAgentMiddleware,
-	UserAgentOptions,
 	HttpRequest,
 	HttpResponse,
+	RetryOptions,
+	SigningOptions,
+	UserAgentOptions,
+	retryMiddlewareFactory,
+	signingMiddlewareFactory,
+	userAgentMiddlewareFactory,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { contentSha256Middleware } from '../contentSha256middleware';
+import { contentSha256MiddlewareFactory } from '../contentSha256middleware';
 import { xhrTransferHandler } from '../xhrTransferHandler';
 
 /**
@@ -23,13 +23,13 @@ import { xhrTransferHandler } from '../xhrTransferHandler';
  * @internal
  */
 export const s3TransferHandler = composeTransferHandler<
-	[{}, UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
+	[object, UserAgentOptions, RetryOptions<HttpResponse>, SigningOptions],
 	HttpRequest,
 	HttpResponse,
 	typeof xhrTransferHandler
 >(xhrTransferHandler, [
-	contentSha256Middleware,
-	userAgentMiddleware,
-	retryMiddleware,
-	signingMiddleware,
+	contentSha256MiddlewareFactory,
+	userAgentMiddlewareFactory,
+	retryMiddlewareFactory,
+	signingMiddlewareFactory,
 ]);
