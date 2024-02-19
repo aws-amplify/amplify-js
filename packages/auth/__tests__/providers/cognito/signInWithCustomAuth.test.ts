@@ -40,7 +40,7 @@ describe('signIn API happy path cases', () => {
 			.spyOn(initiateAuthHelpers, 'handleCustomAuthFlowWithoutSRP')
 			.mockImplementationOnce(
 				async (): Promise<InitiateAuthCommandOutput> =>
-					authAPITestParams.CustomChallengeResponse
+					authAPITestParams.CustomChallengeResponse,
 			);
 	});
 
@@ -77,7 +77,7 @@ describe('signIn API happy path cases', () => {
 			username,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 	});
 });
@@ -100,7 +100,7 @@ describe('Cognito ASF', () => {
 						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
 						CODE_DELIVERY_DESTINATION: '*******9878',
 					},
-				})
+				}),
 			);
 		// load Cognito ASF polyfill
 		window['AmazonCognitoAdvancedSecurityData'] = {
@@ -132,7 +132,7 @@ describe('Cognito ASF', () => {
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
 				ClientMetadata: undefined,
 				UserContextData: { EncodedData: 'abcd' },
-			}
+			},
 		);
 	});
 });

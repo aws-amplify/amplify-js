@@ -8,7 +8,7 @@ export interface Base64EncoderConvertOptions {
 export interface Base64Encoder {
 	convert(
 		input: Uint8Array | string,
-		options?: Base64EncoderConvertOptions
+		options?: Base64EncoderConvertOptions,
 	): string;
 }
 

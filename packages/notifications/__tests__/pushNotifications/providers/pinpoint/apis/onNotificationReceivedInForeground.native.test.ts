@@ -31,7 +31,7 @@ describe('onNotificationReceivedInForeground (native)', () => {
 		onNotificationReceivedInForeground(mockHandler);
 		expect(mockAddEventListener).toHaveBeenCalledWith(
 			'foregroundMessageReceived',
-			mockHandler
+			mockHandler,
 		);
 	});
 });

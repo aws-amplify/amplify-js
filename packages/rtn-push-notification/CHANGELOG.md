@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.2.17 (2024-02-19)
+
+### Reverts
+
+- Revert "chore(release): Publish" (#13027) ([f6f4f42](https://github.com/aws-amplify/amplify-js/commit/f6f4f42befa04ed3c1502fa0adf17c6700abfddf)), closes [#13027](https://github.com/aws-amplify/amplify-js/issues/13027)
+
+## 1.2.16 (2024-02-09)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.15 (2024-02-06)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.14 (2024-02-01)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
 ## 1.2.13 (2024-01-22)
 
 **Note:** Version bump only for package @aws-amplify/rtn-push-notification

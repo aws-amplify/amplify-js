@@ -70,6 +70,17 @@ const schema = a.schema({
 	CommunityPollVote: a
 		.model({ id: a.id().required() })
 		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	SecondaryIndexModel: a
+		.model({
+			title: a.string(),
+			description: a.string(),
+			viewCount: a.integer(),
+			status: a.enum(['draft', 'pending', 'published']),
+		})
+		.secondaryIndexes([
+			a.index('title'),
+			a.index('description').sortKeys(['viewCount']),
+		]),
 
 	// custom queries and mutations
 	EchoResult: a.customType({

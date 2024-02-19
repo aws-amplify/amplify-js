@@ -15,12 +15,13 @@ import { toHex } from '@smithy/util-hex-encoding';
  */
 export const getHashedData = (
 	key: SourceData | null,
-	data: SourceData
+	data: SourceData,
 ): Uint8Array => {
 	const sha256 = new Sha256(key ?? undefined);
 	sha256.update(data);
 	// TODO: V6 flip to async digest
 	const hashedData = sha256.digestSync();
+
 	return hashedData;
 };
 
@@ -35,8 +36,9 @@ export const getHashedData = (
  */
 export const getHashedDataAsHex = (
 	key: SourceData | null,
-	data: SourceData
+	data: SourceData,
 ): string => {
 	const hashedData = getHashedData(key, data);
+
 	return toHex(hashedData);
 };

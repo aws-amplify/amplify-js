@@ -34,7 +34,7 @@ export async function deleteUser(): Promise<void> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 	await tokenOrchestrator.clearDeviceMetadata();
 	await signOut();

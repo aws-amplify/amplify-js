@@ -389,6 +389,7 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	models: ModelTypes<T>;
 	queries: CustomQueries<T>;
 	mutations: CustomMutations<T>;
+	enums: EnumTypes<T>;
 }>;
 
 export type V6ClientSSRRequest<T extends Record<any, any> = never> =

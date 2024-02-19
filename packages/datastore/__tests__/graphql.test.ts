@@ -133,14 +133,14 @@ describe('DataStore GraphQL generation', () => {
 			const [[, , query]] = buildGraphQLOperation(
 				namespace,
 				postModelDefinition,
-				<any>graphQLOpType
+				<any>graphQLOpType,
 			);
 
 			// why does it think `expectedGraphQL` is `string[] | undefined`?
 			expect(print(parse(query))).toStrictEqual(
-				print(parse(expectedGraphQL as any))
+				print(parse(expectedGraphQL as any)),
 			);
-		}
+		},
 	);
 
 	test.each([
@@ -188,11 +188,11 @@ describe('DataStore GraphQL generation', () => {
 				postModelDefinition,
 				<any>transformerMutationType,
 				false,
-				''
+				'',
 			);
 
 			expect(print(parse(query))).toStrictEqual(print(parse(expectedGraphQL)));
-		}
+		},
 	);
 });
 

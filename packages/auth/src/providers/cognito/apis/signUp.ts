@@ -46,11 +46,11 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignUpUsername
+		AuthValidationErrorCode.EmptySignUpUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignUpPassword
+		AuthValidationErrorCode.EmptySignUpPassword,
 	);
 
 	const signInServiceOptions =
@@ -82,7 +82,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			ClientMetadata: clientMetadata,
 			ValidationData: validationData && toAttributeType(validationData),
 			ClientId: authConfig.userPoolClientId,
-		}
+		},
 	);
 	const { UserSub, CodeDeliveryDetails } = clientOutput;
 

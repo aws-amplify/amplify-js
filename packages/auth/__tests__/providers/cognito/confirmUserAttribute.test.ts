@@ -21,7 +21,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('confirmUserAttribute', () => {
@@ -58,7 +58,7 @@ describe('confirmUserAttribute', () => {
 				AccessToken: mockAccessToken,
 				AttributeName: 'email',
 				Code: confirmationCode,
-			})
+			}),
 		);
 	});
 
@@ -71,7 +71,7 @@ describe('confirmUserAttribute', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				AuthValidationErrorCode.EmptyConfirmUserAttributeCode
+				AuthValidationErrorCode.EmptyConfirmUserAttributeCode,
 			);
 		}
 	});
@@ -80,7 +80,7 @@ describe('confirmUserAttribute', () => {
 		expect.assertions(2);
 		mockVerifyUserAttribute.mockImplementation(() => {
 			throw getMockError(
-				VerifyUserAttributeException.InvalidParameterException
+				VerifyUserAttributeException.InvalidParameterException,
 			);
 		});
 		try {
@@ -91,7 +91,7 @@ describe('confirmUserAttribute', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				VerifyUserAttributeException.InvalidParameterException
+				VerifyUserAttributeException.InvalidParameterException,
 			);
 		}
 	});

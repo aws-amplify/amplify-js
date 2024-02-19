@@ -11,7 +11,7 @@ export async function cacheCognitoTokens(
 		NewDeviceMetadata?: DeviceMetadata;
 		username: string;
 		signInDetails?: CognitoAuthSignInDetails;
-	}
+	},
 ): Promise<void> {
 	if (AuthenticationResult.AccessToken) {
 		const accessToken = decodeJWT(AuthenticationResult.AccessToken);

@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { InputLogEvent, Logger, LoggingProvider, LogType } from './types';
 import { AWS_CLOUDWATCH_CATEGORY } from '../constants';
+
+import { InputLogEvent, LogType, Logger, LoggingProvider } from './types';
 
 const LOG_LEVELS: Record<string, number> = {
 	VERBOSE: 1,
@@ -10,6 +11,7 @@ const LOG_LEVELS: Record<string, number> = {
 	INFO: 3,
 	WARN: 4,
 	ERROR: 5,
+	NONE: 6,
 };
 
 /**
@@ -40,9 +42,10 @@ export class ConsoleLogger implements Logger {
 
 	_ts() {
 		const dt = new Date();
+
 		return (
 			[this._padding(dt.getMinutes()), this._padding(dt.getSeconds())].join(
-				':'
+				':',
 			) +
 			'.' +
 			dt.getMilliseconds()
@@ -65,16 +68,16 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	_log(type: LogType | string, ...msg: any) {
-		let logger_level_name = this.level;
+		let loggerLevelName = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
-			logger_level_name = ConsoleLogger.LOG_LEVEL;
+			loggerLevelName = ConsoleLogger.LOG_LEVEL;
 		}
-		if (typeof (<any>window) !== 'undefined' && (<any>window).LOG_LEVEL) {
-			logger_level_name = (<any>window).LOG_LEVEL;
+		if (typeof (window as any) !== 'undefined' && (window as any).LOG_LEVEL) {
+			loggerLevelName = (window as any).LOG_LEVEL;
 		}
-		const logger_level = LOG_LEVELS[logger_level_name];
-		const type_level = LOG_LEVELS[type];
-		if (!(type_level >= logger_level)) {
+		const loggerLevel = LOG_LEVELS[loggerLevelName];
+		const typeLevel = LOG_LEVELS[type];
+		if (!(typeLevel >= loggerLevel)) {
 			// Do nothing if type is not greater than or equal to logger level (handle undefined)
 			return;
 		}

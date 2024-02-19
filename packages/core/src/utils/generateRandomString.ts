@@ -8,7 +8,7 @@ export const generateRandomString = (length: number) => {
 
 	for (let i = 0; i < length; i++) {
 		result += STATE_CHARSET.charAt(
-			Math.floor(Math.random() * STATE_CHARSET.length)
+			Math.floor(Math.random() * STATE_CHARSET.length),
 		);
 	}
 

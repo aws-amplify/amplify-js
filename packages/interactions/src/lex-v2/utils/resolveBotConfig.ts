@@ -5,7 +5,7 @@ import { AWSLexV2ProviderOption } from '../types';
 import { Amplify } from '@aws-amplify/core';
 
 export const resolveBotConfig = (
-	botName: string
+	botName: string,
 ): AWSLexV2ProviderOption | undefined => {
 	const { [botName]: botConfig = undefined } =
 		Amplify.getConfig().Interactions?.LexV2 ?? {};

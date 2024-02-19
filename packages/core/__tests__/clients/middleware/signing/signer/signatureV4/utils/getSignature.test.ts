@@ -23,7 +23,7 @@ describe('getSignature', () => {
 			signingService,
 		};
 		expect(getSignature(getDefaultRequest(), signingValues)).toStrictEqual(
-			'145191af25230efbe34c7eb79d9d3ce881f7a945d02d0361719107147d0086b3'
+			'145191af25230efbe34c7eb79d9d3ce881f7a945d02d0361719107147d0086b3',
 		);
 	});
 });

@@ -4,9 +4,9 @@
 import {
 	Middleware,
 	MiddlewareHandler,
-	TransferHandler,
 	Request as RequestBase,
 	Response as ResponseBase,
+	TransferHandler,
 } from '../types';
 
 /**
@@ -26,26 +26,27 @@ export const composeTransferHandler =
 			Request,
 			Response,
 			any
-		> = TransferHandler<Request, Response, {}>,
+		> = TransferHandler<Request, Response, Record<string, unknown>>,
 	>(
 		coreHandler: CoreHandler,
-		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>
+		middleware: OptionToMiddleware<Request, Response, MiddlewareOptionsArr>,
 	) =>
 	(
 		request: Request,
 		options: MergeNoConflictKeys<
 			[...MiddlewareOptionsArr, InferOptionTypeFromTransferHandler<CoreHandler>]
-		>
+		>,
 	) => {
 		const context = {};
 		let composedHandler: MiddlewareHandler<Request, Response> = (
-			request: Request
-		) => coreHandler(request, options);
+			composeHandlerRequest: Request,
+		) => coreHandler(composeHandlerRequest, options);
 		for (let i = middleware.length - 1; i >= 0; i--) {
 			const m = middleware[i];
 			const resolvedMiddleware = m(options);
 			composedHandler = resolvedMiddleware(composedHandler, context);
 		}
+
 		return composedHandler(request);
 	};
 
@@ -60,13 +61,13 @@ type OptionToMiddleware<
 > = Options extends []
 	? []
 	: Options extends [infer LastOption]
-	  ? [Middleware<Request, Response, LastOption>]
-	  : Options extends [infer FirstOption, ...infer RestOptions]
-	    ? [
+		? [Middleware<Request, Response, LastOption>]
+		: Options extends [infer FirstOption, ...infer RestOptions]
+			? [
 					Middleware<Request, Response, FirstOption>,
 					...OptionToMiddleware<Request, Response, RestOptions>,
-	      ]
-	    : never;
+				]
+			: never;
 
 /**
  * Type to intersect multiple types if they have no conflict keys.
@@ -76,10 +77,10 @@ type MergeNoConflictKeys<Options extends any[]> = Options extends [
 ]
 	? OnlyOption
 	: Options extends [infer FirstOption, infer SecondOption]
-	  ? FirstOption & SecondOption
-	  : Options extends [infer FirstOption, ...infer RestOptions]
-	    ? FirstOption & MergeNoConflictKeys<RestOptions>
-	    : never;
+		? FirstOption & SecondOption
+		: Options extends [infer FirstOption, ...infer RestOptions]
+			? FirstOption & MergeNoConflictKeys<RestOptions>
+			: never;
 
 /**
  * Type to infer the option type of a transfer handler type.

@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	AmplifyServer,
 	createAmplifyServerContext,
 	destroyAmplifyServerContext,
-	AmplifyServer,
 } from '@aws-amplify/core/internals/adapter-core';
 
 /**
@@ -22,7 +22,7 @@ export const runWithAmplifyServerContext: AmplifyServer.RunOperationWithContext 
 	async (amplifyConfig, libraryOptions, operation) => {
 		const contextSpec = createAmplifyServerContext(
 			amplifyConfig,
-			libraryOptions
+			libraryOptions,
 		);
 
 		// run the operation with injecting the context

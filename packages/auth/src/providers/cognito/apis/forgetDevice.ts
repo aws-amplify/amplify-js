@@ -42,7 +42,7 @@ export async function forgetDevice(input?: ForgetDeviceInput): Promise<void> {
 		{
 			AccessToken: tokens.accessToken.toString(),
 			DeviceKey: externalDeviceKey ?? currentDeviceKey,
-		}
+		},
 	);
 
 	if (!externalDeviceKey || externalDeviceKey === currentDeviceKey)

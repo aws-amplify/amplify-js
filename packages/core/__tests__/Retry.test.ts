@@ -30,7 +30,7 @@ describe('retry', () => {
 		}
 
 		await expect(retry(throwsNonRetryableError, [], () => 1)).rejects.toThrow(
-			'bwahahahahaha'
+			'bwahahahahaha',
 		);
 	});
 
@@ -87,7 +87,7 @@ describe('retry', () => {
 		}
 
 		await expect(retry(alwaysFails, [], retryThreeTimes)).rejects.toThrow(
-			'not today'
+			'not today',
 		);
 		expect(count).toEqual(3);
 	});
@@ -158,7 +158,7 @@ describe('jitteredExponentialRetry', () => {
 
 		const returnValue = await jitteredExponentialRetry(
 			succeedAfterThirdTry,
-			[]
+			[],
 		);
 
 		expect(returnValue).toEqual('abc');
@@ -171,7 +171,7 @@ describe('jitteredExponentialRetry', () => {
 		}
 
 		await expect(
-			jitteredExponentialRetry(throwsNonRetryableError, [])
+			jitteredExponentialRetry(throwsNonRetryableError, []),
 		).rejects.toThrow('bwahahahahaha');
 	});
 
@@ -202,7 +202,7 @@ describe('jitteredExponentialRetry', () => {
 
 		manager
 			.add(async onTerminate =>
-				jitteredExponentialRetry(suchAFailure, [], undefined, onTerminate)
+				jitteredExponentialRetry(suchAFailure, [], undefined, onTerminate),
 			)
 			.catch(e => (error = e));
 

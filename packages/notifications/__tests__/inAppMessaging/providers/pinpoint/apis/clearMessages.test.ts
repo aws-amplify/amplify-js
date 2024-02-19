@@ -26,7 +26,7 @@ describe('clearMessages', () => {
 	});
 	it('Rejects if there is a validation error', async () => {
 		await expect(clearMessages()).rejects.toStrictEqual(
-			expect.any(InAppMessagingError)
+			expect.any(InAppMessagingError),
 		);
 		expect(mockDefaultStorage.removeItem).not.toHaveBeenCalled();
 	});
@@ -37,10 +37,10 @@ describe('clearMessages', () => {
 			new InAppMessagingError({
 				name: 'ItemCorrupted',
 				message: 'Item corrupted',
-			})
+			}),
 		);
 		await expect(clearMessages()).rejects.toStrictEqual(
-			expect.any(InAppMessagingError)
+			expect.any(InAppMessagingError),
 		);
 	});
 
@@ -48,7 +48,7 @@ describe('clearMessages', () => {
 		initializeInAppMessaging();
 		await clearMessages();
 		expect(mockDefaultStorage.removeItem).toHaveBeenCalledWith(
-			`${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`
+			`${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`,
 		);
 	});
 });

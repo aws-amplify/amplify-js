@@ -922,7 +922,7 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 				<a href="signingvalues.html#accesskeyid" class="tsd-kind-icon">access<wbr>Key<wbr>Id</a>
 			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
+			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite">
 				<a href="signingvalues.html#credentialscope" class="tsd-kind-icon">credential<wbr>Scope</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
@@ -973,7 +973,7 @@ img { max-width: 100%; }
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="signingvalues.html#accesskeyid" class="tsd-kind-icon">access<wbr>Key<wbr>Id</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="signingvalues.html#credentialscope" class="tsd-kind-icon">credential<wbr>Scope</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite"><a href="signingvalues.html#credentialscope" class="tsd-kind-icon">credential<wbr>Scope</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="signingvalues.html#expiration" class="tsd-kind-icon">expiration</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="signingvalues.html#longdate" class="tsd-kind-icon">long<wbr>Date</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="signingvalues.html#secretaccesskey" class="tsd-kind-icon">secret<wbr>Access<wbr>Key</a></li>
@@ -1002,13 +1002,14 @@ img { max-width: 100%; }
 				</div>
 			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite">
 			<a name="credentialscope" class="tsd-anchor"></a>
 			<h3>credential<wbr>Scope</h3>
 			<div class="tsd-signature tsd-kind-icon">credential<wbr>Scope<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
+				<p>Overrides AwsCredentialIdentity.credentialScope</p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/09816e5df/packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts#L43">packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts:43</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts#L43">packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts:43</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1035,7 +1036,7 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="formatteddates.html">FormattedDates</a>.<a href="formatteddates.html#longdate">longDate</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/09816e5df/packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts#L32">packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts:32</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts#L32">packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts:32</a></li>
 				</ul>
 			</aside>
 		</section>
@@ -1058,7 +1059,7 @@ img { max-width: 100%; }
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 			<a name="sessiontoken" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> session<wbr>Token</h3>
-			<div class="tsd-signature tsd-kind-icon">session<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+			<div class="tsd-signature tsd-kind-icon">session<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="signingvalues.html">SigningValues</a>.<a href="signingvalues.html#sessiontoken">sessionToken</a></p>
 				<ul>
@@ -1079,7 +1080,7 @@ img { max-width: 100%; }
 			<aside class="tsd-sources">
 				<p>Inherited from <a href="formatteddates.html">FormattedDates</a>.<a href="formatteddates.html#shortdate">shortDate</a></p>
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/09816e5df/packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts#L33">packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts:33</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts#L33">packages/core/src/clients/middleware/signing/signer/signatureV4/types/signer.ts:33</a></li>
 				</ul>
 			</aside>
 		</section>

@@ -42,7 +42,7 @@ describe('aws-amplify Exports', () => {
 					'parseAmplifyConfig',
 					'sessionStorage',
 					'sharedInMemoryStorage',
-				].sort()
+				].sort(),
 			);
 		});
 	});
@@ -63,7 +63,7 @@ describe('aws-amplify Exports', () => {
 					'post',
 					'put',
 					'ApiError',
-				].sort()
+				].sort(),
 			);
 		});
 	});
@@ -79,31 +79,31 @@ describe('aws-amplify Exports', () => {
 					'enable',
 					'disable',
 					'AnalyticsError',
-				].sort()
+				].sort(),
 			);
 		});
 
 		it('should only export expected symbols from the Pinpoint provider', () => {
 			expect(Object.keys(analyticsPinpointExports).sort()).toEqual(
-				['record', 'identifyUser', 'configureAutoTrack', 'flushEvents'].sort()
+				['record', 'identifyUser', 'configureAutoTrack', 'flushEvents'].sort(),
 			);
 		});
 
 		it('should only export expected symbols from the Kinesis provider', () => {
 			expect(Object.keys(analyticsKinesisExports).sort()).toEqual(
-				['record', 'flushEvents'].sort()
+				['record', 'flushEvents'].sort(),
 			);
 		});
 
 		it('should only export expected symbols from the Kinesis Firehose provider', () => {
 			expect(Object.keys(analyticsKinesisFirehoseExports).sort()).toEqual(
-				['record', 'flushEvents'].sort()
+				['record', 'flushEvents'].sort(),
 			);
 		});
 
 		it('should only export expected symbols from the Personalize provider', () => {
 			expect(Object.keys(analyticsPersonalizeExports).sort()).toEqual(
-				['record', 'flushEvents'].sort()
+				['record', 'flushEvents'].sort(),
 			);
 		});
 	});
@@ -123,7 +123,7 @@ describe('aws-amplify Exports', () => {
 					'onMessageActionTaken',
 					'notifyMessageInteraction',
 					'clearMessages',
-				].sort()
+				].sort(),
 			);
 		});
 
@@ -141,7 +141,7 @@ describe('aws-amplify Exports', () => {
 					'onMessageActionTaken',
 					'notifyMessageInteraction',
 					'clearMessages',
-				].sort()
+				].sort(),
 			);
 		});
 	});
@@ -179,7 +179,7 @@ describe('aws-amplify Exports', () => {
 					'autoSignIn',
 					'fetchAuthSession',
 					'decodeJWT',
-				].sort()
+				].sort(),
 			);
 		});
 
@@ -219,7 +219,7 @@ describe('aws-amplify Exports', () => {
 					'TokenOrchestrator',
 					'DefaultTokenStore',
 					'refreshAuthTokens',
-				].sort()
+				].sort(),
 			);
 		});
 	});
@@ -237,7 +237,7 @@ describe('aws-amplify Exports', () => {
 					'getUrl',
 					'isCancelError',
 					'StorageError',
-				].sort()
+				].sort(),
 			);
 		});
 
@@ -251,7 +251,7 @@ describe('aws-amplify Exports', () => {
 					'getProperties',
 					'copy',
 					'getUrl',
-				].sort()
+				].sort(),
 			);
 		});
 	});

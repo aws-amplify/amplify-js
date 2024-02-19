@@ -43,7 +43,7 @@ describe('setConflictHandler', () => {
 
 		expect(mockNotifyEventListeners).toHaveBeenCalledWith(
 			'messageReceived',
-			customHandledMessage
+			customHandledMessage,
 		);
 	});
 });

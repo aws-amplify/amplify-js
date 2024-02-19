@@ -8,12 +8,13 @@ import { globalExists, windowExists } from './helpers';
 export function nuxtWebDetect() {
 	return (
 		windowExists() &&
-		// @ts-ignore
-		(window['__NUXT__'] !== undefined || window['$nuxt'] !== undefined)
+		((window as any).__NUXT__ !== undefined ||
+			(window as any).$nuxt !== undefined)
 	);
 }
 
 export function nuxtSSRDetect() {
-	// @ts-ignore
-	return globalExists() && typeof global['__NUXT_PATHS__'] !== 'undefined';
+	return (
+		globalExists() && typeof (global as any).__NUXT_PATHS__ !== 'undefined'
+	);
 }

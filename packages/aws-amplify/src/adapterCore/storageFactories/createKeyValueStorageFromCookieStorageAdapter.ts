@@ -17,7 +17,7 @@ const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
  * @returns An object that implements {@link KeyValueStorageInterface}.
  */
 export const createKeyValueStorageFromCookieStorageAdapter = (
-	cookieStorageAdapter: CookieStorage.Adapter
+	cookieStorageAdapter: CookieStorage.Adapter,
 ): KeyValueStorageInterface => {
 	return {
 		setItem(key, value) {
@@ -26,14 +26,17 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 				...defaultSetCookieOptions,
 				expires: new Date(Date.now() + ONE_YEAR_IN_MS),
 			});
+
 			return Promise.resolve();
 		},
 		getItem(key) {
 			const cookie = cookieStorageAdapter.get(key);
+
 			return Promise.resolve(cookie?.value ?? null);
 		},
 		removeItem(key) {
 			cookieStorageAdapter.delete(key);
+
 			return Promise.resolve();
 		},
 		clear() {

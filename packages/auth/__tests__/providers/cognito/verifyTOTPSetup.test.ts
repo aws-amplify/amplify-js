@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('verifyTOTPSetup', () => {
@@ -58,7 +58,7 @@ describe('verifyTOTPSetup', () => {
 				AccessToken: mockAccessToken,
 				UserCode: code,
 				FriendlyDeviceName: friendlyDeviceName,
-			})
+			}),
 		);
 	});
 
@@ -76,7 +76,7 @@ describe('verifyTOTPSetup', () => {
 		expect.assertions(2);
 		mockVerifySoftwareToken.mockImplementation(() => {
 			throw getMockError(
-				VerifySoftwareTokenException.InvalidParameterException
+				VerifySoftwareTokenException.InvalidParameterException,
 			);
 		});
 		try {
@@ -84,7 +84,7 @@ describe('verifyTOTPSetup', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				VerifySoftwareTokenException.InvalidParameterException
+				VerifySoftwareTokenException.InvalidParameterException,
 			);
 		}
 	});

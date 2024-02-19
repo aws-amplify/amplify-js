@@ -37,7 +37,7 @@ describe('Interactions LexV1 API: onComplete', () => {
 	it('rejects when bot config does not exist', async () => {
 		mockResolveBotConfig.mockReturnValue(undefined);
 		expect(() =>
-			onComplete({ botName: v1BotConfig.name, callback: jest.fn })
+			onComplete({ botName: v1BotConfig.name, callback: jest.fn }),
 		).toThrow(InteractionsError);
 	});
 });

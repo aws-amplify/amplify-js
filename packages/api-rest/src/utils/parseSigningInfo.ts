@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+
 import {
 	APIG_HOSTNAME_PATTERN,
 	DEFAULT_IAM_SIGNING_REGION,
@@ -19,7 +20,7 @@ export const parseSigningInfo = (
 	restApiOptions?: {
 		amplify: AmplifyClassV6;
 		apiName: string;
-	}
+	},
 ) => {
 	const {
 		service: signingService = DEFAULT_REST_IAM_SIGNING_SERVICE,

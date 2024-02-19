@@ -25,7 +25,7 @@ export enum BackgroundProcessManagerState {
  * Completely internal to `BackgroundProcessManager`, and describes the structure of
  * an entry in the jobs registry.
  */
-export type JobEntry = {
+export interface JobEntry {
 	/**
 	 * The underlying promise provided by the job function to wait for.
 	 */
@@ -34,7 +34,7 @@ export type JobEntry = {
 	/**
 	 * Request the termination of the job.
 	 */
-	terminate: () => void;
+	terminate(): void;
 
 	/**
 	 * An object provided by the caller that can be used to identify the description
@@ -46,4 +46,4 @@ export type JobEntry = {
 	 * on `close()`.
 	 */
 	description?: string;
-};
+}

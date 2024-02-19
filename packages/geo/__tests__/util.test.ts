@@ -42,7 +42,7 @@ describe('Geo utility functions', () => {
 		test('should error with message for bad longitude', () => {
 			invalidLngCoordinates.forEach(([lng, lat]) => {
 				expect(() => validateCoordinates(lng, lat)).toThrow(
-					'Longitude must be between -180 and 180 degrees inclusive.'
+					'Longitude must be between -180 and 180 degrees inclusive.',
 				);
 			});
 		});
@@ -50,7 +50,7 @@ describe('Geo utility functions', () => {
 		test('should error with message for bad latitude', () => {
 			invalidLatCoordinates.forEach(([lng, lat]) => {
 				expect(() => validateCoordinates(lng, lat)).toThrow(
-					'Latitude must be between -90 and 90 degrees inclusive.'
+					'Latitude must be between -90 and 90 degrees inclusive.',
 				);
 			});
 		});
@@ -58,7 +58,7 @@ describe('Geo utility functions', () => {
 		test('should error with message for coordinates with infinity', () => {
 			infiniteCoordinates.forEach(([lng, lat]) => {
 				expect(() => validateCoordinates(lng, lat)).toThrow(
-					`Invalid coordinates: [${lng},${lat}]`
+					`Invalid coordinates: [${lng},${lat}]`,
 				);
 			});
 		});
@@ -71,30 +71,33 @@ describe('Geo utility functions', () => {
 		});
 		test('should error if first and last coordinates do not match', () => {
 			expect(() =>
-				validateLinearRing(linearRingIncomplete, 'linearRingIncomplete')
+				validateLinearRing(linearRingIncomplete, 'linearRingIncomplete'),
 			).toThrow(
-				`linearRingIncomplete: LinearRing's first and last coordinates are not the same`
+				`linearRingIncomplete: LinearRing's first and last coordinates are not the same`,
 			);
 		});
 		test('should error if LinearRing has less than 4 elements', () => {
 			expect(() =>
-				validateLinearRing(linearRingTooSmall, 'linearRingTooSmall')
+				validateLinearRing(linearRingTooSmall, 'linearRingTooSmall'),
 			).toThrow(
-				'linearRingTooSmall: LinearRing must contain 4 or more coordinates.'
+				'linearRingTooSmall: LinearRing must contain 4 or more coordinates.',
 			);
 		});
 		test('should error if any coordinates are not valid', () => {
 			expect(() =>
-				validateLinearRing(linearRingBadCoordinates, 'linearRingBadCoordinates')
+				validateLinearRing(
+					linearRingBadCoordinates,
+					'linearRingBadCoordinates',
+				),
 			).toThrow(
-				'linearRingBadCoordinates: One or more of the coordinates in the Polygon LinearRing are not valid: [{"coordinates":[181,0],"error":"Longitude must be between -180 and 180 degrees inclusive."},{"coordinates":[0,-91],"error":"Latitude must be between -90 and 90 degrees inclusive."}]'
+				'linearRingBadCoordinates: One or more of the coordinates in the Polygon LinearRing are not valid: [{"coordinates":[181,0],"error":"Longitude must be between -180 and 180 degrees inclusive."},{"coordinates":[0,-91],"error":"Latitude must be between -90 and 90 degrees inclusive."}]',
 			);
 		});
 		test('should error if the coordinates are not in counterclockwise order', () => {
 			expect(() =>
-				validateLinearRing(clockwiseLinearRing, 'clockwiseLinearRing')
+				validateLinearRing(clockwiseLinearRing, 'clockwiseLinearRing'),
 			).toThrow(
-				'clockwiseLinearRing: LinearRing coordinates must be wound counterclockwise'
+				'clockwiseLinearRing: LinearRing coordinates must be wound counterclockwise',
 			);
 		});
 	});
@@ -105,17 +108,17 @@ describe('Geo utility functions', () => {
 		});
 		test('should error if polygon is not a length of 1', () => {
 			expect(() => validatePolygon(polygonTooBig, 'polygonTooBig')).toThrow(
-				`polygonTooBig: Polygon must have a single LinearRing array. Note: We do not currently support polygons with holes, multipolygons, polygons that are wound clockwise, or that cross the antimeridian.`
+				`polygonTooBig: Polygon must have a single LinearRing array. Note: We do not currently support polygons with holes, multipolygons, polygons that are wound clockwise, or that cross the antimeridian.`,
 			);
 			expect(() => validatePolygon([], 'emptyPolygon')).toThrow(
-				`emptyPolygon: Polygon must have a single LinearRing array.`
+				`emptyPolygon: Polygon must have a single LinearRing array.`,
 			);
 		});
 		test('should error if polygon has more than 1000 vertices', () => {
 			expect(() =>
-				validatePolygon(polygonTooManyVertices, 'polygonTooManyVertices')
+				validatePolygon(polygonTooManyVertices, 'polygonTooManyVertices'),
 			).toThrow(
-				'polygonTooManyVertices: Polygon has more than the maximum 1000 vertices.'
+				'polygonTooManyVertices: Polygon has more than the maximum 1000 vertices.',
 			);
 		});
 	});
@@ -161,18 +164,18 @@ describe('Geo utility functions', () => {
 		});
 		test('should error if a geofenceId is not unique', () => {
 			expect(() => validateGeofencesInput(geofencesWithDuplicate)).toThrow(
-				`Duplicate geofenceId: validGeofenceId1`
+				`Duplicate geofenceId: validGeofenceId1`,
 			);
 		});
 		test('should error if a geofenceId is not valid', () => {
 			expect(() => validateGeofencesInput(geofencesWithInvalidId)).toThrow(
-				`Invalid geofenceId: 't|-|!$ !$ N()T V@|_!D' - IDs can only contain alphanumeric characters, hyphens, underscores and periods.`
+				`Invalid geofenceId: 't|-|!$ !$ N()T V@|_!D' - IDs can only contain alphanumeric characters, hyphens, underscores and periods.`,
 			);
 		});
 	});
 	test('should error if polygon has more than 1000 vertices', () => {
 		expect(() => validateGeofencesInput([geofenceWithTooManyVertices])).toThrow(
-			`Geofence 'geofenceWithTooManyVertices' has more than the maximum of 1000 vertices`
+			`Geofence 'geofenceWithTooManyVertices' has more than the maximum of 1000 vertices`,
 		);
 	});
 
@@ -193,7 +196,7 @@ describe('Geo utility functions', () => {
 			};
 			const result = mapSearchOptions(
 				searchOptionsWithBiasPosition,
-				locationServiceInput
+				locationServiceInput,
 			);
 			expect(result).toEqual(modifiedSearchOptionsMappedToInput);
 		});
@@ -210,7 +213,7 @@ describe('Geo utility functions', () => {
 			};
 			const result = mapSearchOptions(
 				searchOptionsWithSearchAreaConstraints,
-				locationServiceInput
+				locationServiceInput,
 			);
 			expect(result).toEqual(modifiedSearchOptionsMappedToInput);
 		});
@@ -222,7 +225,7 @@ describe('Geo utility functions', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 			expect(() => mapSearchOptions(searchOptionsExtended, {})).toThrow(
-				`BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object`
+				`BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object`,
 			);
 		});
 	});

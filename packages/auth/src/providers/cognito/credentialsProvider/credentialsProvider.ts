@@ -50,7 +50,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	}
 
 	async getCredentialsAndIdentityId(
-		getCredentialsOptions: GetCredentialsOptions
+		getCredentialsOptions: GetCredentialsOptions,
 	): Promise<CredentialsAndIdentityId | undefined> {
 		const isAuthenticated = getCredentialsOptions.authenticated;
 		const tokens = getCredentialsOptions.tokens;
@@ -89,7 +89,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 
 	private async getGuestCredentials(
 		identityId: string,
-		authConfig: CognitoIdentityPoolConfig
+		authConfig: CognitoIdentityPoolConfig,
 	): Promise<CredentialsAndIdentityId> {
 		// Return existing in-memory cached credentials only if it exists, is not past it's lifetime and is unauthenticated credentials
 		if (
@@ -98,7 +98,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId.isAuthenticatedCreds === false
 		) {
 			logger.info(
-				'returning stored credentials as they neither past TTL nor expired.'
+				'returning stored credentials as they neither past TTL nor expired.',
 			);
 			return this._credentialsAndIdentityId;
 		}
@@ -116,7 +116,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			{ region },
 			{
 				IdentityId: identityId,
-			}
+			},
 		);
 
 		if (
@@ -159,7 +159,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 	private async credsForOIDCTokens(
 		authConfig: CognitoIdentityPoolConfig,
 		authTokens: AuthTokens,
-		identityId: string
+		identityId: string,
 	): Promise<CredentialsAndIdentityId> {
 		if (
 			this._credentialsAndIdentityId &&
@@ -167,7 +167,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			this._credentialsAndIdentityId.isAuthenticatedCreds === true
 		) {
 			logger.debug(
-				'returning stored credentials as they neither past TTL nor expired.'
+				'returning stored credentials as they neither past TTL nor expired.',
 			);
 			return this._credentialsAndIdentityId;
 		}
@@ -186,7 +186,7 @@ export class CognitoAWSCredentialsAndIdentityIdProvider
 			{
 				IdentityId: identityId,
 				Logins: logins,
-			}
+			},
 		);
 
 		if (

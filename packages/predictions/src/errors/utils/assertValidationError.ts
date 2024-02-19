@@ -9,7 +9,7 @@ import {
 
 export function assertValidationError(
 	assertion: boolean,
-	name: PredictionsValidationErrorCode
+	name: PredictionsValidationErrorCode,
 ): asserts assertion {
 	if (!assertion) {
 		const { message, recoverySuggestion } = validationErrorMap[name];

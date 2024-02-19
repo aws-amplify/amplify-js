@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { EventBufferConfig } from '../types/buffer';
-import { PinpointEventBuffer } from './PinpointEventBuffer';
 import { AuthSession } from '../../../singleton/Auth/types';
+
+import { PinpointEventBuffer } from './PinpointEventBuffer';
 
 // Map of buffers by region -> appId
 const eventBufferMap: Record<string, Record<string, PinpointEventBuffer>> = {};

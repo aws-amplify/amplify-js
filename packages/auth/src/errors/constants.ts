@@ -26,3 +26,4 @@ export const invalidOriginException = new AuthError({
 });
 export const OAUTH_SIGNOUT_EXCEPTION = 'OAuthSignOutException';
 export const TOKEN_REFRESH_EXCEPTION = 'TokenRefreshException';
+export const UNEXPECTED_SIGN_IN_INTERRUPTION_EXCEPTION = 'UnexpectedSignInInterruptionException';

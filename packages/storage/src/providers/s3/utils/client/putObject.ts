@@ -13,14 +13,14 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 import {
-	buildStorageServiceError,
-	validateS3RequiredParameter,
 	assignStringVariables,
+	buildStorageServiceError,
 	map,
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
 
 export type PutObjectInput = Pick<
@@ -48,7 +48,7 @@ export type PutObjectOutput = Pick<
 
 const putObjectSerializer = async (
 	input: PutObjectInput,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
 		...(await serializeObjectConfigsToHeaders({
@@ -60,6 +60,7 @@ const putObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+
 	return {
 		method: 'PUT',
 		headers,
@@ -69,7 +70,7 @@ const putObjectSerializer = async (
 };
 
 const putObjectDeserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<PutObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
@@ -89,5 +90,5 @@ export const putObject = composeServiceApi(
 	s3TransferHandler,
 	putObjectSerializer,
 	putObjectDeserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

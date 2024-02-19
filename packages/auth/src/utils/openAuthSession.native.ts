@@ -7,13 +7,13 @@ import { OpenAuthSession, OpenAuthSessionResult } from './types';
 export const openAuthSession: OpenAuthSession = async (
 	url: string,
 	redirectUrls: string[],
-	prefersEphemeralSession?: boolean
+	prefersEphemeralSession?: boolean,
 ): Promise<OpenAuthSessionResult> => {
 	try {
 		const redirectUrl = await loadAmplifyWebBrowser().openAuthSessionAsync(
 			url,
 			redirectUrls,
-			prefersEphemeralSession
+			prefersEphemeralSession,
 		);
 		if (!redirectUrl) {
 			return { type: 'canceled' };

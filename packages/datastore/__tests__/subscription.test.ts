@@ -22,7 +22,7 @@ import { Category, DataStoreAction } from '@aws-amplify/core/internals/utils';
 // mock graphql to return a mockable observable
 jest.mock('@aws-amplify/api/internals', () => {
 	const actualInternalAPIModule = jest.requireActual(
-		'@aws-amplify/api/internals'
+		'@aws-amplify/api/internals',
 	);
 	const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
@@ -62,8 +62,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				accessTokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('owner authorization with only read operation', () => {
@@ -92,8 +92,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				accessTokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('owner authorization without read operation', () => {
@@ -122,8 +122,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				accessTokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('owner authorization with public subscription', () => {
@@ -159,8 +159,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				accessTokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('owner authorization with custom owner (explicit)', () => {
@@ -198,8 +198,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				accessTokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('owner authorization with auth different than default auth mode', () => {
@@ -231,8 +231,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool', // default auth mode
 				accessTokenPayload,
-				'iam'
-			)
+				'iam',
+			),
 		).toEqual(authInfo);
 	});
 	test('groups authorization', () => {
@@ -260,8 +260,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				accessTokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('groups authorization with groupClaim (array as string)', () => {
@@ -294,8 +294,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				tokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('groups authorization with groupClaim (string)', () => {
@@ -328,8 +328,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				tokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('groups authorization with groupClaim (plain string)', () => {
@@ -362,8 +362,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				tokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 	test('public iam authorization for unauth user', () => {
@@ -388,8 +388,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.unauth,
 				'iam',
 				undefined, // No Cognito token
-				'iam'
-			)
+				'iam',
+			),
 		).toEqual(authInfo);
 	});
 	test('private iam authorization for unauth user', () => {
@@ -414,8 +414,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.unauth,
 				'iam',
 				undefined, // No Cognito token
-				'iam'
-			)
+				'iam',
+			),
 		).toEqual(null);
 	});
 	test('private iam authorization for auth user', () => {
@@ -440,8 +440,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'iam',
 				undefined,
-				'iam' // No Cognito token
-			)
+				'iam', // No Cognito token
+			),
 		).toEqual(authInfo);
 	});
 	test('public apiKey authorization without credentials', () => {
@@ -466,8 +466,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.none,
 				'apiKey',
 				undefined,
-				'apiKey' // No Cognito token
-			)
+				'apiKey', // No Cognito token
+			),
 		).toEqual(authInfo);
 	});
 	test('OIDC owner authorization', () => {
@@ -509,8 +509,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'oidc',
 				oidcTokenPayload, // No Cognito token,
-				'oidc'
-			)
+				'oidc',
+			),
 		).toEqual(authInfo);
 	});
 	test('User Pools & OIDC owner authorization with Cognito token', () => {
@@ -546,8 +546,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.auth,
 				'userPool',
 				accessTokenPayload,
-				'userPool'
-			)
+				'userPool',
+			),
 		).toEqual(authInfo);
 	});
 
@@ -573,8 +573,8 @@ describe('sync engine subscription module', () => {
 				USER_CREDENTIALS.none,
 				'lambda',
 				undefined,
-				'lambda' // No Cognito token
-			)
+				'lambda', // No Cognito token
+			),
 		).toEqual(authInfo);
 	});
 });
@@ -621,23 +621,23 @@ describe('error handler', () => {
 							message,
 							model: 'Model',
 							operation,
-						})
+						}),
 					);
 					// expect logger.debug to be called 6 times for auth mode (2 for each operation)
 					// can't use toHaveBeenCalledTimes because it is called elsewhere unrelated to the test
 					expect(debugLog).toHaveBeenCalledWith(
 						expect.stringMatching(
 							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: apiKey`
-							)
-						)
+								`[DEBUG].*${operation} subscription failed with authMode: apiKey`,
+							),
+						),
 					);
 					expect(debugLog).toHaveBeenCalledWith(
 						expect.stringMatching(
 							new RegExp(
-								`[DEBUG].*${operation} subscription failed with authMode: userPool`
-							)
-						)
+								`[DEBUG].*${operation} subscription failed with authMode: userPool`,
+							),
+						),
 					);
 
 					expect(mockGraphQL).toHaveBeenCalledWith(
@@ -646,7 +646,7 @@ describe('error handler', () => {
 						{
 							category: Category.DataStore,
 							action: DataStoreAction.Subscribe,
-						}
+						},
 					);
 				});
 
@@ -687,7 +687,7 @@ describe('error handler', () => {
 				aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
 			},
 			() => ['apiKey', 'userPool'],
-			errorHandler
+			errorHandler,
 		);
 
 		return subscriptionProcessor;
@@ -713,7 +713,7 @@ const accessTokenPayload = {
 
 export function generateModelWithAuth(
 	authRules,
-	modelProperties = {}
+	modelProperties = {},
 ): SchemaModel {
 	return {
 		syncable: true,

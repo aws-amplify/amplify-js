@@ -34,6 +34,7 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Signs a user in using a custom authentication flow without password
@@ -46,7 +47,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws SignInWithCustomAuthOutput - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomAuth(
-	input: SignInWithCustomAuthInput
+	input: SignInWithCustomAuthInput,
 ): Promise<SignInWithCustomAuthOutput> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -58,11 +59,11 @@ export async function signInWithCustomAuth(
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!password,
-		AuthValidationErrorCode.CustomAuthSignInPassword
+		AuthValidationErrorCode.CustomAuthSignInPassword,
 	);
 
 	try {
@@ -75,7 +76,7 @@ export async function signInWithCustomAuth(
 			handleCustomAuthFlowWithoutSRP,
 			[username, metadata, authConfig, tokenOrchestrator],
 			username,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 		const activeUsername = getActiveSignInUsername(username);
 		// sets up local state used during the sign-in process
@@ -94,16 +95,13 @@ export async function signInWithCustomAuth(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
-			Hub.dispatch(
-				'auth',
-				{ event: 'signedIn', data: await getCurrentUser() },
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

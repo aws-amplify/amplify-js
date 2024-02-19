@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/rtn-web-browser",
-	"version": "1.0.13",
+	"version": "1.0.17",
 	"description": "React Native module for aws-amplify web browser",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -24,7 +24,8 @@
 	},
 	"devDependencies": {
 		"@types/react-native": "0.70.0",
-		"react-native": "0.72.3"
+		"react-native": "0.72.3",
+		"typescript": "5.1.6"
 	},
 	"repository": {
 		"type": "git",

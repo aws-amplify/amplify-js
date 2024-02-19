@@ -73,7 +73,7 @@ describe('createUploadTask', () => {
 			task.cancel();
 			expect(onCancel).not.toHaveBeenCalled();
 			expect(task.state).toBe(state);
-		}
+		},
 	);
 
 	it('should call the onPause callback if the task is in status of IN_PROGRESS', () => {
@@ -106,7 +106,7 @@ describe('createUploadTask', () => {
 			task.pause();
 			expect(onPause).not.toHaveBeenCalled();
 			expect(task.state).toBe(state);
-		}
+		},
 	);
 
 	it('should call the onResume callback if the task is in status of PAUSED', () => {
@@ -140,6 +140,6 @@ describe('createUploadTask', () => {
 			task.resume();
 			expect(onResume).not.toHaveBeenCalled();
 			expect(task.state).toBe(state);
-		}
+		},
 	);
 });

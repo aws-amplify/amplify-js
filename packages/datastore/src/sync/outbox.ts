@@ -27,12 +27,12 @@ class MutationEventOutbox {
 		private readonly schema: InternalSchema,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly ownSymbol: Symbol
+		private readonly ownSymbol: Symbol,
 	) {}
 
 	public async enqueue(
 		storage: Storage,
-		mutationEvent: MutationEvent
+		mutationEvent: MutationEvent,
 	): Promise<void> {
 		await storage.runExclusive(async s => {
 			const mutationEventModelDefinition =
@@ -47,7 +47,7 @@ class MutationEventOutbox {
 						{ modelId: { eq: mutationEvent.modelId } },
 						{ id: { ne: this.inProgressMutationEventId } },
 					],
-				}
+				},
 			);
 
 			// Check if there are any other records with same id
@@ -76,7 +76,7 @@ class MutationEventOutbox {
 							draft.data = merged.data;
 						}),
 						undefined,
-						this.ownSymbol
+						this.ownSymbol,
 					);
 				}
 			} else {
@@ -103,7 +103,7 @@ class MutationEventOutbox {
 	public async dequeue(
 		storage: StorageClass,
 		record?: PersistentModel,
-		recordOp?: TransformerMutationType
+		recordOp?: TransformerMutationType,
 	): Promise<MutationEvent> {
 		const head = await this.peek(storage);
 
@@ -111,7 +111,9 @@ class MutationEventOutbox {
 			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp!);
 		}
 
-		await storage.delete(head);
+		if (head) {
+			await storage.delete(head);
+		}
 		this.inProgressMutationEventId = undefined!;
 
 		return head;
@@ -133,7 +135,7 @@ class MutationEventOutbox {
 	public async getForModel<T extends PersistentModel>(
 		storage: StorageFacade,
 		model: T,
-		userModelDefinition: SchemaModel
+		userModelDefinition: SchemaModel,
 	): Promise<MutationEvent[]> {
 		const mutationEventModelDefinition =
 			this.schema.namespaces[SYNC].models.MutationEvent;
@@ -144,7 +146,7 @@ class MutationEventOutbox {
 			this.MutationEvent,
 			ModelPredicateCreator.createFromAST(mutationEventModelDefinition, {
 				and: { modelId: { eq: modelId } },
-			})
+			}),
 		);
 
 		return mutationEvents;
@@ -167,9 +169,9 @@ class MutationEventOutbox {
 		storage: StorageClass,
 		record: PersistentModel,
 		head: PersistentModel,
-		recordOp: string
+		recordOp: string,
 	): Promise<void> {
-		if (head.operation !== recordOp) {
+		if (head?.operation !== recordOp) {
 			return;
 		}
 
@@ -217,12 +219,12 @@ class MutationEventOutbox {
 					{ modelId: { eq: recordId } },
 					{ id: { ne: this.inProgressMutationEventId } },
 				],
-			}
+			},
 		);
 
 		const outdatedMutations = await storage.query(
 			this.MutationEvent,
-			predicate
+			predicate,
 		);
 
 		if (!outdatedMutations.length) {
@@ -243,17 +245,17 @@ class MutationEventOutbox {
 
 		await Promise.all(
 			reconciledMutations.map(
-				async m => await storage.save(m, undefined, this.ownSymbol)
-			)
+				async m => await storage.save(m, undefined, this.ownSymbol),
+			),
 		);
 	}
 
 	private mergeUserFields(
 		previous: MutationEvent,
-		current: MutationEvent
+		current: MutationEvent,
 	): MutationEvent {
 		const { _version, _lastChangedAt, _deleted, ...previousData } = JSON.parse(
-			previous.data
+			previous.data,
 		);
 
 		const {
@@ -296,7 +298,7 @@ class MutationEventOutbox {
 	*/
 	private removeTimestampFields(
 		model: string,
-		record: PersistentModel
+		record: PersistentModel,
 	): PersistentModel {
 		const CREATED_AT_DEFAULT_KEY = 'createdAt';
 		const UPDATED_AT_DEFAULT_KEY = 'updatedAt';

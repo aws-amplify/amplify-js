@@ -36,14 +36,14 @@ describe('createAWSCredentialsAndIdentityIdProvider', () => {
 	it('should create a credentials provider', () => {
 		const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 			mockAuthConfig,
-			mockKeyValueStorage
+			mockKeyValueStorage,
 		);
 
 		expect(MockDefaultIdentityIdStore).toHaveBeenCalledWith(
-			mockKeyValueStorage
+			mockKeyValueStorage,
 		);
 		expect(
-			MockCognitoAWSCredentialsAndIdentityIdProvider
+			MockCognitoAWSCredentialsAndIdentityIdProvider,
 		).toHaveBeenCalledTimes(1);
 		const mockCredentialsProviderInstance =
 			MockCognitoAWSCredentialsAndIdentityIdProvider.mock.instances[0];

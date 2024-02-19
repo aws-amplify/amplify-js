@@ -39,7 +39,7 @@ export const calculateS = async ({
 						return;
 					}
 					resolve(innerResult.mod(N));
-				}
+				},
 			);
 		});
 	});

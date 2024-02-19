@@ -36,6 +36,7 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -49,7 +50,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithCustomSRPAuth(
-	input: SignInWithCustomSRPAuthInput
+	input: SignInWithCustomSRPAuthInput,
 ): Promise<SignInWithCustomSRPAuthOutput> {
 	const { username, password, options } = input;
 	const signInDetails: CognitoAuthSignInDetails = {
@@ -61,11 +62,11 @@ export async function signInWithCustomSRPAuth(
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignInPassword
+		AuthValidationErrorCode.EmptySignInPassword,
 	);
 
 	try {
@@ -79,7 +80,7 @@ export async function signInWithCustomSRPAuth(
 			password,
 			metadata,
 			authConfig,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 
 		const activeUsername = getActiveSignInUsername(username);
@@ -97,20 +98,14 @@ export async function signInWithCustomSRPAuth(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
 			cleanActiveSignInState();
-			Hub.dispatch(
-				'auth',
-				{
-					event: 'signedIn',
-					data: await getCurrentUser(),
-				},
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },

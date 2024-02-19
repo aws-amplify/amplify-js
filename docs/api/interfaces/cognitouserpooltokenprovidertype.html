@@ -919,14 +919,14 @@ img { max-width: 100%; }
 	<li class="current tsd-kind-interface">
 		<a href="cognitouserpooltokenprovidertype.html" class="tsd-kind-icon">Cognito<wbr>User<wbr>Pool<wbr>Token<wbr>Provider<wbr>Type</a>
 		<ul>
-			<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-				<a href="cognitouserpooltokenprovidertype.html#gettokens" class="tsd-kind-icon">get<wbr>Tokens</a>
-			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="cognitouserpooltokenprovidertype.html#setauthconfig" class="tsd-kind-icon">set<wbr>Auth<wbr>Config</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="cognitouserpooltokenprovidertype.html#setkeyvaluestorage" class="tsd-kind-icon">set<wbr>Key<wbr>Value<wbr>Storage</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+				<a href="cognitouserpooltokenprovidertype.html#gettokens" class="tsd-kind-icon">get<wbr>Tokens</a>
 			</li>
 		</ul>
 	</li>
@@ -938,7 +938,7 @@ img { max-width: 100%; }
 		<h3>Hierarchy</h3>
 		<ul class="tsd-hierarchy">
 			<li>
-				<span class="tsd-signature-type">object</span>
+				<span class="tsd-signature-type">TokenProvider</span>
 				<ul class="tsd-hierarchy">
 					<li>
 						<span class="target">CognitoUserPoolTokenProviderType</span>
@@ -960,9 +960,14 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="cognitouserpooltokenprovidertype.html#gettokens" class="tsd-kind-icon">get<wbr>Tokens</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cognitouserpooltokenprovidertype.html#setauthconfig" class="tsd-kind-icon">set<wbr>Auth<wbr>Config</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cognitouserpooltokenprovidertype.html#setkeyvaluestorage" class="tsd-kind-icon">set<wbr>Key<wbr>Value<wbr>Storage</a></li>
+					</ul>
+				</section>
+				<section class="tsd-index-section tsd-is-inherited">
+					<h3>Methods</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="cognitouserpooltokenprovidertype.html#gettokens" class="tsd-kind-icon">get<wbr>Tokens</a></li>
 					</ul>
 				</section>
 			</div>
@@ -970,50 +975,13 @@ img { max-width: 100%; }
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Properties</h2>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-			<a name="gettokens" class="tsd-anchor"></a>
-			<h3>get<wbr>Tokens</h3>
-			<div class="tsd-signature tsd-kind-icon">get<wbr>Tokens<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-			<aside class="tsd-sources">
-				<p>Inherited from __type.getTokens</p>
-				<ul>
-					<li>Defined in packages/core/dist/esm/singleton/Auth/types.d.ts:43</li>
-				</ul>
-			</aside>
-			<div class="tsd-type-declaration">
-				<h4>Type declaration</h4>
-				<ul class="tsd-parameters">
-					<li class="tsd-parameter-siganture">
-						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#authtokens" class="tsd-signature-type">AuthTokens</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
-						</ul>
-						<ul class="tsd-descriptions">
-							<li class="tsd-description">
-								<h4 class="tsd-parameters-title">Parameters</h4>
-								<ul class="tsd-parameters">
-									<li>
-										<h5><span class="tsd-flag ts-flagOptional">Optional</span> __namedParameters: <span class="tsd-signature-type">object</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>force<wbr>Refresh<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
-											</li>
-										</ul>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#authtokens" class="tsd-signature-type">AuthTokens</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="setauthconfig" class="tsd-anchor"></a>
 			<h3>set<wbr>Auth<wbr>Config</h3>
 			<div class="tsd-signature tsd-kind-icon">set<wbr>Auth<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/09816e5df/packages/auth/src/providers/cognito/tokenProvider/types.ts#L64">packages/auth/src/providers/cognito/tokenProvider/types.ts:64</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/auth/src/providers/cognito/tokenProvider/types.ts#L64">packages/auth/src/providers/cognito/tokenProvider/types.ts:64</a></li>
 				</ul>
 			</aside>
 			<div class="tsd-type-declaration">
@@ -1044,7 +1012,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">set<wbr>Key<wbr>Value<wbr>Storage<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/09816e5df/packages/auth/src/providers/cognito/tokenProvider/types.ts#L63">packages/auth/src/providers/cognito/tokenProvider/types.ts:63</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/auth/src/providers/cognito/tokenProvider/types.ts#L63">packages/auth/src/providers/cognito/tokenProvider/types.ts:63</a></li>
 				</ul>
 			</aside>
 			<div class="tsd-type-declaration">
@@ -1068,6 +1036,38 @@ img { max-width: 100%; }
 					</li>
 				</ul>
 			</div>
+		</section>
+	</section>
+	<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+		<h2>Methods</h2>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+			<a name="gettokens" class="tsd-anchor"></a>
+			<h3>get<wbr>Tokens</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+				<li class="tsd-signature tsd-kind-icon">get<wbr>Tokens<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AuthTokens</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="cognitouserpooltokenprovidertype.html">CognitoUserPoolTokenProviderType</a>.<a href="cognitouserpooltokenprovidertype.html#gettokens">getTokens</a></p>
+						<ul>
+							<li>Defined in packages/core/dist/esm/singleton/Auth/types.d.ts:44</li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> __namedParameters: <span class="tsd-signature-type">object</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter">
+									<h5>force<wbr>Refresh<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								</li>
+							</ul>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AuthTokens</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">&gt;</span></h4>
+				</li>
+			</ul>
 		</section>
 	</section>
 	<footer>

@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import {
 	AnalyticsValidationErrorCode,
 	assertValidationError,
 } from '../../../errors';
+
 import {
 	DEFAULT_PERSONALIZE_CONFIG,
 	PERSONALIZE_FLUSH_SIZE_MAX,
@@ -26,12 +28,12 @@ export const resolveConfig = () => {
 	assertValidationError(!!region, AnalyticsValidationErrorCode.NoRegion);
 	assertValidationError(
 		!!trackingId,
-		AnalyticsValidationErrorCode.NoTrackingId
+		AnalyticsValidationErrorCode.NoTrackingId,
 	);
 	assertValidationError(
 		flushSize <= PERSONALIZE_FLUSH_SIZE_MAX,
 		AnalyticsValidationErrorCode.InvalidFlushSize,
-		`FlushSize for Personalize should be less or equal than ${PERSONALIZE_FLUSH_SIZE_MAX}`
+		`FlushSize for Personalize should be less or equal than ${PERSONALIZE_FLUSH_SIZE_MAX}`,
 	);
 
 	return {

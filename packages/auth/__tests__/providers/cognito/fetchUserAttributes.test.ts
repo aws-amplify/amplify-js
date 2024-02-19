@@ -19,7 +19,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	fetchAuthSession: jest.fn(),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('fetchUserAttributes', () => {
@@ -65,7 +65,7 @@ describe('fetchUserAttributes', () => {
 			},
 			{
 				AccessToken: mockAccessToken,
-			}
+			},
 		);
 	});
 

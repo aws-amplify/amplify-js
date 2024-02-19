@@ -112,7 +112,7 @@ describe('getProperties api', () => {
 					await getProperties({
 						key,
 						options: options as GetPropertiesOptions,
-					})
+					}),
 				).toEqual(expected);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
@@ -129,7 +129,7 @@ describe('getProperties api', () => {
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
 					name: 'NotFound',
-				})
+				}),
 			);
 			expect.assertions(3);
 			try {
@@ -145,7 +145,7 @@ describe('getProperties api', () => {
 					{
 						Bucket: 'bucket',
 						Key: 'public/keyed',
-					}
+					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}

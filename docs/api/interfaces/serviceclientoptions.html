@@ -920,10 +920,10 @@ img { max-width: 100%; }
 		<a href="serviceclientoptions.html" class="tsd-kind-icon">Service<wbr>Client<wbr>Options</a>
 		<ul>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
-				<a href="serviceclientoptions.html#endpointresolver" class="tsd-kind-icon">endpoint<wbr>Resolver</a>
-			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="serviceclientoptions.html#region" class="tsd-kind-icon">region</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
+				<a href="serviceclientoptions.html#endpointresolver" class="tsd-kind-icon">endpoint<wbr>Resolver</a>
 			</li>
 		</ul>
 	</li>
@@ -946,8 +946,13 @@ img { max-width: 100%; }
 				<section class="tsd-index-section ">
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="serviceclientoptions.html#endpointresolver" class="tsd-kind-icon">endpoint<wbr>Resolver</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="serviceclientoptions.html#region" class="tsd-kind-icon">region</a></li>
+					</ul>
+				</section>
+				<section class="tsd-index-section ">
+					<h3>Methods</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="serviceclientoptions.html#endpointresolver" class="tsd-kind-icon">endpoint<wbr>Resolver</a></li>
 					</ul>
 				</section>
 			</div>
@@ -956,48 +961,43 @@ img { max-width: 100%; }
 	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Properties</h2>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-			<a name="endpointresolver" class="tsd-anchor"></a>
-			<h3>endpoint<wbr>Resolver</h3>
-			<div class="tsd-signature tsd-kind-icon">endpoint<wbr>Resolver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/09816e5df/packages/core/src/clients/types/aws.ts#L22">packages/core/src/clients/types/aws.ts:22</a></li>
-				</ul>
-			</aside>
-			<div class="tsd-type-declaration">
-				<h4>Type declaration</h4>
-				<ul class="tsd-parameters">
-					<li class="tsd-parameter-siganture">
-						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../globals.html#endpointresolveroptions" class="tsd-signature-type">EndpointResolverOptions</a>, input<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="endpoint.html" class="tsd-signature-type">Endpoint</a></li>
-						</ul>
-						<ul class="tsd-descriptions">
-							<li class="tsd-description">
-								<h4 class="tsd-parameters-title">Parameters</h4>
-								<ul class="tsd-parameters">
-									<li>
-										<h5>options: <a href="../globals.html#endpointresolveroptions" class="tsd-signature-type">EndpointResolverOptions</a></h5>
-									</li>
-									<li>
-										<h5><span class="tsd-flag ts-flagOptional">Optional</span> input: <span class="tsd-signature-type">any</span></h5>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-title">Returns <a href="endpoint.html" class="tsd-signature-type">Endpoint</a></h4>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="region" class="tsd-anchor"></a>
 			<h3>region</h3>
 			<div class="tsd-signature tsd-kind-icon">region<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/09816e5df/packages/core/src/clients/types/aws.ts#L21">packages/core/src/clients/types/aws.ts:21</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/types/aws.ts#L24">packages/core/src/clients/types/aws.ts:24</a></li>
 				</ul>
 			</aside>
+		</section>
+	</section>
+	<section class="tsd-panel-group tsd-member-group ">
+		<h2>Methods</h2>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+			<a name="endpointresolver" class="tsd-anchor"></a>
+			<h3>endpoint<wbr>Resolver</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">endpoint<wbr>Resolver<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="endpointresolveroptions.html" class="tsd-signature-type">EndpointResolverOptions</a>, input<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="endpoint.html" class="tsd-signature-type">Endpoint</a></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/types/aws.ts#L25">packages/core/src/clients/types/aws.ts:25</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>options: <a href="endpointresolveroptions.html" class="tsd-signature-type">EndpointResolverOptions</a></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> input: <span class="tsd-signature-type">any</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="endpoint.html" class="tsd-signature-type">Endpoint</a></h4>
+				</li>
+			</ul>
 		</section>
 	</section>
 	<footer>

@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/storage",
-	"version": "6.0.13",
+	"version": "6.0.17",
 	"description": "Storage category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -31,7 +31,8 @@
 		"clean": "npm run clean:size && rimraf lib-esm lib dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts'  && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 90.31"
 	},
 	"typesVersions": {
@@ -100,7 +101,8 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.13",
-		"@aws-amplify/react-native": "1.0.13"
+		"@aws-amplify/core": "6.0.17",
+		"@aws-amplify/react-native": "1.0.17",
+		"typescript": "5.0.2"
 	}
 }

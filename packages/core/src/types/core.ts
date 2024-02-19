@@ -15,7 +15,7 @@ export interface AmplifyConfig {
 	ssr?: boolean;
 }
 
-export type UserProfile = {
+export interface UserProfile {
 	customProperties?: Record<string, string[]>;
 	demographic?: {
 		appVersion?: string;
@@ -39,7 +39,7 @@ export type UserProfile = {
 	metrics?: Record<string, number>;
 	name?: string;
 	plan?: string;
-};
+}
 
 /**
  * @internal
@@ -47,5 +47,5 @@ export type UserProfile = {
 export type DelayFunction = (
 	attempt: number,
 	args?: any[],
-	error?: unknown
+	error?: unknown,
 ) => number | false;

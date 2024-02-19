@@ -27,7 +27,7 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const sendUserAttributeVerificationCode = async (
-	input: SendUserAttributeVerificationCodeInput
+	input: SendUserAttributeVerificationCodeInput,
 ): Promise<SendUserAttributeVerificationCodeOutput> => {
 	const { userAttributeKey, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -39,14 +39,14 @@ export const sendUserAttributeVerificationCode = async (
 		{
 			region: getRegion(authConfig.userPoolId),
 			userAgentValue: getAuthUserAgentValue(
-				AuthAction.SendUserAttributeVerificationCode
+				AuthAction.SendUserAttributeVerificationCode,
 			),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
 			ClientMetadata: clientMetadata,
 			AttributeName: userAttributeKey,
-		}
+		},
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,

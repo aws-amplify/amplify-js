@@ -3,8 +3,8 @@
 
 import { getDnsSuffix } from '../../clients/endpoints';
 import {
-	jitteredBackoff,
 	getRetryDecider,
+	jitteredBackoff,
 } from '../../clients/middleware/retry';
 import { parseJsonError } from '../../clients/serde/json';
 import type { EndpointResolverOptions, Headers } from '../../clients/types';
