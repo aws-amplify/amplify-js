@@ -367,14 +367,14 @@ const getButtonConfig = (
 	configPlatform: ButtonConfigPlatform,
 	button?: InAppMessageButton,
 ): InAppMessageButton['DefaultConfig'] | undefined => {
-	if (!button || !button?.DefaultConfig) {
+	if (!button?.DefaultConfig) {
 		return;
 	}
 	if (!configPlatform || !button?.[configPlatform]) {
 		return button?.DefaultConfig;
 	}
 	return {
-		...button?.DefaultConfig,
-		...button?.[configPlatform],
+		...button.DefaultConfig,
+		...button[configPlatform],
 	};
 };
