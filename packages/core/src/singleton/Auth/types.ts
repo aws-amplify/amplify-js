@@ -125,6 +125,7 @@ export interface AuthIdentityPoolConfig {
 		userPoolClientId?: never;
 		userPoolId?: never;
 		userPoolEndpoint?: never;
+		cognitoIdentityEndpoint?: never;
 		loginWith?: never;
 		signUpVerificationMethod?: never;
 		userAttributes?: never;
@@ -149,6 +150,7 @@ export interface CognitoUserPoolConfig {
 	userPoolClientId: string;
 	userPoolId: string;
 	userPoolEndpoint?: string;
+	cognitoIdentityEndpoint?: string;
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {
 		oauth?: OAuthConfig;

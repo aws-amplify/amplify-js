@@ -31,7 +31,7 @@ const SERVICE_NAME = 'cognito-identity';
  */
 const endpointResolver = ({ region }: EndpointResolverOptions) => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
-	const customURL = authConfig?.userPoolEndpoint;
+	const customURL = authConfig?.cognitoIdentityEndpoint;
 	const defaultURL = new AmplifyUrl(
 		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`
 	);
