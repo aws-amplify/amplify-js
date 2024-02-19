@@ -5036,26 +5036,21 @@ describe('generateClient', () => {
 		test('can create()', async () => {
 			const spy = mockApiResponse({
 				data: {
-					createTodo: {
-						__typename: 'Todo',
-						...serverManagedFields,
-						name: 'some name',
-						description: 'something something',
+					echo: {
+						resultContent: 'echo result content',
 					},
 				},
 			});
 
 			const client = generateClient<Schema>({
 				amplify: Amplify,
-				authMode: 'lambda',
-				authToken: 'some-token',
 			});
-			await client.models.Todo.create({
-				name: 'some name',
-				description: 'something something',
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toMatchSnapshot();
 		});
 	});
 });

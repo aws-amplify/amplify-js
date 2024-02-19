@@ -4502,6 +4502,43 @@ exports[`generateClient basic model operations with Amplify configuration option
 ]
 `;
 
+exports[`generateClient custom operations can create() 1`] = `
+[
+  [
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can create() 2`] = `
+{
+  "resultContent": "echo result content",
+}
+`;
+
 exports[`generateClient graphql - client-level auth override client auth override query - lambda 1`] = `
 [
   [

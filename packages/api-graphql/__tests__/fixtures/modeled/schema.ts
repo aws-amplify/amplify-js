@@ -110,10 +110,6 @@ const schema = a.schema({
 		.authorization([a.allow.private()]),
 
 	// custom mutation returning a model type
-	// NOTE: I'm not sure we can/should actually support this.
-	// What are the implications of returning a model? What if it has
-	// relationships? When/Where are those resolved? Does this work today?
-	// TODO: Need to test this case directly.
 	Post: a
 		.model({
 			id: a.id().required(),
