@@ -262,17 +262,11 @@ export const extractContent = ({
 				SecondaryBtn,
 			} = content;
 
-			const getButtonConfig = (button?: InAppMessageButton) => ({
-				...button?.DefaultConfig,
-				...button?.[configPlatform],
-			});
-
-			const defaultPrimaryButton = PrimaryBtn
-				? getButtonConfig(PrimaryBtn)
-				: undefined;
-			const defaultSecondaryButton = SecondaryBtn
-				? getButtonConfig(SecondaryBtn)
-				: undefined;
+			const defaultPrimaryButton = getButtonConfig(configPlatform, PrimaryBtn);
+			const defaultSecondaryButton = getButtonConfig(
+				configPlatform,
+				SecondaryBtn,
+			);
 
 			const extractedContent: InAppMessageContent = {};
 			if (BackgroundColor) {
@@ -367,4 +361,20 @@ export const mapOSPlatform = (os?: string): ButtonConfigPlatform => {
 		default:
 			return 'DefaultConfig';
 	}
+};
+
+const getButtonConfig = (
+	configPlatform: ButtonConfigPlatform,
+	button?: InAppMessageButton,
+): InAppMessageButton['DefaultConfig'] | undefined => {
+	if (!button || !button?.DefaultConfig) {
+		return;
+	}
+	if (!configPlatform || !button?.[configPlatform]) {
+		return button?.DefaultConfig;
+	}
+	return {
+		...button?.DefaultConfig,
+		...button?.[configPlatform],
+	};
 };
