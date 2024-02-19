@@ -88,7 +88,7 @@ export const identifyUser = async ({
 		userId,
 		userProfile,
 		userAgentValue: getInAppMessagingUserAgentString(
-			InAppMessagingAction.IdentifyUser
+			InAppMessagingAction.IdentifyUser,
 		),
 	});
 };

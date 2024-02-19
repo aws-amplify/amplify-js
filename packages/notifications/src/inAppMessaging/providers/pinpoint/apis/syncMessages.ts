@@ -66,7 +66,7 @@ async function fetchInAppMessages() {
 			identityId,
 			region,
 			userAgentValue: getInAppMessagingUserAgentString(
-				InAppMessagingAction.SyncMessages
+				InAppMessagingAction.SyncMessages,
 			),
 		});
 
@@ -76,7 +76,7 @@ async function fetchInAppMessages() {
 		};
 		const response: GetInAppMessagesOutput = await getInAppMessages(
 			{ credentials, region },
-			input
+			input,
 		);
 		const { InAppMessageCampaigns: messages } =
 			response.InAppMessagesResponse ?? {};

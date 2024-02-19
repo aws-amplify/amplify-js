@@ -13,5 +13,6 @@ export const calculatePartSize = (totalSize?: number): number => {
 		partSize *= 2;
 		partsCount = Math.ceil(totalSize / partSize);
 	}
+
 	return partSize;
 };

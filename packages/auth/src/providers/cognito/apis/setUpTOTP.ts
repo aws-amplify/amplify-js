@@ -39,7 +39,7 @@ export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 
 	if (!SecretCode) {

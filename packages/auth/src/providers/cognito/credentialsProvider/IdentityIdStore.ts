@@ -26,7 +26,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 		this.authConfig = authConfigParam;
 		this._authKeys = createKeysForAuthStorage(
 			'Cognito',
-			authConfigParam.Cognito.identityPoolId
+			authConfigParam.Cognito.identityPoolId,
 		);
 		return;
 	}
@@ -45,7 +45,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 				};
 			} else {
 				const storedIdentityId = await this.keyValueStorage.getItem(
-					this._authKeys.identityId
+					this._authKeys.identityId,
 				);
 				if (!!storedIdentityId) {
 					return {
@@ -84,6 +84,6 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 const createKeysForAuthStorage = (provider: string, identifier: string) => {
 	return getAuthStorageKeys(IdentityIdStorageKeys)(
 		`com.amplify.${provider}`,
-		identifier
+		identifier,
 	);
 };

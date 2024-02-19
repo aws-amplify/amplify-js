@@ -7,7 +7,7 @@ import { invalidRedirectException } from '../../../../errors/constants';
 export function getRedirectUrl(redirects: string[]): string {
 	const redirect = redirects?.find(
 		redirect =>
-			!redirect.startsWith('http://') && !redirect.startsWith('https://')
+			!redirect.startsWith('http://') && !redirect.startsWith('https://'),
 	);
 	if (!redirect) {
 		throw invalidRedirectException;

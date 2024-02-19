@@ -27,7 +27,7 @@ jest.mock('../../src/internals/server', () => ({
 			graphql: mockGraphQLMethod,
 			cancel: jest.fn(),
 			isCancelError: jest.fn(),
-		})
+		}),
 	),
 }));
 
@@ -106,13 +106,13 @@ describe('generateClient server edition', () => {
 			client.graphql(
 				mockContextSpec,
 				testGraphQLOptions,
-				testAdditionalHeaders
+				testAdditionalHeaders,
 			);
 
 			expect(mockGraphQLMethod).toHaveBeenCalledTimes(1);
 			expect(mockGraphQLMethod).toHaveBeenCalledWith(
 				testGraphQLOptions,
-				testAdditionalHeaders
+				testAdditionalHeaders,
 			);
 		});
 	});

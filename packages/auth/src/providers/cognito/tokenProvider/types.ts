@@ -49,7 +49,7 @@ export interface AuthTokenOrchestrator {
 	setTokenRefresher(tokenRefresher: TokenRefresher): void;
 	setAuthTokenStore(tokenStore: AuthTokenStore): void;
 	getTokens: (
-		options?: FetchAuthSessionOptions
+		options?: FetchAuthSessionOptions,
 	) => Promise<
 		(AuthTokens & { signInDetails?: CognitoAuthSignInDetails }) | null
 	>;

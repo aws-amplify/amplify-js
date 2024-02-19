@@ -121,7 +121,7 @@ export async function handleCustomChallenge({
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
-		jsonReq
+		jsonReq,
 	);
 
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH') {
@@ -159,7 +159,7 @@ export async function handleMFASetupChallenge({
 			UserCode: challengeResponse,
 			Session: session,
 			FriendlyDeviceName: deviceName,
-		}
+		},
 	);
 
 	signInStore.dispatch({
@@ -187,7 +187,7 @@ export async function handleSelectMFATypeChallenge({
 	const { userPoolId, userPoolClientId } = config;
 	assertValidationError(
 		challengeResponse === 'TOTP' || challengeResponse === 'SMS',
-		AuthValidationErrorCode.IncorrectMFAMethod
+		AuthValidationErrorCode.IncorrectMFAMethod,
 	);
 
 	const challengeResponses = {
@@ -215,7 +215,7 @@ export async function handleSelectMFATypeChallenge({
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
-		jsonReq
+		jsonReq,
 	);
 }
 
@@ -250,7 +250,7 @@ export async function handleSMSMFAChallenge({
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
-		jsonReq
+		jsonReq,
 	);
 }
 export async function handleSoftwareTokenMFAChallenge({
@@ -285,7 +285,7 @@ export async function handleSoftwareTokenMFAChallenge({
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
-		jsonReq
+		jsonReq,
 	);
 }
 export async function handleCompleteNewPasswordChallenge({
@@ -323,7 +323,7 @@ export async function handleCompleteNewPasswordChallenge({
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
-		jsonReq
+		jsonReq,
 	);
 }
 
@@ -332,7 +332,7 @@ export async function handleUserPasswordAuthFlow(
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
 	config: CognitoUserPoolConfig,
-	tokenOrchestrator: AuthTokenOrchestrator
+	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<InitiateAuthCommandOutput> {
 	const { userPoolClientId, userPoolId } = config;
 	const authParameters: Record<string, string> = {
@@ -364,7 +364,7 @@ export async function handleUserPasswordAuthFlow(
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
-		jsonReq
+		jsonReq,
 	);
 
 	const activeUsername =
@@ -390,7 +390,7 @@ export async function handleUserSRPAuthFlow(
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
 	config: CognitoUserPoolConfig,
-	tokenOrchestrator: AuthTokenOrchestrator
+	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
@@ -420,7 +420,7 @@ export async function handleUserSRPAuthFlow(
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
-		jsonReq
+		jsonReq,
 	);
 	const { ChallengeParameters: challengeParameters, Session: session } = resp;
 	const activeUsername = challengeParameters?.USERNAME ?? username;
@@ -437,7 +437,7 @@ export async function handleUserSRPAuthFlow(
 			tokenOrchestrator,
 		],
 		activeUsername,
-		tokenOrchestrator
+		tokenOrchestrator,
 	);
 }
 
@@ -445,7 +445,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 	username: string,
 	clientMetadata: ClientMetadata | undefined,
 	config: CognitoUserPoolConfig,
-	tokenOrchestrator: AuthTokenOrchestrator
+	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<InitiateAuthCommandOutput> {
 	const { userPoolClientId, userPoolId } = config;
 	const { dispatch } = signInStore;
@@ -477,7 +477,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
-		jsonReq
+		jsonReq,
 	);
 	const activeUsername = response.ChallengeParameters?.USERNAME ?? username;
 	setActiveSignInUsername(activeUsername);
@@ -497,7 +497,7 @@ export async function handleCustomSRPAuthFlow(
 	password: string,
 	clientMetadata: ClientMetadata | undefined,
 	config: CognitoUserPoolConfig,
-	tokenOrchestrator: AuthTokenOrchestrator
+	tokenOrchestrator: AuthTokenOrchestrator,
 ) {
 	assertTokenProviderConfig(config);
 	const { userPoolId, userPoolClientId } = config;
@@ -531,7 +531,7 @@ export async function handleCustomSRPAuthFlow(
 				region: getRegion(userPoolId),
 				userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 			},
-			jsonReq
+			jsonReq,
 		);
 	const activeUsername = challengeParameters?.USERNAME ?? username;
 	setActiveSignInUsername(activeUsername);
@@ -548,7 +548,7 @@ export async function handleCustomSRPAuthFlow(
 			tokenOrchestrator,
 		],
 		activeUsername,
-		tokenOrchestrator
+		tokenOrchestrator,
 	);
 }
 
@@ -564,7 +564,7 @@ async function handleDeviceSRPAuth({
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	assertDeviceMetadata(deviceMetadata);
 	const authenticationHelper = await getAuthenticationHelper(
-		deviceMetadata.deviceGroupKey
+		deviceMetadata.deviceGroupKey,
 	);
 	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
@@ -581,7 +581,7 @@ async function handleDeviceSRPAuth({
 	};
 	const { ChallengeParameters, Session } = await respondToAuthChallenge(
 		{ region: getRegion(userPoolId) },
-		jsonReqResponseChallenge
+		jsonReqResponseChallenge,
 	);
 
 	return handleDevicePasswordVerifier(
@@ -591,7 +591,7 @@ async function handleDeviceSRPAuth({
 		Session,
 		authenticationHelper,
 		config,
-		tokenOrchestrator
+		tokenOrchestrator,
 	);
 }
 
@@ -602,7 +602,7 @@ async function handleDevicePasswordVerifier(
 	session: string | undefined,
 	authenticationHelper: AuthenticationHelper,
 	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig,
-	tokenOrchestrator?: AuthTokenOrchestrator
+	tokenOrchestrator?: AuthTokenOrchestrator,
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	assertDeviceMetadata(deviceMetadata);
@@ -650,7 +650,7 @@ async function handleDevicePasswordVerifier(
 
 	return respondToAuthChallenge(
 		{ region: getRegion(userPoolId) },
-		jsonReqResponseChallenge
+		jsonReqResponseChallenge,
 	);
 }
 
@@ -661,7 +661,7 @@ export async function handlePasswordVerifierChallenge(
 	session: string | undefined,
 	authenticationHelper: AuthenticationHelper,
 	config: CognitoUserPoolConfig,
-	tokenOrchestrator: AuthTokenOrchestrator
+	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
@@ -717,7 +717,7 @@ export async function handlePasswordVerifierChallenge(
 
 	const response = await respondToAuthChallenge(
 		{ region: getRegion(userPoolId) },
-		jsonReqResponseChallenge
+		jsonReqResponseChallenge,
 	);
 
 	if (response.ChallengeName === 'DEVICE_SRP_AUTH')
@@ -755,14 +755,14 @@ export async function getSignInResult(params: {
 				throw new AuthError({
 					name: AuthErrorCodes.SignInException,
 					message: `Cannot initiate MFA setup from available types: ${getMFATypes(
-						parseMFATypes(challengeParameters.MFAS_CAN_SETUP)
+						parseMFATypes(challengeParameters.MFAS_CAN_SETUP),
 					)}`,
 				});
 			const { Session, SecretCode: secretCode } = await associateSoftwareToken(
 				{ region: getRegion(authConfig.userPoolId) },
 				{
 					Session: signInSession,
-				}
+				},
 			);
 			signInStore.dispatch({
 				type: 'SET_SIGN_IN_SESSION',
@@ -782,7 +782,7 @@ export async function getSignInResult(params: {
 				nextStep: {
 					signInStep: 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
 					missingAttributes: parseAttributes(
-						challengeParameters.requiredAttributes
+						challengeParameters.requiredAttributes,
 					),
 				},
 			};
@@ -792,7 +792,7 @@ export async function getSignInResult(params: {
 				nextStep: {
 					signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
 					allowedMFATypes: getMFATypes(
-						parseMFATypes(challengeParameters.MFAS_CAN_CHOOSE)
+						parseMFATypes(challengeParameters.MFAS_CAN_CHOOSE),
 					),
 				},
 			};
@@ -835,7 +835,7 @@ export async function getSignInResult(params: {
 
 export function getTOTPSetupDetails(
 	secretCode: string,
-	username?: string
+	username?: string,
 ): AuthTOTPSetupDetails {
 	return {
 		sharedSecret: secretCode,
@@ -850,7 +850,7 @@ export function getTOTPSetupDetails(
 }
 
 export function getSignInResultFromError(
-	errorName: string
+	errorName: string,
 ): AuthSignInOutput | undefined {
 	if (errorName === InitiateAuthException.PasswordResetRequiredException) {
 		return {
@@ -868,14 +868,14 @@ export function getSignInResultFromError(
 export function parseAttributes(attributes: string | undefined): string[] {
 	if (!attributes) return [];
 	const parsedAttributes = (JSON.parse(attributes) as Array<string>).map(att =>
-		att.includes(USER_ATTRIBUTES) ? att.replace(USER_ATTRIBUTES, '') : att
+		att.includes(USER_ATTRIBUTES) ? att.replace(USER_ATTRIBUTES, '') : att,
 	);
 
 	return parsedAttributes;
 }
 
 export function createAttributes(
-	attributes?: AuthUserAttributes
+	attributes?: AuthUserAttributes,
 ): Record<string, string> {
 	if (!attributes) return {};
 
@@ -895,7 +895,7 @@ export async function handleChallengeName(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator,
 	clientMetadata?: ClientMetadata,
-	options?: ConfirmSignInOptions
+	options?: ConfirmSignInOptions,
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const userAttributes = options?.userAttributes;
 	const deviceName = options?.friendlyDeviceName;
@@ -949,7 +949,7 @@ export async function handleChallengeName(
 					},
 				],
 				username,
-				tokenOrchestrator
+				tokenOrchestrator,
 			);
 		case 'SOFTWARE_TOKEN_MFA':
 			return handleSoftwareTokenMFAChallenge({
@@ -992,7 +992,7 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 
 export function isMFATypeEnabled(
 	challengeParams: ChallengeParameters,
-	mfaType: AuthMFAType
+	mfaType: AuthMFAType,
 ): boolean {
 	const { MFAS_CAN_SETUP } = challengeParams;
 	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
@@ -1027,7 +1027,7 @@ export async function assertUserNotAuthenticated() {
 export async function getNewDeviceMetatada(
 	userPoolId: string,
 	newDeviceMetadata?: NewDeviceMetadataType,
-	accessToken?: string
+	accessToken?: string,
 ): Promise<DeviceMetadata | undefined> {
 	if (!newDeviceMetadata) return undefined;
 	const userPoolName = userPoolId.split('_')[1] || '';
@@ -1038,7 +1038,7 @@ export async function getNewDeviceMetatada(
 	try {
 		await authenticationHelper.generateHashDevice(
 			deviceGroupKey ?? '',
-			deviceKey ?? ''
+			deviceKey ?? '',
 		);
 	} catch (errGenHash) {
 		// TODO: log error here
@@ -1047,10 +1047,10 @@ export async function getNewDeviceMetatada(
 
 	const deviceSecretVerifierConfig = {
 		Salt: base64Encoder.convert(
-			getBytesFromHex(authenticationHelper.getSaltToHashDevices())
+			getBytesFromHex(authenticationHelper.getSaltToHashDevices()),
 		),
 		PasswordVerifier: base64Encoder.convert(
-			getBytesFromHex(authenticationHelper.getVerifierDevices())
+			getBytesFromHex(authenticationHelper.getVerifierDevices()),
 		),
 	};
 	const randomPassword = authenticationHelper.getRandomPassword();
@@ -1062,7 +1062,7 @@ export async function getNewDeviceMetatada(
 				AccessToken: accessToken,
 				DeviceKey: newDeviceMetadata?.DeviceKey,
 				DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-			}
+			},
 		);
 
 		return {
@@ -1087,7 +1087,7 @@ export async function retryOnResourceNotFoundException<
 	func: F,
 	args: Parameters<F>,
 	username: string,
-	tokenOrchestrator: AuthTokenOrchestrator
+	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<ReturnType<F>> {
 	try {
 		return await func(...args);

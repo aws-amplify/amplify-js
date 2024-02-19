@@ -26,12 +26,12 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function resendSignUpCode(
-	input: ResendSignUpCodeInput
+	input: ResendSignUpCodeInput,
 ): Promise<ResendSignUpCodeOutput> {
 	const username = input.username;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignUpUsername
+		AuthValidationErrorCode.EmptySignUpUsername,
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -54,7 +54,7 @@ export async function resendSignUpCode(
 			ClientMetadata: clientMetadata,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
-		}
+		},
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,

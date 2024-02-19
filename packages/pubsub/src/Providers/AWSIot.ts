@@ -42,7 +42,7 @@ export class AWSIoT extends MqttOverWS {
 			const result = Signer.signUrl(
 				endpoint,
 				{ access_key, secret_key, session_token },
-				serviceInfo
+				serviceInfo,
 			);
 
 			return result;

@@ -19,7 +19,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('deleteUserAttributes', () => {
@@ -53,7 +53,7 @@ describe('deleteUserAttributes', () => {
 			expect.objectContaining({
 				AccessToken: mockAccessToken,
 				UserAttributeNames: ['given_name', 'address'],
-			})
+			}),
 		);
 		expect(mockDeleteUserAttributes).toHaveBeenCalledTimes(1);
 	});
@@ -62,7 +62,7 @@ describe('deleteUserAttributes', () => {
 		expect.assertions(2);
 		mockDeleteUserAttributes.mockImplementation(() => {
 			throw getMockError(
-				DeleteUserAttributesException.InvalidParameterException
+				DeleteUserAttributesException.InvalidParameterException,
 			);
 		});
 		try {
@@ -72,7 +72,7 @@ describe('deleteUserAttributes', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				DeleteUserAttributesException.InvalidParameterException
+				DeleteUserAttributesException.InvalidParameterException,
 			);
 		}
 	});

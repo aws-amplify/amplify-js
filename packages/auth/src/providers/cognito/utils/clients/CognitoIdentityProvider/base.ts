@@ -33,7 +33,7 @@ const endpointResolver = ({ region }: EndpointResolverOptions) => {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const customURL = authConfig?.userPoolEndpoint;
 	const defaultURL = new AmplifyUrl(
-		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`
+		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`,
 	);
 
 	return {
@@ -90,7 +90,7 @@ export const getSharedHeaders = (operation: string): Headers => ({
 export const buildHttpRpcRequest = (
 	{ url }: Endpoint,
 	headers: Headers,
-	body: string
+	body: string,
 ): HttpRequest => ({
 	headers,
 	url,

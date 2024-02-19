@@ -27,7 +27,7 @@ describe('Pinpoint API: flushEvents', () => {
 			Promise.resolve({
 				credentials,
 				identityId,
-			})
+			}),
 		);
 	});
 
@@ -62,7 +62,7 @@ describe('Pinpoint API: flushEvents', () => {
 		expect(mockPinpointFlushEvents).not.toHaveBeenCalled();
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),
-			expect.any(Error)
+			expect.any(Error),
 		);
 	});
 });

@@ -16,7 +16,7 @@ import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
 import { addInflightPromise } from './inflightPromise';
 
 export const attemptCompleteOAuthFlow = async (
-	authConfig: AuthConfig['Cognito']
+	authConfig: AuthConfig['Cognito'],
 ): Promise<void> => {
 	try {
 		assertTokenProviderConfig(authConfig);
@@ -41,7 +41,7 @@ export const attemptCompleteOAuthFlow = async (
 		addInflightPromise(resolve);
 	});
 	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
-		() => asyncGetSessionBlocker
+		() => asyncGetSessionBlocker,
 	);
 
 	try {

@@ -41,7 +41,7 @@ describe('xhrTransferHandler', () => {
 			jest.fn().mockImplementation(() => {
 				return new originalFileReaderCtor();
 			}),
-			{ ...originalFileReaderCtor }
+			{ ...originalFileReaderCtor },
 		);
 	});
 
@@ -60,7 +60,7 @@ describe('xhrTransferHandler', () => {
 		await requestPromise;
 		expect(mockXhr.open).toHaveBeenCalledWith(
 			defaultRequest.method,
-			defaultRequest.url.toString()
+			defaultRequest.url.toString(),
 		);
 	});
 
@@ -76,7 +76,7 @@ describe('xhrTransferHandler', () => {
 			},
 			{
 				responseType: 'text',
-			}
+			},
 		);
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
@@ -110,7 +110,7 @@ describe('xhrTransferHandler', () => {
 			},
 			{
 				responseType: 'text',
-			}
+			},
 		);
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
@@ -127,8 +127,8 @@ describe('xhrTransferHandler', () => {
 				},
 				{
 					responseType: 'text',
-				}
-			)
+				},
+			),
 		).rejects.toThrow('ReadableStream request payload is not supported.');
 	});
 
@@ -141,7 +141,7 @@ describe('xhrTransferHandler', () => {
 			},
 			{
 				responseType: 'text',
-			}
+			},
 		);
 		mockXhrResponse(mockXhr, mock200Response);
 		await requestPromise;
@@ -197,7 +197,7 @@ describe('xhrTransferHandler', () => {
 			expect.objectContaining({
 				message: 'Network Error',
 				name: 'ECONNABORTED',
-			})
+			}),
 		);
 	});
 
@@ -211,7 +211,7 @@ describe('xhrTransferHandler', () => {
 			expect.objectContaining({
 				message: 'Network Error',
 				name: 'ECONNABORTED',
-			})
+			}),
 		);
 		// Should be no-op if the xhr is already cleared
 		mockXhrResponse(mockXhr, mock200Response);
@@ -264,7 +264,7 @@ describe('xhrTransferHandler', () => {
 			expect.objectContaining({
 				message: 'Request aborted',
 				name: 'ERR_ABORTED',
-			})
+			}),
 		);
 	});
 
@@ -278,7 +278,7 @@ describe('xhrTransferHandler', () => {
 			expect.objectContaining({
 				message: 'Request aborted',
 				name: 'ERR_ABORTED',
-			})
+			}),
 		);
 		// Should be no-op if the xhr is already cleared
 		mockXhrResponse(mockXhr, mock200Response);
@@ -336,9 +336,9 @@ describe('xhrTransferHandler', () => {
 		await expect(body!.json()).rejects.toThrow(
 			expect.objectContaining({
 				message: expect.stringContaining(
-					'Parsing response to JSON is not implemented.'
+					'Parsing response to JSON is not implemented.',
 				),
-			})
+			}),
 		);
 	});
 

@@ -342,7 +342,7 @@ describe('Interactions', () => {
 			mockFetchAuthSession.mockReturnValue(Promise.reject(new Error()));
 
 			await expect(
-				provider.sendMessage(botConfig.BookTrip, 'hi')
+				provider.sendMessage(botConfig.BookTrip, 'hi'),
 			).rejects.toEqual('No credentials');
 			expect.assertions(1);
 		});
@@ -355,7 +355,7 @@ describe('Interactions', () => {
 					options: {
 						messageType: 'text',
 					},
-				})
+				}),
 			).rejects.toEqual('invalid content type');
 
 			// obj voice in wrong format
@@ -365,7 +365,7 @@ describe('Interactions', () => {
 					options: {
 						messageType: 'voice',
 					},
-				})
+				}),
 			).rejects.toEqual('invalid content type');
 		});
 	});
@@ -384,7 +384,7 @@ describe('Interactions', () => {
 
 		test('Configure onComplete callback for a configured bot successfully', () => {
 			expect(() =>
-				provider.onComplete(botConfig.BookTrip, callback)
+				provider.onComplete(botConfig.BookTrip, callback),
 			).not.toThrow();
 			expect.assertions(1);
 		});
@@ -410,7 +410,7 @@ describe('Interactions', () => {
 				switch (actionType) {
 					case ACTION_TYPE.IN_PROGRESS:
 						return jest.fn((err, confirmation) =>
-							fail(`callback shouldn't be called`)
+							fail(`callback shouldn't be called`),
 						);
 
 					case ACTION_TYPE.COMPLETE:
@@ -428,24 +428,24 @@ describe('Interactions', () => {
 						});
 					case ACTION_TYPE.ERROR:
 						return jest.fn((err, confirmation) =>
-							expect(err).toEqual(new Error('Bot conversation failed'))
+							expect(err).toEqual(new Error('Bot conversation failed')),
 						);
 				}
 			};
 
 			const inProgressResp = (await provider.sendMessage(
 				botConfig.BookTrip,
-				'in progress. callback isnt fired'
+				'in progress. callback isnt fired',
 			)) as RecognizeTextCommandOutput;
 
 			const completeSuccessResp = (await provider.sendMessage(
 				botConfig.BookTrip,
-				'done'
+				'done',
 			)) as RecognizeTextCommandOutput;
 
 			const completeFailResp = (await provider.sendMessage(
 				botConfig.BookTrip,
-				'error'
+				'error',
 			)) as RecognizeTextCommandOutput;
 
 			mockResponseProvider = actionType => {
@@ -469,13 +469,13 @@ describe('Interactions', () => {
 				// callback is only called once conversation is completed
 				let config = { ...botConfig.BookTrip, name: uuid() };
 				const inProgressCallback = mockCallbackProvider(
-					ACTION_TYPE.IN_PROGRESS
+					ACTION_TYPE.IN_PROGRESS,
 				);
 				provider.onComplete(config, inProgressCallback);
 
 				provider._reportBotStatus(
 					mockResponseProvider(ACTION_TYPE.IN_PROGRESS),
-					config
+					config,
 				);
 
 				jest.runAllTimers();
@@ -486,13 +486,13 @@ describe('Interactions', () => {
 			test(`task complete; callback with success resp`, async () => {
 				let config = { ...botConfig.BookTrip, name: uuid() };
 				const completeSuccessCallback = mockCallbackProvider(
-					ACTION_TYPE.COMPLETE
+					ACTION_TYPE.COMPLETE,
 				);
 
 				provider.onComplete(config, completeSuccessCallback);
 				provider._reportBotStatus(
 					mockResponseProvider(ACTION_TYPE.COMPLETE),
-					config
+					config,
 				);
 
 				jest.runAllTimers();
@@ -508,7 +508,7 @@ describe('Interactions', () => {
 
 				provider._reportBotStatus(
 					mockResponseProvider(ACTION_TYPE.ERROR),
-					config
+					config,
 				);
 
 				jest.runAllTimers();

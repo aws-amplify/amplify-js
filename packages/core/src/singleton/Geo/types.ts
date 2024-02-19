@@ -3,11 +3,11 @@
 
 import { AtLeastOne } from '../types';
 
-export type LocationServiceConfig = {
+export interface LocationServiceConfig {
 	LocationService: {
 		region: string;
 		maps?: {
-			items: {};
+			items: Record<string, unknown>;
 			default: string;
 		};
 		searchIndices?: {
@@ -19,6 +19,6 @@ export type LocationServiceConfig = {
 			default: string;
 		};
 	};
-};
+}
 
 export type GeoConfig = AtLeastOne<LocationServiceConfig>;

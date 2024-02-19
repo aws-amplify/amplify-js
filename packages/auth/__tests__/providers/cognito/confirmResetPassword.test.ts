@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('confirmResetPassword', () => {
@@ -33,7 +33,7 @@ describe('confirmResetPassword', () => {
 
 	beforeEach(() => {
 		mockConfirmForgotPassword.mockResolvedValue(
-			authAPITestParams.confirmResetPasswordHttpCallResult
+			authAPITestParams.confirmResetPasswordHttpCallResult,
 		);
 	});
 
@@ -43,7 +43,7 @@ describe('confirmResetPassword', () => {
 
 	it('should call the confirmForgotPassword and return void', async () => {
 		expect(
-			await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest)
+			await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest),
 		).toBeUndefined();
 		expect(mockConfirmForgotPassword).toHaveBeenCalled();
 	});
@@ -65,7 +65,7 @@ describe('confirmResetPassword', () => {
 				Password: 'password',
 				ClientMetadata: { fooo: 'fooo' },
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			})
+			}),
 		);
 	});
 
@@ -80,7 +80,7 @@ describe('confirmResetPassword', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				AuthValidationErrorCode.EmptyConfirmResetPasswordUsername
+				AuthValidationErrorCode.EmptyConfirmResetPasswordUsername,
 			);
 		}
 	});
@@ -96,7 +96,7 @@ describe('confirmResetPassword', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				AuthValidationErrorCode.EmptyConfirmResetPasswordNewPassword
+				AuthValidationErrorCode.EmptyConfirmResetPasswordNewPassword,
 			);
 		}
 	});
@@ -112,7 +112,7 @@ describe('confirmResetPassword', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode
+				AuthValidationErrorCode.EmptyConfirmResetPasswordConfirmationCode,
 			);
 		}
 	});
@@ -121,7 +121,7 @@ describe('confirmResetPassword', () => {
 		expect.assertions(2);
 		mockConfirmForgotPassword.mockImplementation(() => {
 			throw getMockError(
-				ConfirmForgotPasswordException.InvalidParameterException
+				ConfirmForgotPasswordException.InvalidParameterException,
 			);
 		});
 		try {
@@ -129,7 +129,7 @@ describe('confirmResetPassword', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				ConfirmForgotPasswordException.InvalidParameterException
+				ConfirmForgotPasswordException.InvalidParameterException,
 			);
 		}
 	});
@@ -160,7 +160,7 @@ describe('confirmResetPassword', () => {
 				UserContextData: {
 					EncodedData: 'abcd',
 				},
-			})
+			}),
 		);
 		window['AmazonCognitoAdvancedSecurityData'] = undefined;
 	});

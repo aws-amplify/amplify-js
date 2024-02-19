@@ -152,7 +152,7 @@ export const signingTestTable: TestCase[] = [
 		name: 'unreserved characters in url',
 		request: {
 			url: new URL(
-				`${url}-._~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`
+				`${url}-._~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`,
 			),
 		},
 		expectedAuthorization:

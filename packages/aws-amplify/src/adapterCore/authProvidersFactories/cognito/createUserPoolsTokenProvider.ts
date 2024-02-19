@@ -20,7 +20,7 @@ import {
  */
 export const createUserPoolsTokenProvider = (
 	authConfig: AuthConfig,
-	keyValueStorage: KeyValueStorageInterface
+	keyValueStorage: KeyValueStorageInterface,
 ): TokenProvider => {
 	const authTokenStore = new DefaultTokenStore();
 	authTokenStore.setAuthConfig(authConfig);

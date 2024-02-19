@@ -4,6 +4,7 @@
 import { ConsoleLogger } from '../Logger';
 import { NO_HUBCALLBACK_PROVIDED_EXCEPTION } from '../constants';
 import { AmplifyError } from '../errors';
+
 import {
 	AmplifyChannel,
 	AmplifyEventData,
@@ -19,7 +20,7 @@ export const AMPLIFY_SYMBOL = (
 	typeof Symbol !== 'undefined'
 		? Symbol('amplify_default')
 		: '@@amplify_default'
-) as Symbol;
+) as symbol;
 
 const logger = new ConsoleLogger('Hub');
 
@@ -56,6 +57,7 @@ export class HubClass {
 		const holder = this.listeners.get(channel);
 		if (!holder) {
 			logger.warn(`No listeners for ${channel}`);
+
 			return;
 		}
 		this.listeners.set(channel, [
@@ -77,14 +79,14 @@ export class HubClass {
 		channel: Channel,
 		payload: HubPayload<AmplifyEventData[Channel]>,
 		source?: string,
-		ampSymbol?: Symbol
+		ampSymbol?: symbol,
 	): void;
 
 	dispatch(
 		channel: string,
 		payload: HubPayload,
 		source?: string,
-		ampSymbol?: Symbol
+		ampSymbol?: symbol,
 	): void;
 
 	dispatch<
@@ -94,7 +96,7 @@ export class HubClass {
 		channel: Channel | string,
 		payload: HubPayload<EventData>,
 		source?: string,
-		ampSymbol?: Symbol
+		ampSymbol?: symbol,
 	): void {
 		if (
 			typeof channel === 'string' &&
@@ -104,7 +106,7 @@ export class HubClass {
 
 			if (!hasAccess) {
 				logger.warn(
-					`WARNING: ${channel} is protected and dispatching on it can have unintended consequences`
+					`WARNING: ${channel} is protected and dispatching on it can have unintended consequences`,
 				);
 			}
 		}
@@ -132,19 +134,16 @@ export class HubClass {
 	 * @returns A function which can be called to cancel the listener.
 	 *
 	 */
-	listen<
-		Channel extends AmplifyChannel,
-		EventData extends EventDataMap = EventDataMap,
-	>(
+	listen<Channel extends AmplifyChannel>(
 		channel: Channel,
 		callback: HubCallback<Channel, AmplifyEventData[Channel]>,
-		listenerName?: string
+		listenerName?: string,
 	): StopListenerCallback;
 
 	listen<EventData extends EventDataMap>(
 		channel: string,
 		callback: HubCallback<string, EventData>,
-		listenerName?: string
+		listenerName?: string,
 	): StopListenerCallback;
 
 	listen<
@@ -153,7 +152,7 @@ export class HubClass {
 	>(
 		channel: Channel,
 		callback: HubCallback<Channel, EventData>,
-		listenerName: string = 'noname'
+		listenerName = 'noname',
 	): StopListenerCallback {
 		let cb: HubCallback<string, EventDataMap>;
 		if (typeof callback !== 'function') {
@@ -176,13 +175,14 @@ export class HubClass {
 			name: listenerName,
 			callback: cb,
 		});
+
 		return () => {
 			this._remove(channel, cb);
 		};
 	}
 
 	private _toListeners<Channel extends AmplifyChannel | string>(
-		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>
+		capsule: HubCapsule<Channel, EventDataMap | AmplifyEventData[Channel]>,
 	) {
 		const { channel, payload } = capsule;
 		const holder = this.listeners.get(channel);
@@ -199,9 +199,9 @@ export class HubClass {
 	}
 }
 
-/*We export a __default__ instance of HubClass to use it as a 
+/* We export a __default__ instance of HubClass to use it as a
 pseudo Singleton for the main messaging bus, however you can still create
-your own instance of HubClass() for a separate "private bus" of events.*/
+your own instance of HubClass() for a separate "private bus" of events. */
 export const Hub = new HubClass('__default__');
 
 /**

@@ -10,7 +10,7 @@ import { AttributeType } from './clients/CognitoIdentityProvider/types';
  * @returns an array of AttributeType objects.
  */
 export function toAttributeType<T extends Record<string, string | undefined>>(
-	attributes: T
+	attributes: T,
 ): AttributeType[] {
 	return Object.entries(attributes).map(([key, value]) => ({
 		Name: key,
@@ -25,7 +25,7 @@ export function toAttributeType<T extends Record<string, string | undefined>>(
  * @returns AuthUserAttributes object.
  */
 export function toAuthUserAttribute<T extends string = string>(
-	attributes?: AttributeType[]
+	attributes?: AttributeType[],
 ): AuthUserAttributes<T> {
 	const userAttributes: AuthUserAttributes<string> = {};
 	attributes?.forEach(attribute => {

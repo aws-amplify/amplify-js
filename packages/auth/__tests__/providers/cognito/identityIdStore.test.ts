@@ -51,7 +51,7 @@ describe('DefaultIdentityIdStore', () => {
 			defaultIdStore.storeIdentityId(validGuestIdentityId);
 			expect(mockKeyValueStorage.setItem).toHaveBeenCalledWith(
 				validAuthKey.identityId,
-				validGuestIdentityId.id
+				validGuestIdentityId.id,
 			);
 			expect(defaultIdStore._primaryIdentityId).toBeUndefined();
 		});
@@ -59,27 +59,27 @@ describe('DefaultIdentityIdStore', () => {
 			mockKeyValueStorage.getItem.mockReturnValue(validGuestIdentityId.id);
 
 			expect(await defaultIdStore.loadIdentityId()).toEqual(
-				validGuestIdentityId
+				validGuestIdentityId,
 			);
 		});
 		it('Should store primary identityId in keyValueStorage', async () => {
 			defaultIdStore.storeIdentityId(validPrimaryIdentityId);
 			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
-				validAuthKey.identityId
+				validAuthKey.identityId,
 			);
 			expect(defaultIdStore._primaryIdentityId).toEqual(
-				validPrimaryIdentityId.id
+				validPrimaryIdentityId.id,
 			);
 		});
 		it('Should load primary identityId from keyValueStorage', async () => {
 			expect(await defaultIdStore.loadIdentityId()).toEqual(
-				validPrimaryIdentityId
+				validPrimaryIdentityId,
 			);
 		});
 		it('Should clear the cached identityId', async () => {
 			defaultIdStore.clearIdentityId();
 			expect(mockKeyValueStorage.removeItem).toHaveBeenCalledWith(
-				validAuthKey.identityId
+				validAuthKey.identityId,
 			);
 			expect(defaultIdStore._primaryIdentityId).toBeUndefined();
 		});

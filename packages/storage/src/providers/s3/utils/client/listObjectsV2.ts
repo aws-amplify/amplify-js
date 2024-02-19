@@ -12,6 +12,7 @@ import {
 	AmplifyUrlSearchParams,
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+
 import type {
 	ListObjectsV2CommandInput,
 	ListObjectsV2CommandOutput,
@@ -36,7 +37,7 @@ export type ListObjectsV2Output = ListObjectsV2CommandOutput;
 
 const listObjectsV2Serializer = (
 	input: ListObjectsV2Input,
-	endpoint: Endpoint
+	endpoint: Endpoint,
 ): HttpRequest => {
 	const headers = assignStringVariables({
 		'x-amz-request-payer': input.RequestPayer,
@@ -54,6 +55,7 @@ const listObjectsV2Serializer = (
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
+
 	return {
 		method: 'GET',
 		headers,
@@ -62,7 +64,7 @@ const listObjectsV2Serializer = (
 };
 
 const listObjectsV2Deserializer = async (
-	response: HttpResponse
+	response: HttpResponse,
 ): Promise<ListObjectsV2Output> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
@@ -90,6 +92,7 @@ const listObjectsV2Deserializer = async (
 			Prefix: 'Prefix',
 			StartAfter: 'StartAfter',
 		});
+
 		return {
 			$metadata: parseMetadata(response),
 			...contents,
@@ -131,5 +134,5 @@ export const listObjectsV2 = composeServiceApi(
 	s3TransferHandler,
 	listObjectsV2Serializer,
 	listObjectsV2Deserializer,
-	{ ...defaultConfig, responseType: 'text' }
+	{ ...defaultConfig, responseType: 'text' },
 );

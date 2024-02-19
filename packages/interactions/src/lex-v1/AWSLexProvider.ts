@@ -44,7 +44,7 @@ class AWSLexProvider {
 	 */
 	reportBotStatus(
 		data: AWSLexProviderSendResponse,
-		{ name }: AWSLexProviderOption
+		{ name }: AWSLexProviderOption,
 	) {
 		const callback = this._botsCompleteCallback[name];
 		if (!callback) {
@@ -68,7 +68,7 @@ class AWSLexProvider {
 
 	async sendMessage(
 		botConfig: AWSLexProviderOption,
-		message: string | InteractionsMessage
+		message: string | InteractionsMessage,
 	): Promise<InteractionsResponse> {
 		// check if credentials are present
 		let session;
@@ -158,7 +158,7 @@ class AWSLexProvider {
 
 	onComplete(
 		{ name }: AWSLexProviderOption,
-		callback: InteractionsOnCompleteCallback
+		callback: InteractionsOnCompleteCallback,
 	) {
 		this._botsCompleteCallback[name] = callback;
 	}

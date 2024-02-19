@@ -135,8 +135,6 @@ tests:
     sample_name: v2/owner-and-group-different-models-default-v2
     spec: owner-and-group-different-models-default
     browser: *minimal_browser_list
-    timeout_minutes: 45
-    retry_count: 10
   - test_name: integ_datastore_auth_v2-owner-and-group-same-model-default
     desc: 'DataStore Auth CLI v2'
     framework: react
@@ -158,8 +156,6 @@ tests:
     sample_name: v2/dynamic-user-pool-groups-default-v2
     spec: dynamic-user-pool-groups-default
     browser: *minimal_browser_list
-    timeout_minutes: 45
-    retry_count: 10
   - test_name: integ_datastore_auth_v2-dynamic-user-pool-groups-owner-based-default
     desc: 'DataStore Auth CLI v2'
     framework: react
@@ -349,8 +345,6 @@ tests:
     sample_name: [v2/related-models]
     spec: cpk-related-models
     browser: *extended_browser_list
-    timeout_minutes: 45
-    retry_count: 10
   - test_name: integ_react_datastore_selective_sync
     desc: 'DataStore - Selective Sync'
     framework: react
@@ -371,9 +365,7 @@ tests:
     category: datastore
     sample_name: [v2/amplify-docs-examples]
     spec: amplify-docs-examples
-    browser: *minimal_browser_list
-    timeout_minutes: 45
-    retry_count: 10
+    browser: [chrome]
   - test_name: integ_react_datastore_websocket_disruption
     desc: 'DataStore - WebSocket Disruption'
     framework: react
@@ -386,11 +378,9 @@ tests:
     framework: javascript
     category: datastore
     sample_name: [basic-crud]
-    browser: *minimal_browser_list
+    browser: [chrome]
     spec: vanilla-js-basic-crud
     amplifyjs_dir: true
-    timeout_minutes: 45
-    retry_count: 10
   - test_name: integ_next_datastore_13_basic
     desc: 'DataStore - Nextjs 13 build with SWC - basic JS app'
     framework: next
@@ -411,20 +401,14 @@ tests:
     category: datastore
     sample_name: [v2/basic-crud]
     spec: vite-basic-crud
-    # TODO: run on firefox
     browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
   - test_name: integ_rollup_datastore_basic_crud
     desc: 'Rollup + DataStore - Basic CRUD'
     framework: rollup
     category: datastore
     sample_name: [rollup-basic-crud]
     spec: rollup-basic-crud
-    # TODO: run on firefox
     browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
 
   # API
   - test_name: integ_react_graphql_api
@@ -520,8 +504,6 @@ tests:
     sample_name: [auth-rsc]
     spec: auth-rsc
     browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
   - test_name: integ_next_sign_in_with_oauth
     desc: 'Sign-in with the OAuth flow'
     framework: next
@@ -529,8 +511,6 @@ tests:
     sample_name: [sign-in-with-oauth]
     spec: sign-in-with-oauth
     browser: [chrome]
-    timeout_minutes: 45
-    retry_count: 10
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.

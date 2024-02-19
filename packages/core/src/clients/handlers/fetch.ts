@@ -15,7 +15,7 @@ export const fetchTransferHandler: TransferHandler<
 	HttpTransferOptions
 > = async (
 	{ url, method, headers, body },
-	{ abortSignal, cache, withCrossDomainCredentials }
+	{ abortSignal, cache, withCrossDomainCredentials },
 ) => {
 	let resp: Response;
 	try {

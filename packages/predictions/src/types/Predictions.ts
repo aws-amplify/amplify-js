@@ -338,7 +338,7 @@ export function isValidInterpretInput(obj: any) {
 }
 
 export function isIdentifyFromCollection(
-	obj: any
+	obj: any,
 ): obj is IdentifyFromCollection {
 	const key: keyof IdentifyFromCollection = 'collection';
 	const keyId: keyof IdentifyFromCollection = 'collectionId';
@@ -376,14 +376,14 @@ export function isFileSource(obj: any): obj is FileSource {
 }
 
 export function isConvertBytesSource(
-	obj: any
+	obj: any,
 ): obj is BytesSource<ConvertBytes> {
 	const key: keyof BytesSource<ConvertBytes> = 'bytes';
 	return obj && obj.hasOwnProperty(key);
 }
 
 export function isIdentifyBytesSource(
-	obj: any
+	obj: any,
 ): obj is BytesSource<IdentifyBytes> {
 	const key: keyof BytesSource<IdentifyBytes> = 'bytes';
 	return obj && obj.hasOwnProperty(key);
@@ -400,7 +400,7 @@ export function isIdentifyLabelsInput(obj: any): obj is IdentifyLabelsInput {
 }
 
 export function isIdentifyEntitiesInput(
-	obj: any
+	obj: any,
 ): obj is IdentifyEntitiesInput {
 	const key: keyof IdentifyEntitiesInput = 'entities';
 	return obj && obj.hasOwnProperty(key);
@@ -412,7 +412,7 @@ export function isInterpretTextInput(obj: any): obj is InterpretTextInput {
 }
 
 export function isInterpretTextOthers(
-	text: InterpretTextInput['text']
+	text: InterpretTextInput['text'],
 ): text is InterpretTextOthers {
 	return (text as InterpretTextOthers).source.language !== undefined;
 }

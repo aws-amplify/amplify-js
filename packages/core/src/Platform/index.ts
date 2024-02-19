@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
+
 import { CustomUserAgentDetails, Framework } from './types';
 import { version } from './version';
 import { detectFramework, observeFrameworkChanges } from './detectFramework';
-import { UserAgent as AWSUserAgent } from '@aws-sdk/types';
 import { getCustomUserAgent } from './customUserAgent';
 
 const BASE_USER_AGENT = `aws-amplify`;
@@ -32,7 +33,6 @@ export const Platform = new PlatformBuilder();
 export const getAmplifyUserAgentObject = ({
 	category,
 	action,
-	framework,
 }: CustomUserAgentDetails = {}): AWSUserAgent => {
 	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
 	if (category) {
@@ -54,12 +54,12 @@ export const getAmplifyUserAgentObject = ({
 };
 
 export const getAmplifyUserAgent = (
-	customUserAgentDetails?: CustomUserAgentDetails
+	customUserAgentDetails?: CustomUserAgentDetails,
 ): string => {
 	const userAgent = getAmplifyUserAgentObject(customUserAgentDetails);
 	const userAgentString = userAgent
 		.map(([agentKey, agentValue]) =>
-			agentKey && agentValue ? `${agentKey}/${agentValue}` : agentKey
+			agentKey && agentValue ? `${agentKey}/${agentValue}` : agentKey,
 		)
 		.join(' ');
 

@@ -5,12 +5,13 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+
 import { GetUrlInput, GetUrlOutput } from '../../types';
 import { getUrl as getUrlInternal } from '../internal/getUrl';
 
 export const getUrl = async (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: GetUrlInput
+	input: GetUrlInput,
 ): Promise<GetUrlOutput> => {
 	return getUrlInternal(getAmplifyServerContext(contextSpec).amplify, input);
 };

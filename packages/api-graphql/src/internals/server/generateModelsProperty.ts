@@ -7,7 +7,9 @@ import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../types';
 import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
 
 import { listFactory } from '../operations/list';
+import { indexQueryFactory } from '../operations/indexQuery';
 import { getFactory } from '../operations/get';
+import { getSecondaryIndexesFromSchemaModel } from '../clientUtils';
 
 export function generateModelsProperty<
 	_T extends Record<any, any> = never,
@@ -59,7 +61,7 @@ export function generateModelsProperty<
 						client,
 						modelIntrospection,
 						model,
-						useContext
+						useContext,
 					);
 				} else {
 					models[name][operationPrefix] = getFactory(
@@ -67,11 +69,22 @@ export function generateModelsProperty<
 						modelIntrospection,
 						model,
 						operation,
-						useContext
+						useContext,
 					);
 				}
-			}
+			},
 		);
+
+		const secondaryIdxs = getSecondaryIndexesFromSchemaModel(model);
+
+		for (const idx of secondaryIdxs) {
+			models[name][idx.queryField] = indexQueryFactory(
+				client,
+				modelIntrospection,
+				model,
+				idx,
+			);
+		}
 	}
 
 	return models;

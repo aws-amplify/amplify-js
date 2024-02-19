@@ -73,13 +73,13 @@ export class AmazonAIIdentifyPredictionsProvider {
 	}
 
 	identify(
-		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
+		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput,
 	): Promise<
 		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
 	> {
 		assertValidationError(
 			isValidIdentifyInput(input),
-			PredictionsValidationErrorCode.InvalidInput
+			PredictionsValidationErrorCode.InvalidInput,
 		);
 
 		if (isIdentifyTextInput(input)) {
@@ -156,12 +156,12 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<IdentifyTextOutput>} - Promise resolving to object containing identified texts.
 	 */
 	protected async identifyText(
-		input: IdentifyTextInput
+		input: IdentifyTextInput,
 	): Promise<IdentifyTextOutput> {
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyText = {} } =
@@ -207,7 +207,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 				await this.rekognitionClient.send(detectTextCommand);
 
 			const rekognitionResponse = categorizeRekognitionBlocks(
-				rekognitionData.TextDetections as TextDetectionList
+				rekognitionData.TextDetections as TextDetectionList,
 			);
 			if (rekognitionResponse.text.words.length < 50) {
 				// did not hit the word limit, return the data
@@ -215,11 +215,11 @@ export class AmazonAIIdentifyPredictionsProvider {
 			}
 
 			const detectDocumentTextCommand = new DetectDocumentTextCommand(
-				textractParam
+				textractParam,
 			);
 
 			const { Blocks } = await this.textractClient.send(
-				detectDocumentTextCommand
+				detectDocumentTextCommand,
 			);
 
 			if (
@@ -247,12 +247,12 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to an array of identified entities.
 	 */
 	protected async identifyLabels(
-		input: IdentifyLabelsInput
+		input: IdentifyLabelsInput,
 	): Promise<IdentifyLabelsOutput> {
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyLabels = {} } =
@@ -295,7 +295,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectLabels response.
 	 */
 	private async detectLabels(
-		param: DetectLabelsCommandInput
+		param: DetectLabelsCommandInput,
 	): Promise<IdentifyLabelsOutput> {
 		const detectLabelsCommand = new DetectLabelsCommand(param);
 		const data = await this.rekognitionClient!.send(detectLabelsCommand);
@@ -304,7 +304,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 			const boxes =
 				label.Instances?.map(
 					instance =>
-						makeCamelCase(instance.BoundingBox) as BoundingBox | undefined
+						makeCamelCase(instance.BoundingBox) as BoundingBox | undefined,
 				) || [];
 			return {
 				name: label.Name,
@@ -324,13 +324,13 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectModerationLabels response.
 	 */
 	private async detectModerationLabels(
-		param: DetectModerationLabelsCommandInput
+		param: DetectModerationLabelsCommandInput,
 	): Promise<IdentifyLabelsOutput> {
 		const detectModerationLabelsCommand = new DetectModerationLabelsCommand(
-			param
+			param,
 		);
 		const data = await this.rekognitionClient!.send(
-			detectModerationLabelsCommand
+			detectModerationLabelsCommand,
 		);
 		if (data.ModerationLabels?.length !== 0) {
 			return { unsafe: 'YES' };
@@ -346,12 +346,12 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<IdentifyEntityOutput>} Promise resolving to identify results.
 	 */
 	protected async identifyEntities(
-		input: IdentifyEntitiesInput
+		input: IdentifyEntitiesInput,
 	): Promise<IdentifyEntitiesOutput> {
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { identifyEntities = {} } =
@@ -381,13 +381,13 @@ export class AmazonAIIdentifyPredictionsProvider {
 		) {
 			assertValidationError(
 				celebrityDetectionEnabled,
-				PredictionsValidationErrorCode.CelebrityDetectionNotEnabled
+				PredictionsValidationErrorCode.CelebrityDetectionNotEnabled,
 			);
 			const recognizeCelebritiesCommand = new RecognizeCelebritiesCommand(
-				param
+				param,
 			);
 			const data = await this.rekognitionClient.send(
-				recognizeCelebritiesCommand
+				recognizeCelebritiesCommand,
 			);
 			const faces =
 				data.CelebrityFaces?.map(
@@ -399,7 +399,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 								...makeCamelCase(celebrity, ['Id', 'Name', 'Urls']),
 								pose: makeCamelCase(celebrity.Face?.Pose),
 							},
-						}) as IdentifyEntity
+						}) as IdentifyEntity,
 				) ?? [];
 			return { entities: faces };
 		} else if (
@@ -417,7 +417,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 				MaxFaces: maxFaces,
 			};
 			const searchFacesByImageCommand = new SearchFacesByImageCommand(
-				updatedParam
+				updatedParam,
 			);
 			const data = await this.rekognitionClient.send(searchFacesByImageCommand);
 			const faces =
@@ -452,11 +452,11 @@ export class AmazonAIIdentifyPredictionsProvider {
 					];
 					const faceAttributes = makeCamelCase(
 						detail,
-						attributeKeys
+						attributeKeys,
 					) as FaceAttributes;
 
 					faceAttributes.emotions = detail.Emotions?.map(
-						emotion => emotion.Type
+						emotion => emotion.Type,
 					);
 					return {
 						boundingBox: makeCamelCase(detail.BoundingBox),

@@ -43,6 +43,9 @@ export {
 	ModelIntrospectionSchema,
 	SchemaModel,
 	SchemaModels,
+	ModelAttribute,
+	SecondaryIndexAttribute,
+	GraphQLProviderConfig,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {
@@ -90,6 +93,9 @@ export {
 	AmplifyError,
 	PlatformNotSupportedError,
 	createAssertionFunction,
+	ApiError,
+	ApiErrorParams,
+	ApiErrorResponse,
 } from './errors';
 export {
 	AmplifyErrorCode,

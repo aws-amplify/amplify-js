@@ -15,7 +15,7 @@ describe('resolveConfig', () => {
 	it('should return the configured appId and region', () => {
 		Amplify.configure(validConfig);
 		expect(resolveConfig()).toStrictEqual(
-			validConfig.Notifications!.InAppMessaging!.Pinpoint
+			validConfig.Notifications!.InAppMessaging!.Pinpoint,
 		);
 	});
 });

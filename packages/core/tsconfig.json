@@ -1,12 +1,4 @@
 {
-	"extends": "../tsconfig.base.json",
-	"compilerOptions": {
-		"importHelpers": false,
-		"strict": true,
-		"noImplicitAny": true
-	},
-	"include": ["./src"],
-	"watchOptions": {
-		"excludeDirectories": ["lib*"]
-	}
+	"extends": "../../tsconfig.json",
+	"include": ["./src", "__tests__"]
 }

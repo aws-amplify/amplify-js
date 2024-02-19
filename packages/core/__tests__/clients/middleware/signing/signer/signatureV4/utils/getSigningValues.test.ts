@@ -20,7 +20,7 @@ describe('getSigningValues', () => {
 				signingDate,
 				signingRegion,
 				signingService,
-			})
+			}),
 		).toStrictEqual({
 			...credentialsWithToken,
 			credentialScope,
