@@ -923,12 +923,12 @@ img { max-width: 100%; }
 				<a href="retryoptions.html#abortsignal" class="tsd-kind-icon">abort<wbr>Signal</a>
 			</li>
 			<li class=" tsd-kind-property tsd-parent-kind-interface">
-				<a href="retryoptions.html#computedelay" class="tsd-kind-icon">compute<wbr>Delay</a>
-			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
 				<a href="retryoptions.html#maxattempts" class="tsd-kind-icon">max<wbr>Attempts</a>
 			</li>
-			<li class=" tsd-kind-property tsd-parent-kind-interface">
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
+				<a href="retryoptions.html#computedelay" class="tsd-kind-icon">compute<wbr>Delay</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-interface">
 				<a href="retryoptions.html#retrydecider" class="tsd-kind-icon">retry<wbr>Decider</a>
 			</li>
 		</ul>
@@ -968,9 +968,14 @@ img { max-width: 100%; }
 					<h3>Properties</h3>
 					<ul class="tsd-index-list">
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="retryoptions.html#abortsignal" class="tsd-kind-icon">abort<wbr>Signal</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="retryoptions.html#computedelay" class="tsd-kind-icon">compute<wbr>Delay</a></li>
 						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="retryoptions.html#maxattempts" class="tsd-kind-icon">max<wbr>Attempts</a></li>
-						<li class="tsd-kind-property tsd-parent-kind-interface"><a href="retryoptions.html#retrydecider" class="tsd-kind-icon">retry<wbr>Decider</a></li>
+					</ul>
+				</section>
+				<section class="tsd-index-section ">
+					<h3>Methods</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="retryoptions.html#computedelay" class="tsd-kind-icon">compute<wbr>Delay</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-interface"><a href="retryoptions.html#retrydecider" class="tsd-kind-icon">retry<wbr>Decider</a></li>
 					</ul>
 				</section>
 			</div>
@@ -984,7 +989,7 @@ img { max-width: 100%; }
 			<div class="tsd-signature tsd-kind-icon">abort<wbr>Signal<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AbortSignal</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/core/src/clients/middleware/retry/middleware.ts#L39">packages/core/src/clients/middleware/retry/middleware.ts:39</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/middleware/retry/middleware.ts#L39">packages/core/src/clients/middleware/retry/middleware.ts:39</a></li>
 				</ul>
 			</aside>
 			<div class="tsd-comment tsd-typography">
@@ -994,57 +999,12 @@ img { max-width: 100%; }
 			</div>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-			<a name="computedelay" class="tsd-anchor"></a>
-			<h3>compute<wbr>Delay</h3>
-			<div class="tsd-signature tsd-kind-icon">compute<wbr>Delay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/core/src/clients/middleware/retry/middleware.ts#L31">packages/core/src/clients/middleware/retry/middleware.ts:31</a></li>
-				</ul>
-			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Function to compute the delay in milliseconds before the next retry based
-					on the number of attempts.</p>
-				</div>
-				<dl class="tsd-comment-tags">
-					<dt>param</dt>
-					<dd><p>Current number of attempts, including the first attempt.</p>
-					</dd>
-					<dt>returns</dt>
-					<dd><p>Delay in milliseconds.</p>
-					</dd>
-				</dl>
-			</div>
-			<div class="tsd-type-declaration">
-				<h4>Type declaration</h4>
-				<ul class="tsd-parameters">
-					<li class="tsd-parameter-siganture">
-						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>attempt<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
-						</ul>
-						<ul class="tsd-descriptions">
-							<li class="tsd-description">
-								<h4 class="tsd-parameters-title">Parameters</h4>
-								<ul class="tsd-parameters">
-									<li>
-										<h5>attempt: <span class="tsd-signature-type">number</span></h5>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 			<a name="maxattempts" class="tsd-anchor"></a>
 			<h3><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Attempts</h3>
 			<div class="tsd-signature tsd-kind-icon">max<wbr>Attempts<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 			<aside class="tsd-sources">
 				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/core/src/clients/middleware/retry/middleware.ts#L35">packages/core/src/clients/middleware/retry/middleware.ts:35</a></li>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/middleware/retry/middleware.ts#L35">packages/core/src/clients/middleware/retry/middleware.ts:35</a></li>
 				</ul>
 			</aside>
 			<div class="tsd-comment tsd-typography">
@@ -1053,55 +1013,79 @@ img { max-width: 100%; }
 				</div>
 			</div>
 		</section>
-		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+	</section>
+	<section class="tsd-panel-group tsd-member-group ">
+		<h2>Methods</h2>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+			<a name="computedelay" class="tsd-anchor"></a>
+			<h3>compute<wbr>Delay</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">compute<wbr>Delay<span class="tsd-signature-symbol">(</span>attempt<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/middleware/retry/middleware.ts#L31">packages/core/src/clients/middleware/retry/middleware.ts:31</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Function to compute the delay in milliseconds before the next retry based
+							on the number of attempts.</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>attempt: <span class="tsd-signature-type">number</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>Current number of attempts, including the first attempt.</p>
+							</div>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+					<p>Delay in milliseconds.</p>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
 			<a name="retrydecider" class="tsd-anchor"></a>
 			<h3>retry<wbr>Decider</h3>
-			<div class="tsd-signature tsd-kind-icon">retry<wbr>Decider<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
-			<aside class="tsd-sources">
-				<ul>
-					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/0e919f6e7/packages/core/src/clients/middleware/retry/middleware.ts#L24">packages/core/src/clients/middleware/retry/middleware.ts:24</a></li>
-				</ul>
-			</aside>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Function to decide if the request should be retried.</p>
-				</div>
-				<dl class="tsd-comment-tags">
-					<dt>param</dt>
-					<dd><p>Optional response of the request.</p>
-					</dd>
-					<dt>param</dt>
-					<dd><p>Optional error thrown from previous attempts.</p>
-					</dd>
-					<dt>returns</dt>
-					<dd><p>True if the request should be retried.</p>
-					</dd>
-				</dl>
-			</div>
-			<div class="tsd-type-declaration">
-				<h4>Type declaration</h4>
-				<ul class="tsd-parameters">
-					<li class="tsd-parameter-siganture">
-						<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">TResponse</a>, error<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+				<li class="tsd-signature tsd-kind-icon">retry<wbr>Decider<span class="tsd-signature-symbol">(</span>response<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">TResponse</a>, error<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/c54a19c8a/packages/core/src/clients/middleware/retry/middleware.ts#L24">packages/core/src/clients/middleware/retry/middleware.ts:24</a></li>
 						</ul>
-						<ul class="tsd-descriptions">
-							<li class="tsd-description">
-								<h4 class="tsd-parameters-title">Parameters</h4>
-								<ul class="tsd-parameters">
-									<li>
-										<h5><span class="tsd-flag ts-flagOptional">Optional</span> response: <a href="" class="tsd-signature-type">TResponse</a></h5>
-									</li>
-									<li>
-										<h5><span class="tsd-flag ts-flagOptional">Optional</span> error: <span class="tsd-signature-type">unknown</span></h5>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Function to decide if the request should be retried.</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> response: <a href="" class="tsd-signature-type">TResponse</a></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>Optional response of the request.</p>
+							</div>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> error: <span class="tsd-signature-type">unknown</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>Optional error thrown from previous attempts.</p>
+							</div>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <a href="../classes/asyncitem.html#promise" class="tsd-signature-type">Promise</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<p>True if the request should be retried.</p>
+				</li>
+			</ul>
 		</section>
 	</section>
 	<footer>
