@@ -7,58 +7,53 @@ import {
 	OverrideButtonConfiguration,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import {
+	ButtonConfigPlatform,
 	InAppMessageButton,
 	InAppMessageContent,
 } from '../../src/inAppMessaging/types/message';
-import { mapOSPlatform } from '../../src/inAppMessaging/providers/pinpoint/utils/helpers';
 
-export const mergeInAppMessageWithOverrides: (
+export const mergeInAppMessageWithOverrides = (
 	pinpointInAppMessage: InAppMessageCampaign,
-	platform: 'android' | 'ios' | 'web',
+	mappedPlatform: ButtonConfigPlatform,
 	buttonOverrides?: {
 		primaryButton: OverrideButtonConfiguration;
 		secondaryButton: OverrideButtonConfiguration;
 	},
-) => InAppMessageCampaign = (
-	pinpointInAppMessage,
-	platform,
-	buttonOverrides,
-) => {
+): InAppMessageCampaign => {
 	const message = cloneDeep(pinpointInAppMessage);
-	const configPlatform = mapOSPlatform(platform);
 	if (message?.InAppMessage?.Content) {
 		message.InAppMessage.Content[0] = {
 			...message.InAppMessage.Content[0],
 			PrimaryBtn: {
 				...message.InAppMessage.Content[0].PrimaryBtn,
-				[configPlatform]: buttonOverrides?.primaryButton,
+				[mappedPlatform]: buttonOverrides?.primaryButton,
 			},
 			SecondaryBtn: {
 				...message.InAppMessage.Content[0].SecondaryBtn,
-				[configPlatform]: buttonOverrides?.secondaryButton,
+				[mappedPlatform]: buttonOverrides?.secondaryButton,
 			},
 		};
 	}
 	return message;
 };
 
-export const mergeExpectedContentWithExpectedOverride:(
-	inAppMessage:InAppMessageContent,
+export const mergeExpectedContentWithExpectedOverride = (
+	inAppMessage: InAppMessageContent,
 	expectedButtonConfig: {
-		primaryButton:OverrideButtonConfiguration,
-		secondaryButton:OverrideButtonConfiguration
-	}
-)=>InAppMessageContent = (inAppMessage, expectedButtonConfig)=>{
+		primaryButton: OverrideButtonConfiguration;
+		secondaryButton: OverrideButtonConfiguration;
+	},
+): InAppMessageContent => {
 	let expectedContent = cloneDeep(inAppMessage);
 	expectedContent.primaryButton = {
 		...expectedContent.primaryButton,
-		action:expectedButtonConfig.primaryButton.ButtonAction,
-		url:expectedButtonConfig.primaryButton.Link
-	} as InAppMessageButton
+		action: expectedButtonConfig.primaryButton.ButtonAction,
+		url: expectedButtonConfig.primaryButton.Link,
+	} as InAppMessageButton;
 	expectedContent.secondaryButton = {
 		...expectedContent.secondaryButton,
-		action:expectedButtonConfig.secondaryButton.ButtonAction,
-		url:expectedButtonConfig.secondaryButton.Link
-	} as InAppMessageButton
-	return expectedContent
-}
+		action: expectedButtonConfig.secondaryButton.ButtonAction,
+		url: expectedButtonConfig.secondaryButton.Link,
+	} as InAppMessageButton;
+	return expectedContent;
+};

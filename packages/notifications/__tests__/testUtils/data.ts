@@ -12,6 +12,7 @@ import {
 	InAppMessagingEvent,
 } from '../../src/inAppMessaging/types';
 import { PushNotificationMessage } from '../../src/pushNotifications';
+import { ButtonConfigPlatform } from '../../src/inAppMessaging/types/message';
 
 export const credentials = {
 	credentials: {
@@ -216,6 +217,7 @@ export const extractedContent: InAppMessageContent[] = [
 
 export const nativeButtonOverrides: {
 	configPlatform: 'ios' | 'android';
+	mappedPlatform: ButtonConfigPlatform;
 	buttonOverrides: {
 		primaryButton: OverrideButtonConfiguration;
 		secondaryButton: OverrideButtonConfiguration;
@@ -223,6 +225,7 @@ export const nativeButtonOverrides: {
 }[] = [
 	{
 		configPlatform: 'android',
+		mappedPlatform: 'Android',
 		buttonOverrides: {
 			primaryButton: {
 				ButtonAction: 'DEEP_LINK',
@@ -236,6 +239,7 @@ export const nativeButtonOverrides: {
 	},
 	{
 		configPlatform: 'ios',
+		mappedPlatform: 'IOS',
 		buttonOverrides: {
 			primaryButton: {
 				ButtonAction: 'DEEP_LINK',
@@ -250,6 +254,7 @@ export const nativeButtonOverrides: {
 ];
 export const browserButtonOverrides: {
 	configPlatform: 'web';
+	mappedPlatform: ButtonConfigPlatform;
 	buttonOverrides: {
 		primaryButton: OverrideButtonConfiguration;
 		secondaryButton: OverrideButtonConfiguration;
@@ -257,6 +262,7 @@ export const browserButtonOverrides: {
 }[] = [
 	{
 		configPlatform: 'web',
+		mappedPlatform: 'Web',
 		buttonOverrides: {
 			primaryButton: {
 				ButtonAction: 'LINK',
