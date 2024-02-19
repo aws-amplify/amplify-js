@@ -3,6 +3,10 @@
 import { graphql, cancel, isCancelError } from './v6';
 import { generateModelsProperty } from './generateModelsProperty';
 import {
+	generateCustomQueriesProperty,
+	generateCustomMutationsProperty,
+} from './generateCustomOperationsProperty';
+import {
 	V6Client,
 	__amplify,
 	__authMode,
@@ -38,8 +42,8 @@ export function generateClient<T extends Record<any, any> = never>(
 	} as any;
 
 	client.models = generateModelsProperty<T>(client, params);
-	client.queries = generateQueriesProperty<T>(client, params);
-	// client.queries = generateMutationsProperty<T>(client, params);
+	client.queries = generateCustomQueriesProperty<T>(client, params);
+	client.mutations = generateCustomMutationsProperty<T>(client, params);
 
 	return client as V6Client<T>;
 }

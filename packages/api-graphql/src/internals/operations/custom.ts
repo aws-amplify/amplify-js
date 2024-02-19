@@ -347,8 +347,6 @@ async function _op(
 
 	const variables = operationVariables(operation, args);
 
-	console.log({ query, variables });
-
 	try {
 		const { data, extensions } = context
 			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
@@ -368,8 +366,6 @@ async function _op(
 					},
 					headers
 			  )) as GraphQLResult<any>);
-
-		console.log('raw data, extensions', data);
 
 		// flatten response
 		if (data) {
@@ -395,7 +391,7 @@ async function _op(
 						auth.authToken,
 						!!context
 				  )
-				: flattenedResult;
+				: [flattenedResult];
 
 			return { data: initialized, extensions };
 			// }
