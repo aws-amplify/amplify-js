@@ -5,6 +5,7 @@
 	"includeVersion": true,
 	"entryPoints": [
 		"src/index.ts",
+		"src/utils/index.ts",
 		"src/adapterCore/index.ts",
 		"src/analytics/index.ts",
 		"src/analytics/pinpoint/index.ts",
@@ -17,7 +18,6 @@
 		"src/auth/server.ts",
 		"src/auth/cognito/index.ts",
 		"src/auth/cognito/server/index.ts",
-		"src/datastore/index.ts",
 		"src/in-app-messaging/index.ts",
 		"src/in-app-messaging/pinpoint/index.ts",
 		"src/push-notifications/index.ts",
@@ -25,7 +25,7 @@
 		"src/storage/index.ts",
 		"src/storage/server.ts",
 		"src/storage/s3/index.ts",
-		"src/utils/index.ts"
+		"src/datastore/index.ts",
 	],
 	"readme": "README.md",
 }
