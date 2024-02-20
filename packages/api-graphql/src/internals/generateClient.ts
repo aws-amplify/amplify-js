@@ -1,8 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Hub } from '@aws-amplify/core';
-import { EnumTypes, ModelTypes } from '@aws-amplify/data-schema-types';
 import { graphql, cancel, isCancelError } from './v6';
+import {
+	EnumTypes,
+	ModelTypes,
+	CustomQueries,
+	CustomMutations,
+} from '@aws-amplify/data-schema-types';
 import { generateEnumsProperty } from './utils/generateEnumsProperty';
 import { generateModelsProperty } from './utils/generateModelsProperty';
 import { isApiGraphQLConfig } from './utils/isApiGraphQLProviderConfig';
@@ -40,9 +45,10 @@ export function generateClient<T extends Record<any, any> = never>(
 		graphql,
 		cancel,
 		isCancelError,
-		models: {},
-		queries: {},
-		mutations: {},
+		models: emptyProperty as ModelTypes<never>,
+		enums: emptyProperty as EnumTypes<never>,
+		queries: emptyProperty as CustomQueries<never>,
+		mutations: emptyProperty as CustomMutations<never>,
 	} as any;
 
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
