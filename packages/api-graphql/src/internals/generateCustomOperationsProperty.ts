@@ -1,16 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	ModelTypes,
-	CustomQueries,
-	CustomMutations,
-} from '@aws-amplify/data-schema-types';
-import { graphQLOperationsInfo, ModelOperation } from './APIClient';
-import { ClientGenerationParams } from './types';
+import { CustomQueries, CustomMutations } from '@aws-amplify/data-schema-types';
 import { V6Client, __authMode, __authToken } from '../types';
 
 import { customOpFactory } from './operations/custom';
-import { ModelIntrospectionSchema } from '@aws-amplify/core/internals/utils';
+import {
+	ModelIntrospectionSchema,
+	GraphQLProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 
 type OpTypes = 'queries' | 'mutations';
 
@@ -29,12 +26,10 @@ export function generateCustomOperationsProperty<
 	OpType extends OpTypes,
 >(
 	client: V6Client<Record<string, any>>,
-	params: ClientGenerationParams,
+	config: GraphQLProviderConfig['GraphQL'],
 	operationsType: OpType
 ): OpType extends 'queries' ? CustomQueries<T> : CustomMutations<T> {
-	const config = params.amplify.getConfig();
-
-	if (!config.API?.GraphQL) {
+	if (!config) {
 		// breaks compatibility with certain bundler, e.g. Vite where component files are evaluated before
 		// the entry point causing false positive errors. Revisit how to better handle this post-launch
 
@@ -46,7 +41,7 @@ export function generateCustomOperationsProperty<
 	}
 
 	const modelIntrospection: ModelIntrospectionSchema | undefined =
-		config.API.GraphQL.modelIntrospection;
+		config.modelIntrospection;
 
 	if (!modelIntrospection) {
 		return {} as CustomOpsProperty<T, OpType>;
@@ -71,22 +66,22 @@ export function generateCustomOperationsProperty<
 
 export function generateCustomMutationsProperty<T extends Record<any, any>>(
 	client: V6Client<Record<string, any>>,
-	params: ClientGenerationParams
+	config: GraphQLProviderConfig['GraphQL']
 ) {
 	return generateCustomOperationsProperty<T, 'mutations'>(
 		client,
-		params,
+		config,
 		'mutations'
 	);
 }
 
 export function generateCustomQueriesProperty<T extends Record<any, any>>(
 	client: V6Client<Record<string, any>>,
-	params: ClientGenerationParams
+	config: GraphQLProviderConfig['GraphQL']
 ) {
 	return generateCustomOperationsProperty<T, 'queries'>(
 		client,
-		params,
+		config,
 		'queries'
 	);
 }

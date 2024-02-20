@@ -7,7 +7,6 @@ import {
 	CustomHeaders,
 	CustomQueries,
 	CustomMutations,
-	SelectionSet,
 } from '@aws-amplify/data-schema-types';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
@@ -420,8 +419,8 @@ export type V6ClientSSRCookies<T extends Record<any, any> = never> =
 		isCancelError: (error: any) => boolean;
 		models: ModelTypes<T, 'COOKIES'>;
 		enums: EnumTypes<T>;
-		queries: CustomQueries<T, 'REQUEST'>;
-		mutations: CustomMutations<T, 'REQUEST'>;
+		queries: CustomQueries<T, 'COOKIES'>;
+		mutations: CustomMutations<T, 'COOKIES'>;
 	}>;
 
 export type GraphQLMethod = <

@@ -1,15 +1,16 @@
 import { type ClientSchema, a } from '@aws-amplify/data-schema';
 
 const schema = a.schema({
-	Todo: a.model({
-		name: a.string(),
-		description: a.string(),
-		notes: a.hasMany('Note'),
-		meta: a.hasOne('TodoMetadata'),
-		status: a.enum(['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED']),
-		tags: a.string().array(),
-	}),
-	// .authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	Todo: a
+		.model({
+			name: a.string(),
+			description: a.string(),
+			notes: a.hasMany('Note'),
+			meta: a.hasOne('TodoMetadata'),
+			status: a.enum(['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED']),
+			tags: a.string().array(),
+		})
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	Note: a.model({
 		body: a.string().required(),
 		todo: a.belongsTo('Todo'),
