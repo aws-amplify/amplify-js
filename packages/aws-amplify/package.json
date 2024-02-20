@@ -442,7 +442,7 @@
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "8.23 kB"
+			"limit": "8.24 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
