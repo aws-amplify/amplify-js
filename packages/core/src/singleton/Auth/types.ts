@@ -74,6 +74,11 @@ export interface FetchAuthSessionOptions {
 export interface AuthTokens {
 	idToken?: JWT;
 	accessToken: JWT;
+	/**
+	 * @deprecated
+	 * Use getCurrentUser to access signInDetails
+	 */
+	signInDetails?: AWSAuthSignInDetails;
 }
 
 export type AuthStandardAttributeKey =
@@ -240,3 +245,22 @@ export interface AWSCredentials {
 	sessionToken?: string;
 	expiration?: Date;
 }
+
+// copied from packages/auth/src/providers/cognito/types/models.ts#L94
+/**
+ * @deprecated
+ */
+interface AWSAuthSignInDetails {
+	loginId?: string;
+	authFlowType?: AuthFlowType;
+}
+
+// copied from packages/auth/src/providers/cognito/types/models.ts#L22
+/**
+ * @deprecated
+ */
+type AuthFlowType =
+	| 'USER_SRP_AUTH'
+	| 'CUSTOM_WITH_SRP'
+	| 'CUSTOM_WITHOUT_SRP'
+	| 'USER_PASSWORD_AUTH';
