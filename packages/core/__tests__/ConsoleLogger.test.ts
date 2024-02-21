@@ -44,4 +44,47 @@ describe('ConsoleLogger', () => {
 			expect(pluggables).toHaveLength(0);
 		});
 	});
+	describe('log to console', () => {
+		const mockDate = new Date('2024-01-01T17:30:00Z');
+		jest.spyOn(global, 'Date').mockImplementation(() => mockDate);
+
+		beforeEach(() => {
+			jest.spyOn(console, 'log').mockImplementation(() => {});
+			jest.spyOn(console, 'error').mockImplementation(() => {});
+			jest.spyOn(console, 'warn').mockImplementation(() => {});
+			jest.spyOn(console, 'info').mockImplementation(() => {});
+			jest.spyOn(console, 'debug').mockImplementation(() => {});
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		it.each<[string, string, string]>([
+			['error', 'error', 'ERROR'],
+			['warn', 'warn', 'WARN'],
+			['info', 'info', 'INFO'],
+			['debug', 'debug', 'DEBUG'],
+			['verbose', 'log', 'VERBOSE'],
+		])(
+			'should call console.%p for %p log level',
+			(logEvent, consoleEvent, logLevel) => {
+				const loggerName = 'test-logger';
+				const message = `${logEvent} log message`;
+				ConsoleLogger.LOG_LEVEL = logLevel;
+
+				const logger = new ConsoleLogger(loggerName);
+				(logger[logEvent as keyof ConsoleLogger] as Function)(message);
+
+				expect(
+					console[consoleEvent as keyof typeof console],
+				).toHaveBeenCalledTimes(1);
+				expect(
+					console[consoleEvent as keyof typeof console],
+				).toHaveBeenCalledWith(
+					`[${logLevel}] 30:00.0 ${loggerName} - ${message}`,
+				);
+			},
+		);
+	});
 });
