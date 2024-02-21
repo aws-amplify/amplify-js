@@ -17,6 +17,8 @@ import {
 	cognitoUserPoolsTokenProvider,
 } from './auth/cognito';
 
+console.log('Derp');
+
 export const DefaultAmplify = {
 	/**
 	 * Configures Amplify with the {@link resourceConfig} and {@link libraryOptions}.
