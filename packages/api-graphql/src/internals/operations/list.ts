@@ -52,7 +52,7 @@ async function _list(
 	const { name } = model;
 
 	const query = generateGraphQLDocument(
-		modelIntrospection.models,
+		modelIntrospection,
 		name,
 		'LIST',
 		args,

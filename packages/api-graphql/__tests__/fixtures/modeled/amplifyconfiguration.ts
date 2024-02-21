@@ -906,6 +906,16 @@ const amplifyConfig = {
 						},
 					},
 
+					metadata: {
+						name: 'metadata',
+						isArray: false,
+						type: {
+							nonModel: 'CommunityPostMetadata',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+
 					communityPostPollId: {
 						name: 'communityPostPollId',
 						isArray: false,
@@ -1068,7 +1078,28 @@ const amplifyConfig = {
 				values: ['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED'],
 			},
 		},
-		nonModels: {},
+		nonModels: {
+			CommunityPostMetadata: {
+				name: 'CommunityPostMetadata',
+				fields: {
+					type: {
+						name: 'type',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+
+					deleted: {
+						name: 'deleted',
+						isArray: false,
+						type: 'Boolean',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+			},
+		},
 	},
 };
 export default amplifyConfig;
