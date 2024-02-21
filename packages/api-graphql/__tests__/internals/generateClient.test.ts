@@ -185,7 +185,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			expect(() => {
-				client.enums.Status.values();
+				client.enums.SecondaryIndexModelStatus.values();
 			}).toThrow(
 				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
