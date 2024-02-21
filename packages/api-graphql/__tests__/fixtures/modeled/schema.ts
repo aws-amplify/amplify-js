@@ -48,9 +48,15 @@ const schema = a.schema({
 		})
 		.identifier(['cpk_cluster_key', 'cpk_sort_key']),
 
+	CommunityPostMetadata: a.customType({
+		type: a.string().required(),
+		deleted: a.boolean(),
+	}),
+
 	CommunityPost: a.model({
 		id: a.id().required(),
 		poll: a.hasOne('CommunityPoll'),
+		metadata: a.ref('CommunityPostMetadata'),
 	}),
 	CommunityPoll: a.model({
 		id: a.id().required(),

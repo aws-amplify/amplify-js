@@ -133,8 +133,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	/**
 	 * Search by text input with optional parameters
-	 * @param  {string} text - The text string that is to be searched for
-	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @param  {string} text The text string that is to be searched for
+	 * @param  {SearchByTextOptions} options Optional parameters to the search
 	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
 	 */
 	public async searchByText(
@@ -198,8 +198,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	/**
 	 * Search for suggestions based on the input text
-	 * @param  {string} text - The text string that is to be searched for
-	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @param  {string} text The text string that is to be searched for
+	 * @param  {SearchByTextOptions} options Optional parameters to the search
 	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
 	 */
 
@@ -311,8 +311,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	/**
 	 * Reverse geocoding search via a coordinate point on the map
-	 * @param coordinates - Coordinates array for the search input
-	 * @param options - Options parameters for the search
+	 * @param coordinates Coordinates array for the search input
+	 * @param options Options parameters for the search
 	 * @returns {Promise<Place>} - Promise that resolves to a place matching search coordinates
 	 */
 	public async searchByCoordinates(
@@ -370,8 +370,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	/**
 	 * Create geofences inside of a geofence collection
-	 * @param geofences - Array of geofence objects to create
-	 * @param options? - Optional parameters for creating geofences
+	 * @param geofences Array of geofence objects to create
+	 * @param options Optional parameters for creating geofences
 	 * @returns {Promise<AmazonLocationServiceSaveGeofencesResults>} - Promise that resolves to an object with:
 	 *   successes: list of geofences successfully created
 	 *   errors: list of geofences that failed to create
@@ -476,8 +476,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	/**
 	 * Get geofence from a geofence collection
-	 * @param geofenceId:string
-	 * @param options?: Optional parameters for getGeofence
+	 * @param geofenceId string
+	 * @param options Optional parameters for getGeofence
 	 * @returns {Promise<AmazonLocationServiceGeofence>} - Promise that resolves to a geofence object
 	 */
 	public async getGeofence(
@@ -540,7 +540,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	/**
 	 * List geofences from a geofence collection
-	 * @param  options?: ListGeofenceOptions
+	 * @param  options ListGeofenceOptions
 	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
 	 *   entries: list of geofences - 100 geofences are listed per page
 	 *   nextToken: token for next page of geofences
@@ -614,8 +614,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 	/**
 	 * Delete geofences from a geofence collection
-	 * @param geofenceIds: string|string[]
-	 * @param options?: GeofenceOptions
+	 * @param geofenceIds string|string[]
+	 * @param options GeofenceOptions
 	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
 	 *  successes: list of geofences successfully deleted
 	 *  errors: list of geofences that failed to delete

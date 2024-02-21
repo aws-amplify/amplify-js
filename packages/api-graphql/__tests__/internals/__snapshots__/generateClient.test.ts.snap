@@ -4615,6 +4615,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient custom operations can create() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {

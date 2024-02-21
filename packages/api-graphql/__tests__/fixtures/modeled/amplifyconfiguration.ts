@@ -906,6 +906,16 @@ const amplifyConfig = {
 						},
 					},
 
+					metadata: {
+						name: 'metadata',
+						isArray: false,
+						type: {
+							nonModel: 'CommunityPostMetadata',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+
 					communityPostPollId: {
 						name: 'communityPostPollId',
 						isArray: false,
@@ -1147,6 +1157,26 @@ const amplifyConfig = {
 			},
 		},
 		nonModels: {
+			CommunityPostMetadata: {
+				name: 'CommunityPostMetadata',
+				fields: {
+					type: {
+						name: 'type',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+
+					deleted: {
+						name: 'deleted',
+						isArray: false,
+						type: 'Boolean',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+			},
 			EchoResult: {
 				name: 'EchoResult',
 				fields: {
