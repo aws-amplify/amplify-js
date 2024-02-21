@@ -55,8 +55,8 @@ export class ServiceWorkerClass {
 	 * Make sure the service-worker.js is part of the build
 	 * for example with Angular, modify the angular-cli.json file
 	 * and add to "assets" array "service-worker.js"
-	 * @param {string} - (optional) Service worker file. Defaults to "/service-worker.js"
-	 * @param {string} - (optional) The service worker scope. Defaults to "/"
+	 * @param {string} filePath Service worker file. Defaults to "/service-worker.js"
+	 * @param {string} scope The service worker scope. Defaults to "/"
 	 *  - API Doc: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
 	 * @returns {Promise}
 	 *	- resolve(ServiceWorkerRegistration)
@@ -195,7 +195,7 @@ export class ServiceWorkerClass {
 	 * Send a message to the service worker. The service worker needs
 	 * to implement `self.addEventListener('message') to handle the
 	 * message. This ***currently*** does not work in Safari or IE.
-	 * @param {object | string} - An arbitrary JSON object or string message to send to the service worker
+	 * @param {object | string} message An arbitrary JSON object or string message to send to the service worker
 	 *	- see: https://developer.mozilla.org/en-US/docs/Web/API/Transferable
 	 * @returns {Promise}
 	 **/
