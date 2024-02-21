@@ -26,6 +26,9 @@ import {
 import { NotificationsConfig } from './Notifications/types';
 import { InteractionsConfig } from './Interactions/types';
 
+/**
+ * Compatibility type representing the Amplify Gen 1 configuration file schema. This type should not be used directly.
+ */
 export interface LegacyConfig {
 	/**
 	 * @deprecated The field should not be used.
@@ -36,6 +39,9 @@ export interface LegacyConfig {
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
 	U[keyof U];
 
+/**
+ * Amplify library configuration type. Used to specify back-end resource configuration across the library.
+ */
 export interface ResourcesConfig {
 	API?: APIConfig;
 	Analytics?: AnalyticsConfig;
@@ -47,6 +53,9 @@ export interface ResourcesConfig {
 	Geo?: GeoConfig;
 }
 
+/**
+ * Amplify library options type. Used to customize library behavior.
+ */
 export interface LibraryOptions {
 	API?: LibraryAPIOptions;
 	Auth?: LibraryAuthOptions;
