@@ -164,6 +164,9 @@ export interface Field {
 export interface ModelFieldType {
 	model: string;
 }
+export interface NonModelFieldType {
+	nonModel: string;
+}
 
 export type FieldType =
 	| 'ID'
@@ -182,7 +185,7 @@ export type FieldType =
 	| 'AWSPhone'
 	| { enum: string }
 	| ModelFieldType
-	| { nonModel: string };
+	| NonModelFieldType;
 export type FieldAttribute = ModelAttribute;
 
 /**
