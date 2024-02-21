@@ -11,31 +11,36 @@ const schema = a.schema({
 			tags: a.string().array(),
 		})
 		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
-	Note: a.model({
-		body: a.string().required(),
-		todo: a.belongsTo('Todo'),
-	}),
-	// .authorization([a.allow.public('apiKey'), a.allow.owner()]),
-	TodoMetadata: a.model({
-		data: a.json(),
-	}),
-	// .authorization([a.allow.public('apiKey'), a.allow.owner()]),
-	ThingWithCustomerOwnerField: a.model({
-		id: a.id(),
-		description: a.string(),
-	}),
-	// .authorization([a.allow.owner('userPools').inField('customField')]),
-	ThingWithOwnerFieldSpecifiedInModel: a.model({
-		id: a.id(),
-		name: a.string(),
-		owner: a.string(),
-	}),
-	// .authorization([a.allow.owner()]),
-	ThingWithAPIKeyAuth: a.model({
-		id: a.id(),
-		description: a.string(),
-	}),
-	// .authorization([a.allow.public('apiKey')]),
+	Note: a
+		.model({
+			body: a.string().required(),
+			todo: a.belongsTo('Todo'),
+		})
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	TodoMetadata: a
+		.model({
+			data: a.json(),
+		})
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	ThingWithCustomerOwnerField: a
+		.model({
+			id: a.id(),
+			description: a.string(),
+		})
+		.authorization([a.allow.owner('userPools').inField('customField')]),
+	ThingWithOwnerFieldSpecifiedInModel: a
+		.model({
+			id: a.id(),
+			name: a.string(),
+			owner: a.string(),
+		})
+		.authorization([a.allow.owner()]),
+	ThingWithAPIKeyAuth: a
+		.model({
+			id: a.id(),
+			description: a.string(),
+		})
+		.authorization([a.allow.public('apiKey')]),
 	ThingWithoutExplicitAuth: a.model({
 		id: a.id(),
 		description: a.string(),
@@ -68,8 +73,9 @@ const schema = a.schema({
 		answer: a.string().required(),
 		votes: a.hasMany('CommunityPollVote').arrayRequired().valueRequired(),
 	}),
-	CommunityPollVote: a.model({ id: a.id().required() }),
-	// .authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	CommunityPollVote: a
+		.model({ id: a.id().required() })
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	SecondaryIndexModel: a
 		.model({
 			title: a.string(),
@@ -94,8 +100,8 @@ const schema = a.schema({
 			argumentContent: a.string().required(),
 		})
 		.returns(a.ref('EchoResult'))
-		.function('echoFunction'),
-	// .authorization([a.allow.public()]),
+		.function('echoFunction')
+		.authorization([a.allow.public()]),
 
 	// custom query returning a primitive type
 	echoString: a
@@ -104,8 +110,8 @@ const schema = a.schema({
 			inputString: a.string().required(),
 		})
 		.returns(a.string())
-		.function('echoFunction'),
-	// .authorization([a.allow.public()]),
+		.function('echoFunction')
+		.authorization([a.allow.public()]),
 
 	// custom mutation returning a non-model type
 	PostLikeResult: a.customType({
@@ -117,23 +123,24 @@ const schema = a.schema({
 			postId: a.id().required(),
 		})
 		.returns(a.ref('PostLikeResult'))
-		.function('echoFunction'),
-	// .authorization([a.allow.private()]),
+		.function('echoFunction')
+		.authorization([a.allow.private()]),
 
 	// custom mutation returning a model type
-	Post: a.model({
-		id: a.id().required(),
-		content: a.string(),
-	}),
-	// .authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	Post: a
+		.model({
+			id: a.id().required(),
+			content: a.string(),
+		})
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	listPostReturnPost: a
 		.mutation()
 		.arguments({
 			postId: a.id().required(),
 		})
 		.returns(a.ref('Post'))
-		.function('echoFunction'),
-	// .authorization([a.allow.private()]),
+		.function('echoFunction')
+		.authorization([a.allow.private()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
