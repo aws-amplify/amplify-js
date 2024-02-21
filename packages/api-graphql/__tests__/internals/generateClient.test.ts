@@ -126,6 +126,7 @@ describe('generateClient', () => {
 			'CommunityPost',
 			'SecondaryIndexModel',
 			'Post',
+			'Comment',
 		];
 
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
@@ -5197,7 +5198,7 @@ describe('generateClient', () => {
 				});
 		});
 
-		test('can create()', async () => {
+		test('can query with returnType of customType', async () => {
 			const spy = mockApiResponse({
 				data: {
 					echo: {
@@ -5211,6 +5212,68 @@ describe('generateClient', () => {
 			});
 			const result = await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toMatchSnapshot();
+		});
+
+		test('can query with returnType of string', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echoString: 'echo result content',
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echoString({
+				inputString: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toMatchSnapshot();
+		});
+
+		test('can mutate with returnType of customType', async () => {
+			const spy = mockApiResponse({
+				data: {
+					likePost: {
+						likes: 123,
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePost({
+				postId: 'post-abc',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toMatchSnapshot();
+		});
+
+		test('can mutate with returnType of model (Post)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					likePostReturnPost: {
+						id: 'post-123',
+						content: 'some really slick content',
+						owner: null,
+						createdAt: '2024-02-21T21:30:29.826Z',
+						updatedAt: '2024-02-21T21:30:29.826Z',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePostReturnPost({
+				postId: 'post-abc',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();

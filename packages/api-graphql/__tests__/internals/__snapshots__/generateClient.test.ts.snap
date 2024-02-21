@@ -4612,7 +4612,92 @@ exports[`generateClient basic model operations with Amplify configuration option
 ]
 `;
 
-exports[`generateClient custom operations can create() 1`] = `
+exports[`generateClient custom operations can mutate with returnType of customType 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "mutation ($postId: ID!) {
+  likePost(postId: $postId) {
+    likes
+  }
+}
+",
+          "variables": {
+            "postId": "post-abc",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can mutate with returnType of customType 2`] = `
+{
+  "likes": 123,
+}
+`;
+
+exports[`generateClient custom operations can mutate with returnType of model (Post) 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "mutation ($postId: [ID!]!) {
+  likePostReturnPost(postId: $postId) {
+    id
+    content
+    owner
+    createdAt
+    updatedAt
+  }
+}
+",
+          "variables": {
+            "postId": "post-abc",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can mutate with returnType of model (Post) 2`] = `
+{
+  "comments": [Function],
+  "content": "some really slick content",
+  "createdAt": "2024-02-21T21:30:29.826Z",
+  "id": "post-123",
+  "owner": null,
+  "updatedAt": "2024-02-21T21:30:29.826Z",
+}
+`;
+
+exports[`generateClient custom operations can query with returnType of customType 1`] = `
 [
   [
     "AmplifyClassV6",
@@ -4644,11 +4729,43 @@ exports[`generateClient custom operations can create() 1`] = `
 ]
 `;
 
-exports[`generateClient custom operations can create() 2`] = `
+exports[`generateClient custom operations can query with returnType of customType 2`] = `
 {
   "resultContent": "echo result content",
 }
 `;
+
+exports[`generateClient custom operations can query with returnType of string 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($inputString: String!) {
+  echoString(inputString: $inputString)
+}
+",
+          "variables": {
+            "inputString": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can query with returnType of string 2`] = `"echo result content"`;
 
 exports[`generateClient graphql - client-level auth override client auth override query - lambda 1`] = `
 [

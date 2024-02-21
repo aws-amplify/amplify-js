@@ -131,9 +131,17 @@ const schema = a.schema({
 		.model({
 			id: a.id().required(),
 			content: a.string(),
+			comments: a.hasMany('Comment'),
 		})
 		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
-	listPostReturnPost: a
+	Comment: a
+		.model({
+			id: a.id().required(),
+			content: a.string().required(),
+			post: a.belongsTo('Post'),
+		})
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
+	likePostReturnPost: a
 		.mutation()
 		.arguments({
 			postId: a.id().required(),
