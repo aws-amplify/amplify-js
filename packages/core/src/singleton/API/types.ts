@@ -106,8 +106,8 @@ export interface ModelIntrospectionSchema {
 	models: SchemaModels;
 	nonModels: SchemaNonModels;
 	enums: SchemaEnums;
-	queries: CustomOperations;
-	mutations: CustomOperation;
+	queries?: CustomOperations;
+	mutations?: CustomOperations;
 }
 
 /**
@@ -164,7 +164,7 @@ export type CustomOperationArgument = {
 	type: FieldType;
 	isArray: boolean;
 	isRequired: boolean;
-	isArrayNullable: boolean;
+	isArrayNullable?: boolean;
 };
 
 /**
