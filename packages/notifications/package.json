@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "1.6.9",
+	"version": "1.6.10",
 	"description": "Notifications category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -49,9 +49,9 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/cache": "5.1.15",
-		"@aws-amplify/core": "5.8.9",
-		"@aws-amplify/rtn-push-notification": "1.1.11",
+		"@aws-amplify/cache": "5.1.16",
+		"@aws-amplify/core": "5.8.10",
+		"@aws-amplify/rtn-push-notification": "1.1.12",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
 	},
