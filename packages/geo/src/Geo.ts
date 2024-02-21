@@ -60,7 +60,7 @@ export class GeoClass {
 
 	/**
 	 * add plugin into Geo category
-	 * @param {Object} pluggable - an instance of the plugin
+	 * @param {Object} pluggable an instance of the plugin
 	 */
 	public addPluggable(pluggable: GeoProvider) {
 		if (pluggable && pluggable.getCategory() === 'Geo') {
@@ -70,7 +70,7 @@ export class GeoClass {
 
 	/**
 	 * Get the plugin object
-	 * @param providerName - the name of the plugin
+	 * @param providerName the name of the plugin
 	 */
 	public getPluggable(providerName: string) {
 		const pluggable = this._pluggables.find(
@@ -84,7 +84,7 @@ export class GeoClass {
 
 	/**
 	 * Remove the plugin object
-	 * @param providerName - the name of the plugin
+	 * @param providerName the name of the plugin
 	 */
 	public removePluggable(providerName: string) {
 		this._pluggables = this._pluggables.filter(
@@ -117,8 +117,8 @@ export class GeoClass {
 
 	/**
 	 * Search by text input with optional parameters
-	 * @param  {string} text - The text string that is to be searched for
-	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @param  {string} text The text string that is to be searched for
+	 * @param  {SearchByTextOptions} options Optional parameters to the search
 	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
 	 */
 	public async searchByText(
@@ -138,8 +138,8 @@ export class GeoClass {
 
 	/**
 	 * Search for search term suggestions based on input text
-	 * @param  {string} text - The text string that is to be search for
-	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @param  {string} text The text string that is to be search for
+	 * @param  {SearchByTextOptions} options Optional parameters to the search
 	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
 	 */
 	public async searchForSuggestions(
@@ -159,8 +159,8 @@ export class GeoClass {
 
 	/**
 	 * Search for location by unique ID
-	 * @param  {string} placeId - Unique ID of the location that is to be searched for
-	 * @param  {searchByPlaceIdOptions} options? - Optional parameters to the search
+	 * @param  {string} placeId Unique ID of the location that is to be searched for
+	 * @param  {searchByPlaceIdOptions} options Optional parameters to the search
 	 * @returns {Promise<Place>} - Resolves to a place with the given placeId
 	 */
 	public async searchByPlaceId(
@@ -180,8 +180,8 @@ export class GeoClass {
 
 	/**
 	 * Reverse geocoding search via a coordinate point on the map
-	 * @param coordinates - Coordinates array for the search input
-	 * @param options - Options parameters for the search
+	 * @param coordinates Coordinates array for the search input
+	 * @param options Options parameters for the search
 	 * @returns {Promise<Place>} - Promise that resolves to a place matching search coordinates
 	 */
 	public async searchByCoordinates(
@@ -203,8 +203,8 @@ export class GeoClass {
 
 	/**
 	 * Create geofences
-	 * @param geofences - Single or array of geofence objects to create
-	 * @param options? - Optional parameters for creating geofences
+	 * @param geofences Single or array of geofence objects to create
+	 * @param options Optional parameters for creating geofences
 	 * @returns {Promise<SaveGeofencesResults>} - Promise that resolves to an object with:
 	 *   successes: list of geofences successfully created
 	 *   errors: list of geofences that failed to create
@@ -234,8 +234,8 @@ export class GeoClass {
 
 	/**
 	 * Get a single geofence by geofenceId
-	 * @param geofenceId: GeofenceId - The string id of the geofence to get
-	 * @param options?: GeofenceOptions - Optional parameters for getting a geofence
+	 * @param geofenceId The string id of the geofence to get
+	 * @param options Optional parameters for getting a geofence
 	 * @returns Promise<Geofence> - Promise that resolves to a geofence object
 	 */
 	public async getGeofence(
@@ -255,7 +255,7 @@ export class GeoClass {
 
 	/**
 	 * List geofences
-	 * @param  options?: ListGeofenceOptions
+	 * @param  options ListGeofenceOptions
 	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
 	 *   entries: list of geofences - 100 geofences are listed per page
 	 *   nextToken: token for next page of geofences
@@ -276,8 +276,8 @@ export class GeoClass {
 
 	/**
 	 * Delete geofences
-	 * @param geofenceIds: string|string[]
-	 * @param options?: GeofenceOptions
+	 * @param geofenceIds string|string[]
+	 * @param options GeofenceOptions
 	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
 	 *  successes: list of geofences successfully deleted
 	 *  errors: list of geofences that failed to delete

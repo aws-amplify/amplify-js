@@ -110,7 +110,7 @@ async function _indexQuery(
 	const { name } = model;
 
 	const query = generateGraphQLDocument(
-		modelIntrospection.models,
+		modelIntrospection,
 		name,
 		'INDEX_QUERY',
 		args,

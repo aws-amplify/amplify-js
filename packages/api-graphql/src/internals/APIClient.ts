@@ -5,6 +5,7 @@ import {
 	GraphQLAuthMode,
 	ModelIntrospectionSchema,
 	ModelFieldType,
+	NonModelFieldType,
 	SchemaModel,
 	SchemaModels,
 	AssociationHasOne,
@@ -24,6 +25,7 @@ import {
 } from '../types';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import { SchemaNonModel } from '@aws-amplify/core/dist/esm/singleton/API/types';
 import type { IndexMeta } from './operations/indexQuery';
 
 type LazyLoadOptions = {
@@ -314,18 +316,44 @@ type OperationPrefix =
 
 const SELECTION_SET_WILDCARD = '*';
 
-function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
-	// fields that are explicitly part of the graphql schema; not
-	// inferred from owner auth rules.
-	const { fields } = modelDefinition;
+function defaultSelectionSetForNonModel(
+	nonModelDefinition: SchemaNonModel
+): string[] {
+	// fields that are explicitly part of the graphql schema;
+	const { fields } = nonModelDefinition;
 	const explicitFields = Object.values<any>(fields)
-		// Default selection set omits model fields
+		// Default selection set omits non-model fields
 		.map(
 			({ type, name }) =>
 				(typeof type === 'string' ||
 					(typeof type === 'object' && typeof type?.enum === 'string')) &&
 				name,
 		)
+		.filter(Boolean);
+
+	// fields used for owner auth rules that may or may not also
+	// be explicit on the model.
+
+	return Array.from(new Set(explicitFields));
+}
+
+function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
+	// fields that are explicitly part of the graphql schema; not
+	// inferred from owner auth rules.
+	const { fields } = modelDefinition;
+	const explicitFields = Object.values<any>(fields)
+		// Default selection set omits model fields
+		.map(({ type, name }) => {
+			if (typeof type === 'string') return name;
+
+			if (typeof type === 'object') {
+				if (typeof type?.enum === 'string') {
+					return name;
+				} else if (typeof type?.nonModel === 'string') {
+					return `${name}.${SELECTION_SET_WILDCARD}`;
+				}
+			}
+		})
 		.filter(Boolean);
 
 	// fields used for owner auth rules that may or may not also
@@ -357,44 +385,71 @@ const FIELD_IR = '';
  * ```
  */
 export function customSelectionSetToIR(
-	modelDefinitions: SchemaModels,
+	modelInstrospection: ModelIntrospectionSchema,
 	modelName: string,
 	selectionSet: string[],
 ): Record<string, string | object> {
-	const dotNotationToObject = (
-		path: string,
-		modelName: string,
-	): Record<string, any> => {
+	const dotNotationToObject = (path: string, modelOrNonModelName: string) => {
 		const [fieldName, ...rest] = path.split('.');
 
-		let result: Record<string, any> = {};
+		const nested = rest[0];
+		const modelDefinition = modelInstrospection.models[modelOrNonModelName];
 
-		if (rest.length === 0) {
-			result = { [fieldName]: FIELD_IR };
-		} else {
-			const nested = rest[0];
-			const modelDefinition = modelDefinitions[modelName];
-			const modelFields = modelDefinition.fields;
-			const relatedModel = (modelFields[fieldName]?.type as ModelFieldType)
-				?.model;
+		const modelFields = modelDefinition?.fields;
+		const relatedModel = (modelFields?.[fieldName]?.type as ModelFieldType)
+			?.model;
 
-			if (!relatedModel) {
-				// TODO: may need to change this to support custom types
-				throw Error(`${fieldName} is not a model field`);
+		const relatedModelDefinition = modelInstrospection.models[relatedModel];
+		const relatedNonModel = (
+			modelFields?.[fieldName]?.type as NonModelFieldType
+		)?.nonModel;
+		const relatedNonModelDefinition =
+			modelInstrospection.nonModels[relatedNonModel];
+
+		const isModelOrNonModelOrField = relatedModelDefinition
+			? 'model'
+			: relatedNonModelDefinition
+			  ? 'nonModel'
+			  : 'field';
+
+		if (isModelOrNonModelOrField === 'nonModel') {
+			let result: Record<string, any> = {};
+
+			if (!nested) {
+				throw Error(
+					`${fieldName} must declare a wildcard (*) or a field of custom type ${relatedNonModel}`
+				);
 			}
 
 			if (nested === SELECTION_SET_WILDCARD) {
-				const relatedModelDefinition = modelDefinitions[relatedModel];
-
 				result = {
-					[fieldName]: defaultSelectionSetIR(relatedModelDefinition),
+					[fieldName]: nonModelsDefaultSelectionSetIR(
+						relatedNonModelDefinition
+					),
 				};
 			} else {
-				const exists = Boolean(modelFields[fieldName]);
-				if (!exists) {
-					throw Error(`${fieldName} is not a field of model ${modelName}`);
-				}
+				result = {
+					[fieldName]: dotNotationToObject(rest.join('.'), relatedNonModel),
+				};
+			}
 
+			return result;
+		} else if (isModelOrNonModelOrField === 'model') {
+			let result: Record<string, any> = {};
+
+			if (!nested) {
+				throw Error(
+					`${fieldName} must declare a wildcard (*) or a field of model ${relatedModel}`
+				);
+			}
+
+			if (nested === SELECTION_SET_WILDCARD) {
+				const relatedModelDefinition = modelInstrospection.models[relatedModel];
+
+				result = {
+					[fieldName]: modelsDefaultSelectionSetIR(relatedModelDefinition),
+				};
+			} else {
 				result = {
 					[fieldName]: dotNotationToObject(rest.join('.'), relatedModel),
 				};
@@ -407,9 +462,34 @@ export function customSelectionSetToIR(
 					},
 				};
 			}
-		}
 
-		return result;
+			return result;
+		} else {
+			const modelField = modelFields?.[fieldName];
+
+			const nonModelDefinition =
+				modelInstrospection.nonModels[modelOrNonModelName];
+			const nonModelField = nonModelDefinition?.fields?.[fieldName];
+
+			if (!nonModelDefinition) {
+				const isOwnerField =
+					resolveOwnerFields(modelDefinition).includes(fieldName);
+
+				if (!modelField && !isOwnerField) {
+					throw Error(
+						`${fieldName} is not a field of model ${modelOrNonModelName}`
+					);
+				}
+			} else {
+				if (!nonModelField) {
+					throw Error(
+						`${fieldName} is not a field of custom type ${modelOrNonModelName}`
+					);
+				}
+			}
+
+			return { [fieldName]: FIELD_IR };
+		}
 	};
 
 	return selectionSet.reduce(
@@ -422,7 +502,7 @@ export function customSelectionSetToIR(
 	);
 }
 
-const defaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
+const modelsDefaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 	const defaultSelectionSet = defaultSelectionSetForModel(
 		relatedModelDefinition,
 	);
@@ -433,6 +513,24 @@ const defaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 			return acc;
 		},
 		{},
+	);
+
+	return reduced;
+};
+
+const nonModelsDefaultSelectionSetIR = (
+	relatedNonModelDefinition: SchemaNonModel
+) => {
+	const defaultSelectionSet = defaultSelectionSetForNonModel(
+		relatedNonModelDefinition
+	);
+
+	const reduced = defaultSelectionSet.reduce(
+		(acc: Record<string, any>, curVal) => {
+			acc[curVal] = FIELD_IR;
+			return acc;
+		},
+		{}
 	);
 
 	return reduced;
@@ -510,20 +608,16 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 }
 
 export function generateSelectionSet(
-	modelDefinitions: SchemaModels,
+	modelInstrospection: ModelIntrospectionSchema,
 	modelName: string,
 	selectionSet?: string[],
 ) {
-	const modelDefinition = modelDefinitions[modelName];
-
-	if (!selectionSet) {
-		return defaultSelectionSetForModel(modelDefinition).join(' ');
-	}
+	const modelDefinition = modelInstrospection.models[modelName];
 
 	const selSetIr = customSelectionSetToIR(
-		modelDefinitions,
+		modelInstrospection,
 		modelName,
-		selectionSet,
+		selectionSet ?? defaultSelectionSetForModel(modelDefinition)
 	);
 	const selSetString = selectionSetIRToString(selSetIr);
 
@@ -531,13 +625,13 @@ export function generateSelectionSet(
 }
 
 export function generateGraphQLDocument(
-	modelDefinitions: SchemaModels,
+	modelInstrospection: ModelIntrospectionSchema,
 	modelName: string,
 	modelOperation: ModelOperation,
 	listArgs?: ListArgs | QueryArgs,
 	indexMeta?: IndexMeta,
 ): string {
-	const modelDefinition = modelDefinitions[modelName];
+	const modelDefinition = modelInstrospection.models[modelName];
 
 	const {
 		name,
@@ -584,7 +678,7 @@ export function generateGraphQLDocument(
 	let graphQLArguments: Record<string, any> | undefined;
 
 	const selectionSetFields = generateSelectionSet(
-		modelDefinitions,
+		modelInstrospection,
 		modelName,
 		selectionSet as ListArgs['selectionSet'],
 	);
