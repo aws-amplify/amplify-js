@@ -3,11 +3,8 @@
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
 	initializeModel,
-	generateGraphQLDocument,
-	buildGraphQLVariables,
 	flattenItems,
 	authModeParams,
-	ModelOperation,
 	getCustomHeaders,
 } from '../APIClient';
 import {
