@@ -370,17 +370,9 @@ async function _op(
 		// flatten response
 		if (data) {
 			const [key] = Object.keys(data);
-
-			// TODO: for scalar return types, flattenItems doesn't do what we want.
-			// it seems to assume top-level result is always an object. But, it could
-			// be a variety of things at this stage.
 			const flattenedResult = flattenItems(data)[key];
 
-			// TODO: custom selection set not supported up the chain yet
-			// if (options?.selectionSet) {
-			// 	return { data: flattenedResult, extensions };
-			// } else {
-			// TODO: refactor to avoid destructuring here
+			// TODO: custom selection set
 			const [initialized] = returnTypeModelName
 				? initializeModel(
 						client,
@@ -394,7 +386,6 @@ async function _op(
 				: [flattenedResult];
 
 			return { data: initialized, extensions };
-			// }
 		} else {
 			return { data: null, extensions };
 		}

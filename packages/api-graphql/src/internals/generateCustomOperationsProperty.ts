@@ -55,10 +55,6 @@ export function generateCustomOperationsProperty<
 
 	const ops = {} as CustomOpsProperty<T, OpType>;
 	for (const operation of Object.values(operations)) {
-		// There's no common ancestry between CustomOpsProperty (CustomQueries, CustomMutations)
-		// and the model introspection schema, and no way to ensure the types *actually* match.
-		// They *should* match as long as the customer is using types from the gen2 schema builder
-		// and the config generated from gen2.
 		(ops as any)[operation.name] = customOpFactory(
 			client,
 			modelIntrospection,
