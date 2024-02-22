@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '../Amplify';
-import { FetchAuthSessionOptions } from '../Auth/types';
+import { AuthSession, FetchAuthSessionOptions } from '../Auth/types';
 
 import { fetchAuthSession as fetchAuthSessionInternal } from './internal/fetchAuthSession';
 
-export const fetchAuthSession = (options?: FetchAuthSessionOptions) => {
+export const fetchAuthSession = (
+	options?: FetchAuthSessionOptions
+): Promise<AuthSession> => {
 	return fetchAuthSessionInternal(Amplify, options);
 };
