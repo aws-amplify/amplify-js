@@ -17,6 +17,7 @@ jobs:
   deploy:
     name: Publish to Amplify Package
     runs-on: ubuntu-latest
+    needs: deploy-prep
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -64,7 +65,7 @@ jobs:
           git push origin release
           if [ $(git tag -l "required-release") ]; then git push -f origin required-release; fi
 
-      - name: Create a PR to merge temporary release branch into development branch
+      - name: Create a PR to merge temporary release branch into main development branch
         working-directory: ./amplify-js
         env:
           TEMP_BRANCH_NAME: ${{ needs.deploy-prep.outputs.branch_name }}
