@@ -28,77 +28,6 @@ import {
 	CustomOperationArgument,
 } from '@aws-amplify/core/internals/utils';
 
-const OBJECT_TYPE_STRINGS = ['AWSJSON'] as const;
-const NUMERIC_TYPE_STRINGS = ['Int', 'Float', 'AWSTimeStamp'] as const;
-const BOOLEAN_TYPE_STRINGS = ['Boolean'] as const;
-const STRING_TYPE_STRINGS = [
-	'ID',
-	'String',
-	'AWSPhone',
-	'AWSDate',
-	'AWSTime',
-	'AWSDateTime',
-	'AWSEmail',
-	'AWSURL',
-	'AWSIPAddress',
-] as const;
-
-/**
- * Experimental.
- *
- * Playing with the idea of using this as a look up for `typeof arg[f]` to
- * validate whether the field is of the correct type.
- *
- * Problem is `null` and `undefined`, which are valid for any nullable field.
- */
-const JS_TYPES_TO_GRAPHAL_TYPES = {
-	object: OBJECT_TYPE_STRINGS,
-	number: NUMERIC_TYPE_STRINGS,
-	boolean: BOOLEAN_TYPE_STRINGS,
-	string: STRING_TYPE_STRINGS,
-	symbol: [],
-	undefined: [],
-	function: [],
-	bigint: [],
-};
-
-type PrimitiveTypeString =
-	| StringTypeString
-	| NumericTypeString
-	| BooleanTypeString
-	| ObjectTypeString;
-
-type StringTypeString = (typeof STRING_TYPE_STRINGS)[number];
-type ObjectTypeString = (typeof OBJECT_TYPE_STRINGS)[number];
-type NumericTypeString = (typeof NUMERIC_TYPE_STRINGS)[number];
-type BooleanTypeString = (typeof BOOLEAN_TYPE_STRINGS)[number];
-
-/**
- * Index of type strings to their TS types.
- *
- * ```typescript
- * type T = TypeStringToTypeMap['AWSEmail'];
- * //   ^? type T = string
- * ```
- *
- * @see TypeStringToType
- */
-type TypeStringToTypeMap = Record<StringTypeString, string> &
-	Record<ObjectTypeString, object> &
-	Record<NumericTypeString, number> &
-	Record<BooleanTypeString, boolean>;
-
-/**
- * Finds the TS type for introspection schema type string, returning
- * `never` if the string isn't valid.
- *
- * For a restrictive lookup with IDE autocompletion:
- *
- * @see TypeStringToTypeMap
- */
-type TypeStringToType<S> = S extends keyof TypeStringToTypeMap
-	? TypeStringToTypeMap[S]
-	: never;
 
 export function customOpFactory(
 	client: ClientWithModels,
@@ -151,9 +80,6 @@ function hasValidArgument<ArgumentType extends CustomOperationArgument>(
 ): args is Record<ArgumentType['name'], any> {
 	const argValue = args[argDef.name];
 	const argJSType = typeof argValue;
-	// const correspondingGraphQLTypes = JS_TYPES_TO_GRAPHAL_TYPES[providedArgJSType];
-	// const targetGraphQLType = typeof argDef.type === 'string' ? argDef.type :
-	// const isJSTypeValid = correspondingGraphQLTypes.includes(argDef.type)
 	if (argJSType !== 'undefined') {
 		return true;
 	} else if (argDef.isRequired) {
