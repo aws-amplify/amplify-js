@@ -5215,7 +5215,9 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				resultContent: "echo result content",
+			});
 		});
 
 		test('can query with returnType of string', async () => {
@@ -5253,20 +5255,22 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				likes: 123,
+			});
 		});
 
 		test('can mutate with returnType of model (Post)', async () => {
+			const likePostReturnPost = {
+				id: 'post-123',
+				content: 'some really slick content',
+				owner: null,
+				createdAt: '2024-02-21T21:30:29.826Z',
+				updatedAt: '2024-02-21T21:30:29.826Z',
+			};
+
 			const spy = mockApiResponse({
-				data: {
-					likePostReturnPost: {
-						id: 'post-123',
-						content: 'some really slick content',
-						owner: null,
-						createdAt: '2024-02-21T21:30:29.826Z',
-						updatedAt: '2024-02-21T21:30:29.826Z',
-					},
-				},
+				data: { likePostReturnPost },
 			});
 
 			const client = generateClient<Schema>({
@@ -5277,7 +5281,139 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toMatchSnapshot();
+			expect(result?.data).toEqual(expect.objectContaining(likePostReturnPost))
 		});
+
+		test('can return model (Post) that with lazy-loading props', async () => {
+			const likePostReturnPost = {
+				id: 'post-123',
+				content: 'some really slick content',
+				owner: null,
+				createdAt: '2024-02-21T21:30:29.826Z',
+				updatedAt: '2024-02-21T21:30:29.826Z',
+			};
+
+			const likePostSpy = mockApiResponse({
+				data: { likePostReturnPost },
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePostReturnPost({
+				postId: 'post-abc',
+			});
+
+			const listCommentItem = {
+				content: "some content",
+				createdAt: "2024-02-09T16:42:52.486Z",
+				id: "comment123",
+				owner: "8d0a5587-1d0f-4d05-b120-ecae23ee1f0e",
+				postCommentsId: "post-123",
+				updatedAt: "2024-02-09T16:42:52.486Z"
+			};
+
+			const lazyLoadCommentsSpy = mockApiResponse({
+				data: {
+					listComments: {
+						items: [listCommentItem],
+						nextToken: null
+    				}
+				}
+			});
+
+			const { data: comments } = await result.data!.comments()
+
+			expect(normalizePostGraphqlCalls(lazyLoadCommentsSpy)).toMatchSnapshot();
+			expect(comments[0]).toEqual(expect.objectContaining(listCommentItem));
+		});
+
+		test('includes client level headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					someHeader: "some header value"
+				}
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('includes call level headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			}, {
+				headers: {
+					callSiteHeaders: 'some header value'
+				}
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses client authMode', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				authMode: 'lambda',
+				authToken: 'my-auth-token'
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses call site authMode', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			}, {
+				authMode: 'lambda',
+				authToken: 'my-auth-token'
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		})
 	});
 });

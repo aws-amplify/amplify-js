@@ -4644,12 +4644,6 @@ exports[`generateClient custom operations can mutate with returnType of customTy
 ]
 `;
 
-exports[`generateClient custom operations can mutate with returnType of customType 2`] = `
-{
-  "likes": 123,
-}
-`;
-
 exports[`generateClient custom operations can mutate with returnType of model (Post) 1`] = `
 [
   [
@@ -4686,17 +4680,6 @@ exports[`generateClient custom operations can mutate with returnType of model (P
 ]
 `;
 
-exports[`generateClient custom operations can mutate with returnType of model (Post) 2`] = `
-{
-  "comments": [Function],
-  "content": "some really slick content",
-  "createdAt": "2024-02-21T21:30:29.826Z",
-  "id": "post-123",
-  "owner": null,
-  "updatedAt": "2024-02-21T21:30:29.826Z",
-}
-`;
-
 exports[`generateClient custom operations can query with returnType of customType 1`] = `
 [
   [
@@ -4727,12 +4710,6 @@ exports[`generateClient custom operations can query with returnType of customTyp
     },
   ],
 ]
-`;
-
-exports[`generateClient custom operations can query with returnType of customType 2`] = `
-{
-  "resultContent": "echo result content",
-}
 `;
 
 exports[`generateClient custom operations can query with returnType of string 1`] = `
@@ -4766,6 +4743,220 @@ exports[`generateClient custom operations can query with returnType of string 1`
 `;
 
 exports[`generateClient custom operations can query with returnType of string 2`] = `"echo result content"`;
+
+exports[`generateClient custom operations can return model (Post) that with lazy-loading props 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "mutation ($postId: [ID!]!) {
+  likePostReturnPost(postId: $postId) {
+    id
+    content
+    owner
+    createdAt
+    updatedAt
+  }
+}
+",
+          "variables": {
+            "postId": "post-abc",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($filter: ModelCommentFilterInput, $limit: Int, $nextToken: String) {
+  listComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      content
+      postCommentsId
+      owner
+      createdAt
+      updatedAt
+    }
+    nextToken
+    __typename
+  }
+}
+",
+          "variables": {
+            "filter": {
+              "and": [
+                {
+                  "postCommentsId": {
+                    "eq": "post-123",
+                  },
+                },
+              ],
+            },
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations includes call level headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "callSiteHeaders": "some header value",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations includes client level headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "someHeader": "some header value",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations uses call site authMode 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "my-auth-token",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": {
+          "region": "us-west-1",
+          "service": "appsync",
+        },
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations uses client authMode 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "my-auth-token",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": {
+          "region": "us-west-1",
+          "service": "appsync",
+        },
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
 
 exports[`generateClient graphql - client-level auth override client auth override query - lambda 1`] = `
 [
