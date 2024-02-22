@@ -149,23 +149,23 @@ export interface SecondaryIndexAttribute {
 	};
 }
 
-export type CustomOperation = {
+export interface CustomOperation {
 	name: string;
 	type: FieldType;
 	isArray: boolean;
 	isRequired: boolean;
 	arguments: CustomOperationArguments;
-};
+}
 
 export type CustomOperationArguments = Record<string, CustomOperationArgument>;
 
-export type CustomOperationArgument = {
+export interface CustomOperationArgument {
 	name: string;
 	type: FieldType;
 	isArray: boolean;
 	isRequired: boolean;
 	isArrayNullable?: boolean;
-};
+}
 
 /**
  * Field Definition
