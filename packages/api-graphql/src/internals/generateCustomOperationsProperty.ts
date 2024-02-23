@@ -29,14 +29,10 @@ export function generateCustomOperationsProperty<
 	config: GraphQLProviderConfig['GraphQL'],
 	operationsType: OpType,
 ): OpType extends 'queries' ? CustomQueries<T> : CustomMutations<T> {
+	// some bundlers end up with `Amplify.configure` being called *after* generate client.
+	// if that occurs, we need to *not error* while we wait. handling for late configuration
+	// occurs in `generateClient()`. we do not need to subscribe to Hub events here.
 	if (!config) {
-		// breaks compatibility with certain bundler, e.g. Vite where component files are evaluated before
-		// the entry point causing false positive errors. Revisit how to better handle this post-launch
-
-		// throw new Error(
-		// 	'The API configuration is missing. This is likely due to Amplify.configure() not being called
-		// prior to generateClient().'
-		// );
 		return {} as CustomOpsProperty<T, OpType>;
 	}
 
