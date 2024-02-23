@@ -5179,6 +5179,7 @@ describe('generateClient', () => {
 	describe('custom operations', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
+			jest.resetAllMocks();
 			Amplify.configure(configFixture as any);
 
 			jest
@@ -5216,7 +5217,7 @@ describe('generateClient', () => {
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 			expect(result?.data).toEqual({
-				resultContent: "echo result content",
+				resultContent: 'echo result content',
 			});
 		});
 
@@ -5235,7 +5236,7 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toMatchSnapshot();
+			expect(result?.data).toEqual('echo result content');
 		});
 
 		test('can mutate with returnType of customType', async () => {
@@ -5281,7 +5282,7 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toEqual(expect.objectContaining(likePostReturnPost))
+			expect(result?.data).toEqual(expect.objectContaining(likePostReturnPost));
 		});
 
 		test('can return model (Post) that with lazy-loading props', async () => {
@@ -5305,24 +5306,24 @@ describe('generateClient', () => {
 			});
 
 			const listCommentItem = {
-				content: "some content",
-				createdAt: "2024-02-09T16:42:52.486Z",
-				id: "comment123",
-				owner: "8d0a5587-1d0f-4d05-b120-ecae23ee1f0e",
-				postCommentsId: "post-123",
-				updatedAt: "2024-02-09T16:42:52.486Z"
+				content: 'some content',
+				createdAt: '2024-02-09T16:42:52.486Z',
+				id: 'comment123',
+				owner: '8d0a5587-1d0f-4d05-b120-ecae23ee1f0e',
+				postCommentsId: 'post-123',
+				updatedAt: '2024-02-09T16:42:52.486Z',
 			};
 
 			const lazyLoadCommentsSpy = mockApiResponse({
 				data: {
 					listComments: {
 						items: [listCommentItem],
-						nextToken: null
-    				}
-				}
+						nextToken: null,
+					},
+				},
 			});
 
-			const { data: comments } = await result.data!.comments()
+			const { data: comments } = await result.data!.comments();
 
 			expect(normalizePostGraphqlCalls(lazyLoadCommentsSpy)).toMatchSnapshot();
 			expect(comments[0]).toEqual(expect.objectContaining(listCommentItem));
@@ -5340,8 +5341,8 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({
 				amplify: Amplify,
 				headers: {
-					someHeader: "some header value"
-				}
+					someHeader: 'some header value',
+				},
 			});
 			const result = await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
@@ -5360,15 +5361,18 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({
-				amplify: Amplify
+				amplify: Amplify,
 			});
-			const result = await client.queries.echo({
-				argumentContent: 'echo argumentContent value',
-			}, {
-				headers: {
-					callSiteHeaders: 'some header value'
-				}
-			});
+			const result = await client.queries.echo(
+				{
+					argumentContent: 'echo argumentContent value',
+				},
+				{
+					headers: {
+						callSiteHeaders: 'some header value',
+					},
+				},
+			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
@@ -5385,7 +5389,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({
 				amplify: Amplify,
 				authMode: 'lambda',
-				authToken: 'my-auth-token'
+				authToken: 'my-auth-token',
 			});
 			const result = await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
@@ -5404,16 +5408,124 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({
-				amplify: Amplify
+				amplify: Amplify,
+			});
+			const result = await client.queries.echo(
+				{
+					argumentContent: 'echo argumentContent value',
+				},
+				{
+					authMode: 'lambda',
+					authToken: 'my-auth-token',
+				},
+			);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses config level headers if available', async () => {
+			Amplify.configure(configFixture as any, {
+				API: {
+					GraphQL: {
+						headers: async () => ({
+							'config-level-header': 'config header value',
+						}),
+					},
+				},
+			});
+
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
 			});
 			const result = await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
-			}, {
-				authMode: 'lambda',
-				authToken: 'my-auth-token'
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-		})
+		});
+
+		test('graphql error handling', async () => {
+			const spy = mockApiResponse({
+				data: null,
+				errors: [{ message: 'some graphql error' }],
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const { data, errors } = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(data).toBeNull();
+			expect(errors).toEqual([{ message: 'some graphql error' }]);
+		});
+
+		test('network error handling', async () => {
+			jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(async () => {
+					// not strictly what I expect a network error will look like,
+					// but represents the guts of `post` throwing any generic error.
+					throw new Error('Network error');
+				});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+
+			const { data, errors } = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			// TODO: data should actually be null/undefined, pending discussion and fix.
+			// This is not strictly related to custom ops.
+			expect(data).toEqual({});
+			expect(errors).toEqual([{ message: 'Network error' }]);
+		});
+
+		test('core error handling', async () => {
+			// Basically, we want to ensure exceptions we throw aren't simply swallowed.
+			// The list of errors that are thrown appears to be pretty small, since we
+			// package up a lot of different errors types into `{ errors }` as possible.
+			// But, a clear example where this doesn't occur is request cancellations.
+
+			const spy = mockApiResponse(
+				new Promise(resolve => {
+					// slight delay to give us time to cancel the request.
+					setTimeout(
+						() =>
+							resolve({
+								data: {
+									echo: {
+										resultContent: 'echo result content',
+									},
+								},
+							}),
+						1,
+					);
+				}),
+			);
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+
+			const result = client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			client.cancel(result);
+
+			expect(result).resolves.toThrow();
+		});
 	});
 });

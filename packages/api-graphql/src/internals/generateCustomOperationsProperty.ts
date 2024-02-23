@@ -27,27 +27,25 @@ export function generateCustomOperationsProperty<
 >(
 	client: V6Client<Record<string, any>>,
 	config: GraphQLProviderConfig['GraphQL'],
-	operationsType: OpType
+	operationsType: OpType,
 ): OpType extends 'queries' ? CustomQueries<T> : CustomMutations<T> {
+	// some bundlers end up with `Amplify.configure` being called *after* generate client.
+	// if that occurs, we need to *not error* while we wait. handling for late configuration
+	// occurs in `generateClient()`. we do not need to subscribe to Hub events here.
 	if (!config) {
-		// breaks compatibility with certain bundler, e.g. Vite where component files are evaluated before
-		// the entry point causing false positive errors. Revisit how to better handle this post-launch
-
-		// throw new Error(
-		// 	'The API configuration is missing. This is likely due to Amplify.configure() not being called
-		// prior to generateClient().'
-		// );
 		return {} as CustomOpsProperty<T, OpType>;
 	}
 
 	const modelIntrospection: ModelIntrospectionSchema | undefined =
 		config.modelIntrospection;
 
+	// model intro schema might be absent if there's not actually a configured GraphQL API
 	if (!modelIntrospection) {
 		return {} as CustomOpsProperty<T, OpType>;
 	}
 
-	// digging operations out here to type guard
+	// custom operations will be absent from model intro schema if no custom ops
+	// are present on the source schema.
 	const operations = modelIntrospection[operationsType];
 	if (!operations) {
 		return {} as CustomOpsProperty<T, OpType>;
@@ -59,7 +57,7 @@ export function generateCustomOperationsProperty<
 			client,
 			modelIntrospection,
 			operationTypeMap[operationsType],
-			operation
+			operation,
 		);
 	}
 
@@ -68,22 +66,22 @@ export function generateCustomOperationsProperty<
 
 export function generateCustomMutationsProperty<T extends Record<any, any>>(
 	client: V6Client<Record<string, any>>,
-	config: GraphQLProviderConfig['GraphQL']
+	config: GraphQLProviderConfig['GraphQL'],
 ) {
 	return generateCustomOperationsProperty<T, 'mutations'>(
 		client,
 		config,
-		'mutations'
+		'mutations',
 	);
 }
 
 export function generateCustomQueriesProperty<T extends Record<any, any>>(
 	client: V6Client<Record<string, any>>,
-	config: GraphQLProviderConfig['GraphQL']
+	config: GraphQLProviderConfig['GraphQL'],
 ) {
 	return generateCustomOperationsProperty<T, 'queries'>(
 		client,
 		config,
-		'queries'
+		'queries',
 	);
 }

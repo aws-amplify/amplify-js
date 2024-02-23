@@ -25,18 +25,73 @@ import {
 	CustomOperationArgument,
 } from '@aws-amplify/core/internals/utils';
 
-
+/**
+ * Builds an operation function, embedded with all client and context data, that
+ * can be attached to a client as a custom query or mutation.
+ *
+ * If we have this source schema:
+ *
+ * ```typescript
+ * a.schema({
+ *   echo: a.query()
+ *     .arguments({input: a.string().required()})
+ *     .returns(a.string())
+ * })
+ * ```
+ *
+ * Our model intro schema will contain an entry like this:
+ *
+ * ```ts
+ * {
+ *   queries: {
+ *     echo: {
+ *       name: "echo",
+ *       isArray: false,
+ *       type: 'String',
+ *       isRequired: false,
+ *       arguments: {
+ *         input: {
+ *           name: 'input',
+ *           isArray: false,
+ *           type: String,
+ *           isRequired: true
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * The `echo` object is used to build the `echo' method that goes here:
+ *
+ * ```typescript
+ * const client = generateClent()
+ * const { data } = await client.queries.echo({input: 'a string'});
+ * //                                    ^
+ * //                                    |
+ * //                                    +-- This one right here.
+ * //
+ * ```
+ *
+ *
+ * @param client The client to run graphql queries through.
+ * @param modelIntrospection The model introspection schema the op comes from.
+ * @param operationType The broad category of graphql operation.
+ * @param operation The operation definition from the introspection schema.
+ * @param useContext Whether the function needs to accept an SSR context.
+ * @returns The operation function to attach to query, mutations, etc.
+ */
 export function customOpFactory(
 	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
 	operationType: 'query' | 'mutation',
 	operation: CustomOperation,
-	useContext = false
+	useContext = false,
 ) {
 	const opWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec & GraphQLOptionsV6<unknown, string>,
 		arg?: QueryArgs,
-		options?: any
+		options?: AuthModeParams & ListArgs,
 	) => {
 		return _op(
 			client,
@@ -45,45 +100,22 @@ export function customOpFactory(
 			operation,
 			arg,
 			options,
-			contextSpec
+			contextSpec,
 		);
 	};
 
-	const op = async (arg?: QueryArgs, options?: any) => {
+	const op = async (arg?: QueryArgs, options?: AuthModeParams & ListArgs) => {
 		return _op(
 			client,
 			modelIntrospection,
 			operationType,
 			operation,
 			arg,
-			options
+			options,
 		);
 	};
 
 	return useContext ? opWithContext : op;
-}
-
-/**
- * Checks whether a specific argument is defined on an arguments object.
- *
- * @param args Arguments object to check.
- * @param argDef Argument definition to check for.
- * @returns true if argument is present; false if not.
- * @throws If argument is required and not present.
- */
-function hasValidArgument<ArgumentType extends CustomOperationArgument>(
-	args: any,
-	argDef: ArgumentType
-): args is Record<ArgumentType['name'], any> {
-	const argValue = args[argDef.name];
-	const argJSType = typeof argValue;
-	if (argJSType !== 'undefined') {
-		return true;
-	} else if (argDef.isRequired) {
-		throw new Error(`Argument ${argDef.name}: ${argDef.type} is required.`);
-	} else {
-		return false;
-	}
 }
 
 /**
@@ -102,7 +134,7 @@ function hasValidArgument<ArgumentType extends CustomOperationArgument>(
  */
 function hasStringField<Field extends string>(
 	o: any,
-	field: Field
+	field: Field,
 ): o is Record<Field, string> {
 	return typeof o[field] === 'string';
 }
@@ -173,14 +205,14 @@ function innerArguments(operation: CustomOperation): string {
  * @returns String selection set.
  */
 function modelishTypeSelectionSet(
-	nonModel: SchemaModel | SchemaNonModel
+	nonModel: SchemaModel | SchemaNonModel,
 ): string {
 	return Object.values(nonModel.fields)
 		.filter(
 			field =>
 				hasStringField(field, 'type') ||
 				hasStringField(field.type, 'nonModel') ||
-				hasStringField(field.type, 'enum')
+				hasStringField(field.type, 'enum'),
 		)
 		.map(field => field.name)
 		.join(' ');
@@ -211,7 +243,7 @@ function modelishTypeSelectionSet(
  */
 function operationSelectionSet(
 	modelIntrospection: ModelIntrospectionSchema,
-	operation: CustomOperation
+	operation: CustomOperation,
 ): string {
 	if (
 		hasStringField(operation, 'type') ||
@@ -229,19 +261,44 @@ function operationSelectionSet(
 	}
 }
 
+/**
+ * Maps an arguments objec to graphql variables, removing superfluous args and
+ * screaming loudly when required args are missing.
+ *
+ * @param operation The operation to construct graphql request variables for.
+ * @param args The arguments to map variables from.
+ * @returns The graphql variables object.
+ */
 function operationVariables(
 	operation: CustomOperation,
-	args?: QueryArgs
-): Record<string, any> {
-	const variables = {} as Record<string, any>;
+	args: QueryArgs = {},
+): Record<string, unknown> {
+	const variables = {} as Record<string, unknown>;
 	for (const argDef of Object.values(operation.arguments)) {
-		if (hasValidArgument(args, argDef)) {
+		if (typeof args[argDef.name] !== 'undefined') {
 			variables[argDef.name] = args[argDef.name];
+		} else if (argDef.isRequired) {
+			// At this point, the variable is both required and missing: We don't need
+			// to continue. The operation is expected to fail.
+			throw new Error(`${operation.name} requires arguments '${argDef.name}'`);
 		}
 	}
 	return variables;
 }
 
+/**
+ * Executes an operation from the given model intro schema against a client, returning
+ * a fully instantiated model when relevant.
+ *
+ * @param client The client to operate `graphql()` calls through.
+ * @param modelIntrospection The model intro schema to construct requests from.
+ * @param operationType The high level graphql operation type.
+ * @param operation The specific operation name, args, return type details.
+ * @param args The arguments to provide to the operation as variables.
+ * @param options Request options like headers, etc.
+ * @param context SSR context if relevant.
+ * @returns Result from the graphql request, model-instantiated when relevant.
+ */
 async function _op(
 	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
@@ -249,7 +306,7 @@ async function _op(
 	operation: CustomOperation,
 	args?: QueryArgs,
 	options?: AuthModeParams & ListArgs,
-	context?: AmplifyServer.ContextSpec
+	context?: AmplifyServer.ContextSpec,
 ) {
 	const { name: operationName } = operation;
 	const auth = authModeParams(client, options);
@@ -279,23 +336,24 @@ async function _op(
 						query,
 						variables,
 					},
-					headers
-			  )) as GraphQLResult<any>)
+					headers,
+				)) as GraphQLResult<any>)
 			: ((await (client as V6Client<Record<string, any>>).graphql(
 					{
 						...auth,
 						query,
 						variables,
 					},
-					headers
-			  )) as GraphQLResult<any>);
+					headers,
+				)) as GraphQLResult<any>);
 
 		// flatten response
 		if (data) {
 			const [key] = Object.keys(data);
 			const flattenedResult = flattenItems(data)[key];
 
-			// TODO: custom selection set
+			// TODO: custom selection set. current selection set is default selection set only
+			// custom selection set requires data-schema-type + runtime updates above.
 			const [initialized] = returnTypeModelName
 				? initializeModel(
 						client,
@@ -304,8 +362,8 @@ async function _op(
 						modelIntrospection,
 						auth.authMode,
 						auth.authToken,
-						!!context
-				  )
+						!!context,
+					)
 				: [flattenedResult];
 
 			return { data: initialized, extensions };

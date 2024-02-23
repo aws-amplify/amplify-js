@@ -88,7 +88,7 @@ const schema = a.schema({
 			a.index('description').sortKeys(['viewCount']),
 		]),
 
-	// custom queries and mutations
+	// #region Custom queries and mutations
 	EchoResult: a.customType({
 		resultContent: a.string().required(),
 	}),
@@ -149,6 +149,8 @@ const schema = a.schema({
 		.returns(a.ref('Post'))
 		.function('echoFunction')
 		.authorization([a.allow.private()]),
+
+	//#endregion
 });
 
 export type Schema = ClientSchema<typeof schema>;

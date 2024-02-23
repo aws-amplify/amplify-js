@@ -78,7 +78,7 @@ export type GraphQLSubscription<T> = T & {
 export type GraphQLReturnType<T> = T extends {}
 	? {
 			[K in keyof T]?: GraphQLReturnType<T[K]>;
-	  }
+		}
 	: T;
 
 /**
@@ -99,13 +99,14 @@ type PagedList<T, TYPENAME> = {
  * array, this will only be the case when we also have errors,
  * which will then be *thrown*.
  */
-type WithListsFixed<T> = T extends PagedList<infer IT, infer NAME>
-	? PagedList<Exclude<IT, null | undefined>, NAME>
-	: T extends {}
-	  ? {
-				[K in keyof T]: WithListsFixed<T[K]>;
-	    }
-	  : T;
+type WithListsFixed<T> =
+	T extends PagedList<infer IT, infer NAME>
+		? PagedList<Exclude<IT, null | undefined>, NAME>
+		: T extends {}
+			? {
+					[K in keyof T]: WithListsFixed<T[K]>;
+				}
+			: T;
 
 /**
  * Returns an updated response type to always return a value.
@@ -121,14 +122,12 @@ type NeverEmpty<T> = {
  * If empty members are present, there will also be errors present,
  * and the response will instead be *thrown*.
  */
-type FixedQueryResult<T> = Exclude<
-	T[keyof T],
-	null | undefined
-> extends PagedList<any, any>
-	? {
-			[K in keyof T]-?: WithListsFixed<Exclude<T[K], null | undefined>>;
-	  }
-	: T;
+type FixedQueryResult<T> =
+	Exclude<T[keyof T], null | undefined> extends PagedList<any, any>
+		? {
+				[K in keyof T]-?: WithListsFixed<Exclude<T[K], null | undefined>>;
+			}
+		: T;
 
 /**
  * The return value from a `graphql({query})` call when `query` is a subscription.
@@ -187,7 +186,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 
 export type AWSAppSyncRealTimeProvider = {
 	subscribe(
-		options?: AWSAppSyncRealTimeProviderOptions
+		options?: AWSAppSyncRealTimeProviderOptions,
 	): Observable<Record<string, unknown>>;
 };
 
@@ -241,15 +240,16 @@ export type UnknownGraphQLResponse =
 export type GraphQLVariablesV6<
 	FALLBACK_TYPES = unknown,
 	TYPED_GQL_STRING extends string = string,
-> = TYPED_GQL_STRING extends GeneratedQuery<infer IN, any>
-	? IN
-	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, any>
-	  ? IN
-	  : TYPED_GQL_STRING extends GeneratedSubscription<infer IN, any>
-	    ? IN
-	    : FALLBACK_TYPES extends GraphQLOperationType<infer IN, any>
-	      ? IN
-	      : any;
+> =
+	TYPED_GQL_STRING extends GeneratedQuery<infer IN, any>
+		? IN
+		: TYPED_GQL_STRING extends GeneratedMutation<infer IN, any>
+			? IN
+			: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, any>
+				? IN
+				: FALLBACK_TYPES extends GraphQLOperationType<infer IN, any>
+					? IN
+					: any;
 
 /**
  * The expected return type with respect to the given `FALLBACK_TYPE`
@@ -258,22 +258,23 @@ export type GraphQLVariablesV6<
 export type GraphQLResponseV6<
 	FALLBACK_TYPE = unknown,
 	TYPED_GQL_STRING extends string = string,
-> = TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer QUERY_OUT>
-	? Promise<GraphQLResult<FixedQueryResult<QUERY_OUT>>>
-	: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
-	  ? Promise<GraphQLResult<NeverEmpty<MUTATION_OUT>>>
-	  : TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
-	    ? GraphqlSubscriptionResult<NeverEmpty<SUB_OUT>>
-	    : FALLBACK_TYPE extends GraphQLQuery<infer T>
-	      ? Promise<GraphQLResult<FALLBACK_TYPE>>
-	      : FALLBACK_TYPE extends GraphQLSubscription<infer T>
-	        ? GraphqlSubscriptionResult<FALLBACK_TYPE>
-	        : FALLBACK_TYPE extends GraphQLOperationType<
-								infer IN,
-								infer CUSTOM_OUT
-	            >
-	          ? CUSTOM_OUT
-	          : UnknownGraphQLResponse;
+> =
+	TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer QUERY_OUT>
+		? Promise<GraphQLResult<FixedQueryResult<QUERY_OUT>>>
+		: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
+			? Promise<GraphQLResult<NeverEmpty<MUTATION_OUT>>>
+			: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
+				? GraphqlSubscriptionResult<NeverEmpty<SUB_OUT>>
+				: FALLBACK_TYPE extends GraphQLQuery<infer T>
+					? Promise<GraphQLResult<FALLBACK_TYPE>>
+					: FALLBACK_TYPE extends GraphQLSubscription<infer T>
+						? GraphqlSubscriptionResult<FALLBACK_TYPE>
+						: FALLBACK_TYPE extends GraphQLOperationType<
+									infer IN,
+									infer CUSTOM_OUT
+							  >
+							? CUSTOM_OUT
+							: UnknownGraphQLResponse;
 
 /**
  * The shape customers can use to provide `T` to `graphql<T>()` to specify both
@@ -428,7 +429,7 @@ export type GraphQLMethod = <
 	TYPED_GQL_STRING extends string = string,
 >(
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?: CustomHeaders | undefined
+	additionalHeaders?: CustomHeaders | undefined,
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 export type GraphQLMethodSSR = <
@@ -437,7 +438,7 @@ export type GraphQLMethodSSR = <
 >(
 	contextSpec: AmplifyServer.ContextSpec,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?: CustomHeaders | undefined
+	additionalHeaders?: CustomHeaders | undefined,
 ) => GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 
 /**
