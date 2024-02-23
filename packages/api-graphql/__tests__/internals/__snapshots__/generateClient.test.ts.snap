@@ -4956,6 +4956,38 @@ exports[`generateClient custom operations uses client authMode 1`] = `
 ]
 `;
 
+exports[`generateClient custom operations uses config level headers if available 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "config-level-header": "config header value",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
 exports[`generateClient graphql - client-level auth override client auth override query - lambda 1`] = `
 [
   [

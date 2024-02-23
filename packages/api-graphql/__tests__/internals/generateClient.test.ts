@@ -5421,5 +5421,34 @@ describe('generateClient', () => {
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
+
+		test('uses config level headers if available', async () => {
+			Amplify.configure(configFixture as any, {
+				API: {
+					GraphQL: {
+						headers: async () => ({
+							'config-level-header': 'config header value',
+						}),
+					},
+				},
+			});
+
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
 	});
 });
