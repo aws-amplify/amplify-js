@@ -91,7 +91,7 @@ export function customOpFactory(
 	const opWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec & GraphQLOptionsV6<unknown, string>,
 		arg?: QueryArgs,
-		options?: any,
+		options?: AuthModeParams & ListArgs,
 	) => {
 		return _op(
 			client,
@@ -104,7 +104,7 @@ export function customOpFactory(
 		);
 	};
 
-	const op = async (arg?: QueryArgs, options?: any) => {
+	const op = async (arg?: QueryArgs, options?: AuthModeParams & ListArgs) => {
 		return _op(
 			client,
 			modelIntrospection,
@@ -272,8 +272,8 @@ function operationSelectionSet(
 function operationVariables(
 	operation: CustomOperation,
 	args: QueryArgs = {},
-): Record<string, any> {
-	const variables = {} as Record<string, any>;
+): Record<string, unknown> {
+	const variables = {} as Record<string, unknown>;
 	for (const argDef of Object.values(operation.arguments)) {
 		if (typeof args[argDef.name] !== 'undefined') {
 			variables[argDef.name] = args[argDef.name];
