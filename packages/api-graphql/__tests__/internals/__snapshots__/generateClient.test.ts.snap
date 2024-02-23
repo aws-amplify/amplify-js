@@ -4742,8 +4742,6 @@ exports[`generateClient custom operations can query with returnType of string 1`
 ]
 `;
 
-exports[`generateClient custom operations can query with returnType of string 2`] = `"echo result content"`;
-
 exports[`generateClient custom operations can return model (Post) that with lazy-loading props 1`] = `
 [
   [

@@ -27,7 +27,7 @@ export function generateCustomOperationsProperty<
 >(
 	client: V6Client<Record<string, any>>,
 	config: GraphQLProviderConfig['GraphQL'],
-	operationsType: OpType
+	operationsType: OpType,
 ): OpType extends 'queries' ? CustomQueries<T> : CustomMutations<T> {
 	if (!config) {
 		// breaks compatibility with certain bundler, e.g. Vite where component files are evaluated before
@@ -43,11 +43,13 @@ export function generateCustomOperationsProperty<
 	const modelIntrospection: ModelIntrospectionSchema | undefined =
 		config.modelIntrospection;
 
+	// model intro schema might be absent if there's not actually a configured GraphQL API
 	if (!modelIntrospection) {
 		return {} as CustomOpsProperty<T, OpType>;
 	}
 
-	// digging operations out here to type guard
+	// custom operations will be absent from model intro schema if no custom ops
+	// are present on the source schema.
 	const operations = modelIntrospection[operationsType];
 	if (!operations) {
 		return {} as CustomOpsProperty<T, OpType>;
@@ -59,7 +61,7 @@ export function generateCustomOperationsProperty<
 			client,
 			modelIntrospection,
 			operationTypeMap[operationsType],
-			operation
+			operation,
 		);
 	}
 
@@ -68,22 +70,22 @@ export function generateCustomOperationsProperty<
 
 export function generateCustomMutationsProperty<T extends Record<any, any>>(
 	client: V6Client<Record<string, any>>,
-	config: GraphQLProviderConfig['GraphQL']
+	config: GraphQLProviderConfig['GraphQL'],
 ) {
 	return generateCustomOperationsProperty<T, 'mutations'>(
 		client,
 		config,
-		'mutations'
+		'mutations',
 	);
 }
 
 export function generateCustomQueriesProperty<T extends Record<any, any>>(
 	client: V6Client<Record<string, any>>,
-	config: GraphQLProviderConfig['GraphQL']
+	config: GraphQLProviderConfig['GraphQL'],
 ) {
 	return generateCustomOperationsProperty<T, 'queries'>(
 		client,
 		config,
-		'queries'
+		'queries',
 	);
 }

@@ -5216,7 +5216,7 @@ describe('generateClient', () => {
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 			expect(result?.data).toEqual({
-				resultContent: "echo result content",
+				resultContent: 'echo result content',
 			});
 		});
 
@@ -5235,7 +5235,7 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toMatchSnapshot();
+			expect(result?.data).toEqual('echo result content');
 		});
 
 		test('can mutate with returnType of customType', async () => {
@@ -5281,7 +5281,7 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toEqual(expect.objectContaining(likePostReturnPost))
+			expect(result?.data).toEqual(expect.objectContaining(likePostReturnPost));
 		});
 
 		test('can return model (Post) that with lazy-loading props', async () => {
@@ -5305,24 +5305,24 @@ describe('generateClient', () => {
 			});
 
 			const listCommentItem = {
-				content: "some content",
-				createdAt: "2024-02-09T16:42:52.486Z",
-				id: "comment123",
-				owner: "8d0a5587-1d0f-4d05-b120-ecae23ee1f0e",
-				postCommentsId: "post-123",
-				updatedAt: "2024-02-09T16:42:52.486Z"
+				content: 'some content',
+				createdAt: '2024-02-09T16:42:52.486Z',
+				id: 'comment123',
+				owner: '8d0a5587-1d0f-4d05-b120-ecae23ee1f0e',
+				postCommentsId: 'post-123',
+				updatedAt: '2024-02-09T16:42:52.486Z',
 			};
 
 			const lazyLoadCommentsSpy = mockApiResponse({
 				data: {
 					listComments: {
 						items: [listCommentItem],
-						nextToken: null
-    				}
-				}
+						nextToken: null,
+					},
+				},
 			});
 
-			const { data: comments } = await result.data!.comments()
+			const { data: comments } = await result.data!.comments();
 
 			expect(normalizePostGraphqlCalls(lazyLoadCommentsSpy)).toMatchSnapshot();
 			expect(comments[0]).toEqual(expect.objectContaining(listCommentItem));
@@ -5340,8 +5340,8 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({
 				amplify: Amplify,
 				headers: {
-					someHeader: "some header value"
-				}
+					someHeader: 'some header value',
+				},
 			});
 			const result = await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
@@ -5360,15 +5360,18 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({
-				amplify: Amplify
+				amplify: Amplify,
 			});
-			const result = await client.queries.echo({
-				argumentContent: 'echo argumentContent value',
-			}, {
-				headers: {
-					callSiteHeaders: 'some header value'
-				}
-			});
+			const result = await client.queries.echo(
+				{
+					argumentContent: 'echo argumentContent value',
+				},
+				{
+					headers: {
+						callSiteHeaders: 'some header value',
+					},
+				},
+			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
@@ -5385,7 +5388,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({
 				amplify: Amplify,
 				authMode: 'lambda',
-				authToken: 'my-auth-token'
+				authToken: 'my-auth-token',
 			});
 			const result = await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
@@ -5404,16 +5407,19 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({
-				amplify: Amplify
+				amplify: Amplify,
 			});
-			const result = await client.queries.echo({
-				argumentContent: 'echo argumentContent value',
-			}, {
-				authMode: 'lambda',
-				authToken: 'my-auth-token'
-			});
+			const result = await client.queries.echo(
+				{
+					argumentContent: 'echo argumentContent value',
+				},
+				{
+					authMode: 'lambda',
+					authToken: 'my-auth-token',
+				},
+			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-		})
+		});
 	});
 });

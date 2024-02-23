@@ -35,7 +35,7 @@ import { isConfigureEventWithResourceConfig } from './utils/isConfigureEventWith
  * @returns
  */
 export function generateClient<T extends Record<any, any> = never>(
-	params: ClientGenerationParams
+	params: ClientGenerationParams,
 ): V6Client<T> {
 	const client = {
 		[__amplify]: params.amplify,
@@ -54,13 +54,12 @@ export function generateClient<T extends Record<any, any> = never>(
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
 
 	if (isApiGraphQLConfig(apiGraphqlConfig)) {
-		console.log('here');
 		client.models = generateModelsProperty<T>(client, apiGraphqlConfig);
 		client.enums = generateEnumsProperty<T>(apiGraphqlConfig);
 		client.queries = generateCustomQueriesProperty<T>(client, apiGraphqlConfig);
 		client.mutations = generateCustomMutationsProperty<T>(
 			client,
-			apiGraphqlConfig
+			apiGraphqlConfig,
 		);
 	} else {
 		// This happens when the `Amplify.configure()` call gets evaluated after the `generateClient()` call.
@@ -94,11 +93,11 @@ const generateModelsPropertyOnAmplifyConfigure = (clientRef: any) => {
 			clientRef.enums = generateEnumsProperty(apiGraphQLConfig);
 			clientRef.queries = generateCustomQueriesProperty(
 				clientRef,
-				apiGraphQLConfig
+				apiGraphQLConfig,
 			);
 			clientRef.mutations = generateCustomMutationsProperty(
 				clientRef,
-				apiGraphQLConfig
+				apiGraphQLConfig,
 			);
 		}
 	});
@@ -109,8 +108,8 @@ const emptyProperty = new Proxy(
 	{
 		get() {
 			throw new Error(
-				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.'
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
 		},
-	}
+	},
 );
