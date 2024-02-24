@@ -13,9 +13,10 @@ import {
 import {
 	AuthModeParams,
 	ClientWithModels,
+	ConfigurableHeadersParams,
+	FieldSelectionParams,
 	GraphQLOptionsV6,
 	GraphQLResult,
-	ListArgs,
 	QueryArgs,
 	V6Client,
 	V6ClientSSRRequest,
@@ -60,7 +61,7 @@ async function _get(
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	arg: QueryArgs,
-	options: AuthModeParams & ListArgs,
+	options: AuthModeParams & ConfigurableHeadersParams & FieldSelectionParams,
 	operation: ModelOperation,
 	context?: AmplifyServer.ContextSpec,
 ) {

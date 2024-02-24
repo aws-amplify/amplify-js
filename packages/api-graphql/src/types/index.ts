@@ -447,11 +447,17 @@ export type ServerClientGenerationParams = {
 
 export type QueryArgs = Record<string, unknown>;
 
-export type ListArgs = {
+export type FieldSelectionParams = {
 	selectionSet?: string[];
-	filter?: {};
+}
+
+export type ConfigurableHeadersParams = {
 	headers?: CustomHeaders;
-};
+}
+
+export type ListArgs = {
+	filter?: {};
+} & ConfigurableHeadersParams & FieldSelectionParams;
 
 export type AuthModeParams = {
 	authMode?: GraphQLAuthMode;
