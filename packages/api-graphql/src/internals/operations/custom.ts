@@ -86,7 +86,7 @@ export function customOpFactory(
 	modelIntrospection: ModelIntrospectionSchema,
 	operationType: 'query' | 'mutation',
 	operation: CustomOperation,
-	useContext = false,
+	useContext: boolean,
 ) {
 	const opWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec & GraphQLOptionsV6<unknown, string>,

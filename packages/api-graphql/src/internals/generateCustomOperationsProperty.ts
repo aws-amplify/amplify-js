@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { CustomQueries, CustomMutations } from '@aws-amplify/data-schema-types';
-import { V6Client, __authMode, __authToken } from '../types';
+import { V6Client, __authMode, __authToken, __amplify } from '../types';
 
 import { customOpFactory } from './operations/custom';
 import {
@@ -52,12 +52,14 @@ export function generateCustomOperationsProperty<
 	}
 
 	const ops = {} as CustomOpsProperty<T, OpType>;
+	const useContext = client[__amplify] === null;
 	for (const operation of Object.values(operations)) {
 		(ops as any)[operation.name] = customOpFactory(
 			client,
 			modelIntrospection,
 			operationTypeMap[operationsType],
 			operation,
+			useContext
 		);
 	}
 
