@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { base64Encoder } from '@aws-amplify/core/internals/utils';
+
 import { getRandomBytes } from './getRandomBytes';
 
 /**

@@ -1,58 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import type {
-	ConfirmForgotPasswordCommandInput as ConfirmForgotPasswordInput,
-	ConfirmForgotPasswordCommandOutput as ConfirmForgotPasswordOutput,
-	ForgotPasswordCommandInput as ForgotPasswordInput,
-	ForgotPasswordCommandOutput as ForgotPasswordOutput,
-	ResendConfirmationCodeCommandInput as ResendConfirmationCodeInput,
-	ResendConfirmationCodeCommandOutput as ResendConfirmationCodeOutput,
-	SignUpCommandInput as SignUpInput,
-	SignUpCommandOutput as SignUpOutput,
-	InitiateAuthCommandInput as InitiateAuthInput,
-	InitiateAuthCommandOutput as InitiateAuthOutput,
-	RespondToAuthChallengeCommandInput as RespondToAuthChallengeInput,
-	RespondToAuthChallengeCommandOutput as RespondToAuthChallengeOutput,
-	ConfirmSignUpCommandOutput as ConfirmSignUpOutput,
-	ConfirmSignUpCommandInput as ConfirmSignUpInput,
-	VerifySoftwareTokenCommandInput as VerifySoftwareTokenInput,
-	VerifySoftwareTokenCommandOutput as VerifySoftwareTokenOutput,
-	AssociateSoftwareTokenCommandInput as AssociateSoftwareTokenInput,
-	AssociateSoftwareTokenCommandOutput as AssociateSoftwareTokenOutput,
-	SetUserMFAPreferenceCommandInput as SetUserMFAPreferenceInput,
-	SetUserMFAPreferenceCommandOutput as SetUserMFAPreferenceOutput,
-	GetUserCommandInput as GetUserInput,
-	GetUserCommandOutput as GetUserOutput,
-	ChangePasswordCommandInput as ChangePasswordInput,
-	ChangePasswordCommandOutput as ChangePasswordOutput,
-	ConfirmDeviceCommandInput as ConfirmDeviceInput,
-	ConfirmDeviceCommandOutput as ConfirmDeviceOutput,
-	ForgetDeviceCommandInput as ForgetDeviceInput,
-	ForgetDeviceCommandOutput as ForgetDeviceOutput,
-	DeleteUserCommandInput as DeleteUserInput,
-	DeleteUserCommandOutput as DeleteUserOutput,
-	GetUserAttributeVerificationCodeCommandInput as GetUserAttributeVerificationCodeInput,
-	GetUserAttributeVerificationCodeCommandOutput as GetUserAttributeVerificationCodeOutput,
-	GlobalSignOutCommandInput as GlobalSignOutInput,
-	GlobalSignOutCommandOutput as GlobalSignOutOutput,
-	UpdateUserAttributesCommandInput as UpdateUserAttributesInput,
-	UpdateUserAttributesCommandOutput as UpdateUserAttributesOutput,
-	VerifyUserAttributeCommandInput as VerifyUserAttributeInput,
-	VerifyUserAttributeCommandOutput as VerifyUserAttributeOutput,
-	UpdateDeviceStatusCommandInput as UpdateDeviceStatusInput,
-	UpdateDeviceStatusCommandOutput as UpdateDeviceStatusOutput,
-	ListDevicesCommandInput as ListDevicesInput,
-	ListDevicesCommandOutput as ListDevicesOutput,
-	DeleteUserAttributesCommandInput as DeleteUserAttributesInput,
-	DeleteUserAttributesCommandOutput as DeleteUserAttributesOutput,
-} from './types';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import {
-	buildHttpRpcRequest,
-	cognitoUserPoolTransferHandler,
-	defaultConfig,
-	getSharedHeaders,
-} from './base';
 import {
 	Endpoint,
 	HttpRequest,
@@ -60,15 +8,69 @@ import {
 	parseJsonBody,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { assertServiceError } from '../../../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../../../errors/AuthError';
 
-type RevokeTokenInput = {
+import {
+	buildHttpRpcRequest,
+	cognitoUserPoolTransferHandler,
+	defaultConfig,
+	getSharedHeaders,
+} from './base';
+import type {
+	AssociateSoftwareTokenCommandInput as AssociateSoftwareTokenInput,
+	AssociateSoftwareTokenCommandOutput as AssociateSoftwareTokenOutput,
+	ChangePasswordCommandInput as ChangePasswordInput,
+	ChangePasswordCommandOutput as ChangePasswordOutput,
+	ConfirmDeviceCommandInput as ConfirmDeviceInput,
+	ConfirmDeviceCommandOutput as ConfirmDeviceOutput,
+	ConfirmForgotPasswordCommandInput as ConfirmForgotPasswordInput,
+	ConfirmForgotPasswordCommandOutput as ConfirmForgotPasswordOutput,
+	ConfirmSignUpCommandInput as ConfirmSignUpInput,
+	ConfirmSignUpCommandOutput as ConfirmSignUpOutput,
+	DeleteUserAttributesCommandInput as DeleteUserAttributesInput,
+	DeleteUserAttributesCommandOutput as DeleteUserAttributesOutput,
+	DeleteUserCommandInput as DeleteUserInput,
+	DeleteUserCommandOutput as DeleteUserOutput,
+	ForgetDeviceCommandInput as ForgetDeviceInput,
+	ForgetDeviceCommandOutput as ForgetDeviceOutput,
+	ForgotPasswordCommandInput as ForgotPasswordInput,
+	ForgotPasswordCommandOutput as ForgotPasswordOutput,
+	GetUserAttributeVerificationCodeCommandInput as GetUserAttributeVerificationCodeInput,
+	GetUserAttributeVerificationCodeCommandOutput as GetUserAttributeVerificationCodeOutput,
+	GetUserCommandInput as GetUserInput,
+	GetUserCommandOutput as GetUserOutput,
+	GlobalSignOutCommandInput as GlobalSignOutInput,
+	GlobalSignOutCommandOutput as GlobalSignOutOutput,
+	InitiateAuthCommandInput as InitiateAuthInput,
+	InitiateAuthCommandOutput as InitiateAuthOutput,
+	ListDevicesCommandInput as ListDevicesInput,
+	ListDevicesCommandOutput as ListDevicesOutput,
+	ResendConfirmationCodeCommandInput as ResendConfirmationCodeInput,
+	ResendConfirmationCodeCommandOutput as ResendConfirmationCodeOutput,
+	RespondToAuthChallengeCommandInput as RespondToAuthChallengeInput,
+	RespondToAuthChallengeCommandOutput as RespondToAuthChallengeOutput,
+	SetUserMFAPreferenceCommandInput as SetUserMFAPreferenceInput,
+	SetUserMFAPreferenceCommandOutput as SetUserMFAPreferenceOutput,
+	SignUpCommandInput as SignUpInput,
+	SignUpCommandOutput as SignUpOutput,
+	UpdateDeviceStatusCommandInput as UpdateDeviceStatusInput,
+	UpdateDeviceStatusCommandOutput as UpdateDeviceStatusOutput,
+	UpdateUserAttributesCommandInput as UpdateUserAttributesInput,
+	UpdateUserAttributesCommandOutput as UpdateUserAttributesOutput,
+	VerifySoftwareTokenCommandInput as VerifySoftwareTokenInput,
+	VerifySoftwareTokenCommandOutput as VerifySoftwareTokenOutput,
+	VerifyUserAttributeCommandInput as VerifyUserAttributeInput,
+	VerifyUserAttributeCommandOutput as VerifyUserAttributeOutput,
+} from './types';
+
+interface RevokeTokenInput {
 	Token: string;
 	ClientId: string;
-};
+}
 
-type RevokeTokenOutput = {};
+interface RevokeTokenOutput {}
 
 type ClientOperation =
 	| 'SignUp'
@@ -100,6 +102,7 @@ const buildUserPoolSerializer =
 	(input: Input, endpoint: Endpoint): HttpRequest => {
 		const headers = getSharedHeaders(operation);
 		const body = JSON.stringify(input);
+
 		return buildHttpRpcRequest(endpoint, headers, body);
 	};
 
@@ -113,6 +116,7 @@ const buildUserPoolDeserializer = <Output>(): ((
 			throw new AuthError({ name: error.name, message: error.message });
 		} else {
 			const body = await parseJsonBody(response);
+
 			return body;
 		}
 	};

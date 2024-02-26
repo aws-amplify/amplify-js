@@ -9,14 +9,14 @@ import {
 	HttpResponse,
 	Middleware,
 	getDnsSuffix,
-	unauthenticatedHandler,
-	parseJsonError,
 	getRetryDecider,
 	jitteredBackoff,
+	parseJsonError,
+	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import {
-	getAmplifyUserAgent,
 	AmplifyUrl,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 import { composeTransferHandler } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
@@ -41,6 +41,7 @@ const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
 	() => (next, context) =>
 		async function disableCacheMiddleware(request) {
 			request.headers['cache-control'] = 'no-store';
+
 			return next(request);
 		};
 

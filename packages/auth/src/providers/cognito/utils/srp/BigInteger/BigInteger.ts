@@ -1,4 +1,3 @@
-/* tslint:disable */
 // @ts-nocheck -> BigInteger is already a vended utility
 // A small implementation of BigInteger based on http://www-cs-students.stanford.edu/~tjw/jsbn/
 //
@@ -21,7 +20,10 @@ import { AuthBigInteger } from './types';
 
 export default BigInteger as AuthBigInteger;
 
-type BNP = { s: number; t: number };
+interface BNP {
+	s: number;
+	t: number;
+}
 /*
  * Copyright (c) 2003-2005  Tom Wu
  * All Rights Reserved.
@@ -91,6 +93,7 @@ function am1(
 		c = Math.floor(v / 0x4000000);
 		w[j++] = v & 0x3ffffff;
 	}
+
 	return c;
 }
 // am2 avoids a big mult-and-extract completely.
@@ -104,8 +107,8 @@ function am2(
 	c: number,
 	n: number,
 ): number {
-	const xl = x & 0x7fff,
-		xh = x >> 15;
+	const xl = x & 0x7fff;
+	const xh = x >> 15;
 	while (--n >= 0) {
 		let l = this[i] & 0x7fff;
 		const h = this[i++] >> 15;
@@ -114,6 +117,7 @@ function am2(
 		c = (l >>> 30) + (m >>> 15) + xh * h + (c >>> 30);
 		w[j++] = l & 0x3fffffff;
 	}
+
 	return c;
 }
 // Alternately, set max digit bits to 28 since some
@@ -126,8 +130,8 @@ function am3(
 	c: number,
 	n: number,
 ): number {
-	const xl = x & 0x3fff,
-		xh = x >> 14;
+	const xl = x & 0x3fff;
+	const xh = x >> 14;
 	while (--n >= 0) {
 		let l = this[i] & 0x3fff;
 		const h = this[i++] >> 14;
@@ -136,6 +140,7 @@ function am3(
 		c = (l >> 28) + (m >> 14) + xh * h;
 		w[j++] = l & 0xfffffff;
 	}
+
 	return c;
 }
 const inBrowser = typeof navigator !== 'undefined';
@@ -162,7 +167,7 @@ BigInteger.prototype.F2 = 2 * dbits - BI_FP;
 
 // Digit conversions
 const BI_RM = '0123456789abcdefghijklmnopqrstuvwxyz';
-const BI_RC = new Array();
+const BI_RC = [];
 let rr: number, vv: number;
 rr = '0'.charCodeAt(0);
 for (vv = 0; vv <= 9; ++vv) BI_RC[rr++] = vv;
@@ -175,13 +180,14 @@ function int2char(n: number): string {
 	return BI_RM.charAt(n);
 }
 function intAt(s: string, i: number): number {
-	var c = BI_RC[s.charCodeAt(i)];
+	const c = BI_RC[s.charCodeAt(i)];
+
 	return c == null ? -1 : c;
 }
 
 // (protected) copy this to r
 function bnpCopyTo(r: { t: number; s: number }): void {
-	for (var i = this.t - 1; i >= 0; --i) r[i] = this[i];
+	for (let i = this.t - 1; i >= 0; --i) r[i] = this[i];
 	r.t = this.t;
 	r.s = this.s;
 }
@@ -197,7 +203,7 @@ function bnpFromInt(x: number): void {
 
 // return bigint initialized to value
 function nbv(i: number) {
-	var r = nbi();
+	const r = nbi();
 
 	r.fromInt(i);
 
@@ -215,9 +221,9 @@ function bnpFromString(s: string, b: number): void {
 	else throw new Error('Only radix 2, 4, 8, 16, 32 are supported');
 	this.t = 0;
 	this.s = 0;
-	let i = s.length,
-		mi = false,
-		sh = 0;
+	let i = s.length;
+	let mi = false;
+	let sh = 0;
 	while (--i >= 0) {
 		const x = intAt(s, i);
 		if (x < 0) {
@@ -239,25 +245,25 @@ function bnpFromString(s: string, b: number): void {
 
 // (protected) clamp off excess high words
 function bnpClamp(): void {
-	var c = this.s & this.DM;
+	const c = this.s & this.DM;
 	while (this.t > 0 && this[this.t - 1] == c) --this.t;
 }
 
 // (public) return string representation in given radix
 function bnToString(b: number): string {
 	if (this.s < 0) return '-' + this.negate().toString(b);
-	var k: number;
+	let k: number;
 	if (b == 16) k = 4;
 	else if (b === 8) k = 3;
 	else if (b === 2) k = 1;
 	else if (b === 32) k = 5;
 	else if (b === 4) k = 2;
 	else throw new Error('Only radix 2, 4, 8, 16, 32 are supported');
-	let km = (1 << k) - 1,
-		d: number,
-		m = false,
-		r = '',
-		i = this.t;
+	const km = (1 << k) - 1;
+	let d: number;
+	let m = false;
+	let r = '';
+	let i = this.t;
 	let p = this.DB - ((i * this.DB) % k);
 	if (i-- > 0) {
 		if (p < this.DB && (d = this[i] >> p) > 0) {
@@ -279,12 +285,13 @@ function bnToString(b: number): string {
 			if (m) r += int2char(d);
 		}
 	}
+
 	return m ? r : '0';
 }
 
 // (public) -this
 function bnNegate() {
-	var r = nbi();
+	const r = nbi();
 
 	BigInteger.ZERO.subTo(this, r);
 
@@ -298,19 +305,20 @@ function bnAbs() {
 
 // (public) return + if this > a, - if this < a, 0 if equal
 function bnCompareTo(a: BNP): number {
-	var r = this.s - a.s;
+	let r = this.s - a.s;
 	if (r != 0) return r;
-	var i = this.t;
+	let i = this.t;
 	r = i - a.t;
 	if (r != 0) return this.s < 0 ? -r : r;
 	while (--i >= 0) if ((r = this[i] - a[i]) != 0) return r;
+
 	return 0;
 }
 
 // returns bit length of the integer x
 function nbits(x: number): number {
-	var r = 1,
-		t: number;
+	let r = 1;
+	let t: number;
 	if ((t = x >>> 16) !== 0) {
 		x = t;
 		r += 16;
@@ -331,12 +339,14 @@ function nbits(x: number): number {
 		x = t;
 		r += 1;
 	}
+
 	return r;
 }
 
 // (public) return the number of bits in "this"
 function bnBitLength(): number {
 	if (this.t <= 0) return 0;
+
 	return this.DB * (this.t - 1) + nbits(this[this.t - 1] ^ (this.s & this.DM));
 }
 
@@ -364,9 +374,9 @@ function bnpLShiftTo(
 	const bs = n % this.DB;
 	const cbs = this.DB - bs;
 	const bm = (1 << cbs) - 1;
-	let ds = Math.floor(n / this.DB),
-		c = (this.s << bs) & this.DM,
-		i;
+	const ds = Math.floor(n / this.DB);
+	let c = (this.s << bs) & this.DM;
+	let i;
 	for (i = this.t - 1; i >= 0; --i) {
 		r[i + ds + 1] = (this[i] >> cbs) | c;
 		c = (this[i] & bm) << bs;
@@ -384,6 +394,7 @@ function bnpRShiftTo(n: number, r: BNP & { clamp: Function }): void {
 	const ds = Math.floor(n / this.DB);
 	if (ds >= this.t) {
 		r.t = 0;
+
 		return;
 	}
 	const bs = n % this.DB;
@@ -401,9 +412,9 @@ function bnpRShiftTo(n: number, r: BNP & { clamp: Function }): void {
 
 // (protected) r = this - a
 function bnpSubTo(a: BNP, r: BNP & { clamp: Function }): void {
-	let i = 0,
-		c = 0,
-		m = Math.min(a.t, this.t);
+	let i = 0;
+	let c = 0;
+	const m = Math.min(a.t, this.t);
 	while (i < m) {
 		c += this[i] - a[i];
 		r[i++] = c & this.DM;
@@ -439,8 +450,8 @@ function bnpMultiplyTo(
 	a: BNP & { abs: Function },
 	r: BNP & { clamp: Function },
 ): void {
-	const x = this.abs(),
-		y = a.abs();
+	const x = this.abs();
+	const y = a.abs();
 	let i = x.t;
 	r.t = i + y.t;
 	while (--i >= 0) r[i] = 0;
@@ -452,11 +463,11 @@ function bnpMultiplyTo(
 
 // (protected) r = this^2, r != this (HAC 14.16)
 function bnpSquareTo(r) {
-	var x = this.abs();
-	var i = (r.t = 2 * x.t);
+	const x = this.abs();
+	let i = (r.t = 2 * x.t);
 	while (--i >= 0) r[i] = 0;
 	for (i = 0; i < x.t - 1; ++i) {
-		var c = x.am(i, x[i], r, 2 * i, 0, 1);
+		const c = x.am(i, x[i], r, 2 * i, 0, 1);
 		if (
 			(r[i + x.t] += x.am(i + 1, 2 * x[i], r, 2 * i + 1, c, x.t - i - 1)) >=
 			x.DV
@@ -483,19 +494,20 @@ function bnpDivRemTo(
 		rShiftTo: Function;
 	},
 ): void {
-	var pm = m.abs();
+	const pm = m.abs();
 	if (pm.t <= 0) return;
-	var pt = this.abs();
+	const pt = this.abs();
 	if (pt.t < pm.t) {
 		if (q != null) q.fromInt(0);
 		if (r != null) this.copyTo(r);
+
 		return;
 	}
 	if (r === null) r = nbi();
-	var y = nbi(),
-		ts = this.s,
-		ms = m.s;
-	var nsh = this.DB - nbits(pm[pm.t - 1]);
+	const y = nbi();
+	const ts = this.s;
+	const ms = m.s;
+	const nsh = this.DB - nbits(pm[pm.t - 1]);
 	// normalize modulus
 	if (nsh > 0) {
 		pm.lShiftTo(nsh, y);
@@ -508,12 +520,12 @@ function bnpDivRemTo(
 	const y0 = y[ys - 1];
 	if (y0 === 0) return;
 	const yt = y0 * (1 << this.F1) + (ys > 1 ? y[ys - 2] >> this.F2 : 0);
-	const d1 = this.FV / yt,
-		d2 = (1 << this.F1) / yt,
-		e = 1 << this.F2;
-	let i = r.t,
-		j = i - ys,
-		t = q === null ? nbi() : q;
+	const d1 = this.FV / yt;
+	const d2 = (1 << this.F1) / yt;
+	const e = 1 << this.F2;
+	let i = r.t;
+	let j = i - ys;
+	const t = q === null ? nbi() : q;
 	y.dlShiftTo(j, t);
 	if (r.compareTo(t) >= 0) {
 		r[r.t++] = 1;
@@ -525,7 +537,7 @@ function bnpDivRemTo(
 	while (y.t < ys) y[y.t++] = 0;
 	while (--j >= 0) {
 		// Estimate quotient digit
-		var qd =
+		let qd =
 			r[--i] === y0 ? this.DM : Math.floor(r[i] * d1 + (r[i - 1] + e) * d2);
 		if ((r[i] += y.am(0, qd, r, j, 0, ys)) < qd) {
 			// Try it out
@@ -547,9 +559,10 @@ function bnpDivRemTo(
 
 // (public) this mod a
 function bnMod(a) {
-	var r = nbi();
+	const r = nbi();
 	this.abs().divRemTo(a, null, r);
 	if (this.s < 0 && r.compareTo(BigInteger.ZERO) > 0) a.subTo(r, r);
+
 	return r;
 }
 
@@ -565,9 +578,9 @@ function bnMod(a) {
 // JS multiply "overflows" differently from C/C++, so care is needed here.
 function bnpInvDigit(): number {
 	if (this.t < 1) return 0;
-	var x = this[0];
+	const x = this[0];
 	if ((x & 1) === 0) return 0;
-	var y = x & 3;
+	let y = x & 3;
 	// y == 1/x mod 2^2
 	y = (y * (2 - (x & 0xf) * y)) & 0xf;
 	// y == 1/x mod 2^4
@@ -578,6 +591,7 @@ function bnpInvDigit(): number {
 	// last step - calculate inverse mod DV directly;
 	// assumes 16 < DB <= 32 and assumes ability to handle 48-bit ints
 	y = (y * (2 - ((x * y) % this.DV))) % this.DV;
+
 	// y == 1/x mod 2^dbits
 	// we really want the negative inverse, and -DV < y < DV
 	return y > 0 ? this.DV - y : -y;
@@ -589,9 +603,9 @@ function bnEquals(a: number): boolean {
 
 // (protected) r = this + a
 function bnpAddTo(a: BNP, r: BNP & { clamp: Function }): void {
-	let i = 0,
-		c = 0,
-		m = Math.min(a.t, this.t);
+	let i = 0;
+	let c = 0;
+	const m = Math.min(a.t, this.t);
 	while (i < m) {
 		c += this[i] + a[i];
 		r[i++] = c & this.DM;
@@ -623,7 +637,7 @@ function bnpAddTo(a: BNP, r: BNP & { clamp: Function }): void {
 
 // (public) this + a
 function bnAdd(a: number) {
-	var r = nbi();
+	const r = nbi();
 
 	this.addTo(a, r);
 
@@ -632,7 +646,7 @@ function bnAdd(a: number) {
 
 // (public) this - a
 function bnSubtract(a: number): number {
-	var r = nbi();
+	const r = nbi();
 
 	this.subTo(a, r);
 
@@ -641,7 +655,7 @@ function bnSubtract(a: number): number {
 
 // (public) this * a
 function bnMultiply(a: number): number {
-	var r = nbi();
+	const r = nbi();
 
 	this.multiplyTo(a, r);
 
@@ -650,7 +664,7 @@ function bnMultiply(a: number): number {
 
 // (public) this / a
 function bnDivide(a: number): number {
-	var r = nbi();
+	const r = nbi();
 
 	this.divRemTo(a, r, null);
 
@@ -669,18 +683,20 @@ function Montgomery(m: { invDigit: Function; DB: number; t: number }): void {
 
 // xR mod m
 function montConvert(x: BNP & { abs: Function }): number {
-	var r = nbi();
+	const r = nbi();
 	x.abs().dlShiftTo(this.m.t, r);
 	r.divRemTo(this.m, null, r);
 	if (x.s < 0 && r.compareTo(BigInteger.ZERO) > 0) this.m.subTo(r, r);
+
 	return r;
 }
 
 // x/R mod m
 function montRevert(x: { copyTo: Function }): number {
-	var r = nbi();
+	const r = nbi();
 	x.copyTo(r);
 	this.reduce(r);
+
 	return r;
 }
 
@@ -697,10 +713,10 @@ function montReduce(x: {
 	while (x.t <= this.mt2)
 		// pad x so am has enough room later
 		x[x.t++] = 0;
-	for (var i = 0; i < this.m.t; ++i) {
+	for (let i = 0; i < this.m.t; ++i) {
 		// faster way of calculating u0 = x[i]*mp mod DV
-		var j = x[i] & 0x7fff;
-		var u0 =
+		let j = x[i] & 0x7fff;
+		const u0 =
 			(j * this.mpl +
 				(((j * this.mph + (x[i] >> 15) * this.mpl) & this.um) << 15)) &
 			x.DM;
@@ -748,10 +764,10 @@ function bnModPow(
 	},
 	callback: Function,
 ) {
-	let i = e.bitLength(),
-		k: number,
-		r = nbv(1),
-		z = new Montgomery(m);
+	let i = e.bitLength();
+	let k: number;
+	let r = nbv(1);
+	const z = new Montgomery(m);
 	if (i <= 0) return r;
 	else if (i < 18) k = 1;
 	else if (i < 48) k = 3;
@@ -760,10 +776,10 @@ function bnModPow(
 	else k = 6;
 
 	// precomputation
-	let g = new Array(),
-		n = 3,
-		k1 = k - 1,
-		km = (1 << k) - 1;
+	const g = [];
+	let n = 3;
+	const k1 = k - 1;
+	const km = (1 << k) - 1;
 	g[1] = z.convert(this);
 	if (k > 1) {
 		const g2 = nbi();
@@ -775,11 +791,11 @@ function bnModPow(
 		}
 	}
 
-	let j = e.t - 1,
-		w: number,
-		is1 = true,
-		r2 = nbi(),
-		t: number;
+	let j = e.t - 1;
+	let w: number;
+	let is1 = true;
+	let r2 = nbi();
+	let t: number;
 	i = nbits(e[j]) - 1;
 	while (j >= 0) {
 		if (i >= k1) w = (e[j] >> (i - k1)) & km;
@@ -827,8 +843,9 @@ function bnModPow(
 			}
 		}
 	}
-	var result = z.revert(r);
+	const result = z.revert(r);
 	callback(null, result);
+
 	return result;
 }
 

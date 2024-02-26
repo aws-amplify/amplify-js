@@ -1,22 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
-	handleCustomAuthFlowWithoutSRP,
+	getActiveSignInUsername,
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
-	getNewDeviceMetatada,
+	handleCustomAuthFlowWithoutSRP,
 	retryOnResourceNotFoundException,
-	getActiveSignInUsername,
 } from '../utils/signInHelpers';
-import { Amplify, Hub } from '@aws-amplify/core';
-import {
-	AMPLIFY_SYMBOL,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import {
 	CognitoAuthSignInDetails,
@@ -33,7 +31,6 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
-import { getCurrentUser } from './getCurrentUser';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**

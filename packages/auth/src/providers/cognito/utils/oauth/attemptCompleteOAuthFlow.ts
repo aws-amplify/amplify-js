@@ -7,12 +7,14 @@ import {
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
+import { getAuthUserAgentValue } from '../../../../utils';
+import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
+
 import { oAuthStore } from './oAuthStore';
 import { completeOAuthFlow } from './completeOAuthFlow';
-import { getAuthUserAgentValue } from '../../../../utils';
 import { getRedirectUrl } from './getRedirectUrl';
 import { handleFailure } from './handleFailure';
-import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
 import { addInflightPromise } from './inflightPromise';
 
 export const attemptCompleteOAuthFlow = async (

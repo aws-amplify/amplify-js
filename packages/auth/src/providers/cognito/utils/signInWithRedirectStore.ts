@@ -5,9 +5,11 @@ import {
 	CognitoUserPoolConfig,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
-import { OAuthStorageKeys, OAuthStore } from './types';
-import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
+import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
+
+import { OAuthStorageKeys, OAuthStore } from './types';
 
 const V5_HOSTED_UI_KEY = 'amplify-signin-with-hostedUI';
 
@@ -19,6 +21,7 @@ export class DefaultOAuthStore implements OAuthStore {
 	constructor(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
 	}
+
 	async clearOAuthInflightData(): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
@@ -32,6 +35,7 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.keyValueStorage.removeItem(authKeys.oauthState),
 		]);
 	}
+
 	async clearOAuthData(): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 		const authKeys = createKeysForAuthStorage(
@@ -40,8 +44,10 @@ export class DefaultOAuthStore implements OAuthStore {
 		);
 		await this.clearOAuthInflightData();
 		await this.keyValueStorage.removeItem(V5_HOSTED_UI_KEY); // remove in case a customer migrated an App from v5 to v6
+
 		return this.keyValueStorage.removeItem(authKeys.oauthSignIn);
 	}
+
 	loadOAuthState(): Promise<string | null> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
@@ -52,6 +58,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		return this.keyValueStorage.getItem(authKeys.oauthState);
 	}
+
 	storeOAuthState(state: string): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
@@ -62,6 +69,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		return this.keyValueStorage.setItem(authKeys.oauthState, state);
 	}
+
 	loadPKCE(): Promise<string | null> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
@@ -72,6 +80,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 		return this.keyValueStorage.getItem(authKeys.oauthPKCE);
 	}
+
 	storePKCE(pkce: string): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
@@ -86,6 +95,7 @@ export class DefaultOAuthStore implements OAuthStore {
 	setAuthConfig(authConfigParam: CognitoUserPoolConfig): void {
 		this.cognitoConfig = authConfigParam;
 	}
+
 	async loadOAuthInFlight(): Promise<boolean> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
@@ -106,10 +116,7 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.cognitoConfig.userPoolClientId,
 		);
 
-		return await this.keyValueStorage.setItem(
-			authKeys.inflightOAuth,
-			`${inflight}`,
-		);
+		await this.keyValueStorage.setItem(authKeys.inflightOAuth, `${inflight}`);
 	}
 
 	async loadOAuthSignIn(): Promise<{
@@ -139,7 +146,7 @@ export class DefaultOAuthStore implements OAuthStore {
 
 	async storeOAuthSignIn(
 		oauthSignIn: boolean,
-		preferPrivateSession: boolean = false,
+		preferPrivateSession = false,
 	): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
@@ -148,7 +155,7 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.cognitoConfig.userPoolClientId,
 		);
 
-		return await this.keyValueStorage.setItem(
+		await this.keyValueStorage.setItem(
 			authKeys.oauthSignIn,
 			`${oauthSignIn},${preferPrivateSession}`,
 		);

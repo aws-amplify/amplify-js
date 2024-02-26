@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { computeS } from '@aws-amplify/react-native';
+
 import { AuthBigInteger, BigInteger } from '../BigInteger';
 
 export const calculateS = async ({
@@ -29,5 +30,6 @@ export const calculateS = async ({
 		b: B.toString(16),
 		u: U.toString(16),
 	});
+
 	return new BigInteger(result, 16);
 };

@@ -12,5 +12,6 @@ export function getRedirectUrl(redirects: string[]): string {
 	if (!redirect) {
 		throw invalidRedirectException;
 	}
+
 	return redirect;
 }

@@ -7,15 +7,16 @@ import {
 	USER_AGENT_HEADER,
 	urlSafeDecode,
 } from '@aws-amplify/core/internals/utils';
-import { oAuthStore } from './oAuthStore';
 import { Hub, decodeJWT } from '@aws-amplify/core';
-import { validateState } from './validateState';
-import { resolveAndClearInflightPromises } from './inflightPromise';
+
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
-import { getCurrentUser } from '../../apis/getCurrentUser';
-import { createOAuthError } from './createOAuthError';
 import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
 import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
+
+import { createOAuthError } from './createOAuthError';
+import { resolveAndClearInflightPromises } from './inflightPromise';
+import { validateState } from './validateState';
+import { oAuthStore } from './oAuthStore';
 
 export const completeOAuthFlow = async ({
 	currentUrl,
@@ -255,7 +256,7 @@ const completeFlow = async ({
 	clearHistory(redirectUri);
 };
 
-const isCustomState = (state: string): Boolean => {
+const isCustomState = (state: string): boolean => {
 	return /-/.test(state);
 };
 

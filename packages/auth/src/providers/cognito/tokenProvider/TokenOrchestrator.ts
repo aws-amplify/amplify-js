@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	AuthConfig,
 	AuthTokens,
 	FetchAuthSessionOptions,
-	AuthConfig,
 	Hub,
 } from '@aws-amplify/core';
 import {
@@ -11,6 +11,11 @@ import {
 	assertTokenProviderConfig,
 	isTokenExpired,
 } from '@aws-amplify/core/internals/utils';
+
+import { assertServiceError } from '../../../errors/utils/assertServiceError';
+import { AuthError } from '../../../errors/AuthError';
+import { CognitoAuthSignInDetails } from '../types';
+
 import {
 	AuthTokenOrchestrator,
 	AuthTokenStore,
@@ -18,9 +23,6 @@ import {
 	DeviceMetadata,
 	TokenRefresher,
 } from './types';
-import { assertServiceError } from '../../../errors/utils/assertServiceError';
-import { AuthError } from '../../../errors/AuthError';
-import { CognitoAuthSignInDetails } from '../types';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
@@ -31,12 +33,15 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	setAuthConfig(authConfig: AuthConfig) {
 		this.authConfig = authConfig;
 	}
+
 	setTokenRefresher(tokenRefresher: TokenRefresher) {
 		this.tokenRefresher = tokenRefresher;
 	}
+
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
 	}
+
 	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>) {
 		this.waitForInflightOAuth = waitForInflightOAuth;
 	}
@@ -48,6 +53,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				message: 'TokenStore not set',
 			});
 		}
+
 		return this.tokenStore;
 	}
 
@@ -58,6 +64,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 				message: 'TokenRefresher not set',
 			});
 		}
+
 		return this.tokenRefresher;
 	}
 
@@ -154,6 +161,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		}
 		throw err;
 	}
+
 	async setTokens({ tokens }: { tokens: CognitoAuthTokens }) {
 		return this.getTokenStore().storeTokens(tokens);
 	}
@@ -165,6 +173,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null> {
 		return this.getTokenStore().getDeviceMetadata(username);
 	}
+
 	clearDeviceMetadata(username?: string): Promise<void> {
 		return this.getTokenStore().clearDeviceMetadata(username);
 	}

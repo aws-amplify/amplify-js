@@ -5,6 +5,7 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+
 import { GetCurrentUserOutput } from '../../types';
 import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrentUser';
 

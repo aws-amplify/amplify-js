@@ -13,6 +13,6 @@ export interface AuthBigInteger {
 	ZERO: any;
 	abs: Function;
 	compareTo: Function;
-	fromInt: (num: number) => void;
-	toString: (radix: number) => string;
+	fromInt(num: number): void;
+	toString(radix: number): string;
 }

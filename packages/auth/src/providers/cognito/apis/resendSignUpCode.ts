@@ -3,10 +3,11 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthDeliveryMedium } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -28,7 +29,7 @@ import { getUserContextData } from '../utils/userContextData';
 export async function resendSignUpCode(
 	input: ResendSignUpCodeInput,
 ): Promise<ResendSignUpCodeOutput> {
-	const username = input.username;
+	const { username } = input;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername,
@@ -59,6 +60,7 @@ export async function resendSignUpCode(
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,
 	};
+
 	return {
 		destination: Destination as string,
 		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,
