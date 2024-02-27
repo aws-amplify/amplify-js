@@ -68,8 +68,8 @@ export async function signInWithSRP(
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: handledChallengeName,
+			ChallengeParameters: handledChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await handleUserSRPAuthFlow(
@@ -85,7 +85,7 @@ export async function signInWithSRP(
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -110,8 +110,8 @@ export async function signInWithSRP(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

@@ -65,8 +65,8 @@ export async function signInWithCustomAuth(
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: retriedChallengeName,
+			ChallengeParameters: retiredChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await retryOnResourceNotFoundException(
@@ -80,7 +80,7 @@ export async function signInWithCustomAuth(
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: retriedChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -106,8 +106,8 @@ export async function signInWithCustomAuth(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: retriedChallengeName as ChallengeName,
+			challengeParameters: retiredChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

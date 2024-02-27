@@ -129,9 +129,9 @@ const oauthSignIn = async ({
 				preferPrivateSession,
 			});
 		}
-	} catch (error) {
-		await handleFailure(error);
+	} catch (err) {
+		await handleFailure(err);
 		// rethrow the error so it can be caught by `await signInWithRedirect()` in react-native
-		throw error;
+		throw err;
 	}
 };

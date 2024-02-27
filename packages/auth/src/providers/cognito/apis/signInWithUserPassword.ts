@@ -65,8 +65,8 @@ export async function signInWithUserPassword(
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: retiredChallengeName,
+			ChallengeParameters: retriedChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await retryOnResourceNotFoundException(
@@ -80,7 +80,7 @@ export async function signInWithUserPassword(
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: retiredChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -105,8 +105,8 @@ export async function signInWithUserPassword(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: retiredChallengeName as ChallengeName,
+			challengeParameters: retriedChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

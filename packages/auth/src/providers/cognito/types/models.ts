@@ -52,7 +52,7 @@ export type VerifiableUserAttributeKey = AuthVerifiableAttributeKey;
  * Cognito custom attribute type
  */
 // TODO(V6): replace by `custom:${string}` once categories that use auth have upgraded TS
-export type CustomAttribute = string & {};
+export type CustomAttribute = string & NonNullable<unknown>;
 
 /**
  * One or more name-value pairs containing the validation data in the request to register a user.

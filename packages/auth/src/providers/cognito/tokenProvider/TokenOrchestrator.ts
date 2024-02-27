@@ -28,7 +28,9 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
-	waitForInflightOAuth: () => Promise<void> = async () => {};
+	waitForInflightOAuth: () => Promise<void> = async () => {
+		// no-op
+	};
 
 	setAuthConfig(authConfig: AuthConfig) {
 		this.authConfig = authConfig;

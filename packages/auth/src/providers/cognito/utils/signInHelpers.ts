@@ -453,7 +453,6 @@ export async function handleCustomAuthFlowWithoutSRP(
 	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<InitiateAuthCommandOutput> {
 	const { userPoolClientId, userPoolId } = config;
-	const { dispatch } = signInStore;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 	};
@@ -585,14 +584,15 @@ async function handleDeviceSRPAuth({
 		ClientMetadata: clientMetadata,
 		Session: session,
 	};
-	const { ChallengeParameters, Session } = await respondToAuthChallenge(
-		{ region: getRegion(userPoolId) },
-		jsonReqResponseChallenge,
-	);
+	const { ChallengeParameters: respondedChallengeParameters, Session } =
+		await respondToAuthChallenge(
+			{ region: getRegion(userPoolId) },
+			jsonReqResponseChallenge,
+		);
 
 	return handleDevicePasswordVerifier(
 		username,
-		ChallengeParameters as ChallengeParameters,
+		respondedChallengeParameters as ChallengeParameters,
 		clientMetadata,
 		Session,
 		authenticationHelper,
@@ -755,7 +755,7 @@ export async function getSignInResult(params: {
 					additionalInfo: challengeParameters as AuthAdditionalInfo,
 				},
 			};
-		case 'MFA_SETUP':
+		case 'MFA_SETUP': {
 			const { signInSession, username } = signInStore.getState();
 
 			if (!isMFATypeEnabled(challengeParameters, 'TOTP'))
@@ -783,6 +783,7 @@ export async function getSignInResult(params: {
 					totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
 				},
 			};
+		}
 		case 'NEW_PASSWORD_REQUIRED':
 			return {
 				isSignedIn: false,
@@ -1110,7 +1111,7 @@ export async function retryOnResourceNotFoundException<
 		) {
 			await tokenOrchestrator.clearDeviceMetadata(username);
 
-			return await func(...args);
+			return func(...args);
 		}
 		throw error;
 	}

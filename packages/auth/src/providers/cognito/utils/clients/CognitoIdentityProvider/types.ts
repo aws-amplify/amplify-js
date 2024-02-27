@@ -499,7 +499,7 @@ export interface ChangePasswordRequest {
 /**
  * <p>The response from the server to the change password request.</p>
  */
-export interface ChangePasswordResponse {}
+export type ChangePasswordResponse = Record<never, never>;
 /**
  * <p>The code delivery details being returned from the server.</p>
  */
@@ -621,7 +621,7 @@ export interface ConfirmForgotPasswordRequest {
 /**
  * <p>The response from the server that results from a user's request to retrieve a forgotten password.</p>
  */
-export interface ConfirmForgotPasswordResponse {}
+export type ConfirmForgotPasswordResponse = Record<never, never>;
 export type ConfirmSignUpCommandInput = ConfirmSignUpRequest;
 export interface ConfirmSignUpCommandOutput
 	extends ConfirmSignUpResponse,
@@ -694,7 +694,7 @@ export interface ConfirmSignUpRequest {
 /**
  * <p>Represents the response from the server for the registration confirmation.</p>
  */
-export interface ConfirmSignUpResponse {}
+export type ConfirmSignUpResponse = Record<never, never>;
 export type DeleteUserCommandInput = DeleteUserRequest;
 export interface DeleteUserCommandOutput
 	extends DeleteUserResponse,
@@ -708,7 +708,7 @@ export interface DeleteUserRequest {
 	 */
 	AccessToken: string | undefined;
 }
-export interface DeleteUserResponse {}
+export type DeleteUserResponse = Record<never, never>;
 /**
  * <p>The device verifier against which it is authenticated.</p>
  */
@@ -941,7 +941,7 @@ export interface GlobalSignOutRequest {
 /**
  * <p>The response to the request to sign out all devices.</p>
  */
-export interface GlobalSignOutResponse {}
+export type GlobalSignOutResponse = Record<never, never>;
 export type InitiateAuthCommandInput = InitiateAuthRequest;
 export interface InitiateAuthCommandOutput
 	extends InitiateAuthResponse,
@@ -1435,7 +1435,7 @@ export interface SetUserMFAPreferenceRequest {
 	 */
 	AccessToken: string | undefined;
 }
-export interface SetUserMFAPreferenceResponse {}
+export type SetUserMFAPreferenceResponse = Record<never, never>;
 export type SignUpCommandInput = SignUpRequest;
 export interface SignUpCommandOutput extends SignUpResponse, __MetadataBearer {}
 /**
@@ -1562,7 +1562,7 @@ export interface UpdateDeviceStatusRequest {
 /**
  * <p>The response to the request to update the device status.</p>
  */
-export interface UpdateDeviceStatusResponse {}
+export type UpdateDeviceStatusResponse = Record<never, never>;
 export type UpdateUserAttributesCommandInput = UpdateUserAttributesRequest;
 export interface UpdateUserAttributesCommandOutput
 	extends UpdateUserAttributesResponse,
@@ -1684,7 +1684,7 @@ export interface VerifyUserAttributeRequest {
 /**
  * <p>A container representing the response from the server from the request to verify user attributes.</p>
  */
-export interface VerifyUserAttributeResponse {}
+export type VerifyUserAttributeResponse = Record<never, never>;
 export type DeleteUserAttributesCommandInput = DeleteUserAttributesRequest;
 export interface DeleteUserAttributesCommandOutput
 	extends DeleteUserAttributesResponse,
@@ -1708,5 +1708,5 @@ export interface DeleteUserAttributesRequest {
 /**
  * <p>Represents the response from the server to delete user attributes.</p>
  */
-export interface DeleteUserAttributesResponse {}
+export type DeleteUserAttributesResponse = Record<never, never>;
 export {};

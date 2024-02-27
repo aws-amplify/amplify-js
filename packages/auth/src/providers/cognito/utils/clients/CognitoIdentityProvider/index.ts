@@ -70,7 +70,7 @@ interface RevokeTokenInput {
 	ClientId: string;
 }
 
-interface RevokeTokenOutput {}
+type RevokeTokenOutput = Record<string, unknown>;
 
 type ClientOperation =
 	| 'SignUp'

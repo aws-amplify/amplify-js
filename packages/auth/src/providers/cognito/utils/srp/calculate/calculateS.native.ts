@@ -11,7 +11,7 @@ export const calculateS = async ({
 	k,
 	x,
 	B,
-	N,
+	N: _,
 	U,
 }: {
 	a: AuthBigInteger;

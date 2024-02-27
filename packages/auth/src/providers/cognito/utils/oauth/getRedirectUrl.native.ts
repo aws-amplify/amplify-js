@@ -5,13 +5,13 @@ import { invalidRedirectException } from '../../../../errors/constants';
 
 /** @internal */
 export function getRedirectUrl(redirects: string[]): string {
-	const redirect = redirects?.find(
+	const redirectUrl = redirects?.find(
 		redirect =>
 			!redirect.startsWith('http://') && !redirect.startsWith('https://'),
 	);
-	if (!redirect) {
+	if (!redirectUrl) {
 		throw invalidRedirectException;
 	}
 
-	return redirect;
+	return redirectUrl;
 }

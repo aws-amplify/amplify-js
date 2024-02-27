@@ -10,7 +10,7 @@ import { SignInOutput } from '../providers/cognito';
  */
 export type AuthAdditionalInfo = Record<string, string>;
 
-export type AuthAnyAttribute = string & {};
+export type AuthAnyAttribute = string & NonNullable<unknown>;
 
 /**
  * Denotes the medium over which a confirmation code was sent.

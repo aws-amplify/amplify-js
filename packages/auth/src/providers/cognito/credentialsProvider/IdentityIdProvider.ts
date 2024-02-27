@@ -6,6 +6,7 @@ import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
 import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
+import { GetIdException } from '../types/errors';
 
 import { IdentityIdStore } from './types';
 import { formLoginsMap } from './utils';
@@ -17,9 +18,9 @@ const logger = new ConsoleLogger('CognitoIdentityIdProvider');
  *
  * @param tokens - The AuthTokens received after SignIn
  * @returns string
- * @throws configuration excpetions: {@link InvalidIdentityPoolIdException }
+ * @throws configuration exceptions: {@link InvalidIdentityPoolIdException }
  *  - Auth errors that may arise from misconfiguration.
- * @throws service excpetions: {@link GetIdException }
+ * @throws service exceptions: {@link GetIdException }
  */
 export async function cognitoIdentityIdProvider({
 	tokens,
@@ -76,7 +77,7 @@ export async function cognitoIdentityIdProvider({
 }
 
 async function generateIdentityId(
-	logins: {},
+	logins: Record<string, string>,
 	authConfig: CognitoIdentityPoolConfig,
 ): Promise<string> {
 	const identityPoolId = authConfig?.identityPoolId;

@@ -3,6 +3,11 @@
 
 import { defaultStorage } from '@aws-amplify/core';
 
+import {
+	GetCredentialsForIdentityException,
+	GetIdException,
+} from '../types/errors';
+
 import { DefaultIdentityIdStore } from './IdentityIdStore';
 import { CognitoAWSCredentialsAndIdentityIdProvider } from './credentialsProvider';
 

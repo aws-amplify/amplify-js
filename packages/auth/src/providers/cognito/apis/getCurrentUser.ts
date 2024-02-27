@@ -4,6 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { GetCurrentUserOutput } from '../types';
+import { InitiateAuthException } from '../types/errors';
 
 import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentUser';
 

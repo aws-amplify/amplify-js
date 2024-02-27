@@ -53,9 +53,7 @@ type TimeOutOutput = ReturnType<typeof setTimeout>;
 function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
 	let timer: TimeOutOutput | undefined;
 
-	return function (
-		args: F extends (...args: infer A) => any ? A : never,
-	): void {
+	return (args: F extends (...args: infer A) => any ? A : never): void => {
 		if (!timer) {
 			fun(...args);
 		}
@@ -68,8 +66,8 @@ function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
 
 function handleAutoSignInWithLink(
 	signInInput: SignInInput,
-	resolve: Function,
-	reject: Function,
+	resolve: (value: SignInOutput) => void,
+	reject: (reason?: any) => void,
 ) {
 	const start = Date.now();
 	const autoSignInPollingIntervalId = setInterval(async () => {
@@ -140,15 +138,15 @@ export function autoSignInWhenUserIsConfirmedWithLink(
 	signInInput: SignInInput,
 ): AutoSignInCallback {
 	return async () => {
-		return new Promise<SignInOutput>(async (resolve, reject) => {
+		return new Promise<SignInOutput>((resolve, reject) => {
 			debouncedAutoSignInWithLink([signInInput, resolve, reject]);
 		});
 	};
 }
 async function handleAutoSignInWithCodeOrUserConfirmed(
 	signInInput: SignInInput,
-	resolve: Function,
-	reject: Function,
+	resolve: (value: SignInOutput) => void,
+	reject: (reason?: any) => void,
 ) {
 	try {
 		const output = await signIn(signInInput);
@@ -162,7 +160,7 @@ async function handleAutoSignInWithCodeOrUserConfirmed(
 
 function autoSignInWithCode(signInInput: SignInInput): AutoSignInCallback {
 	return async () => {
-		return new Promise<SignInOutput>(async (resolve, reject) => {
+		return new Promise<SignInOutput>((resolve, reject) => {
 			debouncedAutoSignWithCodeOrUserConfirmed([signInInput, resolve, reject]);
 		});
 	};

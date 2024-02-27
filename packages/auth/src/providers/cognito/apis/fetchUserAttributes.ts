@@ -4,6 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { FetchUserAttributesOutput } from '../types';
+import { GetUserException } from '../types/errors';
 
 import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/fetchUserAttributes';
 

@@ -86,9 +86,9 @@ export async function confirmSignIn(
 	try {
 		const {
 			Session,
-			ChallengeName,
+			ChallengeName: handledChallengeName,
 			AuthenticationResult,
-			ChallengeParameters,
+			ChallengeParameters: handledChallengeParameters,
 		} = await handleChallengeName(
 			username,
 			challengeName as ChallengeName,
@@ -104,7 +104,7 @@ export async function confirmSignIn(
 		setActiveSignInState({
 			signInSession: Session,
 			username,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 
@@ -130,8 +130,8 @@ export async function confirmSignIn(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		assertServiceError(error);

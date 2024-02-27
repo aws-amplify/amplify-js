@@ -37,13 +37,16 @@ const endpointResolver = ({ region }: EndpointResolverOptions) => ({
 /**
  * A Cognito Identity-specific middleware that disables caching for all requests.
  */
-const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
-	() => (next, context) =>
-		async function disableCacheMiddleware(request) {
-			request.headers['cache-control'] = 'no-store';
+const disableCacheMiddlewareFactory: Middleware<
+	HttpRequest,
+	HttpResponse,
+	Record<string, unknown>
+> = () => (next, _) =>
+	async function disableCacheMiddleware(request) {
+		request.headers['cache-control'] = 'no-store';
 
-			return next(request);
-		};
+		return next(request);
+	};
 
 /**
  * A Cognito Identity-specific transfer handler that does NOT sign requests, and
@@ -52,11 +55,11 @@ const disableCacheMiddleware: Middleware<HttpRequest, HttpResponse, {}> =
  * @internal
  */
 export const cognitoUserPoolTransferHandler = composeTransferHandler<
-	[Parameters<typeof disableCacheMiddleware>[0]],
+	[Parameters<typeof disableCacheMiddlewareFactory>[0]],
 	HttpRequest,
 	HttpResponse,
 	typeof unauthenticatedHandler
->(unauthenticatedHandler, [disableCacheMiddleware]);
+>(unauthenticatedHandler, [disableCacheMiddlewareFactory]);
 
 /**
  * @internal

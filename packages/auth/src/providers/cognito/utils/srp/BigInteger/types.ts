@@ -1,3 +1,6 @@
+/* eslint-disable */
+// @ts-nocheck -> BigInteger is already a vended utility
+
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 

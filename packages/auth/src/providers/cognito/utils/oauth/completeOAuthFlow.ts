@@ -116,10 +116,10 @@ const handleCodeFlow = async ({
 		.join('&');
 	const {
 		access_token,
-		refresh_token,
+		refresh_token: refreshToken,
 		id_token,
 		error,
-		error_message,
+		error_message: errorMessage,
 		token_type,
 		expires_in,
 	} = await (
@@ -135,7 +135,7 @@ const handleCodeFlow = async ({
 
 	if (error) {
 		// error is being caught in attemptCompleteOAuthFlow.ts
-		throw createOAuthError(error_message ?? error);
+		throw createOAuthError(errorMessage ?? error);
 	}
 
 	const username =
@@ -145,7 +145,7 @@ const handleCodeFlow = async ({
 		username,
 		AccessToken: access_token,
 		IdToken: id_token,
-		RefreshToken: refresh_token,
+		RefreshToken: refreshToken,
 		TokenType: token_type,
 		ExpiresIn: expires_in,
 	});
@@ -238,7 +238,9 @@ const completeFlow = async ({
 
 	// when the oauth flow is completed, there should be nothing to block the async calls
 	// that involves fetchAuthSession in the `TokenOrchestrator`
-	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(async () => {});
+	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(async () => {
+		// no-op
+	});
 
 	if (isCustomState(state)) {
 		Hub.dispatch(
