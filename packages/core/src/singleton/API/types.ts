@@ -106,6 +106,8 @@ export interface ModelIntrospectionSchema {
 	models: SchemaModels;
 	nonModels: SchemaNonModels;
 	enums: SchemaEnums;
+	queries?: CustomOperations;
+	mutations?: CustomOperations;
 }
 
 /**
@@ -114,6 +116,7 @@ export interface ModelIntrospectionSchema {
 export type SchemaModels = Record<string, SchemaModel>;
 export type SchemaNonModels = Record<string, SchemaNonModel>;
 export type SchemaEnums = Record<string, SchemaEnum>;
+export type CustomOperations = Record<string, CustomOperation>;
 
 export interface SchemaModel {
 	name: string;
@@ -144,6 +147,24 @@ export interface SecondaryIndexAttribute {
 		queryField: string;
 		fields: string[];
 	};
+}
+
+export interface CustomOperation {
+	name: string;
+	type: FieldType;
+	isArray: boolean;
+	isRequired: boolean;
+	arguments: CustomOperationArguments;
+}
+
+export type CustomOperationArguments = Record<string, CustomOperationArgument>;
+
+export interface CustomOperationArgument {
+	name: string;
+	type: FieldType;
+	isArray: boolean;
+	isRequired: boolean;
+	isArrayNullable?: boolean;
 }
 
 /**
