@@ -15,9 +15,12 @@ export let conflictHandler: InAppMessageConflictHandler =
  * @remark
  * The conflict handler is not persisted across app restarts and so must be set again before dispatching an event for
  * any custom handling to take effect.
+ * 
  * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
  * configuration is incorrect, or if In App messaging hasn't been initialized.
- * @param SetConflictHandlerInput: The input object that holds the conflict handler to be used.
+ * 
+ * @param input The input object that holds the conflict handler to be used.
+ * 
  * @example
  * ```ts
  * // Sync messages before dispatching an event

@@ -19,7 +19,7 @@ import { StorageValidationErrorCode } from '../../../../errors/types/validation'
 interface ListApi {
 	/**
 	 * Lists bucket objects with pagination.
-	 * @param {ListPaginateInput} The input object
+	 * @param {ListPaginateInput} input The input object
 	 * @return {Promise<ListPaginateOutput>} - Promise resolves to list of keys and metadata with
 	 * pageSize defaulting to 1000. Additionally the result will include a nextToken if there are more items to retrieve
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
@@ -31,7 +31,7 @@ interface ListApi {
 	): Promise<ListPaginateOutput>;
 	/**
 	 * Lists all bucket objects.
-	 * @param {ListAllInput} The input object
+	 * @param {ListAllInput} input The input object
 	 * @return {Promise<ListAllOutput>} - Promise resolves to list of keys and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
