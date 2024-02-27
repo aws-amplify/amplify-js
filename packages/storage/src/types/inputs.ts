@@ -12,6 +12,11 @@ export type StorageOperationInput<Options extends StorageOptions> = {
 	options?: Options;
 };
 
+export type StorageOperationInputPath<Options> = {
+	path: string | ((id: string) => string);
+	options?: Options;
+};
+
 export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
@@ -32,6 +37,9 @@ export type StorageGetUrlInput<Options extends StorageOptions> =
 
 export type StorageDownloadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
+
+export type StorageDownloadDataInputPath<Options> =
+	StorageOperationInputPath<Options>;
 
 export type StorageUploadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options> & {

@@ -92,6 +92,10 @@ export type DownloadDataOptions = ReadOptions &
 	TransferOptions &
 	BytesRangeOptions;
 
+export type DownloadDataOptionsPath = CommonOptions &
+	TransferOptions &
+	BytesRangeOptions;
+
 export type UploadDataOptions = WriteOptions &
 	CommonOptions &
 	TransferOptions & {

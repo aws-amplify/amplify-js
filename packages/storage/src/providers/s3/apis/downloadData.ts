@@ -11,6 +11,9 @@ import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
+import { Item } from '../types/outputs';
+import { StorageDownloadDataOutput } from '../../../types';
+import { DownloadDataInputKey, DownloadDataInputPath } from '../types/inputs';
 
 /**
  * Download S3 object data to memory
@@ -42,6 +45,7 @@ import { logger } from '../../../utils';
  * }
  *```
  */
+
 export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 	const abortController = new AbortController();
 
@@ -55,11 +59,12 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 };
 
 const downloadDataJob =
-	(
+	<DownloadDataInput extends DownloadDataInputKey | DownloadDataInputPath>(
 		{ options: downloadDataOptions, key }: DownloadDataInput,
 		abortSignal: AbortSignal
 	) =>
-	async () => {
+	async (): Promise<StorageDownloadDataOutput<Item>> => {
+		
 		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
 			Amplify,
 			downloadDataOptions
@@ -92,7 +97,7 @@ const downloadDataJob =
 			}
 		);
 		return {
-			key,
+			key: key ?? '',
 			body,
 			lastModified,
 			size,

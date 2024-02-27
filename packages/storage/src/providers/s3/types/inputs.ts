@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StrictUnion } from '@aws-amplify/core/internals/utils';
 import {
 	StorageCopyInput,
 	StorageGetPropertiesInput,
@@ -9,6 +10,7 @@ import {
 	StorageRemoveInput,
 	StorageDownloadDataInput,
 	StorageUploadDataInput,
+	StorageDownloadDataInputPath,
 } from '../../../types';
 import {
 	GetPropertiesOptions,
@@ -21,6 +23,7 @@ import {
 	CopyDestinationOptions,
 	CopySourceOptions,
 } from '../types';
+import { DownloadDataOptionsPath } from './options';
 
 // TODO: support use accelerate endpoint option
 /**
@@ -60,7 +63,13 @@ export type RemoveInput = StorageRemoveInput<RemoveOptions>;
 /**
  * Input type for S3 downloadData API.
  */
-export type DownloadDataInput = StorageDownloadDataInput<DownloadDataOptions>;
+export type DownloadDataInputKey =
+	StorageDownloadDataInput<DownloadDataOptions>;
+export type DownloadDataInputPath =
+	StorageDownloadDataInputPath<DownloadDataOptionsPath>;
+export type DownloadDataInput = StrictUnion<
+	DownloadDataInputKey | DownloadDataInputPath
+>;
 
 /**
  * Input type for S3 uploadData API.

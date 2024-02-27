@@ -13,6 +13,7 @@ export {
 	StorageGetPropertiesInput,
 	StorageRemoveInput,
 	StorageDownloadDataInput,
+	StorageDownloadDataInputPath,
 	StorageUploadDataInput,
 	StorageCopyInput,
 	StorageGetUrlInput,
