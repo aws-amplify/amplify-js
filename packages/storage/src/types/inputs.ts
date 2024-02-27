@@ -7,15 +7,18 @@ import {
 	StorageListPaginateOptions,
 } from './options';
 
+export type StorageOperationInputKey = {key: string}
+export type StorageOperationInputPath = {path: string | ((id: string) => string);}
+
 export type StorageOperationInput<Options extends StorageOptions> = {
 	key: string;
 	options?: Options;
 };
 
-export type StorageOperationInputPath<Options> = {
-	path: string | ((id: string) => string);
-	options?: Options;
-};
+// export type StorageOperationInputPath<Options> = {
+// 	path: string | ((id: string) => string);
+// 	options?: Options;
+// };
 
 export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
@@ -39,7 +42,7 @@ export type StorageDownloadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
 export type StorageDownloadDataInputPath<Options> =
-	StorageOperationInputPath<Options>;
+	StorageOperationInputPath & {options: Options};
 
 export type StorageUploadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options> & {

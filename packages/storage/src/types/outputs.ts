@@ -53,7 +53,7 @@ export type StorageItemPath = {
 };
 
 
-export type StorageDownloadDataOutput<T extends StorageItem | StorageItemPath> = T & {
+export type StorageDownloadDataOutput<Item extends StorageItem | StorageItemPath> = Item & {
 	body: ResponseBodyMixin;
 };
 

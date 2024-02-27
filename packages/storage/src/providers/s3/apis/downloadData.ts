@@ -14,6 +14,9 @@ import { logger } from '../../../utils';
 import { Item } from '../types/outputs';
 import { StorageDownloadDataOutput } from '../../../types';
 import { DownloadDataInputKey, DownloadDataInputPath } from '../types/inputs';
+import { validateStorageOperationInput } from '../utils/utils';
+import { STORAGE_INPUT_TYPES } from '../utils/constants';
+import { StorageItem, StorageItemPath } from '../../../types/outputs';
 
 /**
  * Download S3 object data to memory
@@ -60,18 +63,21 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 
 const downloadDataJob =
 	<DownloadDataInput extends DownloadDataInputKey | DownloadDataInputPath>(
-		{ options: downloadDataOptions, key }: DownloadDataInput,
-		abortSignal: AbortSignal
+		downloadDataInput: DownloadDataInput,
+		abortSignal: AbortSignal,
 	) =>
-	async (): Promise<StorageDownloadDataOutput<Item>> => {
-		
+	async (): Promise<StorageDownloadDataOutput<StorageItem | StorageItemPath>> => {
+		const { options: downloadDataOptions } = downloadDataInput;
+		const { inputType, objectKey } =
+			validateStorageOperationInput(downloadDataInput);
 		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
 			Amplify,
-			downloadDataOptions
+			downloadDataOptions,
 		);
-		const finalKey = keyPrefix + key;
+		const finalKey =
+			inputType === STORAGE_INPUT_TYPES.KEY ? keyPrefix + objectKey : objectKey;
 
-		logger.debug(`download ${key} from ${finalKey}.`);
+		logger.debug(`download ${objectKey} from ${finalKey}.`);
 
 		const {
 			Body: body,
@@ -94,10 +100,10 @@ const downloadDataJob =
 				...(downloadDataOptions?.bytesRange && {
 					Range: `bytes=${downloadDataOptions.bytesRange.start}-${downloadDataOptions.bytesRange.end}`,
 				}),
-			}
+			},
 		);
-		return {
-			key: key ?? '',
+
+		const result = {
 			body,
 			lastModified,
 			size,
@@ -106,4 +112,7 @@ const downloadDataJob =
 			metadata,
 			versionId,
 		};
+		return inputType === STORAGE_INPUT_TYPES.KEY
+			? { key: finalKey, ...result }
+			: { path: finalKey, ...result };
 	};

@@ -19,3 +19,8 @@ export const MAX_PARTS_COUNT = 10000;
 export const DEFAULT_QUEUE_SIZE = 4;
 
 export const UPLOADS_STORAGE_KEY = '__uploadInProgress';
+
+export enum STORAGE_INPUT_TYPES {
+	PATH = 'path',
+	KEY = 'key'
+}
