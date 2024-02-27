@@ -42,7 +42,7 @@ export type StorageDownloadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
 export type StorageDownloadDataInputPath<Options> =
-	StorageOperationInputPath & {options: Options};
+	StorageOperationInputPath & {options?: Options};
 
 export type StorageUploadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options> & {
