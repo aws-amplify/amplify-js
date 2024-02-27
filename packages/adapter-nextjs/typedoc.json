@@ -1,0 +1,11 @@
+{
+	"name": "@aws-amplify/adapter-nextjs",
+	"extends": ["../../typedoc.base.json"],
+	"entryPointStrategy": "resolve",
+	"entryPoints": [
+		"src/index.ts",
+		"src/api/index.ts",
+		"src/utils/index.ts"
+	],
+	"readme": "README.md",
+}
