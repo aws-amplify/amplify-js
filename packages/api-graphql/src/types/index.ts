@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import {
+	EnumTypes,
 	ModelTypes,
 	CustomHeaders,
-	EnumTypes,
+	CustomQueries,
+	CustomMutations,
 } from '@aws-amplify/data-schema-types';
 import { Source, DocumentNode, GraphQLError } from 'graphql';
 export { OperationTypeNode } from 'graphql';
@@ -388,6 +390,8 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	isCancelError: (error: any) => boolean;
 	models: ModelTypes<T>;
 	enums: EnumTypes<T>;
+	queries: CustomQueries<T>;
+	mutations: CustomMutations<T>;
 }>;
 
 export type V6ClientSSRRequest<T extends Record<any, any> = never> =
@@ -400,6 +404,9 @@ export type V6ClientSSRRequest<T extends Record<any, any> = never> =
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
 		models: ModelTypes<T, 'REQUEST'>;
+		enums: EnumTypes<T>;
+		queries: CustomQueries<T, 'REQUEST'>;
+		mutations: CustomMutations<T, 'REQUEST'>;
 	}>;
 
 export type V6ClientSSRCookies<T extends Record<any, any> = never> =
@@ -412,6 +419,9 @@ export type V6ClientSSRCookies<T extends Record<any, any> = never> =
 		cancel: (promise: Promise<any>, message?: string) => boolean;
 		isCancelError: (error: any) => boolean;
 		models: ModelTypes<T, 'COOKIES'>;
+		enums: EnumTypes<T>;
+		queries: CustomQueries<T, 'COOKIES'>;
+		mutations: CustomMutations<T, 'COOKIES'>;
 	}>;
 
 export type GraphQLMethod = <

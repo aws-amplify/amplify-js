@@ -504,7 +504,6 @@ describe('generateGraphQLDocument()', () => {
 					modelOperation,
 				);
 
-				console.log(document);
 				expect(document.includes(expectedArgs)).toBe(true);
 			},
 		);
