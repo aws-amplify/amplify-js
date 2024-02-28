@@ -2170,7 +2170,7 @@ export class AuthClass {
 			}
 			const user = this.userPool.getCurrentUser();
 			if (user) {
-				await this.cognitoIdentitySignOut(opts ?? {}, user);
+				await this.cognitoIdentitySignOut(opts, user);
 			} else {
 				logger.debug('no current Cognito user');
 			}

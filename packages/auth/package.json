@@ -60,7 +60,7 @@
       "name": "Auth (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Auth }",
-      "limit": "55.11 kB"
+      "limit": "55.12 kB"
     }
   ],
   "jest": {
