@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AuthUserAttributes,
+	AuthDevice,
 	AuthUserAttribute,
 	AuthUserAttributeKey,
-	AuthDevice,
+	AuthUserAttributes,
 } from './models';
 import { AuthServiceOptions, AuthSignUpOptions } from './options';
 
-export type AuthConfirmResetPasswordInput<
+export interface AuthConfirmResetPasswordInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	username: string;
 	newPassword: string;
 	confirmationCode: string;
 	options?: ServiceOptions;
-};
+}
 
 /**
  * The parameters for constructing a Resend Sign Up code input.
@@ -24,34 +24,34 @@ export type AuthConfirmResetPasswordInput<
  * @param username - a standard username, potentially an email/phone number
  * @param options - optional parameters for the Sign Up process such as the plugin options
  */
-export type AuthResendSignUpCodeInput<
+export interface AuthResendSignUpCodeInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	username: string;
 	options?: ServiceOptions;
-};
+}
 
-export type AuthResetPasswordInput<
+export interface AuthResetPasswordInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	username: string;
 	options?: ServiceOptions;
-};
+}
 
-export type AuthSignInInput<
+export interface AuthSignInInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	username: string;
 	password?: string;
 	options?: ServiceOptions;
-};
-export type AuthSignOutInput = {
+}
+export interface AuthSignOutInput {
 	global: boolean;
-};
+}
 
 export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
 
-export type AuthSignInWithRedirectInput = {
+export interface AuthSignInWithRedirectInput {
 	provider?: AuthProvider | { custom: string };
 	customState?: string;
 	options?: {
@@ -66,7 +66,7 @@ export type AuthSignInWithRedirectInput = {
 		 */
 		preferPrivateSession?: boolean;
 	};
-};
+}
 
 /**
  * The parameters for constructing a Sign Up input.
@@ -75,14 +75,14 @@ export type AuthSignInWithRedirectInput = {
  * @param password - the user's password
  * @param options - optional parameters for the Sign Up process, including user attributes
  */
-export type AuthSignUpInput<
+export interface AuthSignUpInput<
 	ServiceOptions extends
 		AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>,
-> = {
+> {
 	username: string;
 	password: string;
 	options?: ServiceOptions;
-};
+}
 
 /**
  *  Constructs a `confirmSignUp` input.
@@ -91,13 +91,13 @@ export type AuthSignUpInput<
  * @param confirmationCode - the user's confirmation code sent to email or cellphone
  * @param options - optional parameters for the Sign Up process, including user attributes
  */
-export type AuthConfirmSignUpInput<
+export interface AuthConfirmSignUpInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	username: string;
 	confirmationCode: string;
 	options?: ServiceOptions;
-};
+}
 /**
  * Constructs a `confirmSignIn` input.
  *
@@ -105,12 +105,12 @@ export type AuthConfirmSignUpInput<
  * the sign in process.
  * @param options - optional parameters for the Confirm Sign In process such as the service options
  */
-export type AuthConfirmSignInInput<
+export interface AuthConfirmSignInInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	challengeResponse: string;
 	options?: ServiceOptions;
-};
+}
 
 /**
  * Constructs a `VerifyTOTPSetup` input.
@@ -118,12 +118,12 @@ export type AuthConfirmSignInInput<
  * @param code - required parameter for verifying the TOTP setup.
  * @param options - optional parameters for the Verify TOTP Setup process such as the service options.
  */
-export type AuthVerifyTOTPSetupInput<
+export interface AuthVerifyTOTPSetupInput<
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	code: string;
 	options?: ServiceOptions;
-};
+}
 
 /**
  * Constructs a `updatePassword` input.
@@ -131,10 +131,10 @@ export type AuthVerifyTOTPSetupInput<
  * @param oldPassword - previous password used for `signIn`
  * @param newPassword - new password to be used for `signIn`
  */
-export type AuthUpdatePasswordInput = {
+export interface AuthUpdatePasswordInput {
 	oldPassword: string;
 	newPassword: string;
-};
+}
 
 /**
  * Constructs a `updateUserAttributes` input.
@@ -142,26 +142,26 @@ export type AuthUpdatePasswordInput = {
  * @param userAttributes - the user attributes to be updated
  * @param options - optional parameters for the Update User Attributes process such as the service options.
  */
-export type AuthUpdateUserAttributesInput<
+export interface AuthUpdateUserAttributesInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	userAttributes: AuthUserAttributes<UserAttributeKey>;
 	options?: ServiceOptions;
-};
+}
 
 /**
  * Constructs a `updateUserAttributes` input.
  * @param userAttributes - the user attribute to be updated
  * @param options - optional parameters for the Update User Attributes process such as the service options.
  */
-export type AuthUpdateUserAttributeInput<
+export interface AuthUpdateUserAttributeInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	userAttribute: AuthUserAttribute<UserAttributeKey>;
 	options?: ServiceOptions;
-};
+}
 
 /*
  * Constructs a `verifyUserAttribute` input.
@@ -170,9 +170,12 @@ export type AuthUpdateUserAttributeInput<
  * @param confirmationCode - the user attribute verification code sent to email or cellphone
  *
  */
-export type AuthConfirmUserAttributeInput<
+export interface AuthConfirmUserAttributeInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = { userAttributeKey: UserAttributeKey; confirmationCode: string };
+> {
+	userAttributeKey: UserAttributeKey;
+	confirmationCode: string;
+}
 
 /**
  * Constructs a `sendUserAttributeVerificationCode` request.
@@ -180,28 +183,30 @@ export type AuthConfirmUserAttributeInput<
  * @param userAttributeKey - the user attribute key
  * @param options - optional parameters for the Resend Attribute Code process such as the service options.
  */
-export type AuthSendUserAttributeVerificationCodeInput<
+export interface AuthSendUserAttributeVerificationCodeInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 	ServiceOptions extends AuthServiceOptions = AuthServiceOptions,
-> = {
+> {
 	userAttributeKey: UserAttributeKey;
 	options?: ServiceOptions;
-};
+}
 
 /**
  * Constructs a `deleteUserAttributes` input.
  *
  * @param userAttributeKeys - the user attribute keys to be deleted
  */
-export type AuthDeleteUserAttributesInput<
+export interface AuthDeleteUserAttributesInput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = { userAttributeKeys: [UserAttributeKey, ...UserAttributeKey[]] };
+> {
+	userAttributeKeys: [UserAttributeKey, ...UserAttributeKey[]];
+}
 
 /**
  * Constructs a `forgetDevice` input.
  *
  * @param device - optional parameter to forget an external device
  */
-export type AuthForgetDeviceInput = {
+export interface AuthForgetDeviceInput {
 	device?: AuthDevice;
-};
+}
