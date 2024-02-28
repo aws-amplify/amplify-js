@@ -3,9 +3,10 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { FetchDevicesOutput } from '../types';
 import { listDevices } from '../utils/clients/CognitoIdentityProvider';
 import { DeviceType } from '../utils/clients/CognitoIdentityProvider/types';
@@ -43,6 +44,7 @@ export async function fetchDevices(): Promise<FetchDevicesOutput> {
 			Limit: MAX_DEVICES,
 		},
 	);
+
 	return parseDevicesResponse(response.Devices ?? []);
 }
 
@@ -62,10 +64,12 @@ const parseDevicesResponse = async (
 					if (Name && Value) {
 						attrs[Name] = Value;
 					}
+
 					return attrs;
 				},
 				{},
 			);
+
 			return {
 				id,
 				attributes,

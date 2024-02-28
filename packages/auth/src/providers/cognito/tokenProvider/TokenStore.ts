@@ -5,6 +5,9 @@ import {
 	assertTokenProviderConfig,
 	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
+
+import { AuthError } from '../../../errors/AuthError';
+
 import {
 	AuthKeys,
 	AuthTokenStorageKeys,
@@ -12,8 +15,7 @@ import {
 	CognitoAuthTokens,
 	DeviceMetadata,
 } from './types';
-import { AuthError } from '../../../errors/AuthError';
-import { assert, TokenProviderErrorCode } from './errorHelpers';
+import { TokenProviderErrorCode, assert } from './errorHelpers';
 
 export class DefaultTokenStore implements AuthTokenStore {
 	private authConfig?: AuthConfig;
@@ -26,11 +28,14 @@ export class DefaultTokenStore implements AuthTokenStore {
 				message: 'KeyValueStorage was not found in TokenStore',
 			});
 		}
+
 		return this.keyValueStorage;
 	}
+
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface) {
 		this.keyValueStorage = keyValueStorage;
 	}
+
 	setAuthConfig(authConfig: AuthConfig) {
 		this.authConfig = authConfig;
 	}
@@ -80,11 +85,13 @@ export class DefaultTokenStore implements AuthTokenStore {
 			if (signInDetails) {
 				tokens.signInDetails = JSON.parse(signInDetails);
 			}
+
 			return tokens;
 		} catch (err) {
 			return null;
 		}
 	}
+
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
 		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
 		await this.clearTokens();
@@ -100,21 +107,21 @@ export class DefaultTokenStore implements AuthTokenStore {
 			tokens.accessToken.toString(),
 		);
 
-		if (!!tokens.idToken) {
+		if (tokens.idToken) {
 			await this.getKeyValueStorage().setItem(
 				authKeys.idToken,
 				tokens.idToken.toString(),
 			);
 		}
 
-		if (!!tokens.refreshToken) {
+		if (tokens.refreshToken) {
 			await this.getKeyValueStorage().setItem(
 				authKeys.refreshToken,
 				tokens.refreshToken,
 			);
 		}
 
-		if (!!tokens.deviceMetadata) {
+		if (tokens.deviceMetadata) {
 			if (tokens.deviceMetadata.deviceKey) {
 				await this.getKeyValueStorage().setItem(
 					authKeys.deviceKey,
@@ -133,7 +140,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				tokens.deviceMetadata.randomPassword,
 			);
 		}
-		if (!!tokens.signInDetails) {
+		if (tokens.signInDetails) {
 			await this.getKeyValueStorage().setItem(
 				authKeys.signInDetails,
 				JSON.stringify(tokens.signInDetails),
@@ -171,7 +178,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			authKeys.randomPasswordKey,
 		);
 
-		return !!randomPassword
+		return randomPassword
 			? {
 					deviceKey: deviceKey ?? undefined,
 					deviceGroupKey: deviceGroupKey ?? undefined,
@@ -179,6 +186,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 				}
 			: null;
 	}
+
 	async clearDeviceMetadata(username?: string): Promise<void> {
 		const authKeys = await this.getAuthKeys(username);
 		await Promise.all([
@@ -193,6 +201,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 	): Promise<AuthKeys<keyof typeof AuthTokenStorageKeys>> {
 		assertTokenProviderConfig(this.authConfig?.Cognito);
 		const lastAuthUser = username ?? (await this.getLastAuthUser());
+
 		return createKeysForAuthStorage(
 			this.name,
 			`${this.authConfig.Cognito.userPoolClientId}.${lastAuthUser}`,
@@ -202,6 +211,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 	private getLastAuthUserKey() {
 		assertTokenProviderConfig(this.authConfig?.Cognito);
 		const identifier = this.authConfig.Cognito.userPoolClientId;
+
 		return `${this.name}.${identifier}.LastAuthUser`;
 	}
 
@@ -225,6 +235,7 @@ export function getAuthStorageKeys<T extends Record<string, string>>(
 	authKeys: T,
 ) {
 	const keys = Object.values({ ...authKeys });
+
 	return (prefix: string, identifier: string) =>
 		keys.reduce(
 			(acc, authKey) => ({

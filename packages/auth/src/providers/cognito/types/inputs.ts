@@ -2,40 +2,41 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthVerifiableAttributeKey } from '@aws-amplify/core/internals/utils';
+
 import {
-	MFAPreference,
 	ConfirmResetPasswordOptions,
 	ConfirmSignInOptions,
 	ConfirmSignUpOptions,
-	UserAttributeKey,
-	VerifiableUserAttributeKey,
+	MFAPreference,
 	ResendSignUpCodeOptions,
 	ResetPasswordOptions,
+	SendUserAttributeVerificationCodeOptions,
 	SignInOptions,
 	SignUpOptions,
-	UpdateUserAttributesOptions,
 	UpdateUserAttributeOptions,
+	UpdateUserAttributesOptions,
+	UserAttributeKey,
+	VerifiableUserAttributeKey,
 	VerifyTOTPSetupOptions,
-	SendUserAttributeVerificationCodeOptions,
 } from '../types';
 import {
 	AuthConfirmResetPasswordInput,
 	AuthConfirmSignInInput,
 	AuthConfirmSignUpInput,
 	AuthConfirmUserAttributeInput,
+	AuthDeleteUserAttributesInput,
+	AuthForgetDeviceInput,
 	AuthResendSignUpCodeInput,
 	AuthResetPasswordInput,
+	AuthSendUserAttributeVerificationCodeInput,
 	AuthSignInInput,
 	AuthSignInWithRedirectInput,
 	AuthSignOutInput,
 	AuthSignUpInput,
 	AuthUpdatePasswordInput,
-	AuthUpdateUserAttributesInput,
 	AuthUpdateUserAttributeInput,
+	AuthUpdateUserAttributesInput,
 	AuthVerifyTOTPSetupInput,
-	AuthSendUserAttributeVerificationCodeInput,
-	AuthDeleteUserAttributesInput,
-	AuthForgetDeviceInput,
 } from '../../../types';
 
 /**
@@ -114,10 +115,10 @@ export type SignUpInput = AuthSignUpInput<SignUpOptions<UserAttributeKey>>;
 /**
  * Input type for Cognito updateMFAPreference API.
  */
-export type UpdateMFAPreferenceInput = {
+export interface UpdateMFAPreferenceInput {
 	sms?: MFAPreference;
 	totp?: MFAPreference;
-};
+}
 
 /**
  * Input type for Cognito updatePassword API.

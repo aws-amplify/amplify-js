@@ -30,6 +30,7 @@ export function getUserContextData({
 		const userContextData = {
 			EncodedData: advancedSecurityData,
 		};
+
 		return userContextData;
 	}
 

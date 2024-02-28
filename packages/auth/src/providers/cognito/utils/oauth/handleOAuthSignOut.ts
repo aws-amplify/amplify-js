@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CognitoUserPoolConfig } from '@aws-amplify/core';
+
 import { OpenAuthSessionResult } from '../../../../utils/types';
 import { DefaultOAuthStore } from '../../utils/signInWithRedirectStore';
+
 import { completeOAuthSignOut } from './completeOAuthSignOut';
 import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 

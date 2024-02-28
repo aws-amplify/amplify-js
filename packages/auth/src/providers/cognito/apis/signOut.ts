@@ -3,23 +3,23 @@
 
 import {
 	Amplify,
-	clearCredentials,
 	CognitoUserPoolConfig,
 	ConsoleLogger,
-	defaultStorage,
 	Hub,
+	clearCredentials,
+	defaultStorage,
 } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	AuthAction,
+	JWT,
+	assertOAuthConfig,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 
 import { getAuthUserAgentValue } from '../../../utils';
 import { SignOutInput } from '../types';
 import { tokenOrchestrator } from '../tokenProvider';
-import {
-	AuthAction,
-	AMPLIFY_SYMBOL,
-	assertOAuthConfig,
-	assertTokenProviderConfig,
-	JWT,
-} from '@aws-amplify/core/internals/utils';
 import {
 	globalSignOut as globalSignOutClient,
 	revokeToken,
