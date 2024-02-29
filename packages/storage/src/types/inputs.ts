@@ -8,7 +8,7 @@ import {
 } from './options';
 
 export type StorageOperationInputKey = {key: string}
-export type StorageOperationInputPath = {path: string | ((id: string) => string);}
+export type StorageOperationInputPath = {path: string | (({identityId, userSub}: {identityId?: string, userSub?: string}) => string);}
 
 export type StorageOperationInput<Options extends StorageOptions> = {
 	key: string;

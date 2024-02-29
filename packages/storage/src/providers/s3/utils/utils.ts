@@ -17,10 +17,10 @@ const isInputWithPath = (
 	return input.path !== undefined;
 };
 
-export const validateStorageOperationInput = (input: Input) => {
+export const validateStorageOperationInput = (input: Input, identityId: string = '', userSub: string= '') => {
 	if (isInputWithPath(input)) {
 		const { path } = input;
-		return { inputType: STORAGE_INPUT_TYPES.PATH, objectKey: typeof path === 'string' ? path : path('')  };
+		return { inputType: STORAGE_INPUT_TYPES.PATH, objectKey: typeof path === 'string' ? path : path({identityId, userSub})  };
 	} else if (isInputWithKey(input)) {
 		return { inputType: STORAGE_INPUT_TYPES.KEY, objectKey: input.key };
 	} else {

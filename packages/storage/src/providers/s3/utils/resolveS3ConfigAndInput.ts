@@ -20,6 +20,8 @@ type ResolvedS3ConfigAndInput = {
 	bucket: string;
 	keyPrefix: string;
 	isObjectLockEnabled?: boolean;
+	identityId?: string;
+	userSub?: string;
 };
 
 /**
@@ -38,7 +40,7 @@ export const resolveS3ConfigAndInput = async (
 	apiOptions?: S3ApiOptions
 ): Promise<ResolvedS3ConfigAndInput> => {
 	// identityId is always cached in memory if forceRefresh is not set. So we can safely make calls here.
-	const { credentials, identityId } = await amplify.Auth.fetchAuthSession({
+	const { credentials, identityId, userSub } = await amplify.Auth.fetchAuthSession({
 		forceRefresh: false,
 	});
 	assertValidationError(
@@ -82,6 +84,8 @@ export const resolveS3ConfigAndInput = async (
 		},
 		bucket,
 		keyPrefix,
+		identityId,
+		userSub,
 		isObjectLockEnabled,
 	};
 };
