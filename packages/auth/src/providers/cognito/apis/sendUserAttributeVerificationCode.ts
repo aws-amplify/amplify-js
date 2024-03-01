@@ -3,10 +3,11 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthDeliveryMedium } from '../../../types';
 import {
 	SendUserAttributeVerificationCodeInput,
@@ -51,6 +52,7 @@ export const sendUserAttributeVerificationCode = async (
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,
 	};
+
 	return {
 		destination: Destination,
 		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,

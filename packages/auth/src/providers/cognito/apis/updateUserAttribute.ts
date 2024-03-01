@@ -3,6 +3,7 @@
 
 import { UpdateUserAttributeInput, UpdateUserAttributeOutput } from '../types';
 import { UpdateUserAttributesException } from '../types/errors';
+
 import { updateUserAttributes } from './updateUserAttributes';
 
 /**
@@ -24,5 +25,6 @@ export const updateUserAttribute = async (
 		userAttributes: { [attributeKey]: value },
 		options,
 	});
+
 	return Object.values(output)[0];
 };

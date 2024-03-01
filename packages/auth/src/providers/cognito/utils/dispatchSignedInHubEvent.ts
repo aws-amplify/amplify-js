@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Hub } from '@aws-amplify/core';
-import { getCurrentUser } from '../apis/getCurrentUser';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+
+import { getCurrentUser } from '../apis/getCurrentUser';
 import {
 	UNEXPECTED_SIGN_IN_INTERRUPTION_EXCEPTION,
 	USER_UNAUTHENTICATED_EXCEPTION,

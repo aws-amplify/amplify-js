@@ -1,15 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SignInOutput } from '../providers/cognito';
 import { AuthStandardAttributeKey } from '@aws-amplify/core/internals/utils';
+
+import { SignInOutput } from '../providers/cognito';
 
 /**
  * Additional data that may be returned from Auth APIs.
  */
-export type AuthAdditionalInfo = { [key: string]: string };
+export type AuthAdditionalInfo = Record<string, string>;
 
-export type AuthAnyAttribute = string & {};
+export type AuthAnyAttribute = string & NonNullable<unknown>;
 
 /**
  * Denotes the medium over which a confirmation code was sent.
@@ -19,35 +20,35 @@ export type AuthDeliveryMedium = 'EMAIL' | 'SMS' | 'PHONE' | 'UNKNOWN';
 /**
  * Data describing the dispatch of a confirmation code.
  */
-export type AuthCodeDeliveryDetails<
+export interface AuthCodeDeliveryDetails<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	destination?: string;
 	deliveryMedium?: AuthDeliveryMedium;
 	attributeName?: UserAttributeKey;
-};
+}
 /**
  * Denotes the next step in the Reset Password process.
  */
 export type AuthResetPasswordStep = 'CONFIRM_RESET_PASSWORD_WITH_CODE' | 'DONE';
-export type AuthNextResetPasswordStep<
+export interface AuthNextResetPasswordStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	resetPasswordStep: AuthResetPasswordStep;
 	additionalInfo?: AuthAdditionalInfo;
 	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
-};
+}
 
-export type AuthTOTPSetupDetails = {
+export interface AuthTOTPSetupDetails {
 	sharedSecret: string;
-	getSetupUri: (appName: string, accountName?: string) => URL;
-};
+	getSetupUri(appName: string, accountName?: string): URL;
+}
 
 export type AuthMFAType = 'SMS' | 'TOTP';
 
 export type AuthAllowedMFATypes = AuthMFAType[];
 
-export type ContinueSignInWithTOTPSetup = {
+export interface ContinueSignInWithTOTPSetup {
 	/**
 	 * Auth step requires user to set up TOTP as multifactor authentication by associating an authenticator app
 	 * and retrieving an OTP code.
@@ -61,8 +62,8 @@ export type ContinueSignInWithTOTPSetup = {
 	 */
 	signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP';
 	totpSetupDetails: AuthTOTPSetupDetails;
-};
-export type ConfirmSignInWithTOTPCode = {
+}
+export interface ConfirmSignInWithTOTPCode {
 	/**
 	 * Auth step requires user to use TOTP as multifactor authentication by retriving an OTP code from authenticator app.
 	 *
@@ -74,9 +75,9 @@ export type ConfirmSignInWithTOTPCode = {
 	 * ```
 	 */
 	signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE';
-};
+}
 
-export type ContinueSignInWithMFASelection = {
+export interface ContinueSignInWithMFASelection {
 	/**
 	 * Auth step requires user to select an mfa option (SMS | TOTP) to continue with the sign-in flow.
 	 *
@@ -89,9 +90,9 @@ export type ContinueSignInWithMFASelection = {
 	 */
 	signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION';
 	allowedMFATypes?: AuthAllowedMFATypes;
-};
+}
 
-export type ConfirmSignInWithCustomChallenge = {
+export interface ConfirmSignInWithCustomChallenge {
 	/**
 	 * Auth step requires user to respond to a custom challenge.
 	 *
@@ -103,11 +104,11 @@ export type ConfirmSignInWithCustomChallenge = {
 	 */
 	signInStep: 'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE';
 	additionalInfo?: AuthAdditionalInfo;
-};
+}
 
-export type ConfirmSignInWithNewPasswordRequired<
+export interface ConfirmSignInWithNewPasswordRequired<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	/**
 	 * Auth step requires user to change their password with any required attributes.
 	 *
@@ -128,9 +129,9 @@ export type ConfirmSignInWithNewPasswordRequired<
 	 */
 	signInStep: 'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED';
 	missingAttributes?: UserAttributeKey[];
-};
+}
 
-export type ConfirmSignInWithSMSCode = {
+export interface ConfirmSignInWithSMSCode {
 	/**
 	 * Auth step requires user to use SMS as multifactor authentication by retrieving a code sent to cellphone.
 	 *
@@ -143,34 +144,34 @@ export type ConfirmSignInWithSMSCode = {
 	 */
 	signInStep: 'CONFIRM_SIGN_IN_WITH_SMS_CODE';
 	codeDeliveryDetails?: AuthCodeDeliveryDetails;
-};
+}
 
-export type ConfirmSignUpStep = {
+export interface ConfirmSignUpStep {
 	/**
 	 * Auth step requires to confirm user's sign-up.
 	 *
 	 * Try calling confirmSignUp.
 	 */
 	signInStep: 'CONFIRM_SIGN_UP';
-};
+}
 
-export type ResetPasswordStep = {
+export interface ResetPasswordStep {
 	/**
 	 * Auth step requires user to change their password.
 	 *
 	 * Try calling resetPassword.
 	 */
 	signInStep: 'RESET_PASSWORD';
-};
+}
 
-export type DoneSignInStep = {
+export interface DoneSignInStep {
 	/**
 	 * The sign-in process is complete.
 	 *
 	 * No further action is needed.
 	 */
 	signInStep: 'DONE';
-};
+}
 
 export type AuthNextSignInStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
@@ -197,12 +198,12 @@ export type AuthUserAttributes<
 /**
  * The interface of a user attribute.
  */
-export type AuthUserAttribute<
+export interface AuthUserAttribute<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	attributeKey: UserAttributeKey;
 	value: string;
-};
+}
 
 /**
  * A user attribute key type consisting of standard OIDC claims or custom attributes.
@@ -233,42 +234,42 @@ export type AuthNextSignUpStep<
 	| DoneSignUpStep;
 
 export type AutoSignInCallback = () => Promise<SignInOutput>;
-export type DoneSignUpStep = {
+export interface DoneSignUpStep {
 	signUpStep: 'DONE';
-};
+}
 
-export type ConfirmSignUpSignUpStep<
+export interface ConfirmSignUpSignUpStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	signUpStep: 'CONFIRM_SIGN_UP';
 	codeDeliveryDetails: AuthCodeDeliveryDetails<UserAttributeKey>;
-};
+}
 
-export type AutoSignInSignUpStep<
+export interface AutoSignInSignUpStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	signUpStep: 'COMPLETE_AUTO_SIGN_IN';
 	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
-};
+}
 
-export type AuthNextUpdateAttributeStep<
+export interface AuthNextUpdateAttributeStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	updateAttributeStep: AuthUpdateAttributeStep;
 	codeDeliveryDetails?: AuthCodeDeliveryDetails<UserAttributeKey>;
-};
+}
 
 /**
  * The AWSAuthUser object contains username and userId from the idToken.
  */
-export type AWSAuthUser = {
+export interface AWSAuthUser {
 	username: string;
 	userId: string;
-};
+}
 
 /**
  * The AuthDevice object contains id and name of the device.
  */
-export type AuthDevice = {
+export interface AuthDevice {
 	id: string;
-};
+}

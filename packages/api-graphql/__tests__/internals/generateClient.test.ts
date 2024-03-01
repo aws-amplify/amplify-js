@@ -127,6 +127,7 @@ describe('generateClient', () => {
 			'SecondaryIndexModel',
 			'Post',
 			'Comment',
+			'Product',
 		];
 
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {

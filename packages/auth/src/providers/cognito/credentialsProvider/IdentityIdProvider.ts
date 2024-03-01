@@ -1,12 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthTokens, getId, ConsoleLogger } from '@aws-amplify/core';
+import { AuthTokens, ConsoleLogger, Identity, getId } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
+
 import { AuthError } from '../../../errors/AuthError';
-import { IdentityIdStore } from './types';
 import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
-import { Identity } from '@aws-amplify/core';
+import { GetIdException } from '../types/errors';
+
+import { IdentityIdStore } from './types';
 import { formLoginsMap } from './utils';
 
 const logger = new ConsoleLogger('CognitoIdentityIdProvider');
@@ -16,9 +18,9 @@ const logger = new ConsoleLogger('CognitoIdentityIdProvider');
  *
  * @param tokens - The AuthTokens received after SignIn
  * @returns string
- * @throws configuration excpetions: {@link InvalidIdentityPoolIdException }
+ * @throws configuration exceptions: {@link InvalidIdentityPoolIdException }
  *  - Auth errors that may arise from misconfiguration.
- * @throws service excpetions: {@link GetIdException }
+ * @throws service exceptions: {@link GetIdException }
  */
 export async function cognitoIdentityIdProvider({
 	tokens,
@@ -70,11 +72,12 @@ export async function cognitoIdentityIdProvider({
 
 	// Store in-memory or local storage depending on guest or primary identityId
 	identityIdStore.storeIdentityId(identityId);
+
 	return identityId.id;
 }
 
 async function generateIdentityId(
-	logins: {},
+	logins: Record<string, string>,
 	authConfig: CognitoIdentityPoolConfig,
 ): Promise<string> {
 	const identityPoolId = authConfig?.identityPoolId;
@@ -103,5 +106,6 @@ async function generateIdentityId(
 				'Make sure to pass a valid identityPoolId in the configuration.',
 		});
 	}
+
 	return idResult;
 }

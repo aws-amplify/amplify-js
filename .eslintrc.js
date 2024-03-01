@@ -43,7 +43,7 @@ module.exports = {
 		// 'packages/api',
 		'packages/api-graphql',
 		// 'packages/api-rest',
-		'packages/auth',
+		// 'packages/auth',
 		// 'packages/aws-amplify',
 		// 'packages/core',
 		'packages/datastore',

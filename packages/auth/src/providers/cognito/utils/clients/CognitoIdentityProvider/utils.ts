@@ -15,6 +15,7 @@ export function getRegion(userPoolId?: string): string {
 			name: 'InvalidUserPoolId',
 			message: 'Invalid user pool id provided.',
 		});
+
 	return region;
 }
 
@@ -27,5 +28,6 @@ export function getRegionFromIdentityPoolId(identityPoolId?: string): string {
 				'Make sure a valid identityPoolId is given in the config.',
 		});
 	}
+
 	return identityPoolId.split(':')[0];
 }

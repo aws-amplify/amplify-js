@@ -7,6 +7,7 @@ import {
 	assertTokenProviderConfig,
 	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
+
 import { getUser } from '../../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../../utils/types';
