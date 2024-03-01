@@ -15,12 +15,12 @@ export const remove = async (
 	input: RemoveInput,
 ): Promise<RemoveOutput> => {
 	const { key, options = {} } = input;
-	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(
+	const { s3Config, bucket } = await resolveS3ConfigAndInput(
 		amplify,
 		options,
 	);
 
-	const finalKey = `${keyPrefix}${key}`;
+	const finalKey = `${key}`;
 	logger.debug(`remove "${key}" from "${finalKey}".`);
 	await deleteObject(
 		{

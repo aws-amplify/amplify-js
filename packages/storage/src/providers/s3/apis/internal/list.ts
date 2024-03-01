@@ -37,7 +37,6 @@ export const list = async (
 	const {
 		s3Config,
 		bucket,
-		keyPrefix: prefix,
 	} = await resolveS3ConfigAndInput(amplify, options);
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
 	if (options?.listAll && (options?.pageSize || options?.nextToken)) {
@@ -50,15 +49,15 @@ export const list = async (
 	}
 	const listParams = {
 		Bucket: bucket,
-		Prefix: `${prefix}${path}`,
+		Prefix: `${path}`,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
 	return options.listAll
-		? _listAll({ s3Config, listParams, prefix })
-		: _list({ s3Config, listParams, prefix });
+		? _listAll({ s3Config, listParams, prefix: path })
+		: _list({ s3Config, listParams, prefix: path });
 };
 
 const _listAll = async ({
