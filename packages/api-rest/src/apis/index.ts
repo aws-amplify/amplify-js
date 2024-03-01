@@ -2,14 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import {
-	get as commonGet,
-	post as commonPost,
-	put as commonPut,
-	del as commonDel,
-	head as commonHead,
-	patch as commonPatch,
-} from './common/publicApis';
+
 import {
 	DeleteInput,
 	DeleteOperation,
@@ -25,6 +18,15 @@ import {
 	PutOperation,
 } from '../types';
 import { RestApiError } from '../errors';
+
+import {
+	del as commonDel,
+	get as commonGet,
+	head as commonHead,
+	patch as commonPatch,
+	post as commonPost,
+	put as commonPut,
+} from './common/publicApis';
 
 /**
  * GET HTTP request
@@ -57,7 +59,7 @@ import { RestApiError } from '../errors';
  * cancel(message);
  * try {
  *   await response;
- * } cache (e) {
+ * } catch (e) {
  *   if (isCancelError(e)) {
  *    // handle request cancellation
  *   }
@@ -98,7 +100,7 @@ export const get = (input: GetInput): GetOperation => commonGet(Amplify, input);
  * cancel(message);
  * try {
  *   await response;
- * } cache (e) {
+ * } catch (e) {
  *   if (isCancelError(e)) {
  *    // handle request cancellation
  *   }
@@ -139,7 +141,7 @@ export const post = (input: PostInput): PostOperation =>
  * cancel(message);
  * try {
  *  await response;
- * } cache (e) {
+ * } catch (e) {
  *   if (isCancelError(e)) {
  *     // handle request cancellation
  *   }
@@ -227,7 +229,7 @@ export const head = (input: HeadInput): HeadOperation =>
  * cancel(message);
  * try {
  *  await response;
- * } cache (e) {
+ * } catch (e) {
  *  if (isCancelError(e)) {
  *   // handle request cancellation
  *  }

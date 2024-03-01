@@ -18,9 +18,9 @@ const SKEW_WINDOW = 5 * 60 * 1000;
  */
 export const isClockSkewed = (
 	clockTimeInMilliseconds: number,
-	clockOffsetInMilliseconds: number
+	clockOffsetInMilliseconds: number,
 ): boolean =>
 	Math.abs(
 		getSkewCorrectedDate(clockOffsetInMilliseconds).getTime() -
-			clockTimeInMilliseconds
+			clockTimeInMilliseconds,
 	) >= SKEW_WINDOW;

@@ -164,7 +164,7 @@ describe('copy API', () => {
 								...(destination as CopyDestinationOptions),
 								key: destinationKey,
 							},
-						})
+						}),
 					).toEqual(copyResult);
 					expect(copyObject).toHaveBeenCalledTimes(1);
 					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
@@ -173,7 +173,7 @@ describe('copy API', () => {
 						Key: expectedDestinationKey,
 					});
 				});
-			}
+			},
 		);
 	});
 
@@ -186,7 +186,7 @@ describe('copy API', () => {
 				Object.assign(new Error(), {
 					$metadata: { httpStatusCode: 404 },
 					name: 'NotFound',
-				})
+				}),
 			);
 			expect.assertions(3);
 			const sourceKey = 'SourceKeyNotFound';

@@ -39,14 +39,14 @@ describe('Auto sign-in API Happy Path Cases:', () => {
 		signUpSpy = jest
 			.spyOn(signUpClient, 'signUp')
 			.mockImplementationOnce(
-				async () => ({ UserConfirmed: true }) as SignUpCommandOutput
+				async () => ({ UserConfirmed: true }) as SignUpCommandOutput,
 			);
 
 		handleUserSRPAuthflowSpy = jest
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
-					authAPITestParams.RespondToAuthChallengeCommandOutput
+					authAPITestParams.RespondToAuthChallengeCommandOutput,
 			);
 	});
 	afterEach(() => {

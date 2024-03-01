@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAsyncStorage } from '@aws-amplify/react-native';
+
 import { KeyValueStorageInterface } from '../types';
 
 const MEMORY_KEY_PREFIX = '@MemoryStorage:';
@@ -51,8 +52,9 @@ export class DefaultStorage implements KeyValueStorageInterface {
 	 */
 	async clear(): Promise<void> {
 		const allKeys = await this.asyncStorage.getAllKeys();
+
 		return this.asyncStorage.multiRemove(
-			allKeys.filter(key => key.startsWith(MEMORY_KEY_PREFIX))
+			allKeys.filter(key => key.startsWith(MEMORY_KEY_PREFIX)),
 		);
 	}
 }

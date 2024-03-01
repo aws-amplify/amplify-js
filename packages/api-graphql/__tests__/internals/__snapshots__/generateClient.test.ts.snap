@@ -3,6 +3,7 @@
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can create() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -47,6 +48,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can delete() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -90,6 +92,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can get() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -131,6 +134,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can lazy load with inherited authMode can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -164,6 +168,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -205,6 +210,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can lazy load with inherited authMode can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -241,6 +247,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -291,6 +298,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can lazy load with inherited authMode can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -327,6 +335,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -364,6 +373,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can lazy load with overridden authMode can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -397,6 +407,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -435,6 +446,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can lazy load with overridden authMode can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -471,6 +483,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -518,6 +531,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can lazy load with overridden authMode can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -554,6 +568,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -588,6 +603,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can list() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -637,6 +653,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override at the time of operation can update() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -681,6 +698,7 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
 exports[`generateClient basic model operations - authMode: CuP override in the client can create() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -725,6 +743,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can delete() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -768,6 +787,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can get() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -809,6 +829,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can lazy load with inherited authMode can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -842,6 +863,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -883,6 +905,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can lazy load with inherited authMode can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -919,6 +942,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -969,6 +993,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can lazy load with inherited authMode can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1005,6 +1030,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1042,6 +1068,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can lazy load with overridden authMode can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1075,6 +1102,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1113,6 +1141,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can lazy load with overridden authMode can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1149,6 +1178,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1196,6 +1226,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can lazy load with overridden authMode can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1232,6 +1263,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1266,6 +1298,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can list() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1315,6 +1348,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: CuP override in the client can update() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1359,6 +1393,7 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can create() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1403,6 +1438,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can delete() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1446,6 +1482,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can get() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1487,6 +1524,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can lazy load with inherited authMode can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1520,6 +1558,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1561,6 +1600,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can lazy load with inherited authMode can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1597,6 +1637,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1647,6 +1688,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can lazy load with inherited authMode can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1683,6 +1725,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1720,6 +1763,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can lazy load with overridden authMode can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1753,6 +1797,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1794,6 +1839,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can lazy load with overridden authMode can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1830,6 +1876,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1880,6 +1927,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can lazy load with overridden authMode can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1916,6 +1964,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -1953,6 +2002,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can list() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2002,6 +2052,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override at the time of operation can update() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2046,6 +2097,7 @@ exports[`generateClient basic model operations - authMode: lambda override at th
 exports[`generateClient basic model operations - authMode: lambda override in the client can create() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2090,6 +2142,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can delete() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2133,6 +2186,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can get() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2174,6 +2228,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can lazy load with inherited authMode can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2207,6 +2262,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2248,6 +2304,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can lazy load with inherited authMode can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2284,6 +2341,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2334,6 +2392,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can lazy load with inherited authMode can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2370,6 +2429,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2407,6 +2467,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can lazy load with overridden authMode can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2440,6 +2501,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2481,6 +2543,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can lazy load with overridden authMode can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2517,6 +2580,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2567,6 +2631,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can lazy load with overridden authMode can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2603,6 +2668,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2640,6 +2706,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can list() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2689,6 +2756,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - authMode: lambda override in the client can update() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2733,6 +2801,7 @@ exports[`generateClient basic model operations - authMode: lambda override in th
 exports[`generateClient basic model operations - custom client and request headers can create() - with custom client header functions 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2775,6 +2844,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can create() - with custom client header functions that pass requestOptions 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2832,6 +2902,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can create() - with custom client headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2874,6 +2945,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can create() - with custom request header function 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2916,6 +2988,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can create() - with custom request header function that accept requestOptions 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -2973,6 +3046,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can create() - with custom request headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3015,6 +3089,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can delete() - with custom client headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3056,6 +3131,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can delete() - with custom request headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3097,6 +3173,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can get() - with custom client headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3136,6 +3213,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can get() - with custom request headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3175,6 +3253,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can list() - with custom client headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3222,6 +3301,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can list() - with custom request headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3269,6 +3349,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can update() - with custom client headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3311,6 +3392,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations - custom client and request headers can update() - with custom request headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3353,6 +3435,7 @@ exports[`generateClient basic model operations - custom client and request heade
 exports[`generateClient basic model operations can create() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3394,6 +3477,7 @@ exports[`generateClient basic model operations can create() 1`] = `
 exports[`generateClient basic model operations can delete() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3434,6 +3518,7 @@ exports[`generateClient basic model operations can delete() 1`] = `
 exports[`generateClient basic model operations can get() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3472,6 +3557,7 @@ exports[`generateClient basic model operations can get() 1`] = `
 exports[`generateClient basic model operations can lazy load @belongsTo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3502,6 +3588,7 @@ exports[`generateClient basic model operations can lazy load @belongsTo 1`] = `
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3540,6 +3627,7 @@ exports[`generateClient basic model operations can lazy load @belongsTo 1`] = `
 exports[`generateClient basic model operations can lazy load @hasMany 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3573,6 +3661,7 @@ exports[`generateClient basic model operations can lazy load @hasMany 1`] = `
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3620,6 +3709,7 @@ exports[`generateClient basic model operations can lazy load @hasMany 1`] = `
 exports[`generateClient basic model operations can lazy load @hasMany with limit 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3653,6 +3743,7 @@ exports[`generateClient basic model operations can lazy load @hasMany with limit
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3701,6 +3792,7 @@ exports[`generateClient basic model operations can lazy load @hasMany with limit
 exports[`generateClient basic model operations can lazy load @hasMany with nextToken 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3734,6 +3826,7 @@ exports[`generateClient basic model operations can lazy load @hasMany with nextT
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3782,6 +3875,7 @@ exports[`generateClient basic model operations can lazy load @hasMany with nextT
 exports[`generateClient basic model operations can lazy load @hasOne 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3815,6 +3909,7 @@ exports[`generateClient basic model operations can lazy load @hasOne 1`] = `
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3849,6 +3944,7 @@ exports[`generateClient basic model operations can lazy load @hasOne 1`] = `
 exports[`generateClient basic model operations can list() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3895,6 +3991,7 @@ exports[`generateClient basic model operations can list() 1`] = `
 exports[`generateClient basic model operations can list() with limit 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3942,6 +4039,7 @@ exports[`generateClient basic model operations can list() with limit 1`] = `
 exports[`generateClient basic model operations can list() with nextToken 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -3989,6 +4087,7 @@ exports[`generateClient basic model operations can list() with nextToken 1`] = `
 exports[`generateClient basic model operations can update() 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4030,6 +4129,7 @@ exports[`generateClient basic model operations can update() 1`] = `
 exports[`generateClient basic model operations with Amplify configuration options headers can create() - custom client headers should not overwrite library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4073,6 +4173,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can create() - custom request headers should not overwrite library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4116,6 +4217,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can create() - with library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4159,6 +4261,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can delete() - custom client headers should not overwrite library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4201,6 +4304,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can delete() - custom request headers should overwrite client headers but not library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4243,6 +4347,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can get() - custom client headers should not overwrite library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4283,6 +4388,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can get() - custom request headers overwrite client headers, but not library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4323,6 +4429,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can list() - custom client headers should not overwrite library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4371,6 +4478,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can list() - custom request headers should overwrite client headers but not library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4419,6 +4527,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can update() - custom client headers should not overwrite library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4462,6 +4571,7 @@ exports[`generateClient basic model operations with Amplify configuration option
 exports[`generateClient basic model operations with Amplify configuration options headers can update() - custom request headers should overwrite client headers but not library config headers 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4502,9 +4612,386 @@ exports[`generateClient basic model operations with Amplify configuration option
 ]
 `;
 
+exports[`generateClient custom operations can mutate with returnType of customType 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "mutation ($postId: ID!) {
+  likePost(postId: $postId) {
+    likes
+  }
+}
+",
+          "variables": {
+            "postId": "post-abc",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can mutate with returnType of model (Post) 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "mutation ($postId: [ID!]!) {
+  likePostReturnPost(postId: $postId) {
+    id
+    content
+    owner
+    createdAt
+    updatedAt
+  }
+}
+",
+          "variables": {
+            "postId": "post-abc",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can query with returnType of customType 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can query with returnType of string 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($inputString: String!) {
+  echoString(inputString: $inputString)
+}
+",
+          "variables": {
+            "inputString": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can return model (Post) that with lazy-loading props 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "mutation ($postId: [ID!]!) {
+  likePostReturnPost(postId: $postId) {
+    id
+    content
+    owner
+    createdAt
+    updatedAt
+  }
+}
+",
+          "variables": {
+            "postId": "post-abc",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($filter: ModelCommentFilterInput, $limit: Int, $nextToken: String) {
+  listComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      content
+      postCommentsId
+      owner
+      createdAt
+      updatedAt
+    }
+    nextToken
+    __typename
+  }
+}
+",
+          "variables": {
+            "filter": {
+              "and": [
+                {
+                  "postCommentsId": {
+                    "eq": "post-123",
+                  },
+                },
+              ],
+            },
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations includes call level headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "callSiteHeaders": "some header value",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations includes client level headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "someHeader": "some header value",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations uses call site authMode 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "my-auth-token",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": {
+          "region": "us-west-1",
+          "service": "appsync",
+        },
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations uses client authMode 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "my-auth-token",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": {
+          "region": "us-west-1",
+          "service": "appsync",
+        },
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations uses config level headers if available 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echo(argumentContent: $argumentContent) {
+    resultContent
+  }
+}
+",
+          "variables": {
+            "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "config-level-header": "config header value",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
 exports[`generateClient graphql - client-level auth override client auth override query - lambda 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4542,6 +5029,7 @@ exports[`generateClient graphql - client-level auth override client auth overrid
 exports[`generateClient graphql - client-level auth override client auth override query 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4579,6 +5067,7 @@ exports[`generateClient graphql - client-level auth override client auth overrid
 exports[`generateClient graphql default auth default iam produces expected signingInfo 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4616,6 +5105,7 @@ exports[`generateClient graphql default auth default iam produces expected signi
 exports[`generateClient index queries PK and SK index query 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4666,6 +5156,7 @@ exports[`generateClient index queries PK and SK index query 1`] = `
 exports[`generateClient index queries PK-only index query 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4712,6 +5203,7 @@ exports[`generateClient index queries PK-only index query 1`] = `
 exports[`generateClient observeQuery can paginate through initial results 1`] = `
 [
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {
@@ -4748,6 +5240,7 @@ exports[`generateClient observeQuery can paginate through initial results 1`] = 
     },
   ],
   [
+    "AmplifyClassV6",
     {
       "abortController": AbortController {},
       "options": {

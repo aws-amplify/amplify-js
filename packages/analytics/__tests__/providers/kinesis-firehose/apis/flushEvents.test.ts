@@ -26,7 +26,7 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 	beforeEach(() => {
 		mockResolveConfig.mockReturnValue(mockKinesisConfig);
 		mockResolveCredentials.mockReturnValue(
-			Promise.resolve(mockCredentialConfig)
+			Promise.resolve(mockCredentialConfig),
 		);
 		mockGetEventBuffer.mockImplementation(() => ({
 			flushAll: mockFlushAll,
@@ -50,7 +50,7 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 			expect.objectContaining({
 				...mockKinesisConfig,
 				...mockCredentialConfig,
-			})
+			}),
 		);
 		expect(mockFlushAll).toHaveBeenCalledTimes(1);
 	});
@@ -62,7 +62,7 @@ describe('Analytics Kinesis Firehose API: flushEvents', () => {
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),
-			expect.any(Error)
+			expect.any(Error),
 		);
 	});
 });

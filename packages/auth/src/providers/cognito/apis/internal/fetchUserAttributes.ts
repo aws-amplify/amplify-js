@@ -7,6 +7,7 @@ import {
 	assertTokenProviderConfig,
 	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
+
 import { getUser } from '../../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../../utils/types';
@@ -15,7 +16,7 @@ import { toAuthUserAttribute } from '../../utils/apiHelpers';
 import { getAuthUserAgentValue } from '../../../../utils';
 
 export const fetchUserAttributes = async (
-	amplify: AmplifyClassV6
+	amplify: AmplifyClassV6,
 ): Promise<FetchUserAttributesOutput> => {
 	const authConfig = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -31,7 +32,7 @@ export const fetchUserAttributes = async (
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 
 	return toAuthUserAttribute(UserAttributes);

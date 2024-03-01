@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	sessionListener,
-	SessionState,
 	SESSION_START_EVENT,
 	SESSION_STOP_EVENT,
+	SessionState,
+	sessionListener,
 } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
+
 import {
 	SessionTrackingOptions,
 	TrackerEventRecorder,
@@ -24,7 +25,7 @@ export class SessionTracker implements TrackerInterface {
 
 	constructor(
 		eventRecorder: TrackerEventRecorder,
-		options?: SessionTrackingOptions
+		options?: SessionTrackingOptions,
 	) {
 		this.options = {};
 		this.eventRecorder = eventRecorder;
@@ -37,7 +38,7 @@ export class SessionTracker implements TrackerInterface {
 
 	public configure(
 		eventRecorder: TrackerEventRecorder,
-		options?: SessionTrackingOptions
+		options?: SessionTrackingOptions,
 	) {
 		this.eventRecorder = eventRecorder;
 
@@ -53,7 +54,7 @@ export class SessionTracker implements TrackerInterface {
 		if (!this.sessionTrackingActive) {
 			sessionListener.addStateChangeListener(
 				this.handleStateChange,
-				!this.initialEventSent
+				!this.initialEventSent,
 			);
 
 			this.sessionTrackingActive = true;

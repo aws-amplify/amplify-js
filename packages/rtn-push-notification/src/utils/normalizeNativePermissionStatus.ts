@@ -10,7 +10,7 @@ import {
  * @internal
  */
 export const normalizeNativePermissionStatus = (
-	nativeStatus: NativePermissionStatus
+	nativeStatus: NativePermissionStatus,
 ): PushNotificationPermissionStatus => {
 	switch (nativeStatus) {
 		case 'ShouldRequest':

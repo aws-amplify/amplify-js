@@ -29,7 +29,7 @@ describe('calculateS', () => {
 				B,
 				N,
 				U,
-			})
+			}),
 		).toBeDefined();
 		expect(modPowSpy).toHaveBeenCalledWith(x, N, expect.any(Function));
 	});
@@ -48,7 +48,7 @@ describe('calculateS', () => {
 				B,
 				N,
 				U,
-			})
+			}),
 		).rejects.toThrow();
 	});
 
@@ -70,7 +70,7 @@ describe('calculateS', () => {
 				B,
 				N,
 				U,
-			})
+			}),
 		).rejects.toThrow();
 	});
 });

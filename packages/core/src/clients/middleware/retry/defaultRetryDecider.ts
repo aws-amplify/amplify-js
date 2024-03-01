@@ -1,7 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { HttpResponse, ErrorParser } from '../../types';
+import { ErrorParser, HttpResponse } from '../../types';
+
 import { isClockSkewError } from './isClockSkewError';
 
 /**
@@ -15,8 +16,9 @@ export const getRetryDecider =
 			(error as Error & { code: string }) ??
 			(await errorParser(response)) ??
 			undefined;
-		const errorCode = parsedError?.['code'];
+		const errorCode = parsedError?.code;
 		const statusCode = response?.statusCode;
+
 		return (
 			isConnectionError(error) ||
 			isThrottlingError(statusCode, errorCode) ||
@@ -53,7 +55,7 @@ const isThrottlingError = (statusCode?: number, errorCode?: string) =>
 	(!!errorCode && THROTTLING_ERROR_CODES.includes(errorCode));
 
 const isConnectionError = (error?: unknown) =>
-	(error as Error)?.['name'] === 'Network error';
+	(error as Error)?.name === 'Network error';
 
 const isServerSideError = (statusCode?: number, errorCode?: string) =>
 	(!!statusCode && [500, 502, 503, 504].includes(statusCode)) ||

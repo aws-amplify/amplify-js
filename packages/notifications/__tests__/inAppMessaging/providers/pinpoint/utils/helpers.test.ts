@@ -267,7 +267,7 @@ describe('InAppMessaging Provider Utils', () => {
 
 		// Set the end date to 24 hours from now
 		message!.Schedule!.EndDate = new Date(
-			new Date().getTime() + HOUR_IN_MS * 24
+			new Date().getTime() + HOUR_IN_MS * 24,
 		).toISOString();
 
 		expect(isBeforeEndDate(message)).toBe(true);

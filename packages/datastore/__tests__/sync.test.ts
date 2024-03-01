@@ -356,7 +356,7 @@ describe('Sync', () => {
 					operation: 'syncPosts',
 					process: 'sync',
 					errorType: 'BadRecord',
-				})
+				}),
 			);
 		});
 
@@ -385,7 +385,7 @@ describe('Sync', () => {
 					operation: 'syncPosts',
 					process: 'sync',
 					errorType: 'Transient',
-				})
+				}),
 			);
 		});
 
@@ -418,7 +418,7 @@ describe('Sync', () => {
 					operation: 'syncPosts',
 					process: 'sync',
 					errorType: 'Transient',
-				})
+				}),
 			);
 		});
 	});
@@ -443,12 +443,12 @@ function jitteredRetrySyncProcessorSetup({
 				} else if (rejectResponse) {
 					rej(rejectResponse);
 				}
-			})
+			}),
 	);
 	// mock graphql to return a mockable observable
 	jest.mock('@aws-amplify/api/internals', () => {
 		const actualInternalAPIModule = jest.requireActual(
-			'@aws-amplify/api/internals'
+			'@aws-amplify/api/internals',
 		);
 		const actualInternalAPIInstance = actualInternalAPIModule.InternalAPI;
 
@@ -487,7 +487,7 @@ function jitteredRetrySyncProcessorSetup({
 		{ aws_appsync_authenticationType: 'userPools' },
 		defaultAuthStrategy,
 		errorHandler,
-		{}
+		{},
 	);
 
 	return SyncProcessor;

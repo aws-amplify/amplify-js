@@ -3,6 +3,7 @@
 
 import { UpdateUserAttributeInput, UpdateUserAttributeOutput } from '../types';
 import { UpdateUserAttributesException } from '../types/errors';
+
 import { updateUserAttributes } from './updateUserAttributes';
 
 /**
@@ -14,7 +15,7 @@ import { updateUserAttributes } from './updateUserAttributes';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const updateUserAttribute = async (
-	input: UpdateUserAttributeInput
+	input: UpdateUserAttributeInput,
 ): Promise<UpdateUserAttributeOutput> => {
 	const {
 		userAttribute: { attributeKey, value },
@@ -24,5 +25,6 @@ export const updateUserAttribute = async (
 		userAttributes: { [attributeKey]: value },
 		options,
 	});
+
 	return Object.values(output)[0];
 };

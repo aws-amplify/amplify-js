@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyError } from './AmplifyError';
 import { AmplifyErrorParams } from '../types/errors';
+
+import { AmplifyError } from './AmplifyError';
 
 /**
  * The type of an unwrapped HTTP response causing the given API error.
@@ -52,7 +53,7 @@ export class ApiError extends AmplifyError {
 }
 
 const replicateApiErrorResponse = (
-	response: ApiErrorResponse
+	response: ApiErrorResponse,
 ): ApiErrorResponse => ({
 	...response,
 	headers: { ...response.headers },

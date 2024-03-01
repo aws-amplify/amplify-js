@@ -64,7 +64,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		await updateEndpoint({ appId, category, credentials, region });
 		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
 			{ credentials, region },
-			getExpectedInput({})
+			getExpectedInput({}),
 		);
 	});
 
@@ -115,7 +115,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 				metrics,
 				optOut,
 				userId,
-			})
+			}),
 		);
 	});
 
@@ -140,7 +140,7 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 					make: clientDemographic.make,
 					model: clientDemographic.model,
 				},
-			})
+			}),
 		);
 	});
 
@@ -150,12 +150,12 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		await updateEndpoint({ appId, category, credentials, region });
 		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
 			{ credentials, region },
-			getExpectedInput({ endpointId: createdEndpointId })
+			getExpectedInput({ endpointId: createdEndpointId }),
 		);
 		expect(mockCacheEndpointId).toHaveBeenCalledWith(
 			appId,
 			category,
-			createdEndpointId
+			createdEndpointId,
 		);
 	});
 

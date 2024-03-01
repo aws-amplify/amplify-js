@@ -1,10 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
 import {
-	VerifySoftwareTokenException,
-	RespondToAuthChallengeException,
 	AssociateSoftwareTokenException,
+	RespondToAuthChallengeException,
+	VerifySoftwareTokenException,
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
 import {
@@ -23,18 +26,13 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { Amplify, Hub } from '@aws-amplify/core';
-import {
-	AMPLIFY_SYMBOL,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
-import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -52,7 +50,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignIn(
-	input: ConfirmSignInInput
+	input: ConfirmSignInInput,
 ): Promise<ConfirmSignInOutput> {
 	const { challengeResponse, options } = input;
 	const { username, challengeName, signInSession, signInDetails } =
@@ -65,7 +63,7 @@ export async function confirmSignIn(
 
 	assertValidationError(
 		!!challengeResponse,
-		AuthValidationErrorCode.EmptyChallengeResponse
+		AuthValidationErrorCode.EmptyChallengeResponse,
 	);
 
 	if (!username || !challengeName || !signInSession)
@@ -88,9 +86,9 @@ export async function confirmSignIn(
 	try {
 		const {
 			Session,
-			ChallengeName,
+			ChallengeName: handledChallengeName,
 			AuthenticationResult,
-			ChallengeParameters,
+			ChallengeParameters: handledChallengeParameters,
 		} = await handleChallengeName(
 			username,
 			challengeName as ChallengeName,
@@ -99,14 +97,14 @@ export async function confirmSignIn(
 			authConfig,
 			tokenOrchestrator,
 			clientMetaData,
-			options
+			options,
 		);
 
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
 			signInSession: Session,
 			username,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 
@@ -118,19 +116,13 @@ export async function confirmSignIn(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
-			Hub.dispatch(
-				'auth',
-				{
-					event: 'signedIn',
-					data: await getCurrentUser(),
-				},
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -138,8 +130,8 @@ export async function confirmSignIn(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		assertServiceError(error);

@@ -19,11 +19,11 @@ const CODE_VERIFIER_CHARSET =
  * following the spec of [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636#section-4.2).
  */
 export const generateCodeVerifier = (
-	length: number
+	length: number,
 ): {
 	value: string;
 	method: 'S256';
-	toCodeChallenge: () => string;
+	toCodeChallenge(): string;
 } => {
 	const randomBytes = new Uint8Array(length);
 	getCrypto().getRandomValues(randomBytes);
@@ -31,7 +31,7 @@ export const generateCodeVerifier = (
 	let value = '';
 	let codeChallenge: string | undefined;
 
-	for (let byte of randomBytes) {
+	for (const byte of randomBytes) {
 		value += CODE_VERIFIER_CHARSET.charAt(byte % CODE_VERIFIER_CHARSET.length);
 	}
 
@@ -43,6 +43,7 @@ export const generateCodeVerifier = (
 				return codeChallenge;
 			}
 			codeChallenge = generateCodeChallenge(value);
+
 			return codeChallenge;
 		},
 	};
@@ -53,7 +54,7 @@ function generateCodeChallenge(codeVerifier: string): string {
 	awsCryptoHash.update(codeVerifier);
 
 	const codeChallenge = removePaddingChar(
-		base64Encoder.convert(awsCryptoHash.digestSync(), { urlSafe: true })
+		base64Encoder.convert(awsCryptoHash.digestSync(), { urlSafe: true }),
 	);
 
 	return codeChallenge;

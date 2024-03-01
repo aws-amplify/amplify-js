@@ -5,11 +5,12 @@ import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../../errors/AuthError';
+
 import { oAuthStore } from './oAuthStore';
 import { resolveAndClearInflightPromises } from './inflightPromise';
 
 export const handleFailure = async (
-	error: AuthError | unknown
+	error: AuthError | unknown,
 ): Promise<void> => {
 	resolveAndClearInflightPromises();
 	await oAuthStore.clearOAuthInflightData();
@@ -17,6 +18,6 @@ export const handleFailure = async (
 		'auth',
 		{ event: 'signInWithRedirect_failure', data: { error } },
 		'Auth',
-		AMPLIFY_SYMBOL
+		AMPLIFY_SYMBOL,
 	);
 };

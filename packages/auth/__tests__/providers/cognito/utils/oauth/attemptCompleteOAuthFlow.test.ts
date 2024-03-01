@@ -36,7 +36,7 @@ jest.mock(
 			clearOAuthData: jest.fn(),
 			clearOAuthInflightData: jest.fn(),
 		} as OAuthStore,
-	})
+	}),
 );
 jest.mock(
 	'../../../../../src/providers/cognito/tokenProvider/tokenProvider',
@@ -44,13 +44,13 @@ jest.mock(
 		cognitoUserPoolsTokenProvider: {
 			setWaitForInflightOAuth: jest.fn(),
 		},
-	})
+	}),
 );
 jest.mock(
 	'../../../../../src/providers/cognito/utils/oauth/inflightPromise',
 	() => ({
 		addInflightPromise: jest.fn(),
-	})
+	}),
 );
 
 const mockAssertOAuthConfig = assertOAuthConfig as jest.Mock;
@@ -75,7 +75,7 @@ describe('attemptCompleteOAuthFlow', () => {
 						origin: 'http://localhost:3000',
 						pathname: undefined,
 					},
-				}) as any
+				}) as any,
 		);
 	});
 
@@ -117,11 +117,11 @@ describe('attemptCompleteOAuthFlow', () => {
 			expect.objectContaining({
 				currentUrl: 'http://localhost:3000/',
 				redirectUri: 'http://localhost:3000/',
-			})
+			}),
 		);
 
 		expect(
-			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
+			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth,
 		).toHaveBeenCalledTimes(1);
 		expect(mockAddInflightPromise).toHaveBeenCalledTimes(1);
 
@@ -143,7 +143,7 @@ describe('attemptCompleteOAuthFlow', () => {
 			throw new Error('some error');
 		});
 		expect(
-			attemptCompleteOAuthFlow(mockAuthConfigWithOAuth.Auth.Cognito)
+			attemptCompleteOAuthFlow(mockAuthConfigWithOAuth.Auth.Cognito),
 		).resolves.toBeUndefined();
 	});
 });

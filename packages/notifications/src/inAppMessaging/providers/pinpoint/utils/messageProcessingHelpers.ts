@@ -28,7 +28,7 @@ let sessionMessageCountMap: InAppMessageCountMap = {};
 
 export async function processInAppMessages(
 	messages: PinpointInAppMessage[],
-	event: InAppMessagingEvent
+	event: InAppMessagingEvent,
 ): Promise<InAppMessage[]> {
 	let highestPrioritySeen: number | undefined;
 	let acc: PinpointInAppMessage[] = [];
@@ -116,7 +116,7 @@ async function isBelowCap({
 }
 
 async function getMessageCounts(
-	messageId?: string
+	messageId?: string,
 ): Promise<InAppMessageCounts> {
 	let messageCounts = {
 		sessionCount: 0,

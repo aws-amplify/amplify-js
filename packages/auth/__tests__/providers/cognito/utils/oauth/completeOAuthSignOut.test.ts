@@ -48,7 +48,7 @@ describe('completeOAuthSignOut', () => {
 			'auth',
 			{ event: 'signedOut' },
 			'Auth',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
 	});
 });

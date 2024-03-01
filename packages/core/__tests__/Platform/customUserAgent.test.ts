@@ -35,7 +35,7 @@ describe('Custom user agent utilities', () => {
 
 		const confirmSignInState = getCustomUserAgent(
 			Category.Auth,
-			AuthAction.ConfirmSignIn
+			AuthAction.ConfirmSignIn,
 		);
 		const signInState = getCustomUserAgent(Category.Auth, AuthAction.SignIn);
 		const copyState = getCustomUserAgent(Category.Storage, StorageAction.Copy);
@@ -54,14 +54,14 @@ describe('Custom user agent utilities', () => {
 		cleanUp();
 		let confirmSignInState = getCustomUserAgent(
 			Category.Auth,
-			AuthAction.ConfirmSignIn
+			AuthAction.ConfirmSignIn,
 		);
 		expect(confirmSignInState).toStrictEqual([['uastate', 'auth']]);
 
 		cleanUp2();
 		confirmSignInState = getCustomUserAgent(
 			Category.Auth,
-			AuthAction.ConfirmSignIn
+			AuthAction.ConfirmSignIn,
 		);
 		expect(confirmSignInState).toStrictEqual(undefined);
 

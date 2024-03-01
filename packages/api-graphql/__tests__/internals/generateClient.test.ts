@@ -1,5 +1,5 @@
 import * as raw from '../../src';
-import { Amplify, AmplifyClassV6, Hub } from '@aws-amplify/core';
+import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
@@ -89,13 +89,18 @@ function makeAppSyncStreams() {
  */
 function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
 	return spy.mock.calls.map((call: any) => {
-		const [postOptions] = call;
+		// The 1st param in `call` is an instance of `AmplifyClassV6`
+		// The 2nd param in `call` is the actual `postOptions`
+		const [_, postOptions] = call;
 		const userAgent = postOptions?.options?.headers?.['x-amz-user-agent'];
 		if (userAgent) {
 			const staticUserAgent = userAgent.replace(/\/[\d.]+/g, '/latest');
 			postOptions.options.headers['x-amz-user-agent'] = staticUserAgent;
 		}
-		return call;
+		// Calling of `post` API with an instance of `AmplifyClassV6` has been
+		// unit tested in other test suites. To reduce the noise in the generated
+		// snapshot, we hide the details of the instance here.
+		return ['AmplifyClassV6', postOptions];
 	});
 }
 
@@ -120,6 +125,9 @@ describe('generateClient', () => {
 			'CommunityPollVote',
 			'CommunityPost',
 			'SecondaryIndexModel',
+			'Post',
+			'Comment',
+			'Product',
 		];
 
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
@@ -148,7 +156,41 @@ describe('generateClient', () => {
 			expect(() => {
 				client.models.Todo.create({ name: 'todo' });
 			}).toThrow(
-				'Could not generate client. This is likely due to Amplify.configure() not being called prior to generateClient().',
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
+			);
+		});
+	});
+
+	describe('client `enums` property', () => {
+		const expectedEnumsProperties = ['Status'];
+
+		it('generates `enums` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
+			Amplify.configure(configFixture); // clear the resource config
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(Object.keys(client.enums)).toEqual(expectedEnumsProperties);
+		});
+
+		it('generates `enums` property when Amplify.configure() is called later with a valid GraphQL provider config', async () => {
+			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(Object.keys(client.enums)).toHaveLength(0);
+
+			Amplify.configure(configFixture);
+
+			expect(Object.keys(client.enums)).toEqual(expectedEnumsProperties);
+		});
+
+		it('generates `models` property throwing error when there is no valid GraphQL provider config can be resolved', () => {
+			Amplify.configure({}); // clear the ResourceConfig mimic Amplify.configure has not been called
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			expect(() => {
+				client.enums.SecondaryIndexModelStatus.values();
+			}).toThrow(
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
 		});
 	});
@@ -2922,6 +2964,7 @@ describe('generateClient', () => {
 
 			// Request headers should overwrite client headers:
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.not.objectContaining({
@@ -3177,6 +3220,7 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -3856,6 +3900,7 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -5129,6 +5174,359 @@ describe('generateClient', () => {
 					viewCount: 5,
 				}),
 			);
+		});
+	});
+
+	describe('custom operations', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+			jest.resetAllMocks();
+			Amplify.configure(configFixture as any);
+
+			jest
+				.spyOn(Amplify.Auth, 'fetchAuthSession')
+				.mockImplementation(async () => {
+					return {
+						tokens: {
+							accessToken: {
+								toString: () => 'test',
+							},
+						},
+						credentials: {
+							accessKeyId: 'test',
+							secretAccessKey: 'test',
+						},
+					} as any;
+				});
+		});
+
+		test('can query with returnType of customType', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				resultContent: 'echo result content',
+			});
+		});
+
+		test('can query with returnType of string', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echoString: 'echo result content',
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echoString({
+				inputString: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual('echo result content');
+		});
+
+		test('can mutate with returnType of customType', async () => {
+			const spy = mockApiResponse({
+				data: {
+					likePost: {
+						likes: 123,
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePost({
+				postId: 'post-abc',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				likes: 123,
+			});
+		});
+
+		test('can mutate with returnType of model (Post)', async () => {
+			const likePostReturnPost = {
+				id: 'post-123',
+				content: 'some really slick content',
+				owner: null,
+				createdAt: '2024-02-21T21:30:29.826Z',
+				updatedAt: '2024-02-21T21:30:29.826Z',
+			};
+
+			const spy = mockApiResponse({
+				data: { likePostReturnPost },
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePostReturnPost({
+				postId: 'post-abc',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual(expect.objectContaining(likePostReturnPost));
+		});
+
+		test('can return model (Post) that with lazy-loading props', async () => {
+			const likePostReturnPost = {
+				id: 'post-123',
+				content: 'some really slick content',
+				owner: null,
+				createdAt: '2024-02-21T21:30:29.826Z',
+				updatedAt: '2024-02-21T21:30:29.826Z',
+			};
+
+			const likePostSpy = mockApiResponse({
+				data: { likePostReturnPost },
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePostReturnPost({
+				postId: 'post-abc',
+			});
+
+			const listCommentItem = {
+				content: 'some content',
+				createdAt: '2024-02-09T16:42:52.486Z',
+				id: 'comment123',
+				owner: '8d0a5587-1d0f-4d05-b120-ecae23ee1f0e',
+				postCommentsId: 'post-123',
+				updatedAt: '2024-02-09T16:42:52.486Z',
+			};
+
+			const lazyLoadCommentsSpy = mockApiResponse({
+				data: {
+					listComments: {
+						items: [listCommentItem],
+						nextToken: null,
+					},
+				},
+			});
+
+			const { data: comments } = await result.data!.comments();
+
+			expect(normalizePostGraphqlCalls(lazyLoadCommentsSpy)).toMatchSnapshot();
+			expect(comments[0]).toEqual(expect.objectContaining(listCommentItem));
+		});
+
+		test('includes client level headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					someHeader: 'some header value',
+				},
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('includes call level headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echo(
+				{
+					argumentContent: 'echo argumentContent value',
+				},
+				{
+					headers: {
+						callSiteHeaders: 'some header value',
+					},
+				},
+			);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses client authMode', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				authMode: 'lambda',
+				authToken: 'my-auth-token',
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses call site authMode', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echo(
+				{
+					argumentContent: 'echo argumentContent value',
+				},
+				{
+					authMode: 'lambda',
+					authToken: 'my-auth-token',
+				},
+			);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses config level headers if available', async () => {
+			Amplify.configure(configFixture as any, {
+				API: {
+					GraphQL: {
+						headers: async () => ({
+							'config-level-header': 'config header value',
+						}),
+					},
+				},
+			});
+
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('graphql error handling', async () => {
+			const spy = mockApiResponse({
+				data: null,
+				errors: [{ message: 'some graphql error' }],
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const { data, errors } = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(data).toBeNull();
+			expect(errors).toEqual([{ message: 'some graphql error' }]);
+		});
+
+		test('network error handling', async () => {
+			jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(async () => {
+					// not strictly what I expect a network error will look like,
+					// but represents the guts of `post` throwing any generic error.
+					throw new Error('Network error');
+				});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+
+			const { data, errors } = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			// TODO: data should actually be null/undefined, pending discussion and fix.
+			// This is not strictly related to custom ops.
+			expect(data).toEqual({});
+			expect(errors).toEqual([{ message: 'Network error' }]);
+		});
+
+		test('core error handling', async () => {
+			// Basically, we want to ensure exceptions we throw aren't simply swallowed.
+			// The list of errors that are thrown appears to be pretty small, since we
+			// package up a lot of different errors types into `{ errors }` as possible.
+			// But, a clear example where this doesn't occur is request cancellations.
+
+			const spy = mockApiResponse(
+				new Promise(resolve => {
+					// slight delay to give us time to cancel the request.
+					setTimeout(
+						() =>
+							resolve({
+								data: {
+									echo: {
+										resultContent: 'echo result content',
+									},
+								},
+							}),
+						1,
+					);
+				}),
+			);
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+
+			const result = client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			client.cancel(result);
+
+			expect(result).resolves.toThrow();
 		});
 	});
 });

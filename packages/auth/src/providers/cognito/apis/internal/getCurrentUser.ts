@@ -3,15 +3,16 @@
 
 import { AmplifyClassV6, AuthTokens } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
 import { assertAuthTokens } from '../../utils/types';
 import {
-	CognitoAuthSignInDetails,
 	AuthUser,
+	CognitoAuthSignInDetails,
 	GetCurrentUserOutput,
 } from '../../types';
 
 export const getCurrentUser = async (
-	amplify: AmplifyClassV6
+	amplify: AmplifyClassV6,
 ): Promise<GetCurrentUserOutput> => {
 	const authConfig = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -29,11 +30,12 @@ export const getCurrentUser = async (
 	if (signInDetails) {
 		authUser.signInDetails = signInDetails;
 	}
+
 	return authUser;
 };
 
 function getSignInDetailsFromTokens(
-	tokens: AuthTokens & { signInDetails?: CognitoAuthSignInDetails }
+	tokens: AuthTokens & { signInDetails?: CognitoAuthSignInDetails },
 ): CognitoAuthSignInDetails | undefined {
 	return tokens?.signInDetails;
 }

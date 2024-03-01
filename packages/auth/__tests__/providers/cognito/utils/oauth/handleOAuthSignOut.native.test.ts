@@ -7,10 +7,10 @@ import { oAuthSignOutRedirect } from '../../../../../src/providers/cognito/utils
 import { DefaultOAuthStore } from '../../../../../src/providers/cognito/utils/signInWithRedirectStore';
 
 jest.mock(
-	'../../../../../src/providers/cognito/utils/oauth/completeOAuthSignOut'
+	'../../../../../src/providers/cognito/utils/oauth/completeOAuthSignOut',
 );
 jest.mock(
-	'../../../../../src/providers/cognito/utils/oauth/oAuthSignOutRedirect'
+	'../../../../../src/providers/cognito/utils/oauth/oAuthSignOutRedirect',
 );
 
 describe('handleOAuthSignOut (native)', () => {
@@ -47,7 +47,7 @@ describe('handleOAuthSignOut (native)', () => {
 
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 				cognitoConfig,
-				false
+				false,
 			);
 			expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 		});
@@ -58,7 +58,7 @@ describe('handleOAuthSignOut (native)', () => {
 
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 				cognitoConfig,
-				false
+				false,
 			);
 			expect(mockCompleteOAuthSignOut).not.toHaveBeenCalled();
 		});
@@ -69,7 +69,7 @@ describe('handleOAuthSignOut (native)', () => {
 
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 				cognitoConfig,
-				false
+				false,
 			);
 			expect(mockCompleteOAuthSignOut).not.toHaveBeenCalled();
 		});

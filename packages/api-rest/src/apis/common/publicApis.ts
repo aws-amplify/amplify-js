@@ -2,34 +2,36 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
+
 import {
-	GetInput,
-	GetOperation,
-	PostInput,
-	PostOperation,
-	PutInput,
-	PutOperation,
+	ApiInput,
 	DeleteInput,
 	DeleteOperation,
+	GetInput,
+	GetOperation,
 	HeadInput,
 	HeadOperation,
 	PatchInput,
 	PatchOperation,
-	ApiInput,
+	PostInput,
+	PostOperation,
+	PutInput,
+	PutOperation,
 	RestApiOptionsBase,
 } from '../../types';
 import {
-	resolveApiUrl,
 	createCancellableOperation,
 	logger,
 	parseSigningInfo,
+	resolveApiUrl,
 } from '../../utils';
+
 import { transferHandler } from './handler';
 
 const publicHandler = (
 	amplify: AmplifyClassV6,
 	options: ApiInput<RestApiOptionsBase>,
-	method: string
+	method: string,
 ) =>
 	createCancellableOperation(async abortSignal => {
 		const { apiName, options: apiOptions = {}, path: apiPath } = options;
@@ -37,7 +39,7 @@ const publicHandler = (
 			amplify,
 			apiName,
 			apiPath,
-			apiOptions?.queryParams
+			apiOptions?.queryParams,
 		);
 		const libraryConfigHeaders =
 			await amplify.libraryOptions?.API?.REST?.headers?.({
@@ -57,8 +59,9 @@ const publicHandler = (
 			method,
 			url,
 			headers,
-			`IAM signing options: ${JSON.stringify(signingServiceInfo)}`
+			`IAM signing options: ${JSON.stringify(signingServiceInfo)}`,
 		);
+
 		return transferHandler(
 			amplify,
 			{
@@ -68,7 +71,7 @@ const publicHandler = (
 				headers,
 				abortSignal,
 			},
-			signingServiceInfo
+			signingServiceInfo,
 		);
 	});
 
@@ -77,7 +80,7 @@ export const get = (amplify: AmplifyClassV6, input: GetInput): GetOperation =>
 
 export const post = (
 	amplify: AmplifyClassV6,
-	input: PostInput
+	input: PostInput,
 ): PostOperation => publicHandler(amplify, input, 'POST');
 
 export const put = (amplify: AmplifyClassV6, input: PutInput): PutOperation =>
@@ -85,15 +88,15 @@ export const put = (amplify: AmplifyClassV6, input: PutInput): PutOperation =>
 
 export const del = (
 	amplify: AmplifyClassV6,
-	input: DeleteInput
+	input: DeleteInput,
 ): DeleteOperation => publicHandler(amplify, input, 'DELETE');
 
 export const head = (
 	amplify: AmplifyClassV6,
-	input: HeadInput
+	input: HeadInput,
 ): HeadOperation => publicHandler(amplify, input, 'HEAD');
 
 export const patch = (
 	amplify: AmplifyClassV6,
-	input: PatchInput
+	input: PatchInput,
 ): PatchOperation => publicHandler(amplify, input, 'PATCH');

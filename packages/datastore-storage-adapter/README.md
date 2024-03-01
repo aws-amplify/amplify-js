@@ -1,0 +1,1 @@
+This package contains the AWS Amplify DataStore storage adapter. For more information on using the DataStore storage adapter in your application please reference the [Amplify Dev Center](https://docs.amplify.aws/react-native/build-a-backend/more-features/datastore/set-up-datastore/#setup-local-development-environment).

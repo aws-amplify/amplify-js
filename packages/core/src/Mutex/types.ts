@@ -9,12 +9,8 @@ export interface MutexInterface {
 	isLocked(): boolean;
 }
 
-export namespace MutexInterface {
-	export interface Releaser {
-		(): void;
-	}
+export declare namespace MutexInterface {
+	export type Releaser = () => void;
 
-	export interface Worker<T> {
-		(): Promise<T> | T;
-	}
+	export type Worker<T> = () => Promise<T> | T;
 }

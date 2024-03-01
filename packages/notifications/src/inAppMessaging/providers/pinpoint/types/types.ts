@@ -18,7 +18,7 @@ export type InAppMessageCounts = {
 
 export type MetricsComparator = (
 	metricsVal: number,
-	eventVal: number
+	eventVal: number,
 ) => boolean;
 
 export enum PinpointMessageEvent {
@@ -28,7 +28,7 @@ export enum PinpointMessageEvent {
 }
 
 export type InAppMessageConflictHandler = (
-	messages: InAppMessage[]
+	messages: InAppMessage[],
 ) => InAppMessage;
 
 export type OnMessageInteractionEventHandler = (message: InAppMessage) => void;

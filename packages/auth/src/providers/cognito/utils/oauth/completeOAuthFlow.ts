@@ -7,14 +7,16 @@ import {
 	USER_AGENT_HEADER,
 	urlSafeDecode,
 } from '@aws-amplify/core/internals/utils';
-import { oAuthStore } from './oAuthStore';
 import { Hub, decodeJWT } from '@aws-amplify/core';
-import { validateState } from './validateState';
-import { resolveAndClearInflightPromises } from './inflightPromise';
+
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
-import { getCurrentUser } from '../../apis/getCurrentUser';
-import { createOAuthError } from './createOAuthError';
 import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
+import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
+
+import { createOAuthError } from './createOAuthError';
+import { resolveAndClearInflightPromises } from './inflightPromise';
+import { validateState } from './validateState';
+import { oAuthStore } from './oAuthStore';
 
 export const completeOAuthFlow = async ({
 	currentUrl,
@@ -114,10 +116,10 @@ const handleCodeFlow = async ({
 		.join('&');
 	const {
 		access_token,
-		refresh_token,
+		refresh_token: refreshToken,
 		id_token,
 		error,
-		error_message,
+		error_message: errorMessage,
 		token_type,
 		expires_in,
 	} = await (
@@ -133,7 +135,7 @@ const handleCodeFlow = async ({
 
 	if (error) {
 		// error is being caught in attemptCompleteOAuthFlow.ts
-		throw createOAuthError(error_message ?? error);
+		throw createOAuthError(errorMessage ?? error);
 	}
 
 	const username =
@@ -143,7 +145,7 @@ const handleCodeFlow = async ({
 		username,
 		AccessToken: access_token,
 		IdToken: id_token,
-		RefreshToken: refresh_token,
+		RefreshToken: refreshToken,
 		TokenType: token_type,
 		ExpiresIn: expires_in,
 	});
@@ -236,7 +238,9 @@ const completeFlow = async ({
 
 	// when the oauth flow is completed, there should be nothing to block the async calls
 	// that involves fetchAuthSession in the `TokenOrchestrator`
-	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(async () => {});
+	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(async () => {
+		// no-op
+	});
 
 	if (isCustomState(state)) {
 		Hub.dispatch(
@@ -246,20 +250,15 @@ const completeFlow = async ({
 				data: urlSafeDecode(getCustomState(state)),
 			},
 			'Auth',
-			AMPLIFY_SYMBOL
+			AMPLIFY_SYMBOL,
 		);
 	}
 	Hub.dispatch('auth', { event: 'signInWithRedirect' }, 'Auth', AMPLIFY_SYMBOL);
-	Hub.dispatch(
-		'auth',
-		{ event: 'signedIn', data: await getCurrentUser() },
-		'Auth',
-		AMPLIFY_SYMBOL
-	);
+	await dispatchSignedInHubEvent();
 	clearHistory(redirectUri);
 };
 
-const isCustomState = (state: string): Boolean => {
+const isCustomState = (state: string): boolean => {
 	return /-/.test(state);
 };
 

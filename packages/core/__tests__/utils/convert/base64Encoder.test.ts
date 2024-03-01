@@ -40,7 +40,7 @@ describe('base64Encoder (non-native)', () => {
 		const mockResult = 'test+test/test';
 		mockBtoa.mockReturnValue(mockResult);
 		expect(base64Encoder.convert('test', { urlSafe: true })).toBe(
-			'test-test_test'
+			'test-test_test',
 		);
 	});
 });

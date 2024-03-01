@@ -40,11 +40,19 @@ export {
 	DocumentType,
 	GraphQLAuthMode,
 	ModelFieldType,
+	NonModelFieldType,
 	ModelIntrospectionSchema,
 	SchemaModel,
 	SchemaModels,
+	SchemaNonModel,
+	SchemaNonModels,
+	CustomOperations,
+	CustomOperation,
+	CustomOperationArguments,
+	CustomOperationArgument,
 	ModelAttribute,
 	SecondaryIndexAttribute,
+	GraphQLProviderConfig,
 } from './singleton/API/types';
 export { Signer } from './Signer';
 export {

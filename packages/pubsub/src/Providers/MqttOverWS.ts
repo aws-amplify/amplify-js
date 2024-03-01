@@ -69,7 +69,7 @@ class ClientsQueue {
 
 	async get(
 		clientId: string,
-		clientFactory?: (input: string) => Promise<PahoClient | undefined>
+		clientFactory?: (input: string) => Promise<PahoClient | undefined>,
 	) {
 		const cachedPromise = this.promises.get(clientId);
 		if (cachedPromise) return cachedPromise;
@@ -129,7 +129,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 					// Trigger connected to halt reconnection attempts
 					this.reconnectionMonitor.record(ReconnectEvent.HALT_RECONNECT);
 				}
-			}
+			},
 		);
 	}
 
@@ -214,7 +214,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 
 		if (connected) {
 			this.connectionStateMonitor.record(
-				CONNECTION_CHANGE.CONNECTION_ESTABLISHED
+				CONNECTION_CHANGE.CONNECTION_ESTABLISHED,
 			);
 		}
 
@@ -223,7 +223,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 
 	protected async connect(
 		clientId: string,
-		options: MqttOptions = {}
+		options: MqttOptions = {},
 	): Promise<PahoClient | undefined> {
 		return await this.clientsQueue.get(clientId, async clientId => {
 			const client = await this.newClient({ ...options, clientId });
@@ -233,7 +233,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 				this._topicObservers.forEach(
 					(_value: Set<PubSubContentObserver>, key: string) => {
 						client.subscribe(key);
-					}
+					},
 				);
 			}
 			return client;
@@ -263,7 +263,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 			logger.debug(
 				'Publishing to topic(s) failed',
 				targetTopics.join(','),
-				message
+				message,
 			);
 		}
 	}
@@ -368,7 +368,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 					if (this._clientIdObservers.get(clientId)?.size === 0) {
 						this.disconnect(clientId);
 						this.connectionStateMonitor.record(
-							CONNECTION_CHANGE.CLOSING_CONNECTION
+							CONNECTION_CHANGE.CLOSING_CONNECTION,
 						);
 						this._clientIdObservers.delete(clientId);
 					}

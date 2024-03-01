@@ -37,7 +37,7 @@ export const logger = new ConsoleLogger('InAppMessaging.Pinpoint.Utils');
 
 export const recordAnalyticsEvent = (
 	event: PinpointMessageEvent,
-	message: InAppMessage
+	message: InAppMessage,
 ) => {
 	const { appId, region } = resolveConfig();
 
@@ -60,7 +60,7 @@ export const recordAnalyticsEvent = (
 				identityId,
 				region,
 				userAgentValue: getInAppMessagingUserAgentString(
-					InAppMessagingAction.NotifyMessageInteraction
+					InAppMessagingAction.NotifyMessageInteraction,
 				),
 			});
 		})
@@ -78,7 +78,7 @@ export const getStartOfDay = (): string => {
 
 export const matchesEventType = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ name: eventType }: InAppMessagingEvent
+	{ name: eventType }: InAppMessagingEvent,
 ) => {
 	const { EventType } = Schedule?.EventFilter?.Dimensions ?? {};
 	const memoKey = `${CampaignId}:${eventType}`;
@@ -90,7 +90,7 @@ export const matchesEventType = (
 
 export const matchesAttributes = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ attributes = {} }: InAppMessagingEvent
+	{ attributes = {} }: InAppMessagingEvent,
 ): boolean => {
 	const { Attributes } = Schedule?.EventFilter?.Dimensions ?? {};
 	if (isEmpty(Attributes)) {
@@ -105,8 +105,8 @@ export const matchesAttributes = (
 	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
 		eventAttributesMemo[memoKey] =
 			!Attributes ||
-			Object.entries(Attributes).every(
-				([key, { Values }]) => Values?.includes(attributes[key])
+			Object.entries(Attributes).every(([key, { Values }]) =>
+				Values?.includes(attributes[key]),
 			);
 	}
 	return eventAttributesMemo[memoKey];
@@ -114,7 +114,7 @@ export const matchesAttributes = (
 
 export const matchesMetrics = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ metrics = {} }: InAppMessagingEvent
+	{ metrics = {} }: InAppMessagingEvent,
 ): boolean => {
 	const { Metrics } = Schedule?.EventFilter?.Dimensions ?? {};
 	if (isEmpty(Metrics)) {
@@ -139,7 +139,7 @@ export const matchesMetrics = (
 };
 
 export const getComparator = (
-	operator?: string
+	operator?: string,
 ): MetricsComparator | undefined => {
 	switch (operator) {
 		case 'EQUAL':
@@ -194,13 +194,13 @@ export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 		Number.parseInt(startHours, 10),
 		Number.parseInt(startMinutes, 10),
 		0,
-		0
+		0,
 	);
 	end.setHours(
 		Number.parseInt(endHours, 10),
 		Number.parseInt(endMinutes, 10),
 		0,
-		0
+		0,
 	);
 
 	// if quiet time includes midnight, bump the end time to the next day
@@ -232,7 +232,7 @@ export const clearMemo = () => {
 // - 2. Amplify correctly handles the legacy layout values from Pinpoint after they are updated
 
 export const interpretLayout = (
-	layout: NonNullable<PinpointInAppMessage['InAppMessage']>['Layout']
+	layout: NonNullable<PinpointInAppMessage['InAppMessage']>['Layout'],
 ): InAppMessageLayout => {
 	if (layout === 'MOBILE_FEED') {
 		return 'MODAL';
