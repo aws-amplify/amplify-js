@@ -10,8 +10,11 @@
 # - test_name: 'integ_rn_ios_datastore_sqlite_adapter'
 #   working_directory: amplify-js-samples-staging/samples/react-native/datastore/SQLiteAdapter
 #   timeout_minutes: 120
-- test_name: 'integ_rn_ios_api_v6'
+- test_name: 'integ_rn_ios_api_v6_latest_rn_ported_detox'
   working_directory: amplify-js-samples-staging/samples/react-native/api/v6/ApiCRUDL
+  timeout_minutes: 120
+- test_name: 'integ_rn_ios_api_v6_rn_72_detox_cli'
+  working_directory: amplify-js-samples-staging/samples/react-native/api/rn72-detox-cli/ApiCRUDL
   timeout_minutes: 120
 # - test_name: 'integ_rn_android_storage'
 #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
