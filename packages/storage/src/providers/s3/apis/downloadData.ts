@@ -6,7 +6,7 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { DownloadDataInput, DownloadDataOutput } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
-import { createDownloadTask } from '../utils';
+import { createDownloadTask, validateStorageOperationInput } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
@@ -15,7 +15,6 @@ import {
 	StorageItemKey,
 	StorageItemPath,
 } from '../../../types';
-import { validateStorageOperationInput } from '../utils/storageInputValidation';
 import { STORAGE_INPUT_TYPES } from '../utils/constants';
 import { DownloadDataInputKey, DownloadDataInputPath } from '../types/inputs';
 import {
