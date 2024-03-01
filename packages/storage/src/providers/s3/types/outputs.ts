@@ -8,13 +8,25 @@ import {
 	StorageListOutput,
 	DownloadTask,
 	UploadTask,
+	StorageItemKey,
+	StorageItemPath,
 } from '../../../types';
-import { StorageItemPath } from '../../../types/outputs';
 
 /**
  * type for S3 item.
  */
-export interface Item extends StorageItem {
+export interface Item extends StorageItemKey {
+	/**
+	 * VersionId used to reference a specific version of the object.
+	 */
+	versionId?: string;
+	/**
+	 * A standard MIME type describing the format of the object data.
+	 */
+	contentType?: string;
+}
+
+export interface ItemPath extends StorageItemPath {
 	/**
 	 * VersionId used to reference a specific version of the object.
 	 */
@@ -39,14 +51,14 @@ export interface ItemPath extends StorageItemPath {
 /**
  * type for S3 list item.
  */
-export type ListOutputItem = Omit<StorageItem, 'metadata'>;
+export type ListOutputItem = Omit<Item, 'metadata'>;
 
 /**
  * Output type for S3 downloadData API.
  */
-export type DownloadDataOutput = DownloadTask<StorageDownloadDataOutput<Item>>;
+export type DownloadDataOutputKey = DownloadTask<StorageDownloadDataOutput<Item>>;
 export type DownloadDataOutputPath = DownloadTask<StorageDownloadDataOutput<ItemPath>>;
-
+export type DownloadDataOutput = DownloadDataOutputKey | DownloadDataOutputPath
 
 /**
  * Output type for S3 getUrl API.

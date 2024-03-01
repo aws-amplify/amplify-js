@@ -7,18 +7,30 @@ import {
 	StorageListPaginateOptions,
 } from './options';
 
-export type StorageOperationInputKey = {key: string}
-export type StorageOperationInputPath = {path: string | (({identityId, userSub}: {identityId?: string, userSub?: string}) => string);}
+export type StorageOperationInputKey = { key: string };
+export type StorageOperationInputPath = {
+	path:
+		| string
+		| (({
+				identityId
+		  }: {
+				identityId?: string;
+		  }) => string);
+};
+export type StorageOperationOptions<Options> = { options?: Options };
 
+/** Download Data Input types */
+export type StorageDownloadDataInputKey<Options extends StorageOptions> =
+	StorageOperationInputKey & StorageOperationOptions<Options>;
+
+export type StorageDownloadDataInputPath<Options> = StorageOperationInputPath &
+	StorageOperationOptions<Options>;
+
+// TODO: This needs to be removed after refactor of all storage APIs
 export type StorageOperationInput<Options extends StorageOptions> = {
 	key: string;
 	options?: Options;
 };
-
-// export type StorageOperationInputPath<Options> = {
-// 	path: string | ((id: string) => string);
-// 	options?: Options;
-// };
 
 export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
@@ -37,12 +49,6 @@ export type StorageListInput<
 
 export type StorageGetUrlInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
-
-export type StorageDownloadDataInput<Options extends StorageOptions> =
-	StorageOperationInput<Options>;
-
-export type StorageDownloadDataInputPath<Options> =
-	StorageOperationInputPath & {options?: Options};
 
 export type StorageUploadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options> & {

@@ -21,7 +21,6 @@ type ResolvedS3ConfigAndInput = {
 	keyPrefix: string;
 	isObjectLockEnabled?: boolean;
 	identityId?: string;
-	userSub?: string;
 };
 
 /**
@@ -85,7 +84,6 @@ export const resolveS3ConfigAndInput = async (
 		bucket,
 		keyPrefix,
 		identityId,
-		userSub,
 		isObjectLockEnabled,
 	};
 };

@@ -8,8 +8,8 @@ import {
 	StorageGetUrlInput,
 	StorageListInput,
 	StorageRemoveInput,
-	StorageDownloadDataInput,
 	StorageUploadDataInput,
+	StorageDownloadDataInputKey,
 	StorageDownloadDataInputPath,
 } from '../../../types';
 import {
@@ -22,8 +22,8 @@ import {
 	UploadDataOptions,
 	CopyDestinationOptions,
 	CopySourceOptions,
+	DownloadDataOptionsKey,
 } from '../types';
-import { DownloadDataOptionsPath } from './options';
 
 // TODO: support use accelerate endpoint option
 /**
@@ -63,13 +63,13 @@ export type RemoveInput = StorageRemoveInput<RemoveOptions>;
 /**
  * Input type for S3 downloadData API.
  */
-export type DownloadDataInputKey =
-	StorageDownloadDataInput<DownloadDataOptions>;
-export type DownloadDataInputPath =
-	StorageDownloadDataInputPath<DownloadDataOptionsPath>;
 export type DownloadDataInput = StrictUnion<
 	DownloadDataInputKey | DownloadDataInputPath
 >;
+export type DownloadDataInputKey =
+	StorageDownloadDataInputKey<DownloadDataOptionsKey>;
+export type DownloadDataInputPath =
+	StorageDownloadDataInputPath<DownloadDataOptions>;
 
 /**
  * Input type for S3 uploadData API.

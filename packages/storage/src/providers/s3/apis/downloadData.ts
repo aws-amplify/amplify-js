@@ -11,12 +11,15 @@ import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
-import { DownloadDataOutputPath } from '../types/outputs';
-import { StorageDownloadDataOutput } from '../../../types';
-import { DownloadDataInputKey, DownloadDataInputPath } from '../types/inputs';
-import { validateStorageOperationInput } from '../utils/utils';
+import {
+	StorageDownloadDataOutput,
+	StorageItemKey,
+	StorageItemPath,
+} from '../../../types';
+import { validateStorageOperationInput } from '../utils/storageInputValidation';
 import { STORAGE_INPUT_TYPES } from '../utils/constants';
-import { StorageItem, StorageItemPath } from '../../../types/outputs';
+import { DownloadDataInputKey, DownloadDataInputPath } from '../types/inputs';
+import { DownloadDataOutputKey, DownloadDataOutputPath } from '../types/outputs';
 
 /**
  * Download S3 object data to memory
@@ -51,12 +54,10 @@ import { StorageItem, StorageItemPath } from '../../../types/outputs';
 
 interface DownloadData {
 	(input: DownloadDataInputPath): DownloadDataOutputPath;
-	(input: DownloadDataInputKey): DownloadDataOutput;
+	(input: DownloadDataInputKey): DownloadDataOutputKey;
 }
 
-export const downloadData: DownloadData = <
-	Output extends DownloadDataOutput | DownloadDataOutputPath,
->(
+export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 	input: DownloadDataInput,
 ): Output => {
 	const abortController = new AbortController();
@@ -76,13 +77,15 @@ const downloadDataJob =
 		abortSignal: AbortSignal,
 	) =>
 	async (): Promise<
-		StorageDownloadDataOutput<StorageItem | StorageItemPath>
+		StorageDownloadDataOutput<StorageItemKey | StorageItemPath>
 	> => {
 		const { options: downloadDataOptions } = downloadDataInput;
-		const { bucket, keyPrefix, s3Config, identityId, userSub } =
+		const { bucket, keyPrefix, s3Config, identityId } =
 			await resolveS3ConfigAndInput(Amplify, downloadDataOptions);
-		const { inputType, objectKey } =
-			validateStorageOperationInput(downloadDataInput, identityId, userSub);
+		const { inputType, objectKey } = validateStorageOperationInput(
+			downloadDataInput,
+			identityId,
+		);
 		const finalKey =
 			inputType === STORAGE_INPUT_TYPES.KEY ? keyPrefix + objectKey : objectKey;
 
@@ -122,6 +125,6 @@ const downloadDataJob =
 			versionId,
 		};
 		return inputType === STORAGE_INPUT_TYPES.KEY
-			? { key: finalKey, ...result }
+			? { key: objectKey, ...result }
 			: { path: finalKey, ...result };
 	};

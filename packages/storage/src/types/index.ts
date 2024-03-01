@@ -12,7 +12,7 @@ export {
 	StorageListInput,
 	StorageGetPropertiesInput,
 	StorageRemoveInput,
-	StorageDownloadDataInput,
+	StorageDownloadDataInputKey,
 	StorageDownloadDataInputPath,
 	StorageUploadDataInput,
 	StorageCopyInput,
@@ -27,6 +27,8 @@ export {
 } from './options';
 export {
 	StorageItem,
+	StorageItemKey,
+	StorageItemPath,
 	StorageListOutput,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,
