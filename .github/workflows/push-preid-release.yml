@@ -22,6 +22,14 @@ jobs:
           path: amplify-js
           token: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
 
+      - name: Set github commit user
+        env:
+          GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+          GITHUB_USER: ${{ vars.GH_USER }}
+        run: |
+          git config --global user.email $GITHUB_EMAIL
+          git config --global user.name $GITHUB_USER
+
       - name: Create an empty commit
         working-directory: ./amplify-js
         run: |
