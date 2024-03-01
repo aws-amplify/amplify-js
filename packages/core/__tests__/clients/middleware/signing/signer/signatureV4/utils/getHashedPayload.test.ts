@@ -6,26 +6,26 @@ import { getHashedPayload } from '../../../../../../../src/clients/middleware/si
 describe('getHashedPayload', () => {
 	test('returns empty hash if nullish', () => {
 		expect(getHashedPayload(undefined)).toStrictEqual(
-			'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+			'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
 		);
 		expect(getHashedPayload(null as any)).toStrictEqual(
-			'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+			'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
 		);
 	});
 
 	test('returns hashed payload', () => {
 		expect(getHashedPayload('string-body')).toStrictEqual(
-			'f4241e27b103e1a1d7f88a1556541718250245fe31c8e695f3e068d3fe837572'
+			'f4241e27b103e1a1d7f88a1556541718250245fe31c8e695f3e068d3fe837572',
 		);
 	});
 
 	test('works with ArrayBuffer', () => {
 		expect(getHashedPayload(new ArrayBuffer(8))).toStrictEqual(
-			'af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc'
+			'af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc',
 		);
 
 		expect(getHashedPayload(new Uint8Array(new ArrayBuffer(8)))).toStrictEqual(
-			'af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc'
+			'af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc',
 		);
 	});
 

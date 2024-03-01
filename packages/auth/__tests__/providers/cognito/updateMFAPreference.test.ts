@@ -24,7 +24,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 const mfaChoices: UpdateMFAPreferenceInput[] = [
@@ -82,16 +82,16 @@ describe('updateMFAPreference', () => {
 					AccessToken: mockAccessToken,
 					SMSMfaSettings: getMFASettings(sms),
 					SoftwareTokenMfaSettings: getMFASettings(totp),
-				}
+				},
 			);
-		}
+		},
 	);
 
 	it('should throw an error when service returns an error response', async () => {
 		expect.assertions(2);
 		mockSetUserMFAPreference.mockImplementation(() => {
 			throw getMockError(
-				SetUserMFAPreferenceException.InvalidParameterException
+				SetUserMFAPreferenceException.InvalidParameterException,
 			);
 		});
 		try {
@@ -99,7 +99,7 @@ describe('updateMFAPreference', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				SetUserMFAPreferenceException.InvalidParameterException
+				SetUserMFAPreferenceException.InvalidParameterException,
 			);
 		}
 	});

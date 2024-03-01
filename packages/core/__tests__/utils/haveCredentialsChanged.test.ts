@@ -3,7 +3,7 @@ import { haveCredentialsChanged } from '../../src/utils/haveCredentialsChanged';
 const MOCK_AWS_CREDS = {
 	accessKeyId: 'mock-access-key',
 	secretAccessKey: 'mock-secret-key',
-	sessionToken: 'mock-session-token'
+	sessionToken: 'mock-session-token',
 };
 
 describe('haveCredentialsChanged', () => {
@@ -35,8 +35,11 @@ describe('haveCredentialsChanged', () => {
 	});
 
 	it('returns false if credentials have not changed', () => {
-		const credentialsHaveChanged = haveCredentialsChanged(MOCK_AWS_CREDS, MOCK_AWS_CREDS);
+		const credentialsHaveChanged = haveCredentialsChanged(
+			MOCK_AWS_CREDS,
+			MOCK_AWS_CREDS,
+		);
 
 		expect(credentialsHaveChanged).toBe(false);
 	});
-})
+});

@@ -7,6 +7,7 @@ import {
 	KeyValueStorageInterface,
 	TokenProvider,
 } from '@aws-amplify/core';
+
 import { CognitoAuthSignInDetails } from '../types';
 
 export type TokenRefresher = ({
@@ -48,20 +49,20 @@ export interface AuthTokenStore {
 export interface AuthTokenOrchestrator {
 	setTokenRefresher(tokenRefresher: TokenRefresher): void;
 	setAuthTokenStore(tokenStore: AuthTokenStore): void;
-	getTokens: (
-		options?: FetchAuthSessionOptions
-	) => Promise<
+	getTokens(
+		options?: FetchAuthSessionOptions,
+	): Promise<
 		(AuthTokens & { signInDetails?: CognitoAuthSignInDetails }) | null
 	>;
-	setTokens: ({ tokens }: { tokens: CognitoAuthTokens }) => Promise<void>;
-	clearTokens: () => Promise<void>;
+	setTokens({ tokens }: { tokens: CognitoAuthTokens }): Promise<void>;
+	clearTokens(): Promise<void>;
 	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null>;
 	clearDeviceMetadata(username?: string): Promise<void>;
 }
 
 export interface CognitoUserPoolTokenProviderType extends TokenProvider {
-	setKeyValueStorage: (keyValueStorage: KeyValueStorageInterface) => void;
-	setAuthConfig: (authConfig: AuthConfig) => void;
+	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
+	setAuthConfig(authConfig: AuthConfig): void;
 }
 
 export type CognitoAuthTokens = AuthTokens & {
@@ -72,8 +73,8 @@ export type CognitoAuthTokens = AuthTokens & {
 	signInDetails?: CognitoAuthSignInDetails;
 };
 
-export type DeviceMetadata = {
+export interface DeviceMetadata {
 	deviceKey?: string;
 	deviceGroupKey?: string;
 	randomPassword: string;
-};
+}

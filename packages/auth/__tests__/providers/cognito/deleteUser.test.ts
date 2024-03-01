@@ -22,7 +22,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 }));
 jest.mock('../../../src/providers/cognito/apis/signOut');
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 jest.mock('../../../src/providers/cognito/tokenProvider');
 
@@ -58,7 +58,7 @@ describe('deleteUser', () => {
 			expect.objectContaining({ region: 'us-west-2' }),
 			expect.objectContaining({
 				AccessToken: mockAccessToken,
-			})
+			}),
 		);
 		expect(mockDeleteUser).toHaveBeenCalledTimes(1);
 		expect(mockClearDeviceMetadata).toHaveBeenCalledTimes(1);
@@ -66,7 +66,7 @@ describe('deleteUser', () => {
 
 		// make sure we clearDeviceToken -> signout, in that order
 		expect(mockClearDeviceMetadata.mock.invocationCallOrder[0]).toBeLessThan(
-			mockSignOut.mock.invocationCallOrder[0]
+			mockSignOut.mock.invocationCallOrder[0],
 		);
 	});
 

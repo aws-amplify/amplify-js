@@ -60,10 +60,10 @@ describe('DataStore sanity testing checks', () => {
 					post: new Post({
 						title: 'newly created post',
 					}),
-				})
-			)
+				}),
+			),
 		).rejects.toThrow(
-			`Data integrity error. You tried to save a Comment` // instructions specific to the instance follow
+			`Data integrity error. You tried to save a Comment`, // instructions specific to the instance follow
 		);
 	});
 
@@ -128,7 +128,7 @@ describe('DataStore sanity testing checks', () => {
 					setTimeout(() => {
 						lastCycle = cycle;
 						unsleep();
-					}, 20 * cycle)
+					}, 20 * cycle),
 				);
 			}, numberOfCycles);
 
@@ -204,7 +204,7 @@ describe('DataStore sanity testing checks', () => {
 
 							// At minimum: looking for top-level error, operation that failed, state while in failure.
 							expect(DataStore.start()).rejects.toThrow(
-								/DataStoreStateError:.+`DataStore\.start\(\)`.+Clearing/
+								/DataStoreStateError:.+`DataStore\.start\(\)`.+Clearing/,
 							);
 
 							await clearing;
@@ -218,7 +218,7 @@ describe('DataStore sanity testing checks', () => {
 
 							// At minimum: looking for top-level error, operation that failed, state while in failure.
 							expect(DataStore.start()).rejects.toThrow(
-								/DataStoreStateError:.+`DataStore\.start\(\)`.+Stopping/
+								/DataStoreStateError:.+`DataStore\.start\(\)`.+Stopping/,
 							);
 
 							await stopping;
@@ -306,7 +306,7 @@ describe('DataStore sanity testing checks', () => {
 		test('awaited save', async () => {
 			await expectIsolation(
 				async ({ DataStore, Post }) =>
-					await DataStore.save(new Post({ title: 'some title' }))
+					await DataStore.save(new Post({ title: 'some title' })),
 			);
 		});
 
@@ -324,7 +324,7 @@ describe('DataStore sanity testing checks', () => {
 
 			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
-				'artificial query blocker'
+				'artificial query blocker',
 			);
 
 			// begin clearing, which should lock DataStore
@@ -351,7 +351,7 @@ describe('DataStore sanity testing checks', () => {
 			let unblock;
 			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
-				'artificial save blocker'
+				'artificial save blocker',
 			);
 
 			// begin clearing, which should lock DataStore
@@ -363,7 +363,7 @@ describe('DataStore sanity testing checks', () => {
 
 			// and now attempt an ill-fated operation
 			await expect(
-				DataStore.save(new Post({ title: 'title that should fail' }))
+				DataStore.save(new Post({ title: 'title that should fail' })),
 			)
 				// looking top-level error name, operation that failed, state DS was in
 				.rejects.toThrow(/DataStoreStateError.+DataStore\.save\(\).+Clearing/i)
@@ -380,7 +380,7 @@ describe('DataStore sanity testing checks', () => {
 			let unblock;
 			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
-				'artificial delete blocker'
+				'artificial delete blocker',
 			);
 
 			// begin clearing, which should lock DataStore
@@ -407,7 +407,7 @@ describe('DataStore sanity testing checks', () => {
 			let unblock;
 			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
-				'artificial observe blocker'
+				'artificial observe blocker',
 			);
 
 			// begin clearing, which should lock DataStore
@@ -440,7 +440,7 @@ describe('DataStore sanity testing checks', () => {
 			let unblock;
 			(DataStore as any).runningProcesses.add(
 				async () => new Promise(_unblock => (unblock = _unblock)),
-				'artificial observeQuery blocker'
+				'artificial observeQuery blocker',
 			);
 
 			// begin clearing, which should lock DataStore
@@ -513,14 +513,14 @@ describe('DataStore sanity testing checks', () => {
 						({ element, opType, model }) => {
 							expect(opType).toEqual('INSERT');
 							expect(element.title).toEqual(
-								`a title from polite cycle ${cycle}`
+								`a title from polite cycle ${cycle}`,
 							);
 							sub.unsubscribe();
 							resolve();
-						}
+						},
 					);
 					DataStore.save(
-						new Post({ title: `a title from polite cycle ${cycle}` })
+						new Post({ title: `a title from polite cycle ${cycle}` }),
 					);
 				});
 			});
@@ -533,16 +533,16 @@ describe('DataStore sanity testing checks', () => {
 						({ element, opType, model }) => {
 							expect(opType).toEqual('INSERT');
 							expect(element.title).toEqual(
-								`a title from impolite cycle ${cycle}`
+								`a title from impolite cycle ${cycle}`,
 							);
 							// omitted:
 							// sub.unsubscribe();
 							// (that's what makes it impolite)
 							resolve();
-						}
+						},
 					);
 					DataStore.save(
-						new Post({ title: `a title from impolite cycle ${cycle}` })
+						new Post({ title: `a title from impolite cycle ${cycle}` }),
 					);
 				});
 			});
@@ -552,13 +552,13 @@ describe('DataStore sanity testing checks', () => {
 			await expectIsolation(async ({ DataStore, Post, cycle }) => {
 				await pretendModelsAreSynced(DataStore);
 				await DataStore.save(
-					new Post({ title: `a title from polite cycle ${cycle} post 1` })
+					new Post({ title: `a title from polite cycle ${cycle} post 1` }),
 				);
 
 				const sanityCheck = await DataStore.query(Post);
 				expect(sanityCheck.length).toEqual(1);
 				expect(sanityCheck[0].title).toEqual(
-					`a title from polite cycle ${cycle} post 1`
+					`a title from polite cycle ${cycle} post 1`,
 				);
 
 				return new Promise<void>(async resolve => {
@@ -568,10 +568,12 @@ describe('DataStore sanity testing checks', () => {
 							first = false;
 							expect(items.length).toEqual(1);
 							expect(items[0].title).toEqual(
-								`a title from polite cycle ${cycle} post 1`
+								`a title from polite cycle ${cycle} post 1`,
 							);
 							DataStore.save(
-								new Post({ title: `a title from polite cycle ${cycle} post 2` })
+								new Post({
+									title: `a title from polite cycle ${cycle} post 2`,
+								}),
 							);
 						} else {
 							expect(items.length).toEqual(2);
@@ -602,12 +604,12 @@ describe('DataStore sanity testing checks', () => {
 							DataStore.save(
 								new Post({
 									title: `a title from polite unsynced cycle ${cycle} post 1`,
-								})
+								}),
 							);
 						} else {
 							expect(items.length).toEqual(1);
 							expect(items[0].title).toEqual(
-								`a title from polite unsynced cycle ${cycle} post 1`
+								`a title from polite unsynced cycle ${cycle} post 1`,
 							);
 							sub.unsubscribe();
 							doneTesting();
@@ -625,12 +627,12 @@ describe('DataStore sanity testing checks', () => {
 				await pretendModelsAreSynced(DataStore);
 
 				await DataStore.save(
-					new Post({ title: `a title from impolite cycle ${cycle} post 1` })
+					new Post({ title: `a title from impolite cycle ${cycle} post 1` }),
 				);
 				const sanityCheck = await DataStore.query(Post);
 				expect(sanityCheck.length).toEqual(1);
 				expect(sanityCheck[0].title).toEqual(
-					`a title from impolite cycle ${cycle} post 1`
+					`a title from impolite cycle ${cycle} post 1`,
 				);
 
 				await new Promise<void>(doneTesting => {
@@ -640,12 +642,12 @@ describe('DataStore sanity testing checks', () => {
 							first = false;
 							expect(items.length).toEqual(1);
 							expect(items[0].title).toEqual(
-								`a title from impolite cycle ${cycle} post 1`
+								`a title from impolite cycle ${cycle} post 1`,
 							);
 							DataStore.save(
 								new Post({
 									title: `a title from impolite cycle ${cycle} post 2`,
-								})
+								}),
 							);
 						} else {
 							expect(items.length).toEqual(2);
@@ -674,7 +676,7 @@ describe('DataStore sanity testing checks', () => {
 
 				// save an item to kickstart outbox processing.
 				await DataStore.save(
-					new Post({ title: `post from "sync is cleaned" up cycle ${cycle}` })
+					new Post({ title: `post from "sync is cleaned" up cycle ${cycle}` }),
 				);
 			});
 		});
@@ -689,7 +691,7 @@ describe('DataStore sanity testing checks', () => {
 				DataStore.save(
 					new Post({
 						title: `post from "rude synchronized observe-save" up cycle ${cycle}`,
-					})
+					}),
 				);
 			});
 		});

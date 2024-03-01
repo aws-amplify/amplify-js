@@ -3,12 +3,13 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthDeliveryMedium } from '../../../types';
-import { SignUpInput, SignUpOutput, SignInInput } from '../types';
+import { SignInInput, SignUpInput, SignUpOutput } from '../types';
 import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -16,16 +17,17 @@ import { SignUpException } from '../types/errors';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { toAttributeType } from '../utils/apiHelpers';
 import {
-	handleCodeAutoSignIn,
-	isAutoSignInStarted,
-	setAutoSignInStarted,
-	isSignUpComplete,
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
+	handleCodeAutoSignIn,
+	isAutoSignInStarted,
+	isSignUpComplete,
+	setAutoSignInStarted,
 	setUsernameUsedForAutoSignIn,
 } from '../utils/signUpHelpers';
-import { setAutoSignIn } from './autoSignIn';
 import { getAuthUserAgentValue } from '../../../utils';
+
+import { setAutoSignIn } from './autoSignIn';
 
 /**
  * Creates a user
@@ -46,11 +48,11 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	assertTokenProviderConfig(authConfig);
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignUpUsername
+		AuthValidationErrorCode.EmptySignUpUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignUpPassword
+		AuthValidationErrorCode.EmptySignUpPassword,
 	);
 
 	const signInServiceOptions =
@@ -63,7 +65,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 
 	// if the authFlowType is 'CUSTOM_WITHOUT_SRP' then we don't include the password
 	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
-		signInInput['password'] = password;
+		signInInput.password = password;
 	}
 	if (signInServiceOptions || autoSignIn === true) {
 		setUsernameUsedForAutoSignIn(username);
@@ -82,12 +84,13 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			ClientMetadata: clientMetadata,
 			ValidationData: validationData && toAttributeType(validationData),
 			ClientId: authConfig.userPoolClientId,
-		}
+		},
 	);
 	const { UserSub, CodeDeliveryDetails } = clientOutput;
 
 	if (isSignUpComplete(clientOutput) && isAutoSignInStarted()) {
 		setAutoSignIn(autoSignInUserConfirmed(signInInput));
+
 		return {
 			isSignUpComplete: true,
 			nextStep: {
@@ -113,6 +116,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		signUpVerificationMethod === 'link'
 	) {
 		setAutoSignIn(autoSignInWhenUserIsConfirmedWithLink(signInInput));
+
 		return {
 			isSignUpComplete: false,
 			nextStep: {

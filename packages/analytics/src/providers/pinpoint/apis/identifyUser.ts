@@ -3,9 +3,10 @@
 
 import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
 import {
-	updateEndpoint,
 	UpdateEndpointException,
+	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { AnalyticsValidationErrorCode } from '../../../errors';
 import { getAnalyticsUserAgentString } from '../../../utils';
 import { IdentifyUserInput } from '../types';
@@ -16,7 +17,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
  *
- * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
+ * @param {IdentifyUserInput} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
  *
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.

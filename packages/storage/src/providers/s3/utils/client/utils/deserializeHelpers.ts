@@ -48,9 +48,9 @@ type InferInstructionResultType<T extends Instruction<any>> =
  *
  * @internal
  */
-export const map = <Instructions extends { [key: string]: Instruction<any> }>(
+export const map = <Instructions extends Record<string, Instruction<any>>>(
 	obj: Record<string, any>,
-	instructions: Instructions
+	instructions: Instructions,
 ): {
 	[K in keyof Instructions]: InferInstructionResultType<Instructions[K]>;
 } => {
@@ -59,12 +59,13 @@ export const map = <Instructions extends { [key: string]: Instruction<any> }>(
 		const [accessor, deserializer] = Array.isArray(instruction)
 			? instruction
 			: [instruction];
-		if (obj.hasOwnProperty(accessor)) {
+		if (Object.prototype.hasOwnProperty.call(obj, accessor)) {
 			result[key as keyof Instructions] = deserializer
 				? deserializer(obj[accessor])
 				: String(obj[accessor]);
 		}
 	}
+
 	return result;
 };
 
@@ -108,16 +109,17 @@ export const deserializeTimestamp = (value: string): Date | undefined => {
  *
  * @internal
  */
-export const emptyArrayGuard = <T extends Array<any>>(
+export const emptyArrayGuard = <T extends any[]>(
 	value: any,
-	deserializer: (value: any[]) => T
+	deserializer: (value: any[]) => T,
 ): T => {
 	if (value === '') {
 		return [] as any as T;
 	}
 	const valueArray = (Array.isArray(value) ? value : [value]).filter(
-		e => e != null
+		e => e != null,
 	);
+
 	return deserializer(valueArray);
 };
 
@@ -125,15 +127,17 @@ export const emptyArrayGuard = <T extends Array<any>>(
  * @internal
  */
 export const deserializeMetadata = (
-	headers: Headers
+	headers: Headers,
 ): Record<string, string> => {
 	const objectMetadataHeaderPrefix = 'x-amz-meta-';
 	const deserialized = Object.keys(headers)
 		.filter(header => header.startsWith(objectMetadataHeaderPrefix))
 		.reduce((acc, header) => {
 			acc[header.replace(objectMetadataHeaderPrefix, '')] = headers[header];
+
 			return acc;
 		}, {} as any);
+
 	return Object.keys(deserialized).length > 0 ? deserialized : undefined;
 };
 
@@ -144,7 +148,7 @@ export const deserializeMetadata = (
  */
 export const buildStorageServiceError = (
 	error: Error,
-	statusCode: number
+	statusCode: number,
 ): ServiceError => {
 	const storageError = new StorageError({
 		name: error.name,
@@ -154,5 +158,6 @@ export const buildStorageServiceError = (
 		storageError.recoverySuggestion =
 			'Please add the object with this key to the bucket as the key is not found.';
 	}
+
 	return storageError;
 };

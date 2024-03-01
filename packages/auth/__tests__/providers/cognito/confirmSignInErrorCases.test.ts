@@ -14,7 +14,7 @@ jest.mock('@aws-amplify/core', () => ({
 	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 jest.mock('../../../src/providers/cognito/utils/signInStore');
 
@@ -63,7 +63,7 @@ describe('confirmSignIn API error path cases:', () => {
 		expect.assertions(2);
 		mockRespondToAuthChallenge.mockImplementation(() => {
 			throw getMockError(
-				RespondToAuthChallengeException.InvalidParameterException
+				RespondToAuthChallengeException.InvalidParameterException,
 			);
 		});
 		try {
@@ -71,7 +71,7 @@ describe('confirmSignIn API error path cases:', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				RespondToAuthChallengeException.InvalidParameterException
+				RespondToAuthChallengeException.InvalidParameterException,
 			);
 		}
 	});

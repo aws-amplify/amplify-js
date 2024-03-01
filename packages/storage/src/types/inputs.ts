@@ -2,22 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	StorageOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
+	StorageOptions,
 } from './options';
 
-export type StorageOperationInputKey = { key: string };
-export type StorageOperationInputPath = {
-	path:
-		| string
-		| (({
-				identityId
-		  }: {
-				identityId?: string;
-		  }) => string);
-};
-export type StorageOperationOptions<Options> = { options?: Options };
+export interface StorageOperationInputKey {
+	key: string;
+}
+export interface StorageOperationInputPath {
+	path: string | (({ identityId }: { identityId?: string }) => string);
+}
+export interface StorageOperationOptions<Options> {
+	options?: Options;
+}
 
 /** Download Data Input types */
 export type StorageDownloadDataInputKey<Options extends StorageOptions> =
@@ -27,25 +25,25 @@ export type StorageDownloadDataInputPath<Options> = StorageOperationInputPath &
 	StorageOperationOptions<Options>;
 
 // TODO: This needs to be removed after refactor of all storage APIs
-export type StorageOperationInput<Options extends StorageOptions> = {
+export interface StorageOperationInput<Options extends StorageOptions> {
 	key: string;
 	options?: Options;
-};
+}
 
 export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export type StorageRemoveInput<Options extends StorageOptions> = {
+export interface StorageRemoveInput<Options extends StorageOptions> {
 	key: string;
 	options?: Options;
-};
+}
 
-export type StorageListInput<
+export interface StorageListInput<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
-> = {
+> {
 	prefix?: string;
 	options?: Options;
-};
+}
 
 export type StorageGetUrlInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
@@ -55,13 +53,13 @@ export type StorageUploadDataInput<Options extends StorageOptions> =
 		data: StorageUploadDataPayload;
 	};
 
-export type StorageCopyInput<
+export interface StorageCopyInput<
 	SourceOptions extends StorageOptions,
 	DestinationOptions extends StorageOptions,
-> = {
+> {
 	source: SourceOptions;
 	destination: DestinationOptions;
-};
+}
 
 /**
  * The data payload type for upload operation.

@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -16,11 +19,6 @@ import {
 	handleUserPasswordAuthFlow,
 	retryOnResourceNotFoundException,
 } from '../utils/signInHelpers';
-import { Amplify, Hub } from '@aws-amplify/core';
-import {
-	AMPLIFY_SYMBOL,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core/internals/utils';
 import { InitiateAuthException } from '../types/errors';
 import {
 	CognitoAuthSignInDetails,
@@ -33,7 +31,7 @@ import {
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
-import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -46,7 +44,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithUserPassword(
-	input: SignInWithUserPasswordInput
+	input: SignInWithUserPasswordInput,
 ): Promise<SignInWithUserPasswordOutput> {
 	const { username, password, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -58,31 +56,31 @@ export async function signInWithUserPassword(
 	const metadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignInPassword
+		AuthValidationErrorCode.EmptySignInPassword,
 	);
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: retiredChallengeName,
+			ChallengeParameters: retriedChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await retryOnResourceNotFoundException(
 			handleUserPasswordAuthFlow,
 			[username, password, metadata, authConfig, tokenOrchestrator],
 			username,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 		const activeUsername = getActiveSignInUsername(username);
 		// sets up local state used during the sign-in process
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: retiredChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -92,20 +90,14 @@ export async function signInWithUserPassword(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
 			cleanActiveSignInState();
-			Hub.dispatch(
-				'auth',
-				{
-					event: 'signedIn',
-					data: await getCurrentUser(),
-				},
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -113,8 +105,8 @@ export async function signInWithUserPassword(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: retiredChallengeName as ChallengeName,
+			challengeParameters: retriedChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

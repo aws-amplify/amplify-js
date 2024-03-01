@@ -46,12 +46,12 @@ describe('oAuthSignOutRedirect', () => {
 		await oAuthSignOutRedirect(authConfig);
 
 		expect(mockGetRedirectUrl).toHaveBeenCalledWith(
-			authConfig.loginWith.oauth.redirectSignOut
+			authConfig.loginWith.oauth.redirectSignOut,
 		);
 		expect(mockOpenAuthSession).toHaveBeenCalledWith(
 			`https://${domain}/logout?client_id=${userPoolClientId}&logout_uri=${encodedSignOutRedirectUrl}`,
 			authConfig.loginWith.oauth.redirectSignOut,
-			false
+			false,
 		);
 	});
 
@@ -61,7 +61,7 @@ describe('oAuthSignOutRedirect', () => {
 		expect(mockOpenAuthSession).toHaveBeenCalledWith(
 			`https://${domain}/logout?client_id=${userPoolClientId}&logout_uri=${encodedSignOutRedirectUrl}`,
 			authConfig.loginWith.oauth.redirectSignOut,
-			true
+			true,
 		);
 	});
 });

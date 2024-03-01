@@ -3,6 +3,7 @@
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
+
 import { RemoveInput, RemoveOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { deleteObject } from '../../utils/client';
@@ -11,12 +12,12 @@ import { logger } from '../../../../utils';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
-	input: RemoveInput
+	input: RemoveInput,
 ): Promise<RemoveOutput> => {
 	const { key, options = {} } = input;
 	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(
 		amplify,
-		options
+		options,
 	);
 
 	const finalKey = `${keyPrefix}${key}`;
@@ -29,8 +30,9 @@ export const remove = async (
 		{
 			Bucket: bucket,
 			Key: finalKey,
-		}
+		},
 	);
+
 	return {
 		key,
 	};

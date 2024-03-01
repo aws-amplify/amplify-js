@@ -36,7 +36,7 @@ describe('Interactions LexV2 API: send', () => {
 	it('rejects when bot config does not exist', async () => {
 		mockResolveBotConfig.mockReturnValue(undefined);
 		await expect(
-			send({ botName: v2BotConfig.name, message: uuid() })
+			send({ botName: v2BotConfig.name, message: uuid() }),
 		).rejects.toBeInstanceOf(InteractionsError);
 	});
 });

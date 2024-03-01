@@ -1,16 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import {
+	AuthAction,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { VerifyTOTPSetupInput } from '../types';
 import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import {
-	assertTokenProviderConfig,
-	AuthAction,
-} from '@aws-amplify/core/internals/utils';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -26,14 +27,14 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function verifyTOTPSetup(
-	input: VerifyTOTPSetupInput
+	input: VerifyTOTPSetupInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { code, options } = input;
 	assertValidationError(
 		!!code,
-		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode
+		AuthValidationErrorCode.EmptyVerifyTOTPSetupCode,
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
@@ -46,6 +47,6 @@ export async function verifyTOTPSetup(
 			AccessToken: tokens.accessToken.toString(),
 			UserCode: code,
 			FriendlyDeviceName: options?.friendlyDeviceName,
-		}
+		},
 	);
 }

@@ -4,9 +4,8 @@
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { DownloadDataInput, DownloadDataOutput, S3Exception } from '../types';
+import { DownloadDataInput, DownloadDataOutput } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { createDownloadTask } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
@@ -19,7 +18,10 @@ import {
 import { validateStorageOperationInput } from '../utils/storageInputValidation';
 import { STORAGE_INPUT_TYPES } from '../utils/constants';
 import { DownloadDataInputKey, DownloadDataInputPath } from '../types/inputs';
-import { DownloadDataOutputKey, DownloadDataOutputPath } from '../types/outputs';
+import {
+	DownloadDataOutputKey,
+	DownloadDataOutputPath,
+} from '../types/outputs';
 
 /**
  * Download S3 object data to memory
@@ -68,6 +70,7 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 			abortController.abort(message);
 		},
 	});
+
 	return downloadTask as Output;
 };
 
@@ -124,6 +127,7 @@ const downloadDataJob =
 			metadata,
 			versionId,
 		};
+
 		return inputType === STORAGE_INPUT_TYPES.KEY
 			? { key: objectKey, ...result }
 			: { path: finalKey, ...result };

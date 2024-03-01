@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
-	HttpRequest,
-	unauthenticatedHandler,
 	Headers,
+	HttpRequest,
+	authenticatedHandler,
 	getRetryDecider,
 	jitteredBackoff,
-	authenticatedHandler,
+	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	AWSCredentials,
@@ -28,10 +28,10 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	withCredentials?: boolean;
 };
 
-type SigningServiceInfo = {
+interface SigningServiceInfo {
 	service?: string;
 	region?: string;
-};
+}
 
 /**
  * Make REST API call with best-effort IAM auth.
@@ -46,7 +46,7 @@ type SigningServiceInfo = {
 export const transferHandler = async (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions & { abortSignal: AbortSignal },
-	signingServiceInfo?: SigningServiceInfo
+	signingServiceInfo?: SigningServiceInfo,
 ): Promise<RestApiResponse> => {
 	const { url, method, headers, body, withCredentials, abortSignal } = options;
 	const resolvedBody = body
@@ -88,6 +88,7 @@ export const transferHandler = async (
 			...baseOptions,
 		});
 	}
+
 	// Clean-up un-modeled properties from response.
 	return {
 		statusCode: response.statusCode,
@@ -98,11 +99,11 @@ export const transferHandler = async (
 
 const iamAuthApplicable = (
 	{ headers }: HttpRequest,
-	signingServiceInfo?: SigningServiceInfo
+	signingServiceInfo?: SigningServiceInfo,
 ) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;
 
 const resolveCredentials = async (
-	amplify: AmplifyClassV6
+	amplify: AmplifyClassV6,
 ): Promise<AWSCredentials | null> => {
 	try {
 		const { credentials } = await amplify.Auth.fetchAuthSession();
@@ -112,5 +113,6 @@ const resolveCredentials = async (
 	} catch (e) {
 		logger.debug('No credentials available, the request will be unsigned.');
 	}
+
 	return null;
 };

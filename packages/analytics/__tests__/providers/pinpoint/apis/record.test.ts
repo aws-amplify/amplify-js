@@ -88,7 +88,7 @@ describe('Pinpoint API: record', () => {
 		expect(mockPinpointRecord).not.toHaveBeenCalled();
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),
-			expect.any(Error)
+			expect.any(Error),
 		);
 	});
 
@@ -123,7 +123,7 @@ describe('Pinpoint API: record', () => {
 			'analytics',
 			{ event: 'record', data: event, message: 'Recording Analytics event' },
 			'Analytics',
-			expect.anything()
+			expect.anything(),
 		);
 	});
 });

@@ -7,7 +7,7 @@ import { AuthValidationErrorCode } from '../types/validation';
 
 export function assertValidationError(
 	assertion: boolean,
-	name: AuthValidationErrorCode
+	name: AuthValidationErrorCode,
 ): asserts assertion {
 	const { message, recoverySuggestion } = validationErrorMap[name];
 

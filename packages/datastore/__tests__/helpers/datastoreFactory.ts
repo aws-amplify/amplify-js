@@ -144,7 +144,7 @@ export function getDataStore({
 					connectionState: ConnectionState.ConnectionDisrupted,
 				},
 			},
-			'PubSub'
+			'PubSub',
 		);
 
 		if (log) console.log('done simulated disruption.');
@@ -173,7 +173,7 @@ export function getDataStore({
 					connectionState: ConnectionState.Connecting,
 				},
 			},
-			'PubSub'
+			'PubSub',
 		);
 		Hub.dispatch(
 			'api',
@@ -183,7 +183,7 @@ export function getDataStore({
 					connectionState: ConnectionState.Connected,
 				},
 			},
-			'PubSub'
+			'PubSub',
 		);
 		if (log) console.log('done simulated disruption end.');
 	}

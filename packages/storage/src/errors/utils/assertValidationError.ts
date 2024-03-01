@@ -9,7 +9,7 @@ import { StorageError } from '../StorageError';
 
 export function assertValidationError(
 	assertion: boolean,
-	name: StorageValidationErrorCode
+	name: StorageValidationErrorCode,
 ): asserts assertion {
 	const { message, recoverySuggestion } = validationErrorMap[name];
 

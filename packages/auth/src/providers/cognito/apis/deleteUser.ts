@@ -3,16 +3,18 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { deleteUser as serviceDeleteUser } from '../utils/clients/CognitoIdentityProvider';
 import { DeleteUserException } from '../types/errors';
 import { tokenOrchestrator } from '../tokenProvider';
-import { signOut } from './signOut';
 import { getAuthUserAgentValue } from '../../../utils';
+
+import { signOut } from './signOut';
 
 /**
  * Deletes a user from the user pool while authenticated.
@@ -34,7 +36,7 @@ export async function deleteUser(): Promise<void> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 	await tokenOrchestrator.clearDeviceMetadata();
 	await signOut();

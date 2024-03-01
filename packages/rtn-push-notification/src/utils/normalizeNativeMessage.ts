@@ -15,7 +15,7 @@ import {
  * @internal
  */
 export const normalizeNativeMessage = (
-	nativeMessage?: NativeMessage
+	nativeMessage?: NativeMessage,
 ): PushNotificationMessage | null => {
 	let normalized: NormalizedValues;
 	if (isApnsMessage(nativeMessage)) {
@@ -53,7 +53,7 @@ const normalizeFcmMessage = (fcmMessage: FcmMessage): NormalizedValues => {
 };
 
 const getApnsAction = (
-	action?: NativeAction
+	action?: NativeAction,
 ): Pick<PushNotificationMessage, 'deeplinkUrl'> | undefined => {
 	if (action?.deeplink) {
 		return { deeplinkUrl: action.deeplink };
@@ -61,7 +61,7 @@ const getApnsAction = (
 };
 
 const getFcmAction = (
-	action?: NativeAction
+	action?: NativeAction,
 ): Pick<PushNotificationMessage, 'goToUrl' | 'deeplinkUrl'> | undefined => {
 	if (action?.url) {
 		return { goToUrl: action.url };
@@ -95,9 +95,9 @@ const getFcmOptions = ({
 };
 
 const isApnsMessage = (
-	nativeMessage?: NativeMessage
+	nativeMessage?: NativeMessage,
 ): nativeMessage is ApnsMessage => !!nativeMessage?.aps;
 
 const isFcmMessage = (
-	nativeMessage?: NativeMessage
+	nativeMessage?: NativeMessage,
 ): nativeMessage is FcmMessage => !!nativeMessage?.rawData;

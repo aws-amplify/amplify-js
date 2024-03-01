@@ -5,8 +5,10 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+
 import { GetCurrentUserOutput } from '../../types';
 import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrentUser';
+import { InitiateAuthException } from '../../types/errors';
 
 /**
  * Gets the current user from the idToken.
@@ -16,7 +18,7 @@ import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrent
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const getCurrentUser = async (
-	contextSpec: AmplifyServer.ContextSpec
+	contextSpec: AmplifyServer.ContextSpec,
 ): Promise<GetCurrentUserOutput> => {
 	return getCurrentUserInternal(getAmplifyServerContext(contextSpec).amplify);
 };

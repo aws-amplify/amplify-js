@@ -3,9 +3,10 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { UpdateMFAPreferenceInput } from '../types';
 import { SetUserMFAPreferenceException } from '../types/errors';
 import { MFAPreference } from '../types/models';
@@ -23,7 +24,7 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function updateMFAPreference(
-	input: UpdateMFAPreferenceInput
+	input: UpdateMFAPreferenceInput,
 ): Promise<void> {
 	const { sms, totp } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -39,12 +40,12 @@ export async function updateMFAPreference(
 			AccessToken: tokens.accessToken.toString(),
 			SMSMfaSettings: getMFASettings(sms),
 			SoftwareTokenMfaSettings: getMFASettings(totp),
-		}
+		},
 	);
 }
 
 export function getMFASettings(
-	mfaPreference?: MFAPreference
+	mfaPreference?: MFAPreference,
 ): CognitoMFASettings | undefined {
 	if (mfaPreference === 'DISABLED') {
 		return {

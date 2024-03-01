@@ -3,13 +3,14 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import {
-	AuthUserAttributes,
-	AuthUpdateUserAttributesOutput,
 	AuthDeliveryMedium,
+	AuthUpdateUserAttributesOutput,
+	AuthUserAttributes,
 } from '../../../types';
 import {
 	UpdateUserAttributesInput,
@@ -32,7 +33,7 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export const updateUserAttributes = async (
-	input: UpdateUserAttributesInput
+	input: UpdateUserAttributesInput,
 ): Promise<UpdateUserAttributesOutput> => {
 	const { userAttributes, options } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -49,7 +50,7 @@ export const updateUserAttributes = async (
 			AccessToken: tokens.accessToken.toString(),
 			ClientMetadata: clientMetadata,
 			UserAttributes: toAttributeType(userAttributes),
-		}
+		},
 	);
 
 	return {
@@ -59,7 +60,7 @@ export const updateUserAttributes = async (
 };
 
 function getConfirmedAttributes(
-	attributes: AuthUserAttributes
+	attributes: AuthUserAttributes,
 ): AuthUpdateUserAttributesOutput {
 	const confirmedAttributes = {} as AuthUpdateUserAttributesOutput;
 	Object.keys(attributes)?.forEach(key => {
@@ -75,7 +76,7 @@ function getConfirmedAttributes(
 }
 
 function getUnConfirmedAttributes(
-	codeDeliveryDetailsList?: CodeDeliveryDetailsType[]
+	codeDeliveryDetailsList?: CodeDeliveryDetailsType[],
 ): AuthUpdateUserAttributesOutput {
 	const unConfirmedAttributes = {} as AuthUpdateUserAttributesOutput;
 	codeDeliveryDetailsList?.forEach(codeDeliveryDetails => {
@@ -93,5 +94,6 @@ function getUnConfirmedAttributes(
 				},
 			};
 	});
+
 	return unConfirmedAttributes;
 }

@@ -1,0 +1,11 @@
+{
+	"name": "@aws-amplify/interactions",
+	"extends": ["../../typedoc.base.json"],
+	"entryPointStrategy": "resolve",
+	"entryPoints": [
+		"src/index.ts",
+		"src/lex-v1/index.ts",
+		"src/lex-v2/index.ts"
+	],
+	"readme": "README.md",
+}

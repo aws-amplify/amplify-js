@@ -47,7 +47,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 	private modelInstanceCreator: ModelInstanceCreator;
 	private getModelConstructorByModelName: (
 		namsespaceName: string,
-		modelName: string
+		modelName: string,
 	) => PersistentModelConstructor<any>;
 	private db: CommonSQLiteDatabase;
 	private initPromise: Promise<void>;
@@ -64,8 +64,8 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
 			namsespaceName: NAMESPACES,
-			modelName: string
-		) => PersistentModelConstructor<any>
+			modelName: string,
+		) => PersistentModelConstructor<any>,
 	) {
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
@@ -83,15 +83,15 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 		try {
 			const usesCPKCodegen = Object.values(
-				this.schema.namespaces.user.models
+				this.schema.namespaces.user.models,
 			).some(model =>
-				Object.values(model.fields).some(
-					field => field.association?.hasOwnProperty('targetNames')
-				)
+				Object.values(model.fields).some(field =>
+					field.association?.hasOwnProperty('targetNames'),
+				),
 			);
 			if (usesCPKCodegen) {
 				logger.error(
-					'The SQLite adapter does not support schemas using custom primary key. Set `graphQLTransformer.respectPrimaryKeyAttributesOnConnectionField in `amplify/cli.json` to false to disable custom primary key. To regenerate your API, add or remove an empty newline to your GraphQL schema (to change the computed hash) then run `amplify push`.'
+					'The SQLite adapter does not support schemas using custom primary key. Set `graphQLTransformer.respectPrimaryKeyAttributesOnConnectionField in `amplify/cli.json` to false to disable custom primary key. To regenerate your API, add or remove an empty newline to your GraphQL schema (to change the computed hash) then run `amplify push`.',
 				);
 			}
 			await this.db.init();
@@ -112,7 +112,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 	async save<T extends PersistentModel>(
 		model: T,
-		condition?: ModelPredicate<T>
+		condition?: ModelPredicate<T>,
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
@@ -122,12 +122,12 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			model,
 			this.schema.namespaces[this.namespaceResolver(modelConstructor)],
 			this.modelInstanceCreator,
-			this.getModelConstructorByModelName
+			this.getModelConstructorByModelName,
 		);
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
 				return { modelName, item, instance };
-			}
+			},
 		);
 
 		const [queryStatement, params] = queryByIdStatement(model.id, tableName);
@@ -179,7 +179,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 	private async load<T>(
 		namespaceName: string,
 		srcModelName: string,
-		records: T[]
+		records: T[],
 	): Promise<T[]> {
 		const namespace = this.schema.namespaces[namespaceName];
 		const relations = namespace.relationships[srcModelName].relationTypes;
@@ -187,12 +187,12 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 		const modelConstructor = this.getModelConstructorByModelName(
 			namespaceName,
-			srcModelName
+			srcModelName,
 		);
 
 		if (connectionTableNames.length === 0) {
 			return records.map(record =>
-				this.modelInstanceCreator(modelConstructor, record)
+				this.modelInstanceCreator(modelConstructor, record),
 			);
 		}
 
@@ -212,7 +212,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 	async query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput<T>
+		pagination?: PaginationInput<T>,
 	): Promise<T[]> {
 		const { name: tableName } = modelConstructor;
 		const namespaceName = this.namespaceResolver(modelConstructor);
@@ -239,7 +239,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 				predicates,
 				sortPredicates,
 				limit,
-				page
+				page,
 			);
 
 			return await this.db.getAll(queryStatement, params);
@@ -250,7 +250,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 	private async getById<T extends PersistentModel>(
 		tableName: string,
-		id: string
+		id: string,
 	): Promise<T> {
 		const [queryStatement, params] = queryByIdStatement(id, tableName);
 		const record = await this.db.get<T>(queryStatement, params);
@@ -259,13 +259,13 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 	}
 
 	private idFromPredicate<T extends PersistentModel>(
-		predicates: PredicatesGroup<T>
+		predicates: PredicatesGroup<T>,
 	) {
 		const { predicates: predicateObjs } = predicates;
 		const idPredicate =
 			predicateObjs.length === 1 &&
 			(predicateObjs.find(
-				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq',
 			) as PredicateObject<T>);
 
 		return idPredicate && idPredicate.operand;
@@ -273,7 +273,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 	async queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		firstOrLast: QueryOne = QueryOne.FIRST
+		firstOrLast: QueryOne = QueryOne.FIRST,
 	): Promise<T | undefined> {
 		const { name: tableName } = modelConstructor;
 		const [queryStatement, params] = queryOneStatement(firstOrLast, tableName);
@@ -291,7 +291,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 	// For Has Many and Has One relations to have SQL handle cascades automatically
 	async delete<T extends PersistentModel>(
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
-		condition?: ModelPredicate<T>
+		condition?: ModelPredicate<T>,
 	): Promise<[T[], T[]]> {
 		if (isModelConstructor(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
@@ -306,13 +306,13 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 			const models = await this.db.selectAndDelete(
 				queryStatement,
-				deleteStatement
+				deleteStatement,
 			);
 
 			const modelInstances = await this.load(
 				namespaceName,
 				modelConstructor.name,
-				models
+				models,
 			);
 
 			return [modelInstances, modelInstances];
@@ -325,7 +325,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			if (condition) {
 				const [queryStatement, params] = queryByIdStatement(
 					model.id,
-					tableName
+					tableName,
 				);
 
 				const fromDB = await this.db.get(queryStatement, params);
@@ -351,7 +351,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 				const [deleteStatement, deleteParams] = deleteByIdStatement(
 					model.id,
-					tableName
+					tableName,
 				);
 				await this.db.save(deleteStatement, deleteParams);
 
@@ -359,7 +359,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			} else {
 				const [deleteStatement, params] = deleteByIdStatement(
 					model.id,
-					tableName
+					tableName,
 				);
 				await this.db.save(deleteStatement, params);
 
@@ -370,7 +370,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
-		items: ModelInstanceMetadataWithId[]
+		items: ModelInstanceMetadataWithId[],
 	): Promise<[T, OpType][]> {
 		const { name: tableName } = modelConstructor;
 		const result: [T, OpType][] = [];
@@ -390,13 +390,13 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 				this.modelInstanceCreator(modelConstructor, item),
 				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
 				this.modelInstanceCreator,
-				this.getModelConstructorByModelName
+				this.getModelConstructorByModelName,
 			);
 
 			const { id, _deleted } = item;
 
 			const { instance } = connectedModels.find(
-				({ instance }) => instance.id === id
+				({ instance }) => instance.id === id,
 			);
 
 			if (_deleted) {
@@ -420,14 +420,14 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			if (response === undefined) {
 				const insertStatement = modelInsertStatement(
 					itemsToSave[idx],
-					tableName
+					tableName,
 				);
 				saveStatements.add(insertStatement);
 				result.push([<T>(<unknown>itemsToSave[idx]), OpType.INSERT]);
 			} else {
 				const updateStatement = modelUpdateStatement(
 					itemsToSave[idx],
-					tableName
+					tableName,
 				);
 				saveStatements.add(updateStatement);
 				result.push([<T>(<unknown>itemsToSave[idx]), OpType.UPDATE]);

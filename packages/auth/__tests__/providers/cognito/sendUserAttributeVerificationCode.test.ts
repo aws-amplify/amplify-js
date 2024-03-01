@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('sendUserAttributeVerificationCode', () => {
@@ -38,7 +38,7 @@ describe('sendUserAttributeVerificationCode', () => {
 
 	beforeEach(() => {
 		mockGetUserAttributeVerificationCode.mockResolvedValue(
-			authAPITestParams.resendSignUpClientResult
+			authAPITestParams.resendSignUpClientResult,
 		);
 	});
 
@@ -62,7 +62,7 @@ describe('sendUserAttributeVerificationCode', () => {
 				AccessToken: mockAccessToken,
 				AttributeName: 'email',
 				ClientMetadata: { foo: 'bar' },
-			})
+			}),
 		);
 		expect(mockGetUserAttributeVerificationCode).toHaveBeenCalledTimes(1);
 	});
@@ -71,7 +71,7 @@ describe('sendUserAttributeVerificationCode', () => {
 		expect.assertions(2);
 		mockGetUserAttributeVerificationCode.mockImplementation(() => {
 			throw getMockError(
-				GetUserAttributeVerificationException.InvalidParameterException
+				GetUserAttributeVerificationException.InvalidParameterException,
 			);
 		});
 		try {
@@ -84,7 +84,7 @@ describe('sendUserAttributeVerificationCode', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(
-				GetUserAttributeVerificationException.InvalidParameterException
+				GetUserAttributeVerificationException.InvalidParameterException,
 			);
 		}
 	});

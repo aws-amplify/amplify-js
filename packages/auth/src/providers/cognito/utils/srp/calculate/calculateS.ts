@@ -27,6 +27,7 @@ export const calculateS = async ({
 		g.modPow(x, N, (outerErr: unknown, outerResult: AuthBigInteger) => {
 			if (outerErr) {
 				reject(outerErr);
+
 				return;
 			}
 
@@ -36,10 +37,11 @@ export const calculateS = async ({
 				(innerErr: unknown, innerResult: AuthBigInteger) => {
 					if (innerErr) {
 						reject(innerErr);
+
 						return;
 					}
 					resolve(innerResult.mod(N));
-				}
+				},
 			);
 		});
 	});

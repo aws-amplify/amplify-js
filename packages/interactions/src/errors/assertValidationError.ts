@@ -10,7 +10,7 @@ import { InteractionsError } from './InteractionsError';
 export function assertValidationError(
 	assertion: boolean,
 	name: InteractionsValidationErrorCode,
-	message?: string
+	message?: string,
 ): asserts assertion {
 	if (!assertion) {
 		const { message: defaultMessage, recoverySuggestion } =

@@ -66,13 +66,13 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
 			async () => {
 				return authAPITestParams.GuestIdentityId as Identity;
-			}
+			},
 		);
 		expect(
 			await cognitoIdentityIdProvider({
 				authConfig: ampConfig.Auth!.Cognito as CognitoIdentityPoolConfig,
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
-			})
+			}),
 		).toBe(authAPITestParams.GuestIdentityId.id);
 		expect(mockGetId).toHaveBeenCalledTimes(0);
 	});
@@ -80,13 +80,13 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
 			async () => {
 				return undefined;
-			}
+			},
 		);
 		mockDefaultIdentityIdStoreInstance.storeIdentityId.mockImplementationOnce(
 			async (identity: Identity) => {
 				expect(identity.id).toBe(authAPITestParams.GuestIdentityId.id);
 				expect(identity.type).toBe(authAPITestParams.GuestIdentityId.type);
-			}
+			},
 		);
 		expect(
 			await cognitoIdentityIdProvider({
@@ -94,7 +94,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 					identityPoolId: 'us-east-1:test-id',
 				},
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
-			})
+			}),
 		).toBe(authAPITestParams.GuestIdentityId.id);
 		expect(mockGetId).toHaveBeenCalledTimes(1);
 	});
@@ -102,14 +102,14 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
 			async () => {
 				return authAPITestParams.PrimaryIdentityId as Identity;
-			}
+			},
 		);
 		expect(
 			await cognitoIdentityIdProvider({
 				authConfig: ampConfig.Auth!.Cognito as CognitoIdentityPoolConfig,
 				tokens: authAPITestParams.ValidAuthTokens,
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
-			})
+			}),
 		).toBe(authAPITestParams.PrimaryIdentityId.id);
 		expect(mockGetId).toHaveBeenCalledTimes(0);
 	});
@@ -117,13 +117,13 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 		mockDefaultIdentityIdStoreInstance.loadIdentityId.mockImplementationOnce(
 			async () => {
 				return undefined;
-			}
+			},
 		);
 		mockDefaultIdentityIdStoreInstance.storeIdentityId.mockImplementationOnce(
 			async (identity: Identity) => {
 				expect(identity.id).toBe(authAPITestParams.PrimaryIdentityId.id);
 				expect(identity.type).toBe(authAPITestParams.PrimaryIdentityId.type);
-			}
+			},
 		);
 		expect(
 			await cognitoIdentityIdProvider({
@@ -132,7 +132,7 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 					identityPoolId: 'us-east-1:test-id',
 				},
 				identityIdStore: mockDefaultIdentityIdStoreInstance,
-			})
+			}),
 		).toBe(authAPITestParams.PrimaryIdentityId.id);
 		expect(mockGetId).toHaveBeenCalledTimes(1);
 	});

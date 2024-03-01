@@ -9,15 +9,19 @@ import { AuthBigInteger } from './types';
 BigInteger.prototype.modPow = function modPow(
 	e: AuthBigInteger,
 	m: AuthBigInteger,
-	callback: Function
+	callback: (error: Error | null, result: AuthBigInteger | null) => void,
 ) {
 	computeModPow({
 		base: (this as unknown as AuthBigInteger).toString(16),
 		exponent: e.toString(16),
 		divisor: m.toString(16),
 	})
-		.then((result: any) => callback(null, new BigInteger(result, 16)))
-		.catch((error: any) => callback(new Error(error), null));
+		.then((result: any) => {
+			callback(null, new BigInteger(result, 16));
+		})
+		.catch((error: any) => {
+			callback(new Error(error), null);
+		});
 };
 
 export { BigInteger };

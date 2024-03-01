@@ -2,27 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StrictUnion } from '@aws-amplify/core/internals/utils';
+
 import {
 	StorageCopyInput,
+	StorageDownloadDataInputKey,
+	StorageDownloadDataInputPath,
 	StorageGetPropertiesInput,
 	StorageGetUrlInput,
 	StorageListInput,
 	StorageRemoveInput,
 	StorageUploadDataInput,
-	StorageDownloadDataInputKey,
-	StorageDownloadDataInputPath,
 } from '../../../types';
 import {
+	CopyDestinationOptions,
+	CopySourceOptions,
+	DownloadDataOptions,
+	DownloadDataOptionsKey,
 	GetPropertiesOptions,
 	GetUrlOptions,
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
-	DownloadDataOptions,
 	UploadDataOptions,
-	CopyDestinationOptions,
-	CopySourceOptions,
-	DownloadDataOptionsKey,
 } from '../types';
 
 // TODO: support use accelerate endpoint option

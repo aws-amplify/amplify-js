@@ -2,26 +2,28 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
+
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { StorageError } from '../../../errors/StorageError';
-import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
 import { ResolvedS3Config } from '../types/options';
 
-type S3ApiOptions = {
+import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
+
+interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
-};
+}
 
-type ResolvedS3ConfigAndInput = {
+interface ResolvedS3ConfigAndInput {
 	s3Config: ResolvedS3Config;
 	bucket: string;
 	keyPrefix: string;
 	isObjectLockEnabled?: boolean;
 	identityId?: string;
-};
+}
 
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.
@@ -36,15 +38,15 @@ type ResolvedS3ConfigAndInput = {
  */
 export const resolveS3ConfigAndInput = async (
 	amplify: AmplifyClassV6,
-	apiOptions?: S3ApiOptions
+	apiOptions?: S3ApiOptions,
 ): Promise<ResolvedS3ConfigAndInput> => {
 	// identityId is always cached in memory if forceRefresh is not set. So we can safely make calls here.
-	const { credentials, identityId, userSub } = await amplify.Auth.fetchAuthSession({
+	const { credentials, identityId } = await amplify.Auth.fetchAuthSession({
 		forceRefresh: false,
 	});
 	assertValidationError(
 		!!credentials,
-		StorageValidationErrorCode.NoCredentials
+		StorageValidationErrorCode.NoCredentials,
 	);
 	assertValidationError(!!identityId, StorageValidationErrorCode.NoIdentityId);
 
@@ -78,7 +80,7 @@ export const resolveS3ConfigAndInput = async (
 				? {
 						customEndpoint: LOCAL_TESTING_S3_ENDPOINT,
 						forcePathStyle: true,
-				  }
+					}
 				: {}),
 		},
 		bucket,

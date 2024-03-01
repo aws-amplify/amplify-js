@@ -15,7 +15,7 @@ export const send = async (input: SendInput): Promise<SendOutput> => {
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
-		`Bot ${botName} does not exist.`
+		`Bot ${botName} does not exist.`,
 	);
 	return lexProvider.sendMessage(botConfig, message);
 };
