@@ -9,30 +9,28 @@ on:
   push:
     branches:
       # Change this to your branch name where "example-preid" corresponds to the preid you want your changes released on
-      - feat/example-preid-branch/main
+      - fix/release-workflow
 
 jobs:
-  e2e:
-    secrets: inherit
-    uses: ./.github/workflows/callable-release-verification.yml
-  parse-preid:
-    name: Parse preid from branch
+  workflow-test:
+    name: Test PR generation
     runs-on: ubuntu-latest
-    env:
-      BRANCH: ${{ github.ref_name }}
     steps:
-      - id: output_preid
-        run: echo "preid=$(echo $BRANCH |  tr -cd '[:alnum:]_\-/.' | cut -d \/ -f 2)" >> $GITHUB_OUTPUT
-    outputs:
-      preid: ${{ steps.output_preid.outputs.preid }}
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+          token: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
 
-  preid-release:
-    needs:
-      - e2e
-      - parse-preid
-    secrets: inherit
-    uses: ./.github/workflows/callable-npm-publish-preid.yml
-    # The preid should be detected from the branch name recommending feat/{PREID}/whatever as branch naming pattern
-    #   if your branch doesn't follow this pattern, you can override it here for your branch.
-    with:
-      preid: ${{ needs.parse-preid.outputs.preid }}
+      - name: Create an empty commit
+        working-directory: ./amplify-js
+        run: |
+          git commit --allow-empty -m "Empty-Commit"
+          git push origin fix/release-workflow
+
+      - name: Create a PR to merge temporary release branch into main development branch
+        working-directory: ./amplify-js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
+        run: |
+          gh pr create -B main -H fix/release-workflow --title 'DO NOT MERGE: Test release workflow' --body 'Test release workflow.'             
