@@ -110,7 +110,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 });
 
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
-	const CognitoUser = function() {
+	const CognitoUser = function () {
 		// mock private member
 		this.signInUserSession = null;
 	};
@@ -255,7 +255,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
 		callback.onSuccess('success');
 	};
-	CognitoUser.prototype.getSignInUserSession = function() {
+	CognitoUser.prototype.getSignInUserSession = function () {
 		return this.signInUserSession;
 	};
 
@@ -277,7 +277,7 @@ const createMockLocalStorage = () =>
 		removeItem(key: string) {
 			delete this._items[key];
 		},
-	}) as unknown as Storage;
+	} as unknown as Storage);
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
@@ -1879,7 +1879,7 @@ describe('auth unit test', () => {
 			const concurrency = 10;
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'getSession')
-				.mockImplementationOnce(function(callback: any) {
+				.mockImplementationOnce(function (callback: any) {
 					this.signInUserSession = session;
 					callback(null, session);
 				});
@@ -2361,6 +2361,7 @@ describe('auth unit test', () => {
 	});
 
 	describe('signOut test', () => {
+		const syncMock = jest.fn();
 		beforeAll(() => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
@@ -2369,6 +2370,7 @@ describe('auth unit test', () => {
 						setItem() {},
 						getItem() {},
 						removeItem() {},
+						sync: syncMock,
 					};
 				});
 		});
@@ -2491,6 +2493,37 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptionsWithNoUserPoolId);
 
 			expect(await auth.signOut()).toBeUndefined();
+		});
+
+		test('should call storage sync before finishing signOut', async () => {
+			const auth = new Auth(authOptions);
+
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			const spyon = jest
+				.spyOn(Credentials, 'clear')
+				.mockImplementationOnce(() => {
+					return Promise.resolve();
+				});
+			const spyon2 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementationOnce(() => {
+					return user;
+				});
+
+			await auth.signOut();
+
+			expect.assertions(3);
+			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalled();
+			expect(syncMock).toBeCalled();
+
+			spyon.mockClear();
+			spyon2.mockClear();
+			syncMock.mockClear();
 		});
 	});
 
@@ -3603,7 +3636,7 @@ describe('auth unit test', () => {
 			    "Hub.dispatch('auth', { data: ..., event: 'parsingCallbackUrl' })",
 			  ],
 			  Array [
-			    "window.history.replaceState(null, "", 'http://localhost:3000/')",
+			    "window.history.replaceState(null, \\"\\", 'http://localhost:3000/')",
 			  ],
 			  Array [
 			    "Hub.dispatch('auth', { data: ..., event: 'signIn' })",
@@ -3680,7 +3713,7 @@ describe('auth unit test', () => {
 			);
 		});
 
-		test.only('User Pools and Identity Pools', async () => {
+		test('User Pools and Identity Pools', async () => {
 			const options: AuthOptions = {
 				region: 'region',
 				userPoolId: 'userPoolId',
