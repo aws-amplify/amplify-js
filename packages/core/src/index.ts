@@ -13,6 +13,7 @@ export {
 	TokenProvider,
 	AuthTokens,
 	FetchAuthSessionOptions,
+	AuthSession,
 	CredentialsAndIdentityIdProvider,
 	CredentialsAndIdentityId,
 	Identity,

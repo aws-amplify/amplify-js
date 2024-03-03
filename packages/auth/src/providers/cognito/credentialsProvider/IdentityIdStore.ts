@@ -8,9 +8,11 @@ import {
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
 import { assertIdentityPoolIdConfig } from '@aws-amplify/core/internals/utils';
-import { IdentityIdStorageKeys, IdentityIdStore } from './types';
+
 import { getAuthStorageKeys } from '../tokenProvider/TokenStore';
 import { AuthKeys } from '../tokenProvider/types';
+
+import { IdentityIdStorageKeys, IdentityIdStore } from './types';
 
 const logger = new ConsoleLogger('DefaultIdentityIdStore');
 
@@ -28,7 +30,6 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 			'Cognito',
 			authConfigParam.Cognito.identityPoolId,
 		);
-		return;
 	}
 
 	constructor(keyValueStorage: KeyValueStorageInterface) {
@@ -38,7 +39,7 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	async loadIdentityId(): Promise<Identity | null> {
 		assertIdentityPoolIdConfig(this.authConfig?.Cognito);
 		try {
-			if (!!this._primaryIdentityId) {
+			if (this._primaryIdentityId) {
 				return {
 					id: this._primaryIdentityId,
 					type: 'primary',
@@ -47,16 +48,18 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 				const storedIdentityId = await this.keyValueStorage.getItem(
 					this._authKeys.identityId,
 				);
-				if (!!storedIdentityId) {
+				if (storedIdentityId) {
 					return {
 						id: storedIdentityId,
 						type: 'guest',
 					};
 				}
+
 				return null;
 			}
 		} catch (err) {
 			logger.log('Error getting stored IdentityId.', err);
+
 			return null;
 		}
 	}

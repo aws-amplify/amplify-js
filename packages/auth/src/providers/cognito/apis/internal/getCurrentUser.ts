@@ -3,10 +3,11 @@
 
 import { AmplifyClassV6, AuthTokens } from '@aws-amplify/core';
 import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
 import { assertAuthTokens } from '../../utils/types';
 import {
-	CognitoAuthSignInDetails,
 	AuthUser,
+	CognitoAuthSignInDetails,
 	GetCurrentUserOutput,
 } from '../../types';
 
@@ -29,6 +30,7 @@ export const getCurrentUser = async (
 	if (signInDetails) {
 		authUser.signInDetails = signInDetails;
 	}
+
 	return authUser;
 };
 

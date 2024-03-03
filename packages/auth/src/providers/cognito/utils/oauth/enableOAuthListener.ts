@@ -6,9 +6,7 @@ import {
 	ADD_OAUTH_LISTENER,
 	isBrowser,
 } from '@aws-amplify/core/internals/utils';
-import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
-import { oAuthStore } from './oAuthStore';
-import { addInflightPromise } from './inflightPromise';
+
 import { attemptCompleteOAuthFlow } from './attemptCompleteOAuthFlow';
 
 // attach the side effect for handling the completion of an inflight oauth flow

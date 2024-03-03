@@ -5,8 +5,10 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+
 import { GetCurrentUserOutput } from '../../types';
 import { getCurrentUser as getCurrentUserInternal } from '../internal/getCurrentUser';
+import { InitiateAuthException } from '../../types/errors';
 
 /**
  * Gets the current user from the idToken.

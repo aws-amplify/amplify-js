@@ -7,7 +7,6 @@ import {
 	ModelFieldType,
 	NonModelFieldType,
 	SchemaModel,
-	SchemaModels,
 	AssociationHasOne,
 	AssociationBelongsTo,
 } from '@aws-amplify/core/internals/utils';
@@ -17,7 +16,6 @@ import {
 	ListArgs,
 	QueryArgs,
 	V6Client,
-	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 	__authMode,
 	__authToken,
@@ -316,25 +314,39 @@ type OperationPrefix =
 
 const SELECTION_SET_WILDCARD = '*';
 
-function defaultSelectionSetForNonModel(
-	nonModelDefinition: SchemaNonModel
-): string[] {
-	// fields that are explicitly part of the graphql schema;
+function defaultSelectionSetForNonModelWithIR(
+	nonModelDefinition: SchemaNonModel,
+	modelIntrospection: ModelIntrospectionSchema,
+): Record<string, unknown> {
 	const { fields } = nonModelDefinition;
-	const explicitFields = Object.values<any>(fields)
-		// Default selection set omits non-model fields
-		.map(
-			({ type, name }) =>
-				(typeof type === 'string' ||
-					(typeof type === 'object' && typeof type?.enum === 'string')) &&
-				name,
-		)
-		.filter(Boolean);
+	const mappedFields = Object.values(fields)
+		.map(({ type, name }) => {
+			if (typeof (type as { enum: string }).enum === 'string') {
+				return [name, FIELD_IR];
+			}
 
-	// fields used for owner auth rules that may or may not also
-	// be explicit on the model.
+			if (typeof (type as NonModelFieldType).nonModel === 'string') {
+				return [
+					name,
+					defaultSelectionSetForNonModelWithIR(
+						modelIntrospection.nonModels[(type as NonModelFieldType).nonModel],
+						modelIntrospection,
+					),
+				];
+			}
 
-	return Array.from(new Set(explicitFields));
+			if (typeof type === 'string') {
+				return [name, FIELD_IR];
+			}
+
+			return undefined;
+		})
+		.filter(
+			(
+				pair: (string | Record<string, unknown>)[] | undefined,
+			): pair is (string | Record<string, unknown>)[] => pair !== undefined,
+		);
+	return Object.fromEntries(mappedFields);
 }
 
 function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
@@ -385,7 +397,7 @@ const FIELD_IR = '';
  * ```
  */
 export function customSelectionSetToIR(
-	modelInstrospection: ModelIntrospectionSchema,
+	modelIntrospection: ModelIntrospectionSchema,
 	modelName: string,
 	selectionSet: string[],
 ): Record<string, string | object> {
@@ -393,38 +405,42 @@ export function customSelectionSetToIR(
 		const [fieldName, ...rest] = path.split('.');
 
 		const nested = rest[0];
-		const modelDefinition = modelInstrospection.models[modelOrNonModelName];
+		const modelOrNonModelDefinition =
+			modelIntrospection.models[modelOrNonModelName] ??
+			modelIntrospection.nonModels[modelOrNonModelName];
 
-		const modelFields = modelDefinition?.fields;
-		const relatedModel = (modelFields?.[fieldName]?.type as ModelFieldType)
-			?.model;
+		const modelOrNonModelFields = modelOrNonModelDefinition?.fields;
+		const relatedModel = (
+			modelOrNonModelFields?.[fieldName]?.type as ModelFieldType
+		)?.model;
 
-		const relatedModelDefinition = modelInstrospection.models[relatedModel];
+		const relatedModelDefinition = modelIntrospection.models[relatedModel];
 		const relatedNonModel = (
-			modelFields?.[fieldName]?.type as NonModelFieldType
+			modelOrNonModelFields?.[fieldName]?.type as NonModelFieldType
 		)?.nonModel;
 		const relatedNonModelDefinition =
-			modelInstrospection.nonModels[relatedNonModel];
+			modelIntrospection.nonModels[relatedNonModel];
 
-		const isModelOrNonModelOrField = relatedModelDefinition
+		const isModelOrNonModelOrFieldType = relatedModelDefinition
 			? 'model'
 			: relatedNonModelDefinition
-			  ? 'nonModel'
-			  : 'field';
+				? 'nonModel'
+				: 'field';
 
-		if (isModelOrNonModelOrField === 'nonModel') {
+		if (isModelOrNonModelOrFieldType === 'nonModel') {
 			let result: Record<string, any> = {};
 
 			if (!nested) {
 				throw Error(
-					`${fieldName} must declare a wildcard (*) or a field of custom type ${relatedNonModel}`
+					`${fieldName} must declare a wildcard (*) or a field of custom type ${relatedNonModel}`,
 				);
 			}
 
 			if (nested === SELECTION_SET_WILDCARD) {
 				result = {
-					[fieldName]: nonModelsDefaultSelectionSetIR(
-						relatedNonModelDefinition
+					[fieldName]: defaultSelectionSetForNonModelWithIR(
+						relatedNonModelDefinition,
+						modelIntrospection,
 					),
 				};
 			} else {
@@ -434,17 +450,17 @@ export function customSelectionSetToIR(
 			}
 
 			return result;
-		} else if (isModelOrNonModelOrField === 'model') {
+		} else if (isModelOrNonModelOrFieldType === 'model') {
 			let result: Record<string, any> = {};
 
 			if (!nested) {
 				throw Error(
-					`${fieldName} must declare a wildcard (*) or a field of model ${relatedModel}`
+					`${fieldName} must declare a wildcard (*) or a field of model ${relatedModel}`,
 				);
 			}
 
 			if (nested === SELECTION_SET_WILDCARD) {
-				const relatedModelDefinition = modelInstrospection.models[relatedModel];
+				const relatedModelDefinition = modelIntrospection.models[relatedModel];
 
 				result = {
 					[fieldName]: modelsDefaultSelectionSetIR(relatedModelDefinition),
@@ -455,7 +471,7 @@ export function customSelectionSetToIR(
 				};
 			}
 
-			if (modelFields[fieldName]?.isArray) {
+			if (modelOrNonModelFields[fieldName]?.isArray) {
 				result = {
 					[fieldName]: {
 						items: result[fieldName],
@@ -465,25 +481,26 @@ export function customSelectionSetToIR(
 
 			return result;
 		} else {
-			const modelField = modelFields?.[fieldName];
+			const modelField = modelOrNonModelFields?.[fieldName];
 
 			const nonModelDefinition =
-				modelInstrospection.nonModels[modelOrNonModelName];
+				modelIntrospection.nonModels[modelOrNonModelName];
 			const nonModelField = nonModelDefinition?.fields?.[fieldName];
 
 			if (!nonModelDefinition) {
-				const isOwnerField =
-					resolveOwnerFields(modelDefinition).includes(fieldName);
+				const isOwnerField = resolveOwnerFields(
+					modelOrNonModelDefinition,
+				).includes(fieldName);
 
 				if (!modelField && !isOwnerField) {
 					throw Error(
-						`${fieldName} is not a field of model ${modelOrNonModelName}`
+						`${fieldName} is not a field of model ${modelOrNonModelName}`,
 					);
 				}
 			} else {
 				if (!nonModelField) {
 					throw Error(
-						`${fieldName} is not a field of custom type ${modelOrNonModelName}`
+						`${fieldName} is not a field of custom type ${modelOrNonModelName}`,
 					);
 				}
 			}
@@ -513,24 +530,6 @@ const modelsDefaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 			return acc;
 		},
 		{},
-	);
-
-	return reduced;
-};
-
-const nonModelsDefaultSelectionSetIR = (
-	relatedNonModelDefinition: SchemaNonModel
-) => {
-	const defaultSelectionSet = defaultSelectionSetForNonModel(
-		relatedNonModelDefinition
-	);
-
-	const reduced = defaultSelectionSet.reduce(
-		(acc: Record<string, any>, curVal) => {
-			acc[curVal] = FIELD_IR;
-			return acc;
-		},
-		{}
 	);
 
 	return reduced;
@@ -608,16 +607,16 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 }
 
 export function generateSelectionSet(
-	modelInstrospection: ModelIntrospectionSchema,
+	modelIntrospection: ModelIntrospectionSchema,
 	modelName: string,
 	selectionSet?: string[],
 ) {
-	const modelDefinition = modelInstrospection.models[modelName];
+	const modelDefinition = modelIntrospection.models[modelName];
 
 	const selSetIr = customSelectionSetToIR(
-		modelInstrospection,
+		modelIntrospection,
 		modelName,
-		selectionSet ?? defaultSelectionSetForModel(modelDefinition)
+		selectionSet ?? defaultSelectionSetForModel(modelDefinition),
 	);
 	const selSetString = selectionSetIRToString(selSetIr);
 
@@ -625,13 +624,13 @@ export function generateSelectionSet(
 }
 
 export function generateGraphQLDocument(
-	modelInstrospection: ModelIntrospectionSchema,
+	modelIntrospection: ModelIntrospectionSchema,
 	modelName: string,
 	modelOperation: ModelOperation,
 	listArgs?: ListArgs | QueryArgs,
 	indexMeta?: IndexMeta,
 ): string {
-	const modelDefinition = modelInstrospection.models[modelName];
+	const modelDefinition = modelIntrospection.models[modelName];
 
 	const {
 		name,
@@ -678,7 +677,7 @@ export function generateGraphQLDocument(
 	let graphQLArguments: Record<string, any> | undefined;
 
 	const selectionSetFields = generateSelectionSet(
-		modelInstrospection,
+		modelIntrospection,
 		modelName,
 		selectionSet as ListArgs['selectionSet'],
 	);
@@ -955,7 +954,7 @@ export function normalizeMutationInput(
  * as a fallback.
  *
  * @param client Configured client from `generateClient`
- * @param options Args/Options obect from call site.
+ * @param options Args/Options object from call site.
  * @returns
  */
 export function authModeParams(

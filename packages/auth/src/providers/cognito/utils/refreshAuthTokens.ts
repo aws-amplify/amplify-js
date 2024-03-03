@@ -1,17 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
 import { AuthConfig } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
-	decodeJWT,
 	deDupeAsyncFunction,
+	decodeJWT,
 } from '@aws-amplify/core/internals/utils';
+
+import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
 import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
+
 import { getUserContextData } from './userContextData';
 
 const refreshAuthTokensFunction: TokenRefresher = async ({
@@ -32,7 +34,7 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 		REFRESH_TOKEN: refreshTokenString,
 	};
 	if (tokens.deviceMetadata?.deviceKey) {
-		AuthParameters['DEVICE_KEY'] = tokens.deviceMetadata.deviceKey;
+		AuthParameters.DEVICE_KEY = tokens.deviceMetadata.deviceKey;
 	}
 
 	const UserContextData = getUserContextData({
@@ -55,7 +57,7 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 	const idToken = AuthenticationResult?.IdToken
 		? decodeJWT(AuthenticationResult.IdToken)
 		: undefined;
-	const iat = accessToken.payload.iat;
+	const { iat } = accessToken.payload;
 	// This should never happen. If it does, it's a bug from the service.
 	if (!iat) {
 		throw new AuthError({

@@ -97,6 +97,8 @@ const initialAutoSignIn: AutoSignInCallback =
  *
  * ```
  */
+// TODO(Eslint): can this be refactored not using `let` on exported member?
+// eslint-disable-next-line import/no-mutable-exports
 export let autoSignIn: AutoSignInCallback = initialAutoSignIn;
 
 /**

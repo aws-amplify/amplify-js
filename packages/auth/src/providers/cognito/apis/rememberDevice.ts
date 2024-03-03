@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { updateDeviceStatus } from '../utils/clients/CognitoIdentityProvider';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
+import { updateDeviceStatus } from '../utils/clients/CognitoIdentityProvider';
+import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { tokenOrchestrator } from '../tokenProvider';
 import { UpdateDeviceStatusException } from '../../cognito/types/errors';
