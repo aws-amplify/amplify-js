@@ -11,5 +11,4 @@ import { CognitoUserPoolsTokenProvider } from './CognitoUserPoolsTokenProvider';
 export const cognitoUserPoolsTokenProvider =
 	new CognitoUserPoolsTokenProvider();
 
-export const tokenOrchestrator =
-	cognitoUserPoolsTokenProvider.tokenOrchestrator;
+export const { tokenOrchestrator } = cognitoUserPoolsTokenProvider;

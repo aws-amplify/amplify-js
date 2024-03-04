@@ -3,6 +3,7 @@
 
 function bytesToBase64(bytes: Uint8Array): string {
 	const base64Str = Array.from(bytes, x => String.fromCodePoint(x)).join('');
+
 	return btoa(base64Str);
 }
 

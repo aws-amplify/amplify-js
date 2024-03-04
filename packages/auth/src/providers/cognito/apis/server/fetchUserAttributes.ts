@@ -5,6 +5,7 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+
 import { FetchUserAttributesOutput } from '../../types';
 import { fetchUserAttributes as fetchUserAttributesInternal } from '../internal/fetchUserAttributes';
 

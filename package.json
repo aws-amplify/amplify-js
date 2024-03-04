@@ -5,7 +5,6 @@
 	"description": "",
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
-		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
 		"test": "yarn test:no-datastore && yarn test:datastore && yarn test:license && yarn test:github-actions && yarn test:tsc-compliance",
 		"test:no-datastore": "lerna run test --stream --ignore @aws-amplify/datastore",
@@ -15,7 +14,7 @@
 		"test:license": "license-check-and-add check -f license_config.json",
 		"test:github-actions": "node ./scripts/test-github-actions.js",
 		"test:tsc-compliance": "yarn workspace tsc-compliance-test test:compliance",
-		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/ --readme README.md",
+		"docs": "typedoc",
 		"build": "lerna run build --stream && yarn test:duplicates",
 		"build:watch": "concurrently 'lerna run build:watch --parallel' --raw",
 		"build:client-types": "cd scripts/dts-bundler && yarn && yarn run build",
@@ -119,15 +118,15 @@
 		"ts-loader": "^9.4.3",
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
-		"typedoc": "^0.17.0",
-		"typescript": "^4.3.5",
+		"typedoc": "0.25.8",
+		"typedoc-plugin-extras": "^3.0.0",
+		"typedoc-plugin-missing-exports": "^2.2.0",
+		"typescript": "^4.6.0",
 		"typescript-coverage-report": "^0.6.4",
 		"uuid-validate": "^0.0.3",
 		"webpack": "^5.75.0",
 		"webpack-bundle-analyzer": "^4.7.0",
-		"webpack-cli": "^5.0.0",
-		"wml": "0.0.83",
-		"winston": "3.11.0"
+		"webpack-cli": "^5.0.0"
 	},
 	"resolutions": {
 		"@types/babel__traverse": "7.20.0",

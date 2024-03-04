@@ -43,7 +43,7 @@ module.exports = {
 		// 'packages/api',
 		'packages/api-graphql',
 		// 'packages/api-rest',
-		'packages/auth',
+		// 'packages/auth',
 		// 'packages/aws-amplify',
 		// 'packages/core',
 		'packages/datastore',
@@ -56,7 +56,7 @@ module.exports = {
 		'packages/react-native',
 		'packages/rtn-push-notification',
 		'packages/rtn-web-browser',
-		'packages/storage',
+		// 'packages/storage',
 	],
 	rules: {
 		camelcase: [

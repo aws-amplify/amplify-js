@@ -1,20 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, Hub } from '@aws-amplify/core';
-import {
-	AMPLIFY_SYMBOL,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core/internals/utils';
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
-	handleCustomSRPAuthFlow,
+	getActiveSignInUsername,
+	getNewDeviceMetatada,
 	getSignInResult,
 	getSignInResultFromError,
-	getNewDeviceMetatada,
-	getActiveSignInUsername,
+	handleCustomSRPAuthFlow,
 } from '../utils/signInHelpers';
 import {
 	InitiateAuthException,
@@ -35,7 +33,7 @@ import {
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
-import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -70,8 +68,8 @@ export async function signInWithCustomSRPAuth(
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: handledChallengeName,
+			ChallengeParameters: handledChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await handleCustomSRPAuthFlow(
@@ -87,7 +85,7 @@ export async function signInWithCustomSRPAuth(
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -102,15 +100,9 @@ export async function signInWithCustomSRPAuth(
 				signInDetails,
 			});
 			cleanActiveSignInState();
-			Hub.dispatch(
-				'auth',
-				{
-					event: 'signedIn',
-					data: await getCurrentUser(),
-				},
-				'Auth',
-				AMPLIFY_SYMBOL,
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -118,8 +110,8 @@ export async function signInWithCustomSRPAuth(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

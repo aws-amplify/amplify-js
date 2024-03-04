@@ -77,6 +77,8 @@ export { AuthError } from './errors/AuthError';
 
 export {
 	fetchAuthSession,
+	FetchAuthSessionOptions,
+	AuthSession,
 	decodeJWT,
 	CredentialsAndIdentityIdProvider,
 	GetCredentialsOptions,

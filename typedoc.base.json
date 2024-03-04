@@ -1,0 +1,9 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"includeVersion": true,
+	"excludePrivate": true,
+	"excludeInternal": true,
+	"skipErrorChecking": true,
+	"disableSources": true,
+	"internalModule": "<Reference Types>"
+}

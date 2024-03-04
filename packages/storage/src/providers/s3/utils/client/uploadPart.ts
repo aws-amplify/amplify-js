@@ -16,13 +16,13 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { defaultConfig } from './base';
 import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
 import {
-	buildStorageServiceError,
-	validateS3RequiredParameter,
 	assignStringVariables,
+	buildStorageServiceError,
 	map,
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
+	validateS3RequiredParameter,
 } from './utils';
 
 // Content-length is ignored here because it's forbidden header
@@ -54,6 +54,7 @@ const uploadPartSerializer = async (
 		partNumber: input.PartNumber + '',
 		uploadId: input.UploadId,
 	}).toString();
+
 	return {
 		method: 'PUT',
 		headers,
