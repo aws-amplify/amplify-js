@@ -13,16 +13,10 @@ import {
 } from '../../../../src/providers/cloudwatch/types';
 import { LogParams } from '@aws-amplify/core/internals/utils';
 
-jest.mock('@aws-amplify/core', () => {
-	return {
-		...jest.requireActual('@aws-amplify/core'),
-		fetchAuthSession: jest.fn().mockImplementation(() =>
-			Promise.resolve({
-				userSub: 'userSub1',
-			}),
-		),
-	};
-});
+jest.mock('@aws-amplify/core', () => ({
+	fetchAuthSession: jest.fn(() => Promise.resolve({ userSub: 'userSub1' })),
+}));
+
 const baseLog = {
 	message: 'message',
 	namespace: 'namespace',
@@ -63,7 +57,7 @@ describe('resolve loggingConstraints in cloudwatch config', () => {
 			const authDebugLog: LogParams = { ...authErrorLog, logLevel: 'DEBUG' };
 
 			// cloudWatchConfig has no loggingConstraints, defaults to 'INFO'
-			expect(await isLoggable(authDebugLog, cloudWatchConfig)).toEqual(false);
+			expect(isLoggable(authDebugLog, cloudWatchConfig)).resolves.toBe(false);
 			expect(resolveLoggingConstraintsSpy).toHaveBeenCalledTimes(0);
 		});
 
@@ -73,7 +67,7 @@ describe('resolve loggingConstraints in cloudwatch config', () => {
 				region: 'region',
 				loggingConstraints: { defaultLogLevel: 'ERROR' },
 			};
-			expect(await isLoggable(authErrorLog, cloudWatchConfig)).toEqual(true);
+			expect(isLoggable(authErrorLog, cloudWatchConfig)).resolves.toBe(true);
 			expect(resolveLoggingConstraintsSpy).toHaveBeenCalledTimes(1);
 			expect(resolveLoggingConstraintsSpy).toHaveBeenCalledWith(
 				authErrorLog,
@@ -88,14 +82,14 @@ describe('resolve loggingConstraints in cloudwatch config', () => {
 				defaultLogLevel: 'ERROR',
 			};
 			expect(
-				await resolveLoggingConstraints(authErrorLog, loggingConstraints),
-			).toEqual('ERROR');
+				resolveLoggingConstraints(authErrorLog, loggingConstraints),
+			).resolves.toBe('ERROR');
 			expect(
-				await resolveLoggingConstraints(storageInfoLog, loggingConstraints),
-			).toEqual('ERROR');
+				resolveLoggingConstraints(storageInfoLog, loggingConstraints),
+			).resolves.toBe('ERROR');
 			expect(
-				await resolveLoggingConstraints(noCategoryDebugLog, loggingConstraints),
-			).toEqual('ERROR');
+				resolveLoggingConstraints(noCategoryDebugLog, loggingConstraints),
+			).resolves.toBe('ERROR');
 		});
 
 		it('should resolve "categoryLogLevel" correctly', async () => {
@@ -104,11 +98,11 @@ describe('resolve loggingConstraints in cloudwatch config', () => {
 				categoryLogLevel: { Auth: 'WARN', Storage: 'DEBUG' },
 			};
 			expect(
-				await resolveLoggingConstraints(authErrorLog, loggingConstraints),
-			).toEqual('WARN');
+				resolveLoggingConstraints(authErrorLog, loggingConstraints),
+			).resolves.toBe('WARN');
 			expect(
-				await resolveLoggingConstraints(storageInfoLog, loggingConstraints),
-			).toEqual('DEBUG');
+				resolveLoggingConstraints(storageInfoLog, loggingConstraints),
+			).resolves.toBe('DEBUG');
 		});
 
 		it('should resolve "categoryLogLevel" and "defaultLogLevel" correctly when userLogLevel is present but user is not found', async () => {
@@ -123,11 +117,11 @@ describe('resolve loggingConstraints in cloudwatch config', () => {
 				},
 			};
 			expect(
-				await resolveLoggingConstraints(authErrorLog, loggingConstraints),
-			).toEqual('WARN');
+				resolveLoggingConstraints(authErrorLog, loggingConstraints),
+			).resolves.toBe('WARN');
 			expect(
-				await resolveLoggingConstraints(storageInfoLog, loggingConstraints),
-			).toEqual('ERROR');
+				resolveLoggingConstraints(storageInfoLog, loggingConstraints),
+			).resolves.toBe('ERROR');
 		});
 
 		it('should resolve "defaultLogLevel" correctly when userLogLevel is present and user is found', async () => {
@@ -140,14 +134,14 @@ describe('resolve loggingConstraints in cloudwatch config', () => {
 				},
 			};
 			expect(
-				await resolveLoggingConstraints(authErrorLog, loggingConstraints),
-			).toEqual('INFO');
+				resolveLoggingConstraints(authErrorLog, loggingConstraints),
+			).resolves.toBe('INFO');
 			expect(
-				await resolveLoggingConstraints(storageInfoLog, loggingConstraints),
-			).toEqual('INFO');
+				resolveLoggingConstraints(storageInfoLog, loggingConstraints),
+			).resolves.toBe('INFO');
 			expect(
-				await resolveLoggingConstraints(noCategoryDebugLog, loggingConstraints),
-			).toEqual('INFO');
+				resolveLoggingConstraints(noCategoryDebugLog, loggingConstraints),
+			).resolves.toBe('INFO');
 		});
 
 		it('should resolve "categoryLogLevel" correctly when userLogLevel is present and user is found', async () => {
@@ -166,11 +160,11 @@ describe('resolve loggingConstraints in cloudwatch config', () => {
 				},
 			};
 			expect(
-				await resolveLoggingConstraints(authErrorLog, loggingConstraints),
-			).toEqual('DEBUG');
+				resolveLoggingConstraints(authErrorLog, loggingConstraints),
+			).resolves.toBe('DEBUG');
 			expect(
-				await resolveLoggingConstraints(storageInfoLog, loggingConstraints),
-			).toEqual('NONE');
+				resolveLoggingConstraints(storageInfoLog, loggingConstraints),
+			).resolves.toBe('NONE');
 		});
 	});
 });

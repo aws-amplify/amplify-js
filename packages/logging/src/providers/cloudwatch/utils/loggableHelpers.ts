@@ -52,9 +52,9 @@ const getLoggingConstraint = async (
 	const { defaultLogLevel, categoryLogLevel, userLogLevel } =
 		loggingConstraints;
 
-	const { userSub = '' } = await fetchAuthSession();
+	const { userSub } = await fetchAuthSession();
 
-	if (userLogLevel?.[userSub]) {
+	if (userSub && userLogLevel?.[userSub]) {
 		return {
 			defaultLogLevel: userLogLevel[userSub].defaultLogLevel,
 			categoryLogLevel: userLogLevel[userSub]?.categoryLogLevel,
