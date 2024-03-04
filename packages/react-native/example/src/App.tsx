@@ -30,10 +30,10 @@ export default function App() {
 
 	React.useEffect(() => {
 		async function calc() {
-			const computeModPowResult = await computeModPow(computeModPowPayload);
-			setComputeModPowResult(computeModPowResult);
-			const computeSResult = await computeS(computeSPayload);
-			setComputeSResult(computeSResult);
+			const modPowResult = await computeModPow(computeModPowPayload);
+			setComputeModPowResult(modPowResult);
+			const sResult = await computeS(computeSPayload);
+			setComputeSResult(sResult);
 		}
 		calc();
 	}, []);
