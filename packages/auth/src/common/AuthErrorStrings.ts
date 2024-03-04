@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyErrorMap } from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../errors/types/validation';
 
 export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {

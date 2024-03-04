@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthUserAttributes } from '../../../types';
+
 import { AttributeType } from './clients/CognitoIdentityProvider/types';
 
 /**
@@ -31,5 +32,6 @@ export function toAuthUserAttribute<T extends string = string>(
 	attributes?.forEach(attribute => {
 		if (attribute.Name) userAttributes[attribute.Name] = attribute.Value;
 	});
+
 	return userAttributes;
 }

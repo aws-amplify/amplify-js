@@ -2,23 +2,24 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthVerifiableAttributeKey } from '@aws-amplify/core/internals/utils';
+
 import {
-	AuthMFAType,
-	AuthUserAttributes,
 	AuthCodeDeliveryDetails,
-	AuthTOTPSetupDetails,
+	AuthMFAType,
+	AuthResetPasswordOutput,
 	AuthSignInOutput,
 	AuthSignUpOutput,
-	AuthResetPasswordOutput,
-	AuthUpdateUserAttributesOutput,
+	AuthTOTPSetupDetails,
 	AuthUpdateUserAttributeOutput,
+	AuthUpdateUserAttributesOutput,
+	AuthUserAttributes,
 } from '../../../types';
 import { AWSAuthDevice, AuthUser, UserAttributeKey } from '../types';
 
-export type FetchMFAPreferenceOutput = {
+export interface FetchMFAPreferenceOutput {
 	enabled?: AuthMFAType[];
 	preferred?: AuthMFAType;
-};
+}
 
 /**
  * Output type for Cognito fetchUserAttributes API.

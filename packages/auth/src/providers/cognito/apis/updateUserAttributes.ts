@@ -3,13 +3,14 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import {
-	AuthUserAttributes,
-	AuthUpdateUserAttributesOutput,
 	AuthDeliveryMedium,
+	AuthUpdateUserAttributesOutput,
+	AuthUserAttributes,
 } from '../../../types';
 import {
 	UpdateUserAttributesInput,
@@ -93,5 +94,6 @@ function getUnConfirmedAttributes(
 				},
 			};
 	});
+
 	return unConfirmedAttributes;
 }

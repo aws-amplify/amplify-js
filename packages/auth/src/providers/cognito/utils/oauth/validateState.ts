@@ -3,6 +3,7 @@
 
 import { AuthError } from '../../../../errors/AuthError';
 import { AuthErrorTypes } from '../../../../types/Auth';
+
 import { oAuthStore } from './oAuthStore';
 
 export const flowCancelledMessage = '`signInWithRedirect` has been canceled.';
@@ -24,5 +25,6 @@ export const validateState = async (state?: string | null): Promise<string> => {
 				state === null ? undefined : validationRecoverySuggestion,
 		});
 	}
+
 	return validatedState;
 };

@@ -56,6 +56,7 @@ export const getPaddedHex = (bigInt: AuthBigInteger): string => {
 			.split('')
 			.map((x: string) => {
 				const invertedNibble = ~parseInt(x, 16) & 0xf;
+
 				return '0123456789ABCDEF'.charAt(invertedNibble);
 			})
 			.join('');

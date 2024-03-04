@@ -1261,6 +1261,106 @@ const amplifyConfig = {
 					sortKeyFieldNames: [],
 				},
 			},
+			Product: {
+				name: 'Product',
+				fields: {
+					sku: {
+						name: 'sku',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					factoryId: {
+						name: 'factoryId',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					warehouseId: {
+						name: 'warehouseId',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					trackingMeta: {
+						name: 'trackingMeta',
+						isArray: false,
+						type: {
+							nonModel: 'ProductTrackingMeta',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+					owner: {
+						name: 'owner',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'Products',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['sku', 'factoryId', 'warehouseId'],
+						},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									allow: 'public',
+									operations: ['read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: true,
+					primaryKeyFieldName: 'sku',
+					sortKeyFieldNames: ['factoryId', 'warehouseId'],
+				},
+			},
 		},
 		enums: {
 			Status: {
@@ -1309,6 +1409,69 @@ const amplifyConfig = {
 						isArray: false,
 						type: 'Int',
 						isRequired: true,
+						attributes: [],
+					},
+				},
+			},
+			ProductMeta: {
+				name: 'ProductMeta',
+				fields: {
+					releaseDate: {
+						name: 'releaseDate',
+						isArray: false,
+						type: 'AWSDate',
+						isRequired: false,
+						attributes: [],
+					},
+					status: {
+						name: 'status',
+						isArray: false,
+						type: {
+							enum: 'ProductMetaStatus',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+					deepMeta: {
+						name: 'deepMeta',
+						isArray: false,
+						type: {
+							nonModel: 'ProductMetaDeepMeta',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+				},
+			},
+			ProductTrackingMeta: {
+				name: 'ProductTrackingMeta',
+				fields: {
+					productMeta: {
+						name: 'productMeta',
+						isArray: false,
+						type: {
+							nonModel: 'ProductMeta',
+						},
+						isRequired: false,
+						attributes: [],
+					},
+					note: {
+						name: 'note',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+			},
+			ProductMetaDeepMeta: {
+				name: 'ProductMetaDeepMeta',
+				fields: {
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
 						attributes: [],
 					},
 				},

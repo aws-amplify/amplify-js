@@ -62,6 +62,7 @@ export default class AuthenticationHelper {
 				message: 'random password is empty',
 			});
 		}
+
 		return this.randomPassword;
 	}
 
@@ -75,6 +76,7 @@ export default class AuthenticationHelper {
 				message: 'saltToHashDevices is empty',
 			});
 		}
+
 		return this.saltToHashDevices;
 	}
 
@@ -88,6 +90,7 @@ export default class AuthenticationHelper {
 				message: 'verifyDevices is empty',
 			});
 		}
+
 		return this.verifierDevices;
 	}
 
@@ -122,6 +125,7 @@ export default class AuthenticationHelper {
 				(err: unknown, result: AuthBigInteger) => {
 					if (err) {
 						reject(err);
+
 						return;
 					}
 
@@ -188,6 +192,7 @@ export default class AuthenticationHelper {
 			getBytesFromHex(getPaddedHex(U)),
 			info,
 		);
+
 		return hkdfKey;
 	}
 }

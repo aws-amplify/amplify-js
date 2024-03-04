@@ -59,7 +59,7 @@ import {
  * cancel(message);
  * try {
  *   await response;
- * } cache (e) {
+ * } catch (e) {
  *   if (isCancelError(e)) {
  *    // handle request cancellation
  *   }
@@ -100,7 +100,7 @@ export const get = (input: GetInput): GetOperation => commonGet(Amplify, input);
  * cancel(message);
  * try {
  *   await response;
- * } cache (e) {
+ * } catch (e) {
  *   if (isCancelError(e)) {
  *    // handle request cancellation
  *   }
@@ -141,7 +141,7 @@ export const post = (input: PostInput): PostOperation =>
  * cancel(message);
  * try {
  *  await response;
- * } cache (e) {
+ * } catch (e) {
  *   if (isCancelError(e)) {
  *     // handle request cancellation
  *   }
@@ -229,7 +229,7 @@ export const head = (input: HeadInput): HeadOperation =>
  * cancel(message);
  * try {
  *  await response;
- * } cache (e) {
+ * } catch (e) {
  *  if (isCancelError(e)) {
  *   // handle request cancellation
  *  }
