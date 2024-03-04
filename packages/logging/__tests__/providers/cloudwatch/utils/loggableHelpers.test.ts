@@ -150,7 +150,7 @@ describe('resolve loggingConstraints in cloudwatch config', () => {
 			).toEqual('INFO');
 		});
 
-		it('should resolve "categoryLogLevel" correctly when userLogLevel is presnet and user is found', async () => {
+		it('should resolve "categoryLogLevel" correctly when userLogLevel is present and user is found', async () => {
 			const loggingConstraints: LoggingConstraints = {
 				defaultLogLevel: 'ERROR',
 				categoryLogLevel: { Auth: 'WARN' },
