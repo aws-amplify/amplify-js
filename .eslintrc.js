@@ -53,9 +53,9 @@ module.exports = {
 		'packages/notifications',
 		// 'packages/predictions',
 		// 'packages/pubsub',
-		'packages/react-native',
-		'packages/rtn-push-notification',
-		'packages/rtn-web-browser',
+		// 'packages/react-native',
+		// 'packages/rtn-push-notification',
+		// 'packages/rtn-web-browser',
 		// 'packages/storage',
 	],
 	rules: {
