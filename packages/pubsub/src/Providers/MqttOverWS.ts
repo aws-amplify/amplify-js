@@ -2,35 +2,36 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // @ts-ignore
-import * as Paho from '../vendor/paho-mqtt.js';
-import { Observable, SubscriptionLike as Subscription, Observer } from 'rxjs';
+import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
+import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
+import { amplifyUuid } from '@aws-amplify/core/internals/utils';
 
-import { AbstractPubSub } from './PubSub';
 import {
 	ConnectionState,
-	PubSubContentObserver,
 	PubSubContent,
+	PubSubContentObserver,
 	PubSubOptions,
 	PublishInput,
 	SubscribeInput,
 } from '../types/PubSub';
-import { Hub, HubPayload, ConsoleLogger } from '@aws-amplify/core';
-import { amplifyUuid } from '@aws-amplify/core/internals/utils';
+import * as Paho from '../vendor/paho-mqtt.js';
 import {
-	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
+	ConnectionStateMonitor,
 } from '../utils/ConnectionStateMonitor';
 import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../utils/ReconnectionMonitor';
+
+import { AbstractPubSub } from './PubSub';
 import { AMPLIFY_SYMBOL, CONNECTION_STATE_CHANGE } from './constants';
 
 const logger = new ConsoleLogger('MqttOverWS');
 
 export function mqttTopicMatch(filter: string, topic: string) {
 	const filterArray = filter.split('/');
-	const length = filterArray.length;
+	const { length } = filterArray;
 	const topicArray = topic.split('/');
 
 	for (let i = 0; i < length; ++i) {
@@ -39,6 +40,7 @@ export function mqttTopicMatch(filter: string, topic: string) {
 		if (left === '#') return topicArray.length >= length;
 		if (left !== '+' && left !== right) return false;
 	}
+
 	return length === topicArray.length;
 }
 
@@ -49,23 +51,23 @@ export interface MqttOptions extends PubSubOptions {
 }
 
 interface PahoClient {
-	onMessageArrived: (params: {
+	onMessageArrived(params: {
 		destinationName: string;
 		payloadString: string;
-	}) => void;
-	onConnectionLost: (params: { errorCode: number }) => void;
-	connect: (params: {
-		[k: string]: string | number | boolean | (() => void);
-	}) => void;
-	disconnect: () => void;
-	isConnected: () => boolean;
-	subscribe: (topic: string) => void;
-	unsubscribe: (topic: string) => void;
+	}): void;
+	onConnectionLost(params: { errorCode: number }): void;
+	connect(
+		params: Record<string, string | number | boolean | (() => void)>,
+	): void;
+	disconnect(): void;
+	isConnected(): boolean;
+	subscribe(topic: string): void;
+	unsubscribe(topic: string): void;
 	send(topic: string, message: string): void;
 }
 
 class ClientsQueue {
-	private promises: Map<string, Promise<PahoClient | undefined>> = new Map();
+	private promises = new Map<string, Promise<PahoClient | undefined>>();
 
 	async get(
 		clientId: string,
@@ -78,6 +80,7 @@ class ClientsQueue {
 			const newPromise = clientFactory(clientId);
 			this.promises.set(clientId, newPromise);
 			newPromise.catch(() => this.promises.delete(clientId));
+
 			return newPromise;
 		}
 
@@ -146,9 +149,8 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 	}
 
 	protected get isSSLEnabled() {
-		return !this.options[
-			'aws_appsync_dangerously_connect_to_http_endpoint_for_testing'
-		];
+		return !this.options
+			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
 	}
 
 	public onDisconnect({
@@ -203,7 +205,9 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 			client.connect({
 				useSSL: this.isSSLEnabled,
 				mqttVersion: 3,
-				onSuccess: () => resolve(true),
+				onSuccess: () => {
+					resolve(true);
+				},
 				onFailure: () => {
 					if (clientId) this._clientsQueue.remove(clientId);
 					this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
@@ -236,6 +240,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 					},
 				);
 			}
+
 			return client;
 		});
 	}
@@ -258,7 +263,9 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 
 		if (client) {
 			logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
-			targetTopics.forEach(topic => client.send(topic, msg));
+			targetTopics.forEach(topic => {
+				client.send(topic, msg);
+			});
 		} else {
 			logger.debug(
 				'Publishing to topic(s) failed',
@@ -268,11 +275,9 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		}
 	}
 
-	protected _topicObservers: Map<string, Set<PubSubContentObserver>> =
-		new Map();
+	protected _topicObservers = new Map<string, Set<PubSubContentObserver>>();
 
-	protected _clientIdObservers: Map<string, Set<PubSubContentObserver>> =
-		new Map();
+	protected _clientIdObservers = new Map<string, Set<PubSubContentObserver>>();
 
 	private _onMessage(topic: string, msg: string) {
 		try {
@@ -290,7 +295,9 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 			}
 
 			matchedTopicObservers.forEach(observersForTopic => {
-				observersForTopic.forEach(observer => observer.next(parsedMessage));
+				observersForTopic.forEach(observer => {
+					observer.next(parsedMessage);
+				});
 			});
 		} catch (error) {
 			logger.warn('Error handling message', error, msg);
