@@ -4680,6 +4680,54 @@ exports[`generateClient custom operations can mutate with returnType of model (P
 ]
 `;
 
+exports[`generateClient custom operations can query with returnType of a model that has nested custom types 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echoModelHasNestedTypes(argumentContent: $argumentContent) {
+    sku
+    factoryId
+    warehouseId
+    description
+    trackingMeta {
+      productMeta {
+        releaseDate
+        status
+        deepMeta {
+          content
+        }
+      }
+      note
+    }
+    owner
+    createdAt
+    updatedAt
+  }
+}
+",
+          "variables": {
+            "input": "test input",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
 exports[`generateClient custom operations can query with returnType of customType 1`] = `
 [
   [
@@ -4696,6 +4744,45 @@ exports[`generateClient custom operations can query with returnType of customTyp
 ",
           "variables": {
             "argumentContent": "echo argumentContent value",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom operations can query with returnType of nested custom types 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($argumentContent: String!) {
+  echoNestedCustomTypes(argumentContent: $argumentContent) {
+    productMeta {
+      releaseDate
+      status
+      deepMeta {
+        content
+      }
+    }
+    note
+  }
+}
+",
+          "variables": {
+            "input": "test input",
           },
         },
         "headers": {
