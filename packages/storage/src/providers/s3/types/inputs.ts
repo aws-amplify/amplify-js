@@ -16,8 +16,8 @@ import {
 import {
 	CopyDestinationOptions,
 	CopySourceOptions,
-	DownloadDataOptions,
 	DownloadDataOptionsKey,
+	DownloadDataOptions as DownloadDataOptionsPath,
 	GetPropertiesOptions,
 	GetUrlOptions,
 	ListAllOptions,
@@ -70,7 +70,7 @@ export type DownloadDataInput = StrictUnion<
 export type DownloadDataInputKey =
 	StorageDownloadDataInputKey<DownloadDataOptionsKey>;
 export type DownloadDataInputPath =
-	StorageDownloadDataInputPath<DownloadDataOptions>;
+	StorageDownloadDataInputPath<DownloadDataOptionsPath>;
 
 /**
  * Input type for S3 uploadData API.

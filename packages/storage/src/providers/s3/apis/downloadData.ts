@@ -15,7 +15,7 @@ import {
 	StorageItemKey,
 	StorageItemPath,
 } from '../../../types';
-import { STORAGE_INPUT_TYPES } from '../utils/constants';
+import { STORAGE_INPUT_KEY } from '../utils/constants';
 import { DownloadDataInputKey, DownloadDataInputPath } from '../types/inputs';
 import {
 	DownloadDataOutputKey,
@@ -64,7 +64,7 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 	const abortController = new AbortController();
 
 	const downloadTask = createDownloadTask({
-		job: downloadDataJob(input as DownloadDataInputKey, abortController.signal),
+		job: downloadDataJob(input, abortController.signal),
 		onCancel: (message?: string) => {
 			abortController.abort(message);
 		},
@@ -74,10 +74,7 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 };
 
 const downloadDataJob =
-	<DownloadDataInput extends DownloadDataInputKey | DownloadDataInputPath>(
-		downloadDataInput: DownloadDataInput,
-		abortSignal: AbortSignal,
-	) =>
+	(downloadDataInput: DownloadDataInput, abortSignal: AbortSignal) =>
 	async (): Promise<
 		StorageDownloadDataOutput<StorageItemKey | StorageItemPath>
 	> => {
@@ -89,7 +86,7 @@ const downloadDataJob =
 			identityId,
 		);
 		const finalKey =
-			inputType === STORAGE_INPUT_TYPES.KEY ? keyPrefix + objectKey : objectKey;
+			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
 		logger.debug(`download ${objectKey} from ${finalKey}.`);
 
@@ -127,7 +124,7 @@ const downloadDataJob =
 			versionId,
 		};
 
-		return inputType === STORAGE_INPUT_TYPES.KEY
+		return inputType === STORAGE_INPUT_KEY
 			? { key: objectKey, ...result }
 			: { path: finalKey, ...result };
 	};

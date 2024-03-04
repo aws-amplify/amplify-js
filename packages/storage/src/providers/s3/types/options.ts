@@ -87,12 +87,11 @@ export type GetUrlOptions = ReadOptions &
 /**
  * Input options type for S3 downloadData API.
  */
-export type DownloadDataOptions = 
-	CommonOptions &
+export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
 	BytesRangeOptions;
 
-export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions
+export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions;
 
 export type UploadDataOptions = WriteOptions &
 	CommonOptions &
