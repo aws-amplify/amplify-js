@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// @ts-ignore
 import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
 import { ConsoleLogger, Hub, HubPayload } from '@aws-amplify/core';
 import { amplifyUuid } from '@aws-amplify/core/internals/utils';
@@ -14,6 +13,8 @@ import {
 	PublishInput,
 	SubscribeInput,
 } from '../types/PubSub';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore this module is expected to not have declaration file
 import * as Paho from '../vendor/paho-mqtt.js';
 import {
 	CONNECTION_CHANGE,
@@ -179,7 +180,8 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		logger.debug('Creating new MQTT client', clientId);
 
 		this.connectionStateMonitor.record(CONNECTION_CHANGE.OPENING_CONNECTION);
-		// @ts-ignore
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore this module is expected to not have declaration file
 		const client = new Paho.Client(url, clientId) as PahoClient;
 
 		client.onMessageArrived = ({
@@ -201,7 +203,7 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.CLOSED);
 		};
 
-		const connected = await new Promise((resolve, reject) => {
+		const connected = await new Promise((resolve, _reject) => {
 			client.connect({
 				useSSL: this.isSSLEnabled,
 				mqttVersion: 3,
@@ -229,8 +231,11 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 		clientId: string,
 		options: MqttOptions = {},
 	): Promise<PahoClient | undefined> {
-		return await this.clientsQueue.get(clientId, async clientId => {
-			const client = await this.newClient({ ...options, clientId });
+		return this.clientsQueue.get(clientId, async inputClientId => {
+			const client = await this.newClient({
+				...options,
+				clientId: inputClientId,
+			});
 
 			if (client) {
 				// Once connected, subscribe to all topics registered observers
@@ -290,7 +295,6 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 			const parsedMessage: PubSubContent = JSON.parse(msg);
 
 			if (typeof parsedMessage === 'object') {
-				// @ts-ignore
 				parsedMessage[topicSymbol] = topic;
 			}
 
@@ -357,9 +361,11 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 				await getClient();
 
 				// Add an observable to the reconnection list to manage reconnection for this subscription
-				reconnectSubscription = new Observable(observer => {
-					this.reconnectionMonitor.addObserver(observer);
-				}).subscribe(() => {
+				reconnectSubscription = new Observable(
+					reconnectSubscriptionObserver => {
+						this.reconnectionMonitor.addObserver(reconnectSubscriptionObserver);
+					},
+				).subscribe(() => {
 					getClient();
 				});
 			})();
