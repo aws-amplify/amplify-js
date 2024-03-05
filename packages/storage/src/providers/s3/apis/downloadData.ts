@@ -22,40 +22,71 @@ import {
 	DownloadDataOutputPath,
 } from '../types/outputs';
 
-/**
- * Download S3 object data to memory
- *
- * @param input - The DownloadDataInput object.
- * @returns A cancelable task exposing result promise from `result` property.
- * @throws service: {@link S3Exception} - thrown when checking for existence of the object
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors
- *
- * @example
- * ```ts
- * // Download a file from s3 bucket
- * const { body, eTag } = await downloadData({ path, data: file, options: {
- *   onProgress, // Optional progress callback.
- * } }).result;
- * ```
- * @example
- * ```ts
- * // Cancel a task
- * const downloadTask = downloadData({ path, data: file });
- * //...
- * downloadTask.cancel();
- * try {
- * 	await downloadTask.result;
- * } catch (error) {
- * 	if(isCancelError(error)) {
- *    // Handle error thrown by task cancelation.
- * 	}
- * }
- *```
- */
-
 interface DownloadData {
+	/**
+	 * Download S3 object data to memory
+	 *
+	 * @param input - The DownloadDataInputPath object.
+	 * @returns A cancelable task exposing result promise from `result` property.
+	 * @throws service: {@link S3Exception} - thrown when checking for existence of the object
+	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors
+	 *
+	 * @example
+	 * ```ts
+	 * // Download a file from s3 bucket
+	 * const { body, eTag } = await downloadData({ path, options: {
+	 *   onProgress, // Optional progress callback.
+	 * } }).result;
+	 * ```
+	 * @example
+	 * ```ts
+	 * // Cancel a task
+	 * const downloadTask = downloadData({ path });
+	 * //...
+	 * downloadTask.cancel();
+	 * try {
+	 * 	await downloadTask.result;
+	 * } catch (error) {
+	 * 	if(isCancelError(error)) {
+	 *    // Handle error thrown by task cancelation.
+	 * 	}
+	 * }
+	 *```
+	 */
 	(input: DownloadDataInputPath): DownloadDataOutputPath;
-	/** @deprecated Please prefer usage with DownloadDataInputPath */
+	/**
+	 * @deprecated The `key` and `accessLevel` in input is deprecated and will be removed in next major version.
+	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
+	 *
+	 * Download S3 object data to memory
+	 *
+	 * @param input - The DownloadDataInputKey object.
+	 * @returns A cancelable task exposing result promise from `result` property.
+	 * @throws service: {@link S3Exception} - thrown when checking for existence of the object
+	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors
+	 *
+	 * @example
+	 * ```ts
+	 * // Download a file from s3 bucket
+	 * const { body, eTag } = await downloadData({ key, options: {
+	 *   onProgress, // Optional progress callback.
+	 * } }).result;
+	 * ```
+	 * @example
+	 * ```ts
+	 * // Cancel a task
+	 * const downloadTask = downloadData({ key });
+	 * //...
+	 * downloadTask.cancel();
+	 * try {
+	 * 	await downloadTask.result;
+	 * } catch (error) {
+	 * 	if(isCancelError(error)) {
+	 *    // Handle error thrown by task cancelation.
+	 * 	}
+	 * }
+	 *```
+	 */
 	(input: DownloadDataInputKey): DownloadDataOutputKey;
 }
 
@@ -75,7 +106,10 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 };
 
 const downloadDataJob =
-	(downloadDataInput: DownloadDataInput, abortSignal: AbortSignal) =>
+	<DownloadDataInput extends DownloadDataInputPath | DownloadDataInputKey>(
+		downloadDataInput: DownloadDataInput,
+		abortSignal: AbortSignal,
+	) =>
 	async (): Promise<
 		StorageDownloadDataOutput<StorageItemKey | StorageItemPath>
 	> => {

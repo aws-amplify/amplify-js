@@ -18,11 +18,13 @@ interface CommonOptions {
 	useAccelerateEndpoint?: boolean;
 }
 
+/** @deprecated This will be removed in next major version. */
 type ReadOptions =
 	| { accessLevel?: 'guest' | 'private' }
 	| { accessLevel: 'protected'; targetIdentityId?: string };
 
 interface WriteOptions {
+	/** @deprecated This will be removed in next major version. */
 	accessLevel?: StorageAccessLevel;
 }
 
@@ -91,7 +93,7 @@ export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
 	BytesRangeOptions;
 
-/** @deprecated Prefer usage DownloadDataOptions */
+/** @deprecated Use {@link DownloadDataOptions} instead. */
 export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions;
 
 export type UploadDataOptions = WriteOptions &

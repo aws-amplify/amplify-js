@@ -15,7 +15,7 @@ import {
  * type for S3 item.
  */
 
-/** @deprecated Prefer usage ItemPath */
+/** @deprecated Use{@link ItemPath} instead. */
 export interface Item extends StorageItemKey {
 	/**
 	 * VersionId used to reference a specific version of the object.
@@ -47,7 +47,7 @@ export type ListOutputItem = Omit<Item, 'metadata'>;
  * Output type for S3 downloadData API.
  */
 
-/** @deprecated Prefer usage DownloadDataOutputPath */
+/** @deprecated Use {@link DownloadDataOutputPath} instead. */
 export type DownloadDataOutputKey = DownloadTask<
 	StorageDownloadDataOutput<Item>
 >;
