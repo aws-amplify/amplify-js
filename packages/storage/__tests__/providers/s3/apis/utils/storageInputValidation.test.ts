@@ -5,19 +5,19 @@ import { validateStorageOperationInput } from "../../../../../src/providers/s3/u
 import { STORAGE_INPUT_KEY, STORAGE_INPUT_PATH } from "../../../../../src/providers/s3/utils/constants";
 
 describe('validateStorageOperationInput', () => {
-  it('should return inputType as STORAGE_INPUT_PATH and objectKey as path when input is path', () => {
+  it('should return inputType as STORAGE_INPUT_PATH and objectKey as testPath when input is path as string', () => {
     const input = { path: 'testPath' };
     const result = validateStorageOperationInput(input);
     expect(result).toEqual({ inputType: STORAGE_INPUT_PATH, objectKey: 'testPath' });
   });
 
-  it('should return inputType as STORAGE_INPUT_PATH and objectKey as result of path function when input is path function', () => {
+  it('should return inputType as STORAGE_INPUT_PATH and objectKey as result of path function when input is path as function', () => {
     const input = { path: ({identityId}: {identityId?: string}) => `testPath/${identityId}` };
     const result = validateStorageOperationInput(input, '123');
     expect(result).toEqual({ inputType: STORAGE_INPUT_PATH, objectKey: 'testPath/123' });
   });
 
-  it('should return inputType as STORAGE_INPUT_KEY and objectKey as key when input is key', () => {
+  it('should return inputType as STORAGE_INPUT_KEY and objectKey as testKey when input is key', () => {
     const input = { key: 'testKey' };
     const result = validateStorageOperationInput(input);
     expect(result).toEqual({ inputType: STORAGE_INPUT_KEY, objectKey: 'testKey' });
