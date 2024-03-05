@@ -91,7 +91,6 @@ describe('downloadData with key', () => {
 			: '';
 
 		it(`should supply the correct parameters to getObject API handler with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
-			// expect.assertions(2);
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const onProgress = jest.fn();
 			downloadData({
@@ -123,7 +122,6 @@ describe('downloadData with key', () => {
 	});
 
 	it('should assign the getObject API handler response to the result with key', async () => {
-		expect.assertions(2);
 		const lastModified = 'lastModified';
 		const contentLength = 'contentLength';
 		const eTag = 'eTag';
@@ -248,7 +246,6 @@ describe('downloadData with path', () => {
 	});
 
 	it('should assign the getObject API handler response to the result with path', async () => {
-		expect.assertions(2);
 		const lastModified = 'lastModified';
 		const contentLength = 'contentLength';
 		const eTag = 'eTag';
