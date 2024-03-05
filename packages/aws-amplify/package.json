@@ -53,12 +53,6 @@
 			"require": "./dist/cjs/datastore/index.js",
 			"react-native": "./src/datastore/index.ts"
 		},
-		"./datastore-storage-adapter": {
-			"types": "./dist/esm/datastore-storage-adapter/index.d.ts",
-			"import": "./dist/esm/datastore-storage-adapter/index.mjs",
-			"require": "./dist/cjs/datastore-storage-adapter/index.js",
-			"react-native": "./src/datastore-storage-adapter/index.ts"
-		},
 		"./auth/cognito": {
 			"types": "./dist/esm/auth/cognito/index.d.ts",
 			"import": "./dist/esm/auth/cognito/index.mjs",
