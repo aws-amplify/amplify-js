@@ -106,10 +106,7 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 };
 
 const downloadDataJob =
-	<DownloadDataInput extends DownloadDataInputPath | DownloadDataInputKey>(
-		downloadDataInput: DownloadDataInput,
-		abortSignal: AbortSignal,
-	) =>
+	(downloadDataInput: DownloadDataInput, abortSignal: AbortSignal) =>
 	async (): Promise<
 		StorageDownloadDataOutput<StorageItemKey | StorageItemPath>
 	> => {
