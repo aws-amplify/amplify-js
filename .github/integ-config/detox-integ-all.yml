@@ -13,6 +13,9 @@
 - test_name: 'integ_rn_ios_api_gen2_rn_72_detox_cli'
   working_directory: amplify-js-samples-staging/samples/react-native/api/gen2/ApiGraphQLGen2
   timeout_minutes: 120
+- test_name: 'integ_rn_ios_api_v6_rn_72_detox_cli'
+  working_directory: amplify-js-samples-staging/samples/react-native/api/v6/ApiGRAPHQL
+  timeout_minutes: 120
 # - test_name: 'integ_rn_android_storage'
 #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
 # - test_name: 'integ_rn_android_storage_multipart_progress'
