@@ -27,6 +27,7 @@ export interface StorageItemBase {
 	metadata?: Record<string, string>;
 }
 
+/** @deprecated Prefer usage StorageItemPath */
 export type StorageItemKey = StorageItemBase & {
 	/**
 	 * Key of the object.

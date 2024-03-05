@@ -33,14 +33,14 @@ import {
  * @example
  * ```ts
  * // Download a file from s3 bucket
- * const { body, eTag } = await downloadData({ key, data: file, options: {
+ * const { body, eTag } = await downloadData({ path, data: file, options: {
  *   onProgress, // Optional progress callback.
  * } }).result;
  * ```
  * @example
  * ```ts
  * // Cancel a task
- * const downloadTask = downloadData({ key, data: file });
+ * const downloadTask = downloadData({ path, data: file });
  * //...
  * downloadTask.cancel();
  * try {
@@ -55,6 +55,7 @@ import {
 
 interface DownloadData {
 	(input: DownloadDataInputPath): DownloadDataOutputPath;
+	/** @deprecated Please prefer usage with DownloadDataInputPath */
 	(input: DownloadDataInputKey): DownloadDataOutputKey;
 }
 

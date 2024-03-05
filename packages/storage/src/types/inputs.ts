@@ -7,6 +7,7 @@ import {
 	StorageOptions,
 } from './options';
 
+/** @deprecated Prefer usage StorageOperationInputPath */
 export interface StorageOperationInputKey {
 	key: string;
 }
@@ -18,6 +19,8 @@ export interface StorageOperationOptions<Options> {
 }
 
 /** Download Data Input types */
+
+/** @deprecated Prefer usage StorageDownloadDataInputPath */
 export type StorageDownloadDataInputKey<Options extends StorageOptions> =
 	StorageOperationInputKey & StorageOperationOptions<Options>;
 

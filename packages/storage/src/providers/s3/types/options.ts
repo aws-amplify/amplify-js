@@ -91,6 +91,7 @@ export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
 	BytesRangeOptions;
 
+/** @deprecated Prefer usage DownloadDataOptions */
 export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions;
 
 export type UploadDataOptions = WriteOptions &
