@@ -23,25 +23,25 @@ jobs:
       integ-config-headless: ${{ steps.load_config.outputs.INTEG_CONFIG_HEADLESS }}
       detox-integ-config: ${{ steps.load_config.outputs.DETOX_INTEG_CONFIG }}
 
-  #   e2e-test-runner:
-  #     name: E2E test runnner
-  #     needs: e2e-prep
-  #     secrets: inherit
-  #     strategy:
-  #       matrix:
-  #         integ-config: ${{ fromJson(needs.e2e-prep.outputs.integ-config) }}
-  #       fail-fast: false
-  #     uses: ./.github/workflows/callable-e2e-test.yml
-  #     with:
-  #       test_name: ${{ matrix.integ-config.test_name }}
-  #       framework: ${{ matrix.integ-config.framework }}
-  #       category: ${{ matrix.integ-config.category }}
-  #       spec: ${{ matrix.integ-config.spec || '' }}
-  #       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
-  #       sample_name: ${{ toJSON(matrix.integ-config.sample_name) || '[""]' }}
-  #       browser: ${{ toJSON(matrix.integ-config.browser) || '[""]' }}
-  #       timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
-  #       retry_count: ${{ matrix.integ-config.retry_count || 3 }}
+  e2e-test-runner:
+    name: E2E test runnner
+    needs: e2e-prep
+    secrets: inherit
+    strategy:
+      matrix:
+        integ-config: ${{ fromJson(needs.e2e-prep.outputs.integ-config) }}
+      fail-fast: false
+    uses: ./.github/workflows/callable-e2e-test.yml
+    with:
+      test_name: ${{ matrix.integ-config.test_name }}
+      framework: ${{ matrix.integ-config.framework }}
+      category: ${{ matrix.integ-config.category }}
+      spec: ${{ matrix.integ-config.spec || '' }}
+      amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
+      sample_name: ${{ toJSON(matrix.integ-config.sample_name) || '[""]' }}
+      browser: ${{ toJSON(matrix.integ-config.browser) || '[""]' }}
+      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
+      retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
   # e2e-test-runner-headless:
   #   name: E2E test runnner_headless
