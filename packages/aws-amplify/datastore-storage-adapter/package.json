@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/datastore-storage-adapter",
+	"main": "../dist/cjs/datastore-storage-adapter/index.js",
+	"react-native": "../src/datastore-storage-adapter/index.ts",
+	"browser": "../dist/esm/datastore-storage-adapter/index.mjs",
+	"module": "../dist/esm/datastore-storage-adapter/index.mjs",
+	"typings": "../dist/esm/datastore-storage-adapter/index.d.ts"
+}
