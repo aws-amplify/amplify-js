@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/datastore-storage-adapter/SQLiteAdapter",
+	"types": "../dist/esm/SQLiteAdapter/SQLiteAdapter.d.ts",
+	"main": "../dist/cjs/SQLiteAdapter/SQLiteAdapter.js",
+	"module": "../dist/esm/SQLiteAdapter/SQLiteAdapter.mjs",
+	"react-native": "../src/SQLiteAdapter/SQLiteAdapter.ts",
+	"sideEffects": false
+}
