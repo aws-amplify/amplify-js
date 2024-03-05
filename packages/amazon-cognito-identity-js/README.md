@@ -12,7 +12,7 @@ We recommend using the Amplify JavaScript library's Auth features in place of th
 
 ## Amazon Cognito Identity SDK and Amplify JavaScript API Mappings
 
-The following table provides the Amplify Auth APIs that can be used in place of Amazon Cognito Identity SDK APIs.
+The following table provides the Amplify Auth APIs that can be used to satisfy Amazon Cognito Identity SDK use cases.
 
 | Amazon Cognito Identity SDK Use Case                                                    | Amplify JS Auth                                                                                                                       |
 | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
