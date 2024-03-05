@@ -8,20 +8,15 @@ import { RemoveInput, RemoveOutput } from '../../types';
 import { resolveS3ConfigAndInput } from '../../utils';
 import { deleteObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
-import { logger } from '../../../../utils';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
 	input: RemoveInput,
 ): Promise<RemoveOutput> => {
 	const { key, options = {} } = input;
-	const { s3Config, bucket } = await resolveS3ConfigAndInput(
-		amplify,
-		options,
-	);
+	const { s3Config, bucket } = await resolveS3ConfigAndInput(amplify, options);
 
-	const finalKey = `${key}`;
-	logger.debug(`remove "${key}" from "${finalKey}".`);
+	// logger.debug(`remove "${key}" from "${key}".`);
 	await deleteObject(
 		{
 			...s3Config,
@@ -29,7 +24,7 @@ export const remove = async (
 		},
 		{
 			Bucket: bucket,
-			Key: finalKey,
+			Key: key,
 		},
 	);
 

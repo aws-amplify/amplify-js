@@ -33,11 +33,8 @@ export const list = async (
 	amplify: AmplifyClassV6,
 	input?: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
-	const { options = {}, prefix: path = '' } = input ?? {};
-	const {
-		s3Config,
-		bucket,
-	} = await resolveS3ConfigAndInput(amplify, options);
+	const { options = {}, prefix = '' } = input ?? {};
+	const { s3Config, bucket } = await resolveS3ConfigAndInput(amplify, options);
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
 	if (options?.listAll && (options?.pageSize || options?.nextToken)) {
 		const anyOptions = options as any;
@@ -49,15 +46,15 @@ export const list = async (
 	}
 	const listParams = {
 		Bucket: bucket,
-		Prefix: `${path}`,
+		Prefix: prefix,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
 	return options.listAll
-		? _listAll({ s3Config, listParams, prefix: path })
-		: _list({ s3Config, listParams, prefix: path });
+		? _listAll({ s3Config, listParams, prefix })
+		: _list({ s3Config, listParams, prefix });
 };
 
 const _listAll = async ({
