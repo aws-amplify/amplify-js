@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - gen2-storage
+      - feat/gen2-downloadData
 
 jobs:
   e2e:
