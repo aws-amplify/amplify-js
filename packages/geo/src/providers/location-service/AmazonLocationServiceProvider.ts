@@ -369,7 +369,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Create geofences inside of a geofence collection
 	 * @param geofences Array of geofence objects to create
 	 * @param options Optional parameters for creating geofences
-	 * @returns {Promise<AmazonLocationServiceSaveGeofencesResults>} - Promise that resolves to an object with:
+	 * @returns a promise that resolves to an object that conforms to {@link SaveGeofencesResults}:
 	 *   successes: list of geofences successfully created
 	 *   errors: list of geofences that failed to create
 	 */
@@ -446,9 +446,9 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 				// Push all successes to results
 				response.Successes?.forEach(success => {
-					const { GeofenceId, CreateTime, UpdateTime } = success;
+					const { GeofenceId: geofenceId, CreateTime, UpdateTime } = success;
 					results.successes.push({
-						geofenceId: GeofenceId!,
+						geofenceId: geofenceId!,
 						createTime: CreateTime,
 						updateTime: UpdateTime,
 					});
@@ -456,14 +456,14 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 				// Push all errors to results
 				response.Errors?.forEach(error => {
-					const { Error, GeofenceId } = error;
+					const { Error, GeofenceId: geofenceId } = error;
 					const { Code, Message } = Error!;
 					results.errors.push({
 						error: {
 							code: Code!,
 							message: Message!,
 						},
-						geofenceId: GeofenceId!,
+						geofenceId: geofenceId!,
 					});
 				});
 			}),
@@ -522,10 +522,16 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 
 		// Convert response to camelCase for return
-		const { GeofenceId, CreateTime, UpdateTime, Status, Geometry } = response;
+		const {
+			GeofenceId: responseGeofenceId,
+			CreateTime,
+			UpdateTime,
+			Status,
+			Geometry,
+		} = response;
 		const geofence: AmazonLocationServiceGeofence = {
 			createTime: CreateTime,
-			geofenceId: GeofenceId!,
+			geofenceId: responseGeofenceId!,
 			geometry: {
 				polygon: Geometry!.Polygon as GeofencePolygon,
 			},
@@ -539,7 +545,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	/**
 	 * List geofences from a geofence collection
 	 * @param  options ListGeofenceOptions
-	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
+	 * @returns a promise that resolves to an object that conforms to {@link ListGeofenceResults}:
 	 *   entries: list of geofences - 100 geofences are listed per page
 	 *   nextToken: token for next page of geofences
 	 */
@@ -592,9 +598,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		const results: ListGeofenceResults = {
 			entries: Entries!.map(
-				({ GeofenceId, CreateTime, UpdateTime, Status, Geometry }) => {
+				({
+					GeofenceId: geofenceId,
+					CreateTime,
+					UpdateTime,
+					Status,
+					Geometry,
+				}) => {
 					return {
-						geofenceId: GeofenceId!,
+						geofenceId: geofenceId!,
 						createTime: CreateTime,
 						updateTime: UpdateTime,
 						status: Status,
@@ -614,7 +626,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Delete geofences from a geofence collection
 	 * @param geofenceIds string|string[]
 	 * @param options GeofenceOptions
-	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
+	 * @returns a promise that resolves to an object that conforms to {@link AmazonLocationServiceDeleteGeofencesResults}:
 	 *  successes: list of geofences successfully deleted
 	 *  errors: list of geofences that failed to delete
 	 */
@@ -640,6 +652,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			} catch (error) {
 				return true;
 			}
+
+			return false;
 		});
 		if (badGeofenceIds.length > 0) {
 			throw new Error(`Invalid geofence ids: ${badGeofenceIds.join(', ')}`);
@@ -683,11 +697,11 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 					return;
 				}
 
-				const badGeofenceIds = response.Errors.map(
+				const targetBadGeofenceIds = response.Errors.map(
 					({ geofenceId }) => geofenceId,
 				);
 				results.successes.push(
-					...batch.filter(Id => !badGeofenceIds.includes(Id)),
+					...batch.filter(Id => !targetBadGeofenceIds.includes(Id)),
 				);
 			}),
 		);
@@ -787,14 +801,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		});
 		const command = new BatchPutGeofenceCommand(geofenceInput);
 
-		let response: BatchPutGeofenceCommandOutput;
-		try {
-			response = await client.send(command);
-		} catch (error) {
-			throw error;
-		}
-
-		return response;
+		return client.send(command);
 	}
 
 	private async _AmazonLocationServiceBatchDeleteGeofenceCall(
@@ -815,13 +822,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		});
 		const command = new BatchDeleteGeofenceCommand(deleteGeofencesInput);
 
-		let response: BatchDeleteGeofenceCommandOutput;
-		try {
-			response = await client.send(command);
-		} catch (error) {
-			throw error;
-		}
-
-		return response;
+		return client.send(command);
 	}
 }
