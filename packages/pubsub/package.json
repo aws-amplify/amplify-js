@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/pubsub",
-	"version": "6.0.18",
+	"version": "6.0.19",
 	"description": "Pubsub category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -72,7 +72,7 @@
 		"mqtt"
 	],
 	"dependencies": {
-		"@aws-amplify/auth": "6.0.18",
+		"@aws-amplify/auth": "6.0.19",
 		"buffer": "4.9.2",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
@@ -83,7 +83,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.18",
+		"@aws-amplify/core": "6.0.19",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [
