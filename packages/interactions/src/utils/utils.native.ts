@@ -6,10 +6,10 @@ import { ungzip } from 'pako';
 
 export const convert = async (stream: object): Promise<Uint8Array> => {
 	if (!(stream instanceof Blob)) {
-		return Promise.reject('Invalid content type');
+		return Promise.reject(new Error('Invalid content type'));
 	}
 
-	return new Promise(async (resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		try {
 			const fileReaderInstance = new FileReader();
 			fileReaderInstance.readAsDataURL(stream);
@@ -22,7 +22,7 @@ export const convert = async (stream: object): Promise<Uint8Array> => {
 				resolve(decodedArrayBuffer);
 			};
 		} catch (error) {
-			reject('unable to convert blob to arrayBuffer: ' + error);
+			reject(new Error('unable to convert blob to arrayBuffer: ' + error));
 		}
 	});
 };
@@ -41,7 +41,7 @@ export const gzipDecompressToString = async (
 			const result: string = ungzip(data, { to: 'string' });
 			resolve(result);
 		} catch (error) {
-			reject('unable to decompress' + error);
+			reject(new Error('unable to decompress' + error));
 		}
 	});
 };

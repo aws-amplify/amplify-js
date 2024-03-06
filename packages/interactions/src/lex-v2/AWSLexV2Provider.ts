@@ -76,7 +76,7 @@ class AWSLexV2Provider {
 		try {
 			session = await fetchAuthSession();
 		} catch (error) {
-			return Promise.reject('No credentials');
+			return Promise.reject(new Error('No credentials'));
 		}
 
 		const { region, aliasId, localeId, botId } = botConfig;
@@ -197,11 +197,11 @@ class AWSLexV2Provider {
 
 		try {
 			const recognizeTextCommand = new RecognizeTextCommand(params);
-			const data = await client.send(recognizeTextCommand);
+			const resultData = await client.send(recognizeTextCommand);
 
-			this._reportBotStatus(data, botConfig);
+			this._reportBotStatus(resultData, botConfig);
 
-			return data;
+			return resultData;
 		} catch (err) {
 			return Promise.reject(err);
 		}
@@ -228,7 +228,7 @@ class AWSLexV2Provider {
 		// prepare params
 		if (messageType === 'voice') {
 			if (typeof content !== 'object') {
-				return Promise.reject('invalid content type');
+				return Promise.reject(new Error('invalid content type'));
 			}
 
 			const inputStream =
@@ -242,7 +242,7 @@ class AWSLexV2Provider {
 		} else {
 			// text input
 			if (typeof content !== 'string')
-				return Promise.reject('invalid content type');
+				return Promise.reject(new Error('invalid content type'));
 
 			params = {
 				...baseParams,
@@ -254,9 +254,9 @@ class AWSLexV2Provider {
 		// make API call to lex
 		try {
 			const recognizeUtteranceCommand = new RecognizeUtteranceCommand(params);
-			const data = await client.send(recognizeUtteranceCommand);
+			const resultData = await client.send(recognizeUtteranceCommand);
 
-			const response = await this._formatUtteranceCommandOutput(data);
+			const response = await this._formatUtteranceCommandOutput(resultData);
 			this._reportBotStatus(response, botConfig);
 
 			return response;

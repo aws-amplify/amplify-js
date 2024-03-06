@@ -77,7 +77,7 @@ class AWSLexProvider {
 		try {
 			session = await fetchAuthSession();
 		} catch (error) {
-			return Promise.reject('No credentials');
+			return Promise.reject(new Error('No credentials'));
 		}
 
 		const { name, region, alias } = botConfig;
@@ -114,7 +114,7 @@ class AWSLexProvider {
 			} = message;
 			if (messageType === 'voice') {
 				if (typeof content !== 'object') {
-					return Promise.reject('invalid content type');
+					return Promise.reject(new Error('invalid content type'));
 				}
 				const inputStream =
 					content instanceof Uint8Array ? content : await convert(content);
@@ -129,7 +129,7 @@ class AWSLexProvider {
 				};
 			} else {
 				if (typeof content !== 'string')
-					return Promise.reject('invalid content type');
+					return Promise.reject(new Error('invalid content type'));
 
 				params = {
 					botAlias: alias,
