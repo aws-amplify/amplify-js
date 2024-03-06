@@ -242,7 +242,7 @@ export interface IdentifyLabelsOutput {
 	labels?: {
 		name?: string;
 		boundingBoxes?: (BoundingBox | undefined)[];
-		metadata?: Object;
+		metadata?: object;
 	}[];
 	unsafe?: 'YES' | 'NO' | 'UNKNOWN';
 }
@@ -342,43 +342,47 @@ export function isIdentifyFromCollection(
 	const key: keyof IdentifyFromCollection = 'collection';
 	const keyId: keyof IdentifyFromCollection = 'collectionId';
 
-	return obj && (obj.hasOwnProperty(key) || obj.hasOwnProperty(keyId));
+	return (
+		obj &&
+		(Object.prototype.hasOwnProperty.call(obj, key) ||
+			Object.prototype.hasOwnProperty.call(obj, keyId))
+	);
 }
 
 export function isIdentifyCelebrities(obj: any): obj is IdentifyCelebrities {
 	const key: keyof IdentifyCelebrities = 'celebrityDetection';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
 	const key: keyof TranslateTextInput = 'translateText';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isTextToSpeechInput(obj: any): obj is TextToSpeechInput {
 	const key: keyof TextToSpeechInput = 'textToSpeech';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
 	const key: keyof SpeechToTextInput = 'transcription';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isStorageSource(obj: any): obj is StorageSource {
 	const key: keyof StorageSource = 'key';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isFileSource(obj: any): obj is FileSource {
 	const key: keyof FileSource = 'file';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isConvertBytesSource(
@@ -386,7 +390,7 @@ export function isConvertBytesSource(
 ): obj is BytesSource<ConvertBytes> {
 	const key: keyof BytesSource<ConvertBytes> = 'bytes';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyBytesSource(
@@ -394,19 +398,19 @@ export function isIdentifyBytesSource(
 ): obj is BytesSource<IdentifyBytes> {
 	const key: keyof BytesSource<IdentifyBytes> = 'bytes';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
 	const key: keyof IdentifyTextInput = 'text';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyLabelsInput(obj: any): obj is IdentifyLabelsInput {
 	const key: keyof IdentifyLabelsInput = 'labels';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyEntitiesInput(
@@ -414,13 +418,13 @@ export function isIdentifyEntitiesInput(
 ): obj is IdentifyEntitiesInput {
 	const key: keyof IdentifyEntitiesInput = 'entities';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isInterpretTextInput(obj: any): obj is InterpretTextInput {
 	const key: keyof InterpretTextInput = 'text';
 
-	return obj && obj.hasOwnProperty(key);
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isInterpretTextOthers(

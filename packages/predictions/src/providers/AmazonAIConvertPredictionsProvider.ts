@@ -277,7 +277,7 @@ export class AmazonAIConvertPredictionsProvider {
 		raw,
 		languageCode,
 	}: TranscribeData): Promise<string> {
-		return new Promise((res, rej) => {
+		return new Promise((resolve, reject) => {
 			let fullText = '';
 			connection.onmessage = message => {
 				try {
@@ -290,19 +290,19 @@ export class AmazonAIConvertPredictionsProvider {
 					}
 				} catch (err: unknown) {
 					logger.debug(err);
-					rej(err);
+					reject(err);
 				}
 			};
 
 			connection.onerror = errorEvent => {
 				logger.debug({ errorEvent });
-				rej('failed to transcribe, network error');
+				reject(new Error('failed to transcribe, network error'));
 			};
 
 			connection.onclose = closeEvent => {
 				logger.debug({ closeEvent });
 
-				res(fullText.trim());
+				resolve(fullText.trim());
 			};
 
 			logger.debug({ raw });
@@ -430,7 +430,7 @@ export class AmazonAIConvertPredictionsProvider {
 		region: string;
 		languageCode: string;
 	}): Promise<WebSocket> {
-		return new Promise(async (res, rej) => {
+		return new Promise((resolve, _reject) => {
 			const signedUrl = this.generateTranscribeUrl({
 				credentials,
 				region,
@@ -443,7 +443,7 @@ export class AmazonAIConvertPredictionsProvider {
 			connection.binaryType = 'arraybuffer';
 			connection.onopen = () => {
 				logger.debug('connected');
-				res(connection);
+				resolve(connection);
 			};
 		});
 	}

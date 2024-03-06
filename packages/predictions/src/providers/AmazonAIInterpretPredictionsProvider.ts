@@ -63,9 +63,9 @@ export class AmazonAIInterpretPredictionsProvider {
 		const { text: textSource } = input;
 		const { source, type = defaultType } = textSource;
 		const { text } = source;
-		let language;
+		let sourceLanguage;
 		if (isInterpretTextOthers(textSource)) {
-			language = (textSource as InterpretTextOthers).source.language;
+			sourceLanguage = (textSource as InterpretTextOthers).source.language;
 		}
 
 		this.comprehendClient = new ComprehendClient({
@@ -79,7 +79,7 @@ export class AmazonAIInterpretPredictionsProvider {
 
 		const doAll = type === 'all';
 
-		let languageCode = language;
+		let languageCode = sourceLanguage;
 		if (doAll || type === 'language') {
 			const languageDetectionParams = {
 				Text: text,
@@ -161,9 +161,9 @@ export class AmazonAIInterpretPredictionsProvider {
 		try {
 			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
 			const data = await this.comprehendClient!.send(detectKeyPhrasesCommand);
-			const { KeyPhrases = [] } = data || {};
+			const { KeyPhrases: keyPhrases = [] } = data || {};
 
-			return KeyPhrases.map(({ Text: text }) => {
+			return keyPhrases.map(({ Text: text }) => {
 				return { text };
 			});
 		} catch (err: any) {
@@ -222,7 +222,7 @@ export class AmazonAIInterpretPredictionsProvider {
 					Neutral: neutral = 0,
 					Mixed: mixed = 0,
 				} = {},
-			} = ({} = data);
+			} = data ?? {};
 
 			return { predominant, positive, negative, neutral, mixed };
 		} catch (err: any) {
@@ -275,7 +275,8 @@ export class AmazonAIInterpretPredictionsProvider {
 			const data = await this.comprehendClient!.send(
 				detectDominantLanguageCommand,
 			);
-			const { Languages: [{ LanguageCode }] = [{}] } = ({} = data || {});
+			const { Languages: [{ LanguageCode }] = [{ LanguageCode: undefined }] } =
+				data ?? {};
 			assertValidationError(
 				!!LanguageCode,
 				PredictionsValidationErrorCode.NoLanguage,

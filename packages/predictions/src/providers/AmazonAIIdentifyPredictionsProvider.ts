@@ -51,12 +51,7 @@ import {
 	isStorageSource,
 	isValidIdentifyInput,
 } from '../types';
-import {
-	BlockList,
-	Document,
-	Image,
-	TextDetectionList,
-} from '../types/AWSTypes';
+import { BlockList, Image, TextDetectionList } from '../types/AWSTypes';
 
 import {
 	categorizeRekognitionBlocks,
@@ -107,7 +102,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 	 * @return {Promise<Image>} - Promise resolving to the converted source object.
 	 */
 	private configureSource(source: IdentifySource): Promise<Image> {
-		return new Promise((res, rej) => {
+		return new Promise((resolve, reject) => {
 			if (isStorageSource(source)) {
 				const storageConfig = {
 					accessLevel: source.level,
@@ -119,8 +114,9 @@ export class AmazonAIIdentifyPredictionsProvider {
 						const parser =
 							/https:\/\/([a-zA-Z0-9%\-_.]+)\.s3\.[A-Za-z0-9%\-._~]+\/([a-zA-Z0-9%\-._~/]+)\?/;
 						const parsedURL = value.url.toString().match(parser) ?? '';
-						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
-						res({
+						if (parsedURL.length < 3)
+							reject(new Error('Invalid S3 key was given.'));
+						resolve({
 							S3Object: {
 								Bucket: parsedURL[1],
 								Name: decodeURIComponent(parsedURL[2]),
@@ -128,34 +124,34 @@ export class AmazonAIIdentifyPredictionsProvider {
 						});
 					})
 					.catch(err => {
-						rej(err);
+						reject(err);
 					});
 			} else if (isFileSource(source)) {
 				blobToArrayBuffer(source.file)
 					.then(buffer => {
-						res({ Bytes: new Uint8Array(buffer) });
+						resolve({ Bytes: new Uint8Array(buffer) });
 					})
 					.catch(err => {
-						rej(err);
+						reject(err);
 					});
 			} else if (isIdentifyBytesSource(source)) {
 				const { bytes } = source;
 				if (bytes instanceof Blob) {
 					blobToArrayBuffer(bytes)
 						.then(buffer => {
-							res({ Bytes: new Uint8Array(buffer) });
+							resolve({ Bytes: new Uint8Array(buffer) });
 						})
 						.catch(err => {
-							rej(err);
+							reject(err);
 						});
 				}
 				if (bytes instanceof ArrayBuffer || bytes instanceof Buffer) {
-					res({ Bytes: new Uint8Array(bytes) } as Image);
+					resolve({ Bytes: new Uint8Array(bytes) } as Image);
 				}
 				// everything else can be directly passed to Rekognition / Textract.
-				res({ Bytes: bytes } as Image);
+				resolve({ Bytes: bytes } as Image);
 			} else {
-				rej('Input source is not configured correctly.');
+				reject(new Error('Input source is not configured correctly.'));
 			}
 		});
 	}
@@ -190,9 +186,8 @@ export class AmazonAIIdentifyPredictionsProvider {
 			credentials,
 			customUserAgent: _getPredictionsIdentifyAmplifyUserAgent(),
 		});
-		let inputDocument: Document;
 
-		inputDocument = await this.configureSource(input.text?.source);
+		const inputDocument = await this.configureSource(input.text?.source);
 
 		// get default value if format isn't specified in the input.
 		const format = input.text?.format ?? configFormat;
@@ -304,8 +299,8 @@ export class AmazonAIIdentifyPredictionsProvider {
 
 	/**
 	 * Calls Rekognition.detectLabels and organizes the returned data.
-	 * @param {DetectLabelsInput} param - parameter to be passed onto Rekognition
-	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectLabels response.
+	 * @param param - parameters as {@link DetectLabelsCommandInput} to be passed onto Rekognition
+	 * @return a promise resolving to organized detectLabels response as {@link IdentifyLabelsOutput}.
 	 */
 	private async detectLabels(
 		param: DetectLabelsCommandInput,
@@ -335,8 +330,8 @@ export class AmazonAIIdentifyPredictionsProvider {
 
 	/**
 	 * Calls Rekognition.detectModerationLabels and organizes the returned data.
-	 * @param {Rekognition.DetectLabelsRequest} param - Parameter to be passed onto Rekognition
-	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectModerationLabels response.
+	 * @param param parameter to be passed onto Rekognition as {@link DetectModerationLabelsCommandInput}
+	 * @return a promise resolving to organized detectModerationLabels response as {@link IdentifyLabelsOutput}.
 	 */
 	private async detectModerationLabels(
 		param: DetectModerationLabelsCommandInput,
@@ -357,8 +352,8 @@ export class AmazonAIIdentifyPredictionsProvider {
 	/**
 	 * Identify faces within an image that is provided as input, and match faces from a collection
 	 * or identify celebrities.
-	 * @param {IdentifyEntityInput} input - object containing the source image and face match options.
-	 * @return {Promise<IdentifyEntityOutput>} Promise resolving to identify results.
+	 * @param input - object of {@link IdentifyEntitiesInput} containing the source image and face match options.
+	 * @return a promise resolving to identify results as {@link IdentifyEntitiesOutput}.
 	 */
 	protected async identifyEntities(
 		input: IdentifyEntitiesInput,

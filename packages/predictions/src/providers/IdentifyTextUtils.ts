@@ -133,7 +133,7 @@ export function categorizeTextractBlocks(
 					blockMap[block.Id] = block;
 				}
 				break;
-			case 'SELECTION_ELEMENT':
+			case 'SELECTION_ELEMENT': {
 				const selectionStatus = block.SelectionStatus === 'SELECTED';
 				if (!response.text.selections) response.text.selections = [];
 				response.text.selections.push({
@@ -145,6 +145,7 @@ export function categorizeTextractBlocks(
 					blockMap[block.Id] = block;
 				}
 				break;
+			}
 			case 'TABLE':
 				tableBlocks.push(block);
 				break;
@@ -197,8 +198,7 @@ export function categorizeTextractBlocks(
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
 function constructTable(table: Block, blockMap: Record<string, Block>): Table {
-	let tableMatrix: TableCell[][];
-	tableMatrix = [];
+	const tableMatrix: TableCell[][] = [];
 	// visit each of the cell associated with the table's relationship.
 	for (const tableRelation of table.Relationships ?? []) {
 		for (const cellId of tableRelation.Ids ?? []) {
