@@ -1,3 +1,37 @@
+# Developer Note: Please Update to Amplify v6
+
+We recommend using the Amplify JavaScript library's Auth features in place of the Amazon Cognito Identity SDK. The Amplify JavaScript library offers a modern, fully-typed, and performant experience for Auth use cases with tree-shaking built-in for bundle size reduction.
+
+## Amazon Cognito Identity SDK and Amplify JavaScript API Mappings
+
+The following table provides the Amplify Auth APIs that can be used to satisfy Amazon Cognito Identity SDK use cases.
+
+| Amazon Cognito Identity SDK Use Case                                                    | Amplify JS Auth                                                                                                                            |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Registering a user with the application.                                                | [Sign Up](https://docs.amplify.aws/react/build-a-backend/auth/enable-sign-up/#sign-up)                                                     |
+| Confirming a registered, unauthenticated user using a confirmation code.                | [Confirm Sign Up](https://docs.amplify.aws/react/build-a-backend/auth/enable-sign-up/#confirm-sign-up)                                     |
+| Resending a confirmation code for an unauthenticated user.                              | [Resend Sign Up Code](https://aws-amplify.github.io/amplify-js/api/functions/aws_amplify.auth.resendSignUpCode.html)                       |
+| Authenticating a user and establishing a user session.                                  | [Sign In](https://docs.amplify.aws/react/build-a-backend/auth/enable-sign-up/#sign-in)                                                     |
+| Configuring an authentication flow type.                                                | [Auth Flows](https://docs.amplify.aws/react/build-a-backend/auth/switch-auth/)                                                             |
+| Configuring persistence of auth data.                                                   | [Token Saving Mechanism](https://docs.amplify.aws/react/build-a-backend/auth/manage-user-session/#update-your-token-saving-mechanism)      |
+| Handling token expiration.                                                              | [Token Expiration](https://docs.amplify.aws/react/build-a-backend/auth/manage-user-session/#refreshing-sessions)                           |
+| Retrieving user attributes for an authenticated user.                                   | [Fetch User Attributes](https://docs.amplify.aws/react/build-a-backend/auth/manage-user-profile/#retrieve-user-attributes)                 |
+| Updating user attributes for an authenticated user.                                     | [Update User Attributes](https://docs.amplify.aws/react/build-a-backend/auth/manage-user-profile/#update-user-attributes)                  |
+| Verifying a user attribute for an authenticated user.                                   | [Confirm User Attribute](https://docs.amplify.aws/react/build-a-backend/auth/manage-user-profile/#verify-user-attribute)                   |
+| Sending a user attribute confirmation code for an authenticated user.                   | [Send User Attribute Code](https://docs.amplify.aws/react/build-a-backend/auth/manage-user-profile/#send-user-attribute-verification-code) |
+| Deleting user attributes for an authenticated user.                                     | [Delete User Attributes](https://docs.amplify.aws/react/build-a-backend/auth/manage-user-profile/#delete-user-attributes)                  |
+| Updating MFA settings for a user on a User Pool that allows MFA.                        | [Update MFA Preference](https://docs.amplify.aws/react/build-a-backend/auth/manage-mfa/#update-the-current-users-mfa-preferences)          |
+| Getting MFA preferences for an authenticated user.                                      | [Fetch MFA Preference](https://docs.amplify.aws/react/build-a-backend/auth/manage-mfa/#fetch-the-current-users-mfa-preferences)            |
+| Setting up TOTP MFA.                                                                    | [TOTP Setup](https://docs.amplify.aws/react/build-a-backend/auth/manage-mfa/#set-up-totp-for-a-user)                                       |
+| Changing the current password for an authenticated user.                                | [Update Password](https://docs.amplify.aws/react/build-a-backend/auth/manage-passwords/#update-password)                                   |
+| Starting password recovery for an unauthenticated user.                                 | [Reset Password](https://docs.amplify.aws/react/build-a-backend/auth/manage-passwords/#reset-password)                                     |
+| Deleting an authenticated user.                                                         | [Delete User](https://docs.amplify.aws/react/build-a-backend/auth/delete-user-account/)                                                    |
+| Signing out from the application (including global sign out).                           | [Sign Out](https://docs.amplify.aws/react/build-a-backend/auth/enable-sign-up/#sign-out)                                                   |
+| Retrieving the authenticated user's session information.                                | [Fetch Auth Session](https://docs.amplify.aws/react/build-a-backend/auth/manage-user-session/#retrieve-a-user-session)                     |
+| Fetching all remembered devices for an authenticated user as a limited, paginated list. | [Fetch Devices](https://docs.amplify.aws/react/build-a-backend/auth/remember-device/#fetch-devices)                                        |
+| Remembering the current device.                                                         | [Remember Device](https://docs.amplify.aws/react/build-a-backend/auth/remember-device/#remember-device)                                    |
+| Forgetting a device.                                                                    | [Forget Device](https://docs.amplify.aws/react/build-a-backend/auth/remember-device/#forget-device)                                        |
+
 # Amazon Cognito Identity SDK for JavaScript
 
 You can now use Amazon Cognito to easily add user sign-up and sign-in to your mobile and web apps. Your User Pool in Amazon Cognito is a fully managed user directory that can scale to hundreds of millions of users, so you don't have to worry about building, securing, and scaling a solution to handle user management and authentication.
@@ -219,17 +253,20 @@ var attributePhoneNumber = new AmazonCognitoIdentity.CognitoUserAttribute(
 attributeList.push(attributeEmail);
 attributeList.push(attributePhoneNumber);
 
-userPool.signUp('username', 'password', attributeList, null, function(
-	err,
-	result
-) {
-	if (err) {
-		alert(err.message || JSON.stringify(err));
-		return;
+userPool.signUp(
+	'username',
+	'password',
+	attributeList,
+	null,
+	function (err, result) {
+		if (err) {
+			alert(err.message || JSON.stringify(err));
+			return;
+		}
+		var cognitoUser = result.user;
+		console.log('user name is ' + cognitoUser.getUsername());
 	}
-	var cognitoUser = result.user;
-	console.log('user name is ' + cognitoUser.getUsername());
-});
+);
 ```
 
 **Use case 2.** Confirming a registered, unauthenticated user using a confirmation code received via SMS.
@@ -247,7 +284,7 @@ var userData = {
 };
 
 var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-cognitoUser.confirmRegistration('123456', true, function(err, result) {
+cognitoUser.confirmRegistration('123456', true, function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -259,7 +296,7 @@ cognitoUser.confirmRegistration('123456', true, function(err, result) {
 **Use case 3.** Resending a confirmation code via SMS for confirming registration for a unauthenticated user.
 
 ```javascript
-cognitoUser.resendConfirmationCode(function(err, result) {
+cognitoUser.resendConfirmationCode(function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -291,7 +328,7 @@ var userData = {
 };
 var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 cognitoUser.authenticateUser(authenticationDetails, {
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		var accessToken = result.getAccessToken().getJwtToken();
 
 		//POTENTIAL: Region needs to be set if not already set previously elsewhere.
@@ -319,7 +356,7 @@ cognitoUser.authenticateUser(authenticationDetails, {
 		});
 	},
 
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message || JSON.stringify(err));
 	},
 });
@@ -332,7 +369,7 @@ Note also that if CognitoUser.authenticateUser throws ReferenceError: navigator 
 **Use case 5.** Retrieve user attributes for an authenticated user.
 
 ```javascript
-cognitoUser.getUserAttributes(function(err, result) {
+cognitoUser.getUserAttributes(function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -351,13 +388,13 @@ Note that the inputVerificationCode method needs to be defined but does not need
 
 ```javascript
 cognitoUser.getAttributeVerificationCode('email', {
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		console.log('call result: ' + result);
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message || JSON.stringify(err));
 	},
-	inputVerificationCode: function() {
+	inputVerificationCode: function () {
 		var verificationCode = prompt('Please input verification code: ', '');
 		cognitoUser.verifyAttribute('email', verificationCode, this);
 	},
@@ -370,7 +407,7 @@ cognitoUser.getAttributeVerificationCode('email', {
 var attributeList = [];
 attributeList.push('nickname');
 
-cognitoUser.deleteAttributes(attributeList, function(err, result) {
+cognitoUser.deleteAttributes(attributeList, function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -390,7 +427,7 @@ var attribute = {
 var attribute = new AmazonCognitoIdentity.CognitoUserAttribute(attribute);
 attributeList.push(attribute);
 
-cognitoUser.updateAttributes(attributeList, function(err, result) {
+cognitoUser.updateAttributes(attributeList, function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -404,7 +441,7 @@ cognitoUser.updateAttributes(attributeList, function(err, result) {
 Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
 
 ```javascript
-cognitoUser.enableMFA(function(err, result) {
+cognitoUser.enableMFA(function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -418,7 +455,7 @@ cognitoUser.enableMFA(function(err, result) {
 Note: this method is now deprecated. Please use `setUserMfaPreference` instead.
 
 ```javascript
-cognitoUser.disableMFA(function(err, result) {
+cognitoUser.disableMFA(function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -430,13 +467,17 @@ cognitoUser.disableMFA(function(err, result) {
 **Use case 11.** Changing the current password for an authenticated user.
 
 ```javascript
-cognitoUser.changePassword('oldPassword', 'newPassword', function(err, result) {
-	if (err) {
-		alert(err.message || JSON.stringify(err));
-		return;
+cognitoUser.changePassword(
+	'oldPassword',
+	'newPassword',
+	function (err, result) {
+		if (err) {
+			alert(err.message || JSON.stringify(err));
+			return;
+		}
+		console.log('call result: ' + result);
 	}
-	console.log('call result: ' + result);
-});
+);
 ```
 
 **Use case 12.** Starting and completing a forgot password flow for an unauthenticated user.
@@ -456,15 +497,15 @@ For example:
 
 ```javascript
 cognitoUser.forgotPassword({
-	onSuccess: function(data) {
+	onSuccess: function (data) {
 		// successfully initiated reset password request
 		console.log('CodeDeliveryData from forgotPassword: ' + data);
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message || JSON.stringify(err));
 	},
 	//Optional automatic callback
-	inputVerificationCode: function(data) {
+	inputVerificationCode: function (data) {
 		console.log('Code sent to: ' + data);
 		var verificationCode = document.getElementById('code').value;
 		var newPassword = document.getElementById('new_password').value;
@@ -483,7 +524,7 @@ cognitoUser.forgotPassword({
 **Use case 13.** Deleting an authenticated user.
 
 ```javascript
-cognitoUser.deleteUser(function(err, result) {
+cognitoUser.deleteUser(function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -515,7 +556,7 @@ var poolData = {
 };
 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-userPool.storage.sync(function(err, result) {
+userPool.storage.sync(function (err, result) {
 	if (err) {
 	} else if (result === 'SUCCESS') {
 		var cognitoUser = userPool.getCurrentUser();
@@ -535,7 +576,7 @@ var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 var cognitoUser = userPool.getCurrentUser();
 
 if (cognitoUser != null) {
-	cognitoUser.getSession(function(err, session) {
+	cognitoUser.getSession(function (err, session) {
 		if (err) {
 			alert(err.message || JSON.stringify(err));
 			return;
@@ -543,7 +584,7 @@ if (cognitoUser != null) {
 		console.log('session validity: ' + session.isValid());
 
 		// NOTE: getSession must be called to authenticate user before calling getUserAttributes
-		cognitoUser.getUserAttributes(function(err, attributes) {
+		cognitoUser.getUserAttributes(function (err, attributes) {
 			if (err) {
 				// Handle error
 			} else {
@@ -573,7 +614,7 @@ if (cognitoUser != null) {
 var cognitoUser = userPool.getCurrentUser();
 
 if (cognitoUser != null) {
-	cognitoUser.getSession(function(err, result) {
+	cognitoUser.getSession(function (err, result) {
 		if (result) {
 			console.log('You are now logged in.');
 
@@ -608,10 +649,10 @@ _note that you can not replace the login key with a variable because it will be 
 
 ```javascript
 cognitoUser.listDevices(limit, paginationToken, {
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		console.log('call result: ' + result);
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message);
 	},
 });
@@ -621,10 +662,10 @@ cognitoUser.listDevices(limit, paginationToken, {
 
 ```javascript
 cognitoUser.getDevice({
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		console.log('call result: ' + result);
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message || JSON.stringify(err));
 	},
 });
@@ -634,10 +675,10 @@ cognitoUser.getDevice({
 
 ```javascript
 cognitoUser.setDeviceStatusRemembered({
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		console.log('call result: ' + result);
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message || JSON.stringify(err));
 	},
 });
@@ -647,10 +688,10 @@ cognitoUser.setDeviceStatusRemembered({
 
 ```javascript
 cognitoUser.setDeviceStatusNotRemembered({
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		console.log('call result: ' + result);
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message || JSON.stringify(err));
 	},
 });
@@ -660,10 +701,10 @@ cognitoUser.setDeviceStatusNotRemembered({
 
 ```javascript
 cognitoUser.forgetDevice({
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		console.log('call result: ' + result);
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message || JSON.stringify(err));
 	},
 });
@@ -742,13 +783,13 @@ E.g.
 cognitoUser.setAuthenticationFlowType('CUSTOM_AUTH');
 
 cognitoUser.initiateAuth(authenticationDetails, {
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		// User authentication was successful
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		// User authentication was not successful
 	},
-	customChallenge: function(challengeParameters) {
+	customChallenge: function (challengeParameters) {
 		// User authentication depends on challenge response
 		var challengeResponses = 'challenge-answer';
 		cognitoUser.sendCustomChallengeAnswer(challengeResponses, this);
@@ -806,34 +847,34 @@ var userData = {
 var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
 
 cognitoUser.authenticateUser(authenticationDetails, {
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		var accessToken = result.getAccessToken().getJwtToken();
 	},
 
-	onFailure: function(err) {
+	onFailure: function (err) {
 		alert(err.message || JSON.stringify(err));
 	},
 
-	mfaSetup: function(challengeName, challengeParameters) {
+	mfaSetup: function (challengeName, challengeParameters) {
 		cognitoUser.associateSoftwareToken(this);
 	},
 
-	associateSecretCode: function(secretCode) {
+	associateSecretCode: function (secretCode) {
 		var challengeAnswer = prompt('Please input the TOTP code.', '');
 		cognitoUser.verifySoftwareToken(challengeAnswer, 'My TOTP device', this);
 	},
 
-	selectMFAType: function(challengeName, challengeParameters) {
+	selectMFAType: function (challengeName, challengeParameters) {
 		var mfaType = prompt('Please select the MFA method.', ''); // valid values for mfaType is "SMS_MFA", "SOFTWARE_TOKEN_MFA"
 		cognitoUser.sendMFASelectionAnswer(mfaType, this);
 	},
 
-	totpRequired: function(secretCode) {
+	totpRequired: function (secretCode) {
 		var challengeAnswer = prompt('Please input the TOTP code.', '');
 		cognitoUser.sendMFACode(challengeAnswer, this, 'SOFTWARE_TOKEN_MFA');
 	},
 
-	mfaRequired: function(codeDeliveryDetails) {
+	mfaRequired: function (codeDeliveryDetails) {
 		var verificationCode = prompt('Please input verification code', '');
 		cognitoUser.sendMFACode(verificationCode, this);
 	},
@@ -847,7 +888,7 @@ var smsMfaSettings = {
 	PreferredMfa: true,
 	Enabled: true,
 };
-cognitoUser.setUserMfaPreference(smsMfaSettings, null, function(err, result) {
+cognitoUser.setUserMfaPreference(smsMfaSettings, null, function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 	}
@@ -862,7 +903,7 @@ var totpMfaSettings = {
 	PreferredMfa: true,
 	Enabled: true,
 };
-cognitoUser.setUserMfaPreference(null, totpMfaSettings, function(err, result) {
+cognitoUser.setUserMfaPreference(null, totpMfaSettings, function (err, result) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 	}
@@ -876,13 +917,13 @@ cognitoUser.setUserMfaPreference(null, totpMfaSettings, function(err, result) {
 cognitoUser.setAuthenticationFlowType('USER_PASSWORD_AUTH');
 
 cognitoUser.authenticateUser(authenticationDetails, {
-	onSuccess: function(result) {
+	onSuccess: function (result) {
 		// User authentication was successful
 	},
-	onFailure: function(err) {
+	onFailure: function (err) {
 		// User authentication was not successful
 	},
-	mfaRequired: function(codeDeliveryDetails) {
+	mfaRequired: function (codeDeliveryDetails) {
 		// MFA is required to complete user authentication.
 		// Get the code from user and call
 		cognitoUser.sendMFACode(verificationCode, this);
@@ -893,7 +934,7 @@ cognitoUser.authenticateUser(authenticationDetails, {
 **Use case 31.** Retrieve the user data for an authenticated user.
 
 ```js
-cognitoUser.getUserData(function(err, userData) {
+cognitoUser.getUserData(function (err, userData) {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
@@ -904,7 +945,7 @@ cognitoUser.getUserData(function(err, userData) {
 // If you want to force to get the user data from backend,
 // you can set the bypassCache to true
 cognitoUser.getUserData(
-	function(err, userData) {
+	function (err, userData) {
 		if (err) {
 			alert(err.message || JSON.stringify(err));
 			return;
