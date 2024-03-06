@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	InteractionsOnCompleteCallback,
-	InteractionsMessage,
-	InteractionsResponse,
-} from '../types/Interactions';
-import {
 	IntentState,
 	LexRuntimeV2Client,
 	RecognizeTextCommand,
@@ -17,8 +12,15 @@ import {
 } from '@aws-sdk/client-lex-runtime-v2';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
-import { convert, unGzipBase64AsJson } from '../utils';
 import { v4 as uuid } from 'uuid';
+
+import { convert, unGzipBase64AsJson } from '../utils';
+import {
+	InteractionsMessage,
+	InteractionsOnCompleteCallback,
+	InteractionsResponse,
+} from '../types/Interactions';
+
 import { AWSLexV2ProviderOption } from './types';
 
 const logger = new ConsoleLogger('AWSLexV2Provider');
@@ -43,18 +45,19 @@ type AWSLexV2ProviderSendResponse =
 	| RecognizeTextCommandOutput
 	| RecognizeUtteranceCommandOutputFormatted;
 
-type lexV2BaseReqParams = {
+interface lexV2BaseReqParams {
 	botId: string;
 	botAliasId: string;
 	localeId: string;
 	sessionId: string;
-};
+}
 
 class AWSLexV2Provider {
 	private readonly _botsCompleteCallback: Record<
 		string,
 		InteractionsOnCompleteCallback
 	> = {};
+
 	private defaultSessionId: string = uuid();
 
 	/**
@@ -108,6 +111,7 @@ class AWSLexV2Provider {
 				client,
 			);
 		}
+
 		return response;
 	}
 
@@ -196,6 +200,7 @@ class AWSLexV2Provider {
 			const data = await client.send(recognizeTextCommand);
 
 			this._reportBotStatus(data, botConfig);
+
 			return data;
 		} catch (err) {
 			return Promise.reject(err);
@@ -253,6 +258,7 @@ class AWSLexV2Provider {
 
 			const response = await this._formatUtteranceCommandOutput(data);
 			this._reportBotStatus(response, botConfig);
+
 			return response;
 		} catch (err) {
 			return Promise.reject(err);

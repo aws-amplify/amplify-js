@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	InteractionsOnCompleteCallback,
-	InteractionsMessage,
-	InteractionsResponse,
-} from '../types/Interactions';
-import {
 	DialogState,
 	LexRuntimeServiceClient,
 	PostContentCommand,
@@ -17,7 +12,14 @@ import {
 } from '@aws-sdk/client-lex-runtime-service';
 import { getAmplifyUserAgentObject } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
+
+import {
+	InteractionsMessage,
+	InteractionsOnCompleteCallback,
+	InteractionsResponse,
+} from '../types/Interactions';
 import { convert } from '../utils';
+
 import { AWSLexProviderOption } from './types';
 
 const logger = new ConsoleLogger('AWSLexProvider');
@@ -100,6 +102,7 @@ class AWSLexProvider {
 				const data = await client.send(postTextCommand);
 
 				this.reportBotStatus(data, botConfig);
+
 				return data;
 			} catch (err) {
 				return Promise.reject(err);
@@ -149,6 +152,7 @@ class AWSLexProvider {
 				const response = { ...data, ...{ audioStream: audioArray } };
 
 				this.reportBotStatus(response, botConfig);
+
 				return response;
 			} catch (err) {
 				return Promise.reject(err);

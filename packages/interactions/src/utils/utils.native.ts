@@ -29,6 +29,7 @@ export const convert = async (stream: object): Promise<Uint8Array> => {
 
 export const base64ToArrayBuffer = (base64: string): Uint8Array => {
 	const binaryString: string = decode(base64);
+
 	return Uint8Array.from(binaryString, c => c.charCodeAt(0));
 };
 
