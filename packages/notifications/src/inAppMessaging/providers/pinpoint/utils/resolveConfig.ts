@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import {
 	InAppMessagingValidationErrorCode,
 	assertValidationError,
@@ -15,5 +16,6 @@ export const resolveConfig = () => {
 		Amplify.getConfig().Notifications?.InAppMessaging?.Pinpoint ?? {};
 	assertValidationError(!!appId, InAppMessagingValidationErrorCode.NoAppId);
 	assertValidationError(!!region, InAppMessagingValidationErrorCode.NoRegion);
+
 	return { appId, region };
 };

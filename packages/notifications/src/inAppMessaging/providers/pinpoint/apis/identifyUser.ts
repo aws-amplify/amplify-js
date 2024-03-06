@@ -3,9 +3,10 @@
 
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import {
-	updateEndpoint,
 	UpdateEndpointException,
+	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { InAppMessagingValidationErrorCode } from '../../../errors';
 import {
 	CATEGORY,

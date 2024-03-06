@@ -5,6 +5,8 @@ import { ConsoleLogger } from '@aws-amplify/core';
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty.js';
+import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import {
 	InAppMessage,
 	InAppMessageAction,
@@ -14,7 +16,7 @@ import {
 	InAppMessagingEvent,
 } from '../../../types';
 import { MetricsComparator, PinpointMessageEvent } from '../types';
-import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { resolveConfig } from './resolveConfig';
 import { resolveCredentials } from './resolveCredentials';
 import { CATEGORY } from './constants';
@@ -66,6 +68,7 @@ export const recordAnalyticsEvent = (
 export const getStartOfDay = (): string => {
 	const now = new Date();
 	now.setHours(0, 0, 0, 0);
+
 	return now.toISOString();
 };
 
@@ -78,6 +81,7 @@ export const matchesEventType = (
 	if (!eventNameMemo.hasOwnProperty(memoKey)) {
 		eventNameMemo[memoKey] = !!EventType?.Values?.includes(eventType);
 	}
+
 	return eventNameMemo[memoKey];
 };
 
@@ -102,6 +106,7 @@ export const matchesAttributes = (
 				Values?.includes(attributes[key]),
 			);
 	}
+
 	return eventAttributesMemo[memoKey];
 };
 
@@ -124,10 +129,12 @@ export const matchesMetrics = (
 			!Metrics ||
 			Object.entries(Metrics).every(([key, { ComparisonOperator, Value }]) => {
 				const compare = getComparator(ComparisonOperator);
+
 				// if there is some unknown comparison operator, treat as a comparison failure
 				return compare && !!Value ? compare(Value, metrics[key]) : false;
 			});
 	}
+
 	return eventMetricsMemo[memoKey];
 };
 
@@ -156,6 +163,7 @@ export const isBeforeEndDate = ({
 	if (!Schedule?.EndDate) {
 		return true;
 	}
+
 	return new Date() < new Date(Schedule.EndDate);
 };
 
@@ -205,6 +213,7 @@ export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 	if (isQuietTime) {
 		logger.debug('message filtered due to quiet time', message);
 	}
+
 	return isQuietTime;
 };
 
@@ -315,6 +324,7 @@ export const extractContent = ({
 					},
 				};
 			}
+
 			return extractedContent;
 		}) ?? []
 	);

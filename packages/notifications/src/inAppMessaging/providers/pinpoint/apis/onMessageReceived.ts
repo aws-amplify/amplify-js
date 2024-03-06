@@ -25,5 +25,6 @@ export function onMessageReceived(
 	input: OnMessageReceivedInput,
 ): OnMessageReceivedOutput {
 	assertIsInitialized();
+
 	return addEventListener('messageReceived', input);
 }

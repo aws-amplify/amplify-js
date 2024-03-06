@@ -25,5 +25,6 @@ export function onMessageDisplayed(
 	input: OnMessageDisplayedInput,
 ): OnMessageDisplayedOutput {
 	assertIsInitialized();
+
 	return addEventListener('messageDisplayed', input);
 }

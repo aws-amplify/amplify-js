@@ -40,7 +40,10 @@ export const addEventListener = <EventHandler extends Function>(
 		},
 	};
 	eventListeners[type].add(listener);
+
 	return {
-		remove: () => listener.remove(),
+		remove: () => {
+			listener.remove();
+		},
 	};
 };

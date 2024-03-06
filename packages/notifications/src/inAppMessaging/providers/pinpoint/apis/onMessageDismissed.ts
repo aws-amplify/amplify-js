@@ -25,5 +25,6 @@ export function onMessageDismissed(
 	input: OnMessageDismissedInput,
 ): OnMessageDismissedOutput {
 	assertIsInitialized();
+
 	return addEventListener('messageDismissed', input);
 }

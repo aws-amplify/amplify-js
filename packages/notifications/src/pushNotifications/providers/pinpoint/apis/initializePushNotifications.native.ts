@@ -5,6 +5,7 @@ import { ConsoleLogger } from '@aws-amplify/core';
 import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
 import { loadAmplifyPushNotification } from '@aws-amplify/react-native';
+
 import {
 	EventListenerRemover,
 	addEventListener,
@@ -40,6 +41,7 @@ const BACKGROUND_TASK_TIMEOUT = 25; // seconds
 export const initializePushNotifications = (): void => {
 	if (isInitialized()) {
 		logger.info('Push notifications have already been enabled');
+
 		return;
 	}
 	addNativeListeners();
@@ -86,13 +88,11 @@ const addNativeListeners = (): void => {
 						// more than 30 seconds so we reject with a error in a shorter amount of time to prevent this from
 						// happening
 						new Promise((_, reject) => {
-							setTimeout(
-								() =>
-									reject(
-										`onNotificationReceivedInBackground handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`,
-									),
-								BACKGROUND_TASK_TIMEOUT * 1000,
-							);
+							setTimeout(() => {
+								reject(
+									`onNotificationReceivedInBackground handlers should complete their work within ${BACKGROUND_TASK_TIMEOUT} seconds, but they did not.`,
+								);
+							}, BACKGROUND_TASK_TIMEOUT * 1000);
 						}),
 					]);
 				} catch (err) {

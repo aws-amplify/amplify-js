@@ -1,12 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import { ConsoleLogger, defaultStorage } from '@aws-amplify/core';
+import { SessionState } from '@aws-amplify/core/internals/utils';
+
 import { InAppMessage, InAppMessagingEvent } from '../../../types';
 import {
-	InAppMessageCounts,
-	InAppMessageCountMap,
 	DailyInAppMessageCounter,
+	InAppMessageCountMap,
+	InAppMessageCounts,
 } from '../types';
+
 import {
 	extractContent,
 	extractMetadata,
@@ -16,9 +21,6 @@ import {
 	matchesEventType,
 	matchesMetrics,
 } from './helpers';
-import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
-import { defaultStorage, ConsoleLogger } from '@aws-amplify/core';
-import { SessionState } from '@aws-amplify/core/internals/utils';
 
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
@@ -65,6 +67,7 @@ export async function processInAppMessages(
 			}
 		}
 	}
+
 	return normalizeMessages(acc);
 }
 
@@ -86,6 +89,7 @@ export async function incrementMessageCounts(messageId: string): Promise<void> {
 function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
 	return messages.map(message => {
 		const { CampaignId, InAppMessage } = message;
+
 		return {
 			// Default to empty string in rare cases we don't have a campaignId
 			id: CampaignId ?? '',
@@ -104,7 +108,7 @@ async function isBelowCap({
 	SessionCap,
 	DailyCap,
 	TotalCap,
-}: PinpointInAppMessage): Promise<Boolean> {
+}: PinpointInAppMessage): Promise<boolean> {
 	const { sessionCount, dailyCount, totalCount } =
 		await getMessageCounts(CampaignId);
 
@@ -131,6 +135,7 @@ async function getMessageCounts(
 				dailyCount: await getDailyCount(),
 				totalCount: await getTotalCount(messageId),
 			};
+
 		return messageCounts;
 	} catch (err) {
 		logger.error('Failed to get message counts from storage', err);
@@ -185,18 +190,21 @@ async function getDailyCount(): Promise<number> {
 	const counter: DailyInAppMessageCounter = item
 		? JSON.parse(item)
 		: { count: 0, lastCountTimestamp: today };
+
 	// If the stored counter timestamp is today, use it as the count, otherwise reset to 0
 	return counter.lastCountTimestamp === today ? counter.count : 0;
 }
 
 async function getTotalCountMap(): Promise<InAppMessageCountMap> {
 	const item = await defaultStorage.getItem(MESSAGE_TOTAL_COUNT_KEY);
+
 	// Parse stored count map or initialize as empty
 	return item ? JSON.parse(item) : {};
 }
 
 async function getTotalCount(messageId: string): Promise<number> {
 	const countMap = await getTotalCountMap();
+
 	// Return stored count or initialize as empty count
 	return countMap[messageId] || 0;
 }
@@ -204,5 +212,6 @@ async function getTotalCount(messageId: string): Promise<number> {
 const getStartOfDay = (): string => {
 	const now = new Date();
 	now.setHours(0, 0, 0, 0);
+
 	return now.toISOString();
 };

@@ -25,5 +25,6 @@ export function onMessageActionTaken(
 	input: OnMessageActionTakenInput,
 ): OnMessageActionTakenOutput {
 	assertIsInitialized();
+
 	return addEventListener('messageActionTaken', input);
 }
