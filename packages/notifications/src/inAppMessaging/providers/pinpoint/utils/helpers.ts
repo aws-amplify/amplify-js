@@ -78,7 +78,7 @@ export const matchesEventType = (
 ) => {
 	const { EventType } = Schedule?.EventFilter?.Dimensions ?? {};
 	const memoKey = `${CampaignId}:${eventType}`;
-	if (!eventNameMemo.hasOwnProperty(memoKey)) {
+	if (!Object.prototype.hasOwnProperty.call(eventNameMemo, memoKey)) {
 		eventNameMemo[memoKey] = !!EventType?.Values?.includes(eventType);
 	}
 
@@ -99,7 +99,7 @@ export const matchesAttributes = (
 		return false;
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(attributes)}`;
-	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
+	if (!Object.prototype.hasOwnProperty.call(eventAttributesMemo, memoKey)) {
 		eventAttributesMemo[memoKey] =
 			!Attributes ||
 			Object.entries(Attributes).every(([key, { Values }]) =>
@@ -124,7 +124,7 @@ export const matchesMetrics = (
 		return false;
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(metrics)}`;
-	if (!eventMetricsMemo.hasOwnProperty(memoKey)) {
+	if (!Object.prototype.hasOwnProperty.call(eventMetricsMemo, memoKey)) {
 		eventMetricsMemo[memoKey] =
 			!Metrics ||
 			Object.entries(Metrics).every(([key, { ComparisonOperator, Value }]) => {
@@ -209,12 +209,12 @@ export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 		end.setDate(end.getDate() + 1);
 	}
 
-	const isQuietTime = now >= start && now <= end;
-	if (isQuietTime) {
+	const isDuringQuietTime = now >= start && now <= end;
+	if (isDuringQuietTime) {
 		logger.debug('message filtered due to quiet time', message);
 	}
 
-	return isQuietTime;
+	return isDuringQuietTime;
 };
 
 export const clearMemo = () => {
@@ -331,12 +331,12 @@ export const extractContent = ({
 };
 
 export const extractMetadata = ({
-	InAppMessage,
+	InAppMessage: campaignInAppMessage,
 	Priority,
 	Schedule,
 	TreatmentId,
 }: PinpointInAppMessage): InAppMessage['metadata'] => ({
-	customData: InAppMessage?.CustomConfig,
+	customData: campaignInAppMessage?.CustomConfig,
 	endDate: Schedule?.EndDate,
 	priority: Priority,
 	treatmentId: TreatmentId,

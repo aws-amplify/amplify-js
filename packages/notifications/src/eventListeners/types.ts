@@ -4,7 +4,9 @@
 import { InAppMessageInteractionEvent } from '../inAppMessaging/types';
 import { PushNotificationEvent } from '../pushNotifications/types';
 
-export interface EventListener<EventHandler extends Function> {
+export type EventListenerHandler = (...args: any[]) => unknown;
+
+export interface EventListener<EventHandler extends EventListenerHandler> {
 	handleEvent: EventHandler;
 	remove(): void;
 }

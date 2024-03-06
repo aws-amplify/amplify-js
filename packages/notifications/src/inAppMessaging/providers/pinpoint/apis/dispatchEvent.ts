@@ -15,6 +15,7 @@ import {
 	getConflictHandler,
 	processInAppMessages,
 } from '../utils';
+
 import { syncMessages } from './syncMessages';
 import { setConflictHandler } from './setConflictHandler';
 

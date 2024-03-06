@@ -34,8 +34,7 @@ export async function processInAppMessages(
 ): Promise<InAppMessage[]> {
 	let highestPrioritySeen: number | undefined;
 	let acc: PinpointInAppMessage[] = [];
-	for (let index = 0; index < messages.length; index++) {
-		const message = messages[index];
+	for (const message of messages) {
 		const messageQualifies =
 			matchesEventType(message, event) &&
 			matchesAttributes(message, event) &&
@@ -88,15 +87,15 @@ export async function incrementMessageCounts(messageId: string): Promise<void> {
 
 function normalizeMessages(messages: PinpointInAppMessage[]): InAppMessage[] {
 	return messages.map(message => {
-		const { CampaignId, InAppMessage } = message;
+		const { CampaignId, InAppMessage: campaignInAppMessage } = message;
 
 		return {
 			// Default to empty string in rare cases we don't have a campaignId
 			id: CampaignId ?? '',
 			content: extractContent(message),
 			// Default to TOP_BANNER layout in rare cases we don't have a Layout
-			layout: InAppMessage?.Layout
-				? interpretLayout(InAppMessage.Layout)
+			layout: campaignInAppMessage?.Layout
+				? interpretLayout(campaignInAppMessage.Layout)
 				: 'TOP_BANNER',
 			metadata: extractMetadata(message),
 		};

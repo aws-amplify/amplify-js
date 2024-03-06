@@ -5,6 +5,7 @@ import { addEventListener } from '../../../../eventListeners';
 import { OnMessageDismissedOutput } from '../types/outputs';
 import { OnMessageDismissedInput } from '../types/inputs';
 import { assertIsInitialized } from '../../../utils';
+import { InAppMessagingValidationErrorCode } from '../../../errors';
 
 /**
  * Registers a callback that will be invoked on `messageDismissed` events.

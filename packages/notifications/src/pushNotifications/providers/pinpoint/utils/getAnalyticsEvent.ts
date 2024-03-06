@@ -39,7 +39,7 @@ const getAnalyticsEventAttributes = (
 	if (!data) {
 		return;
 	}
-	if (data.hasOwnProperty(ANDROID_CAMPAIGN_ID_KEY)) {
+	if (Object.prototype.hasOwnProperty.call(data, ANDROID_CAMPAIGN_ID_KEY)) {
 		return {
 			source: '_campaign',
 			attributes: {
