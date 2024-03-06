@@ -1,26 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
-
 import { validateCoordinates } from './util';
-
 import {
-	Place,
-	GeoConfig,
 	Coordinates,
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
+	DeleteGeofencesResults,
+	GeoConfig,
 	GeoProvider,
-	MapStyle,
+	Geofence,
 	GeofenceId,
 	GeofenceInput,
 	GeofenceOptions,
-	SaveGeofencesResults,
-	Geofence,
 	ListGeofenceOptions,
 	ListGeofenceResults,
-	DeleteGeofencesResults,
+	MapStyle,
+	Place,
+	SaveGeofencesResults,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
 	searchByPlaceIdOptions,
 } from './types';
 
@@ -90,7 +89,6 @@ export class GeoClass {
 		this._pluggables = this._pluggables.filter(
 			pluggable => pluggable.getProviderName() !== providerName,
 		);
-		return;
 	}
 
 	/**
@@ -194,6 +192,7 @@ export class GeoClass {
 		const [lng, lat] = coordinates;
 		try {
 			validateCoordinates(lng, lat);
+
 			return await prov.searchByCoordinates(coordinates, options);
 		} catch (error) {
 			logger.debug(error);

@@ -1,34 +1,33 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
-
-import { Amplify, fetchAuthSession, ConsoleLogger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
 import { GeoAction } from '@aws-amplify/core/internals/utils';
 import {
-	Place as PlaceResult,
-	LocationClient,
-	SearchPlaceIndexForTextCommand,
-	SearchPlaceIndexForTextCommandInput,
-	SearchPlaceIndexForSuggestionsCommand,
-	SearchPlaceIndexForSuggestionsCommandInput,
-	SearchPlaceIndexForPositionCommand,
-	SearchPlaceIndexForPositionCommandInput,
-	BatchPutGeofenceCommand,
-	BatchPutGeofenceCommandInput,
-	BatchPutGeofenceRequestEntry,
-	BatchPutGeofenceCommandOutput,
-	GetPlaceCommand,
-	GetPlaceCommandInput,
-	GetPlaceCommandOutput,
-	GetGeofenceCommand,
-	GetGeofenceCommandInput,
-	GetGeofenceCommandOutput,
-	ListGeofencesCommand,
-	ListGeofencesCommandInput,
-	ListGeofencesCommandOutput,
 	BatchDeleteGeofenceCommand,
 	BatchDeleteGeofenceCommandInput,
 	BatchDeleteGeofenceCommandOutput,
+	BatchPutGeofenceCommand,
+	BatchPutGeofenceCommandInput,
+	BatchPutGeofenceCommandOutput,
+	BatchPutGeofenceRequestEntry,
+	GetGeofenceCommand,
+	GetGeofenceCommandInput,
+	GetGeofenceCommandOutput,
+	GetPlaceCommand,
+	GetPlaceCommandInput,
+	GetPlaceCommandOutput,
+	ListGeofencesCommand,
+	ListGeofencesCommandInput,
+	ListGeofencesCommandOutput,
+	LocationClient,
+	Place as PlaceResult,
+	SearchPlaceIndexForPositionCommand,
+	SearchPlaceIndexForPositionCommandInput,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForSuggestionsCommandInput,
+	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForTextCommandInput,
 } from '@aws-sdk/client-location';
 
 import {
@@ -37,28 +36,27 @@ import {
 	validateGeofenceId,
 	validateGeofencesInput,
 } from '../../util';
-
 import {
-	GeoConfig,
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
-	GeoProvider,
-	Place,
+	AmazonLocationServiceBatchGeofenceErrorMessages,
+	AmazonLocationServiceDeleteGeofencesResults,
+	AmazonLocationServiceGeofence,
+	AmazonLocationServiceGeofenceOptions,
+	AmazonLocationServiceGeofenceStatus,
+	AmazonLocationServiceListGeofenceOptions,
 	AmazonLocationServiceMapStyle,
 	Coordinates,
-	SearchForSuggestionsResults,
+	GeoConfig,
+	GeoProvider,
 	GeofenceId,
 	GeofenceInput,
-	AmazonLocationServiceGeofenceOptions,
-	AmazonLocationServiceListGeofenceOptions,
-	ListGeofenceResults,
-	AmazonLocationServiceGeofenceStatus,
-	SaveGeofencesResults,
-	AmazonLocationServiceGeofence,
 	GeofencePolygon,
-	AmazonLocationServiceDeleteGeofencesResults,
+	ListGeofenceResults,
+	Place,
+	SaveGeofencesResults,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
+	SearchForSuggestionsResults,
 	searchByPlaceIdOptions,
-	AmazonLocationServiceBatchGeofenceErrorMessages,
 } from '../../types';
 
 const logger = new ConsoleLogger('AmazonLocationServiceProvider');
@@ -78,7 +76,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * @param {Object} config - Configuration object for Geo
 	 */
 	constructor(config?: GeoConfig) {
-		this._config = config ? config : {};
+		this._config = config || {};
 		logger.debug('Geo Options', this._config);
 	}
 
@@ -107,10 +105,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 
 		const mapStyles: AmazonLocationServiceMapStyle[] = [];
 		const availableMaps = this._config.maps.items;
-		const region = this._config.region;
+		const { region } = this._config;
 
 		for (const mapName in availableMaps) {
-			const style = availableMaps[mapName].style;
+			const { style } = availableMaps[mapName];
 			mapStyles.push({ mapName, style, region });
 		}
 
@@ -125,8 +123,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		this._verifyMapResources();
 
 		const mapName = this._config.maps.default;
-		const style = this._config.maps.items[mapName].style;
-		const region = this._config.region;
+		const { style } = this._config.maps.items[mapName];
+		const { region } = this._config;
 
 		return { mapName, style, region };
 	}
@@ -306,7 +304,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		if (place) {
 			return camelcaseKeys(place, { deep: true }) as unknown as Place;
 		}
-		return;
 	}
 
 	/**
@@ -443,6 +440,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 							},
 						});
 					});
+
 					return;
 				}
 
@@ -681,6 +679,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 						};
 						results.errors.push(errorObject);
 					});
+
 					return;
 				}
 
@@ -692,6 +691,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				);
 			}),
 		);
+
 		return results;
 	}
 
@@ -700,16 +700,18 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
 		try {
-			const credentials = (await fetchAuthSession()).credentials;
+			const { credentials } = await fetchAuthSession();
 			if (!credentials) return false;
 			logger.debug(
 				'Set credentials for storage. Credentials are:',
 				credentials,
 			);
 			this._credentials = credentials;
+
 			return true;
 		} catch (error) {
 			logger.debug('Ensure credentials error. Credentials are:', error);
+
 			return false;
 		}
 	}
@@ -791,6 +793,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		} catch (error) {
 			throw error;
 		}
+
 		return response;
 	}
 
@@ -818,6 +821,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		} catch (error) {
 			throw error;
 		}
+
 		return response;
 	}
 }
