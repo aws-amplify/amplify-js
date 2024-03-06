@@ -7,7 +7,7 @@
 export function makeCamelCase(obj?: any, keys?: string[]) {
 	if (!obj) return undefined;
 	const newObj = {};
-	const keysToRename = keys ? keys : Object.keys(obj);
+	const keysToRename = keys || Object.keys(obj);
 	keysToRename.forEach(key => {
 		if (obj.hasOwnProperty(key)) {
 			// change the key to camelcase.
@@ -15,6 +15,7 @@ export function makeCamelCase(obj?: any, keys?: string[]) {
 			Object.assign(newObj, { [camelCaseKey]: obj[key] });
 		}
 	});
+
 	return newObj;
 }
 
@@ -23,6 +24,7 @@ export function makeCamelCase(obj?: any, keys?: string[]) {
  */
 export function makeCamelCaseArray(objArr?: object[], keys?: string[]) {
 	if (!objArr) return undefined;
+
 	return objArr.map(obj => makeCamelCase(obj, keys));
 }
 

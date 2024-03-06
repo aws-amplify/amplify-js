@@ -11,6 +11,7 @@ import {
 	TableCell,
 } from '../types';
 import { Block, BlockList, TextDetectionList } from '../types/AWSTypes';
+
 import { makeCamelCase, makeCamelCaseArray } from './Utils';
 
 function getBoundingBox(geometry?: Geometry): BoundingBox | undefined {
@@ -19,6 +20,7 @@ function getBoundingBox(geometry?: Geometry): BoundingBox | undefined {
 
 function getPolygon(geometry?: Geometry): Polygon | undefined {
 	if (!geometry?.Polygon) return undefined;
+
 	return makeCamelCaseArray(Array.from(geometry.Polygon)) as Polygon;
 }
 
@@ -69,6 +71,7 @@ export function categorizeRekognitionBlocks(
 		0,
 		response.text.fullText.length - 1,
 	);
+
 	return response;
 }
 
@@ -102,9 +105,9 @@ export function categorizeTextractBlocks(
 	 * Note that we do not map `WORD` and `TABLE` in `blockMap` because they will not be referenced by any other
 	 * block except the Page block.
 	 */
-	const tableBlocks: BlockList = Array();
-	const keyValueBlocks: BlockList = Array();
-	const blockMap: { [id: string]: Block } = {};
+	const tableBlocks: BlockList = [];
+	const keyValueBlocks: BlockList = [];
+	const blockMap: Record<string, Block> = {};
 
 	blocks.forEach(block => {
 		switch (block.BlockType) {
@@ -131,8 +134,7 @@ export function categorizeTextractBlocks(
 				}
 				break;
 			case 'SELECTION_ELEMENT':
-				const selectionStatus =
-					block.SelectionStatus === 'SELECTED' ? true : false;
+				const selectionStatus = block.SelectionStatus === 'SELECTED';
 				if (!response.text.selections) response.text.selections = [];
 				response.text.selections.push({
 					selected: selectionStatus,
@@ -166,14 +168,14 @@ export function categorizeTextractBlocks(
 
 	// Post-process complex structures if they exist.
 	if (tableBlocks.length !== 0) {
-		const tableResponse: Table[] = Array();
+		const tableResponse: Table[] = [];
 		tableBlocks.forEach(table => {
 			tableResponse.push(constructTable(table, blockMap));
 		});
 		response.text.tables = tableResponse;
 	}
 	if (keyValueBlocks.length !== 0) {
-		const keyValueResponse: KeyValue[] = Array();
+		const keyValueResponse: KeyValue[] = [];
 		keyValueBlocks.forEach(keyValue => {
 			// We need the KeyValue blocks of EntityType = `KEY`, which has both key and value references.
 			if (keyValue.EntityTypes) {
@@ -185,6 +187,7 @@ export function categorizeTextractBlocks(
 		});
 		response.text.keyValues = keyValueResponse;
 	}
+
 	return response;
 }
 
@@ -193,10 +196,7 @@ export function categorizeTextractBlocks(
  * @param {Block} table - Table block that has references (`Relationships`) to its cells
  * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
-function constructTable(
-	table: Block,
-	blockMap: { [key: string]: Block },
-): Table {
+function constructTable(table: Block, blockMap: Record<string, Block>): Table {
 	let tableMatrix: TableCell[][];
 	tableMatrix = [];
 	// visit each of the cell associated with the table's relationship.
@@ -225,6 +225,7 @@ function constructTable(
 	const columnSize = tableMatrix[0].length;
 	const boundingBox = getBoundingBox(table.Geometry);
 	const polygon = getPolygon(table.Geometry);
+
 	// Note that we leave spanned cells undefined for distinction
 	return {
 		size: { rows: rowSize, columns: columnSize },
@@ -241,11 +242,11 @@ function constructTable(
  */
 function constructKeyValue(
 	keyBlock: Block,
-	blockMap: { [key: string]: Block },
+	blockMap: Record<string, Block>,
 ): KeyValue {
-	let keyText: string = '';
-	let valueText: string = '';
-	let valueSelected: boolean = false;
+	let keyText = '';
+	let valueText = '';
+	let valueSelected = false;
 	for (const keyValueRelation of keyBlock.Relationships ?? []) {
 		if (keyValueRelation.Type === 'CHILD') {
 			// relation refers to key
@@ -261,6 +262,7 @@ function constructKeyValue(
 			}
 		}
 	}
+
 	return {
 		key: keyText,
 		value: { text: valueText, selected: valueSelected },
@@ -276,10 +278,10 @@ function constructKeyValue(
  */
 function extractContentsFromBlock(
 	block: Block,
-	blockMap: { [id: string]: Block },
+	blockMap: Record<string, Block>,
 ): Content {
-	let words: string = '';
-	let isSelected: boolean = false;
+	let words = '';
+	let isSelected = false;
 
 	if (!block.Relationships) {
 		// some block might have no content
@@ -291,11 +293,12 @@ function extractContentsFromBlock(
 			if (contentBlock.BlockType === 'WORD') {
 				words += contentBlock.Text + ' ';
 			} else if (contentBlock.BlockType === 'SELECTION_ELEMENT') {
-				isSelected = contentBlock.SelectionStatus === 'SELECTED' ? true : false;
+				isSelected = contentBlock.SelectionStatus === 'SELECTED';
 			}
 		}
 	}
 
 	words = words.substr(0, words.length - 1); // remove trailing space.
+
 	return { text: words, selected: isSelected };
 }

@@ -26,6 +26,7 @@ import {
 	DetectDocumentTextCommandInput,
 	TextractClient,
 } from '@aws-sdk/client-textract';
+
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import {
@@ -56,6 +57,7 @@ import {
 	Image,
 	TextDetectionList,
 } from '../types/AWSTypes';
+
 import {
 	categorizeRekognitionBlocks,
 	categorizeTextractBlocks,
@@ -84,12 +86,15 @@ export class AmazonAIIdentifyPredictionsProvider {
 
 		if (isIdentifyTextInput(input)) {
 			logger.debug('identifyText');
+
 			return this.identifyText(input);
 		} else if (isIdentifyLabelsInput(input)) {
 			logger.debug('identifyLabels');
+
 			return this.identifyLabels(input);
 		} else {
 			logger.debug('identifyEntities');
+
 			return this.identifyEntities(input);
 		}
 	}
@@ -122,21 +127,27 @@ export class AmazonAIIdentifyPredictionsProvider {
 							},
 						});
 					})
-					.catch(err => rej(err));
+					.catch(err => {
+						rej(err);
+					});
 			} else if (isFileSource(source)) {
 				blobToArrayBuffer(source.file)
 					.then(buffer => {
 						res({ Bytes: new Uint8Array(buffer) });
 					})
-					.catch(err => rej(err));
+					.catch(err => {
+						rej(err);
+					});
 			} else if (isIdentifyBytesSource(source)) {
-				const bytes = source.bytes;
+				const { bytes } = source;
 				if (bytes instanceof Blob) {
 					blobToArrayBuffer(bytes)
 						.then(buffer => {
 							res({ Bytes: new Uint8Array(buffer) });
 						})
-						.catch(err => rej(err));
+						.catch(err => {
+							rej(err);
+						});
 				}
 				if (bytes instanceof ArrayBuffer || bytes instanceof Buffer) {
 					res({ Bytes: new Uint8Array(bytes) } as Image);
@@ -237,6 +248,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 
 			const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
 			const { Blocks } = await this.textractClient.send(analyzeDocumentCommand);
+
 			return categorizeTextractBlocks(Blocks as BlockList);
 		}
 	}
@@ -285,6 +297,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 			data.forEach(val => {
 				identifyResult = { ...identifyResult, ...val };
 			});
+
 			return identifyResult;
 		});
 	}
@@ -306,6 +319,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 					instance =>
 						makeCamelCase(instance.BoundingBox) as BoundingBox | undefined,
 				) || [];
+
 			return {
 				name: label.Name,
 				boundingBoxes: boxes,
@@ -315,6 +329,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 				},
 			};
 		});
+
 		return { labels: detectLabelData };
 	}
 
@@ -401,6 +416,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 							},
 						}) as IdentifyEntity,
 				) ?? [];
+
 			return { entities: faces };
 		} else if (
 			isIdentifyFromCollection(input.entities) &&
@@ -425,6 +441,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 					const externalImageId = match.Face?.ExternalImageId
 						? this.decodeExternalImageId(match.Face.ExternalImageId)
 						: undefined;
+
 					return {
 						boundingBox: makeCamelCase(match.Face?.BoundingBox),
 						metadata: {
@@ -433,6 +450,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 						},
 					} as IdentifyEntity;
 				}) ?? [];
+
 			return { entities: faces };
 		} else {
 			const detectFacesCommand = new DetectFacesCommand(param);
@@ -458,6 +476,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 					faceAttributes.emotions = detail.Emotions?.map(
 						emotion => emotion.Type,
 					);
+
 					return {
 						boundingBox: makeCamelCase(detail.BoundingBox),
 						landmarks: makeCamelCaseArray(detail.Landmarks),
@@ -469,6 +488,7 @@ export class AmazonAIIdentifyPredictionsProvider {
 						},
 					} as IdentifyEntity;
 				}) ?? [];
+
 			return { entities: faces };
 		}
 	}

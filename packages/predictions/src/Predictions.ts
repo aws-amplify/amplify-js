@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger } from '@aws-amplify/core';
+
 import {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
@@ -52,6 +53,7 @@ export class PredictionsClass {
 	public identify(
 		input: IdentifyEntitiesInput,
 	): Promise<IdentifyEntitiesOutput>;
+
 	public identify(
 		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput,
 	): Promise<
