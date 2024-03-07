@@ -15,6 +15,8 @@ export {
 } from './options';
 export {
 	DownloadDataOutput,
+	DownloadDataOutputKey,
+	DownloadDataOutputPath,
 	GetUrlOutput,
 	UploadDataOutput,
 	ListOutputItem,
@@ -32,6 +34,8 @@ export {
 	ListPaginateInput,
 	RemoveInput,
 	DownloadDataInput,
+	DownloadDataInputKey,
+	DownloadDataInputPath,
 	UploadDataInput,
 } from './inputs';
 export { S3Exception } from './errors';
