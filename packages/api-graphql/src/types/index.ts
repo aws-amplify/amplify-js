@@ -459,11 +459,11 @@ export type QueryArgs = Record<string, unknown>;
 
 export type FieldSelectionParams = {
 	selectionSet?: string[];
-}
+};
 
 export type ConfigurableHeadersParams = {
 	headers?: CustomHeaders;
-}
+};
 
 export type ListArgs = {
 	filter?: {};
