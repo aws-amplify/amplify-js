@@ -3,7 +3,8 @@
 
 export {
 	GetUrlOptions,
-	UploadDataOptions,
+	UploadDataOptionsPath,
+	UploadDataOptionsKey,
 	GetPropertiesOptions,
 	ListAllOptions,
 	ListPaginateOptions,
@@ -17,6 +18,8 @@ export {
 	DownloadDataOutput,
 	GetUrlOutput,
 	UploadDataOutput,
+	UploadDataOutputKey,
+	UploadDataOutputPath,
 	ListOutputItem,
 	ListAllOutput,
 	ListPaginateOutput,
@@ -33,5 +36,7 @@ export {
 	RemoveInput,
 	DownloadDataInput,
 	UploadDataInput,
+	UploadDataInputPath,
+	UploadDataInputKey,
 } from './inputs';
 export { S3Exception } from './errors';

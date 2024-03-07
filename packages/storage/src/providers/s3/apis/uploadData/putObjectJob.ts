@@ -5,10 +5,15 @@ import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput } from '../../types';
-import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
-import { ItemKey as S3Item } from '../../types/outputs';
+import {
+	calculateContentMd5,
+	resolveS3ConfigAndInput,
+	validateStorageOperationInput,
+} from '../../utils';
+import { ItemKey, ItemPath } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
+import { STORAGE_INPUT_KEY } from '../../utils/constants';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -17,15 +22,21 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
  */
 export const putObjectJob =
 	(
-		{ options: uploadDataOptions, key, data }: UploadDataInput,
+		uploadDataInput: UploadDataInput,
 		abortSignal: AbortSignal,
 		totalLength?: number,
 	) =>
-	async (): Promise<S3Item> => {
-		const { bucket, keyPrefix, s3Config, isObjectLockEnabled } =
+	async (): Promise<ItemKey | ItemPath> => {
+		const { options: uploadDataOptions, data } = uploadDataInput;
+		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
+		const { inputType, objectKey } = validateStorageOperationInput(
+			uploadDataInput,
+			identityId,
+		);
 
-		const finalKey = keyPrefix + key;
+		const finalKey =
+			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 		const {
 			contentDisposition,
 			contentEncoding,
@@ -55,12 +66,15 @@ export const putObjectJob =
 			},
 		);
 
-		return {
-			key,
+		const result = {
 			eTag,
 			versionId,
 			contentType,
 			metadata,
 			size: totalLength,
 		};
+
+		return inputType === STORAGE_INPUT_KEY
+			? { key: objectKey, ...result }
+			: { path: finalKey, ...result };
 	};

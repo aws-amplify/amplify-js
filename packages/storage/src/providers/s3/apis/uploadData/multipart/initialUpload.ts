@@ -18,8 +18,8 @@ interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
 	data: StorageUploadDataPayload;
 	bucket: string;
-	accessLevel: StorageAccessLevel;
-	keyPrefix: string;
+	accessLevel?: StorageAccessLevel;
+	keyPrefix?: string;
 	key: string;
 	contentType?: string;
 	contentDisposition?: string;

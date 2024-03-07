@@ -94,7 +94,7 @@ interface UploadsCacheKeyOptions {
 	size: number;
 	contentType?: string;
 	bucket: string;
-	accessLevel: StorageAccessLevel;
+	accessLevel?: StorageAccessLevel;
 	key: string;
 	file?: File;
 }
@@ -112,10 +112,18 @@ export const getUploadsCacheKey = ({
 	accessLevel,
 	key,
 }: UploadsCacheKeyOptions) => {
+	let levelStr;
 	const resolvedContentType =
 		contentType ?? file?.type ?? 'application/octet-stream';
-	const levelStr = accessLevel === 'guest' ? 'public' : accessLevel;
+
+	if (accessLevel === undefined) {
+		levelStr = 'custom';
+	} else {
+		levelStr = accessLevel === 'guest' ? 'public' : accessLevel;
+	}
+
 	const baseId = `${size}_${resolvedContentType}_${bucket}_${levelStr}_${key}`;
+
 	if (file) {
 		return `${file.name}_${file.lastModified}_${baseId}`;
 	} else {
