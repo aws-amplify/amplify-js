@@ -12,8 +12,8 @@ on:
 
 jobs:
   e2e:
-    # Skip the release workflow if the most recent commit in the triggering branch contains [skip build]
-    if: ${{ ! contains(github.event.commits[0].message, '[skip release]') }}
+    # Skip the release workflow if the head commit in the triggering branch contains [skip release]
+    if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
   release:
