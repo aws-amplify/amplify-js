@@ -52,7 +52,7 @@ module.exports = {
 		'packages/interactions',
 		'packages/notifications',
 		'packages/predictions',
-		'packages/pubsub',
+		// 'packages/pubsub',
 		'packages/react-native',
 		'packages/rtn-push-notification',
 		'packages/rtn-web-browser',
