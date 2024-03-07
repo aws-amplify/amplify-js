@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - release
+      - chore/release-workflow-tweaks
 
 jobs:
   e2e:
