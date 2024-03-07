@@ -95,6 +95,7 @@ export type DownloadDataOptions = CommonOptions &
 
 /** @deprecated Use {@link DownloadDataOptions} instead. */
 export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions;
+export type DownloadDataOptionsPath = DownloadDataOptions;
 
 export type UploadDataOptions = WriteOptions &
 	CommonOptions &

@@ -6,7 +6,7 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput } from '../../types';
 import { calculateContentMd5, resolveS3ConfigAndInput } from '../../utils';
-import { Item as S3Item } from '../../types/outputs';
+import { ItemKey as S3Item } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 

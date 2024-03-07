@@ -8,7 +8,7 @@ export {
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
-	DownloadDataOptions,
+	DownloadDataOptionsPath,
 	DownloadDataOptionsKey,
 	CopyDestinationOptions,
 	CopySourceOptions,

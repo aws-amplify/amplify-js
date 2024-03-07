@@ -7,14 +7,12 @@ import {
 	StorageOperationInputKey,
 	StorageOperationInputPath,
 } from '../../../types/inputs';
+import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 import { STORAGE_INPUT_KEY, STORAGE_INPUT_PATH } from './constants';
 
 type Input = StrictUnion<StorageOperationInputKey | StorageOperationInputPath>;
-
-const isInputWithKey = (input: Input): input is StorageOperationInputKey => {
-	return input.key !== undefined;
-};
 
 const isInputWithPath = (input: Input): input is StorageOperationInputPath => {
 	return input.path !== undefined;
@@ -24,6 +22,11 @@ export const validateStorageOperationInput = (
 	input: Input,
 	identityId?: string,
 ) => {
+	assertValidationError(
+		!!(input as Input).key || !!(input as Input).path,
+		StorageValidationErrorCode.InvalidStorageOperationInput,
+	);
+
 	if (isInputWithPath(input)) {
 		const { path } = input;
 
@@ -31,9 +34,7 @@ export const validateStorageOperationInput = (
 			inputType: STORAGE_INPUT_PATH,
 			objectKey: typeof path === 'string' ? path : path({ identityId }),
 		};
-	} else if (isInputWithKey(input)) {
-		return { inputType: STORAGE_INPUT_KEY, objectKey: input.key };
 	} else {
-		throw new Error('invalid input');
+		return { inputType: STORAGE_INPUT_KEY, objectKey: input.key };
 	}
 };
