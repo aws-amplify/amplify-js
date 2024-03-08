@@ -1367,6 +1367,10 @@ const amplifyConfig = {
 				name: 'Status',
 				values: ['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED'],
 			},
+			ProductMetaStatus: {
+				name: 'ProductMetaStatus',
+				values: ['discontinued', 'in_production'],
+			},
 		},
 		nonModels: {
 			CommunityPostMetadata: {
@@ -1502,6 +1506,38 @@ const amplifyConfig = {
 				arguments: {
 					inputString: {
 						name: 'inputString',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+					},
+				},
+			},
+			echoNestedCustomTypes: {
+				name: 'echoNestedCustomTypes',
+				isArray: false,
+				type: {
+					nonModel: 'ProductTrackingMeta',
+				},
+				isRequired: false,
+				arguments: {
+					argumentContent: {
+						name: 'input',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+					},
+				},
+			},
+			echoModelHasNestedTypes: {
+				name: 'echoModelHasNestedTypes',
+				isArray: false,
+				type: {
+					model: 'Product',
+				},
+				isRequired: false,
+				arguments: {
+					argumentContent: {
+						name: 'input',
 						isArray: false,
 						type: 'String',
 						isRequired: true,
