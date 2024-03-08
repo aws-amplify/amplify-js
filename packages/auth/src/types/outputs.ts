@@ -2,41 +2,41 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AuthUserAttributeKey,
+	AuthNextResetPasswordStep,
 	AuthNextSignInStep,
 	AuthNextSignUpStep,
-	AuthNextResetPasswordStep,
 	AuthNextUpdateAttributeStep,
+	AuthUserAttributeKey,
 } from './models';
 
-export type AuthSignInOutput<
+export interface AuthSignInOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	isSignedIn: boolean;
 	nextStep: AuthNextSignInStep<UserAttributeKey>;
-};
+}
 
-export type AuthSignUpOutput<
+export interface AuthSignUpOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	isSignUpComplete: boolean;
 	userId?: string;
 	nextStep: AuthNextSignUpStep<UserAttributeKey>;
-};
+}
 
-export type AuthResetPasswordOutput<
+export interface AuthResetPasswordOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	isPasswordReset: boolean;
 	nextStep: AuthNextResetPasswordStep<UserAttributeKey>;
-};
+}
 
-export type AuthUpdateUserAttributeOutput<
+export interface AuthUpdateUserAttributeOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
-> = {
+> {
 	isUpdated: boolean;
 	nextStep: AuthNextUpdateAttributeStep<UserAttributeKey>;
-};
+}
 
 export type AuthUpdateUserAttributesOutput<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,

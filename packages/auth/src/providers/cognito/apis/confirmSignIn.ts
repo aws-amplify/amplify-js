@@ -1,10 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
 import {
-	VerifySoftwareTokenException,
-	RespondToAuthChallengeException,
 	AssociateSoftwareTokenException,
+	RespondToAuthChallengeException,
+	VerifySoftwareTokenException,
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
 import {
@@ -23,18 +26,12 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
-import { Amplify, Hub } from '@aws-amplify/core';
-import {
-	AMPLIFY_SYMBOL,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core/internals/utils';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
 	ChallengeParameters,
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
-import { getCurrentUser } from './getCurrentUser';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
@@ -89,9 +86,9 @@ export async function confirmSignIn(
 	try {
 		const {
 			Session,
-			ChallengeName,
+			ChallengeName: handledChallengeName,
 			AuthenticationResult,
-			ChallengeParameters,
+			ChallengeParameters: handledChallengeParameters,
 		} = await handleChallengeName(
 			username,
 			challengeName as ChallengeName,
@@ -107,7 +104,7 @@ export async function confirmSignIn(
 		setActiveSignInState({
 			signInSession: Session,
 			username,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 
@@ -133,8 +130,8 @@ export async function confirmSignIn(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		assertServiceError(error);

@@ -3,10 +3,11 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	HubInternal,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -85,7 +86,9 @@ export async function confirmSignUp(
 				!isAutoSignInStarted() ||
 				!isAutoSignInUserUsingConfirmSignUp(username)
 			) {
-				return resolve(signUpOut);
+				resolve(signUpOut);
+
+				return;
 			}
 
 			const stopListener = HubInternal.listen<AutoSignInEventData>(

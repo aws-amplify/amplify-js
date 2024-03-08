@@ -5,6 +5,7 @@ import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../../errors/AuthError';
+
 import { oAuthStore } from './oAuthStore';
 import { resolveAndClearInflightPromises } from './inflightPromise';
 

@@ -43,7 +43,7 @@ describe('APIClient', () => {
 			const normalized = normalizeMutationInput(
 				note,
 				noteModelDef,
-				modelIntroSchema,
+				modelIntroSchema
 			);
 
 			expect(normalized).toEqual(expectedInput);
@@ -427,6 +427,15 @@ describe('flattenItems', () => {
 			expect(selSet).toEqual(expected);
 		});
 
+		it('generates default selection set for nested custom types', () => {
+			const generated = generateSelectionSet(modelIntroSchema, 'Product');
+
+			const expected =
+				'sku factoryId warehouseId description trackingMeta { productMeta { releaseDate status deepMeta { content } } note } owner createdAt updatedAt';
+
+			expect(generated).toEqual(expected);
+		});
+
 		test('it should generate custom selection set - top-level fields', () => {
 			const selSet = generateSelectionSet(modelIntroSchema, 'Todo', [
 				'id',
@@ -476,6 +485,20 @@ describe('flattenItems', () => {
 
 			expect(selSet).toEqual(expected);
 		});
+
+		it('generates custom selection set for nested custom types', () => {
+			const generated = generateSelectionSet(modelIntroSchema, 'Product', [
+				'sku',
+				'trackingMeta.note',
+				'trackingMeta.productMeta.status',
+				'trackingMeta.productMeta.deepMeta.content',
+			]);
+
+			const expected =
+				'sku trackingMeta { note productMeta { status deepMeta { content } } }';
+
+			expect(generated).toEqual(expected);
+		});
 	});
 });
 
@@ -489,7 +512,7 @@ describe('generateGraphQLDocument()', () => {
 			models: {
 				User: userSchemaModel,
 				Product: productSchemaModel,
-			}
+			},
 		};
 
 		test.each([
@@ -501,12 +524,11 @@ describe('generateGraphQLDocument()', () => {
 				const document = generateGraphQLDocument(
 					mockModelDefinitions,
 					modelName,
-					modelOperation,
+					modelOperation
 				);
 
-				console.log(document);
 				expect(document.includes(expectedArgs)).toBe(true);
-			},
+			}
 		);
 	});
 });

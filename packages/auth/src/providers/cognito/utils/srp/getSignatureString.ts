@@ -7,6 +7,7 @@ import {
 	base64Decoder,
 	base64Encoder,
 } from '@aws-amplify/core/internals/utils';
+
 import { textEncoder } from '../textEncoder';
 
 export const getSignatureString = ({
@@ -45,14 +46,13 @@ export const getSignatureString = ({
 	awsCryptoHash.update(bufConcat);
 	const resultFromAWSCrypto = awsCryptoHash.digestSync();
 	const signatureString = base64Encoder.convert(resultFromAWSCrypto);
+
 	return signatureString;
 };
 
 const urlB64ToUint8Array = (base64String: string): Uint8Array => {
 	const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-	const base64 = (base64String + padding)
-		.replace(/\-/g, '+')
-		.replace(/_/g, '/');
+	const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
 	const rawData = base64Decoder.convert(base64);
 	const outputArray = new Uint8Array(rawData.length);
@@ -60,5 +60,6 @@ const urlB64ToUint8Array = (base64String: string): Uint8Array => {
 	for (let i = 0; i < rawData.length; ++i) {
 		outputArray[i] = rawData.charCodeAt(i);
 	}
+
 	return outputArray;
 };
