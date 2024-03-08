@@ -2,13 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
-	initializeModel,
-	flattenItems,
+	CustomOperation,
+	ModelIntrospectionSchema,
+} from '@aws-amplify/core/internals/utils';
+
+import {
 	authModeParams,
-	getCustomHeaders,
-	generateSelectionSet,
-	selectionSetIRToString,
 	defaultSelectionSetForNonModelWithIR,
+	flattenItems,
+	generateSelectionSet,
+	getCustomHeaders,
+	initializeModel,
+	selectionSetIRToString,
 } from '../APIClient';
 import {
 	AuthModeParams,
@@ -20,13 +25,6 @@ import {
 	V6Client,
 	V6ClientSSRRequest,
 } from '../../types';
-import {
-	ModelIntrospectionSchema,
-	SchemaModel,
-	SchemaNonModel,
-	CustomOperation,
-	CustomOperationArgument,
-} from '@aws-amplify/core/internals/utils';
 
 /**
  * Builds an operation function, embedded with all client and context data, that
@@ -168,9 +166,11 @@ function outerArguments(operation: CustomOperation): string {
 			const finalType = v.isArray
 				? `[${baseType}]${v.isArrayNullable ? '' : '!'}`
 				: baseType;
+
 			return `$${k}: ${finalType}`;
 		})
 		.join(', ');
+
 	return args.length > 0 ? `(${args})` : '';
 }
 
@@ -197,6 +197,7 @@ function innerArguments(operation: CustomOperation): string {
 	const args = Object.entries(operation.arguments)
 		.map(([k, v]) => `${k}: $${k}`)
 		.join(', ');
+
 	return args.length > 0 ? `(${args})` : '';
 }
 
@@ -234,6 +235,7 @@ function operationSelectionSet(
 		return '';
 	} else if (hasStringField(operation.type, 'nonModel')) {
 		const nonModel = modelIntrospection.nonModels[operation.type.nonModel];
+
 		return `{${selectionSetIRToString(
 			defaultSelectionSetForNonModelWithIR(nonModel, modelIntrospection),
 		)}}`;
@@ -266,6 +268,7 @@ function operationVariables(
 			throw new Error(`${operation.name} requires arguments '${argDef.name}'`);
 		}
 	}
+
 	return variables;
 }
 

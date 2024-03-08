@@ -3,25 +3,26 @@
 import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
 import {
-	Hub,
-	fetchAuthSession,
 	ConsoleLogger,
+	Hub,
 	HubPayload,
+	fetchAuthSession,
 } from '@aws-amplify/core';
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
-	base64Encoder,
-	GraphQLAuthMode,
+	AmplifyUrl,
 	CustomUserAgentDetails,
+	DocumentType,
+	GraphQLAuthMode,
 	NonRetryableError,
 	USER_AGENT_HEADER,
+	amplifyUuid,
+	base64Encoder,
 	getAmplifyUserAgent,
 	isNonRetryableError,
 	jitteredExponentialRetry,
-	DocumentType,
-	amplifyUuid,
-	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
+import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
 
 import {
 	CONTROL_MSG,
@@ -32,25 +33,24 @@ import {
 	AMPLIFY_SYMBOL,
 	AWS_APPSYNC_REALTIME_HEADERS,
 	CONNECTION_INIT_TIMEOUT,
-	DEFAULT_KEEP_ALIVE_TIMEOUT,
+	CONNECTION_STATE_CHANGE,
 	DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT,
+	DEFAULT_KEEP_ALIVE_TIMEOUT,
 	MAX_DELAY_MS,
 	MESSAGE_TYPES,
 	NON_RETRYABLE_CODES,
 	SOCKET_STATUS,
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
-	CONNECTION_STATE_CHANGE,
 } from '../constants';
 import {
-	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
+	ConnectionStateMonitor,
 } from '../../utils/ConnectionStateMonitor';
 import {
 	ReconnectEvent,
 	ReconnectionMonitor,
 } from '../../utils/ReconnectionMonitor';
-import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
 
 const logger = new ConsoleLogger('AWSAppSyncRealTimeProvider');
 
@@ -58,7 +58,7 @@ const dispatchApiEvent = (payload: HubPayload) => {
 	Hub.dispatch('api', payload, 'PubSub', AMPLIFY_SYMBOL);
 };
 
-export type ObserverQuery = {
+export interface ObserverQuery {
 	observer: PubSubContentObserver;
 	query: string;
 	variables: Record<string, DocumentType>;
@@ -66,30 +66,30 @@ export type ObserverQuery = {
 	subscriptionReadyCallback?: Function;
 	subscriptionFailedCallback?: Function;
 	startAckTimeoutId?: ReturnType<typeof setTimeout>;
-};
+}
 
 const standardDomainPattern =
 	/^https:\/\/\w{26}\.appsync\-api\.\w{2}(?:(?:\-\w{2,})+)\-\d\.amazonaws.com(?:\.cn)?\/graphql$/i;
 
 const customDomainPath = '/realtime';
 
-type DataObject = {
+interface DataObject {
 	data: Record<string, unknown>;
-};
+}
 
-type DataPayload = {
+interface DataPayload {
 	id: string;
 	payload: DataObject;
 	type: string;
-};
+}
 
-type ParsedMessagePayload = {
+interface ParsedMessagePayload {
 	type: string;
 	payload: {
 		connectionTimeoutMs: number;
 		errors?: [{ errorType: string; errorCode: number }];
 	};
-};
+}
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
@@ -98,7 +98,7 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
 	region?: string;
-	libraryConfigHeaders?: () => {} | (() => Promise<{}>);
+	libraryConfigHeaders?(): {} | (() => Promise<{}>);
 	additionalHeaders?: CustomHeaders;
 	additionalCustomHeaders?: Record<string, string>;
 	authToken?: string;
@@ -117,8 +117,8 @@ export class AWSAppSyncRealTimeProvider {
 	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
 	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
 	private keepAliveAlertTimeoutId?: ReturnType<typeof setTimeout>;
-	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
-	private promiseArray: Array<{ res: Function; rej: Function }> = [];
+	private subscriptionObserverMap = new Map<string, ObserverQuery>();
+	private promiseArray: { res: Function; rej: Function }[] = [];
 	private connectionState: ConnectionState | undefined;
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
@@ -397,6 +397,7 @@ export class AWSAppSyncRealTimeProvider {
 			});
 		} catch (err: any) {
 			this._logStartSubscriptionError(subscriptionId, observer, err);
+
 			return;
 		}
 
@@ -526,6 +527,7 @@ export class AWSAppSyncRealTimeProvider {
 
 		if (!this.awsRealTimeSocket) {
 			this.socketStatus = SOCKET_STATUS.CLOSED;
+
 			return;
 		}
 
@@ -582,6 +584,7 @@ export class AWSAppSyncRealTimeProvider {
 			} else {
 				logger.debug(`observer not found for id: ${id}`);
 			}
+
 			return;
 		}
 
@@ -621,14 +624,14 @@ export class AWSAppSyncRealTimeProvider {
 			if (this.keepAliveTimeoutId) clearTimeout(this.keepAliveTimeoutId);
 			if (this.keepAliveAlertTimeoutId)
 				clearTimeout(this.keepAliveAlertTimeoutId);
-			this.keepAliveTimeoutId = setTimeout(
-				() => this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT),
-				this.keepAliveTimeout,
-			);
+			this.keepAliveTimeoutId = setTimeout(() => {
+				this._errorDisconnect(CONTROL_MSG.TIMEOUT_DISCONNECT);
+			}, this.keepAliveTimeout);
 			this.keepAliveAlertTimeoutId = setTimeout(() => {
 				this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE_MISSED);
 			}, DEFAULT_KEEP_ALIVE_ALERT_TIMEOUT);
 			this.connectionStateMonitor.record(CONNECTION_CHANGE.KEEP_ALIVE);
+
 			return;
 		}
 
@@ -712,6 +715,7 @@ export class AWSAppSyncRealTimeProvider {
 		if (this.socketStatus === SOCKET_STATUS.READY) {
 			return;
 		}
+
 		return new Promise(async (res, rej) => {
 			this.promiseArray.push({ res, rej });
 
@@ -805,7 +809,8 @@ export class AWSAppSyncRealTimeProvider {
 					};
 					newSocket.onopen = () => {
 						this.awsRealTimeSocket = newSocket;
-						return res();
+
+						res();
 					};
 				});
 			})();
@@ -852,6 +857,7 @@ export class AWSAppSyncRealTimeProvider {
 									};
 								}
 								res('Cool, connected to AWS AppSyncRealTime');
+
 								return;
 							}
 
@@ -884,7 +890,9 @@ export class AWSAppSyncRealTimeProvider {
 							}
 						};
 
-						setTimeout(() => checkAckOk(ackOk), CONNECTION_INIT_TIMEOUT);
+						setTimeout(() => {
+							checkAckOk(ackOk);
+						}, CONNECTION_INIT_TIMEOUT);
 					}
 				});
 			})();
@@ -928,6 +936,7 @@ export class AWSAppSyncRealTimeProvider {
 
 		if (!authenticationType || !headerHandler[authenticationType]) {
 			logger.debug(`Authentication type ${authenticationType} not supported`);
+
 			return undefined;
 		} else {
 			const handler = headerHandler[authenticationType];
@@ -1012,6 +1021,7 @@ export class AWSAppSyncRealTimeProvider {
 				signingService: endpointInfo.service,
 			},
 		);
+
 		return signed_params.headers;
 	}
 
@@ -1024,7 +1034,7 @@ export class AWSAppSyncRealTimeProvider {
 		 * the headers that are returned by that function will already have been
 		 * provided before this function is called.
 		 */
-		if (!additionalCustomHeaders?.['Authorization']) {
+		if (!additionalCustomHeaders?.Authorization) {
 			throw new Error('No auth token specified');
 		}
 

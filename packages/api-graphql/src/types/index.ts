@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import {
+	CustomHeaders,
+	CustomMutations,
+	CustomQueries,
 	EnumTypes,
 	ModelTypes,
-	CustomHeaders,
-	CustomQueries,
-	CustomMutations,
 } from '@aws-amplify/data-schema-types';
-import { Source, DocumentNode, GraphQLError } from 'graphql';
-export { OperationTypeNode } from 'graphql';
+import { DocumentNode, GraphQLError, Source } from 'graphql';
 import { Observable } from 'rxjs';
-
 import {
-	GraphQLAuthMode,
 	DocumentType,
+	GraphQLAuthMode,
 } from '@aws-amplify/core/internals/utils';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+
+export { OperationTypeNode } from 'graphql';
 
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 
@@ -41,9 +41,7 @@ export interface GraphQLOptions {
 export interface GraphQLResult<T = object> {
 	data: T;
 	errors?: GraphQLError[];
-	extensions?: {
-		[key: string]: any;
-	};
+	extensions?: Record<string, any>;
 }
 
 // Opaque type used for determining the graphql query type
@@ -85,11 +83,11 @@ export type GraphQLReturnType<T> = T extends {}
  * Describes a paged list result from AppSync, which can either
  * live at the top query or property (e.g., related model) level.
  */
-type PagedList<T, TYPENAME> = {
+interface PagedList<T, TYPENAME> {
 	__typename: TYPENAME;
 	nextToken?: string | null | undefined;
-	items: Array<T>;
-};
+	items: T[];
+}
 
 /**
  * Recursively looks through a result type and removes nulls and
@@ -169,9 +167,9 @@ export type GraphqlSubscriptionResult<T> = Observable<
  * })
  * ```
  */
-export type GraphqlSubscriptionMessage<T> = {
+export interface GraphqlSubscriptionMessage<T> {
 	data: T;
-};
+}
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
@@ -180,15 +178,15 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, unknown>;
 	apiKey?: string;
 	region?: string;
-	libraryConfigHeaders?: () => {} | (() => Promise<{}>);
+	libraryConfigHeaders?(): {} | (() => Promise<{}>);
 	additionalHeaders?: CustomHeaders;
 }
 
-export type AWSAppSyncRealTimeProvider = {
+export interface AWSAppSyncRealTimeProvider {
 	subscribe(
 		options?: AWSAppSyncRealTimeProviderOptions,
 	): Observable<Record<string, unknown>>;
-};
+}
 
 export enum GraphQLAuthError {
 	NO_API_KEY = 'No api-key configured',
@@ -294,10 +292,10 @@ export type GraphQLResponseV6<
  * })
  * ```
  */
-export type GraphQLOperationType<IN extends {}, OUT extends {}> = {
+export interface GraphQLOperationType<IN extends {}, OUT extends {}> {
 	variables: IN;
 	result: OUT;
-};
+}
 
 /**
  * Nominal type for branding generated graphql query operation strings with
@@ -386,8 +384,8 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	[__authToken]?: string;
 	[__headers]?: CustomHeaders;
 	graphql: GraphQLMethod;
-	cancel: (promise: Promise<any>, message?: string) => boolean;
-	isCancelError: (error: any) => boolean;
+	cancel(promise: Promise<any>, message?: string): boolean;
+	isCancelError(error: any): boolean;
 	models: ModelTypes<T>;
 	enums: EnumTypes<T>;
 	queries: CustomQueries<T>;
@@ -401,8 +399,8 @@ export type V6ClientSSRRequest<T extends Record<any, any> = never> =
 		[__authToken]?: string;
 		[__headers]?: CustomHeaders;
 		graphql: GraphQLMethodSSR;
-		cancel: (promise: Promise<any>, message?: string) => boolean;
-		isCancelError: (error: any) => boolean;
+		cancel(promise: Promise<any>, message?: string): boolean;
+		isCancelError(error: any): boolean;
 		models: ModelTypes<T, 'REQUEST'>;
 		enums: EnumTypes<T>;
 		queries: CustomQueries<T, 'REQUEST'>;
@@ -416,8 +414,8 @@ export type V6ClientSSRCookies<T extends Record<any, any> = never> =
 		[__authToken]?: string;
 		[__headers]?: CustomHeaders;
 		graphql: GraphQLMethod;
-		cancel: (promise: Promise<any>, message?: string) => boolean;
-		isCancelError: (error: any) => boolean;
+		cancel(promise: Promise<any>, message?: string): boolean;
+		isCancelError(error: any): boolean;
 		models: ModelTypes<T, 'COOKIES'>;
 		enums: EnumTypes<T>;
 		queries: CustomQueries<T, 'COOKIES'>;
@@ -446,30 +444,30 @@ export type GraphQLMethodSSR = <
  *
  * The knobs available for configuring `server/generateClient` internally.
  */
-export type ServerClientGenerationParams = {
+export interface ServerClientGenerationParams {
 	amplify:
 		| null // null expected when used with `generateServerClient`
 		// closure expected with `generateServerClientUsingCookies`
 		| ((fn: (amplify: AmplifyClassV6) => Promise<any>) => Promise<any>);
 	// global env-sourced config use for retrieving modelIntro
 	config: ResourcesConfig;
-};
+}
 
 export type QueryArgs = Record<string, unknown>;
 
-export type ListArgs = {
+export interface ListArgs {
 	selectionSet?: string[];
 	filter?: {};
 	headers?: CustomHeaders;
-};
+}
 
-export type AuthModeParams = {
+export interface AuthModeParams {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
-};
+}
 
-export type GenerateServerClientParams = {
+export interface GenerateServerClientParams {
 	config: ResourcesConfig;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
-};
+}

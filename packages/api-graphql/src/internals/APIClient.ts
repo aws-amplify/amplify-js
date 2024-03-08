@@ -1,15 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { resolveOwnerFields } from '../utils/resolveOwnerFields';
 import {
+	AssociationBelongsTo,
+	AssociationHasOne,
 	GraphQLAuthMode,
-	ModelIntrospectionSchema,
 	ModelFieldType,
+	ModelIntrospectionSchema,
 	NonModelFieldType,
 	SchemaModel,
-	AssociationHasOne,
-	AssociationBelongsTo,
 } from '@aws-amplify/core/internals/utils';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import { SchemaNonModel } from '@aws-amplify/core/dist/esm/singleton/API/types';
+
 import {
 	AuthModeParams,
 	ClientWithModels,
@@ -21,18 +24,17 @@ import {
 	__authToken,
 	__headers,
 } from '../types';
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
-import { SchemaNonModel } from '@aws-amplify/core/dist/esm/singleton/API/types';
+import { resolveOwnerFields } from '../utils/resolveOwnerFields';
+
 import type { IndexMeta } from './operations/indexQuery';
 
-type LazyLoadOptions = {
+interface LazyLoadOptions {
 	authMode?: GraphQLAuthMode;
 	authToken?: string | undefined;
 	limit?: number | undefined;
 	nextToken?: string | undefined | null;
 	headers?: CustomHeaders | undefined;
-};
+}
 
 const connectionType = {
 	HAS_ONE: 'HAS_ONE',
@@ -54,9 +56,11 @@ export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
 				res[prop] = value.items.map((item: Record<string, any>) =>
 					flattenItems(item),
 				);
+
 				return;
 			}
 			res[prop] = flattenItems(value);
+
 			return;
 		}
 
@@ -146,6 +150,7 @@ export function initializeModel(
 									},
 								);
 							}
+
 							return undefined;
 						};
 					} else {
@@ -166,6 +171,7 @@ export function initializeModel(
 									},
 								);
 							}
+
 							return undefined;
 						};
 					}
@@ -214,6 +220,7 @@ export function initializeModel(
 										authToken: options?.authToken || authToken,
 									});
 								}
+
 								return [];
 							};
 						} else {
@@ -231,6 +238,7 @@ export function initializeModel(
 										authToken: options?.authToken || authToken,
 									});
 								}
+
 								return [];
 							};
 						}
@@ -264,6 +272,7 @@ export function initializeModel(
 									authToken: options?.authToken || authToken,
 								});
 							}
+
 							return [];
 						};
 					} else {
@@ -281,6 +290,7 @@ export function initializeModel(
 									authToken: options?.authToken || authToken,
 								});
 							}
+
 							return [];
 						};
 					}
@@ -346,6 +356,7 @@ export function defaultSelectionSetForNonModelWithIR(
 				pair: (string | Record<string, unknown>)[] | undefined,
 			): pair is (string | Record<string, unknown>)[] => pair !== undefined,
 		);
+
 	return Object.fromEntries(mappedFields);
 }
 
@@ -527,6 +538,7 @@ const modelsDefaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 	const reduced = defaultSelectionSet.reduce(
 		(acc: Record<string, any>, curVal) => {
 			acc[curVal] = FIELD_IR;
+
 			return acc;
 		},
 		{},
@@ -659,6 +671,7 @@ export function generateGraphQLDocument(
 		const skQueryArgs = sk.reduce((acc: Record<string, any>, fieldName) => {
 			const fieldType = fields[fieldName].type;
 			acc[fieldName] = `Model${fieldType}KeyConditionInput`;
+
 			return acc;
 		}, {});
 

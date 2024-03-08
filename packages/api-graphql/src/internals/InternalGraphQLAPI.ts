@@ -2,34 +2,35 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	DocumentNode,
-	OperationDefinitionNode,
-	print,
-	parse,
 	GraphQLError,
+	OperationDefinitionNode,
 	OperationTypeNode,
+	parse,
+	print,
 } from 'graphql';
 import { Observable, catchError } from 'rxjs';
 import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
 import {
-	GraphQLAuthMode,
-	CustomUserAgentDetails,
-	getAmplifyUserAgent,
 	AmplifyUrl,
+	CustomUserAgentDetails,
+	GraphQLAuthMode,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
-import {
-	GraphQLAuthError,
-	GraphQLResult,
-	GraphQLOperation,
-	GraphQLOptions,
-} from '../types';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
 import {
-	post,
 	cancel as cancelREST,
+	post,
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
-import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
+
+import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
+import {
+	GraphQLAuthError,
+	GraphQLOperation,
+	GraphQLOptions,
+	GraphQLResult,
+} from '../types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthError } from '../utils/errors/repackageAuthError';
 
@@ -71,7 +72,7 @@ export class InternalGraphQLAPIClass {
 		additionalHeaders: Record<string, string> = {},
 	) {
 		const {
-			region: region,
+			region,
 			endpoint: appSyncGraphqlEndpoint,
 			apiKey,
 		} = resolveConfig(amplify);
@@ -139,8 +140,7 @@ export class InternalGraphQLAPIClass {
 	 */
 	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
 		const doc = parse(operation);
-		const definitions =
-			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
+		const definitions = doc.definitions as readonly OperationDefinitionNode[];
 		const [{ operation: operationType }] = definitions;
 
 		return operationType;
@@ -215,6 +215,7 @@ export class InternalGraphQLAPIClass {
 					responsePromise,
 					abortController,
 				);
+
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe(
@@ -238,7 +239,7 @@ export class InternalGraphQLAPIClass {
 		authToken?: string,
 	): Promise<GraphQLResult<T>> {
 		const {
-			region: region,
+			region,
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
