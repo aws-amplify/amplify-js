@@ -41,7 +41,7 @@ module.exports = {
 		// 'adapter-nextjs',
 		// 'packages/analytics',
 		// 'packages/api',
-		'packages/api-graphql',
+		// 'packages/api-graphql',
 		// 'packages/api-rest',
 		// 'packages/auth',
 		// 'packages/aws-amplify',
