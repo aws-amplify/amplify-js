@@ -593,7 +593,7 @@ describe('error handler', () => {
 
 	test('error handler once after all retires have failed', done => {
 		window['LOG_LEVEL'] = 'DEBUG';
-		const debugLog = jest.spyOn(console, 'debug');
+		const debugLog = jest.spyOn(console, 'log');
 		const message = PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR;
 		mockObservable = new Observable(observer => {
 			observer.error({
