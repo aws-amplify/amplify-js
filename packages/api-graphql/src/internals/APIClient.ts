@@ -8,10 +8,10 @@ import {
 	ModelIntrospectionSchema,
 	NonModelFieldType,
 	SchemaModel,
+	SchemaNonModel,
 } from '@aws-amplify/core/internals/utils';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import { CustomHeaders } from '@aws-amplify/data-schema-types';
-import { SchemaNonModel } from '@aws-amplify/core/dist/esm/singleton/API/types';
 
 import {
 	AuthModeParams,
@@ -113,15 +113,17 @@ export function initializeModel(
 				connectionFields = modelField.association.associatedWith;
 			}
 
-			let targetNames: string[] = [];
+			const targetNames: string[] = [];
 			if (modelField.association && 'targetNames' in modelField.association) {
-				targetNames = modelField.association.targetNames;
+				targetNames.push(...modelField.association.targetNames);
 			}
 
 			switch (relationType) {
 				case connectionType.HAS_ONE:
-				case connectionType.BELONGS_TO:
+				case connectionType.BELONGS_TO: {
 					const sortKeyValues = relatedModelSKFieldNames.reduce(
+						// TODO(Eslint): is this implementation correct?
+						// eslint-disable-next-line array-callback-return
 						(acc: Record<string, any>, curVal) => {
 							if (record[curVal]) {
 								return (acc[curVal] = record[curVal]);
@@ -177,7 +179,8 @@ export function initializeModel(
 					}
 
 					break;
-				case connectionType.HAS_MANY:
+				}
+				case connectionType.HAS_MANY: {
 					const parentPk = introModel.primaryKeyInfo.primaryKeyFieldName;
 					const parentSK = introModel.primaryKeyInfo.sortKeyFieldNames;
 
@@ -296,6 +299,7 @@ export function initializeModel(
 					}
 
 					break;
+				}
 				default:
 					break;
 			}
@@ -318,9 +322,6 @@ export const graphQLOperationsInfo = {
 	OBSERVE_QUERY: { operationPrefix: 'observeQuery', usePlural: false },
 } as const;
 export type ModelOperation = keyof typeof graphQLOperationsInfo;
-
-type OperationPrefix =
-	(typeof graphQLOperationsInfo)[ModelOperation]['operationPrefix'];
 
 const SELECTION_SET_WILDCARD = '*';
 
@@ -376,6 +377,8 @@ function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
 					return `${name}.${SELECTION_SET_WILDCARD}`;
 				}
 			}
+
+			return undefined;
 		})
 		.filter(Boolean);
 
@@ -471,10 +474,13 @@ export function customSelectionSetToIR(
 			}
 
 			if (nested === SELECTION_SET_WILDCARD) {
-				const relatedModelDefinition = modelIntrospection.models[relatedModel];
+				const nestedRelatedModelDefinition =
+					modelIntrospection.models[relatedModel];
 
 				result = {
-					[fieldName]: modelsDefaultSelectionSetIR(relatedModelDefinition),
+					[fieldName]: modelsDefaultSelectionSetIR(
+						nestedRelatedModelDefinition,
+					),
 				};
 			} else {
 				result = {
@@ -606,9 +612,12 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 
 	for (const key in source) {
 		// This verification avoids 'Prototype Pollution' issue
-		if (!source.hasOwnProperty(key)) continue;
+		if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
 
-		if (target.hasOwnProperty(key) && isObject(target[key])) {
+		if (
+			Object.prototype.hasOwnProperty.call(target, key) &&
+			isObject(target[key])
+		) {
 			deepMergeSelectionSetObjects(source[key], target[key]);
 		} else {
 			target[key] = source[key];
@@ -707,6 +716,8 @@ export function generateGraphQLDocument(
 					}${name}Input!`,
 				});
 			graphQLOperationType ?? (graphQLOperationType = 'mutation');
+		// TODO(Eslint): this this case clause correct without the break statement?
+		// eslint-disable-next-line no-fallthrough
 		case 'READ':
 			graphQLArguments ??
 				(graphQLArguments = isCustomPrimaryKey
@@ -722,6 +733,8 @@ export function generateGraphQLDocument(
 							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
 						});
 			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
+		// TODO(Eslint): this this case clause correct without the break statement?
+		// eslint-disable-next-line no-fallthrough
 		case 'LIST':
 			graphQLArguments ??
 				(graphQLArguments = {
@@ -732,6 +745,8 @@ export function generateGraphQLDocument(
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
 				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken __typename`);
+		// TODO(Eslint): this this case clause correct without the break statement?
+		// eslint-disable-next-line no-fallthrough
 		case 'INDEX_QUERY':
 			graphQLArguments ??
 				(graphQLArguments = {
@@ -743,6 +758,8 @@ export function generateGraphQLDocument(
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
 				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken __typename`);
+		// TODO(Eslint): this this case clause correct without the break statement?
+		// eslint-disable-next-line no-fallthrough
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':
@@ -763,13 +780,13 @@ export function generateGraphQLDocument(
 	const graphQLDocument = `${graphQLOperationType}${
 		graphQLArguments
 			? `(${Object.entries(graphQLArguments).map(
-					([fieldName, type]) => `\$${fieldName}: ${type}`,
+					([fieldName, type]) => `$${fieldName}: ${type}`,
 				)})`
 			: ''
 	} { ${graphQLFieldName}${
 		graphQLArguments
 			? `(${Object.keys(graphQLArguments).map(
-					fieldName => `${fieldName}: \$${fieldName}`,
+					fieldName => `${fieldName}: $${fieldName}`,
 				)})`
 			: ''
 	} { ${graphQLSelectionSet} } }`;
@@ -855,7 +872,7 @@ export function buildGraphQLVariables(
 				variables.limit = arg.limit;
 			}
 			break;
-		case 'INDEX_QUERY':
+		case 'INDEX_QUERY': {
 			const { pk, sk = [] } = indexMeta!;
 
 			variables[pk] = arg![pk];
@@ -874,6 +891,7 @@ export function buildGraphQLVariables(
 				variables.limit = arg.limit;
 			}
 			break;
+		}
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':
@@ -886,9 +904,10 @@ export function buildGraphQLVariables(
 				'Internal error: Attempted to build variables for observeQuery. Please report this error.',
 			);
 			break;
-		default:
+		default: {
 			const exhaustiveCheck: never = operation;
 			throw new Error(`Unhandled operation case: ${exhaustiveCheck}`);
+		}
 	}
 
 	return variables;
@@ -982,9 +1001,9 @@ export function authModeParams(
 
 /**
  * Retrieves custom headers from either the client or request options.
- * @param {client} V6Client | V6ClientSSRRequest | V6ClientSSRCookies - for extracting client headers
- * @param {requestHeaders} [CustomHeaders] - request headers
- * @returns {CustomHeaders} - custom headers
+ * @param client V6Client | V6ClientSSRRequest | V6ClientSSRCookies - for extracting client headers
+ * @param requestHeaders {@link CustomHeaders} - request headers
+ * @returns custom headers as {@link CustomHeaders}
  */
 export function getCustomHeaders(
 	client: V6Client | ClientWithModels,

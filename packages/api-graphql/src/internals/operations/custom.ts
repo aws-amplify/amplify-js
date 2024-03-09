@@ -195,7 +195,7 @@ function outerArguments(operation: CustomOperation): string {
  */
 function innerArguments(operation: CustomOperation): string {
 	const args = Object.entries(operation.arguments)
-		.map(([k, v]) => `${k}: $${k}`)
+		.map(([k, _]) => `${k}: $${k}`)
 		.join(', ');
 
 	return args.length > 0 ? `(${args})` : '';

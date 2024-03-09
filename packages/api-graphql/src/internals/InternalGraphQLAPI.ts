@@ -9,7 +9,7 @@ import {
 	print,
 } from 'graphql';
 import { Observable, catchError } from 'rxjs';
-import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
@@ -35,8 +35,6 @@ import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthError } from '../utils/errors/repackageAuthError';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
-
-const logger = new ConsoleLogger('GraphQLAPI');
 
 const isAmplifyInstance = (
 	amplify:
@@ -71,11 +69,7 @@ export class InternalGraphQLAPIClass {
 		authMode: GraphQLAuthMode,
 		additionalHeaders: Record<string, string> = {},
 	) {
-		const {
-			region,
-			endpoint: appSyncGraphqlEndpoint,
-			apiKey,
-		} = resolveConfig(amplify);
+		const { apiKey } = resolveConfig(amplify);
 
 		let headers = {};
 
@@ -88,18 +82,17 @@ export class InternalGraphQLAPIClass {
 					'X-Api-Key': apiKey,
 				};
 				break;
-			case 'iam':
+			case 'iam': {
 				const session = await amplify.Auth.fetchAuthSession();
 				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
+			}
 			case 'oidc':
 			case 'userPool':
 				try {
-					let token;
-
-					token = (
+					const token = (
 						await amplify.Auth.fetchAuthSession()
 					).tokens?.accessToken.toString();
 
@@ -176,7 +169,7 @@ export class InternalGraphQLAPIClass {
 
 		switch (operationType) {
 			case 'query':
-			case 'mutation':
+			case 'mutation': {
 				const abortController = new AbortController();
 
 				let responsePromise: Promise<GraphQLResult<T>>;
@@ -217,6 +210,7 @@ export class InternalGraphQLAPIClass {
 				);
 
 				return responsePromise;
+			}
 			case 'subscription':
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
@@ -357,7 +351,8 @@ export class InternalGraphQLAPIClass {
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
-
+			// TODO(Eslint): refactor this to throw an Error instead of a plain object
+			// eslint-disable-next-line no-throw-literal
 			throw {
 				data: {},
 				errors: [error],

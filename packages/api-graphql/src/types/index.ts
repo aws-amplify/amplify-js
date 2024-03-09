@@ -73,11 +73,12 @@ export type GraphQLSubscription<T> = T & {
  *
  * This util simply makes related model properties optional recursively.
  */
-export type GraphQLReturnType<T> = T extends {}
-	? {
-			[K in keyof T]?: GraphQLReturnType<T[K]>;
-		}
-	: T;
+export type GraphQLReturnType<T> =
+	T extends Record<string, unknown>
+		? {
+				[K in keyof T]?: GraphQLReturnType<T[K]>;
+			}
+		: T;
 
 /**
  * Describes a paged list result from AppSync, which can either
@@ -100,7 +101,7 @@ interface PagedList<T, TYPENAME> {
 type WithListsFixed<T> =
 	T extends PagedList<infer IT, infer NAME>
 		? PagedList<Exclude<IT, null | undefined>, NAME>
-		: T extends {}
+		: T extends Record<string, unknown>
 			? {
 					[K in keyof T]: WithListsFixed<T[K]>;
 				}
@@ -178,7 +179,9 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	variables?: Record<string, unknown>;
 	apiKey?: string;
 	region?: string;
-	libraryConfigHeaders?(): {} | (() => Promise<{}>);
+	libraryConfigHeaders?():
+		| Record<string, unknown>
+		| (() => Promise<Record<string, unknown> | Headers>);
 	additionalHeaders?: CustomHeaders;
 }
 
@@ -257,18 +260,18 @@ export type GraphQLResponseV6<
 	FALLBACK_TYPE = unknown,
 	TYPED_GQL_STRING extends string = string,
 > =
-	TYPED_GQL_STRING extends GeneratedQuery<infer IN, infer QUERY_OUT>
+	TYPED_GQL_STRING extends GeneratedQuery<infer _, infer QUERY_OUT>
 		? Promise<GraphQLResult<FixedQueryResult<QUERY_OUT>>>
-		: TYPED_GQL_STRING extends GeneratedMutation<infer IN, infer MUTATION_OUT>
+		: TYPED_GQL_STRING extends GeneratedMutation<infer _, infer MUTATION_OUT>
 			? Promise<GraphQLResult<NeverEmpty<MUTATION_OUT>>>
-			: TYPED_GQL_STRING extends GeneratedSubscription<infer IN, infer SUB_OUT>
+			: TYPED_GQL_STRING extends GeneratedSubscription<infer _, infer SUB_OUT>
 				? GraphqlSubscriptionResult<NeverEmpty<SUB_OUT>>
-				: FALLBACK_TYPE extends GraphQLQuery<infer T>
+				: FALLBACK_TYPE extends GraphQLQuery<infer _>
 					? Promise<GraphQLResult<FALLBACK_TYPE>>
-					: FALLBACK_TYPE extends GraphQLSubscription<infer T>
+					: FALLBACK_TYPE extends GraphQLSubscription<infer _>
 						? GraphqlSubscriptionResult<FALLBACK_TYPE>
 						: FALLBACK_TYPE extends GraphQLOperationType<
-									infer IN,
+									infer _,
 									infer CUSTOM_OUT
 							  >
 							? CUSTOM_OUT
@@ -292,7 +295,10 @@ export type GraphQLResponseV6<
  * })
  * ```
  */
-export interface GraphQLOperationType<IN extends {}, OUT extends {}> {
+export interface GraphQLOperationType<
+	IN extends Record<string, DocumentType>,
+	OUT extends Record<string, DocumentType>,
+> {
 	variables: IN;
 	result: OUT;
 }
@@ -455,13 +461,13 @@ export interface ServerClientGenerationParams {
 
 export type QueryArgs = Record<string, unknown>;
 
-export interface ListArgs {
+export interface ListArgs extends Record<string, unknown> {
 	selectionSet?: string[];
-	filter?: {};
+	filter?: Record<string, unknown>;
 	headers?: CustomHeaders;
 }
 
-export interface AuthModeParams {
+export interface AuthModeParams extends Record<string, unknown> {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
 }
