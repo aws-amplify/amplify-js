@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StrictUnion } from '@aws-amplify/core/internals/utils';
+
 import {
 	DownloadTask,
 	StorageDownloadDataOutput,
@@ -39,9 +41,14 @@ export interface ItemPath extends StorageItemPath {
 }
 
 /**
- * type for S3 list item.
+ * type for S3 list item with key.
  */
-export type ListOutputItem = Omit<Item, 'metadata'>;
+export type ListOutputItemKey = Omit<Item, 'metadata'>;
+
+/**
+ * type for S3 list item with path.
+ */
+export type ListOutputItemPath = Omit<ItemPath, 'metadata'>;
 
 /**
  * Output type for S3 downloadData API.
@@ -74,14 +81,20 @@ export type GetPropertiesOutput = Item;
 /**
  * Output type for S3 list API. Lists all bucket objects.
  */
-export type ListAllOutput = StorageListOutput<ListOutputItem>;
+export type ListAllOutput = StorageListOutput<
+	ListOutputItemKey | ListOutputItemPath
+>;
 
 /**
  * Output type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateOutput = StorageListOutput<ListOutputItem> & {
+export type ListPaginateOutput = StorageListOutput<
+	ListOutputItemKey | ListOutputItemPath
+> & {
 	nextToken?: string;
 };
+
+export type ListOutput = StrictUnion<ListAllOutput | ListPaginateOutput>;
 
 /**
  * Output type for S3 copy API.

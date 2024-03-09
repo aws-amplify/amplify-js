@@ -15,6 +15,10 @@ export interface StorageOperationInputKey {
 export interface StorageOperationInputPath {
 	path: string | (({ identityId }: { identityId?: string }) => string);
 }
+export interface StorageOperationInputPrefix {
+	/** @deprecated Use `path` instead. */
+	prefix?: string;
+}
 export interface StorageOperationOptions<Options> {
 	options?: Options;
 }
@@ -42,12 +46,14 @@ export interface StorageRemoveInput<Options extends StorageOptions> {
 	options?: Options;
 }
 
-export interface StorageListInput<
+/** @deprecated Use {@link StorageListInputPath} instead. */
+export type StorageListInputPrefix<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
-> {
-	prefix?: string;
-	options?: Options;
-}
+> = StorageOperationInputPrefix & StorageOperationOptions<Options>;
+
+export type StorageListInputPath<
+	Options extends StorageListAllOptions | StorageListPaginateOptions,
+> = StorageOperationInputPath & StorageOperationOptions<Options>;
 
 export type StorageGetUrlInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;

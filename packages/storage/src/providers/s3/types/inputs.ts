@@ -9,7 +9,8 @@ import {
 	StorageDownloadDataInputPath,
 	StorageGetPropertiesInput,
 	StorageGetUrlInput,
-	StorageListInput,
+	StorageListInputPath,
+	StorageListInputPrefix,
 	StorageRemoveInput,
 	StorageUploadDataInput,
 } from '../../../types';
@@ -20,8 +21,10 @@ import {
 	DownloadDataOptions as DownloadDataOptionsPath,
 	GetPropertiesOptions,
 	GetUrlOptions,
-	ListAllOptions,
-	ListPaginateOptions,
+	ListAllOptionsPath,
+	ListAllOptionsPrefix,
+	ListPaginateOptionsPath,
+	ListPaginateOptionsPrefix,
 	RemoveOptions,
 	UploadDataOptions,
 } from '../types';
@@ -46,15 +49,9 @@ export type GetPropertiesInput =
  */
 export type GetUrlInput = StorageGetUrlInput<GetUrlOptions>;
 
-/**
- * Input type for S3 list API. Lists all bucket objects.
- */
-export type ListAllInput = StorageListInput<ListAllOptions>;
-
-/**
- * Input type for S3 list API. Lists bucket objects with pagination.
- */
-export type ListPaginateInput = StorageListInput<ListPaginateOptions>;
+export type ListInput =
+	| StorageListInputPath<ListAllOptionsPath | ListPaginateOptionsPath>
+	| StorageListInputPrefix<ListAllOptionsPrefix | ListPaginateOptionsPrefix>;
 
 /**
  * Input type for S3 remove API.

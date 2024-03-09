@@ -6,8 +6,8 @@ import { Amplify } from '@aws-amplify/core';
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3';
 import {
-	ListAllOptions,
-	ListPaginateOptions,
+	ListAllOptionsPrefix,
+	ListPaginateOptionsPrefix,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -55,7 +55,7 @@ const listResultItem = {
 	lastModified,
 	size,
 };
-const mockListObjectsV2ApiWithPages = pages => {
+const mockListObjectsV2ApiWithPages = (pages: number) => {
 	let methodCalls = 0;
 	mockListObject.mockClear();
 	mockListObject.mockImplementation(async (_, input) => {
@@ -142,7 +142,7 @@ describe('list API', () => {
 				expect.assertions(4);
 				let response = await list({
 					prefix: path,
-					options: options as ListPaginateOptions,
+					options: options as ListPaginateOptionsPrefix,
 				});
 				expect(response.items).toEqual([
 					{ ...listResultItem, key: path ?? '' },
@@ -177,7 +177,7 @@ describe('list API', () => {
 				const response = await list({
 					prefix: path,
 					options: {
-						...(options as ListPaginateOptions),
+						...(options as ListPaginateOptionsPrefix),
 						pageSize: customPageSize,
 						nextToken: nextToken,
 					},
@@ -209,10 +209,10 @@ describe('list API', () => {
 				expect.assertions(3);
 				let response = await list({
 					prefix: path,
-					options: options as ListPaginateOptions,
+					options: options as ListPaginateOptionsPrefix,
 				});
 				expect(response.items).toEqual([]);
-				//
+
 				expect(response.nextToken).toEqual(undefined);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
@@ -233,7 +233,7 @@ describe('list API', () => {
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
 					prefix: path,
-					options: { ...options, listAll: true } as ListAllOptions,
+					options: { ...options, listAll: true } as ListAllOptionsPrefix,
 				});
 
 				const listResult = { ...listResultItem, key: path ?? '' };

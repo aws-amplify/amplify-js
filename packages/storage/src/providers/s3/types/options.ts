@@ -58,15 +58,30 @@ export type RemoveOptions = WriteOptions & CommonOptions;
 /**
  * Input options type for S3 list API.
  */
-export type ListAllOptions = StorageListAllOptions &
+export type ListAllOptionsPrefix = StorageListAllOptions &
 	ReadOptions &
 	CommonOptions;
 
 /**
  * Input options type for S3 list API.
  */
-export type ListPaginateOptions = StorageListPaginateOptions &
+export type ListPaginateOptionsPrefix = StorageListPaginateOptions &
 	ReadOptions &
+	CommonOptions;
+
+/**
+ * Input options type for S3 list API.
+ */
+export type ListAllOptionsPath = Omit<StorageListAllOptions, 'accessLevel'> &
+	CommonOptions;
+
+/**
+ * Input options type for S3 list API.
+ */
+export type ListPaginateOptionsPath = Omit<
+	StorageListPaginateOptions,
+	'accessLevel'
+> &
 	CommonOptions;
 
 /**

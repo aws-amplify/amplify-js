@@ -7,44 +7,58 @@ import {
 } from '@aws-amplify/core/internals/adapter-core';
 
 import {
-	ListAllInput,
+	ListAllOptionsPath,
+	ListAllOptionsPrefix,
 	ListAllOutput,
-	ListPaginateInput,
+	ListInput,
+	ListPaginateOptionsPath,
+	ListPaginateOptionsPrefix,
 	ListPaginateOutput,
 	S3Exception,
 } from '../../types';
 import { list as listInternal } from '../internal/list';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
+import {
+	StorageListInputPath,
+	StorageListInputPrefix,
+} from '../../../../types';
 
 interface ListApi {
 	/**
-	 * Lists bucket objects with pagination.
-	 * @param {ListPaginateInput} input The input object
-	 * @return {Promise<ListPaginateOutput>} - Promise resolves to list of keys and metadata with
-	 * pageSize defaulting to 1000. Additionally the result will include a nextToken if there are more items to retrieve
+	 * List single or all files in pages with given `path`.
+	 * To list all the pages, you can set `listAll` to true in `options` to get all the files from S3.
+	 * For pagination, pageSize defaults to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
+	 * @param input - The ListPaginateInput object.
+	 * @returns when listAll is true, A list of keys and metadata for all objects in path
+	 * @returns when listAll is false, A list of keys and metadata with nextToken
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListPaginateInput,
+		input?: StorageListInputPath<ListAllOptionsPath | ListPaginateOptionsPath>,
 	): Promise<ListPaginateOutput>;
 	/**
-	 * Lists all bucket objects.
-	 * @param {ListAllInput} input The input object
-	 * @return {Promise<ListAllOutput>} - Promise resolves to list of keys and metadata for all objects in path
+	 * List single or all files in pages with given `prefix`
+	 * To list all the pages, you can set `listAll` to true in `options` to get all the files from S3.
+	 * For pagination, pageSize defaults to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
+	 * @param input - The ListPaginateInput object.
+	 * @returns when listAll is true, A list of keys and metadata for all objects in path
+	 * @returns when listAll is false, A list of keys and metadata with nextToken
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListAllInput,
+		input?: StorageListInputPrefix<
+			ListAllOptionsPrefix | ListPaginateOptionsPrefix
+		>,
 	): Promise<ListAllOutput>;
 }
 
 export const list: ListApi = (
 	contextSpec: AmplifyServer.ContextSpec,
-	input?: ListAllInput | ListPaginateInput,
+	input?: ListInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	return listInternal(
 		getAmplifyServerContext(contextSpec).amplify,
