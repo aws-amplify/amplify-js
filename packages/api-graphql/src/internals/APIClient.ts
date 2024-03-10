@@ -314,7 +314,7 @@ type OperationPrefix =
 
 const SELECTION_SET_WILDCARD = '*';
 
-function defaultSelectionSetForNonModelWithIR(
+export function defaultSelectionSetForNonModelWithIR(
 	nonModelDefinition: SchemaNonModel,
 	modelIntrospection: ModelIntrospectionSchema,
 ): Record<string, unknown> {
