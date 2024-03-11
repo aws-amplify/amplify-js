@@ -80,6 +80,9 @@ module.exports = {
 			'error',
 			{
 				allow: [
+					// exceptions for core package
+					'phone_number',
+					// exceptions for api packages
 					'graphql_headers',
 					// exceptions for the legacy config
 					/^(aws_|amazon_)/,
