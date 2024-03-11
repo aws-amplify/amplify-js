@@ -95,7 +95,9 @@ describe('generateServerClient', () => {
 		}));
 
 		jest.mock('@aws-amplify/core/internals/adapter-core', () => ({
-			getAmplifyServerContext: () => {},
+			getAmplifyServerContext: () => {
+				// no-op for testing
+			},
 		}));
 
 		const client = generateServerClientUsingReqRes({
