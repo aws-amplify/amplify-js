@@ -51,7 +51,7 @@ describe('createServerRunner', () => {
 			parseAWSExports: mockParseAWSExports,
 		}));
 
-		createServerRunner = require('../src').createServerRunner;
+		({ createServerRunner } = require('../src'));
 	});
 
 	afterEach(() => {
@@ -77,7 +77,7 @@ describe('createServerRunner', () => {
 	describe('runWithAmplifyServerContext', () => {
 		describe('when amplifyConfig.Auth is not defined', () => {
 			it('should call runWithAmplifyServerContextCore without Auth library options', () => {
-				const mockAmplifyConfig: ResourcesConfig = {
+				const mockAmplifyConfigWithoutAuth: ResourcesConfig = {
 					Analytics: {
 						Pinpoint: {
 							appId: 'app-id',
@@ -86,12 +86,12 @@ describe('createServerRunner', () => {
 					},
 				};
 				const { runWithAmplifyServerContext } = createServerRunner({
-					config: mockAmplifyConfig,
+					config: mockAmplifyConfigWithoutAuth,
 				});
 				const operation = jest.fn();
 				runWithAmplifyServerContext({ operation, nextServerContext: null });
 				expect(mockRunWithAmplifyServerContextCore).toHaveBeenCalledWith(
-					mockAmplifyConfig,
+					mockAmplifyConfigWithoutAuth,
 					{},
 					operation,
 				);
