@@ -49,13 +49,17 @@ describe('Mutex', function () {
 	test('runExclusive passes result (immediate)', function () {
 		return mutex
 			.runExclusive<number>(() => 10)
-			.then(value => expect(value).toBe(10));
+			.then(value => {
+				expect(value).toBe(10);
+			});
 	});
 
 	test('runExclusive passes result (promise)', function () {
 		return mutex
 			.runExclusive<number>(() => Promise.resolve(10))
-			.then(value => expect(value).toBe(10));
+			.then(value => {
+				expect(value).toBe(10);
+			});
 	});
 
 	test('runExclusive passes rejection', function () {
@@ -63,7 +67,9 @@ describe('Mutex', function () {
 			.runExclusive<number>(() => Promise.reject('foo'))
 			.then(
 				() => Promise.reject('should have been rejected'),
-				value => expect(value).toBe('foo'),
+				value => {
+					expect(value).toBe('foo');
+				},
 			);
 	});
 
@@ -74,7 +80,9 @@ describe('Mutex', function () {
 			})
 			.then(
 				() => Promise.reject('should have been rejected'),
-				value => expect(value).toBe('foo'),
+				value => {
+					expect(value).toBe('foo');
+				},
 			);
 	});
 
@@ -91,7 +99,9 @@ describe('Mutex', function () {
 				),
 		);
 
-		return mutex.runExclusive(() => expect(flag).toBe(true));
+		return mutex.runExclusive(() => {
+			expect(flag).toBe(true);
+		});
 	});
 
 	test('exceptions during runExclusive do not leave mutex locked', function () {
@@ -107,7 +117,9 @@ describe('Mutex', function () {
 				() => undefined,
 			);
 
-		return mutex.runExclusive(() => expect(flag).toBe(true));
+		return mutex.runExclusive(() => {
+			expect(flag).toBe(true);
+		});
 	});
 
 	test('new mutex is unlocked', function () {
@@ -115,8 +127,8 @@ describe('Mutex', function () {
 	});
 
 	test('isLocked reflects the mutex state', async function () {
-		const lock1 = mutex.acquire(),
-			lock2 = mutex.acquire();
+		const lock1 = mutex.acquire();
+		const lock2 = mutex.acquire();
 
 		expect(mutex.isLocked()).toBe(true);
 

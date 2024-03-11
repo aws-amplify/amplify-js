@@ -1,8 +1,8 @@
 'use strict';
 
 import {
-	jitteredExponentialRetry,
 	NonRetryableError,
+	jitteredExponentialRetry,
 	urlSafeDecode,
 	urlSafeEncode,
 } from '../src/utils';

@@ -5,6 +5,7 @@ import { SignRequestOptions } from '../src/clients/middleware/signing/signer/sig
 import { Signer } from '../src/Signer';
 import { DateUtils } from '../src/Signer/DateUtils';
 import * as getSignatureModule from '../src/clients/middleware/signing/signer/signatureV4/utils/getSignature';
+
 import {
 	credentials,
 	credentialsWithToken,
@@ -39,6 +40,7 @@ describe('Signer.sign', () => {
 					...signingOptions,
 					...options,
 				};
+
 				return [name, updatedRequest, updatedOptions, expectedAuthorization];
 			},
 		),
@@ -146,6 +148,7 @@ describe('Signer.signUrl', () => {
 					...signingOptions,
 					...options,
 				};
+
 				return [name, updatedRequest, updatedOptions, expectedUrl];
 			},
 		),

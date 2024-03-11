@@ -23,7 +23,7 @@ describe(fetchTransferHandler.name, () => {
 	const mockFetch = jest.fn();
 
 	beforeAll(() => {
-		global['fetch'] = mockFetch;
+		global.fetch = mockFetch;
 	});
 
 	beforeEach(() => {
@@ -32,7 +32,7 @@ describe(fetchTransferHandler.name, () => {
 	});
 
 	it('should support abort signal', async () => {
-		const signal = new AbortController().signal;
+		const { signal } = new AbortController();
 		await fetchTransferHandler(mockRequest, { abortSignal: signal });
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(

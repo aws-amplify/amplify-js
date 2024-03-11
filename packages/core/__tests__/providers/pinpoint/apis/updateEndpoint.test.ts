@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 } from 'uuid';
+
 import { getClientInfo } from '../../../../src/utils/getClientInfo';
 import { updateEndpoint as clientUpdateEndpoint } from '../../../../src/awsClients/pinpoint';
 import { cacheEndpointId } from '../../../../src/providers/pinpoint/utils/cacheEndpointId';
@@ -18,6 +19,7 @@ import {
 	userProfile,
 	uuid,
 } from '../testUtils/data';
+
 import { getExpectedInput } from './testUtils/getExpectedInput';
 
 jest.mock('uuid');

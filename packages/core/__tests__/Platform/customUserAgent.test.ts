@@ -1,8 +1,8 @@
 import {
-	Category,
 	AuthAction,
-	StorageAction,
+	Category,
 	SetCustomUserAgentInput,
+	StorageAction,
 } from '../../src/Platform/types';
 
 const MOCK_AUTH_UA_STATE: SetCustomUserAgentInput = {

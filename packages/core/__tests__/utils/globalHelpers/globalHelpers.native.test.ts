@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-const mockCrypto = { getRandomValues: jest.fn() };
+import { loadBase64, loadGetRandomValues } from '@aws-amplify/react-native';
 
-import { loadGetRandomValues, loadBase64 } from '@aws-amplify/react-native';
 import {
 	getAtob,
 	getBtoa,
 	getCrypto,
 } from '../../../src/utils/globalHelpers/index.native';
+
+const mockCrypto = { getRandomValues: jest.fn() };
 
 jest.mock('react-native');
 jest.mock('@aws-amplify/react-native', () => ({

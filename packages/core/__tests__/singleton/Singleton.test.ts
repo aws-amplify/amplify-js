@@ -1,10 +1,12 @@
+import { TextDecoder, TextEncoder } from 'util';
+
 import { Amplify } from '../../src/singleton';
-import { Hub, AMPLIFY_SYMBOL } from '../../src/Hub';
+import { AMPLIFY_SYMBOL, Hub } from '../../src/Hub';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { CredentialsAndIdentityId } from '../../src/singleton/Auth/types';
-import { TextEncoder, TextDecoder } from 'util';
-import { fetchAuthSession, ResourcesConfig } from '../../src';
+import { ResourcesConfig, fetchAuthSession } from '../../src';
+
 Object.assign(global, { TextDecoder, TextEncoder });
 
 jest.mock('../../src/Hub', () => ({
@@ -521,6 +523,7 @@ describe('Session tests', () => {
 			const token =
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
 			const mockToken = decodeJWT(token);
+
 			return {
 				accessToken: mockToken,
 			};

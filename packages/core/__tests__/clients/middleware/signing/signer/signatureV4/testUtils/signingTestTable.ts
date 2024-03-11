@@ -3,6 +3,7 @@
 
 import { SignRequestOptions } from '../../../../../../../src/clients/middleware/signing/signer/signatureV4/types';
 import { HttpRequest } from '../../../../../../../src/clients/types';
+
 import { credentialsWithToken, signingOptions, url } from './data';
 
 interface TestCase {

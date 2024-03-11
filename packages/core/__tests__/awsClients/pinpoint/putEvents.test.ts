@@ -3,9 +3,9 @@
 
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
-	putEvents,
 	PutEventsInput,
 	PutEventsOutput,
+	putEvents,
 } from '../../../src/awsClients/pinpoint';
 import {
 	mockApplicationId,

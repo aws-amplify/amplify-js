@@ -1,4 +1,4 @@
-import { Hub, AMPLIFY_SYMBOL } from '../src/Hub';
+import { Hub } from '../src/Hub';
 import { ConsoleLogger } from '../src';
 
 describe('Hub', () => {

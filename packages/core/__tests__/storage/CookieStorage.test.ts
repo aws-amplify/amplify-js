@@ -3,7 +3,7 @@ import { CookieStorage } from '../../src/storage/CookieStorage';
 const cookieStorageDomain = 'https://testdomain.com';
 
 describe('CookieStorage', () => {
-	//defining a DOM to attach a cookie to
+	// defining a DOM to attach a cookie to
 	Object.defineProperty(document, 'cookie', { writable: true });
 
 	describe('Constructor methods', () => {

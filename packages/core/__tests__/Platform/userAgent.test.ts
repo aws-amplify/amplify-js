@@ -1,18 +1,13 @@
 import {
-	getAmplifyUserAgentObject,
-	getAmplifyUserAgent,
 	Platform,
+	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '../../src/Platform';
 import { version } from '../../src/Platform/version';
+import { AuthAction, Category, Framework } from '../../src/Platform/types';
 import {
-	ApiAction,
-	AuthAction,
-	Category,
-	Framework,
-} from '../../src/Platform/types';
-import {
-	detectFramework,
 	clearCache,
+	detectFramework,
 } from '../../src/Platform/detectFramework';
 import * as detection from '../../src/Platform/detection';
 import { getCustomUserAgent } from '../../src/Platform/customUserAgent';

@@ -9,12 +9,12 @@ describe('isBrowser build test', () => {
 	// testing the Node.js process.
 	const originalVersions = process.versions;
 	beforeEach(() => {
-		//@ts-ignore
+		// @ts-ignore
 		delete global.process.versions;
 	});
 
 	afterEach(() => {
-		//@ts-ignore
+		// @ts-ignore
 		global.process.versions = originalVersions;
 	});
 
