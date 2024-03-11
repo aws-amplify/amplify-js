@@ -60,8 +60,8 @@ describe('retry', () => {
 			}
 		}
 
-		function delayFunction(attempt, args) {
-			receivedAttempt = attempt;
+		function delayFunction(attemptForDelayed: number, args: any[] | undefined) {
+			receivedAttempt = attemptForDelayed;
 			receivedArgs = args;
 
 			return 1;

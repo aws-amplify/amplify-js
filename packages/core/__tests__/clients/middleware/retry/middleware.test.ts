@@ -54,9 +54,9 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		});
 		const retryableHandler = getRetryableHandler(nextHandler);
 		expect.assertions(2);
-		let resp;
+
 		try {
-			resp = await retryableHandler(defaultRequest, {
+			await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
 				maxAttempts: 6,
 			});
@@ -94,7 +94,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 				(resp, error) => error.message !== 'UnretryableError',
 			);
 		try {
-			const resp = await retryableHandler(defaultRequest, {
+			await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
 				retryDecider,
 			});
@@ -185,7 +185,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const betweenRetryFunction = jest
 			.fn()
 			.mockRejectedValueOnce(new Error('MiddlewareRetryableError'))
-			.mockResolvedValue(void 0);
+			.mockResolvedValue(undefined);
 		const betweenRetryMiddleware =
 			() => (next: any, context: any) => async (args: any) => {
 				await betweenRetryFunction(args, context);
@@ -194,7 +194,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 			};
 
 		const doubleRetryableHandler = composeTransferHandler<
-			[RetryOptions, {}, RetryOptions]
+			[RetryOptions, Record<string, unknown>, RetryOptions]
 		>(coreHandler, [
 			retryMiddlewareFactory,
 			betweenRetryMiddleware,

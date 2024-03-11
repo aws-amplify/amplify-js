@@ -14,15 +14,25 @@ import {
 } from '../../../src/utils/queuedStorage/types';
 
 describe('createQueuedStorage', () => {
-	let originalIndexedDB;
-	let originalIDBKeyRange;
+	let originalIndexedDB: IDBFactory;
+	let originalIDBKeyRange: typeof IDBKeyRange;
 	const mockTimestamp = new Date('2024-01-02').toUTCString();
 	const mockAdd = jest.fn(() => ({
 		set onsuccess(handler) {
 			handler();
 		},
+		get onsuccess() {
+			return () => {
+				// no op
+			};
+		},
 		set onerror(handler) {
 			handler();
+		},
+		get onerror() {
+			return () => {
+				// no op
+			};
 		},
 	}));
 	const mockClear = jest.fn();
@@ -30,8 +40,18 @@ describe('createQueuedStorage', () => {
 		set onsuccess(handler) {
 			handler();
 		},
+		get onsuccess() {
+			return () => {
+				// no op
+			};
+		},
 		set onerror(handler) {
 			handler();
+		},
+		get onerror() {
+			return () => {
+				// no op
+			};
 		},
 		result: [] as QueuedItem[],
 	}));
@@ -39,8 +59,18 @@ describe('createQueuedStorage', () => {
 		set onsuccess(handler) {
 			handler();
 		},
+		get onsuccess() {
+			return () => {
+				// no op
+			};
+		},
 		set onerror(handler) {
 			handler();
+		},
+		get onerror() {
+			return () => {
+				// no op
+			};
 		},
 	}));
 	const mockObjectStore = jest.fn(() => ({
@@ -63,10 +93,27 @@ describe('createQueuedStorage', () => {
 		set onupgradeneeded(handler) {
 			handler();
 		},
+		get onupgradeneeded() {
+			return () => {
+				// no op
+			};
+		},
 		set onsuccess(handler) {
 			handler();
 		},
-		set onerror(_) {},
+		get onsuccess() {
+			return () => {
+				// no op
+			};
+		},
+		set onerror(_) {
+			// no op
+		},
+		get onerror() {
+			return () => {
+				// no op
+			};
+		},
 		result: mockDB,
 	};
 	const mockIndexedDBOpen = jest.fn(() => mockIndexedDBOpenRequest);
@@ -119,7 +166,19 @@ describe('createQueuedStorage', () => {
 				set onsuccess(handler) {
 					handler();
 				},
-				set onerror(_) {},
+				get onsuccess() {
+					return () => {
+						// no op
+					};
+				},
+				set onerror(_) {
+					// no-op
+				},
+				get onerror() {
+					return () => {
+						// no op
+					};
+				},
 				result: mockQueuedItems,
 			});
 			queuedStorage = createQueuedStorage();
@@ -172,9 +231,26 @@ describe('createQueuedStorage', () => {
 				set onupgradeneeded(handler) {
 					handler();
 				},
-				set onsuccess(_) {},
+				get onupgradeneeded() {
+					return () => {
+						// no op
+					};
+				},
+				set onsuccess(_) {
+					// no-op
+				},
+				get onsuccess() {
+					return () => {
+						// no op
+					};
+				},
 				set onerror(handler) {
 					handler();
+				},
+				get onerror() {
+					return () => {
+						// no op
+					};
 				},
 				error: expectedError,
 				result: mockDB,
@@ -187,10 +263,13 @@ describe('createQueuedStorage', () => {
 			['peekAll', undefined],
 			['delete', [{}]],
 			['clear', undefined],
-		])('when invokes %s it throws', async (method, args) => {
-			const storage = createQueuedStorage();
-			await expect(storage[method](args)).rejects.toThrow(expectedError);
-		});
+		] as unknown as [keyof QueuedStorage, any])(
+			'when invokes %s it throws',
+			async (method: keyof QueuedStorage, args: any) => {
+				const storage = createQueuedStorage();
+				await expect(storage[method](args)).rejects.toThrow(expectedError);
+			},
+		);
 	});
 
 	describe('method add()', () => {
@@ -231,7 +310,19 @@ describe('createQueuedStorage', () => {
 				set onsuccess(handler) {
 					handler();
 				},
-				set onerror(_) {},
+				get onsuccess() {
+					return () => {
+						// no op
+					};
+				},
+				set onerror(_) {
+					// no op
+				},
+				get onerror() {
+					return () => {
+						// no op
+					};
+				},
 				result: mockQueuedItems,
 			});
 
@@ -273,7 +364,19 @@ describe('createQueuedStorage', () => {
 				set onsuccess(handler) {
 					handler();
 				},
-				set onerror(_) {},
+				get onsuccess() {
+					return () => {
+						// no op
+					};
+				},
+				set onerror(_) {
+					// no-op
+				},
+				get onerror() {
+					return () => {
+						// no op
+					};
+				},
 				result: [mockQueuedItems[0]],
 			});
 			const result = await queuedStorage.peek(1);
@@ -288,7 +391,19 @@ describe('createQueuedStorage', () => {
 				set onsuccess(handler) {
 					handler();
 				},
-				set onerror(_) {},
+				get onsuccess() {
+					return () => {
+						// no op
+					};
+				},
+				set onerror(_) {
+					// no op
+				},
+				get onerror() {
+					return () => {
+						// no op
+					};
+				},
 				result: mockQueuedItems,
 			});
 

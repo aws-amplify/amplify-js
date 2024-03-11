@@ -23,7 +23,7 @@ describe(fetchTransferHandler.name, () => {
 	const mockFetch = jest.fn();
 
 	beforeAll(() => {
-		global.fetch = mockFetch;
+		(global as any).fetch = mockFetch;
 	});
 
 	beforeEach(() => {
@@ -68,8 +68,8 @@ describe(fetchTransferHandler.name, () => {
 	});
 
 	it('should support headers', async () => {
-		mockFetchResponse.headers.forEach.mockImplementation((cb: any) => {
-			cb('foo', 'bar');
+		mockFetchResponse.headers.forEach.mockImplementation((funcParam: any) => {
+			funcParam('foo', 'bar');
 		});
 		const { headers } = await fetchTransferHandler(mockRequest, {});
 		expect(headers).toEqual({ bar: 'foo' });

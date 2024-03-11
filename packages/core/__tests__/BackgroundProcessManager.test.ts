@@ -96,9 +96,9 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 
 		const resultPromise = manager.add(async () => {
-			return new Promise((resolve, raise) => {
+			return new Promise((resolve, reject) => {
 				setTimeout(() => {
-					raise(new Error('a fuss'));
+					reject(new Error('a fuss'));
 				}, 50);
 			});
 		});
@@ -146,7 +146,7 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 
 		// add a job that will not have completed by the time we open() again
-		manager.add(async () => new Promise(unsleep => setTimeout(unsleep, 10)));
+		manager.add(async () => new Promise(resolve => setTimeout(resolve, 10)));
 
 		// close, but don't want, because we want to prove that open() will wait
 		// internally for close to resolve before re-opening.
@@ -176,8 +176,15 @@ describe('BackgroundProcessManager', () => {
 		expect(manager.isClosing).toBe(false);
 		expect(manager.isClosed).toBe(false);
 
-		let unblock;
-		manager.add(async () => new Promise(_unblock => (unblock = _unblock)));
+		let unblock: () => void = () => {
+			// no op
+		};
+		manager.add(
+			async () =>
+				new Promise<void>(resolve => {
+					unblock = resolve;
+				}),
+		);
 
 		expect(manager.state).toEqual(BackgroundProcessManagerState.Open);
 		expect(manager.isOpen).toBe(true);
@@ -195,7 +202,7 @@ describe('BackgroundProcessManager', () => {
 		// promise layers handling by awaiting another promise before the
 		// manager can register completion.
 
-		unblock();
+		unblock?.();
 		await new Promise(process.nextTick);
 
 		expect(manager.state).toEqual(BackgroundProcessManagerState.Closed);
@@ -252,8 +259,8 @@ describe('BackgroundProcessManager', () => {
 		let completed = false;
 		const manager = new BackgroundProcessManager();
 
-		const resultPromise = manager.add(async onTerminate => {
-			return new Promise<void>((resolve, reject) => {
+		const _ = manager.add(async (onTerminate: Promise<void>) => {
+			return new Promise<void>((resolve, _reject) => {
 				const timer = setTimeout(() => {
 					// this is the happy path that we plan not to reach in
 					// this test.
@@ -290,8 +297,9 @@ describe('BackgroundProcessManager', () => {
 		let completed = false;
 		let thrown;
 		const manager = new BackgroundProcessManager();
+		const expectedError = new Error('badness happened');
 
-		const resultPromise = manager.add(async onTerminate => {
+		const resultPromise = manager.add(async (onTerminate: Promise<void>) => {
 			return new Promise<void>((resolve, reject) => {
 				const timer = setTimeout(() => {
 					// this is the happy path that we plan not to reach in
@@ -305,7 +313,7 @@ describe('BackgroundProcessManager', () => {
 				// or reject.
 				onTerminate.then(() => {
 					clearTimeout(timer);
-					reject('badness happened');
+					reject(expectedError);
 				});
 			});
 		});
@@ -329,7 +337,7 @@ describe('BackgroundProcessManager', () => {
 
 		// then making sure the job really really didn't fire.
 		expect(completed).toBe(false);
-		expect(thrown).toEqual('badness happened');
+		expect(thrown).toEqual(expectedError);
 	});
 
 	test('attempts to terminate all, but patiently waits for persistent jobs', async () => {
@@ -341,7 +349,7 @@ describe('BackgroundProcessManager', () => {
 		for (let i = 0; i < 10; i++) {
 			const _i = i;
 			results.push(false);
-			manager.add(async onTerminate => {
+			manager.add(async (onTerminate: Promise<void>) => {
 				return new Promise<void>((resolve, reject) => {
 					const timer = setTimeout(() => {
 						results[_i] = true;
@@ -357,7 +365,7 @@ describe('BackgroundProcessManager', () => {
 
 							// remember, if a job *does* terminate, it still
 							// needs resolve/reject to unblock `close()`.
-							_i > 5 ? resolve() : reject();
+							_i > 5 ? resolve() : reject(new Error());
 						}
 					});
 				});
@@ -371,7 +379,9 @@ describe('BackgroundProcessManager', () => {
 		expect(results.length).toEqual(10); // sanity check
 		expect(results.filter(v => v === true).length).toBe(5);
 		expect(terminationAttemptCount).toEqual(10);
-		expect(resolutions.filter(r => r.status === 'rejected').length).toEqual(3);
+		expect(
+			resolutions.filter((r: any) => r.status === 'rejected').length,
+		).toEqual(3);
 	});
 
 	test('can be used to terminate other types of bg jobs, like zen subscriptions', async () => {
@@ -418,7 +428,7 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 		let count = 0;
 
-		const subscription = new Observable(observer => {
+		const _ = new Observable(observer => {
 			const interval = setInterval(() => {
 				observer.next({});
 			}, 10);
@@ -502,7 +512,7 @@ describe('BackgroundProcessManager', () => {
 
 		// accumulate a bunch of close promises, only the first of which should
 		// send the close signal, but all of which should await resolution.
-		const closes = [0, 1, 2, 3, 4, 5].map(i => manager.close());
+		const closes = [0, 1, 2, 3, 4, 5].map(_ => manager.close());
 
 		// ensure everything has settled
 		const resolved = await Promise.allSettled(closes);
@@ -564,7 +574,7 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 
 		manager.add(
-			async () => new Promise(unsleep => setTimeout(unsleep, 1)),
+			async () => new Promise(resolve => setTimeout(resolve, 1)),
 			'async function',
 		);
 
@@ -579,9 +589,9 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 
 		manager.add(
-			async onTerminate =>
-				new Promise(finishJob => {
-					onTerminate.then(finishJob);
+			async (onTerminate: Promise<void>) =>
+				new Promise(resolve => {
+					onTerminate.then(resolve);
 				}),
 			'cancelable async function',
 		);
@@ -635,27 +645,31 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 		await manager.close();
 
-		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow(
-			'some job',
-		);
+		await expect(
+			manager.add(async () => {
+				// no-op
+			}, 'some job'),
+		).rejects.toThrow('some job');
 	});
 
 	test('manager closed error shows names of pending items in error', async () => {
 		const manager = new BackgroundProcessManager();
 
-		let unblock;
+		let unblock: any;
 		manager.add(
-			() => new Promise(_unblock => (unblock = _unblock)),
+			() => new Promise<void>(resolve => (unblock = resolve)),
 			'blocking job',
 		);
 
 		const close = manager.close();
 
-		await expect(manager.add(async () => {}, 'some job')).rejects.toThrow(
-			'blocking job',
-		);
+		await expect(
+			manager.add(async () => {
+				// no-op
+			}, 'some job'),
+		).rejects.toThrow('blocking job');
 
-		unblock();
+		unblock?.();
 		await close;
 	});
 });

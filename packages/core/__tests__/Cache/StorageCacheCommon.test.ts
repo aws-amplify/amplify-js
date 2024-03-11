@@ -26,7 +26,7 @@ describe('StorageCacheCommon', () => {
 		warningThreshold: 0.8,
 	};
 	// create spies
-	const loggerSpy = {
+	const loggerSpy: Record<string, jest.SpyInstance> = {
 		debug: jest.spyOn(ConsoleLogger.prototype, 'debug'),
 		error: jest.spyOn(ConsoleLogger.prototype, 'error'),
 		warn: jest.spyOn(ConsoleLogger.prototype, 'warn'),
@@ -57,9 +57,9 @@ describe('StorageCacheCommon', () => {
 		}
 	}
 	// create test helpers
-	const getStorageCache = (config?: CacheConfig) =>
+	const getStorageCache = (storageCacheConfig?: CacheConfig) =>
 		new StorageCacheCommonTest({
-			config,
+			config: storageCacheConfig,
 			keyValueStorage: mockKeyValueStorage,
 		});
 
@@ -464,8 +464,8 @@ describe('StorageCacheCommon', () => {
 	describe('getItem()', () => {
 		const value = 'value';
 		const cache = getStorageCache(config);
-		const key = 'key';
-		const prefixedKey = `${keyPrefix}${key}`;
+		const testKey = 'key';
+		const testPrefixedKey = `${keyPrefix}${testKey}`;
 
 		beforeEach(() => {
 			mockKeyValueStorageGetItem.mockReturnValue(null);
@@ -476,11 +476,11 @@ describe('StorageCacheCommon', () => {
 				JSON.stringify({ data: value }),
 			);
 
-			expect(await cache.getItem(key)).toBe(value);
+			expect(await cache.getItem(testKey)).toBe(value);
 			expect(loggerSpy.debug).toHaveBeenCalledWith(
-				expect.stringContaining(`Get item: key is ${key}`),
+				expect.stringContaining(`Get item: key is ${testKey}`),
 			);
-			expect(mockKeyValueStorageGetItem).toHaveBeenCalledWith(prefixedKey);
+			expect(mockKeyValueStorageGetItem).toHaveBeenCalledWith(testPrefixedKey);
 		});
 
 		it('aborts on empty key', async () => {
@@ -508,22 +508,24 @@ describe('StorageCacheCommon', () => {
 				}),
 			);
 
-			expect(await cache.getItem(key)).toBeNull();
-			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(prefixedKey);
+			expect(await cache.getItem(testKey)).toBeNull();
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(
+				testPrefixedKey,
+			);
 		});
 
 		it('returns null if not in cache', async () => {
-			expect(await cache.getItem(key)).toBeNull();
+			expect(await cache.getItem(testKey)).toBeNull();
 		});
 
 		it('updates item visitedTime when fetched from cache', async () => {
 			const item = { data: value };
 			mockKeyValueStorageGetItem.mockReturnValue(JSON.stringify(item));
 
-			expect(await cache.getItem(key)).toBe(value);
-			expect(mockKeyValueStorageGetItem).toHaveBeenCalledWith(prefixedKey);
+			expect(await cache.getItem(testKey)).toBe(value);
+			expect(mockKeyValueStorageGetItem).toHaveBeenCalledWith(testPrefixedKey);
 			expect(mockKeyValueStorageSetItem).toHaveBeenCalledWith(
-				prefixedKey,
+				testPrefixedKey,
 				JSON.stringify({ ...item, visitedTime: currentTime }),
 			);
 		});
@@ -531,7 +533,7 @@ describe('StorageCacheCommon', () => {
 		it('execute a callback if specified when key not found in cache', async () => {
 			mockGetByteLength.mockReturnValue(20);
 			const callback = jest.fn(() => value);
-			expect(await cache.getItem(key, { callback })).toBe(value);
+			expect(await cache.getItem(testKey, { callback })).toBe(value);
 			expect(callback).toHaveBeenCalled();
 			expect(mockKeyValueStorageSetItem).toHaveBeenCalled();
 		});
@@ -539,8 +541,8 @@ describe('StorageCacheCommon', () => {
 
 	describe('removeItem()', () => {
 		const cache = getStorageCache(config);
-		const key = 'key';
-		const prefixedKey = `${keyPrefix}${key}`;
+		const testKey = 'key';
+		const testPrefixedKey = `${keyPrefix}${testKey}`;
 
 		beforeEach(() => {
 			mockKeyValueStorageGetItem.mockReturnValue(
@@ -549,11 +551,13 @@ describe('StorageCacheCommon', () => {
 		});
 
 		it('removes an item', async () => {
-			await cache.removeItem(key);
+			await cache.removeItem(testKey);
 			expect(loggerSpy.debug).toHaveBeenCalledWith(
-				expect.stringContaining(`Remove item: key is ${key}`),
+				expect.stringContaining(`Remove item: key is ${testKey}`),
 			);
-			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(prefixedKey);
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledWith(
+				testPrefixedKey,
+			);
 		});
 
 		it('aborts on empty key', async () => {
@@ -574,7 +578,7 @@ describe('StorageCacheCommon', () => {
 
 		it('does nothing if item not found', async () => {
 			mockKeyValueStorageGetItem.mockReturnValue(null);
-			await cache.removeItem(key);
+			await cache.removeItem(testKey);
 			expect(mockKeyValueStorageRemoveItem).not.toHaveBeenCalled();
 		});
 	});

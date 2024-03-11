@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { loadBase64, loadGetRandomValues } from '@aws-amplify/react-native';
+import { loadGetRandomValues } from '@aws-amplify/react-native';
 
 import {
 	getAtob,
@@ -9,13 +9,11 @@ import {
 	getCrypto,
 } from '../../../src/utils/globalHelpers/index.native';
 
-const mockCrypto = { getRandomValues: jest.fn() };
-
 jest.mock('react-native');
 jest.mock('@aws-amplify/react-native', () => ({
 	loadGetRandomValues: jest.fn(() => {
 		Object.defineProperty(global, 'crypto', {
-			value: mockCrypto,
+			value: { getRandomValues: jest.fn(() => 'mocked') },
 			writable: true,
 		});
 	}),
@@ -26,7 +24,6 @@ jest.mock('@aws-amplify/react-native', () => ({
 }));
 
 const mockLoadGetRandomValues = loadGetRandomValues as jest.Mock;
-const mockLoadBase64 = loadBase64 as jest.Mock;
 
 describe('getGlobal (native)', () => {
 	beforeAll(() => {
@@ -36,7 +33,7 @@ describe('getGlobal (native)', () => {
 
 	describe('getCrypto()', () => {
 		it('returns the polyfill crypto from react-native-get-random-values', () => {
-			expect(getCrypto()).toEqual(mockCrypto);
+			expect(getCrypto().getRandomValues(null)).toEqual('mocked');
 		});
 	});
 

@@ -21,7 +21,7 @@ describe('ServiceWorker test', () => {
 		});
 		test('fails when registering', async () => {
 			(global as any).navigator.serviceWorker = {
-				register: () => Promise.reject('an error'),
+				register: () => Promise.reject(new Error('an error')),
 			};
 
 			const serviceWorker = new ServiceWorker();
@@ -38,7 +38,13 @@ describe('ServiceWorker test', () => {
 		const statuses = ['installing', 'waiting', 'active'];
 		statuses.forEach(status => {
 			test(`can register (${status})`, () => {
-				const bla = { [status]: { addEventListener: () => {} } };
+				const bla = {
+					[status]: {
+						addEventListener: () => {
+							// no-op
+						},
+					},
+				};
 				(global as any).navigator.serviceWorker = {
 					register: () => Promise.resolve(bla),
 				};

@@ -38,16 +38,18 @@ describe('ConsoleLogger', () => {
 
 		it('should do nothing when a non-logging category plugin is provided to addPluggable', () => {
 			const provider = {
-				getCategoryName: function () {
+				getCategoryName: () => {
 					return 'non-logging';
 				},
-				getProviderName: function () {
+				getProviderName: () => {
 					return 'lol';
 				},
-				configure: function () {
+				configure: () => {
 					return {};
 				},
-				pushLogs: () => {},
+				pushLogs: () => {
+					// no-op
+				},
 			} as LoggingProvider;
 
 			const logger = new ConsoleLogger('name');
