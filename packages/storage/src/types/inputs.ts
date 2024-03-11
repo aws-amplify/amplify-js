@@ -15,16 +15,16 @@ export interface StorageOperationInputKey {
 export interface StorageOperationInputPath {
 	path: string | (({ identityId }: { identityId?: string }) => string);
 }
-export interface StorageOperationOptions<Options> {
+export interface StorageOperationOptionsInput<Options> {
 	options?: Options;
 }
 
 /** @deprecated Use {@link StorageDownloadDataInputPath} instead. */
 export type StorageDownloadDataInputKey<Options extends StorageOptions> =
-	StorageOperationInputKey & StorageOperationOptions<Options>;
+	StorageOperationInputKey & StorageOperationOptionsInput<Options>;
 
 export type StorageDownloadDataInputPath<Options> = StorageOperationInputPath &
-	StorageOperationOptions<Options>;
+	StorageOperationOptionsInput<Options>;
 
 // TODO: This needs to be removed after refactor of all storage APIs
 export interface StorageOperationInput<Options extends StorageOptions> {
