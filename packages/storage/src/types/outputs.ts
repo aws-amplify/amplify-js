@@ -3,11 +3,10 @@
 
 import { ResponseBodyMixin } from '@aws-amplify/core/internals/aws-client-utils';
 
-export interface StorageItem {
-	/**
-	 * Key of the object
-	 */
-	key: string;
+/**
+ * Base type for a storage item.
+ */
+export interface StorageItemBase {
 	/**
 	 * Creation date of the object.
 	 */
@@ -28,7 +27,27 @@ export interface StorageItem {
 	metadata?: Record<string, string>;
 }
 
-export type StorageDownloadDataOutput<T extends StorageItem> = T & {
+/** @deprecated Use {@link StorageItemPath} instead. */
+export type StorageItemKey = StorageItemBase & {
+	/**
+	 * Key of the object.
+	 */
+	key: string;
+};
+
+export type StorageItemPath = StorageItemBase & {
+	/**
+	 * Path of the object.
+	 */
+	path: string;
+};
+
+/**
+ * A storage item can be identified either by a key or a path.
+ */
+export type StorageItem = StorageItemKey | StorageItemPath;
+
+export type StorageDownloadDataOutput<Item extends StorageItem> = Item & {
 	body: ResponseBodyMixin;
 };
 

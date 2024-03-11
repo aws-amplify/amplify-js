@@ -5,15 +5,16 @@ import {
 	DownloadTask,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,
-	StorageItem,
+	StorageItemKey,
+	StorageItemPath,
 	StorageListOutput,
 	UploadTask,
 } from '../../../types';
 
 /**
- * type for S3 item.
+ * Base type for an S3 item.
  */
-export interface Item extends StorageItem {
+export interface ItemBase {
 	/**
 	 * VersionId used to reference a specific version of the object.
 	 */
@@ -25,14 +26,28 @@ export interface Item extends StorageItem {
 }
 
 /**
+ * @deprecated Use {@link ItemPath} instead.
+ */
+export type ItemKey = ItemBase & StorageItemKey;
+export type ItemPath = ItemBase & StorageItemPath;
+
+/**
  * type for S3 list item.
  */
-export type ListOutputItem = Omit<StorageItem, 'metadata'>;
+export type ListOutputItem = Omit<ItemKey, 'metadata'>;
+
+/** @deprecated Use {@link DownloadDataOutputPath} instead. */
+export type DownloadDataOutputKey = DownloadTask<
+	StorageDownloadDataOutput<ItemKey>
+>;
+export type DownloadDataOutputPath = DownloadTask<
+	StorageDownloadDataOutput<ItemPath>
+>;
 
 /**
  * Output type for S3 downloadData API.
  */
-export type DownloadDataOutput = DownloadTask<StorageDownloadDataOutput<Item>>;
+export type DownloadDataOutput = DownloadDataOutputKey | DownloadDataOutputPath;
 
 /**
  * Output type for S3 getUrl API.
@@ -42,12 +57,12 @@ export type GetUrlOutput = StorageGetUrlOutput;
 /**
  * Output type for S3 uploadData API.
  */
-export type UploadDataOutput = UploadTask<Item>;
+export type UploadDataOutput = UploadTask<ItemKey>;
 
 /**
  * Output type for S3 getProperties API.
  */
-export type GetPropertiesOutput = Item;
+export type GetPropertiesOutput = ItemKey;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.
@@ -64,9 +79,9 @@ export type ListPaginateOutput = StorageListOutput<ListOutputItem> & {
 /**
  * Output type for S3 copy API.
  */
-export type CopyOutput = Pick<Item, 'key'>;
+export type CopyOutput = Pick<ItemKey, 'key'>;
 
 /**
  * Output type for S3 remove API.
  */
-export type RemoveOutput = Pick<Item, 'key'>;
+export type RemoveOutput = Pick<ItemKey, 'key'>;

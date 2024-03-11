@@ -7,6 +7,26 @@ import {
 	StorageOptions,
 } from './options';
 
+/** @deprecated Use {@link StorageOperationInputPath} instead. */
+export interface StorageOperationInputKey {
+	/** @deprecated Use `path` instead. */
+	key: string;
+}
+export interface StorageOperationInputPath {
+	path: string | (({ identityId }: { identityId?: string }) => string);
+}
+export interface StorageOperationOptions<Options> {
+	options?: Options;
+}
+
+/** @deprecated Use {@link StorageDownloadDataInputPath} instead. */
+export type StorageDownloadDataInputKey<Options extends StorageOptions> =
+	StorageOperationInputKey & StorageOperationOptions<Options>;
+
+export type StorageDownloadDataInputPath<Options> = StorageOperationInputPath &
+	StorageOperationOptions<Options>;
+
+// TODO: This needs to be removed after refactor of all storage APIs
 export interface StorageOperationInput<Options extends StorageOptions> {
 	key: string;
 	options?: Options;
@@ -28,9 +48,6 @@ export interface StorageListInput<
 }
 
 export type StorageGetUrlInput<Options extends StorageOptions> =
-	StorageOperationInput<Options>;
-
-export type StorageDownloadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
 export type StorageUploadDataInput<Options extends StorageOptions> =

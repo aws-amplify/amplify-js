@@ -22,6 +22,7 @@ interface ResolvedS3ConfigAndInput {
 	bucket: string;
 	keyPrefix: string;
 	isObjectLockEnabled?: boolean;
+	identityId?: string;
 }
 
 /**
@@ -84,6 +85,7 @@ export const resolveS3ConfigAndInput = async (
 		},
 		bucket,
 		keyPrefix,
+		identityId,
 		isObjectLockEnabled,
 	};
 };

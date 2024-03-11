@@ -6,7 +6,7 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput } from '../../../types';
 import { resolveS3ConfigAndInput } from '../../../utils';
-import { Item as S3Item } from '../../../types/outputs';
+import { ItemKey as S3Item } from '../../../types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
