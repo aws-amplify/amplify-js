@@ -20,19 +20,15 @@ describe(composeServiceApi.name, () => {
 
 	test('should call transfer handler with resolved config including default config values', async () => {
 		const mockTransferHandler = jest.fn().mockResolvedValue(defaultResponse);
-		const config = {
-			...defaultConfig,
-			foo: 'bar',
-		};
 		const api = composeServiceApi(
 			mockTransferHandler,
-			input => defaultRequest,
-			async output => ({
+			_ => defaultRequest,
+			async _ => ({
 				Result: 'from API',
 			}),
 			defaultConfig,
 		);
-		const output = await api({ bar: 'baz', foo: 'foo' }, 'Input');
+		await api({ bar: 'baz', foo: 'foo' }, 'Input');
 		expect(mockTransferHandler).toHaveBeenCalledTimes(1);
 		expect(mockTransferHandler).toHaveBeenCalledWith(
 			defaultRequest,
@@ -51,8 +47,8 @@ describe(composeServiceApi.name, () => {
 		};
 		const api = composeServiceApi(
 			mockTransferHandler,
-			input => defaultRequest,
-			async output => ({
+			__ => defaultRequest,
+			async __ => ({
 				Result: 'from API',
 			}),
 			defaultConfig,
@@ -67,7 +63,7 @@ describe(composeServiceApi.name, () => {
 
 	test('should call serializer and deserializer', async () => {
 		const mockTransferHandler = jest.fn().mockResolvedValue(defaultResponse);
-		const defaultConfig = {
+		const defaultConfigWithEndpointResolver = {
 			foo: 'bar',
 			endpointResolver: jest.fn().mockReturnValue('https://a.b'),
 		};
@@ -79,13 +75,13 @@ describe(composeServiceApi.name, () => {
 			mockTransferHandler,
 			mockSerializer,
 			mockDeserializer,
-			defaultConfig,
+			defaultConfigWithEndpointResolver,
 		);
-		const output = await api({ bar: 'baz', foo: 'foo' }, 'Input');
+		await api({ bar: 'baz', foo: 'foo' }, 'Input');
 		expect(mockSerializer).toHaveBeenCalledTimes(1);
 		expect(mockSerializer).toHaveBeenCalledWith(
 			'Input',
-			defaultConfig.endpointResolver.mock.results[0].value,
+			defaultConfigWithEndpointResolver.endpointResolver.mock.results[0].value,
 		);
 		expect(mockDeserializer).toHaveBeenCalledTimes(1);
 		expect(mockDeserializer).toHaveBeenCalledWith(defaultResponse);

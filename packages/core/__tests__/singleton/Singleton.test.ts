@@ -18,7 +18,9 @@ jest.mock('../../src/Hub', () => ({
 
 const mockHubDispatch = Hub.dispatch as jest.Mock;
 
-type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
+type ArgumentTypes<F extends (...args: any[]) => any> = F extends (
+	...args: infer A
+) => any
 	? A
 	: never;
 
@@ -283,7 +285,7 @@ describe('Session tests', () => {
 	test('fetchAuthSession with credentials provider only', async () => {
 		const mockCredentials = {
 			accessKeyId: 'accessKeyValue',
-			secretAccessKey: 'secreatAccessKeyValue',
+			secretAccessKey: 'secretAccessKeyValue',
 		};
 		Amplify.configure(
 			{},
@@ -295,7 +297,9 @@ describe('Session tests', () => {
 								credentials: mockCredentials,
 							};
 						},
-						clearCredentialsAndIdentityId: () => {},
+						clearCredentialsAndIdentityId: () => {
+							// no-op
+						},
 					},
 				},
 			},
@@ -361,11 +365,7 @@ describe('Session tests', () => {
 		};
 
 		const credentialsSpy = jest.fn(
-			async ({
-				tokens,
-				authConfig,
-				identityId,
-			}): Promise<CredentialsAndIdentityId> => {
+			async (_): Promise<CredentialsAndIdentityId> => {
 				return {
 					credentials: {
 						accessKeyId: 'accessKeyIdValue',
@@ -391,7 +391,9 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentialsAndIdentityId: () => {},
+					clearCredentialsAndIdentityId: () => {
+						// no-op
+					},
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,
@@ -456,11 +458,7 @@ describe('Session tests', () => {
 		};
 
 		const credentialsSpy = jest.fn(
-			async ({
-				tokens,
-				authConfig,
-				identityId,
-			}): Promise<CredentialsAndIdentityId> => {
+			async (_): Promise<CredentialsAndIdentityId> => {
 				return {
 					credentials: {
 						accessKeyId: 'accessKeyIdValue',
@@ -481,7 +479,9 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentialsAndIdentityId: () => {},
+					clearCredentialsAndIdentityId: () => {
+						// no-op
+					},
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,
@@ -572,8 +572,7 @@ describe('Session tests', () => {
 			},
 		);
 
-		const action = async () =>
-			await auth.fetchAuthSession({ forceRefresh: true });
+		const action = async () => auth.fetchAuthSession({ forceRefresh: true });
 
 		await expect(action()).rejects.toThrow('no no no');
 

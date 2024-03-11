@@ -17,15 +17,18 @@ describe('CookieStorage', () => {
 			const expectedError =
 				'The sameSite value of cookieStorage must be "lax", "strict" or "none"';
 			expect(() => {
+				// eslint-disable-next-line no-new
 				new CookieStorage({ sameSite: undefined });
 			}).toThrow(expectedError);
 			expect(() => {
+				// eslint-disable-next-line no-new
 				new CookieStorage({ sameSite: 'foo' as any });
 			}).toThrow(expectedError);
 		});
 
 		it('SameSite value is "none" while secure is false', () => {
 			expect(() => {
+				// eslint-disable-next-line no-new
 				new CookieStorage({
 					domain: cookieStorageDomain,
 					secure: false,
@@ -63,11 +66,11 @@ describe('CookieStorage', () => {
 			});
 
 			it('Clearing cookies should remove all items within the storage', async () => {
-				const cookieStore = new CookieStorage(cookieStoreData);
-				await cookieStore.setItem('testKey2', 'testValue');
-				const tempReference = await cookieStore.getItem('testKey2');
-				await cookieStore.clear();
-				expect(await cookieStore.getItem('testKey2')).not.toEqual(
+				const testCookieStore = new CookieStorage(cookieStoreData);
+				await testCookieStore.setItem('testKey2', 'testValue');
+				const tempReference = await testCookieStore.getItem('testKey2');
+				await testCookieStore.clear();
+				expect(await testCookieStore.getItem('testKey2')).not.toEqual(
 					tempReference,
 				);
 			});

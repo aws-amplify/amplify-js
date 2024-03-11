@@ -82,6 +82,7 @@ module.exports = {
 				allow: [
 					// exceptions for core package
 					'phone_number',
+					'search_indices',
 					// exceptions for api packages
 					'graphql_headers',
 					// exceptions for the legacy config

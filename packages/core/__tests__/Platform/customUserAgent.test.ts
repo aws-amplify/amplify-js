@@ -1,4 +1,5 @@
 import {
+	AdditionalDetails,
 	AuthAction,
 	Category,
 	SetCustomUserAgentInput,
@@ -18,15 +19,16 @@ const MOCK_STORAGE_UA_STATE: SetCustomUserAgentInput = {
 };
 
 describe('Custom user agent utilities', () => {
-	let getCustomUserAgent;
-	let setCustomUserAgent;
+	let getCustomUserAgent: (
+		category: string,
+		api: string,
+	) => AdditionalDetails | undefined;
+	let setCustomUserAgent: (input: SetCustomUserAgentInput) => () => void;
 
 	beforeEach(() => {
 		jest.resetModules();
-		getCustomUserAgent =
-			require('../../src/Platform/customUserAgent').getCustomUserAgent;
-		setCustomUserAgent =
-			require('../../src/Platform/customUserAgent').setCustomUserAgent;
+		({ getCustomUserAgent } = require('../../src/Platform/customUserAgent'));
+		({ setCustomUserAgent } = require('../../src/Platform/customUserAgent'));
 	});
 
 	it('sets custom user agent state for multiple categories and APIs', () => {

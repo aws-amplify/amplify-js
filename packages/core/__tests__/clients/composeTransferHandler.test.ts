@@ -31,7 +31,7 @@ describe(composeTransferHandler.name, () => {
 			mockFnInOptions(calledFrom: string): void;
 		}
 		const middlewareA: Middleware<Request, Response, OptionsType> =
-			(options: OptionsType) => (next, context) => async request => {
+			(options: OptionsType) => (next, _) => async request => {
 				request.body += 'A';
 				options.mockFnInOptions('A');
 				const resp = await next(request);
@@ -40,7 +40,7 @@ describe(composeTransferHandler.name, () => {
 				return resp;
 			};
 		const middlewareB: Middleware<Request, Response, OptionsType> =
-			(options: OptionsType) => (next, context) => async request => {
+			(options: OptionsType) => (next, _) => async request => {
 				request.body += 'B';
 				options.mockFnInOptions('B');
 				const resp = await next(request);
@@ -48,9 +48,11 @@ describe(composeTransferHandler.name, () => {
 
 				return resp;
 			};
-		const coreHandler: TransferHandler<Request, Response, {}> = jest
-			.fn()
-			.mockResolvedValueOnce({ body: '' } as Response);
+		const coreHandler: TransferHandler<
+			Request,
+			Response,
+			Record<string, unknown>
+		> = jest.fn().mockResolvedValueOnce({ body: '' } as Response);
 		const handler = composeTransferHandler<[OptionsType, OptionsType]>(
 			coreHandler,
 			[middlewareA, middlewareB],

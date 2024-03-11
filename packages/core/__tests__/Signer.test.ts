@@ -48,22 +48,26 @@ describe('Signer.sign', () => {
 		'signs request with %s',
 		(
 			_,
-			{ url, ...request },
-			{ credentials, signingRegion, signingService },
+			{ url: testUrl, ...request },
+			{
+				credentials: testCredentials,
+				signingRegion: testSigningRegion,
+				signingService: testSigningService,
+			},
 			expected,
 		) => {
-			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+			const { accessKeyId, secretAccessKey, sessionToken } = testCredentials;
 			const accessInfo = {
 				access_key: accessKeyId,
 				secret_key: secretAccessKey,
 				session_token: sessionToken,
 			};
 			const serviceInfo = {
-				region: signingRegion,
-				service: signingService,
+				region: testSigningRegion,
+				service: testSigningService,
 			};
 			const signedRequest = Signer.sign(
-				{ ...request, url: url.toString() },
+				{ ...request, url: testUrl.toString() },
 				accessInfo as any,
 				serviceInfo as any,
 			);
@@ -156,22 +160,26 @@ describe('Signer.signUrl', () => {
 		'signs url with %s',
 		(
 			_,
-			{ url, ...request },
-			{ credentials, signingRegion, signingService },
+			{ url: testUrl, ...request },
+			{
+				credentials: testCredentials,
+				signingRegion: testSigningRegion,
+				signingService: testSigningService,
+			},
 			expected,
 		) => {
-			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+			const { accessKeyId, secretAccessKey, sessionToken } = testCredentials;
 			const accessInfo = {
 				access_key: accessKeyId,
 				secret_key: secretAccessKey,
 				session_token: sessionToken,
 			};
 			const serviceInfo = {
-				region: signingRegion,
-				service: signingService,
+				region: testSigningRegion,
+				service: testSigningService,
 			};
 			const signedUrl = Signer.signUrl(
-				{ ...request, url: url.toString() },
+				{ ...request, url: testUrl.toString() },
 				accessInfo,
 				serviceInfo as any,
 			);

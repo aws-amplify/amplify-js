@@ -7,7 +7,11 @@ import {
 	createQueuedStorage,
 	keyPrefix,
 } from '../../../src/utils/queuedStorage/createQueuedStorage.native';
-import { ItemToAdd, QueuedItem } from '../../../src/utils/queuedStorage/types';
+import {
+	ItemToAdd,
+	QueuedItem,
+	QueuedStorage,
+} from '../../../src/utils/queuedStorage/types';
 import { getAddItemBytesSize } from '../../../src/utils/queuedStorage/getAddItemBytesSize';
 
 jest.mock('@aws-amplify/react-native', () => ({
@@ -31,7 +35,7 @@ describe('createQueuedStorage', () => {
 	const mockTimestamp = new Date('2024-01-02').toUTCString();
 
 	describe('initialization', () => {
-		let queuedStorage;
+		let queuedStorage: QueuedStorage;
 		const testBytesSize = 1;
 		const mockKeys = [`${keyPrefix}_key1`, `${keyPrefix}_key2`];
 		const mockQueuedItems = [
@@ -116,30 +120,35 @@ describe('createQueuedStorage', () => {
 			['peekAll', undefined],
 			['delete', [{}]],
 			['clear', undefined],
-		])('when invokes %s it throws', async (method, args) => {
-			const storage = createQueuedStorage();
-			await expect(storage[method](args)).rejects.toThrow(expectedError);
-		});
+		] as unknown as [keyof QueuedStorage, any])(
+			'when invokes %s it throws',
+			async (method: keyof QueuedStorage, args: any) => {
+				const storage = createQueuedStorage();
+				await expect(storage[method](args)).rejects.toThrow(expectedError);
+			},
+		);
 	});
 
 	describe('method add()', () => {
-		let queuedStorage;
-		let originalDate;
+		let queuedStorage: QueuedStorage;
+		// let originalDate;
+		let dateNowSpy: jest.SpyInstance;
 		const testInput: ItemToAdd = {
 			content: 'some log content',
 			timestamp: mockTimestamp,
 		};
 
 		beforeAll(() => {
-			originalDate = Date;
-			Date = {
-				now: jest.fn(() => 123),
-			} as any;
+			// originalDate = Date;
+			// Date = {
+			// 	now: jest.fn(() => 123),
+			// } as any;
+			dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(123);
 			queuedStorage = createQueuedStorage();
 		});
 
 		afterAll(() => {
-			Date = originalDate;
+			dateNowSpy.mockRestore();
 		});
 
 		afterEach(() => {
@@ -195,7 +204,7 @@ describe('createQueuedStorage', () => {
 	});
 
 	describe('method peek() and peekAll()', () => {
-		let queuedStorage;
+		let queuedStorage: QueuedStorage;
 
 		const mockQueuedItems = [
 			{
@@ -283,7 +292,7 @@ describe('createQueuedStorage', () => {
 			},
 		];
 
-		let queuedStorage;
+		let queuedStorage: QueuedStorage;
 
 		beforeAll(() => {
 			queuedStorage = createQueuedStorage();
@@ -305,7 +314,7 @@ describe('createQueuedStorage', () => {
 	});
 
 	describe('method clear()', () => {
-		let queuedStorage;
+		let queuedStorage: QueuedStorage;
 		const testAllKeys = [
 			`${keyPrefix}_key1`,
 			`${keyPrefix}_key2`,
