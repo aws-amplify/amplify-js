@@ -1,11 +1,12 @@
 import { ResourcesConfig } from '@aws-amplify/core';
+
 import {
 	generateServerClientUsingCookies,
 	generateServerClientUsingReqRes,
 } from '../../src/api';
 import {
-	getAmplifyConfig,
 	createRunWithAmplifyServerContext,
+	getAmplifyConfig,
 } from '../../src/utils';
 import { NextApiRequestMock, NextApiResponseMock } from '../mocks/headers';
 import { createServerRunnerForAPI } from '../../src/api/createServerRunnerForAPI';
@@ -59,7 +60,7 @@ describe('generateServerClientUsingCookies', () => {
 	});
 
 	it('should call createRunWithAmplifyServerContext to create runWithAmplifyServerContext function', async () => {
-		const cookies = (await headers).cookies;
+		const { cookies } = await headers;
 
 		generateServerClientUsingCookies({ config: mockAmplifyConfig, cookies });
 		expect(mockCreateRunWithAmplifyServerContext).toHaveBeenCalledWith({

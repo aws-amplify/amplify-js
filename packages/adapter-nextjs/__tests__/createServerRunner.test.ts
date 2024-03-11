@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
+
 import { NextServer } from '../src/types';
 
 const mockAmplifyConfig: ResourcesConfig = {
