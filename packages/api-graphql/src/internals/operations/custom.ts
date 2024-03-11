@@ -6,6 +6,9 @@ import {
 	flattenItems,
 	authModeParams,
 	getCustomHeaders,
+	generateSelectionSet,
+	selectionSetIRToString,
+	defaultSelectionSetForNonModelWithIR,
 } from '../APIClient';
 import {
 	AuthModeParams,
@@ -198,27 +201,6 @@ function innerArguments(operation: CustomOperation): string {
 }
 
 /**
- * Accepts a Model or NonModel from generated introspection schema and
- * generates the selection set string.
- *
- * @param nonModel Model or nonModel object from introspection schema.
- * @returns String selection set.
- */
-function modelishTypeSelectionSet(
-	nonModel: SchemaModel | SchemaNonModel,
-): string {
-	return Object.values(nonModel.fields)
-		.filter(
-			field =>
-				hasStringField(field, 'type') ||
-				hasStringField(field.type, 'nonModel') ||
-				hasStringField(field.type, 'enum'),
-		)
-		.map(field => field.name)
-		.join(' ');
-}
-
-/**
  * Generates the selection set string for a custom operation. This is slightly
  * different than the selection set generation for models. If the custom op returns
  * a primitive or enum types, it doen't require a selection set at all.
@@ -251,11 +233,12 @@ function operationSelectionSet(
 	) {
 		return '';
 	} else if (hasStringField(operation.type, 'nonModel')) {
-		const model = modelIntrospection.nonModels[operation.type.nonModel];
-		return `{${modelishTypeSelectionSet(model)}}`;
+		const nonModel = modelIntrospection.nonModels[operation.type.nonModel];
+		return `{${selectionSetIRToString(
+			defaultSelectionSetForNonModelWithIR(nonModel, modelIntrospection),
+		)}}`;
 	} else if (hasStringField(operation.type, 'model')) {
-		const nonModel = modelIntrospection.models[operation.type.model];
-		return `{${modelishTypeSelectionSet(nonModel)}}`;
+		return `{${generateSelectionSet(modelIntrospection, operation.type.model)}}`;
 	} else {
 		return '';
 	}
