@@ -10,13 +10,15 @@ export {
 	ListAllOptionsPath,
 	ListPaginateOptionsPath,
 	RemoveOptions,
-	DownloadDataOptions,
+	DownloadDataOptionsPath,
 	DownloadDataOptionsKey,
 	CopyDestinationOptions,
 	CopySourceOptions,
 } from './options';
 export {
 	DownloadDataOutput,
+	DownloadDataOutputKey,
+	DownloadDataOutputPath,
 	GetUrlOutput,
 	UploadDataOutput,
 	ListOutputItemKey,
@@ -34,6 +36,8 @@ export {
 	GetUrlInput,
 	RemoveInput,
 	DownloadDataInput,
+	DownloadDataInputKey,
+	DownloadDataInputPath,
 	UploadDataInput,
 	ListInput,
 } from './inputs';

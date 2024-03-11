@@ -14,22 +14,9 @@ import {
 } from '../../../types';
 
 /**
- * type for S3 item.
+ * Base type for an S3 item.
  */
-
-/** @deprecated Use{@link ItemPath} instead. */
-export interface Item extends StorageItemKey {
-	/**
-	 * VersionId used to reference a specific version of the object.
-	 */
-	versionId?: string;
-	/**
-	 * A standard MIME type describing the format of the object data.
-	 */
-	contentType?: string;
-}
-
-export interface ItemPath extends StorageItemPath {
+export interface ItemBase {
 	/**
 	 * VersionId used to reference a specific version of the object.
 	 */
@@ -43,24 +30,34 @@ export interface ItemPath extends StorageItemPath {
 /**
  * type for S3 list item with key.
  */
-export type ListOutputItemKey = Omit<Item, 'metadata'>;
+export type ListOutputItemKey = Omit<ItemKey, 'metadata'>;
 
 /**
  * type for S3 list item with path.
  */
 export type ListOutputItemPath = Omit<ItemPath, 'metadata'>;
+/**
+ * @deprecated Use {@link ItemPath} instead.
+ */
+export type ItemKey = ItemBase & StorageItemKey;
+export type ItemPath = ItemBase & StorageItemPath;
 
 /**
- * Output type for S3 downloadData API.
+ * type for S3 list item.
  */
+export type ListOutputItem = Omit<ItemKey, 'metadata'>;
 
 /** @deprecated Use {@link DownloadDataOutputPath} instead. */
 export type DownloadDataOutputKey = DownloadTask<
-	StorageDownloadDataOutput<Item>
+	StorageDownloadDataOutput<ItemKey>
 >;
 export type DownloadDataOutputPath = DownloadTask<
 	StorageDownloadDataOutput<ItemPath>
 >;
+
+/**
+ * Output type for S3 downloadData API.
+ */
 export type DownloadDataOutput = DownloadDataOutputKey | DownloadDataOutputPath;
 
 /**
@@ -71,12 +68,12 @@ export type GetUrlOutput = StorageGetUrlOutput;
 /**
  * Output type for S3 uploadData API.
  */
-export type UploadDataOutput = UploadTask<Item>;
+export type UploadDataOutput = UploadTask<ItemKey>;
 
 /**
  * Output type for S3 getProperties API.
  */
-export type GetPropertiesOutput = Item;
+export type GetPropertiesOutput = ItemKey;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.
@@ -99,9 +96,9 @@ export type ListOutput = StrictUnion<ListAllOutput | ListPaginateOutput>;
 /**
  * Output type for S3 copy API.
  */
-export type CopyOutput = Pick<Item, 'key'>;
+export type CopyOutput = Pick<ItemKey, 'key'>;
 
 /**
  * Output type for S3 remove API.
  */
-export type RemoveOutput = Pick<Item, 'key'>;
+export type RemoveOutput = Pick<ItemKey, 'key'>;

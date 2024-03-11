@@ -18,7 +18,7 @@ import {
 	CopyDestinationOptions,
 	CopySourceOptions,
 	DownloadDataOptionsKey,
-	DownloadDataOptions as DownloadDataOptionsPath,
+	DownloadDataOptionsPath,
 	GetPropertiesOptions,
 	GetUrlOptions,
 	ListAllOptionsPath,

@@ -23,6 +23,7 @@ type ReadOptions =
 	| { accessLevel?: 'guest' | 'private' }
 	| { accessLevel: 'protected'; targetIdentityId?: string };
 
+/** @deprecated This will be removed in next major version. */
 interface WriteOptions {
 	/** @deprecated This will be removed in next major version. */
 	accessLevel?: StorageAccessLevel;
@@ -108,8 +109,9 @@ export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
 	BytesRangeOptions;
 
-/** @deprecated Use {@link DownloadDataOptions} instead. */
+/** @deprecated Use {@link DownloadDataOptionsPath} instead. */
 export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions;
+export type DownloadDataOptionsPath = DownloadDataOptions;
 
 export type UploadDataOptions = WriteOptions &
 	CommonOptions &

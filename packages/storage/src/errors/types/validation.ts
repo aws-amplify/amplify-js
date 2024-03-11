@@ -14,6 +14,7 @@ export enum StorageValidationErrorCode {
 	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
 	ObjectIsTooLarge = 'ObjectIsTooLarge',
 	InvalidUploadSource = 'InvalidUploadSource',
+	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -48,5 +49,8 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.InvalidUploadSource]: {
 		message:
 			'Upload source type can only be a `Blob`, `File`, `ArrayBuffer`, or `string`.',
+	},
+	[StorageValidationErrorCode.InvalidStorageOperationInput]: {
+		message: 'Missing path or key parameter in Input',
 	},
 };

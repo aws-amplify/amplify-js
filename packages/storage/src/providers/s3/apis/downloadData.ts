@@ -4,7 +4,14 @@
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { DownloadDataInput, DownloadDataOutput } from '../types';
+import {
+	DownloadDataInput,
+	DownloadDataInputKey,
+	DownloadDataInputPath,
+	DownloadDataOutput,
+	DownloadDataOutputKey,
+	DownloadDataOutputPath,
+} from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { createDownloadTask, validateStorageOperationInput } from '../utils';
 import { getObject } from '../utils/client';
@@ -16,11 +23,6 @@ import {
 	StorageItemPath,
 } from '../../../types';
 import { STORAGE_INPUT_KEY } from '../utils/constants';
-import { DownloadDataInputKey, DownloadDataInputPath } from '../types/inputs';
-import {
-	DownloadDataOutputKey,
-	DownloadDataOutputPath,
-} from '../types/outputs';
 
 interface DownloadData {
 	/**
@@ -28,8 +30,6 @@ interface DownloadData {
 	 *
 	 * @param input - The DownloadDataInputPath object.
 	 * @returns A cancelable task exposing result promise from `result` property.
-	 * @throws service: {@link S3Exception} - thrown when checking for existence of the object
-	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors
 	 *
 	 * @example
 	 * ```ts
@@ -55,15 +55,13 @@ interface DownloadData {
 	 */
 	(input: DownloadDataInputPath): DownloadDataOutputPath;
 	/**
-	 * @deprecated The `key` and `accessLevel` in input is deprecated and will be removed in next major version.
+	 * @deprecated The `key` and `accessLevel` parameters are deprecated and will be removed in next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
 	 *
 	 * Download S3 object data to memory
 	 *
 	 * @param input - The DownloadDataInputKey object.
 	 * @returns A cancelable task exposing result promise from `result` property.
-	 * @throws service: {@link S3Exception} - thrown when checking for existence of the object
-	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors
 	 *
 	 * @example
 	 * ```ts

@@ -5,9 +5,18 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import { getObject } from '../../../../src/providers/s3/utils/client';
 import { downloadData } from '../../../../src/providers/s3';
-import { createDownloadTask, validateStorageOperationInput } from '../../../../src/providers/s3/utils';
-import { DownloadDataOptions } from '../../../../src/providers/s3/types';
-import { STORAGE_INPUT_KEY, STORAGE_INPUT_PATH } from '../../../../src/providers/s3/utils/constants';
+import {
+	createDownloadTask,
+	validateStorageOperationInput,
+} from '../../../../src/providers/s3/utils';
+import {
+	DownloadDataOptionsKey,
+	DownloadDataOptionsPath,
+} from '../../../../src/providers/s3/types';
+import {
+	STORAGE_INPUT_KEY,
+	STORAGE_INPUT_PATH,
+} from '../../../../src/providers/s3/utils/constants';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
@@ -35,7 +44,7 @@ const defaultIdentityId = 'defaultIdentityId';
 
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockCreateDownloadTask = createDownloadTask as jest.Mock;
-const mockValidateStorageInput = validateStorageOperationInput  as jest.Mock;
+const mockValidateStorageInput = validateStorageOperationInput as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
 describe('downloadData with key', () => {
@@ -54,7 +63,10 @@ describe('downloadData with key', () => {
 		});
 	});
 	mockCreateDownloadTask.mockReturnValue('downloadTask');
-	mockValidateStorageInput.mockReturnValue({inputType: STORAGE_INPUT_KEY, objectKey: key})
+	mockValidateStorageInput.mockReturnValue({
+		inputType: STORAGE_INPUT_KEY,
+		objectKey: key,
+	});
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -64,7 +76,7 @@ describe('downloadData with key', () => {
 		expect(downloadData({ key: 'key' })).toBe('downloadTask');
 	});
 
-	[
+	test.each([
 		{
 			expectedKey: `public/${key}`,
 		},
@@ -84,13 +96,9 @@ describe('downloadData with key', () => {
 			options: { accessLevel: 'protected', targetIdentityId },
 			expectedKey: `protected/${targetIdentityId}/${key}`,
 		},
-	].forEach(({ options, expectedKey }) => {
-		const accessLevelMsg = options?.accessLevel ?? 'default';
-		const targetIdentityIdMsg = options?.targetIdentityId
-			? `and targetIdentityId`
-			: '';
-
-		it(`should supply the correct parameters to getObject API handler with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+	])(
+		'should supply the correct parameters to getObject API handler with $expectedKey accessLevel',
+		async ({ options, expectedKey }) => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const onProgress = jest.fn();
 			downloadData({
@@ -99,7 +107,7 @@ describe('downloadData with key', () => {
 					...options,
 					useAccelerateEndpoint: true,
 					onProgress,
-				} as DownloadDataOptions,
+				} as DownloadDataOptionsKey,
 			});
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			await job();
@@ -118,8 +126,8 @@ describe('downloadData with key', () => {
 					Key: expectedKey,
 				},
 			);
-		});
-	});
+		},
+	);
 
 	it('should assign the getObject API handler response to the result with key', async () => {
 		const lastModified = 'lastModified';
@@ -194,7 +202,10 @@ describe('downloadData with path', () => {
 			},
 		});
 		mockCreateDownloadTask.mockReturnValue('downloadTask');
-		mockValidateStorageInput.mockReturnValue({inputType: STORAGE_INPUT_PATH, objectKey: 'path'})
+		mockValidateStorageInput.mockReturnValue({
+			inputType: STORAGE_INPUT_PATH,
+			objectKey: 'path',
+		});
 	});
 
 	beforeEach(() => {
@@ -205,17 +216,18 @@ describe('downloadData with path', () => {
 		expect(downloadData({ path: 'path' })).toBe('downloadTask');
 	});
 
-	[
+	test.each([
 		{
 			path: 'path',
-			expectedKey: 'path'
+			expectedKey: 'path',
 		},
 		{
 			path: () => 'path',
-			expectedKey: 'path'
-		}
-	].forEach(({ path, expectedKey }) => {
-		it('should supply the correct parameters to getObject API handler', async () => {
+			expectedKey: 'path',
+		},
+	])(
+		'should call getObject API with $expectedKey when path provided is $path',
+		async ({ path, expectedKey }) => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const onProgress = jest.fn();
 			downloadData({
@@ -223,7 +235,7 @@ describe('downloadData with path', () => {
 				options: {
 					useAccelerateEndpoint: true,
 					onProgress,
-				} as DownloadDataOptions,
+				} as DownloadDataOptionsPath,
 			});
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			await job();
@@ -242,8 +254,8 @@ describe('downloadData with path', () => {
 					Key: expectedKey,
 				},
 			);
-		});
-	});
+		},
+	);
 
 	it('should assign the getObject API handler response to the result with path', async () => {
 		const lastModified = 'lastModified';
@@ -278,7 +290,6 @@ describe('downloadData with path', () => {
 			contentType,
 		});
 	});
-
 
 	it('should forward the bytes range option to the getObject API', async () => {
 		const start = 1;

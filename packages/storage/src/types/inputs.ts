@@ -23,8 +23,6 @@ export interface StorageOperationOptions<Options> {
 	options?: Options;
 }
 
-/** Download Data Input types */
-
 /** @deprecated Use {@link StorageDownloadDataInputPath} instead. */
 export type StorageDownloadDataInputKey<Options extends StorageOptions> =
 	StorageOperationInputKey & StorageOperationOptions<Options>;
