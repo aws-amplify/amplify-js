@@ -4,8 +4,8 @@
 import { HttpResponse, MiddlewareHandler } from '../../../../src/clients/types';
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
 import {
-	retryMiddlewareFactory,
 	RetryOptions,
+	retryMiddlewareFactory,
 } from '../../../../src/clients/middleware/retry';
 
 jest.spyOn(global, 'setTimeout');
@@ -155,8 +155,11 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const retryDecider = async () => true;
 		const computeDelay = jest.fn().mockImplementation(attempt => {
 			if (attempt === 1) {
-				setTimeout(() => controller.abort(), 100);
+				setTimeout(() => {
+					controller.abort();
+				}, 100);
 			}
+
 			return 200;
 		});
 		try {
@@ -186,6 +189,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const betweenRetryMiddleware =
 			() => (next: any, context: any) => async (args: any) => {
 				await betweenRetryFunction(args, context);
+
 				return next(args);
 			};
 
@@ -201,6 +205,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 			.fn()
 			.mockImplementation((response, error: Error) => {
 				if (error && error.message.endsWith('RetryableError')) return true;
+
 				return false;
 			});
 		const computeDelay = jest.fn().mockReturnValue(0);

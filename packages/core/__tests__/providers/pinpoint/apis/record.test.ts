@@ -1,4 +1,5 @@
 import { v4 } from 'uuid';
+
 import { putEvents as clientPutEvents } from '../../../../src/awsClients/pinpoint';
 import { record } from '../../../../src/providers/pinpoint/apis';
 import { updateEndpoint } from '../../../../src/providers/pinpoint/apis/updateEndpoint';
@@ -8,9 +9,9 @@ import {
 	category,
 	credentials,
 	endpointId,
-	region,
-	identityId,
 	event,
+	identityId,
+	region,
 	uuid,
 } from '../testUtils/data';
 import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/getEventBuffer';

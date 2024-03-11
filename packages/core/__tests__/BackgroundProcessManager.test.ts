@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+
 import { BackgroundProcessManager } from '../src/BackgroundProcessManager';
 import { BackgroundProcessManagerState } from '../src/BackgroundProcessManager/types';
 
@@ -287,7 +288,7 @@ describe('BackgroundProcessManager', () => {
 
 	test('can send termination signals to jobs that support termination, with reject', async () => {
 		let completed = false;
-		let thrown = undefined;
+		let thrown;
 		const manager = new BackgroundProcessManager();
 
 		const resultPromise = manager.add(async onTerminate => {
@@ -383,7 +384,9 @@ describe('BackgroundProcessManager', () => {
 		// that the observable constructor can manage it like a hook.
 		new Observable(observer => {
 			const { resolve, onTerminate } = manager.add();
-			const interval = setInterval(() => observer.next({}), 10);
+			const interval = setInterval(() => {
+				observer.next({});
+			}, 10);
 
 			const unsubscribe = () => {
 				resolve(); // always remember to resolve/reject!
@@ -392,6 +395,7 @@ describe('BackgroundProcessManager', () => {
 			};
 
 			onTerminate.then(unsubscribe);
+
 			return unsubscribe;
 		}).subscribe(() => count++);
 
@@ -415,7 +419,9 @@ describe('BackgroundProcessManager', () => {
 		let count = 0;
 
 		const subscription = new Observable(observer => {
-			const interval = setInterval(() => observer.next({}), 10);
+			const interval = setInterval(() => {
+				observer.next({});
+			}, 10);
 
 			// LOOK: here's the magic. (tada!)
 			return manager.addCleaner(async () => {
@@ -443,7 +449,9 @@ describe('BackgroundProcessManager', () => {
 		let count = 0;
 
 		const subscription = new Observable(observer => {
-			const interval = setInterval(() => observer.next({}), 10);
+			const interval = setInterval(() => {
+				observer.next({});
+			}, 10);
 
 			// LOOK: here's the magic. (tada!)
 			return manager.addCleaner(async () => {

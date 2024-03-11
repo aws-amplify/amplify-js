@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAsyncStorage } from '@aws-amplify/react-native';
+
 import {
 	createQueuedStorage,
 	keyPrefix,
