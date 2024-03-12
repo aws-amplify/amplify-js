@@ -26,7 +26,7 @@ const key = 'key';
 const bucket = 'bucket';
 const region = 'region';
 const defaultIdentityId = 'defaultIdentityId';
-const removeResult = { key };
+const removeResultKey = { key };
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -53,7 +53,7 @@ describe('remove API', () => {
 			},
 		});
 	});
-	describe('Happy Path Cases:', () => {
+	describe('Key Happy Path Cases:', () => {
 		beforeEach(() => {
 			mockDeleteObject.mockImplementation(() => {
 				return {
@@ -87,11 +87,47 @@ describe('remove API', () => {
 				expect.assertions(3);
 				expect(
 					await remove({ key, options: options as StorageOptions }),
-				).toEqual(removeResult);
+				).toEqual(removeResultKey);
 				expect(deleteObject).toHaveBeenCalledTimes(1);
 				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 					Bucket: bucket,
 					Key: expectedKey,
+				});
+			});
+		});
+	});
+
+	describe('Path Happy Path Cases:', () => {
+		beforeEach(() => {
+			mockDeleteObject.mockImplementation(() => {
+				return {
+					Metadata: { key: 'value' },
+				};
+			});
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+		[
+			{
+				path: `public/${key}`,
+			},
+			{
+				path: `private/${defaultIdentityId}/${key}`,
+			},
+			{
+				path: `protected/${defaultIdentityId}/${key}`,
+			},
+		].forEach(({ path }) => {
+			const removeResultPath = { path };
+
+			it(`should remove object for the given path`, async () => {
+				expect.assertions(3);
+				expect(await remove({ path })).toEqual(removeResultPath);
+				expect(deleteObject).toHaveBeenCalledTimes(1);
+				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
+					Bucket: bucket,
+					Key: path,
 				});
 			});
 		});

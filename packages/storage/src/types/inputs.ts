@@ -5,6 +5,7 @@ import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageOptions,
+	StorageRemoveOptions,
 } from './options';
 
 /** @deprecated Use {@link StorageOperationInputPath} instead. */
@@ -35,10 +36,11 @@ export interface StorageOperationInput<Options extends StorageOptions> {
 export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export interface StorageRemoveInput<Options extends StorageOptions> {
-	key: string;
-	options?: Options;
-}
+export type StorageRemoveInputKey<Options extends StorageRemoveOptions> =
+	StorageOperationInputKey & StorageOperationOptions<Options>;
+
+export type StorageRemoveInputPath<Options> = StorageOperationInputPath &
+	StorageOperationOptions<Options>;
 
 export interface StorageListInput<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,

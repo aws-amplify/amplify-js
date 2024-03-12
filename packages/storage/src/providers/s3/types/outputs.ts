@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StrictUnion } from '@aws-amplify/core/internals/utils';
 import {
 	DownloadTask,
 	StorageDownloadDataOutput,
@@ -84,4 +85,6 @@ export type CopyOutput = Pick<ItemKey, 'key'>;
 /**
  * Output type for S3 remove API.
  */
-export type RemoveOutput = Pick<ItemKey, 'key'>;
+export type RemoveOutput = StrictUnion<
+	Pick<ItemKey, 'key'> | Pick<ItemPath, 'path'>
+>;

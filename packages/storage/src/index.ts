@@ -14,7 +14,8 @@ export {
 export {
 	UploadDataInput,
 	DownloadDataInput,
-	RemoveInput,
+	RemoveInputKey,
+	RemoveInputPath,
 	ListAllInput,
 	ListPaginateInput,
 	GetPropertiesInput,
