@@ -49,6 +49,10 @@ export type GetPropertiesInput =
  */
 export type GetUrlInput = StorageGetUrlInput<GetUrlOptions>;
 
+/**
+ * Input type for S3 list API.
+ * It may contain the full path or just the prefix.
+ */
 export type ListInput =
 	| StorageListInputPath<ListAllOptionsPath | ListPaginateOptionsPath>
 	| StorageListInputPrefix<ListAllOptionsPrefix | ListPaginateOptionsPrefix>;

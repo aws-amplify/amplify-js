@@ -15,6 +15,7 @@ export interface StorageOperationInputKey {
 export interface StorageOperationInputPath {
 	path: string | (({ identityId }: { identityId?: string }) => string);
 }
+/** @deprecated Use {@link StorageOperationInputPath} instead. */
 export interface StorageOperationInputPrefix {
 	/** @deprecated Use `path` instead. */
 	prefix?: string;

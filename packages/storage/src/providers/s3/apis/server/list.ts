@@ -28,7 +28,7 @@ interface ListApi {
 	 * List single or all files in pages with given `path`.
 	 * To list all the pages, you can set `listAll` to true in `options` to get all the files from S3.
 	 * For pagination, pageSize defaults to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
-	 * @param input - The ListPaginateInput object.
+	 * @param input - The StorageListInputPath object.
 	 * @returns when listAll is true, A list of keys and metadata for all objects in path
 	 * @returns when listAll is false, A list of keys and metadata with nextToken
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
@@ -42,7 +42,7 @@ interface ListApi {
 	 * List single or all files in pages with given `prefix`
 	 * To list all the pages, you can set `listAll` to true in `options` to get all the files from S3.
 	 * For pagination, pageSize defaults to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
-	 * @param input - The ListPaginateInput object.
+	 * @param input - The StorageListInputPrefix object.
 	 * @returns when listAll is true, A list of keys and metadata for all objects in path
 	 * @returns when listAll is false, A list of keys and metadata with nextToken
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket

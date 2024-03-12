@@ -383,7 +383,7 @@ describe('list API', () => {
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
 					path,
-					options: { listAll: true } as ListAllOptionsPrefix,
+					options: { listAll: true },
 				});
 
 				const listResult = { ...listResultItem, path: path ?? '' };

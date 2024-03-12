@@ -36,10 +36,15 @@ export type ListOutputItemKey = Omit<ItemKey, 'metadata'>;
  * type for S3 list item with path.
  */
 export type ListOutputItemPath = Omit<ItemPath, 'metadata'>;
+
 /**
  * @deprecated Use {@link ItemPath} instead.
  */
 export type ItemKey = ItemBase & StorageItemKey;
+
+/**
+ * type for S3 list item with path.
+ */
 export type ItemPath = ItemBase & StorageItemPath;
 
 /**
@@ -91,6 +96,9 @@ export type ListPaginateOutput = StorageListOutput<
 	nextToken?: string;
 };
 
+/**
+ * Output type for S3 list API.
+ */
 export type ListOutput = StrictUnion<ListAllOutput | ListPaginateOutput>;
 
 /**

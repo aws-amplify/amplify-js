@@ -65,5 +65,8 @@ export interface StorageGetUrlOutput {
 export type StorageUploadOutput<Item extends StorageItem> = Item;
 
 export interface StorageListOutput<Item extends StorageItem> {
+	/**
+	 * List of items returned by the list API.
+	 */
 	items: Item[];
 }
