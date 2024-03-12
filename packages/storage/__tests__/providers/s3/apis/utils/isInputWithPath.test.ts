@@ -7,7 +7,7 @@ describe('isInputWithPath', () => {
 	it('should return true if input contains path', async () => {
 		expect(isInputWithPath({ path: '' })).toBe(true);
 	});
-	it('should return false if input does not contain key', async () => {
+	it('should return false if input does not contain path', async () => {
 		expect(isInputWithPath({ key: '' })).toBe(false);
 	});
 });
