@@ -9,6 +9,7 @@ import {
 	ListAllOptionsPrefix,
 	ListPaginateOptionsPrefix,
 } from '../../../../src/providers/s3/types';
+import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -89,13 +90,22 @@ describe('list API', () => {
 			},
 		});
 	});
-	describe('Happy Cases:', () => {
+	describe('Prefix Happy Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
 
 		const accessLevelTests = [
 			{
+				expectedPath: `public/`,
+			},
+			{
+				path: undefined,
+				options: undefined,
+				expectedPath: `public/`,
+			},
+			{
+				options: { accessLevel: 'guest' },
 				expectedPath: `public/`,
 			},
 			{
@@ -269,6 +279,146 @@ describe('list API', () => {
 		});
 	});
 
+	describe('Path Happy Cases:', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+		const publicPrefix = 'public/';
+		const privatePrefix = 'private/';
+		const protectedPrefix = 'protected/';
+		const accessLevelTests = [
+			{
+				path: `${publicPrefix}${path}`,
+			},
+			{
+				path: `${privatePrefix}${defaultIdentityId}/${path}`,
+			},
+			{
+				path: `${protectedPrefix}${defaultIdentityId}/${path}`,
+			},
+			{
+				path: `${protectedPrefix}${targetIdentityId}/${path}`,
+			},
+		];
+
+		accessLevelTests.forEach(({ path }) => {
+			it(`should list objects with pagination, default pageSize, custom path`, async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [{ ...listObjectClientBaseResultItem, Key: path }],
+						NextContinuationToken: nextToken,
+					};
+				});
+				expect.assertions(4);
+				let response = await list({
+					path,
+				});
+				expect(response.items).toEqual([
+					{ ...listResultItem, path: path ?? '' },
+				]);
+				expect(response.nextToken).toEqual(nextToken);
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: path,
+				});
+			});
+		});
+
+		accessLevelTests.forEach(({ path }) => {
+			it(`should list objects with pagination using pageSize, nextToken, custom path`, async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [{ ...listObjectClientBaseResultItem, Key: path }],
+						NextContinuationToken: nextToken,
+					};
+				});
+				expect.assertions(4);
+				const customPageSize = 5;
+				const response = await list({
+					path,
+					options: {
+						pageSize: customPageSize,
+						nextToken: nextToken,
+					},
+				});
+				expect(response.items).toEqual([
+					{ ...listResultItem, path: path ?? '' },
+				]);
+				expect(response.nextToken).toEqual(nextToken);
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
+					Bucket: bucket,
+					Prefix: path,
+					ContinuationToken: nextToken,
+					MaxKeys: customPageSize,
+				});
+			});
+		});
+
+		accessLevelTests.forEach(({ path }) => {
+			it(`should list objects with zero results with custom path`, async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {};
+				});
+				expect.assertions(3);
+				let response = await list({
+					path,
+				});
+				expect(response.items).toEqual([]);
+
+				expect(response.nextToken).toEqual(undefined);
+				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: path,
+				});
+			});
+		});
+
+		accessLevelTests.forEach(({ path }) => {
+			it(`should list all objects having three pages with custom path`, async () => {
+				expect.assertions(5);
+				mockListObjectsV2ApiWithPages(3);
+				const result = await list({
+					path,
+					options: { listAll: true } as ListAllOptionsPrefix,
+				});
+
+				const listResult = { ...listResultItem, path: path ?? '' };
+				expect(result.items).toEqual([listResult, listResult, listResult]);
+				expect(result).not.toHaveProperty(nextToken);
+
+				// listing three times for three pages
+				expect(listObjectsV2).toHaveBeenCalledTimes(3);
+
+				// first input recieves undefined as the Continuation Token
+				expect(listObjectsV2).toHaveBeenNthCalledWith(
+					1,
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						Prefix: path,
+						MaxKeys: 1000,
+						ContinuationToken: undefined,
+					},
+				);
+				// last input recieves TEST_TOKEN as the Continuation Token
+				expect(listObjectsV2).toHaveBeenNthCalledWith(
+					3,
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						Prefix: path,
+						MaxKeys: 1000,
+						ContinuationToken: nextToken,
+					},
+				);
+			});
+		});
+	});
+
 	describe('Error Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
@@ -291,6 +441,16 @@ describe('list API', () => {
 					Prefix: 'public/',
 				});
 				expect(error.$metadata.httpStatusCode).toBe(404);
+			}
+		});
+		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
+			expect.assertions(1);
+			try {
+				await list({ path: '' });
+			} catch (error: any) {
+				expect(error.name).toBe(
+					StorageValidationErrorCode.InvalidStorageOperationInput,
+				);
 			}
 		});
 	});

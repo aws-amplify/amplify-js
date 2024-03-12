@@ -54,7 +54,7 @@ export const list = async (
 		path = `${generatedPrefix}`;
 		storageInputType = STORAGE_INPUT_PREFIX;
 	} else {
-		// Handle cases when input has a path and with or without prefix
+		// Handle cases when input has a path or prefix
 		const { inputType, objectKey } = validateStorageOperationInput(
 			input,
 			identityId,
@@ -65,8 +65,6 @@ export const list = async (
 				: objectKey;
 		storageInputType = inputType;
 	}
-
-	console.log('path: ', path);
 
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
 	if (options?.listAll && (options?.pageSize || options?.nextToken)) {
