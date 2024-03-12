@@ -14,8 +14,8 @@ import {
 	ServerClientGenerationParams,
 	CommonPublicClientOptions,
 } from '../../types';
-import { isApiGraphQLConfig } from '../utils/isApiGraphQLProviderConfig';
-import { generateEnumsProperty } from '../utils/generateEnumsProperty';
+import { isApiGraphQLConfig } from '../utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
+import { generateEnumsProperty } from '../utils/clientProperties/generateEnumsProperty';
 import {
 	generateCustomMutationsProperty,
 	generateCustomQueriesProperty,

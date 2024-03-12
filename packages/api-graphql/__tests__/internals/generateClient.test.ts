@@ -162,7 +162,7 @@ describe('generateClient', () => {
 	});
 
 	describe('client `enums` property', () => {
-		const expectedEnumsProperties = ['Status'];
+		const expectedEnumsProperties = ['Status', 'ProductMetaStatus'];
 
 		it('generates `enums` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
 			Amplify.configure(configFixture); // clear the resource config
@@ -5220,6 +5220,68 @@ describe('generateClient', () => {
 			expect(result?.data).toEqual({
 				resultContent: 'echo result content',
 			});
+		});
+
+		test('can query with returnType of nested custom types', async () => {
+			const mockReturnData = {
+				note: 'test node',
+				productMeta: {
+					releaseDate: '2024-03-04',
+					status: 'in_production',
+					deepMeta: {
+						content: 'test deep meta content',
+					},
+				},
+			};
+			const spy = mockApiResponse({
+				data: {
+					echoNestedCustomTypes: mockReturnData,
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echoNestedCustomTypes({
+				input: 'test input',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual(mockReturnData);
+		});
+
+		test('can query with returnType of a model that has nested custom types', async () => {
+			const mockReturnData = {
+				sku: 'sku',
+				factoryId: 'factoryId',
+				warehouseId: 'warehouseId',
+				description: 'description',
+				trackingMeta: {
+					productMeta: {
+						releaseDate: '2024-03-04',
+						status: 'discontinued',
+						deepMeta: {
+							content: 'test content',
+						},
+					},
+					note: 'test note',
+				},
+			};
+			const spy = mockApiResponse({
+				data: {
+					echoNestedCustomTypes: mockReturnData,
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echoModelHasNestedTypes({
+				input: 'test input',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual(mockReturnData);
 		});
 
 		test('can query with returnType of string', async () => {
