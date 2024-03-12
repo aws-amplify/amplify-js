@@ -87,6 +87,26 @@ const schema = a.schema({
 			a.index('title'),
 			a.index('description').sortKeys(['viewCount']),
 		]),
+	Product: a
+		.model({
+			sku: a.string().required(),
+			factoryId: a.string().required(),
+			warehouseId: a.string().required(),
+			description: a.string(),
+			trackingMeta: a.customType({
+				productMeta: a.ref('ProductMeta'),
+				note: a.string(),
+			}),
+		})
+		.identifier(['sku', 'factoryId', 'warehouseId'])
+		.authorization([a.allow.public()]),
+	ProductMeta: a.customType({
+		releaseDate: a.date(),
+		status: a.enum(['in_production', 'discontinued']),
+		deepMeta: a.customType({
+			content: a.string(),
+		}),
+	}),
 
 	// #region Custom queries and mutations
 	EchoResult: a.customType({
@@ -112,7 +132,22 @@ const schema = a.schema({
 		.returns(a.string())
 		.function('echoFunction')
 		.authorization([a.allow.public()]),
-
+	echoNestedCustomTypes: a
+		.query()
+		.arguments({
+			input: a.string().required(),
+		})
+		.returns(a.ref('ProductTrackingMeta'))
+		.function('echoFunction')
+		.authorization([a.allow.public()]),
+	echoModelHasNestedTypes: a
+		.query()
+		.arguments({
+			input: a.string().required(),
+		})
+		.returns(a.ref('Product'))
+		.function('echoFunction')
+		.authorization([a.allow.public()]),
 	// custom mutation returning a non-model type
 	PostLikeResult: a.customType({
 		likes: a.integer().required(),

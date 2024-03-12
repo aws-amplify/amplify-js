@@ -1,14 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observable } from 'rxjs';
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import {
 	PubSubBase,
-	PubSubOptions,
 	PubSubContent,
+	PubSubOptions,
 	PublishInput,
 	SubscribeInput,
 } from '../types/PubSub';
-import { ConsoleLogger } from '@aws-amplify/core';
+
 const logger = new ConsoleLogger('AbstractPubSubProvider');
 
 export abstract class AbstractPubSub<T extends PubSubOptions>
