@@ -20,6 +20,7 @@ export interface S3ProviderConfig {
 
 export type StorageConfig = AtLeastOne<S3ProviderConfig>;
 
+/** @deprecated This may be removed in the next major version. */
 type StoragePrefixResolver = (params: {
 	accessLevel: StorageAccessLevel;
 	targetIdentityId?: string;
@@ -27,7 +28,15 @@ type StoragePrefixResolver = (params: {
 
 export interface LibraryStorageOptions {
 	S3: {
+		/**
+		 * @deprecated This may be removed in the next major version.
+		 * This will be used for storage API signature using key as input parameter.
+		 * */
 		prefixResolver?: StoragePrefixResolver;
+		/**
+		 * @deprecated This may be removed in the next major version.
+		 * This will be used for storage API signature using key as input parameter.
+		 * */
 		defaultAccessLevel?: StorageAccessLevel;
 		isObjectLockEnabled?: boolean;
 	};
