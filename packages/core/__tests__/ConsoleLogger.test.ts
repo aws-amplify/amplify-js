@@ -1,6 +1,8 @@
 import { ConsoleLogger } from '../src';
 import { LoggingProvider, LogType } from '../src/Logger/types';
 
+type LogEvent = 'verbose' | 'debug' | 'info' | 'warn' | 'error';
+
 describe('ConsoleLogger', () => {
 	beforeAll(() => {
 		jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -67,42 +69,42 @@ describe('ConsoleLogger', () => {
 			debug: 'log',
 			verbose: 'log',
 		};
-		const levelVerbose: [string, LogType, number][] = [
+		const levelVerbose: [LogEvent, LogType, number][] = [
 			['verbose', LogType.VERBOSE, 1],
 			['debug', LogType.VERBOSE, 1],
 			['info', LogType.VERBOSE, 1],
 			['warn', LogType.VERBOSE, 1],
 			['error', LogType.VERBOSE, 1],
 		];
-		const levelDebug: [string, LogType, number][] = [
+		const levelDebug: [LogEvent, LogType, number][] = [
 			['verbose', LogType.DEBUG, 0],
 			['debug', LogType.DEBUG, 1],
 			['info', LogType.DEBUG, 1],
 			['warn', LogType.DEBUG, 1],
 			['error', LogType.DEBUG, 1],
 		];
-		const levelInfo: [string, LogType, number][] = [
+		const levelInfo: [LogEvent, LogType, number][] = [
 			['verbose', LogType.INFO, 0],
 			['debug', LogType.INFO, 0],
 			['info', LogType.INFO, 1],
 			['warn', LogType.INFO, 1],
 			['error', LogType.INFO, 1],
 		];
-		const levelWarn: [string, LogType, number][] = [
+		const levelWarn: [LogEvent, LogType, number][] = [
 			['verbose', LogType.WARN, 0],
 			['debug', LogType.WARN, 0],
 			['info', LogType.WARN, 0],
 			['warn', LogType.WARN, 1],
 			['error', LogType.WARN, 1],
 		];
-		const levelError: [string, LogType, number][] = [
+		const levelError: [LogEvent, LogType, number][] = [
 			['verbose', LogType.ERROR, 0],
 			['debug', LogType.ERROR, 0],
 			['info', LogType.ERROR, 0],
 			['warn', LogType.ERROR, 0],
 			['error', LogType.ERROR, 1],
 		];
-		const levelNone: [string, LogType, number][] = [
+		const levelNone: [LogEvent, LogType, number][] = [
 			['verbose', LogType.NONE, 0],
 			['debug', LogType.NONE, 0],
 			['info', LogType.NONE, 0],
@@ -126,7 +128,7 @@ describe('ConsoleLogger', () => {
 				ConsoleLogger.LOG_LEVEL = currentLogLevel;
 
 				const logger = new ConsoleLogger(loggerName);
-				(logger[logEvent as keyof ConsoleLogger] as Function)(message);
+				logger[logEvent](message);
 
 				expect(
 					console[consoleEvent as keyof typeof console],
@@ -143,7 +145,7 @@ describe('ConsoleLogger', () => {
 			jest.clearAllMocks();
 		});
 
-		it.each<[string, string, string]>([
+		it.each<[LogEvent, string, string]>([
 			['error', 'error', 'ERROR'],
 			['warn', 'warn', 'WARN'],
 			['info', 'log', 'INFO'],
@@ -157,7 +159,7 @@ describe('ConsoleLogger', () => {
 				ConsoleLogger.LOG_LEVEL = logLevel;
 
 				const logger = new ConsoleLogger(loggerName);
-				(logger[logEvent as keyof ConsoleLogger] as Function)(message);
+				logger[logEvent](message);
 
 				expect(
 					console[consoleEvent as keyof typeof console],
@@ -170,7 +172,7 @@ describe('ConsoleLogger', () => {
 			},
 		);
 
-		it.each<[string, string, string]>([
+		it.each<[LogEvent, string, string]>([
 			['error', 'error', 'ERROR'],
 			['warn', 'warn', 'WARN'],
 			['info', 'info', 'INFO'],
@@ -185,7 +187,7 @@ describe('ConsoleLogger', () => {
 				ConsoleLogger.LOG_LEVEL = logLevel;
 
 				const logger = new ConsoleLogger(loggerName);
-				(logger[logEvent as keyof ConsoleLogger] as Function)(message);
+				logger[logEvent](message);
 
 				expect(
 					console[consoleEvent as keyof typeof console],
