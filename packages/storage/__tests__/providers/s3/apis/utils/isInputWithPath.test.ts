@@ -3,7 +3,7 @@
 
 import { isInputWithPath } from '../../../../../src/providers/s3/utils';
 
-describe('resolvePrefix', () => {
+describe('isInputWithPath', () => {
 	it('should return true if input contains path', async () => {
 		expect(isInputWithPath({ path: '' })).toBe(true);
 	});
