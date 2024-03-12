@@ -38,5 +38,3 @@ export const remove: RemoveApi = (
 ): Promise<RemoveOutput> => {
 	return removeInternal(Amplify, input);
 };
-
-remove({ key: '' });

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StrictUnion } from '@aws-amplify/core/internals/utils';
+
 import {
 	DownloadTask,
 	StorageDownloadDataOutput,
