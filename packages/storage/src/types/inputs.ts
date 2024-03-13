@@ -36,8 +36,8 @@ export interface StorageOperationInput<Options extends StorageOptions> {
 export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
-export type StorageRemoveInputKey<Options extends StorageOptions> =
-	StorageOperationInputKey & StorageOperationOptions<Options>;
+export type StorageRemoveInputKey<Options> = StorageOperationInputKey &
+	StorageOperationOptions<Options>;
 
 export type StorageRemoveInputPath<Options> = StorageOperationInputPath &
 	StorageOperationOptions<Options>;
