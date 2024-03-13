@@ -15,7 +15,6 @@ export {
 	UploadDataInput,
 	DownloadDataInput,
 	RemoveInput,
-	ListInput,
 	GetPropertiesInput,
 	CopyInput,
 	GetUrlInput,

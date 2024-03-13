@@ -1,53 +1,40 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
 import { Amplify } from '@aws-amplify/core';
 
 import {
-	ListAllOptionsPath,
-	ListAllOptionsPrefix,
-	ListInput,
-	ListOutput,
-	ListPaginateOptionsPath,
-	ListPaginateOptionsPrefix,
+	ListAllInput,
+	ListAllOutput,
+	ListPaginateInput,
+	ListPaginateOutput,
 	S3Exception,
 } from '../types';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { StorageListInputPath, StorageListInputPrefix } from '../../../types';
 
 import { list as listInternal } from './internal/list';
 
 interface ListApi {
 	/**
-	 * List single or all files in pages with given `path`.
-	 * To list all the pages, you can set `listAll` to true in `options` to get all the files from S3.
-	 * For pagination, pageSize defaults to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
-	 * @param input - The StorageListInputPath object.
-	 * @returns when listAll is true, A list of keys and metadata for all objects in path
-	 * @returns when listAll is false, A list of keys and metadata with nextToken
+	 * List files with given prefix or path in pages
+	 * pageSize defaulted to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
+	 * @param input - The ListPaginateInput object.
+	 * @returns A list of keys or paths and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(
-		input?: StorageListInputPath<ListAllOptionsPath | ListPaginateOptionsPath>,
-	): Promise<ListOutput>;
+	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 	/**
-	 * List single or all files in pages with given `prefix`
-	 * To list all the pages, you can set `listAll` to true in `options` to get all the files from S3.
-	 * For pagination, pageSize defaults to 1000. Additionally, the result will include a nextToken if there are more items to retrieve.
-	 * @param input - The StorageListInputPrefix object.
-	 * @returns when listAll is true, A list of keys and metadata for all objects in path
-	 * @returns when listAll is false, A list of keys and metadata with nextToken
+	 * List all files from S3. You can set `listAll` to true in `options` to get all the files from S3.
+	 * @param input - The ListAllInput object.
+	 * @returns A list of keys or paths and metadata for all objects in path
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(
-		input?: StorageListInputPrefix<
-			ListAllOptionsPrefix | ListPaginateOptionsPrefix
-		>,
-	): Promise<ListOutput>;
+	(input?: ListAllInput): Promise<ListAllOutput>;
 }
 
-export const list: ListApi = (input?: ListInput): Promise<ListOutput> => {
+export const list: ListApi = (
+	input?: ListAllInput | ListPaginateInput,
+): Promise<ListAllOutput | ListPaginateOutput> => {
 	return listInternal(Amplify, input ?? {});
 };

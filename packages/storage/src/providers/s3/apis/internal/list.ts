@@ -5,11 +5,11 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
+	ListAllInput,
 	ListAllOutput,
-	ListInput,
-	ListOutput,
 	ListOutputItemKey,
 	ListOutputItemPath,
+	ListPaginateInput,
 	ListPaginateOutput,
 } from '../../types';
 import {
@@ -37,8 +37,8 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input?: ListInput,
-): Promise<ListOutput> => {
+	input?: ListAllInput | ListPaginateInput,
+): Promise<ListAllOutput | ListPaginateOutput> => {
 	const { options = {} } = input ?? {};
 	let path = '';
 	let storageInputType;

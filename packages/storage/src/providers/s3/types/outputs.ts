@@ -97,11 +97,6 @@ export type ListPaginateOutput = StorageListOutput<
 };
 
 /**
- * Output type for S3 list API.
- */
-export type ListOutput = StrictUnion<ListAllOutput | ListPaginateOutput>;
-
-/**
  * Output type for S3 copy API.
  */
 export type CopyOutput = Pick<ItemKey, 'key'>;

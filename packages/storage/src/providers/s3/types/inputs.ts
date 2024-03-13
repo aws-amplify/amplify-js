@@ -50,12 +50,20 @@ export type GetPropertiesInput =
 export type GetUrlInput = StorageGetUrlInput<GetUrlOptions>;
 
 /**
- * Input type for S3 list API.
- * It may contain the full path or just the prefix.
+ * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListInput =
-	| StorageListInputPath<ListAllOptionsPath | ListPaginateOptionsPath>
-	| StorageListInputPrefix<ListAllOptionsPrefix | ListPaginateOptionsPrefix>;
+export type ListAllInput = StrictUnion<
+	| StorageListInputPath<ListAllOptionsPath>
+	| StorageListInputPrefix<ListAllOptionsPrefix>
+>;
+
+/**
+ * Input type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateInput = StrictUnion<
+	| StorageListInputPath<ListPaginateOptionsPath>
+	| StorageListInputPrefix<ListPaginateOptionsPrefix>
+>;
 
 /**
  * Input type for S3 remove API.

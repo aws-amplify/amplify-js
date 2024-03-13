@@ -27,7 +27,6 @@ const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 const mockListObject = listObjectsV2 as jest.Mock;
 const key = 'path/itemsKey';
-const path = key;
 const bucket = 'bucket';
 const region = 'region';
 const nextToken = 'nextToken';
@@ -100,7 +99,7 @@ describe('list API', () => {
 				expectedPath: `public/`,
 			},
 			{
-				path: undefined,
+				key: undefined,
 				options: undefined,
 				expectedPath: `public/`,
 			},
@@ -109,33 +108,33 @@ describe('list API', () => {
 				expectedPath: `public/`,
 			},
 			{
-				path,
-				expectedPath: `public/${path}`,
+				key,
+				expectedPath: `public/${key}`,
 			},
 			{
-				path,
+				key,
 				options: { accessLevel: 'guest' },
-				expectedPath: `public/${path}`,
+				expectedPath: `public/${key}`,
 			},
 			{
-				path,
+				key,
 				options: { accessLevel: 'private' },
-				expectedPath: `private/${defaultIdentityId}/${path}`,
+				expectedPath: `private/${defaultIdentityId}/${key}`,
 			},
 			{
-				path,
+				key,
 				options: { accessLevel: 'protected' },
-				expectedPath: `protected/${defaultIdentityId}/${path}`,
+				expectedPath: `protected/${defaultIdentityId}/${key}`,
 			},
 			{
-				path,
+				key,
 				options: { accessLevel: 'protected', targetIdentityId },
-				expectedPath: `protected/${targetIdentityId}/${path}`,
+				expectedPath: `protected/${targetIdentityId}/${key}`,
 			},
 		];
 
-		accessLevelTests.forEach(({ path, options, expectedPath }) => {
-			const pathMsg = path ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key, options, expectedPath }) => {
+			const pathMsg = key ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -151,12 +150,10 @@ describe('list API', () => {
 				});
 				expect.assertions(4);
 				let response = await list({
-					prefix: path,
+					prefix: key,
 					options: options as ListPaginateOptionsPrefix,
 				});
-				expect(response.items).toEqual([
-					{ ...listResultItem, key: path ?? '' },
-				]);
+				expect(response.items).toEqual([{ ...listResultItem, key: key ?? '' }]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
@@ -167,8 +164,8 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ path, options, expectedPath }) => {
-			const pathMsg = path ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key, options, expectedPath }) => {
+			const pathMsg = key ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -185,16 +182,14 @@ describe('list API', () => {
 				expect.assertions(4);
 				const customPageSize = 5;
 				const response = await list({
-					prefix: path,
+					prefix: key,
 					options: {
 						...(options as ListPaginateOptionsPrefix),
 						pageSize: customPageSize,
 						nextToken: nextToken,
 					},
 				});
-				expect(response.items).toEqual([
-					{ ...listResultItem, key: path ?? '' },
-				]);
+				expect(response.items).toEqual([{ ...listResultItem, key: key ?? '' }]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
@@ -206,8 +201,8 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ path, options, expectedPath }) => {
-			const pathMsg = path ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key, options, expectedPath }) => {
+			const pathMsg = key ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -218,7 +213,7 @@ describe('list API', () => {
 				});
 				expect.assertions(3);
 				let response = await list({
-					prefix: path,
+					prefix: key,
 					options: options as ListPaginateOptionsPrefix,
 				});
 				expect(response.items).toEqual([]);
@@ -232,8 +227,8 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ path, options, expectedPath }) => {
-			const pathMsg = path ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key, options, expectedPath }) => {
+			const pathMsg = key ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -242,11 +237,11 @@ describe('list API', () => {
 				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
-					prefix: path,
+					prefix: key,
 					options: { ...options, listAll: true } as ListAllOptionsPrefix,
 				});
 
-				const listResult = { ...listResultItem, key: path ?? '' };
+				const listResult = { ...listResultItem, key: key ?? '' };
 				expect(result.items).toEqual([listResult, listResult, listResult]);
 				expect(result).not.toHaveProperty(nextToken);
 
@@ -288,16 +283,16 @@ describe('list API', () => {
 		const protectedPrefix = 'protected/';
 		const accessLevelTests = [
 			{
-				path: `${publicPrefix}${path}`,
+				path: `${publicPrefix}${key}`,
 			},
 			{
-				path: `${privatePrefix}${defaultIdentityId}/${path}`,
+				path: `${privatePrefix}${defaultIdentityId}/${key}`,
 			},
 			{
-				path: `${protectedPrefix}${defaultIdentityId}/${path}`,
+				path: `${protectedPrefix}${defaultIdentityId}/${key}`,
 			},
 			{
-				path: `${protectedPrefix}${targetIdentityId}/${path}`,
+				path: `${protectedPrefix}${targetIdentityId}/${key}`,
 			},
 		];
 

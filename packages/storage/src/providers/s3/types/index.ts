@@ -23,7 +23,6 @@ export {
 	UploadDataOutput,
 	ListOutputItemKey,
 	ListOutputItemPath,
-	ListOutput,
 	ListAllOutput,
 	ListPaginateOutput,
 	GetPropertiesOutput,
@@ -39,6 +38,7 @@ export {
 	DownloadDataInputKey,
 	DownloadDataInputPath,
 	UploadDataInput,
-	ListInput,
+	ListAllInput,
+	ListPaginateInput,
 } from './inputs';
 export { S3Exception } from './errors';
