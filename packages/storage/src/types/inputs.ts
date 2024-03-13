@@ -1,11 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StrictUnion } from '@aws-amplify/core/internals/utils';
+
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageOptions,
 } from './options';
+
+// TODO: rename to StorageOperationInput once the other type with
+// the same named is removed
+export type StorageOperationInputType = StrictUnion<
+	StorageOperationInputKey | StorageOperationInputPath
+>;
 
 /** @deprecated Use {@link StorageOperationInputPath} instead. */
 export interface StorageOperationInputKey {
