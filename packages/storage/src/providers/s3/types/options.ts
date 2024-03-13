@@ -18,14 +18,14 @@ interface CommonOptions {
 	useAccelerateEndpoint?: boolean;
 }
 
-/** @deprecated This will be removed in next major version. */
+/** @deprecated This may be removed in the next major version. */
 type ReadOptions =
 	| { accessLevel?: 'guest' | 'private' }
 	| { accessLevel: 'protected'; targetIdentityId?: string };
 
-/** @deprecated This will be removed in next major version. */
+/** @deprecated This may be removed in the next major version. */
 interface WriteOptions {
-	/** @deprecated This will be removed in next major version. */
+	/** @deprecated This may be removed in the next major version. */
 	accessLevel?: StorageAccessLevel;
 }
 

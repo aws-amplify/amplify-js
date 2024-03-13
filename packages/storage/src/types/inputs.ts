@@ -1,11 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StrictUnion } from '@aws-amplify/core/internals/utils';
+
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageOptions,
 } from './options';
+
+// TODO: rename to StorageOperationInput once the other type with
+// the same named is removed
+export type StorageOperationInputType = StrictUnion<
+	| StorageOperationInputKey
+	| StorageOperationInputPath
+	| StorageOperationInputPrefix
+>;
 
 /** @deprecated Use {@link StorageOperationInputPath} instead. */
 export interface StorageOperationInputKey {
@@ -20,16 +30,16 @@ export interface StorageOperationInputPrefix {
 	/** @deprecated Use `path` instead. */
 	prefix?: string;
 }
-export interface StorageOperationOptions<Options> {
+export interface StorageOperationOptionsInput<Options> {
 	options?: Options;
 }
 
 /** @deprecated Use {@link StorageDownloadDataInputPath} instead. */
 export type StorageDownloadDataInputKey<Options extends StorageOptions> =
-	StorageOperationInputKey & StorageOperationOptions<Options>;
+	StorageOperationInputKey & StorageOperationOptionsInput<Options>;
 
 export type StorageDownloadDataInputPath<Options> = StorageOperationInputPath &
-	StorageOperationOptions<Options>;
+	StorageOperationOptionsInput<Options>;
 
 // TODO: This needs to be removed after refactor of all storage APIs
 export interface StorageOperationInput<Options extends StorageOptions> {
@@ -48,11 +58,11 @@ export interface StorageRemoveInput<Options extends StorageOptions> {
 /** @deprecated Use {@link StorageListInputPath} instead. */
 export type StorageListInputPrefix<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
-> = StorageOperationInputPrefix & StorageOperationOptions<Options>;
+> = StorageOperationInputPrefix & StorageOperationOptionsInput<Options>;
 
 export type StorageListInputPath<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
-> = StorageOperationInputPath & StorageOperationOptions<Options>;
+> = StorageOperationInputPath & StorageOperationOptionsInput<Options>;
 
 export type StorageGetUrlInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;

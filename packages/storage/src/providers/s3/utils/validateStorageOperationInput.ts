@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StrictUnion } from '@aws-amplify/core/internals/utils';
-
 import {
+	StorageOperationInputType as Input,
 	StorageOperationInputKey,
 	StorageOperationInputPath,
 	StorageOperationInputPrefix,
@@ -11,17 +10,12 @@ import {
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
+import { isInputWithPath } from './isInputWithPath';
 import {
 	STORAGE_INPUT_KEY,
 	STORAGE_INPUT_PATH,
 	STORAGE_INPUT_PREFIX,
 } from './constants';
-
-type Input = StrictUnion<
-	| StorageOperationInputKey
-	| StorageOperationInputPath
-	| StorageOperationInputPrefix
->;
 
 const isInputWithOptions = (input: any): input is StorageOperationInputPrefix =>
 	'options' in input;
@@ -29,10 +23,6 @@ const isInputWithOptions = (input: any): input is StorageOperationInputPrefix =>
 const isInputWithPrefix = (
 	input: Input,
 ): input is StorageOperationInputPrefix => 'prefix' in input;
-
-const isInputWithPath = (input: Input): input is StorageOperationInputPath => {
-	return input.path !== undefined;
-};
 
 export const validateStorageOperationInput = (
 	input: Input,
