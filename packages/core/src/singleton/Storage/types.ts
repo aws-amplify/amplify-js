@@ -3,6 +3,7 @@
 
 import { AtLeastOne } from '../types';
 
+/** @deprecated This may be removed in the next major version. */
 export type StorageAccessLevel = 'guest' | 'protected' | 'private';
 
 export interface S3ProviderConfig {
@@ -30,12 +31,12 @@ export interface LibraryStorageOptions {
 	S3: {
 		/**
 		 * @deprecated This may be removed in the next major version.
-		 * This will be used for storage API signature using key as input parameter.
+		 * This is currently used for Storage API signature using key as input parameter.
 		 * */
 		prefixResolver?: StoragePrefixResolver;
 		/**
 		 * @deprecated This may be removed in the next major version.
-		 * This will be used for storage API signature using key as input parameter.
+		 * This is currently used for Storage API signature using key as input parameter.
 		 * */
 		defaultAccessLevel?: StorageAccessLevel;
 		isObjectLockEnabled?: boolean;
