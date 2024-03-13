@@ -34,6 +34,7 @@ export {
 	ListPaginateInput,
 	RemoveInputKey,
 	RemoveInputPath,
+	RemoveInput,
 	DownloadDataInput,
 	DownloadDataInputKey,
 	DownloadDataInputPath,

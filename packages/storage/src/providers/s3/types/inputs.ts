@@ -70,6 +70,11 @@ export type RemoveInputPath = StorageRemoveInputPath<
 >;
 
 /**
+ * Input type for S3 remove API.
+ */
+export type RemoveInput = RemoveInputKey | RemoveInputPath;
+
+/**
  * Input type for S3 downloadData API.
  */
 export type DownloadDataInput = StrictUnion<

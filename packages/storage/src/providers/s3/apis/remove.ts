@@ -4,6 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 
 import {
+	RemoveInput,
 	RemoveInputKey,
 	RemoveInputPath,
 	RemoveOutput,
@@ -34,7 +35,7 @@ interface RemoveApi {
 
 // TODO(Samaritan1011001): return type should show only key or path
 export const remove: RemoveApi = (
-	input: RemoveInputKey | RemoveInputPath,
+	input: RemoveInput,
 ): Promise<RemoveOutput> => {
 	return removeInternal(Amplify, input);
 };
