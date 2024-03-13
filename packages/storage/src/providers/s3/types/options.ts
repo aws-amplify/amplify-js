@@ -123,11 +123,13 @@ export type UploadDataOptions = WriteOptions &
 		metadata?: Record<string, string>;
 	};
 
-export type CopySourceOptions = ReadOptions & {
+/** @deprecated This may be removed in the next major version. */
+export type CopySourceOptionsKey = ReadOptions & {
 	key: string;
 };
 
-export type CopyDestinationOptions = WriteOptions & {
+/** @deprecated This may be removed in the next major version. */
+export type CopyDestinationOptionsKey = WriteOptions & {
 	key: string;
 };
 
