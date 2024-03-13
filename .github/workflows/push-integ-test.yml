@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - fix//geo-location-services-config
+      - fix/geo-location-services-config
 
 jobs:
   e2e:
