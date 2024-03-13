@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { map } from 'rxjs';
-import { V6Client, GraphqlSubscriptionResult } from '../../types';
+import { V6Client, GraphqlSubscriptionResult, ListArgs, AuthModeParams } from '../../types';
 import {
 	initializeModel,
 	generateGraphQLDocument,
@@ -24,7 +24,7 @@ export function subscriptionFactory(
 ) {
 	const { name } = model as any;
 
-	const subscription = (args?: any) => {
+	const subscription = (args?: ListArgs & AuthModeParams) => {
 		const query = generateGraphQLDocument(
 			modelIntrospection,
 			name,
@@ -56,15 +56,20 @@ export function subscriptionFactory(
 			map(value => {
 				const [key] = Object.keys(value.data);
 				const data = (value.data as any)[key];
-				const [initialized] = initializeModel(
-					client as V6Client<Record<string, any>>,
-					name,
-					[data],
-					modelIntrospection,
-					auth.authMode,
-					auth.authToken,
-				);
-				return initialized;
+
+				if (args?.selectionSet) {
+					return data;
+				} else {
+					const [initialized] = initializeModel(
+						client as V6Client<Record<string, any>>,
+						name,
+						[data],
+						modelIntrospection,
+						auth.authMode,
+						auth.authToken,
+					);
+					return initialized;
+				}
 			}),
 		);
 	};
