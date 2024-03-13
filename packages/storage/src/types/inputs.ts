@@ -7,7 +7,6 @@ import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageOptions,
-	StorageRemoveOptions,
 } from './options';
 
 // TODO: rename to StorageOperationInput once the other type with
@@ -45,10 +44,10 @@ export type StorageGetPropertiesInput<Options extends StorageOptions> =
 	StorageOperationInput<Options>;
 
 export type StorageRemoveInputKey<Options> = StorageOperationInputKey &
-	StorageOperationOptions<Options>;
+	StorageOperationOptionsInput<Options>;
 
 export type StorageRemoveInputPath<Options> = StorageOperationInputPath &
-	StorageOperationOptions<Options>;
+	StorageOperationOptionsInput<Options>;
 
 export interface StorageListInput<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
