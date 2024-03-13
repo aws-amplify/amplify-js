@@ -30,6 +30,8 @@ interface DownloadData {
 	 *
 	 * @param input - The DownloadDataInputPath object.
 	 * @returns A cancelable task exposing result promise from `result` property.
+	 * @throws service: `S3Exception` - thrown when checking for existence of the object
+	 * @throws validation: `StorageValidationErrorCode` - Validation errors
 	 *
 	 * @example
 	 * ```ts
@@ -55,13 +57,15 @@ interface DownloadData {
 	 */
 	(input: DownloadDataInputPath): DownloadDataOutputPath;
 	/**
-	 * @deprecated The `key` and `accessLevel` parameters are deprecated and will be removed in next major version.
+	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
 	 *
 	 * Download S3 object data to memory
 	 *
 	 * @param input - The DownloadDataInputKey object.
 	 * @returns A cancelable task exposing result promise from `result` property.
+	 * @throws service: `S3Exception` - thrown when checking for existence of the object
+	 * @throws validation: `StorageValidationErrorCode` - Validation errors
 	 *
 	 * @example
 	 * ```ts

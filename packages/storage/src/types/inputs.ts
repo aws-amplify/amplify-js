@@ -1,12 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StrictUnion } from '@aws-amplify/core/internals/utils';
+
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
 	StorageOptions,
 	StorageRemoveOptions,
 } from './options';
+
+// TODO: rename to StorageOperationInput once the other type with
+// the same named is removed
+export type StorageOperationInputType = StrictUnion<
+	StorageOperationInputKey | StorageOperationInputPath
+>;
 
 /** @deprecated Use {@link StorageOperationInputPath} instead. */
 export interface StorageOperationInputKey {
@@ -16,16 +24,16 @@ export interface StorageOperationInputKey {
 export interface StorageOperationInputPath {
 	path: string | (({ identityId }: { identityId?: string }) => string);
 }
-export interface StorageOperationOptions<Options> {
+export interface StorageOperationOptionsInput<Options> {
 	options?: Options;
 }
 
 /** @deprecated Use {@link StorageDownloadDataInputPath} instead. */
 export type StorageDownloadDataInputKey<Options extends StorageOptions> =
-	StorageOperationInputKey & StorageOperationOptions<Options>;
+	StorageOperationInputKey & StorageOperationOptionsInput<Options>;
 
 export type StorageDownloadDataInputPath<Options> = StorageOperationInputPath &
-	StorageOperationOptions<Options>;
+	StorageOperationOptionsInput<Options>;
 
 // TODO: This needs to be removed after refactor of all storage APIs
 export interface StorageOperationInput<Options extends StorageOptions> {
