@@ -5,7 +5,11 @@ import { StorageOperationInputType as Input } from '../../../types/inputs';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { isInputWithPath } from './isInputWithPath';
-import { STORAGE_INPUT_KEY, STORAGE_INPUT_PATH } from './constants';
+import {
+	STORAGE_INPUT_KEY,
+	STORAGE_INPUT_PATH,
+	STORAGE_INPUT_PREFIX,
+} from './constants';
 
 export const validateStorageInputPrefix = (
 	input: Input,
@@ -20,7 +24,7 @@ export const validateStorageInputPrefix = (
 		const objectKey = typeof path === 'string' ? path : path({ identityId });
 		assertValidationError(
 			objectKey.startsWith('/'),
-			StorageValidationErrorCode.InvalidStorageOperationInput,
+			StorageValidationErrorCode.InvalidStoragePathInput,
 		);
 
 		return {
@@ -28,6 +32,6 @@ export const validateStorageInputPrefix = (
 			objectKey,
 		};
 	} else {
-		return { inputType: STORAGE_INPUT_KEY, objectKey: input.prefix ?? '' };
+		return { inputType: STORAGE_INPUT_PREFIX, objectKey: input.prefix ?? '' };
 	}
 };
