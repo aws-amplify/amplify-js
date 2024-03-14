@@ -25,6 +25,10 @@ export {
 	ListOutputItemPath,
 	ListAllOutput,
 	ListPaginateOutput,
+	ListAllOutputPrefix,
+	ListAllOutputPath,
+	ListPaginateOutputPath,
+	ListPaginateOutputPrefix,
 	GetPropertiesOutput,
 	CopyOutput,
 	RemoveOutput,
@@ -40,5 +44,9 @@ export {
 	UploadDataInput,
 	ListAllInput,
 	ListPaginateInput,
+	ListAllInputPath,
+	ListPaginateInputPath,
+	ListAllInputPrefix,
+	ListPaginateInputPrefix,
 } from './inputs';
 export { S3Exception } from './errors';

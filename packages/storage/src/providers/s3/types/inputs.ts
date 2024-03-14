@@ -52,18 +52,36 @@ export type GetUrlInput = StorageGetUrlInput<GetUrlOptions>;
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInput = StrictUnion<
-	| StorageListInputPath<ListAllOptionsPath>
-	| StorageListInputPrefix<ListAllOptionsPrefix>
->;
+export type ListAllInput = ListAllInputPath | ListAllInputPrefix;
 
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateInput = StrictUnion<
-	| StorageListInputPath<ListPaginateOptionsPath>
-	| StorageListInputPrefix<ListPaginateOptionsPrefix>
->;
+export type ListPaginateInput = ListPaginateInputPath | ListPaginateInputPrefix;
+
+/**
+ * Input type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllInputPath = StorageListInputPath<ListAllOptionsPath>;
+
+/**
+ * Input type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateInputPath =
+	StorageListInputPath<ListPaginateOptionsPath>;
+
+/**
+ * @deprecated Use {@link ListAllInputPath} instead.
+ * Input type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllInputPrefix = StorageListInputPrefix<ListAllOptionsPrefix>;
+
+/**
+ * @deprecated Use {@link ListPaginateInputPath} instead.
+ * Input type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateInputPrefix =
+	StorageListInputPrefix<ListPaginateOptionsPrefix>;
 
 /**
  * Input type for S3 remove API.

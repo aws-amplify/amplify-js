@@ -83,16 +83,40 @@ export type GetPropertiesOutput = ItemKey;
 /**
  * Output type for S3 list API. Lists all bucket objects.
  */
-export type ListAllOutput = StorageListOutput<
-	ListOutputItemKey | ListOutputItemPath
+export type ListAllOutput = StrictUnion<
+	ListAllOutputPath | ListAllOutputPrefix
 >;
 
 /**
  * Output type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateOutput = StorageListOutput<
-	ListOutputItemKey | ListOutputItemPath
-> & {
+export type ListPaginateOutput =
+	| ListPaginateOutputPath
+	| ListPaginateOutputPrefix;
+
+/**
+ * @deprecated Use {@link ListAllOutputPath} instead.
+ * Output type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllOutputPrefix = StorageListOutput<ListOutputItemKey>;
+
+/**
+ * Output type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllOutputPath = StorageListOutput<ListOutputItemPath>;
+
+/**
+ * @deprecated Use {@link ListPaginateOutputPath} instead.
+ * Output type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateOutputPrefix = StorageListOutput<ListOutputItemKey> & {
+	nextToken?: string;
+};
+
+/**
+ * Output type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateOutputPath = StorageListOutput<ListOutputItemPath> & {
 	nextToken?: string;
 };
 

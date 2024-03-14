@@ -7,13 +7,18 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 import {
 	ListAllInput,
 	ListAllOutput,
+	ListAllOutputPath,
+	ListAllOutputPrefix,
 	ListOutputItemKey,
 	ListOutputItemPath,
 	ListPaginateInput,
 	ListPaginateOutput,
+	ListPaginateOutputPath,
+	ListPaginateOutputPrefix,
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	validateStorageInputPrefix,
 	validateStorageOperationInput,
 } from '../../utils';
 import { ResolvedS3Config } from '../../types/options';
@@ -32,7 +37,6 @@ interface ListInputArgs {
 	s3Config: ResolvedS3Config;
 	listParams: ListObjectsV2Input;
 	generatedPrefix: string;
-	storageInputType: string;
 }
 
 export const list = async (
@@ -50,21 +54,21 @@ export const list = async (
 	} = await resolveS3ConfigAndInput(amplify, options);
 
 	// Handle cases when input is undefined or empty
-	if (!input || Object.keys(input).length === 0) {
-		path = `${generatedPrefix}`;
-		storageInputType = STORAGE_INPUT_PREFIX;
-	} else {
-		// Handle cases when input has a path or prefix
-		const { inputType, objectKey } = validateStorageOperationInput(
-			input,
-			identityId,
-		);
-		path =
-			inputType === STORAGE_INPUT_PREFIX
-				? `${generatedPrefix}${objectKey}`
-				: objectKey;
-		storageInputType = inputType;
-	}
+	// if (!input || Object.keys(input).length === 0) {
+	// 	path = `${generatedPrefix}`;
+	// 	storageInputType = STORAGE_INPUT_PREFIX;
+	// } else {
+	// Handle cases when input has a path or prefix
+	const { inputType, objectKey } = validateStorageInputPrefix(
+		input,
+		identityId,
+	);
+	path =
+		inputType === STORAGE_INPUT_PREFIX
+			? `${generatedPrefix}${objectKey}`
+			: objectKey;
+	// storageInputType = inputType;
+	// }
 
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
 	if (options?.listAll && (options?.pageSize || options?.nextToken)) {
@@ -84,23 +88,33 @@ export const list = async (
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
 	return options.listAll
-		? _listAll({ s3Config, listParams, storageInputType, generatedPrefix })
-		: _list({ s3Config, listParams, storageInputType, generatedPrefix });
+		? inputType === STORAGE_INPUT_PREFIX
+			? _listAllPrefix({
+					s3Config,
+					listParams,
+					generatedPrefix,
+				})
+			: _listAllPath({
+					s3Config,
+					listParams,
+					generatedPrefix,
+				})
+		: inputType === STORAGE_INPUT_PREFIX
+			? _listPrefix({ s3Config, listParams, generatedPrefix })
+			: _listAllPath({ s3Config, listParams, generatedPrefix });
 };
 
-const _listAll = async ({
+const _listAllPrefix = async ({
 	s3Config,
 	listParams,
-	storageInputType,
 	generatedPrefix,
-}: ListInputArgs): Promise<ListAllOutput> => {
-	const listResult: (ListOutputItemKey | ListOutputItemPath)[] = [];
+}: ListInputArgs): Promise<ListAllOutputPrefix> => {
+	const listResult: ListOutputItemKey[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
-		const { items: pageResults, nextToken: pageNextToken } = await _list({
+		const { items: pageResults, nextToken: pageNextToken } = await _listPrefix({
 			generatedPrefix,
 			s3Config,
-			storageInputType,
 			listParams: {
 				...listParams,
 				ContinuationToken: continuationToken,
@@ -111,23 +125,16 @@ const _listAll = async ({
 		continuationToken = pageNextToken;
 	} while (continuationToken);
 
-	if (storageInputType === STORAGE_INPUT_PREFIX) {
-		return {
-			items: listResult as ListOutputItemKey[],
-		};
-	} else {
-		return {
-			items: listResult as ListOutputItemPath[],
-		};
-	}
+	return {
+		items: listResult as ListOutputItemKey[],
+	};
 };
 
-const _list = async ({
+const _listPrefix = async ({
 	s3Config,
 	listParams,
-	storageInputType,
 	generatedPrefix,
-}: ListInputArgs): Promise<ListPaginateOutput> => {
+}: ListInputArgs): Promise<ListPaginateOutputPrefix> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
@@ -148,25 +155,74 @@ const _list = async ({
 		};
 	}
 
-	if (storageInputType === STORAGE_INPUT_PREFIX) {
+	return {
+		items: response.Contents.map(item => ({
+			key: item.Key!.substring(generatedPrefix.length),
+			eTag: item.ETag,
+			lastModified: item.LastModified,
+			size: item.Size,
+		})),
+		nextToken: response.NextContinuationToken,
+	};
+};
+
+const _listAllPath = async ({
+	s3Config,
+	listParams,
+	generatedPrefix,
+}: ListInputArgs): Promise<ListAllOutputPath> => {
+	const listResult: ListOutputItemPath[] = [];
+	let continuationToken = listParams.ContinuationToken;
+	do {
+		const { items: pageResults, nextToken: pageNextToken } = await _listPath({
+			generatedPrefix,
+			s3Config,
+			listParams: {
+				...listParams,
+				ContinuationToken: continuationToken,
+				MaxKeys: MAX_PAGE_SIZE,
+			},
+		});
+		listResult.push(...pageResults);
+		continuationToken = pageNextToken;
+	} while (continuationToken);
+
+	return {
+		items: listResult as ListOutputItemPath[],
+	};
+};
+
+const _listPath = async ({
+	s3Config,
+	listParams,
+}: ListInputArgs): Promise<ListPaginateOutputPath> => {
+	const listParamsClone = { ...listParams };
+	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
+		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
+		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
+	}
+
+	const response: ListObjectsV2Output = await listObjectsV2(
+		{
+			...s3Config,
+			userAgentValue: getStorageUserAgentValue(StorageAction.List),
+		},
+		listParamsClone,
+	);
+
+	if (!response?.Contents) {
 		return {
-			items: response.Contents.map(item => ({
-				key: item.Key!.substring(generatedPrefix.length),
-				eTag: item.ETag,
-				lastModified: item.LastModified,
-				size: item.Size,
-			})),
-			nextToken: response.NextContinuationToken,
-		};
-	} else {
-		return {
-			items: response.Contents.map(item => ({
-				path: item.Key!,
-				eTag: item.ETag,
-				lastModified: item.LastModified,
-				size: item.Size,
-			})),
-			nextToken: response.NextContinuationToken,
+			items: [],
 		};
 	}
+
+	return {
+		items: response.Contents.map(item => ({
+			path: item.Key!,
+			eTag: item.ETag,
+			lastModified: item.LastModified,
+			size: item.Size,
+		})),
+		nextToken: response.NextContinuationToken,
+	};
 };
