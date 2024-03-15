@@ -12,6 +12,7 @@ import {
 	CopyOutputKey,
 	CopyOutputPath,
 } from '../../types';
+import { ResolvedS3Config } from '../../types/options';
 import {
 	isInputWithPath,
 	resolveS3ConfigAndInput,
@@ -29,17 +30,19 @@ const isCopyInputWithPath = (input: CopyInput): input is CopyInputPath =>
 export const copy = async (
 	amplify: AmplifyClassV6,
 	input: CopyInput,
-): Promise<CopyOutput> =>
-	isCopyInputWithPath(input)
+): Promise<CopyOutput> => {
+	return isCopyInputWithPath(input)
 		? copyWithPath(amplify, input)
 		: copyWithKey(amplify, input);
+};
 
 const copyWithPath = async (
 	amplify: AmplifyClassV6,
 	input: CopyInputPath,
 ): Promise<CopyOutputPath> => {
 	const { source, destination } = input;
-	const { bucket, identityId } = await resolveS3ConfigAndInput(amplify);
+	const { s3Config, bucket, identityId } =
+		await resolveS3ConfigAndInput(amplify);
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
 	assertValidationError(
@@ -60,9 +63,11 @@ const copyWithPath = async (
 	const finalCopyDestination = destinationKey;
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
 
-	await serviceCopy(amplify, {
+	await serviceCopy({
 		source: finalCopySource,
 		destination: finalCopyDestination,
+		bucket,
+		s3Config,
 	});
 
 	return { path: finalCopyDestination };
@@ -84,10 +89,11 @@ export const copyWithKey = async (
 		StorageValidationErrorCode.NoDestinationKey,
 	);
 
-	const { bucket, keyPrefix: sourceKeyPrefix } = await resolveS3ConfigAndInput(
-		amplify,
-		input.source,
-	);
+	const {
+		s3Config,
+		bucket,
+		keyPrefix: sourceKeyPrefix,
+	} = await resolveS3ConfigAndInput(amplify, input.source);
 	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput(
 		amplify,
 		input.destination,
@@ -98,9 +104,11 @@ export const copyWithKey = async (
 	const finalCopyDestination = `${destinationKeyPrefix}${destinationKey}`;
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
 
-	await serviceCopy(amplify, {
+	await serviceCopy({
 		source: finalCopySource,
 		destination: finalCopyDestination,
+		bucket,
+		s3Config,
 	});
 
 	return {
@@ -108,12 +116,17 @@ export const copyWithKey = async (
 	};
 };
 
-const serviceCopy = async (
-	amplify: AmplifyClassV6,
-	input: { source: string; destination: string },
-) => {
-	const { s3Config, bucket } = await resolveS3ConfigAndInput(amplify);
-
+const serviceCopy = async ({
+	source,
+	destination,
+	bucket,
+	s3Config,
+}: {
+	source: string;
+	destination: string;
+	bucket: string;
+	s3Config: ResolvedS3Config;
+}) => {
 	await copyObject(
 		{
 			...s3Config,
@@ -121,8 +134,8 @@ const serviceCopy = async (
 		},
 		{
 			Bucket: bucket,
-			CopySource: input.source,
-			Key: input.destination,
+			CopySource: source,
+			Key: destination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
 		},
 	);

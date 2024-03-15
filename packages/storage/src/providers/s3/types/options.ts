@@ -125,11 +125,13 @@ export type UploadDataOptions = WriteOptions &
 
 /** @deprecated This may be removed in the next major version. */
 export type CopySourceOptionsKey = ReadOptions & {
+	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };
 
 /** @deprecated This may be removed in the next major version. */
 export type CopyDestinationOptionsKey = WriteOptions & {
+	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };
 

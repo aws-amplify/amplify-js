@@ -17,7 +17,7 @@ import { copy as copyInternal } from '../internal/copy';
 
 interface Copy {
 	/**
-	 * Copy an object from a source object to a new object within the same bucket.
+	 * Copy an object from a source to a destination object within the same bucket.
 	 *
 	 * @param input - The CopyInputPath object.
 	 * @returns Output containing the destination object path.
@@ -33,8 +33,8 @@ interface Copy {
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/copy | path} instead.
 	 *
-	 * Copy an object from a source object to a new object within the same bucket. Can optionally copy files across
-	 * different level or identityId (if source object's level is 'protected').
+	 * Copy an object from a source to a destination object within the same bucket. Can optionally copy files across
+	 * different accessLevel or identityId (if source object's accessLevel is 'protected').
 	 *
 	 * @param input - The CopyInputKey object.
 	 * @returns Output containing the destination object key.
