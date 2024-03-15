@@ -44,7 +44,6 @@ export const list = async (
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	const { options = {} } = input;
 	let path = '';
-	// let storageInputType;
 	const {
 		s3Config,
 		bucket,
@@ -52,12 +51,6 @@ export const list = async (
 		identityId,
 	} = await resolveS3ConfigAndInput(amplify, options);
 
-	// Handle cases when input is undefined or empty
-	// if (!input || Object.keys(input).length === 0) {
-	// 	path = `${generatedPrefix}`;
-	// 	storageInputType = STORAGE_INPUT_PREFIX;
-	// } else {
-	// Handle cases when input has a path or prefix
 	const { inputType, objectKey } = validateStorageInputPrefix(
 		input,
 		identityId,
@@ -66,8 +59,6 @@ export const list = async (
 		inputType === STORAGE_INPUT_PREFIX
 			? `${generatedPrefix}${objectKey}`
 			: objectKey;
-	// storageInputType = inputType;
-	// }
 
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
 	if (options?.listAll && (options?.pageSize || options?.nextToken)) {
@@ -86,14 +77,6 @@ export const list = async (
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
-	// return options.listAll
-	// 	? _listAllPrefix({
-	// 			s3Config,
-	// 			listParams,
-	// 			generatedPrefix,
-	// 		})
-	// 	: _listPrefix({ s3Config, listParams, generatedPrefix });
-
 	return options.listAll
 		? inputType === STORAGE_INPUT_PREFIX
 			? _listAllPrefix({
@@ -108,7 +91,7 @@ export const list = async (
 				})
 		: inputType === STORAGE_INPUT_PREFIX
 			? _listPrefix({ s3Config, listParams, generatedPrefix })
-			: _listAllPath({ s3Config, listParams, generatedPrefix });
+			: _listPath({ s3Config, listParams, generatedPrefix });
 };
 
 const _listAllPrefix = async ({

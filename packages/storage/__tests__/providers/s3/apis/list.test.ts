@@ -277,6 +277,7 @@ describe('list API', () => {
 	describe('Path Happy Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
+			mockListObject.mockClear();
 		});
 		const publicPrefix = 'public/';
 		const privatePrefix = 'private/';
