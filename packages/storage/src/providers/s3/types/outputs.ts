@@ -90,9 +90,9 @@ export type ListAllOutput = StrictUnion<
 /**
  * Output type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateOutput =
-	| ListPaginateOutputPath
-	| ListPaginateOutputPrefix;
+export type ListPaginateOutput = StrictUnion<
+	ListPaginateOutputPath | ListPaginateOutputPrefix
+>;
 
 /**
  * @deprecated Use {@link ListAllOutputPath} instead.

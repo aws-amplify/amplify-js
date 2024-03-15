@@ -30,7 +30,7 @@ interface ListApi {
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(input?: ListPaginateInputPath): Promise<ListPaginateOutputPath>;
+	(input: ListPaginateInputPath): Promise<ListPaginateOutputPath>;
 	/**
 	 * List all files from S3. You can set `listAll` to true in `options` to get all the files from S3.
 	 * @param input - The ListAllInput object.
@@ -38,7 +38,7 @@ interface ListApi {
 	 * @throws service: {@link S3Exception} - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: {@link StorageValidationErrorCode } - thrown when there are issues with credentials
 	 */
-	(input?: ListAllInputPath): Promise<ListAllOutputPath>;
+	(input: ListAllInputPath): Promise<ListAllOutputPath>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 *
@@ -62,8 +62,10 @@ interface ListApi {
 	(input?: ListAllInputPrefix): Promise<ListAllOutputPrefix>;
 }
 
-export const list: ListApi = (
+export const list: ListApi = <
+	Output extends ListAllOutput | ListPaginateOutput,
+>(
 	input?: ListAllInput | ListPaginateInput,
-): Promise<ListAllOutput | ListPaginateOutput> => {
-	return listInternal(Amplify, input ?? {});
+): Promise<Output> => {
+	return listInternal(Amplify, input ?? {}) as Promise<Output>;
 };

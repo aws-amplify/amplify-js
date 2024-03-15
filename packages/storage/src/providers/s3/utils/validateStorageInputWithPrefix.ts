@@ -1,15 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageOperationInputType as Input } from '../../../types/inputs';
+import {
+	StorageOperationPrefixInputType as Input,
+	StorageOperationInputPath,
+} from '../../../types/inputs';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { isInputWithPath } from './isInputWithPath';
-import {
-	STORAGE_INPUT_KEY,
-	STORAGE_INPUT_PATH,
-	STORAGE_INPUT_PREFIX,
-} from './constants';
+
+import { STORAGE_INPUT_PATH, STORAGE_INPUT_PREFIX } from './constants';
+
+// Local assertion function with StorageOperationPrefixInputType as Input
+export const isInputWithPath = (
+	input: Input,
+): input is StorageOperationInputPath => {
+	return input.path !== undefined;
+};
 
 export const validateStorageInputPrefix = (
 	input: Input,

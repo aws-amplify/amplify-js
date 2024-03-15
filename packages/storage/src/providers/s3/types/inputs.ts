@@ -52,12 +52,14 @@ export type GetUrlInput = StorageGetUrlInput<GetUrlOptions>;
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInput = ListAllInputPath | ListAllInputPrefix;
+export type ListAllInput = StrictUnion<ListAllInputPath | ListAllInputPrefix>;
 
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateInput = ListPaginateInputPath | ListPaginateInputPrefix;
+export type ListPaginateInput = StrictUnion<
+	ListPaginateInputPath | ListPaginateInputPrefix
+>;
 
 /**
  * Input type for S3 list API. Lists all bucket objects.

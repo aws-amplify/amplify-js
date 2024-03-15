@@ -12,11 +12,11 @@ import {
 // TODO: rename to StorageOperationInput once the other type with
 // the same named is removed
 export type StorageOperationInputType = StrictUnion<
-	| StorageOperationInputKey
-	| StorageOperationInputPath
-	| StorageOperationInputPrefix
+	StorageOperationInputKey | StorageOperationInputPath
 >;
-
+export type StorageOperationPrefixInputType = StrictUnion<
+	StorageOperationInputPath | StorageOperationInputPrefix
+>;
 /** @deprecated Use {@link StorageOperationInputPath} instead. */
 export interface StorageOperationInputKey {
 	/** @deprecated Use `path` instead. */

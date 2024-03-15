@@ -283,16 +283,16 @@ describe('list API', () => {
 		const protectedPrefix = 'protected/';
 		const accessLevelTests = [
 			{
-				path: `${publicPrefix}${key}`,
+				path: `/${publicPrefix}${key}`,
 			},
 			{
-				path: `${privatePrefix}${defaultIdentityId}/${key}`,
+				path: `/${privatePrefix}${defaultIdentityId}/${key}`,
 			},
 			{
-				path: `${protectedPrefix}${defaultIdentityId}/${key}`,
+				path: `/${protectedPrefix}${defaultIdentityId}/${key}`,
 			},
 			{
-				path: `${protectedPrefix}${targetIdentityId}/${key}`,
+				path: `/${protectedPrefix}${targetIdentityId}/${key}`,
 			},
 		];
 

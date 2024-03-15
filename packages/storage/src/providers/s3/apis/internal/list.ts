@@ -19,7 +19,6 @@ import {
 import {
 	resolveS3ConfigAndInput,
 	validateStorageInputPrefix,
-	validateStorageOperationInput,
 } from '../../utils';
 import { ResolvedS3Config } from '../../types/options';
 import {
@@ -41,11 +40,11 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input?: ListAllInput | ListPaginateInput,
+	input: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
-	const { options = {} } = input ?? {};
+	const { options = {} } = input;
 	let path = '';
-	let storageInputType;
+	// let storageInputType;
 	const {
 		s3Config,
 		bucket,
@@ -86,6 +85,14 @@ export const list = async (
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
+
+	// return options.listAll
+	// 	? _listAllPrefix({
+	// 			s3Config,
+	// 			listParams,
+	// 			generatedPrefix,
+	// 		})
+	// 	: _listPrefix({ s3Config, listParams, generatedPrefix });
 
 	return options.listAll
 		? inputType === STORAGE_INPUT_PREFIX
