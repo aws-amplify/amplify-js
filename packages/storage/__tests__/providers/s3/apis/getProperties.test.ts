@@ -211,7 +211,7 @@ describe('getProperties with path', () => {
 				expectedKey: 'path',
 			},
 		].forEach(({ path, expectedKey }) => {
-			it(`should getProperties with path: ${path} and expectedKey ${expectedKey}`, async () => {
+			it(`should getProperties with path ${path} and expectedKey ${expectedKey}`, async () => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,
