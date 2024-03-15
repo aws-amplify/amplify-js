@@ -67,13 +67,6 @@ describe('Indexed db storage test', () => {
 				owner: await DataStore.save(new BlogOwner({ name: 'owner 3' })),
 			}),
 		);
-
-		// because jest has cleared modules, the `Predicates.ALL` we currently have is
-		// not the particular instance DataStore recognizes. functionally, this would
-		// return the the correct results. but, it won't hit the code paths we're looking
-		// to hit in these tests. so, we need to re-import it.
-		// this affects calls to `inMemoryPagination` and `enginePagination` in particular
-		// ({ Predicates } = require('../src/predicates'));
 	});
 
 	test('setup function', async () => {
