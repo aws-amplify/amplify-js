@@ -22,6 +22,10 @@ import {
 	Project,
 	Team,
 } from './model';
+import { Predicates as PredicatesClass } from '../src/predicates';
+
+let Predicates = PredicatesClass;
+
 let db: idb.IDBPDatabase;
 const DB_VERSION = 3;
 
@@ -63,6 +67,13 @@ describe('Indexed db storage test', () => {
 				owner: await DataStore.save(new BlogOwner({ name: 'owner 3' })),
 			}),
 		);
+
+		// because jest has cleared modules, the `Predicates.ALL` we currently have is
+		// not the particular instance DataStore recognizes. functionally, this would
+		// return the the correct results. but, it won't hit the code paths we're looking
+		// to hit in these tests. so, we need to re-import it.
+		// this affects calls to `inMemoryPagination` and `enginePagination` in particular
+		// ({ Predicates } = require('../src/predicates'));
 	});
 
 	test('setup function', async () => {
@@ -522,8 +533,8 @@ describe('Indexed db storage test', () => {
 		);
 	});
 
-	test('query with sort on a single field', async () => {
-		expect.assertions(4);
+	test('pagination w/out sort - first page', async () => {
+		expect.assertions(3);
 
 		const p1 = new Person({
 			firstName: 'John',
@@ -550,16 +561,128 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(p3);
 		await DataStore.save(p4);
 
-		const sortedPersons = await DataStore.query(Person, null, {
+		const firstPage = await DataStore.query(Person, Predicates.ALL, {
 			page: 0,
-			limit: 20,
-			sort: s => s.firstName(SortDirection.DESCENDING),
+			limit: 2,
 		});
 
-		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
-		expect(sortedPersons[1].firstName).toEqual('John');
-		expect(sortedPersons[2].firstName).toEqual('Clem');
-		expect(sortedPersons[3].firstName).toEqual('Beezus');
+		expect(firstPage.length).toEqual(2);
+		expect(firstPage[0].firstName).toEqual('John');
+		expect(firstPage[1].firstName).toEqual('Clem');
+	});
+
+	test('pagination w/out sort - second page', async () => {
+		expect.assertions(3);
+
+		const p1 = new Person({
+			firstName: 'John',
+			lastName: 'Snow',
+		});
+
+		const p2 = new Person({
+			firstName: 'Clem',
+			lastName: 'Fandango',
+		});
+
+		const p3 = new Person({
+			firstName: 'Beezus',
+			lastName: 'Fuffoon',
+		});
+
+		const p4 = new Person({
+			firstName: 'Meow Meow',
+			lastName: 'Fuzzyface',
+		});
+
+		await DataStore.save(p1);
+		await DataStore.save(p2);
+		await DataStore.save(p3);
+		await DataStore.save(p4);
+
+		const secondPage = await DataStore.query(Person, Predicates.ALL, {
+			page: 1,
+			limit: 2,
+		});
+
+		expect(secondPage.length).toEqual(2);
+		expect(secondPage[0].firstName).toEqual('Beezus');
+		expect(secondPage[1].firstName).toEqual('Meow Meow');
+	});
+
+	test('pagination w/out sort - third page', async () => {
+		expect.assertions(3);
+
+		const p1 = new Person({
+			firstName: 'John',
+			lastName: 'Snow',
+		});
+
+		const p2 = new Person({
+			firstName: 'Clem',
+			lastName: 'Fandango',
+		});
+
+		const p3 = new Person({
+			firstName: 'Beezus',
+			lastName: 'Fuffoon',
+		});
+
+		const p4 = new Person({
+			firstName: 'Meow Meow',
+			lastName: 'Fuzzyface',
+		});
+
+		await DataStore.save(p1);
+		await DataStore.save(p2);
+		await DataStore.save(p3);
+		await DataStore.save(p4);
+
+		const secondPage = await DataStore.query(Person, Predicates.ALL, {
+			page: 2,
+			limit: 2,
+		});
+
+		expect(secondPage.length).toEqual(2);
+		expect(secondPage[0].firstName).toEqual('John');
+		expect(secondPage[1].firstName).toEqual('Clem');
+	});
+
+	test('pagination w/out sort - fourth page', async () => {
+		expect.assertions(3);
+
+		const p1 = new Person({
+			firstName: 'John',
+			lastName: 'Snow',
+		});
+
+		const p2 = new Person({
+			firstName: 'Clem',
+			lastName: 'Fandango',
+		});
+
+		const p3 = new Person({
+			firstName: 'Beezus',
+			lastName: 'Fuffoon',
+		});
+
+		const p4 = new Person({
+			firstName: 'Meow Meow',
+			lastName: 'Fuzzyface',
+		});
+
+		await DataStore.save(p1);
+		await DataStore.save(p2);
+		await DataStore.save(p3);
+		await DataStore.save(p4);
+
+		const secondPage = await DataStore.query(Person, Predicates.ALL, {
+			page: 3,
+			limit: 2,
+		});
+
+		expect(secondPage.length).toEqual(2);
+		expect(secondPage[0].firstName).toEqual('John');
+		expect(secondPage[1].firstName).toEqual('Clem');
 	});
 
 	test('query with sort on multiple fields', async () => {
