@@ -10,7 +10,8 @@ export {
 export {
 	StorageOperationInput,
 	StorageListInput,
-	StorageGetPropertiesInput,
+	StorageGetPropertiesInputKey,
+	StorageGetPropertiesInputPath,
 	StorageRemoveInput,
 	StorageDownloadDataInputKey,
 	StorageDownloadDataInputPath,

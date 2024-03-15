@@ -4,7 +4,8 @@
 export {
 	GetUrlOptions,
 	UploadDataOptions,
-	GetPropertiesOptions,
+	GetPropertiesOptionsKey,
+	GetPropertiesOptionsPath,
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
@@ -23,12 +24,16 @@ export {
 	ListAllOutput,
 	ListPaginateOutput,
 	GetPropertiesOutput,
+	GetPropertiesOutputKey,
+	GetPropertiesOutputPath,
 	CopyOutput,
 	RemoveOutput,
 } from './outputs';
 export {
 	CopyInput,
 	GetPropertiesInput,
+	GetPropertiesInputKey,
+	GetPropertiesInputPath,
 	GetUrlInput,
 	ListAllInput,
 	ListPaginateInput,
