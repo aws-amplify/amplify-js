@@ -8,7 +8,10 @@ import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
-import { GetUrlOptionsKey, GetUrlOptionsPath } from '../../../../src/providers/s3/types';
+import {
+	GetUrlOptionsKey,
+	GetUrlOptionsPath,
+} from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -112,7 +115,7 @@ describe('getUrl test with key', () => {
 					options: {
 						...options,
 						validateObjectExistence: true,
-					} as GetUrlOptions,
+					} as GetUrlOptionsKey,
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
@@ -170,7 +173,7 @@ describe('getUrl test with path', () => {
 			region,
 			userAgentValue: expect.any(String),
 		};
-		const path = 'path';
+		const path = '/path';
 		beforeEach(() => {
 			(headObject as jest.Mock).mockImplementation(() => {
 				return {
@@ -191,12 +194,12 @@ describe('getUrl test with path', () => {
 		});
 		[
 			{
-				path: 'path',
-				expectedKey: 'path',
+				path: '/path',
+				expectedKey: '/path',
 			},
 			{
-				path: () => 'path',
-				expectedKey: 'path',
+				path: () => '/path',
+				expectedKey: '/path',
 			},
 		].forEach(({ path, expectedKey }) => {
 			it(`should getUrl with path ${path} and expectedKey ${expectedKey}`, async () => {
@@ -234,7 +237,7 @@ describe('getUrl test with path', () => {
 			expect.assertions(2);
 			try {
 				await getUrl({
-					key: 'invalid_key',
+					path: '/invalid_key',
 					options: { validateObjectExistence: true },
 				});
 			} catch (error: any) {

@@ -34,7 +34,7 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const key = 'key';
-const path = 'path';
+const path = '/path';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 
@@ -203,12 +203,12 @@ describe('getProperties with path', () => {
 		});
 		[
 			{
-				path: 'path',
-				expectedKey: 'path',
+				path: '/path',
+				expectedKey: '/path',
 			},
 			{
-				path: () => 'path',
-				expectedKey: 'path',
+				path: () => '/path',
+				expectedKey: '/path',
 			},
 		].forEach(({ path, expectedKey }) => {
 			it(`should getProperties with path ${path} and expectedKey ${expectedKey}`, async () => {
