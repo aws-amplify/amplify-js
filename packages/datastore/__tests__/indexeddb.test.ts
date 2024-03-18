@@ -70,6 +70,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	afterEach(async () => {
+		// TODO: find a better way to clean up these records / reset DataStore
+		// in the context of this test.
 		await DataStore.delete(Author, Predicates.ALL);
 		await DataStore.delete(Album, Predicates.ALL);
 		await DataStore.delete(Song, Predicates.ALL);
