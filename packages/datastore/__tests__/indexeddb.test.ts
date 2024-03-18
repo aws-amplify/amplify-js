@@ -737,14 +737,6 @@ describe('Indexed db storage test', () => {
 			limit: 100,
 		});
 
-		// For debugging only:
-		// Make sure test cleanup isn't interferring with result:
-		// const queryAll = await DataStore.query(Person, Predicates.ALL);
-		// expect(queryAll.length).toEqual(4);
-
-		// Note: there are a ton of records here. Test cleanup isn't happening..
-		// debugger;
-
 		expect(thirdPage.length).toEqual(0);
 	});
 
@@ -932,14 +924,6 @@ describe('Indexed db storage test', () => {
 			page: 2,
 			limit: 100,
 		});
-
-		// For debugging only:
-		// Make sure test cleanup isn't interferring with result:
-		// const queryAll = await DataStore.query(Person, Predicates.ALL);
-		// expect(queryAll.length).toEqual(4);
-
-		// Note: there are a ton of records here. Test cleanup isn't happening..
-		// debugger;
 
 		expect(thirdPage.length).toEqual(0);
 	});
