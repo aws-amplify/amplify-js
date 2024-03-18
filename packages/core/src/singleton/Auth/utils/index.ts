@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { base64Decoder } from '../../../utils/convert';
+import { StrictUnion } from '../../../types';
 import {
 	AuthConfig,
 	CognitoIdentityPoolConfig,
@@ -8,7 +9,6 @@ import {
 	CognitoUserPoolConfig,
 	JWT,
 	OAuthConfig,
-	StrictUnion,
 } from '../types';
 
 import { AuthConfigurationErrorCode, assert } from './errorHelpers';
