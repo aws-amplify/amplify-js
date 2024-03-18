@@ -22,8 +22,8 @@ describe(composeServiceApi.name, () => {
 		const mockTransferHandler = jest.fn().mockResolvedValue(defaultResponse);
 		const api = composeServiceApi(
 			mockTransferHandler,
-			_ => defaultRequest,
-			async _ => ({
+			() => defaultRequest,
+			async () => ({
 				Result: 'from API',
 			}),
 			defaultConfig,
@@ -47,8 +47,8 @@ describe(composeServiceApi.name, () => {
 		};
 		const api = composeServiceApi(
 			mockTransferHandler,
-			__ => defaultRequest,
-			async __ => ({
+			() => defaultRequest,
+			async () => ({
 				Result: 'from API',
 			}),
 			defaultConfig,
