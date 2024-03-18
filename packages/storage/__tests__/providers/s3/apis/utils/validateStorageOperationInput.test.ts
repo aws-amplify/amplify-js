@@ -13,23 +13,23 @@ import {
 
 describe('validateStorageOperationInput', () => {
 	it('should return inputType as STORAGE_INPUT_PATH and objectKey as testPath when input is path as string', () => {
-		const input = { path: 'testPath' };
+		const input = { path: '/testPath' };
 		const result = validateStorageOperationInput(input);
 		expect(result).toEqual({
 			inputType: STORAGE_INPUT_PATH,
-			objectKey: 'testPath',
+			objectKey: '/testPath',
 		});
 	});
 
 	it('should return inputType as STORAGE_INPUT_PATH and objectKey as result of path function when input is path as function', () => {
 		const input = {
 			path: ({ identityId }: { identityId?: string }) =>
-				`testPath/${identityId}`,
+				`/testPath/${identityId}`,
 		};
 		const result = validateStorageOperationInput(input, '123');
 		expect(result).toEqual({
 			inputType: STORAGE_INPUT_PATH,
-			objectKey: 'testPath/123',
+			objectKey: '/testPath/123',
 		});
 	});
 
@@ -40,6 +40,15 @@ describe('validateStorageOperationInput', () => {
 			inputType: STORAGE_INPUT_KEY,
 			objectKey: 'testKey',
 		});
+	});
+
+	it('should throw an error when input path does not start with a /', () => {
+		const input = { path: 'test' } as any;
+		expect(() => validateStorageOperationInput(input)).toThrow(
+			validationErrorMap[
+				StorageValidationErrorCode.InvalidStoragePathInput
+			].message,
+		);
 	});
 
 	it('should throw an error when input is invalid', () => {

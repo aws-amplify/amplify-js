@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.0.18",
+	"version": "6.0.20",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -268,6 +268,7 @@
 		"adapter-core",
 		"api",
 		"auth",
+		"data",
 		"storage",
 		"datastore",
 		"in-app-messaging",
@@ -275,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.18",
-		"@aws-amplify/api": "6.0.18",
-		"@aws-amplify/auth": "6.0.18",
-		"@aws-amplify/core": "6.0.18",
-		"@aws-amplify/datastore": "5.0.18",
-		"@aws-amplify/notifications": "2.0.18",
-		"@aws-amplify/storage": "6.0.18",
+		"@aws-amplify/analytics": "7.0.20",
+		"@aws-amplify/api": "6.0.20",
+		"@aws-amplify/auth": "6.0.20",
+		"@aws-amplify/core": "6.0.20",
+		"@aws-amplify/datastore": "5.0.20",
+		"@aws-amplify/notifications": "2.0.20",
+		"@aws-amplify/storage": "6.0.20",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -352,7 +353,7 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "9.00 kB"
+			"limit": "9.02 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
@@ -424,7 +425,7 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "4.29 kB"
+			"limit": "4.32 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
@@ -442,7 +443,7 @@
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "8.23 kB"
+			"limit": "8.27 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
@@ -466,7 +467,7 @@
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "14.10 kB"
+			"limit": "14.20 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
