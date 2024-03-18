@@ -55,8 +55,12 @@ export interface StorageListInput<
 	options?: Options;
 }
 
-export type StorageGetUrlInput<Options extends StorageOptions> =
-	StorageOperationInput<Options>;
+/** @deprecated Use {@link StorageGetUrlInputPath} instead. */
+export type StorageGetUrlInputKey<Options extends StorageOptions> =
+	StorageOperationInputKey & StorageOperationInput<Options>;
+
+export type StorageGetUrlInputPath<Options> = StorageOperationInputPath &
+	StorageOperationOptionsInput<Options>;
 
 export type StorageUploadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options> & {

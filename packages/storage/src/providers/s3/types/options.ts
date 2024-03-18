@@ -73,7 +73,7 @@ export type ListPaginateOptions = StorageListPaginateOptions &
 /**
  * Input options type for S3 getUrl API.
  */
-export type GetUrlOptions = ReadOptions &
+export type GetUrlOptions =
 	CommonOptions & {
 		/**
 		 * Whether to head object to make sure the object existence before downloading.
@@ -85,7 +85,12 @@ export type GetUrlOptions = ReadOptions &
 		 * @default 900 (15 minutes)
 		 */
 		expiresIn?: number;
-	};
+};
+	
+
+/** @deprecated Use {@link GetPropertiesOptionsPath} instead. */
+export type GetUrlOptionsKey = ReadOptions & GetUrlOptions;
+export type GetUrlOptionsPath = GetUrlOptions;
 
 /**
  * Input options type for S3 downloadData API.

@@ -8,7 +8,8 @@ import {
 	StorageDownloadDataInputKey,
 	StorageDownloadDataInputPath,
 	StorageGetPropertiesInput,
-	StorageGetUrlInput,
+	StorageGetUrlInputKey,
+	StorageGetUrlInputPath,
 	StorageListInput,
 	StorageRemoveInput,
 	StorageUploadDataInput,
@@ -19,7 +20,8 @@ import {
 	DownloadDataOptionsKey,
 	DownloadDataOptionsPath,
 	GetPropertiesOptions,
-	GetUrlOptions,
+	GetUrlOptionsKey,
+	GetUrlOptionsPath,
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
@@ -44,7 +46,15 @@ export type GetPropertiesInput =
 /**
  * Input type for S3 getUrl API.
  */
-export type GetUrlInput = StorageGetUrlInput<GetUrlOptions>;
+export type GetUrlInput = StrictUnion<
+	GetUrlInputKey | GetUrlInputPath
+>;
+		
+/** @deprecated Use {@link GetPropertiesInputPath} instead. */
+export type GetUrlInputKey =
+	StorageGetUrlInputKey<GetUrlOptionsKey>;
+export type GetUrlInputPath =
+	StorageGetUrlInputPath<GetUrlOptionsPath>;
 
 /**
  * Input type for S3 list API. Lists all bucket objects.
