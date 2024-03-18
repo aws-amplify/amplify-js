@@ -69,11 +69,9 @@ export interface StorageCopyInputKey<
 	DestinationOptions extends StorageOptions,
 > {
 	source: SourceOptions & {
-		/** @deprecated Use {@link StorageCopyInputPath} instead. */
 		path?: never;
 	};
 	destination: DestinationOptions & {
-		/** @deprecated Use {@link StorageCopyInputPath} instead. */
 		path?: never;
 	};
 }

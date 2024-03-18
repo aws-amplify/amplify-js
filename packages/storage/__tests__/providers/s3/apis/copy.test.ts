@@ -65,166 +65,174 @@ describe('copy API', () => {
 			},
 		});
 	});
-	describe('Happy Cases: with key', () => {
-		beforeEach(() => {
-			mockCopyObject.mockImplementation(() => {
-				return {
-					Metadata: { key: 'value' },
-				};
+
+	describe('Happy Cases', () => {
+		describe('With key', () => {
+			beforeEach(() => {
+				mockCopyObject.mockImplementation(() => {
+					return {
+						Metadata: { key: 'value' },
+					};
+				});
 			});
+			afterEach(() => {
+				jest.clearAllMocks();
+			});
+			[
+				{
+					source: { accessLevel: 'guest' },
+					destination: { accessLevel: 'guest' },
+					expectedSourceKey: `${bucket}/public/${sourceKey}`,
+					expectedDestinationKey: `public/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'guest' },
+					destination: { accessLevel: 'private' },
+					expectedSourceKey: `${bucket}/public/${sourceKey}`,
+					expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'guest' },
+					destination: { accessLevel: 'protected' },
+					expectedSourceKey: `${bucket}/public/${sourceKey}`,
+					expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'private' },
+					destination: { accessLevel: 'guest' },
+					expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `public/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'private' },
+					destination: { accessLevel: 'private' },
+					expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'private' },
+					destination: { accessLevel: 'protected' },
+					expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'protected' },
+					destination: { accessLevel: 'guest' },
+					expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `public/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'protected' },
+					destination: { accessLevel: 'private' },
+					expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'protected' },
+					destination: { accessLevel: 'protected' },
+					expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'protected', targetIdentityId },
+					destination: { accessLevel: 'guest' },
+					expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `public/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'protected', targetIdentityId },
+					destination: { accessLevel: 'private' },
+					expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
+				},
+				{
+					source: { accessLevel: 'protected', targetIdentityId },
+					destination: { accessLevel: 'protected' },
+					expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
+					expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
+				},
+			].forEach(
+				({
+					source,
+					destination,
+					expectedSourceKey,
+					expectedDestinationKey,
+				}) => {
+					const targetIdentityIdMsg = source?.targetIdentityId
+						? `with targetIdentityId`
+						: '';
+					it(`should copy ${source.accessLevel} ${targetIdentityIdMsg} -> ${destination.accessLevel}`, async () => {
+						expect(
+							await copy({
+								source: {
+									...(source as CopySourceOptionsKey),
+									key: sourceKey,
+								},
+								destination: {
+									...(destination as CopyDestinationOptionsKey),
+									key: destinationKey,
+								},
+							}),
+						).toEqual(copyResult);
+						expect(copyObject).toHaveBeenCalledTimes(1);
+						expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
+							...copyObjectClientBaseParams,
+							CopySource: expectedSourceKey,
+							Key: expectedDestinationKey,
+						});
+					});
+				},
+			);
 		});
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-		[
-			{
-				source: { accessLevel: 'guest' },
-				destination: { accessLevel: 'guest' },
-				expectedSourceKey: `${bucket}/public/${sourceKey}`,
-				expectedDestinationKey: `public/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'guest' },
-				destination: { accessLevel: 'private' },
-				expectedSourceKey: `${bucket}/public/${sourceKey}`,
-				expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'guest' },
-				destination: { accessLevel: 'protected' },
-				expectedSourceKey: `${bucket}/public/${sourceKey}`,
-				expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'private' },
-				destination: { accessLevel: 'guest' },
-				expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `public/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'private' },
-				destination: { accessLevel: 'private' },
-				expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'private' },
-				destination: { accessLevel: 'protected' },
-				expectedSourceKey: `${bucket}/private/${defaultIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'protected' },
-				destination: { accessLevel: 'guest' },
-				expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `public/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'protected' },
-				destination: { accessLevel: 'private' },
-				expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'protected' },
-				destination: { accessLevel: 'protected' },
-				expectedSourceKey: `${bucket}/protected/${defaultIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'protected', targetIdentityId },
-				destination: { accessLevel: 'guest' },
-				expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `public/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'protected', targetIdentityId },
-				destination: { accessLevel: 'private' },
-				expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `private/${defaultIdentityId}/${destinationKey}`,
-			},
-			{
-				source: { accessLevel: 'protected', targetIdentityId },
-				destination: { accessLevel: 'protected' },
-				expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
-				expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
-			},
-		].forEach(
-			({ source, destination, expectedSourceKey, expectedDestinationKey }) => {
-				const targetIdentityIdMsg = source?.targetIdentityId
-					? `with targetIdentityId`
-					: '';
-				it(`should copy ${source.accessLevel} ${targetIdentityIdMsg} -> ${destination.accessLevel}`, async () => {
+
+		describe('With path', () => {
+			beforeEach(() => {
+				mockCopyObject.mockImplementation(() => {
+					return {
+						Metadata: { key: 'value' },
+					};
+				});
+			});
+			afterEach(() => {
+				jest.clearAllMocks();
+			});
+
+			test.each([
+				{
+					sourcePath: 'sourcePathAsString',
+					expectedSourcePath: 'sourcePathAsString',
+					destinationPath: 'destinationPathAsString',
+					expectedDestinationPath: 'destinationPathAsString',
+				},
+				{
+					sourcePath: () => 'sourcePathAsFunction',
+					expectedSourcePath: 'sourcePathAsFunction',
+					destinationPath: () => 'destinationPathAsFunction',
+					expectedDestinationPath: 'destinationPathAsFunction',
+				},
+			])(
+				'should copy $sourcePath -> $destinationPath',
+				async ({
+					sourcePath,
+					expectedSourcePath,
+					destinationPath,
+					expectedDestinationPath,
+				}) => {
 					expect(
 						await copy({
-							source: {
-								...(source as CopySourceOptionsKey),
-								key: sourceKey,
-							},
-							destination: {
-								...(destination as CopyDestinationOptionsKey),
-								key: destinationKey,
-							},
+							source: { path: sourcePath },
+							destination: { path: destinationPath },
 						}),
-					).toEqual(copyResult);
+					).toEqual({ path: expectedDestinationPath });
 					expect(copyObject).toHaveBeenCalledTimes(1);
 					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 						...copyObjectClientBaseParams,
-						CopySource: expectedSourceKey,
-						Key: expectedDestinationKey,
+						CopySource: `${bucket}/${expectedSourcePath}`,
+						Key: expectedDestinationPath,
 					});
-				});
-			},
-		);
-	});
-
-	describe('Happy Cases: with path', () => {
-		beforeEach(() => {
-			mockCopyObject.mockImplementation(() => {
-				return {
-					Metadata: { key: 'value' },
-				};
-			});
+				},
+			);
 		});
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-
-		test.each([
-			{
-				sourcePath: 'sourcePathAsString',
-				expectedSourcePath: 'sourcePathAsString',
-				destinationPath: 'destinationPathAsString',
-				expectedDestinationPath: 'destinationPathAsString',
-			},
-			{
-				sourcePath: () => 'sourcePathAsFunction',
-				expectedSourcePath: 'sourcePathAsFunction',
-				destinationPath: () => 'destinationPathAsFunction',
-				expectedDestinationPath: 'destinationPathAsFunction',
-			},
-		])(
-			'should copy $sourcePath -> $destinationPath',
-			async ({
-				sourcePath,
-				expectedSourcePath,
-				destinationPath,
-				expectedDestinationPath,
-			}) => {
-				expect(
-					await copy({
-						source: { path: sourcePath },
-						destination: { path: destinationPath },
-					}),
-				).toEqual({ path: expectedDestinationPath });
-				expect(copyObject).toHaveBeenCalledTimes(1);
-				expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-					...copyObjectClientBaseParams,
-					CopySource: `${bucket}/${expectedSourcePath}`,
-					Key: expectedDestinationPath,
-				});
-			},
-		);
 	});
 
 	describe('Error Cases:', () => {
