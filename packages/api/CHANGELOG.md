@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.0.20 (2024-03-11)
+
+**Note:** Version bump only for package @aws-amplify/api
+
 ## 6.0.19 (2024-03-05)
 
 **Note:** Version bump only for package @aws-amplify/api
