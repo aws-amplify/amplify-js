@@ -11,10 +11,11 @@ export enum StorageValidationErrorCode {
 	NoDestinationKey = 'NoDestinationKey',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
-	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
-	ObjectIsTooLarge = 'ObjectIsTooLarge',
-	InvalidUploadSource = 'InvalidUploadSource',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
+	InvalidStoragePathInput = 'InvalidStoragePathInput',
+	InvalidUploadSource = 'InvalidUploadSource',
+	ObjectIsTooLarge = 'ObjectIsTooLarge',
+	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -51,6 +52,9 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 			'Upload source type can only be a `Blob`, `File`, `ArrayBuffer`, or `string`.',
 	},
 	[StorageValidationErrorCode.InvalidStorageOperationInput]: {
-		message: 'Missing path or key parameter in Input',
+		message: 'Missing path or key parameter in Input.',
+	},
+	[StorageValidationErrorCode.InvalidStoragePathInput]: {
+		message: 'Input `path` is missing a leading slash (/).',
 	},
 };

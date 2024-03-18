@@ -16,6 +16,8 @@ export {
 } from './options';
 export {
 	DownloadDataOutput,
+	DownloadDataOutputKey,
+	DownloadDataOutputPath,
 	GetUrlOutput,
 	UploadDataOutput,
 	UploadDataOutputKey,
@@ -35,6 +37,8 @@ export {
 	ListPaginateInput,
 	RemoveInput,
 	DownloadDataInput,
+	DownloadDataInputKey,
+	DownloadDataInputPath,
 	UploadDataInput,
 	UploadDataInputPath,
 	UploadDataInputKey,

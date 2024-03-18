@@ -69,6 +69,7 @@ export type RemoveInput = StorageRemoveInput<RemoveOptions>;
 export type DownloadDataInput = StrictUnion<
 	DownloadDataInputKey | DownloadDataInputPath
 >;
+
 /** @deprecated Use {@link DownloadDataInputPath} instead. */
 export type DownloadDataInputKey =
 	StorageDownloadDataInputKey<DownloadDataOptionsKey>;
@@ -81,6 +82,7 @@ export type DownloadDataInputPath =
 export type UploadDataInput = StrictUnion<
 	UploadDataInputKey | UploadDataInputPath
 >;
+
 /** @deprecated Use {@link UploadDataInputPath} instead. */
 export type UploadDataInputKey =
 	StorageUploadDataInputKey<UploadDataOptionsKey>;

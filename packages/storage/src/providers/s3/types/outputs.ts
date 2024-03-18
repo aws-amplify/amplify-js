@@ -36,10 +36,6 @@ export type ItemPath = ItemBase & StorageItemPath;
  */
 export type ListOutputItem = Omit<ItemKey, 'metadata'>;
 
-/**
- * Output type for S3 downloadData API.
- */
-
 /** @deprecated Use {@link DownloadDataOutputPath} instead. */
 export type DownloadDataOutputKey = DownloadTask<
 	StorageDownloadDataOutput<ItemKey>
@@ -47,6 +43,10 @@ export type DownloadDataOutputKey = DownloadTask<
 export type DownloadDataOutputPath = DownloadTask<
 	StorageDownloadDataOutput<ItemPath>
 >;
+
+/**
+ * Output type for S3 downloadData API.
+ */
 export type DownloadDataOutput = DownloadDataOutputKey | DownloadDataOutputPath;
 
 /**
@@ -54,12 +54,13 @@ export type DownloadDataOutput = DownloadDataOutputKey | DownloadDataOutputPath;
  */
 export type GetUrlOutput = StorageGetUrlOutput;
 
-/**
- * Output type for S3 uploadData API.
- */
 /** @deprecated Use {@link UploadDataOutputPath} instead. */
 export type UploadDataOutputKey = UploadTask<ItemKey>;
 export type UploadDataOutputPath = UploadTask<ItemPath>;
+
+/**
+ * Output type for S3 uploadData API.
+ */
 export type UploadDataOutput = UploadDataOutputKey | UploadDataOutputPath;
 
 /**
