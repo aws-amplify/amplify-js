@@ -467,7 +467,7 @@
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "14.00 kB"
+			"limit": "14.15 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",

@@ -18,11 +18,14 @@ interface CommonOptions {
 	useAccelerateEndpoint?: boolean;
 }
 
+/** @deprecated This may be removed in the next major version. */
 type ReadOptions =
 	| { accessLevel?: 'guest' | 'private' }
 	| { accessLevel: 'protected'; targetIdentityId?: string };
 
+/** @deprecated This may be removed in the next major version. */
 interface WriteOptions {
+	/** @deprecated This may be removed in the next major version. */
 	accessLevel?: StorageAccessLevel;
 }
 
@@ -87,10 +90,13 @@ export type GetUrlOptions = ReadOptions &
 /**
  * Input options type for S3 downloadData API.
  */
-export type DownloadDataOptions = ReadOptions &
-	CommonOptions &
+export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
 	BytesRangeOptions;
+
+/** @deprecated Use {@link DownloadDataOptionsPath} instead. */
+export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions;
+export type DownloadDataOptionsPath = DownloadDataOptions;
 
 export type UploadDataOptions = WriteOptions &
 	CommonOptions &

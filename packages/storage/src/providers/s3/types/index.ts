@@ -8,12 +8,15 @@ export {
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
-	DownloadDataOptions,
+	DownloadDataOptionsPath,
+	DownloadDataOptionsKey,
 	CopyDestinationOptions,
 	CopySourceOptions,
 } from './options';
 export {
 	DownloadDataOutput,
+	DownloadDataOutputKey,
+	DownloadDataOutputPath,
 	GetUrlOutput,
 	UploadDataOutput,
 	ListOutputItem,
@@ -31,6 +34,8 @@ export {
 	ListPaginateInput,
 	RemoveInput,
 	DownloadDataInput,
+	DownloadDataInputKey,
+	DownloadDataInputPath,
 	UploadDataInput,
 } from './inputs';
 export { S3Exception } from './errors';

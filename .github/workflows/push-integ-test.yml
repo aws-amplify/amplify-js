@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - next/main
+      - gen2-storage
 
 jobs:
   e2e:
