@@ -28,6 +28,7 @@ export interface ItemBase {
 }
 
 /**
+ * @deprecated Use {@link ListOutputItemPath} instead.
  * type for S3 list item with key.
  */
 export type ListOutputItemKey = Omit<ItemKey, 'metadata'>;
