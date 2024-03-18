@@ -79,10 +79,8 @@ describe('Indexed db storage test', () => {
 		await DataStore.delete(Editor, Predicates.ALL);
 		await DataStore.delete(Forum, Predicates.ALL);
 		await DataStore.delete(ForumEditorJoin, Predicates.ALL);
-		// await DataStore.delete(Nested, Predicates.ALL);
 		await DataStore.delete(Post, Predicates.ALL);
 		await DataStore.delete(PostAuthorJoin, Predicates.ALL);
-		// await DataStore.delete(PostMetadata, Predicates.ALL);
 		await DataStore.delete(Person, Predicates.ALL);
 		await DataStore.delete(Project, Predicates.ALL);
 		await DataStore.delete(Team, Predicates.ALL);
