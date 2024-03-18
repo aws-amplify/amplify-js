@@ -131,7 +131,6 @@ describe('createQueuedStorage', () => {
 
 	describe('method add()', () => {
 		let queuedStorage: QueuedStorage;
-		// let originalDate;
 		let dateNowSpy: jest.SpyInstance;
 		const testInput: ItemToAdd = {
 			content: 'some log content',
@@ -139,10 +138,6 @@ describe('createQueuedStorage', () => {
 		};
 
 		beforeAll(() => {
-			// originalDate = Date;
-			// Date = {
-			// 	now: jest.fn(() => 123),
-			// } as any;
 			dateNowSpy = jest.spyOn(Date, 'now').mockReturnValue(123);
 			queuedStorage = createQueuedStorage();
 		});

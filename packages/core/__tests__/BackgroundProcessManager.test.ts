@@ -428,7 +428,7 @@ describe('BackgroundProcessManager', () => {
 		const manager = new BackgroundProcessManager();
 		let count = 0;
 
-		const _ = new Observable(observer => {
+		new Observable(observer => {
 			const interval = setInterval(() => {
 				observer.next({});
 			}, 10);
