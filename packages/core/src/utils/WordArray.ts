@@ -26,7 +26,7 @@ function hexStringify(wordArray: WordArray): string {
 	return hexChars.join('');
 }
 
-export default class WordArray {
+export class WordArray {
 	words: number[] = [];
 	sigBytes: number;
 
