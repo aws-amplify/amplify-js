@@ -60,7 +60,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/react-native": "1.0.20",
+		"@aws-amplify/react-native": "1.0.21",
 		"@types/js-cookie": "3.0.2",
 		"genversion": "^2.2.0",
 		"typescript": "5.0.2"

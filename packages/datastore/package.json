@@ -55,7 +55,7 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.0.20",
-		"@aws-amplify/react-native": "1.0.20",
+		"@aws-amplify/react-native": "1.0.21",
 		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
 		"dexie-export-import": "1.0.3",
