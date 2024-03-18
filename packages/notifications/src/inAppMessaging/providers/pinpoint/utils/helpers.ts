@@ -331,12 +331,12 @@ export const extractContent = ({
 };
 
 export const extractMetadata = ({
-	InAppMessage: campaignInAppMessage,
+	InAppMessage: inAppMessage,
 	Priority,
 	Schedule,
 	TreatmentId,
 }: PinpointInAppMessage): InAppMessage['metadata'] => ({
-	customData: campaignInAppMessage?.CustomConfig,
+	customData: inAppMessage?.CustomConfig,
 	endDate: Schedule?.EndDate,
 	priority: Priority,
 	treatmentId: TreatmentId,
