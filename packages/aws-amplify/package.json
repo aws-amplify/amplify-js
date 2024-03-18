@@ -268,6 +268,7 @@
 		"adapter-core",
 		"api",
 		"auth",
+		"data",
 		"storage",
 		"datastore",
 		"in-app-messaging",
@@ -352,7 +353,7 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "9.00 kB"
+			"limit": "9.02 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
@@ -424,7 +425,7 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "4.29 kB"
+			"limit": "4.32 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
@@ -442,7 +443,7 @@
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "8.23 kB"
+			"limit": "8.27 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",

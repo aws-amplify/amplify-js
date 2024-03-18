@@ -35,6 +35,7 @@ export class ConsoleLogger implements Logger {
 	}
 
 	static LOG_LEVEL: string | null = null;
+	static BIND_ALL_LOG_LEVELS = false;
 
 	_padding(n: number) {
 		return n < 10 ? '0' + n : '' + n;
@@ -88,6 +89,14 @@ export class ConsoleLogger implements Logger {
 		}
 		if (type === LogType.WARN && console.warn) {
 			log = console.warn.bind(console);
+		}
+		if (ConsoleLogger.BIND_ALL_LOG_LEVELS) {
+			if (type === LogType.INFO && console.info) {
+				log = console.info.bind(console);
+			}
+			if (type === LogType.DEBUG && console.debug) {
+				log = console.debug.bind(console);
+			}
 		}
 
 		const prefix = `[${type}] ${this._ts()} ${this.name}`;
