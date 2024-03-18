@@ -279,25 +279,19 @@ describe('list API', () => {
 			jest.clearAllMocks();
 			mockListObject.mockClear();
 		});
-		const publicPrefix = 'public/';
-		const privatePrefix = 'private/';
-		const protectedPrefix = 'protected/';
-		const accessLevelTests = [
+		const pathAsFunctionAndStringTests = [
 			{
-				path: `/${publicPrefix}${key}`,
+				path: `/public/${key}`,
 			},
 			{
-				path: `/${privatePrefix}${defaultIdentityId}/${key}`,
+				path: `/private/${defaultIdentityId}/${key}`,
 			},
 			{
-				path: `/${protectedPrefix}${defaultIdentityId}/${key}`,
-			},
-			{
-				path: `/${protectedPrefix}${targetIdentityId}/${key}`,
+				path: ({ identityId }: any) => `/protected/${identityId}/${key}`,
 			},
 		];
 
-		accessLevelTests.forEach(({ path }) => {
+		pathAsFunctionAndStringTests.forEach(({ path }) => {
 			it(`should list objects with pagination, default pageSize, custom path`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
@@ -309,21 +303,22 @@ describe('list API', () => {
 				let response = await list({
 					path,
 				});
-				expect(response.items).toEqual([
-					{ ...listResultItem, path: path ?? '' },
-				]);
+				expect(response.items).toEqual([{ ...listResultItem, path: path }]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
 					MaxKeys: 1000,
-					Prefix: path,
+					Prefix:
+						typeof path === 'string'
+							? path
+							: path({ identityId: defaultIdentityId }),
 				});
 			});
 		});
 
-		accessLevelTests.forEach(({ path }) => {
-			it(`should list objects with pagination using pageSize, nextToken, custom path`, async () => {
+		pathAsFunctionAndStringTests.forEach(({ path }) => {
+			it(`should list objects with pagination using custom pageSize, nextToken and custom path: ${path}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [{ ...listObjectClientBaseResultItem, Key: path }],
@@ -346,15 +341,18 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
-					Prefix: path,
+					Prefix:
+						typeof path === 'string'
+							? path
+							: path({ identityId: defaultIdentityId }),
 					ContinuationToken: nextToken,
 					MaxKeys: customPageSize,
 				});
 			});
 		});
 
-		accessLevelTests.forEach(({ path }) => {
-			it(`should list objects with zero results with custom path`, async () => {
+		pathAsFunctionAndStringTests.forEach(({ path }) => {
+			it(`should list objects with zero results with custom path: ${path}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
@@ -368,13 +366,16 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
 					MaxKeys: 1000,
-					Prefix: path,
+					Prefix:
+						typeof path === 'string'
+							? path
+							: path({ identityId: defaultIdentityId }),
 				});
 			});
 		});
 
-		accessLevelTests.forEach(({ path }) => {
-			it(`should list all objects having three pages with custom path`, async () => {
+		pathAsFunctionAndStringTests.forEach(({ path }) => {
+			it(`should list all objects having three pages with custom path: ${path}`, async () => {
 				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
@@ -382,7 +383,13 @@ describe('list API', () => {
 					options: { listAll: true },
 				});
 
-				const listResult = { ...listResultItem, path: path ?? '' };
+				const listResult = {
+					...listResultItem,
+					path:
+						typeof path === 'string'
+							? path
+							: path({ identityId: defaultIdentityId }),
+				};
 				expect(result.items).toEqual([listResult, listResult, listResult]);
 				expect(result).not.toHaveProperty(nextToken);
 
@@ -395,7 +402,10 @@ describe('list API', () => {
 					listObjectClientConfig,
 					{
 						Bucket: bucket,
-						Prefix: path,
+						Prefix:
+							typeof path === 'string'
+								? path
+								: path({ identityId: defaultIdentityId }),
 						MaxKeys: 1000,
 						ContinuationToken: undefined,
 					},
@@ -406,7 +416,10 @@ describe('list API', () => {
 					listObjectClientConfig,
 					{
 						Bucket: bucket,
-						Prefix: path,
+						Prefix:
+							typeof path === 'string'
+								? path
+								: path({ identityId: defaultIdentityId }),
 						MaxKeys: 1000,
 						ContinuationToken: nextToken,
 					},
