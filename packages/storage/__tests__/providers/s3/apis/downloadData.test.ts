@@ -78,23 +78,23 @@ describe('downloadData with key', () => {
 
 	test.each([
 		{
-			expectedKey: `public/${key}`,
+			expectedKey: `/public/${key}`,
 		},
 		{
 			options: { accessLevel: 'guest' },
-			expectedKey: `public/${key}`,
+			expectedKey: `/public/${key}`,
 		},
 		{
 			options: { accessLevel: 'private' },
-			expectedKey: `private/${defaultIdentityId}/${key}`,
+			expectedKey: `/private/${defaultIdentityId}/${key}`,
 		},
 		{
 			options: { accessLevel: 'protected' },
-			expectedKey: `protected/${defaultIdentityId}/${key}`,
+			expectedKey: `/protected/${defaultIdentityId}/${key}`,
 		},
 		{
 			options: { accessLevel: 'protected', targetIdentityId },
-			expectedKey: `protected/${targetIdentityId}/${key}`,
+			expectedKey: `/protected/${targetIdentityId}/${key}`,
 		},
 	])(
 		'should supply the correct parameters to getObject API handler with $expectedKey accessLevel',
