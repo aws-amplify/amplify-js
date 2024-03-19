@@ -182,7 +182,7 @@ const getObjectCustomEndpoint: ApiFunctionalTestCase<typeof getObject> = [
 	} as Parameters<typeof getObject>[0],
 	{
 		Bucket: 'bucket',
-		Key: '/key',
+		Key: 'key',
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({

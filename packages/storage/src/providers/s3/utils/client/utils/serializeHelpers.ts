@@ -74,7 +74,7 @@ const serializeMetadata = (
 export const serializePathnameObjectKey = (url: URL, key: string) => {
 	return (
 		url.pathname.replace(/\/$/, '') +
-		`${key.split('/').map(extendedEncodeURIComponent).join('/')}`
+		`/${key.split('/').map(extendedEncodeURIComponent).join('/')}`
 	);
 };
 
