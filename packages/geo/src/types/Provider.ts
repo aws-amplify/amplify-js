@@ -1,20 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
-	SearchForSuggestionsResults,
 	Coordinates,
-	Place,
-	MapStyle,
+	DeleteGeofencesResults,
 	Geofence,
 	GeofenceId,
 	GeofenceInput,
 	GeofenceOptions,
 	ListGeofenceOptions,
 	ListGeofenceResults,
+	MapStyle,
+	Place,
 	SaveGeofencesResults,
-	DeleteGeofencesResults,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
+	SearchForSuggestionsResults,
 	searchByPlaceIdOptions,
 } from './Geo';
 

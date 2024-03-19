@@ -12,6 +12,8 @@ export const unGzipBase64AsJson = async (gzipBase64: string | undefined) => {
 
 		return JSON.parse(objString);
 	} catch (error) {
-		return Promise.reject('unable to decode and decompress ' + error);
+		return Promise.reject(
+			new Error('unable to decode and decompress ' + error),
+		);
 	}
 };
