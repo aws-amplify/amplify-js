@@ -27,8 +27,10 @@ describe('Custom user agent utilities', () => {
 
 	beforeEach(() => {
 		jest.resetModules();
-		({ getCustomUserAgent } = require('../../src/Platform/customUserAgent'));
-		({ setCustomUserAgent } = require('../../src/Platform/customUserAgent'));
+		({
+			getCustomUserAgent,
+			setCustomUserAgent,
+		} = require('../../src/Platform/customUserAgent'));
 	});
 
 	it('sets custom user agent state for multiple categories and APIs', () => {

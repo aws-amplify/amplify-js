@@ -4,15 +4,12 @@ import { LogType, LoggingProvider } from '../src/Logger/types';
 type LogEvent = 'verbose' | 'debug' | 'info' | 'warn' | 'error';
 
 describe('ConsoleLogger', () => {
-	const noop = () => {
-		// no op
-	};
 	beforeAll(() => {
-		jest.spyOn(console, 'log').mockImplementation(noop);
-		jest.spyOn(console, 'error').mockImplementation(noop);
-		jest.spyOn(console, 'warn').mockImplementation(noop);
-		jest.spyOn(console, 'info').mockImplementation(noop);
-		jest.spyOn(console, 'debug').mockImplementation(noop);
+		jest.spyOn(console, 'log');
+		jest.spyOn(console, 'error');
+		jest.spyOn(console, 'warn');
+		jest.spyOn(console, 'info');
+		jest.spyOn(console, 'debug');
 	});
 	afterEach(() => {
 		jest.clearAllMocks();
@@ -50,9 +47,7 @@ describe('ConsoleLogger', () => {
 				configure: () => {
 					return {};
 				},
-				pushLogs: () => {
-					// no-op
-				},
+				pushLogs: jest.fn(),
 			} as LoggingProvider;
 
 			const logger = new ConsoleLogger('name');

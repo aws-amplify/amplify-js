@@ -31,7 +31,7 @@ describe(composeTransferHandler.name, () => {
 			mockFnInOptions(calledFrom: string): void;
 		}
 		const middlewareA: Middleware<Request, Response, OptionsType> =
-			(options: OptionsType) => (next, _) => async request => {
+			(options: OptionsType) => next => async request => {
 				request.body += 'A';
 				options.mockFnInOptions('A');
 				const resp = await next(request);

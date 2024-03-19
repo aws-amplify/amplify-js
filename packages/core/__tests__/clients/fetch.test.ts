@@ -68,8 +68,8 @@ describe(fetchTransferHandler.name, () => {
 	});
 
 	it('should support headers', async () => {
-		mockFetchResponse.headers.forEach.mockImplementation((funcParam: any) => {
-			funcParam('foo', 'bar');
+		mockFetchResponse.headers.forEach.mockImplementation((callback: any) => {
+			callback('foo', 'bar');
 		});
 		const { headers } = await fetchTransferHandler(mockRequest, {});
 		expect(headers).toEqual({ bar: 'foo' });

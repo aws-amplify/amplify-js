@@ -17,8 +17,7 @@ describe('CookieStorage', () => {
 			const expectedError =
 				'The sameSite value of cookieStorage must be "lax", "strict" or "none"';
 			expect(() => {
-				// eslint-disable-next-line no-new
-				new CookieStorage({ sameSite: undefined });
+				const _ = new CookieStorage({ sameSite: undefined });
 			}).toThrow(expectedError);
 			expect(() => {
 				// eslint-disable-next-line no-new
