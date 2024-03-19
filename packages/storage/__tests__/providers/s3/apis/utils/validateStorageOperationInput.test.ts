@@ -17,7 +17,7 @@ describe('validateStorageOperationInput', () => {
 		const result = validateStorageOperationInput(input);
 		expect(result).toEqual({
 			inputType: STORAGE_INPUT_PATH,
-			objectKey: '/testPath',
+			objectKey: 'testPath',
 		});
 	});
 
@@ -29,7 +29,7 @@ describe('validateStorageOperationInput', () => {
 		const result = validateStorageOperationInput(input, '123');
 		expect(result).toEqual({
 			inputType: STORAGE_INPUT_PATH,
-			objectKey: '/testPath/123',
+			objectKey: 'testPath/123',
 		});
 	});
 

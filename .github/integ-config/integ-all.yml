@@ -730,6 +730,15 @@ tests:
     spec: multi-part-copy
     browser: *minimal_browser_list
 
+  # GEN2 STORAGE
+  - test_name: integ_react_storage
+    desc: 'React Storage Gen2'
+    framework: react
+    category: storage
+    sample_name: [storage-gen2]
+    spec: storage-gen2
+    browser: *minimal_browser_list
+
   # INAPPMESSAGING
   - test_name: integ_in_app_messaging
     desc: 'React InApp Messaging'
