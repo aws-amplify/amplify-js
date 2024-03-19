@@ -1,26 +1,26 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify, ConsoleLogger } from '@aws-amplify/core';
+
 import { AmazonLocationServiceProvider } from './providers/location-service/AmazonLocationServiceProvider';
-
 import { validateCoordinates } from './util';
-
 import {
-	Place,
-	GeoConfig,
 	Coordinates,
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
+	DeleteGeofencesResults,
+	GeoConfig,
 	GeoProvider,
-	MapStyle,
+	Geofence,
 	GeofenceId,
 	GeofenceInput,
 	GeofenceOptions,
-	SaveGeofencesResults,
-	Geofence,
 	ListGeofenceOptions,
 	ListGeofenceResults,
-	DeleteGeofencesResults,
+	MapStyle,
+	Place,
+	SaveGeofencesResults,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
+	SearchForSuggestionsResults,
 	searchByPlaceIdOptions,
 } from './types';
 
@@ -73,13 +73,13 @@ export class GeoClass {
 	 * @param providerName the name of the plugin
 	 */
 	public getPluggable(providerName: string) {
-		const pluggable = this._pluggables.find(
+		const targetPluggable = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === providerName,
 		);
-		if (pluggable === undefined) {
+		if (targetPluggable === undefined) {
 			logger.debug('No plugin found with providerName', providerName);
 			throw new Error('No plugin found in Geo for the provider');
-		} else return pluggable;
+		} else return targetPluggable;
 	}
 
 	/**
@@ -90,7 +90,6 @@ export class GeoClass {
 		this._pluggables = this._pluggables.filter(
 			pluggable => pluggable.getProviderName() !== providerName,
 		);
-		return;
 	}
 
 	/**
@@ -140,7 +139,7 @@ export class GeoClass {
 	 * Search for search term suggestions based on input text
 	 * @param  {string} text The text string that is to be search for
 	 * @param  {SearchByTextOptions} options Optional parameters to the search
-	 * @returns {Promise<SearchForSuggestionsResults>} - Resolves to an array of search suggestion strings
+	 * @returns a `Promise` of {@link SearchForSuggestionsResults} that resolves to an array of search suggestion strings
 	 */
 	public async searchForSuggestions(
 		text: string,
@@ -194,6 +193,7 @@ export class GeoClass {
 		const [lng, lat] = coordinates;
 		try {
 			validateCoordinates(lng, lat);
+
 			return await prov.searchByCoordinates(coordinates, options);
 		} catch (error) {
 			logger.debug(error);
@@ -256,7 +256,7 @@ export class GeoClass {
 	/**
 	 * List geofences
 	 * @param  options ListGeofenceOptions
-	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
+	 * @returns a promise that resolves to an object that conforms to {@link ListGeofenceResults}:
 	 *   entries: list of geofences - 100 geofences are listed per page
 	 *   nextToken: token for next page of geofences
 	 */
