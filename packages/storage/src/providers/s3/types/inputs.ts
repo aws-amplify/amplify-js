@@ -58,6 +58,7 @@ export type ListAllInput = StorageListInput<ListAllOptions>;
 export type ListPaginateInput = StorageListInput<ListPaginateOptions>;
 
 /**
+ * @deprecated Use {@link RemoveInputPath} instead.
  * Input type with key for S3 remove API.
  */
 export type RemoveInputKey = StorageRemoveInputKey<RemoveOptions>;
@@ -72,7 +73,7 @@ export type RemoveInputPath = StorageRemoveInputPath<
 /**
  * Input type for S3 remove API.
  */
-export type RemoveInput = RemoveInputKey | RemoveInputPath;
+export type RemoveInput = StrictUnion<RemoveInputKey | RemoveInputPath>;
 
 /**
  * Input type for S3 downloadData API.

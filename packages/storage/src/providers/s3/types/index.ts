@@ -25,6 +25,8 @@ export {
 	GetPropertiesOutput,
 	CopyOutput,
 	RemoveOutput,
+	RemoveOutputKey,
+	RemoveOutputPath,
 } from './outputs';
 export {
 	CopyInput,

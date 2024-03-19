@@ -8,34 +8,35 @@ import {
 	RemoveInputKey,
 	RemoveInputPath,
 	RemoveOutput,
-	S3Exception,
+	RemoveOutputKey,
+	RemoveOutputPath,
 } from '../types';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 import { remove as removeInternal } from './internal/remove';
 
 interface RemoveApi {
 	/**
 	 * Remove a file from your S3 bucket.
-	 * @param input - The RemoveInputKey object.
-	 * @return Output containing the removed object key
-	 * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
-	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
-	 */
-	(input: RemoveInputKey): Promise<RemoveOutput>;
-	/**
-	 * Remove a file from your S3 bucket.
-	 * @param input - The RemoveInputPath object.
+	 * @param input - The `RemoveInputPath` object.
 	 * @return Output containing the removed object path
-	 * @throws service: {@link S3Exception} - S3 service errors thrown while getting properties
-	 * @throws validation: {@link StorageValidationErrorCode } - Validation errors thrown
+	 * @throws service: `S3Exception` - S3 service errors thrown while getting properties
+	 * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
 	 */
-	(input: RemoveInputPath): Promise<RemoveOutput>;
+	(input: RemoveInputPath): Promise<RemoveOutputPath>;
+	/**
+	 * @deprecated The `key` parameter is deprecated and may be removed in the next major version.
+	 *
+	 * Remove a file from your S3 bucket.
+	 * @param input - The `RemoveInputKey` object.
+	 * @return Output containing the removed object key
+	 * @throws service: `S3Exception` - S3 service errors thrown while getting properties
+	 * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
+	 */
+	(input: RemoveInputKey): Promise<RemoveOutputKey>;
 }
 
-// TODO(Samaritan1011001): return type should show only key or path
-export const remove: RemoveApi = (
+export const remove: RemoveApi = <Output extends RemoveOutput>(
 	input: RemoveInput,
-): Promise<RemoveOutput> => {
-	return removeInternal(Amplify, input);
+): Promise<Output> => {
+	return removeInternal(Amplify, input) as Promise<Output>;
 };

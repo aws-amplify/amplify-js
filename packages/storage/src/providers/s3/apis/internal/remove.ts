@@ -19,7 +19,6 @@ export const remove = async (
 	input: RemoveInputKey | RemoveInputPath,
 ): Promise<RemoveOutput> => {
 	const { options = {} } = input ?? {};
-	let path = '';
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify, options);
 
@@ -27,9 +26,9 @@ export const remove = async (
 		input,
 		identityId,
 	);
-	path =
+	const finalKey =
 		inputType === STORAGE_INPUT_KEY ? `${keyPrefix}${objectKey}` : objectKey;
-	logger.debug(`removing object in path "${path}"`);
+	logger.debug(`removing object in path "${finalKey}"`);
 	await deleteObject(
 		{
 			...s3Config,
@@ -37,7 +36,7 @@ export const remove = async (
 		},
 		{
 			Bucket: bucket,
-			Key: path,
+			Key: finalKey,
 		},
 	);
 
@@ -46,6 +45,6 @@ export const remove = async (
 				key: objectKey,
 			}
 		: {
-				path,
+				path: finalKey,
 			};
 };

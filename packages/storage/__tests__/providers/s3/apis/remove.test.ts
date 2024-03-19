@@ -6,6 +6,7 @@ import { Amplify } from '@aws-amplify/core';
 import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
 import { StorageOptions } from '../../../../src/types';
+import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -53,7 +54,7 @@ describe('remove API', () => {
 			},
 		});
 	});
-	describe('Key Happy Path Cases:', () => {
+	describe('Key: Happy Path Cases:', () => {
 		beforeEach(() => {
 			mockDeleteObject.mockImplementation(() => {
 				return {
@@ -97,7 +98,7 @@ describe('remove API', () => {
 		});
 	});
 
-	describe('Path Happy Path Cases:', () => {
+	describe('Path: Happy Path Cases:', () => {
 		beforeEach(() => {
 			mockDeleteObject.mockImplementation(() => {
 				return {
@@ -110,16 +111,21 @@ describe('remove API', () => {
 		});
 		[
 			{
-				path: `public/${key}`,
+				path: `/public/${key}`,
 			},
 			{
-				path: `private/${defaultIdentityId}/${key}`,
+				path: `/private/${defaultIdentityId}/${key}`,
 			},
 			{
-				path: `protected/${defaultIdentityId}/${key}`,
+				path: ({ identityId }: any) => `/protected/${identityId}/${key}`,
 			},
 		].forEach(({ path }) => {
-			const removeResultPath = { path };
+			const removeResultPath = {
+				path:
+					typeof path === 'string'
+						? path
+						: path({ identityId: defaultIdentityId }),
+			};
 
 			it(`should remove object for the given path`, async () => {
 				expect.assertions(3);
@@ -127,7 +133,10 @@ describe('remove API', () => {
 				expect(deleteObject).toHaveBeenCalledTimes(1);
 				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 					Bucket: bucket,
-					Key: path,
+					Key:
+						typeof path === 'string'
+							? path
+							: path({ identityId: defaultIdentityId }),
 				});
 			});
 		});
@@ -155,6 +164,16 @@ describe('remove API', () => {
 					Key: `public/${key}`,
 				});
 				expect(error.$metadata.httpStatusCode).toBe(404);
+			}
+		});
+		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
+			expect.assertions(1);
+			try {
+				await remove({ path: '' });
+			} catch (error: any) {
+				expect(error.name).toBe(
+					StorageValidationErrorCode.InvalidStorageOperationInput,
+				);
 			}
 		});
 	});
