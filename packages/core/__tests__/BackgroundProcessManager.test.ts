@@ -512,7 +512,7 @@ describe('BackgroundProcessManager', () => {
 
 		// accumulate a bunch of close promises, only the first of which should
 		// send the close signal, but all of which should await resolution.
-		const closes = [0, 1, 2, 3, 4, 5].map(_ => manager.close());
+		const closes = [0, 1, 2, 3, 4, 5].map(() => manager.close());
 
 		// ensure everything has settled
 		const resolved = await Promise.allSettled(closes);
@@ -631,9 +631,7 @@ describe('BackgroundProcessManager', () => {
 	test('cleaners can be named', async () => {
 		const manager = new BackgroundProcessManager();
 
-		manager.addCleaner(async () => {
-			// no op
-		}, 'cleaner name');
+		manager.addCleaner(() => Promise.resolve(), 'cleaner name');
 
 		expect(manager.pending.length).toBe(1);
 		expect(manager.pending[0]).toEqual('cleaner name');
@@ -646,9 +644,7 @@ describe('BackgroundProcessManager', () => {
 		await manager.close();
 
 		await expect(
-			manager.add(async () => {
-				// no-op
-			}, 'some job'),
+			manager.add(() => Promise.resolve(), 'some job'),
 		).rejects.toThrow('some job');
 	});
 
@@ -664,9 +660,7 @@ describe('BackgroundProcessManager', () => {
 		const close = manager.close();
 
 		await expect(
-			manager.add(async () => {
-				// no-op
-			}, 'some job'),
+			manager.add(() => Promise.resolve(), 'some job'),
 		).rejects.toThrow('blocking job');
 
 		unblock?.();

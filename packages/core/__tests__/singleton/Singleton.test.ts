@@ -297,9 +297,7 @@ describe('Session tests', () => {
 								credentials: mockCredentials,
 							};
 						},
-						clearCredentialsAndIdentityId: () => {
-							// no-op
-						},
+						clearCredentialsAndIdentityId: jest.fn(),
 					},
 				},
 			},
@@ -365,7 +363,7 @@ describe('Session tests', () => {
 		};
 
 		const credentialsSpy = jest.fn(
-			async (_): Promise<CredentialsAndIdentityId> => {
+			async (): Promise<CredentialsAndIdentityId> => {
 				return {
 					credentials: {
 						accessKeyId: 'accessKeyIdValue',
@@ -391,9 +389,7 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentialsAndIdentityId: () => {
-						// no-op
-					},
+					clearCredentialsAndIdentityId: jest.fn(),
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,
@@ -479,9 +475,7 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentialsAndIdentityId: () => {
-						// no-op
-					},
+					clearCredentialsAndIdentityId: jest.fn(),
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,

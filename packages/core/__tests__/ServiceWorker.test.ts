@@ -40,9 +40,7 @@ describe('ServiceWorker test', () => {
 			test(`can register (${status})`, () => {
 				const bla = {
 					[status]: {
-						addEventListener: () => {
-							// no-op
-						},
+						addEventListener: jest.fn(),
 					},
 				};
 				(global as any).navigator.serviceWorker = {

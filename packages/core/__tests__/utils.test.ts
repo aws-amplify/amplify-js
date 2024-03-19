@@ -14,10 +14,6 @@ import { DateUtils } from '../src/Signer/DateUtils';
 ConsoleLogger.LOG_LEVEL = 'DEBUG';
 
 describe('Util', () => {
-	beforeEach(() => {
-		// no-op
-	});
-
 	describe('DateUtils', () => {
 		test('isClockSkewError', () => {
 			expect(
