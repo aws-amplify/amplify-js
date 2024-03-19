@@ -3,7 +3,6 @@
 
 import { TokenOrchestrator } from '../../../src/providers/cognito';
 import { Hub, ResourcesConfig } from '@aws-amplify/core';
-import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
@@ -34,6 +33,62 @@ const validAuthConfig: ResourcesConfig = {
 	},
 };
 
+const currentDate = new Date();
+
+const expiredDate = new Date();
+expiredDate.setDate(currentDate.getDate() - 5);
+const expiredDateInSeconds = Math.floor(expiredDate.getTime() / 1000);
+
+const futureDate = new Date();
+futureDate.setDate(currentDate.getDate() + 5);
+const futureDateInSeconds = Math.floor(futureDate.getTime() / 1000);
+
+const expiredAuthTokens = {
+	idToken: {
+		payload: {
+			sub: '1234567890',
+			name: 'John Doe',
+			iat: 1516239022,
+			exp: expiredDateInSeconds,
+		},
+	},
+	accessToken: {
+		payload: {
+			sub: '1234567890',
+			name: 'John Doe',
+			iat: 1516239022,
+			exp: expiredDateInSeconds,
+		},
+	},
+	accessTokenExpAt: expiredDate,
+	clockDrift: undefined,
+	metadata: undefined,
+};
+
+const validAuthTokens = {
+	idToken: {
+		payload: {
+			sub: '1234567890',
+			name: 'John Doe the second',
+			iat: 1516239022,
+			iss: 'https://test.com',
+			exp: futureDateInSeconds,
+		},
+	},
+	accessToken: {
+		payload: {
+			sub: '1234567890',
+			name: 'John Doe the second',
+			iat: 1516239022,
+			iss: 'https://test.com',
+			exp: futureDateInSeconds,
+		},
+	},
+	accessTokenExpAt: futureDate,
+	clockDrift: undefined,
+	metadata: undefined,
+};
+
 describe('TokenOrchestrator', () => {
 	const tokenOrchestrator = new TokenOrchestrator();
 	describe('Happy Path Cases:', () => {
@@ -44,26 +99,22 @@ describe('TokenOrchestrator', () => {
 			mockAuthTokenStore.getLastAuthUser.mockResolvedValue('test-username');
 		});
 		it('Should get tokens', async () => {
-			mockAuthTokenStore.loadTokens.mockResolvedValue(
-				authAPITestParams.ValidAuthTokens,
-			);
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
 
 			const tokensRes = await tokenOrchestrator.getTokens();
 			expect(tokensRes).toEqual({
-				accessToken: authAPITestParams.ValidAuthTokens.accessToken,
-				idToken: authAPITestParams.ValidAuthTokens.idToken,
+				accessToken: validAuthTokens.accessToken,
+				idToken: validAuthTokens.idToken,
 				signInDetails: undefined,
 			});
 		});
 		it('Should call tokenRefresher and return valid tokens', async () => {
-			mockAuthTokenStore.loadTokens.mockResolvedValue(
-				authAPITestParams.ExpiredAuthTokens,
-			);
-			mockTokenRefresher.mockResolvedValue(authAPITestParams.ValidAuthTokens);
+			mockAuthTokenStore.loadTokens.mockResolvedValue(expiredAuthTokens);
+			mockTokenRefresher.mockResolvedValue(validAuthTokens);
 			const tokensRes = await tokenOrchestrator.getTokens();
 			expect(tokensRes).toEqual({
-				accessToken: authAPITestParams.ValidAuthTokens.accessToken,
-				idToken: authAPITestParams.ValidAuthTokens.idToken,
+				accessToken: validAuthTokens.accessToken,
+				idToken: validAuthTokens.idToken,
 				signInDetails: undefined,
 			});
 			expect(Hub.dispatch).toHaveBeenCalledWith(
