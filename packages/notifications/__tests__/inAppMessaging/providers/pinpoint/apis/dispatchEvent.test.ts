@@ -6,8 +6,12 @@ import {
 	dispatchEvent,
 	initializeInAppMessaging,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
-import { processInAppMessages } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import {
+	getConflictHandler,
+	processInAppMessages,
+} from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
+import {
+	closestExpiryMessage,
 	inAppMessages,
 	simpleInAppMessages,
 	simpleInAppMessagingEvent,
@@ -20,6 +24,7 @@ jest.mock('../../../../../src/inAppMessaging/providers/pinpoint/utils');
 jest.mock('../../../../../src/eventListeners');
 
 const mockDefaultStorage = defaultStorage as jest.Mocked<typeof defaultStorage>;
+const mockGetConflictHandler = getConflictHandler as jest.Mock;
 const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 const mockProcessInAppMessages = processInAppMessages as jest.Mock;
 
@@ -28,6 +33,10 @@ describe('dispatchEvent', () => {
 		initializeInAppMessaging();
 	});
 	beforeEach(() => {
+		mockGetConflictHandler.mockReturnValue(() => inAppMessages[0]);
+	});
+	afterEach(() => {
+		mockGetConflictHandler.mockReset();
 		mockDefaultStorage.setItem.mockClear();
 		mockNotifyEventListeners.mockClear();
 	});
@@ -49,6 +58,7 @@ describe('dispatchEvent', () => {
 	});
 
 	it('handles conflicts through default conflict handler', async () => {
+		mockGetConflictHandler.mockReturnValue(() => closestExpiryMessage);
 		mockDefaultStorage.getItem.mockResolvedValueOnce(
 			JSON.stringify(simpleInAppMessages),
 		);

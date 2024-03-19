@@ -5,8 +5,8 @@ import { OnCompleteInput } from '../types';
 import { resolveBotConfig } from '../utils';
 import { lexProvider } from '../AWSLexV2Provider';
 import {
-	assertValidationError,
 	InteractionsValidationErrorCode,
+	assertValidationError,
 } from '../../errors';
 
 export const onComplete = (input: OnCompleteInput): void => {
