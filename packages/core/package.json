@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.0.20",
+	"version": "6.0.21",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -60,7 +60,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/react-native": "1.0.21",
+		"@aws-amplify/react-native": "1.0.22",
 		"@types/js-cookie": "3.0.2",
 		"genversion": "^2.2.0",
 		"typescript": "5.0.2"
