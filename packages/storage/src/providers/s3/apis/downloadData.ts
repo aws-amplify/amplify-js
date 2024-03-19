@@ -120,7 +120,7 @@ const downloadDataJob =
 			identityId,
 		);
 		const finalKey =
-			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
+			inputType === STORAGE_INPUT_KEY ? `/${keyPrefix + objectKey}` : objectKey;
 
 		logger.debug(`download ${objectKey} from ${finalKey}.`);
 
