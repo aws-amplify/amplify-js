@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSLexProviderOption } from '../types';
 import { Amplify } from '@aws-amplify/core';
+
+import { AWSLexProviderOption } from '../types';
 
 export const resolveBotConfig = (
 	botName: string,

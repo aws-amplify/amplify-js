@@ -343,7 +343,7 @@ describe('Interactions', () => {
 
 			await expect(
 				provider.sendMessage(botConfig.BookTrip, 'hi'),
-			).rejects.toEqual('No credentials');
+			).rejects.toThrow('No credentials');
 			expect.assertions(1);
 		});
 
@@ -356,7 +356,7 @@ describe('Interactions', () => {
 						messageType: 'text',
 					},
 				}),
-			).rejects.toEqual('invalid content type');
+			).rejects.toThrow('invalid content type');
 
 			// obj voice in wrong format
 			await expect(
@@ -366,7 +366,7 @@ describe('Interactions', () => {
 						messageType: 'voice',
 					},
 				}),
-			).rejects.toEqual('invalid content type');
+			).rejects.toThrow('invalid content type');
 		});
 	});
 
