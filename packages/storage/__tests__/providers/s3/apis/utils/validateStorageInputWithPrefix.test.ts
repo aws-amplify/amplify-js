@@ -51,11 +51,12 @@ describe('validateStorageInputPrefix', () => {
 		});
 	});
 
-	it('should throw an error when input path does not start with a /', () => {
-		const input = { path: 'test' } as any;
-		expect(() => validateStorageInputPrefix(input)).toThrow(
-			validationErrorMap[StorageValidationErrorCode.InvalidStoragePathInput]
-				.message,
-		);
-	});
+	// TODO: add back when the assertion is added back.
+	// it('should throw an error when input path does not start with a /', () => {
+	// 	const input = { path: 'test' } as any;
+	// 	expect(() => validateStorageInputPrefix(input)).toThrow(
+	// 		validationErrorMap[StorageValidationErrorCode.InvalidStoragePathInput]
+	// 			.message,
+	// 	);
+	// });
 });
