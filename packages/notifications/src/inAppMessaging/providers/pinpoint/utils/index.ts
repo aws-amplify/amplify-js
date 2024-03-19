@@ -1,6 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+export {
+	getConflictHandler,
+	setConflictHandler,
+} from './conflictHandlerManager';
 export { resolveConfig } from './resolveConfig';
 export { resolveCredentials } from './resolveCredentials';
 export { getInAppMessagingUserAgentString } from './userAgent';
