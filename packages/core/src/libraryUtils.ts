@@ -21,7 +21,8 @@ export {
 	deDupeAsyncFunction,
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
-export { LegacyConfig } from './singleton/types';
+export { isGen2Config, parseGen2Config } from './parseAmplifyGen2';
+export { LegacyConfig, Gen2Config } from './singleton/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
@@ -63,6 +64,7 @@ export {
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
 	AWSCredentials,
+	OAuthProvider,
 } from './singleton/Auth/types';
 export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
 

@@ -8,8 +8,11 @@ import {
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
+	Gen2Config,
 	LegacyConfig,
+	isGen2Config,
 	parseAWSExports,
+	parseGen2Config,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -31,13 +34,15 @@ export const DefaultAmplify = {
 	 * Amplify.configure(config);
 	 */
 	configure(
-		resourceConfig: ResourcesConfig | LegacyConfig,
+		resourceConfig: ResourcesConfig | LegacyConfig | Gen2Config,
 		libraryOptions?: LibraryOptions,
 	): void {
 		let resolvedResourceConfig: ResourcesConfig;
 
 		if (Object.keys(resourceConfig).some(key => key.startsWith('aws_'))) {
 			resolvedResourceConfig = parseAWSExports(resourceConfig);
+		} else if (isGen2Config(resourceConfig)) {
+			resolvedResourceConfig = parseGen2Config(resourceConfig);
 		} else {
 			resolvedResourceConfig = resourceConfig as ResourcesConfig;
 		}

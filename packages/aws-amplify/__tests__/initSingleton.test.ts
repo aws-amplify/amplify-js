@@ -13,6 +13,7 @@ import {
 } from '../src/auth/cognito';
 
 import { Amplify } from '../src';
+import { Gen2Config } from '@aws-amplify/core/internals/utils';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../src/auth/cognito', () => ({
@@ -66,6 +67,96 @@ describe('initSingleton (DefaultAmplify)', () => {
 		mockCognitoUserPoolsTokenProviderSetKeyValueStorage.mockReset();
 		mockAmplifySingletonConfigure.mockReset();
 		mockAmplifySingletonGetConfig.mockReset();
+	});
+
+	describe('Gen2 Amplify configure', () => {
+		it('should use Gen2 config type', () => {
+			const gen2Config: Gen2Config = {
+				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+				"storage": {
+					"aws_region": "us-east-1",
+					"name": "my-bucket-name"
+				},
+				"auth": {
+					"user_pool_id": 'us-east-1:',
+					"user_pool_client_id": "xxxx",
+					"aws_region": "us-east-1",
+					"identity_pool_id": "test"
+				},
+				"analytics": {
+					amazon_pinpoint: {
+						app_id: 'xxxxx',
+						aws_region: 'us-east-1'
+					}
+				},
+				"geo": {
+					aws_region: 'us-east-1',
+					maps: {
+						items: [{ name: 'map1', style: 'color' }],
+						default: 'map1'
+					},
+					geofence_collections: {
+						items: ["a", "b", "c"],
+						default: "a"
+					},
+					search_indices: {
+						items: ["a", "b", "c"],
+						default: "a"
+					}
+				}
+			};
+
+			Amplify.configure(gen2Config);
+
+			expect(AmplifySingleton.configure).toHaveBeenCalledWith({
+				Storage: {
+					S3: {
+						bucket: "my-bucket-name",
+						region: "us-east-1"
+					},
+				},
+				Auth: {
+					Cognito: {
+						identityPoolId: 'test',
+						userPoolId: 'us-east-1:',
+						userPoolClientId: 'xxxx'
+					}
+				},
+				Analytics: {
+					Pinpoint: {
+						appId: "xxxxx",
+						region: "us-east-1",
+					},
+				},
+				Geo: {
+					LocationService: {
+						"geofenceCollections": {
+							"default": "a",
+							"items": [
+								"a",
+								"b",
+								"c",
+							],
+						},
+						"maps": {
+							"default": "map1",
+							"items": {
+								"map1": "color",
+							},
+						},
+						"region": "us-east-1",
+						"searchIndices": {
+							"default": "a",
+							"items": [
+								"a",
+								"b",
+								"c",
+							],
+						},
+					},
+				}
+			}, expect.anything());
+		})
 	});
 
 	describe('DefaultAmplify.configure()', () => {
