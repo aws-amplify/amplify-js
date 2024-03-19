@@ -34,7 +34,6 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const key = 'key';
-const path = '/path';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 
@@ -174,7 +173,7 @@ describe('getProperties with path', () => {
 	});
 	describe('getProperties with path', () => {
 		const expected = {
-			path,
+			path: 'path',
 			size: '100',
 			contentType: 'text/plain',
 			eTag: 'etag',
@@ -204,11 +203,11 @@ describe('getProperties with path', () => {
 		[
 			{
 				path: '/path',
-				expectedKey: '/path',
+				expectedKey: 'path',
 			},
 			{
 				path: () => '/path',
-				expectedKey: '/path',
+				expectedKey: 'path',
 			},
 		].forEach(({ path, expectedKey }) => {
 			it(`should getProperties with path ${path} and expectedKey ${expectedKey}`, async () => {
@@ -244,7 +243,7 @@ describe('getProperties with path', () => {
 			);
 			expect.assertions(3);
 			try {
-				await getProperties({ path });
+				await getProperties({ path: '/path' });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(
@@ -255,7 +254,7 @@ describe('getProperties with path', () => {
 					},
 					{
 						Bucket: 'bucket',
-						Key: path,
+						Key: 'path',
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);

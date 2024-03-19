@@ -173,11 +173,10 @@ describe('getUrl test with path', () => {
 			region,
 			userAgentValue: expect.any(String),
 		};
-		const path = '/path';
 		beforeEach(() => {
 			(headObject as jest.Mock).mockImplementation(() => {
 				return {
-					Key: path,
+					Key: 'path',
 					ContentLength: '100',
 					ContentType: 'text/plain',
 					ETag: 'etag',
@@ -195,11 +194,11 @@ describe('getUrl test with path', () => {
 		[
 			{
 				path: '/path',
-				expectedKey: '/path',
+				expectedKey: 'path',
 			},
 			{
 				path: () => '/path',
-				expectedKey: '/path',
+				expectedKey: 'path',
 			},
 		].forEach(({ path, expectedKey }) => {
 			it(`should getUrl with path ${path} and expectedKey ${expectedKey}`, async () => {
