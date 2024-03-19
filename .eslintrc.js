@@ -126,6 +126,7 @@ module.exports = {
 		'no-useless-constructor': 'off',
 		'no-trailing-spaces': 'error',
 		'no-return-await': 'error',
+		'n/no-callback-literal': 'off',
 		'object-shorthand': 'error',
 		'prefer-destructuring': 'off',
 		'promise/catch-or-return': [
