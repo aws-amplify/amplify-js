@@ -3,9 +3,7 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { GetUrlInput, GetUrlOutput, S3Exception } from '../types';
-import { StorageError } from '../../../errors/StorageError';
+import { GetUrlInput, GetUrlOutput } from '../types';
 
 import { getUrl as getUrlInternal } from './internal/getUrl';
 
@@ -16,12 +14,12 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  *
  * By default, it will not validate the object that exists in S3. If you set the `options.validateObjectExistence`
  * to true, this method will verify the given object already exists in S3 before returning a presigned
- * URL, and will throw {@link StorageError} if the object does not exist.
+ * URL, and will throw StorageError if the object does not exist.
  *
  * @param input - The GetUrlInput object.
  * @returns Presigned URL and timestamp when the URL MAY expire.
- * @throws service: {@link S3Exception} - thrown when checking for existence of the object
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors
+ * @throws service: S3Exception - thrown when checking for existence of the object
+ * @throws validation: StorageValidationErrorCode - Validation errors
  * thrown either username or key are not defined.
  *
  */
