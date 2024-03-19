@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { EmitterSubscription } from 'react-native';
+
 import { nativeEventEmitter } from '../nativeModule';
 import { NativeMessage, PushNotificationMessage } from '../types';
 import { normalizeNativeMessage } from '../utils';
