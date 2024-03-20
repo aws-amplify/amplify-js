@@ -7,5 +7,6 @@ import { OnNotificationOpened } from '../types';
 
 export const onNotificationOpened: OnNotificationOpened = input => {
 	assertIsInitialized();
+
 	return addEventListener('notificationOpened', input);
 };
