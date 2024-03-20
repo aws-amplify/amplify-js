@@ -218,11 +218,11 @@ describe('downloadData with path', () => {
 
 	test.each([
 		{
-			path: 'path',
+			path: '/path',
 			expectedKey: 'path',
 		},
 		{
-			path: () => 'path',
+			path: () => '/path',
 			expectedKey: 'path',
 		},
 	])(

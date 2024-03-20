@@ -8,9 +8,9 @@ import {
 	CustomQueries,
 	CustomMutations,
 } from '@aws-amplify/data-schema-types';
-import { generateEnumsProperty } from './utils/generateEnumsProperty';
-import { generateModelsProperty } from './utils/generateModelsProperty';
-import { isApiGraphQLConfig } from './utils/isApiGraphQLProviderConfig';
+import { generateEnumsProperty } from './utils/clientProperties/generateEnumsProperty';
+import { generateModelsProperty } from './utils/clientProperties/generateModelsProperty';
+import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
 import {
 	generateCustomQueriesProperty,
 	generateCustomMutationsProperty,
@@ -23,7 +23,7 @@ import {
 	__headers,
 } from '../types';
 import { ClientGenerationParams } from './types';
-import { isConfigureEventWithResourceConfig } from './utils/isConfigureEventWithResourceConfig';
+import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 
 /**
  * @private
