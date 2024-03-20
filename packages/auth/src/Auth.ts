@@ -2154,7 +2154,7 @@ export class AuthClass {
 	 * @
 	 * @return - A promise resolved if success
 	 */
-	public async signOut(opts?: SignOutOpts): Promise<any> {
+	public async signOut(opts: SignOutOpts = {}): Promise<any> {
 		try {
 			await this.cleanCachedItems();
 		} catch (e) {
@@ -2162,6 +2162,12 @@ export class AuthClass {
 		}
 
 		if (this.userPool) {
+			try {
+				await this._storageSync;
+			} catch (e) {
+				logger.debug('Failed to sync cache info into memory', e);
+				throw e;
+			}
 			const user = this.userPool.getCurrentUser();
 			if (user) {
 				await this.cognitoIdentitySignOut(opts, user);

@@ -277,7 +277,7 @@ const createMockLocalStorage = () =>
 		removeItem(key: string) {
 			delete this._items[key];
 		},
-	}) as unknown as Storage;
+	} as unknown as Storage);
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
@@ -2361,6 +2361,7 @@ describe('auth unit test', () => {
 	});
 
 	describe('signOut test', () => {
+		const syncMock = jest.fn();
 		beforeAll(() => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
@@ -2369,6 +2370,7 @@ describe('auth unit test', () => {
 						setItem() {},
 						getItem() {},
 						removeItem() {},
+						sync: syncMock,
 					};
 				});
 		});
@@ -2491,6 +2493,37 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptionsWithNoUserPoolId);
 
 			expect(await auth.signOut()).toBeUndefined();
+		});
+
+		test('should call storage sync before finishing signOut', async () => {
+			const auth = new Auth(authOptions);
+
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			const spyon = jest
+				.spyOn(Credentials, 'clear')
+				.mockImplementationOnce(() => {
+					return Promise.resolve();
+				});
+			const spyon2 = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementationOnce(() => {
+					return user;
+				});
+
+			await auth.signOut();
+
+			expect.assertions(3);
+			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalled();
+			expect(syncMock).toBeCalled();
+
+			spyon.mockClear();
+			spyon2.mockClear();
+			syncMock.mockClear();
 		});
 	});
 
@@ -3603,7 +3636,7 @@ describe('auth unit test', () => {
 			    "Hub.dispatch('auth', { data: ..., event: 'parsingCallbackUrl' })",
 			  ],
 			  Array [
-			    "window.history.replaceState(null, "", 'http://localhost:3000/')",
+			    "window.history.replaceState(null, \\"\\", 'http://localhost:3000/')",
 			  ],
 			  Array [
 			    "Hub.dispatch('auth', { data: ..., event: 'signIn' })",
@@ -3680,7 +3713,7 @@ describe('auth unit test', () => {
 			);
 		});
 
-		test.only('User Pools and Identity Pools', async () => {
+		test('User Pools and Identity Pools', async () => {
 			const options: AuthOptions = {
 				region: 'region',
 				userPoolId: 'userPoolId',
