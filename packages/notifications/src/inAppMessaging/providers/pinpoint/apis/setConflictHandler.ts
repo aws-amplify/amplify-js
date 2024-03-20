@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { InAppMessagingValidationErrorCode } from '../../../errors';
 import { assertIsInitialized } from '../../../utils';
 import { SetConflictHandlerInput } from '../types';
 import { setConflictHandler as setConflictHandlerInteral } from '../utils';

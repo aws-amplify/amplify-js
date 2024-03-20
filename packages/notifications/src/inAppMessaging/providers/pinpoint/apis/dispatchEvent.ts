@@ -5,7 +5,10 @@ import flatten from 'lodash/flatten.js';
 import { defaultStorage } from '@aws-amplify/core';
 
 import { notifyEventListeners } from '../../../../eventListeners';
-import { assertServiceError } from '../../../errors';
+import {
+	InAppMessagingValidationErrorCode,
+	assertServiceError,
+} from '../../../errors';
 import { InAppMessage } from '../../../types';
 import { assertIsInitialized } from '../../../utils';
 import { DispatchEventInput } from '../types';
