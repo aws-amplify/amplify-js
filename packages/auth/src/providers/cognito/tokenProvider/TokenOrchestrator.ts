@@ -127,12 +127,13 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		username: string;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
+			const signInDetails = tokens.signInDetails;
 			const newTokens = await this.getTokenRefresher()({
 				tokens,
 				authConfig: this.authConfig,
 				username,
 			});
-
+			newTokens.signInDetails = signInDetails;
 			await this.setTokens({ tokens: newTokens });
 			Hub.dispatch('auth', { event: 'tokenRefresh' }, 'Auth', AMPLIFY_SYMBOL);
 

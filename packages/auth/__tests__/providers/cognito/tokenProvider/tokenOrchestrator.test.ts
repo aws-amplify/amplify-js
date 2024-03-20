@@ -14,8 +14,6 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-const mockAssertTokenProviderConfig = assertTokenProviderConfig as jest.Mock;
-
 describe('tokenOrchestrator', () => {
 	const mockTokenRefresher = jest.fn();
 	const mockTokenStore = {
@@ -36,14 +34,19 @@ describe('tokenOrchestrator', () => {
 	describe('refreshTokens method', () => {
 		it('calls the set tokenRefresher, tokenStore and Hub while refreshing tokens', async () => {
 			const testUsername = 'username';
+			const testSignInDetails= {
+				authFlowType:'CUSTOM_WITHOUT_SRP',
+				loginId: testUsername
+			} as const;
 			const testInputTokens = {
 				accessToken: {
 					payload: {},
 				},
 				clockDrift: 400000,
 				username: testUsername,
+				signInDetails:testSignInDetails
 			};
-
+			// mock tokens should not include signInDetails
 			const mockTokens: CognitoAuthTokens = {
 				accessToken: {
 					payload: {},
@@ -58,6 +61,7 @@ describe('tokenOrchestrator', () => {
 				username: testUsername,
 			});
 
+			console.log(newTokens);
 			// ensure the underlying async operations to be completed
 			// async #1
 			expect(mockTokenRefresher).toHaveBeenCalledWith(
@@ -71,6 +75,7 @@ describe('tokenOrchestrator', () => {
 
 			// ensure the result is correct
 			expect(newTokens).toEqual(mockTokens);
+			expect(newTokens?.signInDetails).toEqual(testSignInDetails)
 		});
 	});
 });
