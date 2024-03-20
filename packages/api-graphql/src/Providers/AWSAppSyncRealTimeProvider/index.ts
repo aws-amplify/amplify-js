@@ -124,7 +124,7 @@ export class AWSAppSyncRealTimeProvider {
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionStateMonitorSubscription: SubscriptionLike;
 
-	constructor(_: AWSAppSyncRealTimeProviderOptions = {}) {
+	constructor() {
 		// Monitor the connection state and pass changes along to Hub
 		this.connectionStateMonitorSubscription =
 			this.connectionStateMonitor.connectionStateObservable.subscribe(

@@ -194,8 +194,8 @@ function outerArguments(operation: CustomOperation): string {
  * @returns "outer" arguments string
  */
 function innerArguments(operation: CustomOperation): string {
-	const args = Object.entries(operation.arguments)
-		.map(([k, _]) => `${k}: $${k}`)
+	const args = Object.keys(operation.arguments)
+		.map(k => `${k}: $${k}`)
 		.join(', ');
 
 	return args.length > 0 ? `(${args})` : '';
