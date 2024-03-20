@@ -63,12 +63,28 @@ export type StorageUploadDataInput<Options extends StorageOptions> =
 		data: StorageUploadDataPayload;
 	};
 
-export interface StorageCopyInput<
+/** @deprecated Use {@link StorageCopyInputPath} instead. */
+export interface StorageCopyInputKey<
 	SourceOptions extends StorageOptions,
 	DestinationOptions extends StorageOptions,
 > {
-	source: SourceOptions;
-	destination: DestinationOptions;
+	source: SourceOptions & {
+		path?: never;
+	};
+	destination: DestinationOptions & {
+		path?: never;
+	};
+}
+
+export interface StorageCopyInputPath {
+	source: StorageOperationInputPath & {
+		/** @deprecated Use path instead. */
+		key?: never;
+	};
+	destination: StorageOperationInputPath & {
+		/** @deprecated Use path instead. */
+		key?: never;
+	};
 }
 
 /**

@@ -9,6 +9,8 @@ export enum StorageValidationErrorCode {
 	NoKey = 'NoKey',
 	NoSourceKey = 'NoSourceKey',
 	NoDestinationKey = 'NoDestinationKey',
+	NoSourcePath = 'NoSourcePath',
+	NoDestinationPath = 'NoDestinationPath',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
@@ -34,6 +36,12 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.NoDestinationKey]: {
 		message: 'Missing destination key in copy api call.',
+	},
+	[StorageValidationErrorCode.NoSourcePath]: {
+		message: 'Missing source path in copy api call.',
+	},
+	[StorageValidationErrorCode.NoDestinationPath]: {
+		message: 'Missing destination path in copy api call.',
 	},
 	[StorageValidationErrorCode.NoBucket]: {
 		message: 'Missing bucket name while accessing object.',
