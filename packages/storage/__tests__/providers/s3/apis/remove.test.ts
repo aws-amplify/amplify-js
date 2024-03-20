@@ -111,13 +111,13 @@ describe('remove API', () => {
 		});
 		[
 			{
-				path: `/public/${key}`,
+				path: `public/${key}`,
 			},
 			{
-				path: `/private/${defaultIdentityId}/${key}`,
+				path: `private/${defaultIdentityId}/${key}`,
 			},
 			{
-				path: ({ identityId }: any) => `/protected/${identityId}/${key}`,
+				path: ({ identityId }: any) => `protected/${identityId}/${key}`,
 			},
 		].forEach(({ path }) => {
 			const removeResultPath = {
