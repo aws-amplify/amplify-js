@@ -127,7 +127,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		username: string;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
-			const signInDetails = tokens.signInDetails;
+			const { signInDetails } = tokens;
 			const newTokens = await this.getTokenRefresher()({
 				tokens,
 				authConfig: this.authConfig,
