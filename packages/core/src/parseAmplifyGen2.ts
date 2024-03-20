@@ -1,5 +1,10 @@
 import { OAuthProvider } from './libraryUtils';
-import { Gen2AuthProperties } from './singleton/gen2/types';
+import {
+	APIGraphQLConfig,
+	APIRestConfig,
+	GraphQLAuthMode,
+} from './singleton/API/types';
+import { AuthType, Gen2AuthProperties } from './singleton/gen2/types';
 import { Gen2Config, LegacyConfig, ResourcesConfig } from './singleton/types';
 
 export function isGen2Config(
@@ -198,7 +203,102 @@ export function parseGen2Config(resourceConfig: Gen2Config): ResourcesConfig {
 		}
 	}
 
+	if (resourceConfig.api) {
+		const apiProperties = resourceConfig.api;
+		const endpoints: Record<string, APIRestConfig> =
+			apiProperties.endpoints?.reduce(
+				(acc, item) => {
+					acc[item.name] = {
+						endpoint: item.url,
+						region: item.aws_region,
+						service: 'execute-api',
+					};
+
+					return acc;
+				},
+				{} as Record<string, APIRestConfig>,
+			);
+		config.API = {
+			REST: { ...endpoints },
+		};
+	}
+
+	if (resourceConfig.data) {
+		const dataConfig = resourceConfig.data;
+
+		const GraphQL: APIGraphQLConfig = {
+			endpoint: dataConfig.url,
+			defaultAuthMode: getGraphQLAuthMode(
+				dataConfig.default_authorization_type,
+			),
+			region: dataConfig.aws_region,
+			apiKey: dataConfig.api_key,
+			modelIntrospection: dataConfig.model_introspection,
+		};
+
+		if (!config.API) {
+			config.API = {
+				GraphQL,
+			};
+		} else {
+			config.API.GraphQL = GraphQL;
+		}
+	}
+
+	if (resourceConfig.notifications) {
+		const notificationConfig = resourceConfig.notifications;
+
+		if (notificationConfig.channels.in_app_messaging) {
+			const InAppMessaging = {
+				Pinpoint: {
+					appId: notificationConfig.pinpoint_app_id,
+					region: notificationConfig.aws_region,
+				},
+			};
+			if (!config.Notifications) {
+				config.Notifications = {
+					InAppMessaging,
+				};
+			} else {
+				config.Notifications.InAppMessaging = InAppMessaging;
+			}
+		}
+		if (notificationConfig.channels.apns || notificationConfig.channels.fcm) {
+			const PushNotification = {
+				Pinpoint: {
+					appId: notificationConfig.pinpoint_app_id,
+					region: notificationConfig.aws_region,
+				},
+			};
+
+			if (!config.Notifications) {
+				config.Notifications = {
+					PushNotification,
+				};
+			} else {
+				config.Notifications.PushNotification = PushNotification;
+			}
+		}
+	}
+
 	return config;
+}
+
+function getGraphQLAuthMode(authType: AuthType): GraphQLAuthMode {
+	switch (authType) {
+		case 'AMAZON_COGNITO_USER_POOLS':
+			return 'userPool';
+		case 'API_KEY':
+			return 'apiKey';
+		case 'AWS_IAM':
+			return 'iam';
+		case 'AWS_LAMBDA':
+			return 'lambda';
+		case 'OPENID_CONNECT':
+			return 'oidc';
+		default:
+			throw new Error('Invalid AuthMode configured');
+	}
 }
 
 function getOAuthProviders(

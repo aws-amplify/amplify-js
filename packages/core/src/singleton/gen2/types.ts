@@ -1,3 +1,5 @@
+import { ModelIntrospectionSchema } from '../API/types';
+
 export interface Gen2AuthProperties {
 	aws_region?: string;
 	user_pool_id: string;
@@ -109,5 +111,60 @@ export interface Gen2AnalyticsProperties {
 		flush_size?: number;
 		flush_interval?: number;
 		resend_limit?: number;
+	};
+}
+
+export type AuthType =
+	| 'AMAZON_COGNITO_USER_POOLS'
+	| 'API_KEY'
+	| 'AWS_IAM'
+	| 'AWS_LAMBDA'
+	| 'OPENID_CONNECT';
+
+export interface Gen2ApiProperties {
+	endpoints: {
+		name: string;
+		url: string;
+		aws_region: string;
+		authorization_types: AuthType[];
+		default_authorization_type: AuthType;
+	}[];
+}
+
+export interface Gen2DataProperties {
+	aws_region: string;
+	url: string;
+	default_authorization_type: AuthType;
+	authorization_types: AuthType[];
+	model_introspection?: ModelIntrospectionSchema;
+	api_key?: string;
+	conflict_resolution_mode?: 'AUTO_MERGE' | 'OPTIMISTIC_CONCURRENCY' | 'LAMBDA';
+}
+
+export type NotificationChannels =
+	| 'in_app_messaging'
+	| 'fcm'
+	| 'apns'
+	| 'email'
+	| 'sms';
+export interface Gen2NotificationsProperties {
+	aws_region: string;
+	pinpoint_app_id: string;
+	channels: {
+		in_app_messaging?: {
+			default: boolean;
+		};
+		fcm?: {
+			default: boolean;
+		};
+		apns?: {
+			default: boolean;
+		};
+		email?: {
+			default: boolean;
+		};
+		sms?: {
+			default: boolean;
+		};
 	};
 }

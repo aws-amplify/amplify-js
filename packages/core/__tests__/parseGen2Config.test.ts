@@ -195,5 +195,114 @@ describe('parseGen2Config tests', () => {
 			})
 		})
 
+	});
+
+	describe('api tests', () => {
+		it('should configure multiple endpoints', () => {
+			const gen2Config: Gen2Config = {
+				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+				"api": {
+					endpoints: [
+						{
+							name: 'api1',
+							url: 'https://api1.amazonapigw.com/',
+							aws_region: 'us-east-1',
+							authorization_types: ['AWS_IAM'],
+							default_authorization_type: 'AWS_IAM'
+						},
+						{
+							name: 'api2',
+							url: 'https://api2.amazonapigw.com/',
+							aws_region: 'us-east-2',
+							authorization_types: ['API_KEY'],
+							default_authorization_type: 'API_KEY'
+						}
+					]
+				}
+			};
+
+			const result = parseGen2Config(gen2Config);
+			expect(result).toEqual({
+				API: {
+					"REST": {
+						"api1": {
+							"endpoint": "https://api1.amazonapigw.com/",
+							"region": "us-east-1",
+							"service": "execute-api",
+						},
+						"api2": {
+							"endpoint": "https://api2.amazonapigw.com/",
+							"region": "us-east-2",
+							"service": "execute-api",
+						}
+					}
+				}
+			});
+		})
+	});
+
+	describe('data tests', () => {
+		it('should configure data', () => {
+			const gen2Config: Gen2Config = {
+				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+				"data": {
+					aws_region: 'us-west-2',
+					url: 'https://api.appsyncaws.com/graphql',
+					authorization_types: ['API_KEY'],
+					default_authorization_type: 'API_KEY',
+					api_key: 'da-xxxx'
+				}
+			};
+
+			const result = parseGen2Config(gen2Config);
+			expect(result).toEqual({
+				API: {
+					"GraphQL": {
+						endpoint: 'https://api.appsyncaws.com/graphql',
+						region: 'us-west-2',
+						apiKey: 'da-xxxx',
+						defaultAuthMode: 'apiKey'
+					}
+				}
+			});
+		});
+
+		describe('notifications tests', () => {
+			it('should configure notifications', () => {
+				const gen2Config: Gen2Config = {
+					"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+					"notifications": {
+						aws_region: 'us-west-2',
+						pinpoint_app_id: 'appid123',
+						channels: {
+							in_app_messaging: {
+								default: true
+							},
+							apns: {
+								default: false
+							}
+						},
+					}
+				};
+
+				const result = parseGen2Config(gen2Config);
+				expect(result).toEqual({
+					"Notifications": {
+						"InAppMessaging": {
+							"Pinpoint": {
+								"appId": "appid123",
+								"region": "us-west-2",
+							},
+						},
+						"PushNotification": {
+							"Pinpoint": {
+								"appId": "appid123",
+								"region": "us-west-2",
+							},
+						}
+					}
+				});
+			});
+		})
 	})
 })

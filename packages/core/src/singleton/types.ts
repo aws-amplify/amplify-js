@@ -27,8 +27,11 @@ import { NotificationsConfig } from './Notifications/types';
 import { InteractionsConfig } from './Interactions/types';
 import {
 	Gen2AnalyticsProperties,
+	Gen2ApiProperties,
 	Gen2AuthProperties,
+	Gen2DataProperties,
 	Gen2GeoProperties,
+	Gen2NotificationsProperties,
 	Gen2StorageProperties,
 } from './gen2/types';
 
@@ -48,6 +51,9 @@ export interface Gen2Config {
 	auth?: Gen2AuthProperties;
 	analytics?: Gen2AnalyticsProperties;
 	geo?: Gen2GeoProperties;
+	api?: Gen2ApiProperties;
+	data?: Gen2DataProperties;
+	notifications?: Gen2NotificationsProperties;
 }
 
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
