@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - next/main
+      - feat/list-remove-gen2
       - gen2-storage
 
 jobs:
