@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-/* tslint:disable:max-line-length */
 import { Geometry, Relationship } from './Predictions';
 
 export type BlockList = Block[];
@@ -61,13 +60,13 @@ export interface Block {
 	/**
 	 * <p>A list of child blocks of the current block. For example a LINE object has child blocks for each WORD block that's part of the line of text. There aren't Relationship objects in the list for relationships that don't exist, such as when the current block has no child blocks. The list size can be the following:</p> <ul> <li> <p>0 - The block has no child blocks.</p> </li> <li> <p>1 - The block has child blocks.</p> </li> </ul>
 	 */
-	Relationships?: Array<Relationship> | Iterable<Relationship>;
+	Relationships?: Relationship[] | Iterable<Relationship>;
 
 	/**
 	 * <p>The type of entity. The following can be returned:</p> <ul> <li> <p> <i>KEY</i> - An identifier for a field on the document.</p> </li> <li> <p> <i>VALUE</i> - The field text.</p> </li> </ul> <p> <code>EntityTypes</code> isn't returned by <code>DetectDocumentText</code> and <code>GetDocumentTextDetection</code>.</p>
 	 */
 	EntityTypes?:
-		| Array<'KEY' | 'VALUE' | string>
+		| ('KEY' | 'VALUE' | string)[]
 		| Iterable<'KEY' | 'VALUE' | string>;
 
 	/**

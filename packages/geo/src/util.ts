@@ -10,21 +10,21 @@ import {
 import { UserAgent } from '@aws-sdk/types';
 
 import {
-	Longitude,
-	Latitude,
 	GeofenceId,
 	GeofenceInput,
 	GeofencePolygon,
+	Latitude,
 	LinearRing,
+	Longitude,
 } from './types';
 
 export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 	if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
 		throw new Error(`Invalid coordinates: [${lng},${lat}]`);
 	}
-	if (lat < -90 || 90 < lat) {
+	if (lat < -90 || lat > 90) {
 		throw new Error('Latitude must be between -90 and 90 degrees inclusive.');
-	} else if (lng < -180 || 180 < lng) {
+	} else if (lng < -180 || lng > 180) {
 		throw new Error(
 			'Longitude must be between -180 and 180 degrees inclusive.',
 		);
@@ -186,17 +186,18 @@ export function mapSearchOptions(options, locationServiceInput) {
 		locationServiceModifiedInput.IndexName = options.searchIndexName;
 	}
 
-	if (options['biasPosition'] && options['searchAreaConstraints']) {
+	if (options.biasPosition && options.searchAreaConstraints) {
 		throw new Error(
 			'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object',
 		);
 	}
-	if (options['biasPosition']) {
-		locationServiceModifiedInput.BiasPosition = options['biasPosition'];
+	if (options.biasPosition) {
+		locationServiceModifiedInput.BiasPosition = options.biasPosition;
 	}
-	if (options['searchAreaConstraints']) {
-		locationServiceModifiedInput.FilterBBox = options['searchAreaConstraints'];
+	if (options.searchAreaConstraints) {
+		locationServiceModifiedInput.FilterBBox = options.searchAreaConstraints;
 	}
+
 	return locationServiceModifiedInput;
 }
 

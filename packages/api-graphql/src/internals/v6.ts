@@ -1,15 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
+
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
+	GraphQLOptionsV6,
+	GraphQLResponseV6,
+	V6Client,
 	__amplify,
 	__authMode,
 	__authToken,
-	V6Client,
-	GraphQLOptionsV6,
-	GraphQLResponseV6,
 } from '../types';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 /**
  * Invokes graphql operations against a graphql service, providing correct input and
@@ -117,6 +118,7 @@ export function graphql<
 		options,
 		additionalHeaders,
 	);
+
 	return result as any;
 }
 

@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	MapStyle,
+	DeleteGeofencesResults,
+	Geofence,
+	GeofenceError,
 	GeofenceOptions,
 	ListGeofenceOptions,
-	Geofence,
-	DeleteGeofencesResults,
-	GeofenceError,
+	MapStyle,
 } from './Geo';
 
 // Maps

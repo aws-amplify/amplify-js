@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	ModelIntrospectionSchema,
 	GraphQLProviderConfig,
+	ModelIntrospectionSchema,
 } from '@aws-amplify/core/internals/utils';
 import { EnumTypes } from '@aws-amplify/data-schema-types';
 
@@ -17,11 +17,12 @@ export const generateEnumsProperty = <T extends Record<any, any> = never>(
 		return {} as EnumTypes<never>;
 	}
 
-	const enums: {
-		[EnumName: string]: {
-			values: () => string[];
-		};
-	} = {};
+	const enums: Record<
+		string,
+		{
+			values(): string[];
+		}
+	> = {};
 
 	for (const [_, enumData] of Object.entries(modelIntrospection.enums)) {
 		enums[enumData.name] = {

@@ -7,6 +7,7 @@ import {
 	NativeEventSubscription,
 	Platform,
 } from 'react-native';
+
 import { nativeModule } from '../nativeModule';
 
 let appStateListener: NativeEventSubscription | undefined;
@@ -31,12 +32,13 @@ export const openAuthSessionAsync = async (
 const openAuthSessionIOS = async (
 	url: string,
 	redirectUrls: string[],
-	prefersEphemeralSession: boolean = false,
+	prefersEphemeralSession = false,
 ) => {
 	const redirectUrl = redirectUrls.find(
 		// take the first non-web url as the deeplink
 		item => !item.startsWith('https://') && !item.startsWith('http://'),
 	);
+
 	return nativeModule.openAuthSessionAsync(
 		url,
 		redirectUrl,
@@ -56,6 +58,7 @@ const openAuthSessionAndroid = async (url: string, redirectUrls: string[]) => {
 			// open chrome tab
 			nativeModule.openAuthSessionAsync(url),
 		]);
+
 		return redirectUrl;
 	} finally {
 		appStateListener?.remove();

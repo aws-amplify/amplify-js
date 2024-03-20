@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import isEmpty from 'lodash/isEmpty.js';
+
 import {
 	ApnsMessage,
 	FcmMessage,
@@ -26,6 +27,7 @@ export const normalizeNativeMessage = (
 		return null;
 	}
 	const { body, imageUrl, title, action, options, data } = normalized;
+
 	return {
 		body,
 		data,
@@ -42,6 +44,7 @@ const normalizeApnsMessage = (apnsMessage: ApnsMessage): NormalizedValues => {
 	const action = getApnsAction(data?.pinpoint) ?? {};
 	const imageUrl = data?.['media-url'];
 	const options = getApnsOptions(apnsMessage);
+
 	return { body, imageUrl, title, action, options, data };
 };
 
@@ -49,6 +52,7 @@ const normalizeFcmMessage = (fcmMessage: FcmMessage): NormalizedValues => {
 	const { body, imageUrl, rawData: data, title } = fcmMessage;
 	const action = getFcmAction(fcmMessage.action) ?? {};
 	const options = getFcmOptions(fcmMessage);
+
 	return { body, imageUrl, title, action, options, data };
 };
 
@@ -76,6 +80,7 @@ const getApnsOptions = ({
 }: ApnsMessage): Pick<PushNotificationMessage, 'apnsOptions'> => {
 	const { subtitle } = aps.alert ?? {};
 	const apnsOptions = { ...(subtitle && { subtitle }) };
+
 	return { ...(!isEmpty(apnsOptions) && { apnsOptions }) };
 };
 
@@ -91,6 +96,7 @@ const getFcmOptions = ({
 		senderId,
 		sendTime: new Date(sendTime),
 	};
+
 	return { ...(!isEmpty(fcmOptions) && { fcmOptions }) };
 };
 
