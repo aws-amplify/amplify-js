@@ -10,7 +10,6 @@ import {
 	expectSubWithlibraryConfigHeaders,
 } from '../utils/expects';
 import { Observable, from } from 'rxjs';
-import * as internals from '../../src/internals';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -1996,7 +1995,9 @@ describe('generateClient', () => {
 			const spy = jest.fn(() => from([graphqlMessage]));
 			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
 
-			client.models.Note.onCreate().subscribe({
+			const onC = client.models.Note.onCreate();
+
+			onC.subscribe({
 				next(value) {
 					expect(spy).toHaveBeenCalledWith(
 						expect.objectContaining({
@@ -5181,6 +5182,8 @@ describe('generateClient', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 			jest.resetAllMocks();
+			jest.restoreAllMocks();
+
 			Amplify.configure(configFixture as any);
 
 			jest
@@ -5390,6 +5393,121 @@ describe('generateClient', () => {
 
 			expect(normalizePostGraphqlCalls(lazyLoadCommentsSpy)).toMatchSnapshot();
 			expect(comments[0]).toEqual(expect.objectContaining(listCommentItem));
+		});
+
+		test('can subscribe to custom subscription', done => {
+			const postToSend = {
+				__typename: 'Post',
+				...serverManagedFields,
+				content: 'a lovely post',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onPostLiked: postToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const spyGql = jest.spyOn(raw.GraphQLAPI as any, 'graphql');
+
+			const expectedOperation = 'subscription';
+			const expectedFieldAndSelectionSet =
+				'onPostLiked {id content owner createdAt updatedAt}';
+
+			const sub = client.subscriptions.onPostLiked().subscribe({
+				next(value) {
+					expect(value).toEqual(expect.objectContaining(postToSend));
+
+					expect(spyGql).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							query: expect.stringContaining(expectedOperation),
+							variables: {},
+						}),
+						expect.anything(),
+					);
+					expect(spyGql).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							query: expect.stringContaining(expectedFieldAndSelectionSet),
+							variables: {},
+						}),
+						expect.anything(),
+					);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+
+			sub.unsubscribe();
+		});
+
+		test('can subscribe to custom subscription with args', done => {
+			const postToSend = {
+				__typename: 'Post',
+				...serverManagedFields,
+				postId: 'abc123',
+				content: 'a lovely post',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onPostLiked: postToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const spyGql = jest.spyOn(raw.GraphQLAPI as any, 'graphql');
+
+			const expectedOperation = 'subscription($postId: String)';
+			const expectedFieldAndSelectionSet =
+				'onPostUpdated(postId: $postId) {id content owner createdAt updatedAt}';
+
+			const sub = client.subscriptions
+				.onPostUpdated({ postId: 'abc123' })
+				.subscribe({
+					next(value) {
+						expect(value).toEqual(expect.objectContaining(postToSend));
+
+						expect(spyGql).toHaveBeenCalledWith(
+							expect.anything(),
+							expect.objectContaining({
+								query: expect.stringContaining(expectedOperation),
+
+								variables: { postId: 'abc123' },
+							}),
+							expect.anything(),
+						);
+						expect(spyGql).toHaveBeenCalledWith(
+							expect.anything(),
+							expect.objectContaining({
+								query: expect.stringContaining(expectedFieldAndSelectionSet),
+
+								variables: { postId: 'abc123' },
+							}),
+							expect.anything(),
+						);
+						done();
+					},
+					error(error) {
+						expect(error).toBeUndefined();
+						done('bad news!');
+					},
+				});
+
+			sub.unsubscribe();
 		});
 
 		test('includes client level headers', async () => {

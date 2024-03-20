@@ -120,7 +120,7 @@ const schema = a.schema({
 			argumentContent: a.string().required(),
 		})
 		.returns(a.ref('EchoResult'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.public()]),
 
 	// custom query returning a primitive type
@@ -130,7 +130,7 @@ const schema = a.schema({
 			inputString: a.string().required(),
 		})
 		.returns(a.string())
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.public()]),
 	echoNestedCustomTypes: a
 		.query()
@@ -138,7 +138,7 @@ const schema = a.schema({
 			input: a.string().required(),
 		})
 		.returns(a.ref('ProductTrackingMeta'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.public()]),
 	echoModelHasNestedTypes: a
 		.query()
@@ -146,7 +146,7 @@ const schema = a.schema({
 			input: a.string().required(),
 		})
 		.returns(a.ref('Product'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.public()]),
 	// custom mutation returning a non-model type
 	PostLikeResult: a.customType({
@@ -158,7 +158,7 @@ const schema = a.schema({
 			postId: a.id().required(),
 		})
 		.returns(a.ref('PostLikeResult'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.private()]),
 
 	// custom mutation returning a model type
@@ -182,9 +182,21 @@ const schema = a.schema({
 			postId: a.id().required(),
 		})
 		.returns(a.ref('Post'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.private()]),
 
+	onPostLiked: a
+		.subscription()
+		.for(a.ref('likePostReturnPost'))
+		.returns(a.ref('Post'))
+		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
+
+	onPostUpdated: a
+		.subscription()
+		.for(a.ref('Post').mutations(['update']))
+		.arguments({ postId: a.string() })
+		.returns(a.ref('Post'))
+		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
 	//#endregion
 });
 

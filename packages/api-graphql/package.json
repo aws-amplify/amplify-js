@@ -72,7 +72,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@aws-amplify/data-schema": "^0.13.9",
+		"@aws-amplify/data-schema": "^0.13.19",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "^4.9.6",
 		"typescript": "5.0.2"
@@ -87,7 +87,7 @@
 	"dependencies": {
 		"@aws-amplify/api-rest": "4.0.21",
 		"@aws-amplify/core": "6.0.21",
-		"@aws-amplify/data-schema-types": "^0.7.6",
+		"@aws-amplify/data-schema-types": "^0.7.10",
 		"@aws-sdk/types": "3.387.0",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",
