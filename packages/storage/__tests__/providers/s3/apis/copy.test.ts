@@ -3,7 +3,7 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
-import { StorageError } from '../../../../src/';
+import { StorageError } from '../../../../src/errors/StorageError';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';

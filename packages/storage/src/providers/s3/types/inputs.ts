@@ -31,7 +31,7 @@ import {
 /**
  * Input type for S3 copy API.
  */
-export type CopyInput = StrictUnion<CopyInputKey | CopyInputPath>;
+export type CopyInput = CopyInputKey | CopyInputPath;
 
 /** @deprecated Use {@link CopyInputPath} instead. */
 export type CopyInputKey = StorageCopyInputKey<

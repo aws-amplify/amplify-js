@@ -50,17 +50,17 @@ const copyWithPath = async (
 		StorageValidationErrorCode.NoDestinationPath,
 	);
 
-	const { objectKey: sourceKey } = validateStorageOperationInput(
+	const { objectKey: sourcePath } = validateStorageOperationInput(
 		source,
 		identityId,
 	);
-	const { objectKey: destinationKey } = validateStorageOperationInput(
+	const { objectKey: destinationPath } = validateStorageOperationInput(
 		destination,
 		identityId,
 	);
 
-	const finalCopySource = `${bucket}/${sourceKey}`;
-	const finalCopyDestination = destinationKey;
+	const finalCopySource = `${bucket}/${sourcePath}`;
+	const finalCopyDestination = destinationPath;
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
 
 	await serviceCopy({
