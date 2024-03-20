@@ -2,31 +2,32 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
-	initializeModel,
-	generateGraphQLDocument,
-	buildGraphQLVariables,
-	flattenItems,
-	authModeParams,
-	getCustomHeaders,
-} from '../APIClient';
-import {
-	AuthModeParams,
-	ClientWithModels,
-	ListArgs,
-	V6ClientSSRRequest,
-	GraphQLResult,
-	QueryArgs,
-} from '../../types';
-import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
 
-export type IndexMeta = {
+import {
+	authModeParams,
+	buildGraphQLVariables,
+	flattenItems,
+	generateGraphQLDocument,
+	getCustomHeaders,
+	initializeModel,
+} from '../APIClient';
+import {
+	AuthModeParams,
+	ClientWithModels,
+	GraphQLResult,
+	ListArgs,
+	QueryArgs,
+	V6ClientSSRRequest,
+} from '../../types';
+
+export interface IndexMeta {
 	queryField: string;
 	pk: string;
 	sk?: string[];
-};
+}
 
 export function indexQueryFactory(
 	client: ClientWithModels,

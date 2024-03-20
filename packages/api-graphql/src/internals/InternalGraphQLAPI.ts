@@ -2,40 +2,39 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	DocumentNode,
-	OperationDefinitionNode,
-	print,
-	parse,
 	GraphQLError,
+	OperationDefinitionNode,
 	OperationTypeNode,
+	parse,
+	print,
 } from 'graphql';
 import { Observable, catchError } from 'rxjs';
-import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
-	GraphQLAuthMode,
-	CustomUserAgentDetails,
-	getAmplifyUserAgent,
 	AmplifyUrl,
+	CustomUserAgentDetails,
+	GraphQLAuthMode,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
-import {
-	GraphQLAuthError,
-	GraphQLResult,
-	GraphQLOperation,
-	GraphQLOptions,
-} from '../types';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
 import {
-	post,
 	cancel as cancelREST,
+	post,
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
-import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
+
+import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
+import {
+	GraphQLAuthError,
+	GraphQLOperation,
+	GraphQLOptions,
+	GraphQLResult,
+} from '../types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthError } from '../utils/errors/repackageAuthError';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
-
-const logger = new ConsoleLogger('GraphQLAPI');
 
 const isAmplifyInstance = (
 	amplify:
@@ -70,11 +69,7 @@ export class InternalGraphQLAPIClass {
 		authMode: GraphQLAuthMode,
 		additionalHeaders: Record<string, string> = {},
 	) {
-		const {
-			region: region,
-			endpoint: appSyncGraphqlEndpoint,
-			apiKey,
-		} = resolveConfig(amplify);
+		const { apiKey } = resolveConfig(amplify);
 
 		let headers = {};
 
@@ -87,18 +82,17 @@ export class InternalGraphQLAPIClass {
 					'X-Api-Key': apiKey,
 				};
 				break;
-			case 'iam':
+			case 'iam': {
 				const session = await amplify.Auth.fetchAuthSession();
 				if (session.credentials === undefined) {
 					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
+			}
 			case 'oidc':
 			case 'userPool':
 				try {
-					let token;
-
-					token = (
+					const token = (
 						await amplify.Auth.fetchAuthSession()
 					).tokens?.accessToken.toString();
 
@@ -139,8 +133,7 @@ export class InternalGraphQLAPIClass {
 	 */
 	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
 		const doc = parse(operation);
-		const definitions =
-			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
+		const definitions = doc.definitions as readonly OperationDefinitionNode[];
 		const [{ operation: operationType }] = definitions;
 
 		return operationType;
@@ -176,7 +169,7 @@ export class InternalGraphQLAPIClass {
 
 		switch (operationType) {
 			case 'query':
-			case 'mutation':
+			case 'mutation': {
 				const abortController = new AbortController();
 
 				let responsePromise: Promise<GraphQLResult<T>>;
@@ -215,7 +208,9 @@ export class InternalGraphQLAPIClass {
 					responsePromise,
 					abortController,
 				);
+
 				return responsePromise;
+			}
 			case 'subscription':
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
@@ -238,7 +233,7 @@ export class InternalGraphQLAPIClass {
 		authToken?: string,
 	): Promise<GraphQLResult<T>> {
 		const {
-			region: region,
+			region,
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
 			customEndpointRegion,
@@ -356,7 +351,8 @@ export class InternalGraphQLAPIClass {
 
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
-
+			// TODO(Eslint): refactor this to throw an Error instead of a plain object
+			// eslint-disable-next-line no-throw-literal
 			throw {
 				data: {},
 				errors: [error],

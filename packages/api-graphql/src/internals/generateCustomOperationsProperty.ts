@@ -1,13 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CustomQueries, CustomMutations } from '@aws-amplify/data-schema-types';
-import { V6Client, __authMode, __authToken, __amplify } from '../types';
+import { CustomMutations, CustomQueries } from '@aws-amplify/data-schema-types';
+import {
+	GraphQLProviderConfig,
+	ModelIntrospectionSchema,
+} from '@aws-amplify/core/internals/utils';
+
+import { V6Client, __amplify } from '../types';
 
 import { customOpFactory } from './operations/custom';
-import {
-	ModelIntrospectionSchema,
-	GraphQLProviderConfig,
-} from '@aws-amplify/core/internals/utils';
 
 type OpTypes = 'queries' | 'mutations';
 
@@ -59,7 +60,7 @@ export function generateCustomOperationsProperty<
 			modelIntrospection,
 			operationTypeMap[operationsType],
 			operation,
-			useContext
+			useContext,
 		);
 	}
 

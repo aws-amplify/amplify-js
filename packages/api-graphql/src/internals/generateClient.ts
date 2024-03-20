@@ -1,20 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Hub } from '@aws-amplify/core';
-import { graphql, cancel, isCancelError } from './v6';
 import {
+	CustomMutations,
+	CustomQueries,
 	EnumTypes,
 	ModelTypes,
-	CustomQueries,
-	CustomMutations,
 } from '@aws-amplify/data-schema-types';
-import { generateEnumsProperty } from './utils/clientProperties/generateEnumsProperty';
-import { generateModelsProperty } from './utils/clientProperties/generateModelsProperty';
-import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
-import {
-	generateCustomQueriesProperty,
-	generateCustomMutationsProperty,
-} from './generateCustomOperationsProperty';
+
 import {
 	V6Client,
 	__amplify,
@@ -22,6 +15,15 @@ import {
 	__authToken,
 	__headers,
 } from '../types';
+
+import { cancel, graphql, isCancelError } from './v6';
+import { generateEnumsProperty } from './utils/clientProperties/generateEnumsProperty';
+import { generateModelsProperty } from './utils/clientProperties/generateModelsProperty';
+import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
+import {
+	generateCustomMutationsProperty,
+	generateCustomQueriesProperty,
+} from './generateCustomOperationsProperty';
 import { ClientGenerationParams } from './types';
 import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 
