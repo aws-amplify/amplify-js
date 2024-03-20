@@ -10,21 +10,9 @@ import {
 	GetPropertiesOutput,
 	GetPropertiesOutputKey,
 	GetPropertiesOutputPath,
-	S3Exception,
 } from '../types';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
-
-/**
- * Gets the properties of a file. The properties include S3 system metadata and
- * the user metadata that was provided when uploading the file.
- *
- * @param input - The GetPropertiesInput object.
- * @returns Requested object properties.
- * @throws A {@link S3Exception} when the underlying S3 service returned error.
- * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
- */
 
 interface GetProperties {
 	/**
@@ -33,8 +21,8 @@ interface GetProperties {
 	 *
 	 * @param input - The GetPropertiesInput object.
 	 * @returns Requested object properties.
-	 * @throws An {@link S3Exception} when the underlying S3 service returned error.
-	 * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
+	 * @throws An S3Exception when the underlying S3 service returned error.
+	 * @throws A StorageValidationErrorCode when API call parameters are invalid.
 	 */
 	(input: GetPropertiesInputPath): Promise<GetPropertiesOutputPath>;
 	/**
@@ -46,8 +34,8 @@ interface GetProperties {
 	 *
 	 * @param input - The GetPropertiesInput object.
 	 * @returns Requested object properties.
-	 * @throws An {@link S3Exception} when the underlying S3 service returned error.
-	 * @throws A {@link StorageValidationErrorCode} when API call parameters are invalid.
+	 * @throws An S3Exception when the underlying S3 service returned error.
+	 * @throws A StorageValidationErrorCode when API call parameters are invalid.
 	 */
 	(input: GetPropertiesInputKey): Promise<GetPropertiesOutputKey>;
 }
