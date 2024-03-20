@@ -15,8 +15,8 @@ import { assertValidationError } from '../../../../errors/utils/assertValidation
 import {
 	DEFAULT_PRESIGN_EXPIRATION,
 	MAX_URL_EXPIRATION,
+	STORAGE_INPUT_KEY,
 } from '../../utils/constants';
-import { STORAGE_INPUT_KEY } from '../../utils/constants';
 
 import { getProperties } from './getProperties';
 
