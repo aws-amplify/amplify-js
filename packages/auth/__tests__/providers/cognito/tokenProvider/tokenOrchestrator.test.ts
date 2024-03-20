@@ -61,7 +61,6 @@ describe('tokenOrchestrator', () => {
 				username: testUsername,
 			});
 
-			console.log(newTokens);
 			// ensure the underlying async operations to be completed
 			// async #1
 			expect(mockTokenRefresher).toHaveBeenCalledWith(
