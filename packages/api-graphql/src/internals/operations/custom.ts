@@ -41,6 +41,15 @@ type OpArgs =
 	| [CustomOperationOptions];
 
 /**
+ * Type guard for checking whether a Custom Operation argument is a contextSpec object
+ */
+const argIsContextSpec = (
+	arg: OpArgs[number],
+): arg is AmplifyServer.ContextSpec => {
+	return typeof (arg as AmplifyServer.ContextSpec)?.token?.value === 'symbol';
+};
+
+/**
  * Builds an operation function, embedded with all client and context data, that
  * can be attached to a client as a custom query or mutation.
  *
@@ -115,8 +124,9 @@ export function customOpFactory(
 		let arg: QueryArgs | undefined;
 
 		if (useContext) {
-			contextSpec = args[0] as AmplifyServer.ContextSpec;
-			if (contextSpec?.token === undefined) {
+			if (argIsContextSpec(args[0])) {
+				contextSpec = args[0];
+			} else {
 				throw new Error(
 					`Invalid first argument passed to ${operation.name}. Expected contextSpec`,
 				);

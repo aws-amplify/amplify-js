@@ -23,7 +23,9 @@ type CustomOpsProperty<
 	? CustomQueries<T>
 	: OpType extends 'mutations'
 		? CustomMutations<T>
-		: CustomSubscriptions<T>;
+		: OpType extends 'subscriptions'
+			? CustomSubscriptions<T>
+			: never;
 
 const operationTypeMap = {
 	queries: 'query',
