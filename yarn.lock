@@ -17,15 +17,15 @@
 
 "@aws-amplify/data-schema-types@*", "@aws-amplify/data-schema-types@^0.7.10":
   version "0.7.10"
-  resolved "http://localhost:4873/@aws-amplify%2fdata-schema-types/-/data-schema-types-0.7.10.tgz#bad317ed818431e9a8dfdcc2c61d49f225d51ffc"
-  integrity sha512-M8HasHh29ZRmrWS7Xd3FLTLAPzC+3wsy+Nz4eqLnyZtQv19Sld8AKUZhObKLXTcXCqtm7ypBdMOGKkYy3B1Z5Q==
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.7.10.tgz#daad8ceeac210dce023785c1eb414dc4c2a4d8a8"
+  integrity sha512-x2aPHw5a6zVZKugvkMp9SKcwzn+JGzxGe1ntgq9jTU67XgeyPpBlF/XY2drwQpSUDE+FES5PbY4cSHpc3iIEkw==
   dependencies:
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema@^0.13.19":
-  version "0.13.19"
-  resolved "http://localhost:4873/@aws-amplify%2fdata-schema/-/data-schema-0.13.19.tgz#1bfc735e5b3ecdfeaf9387ea30f2aaf4833c3361"
-  integrity sha512-bwvNVaHu5+Fdp7+Ph8zWZT+mDq53xou8hZN+OViuj1ZZc3dUJGuzhtQRMunn6k+g8HDuXxCvE7yBjflHoTXrvg==
+"@aws-amplify/data-schema@^0.14.1":
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.14.1.tgz#4208054e2c6c230a9abcc4607e3c38494dad3a38"
+  integrity sha512-V7Gx/HpNf7mOW90XBQMb94/whrysQ+NJCamb7aKSglXqWMVnc0zamFSkt2L+N0+avG+hEJaE+vH3157HfMYamA==
   dependencies:
     "@aws-amplify/data-schema-types" "*"
     "@types/aws-lambda" "^8.10.134"
@@ -4853,7 +4853,7 @@
 
 "@types/aws-lambda@^8.10.134":
   version "8.10.136"
-  resolved "http://localhost:4873/@types%2faws-lambda/-/aws-lambda-8.10.136.tgz#12a2af86b9123f4e4549992b27e1bf0dcf60d9f9"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.136.tgz#12a2af86b9123f4e4549992b27e1bf0dcf60d9f9"
   integrity sha512-cmmgqxdVGhxYK9lZMYYXYRJk6twBo53ivtXjIUEFZxfxe4TkZTZBK3RRWrY2HjJcUIix0mdifn15yjOAat5lTA==
 
 "@types/babel__core@^7.1.14":
