@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 6.5.12 (2024-03-21)
+
+### Bug Fixes
+
+- **auth:** storage not synced before accessing when the app boots from killed state ([#13005](https://github.com/aws-amplify/amplify-js/issues/13005)) ([a2dbd86](https://github.com/aws-amplify/amplify-js/commit/a2dbd86bcf29f58d9e28d68a0f501c5c0e7a7cc7))
+
 ## 6.5.11 (2024-03-06)
 
 **Note:** Version bump only for package @aws-amplify/analytics
