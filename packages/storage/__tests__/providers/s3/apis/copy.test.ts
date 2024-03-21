@@ -199,15 +199,15 @@ describe('copy API', () => {
 
 			test.each([
 				{
-					sourcePath: '/sourcePathAsString',
+					sourcePath: 'sourcePathAsString',
 					expectedSourcePath: 'sourcePathAsString',
-					destinationPath: '/destinationPathAsString',
+					destinationPath: 'destinationPathAsString',
 					expectedDestinationPath: 'destinationPathAsString',
 				},
 				{
-					sourcePath: () => '/sourcePathAsFunction',
+					sourcePath: () => 'sourcePathAsFunction',
 					expectedSourcePath: 'sourcePathAsFunction',
-					destinationPath: () => '/destinationPathAsFunction',
+					destinationPath: () => 'destinationPathAsFunction',
 					expectedDestinationPath: 'destinationPathAsFunction',
 				},
 			])(
