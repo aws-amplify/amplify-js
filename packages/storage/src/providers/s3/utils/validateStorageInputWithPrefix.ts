@@ -29,15 +29,16 @@ export const validateStorageInputPrefix = (
 		const { path } = input;
 		const objectKey = typeof path === 'string' ? path : path({ identityId });
 
-		// TODO: maybe not needed?
-		// assertValidationError(
-		// 	objectKey.startsWith('/'),
-		// 	StorageValidationErrorCode.InvalidStoragePathInput,
-		// );
+		// TODO: This may change to checking for no leading slash
+		assertValidationError(
+			objectKey.startsWith('/'),
+			StorageValidationErrorCode.InvalidStoragePathInput,
+		);
 
 		return {
 			inputType: STORAGE_INPUT_PATH,
-			objectKey,
+			// TODO: This may change to not slicing
+			objectKey: objectKey.slice(1),
 		};
 	} else {
 		return { inputType: STORAGE_INPUT_PREFIX, objectKey: input.prefix ?? '' };

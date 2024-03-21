@@ -39,7 +39,7 @@ interface ListApi {
 	(input: ListAllInputPath): Promise<ListAllOutputPath>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
-	 *
+	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
 	 * List files in pages with the given `prefix`.
 	 * `pageSize` is defaulted to 1000. Additionally, the result will include a `nextToken` if there are more items to retrieve.
 	 * @param input - The `ListPaginateInputPrefix` object.
@@ -50,7 +50,7 @@ interface ListApi {
 	(input?: ListPaginateInputPrefix): Promise<ListPaginateOutputPrefix>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
-	 *
+	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
 	 * List all files from S3 for a given `prefix`. You can set `listAll` to true in `options` to get all the files from S3.
 	 * @param input - The `ListAllInputPrefix` object.
 	 * @returns A list of all objects with key and metadata

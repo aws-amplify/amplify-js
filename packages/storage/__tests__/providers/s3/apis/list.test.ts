@@ -89,7 +89,7 @@ describe('list API', () => {
 			},
 		});
 	});
-	describe('Prefix Happy Cases:', () => {
+	describe('Prefix: Happy Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
@@ -274,7 +274,9 @@ describe('list API', () => {
 		});
 	});
 
-	describe('Path Happy Cases:', () => {
+	describe('Path: Happy Cases:', () => {
+		const resolvePath = (path: string | Function) =>
+			typeof path === 'string' ? path : path({ identityId: defaultIdentityId });
 		afterEach(() => {
 			jest.clearAllMocks();
 			mockListObject.mockClear();
@@ -282,20 +284,24 @@ describe('list API', () => {
 		const pathAsFunctionAndStringTests = [
 			{
 				path: `/public/${key}`,
-			},
-			{
-				path: `/private/${defaultIdentityId}/${key}`,
+				expectedPath: `public/${key}`,
 			},
 			{
 				path: ({ identityId }: any) => `/protected/${identityId}/${key}`,
+				expectedPath: ({ identityId }: any) => `protected/${identityId}/${key}`,
 			},
 		];
 
-		pathAsFunctionAndStringTests.forEach(({ path }) => {
+		pathAsFunctionAndStringTests.forEach(({ path, expectedPath }) => {
 			it(`should list objects with pagination, default pageSize, custom path`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
-						Contents: [{ ...listObjectClientBaseResultItem, Key: path }],
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: resolvePath(expectedPath),
+							},
+						],
 						NextContinuationToken: nextToken,
 					};
 				});
@@ -303,25 +309,29 @@ describe('list API', () => {
 				let response = await list({
 					path,
 				});
-				expect(response.items).toEqual([{ ...listResultItem, path: path }]);
+				expect(response.items).toEqual([
+					{ ...listResultItem, path: resolvePath(expectedPath) },
+				]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
 					MaxKeys: 1000,
-					Prefix:
-						typeof path === 'string'
-							? path
-							: path({ identityId: defaultIdentityId }),
+					Prefix: resolvePath(expectedPath),
 				});
 			});
 		});
 
-		pathAsFunctionAndStringTests.forEach(({ path }) => {
+		pathAsFunctionAndStringTests.forEach(({ path, expectedPath }) => {
 			it(`should list objects with pagination using custom pageSize, nextToken and custom path: ${path}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
-						Contents: [{ ...listObjectClientBaseResultItem, Key: path }],
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: resolvePath(expectedPath),
+							},
+						],
 						NextContinuationToken: nextToken,
 					};
 				});
@@ -335,23 +345,20 @@ describe('list API', () => {
 					},
 				});
 				expect(response.items).toEqual([
-					{ ...listResultItem, path: path ?? '' },
+					{ ...listResultItem, path: resolvePath(expectedPath) ?? '' },
 				]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
-					Prefix:
-						typeof path === 'string'
-							? path
-							: path({ identityId: defaultIdentityId }),
+					Prefix: resolvePath(expectedPath),
 					ContinuationToken: nextToken,
 					MaxKeys: customPageSize,
 				});
 			});
 		});
 
-		pathAsFunctionAndStringTests.forEach(({ path }) => {
+		pathAsFunctionAndStringTests.forEach(({ path, expectedPath }) => {
 			it(`should list objects with zero results with custom path: ${path}`, async () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
@@ -366,15 +373,12 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
 					MaxKeys: 1000,
-					Prefix:
-						typeof path === 'string'
-							? path
-							: path({ identityId: defaultIdentityId }),
+					Prefix: resolvePath(expectedPath),
 				});
 			});
 		});
 
-		pathAsFunctionAndStringTests.forEach(({ path }) => {
+		pathAsFunctionAndStringTests.forEach(({ path, expectedPath }) => {
 			it(`should list all objects having three pages with custom path: ${path}`, async () => {
 				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
@@ -385,10 +389,7 @@ describe('list API', () => {
 
 				const listResult = {
 					...listResultItem,
-					path:
-						typeof path === 'string'
-							? path
-							: path({ identityId: defaultIdentityId }),
+					path: resolvePath(expectedPath),
 				};
 				expect(result.items).toEqual([listResult, listResult, listResult]);
 				expect(result).not.toHaveProperty(nextToken);
@@ -402,10 +403,7 @@ describe('list API', () => {
 					listObjectClientConfig,
 					{
 						Bucket: bucket,
-						Prefix:
-							typeof path === 'string'
-								? path
-								: path({ identityId: defaultIdentityId }),
+						Prefix: resolvePath(expectedPath),
 						MaxKeys: 1000,
 						ContinuationToken: undefined,
 					},
@@ -416,10 +414,7 @@ describe('list API', () => {
 					listObjectClientConfig,
 					{
 						Bucket: bucket,
-						Prefix:
-							typeof path === 'string'
-								? path
-								: path({ identityId: defaultIdentityId }),
+						Prefix: resolvePath(expectedPath),
 						MaxKeys: 1000,
 						ContinuationToken: nextToken,
 					},
