@@ -54,7 +54,7 @@ describe('getUrl test with key', () => {
 		});
 	});
 
-	describe('getUrl happy path', () => {
+	describe('Happy cases: With key', () => {
 		const config = {
 			credentials,
 			region,
@@ -109,7 +109,6 @@ describe('getUrl test with key', () => {
 					Bucket: bucket,
 					Key: expectedKey,
 				};
-				expect.assertions(4);
 				const result = await getUrl({
 					key,
 					options: {
@@ -126,7 +125,7 @@ describe('getUrl test with key', () => {
 			});
 		});
 	});
-	describe('getUrl error path', () => {
+	describe('Error cases :  With key', () => {
 		afterAll(() => {
 			jest.clearAllMocks();
 		});
@@ -167,7 +166,7 @@ describe('getUrl test with path', () => {
 		});
 	});
 
-	describe('getUrl happy path', () => {
+	describe('Happy cases: With path', () => {
 		const config = {
 			credentials,
 			region,
@@ -206,7 +205,6 @@ describe('getUrl test with path', () => {
 					Bucket: bucket,
 					Key: expectedKey,
 				};
-				expect.assertions(4);
 				const result = await getUrl({
 					path,
 					options: {
@@ -222,7 +220,7 @@ describe('getUrl test with path', () => {
 			});
 		});
 	});
-	describe('getUrl error path', () => {
+	describe('Error cases :  With path', () => {
 		afterAll(() => {
 			jest.clearAllMocks();
 		});

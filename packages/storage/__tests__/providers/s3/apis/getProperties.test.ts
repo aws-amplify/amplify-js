@@ -52,7 +52,7 @@ describe('getProperties with key', () => {
 			},
 		});
 	});
-	describe('getProperties happy path with key', () => {
+	describe('Happy cases: With key', () => {
 		const expected = {
 			key,
 			size: '100',
@@ -110,7 +110,6 @@ describe('getProperties with key', () => {
 					Bucket: 'bucket',
 					Key: expectedKey,
 				};
-				expect.assertions(3);
 				expect(
 					await getProperties({
 						key,
@@ -123,7 +122,7 @@ describe('getProperties with key', () => {
 		});
 	});
 
-	describe('getProperties error path', () => {
+	describe('Error cases :  With key', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
@@ -156,7 +155,7 @@ describe('getProperties with key', () => {
 	});
 });
 
-describe('getProperties with path', () => {
+describe('Happy cases: With path', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -215,7 +214,6 @@ describe('getProperties with path', () => {
 					Bucket: 'bucket',
 					Key: expectedKey,
 				};
-				expect.assertions(3);
 				expect(
 					await getProperties({
 						path,
@@ -230,7 +228,7 @@ describe('getProperties with path', () => {
 		});
 	});
 
-	describe('getProperties error path with path', () => {
+	describe('Error cases :  With path', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});

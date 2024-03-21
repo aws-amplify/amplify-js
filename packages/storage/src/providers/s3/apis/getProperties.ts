@@ -21,7 +21,7 @@ interface GetProperties {
 	 *
 	 * @param input - The GetPropertiesInput object.
 	 * @returns Requested object properties.
-	 * @throws An S3Exception when the underlying S3 service returned error.
+	 * @throws An `S3Exception` when the underlying S3 service returned error.
 	 * @throws A StorageValidationErrorCode when API call parameters are invalid.
 	 */
 	(input: GetPropertiesInputPath): Promise<GetPropertiesOutputPath>;
@@ -34,7 +34,7 @@ interface GetProperties {
 	 *
 	 * @param input - The GetPropertiesInput object.
 	 * @returns Requested object properties.
-	 * @throws An S3Exception when the underlying S3 service returned error.
+	 * @throws An `S3Exception` when the underlying S3 service returned error.
 	 * @throws A StorageValidationErrorCode when API call parameters are invalid.
 	 */
 	(input: GetPropertiesInputKey): Promise<GetPropertiesOutputKey>;

@@ -25,31 +25,28 @@ export const getUrl = async (
 	input: GetUrlInput,
 ): Promise<GetUrlOutput> => {
 	const { options: getUrlOptions } = input;
-
-	if (getUrlOptions?.validateObjectExistence) {
-		if (input.key) {
-			await getProperties(
-				amplify,
-				{ key: input.key, options: getUrlOptions },
-				StorageAction.GetUrl,
-			);
-		} else if (input.path) {
-			await getProperties(
-				amplify,
-				{ path: input.path, options: getUrlOptions },
-				StorageAction.GetUrl,
-			);
-		}
-	}
-
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify, getUrlOptions);
 	const { inputType, objectKey } = validateStorageOperationInput(
 		input,
 		identityId,
 	);
+
 	const finalKey =
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
+
+	if (getUrlOptions?.validateObjectExistence) {
+		await getProperties(
+			amplify,
+			{
+				options: getUrlOptions,
+				...((inputType === STORAGE_INPUT_KEY
+					? { key: input.key }
+					: { path: input.path }) as GetUrlInput),
+			},
+			StorageAction.GetUrl,
+		);
+	}
 
 	let urlExpirationInSec =
 		getUrlOptions?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;

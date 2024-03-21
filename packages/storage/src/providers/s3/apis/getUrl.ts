@@ -18,7 +18,7 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  *
  * @param input - The GetUrlInput object.
  * @returns Presigned URL and timestamp when the URL MAY expire.
- * @throws service: S3Exception - thrown when checking for existence of the object
+ * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: StorageValidationErrorCode - Validation errors
  * thrown either username or key are not defined.
  *
