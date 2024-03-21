@@ -42,7 +42,7 @@ describe('validateStorageOperationInput', () => {
 		});
 	});
 
-	it('should throw an error when input path does not start with a /', () => {
+	it('should throw an error when input path starts with a /', () => {
 		const input = { path: '/leading-slash-path' };
 		expect(() => validateStorageOperationInput(input)).toThrow(
 			validationErrorMap[
