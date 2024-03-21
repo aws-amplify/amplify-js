@@ -202,11 +202,11 @@ describe('getProperties with path', () => {
 		});
 		[
 			{
-				path: '/path',
+				path: 'path',
 				expectedKey: 'path',
 			},
 			{
-				path: () => '/path',
+				path: () => 'path',
 				expectedKey: 'path',
 			},
 		].forEach(({ path, expectedKey }) => {
@@ -243,7 +243,7 @@ describe('getProperties with path', () => {
 			);
 			expect.assertions(3);
 			try {
-				await getProperties({ path: '/path' });
+				await getProperties({ path: 'path' });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(

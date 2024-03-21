@@ -193,11 +193,11 @@ describe('getUrl test with path', () => {
 		});
 		[
 			{
-				path: '/path',
+				path: 'path',
 				expectedKey: 'path',
 			},
 			{
-				path: () => '/path',
+				path: () => 'path',
 				expectedKey: 'path',
 			},
 		].forEach(({ path, expectedKey }) => {
