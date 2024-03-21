@@ -9,7 +9,7 @@ on:
   push:
     branches:
       # Change this to your branch name where "example-preid" corresponds to the preid you want your changes released on
-      - feat/example-preid-branch/main
+      - gen2-storage
 
 jobs:
   e2e:
@@ -35,4 +35,4 @@ jobs:
     # The preid should be detected from the branch name recommending feat/{PREID}/whatever as branch naming pattern
     #   if your branch doesn't follow this pattern, you can override it here for your branch.
     with:
-      preid: ${{ needs.parse-preid.outputs.preid }}
+      preid: gen2-storage
