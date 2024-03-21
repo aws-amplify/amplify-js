@@ -1580,6 +1580,32 @@ const amplifyConfig = {
 				},
 			},
 		},
+		subscriptions: {
+			onPostLiked: {
+				name: 'onPostLiked',
+				isArray: false,
+				type: {
+					model: 'Post',
+				},
+				isRequired: false,
+			},
+			onPostUpdated: {
+				name: 'onPostUpdated',
+				isArray: false,
+				type: {
+					model: 'Post',
+				},
+				isRequired: false,
+				arguments: {
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+					},
+				},
+			},
+		},
 	},
 };
 export default amplifyConfig;
