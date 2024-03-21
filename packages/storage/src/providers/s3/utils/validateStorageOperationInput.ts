@@ -28,7 +28,7 @@ export const validateStorageOperationInput = (
 
 		return {
 			inputType: STORAGE_INPUT_PATH,
-			objectKey,
+			objectKey: objectKey.slice(1),
 		};
 	} else {
 		return { inputType: STORAGE_INPUT_KEY, objectKey: input.key };
