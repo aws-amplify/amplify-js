@@ -3,7 +3,8 @@ import {
 	SchemaModel,
 } from '@aws-amplify/core/dist/esm/singleton/API/types';
 import { resolveOwnerFields } from '../src/utils/resolveOwnerFields';
-import configFixture from './fixtures/modeled/amplifyconfiguration';
+import { buildAmplifyConfig } from './utils/build-amplify-config';
+import { schema } from './fixtures/modeled/schema';
 
 describe('owner field resolution', () => {
 	const expectedResolutions = {
@@ -17,9 +18,10 @@ describe('owner field resolution', () => {
 	};
 
 	for (const [modelName, expected] of Object.entries(expectedResolutions)) {
-		it(`identifes ${JSON.stringify(expected)} for ${modelName}`, () => {
+		it(`identifes ${JSON.stringify(expected)} for ${modelName}`, async () => {
+			const config = await buildAmplifyConfig(schema);
 			const modelIntroSchema =
-				configFixture.modelIntrospection as ModelIntrospectionSchema;
+				config.modelIntrospection as ModelIntrospectionSchema;
 			const model: SchemaModel = modelIntroSchema.models[modelName];
 
 			const resolvedField = resolveOwnerFields(model);

@@ -10,14 +10,26 @@ import {
 	generateGraphQLDocument,
 } from '../../src/internals/APIClient';
 
-import config from '../fixtures/modeled/amplifyconfiguration';
 import {
 	productSchemaModel,
 	userSchemaModel,
 } from '../fixtures/schema-models/with-custom-primary-key/models';
-const modelIntroSchema = config.modelIntrospection as ModelIntrospectionSchema;
+
+import { buildAmplifyConfig } from '../utils/build-amplify-config';
+import { schema } from '../fixtures/modeled/schema';
 
 describe('APIClient', () => {
+	// This pattern allows to generate config with modelIntrospection schema directly
+	// from the `schema` so we don't have to manually maintain it in lockstep with the
+	// original schema definition. Since the code generation side of this is async,
+	// we need to build the "fixture" using a jest before*() like so:
+	let config = {} as Record<string, any>;
+	let modelIntroSchema = {} as ModelIntrospectionSchema;
+	beforeAll(async () => {
+		config = await buildAmplifyConfig(schema);
+		modelIntroSchema = config.modelIntrospection;
+	});
+
 	describe('normalizeMutationInput', () => {
 		// TODO: test all relationship combinations
 		test('basic 1:M mutation', () => {
@@ -43,7 +55,7 @@ describe('APIClient', () => {
 			const normalized = normalizeMutationInput(
 				note,
 				noteModelDef,
-				modelIntroSchema
+				modelIntroSchema,
 			);
 
 			expect(normalized).toEqual(expectedInput);
@@ -52,6 +64,17 @@ describe('APIClient', () => {
 });
 
 describe('flattenItems', () => {
+	// This pattern allows to generate config with modelIntrospection schema directly
+	// from the `schema` so we don't have to manually maintain it in lockstep with the
+	// original schema definition. Since the code generation side of this is async,
+	// we need to build the "fixture" using a jest before*() like so:
+	let config = {} as Record<string, any>;
+	let modelIntroSchema = {} as ModelIntrospectionSchema;
+	beforeAll(async () => {
+		config = await buildAmplifyConfig(schema);
+		modelIntroSchema = config.modelIntrospection;
+	});
+
 	test('no-op on get without relationships', () => {
 		const getResponse = { getPost: { id: 'myPost' } };
 
@@ -209,7 +232,7 @@ describe('flattenItems', () => {
 					'id',
 					'name',
 					'notes',
-				])
+				]),
 			).toThrow('notes must declare a wildcard (*) or a field of model Note');
 		});
 
@@ -220,7 +243,7 @@ describe('flattenItems', () => {
 					'name',
 					'inexistentField',
 					'notes.*',
-				])
+				]),
 			).toThrow('inexistentField is not a field of model Todo');
 		});
 
@@ -230,7 +253,7 @@ describe('flattenItems', () => {
 					'id',
 					'name',
 					'notes.inexistentField',
-				])
+				]),
 			).toThrow('inexistentField is not a field of model Note');
 		});
 
@@ -373,9 +396,9 @@ describe('flattenItems', () => {
 				customSelectionSetToIR(modelIntroSchema, 'CommunityPost', [
 					'metadata.inexistentField',
 					'poll.question',
-				])
+				]),
 			).toThrow(
-				'inexistentField is not a field of custom type CommunityPostMetadata'
+				'inexistentField is not a field of custom type CommunityPostMetadata',
 			);
 		});
 
@@ -384,9 +407,9 @@ describe('flattenItems', () => {
 				customSelectionSetToIR(modelIntroSchema, 'CommunityPost', [
 					'metadata',
 					'poll.question',
-				])
+				]),
 			).toThrow(
-				'metadata must declare a wildcard (*) or a field of custom type CommunityPostMetadata'
+				'metadata must declare a wildcard (*) or a field of custom type CommunityPostMetadata',
 			);
 		});
 
@@ -524,11 +547,11 @@ describe('generateGraphQLDocument()', () => {
 				const document = generateGraphQLDocument(
 					mockModelDefinitions,
 					modelName,
-					modelOperation
+					modelOperation,
 				);
 
 				expect(document.includes(expectedArgs)).toBe(true);
-			}
+			},
 		);
 	});
 });

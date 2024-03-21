@@ -1,7 +1,6 @@
 import * as raw from '../../src';
 import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
-import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
 import {
 	expectSub,
@@ -11,6 +10,8 @@ import {
 } from '../utils/expects';
 import { Observable, from } from 'rxjs';
 import * as internals from '../../src/internals';
+import { buildAmplifyConfig } from '../utils/build-amplify-config';
+import { schema } from '../fixtures/modeled/schema';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -110,6 +111,15 @@ const USER_AGENT_DETAILS = {
 };
 
 describe('generateClient', () => {
+	// This pattern allows to generate config with modelIntrospection schema directly
+	// from the `schema` so we don't have to manually maintain it in lockstep with the
+	// original schema definition. Since the code generation side of this is async,
+	// we need to build the "fixture" using a jest before*() like so:
+	let configFixture = {} as Record<string, any>;
+	beforeAll(async () => {
+		configFixture = await buildAmplifyConfig(schema);
+	});
+
 	describe('client `models` property', () => {
 		const expectedModelsProperties = [
 			'Todo',

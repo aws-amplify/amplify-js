@@ -1,9 +1,10 @@
 import * as raw from '../../../src';
 import { Amplify, AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import { generateClientWithAmplifyInstance } from '../../../src/internals/server';
-import configFixture from '../../fixtures/modeled/amplifyconfiguration';
-import { Schema } from '../../fixtures/modeled/schema';
 import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../../src/types';
+import { Schema } from '../../fixtures/modeled/schema';
+import { buildAmplifyConfig } from '../../utils/build-amplify-config';
+import { schema } from '../../fixtures/modeled/schema';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -86,6 +87,15 @@ function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
 }
 
 describe('server generateClient', () => {
+	// This pattern allows to generate config with modelIntrospection schema directly
+	// from the `schema` so we don't have to manually maintain it in lockstep with the
+	// original schema definition. Since the code generation side of this is async,
+	// we need to build the "fixture" using a jest before*() like so:
+	let configFixture = {} as Record<string, any>;
+	beforeAll(async () => {
+		configFixture = await buildAmplifyConfig(schema);
+	});
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});

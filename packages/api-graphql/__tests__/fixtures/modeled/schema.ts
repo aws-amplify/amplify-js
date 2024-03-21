@@ -1,6 +1,6 @@
 import { type ClientSchema, a } from '@aws-amplify/data-schema';
 
-const schema = a.schema({
+export const schema = a.schema({
 	Todo: a
 		.model({
 			name: a.string(),
