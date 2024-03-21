@@ -21,11 +21,10 @@ export const validateStorageOperationInput = (
 		const { path } = input;
 		const objectKey = typeof path === 'string' ? path : path({ identityId });
 
-		// TODO: update this when the list PR is merged in.
-		// assertValidationError(
-		// 	objectKey.startsWith('/'),
-		// 	StorageValidationErrorCode.InvalidStoragePathInput,
-		// );
+		assertValidationError(
+			objectKey.startsWith('/'),
+			StorageValidationErrorCode.InvalidStoragePathInput,
+		);
 
 		return {
 			inputType: STORAGE_INPUT_PATH,

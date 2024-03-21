@@ -24,7 +24,8 @@ interface RemoveApi {
 	 */
 	(input: RemoveInputPath): Promise<RemoveOutputPath>;
 	/**
-	 * @deprecated The `key` parameter is deprecated and may be removed in the next major version.
+	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
+	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/remove | path} instead.
 	 *
 	 * Remove a file from your S3 bucket.
 	 * @param input - The `RemoveInputKey` object.

@@ -54,7 +54,7 @@ describe('remove API', () => {
 			},
 		});
 	});
-	describe('Key: Happy Path Cases:', () => {
+	describe('Key: Happy Cases:', () => {
 		beforeEach(() => {
 			mockDeleteObject.mockImplementation(() => {
 				return {
@@ -98,7 +98,9 @@ describe('remove API', () => {
 		});
 	});
 
-	describe('Path: Happy Path Cases:', () => {
+	describe('Path: Happy Cases:', () => {
+		const resolvePath = (path: string | Function) =>
+			typeof path === 'string' ? path : path({ identityId: defaultIdentityId });
 		beforeEach(() => {
 			mockDeleteObject.mockImplementation(() => {
 				return {
@@ -111,20 +113,14 @@ describe('remove API', () => {
 		});
 		[
 			{
-				path: `public/${key}`,
+				path: `/public/${key}`,
 			},
 			{
-				path: `private/${defaultIdentityId}/${key}`,
-			},
-			{
-				path: ({ identityId }: any) => `protected/${identityId}/${key}`,
+				path: ({ identityId }: any) => `/protected/${identityId}/${key}`,
 			},
 		].forEach(({ path }) => {
 			const removeResultPath = {
-				path:
-					typeof path === 'string'
-						? path
-						: path({ identityId: defaultIdentityId }),
+				path: resolvePath(path),
 			};
 
 			it(`should remove object for the given path`, async () => {
@@ -133,10 +129,7 @@ describe('remove API', () => {
 				expect(deleteObject).toHaveBeenCalledTimes(1);
 				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 					Bucket: bucket,
-					Key:
-						typeof path === 'string'
-							? path
-							: path({ identityId: defaultIdentityId }),
+					Key: resolvePath(path),
 				});
 			});
 		});
