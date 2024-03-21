@@ -83,9 +83,9 @@ const schema = a.schema({
 			viewCount: a.integer(),
 			status: a.enum(['draft', 'pending', 'published']),
 		})
-		.secondaryIndexes([
-			a.index('title'),
-			a.index('description').sortKeys(['viewCount']),
+		.secondaryIndexes(index => [
+			index('title'),
+			index('description').sortKeys(['viewCount']),
 		]),
 	Product: a
 		.model({

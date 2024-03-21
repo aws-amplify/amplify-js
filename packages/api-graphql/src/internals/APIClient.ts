@@ -19,7 +19,6 @@ import {
 	ListArgs,
 	QueryArgs,
 	V6Client,
-	V6ClientSSRRequest,
 	__authMode,
 	__authToken,
 	__headers,
@@ -138,9 +137,7 @@ export function initializeModel(
 							options?: LazyLoadOptions,
 						) => {
 							if (record[targetNames[0]]) {
-								return (
-									client as V6ClientSSRRequest<Record<string, any>>
-								).models[relatedModelName].get(
+								return (client as any).models[relatedModelName].get(
 									contextSpec,
 									{
 										[relatedModelPKFieldName]: record[targetNames[0]],
@@ -160,9 +157,7 @@ export function initializeModel(
 							options?: LazyLoadOptions,
 						) => {
 							if (record[targetNames[0]]) {
-								return (client as V6Client<Record<string, any>>).models[
-									relatedModelName
-								].get(
+								return (client as any).models[relatedModelName].get(
 									{
 										[relatedModelPKFieldName]: record[targetNames[0]],
 										...sortKeyValues,
@@ -213,15 +208,16 @@ export function initializeModel(
 								options?: LazyLoadOptions,
 							) => {
 								if (record[parentPk]) {
-									return (
-										client as V6ClientSSRRequest<Record<string, any>>
-									).models[relatedModelName].list(contextSpec, {
-										filter: { and: hasManyFilter },
-										limit: options?.limit,
-										nextToken: options?.nextToken,
-										authMode: options?.authMode || authMode,
-										authToken: options?.authToken || authToken,
-									});
+									return (client as any).models[relatedModelName].list(
+										contextSpec,
+										{
+											filter: { and: hasManyFilter },
+											limit: options?.limit,
+											nextToken: options?.nextToken,
+											authMode: options?.authMode || authMode,
+											authToken: options?.authToken || authToken,
+										},
+									);
 								}
 
 								return [];
@@ -231,9 +227,7 @@ export function initializeModel(
 								options?: LazyLoadOptions,
 							) => {
 								if (record[parentPk]) {
-									return (client as V6Client<Record<string, any>>).models[
-										relatedModelName
-									].list({
+									return (client as any).models[relatedModelName].list({
 										filter: { and: hasManyFilter },
 										limit: options?.limit,
 										nextToken: options?.nextToken,
@@ -265,15 +259,16 @@ export function initializeModel(
 							options?: LazyLoadOptions,
 						) => {
 							if (record[parentPk]) {
-								return (
-									client as V6ClientSSRRequest<Record<string, any>>
-								).models[relatedModelName].list(contextSpec, {
-									filter: { and: hasManyFilter },
-									limit: options?.limit,
-									nextToken: options?.nextToken,
-									authMode: options?.authMode || authMode,
-									authToken: options?.authToken || authToken,
-								});
+								return (client as any).models[relatedModelName].list(
+									contextSpec,
+									{
+										filter: { and: hasManyFilter },
+										limit: options?.limit,
+										nextToken: options?.nextToken,
+										authMode: options?.authMode || authMode,
+										authToken: options?.authToken || authToken,
+									},
+								);
 							}
 
 							return [];
@@ -283,9 +278,7 @@ export function initializeModel(
 							options?: LazyLoadOptions,
 						) => {
 							if (record[parentPk]) {
-								return (client as V6Client<Record<string, any>>).models[
-									relatedModelName
-								].list({
+								return (client as any).models[relatedModelName].list({
 									filter: { and: hasManyFilter },
 									limit: options?.limit,
 									nextToken: options?.nextToken,
