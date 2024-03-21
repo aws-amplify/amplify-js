@@ -62,14 +62,12 @@ export type StorageGetUrlInput<Options extends StorageOptions> =
 /** @deprecated Use {@link StorageUploadDataInputPath} instead. */
 export type StorageUploadDataInputKey<Options extends StorageOptions> =
 	StorageOperationInputKey &
-		StorageOperationOptionsInput<Options> & {
-			data: StorageUploadDataPayload;
-		};
+		StorageOperationOptionsInput<Options> &
+		StorageUploadDataInputPayload;
 
 export type StorageUploadDataInputPath<Options> = StorageOperationInputPath &
-	StorageOperationOptionsInput<Options> & {
-		data: StorageUploadDataPayload;
-	};
+	StorageOperationOptionsInput<Options> &
+	StorageUploadDataInputPayload;
 
 export interface StorageCopyInput<
 	SourceOptions extends StorageOptions,
@@ -87,3 +85,7 @@ export type StorageUploadDataPayload =
 	| ArrayBufferView
 	| ArrayBuffer
 	| string;
+
+export interface StorageUploadDataInputPayload {
+	data: StorageUploadDataPayload;
+}

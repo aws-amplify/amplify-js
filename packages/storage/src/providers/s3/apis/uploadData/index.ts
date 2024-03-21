@@ -20,18 +20,20 @@ import { getMultipartUploadHandlers } from './multipart';
 
 interface UploadData {
 	/**
-	 * Upload data to specified S3 object path. By default, it uses single PUT operation to upload if the data is less than 5MB.
-	 * Otherwise, it uses multipart upload to upload the data. If the data length is unknown, it uses multipart upload.
+	 * Upload data to the specified S3 object path. By default uses single PUT operation to upload if the payload is less than 5MB.
+	 * Otherwise, uses multipart upload to upload the payload. If the payload length cannot be determined, uses multipart upload.
 	 *
 	 * Limitations:
 	 * * Maximum object size is 5TB.
 	 * * Maximum object size if the size cannot be determined before upload is 50GB.
 	 *
-	 * @param input - A UploadDataInputPath object.
-	 * @returns A cancelable and resumable task exposing result promise from `result`
-	 * 	property.
 	 * @throws Service: `S3Exception` thrown when checking for existence of the object.
 	 * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
+	 *
+	 * @param input - A `UploadDataInputPath` object.
+	 *
+	 * @returns A cancelable and resumable task exposing result promise from `result`
+	 * 	property.
 	 *
 	 * @example
 	 * ```ts
@@ -71,8 +73,8 @@ interface UploadData {
 	(input: UploadDataInputPath): UploadDataOutputPath;
 
 	/**
-	 * Upload data to specified S3 object key. By default, it uses single PUT operation to upload if the data is less than 5MB.
-	 * Otherwise, it uses multipart upload to upload the data. If the data length is unknown, it uses multipart upload.
+	 * Upload data to the specified S3 object key. By default uses single PUT operation to upload if the payload is less than 5MB.
+	 * Otherwise, uses multipart upload to upload the payload. If the payload length cannot be determined, uses multipart upload.
 	 *
 	 * Limitations:
 	 * * Maximum object size is 5TB.
@@ -81,11 +83,12 @@ interface UploadData {
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and will be removed in next major version.
 	 * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/upload/#uploaddata | path} instead.
 	 *
-	 * @param input - A UploadDataInputKey object.
-	 * @returns A cancelable and resumable task exposing result promise from `result`
-	 * 	property.
 	 * @throws Service: `S3Exception` thrown when checking for existence of the object.
 	 * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
+	 *
+	 * @param input - A UploadDataInputKey object.
+	 *
+	 * @returns A cancelable and resumable task exposing result promise from the `result` property.
 	 *
 	 * @example
 	 * ```ts

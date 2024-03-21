@@ -216,7 +216,7 @@ export const getMultipartUploadHandlers = (
 
 		return inputType === STORAGE_INPUT_KEY
 			? { key: objectKey, ...result }
-			: { path: finalKey, ...result };
+			: { path: objectKey, ...result };
 	};
 
 	const startUploadWithResumability = () =>
