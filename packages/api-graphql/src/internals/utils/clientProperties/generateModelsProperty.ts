@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ModelTypes } from '@aws-amplify/data-schema-types';
-import { graphQLOperationsInfo, ModelOperation } from '../../APIClient';
-import { V6Client, __authMode, __authToken } from '../../../types';
+import {
+	GraphQLProviderConfig,
+	ModelIntrospectionSchema,
+} from '@aws-amplify/core/internals/utils';
+
+import { ModelOperation, graphQLOperationsInfo } from '../../APIClient';
+import { V6Client } from '../../../types';
 import { listFactory } from '../../operations/list';
 import { indexQueryFactory } from '../../operations/indexQuery';
 import { getFactory } from '../../operations/get';
 import { subscriptionFactory } from '../../operations/subscription';
 import { observeQueryFactory } from '../../operations/observeQuery';
-import {
-	ModelIntrospectionSchema,
-	GraphQLProviderConfig,
-} from '@aws-amplify/core/internals/utils';
 import { getSecondaryIndexesFromSchemaModel } from '../../clientUtils';
 
 export function generateModelsProperty<T extends Record<any, any> = never>(

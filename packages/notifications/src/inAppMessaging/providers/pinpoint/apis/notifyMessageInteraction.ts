@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { notifyEventListeners } from '../../../../eventListeners';
+import { InAppMessagingValidationErrorCode } from '../../../errors';
 import { assertIsInitialized } from '../../../utils';
 import { NotifyMessageInteractionInput } from '../types/inputs';
 

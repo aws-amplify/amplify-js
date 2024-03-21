@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetchAuthSession } from '@aws-amplify/core';
+
 import {
-	assert,
 	PushNotificationValidationErrorCode,
+	assert,
 } from '../errors/errorHelpers';
 
 /**
@@ -13,5 +14,6 @@ import {
 export const resolveCredentials = async () => {
 	const { credentials, identityId } = await fetchAuthSession();
 	assert(!!credentials, PushNotificationValidationErrorCode.NoCredentials);
+
 	return { credentials, identityId };
 };

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6, ConsoleLogger } from '@aws-amplify/core';
+
 import { APIValidationErrorCode, assertValidationError } from './errors';
 
 const logger = new ConsoleLogger('GraphQLAPI resolveConfig');

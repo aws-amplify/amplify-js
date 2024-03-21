@@ -3,6 +3,7 @@
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
 import { getOperatingSystem } from '@aws-amplify/react-native';
+
 import { ChannelType } from '../types';
 
 const operatingSystem = getOperatingSystem();
