@@ -176,9 +176,7 @@ describe('BackgroundProcessManager', () => {
 		expect(manager.isClosing).toBe(false);
 		expect(manager.isClosed).toBe(false);
 
-		let unblock: () => void = () => {
-			// no op
-		};
+		let unblock: () => void = () => undefined;
 		manager.add(
 			async () =>
 				new Promise<void>(resolve => {
