@@ -23,6 +23,8 @@ import {
 	DeviceMetadata,
 	TokenRefresher,
 } from './types';
+import { oAuthStore } from '../utils/oauth';
+import { addInflightPromise } from '../utils/oauth/inflightPromise';
 
 export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
@@ -30,6 +32,14 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	tokenRefresher?: TokenRefresher;
 	waitForInflightOAuth: () => Promise<void> = async () => {
 		// no-op
+		if (!(await oAuthStore.loadOAuthInFlight())) {
+			return;
+		}
+		
+		return new Promise<void>((resolve, _reject) => {
+			addInflightPromise(resolve);
+		});
+
 	};
 
 	setAuthConfig(authConfig: AuthConfig) {
@@ -83,6 +93,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			// Token provider not configured
 			return null;
 		}
+
 		await this.waitForInflightOAuth();
 		tokens = await this.getTokenStore().loadTokens();
 		const username = await this.getTokenStore().getLastAuthUser();
