@@ -63,6 +63,6 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 		message: 'Missing path or key parameter in Input.',
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
-		message: 'Input `path` is missing a leading slash (/).',
+		message: 'Input `path` does not allow a leading slash (/).',
 	},
 };
