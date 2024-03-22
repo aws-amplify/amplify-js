@@ -18,9 +18,10 @@ interface RemoveApi {
 	/**
 	 * Remove a file from your S3 bucket.
 	 * @param input - The `RemoveInputPath` object.
-	 * @return Output containing the removed object path
-	 * @throws service: `S3Exception` - S3 service errors thrown while getting properties
+	 * @return Output containing the removed object path.
+	 * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
+	 * when there is no path or path is empty or path has a leading slash.
 	 */
 	(input: RemoveInputPath): Promise<RemoveOutputPath>;
 	/**
@@ -30,8 +31,9 @@ interface RemoveApi {
 	 * Remove a file from your S3 bucket.
 	 * @param input - The `RemoveInputKey` object.
 	 * @return Output containing the removed object key
-	 * @throws service: `S3Exception` - S3 service errors thrown while getting properties
+	 * @throws service: `S3Exception` - S3 service errors thrown while while removing the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
+	 * when there is no key or its empty.
 	 */
 	(input: RemoveInputKey): Promise<RemoveOutputKey>;
 }

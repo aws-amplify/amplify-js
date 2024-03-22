@@ -113,16 +113,14 @@ describe('remove API', () => {
 		});
 		[
 			{
-				path: `/public/${key}`,
-				expectedPath: `public/${key}`,
+				path: `public/${key}`,
 			},
 			{
-				path: ({ identityId }: any) => `/protected/${identityId}/${key}`,
-				expectedPath: ({ identityId }: any) => `protected/${identityId}/${key}`,
+				path: ({ identityId }: any) => `protected/${identityId}/${key}`,
 			},
-		].forEach(({ path, expectedPath }) => {
+		].forEach(({ path }) => {
 			const removeResultPath = {
-				path: resolvePath(expectedPath),
+				path: resolvePath(path),
 			};
 
 			it(`should remove object for the given path`, async () => {
@@ -131,7 +129,7 @@ describe('remove API', () => {
 				expect(deleteObject).toHaveBeenCalledTimes(1);
 				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 					Bucket: bucket,
-					Key: resolvePath(expectedPath),
+					Key: resolvePath(path),
 				});
 			});
 		});

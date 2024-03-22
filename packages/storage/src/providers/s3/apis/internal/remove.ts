@@ -26,9 +26,16 @@ export const remove = async (
 		input,
 		identityId,
 	);
-	const finalKey =
-		inputType === STORAGE_INPUT_KEY ? `${keyPrefix}${objectKey}` : objectKey;
-	logger.debug(`removing object in path "${finalKey}"`);
+
+	let finalKey;
+	if (inputType === STORAGE_INPUT_KEY) {
+		finalKey = `${keyPrefix}${objectKey}`;
+		logger.debug(`remove "${objectKey}" from "${finalKey}".`);
+	} else {
+		finalKey = objectKey;
+		logger.debug(`removing object in path "${finalKey}"`);
+	}
+
 	await deleteObject(
 		{
 			...s3Config,
@@ -40,11 +47,7 @@ export const remove = async (
 		},
 	);
 
-	return inputType === STORAGE_INPUT_KEY
-		? {
-				key: objectKey,
-			}
-		: {
-				path: finalKey,
-			};
+	return {
+		key: objectKey,
+	};
 };

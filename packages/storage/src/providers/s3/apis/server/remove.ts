@@ -19,9 +19,11 @@ interface RemoveApi {
 	/**
 	 * Remove a file from your S3 bucket.
 	 * @param input - The `RemoveInputPath` object.
-	 * @return Output containing the removed object path
-	 * @throws service: `S3Exception` - S3 service errors thrown while getting properties
+	 * @param contextSpec - The context spec used to get the Amplify server context.
+	 * @return Output containing the removed object path.
+	 * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
+	 * when there is no path or path is empty or path has a leading slash.
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
@@ -33,9 +35,11 @@ interface RemoveApi {
 	 *
 	 * Remove a file from your S3 bucket.
 	 * @param input - The `RemoveInputKey` object.
+	 * @param contextSpec - The context spec used to get the Amplify server context.
 	 * @return Output containing the removed object key
-	 * @throws service: `S3Exception` - S3 service errors thrown while getting properties
+	 * @throws service: `S3Exception` - S3 service errors thrown while while removing the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
+	 * when there is no key or its empty.
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
