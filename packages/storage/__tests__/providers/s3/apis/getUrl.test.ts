@@ -234,7 +234,7 @@ describe('getUrl test with path', () => {
 			expect.assertions(2);
 			try {
 				await getUrl({
-					path: '/invalid_key',
+					path: 'invalid_key',
 					options: { validateObjectExistence: true },
 				});
 			} catch (error: any) {
