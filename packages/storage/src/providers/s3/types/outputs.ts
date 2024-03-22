@@ -61,6 +61,7 @@ export type GetUrlOutput = StorageGetUrlOutput;
  */
 export type UploadDataOutput = UploadTask<ItemKey>;
 
+/** @deprecated Use {@link GetPropertiesOutputPath} instead. */
 export type GetPropertiesOutputKey = ItemKey;
 export type GetPropertiesOutputPath = ItemPath;
 
