@@ -80,7 +80,7 @@ describe('getProperties with key', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		[
+		test.each([
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -100,12 +100,9 @@ describe('getProperties with key', () => {
 				options: { accessLevel: 'protected', targetIdentityId },
 				expectedKey: `protected/${targetIdentityId}/${key}`,
 			},
-		].forEach(({ options, expectedKey }) => {
-			const accessLevelMsg = options?.accessLevel ?? 'default';
-			const targetIdentityIdMsg = options?.targetIdentityId
-				? `and targetIdentityId`
-				: '';
-			it(`should getProperties with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+		])(
+			'should getProperties with key $expectedKey',
+			async ({ options, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,
@@ -118,8 +115,8 @@ describe('getProperties with key', () => {
 				).toEqual(expected);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-			});
-		});
+			},
+		);
 	});
 
 	describe('Error cases :  With key', () => {
@@ -199,7 +196,7 @@ describe('Happy cases: With path', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		[
+		test.each([
 			{
 				path: 'path',
 				expectedKey: 'path',
@@ -208,8 +205,9 @@ describe('Happy cases: With path', () => {
 				path: () => 'path',
 				expectedKey: 'path',
 			},
-		].forEach(({ path, expectedKey }) => {
-			it(`should getProperties with path ${path} and expectedKey ${expectedKey}`, async () => {
+		])(
+			'should getProperties with path $path and expectedKey $expectedKey',
+			async ({ path, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,
@@ -224,8 +222,8 @@ describe('Happy cases: With path', () => {
 				).toEqual(expected);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-			});
-		});
+			},
+		);
 	});
 
 	describe('Error cases :  With path', () => {

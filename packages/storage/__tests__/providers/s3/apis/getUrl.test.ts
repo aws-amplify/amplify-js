@@ -79,7 +79,7 @@ describe('getUrl test with key', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		[
+		test.each([
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -99,12 +99,9 @@ describe('getUrl test with key', () => {
 				options: { accessLevel: 'protected', targetIdentityId },
 				expectedKey: `protected/${targetIdentityId}/${key}`,
 			},
-		].forEach(({ options, expectedKey }) => {
-			const accessLevelMsg = options?.accessLevel ?? 'default';
-			const targetIdentityIdMsg = options?.targetIdentityId
-				? `and targetIdentityId`
-				: '';
-			it(`should getUrl with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+		])(
+			'should getUrl with key $expectedKey',
+			async ({ options, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: bucket,
 					Key: expectedKey,
@@ -122,8 +119,8 @@ describe('getUrl test with key', () => {
 				expect(result.url).toEqual({
 					url: new URL('https://google.com'),
 				});
-			});
-		});
+			},
+		);
 	});
 	describe('Error cases :  With key', () => {
 		afterAll(() => {
@@ -190,7 +187,8 @@ describe('getUrl test with path', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		[
+
+		test.each([
 			{
 				path: 'path',
 				expectedKey: 'path',
@@ -199,8 +197,9 @@ describe('getUrl test with path', () => {
 				path: () => 'path',
 				expectedKey: 'path',
 			},
-		].forEach(({ path, expectedKey }) => {
-			it(`should getUrl with path ${path} and expectedKey ${expectedKey}`, async () => {
+		])(
+			'should getUrl with path $path and expectedKey $expectedKey',
+			async ({ path, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: bucket,
 					Key: expectedKey,
@@ -217,8 +216,8 @@ describe('getUrl test with path', () => {
 				expect(result.url).toEqual({
 					url: new URL('https://google.com'),
 				});
-			});
-		});
+			},
+		);
 	});
 	describe('Error cases :  With path', () => {
 		afterAll(() => {
