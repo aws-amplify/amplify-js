@@ -18,6 +18,7 @@ interface Copy {
 	/**
 	 * Copy an object from a source to a destination object within the same bucket.
 	 *
+	 * @param contextSpec - The  isolated server context.
 	 * @param input - The CopyInputPath object.
 	 * @returns Output containing the destination object path.
 	 * @throws service: `S3Exception` - Thrown when checking for existence of the object
@@ -32,6 +33,7 @@ interface Copy {
 	 * Copy an object from a source to a destination object within the same bucket. Can optionally copy files across
 	 * different accessLevel or identityId (if source object's accessLevel is 'protected').
 	 *
+	 * @param contextSpec - The  isolated server context.
 	 * @param input - The CopyInputKey object.
 	 * @returns Output containing the destination object key.
 	 * @throws service: `S3Exception` - Thrown when checking for existence of the object
