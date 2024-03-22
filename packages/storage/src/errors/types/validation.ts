@@ -60,7 +60,8 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 			'Upload source type can only be a `Blob`, `File`, `ArrayBuffer`, or `string`.',
 	},
 	[StorageValidationErrorCode.InvalidStorageOperationInput]: {
-		message: 'Missing path or key parameter in Input.',
+		message:
+			'Missing path or key parameter in Input. Key and path can not be specified at the same time.',
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
 		message: 'Input `path` does not allow a leading slash (/).',

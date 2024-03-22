@@ -12,8 +12,15 @@ export const validateStorageOperationInput = (
 	input: Input,
 	identityId?: string,
 ) => {
+	// Validate key or path present
 	assertValidationError(
 		!!(input as Input).key || !!(input as Input).path,
+		StorageValidationErrorCode.InvalidStorageOperationInput,
+	);
+
+	// Validate key & path not present at the same time
+	assertValidationError(
+		(input as Input).key === undefined || (input as Input).path === undefined,
 		StorageValidationErrorCode.InvalidStorageOperationInput,
 	);
 
