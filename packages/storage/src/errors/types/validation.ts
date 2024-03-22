@@ -61,7 +61,7 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.InvalidStorageOperationInput]: {
 		message:
-			'Missing path or key parameter in Input. Key and path can not be specified at the same time.',
+			'Path or key parameter must be specified in the input. Both can not be specified at the same time.',
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
 		message: 'Input `path` does not allow a leading slash (/).',
