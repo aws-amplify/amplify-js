@@ -54,7 +54,7 @@ export const loadOrCreateMultipartUpload = async ({
 	metadata,
 	abortSignal,
 }: LoadOrCreateMultipartUploadOptions): Promise<LoadOrCreateMultipartUploadResult> => {
-	const finalKey = keyPrefix + key;
+	const finalKey = keyPrefix !== undefined ? keyPrefix + key : key;
 
 	let cachedUpload:
 		| {
@@ -75,6 +75,7 @@ export const loadOrCreateMultipartUpload = async ({
 			accessLevel,
 			key,
 		});
+
 		const cachedUploadParts = await findCachedUploadParts({
 			s3Config,
 			cacheKey: uploadCacheKey,

@@ -116,6 +116,7 @@ export const getUploadsCacheKey = ({
 	const resolvedContentType =
 		contentType ?? file?.type ?? 'application/octet-stream';
 
+	// If no access level is defined, we're using custom gen2 access rules
 	if (accessLevel === undefined) {
 		levelStr = 'custom';
 	} else {

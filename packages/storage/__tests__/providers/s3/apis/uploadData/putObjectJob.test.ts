@@ -171,7 +171,7 @@ describe('putObjectJob with path', () => {
 			);
 			const result = await job();
 			expect(result).toEqual({
-				expectedKey,
+				path: expectedKey,
 				eTag: 'eTag',
 				versionId: 'versionId',
 				contentType: 'contentType',
