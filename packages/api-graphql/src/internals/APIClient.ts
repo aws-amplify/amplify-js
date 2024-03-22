@@ -33,7 +33,6 @@ interface LazyLoadOptions {
 	authToken?: string | undefined;
 	limit?: number | undefined;
 	nextToken?: string | undefined | null;
-	// sortDirection?: 'ASC' | 'DESC' | undefined;
 	headers?: CustomHeaders | undefined;
 }
 
@@ -218,7 +217,6 @@ export function initializeModel(
 										client as V6ClientSSRRequest<Record<string, any>>
 									).models[relatedModelName].list(contextSpec, {
 										filter: { and: hasManyFilter },
-										// sortDirection: options?.sortDirection,
 										limit: options?.limit,
 										nextToken: options?.nextToken,
 										authMode: options?.authMode || authMode,
@@ -237,7 +235,6 @@ export function initializeModel(
 										relatedModelName
 									].list({
 										filter: { and: hasManyFilter },
-										// sortDirection: options?.sortDirection,
 										limit: options?.limit,
 										nextToken: options?.nextToken,
 										authMode: options?.authMode || authMode,
@@ -272,7 +269,6 @@ export function initializeModel(
 									client as V6ClientSSRRequest<Record<string, any>>
 								).models[relatedModelName].list(contextSpec, {
 									filter: { and: hasManyFilter },
-									// sortDirection: options?.sortDirection,
 									limit: options?.limit,
 									nextToken: options?.nextToken,
 									authMode: options?.authMode || authMode,
@@ -291,7 +287,6 @@ export function initializeModel(
 									relatedModelName
 								].list({
 									filter: { and: hasManyFilter },
-									// sortDirection: options?.sortDirection,
 									limit: options?.limit,
 									nextToken: options?.nextToken,
 									authMode: options?.authMode || authMode,
