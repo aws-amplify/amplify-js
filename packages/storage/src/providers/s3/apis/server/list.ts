@@ -26,6 +26,7 @@ interface ListApi {
 	 * List files in pages with the given `path`.
 	 * `pageSize` is defaulted to 1000. Additionally, the result will include a `nextToken` if there are more items to retrieve.
 	 * @param input - The `ListPaginateInputPath` object.
+	 * @param contextSpec - The context spec used to get the Amplify server context.
 	 * @returns A list of objects with path and metadata
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
@@ -37,6 +38,7 @@ interface ListApi {
 	/**
 	 * List all files from S3 for a given `path`. You can set `listAll` to true in `options` to get all the files from S3.
 	 * @param input - The `ListAllInputPath` object.
+	 * @param contextSpec - The context spec used to get the Amplify server context.
 	 * @returns A list of all objects with path and metadata
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
