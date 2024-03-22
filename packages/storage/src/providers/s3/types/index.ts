@@ -11,8 +11,8 @@ export {
 	RemoveOptions,
 	DownloadDataOptionsPath,
 	DownloadDataOptionsKey,
-	CopyDestinationOptions,
-	CopySourceOptions,
+	CopyDestinationOptionsKey,
+	CopySourceOptionsKey,
 } from './options';
 export {
 	DownloadDataOutput,
@@ -27,10 +27,14 @@ export {
 	ListPaginateOutput,
 	GetPropertiesOutput,
 	CopyOutput,
+	CopyOutputKey,
+	CopyOutputPath,
 	RemoveOutput,
 } from './outputs';
 export {
 	CopyInput,
+	CopyInputKey,
+	CopyInputPath,
 	GetPropertiesInput,
 	GetUrlInput,
 	ListAllInput,
