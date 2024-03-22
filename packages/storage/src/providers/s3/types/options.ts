@@ -20,8 +20,16 @@ interface CommonOptions {
 
 /** @deprecated This may be removed in the next major version. */
 type ReadOptions =
-	| { accessLevel?: 'guest' | 'private' }
-	| { accessLevel: 'protected'; targetIdentityId?: string };
+	| {
+			/** @deprecated This may be removed in the next major version. */
+			accessLevel?: 'guest' | 'private';
+	  }
+	| {
+			/** @deprecated This may be removed in the next major version. */
+			accessLevel: 'protected';
+			/** @deprecated This may be removed in the next major version. */
+			targetIdentityId?: string;
+	  };
 
 /** @deprecated This may be removed in the next major version. */
 interface WriteOptions {
@@ -138,11 +146,15 @@ export type UploadDataOptions = WriteOptions &
 		metadata?: Record<string, string>;
 	};
 
-export type CopySourceOptions = ReadOptions & {
+/** @deprecated This may be removed in the next major version. */
+export type CopySourceOptionsKey = ReadOptions & {
+	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };
 
-export type CopyDestinationOptions = WriteOptions & {
+/** @deprecated This may be removed in the next major version. */
+export type CopyDestinationOptionsKey = WriteOptions & {
+	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };
 
