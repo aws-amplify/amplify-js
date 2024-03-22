@@ -25,6 +25,8 @@ jest.mock('@aws-amplify/core', () => ({
 		},
 	},
 }));
+
+const testPath = 'testPath/object';
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -51,9 +53,8 @@ mockPutObject.mockResolvedValue({
 	VersionId: 'versionId',
 });
 
-// TODO[AllanZhengYP]: add more unit tests to cover different access level combination.
-// TODO[AllanZhengYP]: add more unit tests to cover validations errors and service errors.
-describe('putObjectJob', () => {
+/* TODO Remove suite when `key` parameter is removed */
+describe('putObjectJob with key', () => {
 	it('should supply the correct parameters to putObject API handler', async () => {
 		const abortController = new AbortController();
 		const key = 'key';
@@ -122,6 +123,95 @@ describe('putObjectJob', () => {
 		const job = putObjectJob(
 			{
 				key: 'key',
+				data: 'data',
+			},
+			new AbortController().signal,
+		);
+		await job();
+		expect(calculateContentMd5).toHaveBeenCalledWith('data');
+	});
+});
+
+describe('putObjectJob with path', () => {
+	test.each([
+		{
+			path: testPath,
+			expectedKey: testPath,
+		},
+		{
+			path: () => testPath,
+			expectedKey: testPath,
+		},
+	])(
+		'should supply the correct parameters to putObject API handler when path is $path', 
+		async ({ path, expectedKey }) => {
+			const abortController = new AbortController();
+			const data = 'data';
+			const contentType = 'contentType';
+			const contentDisposition = 'contentDisposition';
+			const contentEncoding = 'contentEncoding';
+			const metadata = { key: 'value' };
+			const onProgress = jest.fn();
+			const useAccelerateEndpoint = true;
+
+			const job = putObjectJob(
+				{
+					path,
+					data,
+					options: {
+						contentDisposition,
+						contentEncoding,
+						contentType,
+						metadata,
+						onProgress,
+						useAccelerateEndpoint,
+					},
+				},
+				abortController.signal,
+			);
+			const result = await job();
+			expect(result).toEqual({
+				expectedKey,
+				eTag: 'eTag',
+				versionId: 'versionId',
+				contentType: 'contentType',
+				metadata: { key: 'value' },
+				size: undefined,
+			});
+			expect(mockPutObject).toHaveBeenCalledWith(
+				{
+					credentials,
+					region: 'region',
+					abortSignal: abortController.signal,
+					onUploadProgress: expect.any(Function),
+					useAccelerateEndpoint: true,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: 'bucket',
+					Key: expectedKey,
+					Body: data,
+					ContentType: contentType,
+					ContentDisposition: contentDisposition,
+					ContentEncoding: contentEncoding,
+					Metadata: metadata,
+					ContentMD5: undefined,
+				},
+			);
+		}
+	);
+
+	it('should set ContentMD5 if object lock is enabled', async () => {
+		Amplify.libraryOptions = {
+			Storage: {
+				S3: {
+					isObjectLockEnabled: true,
+				},
+			},
+		};
+		const job = putObjectJob(
+			{
+				path: testPath,
 				data: 'data',
 			},
 			new AbortController().signal,
