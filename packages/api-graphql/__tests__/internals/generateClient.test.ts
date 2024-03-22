@@ -4,7 +4,6 @@ import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
 import { Observable, from } from 'rxjs';
-import * as internals from '../../src/internals';
 import {
 	normalizePostGraphqlCalls,
 	expectSub,
