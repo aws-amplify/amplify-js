@@ -14,6 +14,8 @@ import {
 
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
+import { oAuthStore } from '../utils/oauth/oAuthStore';
+import { addInflightPromise } from '../utils/oauth/inflightPromise';
 import { CognitoAuthSignInDetails } from '../types';
 
 import {
@@ -29,7 +31,16 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
 	waitForInflightOAuth: () => Promise<void> = async () => {
-		// no-op
+		if (!(await oAuthStore.loadOAuthInFlight())) {
+			return;
+		}
+		// when there is valid oauth config and there is an inflight oauth flow, try
+		// to block async calls that require fetching tokens before the oauth flow completes
+		// e.g. getCurrentUser, fetchAuthSession etc.
+
+		return new Promise<void>((resolve, _reject) => {
+			addInflightPromise(resolve);
+		});
 	};
 
 	setAuthConfig(authConfig: AuthConfig) {
@@ -42,10 +53,6 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
-	}
-
-	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>) {
-		this.waitForInflightOAuth = waitForInflightOAuth;
 	}
 
 	getTokenStore(): AuthTokenStore {
