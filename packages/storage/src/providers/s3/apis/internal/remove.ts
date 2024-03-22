@@ -47,7 +47,11 @@ export const remove = async (
 		},
 	);
 
-	return {
-		key: objectKey,
-	};
+	return inputType === STORAGE_INPUT_KEY
+		? {
+				key: objectKey,
+			}
+		: {
+				path: objectKey,
+			};
 };
