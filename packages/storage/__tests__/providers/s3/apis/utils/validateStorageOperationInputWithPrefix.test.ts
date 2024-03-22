@@ -5,16 +5,16 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
-import { validateStorageInputPrefix } from '../../../../../src/providers/s3/utils';
+import { validateStorageOperationInputWithPrefix } from '../../../../../src/providers/s3/utils';
 import {
 	STORAGE_INPUT_PATH,
 	STORAGE_INPUT_PREFIX,
 } from '../../../../../src/providers/s3/utils/constants';
 
-describe('validateStorageInputPrefix', () => {
+describe('validateStorageOperationInputWithPrefix', () => {
 	it('should return inputType as STORAGE_INPUT_PATH and objectKey as testPath when input is path as string', () => {
 		const input = { path: 'testPath' };
-		const result = validateStorageInputPrefix(input);
+		const result = validateStorageOperationInputWithPrefix(input);
 		expect(result).toEqual({
 			inputType: STORAGE_INPUT_PATH,
 			objectKey: 'testPath',
@@ -26,7 +26,7 @@ describe('validateStorageInputPrefix', () => {
 			path: ({ identityId }: { identityId?: string }) =>
 				`testPath/${identityId}`,
 		};
-		const result = validateStorageInputPrefix(input, '123');
+		const result = validateStorageOperationInputWithPrefix(input, '123');
 		expect(result).toEqual({
 			inputType: STORAGE_INPUT_PATH,
 			objectKey: 'testPath/123',
@@ -35,7 +35,7 @@ describe('validateStorageInputPrefix', () => {
 
 	it('should return inputType as STORAGE_INPUT_PREFIX and objectKey as testKey when input is prefix', () => {
 		const input = { prefix: 'testKey' };
-		const result = validateStorageInputPrefix(input);
+		const result = validateStorageOperationInputWithPrefix(input);
 		expect(result).toEqual({
 			inputType: STORAGE_INPUT_PREFIX,
 			objectKey: 'testKey',
@@ -44,7 +44,7 @@ describe('validateStorageInputPrefix', () => {
 
 	it('should take a default prefix when input has invalid objects', () => {
 		const input = { invalid: 'test' } as any;
-		const result = validateStorageInputPrefix(input);
+		const result = validateStorageOperationInputWithPrefix(input);
 		expect(result).toEqual({
 			inputType: STORAGE_INPUT_PREFIX,
 			objectKey: '',
@@ -53,7 +53,7 @@ describe('validateStorageInputPrefix', () => {
 
 	it('should throw an error when input path starts with a /', () => {
 		const input = { path: '/test' } as any;
-		expect(() => validateStorageInputPrefix(input)).toThrow(
+		expect(() => validateStorageOperationInputWithPrefix(input)).toThrow(
 			validationErrorMap[StorageValidationErrorCode.InvalidStoragePathInput]
 				.message,
 		);

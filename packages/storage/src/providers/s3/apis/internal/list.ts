@@ -18,7 +18,7 @@ import {
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
-	validateStorageInputPrefix,
+	validateStorageOperationInputWithPrefix,
 } from '../../utils';
 import { ResolvedS3Config } from '../../types/options';
 import {
@@ -50,7 +50,7 @@ export const list = async (
 		identityId,
 	} = await resolveS3ConfigAndInput(amplify, options);
 
-	const { inputType, objectKey } = validateStorageInputPrefix(
+	const { inputType, objectKey } = validateStorageOperationInputWithPrefix(
 		input,
 		identityId,
 	);

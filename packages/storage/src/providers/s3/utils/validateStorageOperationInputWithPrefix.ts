@@ -17,7 +17,7 @@ export const isInputWithPath = (
 	return input.path !== undefined;
 };
 
-export const validateStorageInputPrefix = (
+export const validateStorageOperationInputWithPrefix = (
 	input: StorageOperationPrefixInputType,
 	identityId?: string,
 ) => {
