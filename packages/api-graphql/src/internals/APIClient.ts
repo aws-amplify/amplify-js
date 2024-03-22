@@ -747,6 +747,7 @@ export function generateGraphQLDocument(
 				(graphQLArguments = {
 					...indexQueryArgs!,
 					filter: `Model${name}FilterInput`,
+					sortDirection: 'ModelSortDirection',
 					limit: 'Int',
 					nextToken: 'String',
 				});
