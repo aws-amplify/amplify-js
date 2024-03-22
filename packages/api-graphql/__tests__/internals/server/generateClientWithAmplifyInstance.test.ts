@@ -425,7 +425,7 @@ describe('server generateClient', () => {
 				return result;
 			});
 
-			const mockContextSpec = {};
+			const mockContextSpec = { token: { value: Symbol('test') } };
 
 			const result = await client.queries.echo(mockContextSpec, {
 				argumentContent: 'echo argumentContent value',

@@ -50,7 +50,7 @@ module.exports = {
 		'packages/datastore-storage-adapter',
 		// 'packages/geo',
 		// 'packages/interactions',
-		'packages/notifications',
+		// 'packages/notifications',
 		// 'packages/predictions',
 		// 'packages/pubsub',
 		// 'packages/react-native',

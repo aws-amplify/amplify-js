@@ -18,7 +18,7 @@ import { getSecondaryIndexesFromSchemaModel } from '../../clientUtils';
 export function generateModelsProperty<T extends Record<any, any> = never>(
 	client: V6Client<Record<string, any>>,
 	apiGraphQLConfig: GraphQLProviderConfig['GraphQL'],
-): ModelTypes<T> {
+): ModelTypes<T> | ModelTypes<never> {
 	const models = {} as any;
 
 	const modelIntrospection: ModelIntrospectionSchema | undefined =
