@@ -22,13 +22,13 @@ export const validateStorageOperationInput = (
 		const objectKey = typeof path === 'string' ? path : path({ identityId });
 
 		assertValidationError(
-			objectKey.startsWith('/'),
+			!objectKey.startsWith('/'),
 			StorageValidationErrorCode.InvalidStoragePathInput,
 		);
 
 		return {
 			inputType: STORAGE_INPUT_PATH,
-			objectKey: objectKey.slice(1),
+			objectKey,
 		};
 	} else {
 		return { inputType: STORAGE_INPUT_KEY, objectKey: input.key };

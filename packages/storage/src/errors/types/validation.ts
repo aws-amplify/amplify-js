@@ -9,6 +9,8 @@ export enum StorageValidationErrorCode {
 	NoKey = 'NoKey',
 	NoSourceKey = 'NoSourceKey',
 	NoDestinationKey = 'NoDestinationKey',
+	NoSourcePath = 'NoSourcePath',
+	NoDestinationPath = 'NoDestinationPath',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
@@ -35,6 +37,12 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.NoDestinationKey]: {
 		message: 'Missing destination key in copy api call.',
 	},
+	[StorageValidationErrorCode.NoSourcePath]: {
+		message: 'Missing source path in copy api call.',
+	},
+	[StorageValidationErrorCode.NoDestinationPath]: {
+		message: 'Missing destination path in copy api call.',
+	},
 	[StorageValidationErrorCode.NoBucket]: {
 		message: 'Missing bucket name while accessing object.',
 	},
@@ -55,6 +63,6 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 		message: 'Missing path or key parameter in Input.',
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
-		message: 'Input `path` is missing a leading slash (/).',
+		message: 'Input `path` does not allow a leading slash (/).',
 	},
 };

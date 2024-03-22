@@ -79,9 +79,12 @@ export type ListPaginateOutput = StorageListOutput<ListOutputItem> & {
 };
 
 /**
- * Output type for S3 copy API.
+ * @deprecated Use {@link CopyOutputPath} instead.
  */
-export type CopyOutput = Pick<ItemKey, 'key'>;
+export type CopyOutputKey = Pick<ItemKey, 'key'>;
+export type CopyOutputPath = Pick<ItemPath, 'path'>;
+
+export type CopyOutput = StrictUnion<CopyOutputKey | CopyOutputPath>;
 
 /**
  * Output type for S3 remove API.
