@@ -43,7 +43,6 @@ export const list = async (
 	input: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
 	const { options = {} } = input;
-	let path = '';
 	const {
 		s3Config,
 		bucket,
@@ -55,7 +54,7 @@ export const list = async (
 		input,
 		identityId,
 	);
-	path =
+	const path =
 		inputType === STORAGE_INPUT_PREFIX
 			? `${generatedPrefix}${objectKey}`
 			: objectKey;
@@ -116,7 +115,7 @@ const _listAllPrefix = async ({
 	} while (continuationToken);
 
 	return {
-		items: listResult as ListOutputItemKey[],
+		items: listResult,
 	};
 };
 
@@ -178,7 +177,7 @@ const _listAllPath = async ({
 	} while (continuationToken);
 
 	return {
-		items: listResult as ListOutputItemPath[],
+		items: listResult,
 	};
 };
 

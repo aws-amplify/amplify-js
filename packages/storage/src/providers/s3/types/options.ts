@@ -65,6 +65,7 @@ export type GetPropertiesOptions = ReadOptions & CommonOptions;
 export type RemoveOptions = WriteOptions & CommonOptions;
 
 /**
+ * @deprecated Use {@link ListAllOptionsPath} instead.
  * Input options type with prefix for S3 list all API.
  */
 export type ListAllOptionsPrefix = StorageListAllOptions &
@@ -72,6 +73,7 @@ export type ListAllOptionsPrefix = StorageListAllOptions &
 	CommonOptions;
 
 /**
+ * @deprecated Use {@link ListPaginateOptionsPath} instead.
  * Input options type with prefix for S3 list API to paginate items.
  */
 export type ListPaginateOptionsPrefix = StorageListPaginateOptions &
