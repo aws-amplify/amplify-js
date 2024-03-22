@@ -33,6 +33,7 @@ interface LazyLoadOptions {
 	authToken?: string | undefined;
 	limit?: number | undefined;
 	nextToken?: string | undefined | null;
+	// sortDirection?: 'ASC' | 'DESC' | undefined;
 	headers?: CustomHeaders | undefined;
 }
 
@@ -217,6 +218,7 @@ export function initializeModel(
 										client as V6ClientSSRRequest<Record<string, any>>
 									).models[relatedModelName].list(contextSpec, {
 										filter: { and: hasManyFilter },
+										// sortDirection: options?.sortDirection,
 										limit: options?.limit,
 										nextToken: options?.nextToken,
 										authMode: options?.authMode || authMode,
@@ -235,6 +237,7 @@ export function initializeModel(
 										relatedModelName
 									].list({
 										filter: { and: hasManyFilter },
+										// sortDirection: options?.sortDirection,
 										limit: options?.limit,
 										nextToken: options?.nextToken,
 										authMode: options?.authMode || authMode,
@@ -269,6 +272,7 @@ export function initializeModel(
 									client as V6ClientSSRRequest<Record<string, any>>
 								).models[relatedModelName].list(contextSpec, {
 									filter: { and: hasManyFilter },
+									// sortDirection: options?.sortDirection,
 									limit: options?.limit,
 									nextToken: options?.nextToken,
 									authMode: options?.authMode || authMode,
@@ -287,6 +291,7 @@ export function initializeModel(
 									relatedModelName
 								].list({
 									filter: { and: hasManyFilter },
+									// sortDirection: options?.sortDirection,
 									limit: options?.limit,
 									nextToken: options?.nextToken,
 									authMode: options?.authMode || authMode,
@@ -739,6 +744,8 @@ export function generateGraphQLDocument(
 			graphQLArguments ??
 				(graphQLArguments = {
 					filter: `Model${name}FilterInput`,
+					sortDirection: 'ModelSortDirection',
+					[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
 					limit: 'Int',
 					nextToken: 'String',
 				});
@@ -864,6 +871,10 @@ export function buildGraphQLVariables(
 		case 'LIST':
 			if (arg?.filter) {
 				variables.filter = arg.filter;
+			}
+			if (arg?.sortDirection) {
+				variables.sortDirection = arg.sortDirection;
+				variables[primaryKeyFieldName] = arg[primaryKeyFieldName];
 			}
 			if (arg?.nextToken) {
 				variables.nextToken = arg.nextToken;

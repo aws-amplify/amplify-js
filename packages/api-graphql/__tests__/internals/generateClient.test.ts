@@ -395,6 +395,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -430,6 +431,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 				nextToken: 'some-token',
 			});
 
@@ -945,6 +947,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 				authMode: 'userPool',
 			});
 
@@ -1431,6 +1434,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 				authMode: 'lambda',
 				authToken: 'some-token',
 			});
@@ -1923,6 +1927,7 @@ describe('generateClient', () => {
 			});
 			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -2406,6 +2411,7 @@ describe('generateClient', () => {
 			});
 			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3172,6 +3178,7 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3212,6 +3219,7 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 				headers: {
 					'request-header': 'should exist',
 				},
@@ -3852,6 +3860,7 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3892,6 +3901,7 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
+				sortDirection: 'ASC',
 				headers: {
 					'request-header': 'should exist',
 				},

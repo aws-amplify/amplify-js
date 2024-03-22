@@ -462,6 +462,7 @@ export type QueryArgs = Record<string, unknown>;
 export interface ListArgs extends Record<string, unknown> {
 	selectionSet?: string[];
 	filter?: Record<string, unknown>;
+	sortDirection?: string;
 	headers?: CustomHeaders;
 }
 
