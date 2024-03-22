@@ -21,7 +21,7 @@ interface GetProperties {
 	 * Gets the properties of a file. The properties include S3 system metadata and
 	 * the user metadata that was provided when uploading the file.
 	 *
-	 * @param contextSpec - The  isolated server context.
+	 * @param contextSpec - The isolated server context.
 	 * @param input - The `GetPropertiesInput` object.
 	 * @returns Requested object properties.
 	 * @throws An `S3Exception` when the underlying S3 service returned error.
@@ -38,7 +38,7 @@ interface GetProperties {
 	 * Gets the properties of a file. The properties include S3 system metadata and
 	 * the user metadata that was provided when uploading the file.
 	 *
-	 * @param contextSpec - The  isolated server context.
+	 * @param contextSpec - The isolated server context.
 	 * @param input - The `GetPropertiesInput` object.
 	 * @returns Requested object properties.
 	 * @throws An `S3Exception` when the underlying S3 service returned error.
