@@ -54,10 +54,7 @@ export const list = async (
 		input,
 		identityId,
 	);
-	const path =
-		inputType === STORAGE_INPUT_PREFIX
-			? `${generatedPrefix}${objectKey}`
-			: objectKey;
+	const isInputWithPrefix = inputType === STORAGE_INPUT_PREFIX;
 
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
 	if (options?.listAll && (options?.pageSize || options?.nextToken)) {
@@ -70,14 +67,14 @@ export const list = async (
 	}
 	const listParams = {
 		Bucket: bucket,
-		Prefix: path,
+		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
 	return options.listAll
-		? inputType === STORAGE_INPUT_PREFIX
+		? isInputWithPrefix
 			? _listAllPrefix({
 					s3Config,
 					listParams,

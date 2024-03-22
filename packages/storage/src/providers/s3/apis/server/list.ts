@@ -81,9 +81,8 @@ export const list: ListApi = <
 >(
 	contextSpec: AmplifyServer.ContextSpec,
 	input?: ListAllInput | ListPaginateInput,
-): Promise<Output> => {
-	return listInternal(
+): Promise<Output> =>
+	listInternal(
 		getAmplifyServerContext(contextSpec).amplify,
 		input ?? {},
 	) as Promise<Output>;
-};

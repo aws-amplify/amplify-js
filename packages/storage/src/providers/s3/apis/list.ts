@@ -64,6 +64,4 @@ export const list: ListApi = <
 	Output extends ListAllOutput | ListPaginateOutput,
 >(
 	input?: ListAllInput | ListPaginateInput,
-): Promise<Output> => {
-	return listInternal(Amplify, input ?? {}) as Promise<Output>;
-};
+): Promise<Output> => listInternal(Amplify, input ?? {}) as Promise<Output>;

@@ -99,11 +99,6 @@ describe('list API', () => {
 				expectedPath: `public/`,
 			},
 			{
-				key: undefined,
-				options: undefined,
-				expectedPath: `public/`,
-			},
-			{
 				options: { accessLevel: 'guest' },
 				expectedPath: `public/`,
 			},
@@ -431,6 +426,7 @@ describe('list API', () => {
 			try {
 				await list({});
 			} catch (error: any) {
+				expect.assertions(3);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
@@ -441,6 +437,7 @@ describe('list API', () => {
 			}
 		});
 		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
+			expect.assertions(1);
 			try {
 				await list({ path: '' });
 			} catch (error: any) {
