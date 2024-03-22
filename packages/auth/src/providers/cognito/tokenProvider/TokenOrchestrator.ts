@@ -30,17 +30,25 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
+	inflightPromise: Promise<void> | undefined;
 	waitForInflightOAuth: () => Promise<void> = async () => {
 		if (!(await oAuthStore.loadOAuthInFlight())) {
 			return;
 		}
+
+		if (this.inflightPromise) {
+			return this.inflightPromise;
+		}
+
 		// when there is valid oauth config and there is an inflight oauth flow, try
 		// to block async calls that require fetching tokens before the oauth flow completes
 		// e.g. getCurrentUser, fetchAuthSession etc.
 
-		return new Promise<void>((resolve, _reject) => {
+		this.inflightPromise = new Promise<void>((resolve, _reject) => {
 			addInflightPromise(resolve);
 		});
+
+		return this.inflightPromise;
 	};
 
 	setAuthConfig(authConfig: AuthConfig) {
@@ -91,6 +99,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			return null;
 		}
 		await this.waitForInflightOAuth();
+		this.inflightPromise = undefined;
 		tokens = await this.getTokenStore().loadTokens();
 		const username = await this.getTokenStore().getLastAuthUser();
 

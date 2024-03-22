@@ -100,7 +100,7 @@ describe('attemptCompleteOAuthFlow', () => {
 	});
 
 	it('invokes `completeOAuthFlow` to complete an inflight oauth process', async () => {
-		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(Promise.resolve(true));
+		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValueOnce(true);
 
 		await attemptCompleteOAuthFlow(mockAuthConfigWithOAuth.Auth.Cognito);
 

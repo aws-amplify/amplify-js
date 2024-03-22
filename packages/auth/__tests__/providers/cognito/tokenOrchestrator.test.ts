@@ -146,13 +146,17 @@ describe('TokenOrchestrator', () => {
 			 mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
 			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
          
-			await tokenOrchestrator.getTokens();
-
+		    expect(await tokenOrchestrator.getTokens()).resolves;
+ 
+			expect(addInflightPromise).toHaveBeenCalledWith(expect.any(Function));
 			expect(mockAddInflightPromise).toHaveBeenCalledTimes(1);
 	
 			const inflightPromiseResolver = mockAddInflightPromise.mock.calls[0][0];
 			inflightPromiseResolver();
 
+		
+			const tokens = await tokenOrchestrator.getTokens();
+			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
 		})
 	});
 });
