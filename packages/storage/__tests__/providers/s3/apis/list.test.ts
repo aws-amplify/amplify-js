@@ -148,7 +148,6 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				expect.assertions(4);
 				let response = await list({
 					prefix: key,
 					options: options as ListPaginateOptionsPrefix,
@@ -179,7 +178,6 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				expect.assertions(4);
 				const customPageSize = 5;
 				const response = await list({
 					prefix: key,
@@ -211,7 +209,6 @@ describe('list API', () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-				expect.assertions(3);
 				let response = await list({
 					prefix: key,
 					options: options as ListPaginateOptionsPrefix,
@@ -234,7 +231,6 @@ describe('list API', () => {
 				? `with targetIdentityId`
 				: '';
 			it(`should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
-				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
 					prefix: key,
@@ -290,8 +286,9 @@ describe('list API', () => {
 			},
 		];
 
-		pathAsFunctionAndStringTests.forEach(({ path }) => {
-			it(`should list objects with pagination, default pageSize, custom path`, async () => {
+		it.each(pathAsFunctionAndStringTests)(
+			'should list objects with pagination, default pageSize, custom path',
+			async ({ path }) => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [
@@ -303,7 +300,6 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				expect.assertions(4);
 				let response = await list({
 					path,
 				});
@@ -317,11 +313,12 @@ describe('list API', () => {
 					MaxKeys: 1000,
 					Prefix: resolvePath(path),
 				});
-			});
-		});
+			},
+		);
 
-		pathAsFunctionAndStringTests.forEach(({ path }) => {
-			it(`should list objects with pagination using custom pageSize, nextToken and custom path: ${path}`, async () => {
+		it.each(pathAsFunctionAndStringTests)(
+			'should list objects with pagination using custom pageSize, nextToken and custom path: ${path}',
+			async ({ path }) => {
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [
@@ -333,7 +330,6 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				expect.assertions(4);
 				const customPageSize = 5;
 				const response = await list({
 					path,
@@ -353,15 +349,15 @@ describe('list API', () => {
 					ContinuationToken: nextToken,
 					MaxKeys: customPageSize,
 				});
-			});
-		});
+			},
+		);
 
-		pathAsFunctionAndStringTests.forEach(({ path }) => {
-			it(`should list objects with zero results with custom path: ${path}`, async () => {
+		it.each(pathAsFunctionAndStringTests)(
+			'should list objects with zero results with custom path: ${path}',
+			async ({ path }) => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-				expect.assertions(3);
 				let response = await list({
 					path,
 				});
@@ -373,12 +369,12 @@ describe('list API', () => {
 					MaxKeys: 1000,
 					Prefix: resolvePath(path),
 				});
-			});
-		});
+			},
+		);
 
-		pathAsFunctionAndStringTests.forEach(({ path }) => {
-			it(`should list all objects having three pages with custom path: ${path}`, async () => {
-				expect.assertions(5);
+		it.each(pathAsFunctionAndStringTests)(
+			'should list all objects having three pages with custom path: ${path}',
+			async ({ path }) => {
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
 					path,
@@ -417,8 +413,8 @@ describe('list API', () => {
 						ContinuationToken: nextToken,
 					},
 				);
-			});
-		});
+			},
+		);
 	});
 
 	describe('Error Cases:', () => {
@@ -432,7 +428,6 @@ describe('list API', () => {
 					name: 'NotFound',
 				}),
 			);
-			expect.assertions(3);
 			try {
 				await list({});
 			} catch (error: any) {
@@ -446,7 +441,6 @@ describe('list API', () => {
 			}
 		});
 		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
-			expect.assertions(1);
 			try {
 				await list({ path: '' });
 			} catch (error: any) {
