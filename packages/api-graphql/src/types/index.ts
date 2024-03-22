@@ -5,6 +5,7 @@ import {
 	CustomHeaders,
 	CustomMutations,
 	CustomQueries,
+	CustomSubscriptions,
 	EnumTypes,
 	ModelTypes,
 } from '@aws-amplify/data-schema-types';
@@ -394,6 +395,7 @@ export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
 	enums: EnumTypes<T>;
 	queries: CustomQueries<T>;
 	mutations: CustomMutations<T>;
+	subscriptions: CustomSubscriptions<T>;
 }>;
 
 export type V6ClientSSRRequest<T extends Record<any, any> = never> =

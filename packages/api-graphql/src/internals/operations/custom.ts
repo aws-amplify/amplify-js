@@ -5,6 +5,7 @@ import {
 	CustomOperation,
 	ModelIntrospectionSchema,
 } from '@aws-amplify/core/internals/utils';
+import { map } from 'rxjs';
 
 import {
 	authModeParams,
@@ -18,13 +19,35 @@ import {
 import {
 	AuthModeParams,
 	ClientWithModels,
-	GraphQLOptionsV6,
 	GraphQLResult,
+	GraphqlSubscriptionResult,
 	ListArgs,
 	QueryArgs,
 	V6Client,
 	V6ClientSSRRequest,
 } from '../../types';
+
+type CustomOperationOptions = AuthModeParams & ListArgs;
+
+// these are the 4 possible sets of arguments custom operations methods can receive
+type OpArgs =
+	// SSR Request Client w Args defined
+	| [AmplifyServer.ContextSpec, QueryArgs, CustomOperationOptions]
+	// SSR Request Client without Args defined
+	| [AmplifyServer.ContextSpec, CustomOperationOptions]
+	// Client or SSR Cookies Client w Args defined
+	| [QueryArgs, CustomOperationOptions]
+	// Client or SSR Cookies Client without Args defined
+	| [CustomOperationOptions];
+
+/**
+ * Type guard for checking whether a Custom Operation argument is a contextSpec object
+ */
+const argIsContextSpec = (
+	arg: OpArgs[number],
+): arg is AmplifyServer.ContextSpec => {
+	return typeof (arg as AmplifyServer.ContextSpec)?.token?.value === 'symbol';
+};
 
 /**
  * Builds an operation function, embedded with all client and context data, that
@@ -85,15 +108,50 @@ import {
 export function customOpFactory(
 	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
-	operationType: 'query' | 'mutation',
+	operationType: 'query' | 'mutation' | 'subscription',
 	operation: CustomOperation,
 	useContext: boolean,
 ) {
-	const opWithContext = async (
-		contextSpec: AmplifyServer.ContextSpec & GraphQLOptionsV6<unknown, string>,
-		arg?: QueryArgs,
-		options?: AuthModeParams & ListArgs,
-	) => {
+	// .arguments() are defined for the custom operation in the schema builder
+	// and are present in the model introspection schema
+	const argsDefined = operation.arguments !== undefined;
+
+	const op = (...args: OpArgs) => {
+		// options is always the last argument
+		const options = args[args.length - 1] as CustomOperationOptions;
+
+		let contextSpec: AmplifyServer.ContextSpec | undefined;
+		let arg: QueryArgs | undefined;
+
+		if (useContext) {
+			if (argIsContextSpec(args[0])) {
+				contextSpec = args[0];
+			} else {
+				throw new Error(
+					`Invalid first argument passed to ${operation.name}. Expected contextSpec`,
+				);
+			}
+		}
+
+		if (argsDefined) {
+			if (useContext) {
+				arg = args[1] as QueryArgs;
+			} else {
+				arg = args[0] as QueryArgs;
+			}
+		}
+
+		if (operationType === 'subscription') {
+			return _opSubscription(
+				// subscriptions are only enabled on the clientside
+				client as V6Client<Record<string, any>>,
+				modelIntrospection,
+				operation,
+				arg,
+				options,
+			);
+		}
+
 		return _op(
 			client,
 			modelIntrospection,
@@ -105,18 +163,7 @@ export function customOpFactory(
 		);
 	};
 
-	const op = async (arg?: QueryArgs, options?: AuthModeParams & ListArgs) => {
-		return _op(
-			client,
-			modelIntrospection,
-			operationType,
-			operation,
-			arg,
-			options,
-		);
-	};
-
-	return useContext ? opWithContext : op;
+	return op;
 }
 
 /**
@@ -160,6 +207,9 @@ function hasStringField<Field extends string>(
  * @returns "outer" arguments string
  */
 function outerArguments(operation: CustomOperation): string {
+	if (operation.arguments === undefined) {
+		return '';
+	}
 	const args = Object.entries(operation.arguments)
 		.map(([k, v]) => {
 			const baseType = v.type + (v.isRequired ? '!' : '');
@@ -194,6 +244,9 @@ function outerArguments(operation: CustomOperation): string {
  * @returns "outer" arguments string
  */
 function innerArguments(operation: CustomOperation): string {
+	if (operation.arguments === undefined) {
+		return '';
+	}
 	const args = Object.keys(operation.arguments)
 		.map(k => `${k}: $${k}`)
 		.join(', ');
@@ -259,6 +312,9 @@ function operationVariables(
 	args: QueryArgs = {},
 ): Record<string, unknown> {
 	const variables = {} as Record<string, unknown>;
+	if (operation.arguments === undefined) {
+		return variables;
+	}
 	for (const argDef of Object.values(operation.arguments)) {
 		if (typeof args[argDef.name] !== 'undefined') {
 			variables[argDef.name] = args[argDef.name];
@@ -365,4 +421,72 @@ async function _op(
 			throw error;
 		}
 	}
+}
+
+/**
+ * Executes an operation from the given model intro schema against a client, returning
+ * a fully instantiated model when relevant.
+ *
+ * @param client The client to operate `graphql()` calls through.
+ * @param modelIntrospection The model intro schema to construct requests from.
+ * @param operation The specific operation name, args, return type details.
+ * @param args The arguments to provide to the operation as variables.
+ * @param options Request options like headers, etc.
+ * @returns Result from the graphql request, model-instantiated when relevant.
+ */
+function _opSubscription(
+	client: V6Client<Record<string, any>>,
+	modelIntrospection: ModelIntrospectionSchema,
+	operation: CustomOperation,
+	args?: QueryArgs,
+	options?: AuthModeParams & ListArgs,
+) {
+	const operationType = 'subscription';
+	const { name: operationName } = operation;
+	const auth = authModeParams(client, options);
+	const headers = getCustomHeaders(client, options?.headers);
+	const outerArgsString = outerArguments(operation);
+	const innerArgsString = innerArguments(operation);
+	const selectionSet = operationSelectionSet(modelIntrospection, operation);
+
+	const returnTypeModelName = hasStringField(operation.type, 'model')
+		? operation.type.model
+		: undefined;
+
+	const query = `
+		${operationType.toLocaleLowerCase()}${outerArgsString} {
+			${operationName}${innerArgsString} ${selectionSet}
+		}
+	`;
+
+	const variables = operationVariables(operation, args);
+
+	const observable = client.graphql(
+		{
+			...auth,
+			query,
+			variables,
+		},
+		headers,
+	) as GraphqlSubscriptionResult<object>;
+
+	return observable.pipe(
+		map(value => {
+			const [key] = Object.keys(value.data);
+			const data = (value.data as any)[key];
+
+			const [initialized] = returnTypeModelName
+				? initializeModel(
+						client as V6Client<Record<string, any>>,
+						returnTypeModelName,
+						[data],
+						modelIntrospection,
+						auth.authMode,
+						auth.authToken,
+					)
+				: [data];
+
+			return initialized;
+		}),
+	);
 }

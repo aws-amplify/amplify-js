@@ -15,13 +15,16 @@ import { getFactory } from '../operations/get';
 import { getSecondaryIndexesFromSchemaModel } from '../clientUtils';
 
 export function generateModelsProperty<
-	_T extends Record<any, any> = never,
+	T extends Record<any, any> = never,
 	ClientType extends
 		| V6ClientSSRRequest<Record<string, any>>
 		| V6ClientSSRCookies<Record<string, any>> = V6ClientSSRCookies<
 		Record<string, any>
 	>,
->(client: ClientType, params: ServerClientGenerationParams): ClientType {
+>(
+	client: ClientType,
+	params: ServerClientGenerationParams,
+): ModelTypes<T> | ModelTypes<never> {
 	const models = {} as any;
 	const { config } = params;
 	const useContext = params.amplify === null;
