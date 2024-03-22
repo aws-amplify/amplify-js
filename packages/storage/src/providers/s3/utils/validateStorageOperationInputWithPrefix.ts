@@ -3,27 +3,27 @@
 
 import {
 	StorageOperationInputPath,
-	StorageOperationPrefixInputType,
+	StorageOperationInputWithPrefixPath,
 } from '../../../types/inputs';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 import { STORAGE_INPUT_PATH, STORAGE_INPUT_PREFIX } from './constants';
 
-// Local assertion function with StorageOperationPrefixInputType as Input
-export const isInputWithPath = (
-	input: StorageOperationPrefixInputType,
+// Local assertion function with StorageOperationInputWithPrefixPath as Input
+const _isInputWithPath = (
+	input: StorageOperationInputWithPrefixPath,
 ): input is StorageOperationInputPath => {
 	return input.path !== undefined;
 };
 
 export const validateStorageOperationInputWithPrefix = (
-	input: StorageOperationPrefixInputType,
+	input: StorageOperationInputWithPrefixPath,
 	identityId?: string,
 ) => {
-	if (isInputWithPath(input)) {
+	if (_isInputWithPath(input)) {
 		assertValidationError(
-			(input as StorageOperationPrefixInputType).path !== '',
+			(input as StorageOperationInputWithPrefixPath).path !== '',
 			StorageValidationErrorCode.InvalidStorageOperationInput,
 		);
 		const { path } = input;

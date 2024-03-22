@@ -14,7 +14,7 @@ import {
 export type StorageOperationInputType = StrictUnion<
 	StorageOperationInputKey | StorageOperationInputPath
 >;
-export type StorageOperationPrefixInputType = StrictUnion<
+export type StorageOperationInputWithPrefixPath = StrictUnion<
 	StorageOperationInputPath | StorageOperationInputPrefix
 >;
 /** @deprecated Use {@link StorageOperationInputPath} instead. */
