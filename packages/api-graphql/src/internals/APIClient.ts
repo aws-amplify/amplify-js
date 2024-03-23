@@ -884,6 +884,12 @@ export function buildGraphQLVariables(
 			if (arg?.filter) {
 				variables.filter = arg.filter;
 			}
+
+			if (arg?.sortDirection) {
+				variables.sortDirection = arg.sortDirection;
+				// variables[primaryKeyFieldName] = arg[primaryKeyFieldName];
+			}
+
 			if (arg?.nextToken) {
 				variables.nextToken = arg.nextToken;
 			}

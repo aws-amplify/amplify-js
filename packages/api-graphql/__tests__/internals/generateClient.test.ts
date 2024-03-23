@@ -5171,6 +5171,7 @@ describe('generateClient', () => {
 				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount({
 					description: 'something something',
 					viewCount: { gt: 4 },
+					sortDirection: 'ASC',
 				});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();

@@ -8,6 +8,7 @@ import {
 	CustomSubscriptions,
 	EnumTypes,
 	ModelTypes,
+	// ModelSortDirection,
 } from '@aws-amplify/data-schema-types';
 import { DocumentNode, GraphQLError, Source } from 'graphql';
 import { Observable } from 'rxjs';
@@ -461,10 +462,18 @@ export interface ServerClientGenerationParams {
 
 export type QueryArgs = Record<string, unknown>;
 
+// TODO: temp (test import w/ Verdaccio, then remove)
+enum ModelSortDirectionParams {
+	ASC = 'ASC',
+	DESC = 'DESC',
+}
+
+type ModelSortDirection = keyof typeof ModelSortDirectionParams;
+
 export interface ListArgs extends Record<string, unknown> {
 	selectionSet?: string[];
 	filter?: Record<string, unknown>;
-	sortDirection?: string;
+	sortDirection?: ModelSortDirection;
 	headers?: CustomHeaders;
 }
 
