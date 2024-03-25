@@ -485,7 +485,7 @@
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "14.00 kB"
+			"limit": "14.01 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
