@@ -19,10 +19,15 @@ interface AuthAttribute {
 /**
  * Only the portions of an Auth rule we care about.
  */
-interface AuthRule {
-	allow: string;
-	ownerField?: string;
-}
+type AuthRule =
+	| {
+			allow: 'owner';
+			ownerField?: string;
+	  }
+	| {
+			allow: 'groups';
+			groupsField: string;
+	  };
 
 /**
  * Given an introspection schema model, returns all owner fields.
@@ -37,6 +42,8 @@ export function resolveOwnerFields(model: Model): string[] {
 			for (const rule of attr.properties.rules) {
 				if (rule.allow === 'owner') {
 					ownerFields.add(rule.ownerField || 'owner');
+				} else if (rule.allow === 'groups') {
+					ownerFields.add(rule.groupsField);
 				}
 			}
 		}

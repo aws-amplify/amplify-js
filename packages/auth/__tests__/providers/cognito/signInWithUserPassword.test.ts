@@ -13,6 +13,7 @@ import {
 } from '../../../src/providers/cognito/tokenProvider';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
+jest.mock('../../../src/providers/cognito/utils/dispatchSignedInHubEvent');
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),

@@ -198,6 +198,29 @@ const schema = a.schema({
 		.returns(a.ref('Post'))
 		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
 	//#endregion
+
+	// #region implicit ownership models
+	ImplicitOwner: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.owner()]),
+	CustomImplicitOwner: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.owner().inField('customOwner')]),
+	ModelGroupDefinedIn: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.groupDefinedIn('groupField')]),
+	ModelGroupsDefinedIn: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.groupsDefinedIn('groupsField')]),
+	// #endregion
 });
 
 export type Schema = ClientSchema<typeof schema>;
