@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SendInput, OnCompleteInput } from './inputs';
+import { OnCompleteInput, SendInput } from './inputs';
 import { SendOutput } from './outputs';
 
 export interface AWSLexV2ProviderOption {

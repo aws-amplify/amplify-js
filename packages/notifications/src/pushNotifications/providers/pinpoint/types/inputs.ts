@@ -1,16 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { IdentifyUserOptions } from './options';
 import {
 	PushNotificationIdentifyUserInput,
-	PushNotificationRequestPermissionsInput,
-	PushNotificationSetBadgeCountInput,
 	PushNotificationOnNotificationOpenedInput,
 	PushNotificationOnNotificationReceivedInBackgroundInput,
 	PushNotificationOnNotificationReceivedInForegroundInput,
 	PushNotificationOnTokenReceivedInput,
+	PushNotificationRequestPermissionsInput,
+	PushNotificationSetBadgeCountInput,
 } from '../../../types';
+
+import { IdentifyUserOptions } from './options';
 
 export type IdentifyUserInput =
 	PushNotificationIdentifyUserInput<IdentifyUserOptions>;

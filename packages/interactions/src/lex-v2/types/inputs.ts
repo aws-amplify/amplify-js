@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	InteractionsSendInput,
 	InteractionsOnCompleteInput,
+	InteractionsSendInput,
 } from '../../types';
 
 /**

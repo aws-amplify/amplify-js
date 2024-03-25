@@ -1,14 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyErrorParams,
-	GraphQLAuthMode,
-} from '@aws-amplify/core/internals/utils';
+import { AmplifyErrorParams } from '@aws-amplify/core/internals/utils';
 
-type ErrorObject = {
+interface ErrorObject {
 	errors: AmplifyErrorParams[];
-};
+}
 
 /**
  * Checks to see if the given response or subscription message contains an
@@ -27,12 +24,13 @@ export function repackageUnauthError<T extends ErrorObject>(content: T): T {
 			}
 		});
 	}
+
 	return content;
 }
 
 function isUnauthError(error: any): boolean {
 	// Error pattern corresponding to appsync calls
-	if (error?.['originalError']?.['name']?.startsWith('UnauthorizedException')) {
+	if (error?.originalError?.name?.startsWith('UnauthorizedException')) {
 		return true;
 	}
 	// Error pattern corresponding to appsync subscriptions
@@ -42,5 +40,6 @@ function isUnauthError(error: any): boolean {
 	) {
 		return true;
 	}
+
 	return false;
 }

@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { IdentifyUserOptions } from './options';
-import {
-	InAppMessageConflictHandler,
-	OnMessageInteractionEventHandler,
-} from './types';
 import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
 	InAppMessagingEvent,
 	InAppMessagingIdentifyUserInput,
 } from '../../../types';
+
+import { IdentifyUserOptions } from './options';
+import {
+	InAppMessageConflictHandler,
+	OnMessageInteractionEventHandler,
+} from './types';
 
 /**
  * Input type for Pinpoint identifyUser API.
@@ -52,7 +53,7 @@ export type OnMessageActionTakenInput = OnMessageInteractionEventHandler;
 /**
  * Input type for NotifyMessageInteraction API.
  */
-export type NotifyMessageInteractionInput = {
+export interface NotifyMessageInteractionInput {
 	message: InAppMessage;
 	type: InAppMessageInteractionEvent;
-};
+}

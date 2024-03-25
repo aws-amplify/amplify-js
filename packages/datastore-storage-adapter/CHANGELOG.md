@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2.1.21 (2024-03-19)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
 ## 2.1.20 (2024-03-11)
 
 **Note:** Version bump only for package @aws-amplify/datastore-storage-adapter

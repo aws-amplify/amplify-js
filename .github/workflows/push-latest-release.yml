@@ -1,10 +1,5 @@
 name: Push - release from release to latest
 
-concurrency:
-  # group name unique for push to push-latest-release
-  group: push-release-${{ github.ref }}
-  cancel-in-progress: true
-
 on:
   push:
     branches:
@@ -12,6 +7,8 @@ on:
 
 jobs:
   e2e:
+    # Skip the release workflow if the head commit in the triggering branch contains [skip release]
+    if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
     secrets: inherit
     uses: ./.github/workflows/callable-release-verification.yml
   release:
