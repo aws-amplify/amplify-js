@@ -22,7 +22,7 @@ interface GetUrl {
 	 * to true, this method will verify the given object already exists in S3 before returning a presigned
 	 * URL, and will throw `StorageError` if the object does not exist.
 	 *
-	 * @param input - The `GetUrlInput` object.
+	 * @param input - The `GetUrlInputPath` object.
 	 * @returns Presigned URL and timestamp when the URL MAY expire.
 	 * @throws service: `S3Exception` - thrown when checking for existence of the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -42,7 +42,7 @@ interface GetUrl {
 	 * to true, this method will verify the given object already exists in S3 before returning a presigned
 	 * URL, and will throw `StorageError` if the object does not exist.
 	 *
-	 * @param input - The `GetUrlInput` object.
+	 * @param input - The `GetUrlInputKey` object.
 	 * @returns Presigned URL and timestamp when the URL MAY expire.
 	 * @throws service: `S3Exception` - thrown when checking for existence of the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors

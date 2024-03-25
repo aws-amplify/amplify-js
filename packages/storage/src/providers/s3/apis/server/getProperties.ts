@@ -22,7 +22,7 @@ interface GetProperties {
 	 * the user metadata that was provided when uploading the file.
 	 *
 	 * @param contextSpec - The isolated server context.
-	 * @param input - The `GetPropertiesInput` object.
+	 * @param input - The `GetPropertiesInputPath` object.
 	 * @returns Requested object properties.
 	 * @throws An `S3Exception` when the underlying S3 service returned error.
 	 * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
@@ -39,7 +39,7 @@ interface GetProperties {
 	 * the user metadata that was provided when uploading the file.
 	 *
 	 * @param contextSpec - The isolated server context.
-	 * @param input - The `GetPropertiesInput` object.
+	 * @param input - The `GetPropertiesInputKey` object.
 	 * @returns Requested object properties.
 	 * @throws An `S3Exception` when the underlying S3 service returned error.
 	 * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
