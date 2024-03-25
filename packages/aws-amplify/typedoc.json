@@ -1,12 +1,14 @@
 {
 	"name": "aws-amplify",
-	"extends": ["../../typedoc.base.json"],
+	"extends": [
+		"../../typedoc.base.json"
+	],
 	"entryPointStrategy": "resolve",
 	"includeVersion": true,
 	"entryPoints": [
 		"src/index.ts",
 		"src/utils/index.ts",
-		"src/adapterCore/index.ts",
+		"src/adapter-core/index.ts",
 		"src/analytics/index.ts",
 		"src/analytics/pinpoint/index.ts",
 		"src/analytics/kinesis/index.ts",

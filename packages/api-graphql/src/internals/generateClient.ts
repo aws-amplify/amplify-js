@@ -1,20 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Hub } from '@aws-amplify/core';
-import { graphql, cancel, isCancelError } from './v6';
 import {
+	CustomMutations,
+	CustomQueries,
+	CustomSubscriptions,
 	EnumTypes,
 	ModelTypes,
-	CustomQueries,
-	CustomMutations,
 } from '@aws-amplify/data-schema-types';
-import { generateEnumsProperty } from './utils/clientProperties/generateEnumsProperty';
-import { generateModelsProperty } from './utils/clientProperties/generateModelsProperty';
-import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
-import {
-	generateCustomQueriesProperty,
-	generateCustomMutationsProperty,
-} from './generateCustomOperationsProperty';
+
 import {
 	V6Client,
 	__amplify,
@@ -22,6 +16,16 @@ import {
 	__authToken,
 	__headers,
 } from '../types';
+
+import { cancel, graphql, isCancelError } from './v6';
+import { generateEnumsProperty } from './utils/clientProperties/generateEnumsProperty';
+import { generateModelsProperty } from './utils/clientProperties/generateModelsProperty';
+import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
+import {
+	generateCustomMutationsProperty,
+	generateCustomQueriesProperty,
+	generateCustomSubscriptionsProperty,
+} from './generateCustomOperationsProperty';
 import { ClientGenerationParams } from './types';
 import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 
@@ -49,6 +53,7 @@ export function generateClient<T extends Record<any, any> = never>(
 		enums: emptyProperty as EnumTypes<never>,
 		queries: emptyProperty as CustomQueries<never>,
 		mutations: emptyProperty as CustomMutations<never>,
+		subscriptions: emptyProperty as CustomSubscriptions<never>,
 	} as any;
 
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
@@ -58,6 +63,10 @@ export function generateClient<T extends Record<any, any> = never>(
 		client.enums = generateEnumsProperty<T>(apiGraphqlConfig);
 		client.queries = generateCustomQueriesProperty<T>(client, apiGraphqlConfig);
 		client.mutations = generateCustomMutationsProperty<T>(
+			client,
+			apiGraphqlConfig,
+		);
+		client.subscriptions = generateCustomSubscriptionsProperty(
 			client,
 			apiGraphqlConfig,
 		);
@@ -96,6 +105,10 @@ const generateModelsPropertyOnAmplifyConfigure = (clientRef: any) => {
 				apiGraphQLConfig,
 			);
 			clientRef.mutations = generateCustomMutationsProperty(
+				clientRef,
+				apiGraphQLConfig,
+			);
+			clientRef.subscriptions = generateCustomSubscriptionsProperty(
 				clientRef,
 				apiGraphQLConfig,
 			);

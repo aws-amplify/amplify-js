@@ -5,6 +5,7 @@ import {
 	AmplifyErrorCode,
 	ServiceError,
 } from '@aws-amplify/core/internals/utils';
+
 import { InAppMessagingError } from './InAppMessagingError';
 
 export function assertServiceError(

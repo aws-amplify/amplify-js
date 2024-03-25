@@ -11,7 +11,7 @@
 export function findIndexByFields<T>(
 	needle: T,
 	haystack: T[],
-	keyFields: Array<keyof T>,
+	keyFields: (keyof T)[],
 ): number {
 	const searchObject = Object.fromEntries(
 		keyFields.map(fieldName => [fieldName, needle[fieldName]]),

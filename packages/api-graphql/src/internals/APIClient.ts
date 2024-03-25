@@ -1,38 +1,39 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { resolveOwnerFields } from '../utils/resolveOwnerFields';
 import {
+	AssociationBelongsTo,
+	AssociationHasOne,
 	GraphQLAuthMode,
-	ModelIntrospectionSchema,
 	ModelFieldType,
+	ModelIntrospectionSchema,
 	NonModelFieldType,
 	SchemaModel,
-	AssociationHasOne,
-	AssociationBelongsTo,
+	SchemaNonModel,
 } from '@aws-amplify/core/internals/utils';
+import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
+
 import {
 	AuthModeParams,
 	ClientWithModels,
 	ListArgs,
 	QueryArgs,
 	V6Client,
-	V6ClientSSRRequest,
 	__authMode,
 	__authToken,
 	__headers,
 } from '../types';
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
-import { SchemaNonModel } from '@aws-amplify/core/dist/esm/singleton/API/types';
+import { resolveOwnerFields } from '../utils/resolveOwnerFields';
+
 import type { IndexMeta } from './operations/indexQuery';
 
-type LazyLoadOptions = {
+interface LazyLoadOptions {
 	authMode?: GraphQLAuthMode;
 	authToken?: string | undefined;
 	limit?: number | undefined;
 	nextToken?: string | undefined | null;
 	headers?: CustomHeaders | undefined;
-};
+}
 
 const connectionType = {
 	HAS_ONE: 'HAS_ONE',
@@ -54,9 +55,11 @@ export const flattenItems = (obj: Record<string, any>): Record<string, any> => {
 				res[prop] = value.items.map((item: Record<string, any>) =>
 					flattenItems(item),
 				);
+
 				return;
 			}
 			res[prop] = flattenItems(value);
+
 			return;
 		}
 
@@ -109,15 +112,17 @@ export function initializeModel(
 				connectionFields = modelField.association.associatedWith;
 			}
 
-			let targetNames: string[] = [];
+			const targetNames: string[] = [];
 			if (modelField.association && 'targetNames' in modelField.association) {
-				targetNames = modelField.association.targetNames;
+				targetNames.push(...modelField.association.targetNames);
 			}
 
 			switch (relationType) {
 				case connectionType.HAS_ONE:
-				case connectionType.BELONGS_TO:
+				case connectionType.BELONGS_TO: {
 					const sortKeyValues = relatedModelSKFieldNames.reduce(
+						// TODO(Eslint): is this implementation correct?
+						// eslint-disable-next-line array-callback-return
 						(acc: Record<string, any>, curVal) => {
 							if (record[curVal]) {
 								return (acc[curVal] = record[curVal]);
@@ -132,9 +137,7 @@ export function initializeModel(
 							options?: LazyLoadOptions,
 						) => {
 							if (record[targetNames[0]]) {
-								return (
-									client as V6ClientSSRRequest<Record<string, any>>
-								).models[relatedModelName].get(
+								return (client as any).models[relatedModelName].get(
 									contextSpec,
 									{
 										[relatedModelPKFieldName]: record[targetNames[0]],
@@ -146,6 +149,7 @@ export function initializeModel(
 									},
 								);
 							}
+
 							return undefined;
 						};
 					} else {
@@ -153,9 +157,7 @@ export function initializeModel(
 							options?: LazyLoadOptions,
 						) => {
 							if (record[targetNames[0]]) {
-								return (client as V6Client<Record<string, any>>).models[
-									relatedModelName
-								].get(
+								return (client as any).models[relatedModelName].get(
 									{
 										[relatedModelPKFieldName]: record[targetNames[0]],
 										...sortKeyValues,
@@ -166,12 +168,14 @@ export function initializeModel(
 									},
 								);
 							}
+
 							return undefined;
 						};
 					}
 
 					break;
-				case connectionType.HAS_MANY:
+				}
+				case connectionType.HAS_MANY: {
 					const parentPk = introModel.primaryKeyInfo.primaryKeyFieldName;
 					const parentSK = introModel.primaryKeyInfo.sortKeyFieldNames;
 
@@ -204,16 +208,18 @@ export function initializeModel(
 								options?: LazyLoadOptions,
 							) => {
 								if (record[parentPk]) {
-									return (
-										client as V6ClientSSRRequest<Record<string, any>>
-									).models[relatedModelName].list(contextSpec, {
-										filter: { and: hasManyFilter },
-										limit: options?.limit,
-										nextToken: options?.nextToken,
-										authMode: options?.authMode || authMode,
-										authToken: options?.authToken || authToken,
-									});
+									return (client as any).models[relatedModelName].list(
+										contextSpec,
+										{
+											filter: { and: hasManyFilter },
+											limit: options?.limit,
+											nextToken: options?.nextToken,
+											authMode: options?.authMode || authMode,
+											authToken: options?.authToken || authToken,
+										},
+									);
 								}
+
 								return [];
 							};
 						} else {
@@ -221,9 +227,7 @@ export function initializeModel(
 								options?: LazyLoadOptions,
 							) => {
 								if (record[parentPk]) {
-									return (client as V6Client<Record<string, any>>).models[
-										relatedModelName
-									].list({
+									return (client as any).models[relatedModelName].list({
 										filter: { and: hasManyFilter },
 										limit: options?.limit,
 										nextToken: options?.nextToken,
@@ -231,6 +235,7 @@ export function initializeModel(
 										authToken: options?.authToken || authToken,
 									});
 								}
+
 								return [];
 							};
 						}
@@ -254,16 +259,18 @@ export function initializeModel(
 							options?: LazyLoadOptions,
 						) => {
 							if (record[parentPk]) {
-								return (
-									client as V6ClientSSRRequest<Record<string, any>>
-								).models[relatedModelName].list(contextSpec, {
-									filter: { and: hasManyFilter },
-									limit: options?.limit,
-									nextToken: options?.nextToken,
-									authMode: options?.authMode || authMode,
-									authToken: options?.authToken || authToken,
-								});
+								return (client as any).models[relatedModelName].list(
+									contextSpec,
+									{
+										filter: { and: hasManyFilter },
+										limit: options?.limit,
+										nextToken: options?.nextToken,
+										authMode: options?.authMode || authMode,
+										authToken: options?.authToken || authToken,
+									},
+								);
 							}
+
 							return [];
 						};
 					} else {
@@ -271,9 +278,7 @@ export function initializeModel(
 							options?: LazyLoadOptions,
 						) => {
 							if (record[parentPk]) {
-								return (client as V6Client<Record<string, any>>).models[
-									relatedModelName
-								].list({
+								return (client as any).models[relatedModelName].list({
 									filter: { and: hasManyFilter },
 									limit: options?.limit,
 									nextToken: options?.nextToken,
@@ -281,11 +286,13 @@ export function initializeModel(
 									authToken: options?.authToken || authToken,
 								});
 							}
+
 							return [];
 						};
 					}
 
 					break;
+				}
 				default:
 					break;
 			}
@@ -308,9 +315,6 @@ export const graphQLOperationsInfo = {
 	OBSERVE_QUERY: { operationPrefix: 'observeQuery', usePlural: false },
 } as const;
 export type ModelOperation = keyof typeof graphQLOperationsInfo;
-
-type OperationPrefix =
-	(typeof graphQLOperationsInfo)[ModelOperation]['operationPrefix'];
 
 const SELECTION_SET_WILDCARD = '*';
 
@@ -346,6 +350,7 @@ export function defaultSelectionSetForNonModelWithIR(
 				pair: (string | Record<string, unknown>)[] | undefined,
 			): pair is (string | Record<string, unknown>)[] => pair !== undefined,
 		);
+
 	return Object.fromEntries(mappedFields);
 }
 
@@ -365,6 +370,8 @@ function defaultSelectionSetForModel(modelDefinition: SchemaModel): string[] {
 					return `${name}.${SELECTION_SET_WILDCARD}`;
 				}
 			}
+
+			return undefined;
 		})
 		.filter(Boolean);
 
@@ -460,10 +467,13 @@ export function customSelectionSetToIR(
 			}
 
 			if (nested === SELECTION_SET_WILDCARD) {
-				const relatedModelDefinition = modelIntrospection.models[relatedModel];
+				const nestedRelatedModelDefinition =
+					modelIntrospection.models[relatedModel];
 
 				result = {
-					[fieldName]: modelsDefaultSelectionSetIR(relatedModelDefinition),
+					[fieldName]: modelsDefaultSelectionSetIR(
+						nestedRelatedModelDefinition,
+					),
 				};
 			} else {
 				result = {
@@ -527,6 +537,7 @@ const modelsDefaultSelectionSetIR = (relatedModelDefinition: SchemaModel) => {
 	const reduced = defaultSelectionSet.reduce(
 		(acc: Record<string, any>, curVal) => {
 			acc[curVal] = FIELD_IR;
+
 			return acc;
 		},
 		{},
@@ -594,9 +605,12 @@ function deepMergeSelectionSetObjects<T extends Record<string, any>>(
 
 	for (const key in source) {
 		// This verification avoids 'Prototype Pollution' issue
-		if (!source.hasOwnProperty(key)) continue;
+		if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
 
-		if (target.hasOwnProperty(key) && isObject(target[key])) {
+		if (
+			Object.prototype.hasOwnProperty.call(target, key) &&
+			isObject(target[key])
+		) {
 			deepMergeSelectionSetObjects(source[key], target[key]);
 		} else {
 			target[key] = source[key];
@@ -659,6 +673,7 @@ export function generateGraphQLDocument(
 		const skQueryArgs = sk.reduce((acc: Record<string, any>, fieldName) => {
 			const fieldType = fields[fieldName].type;
 			acc[fieldName] = `Model${fieldType}KeyConditionInput`;
+
 			return acc;
 		}, {});
 
@@ -694,6 +709,8 @@ export function generateGraphQLDocument(
 					}${name}Input!`,
 				});
 			graphQLOperationType ?? (graphQLOperationType = 'mutation');
+		// TODO(Eslint): this this case clause correct without the break statement?
+		// eslint-disable-next-line no-fallthrough
 		case 'READ':
 			graphQLArguments ??
 				(graphQLArguments = isCustomPrimaryKey
@@ -709,6 +726,8 @@ export function generateGraphQLDocument(
 							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
 						});
 			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
+		// TODO(Eslint): this this case clause correct without the break statement?
+		// eslint-disable-next-line no-fallthrough
 		case 'LIST':
 			graphQLArguments ??
 				(graphQLArguments = {
@@ -719,6 +738,8 @@ export function generateGraphQLDocument(
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
 				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken __typename`);
+		// TODO(Eslint): this this case clause correct without the break statement?
+		// eslint-disable-next-line no-fallthrough
 		case 'INDEX_QUERY':
 			graphQLArguments ??
 				(graphQLArguments = {
@@ -730,6 +751,8 @@ export function generateGraphQLDocument(
 			graphQLOperationType ?? (graphQLOperationType = 'query');
 			graphQLSelectionSet ??
 				(graphQLSelectionSet = `items { ${selectionSetFields} } nextToken __typename`);
+		// TODO(Eslint): this this case clause correct without the break statement?
+		// eslint-disable-next-line no-fallthrough
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':
@@ -750,13 +773,13 @@ export function generateGraphQLDocument(
 	const graphQLDocument = `${graphQLOperationType}${
 		graphQLArguments
 			? `(${Object.entries(graphQLArguments).map(
-					([fieldName, type]) => `\$${fieldName}: ${type}`,
+					([fieldName, type]) => `$${fieldName}: ${type}`,
 				)})`
 			: ''
 	} { ${graphQLFieldName}${
 		graphQLArguments
 			? `(${Object.keys(graphQLArguments).map(
-					fieldName => `${fieldName}: \$${fieldName}`,
+					fieldName => `${fieldName}: $${fieldName}`,
 				)})`
 			: ''
 	} { ${graphQLSelectionSet} } }`;
@@ -842,7 +865,7 @@ export function buildGraphQLVariables(
 				variables.limit = arg.limit;
 			}
 			break;
-		case 'INDEX_QUERY':
+		case 'INDEX_QUERY': {
 			const { pk, sk = [] } = indexMeta!;
 
 			variables[pk] = arg![pk];
@@ -861,6 +884,7 @@ export function buildGraphQLVariables(
 				variables.limit = arg.limit;
 			}
 			break;
+		}
 		case 'ONCREATE':
 		case 'ONUPDATE':
 		case 'ONDELETE':
@@ -873,9 +897,10 @@ export function buildGraphQLVariables(
 				'Internal error: Attempted to build variables for observeQuery. Please report this error.',
 			);
 			break;
-		default:
+		default: {
 			const exhaustiveCheck: never = operation;
 			throw new Error(`Unhandled operation case: ${exhaustiveCheck}`);
+		}
 	}
 
 	return variables;
@@ -969,9 +994,9 @@ export function authModeParams(
 
 /**
  * Retrieves custom headers from either the client or request options.
- * @param {client} V6Client | V6ClientSSRRequest | V6ClientSSRCookies - for extracting client headers
- * @param {requestHeaders} [CustomHeaders] - request headers
- * @returns {CustomHeaders} - custom headers
+ * @param client V6Client | V6ClientSSRRequest | V6ClientSSRCookies - for extracting client headers
+ * @param requestHeaders {@link CustomHeaders} - request headers
+ * @returns custom headers as {@link CustomHeaders}
  */
 export function getCustomHeaders(
 	client: V6Client | ClientWithModels,

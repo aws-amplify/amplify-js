@@ -13,6 +13,7 @@ import {
 	requestPermissions,
 	setBadgeCount,
 } from './apis';
+
 export {
 	PushNotificationMessage,
 	PushNotificationPermissionStatus,

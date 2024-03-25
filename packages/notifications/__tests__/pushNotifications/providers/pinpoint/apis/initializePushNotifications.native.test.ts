@@ -47,7 +47,7 @@ const mockGetConstants = jest.fn();
 const mockRegisterHeadlessTask = jest.fn();
 
 describe('initializePushNotifications (native)', () => {
-	let initializePushNotifications;
+	let initializePushNotifications: () => void;
 	const { NativeEvent } = pushModuleConstants;
 	// create mocks
 	const mockEventListenerRemover = { remove: jest.fn() };
