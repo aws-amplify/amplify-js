@@ -47,10 +47,11 @@ export type StorageGetPropertiesInputKey<Options extends StorageOptions> =
 export type StorageGetPropertiesInputPath<Options> = StorageOperationInputPath &
 	StorageOperationOptionsInput<Options>;
 
-export interface StorageRemoveInput<Options extends StorageOptions> {
-	key: string;
-	options?: Options;
-}
+export type StorageRemoveInputKey<Options> = StorageOperationInputKey &
+	StorageOperationOptionsInput<Options>;
+
+export type StorageRemoveInputPath<Options> = StorageOperationInputPath &
+	StorageOperationOptionsInput<Options>;
 
 export interface StorageListInput<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,

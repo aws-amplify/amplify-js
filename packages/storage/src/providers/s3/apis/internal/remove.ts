@@ -5,23 +5,37 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { RemoveInput, RemoveOutput } from '../../types';
-import { resolveS3ConfigAndInput } from '../../utils';
+import {
+	resolveS3ConfigAndInput,
+	validateStorageOperationInput,
+} from '../../utils';
 import { deleteObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
+import { STORAGE_INPUT_KEY } from '../../utils/constants';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
 	input: RemoveInput,
 ): Promise<RemoveOutput> => {
-	const { key, options = {} } = input;
-	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(
-		amplify,
-		options,
+	const { options = {} } = input ?? {};
+	const { s3Config, keyPrefix, bucket, identityId } =
+		await resolveS3ConfigAndInput(amplify, options);
+
+	const { inputType, objectKey } = validateStorageOperationInput(
+		input,
+		identityId,
 	);
 
-	const finalKey = `${keyPrefix}${key}`;
-	logger.debug(`remove "${key}" from "${finalKey}".`);
+	let finalKey;
+	if (inputType === STORAGE_INPUT_KEY) {
+		finalKey = `${keyPrefix}${objectKey}`;
+		logger.debug(`remove "${objectKey}" from "${finalKey}".`);
+	} else {
+		finalKey = objectKey;
+		logger.debug(`removing object in path "${finalKey}"`);
+	}
+
 	await deleteObject(
 		{
 			...s3Config,
@@ -33,7 +47,11 @@ export const remove = async (
 		},
 	);
 
-	return {
-		key,
-	};
+	return inputType === STORAGE_INPUT_KEY
+		? {
+				key: objectKey,
+			}
+		: {
+				path: objectKey,
+			};
 };

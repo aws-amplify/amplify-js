@@ -13,7 +13,8 @@ import {
 	StorageGetUrlInputKey,
 	StorageGetUrlInputPath,
 	StorageListInput,
-	StorageRemoveInput,
+	StorageRemoveInputKey,
+	StorageRemoveInputPath,
 	StorageUploadDataInput,
 } from '../../../types';
 import {
@@ -77,9 +78,22 @@ export type ListAllInput = StorageListInput<ListAllOptions>;
 export type ListPaginateInput = StorageListInput<ListPaginateOptions>;
 
 /**
+ * @deprecated Use {@link RemoveInputPath} instead.
+ * Input type with key for S3 remove API.
+ */
+export type RemoveInputKey = StorageRemoveInputKey<RemoveOptions>;
+
+/**
+ * Input type with path for S3 remove API.
+ */
+export type RemoveInputPath = StorageRemoveInputPath<
+	Omit<RemoveOptions, 'accessLevel'>
+>;
+
+/**
  * Input type for S3 remove API.
  */
-export type RemoveInput = StorageRemoveInput<RemoveOptions>;
+export type RemoveInput = StrictUnion<RemoveInputKey | RemoveInputPath>;
 
 /**
  * Input type for S3 downloadData API.
