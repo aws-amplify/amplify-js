@@ -23,6 +23,5 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  * thrown either username or key are not defined.
  *
  */
-export const getUrl = (input: GetUrlInput): Promise<GetUrlOutput> => {
-	return getUrlInternal(Amplify, input);
-};
+export const getUrl = (input: GetUrlInput): Promise<GetUrlOutput> =>
+	getUrlInternal(Amplify, input);

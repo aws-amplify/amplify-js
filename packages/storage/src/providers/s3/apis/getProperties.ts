@@ -27,7 +27,7 @@ interface GetProperties {
 	(input: GetPropertiesInputPath): Promise<GetPropertiesOutputPath>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
-	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
+	 * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/get-properties/ | path} instead.
 	 *
 	 * Gets the properties of a file. The properties include S3 system metadata and
 	 * the user metadata that was provided when uploading the file.
@@ -44,6 +44,4 @@ export const getProperties: GetProperties = <
 	Output extends GetPropertiesOutput,
 >(
 	input: GetPropertiesInput,
-): Promise<Output> => {
-	return getPropertiesInternal(Amplify, input) as Promise<Output>;
-};
+): Promise<Output> => getPropertiesInternal(Amplify, input) as Promise<Output>;
