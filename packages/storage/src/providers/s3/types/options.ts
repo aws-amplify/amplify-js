@@ -57,7 +57,9 @@ interface TransferOptions {
 /**
  * Input options type for S3 getProperties API.
  */
-export type GetPropertiesOptions = ReadOptions & CommonOptions;
+/** @deprecated Use {@link GetPropertiesOptionsPath} instead. */
+export type GetPropertiesOptionsKey = ReadOptions & CommonOptions;
+export type GetPropertiesOptionsPath = CommonOptions;
 
 /**
  * Input options type for S3 getProperties API.
@@ -81,19 +83,22 @@ export type ListPaginateOptions = StorageListPaginateOptions &
 /**
  * Input options type for S3 getUrl API.
  */
-export type GetUrlOptions = ReadOptions &
-	CommonOptions & {
-		/**
-		 * Whether to head object to make sure the object existence before downloading.
-		 * @default false
-		 */
-		validateObjectExistence?: boolean;
-		/**
-		 * Number of seconds till the URL expires.
-		 * @default 900 (15 minutes)
-		 */
-		expiresIn?: number;
-	};
+export type GetUrlOptions = CommonOptions & {
+	/**
+	 * Whether to head object to make sure the object existence before downloading.
+	 * @default false
+	 */
+	validateObjectExistence?: boolean;
+	/**
+	 * Number of seconds till the URL expires.
+	 * @default 900 (15 minutes)
+	 */
+	expiresIn?: number;
+};
+
+/** @deprecated Use {@link GetUrlOptionsPath} instead. */
+export type GetUrlOptionsKey = ReadOptions & GetUrlOptions;
+export type GetUrlOptionsPath = GetUrlOptions;
 
 /**
  * Input options type for S3 downloadData API.

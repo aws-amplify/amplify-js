@@ -40,8 +40,12 @@ export interface StorageOperationInput<Options extends StorageOptions> {
 	options?: Options;
 }
 
-export type StorageGetPropertiesInput<Options extends StorageOptions> =
-	StorageOperationInput<Options>;
+/** @deprecated Use {@link StorageGetPropertiesInputPath} instead. */
+export type StorageGetPropertiesInputKey<Options extends StorageOptions> =
+	StorageOperationInputKey & StorageOperationInput<Options>;
+
+export type StorageGetPropertiesInputPath<Options> = StorageOperationInputPath &
+	StorageOperationOptionsInput<Options>;
 
 export interface StorageRemoveInput<Options extends StorageOptions> {
 	key: string;
@@ -55,8 +59,12 @@ export interface StorageListInput<
 	options?: Options;
 }
 
-export type StorageGetUrlInput<Options extends StorageOptions> =
-	StorageOperationInput<Options>;
+/** @deprecated Use {@link StorageGetUrlInputPath} instead. */
+export type StorageGetUrlInputKey<Options extends StorageOptions> =
+	StorageOperationInputKey & StorageOperationInput<Options>;
+
+export type StorageGetUrlInputPath<Options> = StorageOperationInputPath &
+	StorageOperationOptionsInput<Options>;
 
 export type StorageUploadDataInput<Options extends StorageOptions> =
 	StorageOperationInput<Options> & {
