@@ -96,7 +96,7 @@ export type GetUrlOptions = CommonOptions & {
 	expiresIn?: number;
 };
 
-/** @deprecated Use {@link GetPropertiesOptionsPath} instead. */
+/** @deprecated Use {@link GetUrlOptionsPath} instead. */
 export type GetUrlOptionsKey = ReadOptions & GetUrlOptions;
 export type GetUrlOptionsPath = GetUrlOptions;
 

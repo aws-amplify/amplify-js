@@ -62,7 +62,7 @@ export type GetPropertiesInputPath =
  */
 export type GetUrlInput = StrictUnion<GetUrlInputKey | GetUrlInputPath>;
 
-/** @deprecated Use {@link GetPropertiesInputPath} instead. */
+/** @deprecated Use {@link GetUrlInputPath} instead. */
 export type GetUrlInputKey = StorageGetUrlInputKey<GetUrlOptionsKey>;
 export type GetUrlInputPath = StorageGetUrlInputPath<GetUrlOptionsPath>;
 

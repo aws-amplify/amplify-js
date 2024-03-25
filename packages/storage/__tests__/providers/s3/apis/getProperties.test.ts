@@ -34,6 +34,7 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const key = 'key';
+const path = 'path';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 
@@ -169,7 +170,7 @@ describe('Happy cases: With path', () => {
 	});
 	describe('getProperties with path', () => {
 		const expected = {
-			path: 'path',
+			path,
 			size: '100',
 			contentType: 'text/plain',
 			eTag: 'etag',
@@ -198,23 +199,23 @@ describe('Happy cases: With path', () => {
 		});
 		test.each([
 			{
-				path: 'path',
-				expectedKey: 'path',
+				testPath: path,
+				expectedKey: path,
 			},
 			{
-				path: () => 'path',
-				expectedKey: 'path',
+				testPath: () => path,
+				expectedKey: path,
 			},
 		])(
 			'should getProperties with path $path and expectedKey $expectedKey',
-			async ({ path, expectedKey }) => {
+			async ({ testPath, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,
 				};
 				expect(
 					await getProperties({
-						path,
+						path: testPath,
 						options: {
 							useAccelerateEndpoint: true,
 						} as GetPropertiesOptionsPath,
@@ -239,7 +240,7 @@ describe('Happy cases: With path', () => {
 			);
 			expect.assertions(3);
 			try {
-				await getProperties({ path: 'path' });
+				await getProperties({ path });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(
@@ -250,7 +251,7 @@ describe('Happy cases: With path', () => {
 					},
 					{
 						Bucket: 'bucket',
-						Key: 'path',
+						Key: path,
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
