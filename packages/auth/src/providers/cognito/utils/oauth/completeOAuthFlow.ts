@@ -10,7 +10,6 @@ import {
 import { Hub, decodeJWT } from '@aws-amplify/core';
 
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
-import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
 import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
 
 import { createOAuthError } from './createOAuthError';
@@ -235,12 +234,6 @@ const completeFlow = async ({
 	// e.g. `getCurrentUser()` below, so it allows every inflight async calls to
 	//  `fetchAuthSession` can be resolved
 	resolveAndClearInflightPromises();
-
-	// when the oauth flow is completed, there should be nothing to block the async calls
-	// that involves fetchAuthSession in the `TokenOrchestrator`
-	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(async () => {
-		// no-op
-	});
 
 	if (isCustomState(state)) {
 		Hub.dispatch(

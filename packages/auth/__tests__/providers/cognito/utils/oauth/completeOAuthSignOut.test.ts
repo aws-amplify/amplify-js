@@ -3,7 +3,7 @@
 
 import { clearCredentials, Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
-import { tokenOrchestrator } from '../../../../../src/providers/cognito/tokenProvider';
+import { tokenOrchestrator } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 import { completeOAuthSignOut } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthSignOut';
 import { DefaultOAuthStore } from '../../../../../src/providers/cognito/utils/signInWithRedirectStore';
 
@@ -16,7 +16,7 @@ jest.mock('@aws-amplify/core', () => {
 		},
 	};
 });
-jest.mock('../../../../../src/providers/cognito/tokenProvider');
+jest.mock('../../../../../src/providers/cognito/tokenProvider/tokenProvider');
 
 describe('completeOAuthSignOut', () => {
 	// assert mocks
