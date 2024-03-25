@@ -35,7 +35,7 @@ const MAX_PAGE_SIZE = 1000;
 interface ListInputArgs {
 	s3Config: ResolvedS3Config;
 	listParams: ListObjectsV2Input;
-	generatedPrefix: string;
+	generatedPrefix?: string;
 }
 
 export const list = async (
@@ -73,23 +73,29 @@ export const list = async (
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
-	return options.listAll
-		? isInputWithPrefix
-			? _listAllPrefix({
-					s3Config,
-					listParams,
-					generatedPrefix,
-				})
-			: _listAllPath({
-					s3Config,
-					listParams,
-					generatedPrefix,
-				})
-		: inputType === STORAGE_INPUT_PREFIX
-			? _listPrefix({ s3Config, listParams, generatedPrefix })
-			: _listPath({ s3Config, listParams, generatedPrefix });
+	const listInputArgs: ListInputArgs = {
+		s3Config,
+		listParams,
+	};
+	if (options.listAll) {
+		if (isInputWithPrefix) {
+			return _listAllPrefix({
+				...listInputArgs,
+				generatedPrefix,
+			});
+		} else {
+			return _listAllPath(listInputArgs);
+		}
+	} else {
+		if (inputType === STORAGE_INPUT_PREFIX) {
+			return _listPrefix({ ...listInputArgs, generatedPrefix });
+		} else {
+			return _listPath(listInputArgs);
+		}
+	}
 };
 
+/** @deprecated Use {@link _listAllPath} instead. */
 const _listAllPrefix = async ({
 	s3Config,
 	listParams,
@@ -116,6 +122,7 @@ const _listAllPrefix = async ({
 	};
 };
 
+/** @deprecated Use {@link _listPath} instead. */
 const _listPrefix = async ({
 	s3Config,
 	listParams,
@@ -143,7 +150,9 @@ const _listPrefix = async ({
 
 	return {
 		items: response.Contents.map(item => ({
-			key: item.Key!.substring(generatedPrefix.length),
+			key: generatedPrefix
+				? item.Key!.substring(generatedPrefix.length)
+				: item.Key!,
 			eTag: item.ETag,
 			lastModified: item.LastModified,
 			size: item.Size,
@@ -155,13 +164,11 @@ const _listPrefix = async ({
 const _listAllPath = async ({
 	s3Config,
 	listParams,
-	generatedPrefix,
 }: ListInputArgs): Promise<ListAllOutputPath> => {
 	const listResult: ListOutputItemPath[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
 		const { items: pageResults, nextToken: pageNextToken } = await _listPath({
-			generatedPrefix,
 			s3Config,
 			listParams: {
 				...listParams,
