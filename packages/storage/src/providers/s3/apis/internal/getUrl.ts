@@ -7,11 +7,15 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 import { GetUrlInput, GetUrlOutput } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client';
-import { resolveS3ConfigAndInput } from '../../utils';
+import {
+	resolveS3ConfigAndInput,
+	validateStorageOperationInput,
+} from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
 import {
 	DEFAULT_PRESIGN_EXPIRATION,
 	MAX_URL_EXPIRATION,
+	STORAGE_INPUT_KEY,
 } from '../../utils/constants';
 
 import { getProperties } from './getProperties';
@@ -20,18 +24,32 @@ export const getUrl = async (
 	amplify: AmplifyClassV6,
 	input: GetUrlInput,
 ): Promise<GetUrlOutput> => {
-	const { key, options } = input;
-
-	if (options?.validateObjectExistence) {
-		await getProperties(amplify, { key, options }, StorageAction.GetUrl);
-	}
-
-	const { s3Config, keyPrefix, bucket } = await resolveS3ConfigAndInput(
-		amplify,
-		options,
+	const { options: getUrlOptions } = input;
+	const { s3Config, keyPrefix, bucket, identityId } =
+		await resolveS3ConfigAndInput(amplify, getUrlOptions);
+	const { inputType, objectKey } = validateStorageOperationInput(
+		input,
+		identityId,
 	);
 
-	let urlExpirationInSec = options?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
+	const finalKey =
+		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
+
+	if (getUrlOptions?.validateObjectExistence) {
+		await getProperties(
+			amplify,
+			{
+				options: getUrlOptions,
+				...((inputType === STORAGE_INPUT_KEY
+					? { key: input.key }
+					: { path: input.path }) as GetUrlInput),
+			},
+			StorageAction.GetUrl,
+		);
+	}
+
+	let urlExpirationInSec =
+		getUrlOptions?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
 	const awsCredExpiration = s3Config.credentials?.expiration;
 	if (awsCredExpiration) {
 		const awsCredExpirationInSec = Math.floor(
@@ -54,7 +72,7 @@ export const getUrl = async (
 			},
 			{
 				Bucket: bucket,
-				Key: `${keyPrefix}${key}`,
+				Key: finalKey,
 			},
 		),
 		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),

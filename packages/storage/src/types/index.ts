@@ -9,16 +9,18 @@ export {
 } from './common';
 export {
 	StorageOperationInput,
+	StorageGetPropertiesInputKey,
+	StorageGetPropertiesInputPath,
 	StorageListInputPrefix,
 	StorageListInputPath,
-	StorageGetPropertiesInput,
 	StorageRemoveInput,
 	StorageDownloadDataInputKey,
 	StorageDownloadDataInputPath,
 	StorageUploadDataInput,
 	StorageCopyInputKey,
 	StorageCopyInputPath,
-	StorageGetUrlInput,
+	StorageGetUrlInputKey,
+	StorageGetUrlInputPath,
 	StorageUploadDataPayload,
 } from './inputs';
 export {
