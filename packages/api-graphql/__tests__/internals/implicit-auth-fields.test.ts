@@ -1,19 +1,11 @@
-import * as raw from '../../src';
-import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
-import { Observable, from } from 'rxjs';
-import * as internals from '../../src/internals';
 import {
-	normalizePostGraphqlCalls,
-	expectSub,
-	expectSubWithHeaders,
-	expectSubWithHeadersFn,
-	expectSubWithlibraryConfigHeaders,
 	expectSelectionSetContains,
-	expectSelectionSetNotContains,
 	expectVariables,
+	mockApiResponse,
 } from '../utils/index';
 
 const serverManagedFields = {
@@ -22,25 +14,6 @@ const serverManagedFields = {
 	createdAt: new Date().toISOString(),
 	updatedAt: new Date().toISOString(),
 };
-
-/**
- *
- * @param value Value to be returned. Will be `awaited`, and can
- * therefore be a simple JSON value or a `Promise`.
- * @returns
- */
-function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
-			const result = await value;
-			return {
-				body: {
-					json: () => result,
-				},
-			};
-		});
-}
 
 describe('implicit auth field handling', () => {
 	beforeEach(() => {

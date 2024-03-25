@@ -3,13 +3,15 @@ import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
-import { Observable, from } from 'rxjs';
+import { from } from 'rxjs';
 import {
 	normalizePostGraphqlCalls,
 	expectSub,
 	expectSubWithHeaders,
 	expectSubWithHeadersFn,
 	expectSubWithlibraryConfigHeaders,
+	makeAppSyncStreams,
+	mockApiResponse,
 } from '../utils/index';
 
 const serverManagedFields = {
@@ -18,50 +20,6 @@ const serverManagedFields = {
 	createdAt: new Date().toISOString(),
 	updatedAt: new Date().toISOString(),
 };
-
-/**
- *
- * @param value Value to be returned. Will be `awaited`, and can
- * therefore be a simple JSON value or a `Promise`.
- * @returns
- */
-function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
-			const result = await value;
-			return {
-				body: {
-					json: () => result,
-				},
-			};
-		});
-}
-
-function makeAppSyncStreams() {
-	const streams = {} as Partial<
-		Record<
-			'create' | 'update' | 'delete',
-			{
-				next: (message: any) => void;
-			}
-		>
-	>;
-	const spy = jest.fn(request => {
-		const matchedType = (request.query as string).match(
-			/on(Create|Update|Delete)/,
-		);
-		if (matchedType) {
-			return new Observable(subscriber => {
-				streams[
-					matchedType[1].toLowerCase() as 'create' | 'update' | 'delete'
-				] = subscriber;
-			});
-		}
-	});
-	(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-	return { streams, spy };
-}
 
 const USER_AGENT_DETAILS = {
 	action: '1',

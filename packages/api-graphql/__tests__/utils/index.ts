@@ -1,4 +1,6 @@
 export * from './expects';
+import * as raw from '../../src';
+import { Observable, from } from 'rxjs';
 
 /**
  * For each call against the spy, assuming the spy is a `post()` spy,
@@ -39,4 +41,72 @@ export function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
 		// snapshot, we hide the details of the instance here.
 		return ['AmplifyClassV6', postOptions];
 	});
+}
+
+/**
+ *
+ * @param value Value to be returned. Will be `awaited`, and can
+ * therefore be a simple JSON value or a `Promise`.
+ * @returns
+ */
+export function mockApiResponse(value: any) {
+	return jest
+		.spyOn((raw.GraphQLAPI as any)._api, 'post')
+		.mockImplementation(async () => {
+			const result = await value;
+			return {
+				body: {
+					json: () => result,
+				},
+			};
+		});
+}
+
+/**
+ * Mocks in a listener for `GraphQLAPI.AppSyncRealTime.subscribe()`, returning
+ * the spy and the create, update, and delete subs.
+ *
+ * After the client connects, you can mock messages like this:
+ *
+ * ```ts
+ * const { streams, spy } = makeAppSyncStreams();
+ *
+ * streams.create?.next({
+ * 	data: {
+ * 		onCreateTodo: {
+ * 			__typename: 'Todo',
+ * 			...serverManagedFields,
+ * 			id: 'different-id',
+ * 			name: 'observed record',
+ * 			description: 'something something',
+ * 		},
+ * 	},
+ * });
+ * ```
+ *
+ * @returns
+ */
+export function makeAppSyncStreams() {
+	const streams = {} as Partial<
+		Record<
+			'create' | 'update' | 'delete',
+			{
+				next: (message: any) => void;
+			}
+		>
+	>;
+	const spy = jest.fn(request => {
+		const matchedType = (request.query as string).match(
+			/on(Create|Update|Delete)/,
+		);
+		if (matchedType) {
+			return new Observable(subscriber => {
+				streams[
+					matchedType[1].toLowerCase() as 'create' | 'update' | 'delete'
+				] = subscriber;
+			});
+		}
+	});
+	(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+	return { streams, spy };
 }
