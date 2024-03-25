@@ -382,46 +382,81 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
-		// test('can list() with limit', async () => {
-		// 	const spy = mockApiResponse({
-		// 		data: {
-		// 			listThingWithCustomPks: {
-		// 				items: [
-		// 					{
-		// 						__typename: 'ThingWithCustomPk',
-		// 						...serverManagedFields,
-		// 						cpk_cluster_key:: '1',
-		// 						cpk_sort_key: 'a',
-		// 					},
-		// 					{
-		// 						__typename: 'ThingWithCustomPk',
-		// 						...serverManagedFields,
-		// 						cpk_cluster_key:: '1',
-		// 						cpk_sort_key: 'b',
-		// 					},
-		// 					{
-		// 						__typename: 'ThingWithCustomPk',
-		// 						...serverManagedFields,
-		// 						cpk_cluster_key: '1',
-		// 						cpk_sort_key: 'c',
-		// 					},
-		// 				],
-		// 			},
-		// 		},
-		// 	});
+		test('can list() with sortDirection (ASC)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listThingWithCustomPks: {
+						items: [
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'a',
+							},
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'b',
+							},
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'c',
+							},
+						],
+					},
+				},
+			});
 
-		// 	const client = generateClient<Schema>({ amplify: Amplify });
-		// 	// const { data } = await client.models.Todo.list({
-		// 	// 	filter: { name: { contains: 'name' } },
-		// 	// 	limit: 5,
-		// 	// });
-		// 	const { data: items } = await client.models.ThingWithCustomPk.list({
-		// 		cpk_cluster_key: "1",
-		// 		sortDirection: "ASC",
-		// 	});
+			const client = generateClient<Schema>({ amplify: Amplify });
 
-		// 	expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-		// });
+			const { data } = await client.models.ThingWithCustomPk.list({
+				cpk_cluster_key: '1',
+				sortDirection: 'ASC',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('can list() with sortDirection (DESC)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listThingWithCustomPks: {
+						items: [
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'c',
+							},
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'b',
+							},
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'a',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } = await client.models.ThingWithCustomPk.list({
+				cpk_cluster_key: '1',
+				sortDirection: 'DESC',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
 
 		test('can update()', async () => {
 			const spy = mockApiResponse({

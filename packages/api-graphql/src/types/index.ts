@@ -8,7 +8,8 @@ import {
 	CustomSubscriptions,
 	EnumTypes,
 	ModelTypes,
-	ModelSortDirection,
+	// Temp:
+	// ModelSortDirection,
 } from '@aws-amplify/data-schema-types';
 import { DocumentNode, GraphQLError, Source } from 'graphql';
 import { Observable } from 'rxjs';
@@ -45,6 +46,9 @@ export interface GraphQLResult<T = object> {
 	errors?: GraphQLError[];
 	extensions?: Record<string, any>;
 }
+
+// Temp for updating tests:
+type ModelSortDirection = 'ASC' | 'DESC';
 
 // Opaque type used for determining the graphql query type
 declare const queryType: unique symbol;
