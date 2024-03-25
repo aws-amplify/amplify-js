@@ -61,10 +61,16 @@ export type GetUrlOutput = StorageGetUrlOutput;
  */
 export type UploadDataOutput = UploadTask<ItemKey>;
 
+/** @deprecated Use {@link GetPropertiesOutputPath} instead. */
+export type GetPropertiesOutputKey = ItemKey;
+export type GetPropertiesOutputPath = ItemPath;
+
 /**
  * Output type for S3 getProperties API.
  */
-export type GetPropertiesOutput = ItemKey;
+export type GetPropertiesOutput =
+	| GetPropertiesOutputKey
+	| GetPropertiesOutputPath;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.
