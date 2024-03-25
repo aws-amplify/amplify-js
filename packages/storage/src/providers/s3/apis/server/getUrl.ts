@@ -29,6 +29,5 @@ import { getUrl as getUrlInternal } from '../internal/getUrl';
 export const getUrl = async (
 	contextSpec: AmplifyServer.ContextSpec,
 	input: GetUrlInput,
-): Promise<GetUrlOutput> => {
-	return getUrlInternal(getAmplifyServerContext(contextSpec).amplify, input);
-};
+): Promise<GetUrlOutput> =>
+	getUrlInternal(getAmplifyServerContext(contextSpec).amplify, input);

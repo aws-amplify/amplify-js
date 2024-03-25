@@ -55,9 +55,8 @@ export const getProperties: GetProperties = <
 >(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: GetPropertiesInput,
-): Promise<Output> => {
-	return getPropertiesInternal(
+): Promise<Output> =>
+	getPropertiesInternal(
 		getAmplifyServerContext(contextSpec).amplify,
 		input,
 	) as Promise<Output>;
-};
