@@ -436,14 +436,12 @@ describe('list API', () => {
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});
-		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
+		it('should throw NoPath error when the path is empty', async () => {
 			expect.assertions(1);
 			try {
 				await list({ path: '' });
 			} catch (error: any) {
-				expect(error.name).toBe(
-					StorageValidationErrorCode.InvalidStorageOperationInput,
-				);
+				expect(error.name).toBe(StorageValidationErrorCode.NoPath);
 			}
 		});
 	});
