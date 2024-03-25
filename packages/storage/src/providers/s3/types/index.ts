@@ -40,6 +40,8 @@ export {
 	GetPropertiesInputKey,
 	GetPropertiesInputPath,
 	GetUrlInput,
+	GetUrlInputKey,
+	GetUrlInputPath,
 	ListAllInput,
 	ListPaginateInput,
 	RemoveInput,
