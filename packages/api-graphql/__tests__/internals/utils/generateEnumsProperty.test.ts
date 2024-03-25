@@ -1,5 +1,5 @@
 import { GraphQLProviderConfig } from '@aws-amplify/core/internals/utils';
-import { generateEnumsProperty } from '../../../src/internals/utils/generateEnumsProperty';
+import { generateEnumsProperty } from '../../../src/internals/utils/clientProperties/generateEnumsProperty';
 
 describe('generateEnumsProperty()', () => {
 	it('returns an empty object when there is no valid `modelIntrospection`', () => {

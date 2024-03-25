@@ -23,7 +23,7 @@ export const generateCodeVerifier = (
 ): {
 	value: string;
 	method: 'S256';
-	toCodeChallenge: () => string;
+	toCodeChallenge(): string;
 } => {
 	const randomBytes = new Uint8Array(length);
 	getCrypto().getRandomValues(randomBytes);
@@ -31,7 +31,7 @@ export const generateCodeVerifier = (
 	let value = '';
 	let codeChallenge: string | undefined;
 
-	for (let byte of randomBytes) {
+	for (const byte of randomBytes) {
 		value += CODE_VERIFIER_CHARSET.charAt(byte % CODE_VERIFIER_CHARSET.length);
 	}
 
@@ -43,6 +43,7 @@ export const generateCodeVerifier = (
 				return codeChallenge;
 			}
 			codeChallenge = generateCodeChallenge(value);
+
 			return codeChallenge;
 		},
 	};

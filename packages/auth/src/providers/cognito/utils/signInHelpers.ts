@@ -3,44 +3,41 @@
 
 import { Amplify, CognitoUserPoolConfig } from '@aws-amplify/core';
 import {
+	AmplifyUrl,
 	AuthAction,
 	assertTokenProviderConfig,
 	base64Encoder,
-	AmplifyUrl,
 } from '@aws-amplify/core/internals/utils';
-import { AuthenticationHelper } from './srp/AuthenticationHelper';
-import { BigInteger } from './srp/BigInteger';
-import {
-	getAuthenticationHelper,
-	getBytesFromHex,
-	getNowString,
-	getSignatureString,
-} from './srp';
 
 import { ClientMetadata, ConfirmSignInOptions } from '../types';
 import {
 	AuthAdditionalInfo,
-	AuthSignInOutput,
 	AuthDeliveryMedium,
+	AuthSignInOutput,
 } from '../../../types';
 import { AuthError } from '../../../errors/AuthError';
 import { InitiateAuthException } from '../types/errors';
 import {
 	AWSAuthUser,
-	AuthUserAttributes,
 	AuthMFAType,
 	AuthTOTPSetupDetails,
+	AuthUserAttributes,
 } from '../../../types/models';
 import { AuthErrorCodes } from '../../../common/AuthErrorStrings';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
+import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
+import { getCurrentUser } from '../apis/getCurrentUser';
+import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
+import { getAuthUserAgentValue } from '../../../utils';
+
 import { signInStore } from './signInStore';
 import {
+	associateSoftwareToken,
+	confirmDevice,
 	initiateAuth,
 	respondToAuthChallenge,
 	verifySoftwareToken,
-	associateSoftwareToken,
-	confirmDevice,
 } from './clients/CognitoIdentityProvider';
 import {
 	ChallengeName,
@@ -53,16 +50,20 @@ import {
 	RespondToAuthChallengeCommandOutput,
 } from './clients/CognitoIdentityProvider/types';
 import { getRegion } from './clients/CognitoIdentityProvider/utils';
-import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants';
-import { getCurrentUser } from '../apis/getCurrentUser';
-import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { assertDeviceMetadata } from './types';
-import { getAuthUserAgentValue } from '../../../utils';
+import {
+	getAuthenticationHelper,
+	getBytesFromHex,
+	getNowString,
+	getSignatureString,
+} from './srp';
+import { BigInteger } from './srp/BigInteger';
+import { AuthenticationHelper } from './srp/AuthenticationHelper';
 import { getUserContextData } from './userContextData';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
-type HandleAuthChallengeRequest = {
+interface HandleAuthChallengeRequest {
 	challengeResponse: string;
 	username: string;
 	clientMetadata?: ClientMetadata;
@@ -70,15 +71,15 @@ type HandleAuthChallengeRequest = {
 	deviceName?: string;
 	requiredAttributes?: AuthUserAttributes;
 	config: CognitoUserPoolConfig;
-};
+}
 
-type HandleDeviceSRPInput = {
+interface HandleDeviceSRPInput {
 	username: string;
 	config: CognitoUserPoolConfig;
 	clientMetadata: ClientMetadata | undefined;
 	session: string | undefined;
 	tokenOrchestrator?: AuthTokenOrchestrator;
-};
+}
 
 export async function handleCustomChallenge({
 	challengeResponse,
@@ -98,7 +99,7 @@ export async function handleCustomChallenge({
 
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	if (deviceMetadata && deviceMetadata.deviceKey) {
-		challengeResponses['DEVICE_KEY'] = deviceMetadata.deviceKey;
+		challengeResponses.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
 	const UserContextData = getUserContextData({
@@ -174,6 +175,7 @@ export async function handleMFASetupChallenge({
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
 	};
+
 	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
@@ -280,6 +282,7 @@ export async function handleSoftwareTokenMFAChallenge({
 		ClientId: userPoolClientId,
 		UserContextData,
 	};
+
 	return respondToAuthChallenge(
 		{
 			region: getRegion(userPoolId),
@@ -342,7 +345,7 @@ export async function handleUserPasswordAuthFlow(
 	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
 
 	if (deviceMetadata && deviceMetadata.deviceKey) {
-		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
+		authParameters.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
 	const UserContextData = getUserContextData({
@@ -382,6 +385,7 @@ export async function handleUserPasswordAuthFlow(
 			session: response.Session,
 			tokenOrchestrator,
 		});
+
 	return response;
 }
 
@@ -425,6 +429,7 @@ export async function handleUserSRPAuthFlow(
 	const { ChallengeParameters: challengeParameters, Session: session } = resp;
 	const activeUsername = challengeParameters?.USERNAME ?? username;
 	setActiveSignInUsername(activeUsername);
+
 	return retryOnResourceNotFoundException(
 		handlePasswordVerifierChallenge,
 		[
@@ -448,14 +453,13 @@ export async function handleCustomAuthFlowWithoutSRP(
 	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<InitiateAuthCommandOutput> {
 	const { userPoolClientId, userPoolId } = config;
-	const { dispatch } = signInStore;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 	};
 	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
 
 	if (deviceMetadata && deviceMetadata.deviceKey) {
-		authParameters['DEVICE_KEY'] = deviceMetadata.deviceKey;
+		authParameters.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
 	const UserContextData = getUserContextData({
@@ -489,6 +493,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 			session: response.Session,
 			tokenOrchestrator,
 		});
+
 	return response;
 }
 
@@ -559,7 +564,7 @@ async function handleDeviceSRPAuth({
 	session,
 	tokenOrchestrator,
 }: HandleDeviceSRPInput): Promise<RespondToAuthChallengeCommandOutput> {
-	const userPoolId = config.userPoolId;
+	const { userPoolId } = config;
 	const clientId = config.userPoolClientId;
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	assertDeviceMetadata(deviceMetadata);
@@ -579,14 +584,15 @@ async function handleDeviceSRPAuth({
 		ClientMetadata: clientMetadata,
 		Session: session,
 	};
-	const { ChallengeParameters, Session } = await respondToAuthChallenge(
-		{ region: getRegion(userPoolId) },
-		jsonReqResponseChallenge,
-	);
+	const { ChallengeParameters: respondedChallengeParameters, Session } =
+		await respondToAuthChallenge(
+			{ region: getRegion(userPoolId) },
+			jsonReqResponseChallenge,
+		);
 
 	return handleDevicePasswordVerifier(
 		username,
-		ChallengeParameters as ChallengeParameters,
+		respondedChallengeParameters as ChallengeParameters,
 		clientMetadata,
 		Session,
 		authenticationHelper,
@@ -609,8 +615,8 @@ async function handleDevicePasswordVerifier(
 
 	const serverBValue = new BigInteger(challengeParameters?.SRP_B, 16);
 	const salt = new BigInteger(challengeParameters?.SALT, 16);
-	const deviceKey = deviceMetadata.deviceKey;
-	const deviceGroupKey = deviceMetadata.deviceGroupKey;
+	const { deviceKey } = deviceMetadata;
+	const { deviceGroupKey } = deviceMetadata;
 	const hkdf = await authenticationHelper.getPasswordAuthenticationKey({
 		username: deviceMetadata.deviceKey,
 		password: deviceMetadata.randomPassword,
@@ -631,7 +637,7 @@ async function handleDevicePasswordVerifier(
 			hkdf,
 		}),
 		DEVICE_KEY: deviceKey,
-	} as { [key: string]: string };
+	} as Record<string, string>;
 
 	const UserContextData = getUserContextData({
 		username,
@@ -693,11 +699,11 @@ export async function handlePasswordVerifierChallenge(
 			dateNow,
 			hkdf,
 		}),
-	} as { [key: string]: string };
+	} as Record<string, string>;
 
 	const deviceMetadata = await tokenOrchestrator.getDeviceMetadata(username);
 	if (deviceMetadata && deviceMetadata.deviceKey) {
-		challengeResponses['DEVICE_KEY'] = deviceMetadata.deviceKey;
+		challengeResponses.DEVICE_KEY = deviceMetadata.deviceKey;
 	}
 
 	const UserContextData = getUserContextData({
@@ -728,6 +734,7 @@ export async function handlePasswordVerifierChallenge(
 			session: response.Session,
 			tokenOrchestrator,
 		});
+
 	return response;
 }
 
@@ -748,7 +755,7 @@ export async function getSignInResult(params: {
 					additionalInfo: challengeParameters as AuthAdditionalInfo,
 				},
 			};
-		case 'MFA_SETUP':
+		case 'MFA_SETUP': {
 			const { signInSession, username } = signInStore.getState();
 
 			if (!isMFATypeEnabled(challengeParameters, 'TOTP'))
@@ -776,6 +783,7 @@ export async function getSignInResult(params: {
 					totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
 				},
 			};
+		}
 		case 'NEW_PASSWORD_REQUIRED':
 			return {
 				isSignedIn: false,
@@ -867,7 +875,7 @@ export function getSignInResultFromError(
 
 export function parseAttributes(attributes: string | undefined): string[] {
 	if (!attributes) return [];
-	const parsedAttributes = (JSON.parse(attributes) as Array<string>).map(att =>
+	const parsedAttributes = (JSON.parse(attributes) as string[]).map(att =>
 		att.includes(USER_ATTRIBUTES) ? att.replace(USER_ATTRIBUTES, '') : att,
 	);
 
@@ -884,6 +892,7 @@ export function createAttributes(
 	Object.entries(attributes).forEach(([key, value]) => {
 		if (value) newAttributes[`${USER_ATTRIBUTES}${key}`] = value;
 	});
+
 	return newAttributes;
 }
 
@@ -983,10 +992,12 @@ export function getMFAType(type?: string): AuthMFAType | undefined {
 
 export function getMFATypes(types?: string[]): AuthMFAType[] | undefined {
 	if (!types) return undefined;
+
 	return types.map(getMFAType).filter(Boolean) as AuthMFAType[];
 }
 export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	if (!mfa) return [];
+
 	return JSON.parse(mfa) as CognitoMFAType[];
 }
 
@@ -997,6 +1008,7 @@ export function isMFATypeEnabled(
 	const { MFAS_CAN_SETUP } = challengeParams;
 	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
 	if (!mfaTypes) return false;
+
 	return mfaTypes.includes(mfaType);
 }
 
@@ -1099,7 +1111,7 @@ export async function retryOnResourceNotFoundException<
 		) {
 			await tokenOrchestrator.clearDeviceMetadata(username);
 
-			return await func(...args);
+			return func(...args);
 		}
 		throw error;
 	}
@@ -1113,5 +1125,6 @@ export function setActiveSignInUsername(username: string) {
 
 export function getActiveSignInUsername(username: string): string {
 	const state = signInStore.getState();
+
 	return state.username ?? username;
 }

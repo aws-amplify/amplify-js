@@ -2,19 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { map } from 'rxjs';
-import { V6Client, GraphqlSubscriptionResult } from '../../types';
-import {
-	initializeModel,
-	generateGraphQLDocument,
-	buildGraphQLVariables,
-	authModeParams,
-	ModelOperation,
-	getCustomHeaders,
-} from '../APIClient';
 import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
+
+import { GraphqlSubscriptionResult, V6Client } from '../../types';
+import {
+	ModelOperation,
+	authModeParams,
+	buildGraphQLVariables,
+	generateGraphQLDocument,
+	getCustomHeaders,
+	initializeModel,
+} from '../APIClient';
 
 export function subscriptionFactory(
 	client: any,
@@ -26,10 +27,12 @@ export function subscriptionFactory(
 
 	const subscription = (args?: any) => {
 		const query = generateGraphQLDocument(
-			modelIntrospection.models,
+			modelIntrospection,
 			name,
 			operation,
+			args,
 		);
+
 		const variables = buildGraphQLVariables(
 			model,
 			operation,
@@ -62,6 +65,7 @@ export function subscriptionFactory(
 					auth.authMode,
 					auth.authToken,
 				);
+
 				return initialized;
 			}),
 		);

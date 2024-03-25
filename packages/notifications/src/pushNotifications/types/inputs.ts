@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UserProfile } from '@aws-amplify/core';
+
 import { PushNotificationServiceOptions } from './options';
 import { PushNotificationPermissions } from './module';
 import {
@@ -9,10 +10,10 @@ import {
 	OnTokenReceivedHandler,
 } from './pushNotifications';
 
-export type PushNotificationIdentifyUserInput<
+export interface PushNotificationIdentifyUserInput<
 	ServiceOptions extends
 		PushNotificationServiceOptions = PushNotificationServiceOptions,
-> = {
+> {
 	/**
 	 * A User ID associated to the current device.
 	 */
@@ -27,7 +28,7 @@ export type PushNotificationIdentifyUserInput<
 	 * Options to be passed to the API.
 	 */
 	options?: ServiceOptions;
-};
+}
 
 export type PushNotificationRequestPermissionsInput =
 	PushNotificationPermissions;

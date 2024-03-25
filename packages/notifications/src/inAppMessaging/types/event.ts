@@ -7,8 +7,8 @@ export type InAppMessageInteractionEvent =
 	| 'messageDismissed'
 	| 'messageActionTaken';
 
-export type InAppMessagingEvent = {
+export interface InAppMessagingEvent {
 	name: string;
 	attributes?: Record<string, string>;
 	metrics?: Record<string, number>;
-};
+}

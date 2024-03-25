@@ -3,10 +3,11 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthDeliveryMedium } from '../../../types';
@@ -31,7 +32,7 @@ import { getUserContextData } from '../utils/userContextData';
 export async function resetPassword(
 	input: ResetPasswordInput,
 ): Promise<ResetPasswordOutput> {
-	const username = input.username;
+	const { username } = input;
 	assertValidationError(
 		!!username,
 		AuthValidationErrorCode.EmptyResetPasswordUsername,
@@ -60,6 +61,7 @@ export async function resetPassword(
 		},
 	);
 	const codeDeliveryDetails = res.CodeDeliveryDetails;
+
 	return {
 		isPasswordReset: false,
 		nextStep: {
