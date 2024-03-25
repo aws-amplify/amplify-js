@@ -3,6 +3,7 @@
 import {
 	AuthConfig,
 	AuthTokens,
+	CognitoUserPoolConfig,
 	FetchAuthSessionOptions,
 	Hub,
 } from '@aws-amplify/core';
@@ -32,6 +33,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	tokenRefresher?: TokenRefresher;
 	inflightPromise: Promise<void> | undefined;
 	waitForInflightOAuth: () => Promise<void> = async () => {
+
 		if (!(await oAuthStore.loadOAuthInFlight())) {
 			return;
 		}
@@ -52,6 +54,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	};
 
 	setAuthConfig(authConfig: AuthConfig) {
+		oAuthStore.setAuthConfig(authConfig.Cognito as CognitoUserPoolConfig)
 		this.authConfig = authConfig;
 	}
 
