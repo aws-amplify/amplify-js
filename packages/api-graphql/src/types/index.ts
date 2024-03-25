@@ -8,7 +8,9 @@ import {
 	CustomSubscriptions,
 	EnumTypes,
 	ModelTypes,
-	// Temp:
+	// Temp: I'm improving unit tests, but since this package has to be built
+	// prior to linking the dep, I'm temporarily including the type below. Will
+	// remove once testing updates are complete.
 	// ModelSortDirection,
 } from '@aws-amplify/data-schema-types';
 import { DocumentNode, GraphQLError, Source } from 'graphql';
@@ -47,7 +49,7 @@ export interface GraphQLResult<T = object> {
 	extensions?: Record<string, any>;
 }
 
-// Temp for updating tests:
+// Temp: see comment above. Will remove before merge.
 type ModelSortDirection = 'ASC' | 'DESC';
 
 // Opaque type used for determining the graphql query type
