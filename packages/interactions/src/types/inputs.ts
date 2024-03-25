@@ -6,12 +6,12 @@ import {
 	InteractionsOnCompleteCallback,
 } from './Interactions';
 
-export type InteractionsSendInput = {
+export interface InteractionsSendInput {
 	botName: string;
 	message: string | InteractionsMessage;
-};
+}
 
-export type InteractionsOnCompleteInput = {
+export interface InteractionsOnCompleteInput {
 	botName: string;
 	callback: InteractionsOnCompleteCallback;
-};
+}

@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-/* tslint:disable:max-line-length */
 
 /**
  * Convert types
@@ -49,9 +48,9 @@ export interface TextEntities {
 }
 
 export type KeyPhrases = KeyPhrase[];
-export type KeyPhrase = {
+export interface KeyPhrase {
 	text?: string;
-};
+}
 
 export interface TextSyntax {
 	text: string;
@@ -66,18 +65,18 @@ export interface TextSentiment {
 	mixed: number;
 }
 
-export type DetectParams = {
+export interface DetectParams {
 	Text: string;
 	LanguageCode: string;
-};
+}
 
 export interface InterpretTextOutput {
 	textInterpretation: {
 		language?: string;
-		textEntities?: Array<TextEntities>;
+		textEntities?: TextEntities[];
 		keyPhrases?: KeyPhrases;
 		sentiment?: TextSentiment;
-		syntax?: Array<TextSyntax>;
+		syntax?: TextSyntax[];
 	};
 }
 
@@ -136,11 +135,11 @@ export interface SpeechToTextInput {
 	};
 }
 
-export type TranscribeData = {
+export interface TranscribeData {
 	connection: WebSocket;
 	raw: ConvertBytes;
 	languageCode: string;
-};
+}
 
 export interface SpeechToTextOutput {
 	transcription: {
@@ -181,8 +180,8 @@ export interface Content {
 export interface TableCell extends Content {
 	boundingBox?: BoundingBox;
 	polygon?: Polygon;
-	rowSpan?: Number;
-	columnSpan?: Number;
+	rowSpan?: number;
+	columnSpan?: number;
 }
 
 export interface Table {
@@ -226,24 +225,24 @@ export interface IdentifyLabelsInput {
 }
 
 export interface Point {
-	x?: Number;
-	y?: Number;
+	x?: number;
+	y?: number;
 }
 
-export type Polygon = Array<Point> | Iterable<Point>;
+export type Polygon = Point[] | Iterable<Point>;
 
 export interface BoundingBox {
-	width?: Number;
-	height?: Number;
-	left?: Number;
-	top?: Number;
+	width?: number;
+	height?: number;
+	left?: number;
+	top?: number;
 }
 
 export interface IdentifyLabelsOutput {
 	labels?: {
 		name?: string;
 		boundingBoxes?: (BoundingBox | undefined)[];
-		metadata?: Object;
+		metadata?: object;
 	}[];
 	unsafe?: 'YES' | 'NO' | 'UNKNOWN';
 }
@@ -280,18 +279,18 @@ export interface FaceAttributes {
 	emotions?: (string | undefined)[];
 }
 
-export type EntityAgeRange = {
-	low?: Number;
-	high?: Number;
-};
+export interface EntityAgeRange {
+	low?: number;
+	high?: number;
+}
 
-export type EntityLandmark = {
+export interface EntityLandmark {
 	type?: string;
 	x?: number;
 	y?: number;
-};
+}
 
-export type EntityMetadata = {
+export interface EntityMetadata {
 	id?: string;
 	name?: string;
 	pose?: {
@@ -303,15 +302,15 @@ export type EntityMetadata = {
 	externalImageId?: string;
 	similarity?: number;
 	confidence?: number;
-};
+}
 
-export type IdentifyEntity = {
+export interface IdentifyEntity {
 	boundingBox?: BoundingBox;
 	ageRange?: EntityAgeRange;
 	landmarks?: (EntityLandmark | undefined)[];
 	attributes?: FaceAttributes;
 	metadata?: EntityMetadata;
-};
+}
 
 export interface IdentifyEntitiesOutput {
 	entities: IdentifyEntity[];
@@ -342,73 +341,90 @@ export function isIdentifyFromCollection(
 ): obj is IdentifyFromCollection {
 	const key: keyof IdentifyFromCollection = 'collection';
 	const keyId: keyof IdentifyFromCollection = 'collectionId';
-	return obj && (obj.hasOwnProperty(key) || obj.hasOwnProperty(keyId));
+
+	return (
+		obj &&
+		(Object.prototype.hasOwnProperty.call(obj, key) ||
+			Object.prototype.hasOwnProperty.call(obj, keyId))
+	);
 }
 
 export function isIdentifyCelebrities(obj: any): obj is IdentifyCelebrities {
 	const key: keyof IdentifyCelebrities = 'celebrityDetection';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
 	const key: keyof TranslateTextInput = 'translateText';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isTextToSpeechInput(obj: any): obj is TextToSpeechInput {
 	const key: keyof TextToSpeechInput = 'textToSpeech';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
 	const key: keyof SpeechToTextInput = 'transcription';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isStorageSource(obj: any): obj is StorageSource {
 	const key: keyof StorageSource = 'key';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isFileSource(obj: any): obj is FileSource {
 	const key: keyof FileSource = 'file';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isConvertBytesSource(
 	obj: any,
 ): obj is BytesSource<ConvertBytes> {
 	const key: keyof BytesSource<ConvertBytes> = 'bytes';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyBytesSource(
 	obj: any,
 ): obj is BytesSource<IdentifyBytes> {
 	const key: keyof BytesSource<IdentifyBytes> = 'bytes';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
 	const key: keyof IdentifyTextInput = 'text';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyLabelsInput(obj: any): obj is IdentifyLabelsInput {
 	const key: keyof IdentifyLabelsInput = 'labels';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyEntitiesInput(
 	obj: any,
 ): obj is IdentifyEntitiesInput {
 	const key: keyof IdentifyEntitiesInput = 'entities';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isInterpretTextInput(obj: any): obj is InterpretTextInput {
 	const key: keyof InterpretTextInput = 'text';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isInterpretTextOthers(
@@ -426,7 +442,7 @@ export interface Geometry {
 	/**
 	 * <p>Within the bounding box, a fine-grained polygon around the detected text.</p>
 	 */
-	Polygon?: Array<Point> | Iterable<Point>;
+	Polygon?: Point[] | Iterable<Point>;
 }
 
 export interface Relationship {
@@ -438,7 +454,7 @@ export interface Relationship {
 	/**
 	 * <p>An array of IDs for related blocks. You can get the type of the relationship from the <code>Type</code> element.</p>
 	 */
-	Ids?: Array<string> | Iterable<string>;
+	Ids?: string[] | Iterable<string>;
 }
 
 export type FeatureType = 'TABLES' | 'FORMS' | string;

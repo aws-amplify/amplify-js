@@ -1,24 +1,36 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CustomQueries, CustomMutations } from '@aws-amplify/data-schema-types';
-import { V6Client, __authMode, __authToken, __amplify } from '../types';
-
-import { customOpFactory } from './operations/custom';
 import {
-	ModelIntrospectionSchema,
+	CustomMutations,
+	CustomQueries,
+	CustomSubscriptions,
+} from '@aws-amplify/data-schema-types';
+import {
 	GraphQLProviderConfig,
+	ModelIntrospectionSchema,
 } from '@aws-amplify/core/internals/utils';
 
-type OpTypes = 'queries' | 'mutations';
+import { V6Client, __amplify } from '../types';
+
+import { customOpFactory } from './operations/custom';
+
+type OpTypes = 'queries' | 'mutations' | 'subscriptions';
 
 type CustomOpsProperty<
 	T extends Record<any, any>,
 	OpType extends OpTypes,
-> = OpType extends 'queries' ? CustomQueries<T> : CustomMutations<T>;
+> = OpType extends 'queries'
+	? CustomQueries<T>
+	: OpType extends 'mutations'
+		? CustomMutations<T>
+		: OpType extends 'subscriptions'
+			? CustomSubscriptions<T>
+			: never;
 
 const operationTypeMap = {
 	queries: 'query',
 	mutations: 'mutation',
+	subscriptions: 'subscription',
 } as const;
 
 export function generateCustomOperationsProperty<
@@ -59,7 +71,7 @@ export function generateCustomOperationsProperty<
 			modelIntrospection,
 			operationTypeMap[operationsType],
 			operation,
-			useContext
+			useContext,
 		);
 	}
 
@@ -85,5 +97,16 @@ export function generateCustomQueriesProperty<T extends Record<any, any>>(
 		client,
 		config,
 		'queries',
+	);
+}
+
+export function generateCustomSubscriptionsProperty<T extends Record<any, any>>(
+	client: V6Client<Record<string, any>>,
+	config: GraphQLProviderConfig['GraphQL'],
+) {
+	return generateCustomOperationsProperty<T, 'subscriptions'>(
+		client,
+		config,
+		'subscriptions',
 	);
 }

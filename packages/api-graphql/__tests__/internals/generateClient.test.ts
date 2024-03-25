@@ -3,14 +3,16 @@ import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
+import { from } from 'rxjs';
 import {
+	normalizePostGraphqlCalls,
 	expectSub,
 	expectSubWithHeaders,
 	expectSubWithHeadersFn,
 	expectSubWithlibraryConfigHeaders,
-} from '../utils/expects';
-import { Observable, from } from 'rxjs';
-import * as internals from '../../src/internals';
+	makeAppSyncStreams,
+	mockApiResponse,
+} from '../utils/index';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -18,91 +20,6 @@ const serverManagedFields = {
 	createdAt: new Date().toISOString(),
 	updatedAt: new Date().toISOString(),
 };
-
-/**
- *
- * @param value Value to be returned. Will be `awaited`, and can
- * therefore be a simple JSON value or a `Promise`.
- * @returns
- */
-function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
-			const result = await value;
-			return {
-				body: {
-					json: () => result,
-				},
-			};
-		});
-}
-
-function makeAppSyncStreams() {
-	const streams = {} as Partial<
-		Record<
-			'create' | 'update' | 'delete',
-			{
-				next: (message: any) => void;
-			}
-		>
-	>;
-	const spy = jest.fn(request => {
-		const matchedType = (request.query as string).match(
-			/on(Create|Update|Delete)/,
-		);
-		if (matchedType) {
-			return new Observable(subscriber => {
-				streams[
-					matchedType[1].toLowerCase() as 'create' | 'update' | 'delete'
-				] = subscriber;
-			});
-		}
-	});
-	(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-	return { streams, spy };
-}
-
-/**
- * For each call against the spy, assuming the spy is a `post()` spy,
- * replaces fields that are likely to change between calls (or library version revs)
- * with static values. When possible, on the unpredicable portions of these values
- * are replaced.
- *
- * ## THIS IS DESTRUCTIVE
- *
- * The original `spy.mocks.calls` will be updated *and* returned.
- *
- * For example,
- *
- * ```plain
- * headers.x-amz-user-agent: "aws-amplify/6.0.5 api/1 framework/0"
- * ```
- *
- * Is replaced with:
- *
- * ```plain
- * headers.x-amz-user-agent: "aws-amplify/latest api/latest framework/latest"
- * ```
- *
- * @param spy The Jest spy
- */
-function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
-	return spy.mock.calls.map((call: any) => {
-		// The 1st param in `call` is an instance of `AmplifyClassV6`
-		// The 2nd param in `call` is the actual `postOptions`
-		const [_, postOptions] = call;
-		const userAgent = postOptions?.options?.headers?.['x-amz-user-agent'];
-		if (userAgent) {
-			const staticUserAgent = userAgent.replace(/\/[\d.]+/g, '/latest');
-			postOptions.options.headers['x-amz-user-agent'] = staticUserAgent;
-		}
-		// Calling of `post` API with an instance of `AmplifyClassV6` has been
-		// unit tested in other test suites. To reduce the noise in the generated
-		// snapshot, we hide the details of the instance here.
-		return ['AmplifyClassV6', postOptions];
-	});
-}
 
 const USER_AGENT_DETAILS = {
 	action: '1',
@@ -128,6 +45,10 @@ describe('generateClient', () => {
 			'Post',
 			'Comment',
 			'Product',
+			'ImplicitOwner',
+			'CustomImplicitOwner',
+			'ModelGroupDefinedIn',
+			'ModelGroupsDefinedIn',
 		];
 
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
@@ -1996,7 +1917,9 @@ describe('generateClient', () => {
 			const spy = jest.fn(() => from([graphqlMessage]));
 			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
 
-			client.models.Note.onCreate().subscribe({
+			const onC = client.models.Note.onCreate();
+
+			onC.subscribe({
 				next(value) {
 					expect(spy).toHaveBeenCalledWith(
 						expect.objectContaining({
@@ -5181,6 +5104,8 @@ describe('generateClient', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 			jest.resetAllMocks();
+			jest.restoreAllMocks();
+
 			Amplify.configure(configFixture as any);
 
 			jest
@@ -5390,6 +5315,121 @@ describe('generateClient', () => {
 
 			expect(normalizePostGraphqlCalls(lazyLoadCommentsSpy)).toMatchSnapshot();
 			expect(comments[0]).toEqual(expect.objectContaining(listCommentItem));
+		});
+
+		test('can subscribe to custom subscription', done => {
+			const postToSend = {
+				__typename: 'Post',
+				...serverManagedFields,
+				content: 'a lovely post',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onPostLiked: postToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const spyGql = jest.spyOn(raw.GraphQLAPI as any, 'graphql');
+
+			const expectedOperation = 'subscription';
+			const expectedFieldAndSelectionSet =
+				'onPostLiked {id content owner createdAt updatedAt}';
+
+			const sub = client.subscriptions.onPostLiked().subscribe({
+				next(value) {
+					expect(value).toEqual(expect.objectContaining(postToSend));
+
+					expect(spyGql).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							query: expect.stringContaining(expectedOperation),
+							variables: {},
+						}),
+						expect.anything(),
+					);
+					expect(spyGql).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							query: expect.stringContaining(expectedFieldAndSelectionSet),
+							variables: {},
+						}),
+						expect.anything(),
+					);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+
+			sub.unsubscribe();
+		});
+
+		test('can subscribe to custom subscription with args', done => {
+			const postToSend = {
+				__typename: 'Post',
+				...serverManagedFields,
+				postId: 'abc123',
+				content: 'a lovely post',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onPostLiked: postToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const spyGql = jest.spyOn(raw.GraphQLAPI as any, 'graphql');
+
+			const expectedOperation = 'subscription($postId: String)';
+			const expectedFieldAndSelectionSet =
+				'onPostUpdated(postId: $postId) {id content owner createdAt updatedAt}';
+
+			const sub = client.subscriptions
+				.onPostUpdated({ postId: 'abc123' })
+				.subscribe({
+					next(value) {
+						expect(value).toEqual(expect.objectContaining(postToSend));
+
+						expect(spyGql).toHaveBeenCalledWith(
+							expect.anything(),
+							expect.objectContaining({
+								query: expect.stringContaining(expectedOperation),
+
+								variables: { postId: 'abc123' },
+							}),
+							expect.anything(),
+						);
+						expect(spyGql).toHaveBeenCalledWith(
+							expect.anything(),
+							expect.objectContaining({
+								query: expect.stringContaining(expectedFieldAndSelectionSet),
+
+								variables: { postId: 'abc123' },
+							}),
+							expect.anything(),
+						);
+						done();
+					},
+					error(error) {
+						expect(error).toBeUndefined();
+						done('bad news!');
+					},
+				});
+
+			sub.unsubscribe();
 		});
 
 		test('includes client level headers', async () => {

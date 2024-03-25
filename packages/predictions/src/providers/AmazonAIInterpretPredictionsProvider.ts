@@ -6,7 +6,6 @@ import {
 	PredictionsAction,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-
 import {
 	ComprehendClient,
 	DetectDominantLanguageCommand,
@@ -17,6 +16,7 @@ import {
 	Entity,
 	SyntaxToken,
 } from '@aws-sdk/client-comprehend';
+
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import {
@@ -63,9 +63,9 @@ export class AmazonAIInterpretPredictionsProvider {
 		const { text: textSource } = input;
 		const { source, type = defaultType } = textSource;
 		const { text } = source;
-		let language;
+		let sourceLanguage;
 		if (isInterpretTextOthers(textSource)) {
-			language = (textSource as InterpretTextOthers).source.language;
+			sourceLanguage = (textSource as InterpretTextOthers).source.language;
 		}
 
 		this.comprehendClient = new ComprehendClient({
@@ -79,7 +79,7 @@ export class AmazonAIInterpretPredictionsProvider {
 
 		const doAll = type === 'all';
 
-		let languageCode = language;
+		let languageCode = sourceLanguage;
 		if (doAll || type === 'language') {
 			const languageDetectionParams = {
 				Text: text,
@@ -87,7 +87,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			languageCode = await this.detectLanguage(languageDetectionParams);
 		}
 
-		let entitiesPromise: Promise<Array<TextEntities>> | undefined;
+		let entitiesPromise: Promise<TextEntities[]> | undefined;
 		if (doAll || type === 'entities') {
 			assertValidationError(
 				!!languageCode,
@@ -113,7 +113,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			sentimentPromise = this.detectSentiment(sentimentParams);
 		}
 
-		let syntaxPromise: Promise<Array<TextSyntax>> | undefined;
+		let syntaxPromise: Promise<TextSyntax[]> | undefined;
 		if (doAll || type === 'syntax') {
 			assertValidationError(
 				!!languageCode,
@@ -145,6 +145,7 @@ export class AmazonAIInterpretPredictionsProvider {
 			syntaxPromise,
 			keyPhrasesPromise,
 		]);
+
 		return {
 			textInterpretation: {
 				keyPhrases,
@@ -160,8 +161,9 @@ export class AmazonAIInterpretPredictionsProvider {
 		try {
 			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
 			const data = await this.comprehendClient!.send(detectKeyPhrasesCommand);
-			const { KeyPhrases = [] } = data || {};
-			return KeyPhrases.map(({ Text: text }) => {
+			const { KeyPhrases: keyPhrases = [] } = data || {};
+
+			return keyPhrases.map(({ Text: text }) => {
 				return { text };
 			});
 		} catch (err: any) {
@@ -176,11 +178,12 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private async detectSyntax(params: DetectParams): Promise<Array<TextSyntax>> {
+	private async detectSyntax(params: DetectParams): Promise<TextSyntax[]> {
 		try {
 			const detectSyntaxCommand = new DetectSyntaxCommand(params);
 			const data = await this.comprehendClient!.send(detectSyntaxCommand);
 			const { SyntaxTokens = [] } = data || {};
+
 			return this.serializeSyntaxFromComprehend(SyntaxTokens);
 		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
@@ -194,9 +197,7 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private serializeSyntaxFromComprehend(
-		tokens: SyntaxToken[],
-	): Array<TextSyntax> {
+	private serializeSyntaxFromComprehend(tokens: SyntaxToken[]): TextSyntax[] {
 		let response: TextSyntax[] = [];
 		if (tokens && Array.isArray(tokens)) {
 			response = tokens.map(
@@ -205,6 +206,7 @@ export class AmazonAIInterpretPredictionsProvider {
 				},
 			);
 		}
+
 		return response;
 	}
 
@@ -220,7 +222,8 @@ export class AmazonAIInterpretPredictionsProvider {
 					Neutral: neutral = 0,
 					Mixed: mixed = 0,
 				} = {},
-			} = ({} = data);
+			} = data ?? {};
+
 			return { predominant, positive, negative, neutral, mixed };
 		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
@@ -234,13 +237,12 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private async detectEntities(
-		params: DetectParams,
-	): Promise<Array<TextEntities>> {
+	private async detectEntities(params: DetectParams): Promise<TextEntities[]> {
 		try {
 			const detectEntitiesCommand = new DetectEntitiesCommand(params);
 			const data = await this.comprehendClient!.send(detectEntitiesCommand);
 			const { Entities = [] } = data || {};
+
 			return this.serializeEntitiesFromComprehend(Entities);
 		} catch (err: any) {
 			if (err.code === 'AccessDeniedException') {
@@ -254,13 +256,14 @@ export class AmazonAIInterpretPredictionsProvider {
 		}
 	}
 
-	private serializeEntitiesFromComprehend(data: Entity[]): Array<TextEntities> {
+	private serializeEntitiesFromComprehend(data: Entity[]): TextEntities[] {
 		let response: TextEntities[] = [];
 		if (data && Array.isArray(data)) {
 			response = data.map(({ Type: type, Text: text }) => {
 				return { type, text };
 			});
 		}
+
 		return response;
 	}
 
@@ -272,7 +275,8 @@ export class AmazonAIInterpretPredictionsProvider {
 			const data = await this.comprehendClient!.send(
 				detectDominantLanguageCommand,
 			);
-			const { Languages: [{ LanguageCode }] = [{}] } = ({} = data || {});
+			const { Languages: [{ LanguageCode }] = [{ LanguageCode: undefined }] } =
+				data ?? {};
 			assertValidationError(
 				!!LanguageCode,
 				PredictionsValidationErrorCode.NoLanguage,

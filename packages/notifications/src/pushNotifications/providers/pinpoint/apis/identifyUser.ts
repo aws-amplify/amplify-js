@@ -3,6 +3,7 @@
 
 import { UpdateEndpointException } from '@aws-amplify/core/internals/providers/pinpoint';
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
+
 import { PushNotificationValidationErrorCode } from '../../../errors';
 import { IdentifyUser, IdentifyUserInput } from '../types';
 
