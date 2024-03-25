@@ -54,82 +54,85 @@ describe('remove API', () => {
 			},
 		});
 	});
-	describe('Key: Happy Cases:', () => {
-		beforeEach(() => {
-			mockDeleteObject.mockImplementation(() => {
-				return {
-					Metadata: { key: 'value' },
-				};
+	describe('Happy Cases', () => {
+		describe('With Key', () => {
+			beforeEach(() => {
+				mockDeleteObject.mockImplementation(() => {
+					return {
+						Metadata: { key: 'value' },
+					};
+				});
 			});
-		});
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-		[
-			{
-				expectedKey: `public/${key}`,
-			},
-			{
-				options: { accessLevel: 'guest' },
-				expectedKey: `public/${key}`,
-			},
-			{
-				options: { accessLevel: 'private' },
-				expectedKey: `private/${defaultIdentityId}/${key}`,
-			},
-			{
-				options: { accessLevel: 'protected' },
-				expectedKey: `protected/${defaultIdentityId}/${key}`,
-			},
-		].forEach(({ options, expectedKey }) => {
-			const accessLevel = options?.accessLevel ?? 'default';
+			afterEach(() => {
+				jest.clearAllMocks();
+			});
+			[
+				{
+					expectedKey: `public/${key}`,
+				},
+				{
+					options: { accessLevel: 'guest' },
+					expectedKey: `public/${key}`,
+				},
+				{
+					options: { accessLevel: 'private' },
+					expectedKey: `private/${defaultIdentityId}/${key}`,
+				},
+				{
+					options: { accessLevel: 'protected' },
+					expectedKey: `protected/${defaultIdentityId}/${key}`,
+				},
+			].forEach(({ options, expectedKey }) => {
+				const accessLevel = options?.accessLevel ?? 'default';
 
-			it(`should remove object with ${accessLevel} accessLevel`, async () => {
-				expect.assertions(3);
-				expect(
-					await remove({ key, options: options as StorageOptions }),
-				).toEqual(removeResultKey);
-				expect(deleteObject).toHaveBeenCalledTimes(1);
-				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-					Bucket: bucket,
-					Key: expectedKey,
+				it(`should remove object with ${accessLevel} accessLevel`, async () => {
+					expect.assertions(3);
+					expect(
+						await remove({ key, options: options as StorageOptions }),
+					).toEqual(removeResultKey);
+					expect(deleteObject).toHaveBeenCalledTimes(1);
+					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
+						Bucket: bucket,
+						Key: expectedKey,
+					});
 				});
 			});
 		});
-	});
-
-	describe('Path: Happy Cases:', () => {
-		const resolvePath = (path: string | Function) =>
-			typeof path === 'string' ? path : path({ identityId: defaultIdentityId });
-		beforeEach(() => {
-			mockDeleteObject.mockImplementation(() => {
-				return {
-					Metadata: { key: 'value' },
-				};
+		describe('With Path', () => {
+			const resolvePath = (path: string | Function) =>
+				typeof path === 'string'
+					? path
+					: path({ identityId: defaultIdentityId });
+			beforeEach(() => {
+				mockDeleteObject.mockImplementation(() => {
+					return {
+						Metadata: { key: 'value' },
+					};
+				});
 			});
-		});
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-		[
-			{
-				path: `public/${key}`,
-			},
-			{
-				path: ({ identityId }: any) => `protected/${identityId}/${key}`,
-			},
-		].forEach(({ path }) => {
-			const removeResultPath = {
-				path: resolvePath(path),
-			};
+			afterEach(() => {
+				jest.clearAllMocks();
+			});
+			[
+				{
+					path: `public/${key}`,
+				},
+				{
+					path: ({ identityId }: any) => `protected/${identityId}/${key}`,
+				},
+			].forEach(({ path }) => {
+				const removeResultPath = {
+					path: resolvePath(path),
+				};
 
-			it(`should remove object for the given path`, async () => {
-				expect.assertions(3);
-				expect(await remove({ path })).toEqual(removeResultPath);
-				expect(deleteObject).toHaveBeenCalledTimes(1);
-				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-					Bucket: bucket,
-					Key: resolvePath(path),
+				it(`should remove object for the given path`, async () => {
+					expect.assertions(3);
+					expect(await remove({ path })).toEqual(removeResultPath);
+					expect(deleteObject).toHaveBeenCalledTimes(1);
+					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
+						Bucket: bucket,
+						Key: resolvePath(path),
+					});
 				});
 			});
 		});

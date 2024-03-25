@@ -7,6 +7,7 @@ import {
 } from '@aws-amplify/core/internals/adapter-core';
 
 import {
+	RemoveInput,
 	RemoveInputKey,
 	RemoveInputPath,
 	RemoveOutput,
@@ -49,10 +50,9 @@ interface RemoveApi {
 
 export const remove: RemoveApi = <Output extends RemoveOutput>(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: RemoveInputKey | RemoveInputPath,
-): Promise<Output> => {
-	return removeInternal(
+	input: RemoveInput,
+): Promise<Output> =>
+	removeInternal(
 		getAmplifyServerContext(contextSpec).amplify,
 		input,
 	) as Promise<Output>;
-};

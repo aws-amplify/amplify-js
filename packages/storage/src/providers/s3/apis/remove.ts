@@ -40,6 +40,4 @@ interface RemoveApi {
 
 export const remove: RemoveApi = <Output extends RemoveOutput>(
 	input: RemoveInput,
-): Promise<Output> => {
-	return removeInternal(Amplify, input) as Promise<Output>;
-};
+): Promise<Output> => removeInternal(Amplify, input) as Promise<Output>;

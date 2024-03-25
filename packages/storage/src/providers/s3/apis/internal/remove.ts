@@ -4,7 +4,7 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { RemoveInputKey, RemoveInputPath, RemoveOutput } from '../../types';
+import { RemoveInput, RemoveOutput } from '../../types';
 import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
@@ -16,7 +16,7 @@ import { STORAGE_INPUT_KEY } from '../../utils/constants';
 
 export const remove = async (
 	amplify: AmplifyClassV6,
-	input: RemoveInputKey | RemoveInputPath,
+	input: RemoveInput,
 ): Promise<RemoveOutput> => {
 	const { options = {} } = input ?? {};
 	const { s3Config, keyPrefix, bucket, identityId } =
