@@ -441,7 +441,9 @@ describe('list API', () => {
 			try {
 				await list({ path: '' });
 			} catch (error: any) {
-				expect(error.name).toBe(StorageValidationErrorCode.NoPath);
+				expect(error.name).toBe(
+					StorageValidationErrorCode.InvalidStorageOperationPrefixInput,
+				);
 			}
 		});
 	});

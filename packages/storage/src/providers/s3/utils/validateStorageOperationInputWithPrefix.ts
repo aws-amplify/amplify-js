@@ -21,16 +21,12 @@ export const validateStorageOperationInputWithPrefix = (
 	input: StorageOperationInputWithPrefixPath,
 	identityId?: string,
 ) => {
-	// Assert that both prefix and path are not present together
+	// Validate prefix & path not present at the same time
 	assertValidationError(
-		!('prefix' in input && 'path' in input),
-		StorageValidationErrorCode.PathAndPrefixNotAllowed,
+		!(input.prefix && input.path),
+		StorageValidationErrorCode.InvalidStorageOperationPrefixInput,
 	);
 	if (_isInputWithPath(input)) {
-		assertValidationError(
-			(input as StorageOperationInputWithPrefixPath).path !== '',
-			StorageValidationErrorCode.NoPath,
-		);
 		const { path } = input;
 		const objectKey = typeof path === 'string' ? path : path({ identityId });
 
