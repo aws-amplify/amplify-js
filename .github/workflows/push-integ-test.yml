@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - next/main
+      - test-sev-2-fix
 
 jobs:
   e2e:
