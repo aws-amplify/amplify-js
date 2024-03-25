@@ -13,6 +13,9 @@ export enum StorageValidationErrorCode {
 	NoDestinationPath = 'NoDestinationPath',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
+	NoPrefix = 'NoPrefix',
+	NoPath = 'NoPath',
+	PathAndPrefixNotAllowed = 'PathAndPrefixNotAllowed',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
 	InvalidStoragePathInput = 'InvalidStoragePathInput',
 	InvalidUploadSource = 'InvalidUploadSource',
@@ -61,6 +64,15 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.InvalidStorageOperationInput]: {
 		message: 'Missing path or key parameter in Input.',
+	},
+	[StorageValidationErrorCode.NoPrefix]: {
+		message: 'Missing `prefix` parameter in Input.',
+	},
+	[StorageValidationErrorCode.NoPath]: {
+		message: 'Missing `path` parameter in Input.',
+	},
+	[StorageValidationErrorCode.PathAndPrefixNotAllowed]: {
+		message: 'Input cannot contain both `path` and `prefix` parameters.',
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
 		message: 'Input `path` does not allow a leading slash (/).',

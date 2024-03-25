@@ -58,4 +58,12 @@ describe('validateStorageOperationInputWithPrefix', () => {
 				.message,
 		);
 	});
+
+	it('should throw an error when input has both path and prefix', () => {
+		const input = { prefix: 'testPrefix', path: 'test' } as any;
+		expect(() => validateStorageOperationInputWithPrefix(input)).toThrow(
+			validationErrorMap[StorageValidationErrorCode.PathAndPrefixNotAllowed]
+				.message,
+		);
+	});
 });
