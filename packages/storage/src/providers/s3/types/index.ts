@@ -38,6 +38,8 @@ export {
 	CopyOutputKey,
 	CopyOutputPath,
 	RemoveOutput,
+	RemoveOutputKey,
+	RemoveOutputPath,
 } from './outputs';
 export {
 	CopyInput,
@@ -49,6 +51,8 @@ export {
 	GetUrlInput,
 	GetUrlInputKey,
 	GetUrlInputPath,
+	RemoveInputKey,
+	RemoveInputPath,
 	RemoveInput,
 	DownloadDataInput,
 	DownloadDataInputKey,

@@ -20,6 +20,7 @@ export const validateStorageOperationInput = (
 	if (isInputWithPath(input)) {
 		const { path } = input;
 		const objectKey = typeof path === 'string' ? path : path({ identityId });
+
 		assertValidationError(
 			!objectKey.startsWith('/'),
 			StorageValidationErrorCode.InvalidStoragePathInput,
