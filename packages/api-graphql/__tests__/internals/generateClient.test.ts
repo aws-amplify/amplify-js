@@ -316,7 +316,6 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -352,7 +351,6 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 				nextToken: 'some-token',
 			});
 
@@ -383,6 +381,47 @@ describe('generateClient', () => {
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
+
+		// test('can list() with limit', async () => {
+		// 	const spy = mockApiResponse({
+		// 		data: {
+		// 			listThingWithCustomPks: {
+		// 				items: [
+		// 					{
+		// 						__typename: 'ThingWithCustomPk',
+		// 						...serverManagedFields,
+		// 						cpk_cluster_key:: '1',
+		// 						cpk_sort_key: 'a',
+		// 					},
+		// 					{
+		// 						__typename: 'ThingWithCustomPk',
+		// 						...serverManagedFields,
+		// 						cpk_cluster_key:: '1',
+		// 						cpk_sort_key: 'b',
+		// 					},
+		// 					{
+		// 						__typename: 'ThingWithCustomPk',
+		// 						...serverManagedFields,
+		// 						cpk_cluster_key: '1',
+		// 						cpk_sort_key: 'c',
+		// 					},
+		// 				],
+		// 			},
+		// 		},
+		// 	});
+
+		// 	const client = generateClient<Schema>({ amplify: Amplify });
+		// 	// const { data } = await client.models.Todo.list({
+		// 	// 	filter: { name: { contains: 'name' } },
+		// 	// 	limit: 5,
+		// 	// });
+		// 	const { data: items } = await client.models.ThingWithCustomPk.list({
+		// 		cpk_cluster_key: "1",
+		// 		sortDirection: "ASC",
+		// 	});
+
+		// 	expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		// });
 
 		test('can update()', async () => {
 			const spy = mockApiResponse({
@@ -868,7 +907,6 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 				authMode: 'userPool',
 			});
 
@@ -1355,7 +1393,6 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 				authMode: 'lambda',
 				authToken: 'some-token',
 			});
@@ -1848,7 +1885,6 @@ describe('generateClient', () => {
 			});
 			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -2334,7 +2370,6 @@ describe('generateClient', () => {
 			});
 			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3101,7 +3136,6 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3142,7 +3176,6 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 				headers: {
 					'request-header': 'should exist',
 				},
@@ -3783,7 +3816,6 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3824,7 +3856,6 @@ describe('generateClient', () => {
 			});
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
-				sortDirection: 'ASC',
 				headers: {
 					'request-header': 'should exist',
 				},
@@ -5093,7 +5124,6 @@ describe('generateClient', () => {
 				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount({
 					description: 'something something',
 					viewCount: { gt: 4 },
-					sortDirection: 'ASC',
 				});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
