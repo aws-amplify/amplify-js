@@ -51,7 +51,7 @@ describe('validateStorageOperationInput', () => {
 		);
 	});
 
-	it('should throw an error when input is invalid', () => {
+	it('should throw an error when key and path are not specified', () => {
 		const input = { invalid: 'test' } as any;
 		expect(() => validateStorageOperationInput(input)).toThrow(
 			validationErrorMap[
