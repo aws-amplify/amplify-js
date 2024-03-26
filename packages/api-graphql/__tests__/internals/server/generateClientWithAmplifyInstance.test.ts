@@ -90,7 +90,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
 							),
 							variables: {
 								filter: {
@@ -171,7 +171,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
 							),
 							variables: {
 								filter: {
@@ -242,7 +242,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
 							),
 							variables: {
 								filter: {
