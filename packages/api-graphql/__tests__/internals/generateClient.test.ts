@@ -781,6 +781,185 @@ describe('generateClient', () => {
 		});
 	});
 
+	describe('error handling', () => {
+		test('create() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['createTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access createTodo on type Mutation',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					getTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.create({
+				id: 'does not matter',
+			});
+
+			expect(data).toBe(undefined);
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('get() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['getTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access getTodo on type Query',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					getTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.get({
+				id: 'does not matter',
+			});
+
+			expect(data).toBe(undefined);
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		// TODO:
+		test.skip('update() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['createTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access createTodo on type Mutation',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					getTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.create({
+				id: 'does not matter',
+			});
+
+			expect(data).toBe(undefined);
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		// TODO:
+		test.skip('delete() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['createTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access createTodo on type Mutation',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					getTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.create({
+				id: 'does not matter',
+			});
+
+			expect(data).toBe(undefined);
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('list() returns empty list with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['listTodos'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access listTodos on type Query',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					listTodos: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+			});
+
+			expect(data.length).toBe(0);
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+	});
+
 	describe('basic model operations - authMode: CuP override at the time of operation', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();

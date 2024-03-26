@@ -26,6 +26,8 @@ import {
 	V6ClientSSRRequest,
 } from '../../types';
 
+import { handleGraphQlError } from './utils';
+
 export function getFactory(
 	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
@@ -129,12 +131,6 @@ async function _get(
 			return { data: null, extensions };
 		}
 	} catch (error: any) {
-		if (error.errors) {
-			// graphql errors pass through
-			return error as any;
-		} else {
-			// non-graphql errors re re-thrown
-			throw error;
-		}
+		return handleGraphQlError(error);
 	}
 }

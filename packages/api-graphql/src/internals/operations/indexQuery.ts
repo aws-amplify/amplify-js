@@ -5,6 +5,7 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
+import { handleGraphQlError } from './utils';
 
 import {
 	authModeParams,
@@ -88,16 +89,6 @@ function processGraphQlResponse(
 		nextToken: data[key].nextToken,
 		extensions,
 	};
-}
-
-function handleGraphQlError(error: any) {
-	if (error.errors) {
-		// graphql errors pass through
-		return error as any;
-	} else {
-		// non-graphql errors re re-thrown
-		throw error;
-	}
 }
 
 async function _indexQuery(
