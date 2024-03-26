@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { addEventListener } from '../../../../eventListeners';
+import { InAppMessagingValidationErrorCode } from '../../../errors';
 import { assertIsInitialized } from '../../../utils';
 import { OnMessageActionTakenInput } from '../types/inputs';
 import { OnMessageActionTakenOutput } from '../types/outputs';
@@ -22,8 +23,9 @@ import { OnMessageActionTakenOutput } from '../types/outputs';
  * ```
  */
 export function onMessageActionTaken(
-	input: OnMessageActionTakenInput
+	input: OnMessageActionTakenInput,
 ): OnMessageActionTakenOutput {
 	assertIsInitialized();
+
 	return addEventListener('messageActionTaken', input);
 }

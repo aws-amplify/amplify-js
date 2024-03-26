@@ -1,7 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { graphql, cancel, isCancelError } from './v6';
-import { generateModelsProperty } from './generateModelsProperty';
+import { Hub } from '@aws-amplify/core';
+import {
+	CustomMutations,
+	CustomQueries,
+	CustomSubscriptions,
+	EnumTypes,
+	ModelTypes,
+} from '@aws-amplify/data-schema-types';
+
 import {
 	V6Client,
 	__amplify,
@@ -9,9 +16,18 @@ import {
 	__authToken,
 	__headers,
 } from '../types';
+
+import { cancel, graphql, isCancelError } from './v6';
+import { generateEnumsProperty } from './utils/clientProperties/generateEnumsProperty';
+import { generateModelsProperty } from './utils/clientProperties/generateModelsProperty';
+import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
+import {
+	generateCustomMutationsProperty,
+	generateCustomQueriesProperty,
+	generateCustomSubscriptionsProperty,
+} from './generateCustomOperationsProperty';
 import { ClientGenerationParams } from './types';
-import { ModelTypes } from '@aws-amplify/data-schema-types';
-import { Hub, HubCapsule, ResourcesConfig } from '@aws-amplify/core';
+import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 
 /**
  * @private
@@ -23,7 +39,7 @@ import { Hub, HubCapsule, ResourcesConfig } from '@aws-amplify/core';
  * @returns
  */
 export function generateClient<T extends Record<any, any> = never>(
-	params: ClientGenerationParams
+	params: ClientGenerationParams,
 ): V6Client<T> {
 	const client = {
 		[__amplify]: params.amplify,
@@ -33,12 +49,28 @@ export function generateClient<T extends Record<any, any> = never>(
 		graphql,
 		cancel,
 		isCancelError,
-		models: {},
+		models: emptyProperty as ModelTypes<never>,
+		enums: emptyProperty as EnumTypes<never>,
+		queries: emptyProperty as CustomQueries<never>,
+		mutations: emptyProperty as CustomMutations<never>,
+		subscriptions: emptyProperty as CustomSubscriptions<never>,
 	} as any;
 
-	const config = params.amplify.getConfig();
+	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
 
-	if (!config.API?.GraphQL) {
+	if (isApiGraphQLConfig(apiGraphqlConfig)) {
+		client.models = generateModelsProperty<T>(client, apiGraphqlConfig);
+		client.enums = generateEnumsProperty<T>(apiGraphqlConfig);
+		client.queries = generateCustomQueriesProperty<T>(client, apiGraphqlConfig);
+		client.mutations = generateCustomMutationsProperty<T>(
+			client,
+			apiGraphqlConfig,
+		);
+		client.subscriptions = generateCustomSubscriptionsProperty(
+			client,
+			apiGraphqlConfig,
+		);
+	} else {
 		// This happens when the `Amplify.configure()` call gets evaluated after the `generateClient()` call.
 		//
 		// Cause: when the `generateClient()` and the `Amplify.configure()` calls are located in
@@ -51,52 +83,45 @@ export function generateClient<T extends Record<any, any> = never>(
 		//
 		// TODO: revisit, and reverify this approach when enabling multiple clients for multi-endpoints
 		// configuration.
-		client.models = emptyModels as ModelTypes<never>;
-		generateModelsPropertyOnAmplifyConfigure<T>(client);
-	} else {
-		client.models = generateModelsProperty<T>(
-			client,
-			config.API?.GraphQL,
-		);
+		generateModelsPropertyOnAmplifyConfigure(client);
 	}
 
 	return client as V6Client<T>;
 }
 
-const generateModelsPropertyOnAmplifyConfigure = <
-	T extends Record<any, any> = never,
->(clientRef: any) => {
+const generateModelsPropertyOnAmplifyConfigure = (clientRef: any) => {
 	Hub.listen('core', coreEvent => {
-		if (!isConfigureEvent(coreEvent.payload)) {
+		if (!isConfigureEventWithResourceConfig(coreEvent.payload)) {
 			return;
 		}
 
-		const { data: resourceConfig } = coreEvent.payload;
+		const apiGraphQLConfig = coreEvent.payload.data.API?.GraphQL;
 
-		if (resourceConfig.API?.GraphQL) {
-			clientRef.models = generateModelsProperty<T>(
+		if (isApiGraphQLConfig(apiGraphQLConfig)) {
+			clientRef.models = generateModelsProperty(clientRef, apiGraphQLConfig);
+			clientRef.enums = generateEnumsProperty(apiGraphQLConfig);
+			clientRef.queries = generateCustomQueriesProperty(
 				clientRef,
-				resourceConfig.API?.GraphQL,
+				apiGraphQLConfig,
+			);
+			clientRef.mutations = generateCustomMutationsProperty(
+				clientRef,
+				apiGraphQLConfig,
+			);
+			clientRef.subscriptions = generateCustomSubscriptionsProperty(
+				clientRef,
+				apiGraphQLConfig,
 			);
 		}
 	});
 };
 
-function isConfigureEvent(
-	payload: HubCapsule<'core', { event: string; data?: unknown }>['payload'],
-): payload is {
-	event: 'configure';
-	data: ResourcesConfig;
-} {
-	return payload.event === 'configure';
-}
-
-const emptyModels = new Proxy(
+const emptyProperty = new Proxy(
 	{},
 	{
 		get() {
 			throw new Error(
-				'Could not generate client. This is likely due to Amplify.configure() not being called prior to generateClient().',
+				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
 		},
 	},

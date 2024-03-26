@@ -48,7 +48,7 @@ export default class AuthenticationHelper {
 		this.N = N;
 		this.k = new BigInteger(
 			getHashFromHex(`${getPaddedHex(N)}${getPaddedHex(g)}`),
-			16
+			16,
 		);
 	}
 
@@ -62,6 +62,7 @@ export default class AuthenticationHelper {
 				message: 'random password is empty',
 			});
 		}
+
 		return this.randomPassword;
 	}
 
@@ -75,6 +76,7 @@ export default class AuthenticationHelper {
 				message: 'saltToHashDevices is empty',
 			});
 		}
+
 		return this.saltToHashDevices;
 	}
 
@@ -88,6 +90,7 @@ export default class AuthenticationHelper {
 				message: 'verifyDevices is empty',
 			});
 		}
+
 		return this.verifierDevices;
 	}
 
@@ -101,7 +104,7 @@ export default class AuthenticationHelper {
 	 */
 	async generateHashDevice(
 		deviceGroupKey: string,
-		username: string
+		username: string,
 	): Promise<void> {
 		this.randomPassword = getRandomString();
 		const combinedString = `${deviceGroupKey}${username}:${this.randomPassword}`;
@@ -116,18 +119,19 @@ export default class AuthenticationHelper {
 			this.g.modPow(
 				new BigInteger(
 					getHashFromHex(this.saltToHashDevices + hashedString),
-					16
+					16,
 				),
 				this.N,
 				(err: unknown, result: AuthBigInteger) => {
 					if (err) {
 						reject(err);
+
 						return;
 					}
 
 					this.verifierDevices = getPaddedHex(result);
 					resolve();
-				}
+				},
 			);
 		});
 	}
@@ -165,7 +169,7 @@ export default class AuthenticationHelper {
 
 		const x = new BigInteger(
 			getHashFromHex(getPaddedHex(salt) + usernamePasswordHash),
-			16
+			16,
 		);
 
 		const S = await calculateS({
@@ -186,8 +190,9 @@ export default class AuthenticationHelper {
 		const hkdfKey = getHkdfKey(
 			getBytesFromHex(getPaddedHex(S)),
 			getBytesFromHex(getPaddedHex(U)),
-			info
+			info,
 		);
+
 		return hkdfKey;
 	}
 }

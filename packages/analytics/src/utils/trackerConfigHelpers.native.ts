@@ -8,11 +8,11 @@ import { AnalyticsConfigureAutoTrackInput } from '../types';
  * Validates tracker configuration.
  */
 export const validateTrackerConfiguration = (
-	input: AnalyticsConfigureAutoTrackInput
+	input: AnalyticsConfigureAutoTrackInput,
 ) => {
 	// React Native only supports session tracking
 	assertValidationError(
 		input.type === 'session',
-		AnalyticsValidationErrorCode.UnsupportedPlatform
+		AnalyticsValidationErrorCode.UnsupportedPlatform,
 	);
 };

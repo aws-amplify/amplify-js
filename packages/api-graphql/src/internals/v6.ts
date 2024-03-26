@@ -1,15 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
+
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
+	GraphQLOptionsV6,
+	GraphQLResponseV6,
+	V6Client,
 	__amplify,
 	__authMode,
 	__authToken,
-	V6Client,
-	GraphQLOptionsV6,
-	GraphQLResponseV6,
 } from '../types';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 /**
  * Invokes graphql operations against a graphql service, providing correct input and
@@ -101,12 +102,12 @@ export function graphql<
 >(
 	this: V6Client,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
-	additionalHeaders?: CustomHeaders
+	additionalHeaders?: CustomHeaders,
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
-	// inject client-level auth 
+	// inject client-level auth
 	options.authMode = options.authMode || this[__authMode];
 	options.authToken = options.authToken || this[__authToken];
-	
+
 	/**
 	 * The correctness of these typings depends on correct string branding or overrides.
 	 * Neither of these can actually be validated at runtime. Hence, we don't perform
@@ -115,8 +116,9 @@ export function graphql<
 	const result = GraphQLAPI.graphql(
 		this[__amplify],
 		options,
-		additionalHeaders
+		additionalHeaders,
 	);
+
 	return result as any;
 }
 
@@ -128,7 +130,7 @@ export function graphql<
 export function cancel(
 	this: V6Client,
 	promise: Promise<any>,
-	message?: string
+	message?: string,
 ): boolean {
 	return GraphQLAPI.cancel(promise, message);
 }

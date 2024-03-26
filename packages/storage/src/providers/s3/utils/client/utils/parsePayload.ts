@@ -15,13 +15,14 @@ export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 	}
 	const { statusCode } = response;
 	const body = await parseXmlBody(response);
-	const code = body?.['Code']
+	const code = body?.Code
 		? (body.Code as string)
 		: statusCode === 404
-		  ? 'NotFound'
-		  : statusCode.toString();
-	const message = body?.['message'] ?? body?.['Message'] ?? code;
+			? 'NotFound'
+			: statusCode.toString();
+	const message = body?.message ?? body?.Message ?? code;
 	const error = new Error(message);
+
 	return Object.assign(error, {
 		name: code,
 		$metadata: parseMetadata(response),
@@ -41,5 +42,6 @@ export const parseXmlBody = async (response: HttpResponse): Promise<any> => {
 			throw new Error('Failed to parse XML response.');
 		}
 	}
+
 	return {};
 };

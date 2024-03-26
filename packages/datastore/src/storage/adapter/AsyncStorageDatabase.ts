@@ -105,7 +105,7 @@ class AsyncStorageDatabase {
 		item: T,
 		storeName: string,
 		keys: string[],
-		keyValuesPath: string
+		keyValuesPath: string,
 	) {
 		const idxName = indexNameFromKeys(keys);
 
@@ -126,7 +126,7 @@ class AsyncStorageDatabase {
 	async batchSave<T extends PersistentModel>(
 		storeName: string,
 		items: ModelInstanceMetadata[],
-		keys: string[]
+		keys: string[],
 	): Promise<[T, OpType][]> {
 		if (items.length === 0) {
 			return [];
@@ -157,7 +157,7 @@ class AsyncStorageDatabase {
 			const key = this.getKeyForItem(
 				storeName,
 				keyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR),
-				ulid
+				ulid,
 			);
 
 			allItemsKeys.push(key);
@@ -252,7 +252,7 @@ class AsyncStorageDatabase {
 
 	async get<T extends PersistentModel>(
 		keyValuePath: string,
-		storeName: string
+		storeName: string,
 	): Promise<T> {
 		const ulid = this.getCollectionIndex(storeName)!.get(keyValuePath)!;
 		const itemKey = this.getKeyForItem(storeName, keyValuePath, ulid);
@@ -270,12 +270,12 @@ class AsyncStorageDatabase {
 						let id: string, ulid: string;
 						for ([id, ulid] of collection) break; // Get first element of the set
 						return [id!, ulid!];
-				  })()
+					})()
 				: (() => {
 						let id: string, ulid: string;
 						for ([id, ulid] of collection); // Get last element of the set
 						return [id!, ulid!];
-				  })();
+					})();
 		const itemKey = this.getKeyForItem(storeName, itemId, ulid);
 
 		const itemString = itemKey && (await this.storage.getItem(itemKey));
@@ -291,7 +291,7 @@ class AsyncStorageDatabase {
 	 */
 	async getAll<T extends PersistentModel>(
 		storeName: string,
-		pagination?: PaginationInput<T>
+		pagination?: PaginationInput<T>,
 	): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName)!;
 

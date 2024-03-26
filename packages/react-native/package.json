@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/react-native",
-	"version": "1.0.15",
+	"version": "1.0.24",
 	"description": "React Native core module for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -19,7 +19,8 @@
 		"build": "npm run clean && npm run build:esm-cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 88.21"
 	},
 	"dependencies": {
@@ -32,8 +33,8 @@
 		"react-native-get-random-values": ">=1.9.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/rtn-push-notification": "1.2.15",
-		"@aws-amplify/rtn-web-browser": "1.0.15",
+		"@aws-amplify/rtn-push-notification": "1.2.24",
+		"@aws-amplify/rtn-web-browser": "1.0.24",
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
 		"@types/base-64": "1.0.0",

@@ -20,7 +20,7 @@ describe('EventBuffer', () => {
 			() => events => {
 				result.push(...events);
 				return Promise.resolve([]);
-			}
+			},
 		);
 
 		const testEvents: TestEvent[] = [
@@ -53,7 +53,7 @@ describe('EventBuffer', () => {
 			() => events => {
 				results.push(events.length);
 				return Promise.resolve(events);
-			}
+			},
 		);
 
 		testEvents.forEach(x => eventBuffer.append(x));
@@ -61,7 +61,7 @@ describe('EventBuffer', () => {
 			eventBuffer.release();
 			expect(results.filter(x => x === testEvents.length).length).toEqual(1);
 			expect(results.filter(x => x !== testEvents.length).length).toEqual(
-				results.length - 1
+				results.length - 1,
 			);
 			done();
 		}, 100);
@@ -85,7 +85,7 @@ describe('EventBuffer', () => {
 			() => events => {
 				results.push(...events);
 				return Promise.resolve([]);
-			}
+			},
 		);
 
 		testEvents.forEach(x => eventBuffer.append(x));
@@ -97,7 +97,7 @@ describe('EventBuffer', () => {
 		setTimeout(() => {
 			expect(results.length).toEqual(testEvents.length);
 			expect(results.filter(x => x.timestamp > results.length).length).toEqual(
-				0
+				0,
 			);
 			done();
 		}, 150);

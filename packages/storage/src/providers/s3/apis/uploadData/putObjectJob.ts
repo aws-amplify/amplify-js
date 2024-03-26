@@ -19,7 +19,7 @@ export const putObjectJob =
 	(
 		{ options: uploadDataOptions, key, data }: UploadDataInput,
 		abortSignal: AbortSignal,
-		totalLength?: number
+		totalLength?: number,
 	) =>
 	async (): Promise<S3Item> => {
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled } =
@@ -52,7 +52,7 @@ export const putObjectJob =
 				ContentMD5: isObjectLockEnabled
 					? await calculateContentMd5(data)
 					: undefined,
-			}
+			},
 		);
 
 		return {

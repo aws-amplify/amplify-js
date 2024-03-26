@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { runWithAmplifyServerContext } from '../../src/adapterCore';
+import { runWithAmplifyServerContext } from '../../src/adapter-core';
 import {
 	createAmplifyServerContext,
 	destroyAmplifyServerContext,
@@ -43,7 +43,7 @@ describe('runWithAmplifyServerContext', () => {
 					credentialsProvider: mockCredentialAndIdentityProvider,
 				},
 			},
-			mockOperation
+			mockOperation,
 		);
 
 		expect(mockOperation).toHaveBeenCalledWith(mockContextSpec);
@@ -59,11 +59,11 @@ describe('runWithAmplifyServerContext', () => {
 					credentialsProvider: mockCredentialAndIdentityProvider,
 				},
 			},
-			mockOperation
+			mockOperation,
 		);
 
 		expect(mockDestroyAmplifyServerContext).toHaveBeenCalledWith(
-			mockContextSpec
+			mockContextSpec,
 		);
 	});
 
@@ -81,12 +81,12 @@ describe('runWithAmplifyServerContext', () => {
 						credentialsProvider: mockCredentialAndIdentityProvider,
 					},
 				},
-				mockOperation
-			)
+				mockOperation,
+			),
 		).rejects.toThrow(testError);
 
 		expect(mockDestroyAmplifyServerContext).toHaveBeenCalledWith(
-			mockContextSpec
+			mockContextSpec,
 		);
 	});
 
@@ -103,7 +103,7 @@ describe('runWithAmplifyServerContext', () => {
 					credentialsProvider: mockCredentialAndIdentityProvider,
 				},
 			},
-			mockOperation
+			mockOperation,
 		);
 
 		expect(result).toStrictEqual(mockResultValue);

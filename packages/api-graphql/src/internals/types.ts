@@ -16,8 +16,8 @@ export type ClientGenerationParams = {
 /**
  * Common options that can be used on public `generateClient()` interfaces.
  */
-export type CommonPublicClientOptions = {
+export interface CommonPublicClientOptions {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
 	headers?: CustomHeaders;
-};
+}

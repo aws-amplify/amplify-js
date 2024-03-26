@@ -20,7 +20,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider'
+	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
 describe('signUp', () => {
@@ -72,7 +72,7 @@ describe('signUp', () => {
 				Username: user1.username,
 				ValidationData: undefined,
 				ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-			}
+			},
 		);
 		expect(mockSignUp).toHaveBeenCalledTimes(1);
 	});

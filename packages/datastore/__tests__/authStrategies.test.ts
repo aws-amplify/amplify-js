@@ -427,7 +427,7 @@ describe('Auth Strategies', () => {
 					schema,
 					modelName: 'Post',
 					operation: ModelOperation.READ,
-				})
+				}),
 			).toEqual([]);
 		});
 	});
@@ -466,7 +466,7 @@ async function testMultiAuthStrategy({
 }
 
 function getAuthSchema(
-	authRules: ModelAttributeAuthProperty[] = []
+	authRules: ModelAttributeAuthProperty[] = [],
 ): InternalSchema {
 	const baseSchema: InternalSchema = {
 		namespaces: {

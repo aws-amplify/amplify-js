@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventBuffer } from '../../../utils';
-import { PersonalizeBufferEvent, PersonalizeEvent } from '../types';
 import { isBrowser } from '@aws-amplify/core/internals/utils';
 import { ConsoleLogger } from '@aws-amplify/core';
+
+import { EventBuffer } from '../../../utils';
+import { PersonalizeBufferEvent, PersonalizeEvent } from '../types';
 
 enum HTML5_MEDIA_EVENT {
 	'PLAY' = 'play',
@@ -25,28 +26,30 @@ enum EVENT_TYPE {
 	'TIME_WATCHED' = 'TimeWatched',
 }
 
-interface IRecordEvent {
-	(eventType: string, properties: Record<string, unknown>): void;
-}
+type IRecordEvent = (
+	eventType: string,
+	properties: Record<string, unknown>,
+) => void;
 
-type MediaAutoTrackConfig = {
+interface MediaAutoTrackConfig {
 	trackingId: string;
 	sessionId: string;
 	userId?: string;
 	event: PersonalizeEvent;
-};
+}
 
 const logger = new ConsoleLogger('MediaAutoTrack');
 
 const startIframeAutoTracking = (
 	element: HTMLElement,
-	recordEvent: IRecordEvent
+	recordEvent: IRecordEvent,
 ) => {
 	let isPlaying = false;
 	let player: any;
 	const mediaProperties = (): Record<string, unknown> => {
 		const duration = Number(parseFloat(player.getDuration()).toFixed(4));
 		const currentTime = Number(parseFloat(player.getCurrentTime()).toFixed(4));
+
 		return {
 			duration,
 			eventValue: Number((currentTime / duration).toFixed(4)),
@@ -64,23 +67,22 @@ const startIframeAutoTracking = (
 		}
 	}, 3_000);
 
-	element.addEventListener('unload', () => clearInterval(timer));
+	element.addEventListener('unload', () => {
+		clearInterval(timer);
+	});
 
-	// @ts-ignore
-	window.onYouTubeIframeAPIReady = () => {
-		// @ts-ignore
-		delete window.onYouTubeIframeAPIReady;
+	(window as any).onYouTubeIframeAPIReady = () => {
+		delete (window as any).onYouTubeIframeAPIReady;
 
-		// @ts-ignore
-		player = new window.YT.Player(element.id, {
+		player = new (window as any).YT.Player(element.id, {
 			events: {
 				onStateChange: (event: any) => {
-					const iframeEventMapping = {
+					const iframeEventMapping: Record<number, EVENT_TYPE> = {
 						0: EVENT_TYPE.ENDED,
 						1: EVENT_TYPE.PLAY,
 						2: EVENT_TYPE.PAUSE,
 					};
-					// @ts-ignore
+
 					const eventType = iframeEventMapping[event.data];
 					switch (eventType) {
 						case EVENT_TYPE.ENDED:
@@ -103,7 +105,7 @@ const startIframeAutoTracking = (
 
 const startHTMLMediaAutoTracking = (
 	element: HTMLMediaElement,
-	recordEvent: IRecordEvent
+	recordEvent: IRecordEvent,
 ) => {
 	let isPlaying = false;
 	const mediaProperties = (): Record<string, unknown> => ({
@@ -117,7 +119,9 @@ const startHTMLMediaAutoTracking = (
 		}
 	}, 3_000);
 
-	element.addEventListener('unload', () => clearInterval(timer));
+	element.addEventListener('unload', () => {
+		clearInterval(timer);
+	});
 
 	element.addEventListener(HTML5_MEDIA_EVENT.PLAY, () => {
 		isPlaying = true;
@@ -137,7 +141,7 @@ const startHTMLMediaAutoTracking = (
 
 const checkElementLoaded = (interval: number, maxTries: number) => {
 	let retryCount = 0;
-	const wait = () => new Promise(r => setTimeout(r, interval));
+	const wait = () => new Promise(resolve => setTimeout(resolve, interval));
 	const check = async (elementId: string): Promise<boolean> => {
 		if (retryCount >= maxTries) {
 			return false;
@@ -149,16 +153,18 @@ const checkElementLoaded = (interval: number, maxTries: number) => {
 		} else {
 			retryCount += 1;
 			await wait();
-			return await check(elementId);
+
+			return check(elementId);
 		}
 	};
+
 	return check;
 };
 
 const recordEvent =
 	(
 		config: MediaAutoTrackConfig,
-		eventBuffer: EventBuffer<PersonalizeBufferEvent>
+		eventBuffer: EventBuffer<PersonalizeBufferEvent>,
 	): IRecordEvent =>
 	(eventType: string, properties: Record<string, unknown>) => {
 		// override eventType and merge properties
@@ -178,19 +184,21 @@ const recordEvent =
 
 export const autoTrackMedia = async (
 	config: MediaAutoTrackConfig,
-	eventBuffer: EventBuffer<PersonalizeBufferEvent>
+	eventBuffer: EventBuffer<PersonalizeBufferEvent>,
 ) => {
 	const { eventType, properties } = config.event;
 	const { domElementId, ...otherProperties } = properties;
 	if (!isBrowser()) {
 		logger.debug(`${eventType} only for browser`);
+
 		return;
 	}
 
 	if (typeof domElementId === 'string' && !domElementId) {
 		logger.debug(
-			"Missing domElementId field in 'properties' for MediaAutoTrack event type."
+			"Missing domElementId field in 'properties' for MediaAutoTrack event type.",
 		);
+
 		return;
 	}
 
@@ -210,7 +218,7 @@ export const autoTrackMedia = async (
 			case MEDIA_TYPE.IFRAME:
 				startIframeAutoTracking(
 					element,
-					recordEvent(autoTrackConfigWithoutDomElementId, eventBuffer)
+					recordEvent(autoTrackConfigWithoutDomElementId, eventBuffer),
 				);
 				break;
 			case MEDIA_TYPE.VIDEO:
@@ -218,7 +226,7 @@ export const autoTrackMedia = async (
 				if (element instanceof HTMLMediaElement) {
 					startHTMLMediaAutoTracking(
 						element,
-						recordEvent(autoTrackConfigWithoutDomElementId, eventBuffer)
+						recordEvent(autoTrackConfigWithoutDomElementId, eventBuffer),
 					);
 				}
 				break;

@@ -67,7 +67,7 @@ describe('Pinpoint Provider API: record', () => {
 				event,
 				session: expect.any(Object),
 				timestamp: expect.any(String),
-			})
+			}),
 		);
 	});
 
@@ -111,7 +111,7 @@ describe('Pinpoint Provider API: record', () => {
 				event,
 				session: expect.any(Object),
 				timestamp: expect.any(String),
-			})
+			}),
 		);
 	});
 
@@ -143,7 +143,7 @@ describe('Pinpoint Provider API: record', () => {
 					StartTimestamp: expect.any(String),
 				},
 				timestamp: expect.any(String),
-			})
+			}),
 		);
 
 		// End the session
@@ -168,7 +168,7 @@ describe('Pinpoint Provider API: record', () => {
 					StopTimestamp: expect.any(String),
 				},
 				timestamp: expect.any(String),
-			})
+			}),
 		);
 	});
 
@@ -178,7 +178,7 @@ describe('Pinpoint Provider API: record', () => {
 		});
 
 		await expect(
-			record({ appId, category, credentials, event, identityId, region })
+			record({ appId, category, credentials, event, identityId, region }),
 		).rejects.toThrow();
 	});
 });

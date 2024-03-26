@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
@@ -12,11 +15,6 @@ import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
-import { Amplify, Hub } from '@aws-amplify/core';
-import {
-	AMPLIFY_SYMBOL,
-	assertTokenProviderConfig,
-} from '@aws-amplify/core/internals/utils';
 import {
 	getActiveSignInUsername,
 	getNewDeviceMetatada,
@@ -30,12 +28,12 @@ import {
 	SignInWithSRPOutput,
 } from '../types';
 import {
-	setActiveSignInState,
 	cleanActiveSignInState,
+	setActiveSignInState,
 } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
-import { getCurrentUser } from './getCurrentUser';
+import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
 /**
  * Signs a user in
@@ -49,7 +47,7 @@ import { getCurrentUser } from './getCurrentUser';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signInWithSRP(
-	input: SignInWithSRPInput
+	input: SignInWithSRPInput,
 ): Promise<SignInWithSRPOutput> {
 	const { username, password } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
@@ -61,17 +59,17 @@ export async function signInWithSRP(
 	const clientMetaData = input.options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignInUsername
+		AuthValidationErrorCode.EmptySignInUsername,
 	);
 	assertValidationError(
 		!!password,
-		AuthValidationErrorCode.EmptySignInPassword
+		AuthValidationErrorCode.EmptySignInPassword,
 	);
 
 	try {
 		const {
-			ChallengeName,
-			ChallengeParameters,
+			ChallengeName: handledChallengeName,
+			ChallengeParameters: handledChallengeParameters,
 			AuthenticationResult,
 			Session,
 		} = await handleUserSRPAuthFlow(
@@ -79,7 +77,7 @@ export async function signInWithSRP(
 			password,
 			clientMetaData,
 			authConfig,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 
 		const activeUsername = getActiveSignInUsername(username);
@@ -87,7 +85,7 @@ export async function signInWithSRP(
 		setActiveSignInState({
 			signInSession: Session,
 			username: activeUsername,
-			challengeName: ChallengeName as ChallengeName,
+			challengeName: handledChallengeName as ChallengeName,
 			signInDetails,
 		});
 		if (AuthenticationResult) {
@@ -98,19 +96,13 @@ export async function signInWithSRP(
 				NewDeviceMetadata: await getNewDeviceMetatada(
 					authConfig.userPoolId,
 					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken
+					AuthenticationResult.AccessToken,
 				),
 				signInDetails,
 			});
-			Hub.dispatch(
-				'auth',
-				{
-					event: 'signedIn',
-					data: await getCurrentUser(),
-				},
-				'Auth',
-				AMPLIFY_SYMBOL
-			);
+
+			await dispatchSignedInHubEvent();
+
 			return {
 				isSignedIn: true,
 				nextStep: { signInStep: 'DONE' },
@@ -118,8 +110,8 @@ export async function signInWithSRP(
 		}
 
 		return getSignInResult({
-			challengeName: ChallengeName as ChallengeName,
-			challengeParameters: ChallengeParameters as ChallengeParameters,
+			challengeName: handledChallengeName as ChallengeName,
+			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
 		cleanActiveSignInState();

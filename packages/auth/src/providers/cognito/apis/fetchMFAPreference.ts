@@ -1,15 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import {
+	AuthAction,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
+
 import { FetchMFAPreferenceOutput } from '../types';
 import { getMFAType, getMFATypes } from '../utils/signInHelpers';
 import { GetUserException } from '../types/errors';
 import { getUser } from '../utils/clients/CognitoIdentityProvider';
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import {
-	assertTokenProviderConfig,
-	AuthAction,
-} from '@aws-amplify/core/internals/utils';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -34,7 +35,7 @@ export async function fetchMFAPreference(): Promise<FetchMFAPreferenceOutput> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 
 	return {

@@ -4,12 +4,14 @@
 import { record } from '@aws-amplify/core/internals/providers/pinpoint';
 import { ConsoleLogger } from '@aws-amplify/core';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
+
 import { PinpointMessageEvent } from '../types';
 import {
 	OnPushNotificationMessageHandler,
 	PushNotificationMessage,
 } from '../../../types';
 import { resolveCredentials } from '../../../utils';
+
 import { getAnalyticsEvent } from './getAnalyticsEvent';
 import { getChannelType } from './getChannelType';
 import { resolveConfig } from './resolveConfig';
@@ -22,7 +24,7 @@ const logger = new ConsoleLogger('PushNotification.recordMessageEvent');
 export const createMessageEventRecorder =
 	(
 		event: PinpointMessageEvent,
-		callback?: Function
+		callback?: () => void,
 	): OnPushNotificationMessageHandler =>
 	async message => {
 		const { credentials } = await resolveCredentials();
@@ -53,8 +55,10 @@ const recordMessageEvent = async ({
 	const analyticsEvent = getAnalyticsEvent(message, event);
 	if (!analyticsEvent) {
 		logger.debug('A notification missing event information was not recorded');
+
 		return;
 	}
+
 	return record({
 		appId,
 		category: 'PushNotification',

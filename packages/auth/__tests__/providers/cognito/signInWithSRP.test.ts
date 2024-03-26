@@ -15,6 +15,7 @@ import { AuthError } from '../../../src';
 import { createKeysForAuthStorage } from '../../../src/providers/cognito/tokenProvider/TokenStore';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
+jest.mock('../../../src/providers/cognito/utils/dispatchSignedInHubEvent');
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -41,18 +42,18 @@ const mockedDeviceMetadata = {
 const lastAuthUser = 'lastAuthUser';
 const authKeys = createKeysForAuthStorage(
 	'CognitoIdentityServiceProvider',
-	`${authConfig.Cognito.userPoolClientId}.${lastAuthUser}`
+	`${authConfig.Cognito.userPoolClientId}.${lastAuthUser}`,
 );
 
 function setDeviceKeys() {
 	localStorage.setItem(authKeys.deviceKey, mockedDeviceMetadata.deviceKey);
 	localStorage.setItem(
 		authKeys.deviceGroupKey,
-		mockedDeviceMetadata.deviceGrouKey
+		mockedDeviceMetadata.deviceGrouKey,
 	);
 	localStorage.setItem(
 		authKeys.randomPasswordKey,
-		mockedDeviceMetadata.randomPasswordKey
+		mockedDeviceMetadata.randomPasswordKey,
 	);
 }
 
@@ -64,7 +65,7 @@ describe('signIn API happy path cases', () => {
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementation(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
-					authAPITestParams.RespondToAuthChallengeCommandOutput
+					authAPITestParams.RespondToAuthChallengeCommandOutput,
 			);
 	});
 
@@ -93,7 +94,7 @@ describe('signIn API happy path cases', () => {
 						Session: 'aaabbbcccddd',
 						$metadata: {},
 					};
-				}
+				},
 			);
 
 		const result = await signIn({
@@ -159,7 +160,7 @@ describe('signIn API happy path cases', () => {
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 	});
 });
@@ -211,7 +212,7 @@ describe('Cognito ASF', () => {
 				UserContextData: {
 					EncodedData: 'abcd',
 				},
-			})
+			}),
 		);
 	});
 });

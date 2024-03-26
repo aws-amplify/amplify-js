@@ -1,8 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { MqttOverWS, MqttOptions } from './MqttOverWS';
 import { Signer } from '@aws-amplify/core/internals/utils';
 import { fetchAuthSession } from '@aws-amplify/core';
+
+import { MqttOptions, MqttOverWS } from './MqttOverWS';
+
 const SERVICE_NAME = 'iotdevicegateway';
 
 export interface AWSIoTOptions extends MqttOptions {
@@ -21,7 +23,7 @@ export class AWSIoT extends MqttOverWS {
 
 	protected get endpoint() {
 		return (async () => {
-			const endpoint = this.options.endpoint;
+			const { endpoint } = this.options;
 
 			const serviceInfo = {
 				service: SERVICE_NAME,
@@ -42,7 +44,7 @@ export class AWSIoT extends MqttOverWS {
 			const result = Signer.signUrl(
 				endpoint,
 				{ access_key, secret_key, session_token },
-				serviceInfo
+				serviceInfo,
 			);
 
 			return result;

@@ -51,18 +51,19 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 			abortController.abort(message);
 		},
 	});
+
 	return downloadTask;
 };
 
 const downloadDataJob =
 	(
 		{ options: downloadDataOptions, key }: DownloadDataInput,
-		abortSignal: AbortSignal
+		abortSignal: AbortSignal,
 	) =>
 	async () => {
 		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
 			Amplify,
-			downloadDataOptions
+			downloadDataOptions,
 		);
 		const finalKey = keyPrefix + key;
 
@@ -89,8 +90,9 @@ const downloadDataJob =
 				...(downloadDataOptions?.bytesRange && {
 					Range: `bytes=${downloadDataOptions.bytesRange.start}-${downloadDataOptions.bytesRange.end}`,
 				}),
-			}
+			},
 		);
+
 		return {
 			key,
 			body,

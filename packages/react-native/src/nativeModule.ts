@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NativeModules, Platform } from 'react-native';
+
 import { RTNCore } from './types';
 
 const LINKING_ERROR =
@@ -18,5 +19,5 @@ export const nativeModule: RTNCore = NativeModules.AmplifyRTNCore
 				get() {
 					throw new Error(LINKING_ERROR);
 				},
-			}
-	  );
+			},
+		);

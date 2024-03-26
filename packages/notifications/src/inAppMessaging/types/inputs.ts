@@ -2,15 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UserProfile } from '@aws-amplify/core';
+
 import { InAppMessagingServiceOptions } from './options';
 
 /**
  * Input type for `identifyUser`.
  */
-export type InAppMessagingIdentifyUserInput<
+export interface InAppMessagingIdentifyUserInput<
 	ServiceOptions extends
 		InAppMessagingServiceOptions = InAppMessagingServiceOptions,
-> = {
+> {
 	/**
 	 * A User ID associated to the current device.
 	 */
@@ -25,4 +26,4 @@ export type InAppMessagingIdentifyUserInput<
 	 * Options to be passed to the API.
 	 */
 	options?: ServiceOptions;
-};
+}

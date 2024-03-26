@@ -3,9 +3,10 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { deleteUserAttributes as deleteUserAttributesClient } from '../utils/clients/CognitoIdentityProvider';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
@@ -21,7 +22,7 @@ import { getAuthUserAgentValue } from '../../../utils';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function deleteUserAttributes(
-	input: DeleteUserAttributesInput
+	input: DeleteUserAttributesInput,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -36,6 +37,6 @@ export async function deleteUserAttributes(
 		{
 			AccessToken: tokens.accessToken.toString(),
 			UserAttributeNames: userAttributeKeys,
-		}
+		},
 	);
 }

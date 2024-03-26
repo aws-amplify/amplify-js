@@ -3,10 +3,11 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthDeliveryMedium } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -15,6 +16,7 @@ import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { resendConfirmationCode } from '../utils/clients/CognitoIdentityProvider';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from '../utils/userContextData';
+import { ResendConfirmationException } from '../types/errors';
 
 /**
  * Resend the confirmation code while signing up
@@ -26,12 +28,12 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function resendSignUpCode(
-	input: ResendSignUpCodeInput
+	input: ResendSignUpCodeInput,
 ): Promise<ResendSignUpCodeOutput> {
-	const username = input.username;
+	const { username } = input;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptySignUpUsername
+		AuthValidationErrorCode.EmptySignUpUsername,
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -54,11 +56,12 @@ export async function resendSignUpCode(
 			ClientMetadata: clientMetadata,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
-		}
+		},
 	);
 	const { DeliveryMedium, AttributeName, Destination } = {
 		...CodeDeliveryDetails,
 	};
+
 	return {
 		destination: Destination as string,
 		deliveryMedium: DeliveryMedium as AuthDeliveryMedium,

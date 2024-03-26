@@ -1,20 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
-	SearchForSuggestionsResults,
 	Coordinates,
-	Place,
-	MapStyle,
+	DeleteGeofencesResults,
 	Geofence,
 	GeofenceId,
 	GeofenceInput,
 	GeofenceOptions,
 	ListGeofenceOptions,
 	ListGeofenceResults,
+	MapStyle,
+	Place,
 	SaveGeofencesResults,
-	DeleteGeofencesResults,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
+	SearchForSuggestionsResults,
 	searchByPlaceIdOptions,
 } from './Geo';
 
@@ -37,29 +37,29 @@ export interface GeoProvider {
 	// search by coordinates and return a matching place
 	searchByCoordinates(
 		coordinates: Coordinates,
-		options?: SearchByCoordinatesOptions
+		options?: SearchByCoordinatesOptions,
 	): Promise<Place>;
 
 	searchForSuggestions(
 		text: string,
-		options?: SearchByTextOptions
+		options?: SearchByTextOptions,
 	): Promise<SearchForSuggestionsResults>;
 
 	searchByPlaceId(
 		placeId: string,
-		options?: searchByPlaceIdOptions
+		options?: searchByPlaceIdOptions,
 	): Promise<Place | undefined>;
 
 	// create geofences
 	saveGeofences(
 		geofences: GeofenceInput[],
-		options?: GeofenceOptions
+		options?: GeofenceOptions,
 	): Promise<SaveGeofencesResults>;
 
 	// get a single geofence
 	getGeofence(
 		geofenceId: GeofenceId,
-		options?: ListGeofenceOptions
+		options?: ListGeofenceOptions,
 	): Promise<Geofence>;
 
 	// list all geofences
@@ -68,6 +68,6 @@ export interface GeoProvider {
 	// Delete geofences
 	deleteGeofences(
 		geofenceIds: string[],
-		options?: GeofenceOptions
+		options?: GeofenceOptions,
 	): Promise<DeleteGeofencesResults>;
 }

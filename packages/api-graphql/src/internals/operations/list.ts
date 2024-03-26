@@ -2,26 +2,27 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
-	initializeModel,
-	generateGraphQLDocument,
-	buildGraphQLVariables,
-	flattenItems,
-	authModeParams,
-	getCustomHeaders,
-} from '../APIClient';
-import {
-	AuthModeParams,
-	ClientWithModels,
-	ListArgs,
-	V6Client,
-	V6ClientSSRRequest,
-	GraphQLResult,
-} from '../../types';
-import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
 import { handleGraphQlError } from './utils';
+
+import {
+	authModeParams,
+	buildGraphQLVariables,
+	flattenItems,
+	generateGraphQLDocument,
+	getCustomHeaders,
+	initializeModel,
+} from '../APIClient';
+import {
+	AuthModeParams,
+	ClientWithModels,
+	GraphQLResult,
+	ListArgs,
+	V6Client,
+	V6ClientSSRRequest,
+} from '../../types';
 
 export function listFactory(
 	client: ClientWithModels,
@@ -52,12 +53,7 @@ async function _list(
 ) {
 	const { name } = model;
 
-	const query = generateGraphQLDocument(
-		modelIntrospection.models,
-		name,
-		'LIST',
-		args,
-	);
+	const query = generateGraphQLDocument(modelIntrospection, name, 'LIST', args);
 	const variables = buildGraphQLVariables(
 		model,
 		'LIST',
@@ -70,7 +66,7 @@ async function _list(
 
 		const headers = getCustomHeaders(client, args?.headers);
 
-		const { data, extensions } = !!contextSpec
+		const { data, extensions } = contextSpec
 			? ((await (client as V6ClientSSRRequest<Record<string, any>>).graphql(
 					contextSpec,
 					{

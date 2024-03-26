@@ -90,7 +90,7 @@ export function addCommonQueryTests({
 						field1: `field1 value ${i}`,
 						dateCreated: new Date(baseDate.getTime() + i).toISOString(),
 						emails: [`field${i}@example.com`],
-					})
+					}),
 				);
 			}
 		}
@@ -135,7 +135,7 @@ export function addCommonQueryTests({
 
 		it('should match fields of any non-empty value for `("ne", undefined)`', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.ne(undefined!)
+				m.field1.ne(undefined!),
 			);
 			expect(results.length).toEqual(3);
 		});
@@ -147,7 +147,7 @@ export function addCommonQueryTests({
 
 		it('should NOT match fields of any non-empty value for `("eq", undefined)`', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.eq(undefined!)
+				m.field1.eq(undefined!),
 			);
 			expect(results.length).toEqual(0);
 		});
@@ -179,70 +179,70 @@ export function addCommonQueryTests({
 
 		it('should NOT match fields of any non-empty value for `("gt", undefined)`', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.gt(undefined!)
+				m.field1.gt(undefined!),
 			);
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("ge", undefined)`', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.ge(undefined!)
+				m.field1.ge(undefined!),
 			);
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("lt", undefined)`', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.lt(undefined!)
+				m.field1.lt(undefined!),
 			);
 			expect(results.length).toEqual(0);
 		});
 
 		it('should NOT match fields of any non-empty value for `("le", undefined)`', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.le(undefined!)
+				m.field1.le(undefined!),
 			);
 			expect(results.length).toEqual(0);
 		});
 
 		it('should match gt', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.gt('field1 value 0')
+				m.field1.gt('field1 value 0'),
 			);
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match ge', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.ge('field1 value 1')
+				m.field1.ge('field1 value 1'),
 			);
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match lt', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.lt('field1 value 2')
+				m.field1.lt('field1 value 2'),
 			);
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match le', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.le('field1 value 1')
+				m.field1.le('field1 value 1'),
 			);
 			expect(results.length).toEqual(2);
 		});
 
 		it('should match eq', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.eq('field1 value 1')
+				m.field1.eq('field1 value 1'),
 			);
 			expect(results.length).toEqual(1);
 		});
 
 		it('should match ne', async () => {
 			const results = await DataStore.query(Model, m =>
-				m.field1.ne('field1 value 1')
+				m.field1.ne('field1 value 1'),
 			);
 			expect(results.length).toEqual(2);
 		});
@@ -251,17 +251,17 @@ export function addCommonQueryTests({
 			const saved = await DataStore.save(
 				new ModelWithIndexes({
 					stringField: 'expected value',
-				})
+				}),
 			);
 
 			await DataStore.save(
 				new ModelWithIndexes({
 					stringField: 'decoy value',
-				})
+				}),
 			);
 
 			const retrieved = await DataStore.query(ModelWithIndexes, m =>
-				m.stringField.eq('expected value')
+				m.stringField.eq('expected value'),
 			);
 			expect(retrieved.map(m => m.stringField)).toEqual(['expected value']);
 		});
@@ -271,12 +271,12 @@ export function addCommonQueryTests({
 				await DataStore.save(
 					new ModelWithIndexes({
 						intField,
-					})
+					}),
 				);
 			}
 
 			const retrieved = await DataStore.query(ModelWithIndexes, m =>
-				m.intField.eq(2)
+				m.intField.eq(2),
 			);
 			expect(retrieved.map(m => m.intField)).toEqual([2]);
 		});
@@ -286,12 +286,12 @@ export function addCommonQueryTests({
 				await DataStore.save(
 					new ModelWithIndexes({
 						floatField,
-					})
+					}),
 				);
 			}
 
 			const retrieved = await DataStore.query(ModelWithIndexes, m =>
-				m.floatField.eq(1.5)
+				m.floatField.eq(1.5),
 			);
 			expect(retrieved.map(m => m.floatField)).toEqual([1.5]);
 		});
@@ -340,11 +340,11 @@ export function addCommonQueryTests({
 
 		it('should allow linking model via model field', async () => {
 			const profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+				new Profile({ firstName: 'Rick', lastName: 'Bob' }),
 			);
 
 			const savedUser = await DataStore.save(
-				new User({ name: 'test', profile })
+				new User({ name: 'test', profile }),
 			);
 			const user1Id = savedUser.id;
 
@@ -355,11 +355,11 @@ export function addCommonQueryTests({
 
 		it('should allow linking model via FK', async () => {
 			const profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+				new Profile({ firstName: 'Rick', lastName: 'Bob' }),
 			);
 
 			const savedUser = await DataStore.save(
-				new User({ name: 'test', profileID: profile.id })
+				new User({ name: 'test', profileID: profile.id }),
 			);
 			const user1Id = savedUser.id;
 
@@ -375,20 +375,20 @@ export function addCommonQueryTests({
 			const post = await DataStore.save(
 				new Post({
 					title: 'some post',
-				})
+				}),
 			);
 
 			const comment = await DataStore.save(
 				new Comment({
 					content: 'some comment',
 					post,
-				})
+				}),
 			);
 
 			const updatedComment = await DataStore.save(
 				Comment.copyOf(comment, draft => {
 					draft.content = 'updated content';
-				})
+				}),
 			);
 
 			const mutations = await getMutations(adapter);
@@ -406,7 +406,7 @@ export function addCommonQueryTests({
 
 		it('only includes changed fields in mutations', async () => {
 			const profile = await DataStore.save(
-				new Profile({ firstName: 'original first', lastName: 'original last' })
+				new Profile({ firstName: 'original first', lastName: 'original last' }),
 			);
 
 			await clearOutbox(adapter);
@@ -414,7 +414,7 @@ export function addCommonQueryTests({
 			await DataStore.save(
 				Profile.copyOf(profile, draft => {
 					draft.firstName = 'new first';
-				})
+				}),
 			);
 
 			const mutations = await getMutations(adapter);
@@ -467,7 +467,7 @@ export function addCommonQueryTests({
 			const post = await DataStore.save(
 				new Post({
 					title: 'a simple title',
-				})
+				}),
 			);
 
 			// sanity check. make sure it was created.
@@ -496,23 +496,23 @@ export function addCommonQueryTests({
 					DataStore.save(
 						new Post({
 							title: `Todo ${idx}`,
-						})
-					)
-				)
+						}),
+					),
+				),
 			);
 
 			// Save a new post with `%` in the title
 			const post1 = await DataStore.save(
 				new Post({
 					title: 'a % title',
-				})
+				}),
 			);
 
 			// Save a new Post with title that begins with `%`
 			const post2 = await DataStore.save(
 				new Post({
 					title: '%title-100',
-				})
+				}),
 			);
 
 			//region: sanity check. make sure posts were created.
@@ -549,23 +549,23 @@ export function addCommonQueryTests({
 					DataStore.save(
 						new Post({
 							title: `Todo ${idx}`,
-						})
-					)
-				)
+						}),
+					),
+				),
 			);
 
 			// Save a new post with `%` in the title
 			const post1 = await DataStore.save(
 				new Post({
 					title: 'a % title',
-				})
+				}),
 			);
 
 			// Save a new Post with title that begins with `%`
 			const post2 = await DataStore.save(
 				new Post({
 					title: '%title-100',
-				})
+				}),
 			);
 
 			//region: sanity check. make sure posts were created.
@@ -603,23 +603,23 @@ export function addCommonQueryTests({
 					DataStore.save(
 						new Post({
 							title: `Todo ${idx}`,
-						})
-					)
-				)
+						}),
+					),
+				),
 			);
 
 			// Save a new post with `%` in the title
 			const post1 = await DataStore.save(
 				new Post({
 					title: 'a % title',
-				})
+				}),
 			);
 
 			// Save a new Post with title that begins with `%`
 			const post2 = await DataStore.save(
 				new Post({
 					title: '%title-100',
-				})
+				}),
 			);
 
 			//region: sanity check. make sure posts were created.
@@ -655,23 +655,23 @@ export function addCommonQueryTests({
 					DataStore.save(
 						new Post({
 							title: `Todo ${idx}`,
-						})
-					)
-				)
+						}),
+					),
+				),
 			);
 
 			// Save a new post with `_` in the title
 			const post1 = await DataStore.save(
 				new Post({
 					title: 'a _ title',
-				})
+				}),
 			);
 
 			// Save a new Post with title that begins with `_`
 			const post2 = await DataStore.save(
 				new Post({
 					title: '_title-100',
-				})
+				}),
 			);
 
 			//region: sanity check. make sure posts were created.
@@ -708,23 +708,23 @@ export function addCommonQueryTests({
 					DataStore.save(
 						new Post({
 							title: `Todo ${idx}`,
-						})
-					)
-				)
+						}),
+					),
+				),
 			);
 
 			// Save a new post with `_` in the title
 			const post1 = await DataStore.save(
 				new Post({
 					title: 'a _ title',
-				})
+				}),
 			);
 
 			// Save a new Post with title that begins with `_`
 			const post2 = await DataStore.save(
 				new Post({
 					title: '_title-100',
-				})
+				}),
 			);
 
 			//region: sanity check. make sure posts were created.
@@ -762,23 +762,23 @@ export function addCommonQueryTests({
 					DataStore.save(
 						new Post({
 							title: `Todo ${idx}`,
-						})
-					)
-				)
+						}),
+					),
+				),
 			);
 
 			// Save a new post with `_` in the title
 			const post1 = await DataStore.save(
 				new Post({
 					title: 'a _ title',
-				})
+				}),
 			);
 
 			// Save a new Post with title that begins with `_`
 			const post2 = await DataStore.save(
 				new Post({
 					title: '_title-100',
-				})
+				}),
 			);
 
 			//region: sanity check. make sure posts were created.
@@ -822,13 +822,13 @@ export function addCommonQueryTests({
 				const post = await DataStore.save(
 					new Post({
 						title: 'parent post',
-					})
+					}),
 				);
 				const comment = await DataStore.save(
 					new Comment({
 						content: 'first!',
 						post,
-					})
+					}),
 				);
 
 				// sanity check. make sure things were created.
@@ -847,10 +847,10 @@ export function addCommonQueryTests({
 
 				const retrievedDeletedComment = await DataStore.query(
 					Comment,
-					comment.id
+					comment.id,
 				);
 				expect(retrievedDeletedComment).toBeUndefined();
-			}
+			},
 		);
 
 		(isSQLiteAdapter() ? test.skip : test)(
@@ -859,13 +859,13 @@ export function addCommonQueryTests({
 				const post = await DataStore.save(
 					new Post({
 						title: 'parent post',
-					})
+					}),
 				);
 				const comment = await DataStore.save(
 					new Comment({
 						content: 'first!',
 						post,
-					})
+					}),
 				);
 
 				// sanity check. make sure things were created.
@@ -884,10 +884,10 @@ export function addCommonQueryTests({
 
 				const retrievedDeletedComment = await DataStore.query(
 					Comment,
-					comment.id
+					comment.id,
 				);
 				expect(retrievedDeletedComment).toBeUndefined();
-			}
+			},
 		);
 
 		/**
@@ -903,14 +903,14 @@ export function addCommonQueryTests({
 				const blog = await DataStore.save(
 					new Blog({
 						title: 'my blog',
-					})
+					}),
 				);
 
 				const post = await DataStore.save(
 					new Post({
 						title: 'my post',
 						blogId: blog.id,
-					})
+					}),
 				);
 
 				const retrievedBlog = await DataStore.query(Blog, blog.id);
@@ -923,20 +923,20 @@ export function addCommonQueryTests({
 				await DataStore.delete(Blog, blog.id);
 
 				expect(await DataStore.query(Post, post.id)).toBeUndefined();
-			}
+			},
 		);
 
 		test('deleting belongsTo side of relationship does not cascade', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'parent post',
-				})
+				}),
 			);
 			const comment = await DataStore.save(
 				new Comment({
 					content: 'first!',
 					post,
-				})
+				}),
 			);
 
 			// sanity check. make sure things were created.
@@ -955,7 +955,7 @@ export function addCommonQueryTests({
 
 			const retrievedDeletedComment = await DataStore.query(
 				Comment,
-				comment.id
+				comment.id,
 			);
 			expect(retrievedDeletedComment).toBeUndefined();
 		});
@@ -968,9 +968,9 @@ export function addCommonQueryTests({
 				await DataStore.delete(hasOneParent);
 
 				expect(
-					await DataStore.query(HasOneParent, hasOneParent.id)
+					await DataStore.query(HasOneParent, hasOneParent.id),
 				).toBeUndefined();
-			}
+			},
 		);
 
 		(isSQLiteAdapter() ? test.skip : test)(
@@ -978,34 +978,34 @@ export function addCommonQueryTests({
 			async () => {
 				const hasOneChild = await DataStore.save(new HasOneChild({}));
 				const hasOneParent = await DataStore.save(
-					new HasOneParent({ child: hasOneChild })
+					new HasOneParent({ child: hasOneChild }),
 				);
 
 				await DataStore.delete(hasOneParent);
 
 				expect(
-					await DataStore.query(HasOneParent, hasOneParent.id)
+					await DataStore.query(HasOneParent, hasOneParent.id),
 				).toBeUndefined();
 
 				expect(
-					await DataStore.query(HasOneChild, hasOneChild.id)
+					await DataStore.query(HasOneChild, hasOneChild.id),
 				).toBeUndefined();
-			}
+			},
 		);
 
 		(isSQLiteAdapter() ? test.skip : test)(
 			'deleting disconnected hasOne without cpk',
 			async () => {
 				const hasOneParent = await DataStore.save(
-					new DefaultPKHasOneParent({})
+					new DefaultPKHasOneParent({}),
 				);
 
 				await DataStore.delete(hasOneParent);
 
 				expect(
-					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
+					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id),
 				).toBeUndefined();
-			}
+			},
 		);
 
 		(isSQLiteAdapter() ? test.skip : test)(
@@ -1013,19 +1013,19 @@ export function addCommonQueryTests({
 			async () => {
 				const hasOneChild = await DataStore.save(new DefaultPKHasOneChild({}));
 				const hasOneParent = await DataStore.save(
-					new DefaultPKHasOneParent({ child: hasOneChild })
+					new DefaultPKHasOneParent({ child: hasOneChild }),
 				);
 
 				await DataStore.delete(hasOneParent);
 
 				expect(
-					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id)
+					await DataStore.query(DefaultPKHasOneParent, hasOneParent.id),
 				).toBeUndefined();
 
 				expect(
-					await DataStore.query(DefaultPKHasOneChild, hasOneChild.id)
+					await DataStore.query(DefaultPKHasOneChild, hasOneChild.id),
 				).toBeUndefined();
-			}
+			},
 		);
 	});
 
@@ -1042,7 +1042,7 @@ export function addCommonQueryTests({
 		const allFKFields = meta => {
 			const fields = new Set<string>();
 			const relationships = ModelRelationship.allFrom(meta).filter(
-				r => r.type === 'BELONGS_TO'
+				r => r.type === 'BELONGS_TO',
 			);
 			for (const relationship of relationships) {
 				for (const field of relationship.localJoinFields) {
@@ -1163,7 +1163,7 @@ export function addCommonQueryTests({
 							test(`can lazy load ${testname}`, async () => {
 								// Create the "remote" instance first, because the "local" one will point to it.
 								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
+									randomInitializer(R.remoteModelConstructor),
 								);
 								const remote = await DataStore.save(remoteInit);
 
@@ -1175,7 +1175,7 @@ export function addCommonQueryTests({
 
 								const fetched = await DataStore.query(
 									R.localConstructor,
-									extractPrimaryKeysAndValues(local, R.localPKFields)
+									extractPrimaryKeysAndValues(local, R.localPKFields),
 								);
 								const lazyLoaded = await fetched[field];
 
@@ -1189,7 +1189,7 @@ export function addCommonQueryTests({
 
 								// Create the "remote" instance first, because the "local" one will point to it.
 								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
+									randomInitializer(R.remoteModelConstructor),
 								);
 								const remote = await DataStore.save(remoteInit);
 
@@ -1203,7 +1203,7 @@ export function addCommonQueryTests({
 
 								const fetched = await DataStore.query(
 									R.localConstructor,
-									extractPrimaryKeysAndValues(local, R.localPKFields)
+									extractPrimaryKeysAndValues(local, R.localPKFields),
 								);
 								const lazyLoaded = await fetched[field];
 
@@ -1212,7 +1212,7 @@ export function addCommonQueryTests({
 							});
 							test(`can query ${testname}`, async () => {
 								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
+									randomInitializer(R.remoteModelConstructor),
 								);
 								const remote = await DataStore.save(remoteInit);
 
@@ -1230,7 +1230,7 @@ export function addCommonQueryTests({
 								const fetched = await DataStore.query(
 									R.localConstructor,
 									local =>
-										local[field][remoteField!].eq(remoteInit[remoteField!])
+										local[field][remoteField!].eq(remoteInit[remoteField!]),
 								);
 
 								expect(fetched.length).toBe(1);
@@ -1238,7 +1238,7 @@ export function addCommonQueryTests({
 							});
 							test(`finds empty sets when target related instance field misatches ${testname}`, async () => {
 								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
+									randomInitializer(R.remoteModelConstructor),
 								);
 								const remote = await DataStore.save(remoteInit);
 
@@ -1258,8 +1258,8 @@ export function addCommonQueryTests({
 									local =>
 										// HERE'S THE DIFFERENCE!
 										local[field][remoteField!].eq(
-											remoteInit[remoteField! + ' MISMATCHED!']
-										)
+											remoteInit[remoteField! + ' MISMATCHED!'],
+										),
 								);
 
 								// HERE'S THE DIFFERENT ASSERTION. expecting no results.
@@ -1267,7 +1267,7 @@ export function addCommonQueryTests({
 							});
 							test(`finds empty sets when target instance isn't related ${testname}`, async () => {
 								const remoteInit = new R.remoteModelConstructor(
-									randomInitializer(R.remoteModelConstructor)
+									randomInitializer(R.remoteModelConstructor),
 								);
 								const remote = await DataStore.save(remoteInit);
 
@@ -1288,7 +1288,7 @@ export function addCommonQueryTests({
 									R.localConstructor,
 									local =>
 										// HERE'S THE DIFFERENCE!
-										local[field][remoteField!].eq(remoteInit[remoteField!])
+										local[field][remoteField!].eq(remoteInit[remoteField!]),
 								);
 
 								// HERE'S THE DIFFERENT ASSERTION. expecting no results.
@@ -1298,7 +1298,7 @@ export function addCommonQueryTests({
 						case 'HAS_MANY':
 							test(`can lazy load ${testname}`, async () => {
 								const local = await DataStore.save(
-									new R.localConstructor(randomInitializer(R.localConstructor))
+									new R.localConstructor(randomInitializer(R.localConstructor)),
 								);
 
 								const FK = {};
@@ -1317,13 +1317,13 @@ export function addCommonQueryTests({
 										new R.remoteModelConstructor({
 											...randomInitializer(R.remoteModelConstructor),
 											...FK,
-										})
+										}),
 									);
 								}
 
 								const fetched = await DataStore.query(
 									R.localConstructor,
-									extractPrimaryKeysAndValues(local, R.localPKFields)
+									extractPrimaryKeysAndValues(local, R.localPKFields),
 								);
 								const lazyLoaded = await fetched[field].toArray();
 
@@ -1335,7 +1335,7 @@ export function addCommonQueryTests({
 								 * loading related instances that are not actually related by FK.
 								 */
 								const local = await DataStore.save(
-									new R.localConstructor(randomInitializer(R.localConstructor))
+									new R.localConstructor(randomInitializer(R.localConstructor)),
 								);
 
 								const remotes = [1, 2, 3] as any[];
@@ -1346,13 +1346,13 @@ export function addCommonQueryTests({
 
 											// HERE'S THE DIFFERENCE! we're not tying the model instances together.
 											// ...FK,
-										})
+										}),
 									);
 								}
 
 								const fetched = await DataStore.query(
 									R.localConstructor,
-									extractPrimaryKeysAndValues(local, R.localPKFields)
+									extractPrimaryKeysAndValues(local, R.localPKFields),
 								);
 								const lazyLoaded = await fetched[field].toArray();
 
@@ -1363,7 +1363,7 @@ export function addCommonQueryTests({
 								const local = await DataStore.save(
 									new R.localConstructor({
 										...randomInitializer(R.localConstructor),
-									})
+									}),
 								);
 
 								const FK = {};
@@ -1382,7 +1382,7 @@ export function addCommonQueryTests({
 										new R.remoteModelConstructor({
 											...randomInitializer(R.remoteModelConstructor),
 											...FK,
-										})
+										}),
 									);
 								}
 
@@ -1396,7 +1396,8 @@ export function addCommonQueryTests({
 								for (const remote of remotes) {
 									const fetched = await DataStore.query(
 										R.localConstructor,
-										local => local[field][remoteField!].eq(remote[remoteField!])
+										local =>
+											local[field][remoteField!].eq(remote[remoteField!]),
 									);
 									expect(fetched.length).toBe(1);
 									expect(fetched[0]).toEqual(local);
@@ -1406,7 +1407,7 @@ export function addCommonQueryTests({
 								const local = await DataStore.save(
 									new R.localConstructor({
 										...randomInitializer(R.localConstructor),
-									})
+									}),
 								);
 
 								const FK = {};
@@ -1425,7 +1426,7 @@ export function addCommonQueryTests({
 										new R.remoteModelConstructor({
 											...randomInitializer(R.remoteModelConstructor),
 											...FK,
-										})
+										}),
 									);
 								}
 
@@ -1442,8 +1443,8 @@ export function addCommonQueryTests({
 										local =>
 											// HERE'S THE DIFFERENCE!
 											local[field][remoteField!].eq(
-												remote[remoteField! + ' MISMATCHED!']
-											)
+												remote[remoteField! + ' MISMATCHED!'],
+											),
 									);
 
 									// DIFFERENCE IN ASSERTION
@@ -1454,7 +1455,7 @@ export function addCommonQueryTests({
 								const local = await DataStore.save(
 									new R.localConstructor({
 										...randomInitializer(R.localConstructor),
-									})
+									}),
 								);
 
 								const remotes = [1, 2, 3] as any[];
@@ -1465,7 +1466,7 @@ export function addCommonQueryTests({
 
 											// HERE'S THE DIFFERENCE
 											// ...FK,
-										})
+										}),
 									);
 								}
 
@@ -1481,7 +1482,7 @@ export function addCommonQueryTests({
 										R.localConstructor,
 										local =>
 											// HERE'S THE DIFFERENCE!
-											local[field][remoteField!].eq(remote[remoteField!])
+											local[field][remoteField!].eq(remote[remoteField!]),
 									);
 
 									// DIFFERENCE IN ASSERTION
@@ -1558,7 +1559,7 @@ export function addCommonQueryTests({
 		 */
 		const saveManyToManys = async (
 			leftOnes: string[],
-			rightOnes: string[]
+			rightOnes: string[],
 		): Promise<MtmBag> => {
 			const left = [] as MtmLeft[];
 			const right = [] as MtmRight[];
@@ -1591,12 +1592,12 @@ export function addCommonQueryTests({
 		const refetch = async <T extends PersistentModel>(item: T) => {
 			const fetched = await DataStore.query(
 				item.constructor as PersistentModelConstructor<T>,
-				item.id
+				item.id,
 			);
 
 			if (!fetched) {
 				throw new Error(
-					`Instance of ${item.constructor.name} (${item?.id}) doesn't exist in DataStore!`
+					`Instance of ${item.constructor.name} (${item?.id}) doesn't exist in DataStore!`,
 				);
 			} else {
 				return fetched;
@@ -1647,11 +1648,11 @@ export function addCommonQueryTests({
 		test('sets can be established and traversed, cardinality 1x1', async () => {
 			const expectedGroupA = await saveManyToManys(
 				['left content A'],
-				['right content A']
+				['right content A'],
 			);
 			const expectedGroupB = await saveManyToManys(
 				['left content B'],
-				['right content B']
+				['right content B'],
 			);
 
 			await expectMatchingMtmsInDataStore(expectedGroupA);
@@ -1661,11 +1662,11 @@ export function addCommonQueryTests({
 		test('sets can be established and traversed, cardinality 3x3', async () => {
 			const expectedGroupA = await saveManyToManys(
 				['left content A 1', 'left content A 2', 'left content A 3'],
-				['right content A 1', 'right content A 2', 'right content A 3']
+				['right content A 1', 'right content A 2', 'right content A 3'],
 			);
 			const expectedGroupB = await saveManyToManys(
 				['left content B 1', 'left content B 2', 'left content B 3'],
-				['right content B 1', 'right content B 2', 'right content B 3']
+				['right content B 1', 'right content B 2', 'right content B 3'],
 			);
 
 			await expectMatchingMtmsInDataStore(expectedGroupA);
@@ -1675,22 +1676,22 @@ export function addCommonQueryTests({
 		test('sets can be queried by nested predicate, cardinality 1x1', async () => {
 			const expectedGroupA = await saveManyToManys(
 				['left content A'],
-				['right content A']
+				['right content A'],
 			);
 			const expectedGroupB = await saveManyToManys(
 				['left content B'],
-				['right content B']
+				['right content B'],
 			);
 
 			const fetchedRightOnesA = await DataStore.query(MtmRight, r =>
-				r.leftOnes.mtmLeft.content.eq('left content A')
+				r.leftOnes.mtmLeft.content.eq('left content A'),
 			);
 			expect(fetchedRightOnesA.map(r => r.content)).toEqual([
 				'right content A',
 			]);
 
 			const fetchedRightOnesB = await DataStore.query(MtmRight, r =>
-				r.leftOnes.mtmLeft.content.eq('left content B')
+				r.leftOnes.mtmLeft.content.eq('left content B'),
 			);
 			expect(fetchedRightOnesB.map(r => r.content)).toEqual([
 				'right content B',
@@ -1711,26 +1712,26 @@ export function addCommonQueryTests({
 
 			const expectedGroupA = await saveManyToManys(
 				['left content A 1', 'left content A 2', 'left content A 3'],
-				expectedNamesARight
+				expectedNamesARight,
 			);
 			const expectedGroupB = await saveManyToManys(
 				['left content B 1', 'left content B 2', 'left content B 3'],
-				expectedNamesBRight
+				expectedNamesBRight,
 			);
 
 			const fetchedRightOnesA = await DataStore.query(MtmRight, r =>
-				r.leftOnes.mtmLeft.content.contains('left content A')
+				r.leftOnes.mtmLeft.content.contains('left content A'),
 			);
 
 			expect(fetchedRightOnesA.map(r => r.content)).toEqual(
-				expectedNamesARight
+				expectedNamesARight,
 			);
 
 			const fetchedRightOnesB = await DataStore.query(MtmRight, r =>
-				r.leftOnes.mtmLeft.content.contains('left content B')
+				r.leftOnes.mtmLeft.content.contains('left content B'),
 			);
 			expect(fetchedRightOnesB.map(r => r.content)).toEqual(
-				expectedNamesBRight
+				expectedNamesBRight,
 			);
 		});
 	});

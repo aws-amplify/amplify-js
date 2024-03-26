@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { Buffer } from 'buffer';
+
 import { Amplify, ConsoleLogger, fetchAuthSession } from '@aws-amplify/core';
 import {
 	AWSCredentials,
@@ -18,7 +20,7 @@ import {
 	MessageHeaderValue,
 } from '@smithy/eventstream-codec';
 import { fromUtf8, toUtf8 } from '@smithy/util-utf8';
-import { Buffer } from 'buffer';
+
 import { PredictionsValidationErrorCode } from '../errors/types/validation';
 import { assertValidationError } from '../errors/utils/assertValidationError';
 import {
@@ -50,27 +52,30 @@ export class AmazonAIConvertPredictionsProvider {
 	}
 
 	convert(
-		input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput
+		input: TranslateTextInput | TextToSpeechInput | SpeechToTextInput,
 	): Promise<TextToSpeechOutput | TranslateTextOutput | SpeechToTextOutput> {
 		assertValidationError(
 			isValidConvertInput(input),
-			PredictionsValidationErrorCode.InvalidInput
+			PredictionsValidationErrorCode.InvalidInput,
 		);
 
 		if (isTranslateTextInput(input)) {
 			logger.debug('translateText');
+
 			return this.translateText(input);
 		} else if (isTextToSpeechInput(input)) {
 			logger.debug('textToSpeech');
+
 			return this.convertTextToSpeech(input);
 		} else {
 			logger.debug('textToSpeech');
+
 			return this.convertSpeechToText(input);
 		}
 	}
 
 	protected async translateText(
-		input: TranslateTextInput
+		input: TranslateTextInput,
 	): Promise<TranslateTextOutput> {
 		logger.debug('Starting translation');
 
@@ -78,14 +83,14 @@ export class AmazonAIConvertPredictionsProvider {
 			Amplify.getConfig().Predictions?.convert ?? {};
 		assertValidationError(
 			!!translateText.region,
-			PredictionsValidationErrorCode.NoRegion
+			PredictionsValidationErrorCode.NoRegion,
 		);
 		const { defaults = {}, region } = translateText;
 
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { sourceLanguage, targetLanguage } = defaults;
@@ -95,11 +100,11 @@ export class AmazonAIConvertPredictionsProvider {
 			input.translateText?.targetLanguage ?? targetLanguage;
 		assertValidationError(
 			!!sourceLanguageCode,
-			PredictionsValidationErrorCode.NoSourceLanguage
+			PredictionsValidationErrorCode.NoSourceLanguage,
 		);
 		assertValidationError(
 			!!targetLanguageCode,
-			PredictionsValidationErrorCode.NoTargetLanguage
+			PredictionsValidationErrorCode.NoTargetLanguage,
 		);
 
 		this.translateClient = new TranslateClient({
@@ -116,6 +121,7 @@ export class AmazonAIConvertPredictionsProvider {
 			Text: input.translateText?.source?.text,
 		});
 		const data = await this.translateClient.send(translateTextCommand);
+
 		return {
 			text: data.TranslatedText,
 			language: data.TargetLanguageCode,
@@ -123,22 +129,22 @@ export class AmazonAIConvertPredictionsProvider {
 	}
 
 	protected async convertTextToSpeech(
-		input: TextToSpeechInput
+		input: TextToSpeechInput,
 	): Promise<TextToSpeechOutput> {
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 		assertValidationError(
 			!!input.textToSpeech?.source,
-			PredictionsValidationErrorCode.NoSource
+			PredictionsValidationErrorCode.NoSource,
 		);
 
 		const { speechGenerator } = Amplify.getConfig().Predictions?.convert ?? {};
 		assertValidationError(
 			!!speechGenerator?.region,
-			PredictionsValidationErrorCode.NoRegion
+			PredictionsValidationErrorCode.NoRegion,
 		);
 
 		const { defaults = {}, region } = speechGenerator;
@@ -161,7 +167,6 @@ export class AmazonAIConvertPredictionsProvider {
 			VoiceId: voiceId,
 			TextType: 'text',
 			SampleRate: '24000',
-			// tslint:disable-next-line: align
 		});
 		const data = await this.pollyClient.send(synthesizeSpeechCommand);
 		const response = new Response(data.AudioStream as ReadableStream);
@@ -170,6 +175,7 @@ export class AmazonAIConvertPredictionsProvider {
 			type: data.ContentType,
 		});
 		const url = URL.createObjectURL(blob);
+
 		return {
 			speech: { url },
 			audioStream: arrayBuffer,
@@ -178,19 +184,19 @@ export class AmazonAIConvertPredictionsProvider {
 	}
 
 	protected async convertSpeechToText(
-		input: SpeechToTextInput
+		input: SpeechToTextInput,
 	): Promise<SpeechToTextOutput> {
 		logger.debug('starting transcription..');
 		const { credentials } = await fetchAuthSession();
 		assertValidationError(
 			!!credentials,
-			PredictionsValidationErrorCode.NoCredentials
+			PredictionsValidationErrorCode.NoCredentials,
 		);
 
 		const { transcription } = Amplify.getConfig().Predictions?.convert ?? {};
 		assertValidationError(
 			!!transcription?.region,
-			PredictionsValidationErrorCode.NoRegion
+			PredictionsValidationErrorCode.NoRegion,
 		);
 
 		const { defaults, region } = transcription;
@@ -198,13 +204,13 @@ export class AmazonAIConvertPredictionsProvider {
 
 		assertValidationError(
 			!!language,
-			PredictionsValidationErrorCode.NoLanguage
+			PredictionsValidationErrorCode.NoLanguage,
 		);
 
 		const source = input.transcription?.source;
 		assertValidationError(
 			isConvertBytesSource(source),
-			PredictionsValidationErrorCode.InvalidSource
+			PredictionsValidationErrorCode.InvalidSource,
 		);
 
 		const connection = await this.openConnectionWithTranscribe({
@@ -218,6 +224,7 @@ export class AmazonAIConvertPredictionsProvider {
 			raw: source.bytes,
 			languageCode: language,
 		});
+
 		return {
 			transcription: {
 				fullText,
@@ -232,7 +239,7 @@ export class AmazonAIConvertPredictionsProvider {
 		if (transcribeMessage.headers[':message-type'].value === 'exception') {
 			logger.debug(
 				'exception',
-				JSON.stringify(transcribeMessageJson.Message, null, 2)
+				JSON.stringify(transcribeMessageJson.Message, null, 2),
 			);
 			throw new Error(transcribeMessageJson.Message);
 		} else if (transcribeMessage.headers[':message-type'].value === 'event') {
@@ -261,6 +268,7 @@ export class AmazonAIConvertPredictionsProvider {
 				}
 			}
 		}
+
 		return decodedMessage;
 	}
 
@@ -269,31 +277,32 @@ export class AmazonAIConvertPredictionsProvider {
 		raw,
 		languageCode,
 	}: TranscribeData): Promise<string> {
-		return new Promise((res, rej) => {
+		return new Promise((resolve, reject) => {
 			let fullText = '';
 			connection.onmessage = message => {
 				try {
 					const decodedMessage =
 						AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
-							message
+							message,
 						);
 					if (decodedMessage) {
 						fullText += decodedMessage + ' ';
 					}
 				} catch (err: unknown) {
 					logger.debug(err);
-					rej(err);
+					reject(err);
 				}
 			};
 
 			connection.onerror = errorEvent => {
 				logger.debug({ errorEvent });
-				rej('failed to transcribe, network error');
+				reject(new Error('failed to transcribe, network error'));
 			};
 
 			connection.onclose = closeEvent => {
 				logger.debug({ closeEvent });
-				return res(fullText.trim());
+
+				resolve(fullText.trim());
 			};
 
 			logger.debug({ raw });
@@ -318,7 +327,7 @@ export class AmazonAIConvertPredictionsProvider {
 	private sendEncodedDataToTranscribe(
 		connection: WebSocket,
 		data: ConvertBytes | any[],
-		languageCode: string
+		languageCode: string,
 	) {
 		const downsampledBuffer = this.downsampleBuffer({
 			buffer: data,
@@ -329,7 +338,7 @@ export class AmazonAIConvertPredictionsProvider {
 
 		const pcmEncodedBuffer = this.pcmEncode(downsampledBuffer);
 		const audioEventMessage = this.getAudioEventMessage(
-			Buffer.from(pcmEncodedBuffer)
+			Buffer.from(pcmEncodedBuffer),
 		);
 		const binary = eventBuilder.encode(audioEventMessage);
 		connection.send(binary);
@@ -366,6 +375,7 @@ export class AmazonAIConvertPredictionsProvider {
 			const s = Math.max(-1, Math.min(1, input[i]));
 			view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
 		}
+
 		return buffer;
 	}
 
@@ -393,8 +403,8 @@ export class AmazonAIConvertPredictionsProvider {
 		let offsetBuffer = 0;
 		while (offsetResult < result.length) {
 			const nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
-			let accum = 0,
-				count = 0;
+			let accum = 0;
+			let count = 0;
 			for (
 				let i = offsetBuffer;
 				i < nextOffsetBuffer && i < buffer.length;
@@ -420,7 +430,7 @@ export class AmazonAIConvertPredictionsProvider {
 		region: string;
 		languageCode: string;
 	}): Promise<WebSocket> {
-		return new Promise(async (res, rej) => {
+		return new Promise((resolve, _reject) => {
 			const signedUrl = this.generateTranscribeUrl({
 				credentials,
 				region,
@@ -433,7 +443,7 @@ export class AmazonAIConvertPredictionsProvider {
 			connection.binaryType = 'arraybuffer';
 			connection.onopen = () => {
 				logger.debug('connected');
-				res(connection);
+				resolve(connection);
 			};
 		});
 	}
@@ -467,7 +477,7 @@ export class AmazonAIConvertPredictionsProvider {
 			url,
 			credentials,
 			{ region, service: 'transcribe' },
-			300
+			300,
 		);
 
 		return signedUrl;

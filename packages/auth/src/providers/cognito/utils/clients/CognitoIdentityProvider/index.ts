@@ -1,58 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import type {
-	ConfirmForgotPasswordCommandInput as ConfirmForgotPasswordInput,
-	ConfirmForgotPasswordCommandOutput as ConfirmForgotPasswordOutput,
-	ForgotPasswordCommandInput as ForgotPasswordInput,
-	ForgotPasswordCommandOutput as ForgotPasswordOutput,
-	ResendConfirmationCodeCommandInput as ResendConfirmationCodeInput,
-	ResendConfirmationCodeCommandOutput as ResendConfirmationCodeOutput,
-	SignUpCommandInput as SignUpInput,
-	SignUpCommandOutput as SignUpOutput,
-	InitiateAuthCommandInput as InitiateAuthInput,
-	InitiateAuthCommandOutput as InitiateAuthOutput,
-	RespondToAuthChallengeCommandInput as RespondToAuthChallengeInput,
-	RespondToAuthChallengeCommandOutput as RespondToAuthChallengeOutput,
-	ConfirmSignUpCommandOutput as ConfirmSignUpOutput,
-	ConfirmSignUpCommandInput as ConfirmSignUpInput,
-	VerifySoftwareTokenCommandInput as VerifySoftwareTokenInput,
-	VerifySoftwareTokenCommandOutput as VerifySoftwareTokenOutput,
-	AssociateSoftwareTokenCommandInput as AssociateSoftwareTokenInput,
-	AssociateSoftwareTokenCommandOutput as AssociateSoftwareTokenOutput,
-	SetUserMFAPreferenceCommandInput as SetUserMFAPreferenceInput,
-	SetUserMFAPreferenceCommandOutput as SetUserMFAPreferenceOutput,
-	GetUserCommandInput as GetUserInput,
-	GetUserCommandOutput as GetUserOutput,
-	ChangePasswordCommandInput as ChangePasswordInput,
-	ChangePasswordCommandOutput as ChangePasswordOutput,
-	ConfirmDeviceCommandInput as ConfirmDeviceInput,
-	ConfirmDeviceCommandOutput as ConfirmDeviceOutput,
-	ForgetDeviceCommandInput as ForgetDeviceInput,
-	ForgetDeviceCommandOutput as ForgetDeviceOutput,
-	DeleteUserCommandInput as DeleteUserInput,
-	DeleteUserCommandOutput as DeleteUserOutput,
-	GetUserAttributeVerificationCodeCommandInput as GetUserAttributeVerificationCodeInput,
-	GetUserAttributeVerificationCodeCommandOutput as GetUserAttributeVerificationCodeOutput,
-	GlobalSignOutCommandInput as GlobalSignOutInput,
-	GlobalSignOutCommandOutput as GlobalSignOutOutput,
-	UpdateUserAttributesCommandInput as UpdateUserAttributesInput,
-	UpdateUserAttributesCommandOutput as UpdateUserAttributesOutput,
-	VerifyUserAttributeCommandInput as VerifyUserAttributeInput,
-	VerifyUserAttributeCommandOutput as VerifyUserAttributeOutput,
-	UpdateDeviceStatusCommandInput as UpdateDeviceStatusInput,
-	UpdateDeviceStatusCommandOutput as UpdateDeviceStatusOutput,
-	ListDevicesCommandInput as ListDevicesInput,
-	ListDevicesCommandOutput as ListDevicesOutput,
-	DeleteUserAttributesCommandInput as DeleteUserAttributesInput,
-	DeleteUserAttributesCommandOutput as DeleteUserAttributesOutput,
-} from './types';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import {
-	buildHttpRpcRequest,
-	cognitoUserPoolTransferHandler,
-	defaultConfig,
-	getSharedHeaders,
-} from './base';
 import {
 	Endpoint,
 	HttpRequest,
@@ -60,15 +8,69 @@ import {
 	parseJsonBody,
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { assertServiceError } from '../../../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../../../errors/AuthError';
 
-type RevokeTokenInput = {
+import {
+	buildHttpRpcRequest,
+	cognitoUserPoolTransferHandler,
+	defaultConfig,
+	getSharedHeaders,
+} from './base';
+import type {
+	AssociateSoftwareTokenCommandInput as AssociateSoftwareTokenInput,
+	AssociateSoftwareTokenCommandOutput as AssociateSoftwareTokenOutput,
+	ChangePasswordCommandInput as ChangePasswordInput,
+	ChangePasswordCommandOutput as ChangePasswordOutput,
+	ConfirmDeviceCommandInput as ConfirmDeviceInput,
+	ConfirmDeviceCommandOutput as ConfirmDeviceOutput,
+	ConfirmForgotPasswordCommandInput as ConfirmForgotPasswordInput,
+	ConfirmForgotPasswordCommandOutput as ConfirmForgotPasswordOutput,
+	ConfirmSignUpCommandInput as ConfirmSignUpInput,
+	ConfirmSignUpCommandOutput as ConfirmSignUpOutput,
+	DeleteUserAttributesCommandInput as DeleteUserAttributesInput,
+	DeleteUserAttributesCommandOutput as DeleteUserAttributesOutput,
+	DeleteUserCommandInput as DeleteUserInput,
+	DeleteUserCommandOutput as DeleteUserOutput,
+	ForgetDeviceCommandInput as ForgetDeviceInput,
+	ForgetDeviceCommandOutput as ForgetDeviceOutput,
+	ForgotPasswordCommandInput as ForgotPasswordInput,
+	ForgotPasswordCommandOutput as ForgotPasswordOutput,
+	GetUserAttributeVerificationCodeCommandInput as GetUserAttributeVerificationCodeInput,
+	GetUserAttributeVerificationCodeCommandOutput as GetUserAttributeVerificationCodeOutput,
+	GetUserCommandInput as GetUserInput,
+	GetUserCommandOutput as GetUserOutput,
+	GlobalSignOutCommandInput as GlobalSignOutInput,
+	GlobalSignOutCommandOutput as GlobalSignOutOutput,
+	InitiateAuthCommandInput as InitiateAuthInput,
+	InitiateAuthCommandOutput as InitiateAuthOutput,
+	ListDevicesCommandInput as ListDevicesInput,
+	ListDevicesCommandOutput as ListDevicesOutput,
+	ResendConfirmationCodeCommandInput as ResendConfirmationCodeInput,
+	ResendConfirmationCodeCommandOutput as ResendConfirmationCodeOutput,
+	RespondToAuthChallengeCommandInput as RespondToAuthChallengeInput,
+	RespondToAuthChallengeCommandOutput as RespondToAuthChallengeOutput,
+	SetUserMFAPreferenceCommandInput as SetUserMFAPreferenceInput,
+	SetUserMFAPreferenceCommandOutput as SetUserMFAPreferenceOutput,
+	SignUpCommandInput as SignUpInput,
+	SignUpCommandOutput as SignUpOutput,
+	UpdateDeviceStatusCommandInput as UpdateDeviceStatusInput,
+	UpdateDeviceStatusCommandOutput as UpdateDeviceStatusOutput,
+	UpdateUserAttributesCommandInput as UpdateUserAttributesInput,
+	UpdateUserAttributesCommandOutput as UpdateUserAttributesOutput,
+	VerifySoftwareTokenCommandInput as VerifySoftwareTokenInput,
+	VerifySoftwareTokenCommandOutput as VerifySoftwareTokenOutput,
+	VerifyUserAttributeCommandInput as VerifyUserAttributeInput,
+	VerifyUserAttributeCommandOutput as VerifyUserAttributeOutput,
+} from './types';
+
+interface RevokeTokenInput {
 	Token: string;
 	ClientId: string;
-};
+}
 
-type RevokeTokenOutput = {};
+type RevokeTokenOutput = Record<string, unknown>;
 
 type ClientOperation =
 	| 'SignUp'
@@ -100,11 +102,12 @@ const buildUserPoolSerializer =
 	(input: Input, endpoint: Endpoint): HttpRequest => {
 		const headers = getSharedHeaders(operation);
 		const body = JSON.stringify(input);
+
 		return buildHttpRpcRequest(endpoint, headers, body);
 	};
 
 const buildUserPoolDeserializer = <Output>(): ((
-	response: HttpResponse
+	response: HttpResponse,
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
 		if (response.statusCode >= 300) {
@@ -113,13 +116,14 @@ const buildUserPoolDeserializer = <Output>(): ((
 			throw new AuthError({ name: error.name, message: error.message });
 		} else {
 			const body = await parseJsonBody(response);
+
 			return body;
 		}
 	};
 };
 
 const handleEmptyResponseDeserializer = <Output>(): ((
-	response: HttpResponse
+	response: HttpResponse,
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
 		if (response.statusCode >= 300) {
@@ -136,147 +140,147 @@ export const initiateAuth = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<InitiateAuthInput>('InitiateAuth'),
 	buildUserPoolDeserializer<InitiateAuthOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 
 export const revokeToken = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<RevokeTokenInput>('RevokeToken'),
 	buildUserPoolDeserializer<RevokeTokenOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 
 export const signUp = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<SignUpInput>('SignUp'),
 	buildUserPoolDeserializer<SignUpOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const confirmSignUp = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ConfirmSignUpInput>('ConfirmSignUp'),
 	buildUserPoolDeserializer<ConfirmSignUpOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const forgotPassword = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ForgotPasswordInput>('ForgotPassword'),
 	buildUserPoolDeserializer<ForgotPasswordOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const confirmForgotPassword = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ConfirmForgotPasswordInput>('ConfirmForgotPassword'),
 	buildUserPoolDeserializer<ConfirmForgotPasswordOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const respondToAuthChallenge = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<RespondToAuthChallengeInput>(
-		'RespondToAuthChallenge'
+		'RespondToAuthChallenge',
 	),
 	buildUserPoolDeserializer<RespondToAuthChallengeOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const resendConfirmationCode = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ResendConfirmationCodeInput>(
-		'ResendConfirmationCode'
+		'ResendConfirmationCode',
 	),
 	buildUserPoolDeserializer<ResendConfirmationCodeOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const verifySoftwareToken = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<VerifySoftwareTokenInput>('VerifySoftwareToken'),
 	buildUserPoolDeserializer<VerifySoftwareTokenOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const associateSoftwareToken = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<AssociateSoftwareTokenInput>(
-		'AssociateSoftwareToken'
+		'AssociateSoftwareToken',
 	),
 	buildUserPoolDeserializer<AssociateSoftwareTokenOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const setUserMFAPreference = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<SetUserMFAPreferenceInput>('SetUserMFAPreference'),
 	buildUserPoolDeserializer<SetUserMFAPreferenceOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const getUser = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<GetUserInput>('GetUser'),
 	buildUserPoolDeserializer<GetUserOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const changePassword = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ChangePasswordInput>('ChangePassword'),
 	buildUserPoolDeserializer<ChangePasswordOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const confirmDevice = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ConfirmDeviceInput>('ConfirmDevice'),
 	buildUserPoolDeserializer<ConfirmDeviceOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const forgetDevice = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ForgetDeviceInput>('ForgetDevice'),
 	handleEmptyResponseDeserializer<ForgetDeviceOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const deleteUser = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<DeleteUserInput>('DeleteUser'),
 	handleEmptyResponseDeserializer<DeleteUserOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const getUserAttributeVerificationCode = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<GetUserAttributeVerificationCodeInput>(
-		'GetUserAttributeVerificationCode'
+		'GetUserAttributeVerificationCode',
 	),
 	buildUserPoolDeserializer<GetUserAttributeVerificationCodeOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const globalSignOut = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<GlobalSignOutInput>('GlobalSignOut'),
 	buildUserPoolDeserializer<GlobalSignOutOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const updateUserAttributes = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<UpdateUserAttributesInput>('UpdateUserAttributes'),
 	buildUserPoolDeserializer<UpdateUserAttributesOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const verifyUserAttribute = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<VerifyUserAttributeInput>('VerifyUserAttribute'),
 	buildUserPoolDeserializer<VerifyUserAttributeOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const updateDeviceStatus = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<UpdateDeviceStatusInput>('UpdateDeviceStatus'),
 	buildUserPoolDeserializer<UpdateDeviceStatusOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const listDevices = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<ListDevicesInput>('ListDevices'),
 	buildUserPoolDeserializer<ListDevicesOutput>(),
-	defaultConfig
+	defaultConfig,
 );
 export const deleteUserAttributes = composeServiceApi(
 	cognitoUserPoolTransferHandler,
 	buildUserPoolSerializer<DeleteUserAttributesInput>('DeleteUserAttributes'),
 	buildUserPoolDeserializer<DeleteUserAttributesOutput>(),
-	defaultConfig
+	defaultConfig,
 );

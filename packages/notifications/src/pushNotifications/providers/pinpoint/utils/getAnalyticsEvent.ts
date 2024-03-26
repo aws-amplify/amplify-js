@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { AnalyticsEventAttributes, PinpointMessageEvent } from '../types';
 import { PushNotificationMessage } from '../../../types';
 
@@ -15,7 +16,7 @@ const ANDROID_CAMPAIGN_TREATMENT_ID_KEY = 'pinpoint.campaign.treatment_id';
  */
 export const getAnalyticsEvent = (
 	{ data }: PushNotificationMessage,
-	event: PinpointMessageEvent
+	event: PinpointMessageEvent,
 ): PinpointAnalyticsEvent | null => {
 	if (!data) {
 		return null;
@@ -25,6 +26,7 @@ export const getAnalyticsEvent = (
 		return null;
 	}
 	const { source, attributes } = eventAttributes;
+
 	return {
 		attributes,
 		name: `${source}.${event}`,
@@ -32,12 +34,12 @@ export const getAnalyticsEvent = (
 };
 
 const getAnalyticsEventAttributes = (
-	data: PushNotificationMessage['data']
+	data: PushNotificationMessage['data'],
 ): AnalyticsEventAttributes | undefined => {
 	if (!data) {
 		return;
 	}
-	if (data.hasOwnProperty(ANDROID_CAMPAIGN_ID_KEY)) {
+	if (Object.prototype.hasOwnProperty.call(data, ANDROID_CAMPAIGN_ID_KEY)) {
 		return {
 			source: '_campaign',
 			attributes: {

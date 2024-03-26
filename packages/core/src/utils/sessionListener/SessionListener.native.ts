@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { loadAppState } from '@aws-amplify/react-native';
+
 import {
-	SessionStateChangeListener,
-	SessionState,
 	SessionListenerInterface,
+	SessionState,
+	SessionStateChangeListener,
 } from './types';
 
 const stateChangeListeners = new Set<SessionStateChangeListener>();
@@ -25,7 +26,7 @@ export class SessionListener implements SessionListenerInterface {
 
 	public addStateChangeListener(
 		listener: SessionStateChangeListener,
-		notifyOnAdd: boolean = false
+		notifyOnAdd = false,
 	) {
 		stateChangeListeners.add(listener);
 

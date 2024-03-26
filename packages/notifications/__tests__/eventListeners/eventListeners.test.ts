@@ -55,7 +55,7 @@ describe('Event listeners', () => {
 		addEventListener(eventType, mockHandler);
 
 		await expect(
-			notifyEventListenersAndAwaitHandlers(eventType, params)
+			notifyEventListenersAndAwaitHandlers(eventType, params),
 		).rejects.toThrow();
 		expect(mockHandler).toHaveBeenCalledWith(params);
 	});
@@ -104,7 +104,7 @@ describe('Event listeners', () => {
 		const unknownType = 'unknown';
 		expect(notifyEventListeners(unknownType, {})).toBeUndefined();
 		expect(
-			await notifyEventListenersAndAwaitHandlers(unknownType, {})
+			await notifyEventListenersAndAwaitHandlers(unknownType, {}),
 		).toStrictEqual([]);
 	});
 });

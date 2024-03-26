@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createKeyValueStorageFromCookieStorageAdapter } from '../../../src/adapterCore';
-import { defaultSetCookieOptions } from '../../../src/adapterCore/storageFactories/createKeyValueStorageFromCookieStorageAdapter';
+import { createKeyValueStorageFromCookieStorageAdapter } from '../../../src/adapter-core';
+import { defaultSetCookieOptions } from '../../../src/adapter-core/storageFactories/createKeyValueStorageFromCookieStorageAdapter';
 
 const mockCookiesStorageAdapter = {
 	getAll: jest.fn(),
@@ -15,7 +15,7 @@ describe('keyValueStorage', () => {
 	describe('createKeyValueStorageFromCookiesStorageAdapter', () => {
 		it('should return a key value storage', () => {
 			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
-				mockCookiesStorageAdapter
+				mockCookiesStorageAdapter,
 			);
 
 			expect(keyValueStorage).toBeDefined();
@@ -23,7 +23,7 @@ describe('keyValueStorage', () => {
 
 		describe('the returned key value storage', () => {
 			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
-				mockCookiesStorageAdapter
+				mockCookiesStorageAdapter,
 			);
 
 			it('should set item', async () => {
@@ -36,7 +36,7 @@ describe('keyValueStorage', () => {
 					{
 						...defaultSetCookieOptions,
 						expires: expect.any(Date),
-					}
+					},
 				);
 			});
 
@@ -50,7 +50,7 @@ describe('keyValueStorage', () => {
 					{
 						...defaultSetCookieOptions,
 						expires: expect.any(Date),
-					}
+					},
 				);
 			});
 

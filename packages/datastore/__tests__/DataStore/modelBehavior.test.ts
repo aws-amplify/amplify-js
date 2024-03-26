@@ -25,7 +25,7 @@ describe('Model behavior', () => {
 		const parent = await DataStore.save(
 			new DefaultPKParent({
 				content: 'this is a decoy!',
-			})
+			}),
 		);
 
 		const comment = await DataStore.save(
@@ -33,7 +33,7 @@ describe('Model behavior', () => {
 				id: "not such a random id, but it's ok",
 				content: 'here is some content',
 				parent,
-			})
+			}),
 		);
 
 		const detachedComment = new DefaultPKChild({
@@ -43,7 +43,7 @@ describe('Model behavior', () => {
 		});
 
 		expect(detachedComment.defaultPKParentChildrenId).toEqual(
-			comment.defaultPKParentChildrenId
+			comment.defaultPKParentChildrenId,
 		);
 		expect(await detachedComment.parent).toBeUndefined();
 
@@ -56,7 +56,7 @@ describe('Model behavior', () => {
 		const parent = await DataStore.save(
 			new DefaultPKParent({
 				content: 'this is a decoy!',
-			})
+			}),
 		);
 
 		const comment = await DataStore.save(
@@ -64,7 +64,7 @@ describe('Model behavior', () => {
 				id: "not such a random id, but it's ok",
 				content: 'here is some content',
 				parent,
-			})
+			}),
 		);
 
 		const detachedParent = new DefaultPKParent({
@@ -86,7 +86,7 @@ describe('Model behavior', () => {
 		const parent = await DataStore.save(
 			new HasOneParent({
 				child,
-			})
+			}),
 		);
 
 		const disconnectedParent = new HasOneParent({
@@ -106,12 +106,12 @@ describe('Model behavior', () => {
 			const { DataStore, HasOneChild, HasOneParent } = getDataStore();
 
 			const child = await DataStore.save(
-				new HasOneChild({ content: 'child content' })
+				new HasOneChild({ content: 'child content' }),
 			);
 			const parent = await DataStore.save(
 				new HasOneParent({
 					child,
-				})
+				}),
 			);
 
 			const parentWithoutChild = HasOneParent.copyOf(parent, draft => {
@@ -120,10 +120,10 @@ describe('Model behavior', () => {
 
 			expect(parentWithoutChild.hasOneParentChildId).toBeNull();
 			expect(
-				(await DataStore.save(parentWithoutChild)).hasOneParentChildId
+				(await DataStore.save(parentWithoutChild)).hasOneParentChildId,
 			).toBeNull();
 			expect(
-				(await DataStore.query(HasOneParent, parent.id))!.hasOneParentChildId
+				(await DataStore.query(HasOneParent, parent.id))!.hasOneParentChildId,
 			).toBeNull();
 
 			await DataStore.clear();
@@ -136,11 +136,15 @@ describe('Model behavior', () => {
 				new CompositePKParent({
 					customId: 'customId',
 					content: 'content',
-				})
+				}),
 			);
 
 			const child = await DataStore.save(
-				new CompositePKChild({ childId: 'childId', content: 'content', parent })
+				new CompositePKChild({
+					childId: 'childId',
+					content: 'content',
+					parent,
+				}),
 			);
 
 			const childWithoutParent = CompositePKChild.copyOf(child, draft => {
@@ -149,19 +153,19 @@ describe('Model behavior', () => {
 
 			expect(await childWithoutParent.parent).toBeUndefined();
 			expect(
-				await DataStore.save(childWithoutParent).then(c => c.parent)
+				await DataStore.save(childWithoutParent).then(c => c.parent),
 			).toBeUndefined();
 			expect(
 				await DataStore.query(CompositePKChild, {
 					childId: child.childId,
 					content: child.content,
-				}).then(c => c!.parent)
+				}).then(c => c!.parent),
 			).toBeUndefined();
 			expect(
 				await DataStore.query(CompositePKParent, {
 					customId: parent.customId,
 					content: parent.content,
-				}).then(c => c!.children.toArray())
+				}).then(c => c!.children.toArray()),
 			).toEqual([]);
 
 			await DataStore.clear();
@@ -180,12 +184,12 @@ describe('Model behavior', () => {
 					await DataStore.save(
 						new ModelWithBoolean({
 							boolField: true,
-						})
+						}),
 					);
 				}
 
 				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
-					m.boolField.eq(true)
+					m.boolField.eq(true),
 				).subscribe(async ({ items, isSynced }) => {
 					// we don't actually expect 0 records in our snapshots after our list runs out.
 					// we just want to make TS happy.
@@ -209,7 +213,7 @@ describe('Model behavior', () => {
 				await DataStore.save(
 					ModelWithBoolean.copyOf(itemToUpdate, m => {
 						m.boolField = false;
-					})
+					}),
 				);
 
 				// advance time to trigger another snapshot.
@@ -235,12 +239,12 @@ describe('Model behavior', () => {
 					await DataStore.save(
 						new ModelWithBoolean({
 							boolField: true,
-						})
+						}),
 					);
 				}
 
 				const sub = DataStore.observeQuery(ModelWithBoolean, m =>
-					m.boolField.ne(false)
+					m.boolField.ne(false),
 				).subscribe(({ items, isSynced }) => {
 					// we don't actually expect 0 records in our snapshots after our list runs out.
 					// we just want to make TS happy.
@@ -263,7 +267,7 @@ describe('Model behavior', () => {
 				await DataStore.save(
 					ModelWithBoolean.copyOf(itemToUpdate, m => {
 						m.boolField = false;
-					})
+					}),
 				);
 
 				// advance time to trigger another snapshot.
@@ -288,7 +292,7 @@ describe('Model behavior', () => {
 				title: 'create',
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString(),
-			})
+			}),
 		);
 
 		const sub = DataStore.observeQuery(Post, Predicates.ALL, {
@@ -313,7 +317,7 @@ describe('Model behavior', () => {
 			Post.copyOf(newPost, updated => {
 				updated.title = 'update';
 				updated.updatedAt = new Date().toISOString();
-			})
+			}),
 		);
 
 		// observeQuery snapshots are debounced by 2s
@@ -323,7 +327,7 @@ describe('Model behavior', () => {
 			Post.copyOf(newPost, updated => {
 				updated.title = 'update2';
 				updated.updatedAt = new Date().toISOString();
-			})
+			}),
 		);
 	});
 });

@@ -5,13 +5,14 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+
 import { FetchUserAttributesOutput } from '../../types';
 import { fetchUserAttributes as fetchUserAttributesInternal } from '../internal/fetchUserAttributes';
 
 export const fetchUserAttributes = (
-	contextSpec: AmplifyServer.ContextSpec
+	contextSpec: AmplifyServer.ContextSpec,
 ): Promise<FetchUserAttributesOutput> => {
 	return fetchUserAttributesInternal(
-		getAmplifyServerContext(contextSpec).amplify
+		getAmplifyServerContext(contextSpec).amplify,
 	);
 };

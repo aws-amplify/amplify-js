@@ -3,10 +3,11 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	HubInternal,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
@@ -34,7 +35,7 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function confirmSignUp(
-	input: ConfirmSignUpInput
+	input: ConfirmSignUpInput,
 ): Promise<ConfirmSignUpOutput> {
 	const { username, confirmationCode, options } = input;
 
@@ -44,11 +45,11 @@ export async function confirmSignUp(
 	const clientMetadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptyConfirmSignUpUsername
+		AuthValidationErrorCode.EmptyConfirmSignUpUsername,
 	);
 	assertValidationError(
 		!!confirmationCode,
-		AuthValidationErrorCode.EmptyConfirmSignUpCode
+		AuthValidationErrorCode.EmptyConfirmSignUpCode,
 	);
 
 	const UserContextData = getUserContextData({
@@ -69,7 +70,7 @@ export async function confirmSignUp(
 			ForceAliasCreation: options?.forceAliasCreation,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
-		}
+		},
 	);
 
 	return new Promise((resolve, reject) => {
@@ -85,7 +86,9 @@ export async function confirmSignUp(
 				!isAutoSignInStarted() ||
 				!isAutoSignInUserUsingConfirmSignUp(username)
 			) {
-				return resolve(signUpOut);
+				resolve(signUpOut);
+
+				return;
 			}
 
 			const stopListener = HubInternal.listen<AutoSignInEventData>(
@@ -102,7 +105,7 @@ export async function confirmSignUp(
 							setAutoSignInStarted(false);
 							stopListener();
 					}
-				}
+				},
 			);
 
 			HubInternal.dispatch('auth-internal', {

@@ -19,7 +19,7 @@ export type HeadOperation = Operation<Omit<RestApiResponse, 'body'>>;
 /**
  * @internal
  */
-export type RestApiOptionsBase = {
+export interface RestApiOptionsBase {
 	headers?: Headers;
 	queryParams?: Record<string, string>;
 	body?: DocumentType | FormData;
@@ -35,7 +35,7 @@ export type RestApiOptionsBase = {
 	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials}
 	 */
 	withCredentials?: boolean;
-};
+}
 
 type Headers = Record<string, string>;
 
@@ -44,16 +44,16 @@ type Headers = Record<string, string>;
  *
  * @internal
  */
-export type Operation<Response> = {
+export interface Operation<Response> {
 	response: Promise<Response>;
-	cancel: (abortMessage?: string) => void;
-};
+	cancel(abortMessage?: string): void;
+}
 
-type ResponsePayload = {
-	blob: () => Promise<Blob>;
-	json: () => Promise<DocumentType>;
-	text: () => Promise<string>;
-};
+interface ResponsePayload {
+	blob(): Promise<Blob>;
+	json(): Promise<DocumentType>;
+	text(): Promise<string>;
+}
 
 /**
  * Basic response type of REST API.
@@ -69,7 +69,7 @@ export interface RestApiResponse {
 /**
  * @internal
  */
-export type ApiInput<Options> = {
+export interface ApiInput<Options> {
 	/**
 	 * Name of the REST API configured in Amplify singleton.
 	 */
@@ -82,13 +82,13 @@ export type ApiInput<Options> = {
 	 * Options to overwrite the REST API call behavior.
 	 */
 	options?: Options;
-};
+}
 
 /**
  * Input type to invoke REST POST API from GraphQl client.
  * @internal
  */
-export type InternalPostInput = {
+export interface InternalPostInput {
 	// Resolved GraphQl endpoint url
 	url: URL;
 	options?: RestApiOptionsBase & {
@@ -111,4 +111,4 @@ export type InternalPostInput = {
 	 * controller.
 	 */
 	abortController?: AbortController;
-};
+}

@@ -1,9 +1,9 @@
-import * as raw from '../../../src';
-import { Amplify, ResourcesConfig } from '@aws-amplify/core';
+import { Amplify, AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import { generateClientWithAmplifyInstance } from '../../../src/internals/server';
 import configFixture from '../../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../../fixtures/modeled/schema';
 import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../../src/types';
+import { mockApiResponse, normalizePostGraphqlCalls } from '../../utils';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -25,26 +25,11 @@ const config: ResourcesConfig = {
 	},
 };
 
-/**
- *
- * @param value Value to be returned. Will be `awaited`, and can
- * therefore be a simple JSON value or a `Promise`.
- * @returns
- */
-function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
-			const result = await value;
-			return {
-				body: {
-					json: () => result,
-				},
-			};
-		});
-}
-
 describe('server generateClient', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('with cookies', () => {
 		test('subscriptions are disabled', () => {
 			const getAmplify = async (fn: any) => await fn(Amplify);
@@ -97,6 +82,7 @@ describe('server generateClient', () => {
 			});
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
@@ -104,7 +90,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
 							),
 							variables: {
 								filter: {
@@ -115,10 +101,11 @@ describe('server generateClient', () => {
 							},
 						},
 					}),
-				})
+				}),
 			);
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -126,7 +113,7 @@ describe('server generateClient', () => {
 							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
-				})
+				}),
 			);
 
 			expect(data.length).toBe(1);
@@ -137,7 +124,7 @@ describe('server generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -176,6 +163,7 @@ describe('server generateClient', () => {
 			});
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
@@ -183,7 +171,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
 							),
 							variables: {
 								filter: {
@@ -195,10 +183,11 @@ describe('server generateClient', () => {
 							},
 						},
 					}),
-				})
+				}),
 			);
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -206,7 +195,7 @@ describe('server generateClient', () => {
 							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
-				})
+				}),
 			);
 		});
 
@@ -245,6 +234,7 @@ describe('server generateClient', () => {
 			});
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						headers: expect.objectContaining({
@@ -252,7 +242,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)'
+								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
 							),
 							variables: {
 								filter: {
@@ -264,10 +254,11 @@ describe('server generateClient', () => {
 							},
 						},
 					}),
-				})
+				}),
 			);
 
 			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
 				expect.objectContaining({
 					options: expect.objectContaining({
 						body: expect.objectContaining({
@@ -275,8 +266,40 @@ describe('server generateClient', () => {
 							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
-				})
+				}),
 			);
+		});
+
+		test('can custom query', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const getAmplify = async (fn: any) => await fn(Amplify);
+
+			const client = generateClientWithAmplifyInstance<
+				Schema,
+				V6ClientSSRCookies<Schema>
+			>({
+				amplify: getAmplify,
+				config: config,
+			});
+
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				resultContent: 'echo result content',
+			});
 		});
 	});
 	describe('with request', () => {
@@ -321,8 +344,34 @@ describe('server generateClient', () => {
 				expect.objectContaining({
 					query: expect.stringContaining('listNotes'),
 				}),
-				{}
+				{},
 			);
+		});
+
+		test('can custom query', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const client = generateClientWithAmplifyInstance<
+				Schema,
+				V6ClientSSRRequest<Schema>
+			>({
+				amplify: null,
+				config: config,
+			});
+
+			const spy = jest.spyOn(client, 'graphql').mockImplementation(async () => {
+				const result: any = {};
+				return result;
+			});
+
+			const mockContextSpec = { token: { value: Symbol('test') } };
+
+			const result = await client.queries.echo(mockContextSpec, {
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 	});
 });

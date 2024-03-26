@@ -3,9 +3,10 @@
 
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import {
-	updateEndpoint,
 	UpdateEndpointException,
+	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { InAppMessagingValidationErrorCode } from '../../../errors';
 import {
 	CATEGORY,
@@ -22,7 +23,7 @@ import { assertIsInitialized } from '../../../utils';
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
  *
- * @param {IdentifyUserParameters} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
+ * @param input The input object that conforms to {@link IdentifyUserInput} used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
  * @throws service: {@link UpdateEndpointException} - Thrown when the underlying Pinpoint service returns an error.
  * @throws validation: {@link InAppMessagingValidationErrorCode} - Thrown when the provided parameters or library
@@ -66,11 +67,8 @@ import { assertIsInitialized } from '../../../utils';
  *     },
  * });
  */
-export const identifyUser = async ({
-	userId,
-	userProfile,
-	options,
-}: IdentifyUserInput): Promise<void> => {
+export const identifyUser = async (input: IdentifyUserInput): Promise<void> => {
+	const { userId, userProfile, options } = input;
 	assertIsInitialized();
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
@@ -88,7 +86,7 @@ export const identifyUser = async ({
 		userId,
 		userProfile,
 		userAgentValue: getInAppMessagingUserAgentString(
-			InAppMessagingAction.IdentifyUser
+			InAppMessagingAction.IdentifyUser,
 		),
 	});
 };

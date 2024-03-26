@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { assert, PushNotificationValidationErrorCode } from '../../../errors';
+
+import { PushNotificationValidationErrorCode, assert } from '../../../errors';
 
 /**
  * @internal
@@ -12,5 +13,6 @@ export const resolveConfig = () => {
 		Amplify.getConfig().Notifications?.PushNotification?.Pinpoint ?? {};
 	assert(!!appId, PushNotificationValidationErrorCode.NoAppId);
 	assert(!!region, PushNotificationValidationErrorCode.NoRegion);
+
 	return { appId, region };
 };

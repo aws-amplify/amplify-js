@@ -32,8 +32,8 @@ export interface Credentials {
  *
  * The input for {@link GetCredentialsForIdentityCommand}.
  */
-export interface GetCredentialsForIdentityCommandInput
-	extends GetCredentialsForIdentityInput {}
+export type GetCredentialsForIdentityCommandInput =
+	GetCredentialsForIdentityInput;
 /**
  * @public
  *
@@ -91,7 +91,7 @@ export interface GetCredentialsForIdentityResponse {
  *
  * The input for {@link GetIdCommand}.
  */
-export interface GetIdCommandInput extends GetIdInput {}
+export type GetIdCommandInput = GetIdInput;
 /**
  * @public
  *

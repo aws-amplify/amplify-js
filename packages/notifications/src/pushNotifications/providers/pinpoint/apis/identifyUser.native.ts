@@ -3,6 +3,7 @@
 
 import { PushNotificationAction } from '@aws-amplify/core/internals/utils';
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { assertIsInitialized } from '../../../errors/errorHelpers';
 import {
 	getPushNotificationUserAgentString,
@@ -33,7 +34,7 @@ export const identifyUser: IdentifyUser = async ({
 		userId,
 		userProfile,
 		userAgentValue: getPushNotificationUserAgentString(
-			PushNotificationAction.IdentifyUser
+			PushNotificationAction.IdentifyUser,
 		),
 	});
 };

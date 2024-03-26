@@ -3,23 +3,23 @@
 
 import {
 	Amplify,
-	clearCredentials,
 	CognitoUserPoolConfig,
 	ConsoleLogger,
-	defaultStorage,
 	Hub,
+	clearCredentials,
+	defaultStorage,
 } from '@aws-amplify/core';
+import {
+	AMPLIFY_SYMBOL,
+	AuthAction,
+	JWT,
+	assertOAuthConfig,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
 
 import { getAuthUserAgentValue } from '../../../utils';
 import { SignOutInput } from '../types';
 import { tokenOrchestrator } from '../tokenProvider';
-import {
-	AuthAction,
-	AMPLIFY_SYMBOL,
-	assertOAuthConfig,
-	assertTokenProviderConfig,
-	JWT,
-} from '@aws-amplify/core/internals/utils';
 import {
 	globalSignOut as globalSignOutClient,
 	revokeToken,
@@ -94,13 +94,13 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 				{
 					ClientId: cognitoConfig.userPoolClientId,
 					Token: authTokens.refreshToken,
-				}
+				},
 			);
 		}
 	} catch (err) {
 		// this shouldn't throw
 		logger.debug(
-			'Client signOut error caught but will proceed with token removal'
+			'Client signOut error caught but will proceed with token removal',
 		);
 	}
 }
@@ -116,12 +116,12 @@ async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 			},
 			{
 				AccessToken: authTokens.accessToken.toString(),
-			}
+			},
 		);
 	} catch (err) {
 		// it should not throw
 		logger.debug(
-			'Global signOut error caught but will proceed with token removal'
+			'Global signOut error caught but will proceed with token removal',
 		);
 	}
 }

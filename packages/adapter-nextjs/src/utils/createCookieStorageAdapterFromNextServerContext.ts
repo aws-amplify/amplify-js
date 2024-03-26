@@ -164,7 +164,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 				? {
 						name,
 						value,
-				  }
+					}
 				: undefined;
 		},
 		getAll() {

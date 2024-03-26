@@ -3,9 +3,9 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-export type StorageOptions = {
+export interface StorageOptions {
 	accessLevel?: StorageAccessLevel;
-};
+}
 
 export type StorageListAllOptions = StorageOptions & {
 	listAll: true;

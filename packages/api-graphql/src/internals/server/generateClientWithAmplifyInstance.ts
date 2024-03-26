@@ -1,17 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { graphql, cancel, isCancelError } from '..';
-import { generateModelsProperty } from './generateModelsProperty';
+import { cancel, graphql, isCancelError } from '..';
 import {
+	CommonPublicClientOptions,
+	ServerClientGenerationParams,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
 	__amplify,
 	__authMode,
 	__authToken,
-	V6ClientSSRRequest,
-	V6ClientSSRCookies,
-	ServerClientGenerationParams,
-	CommonPublicClientOptions,
+	__headers,
 } from '../../types';
+import { isApiGraphQLConfig } from '../utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
+import { generateEnumsProperty } from '../utils/clientProperties/generateEnumsProperty';
+import {
+	generateCustomMutationsProperty,
+	generateCustomQueriesProperty,
+} from '../generateCustomOperationsProperty';
+
+import { generateModelsProperty } from './generateModelsProperty';
 
 /**
  * @private
@@ -30,18 +38,29 @@ export function generateClientWithAmplifyInstance<
 		| V6ClientSSRRequest<T>
 		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>,
 >(
-	params: ServerClientGenerationParams & CommonPublicClientOptions
+	params: ServerClientGenerationParams & CommonPublicClientOptions,
 ): ClientType {
 	const client = {
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
 		[__authToken]: params.authToken,
+		[__headers]: params.headers,
 		graphql,
 		cancel,
 		isCancelError,
 	} as any;
 
-	client.models = generateModelsProperty<T>(client, params);
+	const apiGraphqlConfig = params.config?.API?.GraphQL;
+
+	if (isApiGraphQLConfig(apiGraphqlConfig)) {
+		client.models = generateModelsProperty<T>(client, params);
+		client.enums = generateEnumsProperty<T>(apiGraphqlConfig);
+		client.queries = generateCustomQueriesProperty<T>(client, apiGraphqlConfig);
+		client.mutations = generateCustomMutationsProperty<T>(
+			client,
+			apiGraphqlConfig,
+		);
+	}
 
 	return client as ClientType;
 }

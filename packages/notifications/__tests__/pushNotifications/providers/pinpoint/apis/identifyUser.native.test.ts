@@ -55,7 +55,7 @@ describe('identifyUser (native)', () => {
 			throw new Error();
 		});
 		await expect(
-			identifyUser({ userId: 'user-id', userProfile: {} })
+			identifyUser({ userId: 'user-id', userProfile: {} }),
 		).rejects.toThrow();
 	});
 

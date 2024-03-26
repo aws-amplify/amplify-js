@@ -13,6 +13,7 @@ import {
 } from '../../../src/providers/cognito/tokenProvider';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 
+jest.mock('../../../src/providers/cognito/utils/dispatchSignedInHubEvent');
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -37,7 +38,7 @@ describe('signIn API happy path cases', () => {
 			.spyOn(initiateAuthHelpers, 'handleUserPasswordAuthFlow')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
-					authAPITestParams.RespondToAuthChallengeCommandOutput
+					authAPITestParams.RespondToAuthChallengeCommandOutput,
 			);
 	});
 
@@ -70,7 +71,7 @@ describe('signIn API happy path cases', () => {
 			password,
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			authConfig.Cognito,
-			tokenOrchestrator
+			tokenOrchestrator,
 		);
 	});
 });
@@ -125,7 +126,7 @@ describe('Cognito ASF', () => {
 				UserContextData: {
 					EncodedData: 'abcd',
 				},
-			})
+			}),
 		);
 	});
 });

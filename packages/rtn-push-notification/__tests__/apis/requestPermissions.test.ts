@@ -37,7 +37,7 @@ describe('requestPermissions', () => {
 			await requestPermissions({
 				badge: false,
 				sound: false,
-			})
+			}),
 		).toBe(true);
 		expect(mockRequestPermissionsNative).toHaveBeenCalledWith({
 			alert: true,

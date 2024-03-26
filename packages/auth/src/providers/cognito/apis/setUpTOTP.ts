@@ -3,13 +3,14 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthError } from '../../../errors/AuthError';
 import {
-	SETUP_TOTP_EXCEPTION,
 	AssociateSoftwareTokenException,
+	SETUP_TOTP_EXCEPTION,
 } from '../types/errors';
 import { SetUpTOTPOutput } from '../types';
 import { getTOTPSetupDetails } from '../utils/signInHelpers';
@@ -39,7 +40,7 @@ export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-		}
+		},
 	);
 
 	if (!SecretCode) {
@@ -49,5 +50,6 @@ export async function setUpTOTP(): Promise<SetUpTOTPOutput> {
 			message: 'Failed to set up TOTP.',
 		});
 	}
+
 	return getTOTPSetupDetails(SecretCode, JSON.stringify(username));
 }

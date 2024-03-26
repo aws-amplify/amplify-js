@@ -10,7 +10,6 @@ import { cacheCognitoTokens } from '../../../../../src/providers/cognito/tokenPr
 import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
-import { cognitoUserPoolsTokenProvider } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 
@@ -42,16 +41,9 @@ jest.mock(
 			clearOAuthData: jest.fn(),
 			clearOAuthInflightData: jest.fn(),
 		} as OAuthStore,
-	})
+	}),
 );
-jest.mock(
-	'../../../../../src/providers/cognito/tokenProvider/tokenProvider',
-	() => ({
-		cognitoUserPoolsTokenProvider: {
-			setWaitForInflightOAuth: jest.fn(),
-		},
-	})
-);
+
 
 const mockHandleFailure = handleFailure as jest.Mock;
 const mockValidateState = validateState as jest.Mock;
@@ -60,13 +52,12 @@ const mockResolveAndClearInflightPromises =
 const mockCacheCognitoTokens = cacheCognitoTokens as jest.Mock;
 const mockHubDispatch = Hub.dispatch as jest.Mock;
 const mockDecodeJWT = decodeJWT as jest.Mock;
-// const mockCreateOAuthError = createOAuthError as jest.Mock;
 
 describe('completeOAuthFlow', () => {
 	let windowSpy = jest.spyOn(window, 'window', 'get');
 	const mockFetch = jest.fn();
 	const mockReplaceState = jest.fn();
-  
+
 	beforeAll(() => {
 		(global as any).fetch = mockFetch;
 		windowSpy.mockImplementation(
@@ -74,9 +65,9 @@ describe('completeOAuthFlow', () => {
 				({
 					history: {
 						replaceState: mockReplaceState,
-						state:'http://localhost:3000/?code=aaaa-111-222&state=aaaaa'
+						state: 'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 					},
-				}) as any
+				}) as any,
 		);
 	});
 
@@ -91,9 +82,6 @@ describe('completeOAuthFlow', () => {
 		(oAuthStore.clearOAuthInflightData as jest.Mock).mockClear();
 		(oAuthStore.clearOAuthData as jest.Mock).mockClear();
 		(oAuthStore.storeOAuthSignIn as jest.Mock).mockClear();
-		(
-			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
-		).mockClear();
 	});
 
 	it('handles error presented in the redirect url', async () => {
@@ -107,7 +95,7 @@ describe('completeOAuthFlow', () => {
 				redirectUri: 'http://localhost:3000/',
 				responseType: 'code',
 				domain: 'localhost:3000',
-			})
+			}),
 		).rejects.toThrow(expectedErrorMessage);
 	});
 
@@ -127,7 +115,7 @@ describe('completeOAuthFlow', () => {
 				completeOAuthFlow({
 					...testInput,
 					currentUrl: `http://localhost:3000?state=someState123`,
-				})
+				}),
 			).rejects.toThrow('User cancelled OAuth flow.');
 		});
 
@@ -136,7 +124,7 @@ describe('completeOAuthFlow', () => {
 				completeOAuthFlow({
 					...testInput,
 					currentUrl: `http://localhost:3000?code=123`,
-				})
+				}),
 			).rejects.toThrow('User cancelled OAuth flow.');
 		});
 
@@ -150,7 +138,7 @@ describe('completeOAuthFlow', () => {
 			});
 
 			await expect(completeOAuthFlow(testInput)).rejects.toThrow(
-				expectedErrorMessage
+				expectedErrorMessage,
 			);
 			expect(mockValidateState).toHaveBeenCalledWith(expectedState);
 		});
@@ -182,7 +170,7 @@ describe('completeOAuthFlow', () => {
 				expect.objectContaining({
 					method: 'POST',
 					body: 'grant_type=authorization_code&code=12345&client_id=clientId&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2F&code_verifier=pkce23234a',
-				})
+				}),
 			);
 			expect(mockCacheCognitoTokens).toHaveBeenLastCalledWith({
 				username: 'testuser',
@@ -195,7 +183,7 @@ describe('completeOAuthFlow', () => {
 			expect(mockReplaceState).toHaveBeenCalledWith(
 				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 				'',
-				testInput.redirectUri
+				testInput.redirectUri,
 			);
 
 			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
@@ -216,7 +204,7 @@ describe('completeOAuthFlow', () => {
 			});
 
 			expect(completeOAuthFlow(testInput)).rejects.toThrow(
-				mockError.error_message
+				mockError.error_message,
 			);
 		});
 	});
@@ -237,7 +225,7 @@ describe('completeOAuthFlow', () => {
 				completeOAuthFlow({
 					...testInput,
 					currentUrl: `http://localhost:3000#error_description=${expectedErrorMessage}&error=invalid_request`,
-				})
+				}),
 			).rejects.toThrow(expectedErrorMessage);
 		});
 
@@ -246,7 +234,7 @@ describe('completeOAuthFlow', () => {
 				completeOAuthFlow({
 					...testInput,
 					currentUrl: `http://localhost:3000#`,
-				})
+				}),
 			).rejects.toThrow('No access token returned from OAuth flow.');
 		});
 
@@ -260,7 +248,7 @@ describe('completeOAuthFlow', () => {
 			});
 
 			await expect(completeOAuthFlow(testInput)).rejects.toThrow(
-				expectedErrorMessage
+				expectedErrorMessage,
 			);
 		});
 
@@ -292,21 +280,12 @@ describe('completeOAuthFlow', () => {
 			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
 			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
 			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
-			expect(
-				cognitoUserPoolsTokenProvider.setWaitForInflightOAuth
-			).toHaveBeenCalledTimes(1);
-
-			const waitForInflightOAuth = (
-				cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
-			).mock.calls[0][0];
-			expect(typeof waitForInflightOAuth).toBe('function');
-			expect(waitForInflightOAuth()).resolves.toBeUndefined();
 
 			expect(mockHubDispatch).toHaveBeenCalledTimes(2);
 			expect(mockReplaceState).toHaveBeenCalledWith(
 				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
 				'',
-				testInput.redirectUri
+				testInput.redirectUri,
 			);
 		});
 	});

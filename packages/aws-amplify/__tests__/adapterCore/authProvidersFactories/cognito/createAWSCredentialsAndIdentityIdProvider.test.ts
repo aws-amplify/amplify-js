@@ -10,7 +10,7 @@ import {
 	AuthConfig,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
-import { createAWSCredentialsAndIdentityIdProvider } from '../../../../src/adapterCore';
+import { createAWSCredentialsAndIdentityIdProvider } from '../../../../src/adapter-core';
 
 jest.mock('@aws-amplify/auth/cognito');
 
@@ -36,14 +36,14 @@ describe('createAWSCredentialsAndIdentityIdProvider', () => {
 	it('should create a credentials provider', () => {
 		const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 			mockAuthConfig,
-			mockKeyValueStorage
+			mockKeyValueStorage,
 		);
 
 		expect(MockDefaultIdentityIdStore).toHaveBeenCalledWith(
-			mockKeyValueStorage
+			mockKeyValueStorage,
 		);
 		expect(
-			MockCognitoAWSCredentialsAndIdentityIdProvider
+			MockCognitoAWSCredentialsAndIdentityIdProvider,
 		).toHaveBeenCalledTimes(1);
 		const mockCredentialsProviderInstance =
 			MockCognitoAWSCredentialsAndIdentityIdProvider.mock.instances[0];

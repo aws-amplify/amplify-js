@@ -5,8 +5,8 @@ import { OnCompleteInput } from '../types';
 import { resolveBotConfig } from '../utils';
 import { lexProvider } from '../AWSLexProvider';
 import {
-	assertValidationError,
 	InteractionsValidationErrorCode,
+	assertValidationError,
 } from '../../errors';
 
 export const onComplete = (input: OnCompleteInput): void => {
@@ -15,7 +15,7 @@ export const onComplete = (input: OnCompleteInput): void => {
 	assertValidationError(
 		!!botConfig,
 		InteractionsValidationErrorCode.NoBotConfig,
-		`Bot ${botName} does not exist.`
+		`Bot ${botName} does not exist.`,
 	);
 	lexProvider.onComplete(botConfig, callback);
 };

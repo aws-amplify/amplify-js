@@ -14,7 +14,7 @@
  */
 export const getCanonicalUri = (
 	pathname: string,
-	uriEscapePath = true
+	uriEscapePath = true,
 ): string =>
 	pathname
 		? uriEscapePath

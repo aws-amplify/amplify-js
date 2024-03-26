@@ -33,6 +33,7 @@ export class KeyValueStorage implements KeyValueStorageInterface {
 	 */
 	async getItem(key: string) {
 		if (!this.storage) throw new PlatformNotSupportedError();
+
 		return this.storage.getItem(key);
 	}
 

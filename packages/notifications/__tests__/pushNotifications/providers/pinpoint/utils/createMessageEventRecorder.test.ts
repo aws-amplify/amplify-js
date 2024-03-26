@@ -21,13 +21,13 @@ jest.mock('@aws-amplify/react-native', () => ({
 	getOperatingSystem: jest.fn(),
 }));
 jest.mock(
-	'../../../../../src/pushNotifications/providers/pinpoint/utils/getAnalyticsEvent'
+	'../../../../../src/pushNotifications/providers/pinpoint/utils/getAnalyticsEvent',
 );
 jest.mock(
-	'../../../../../src/pushNotifications/providers/pinpoint/utils/getChannelType'
+	'../../../../../src/pushNotifications/providers/pinpoint/utils/getChannelType',
 );
 jest.mock(
-	'../../../../../src/pushNotifications/providers/pinpoint/utils/resolveConfig'
+	'../../../../../src/pushNotifications/providers/pinpoint/utils/resolveConfig',
 );
 jest.mock('../../../../../src/pushNotifications/utils');
 
@@ -52,7 +52,7 @@ describe('createMessageEventRecorder', () => {
 
 	it('returns message event recorder', () => {
 		expect(createMessageEventRecorder('received_background')).toStrictEqual(
-			expect.any(Function)
+			expect.any(Function),
 		);
 	});
 
@@ -64,7 +64,7 @@ describe('createMessageEventRecorder', () => {
 		});
 		const recorder = createMessageEventRecorder(
 			'received_background',
-			callback
+			callback,
 		);
 		recorder(simplePushMessage);
 	});
@@ -73,7 +73,7 @@ describe('createMessageEventRecorder', () => {
 		it('records a message event', done => {
 			mockRecord.mockImplementation(() => {
 				expect(mockRecord).toHaveBeenCalledWith(
-					expect.objectContaining({ event: analyticsEvent })
+					expect.objectContaining({ event: analyticsEvent }),
 				);
 				done();
 			});

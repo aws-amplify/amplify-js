@@ -12,7 +12,7 @@ import { XMLParser } from 'fast-xml-parser';
  */
 export const parser = {
 	parse: (xmlStr: string): any => {
-		const parser = new XMLParser({
+		const xmlParser = new XMLParser({
 			attributeNamePrefix: '',
 			htmlEntities: true,
 			ignoreAttributes: false,
@@ -23,9 +23,9 @@ export const parser = {
 			tagValueProcessor: (_, val) =>
 				val.trim() === '' && val.includes('\n') ? '' : undefined,
 		});
-		parser.addEntity('#xD', '\r');
-		parser.addEntity('#10', '\n');
-		const parsedObj: any = parser.parse(xmlStr);
+		xmlParser.addEntity('#xD', '\r');
+		xmlParser.addEntity('#10', '\n');
+		const parsedObj: any = xmlParser.parse(xmlStr);
 		const textNodeName = '#text';
 		const key = Object.keys(parsedObj)[0];
 		const parsedObjToReturn = parsedObj[key];
@@ -33,6 +33,7 @@ export const parser = {
 			parsedObjToReturn[key] = parsedObjToReturn[textNodeName];
 			delete parsedObjToReturn[textNodeName];
 		}
+
 		return getValueFromTextNode(parsedObjToReturn);
 	},
 };
@@ -45,11 +46,15 @@ export const parser = {
 const getValueFromTextNode = (obj: any) => {
 	const textNodeName = '#text';
 	for (const key in obj) {
-		if (obj.hasOwnProperty(key) && obj[key][textNodeName] !== undefined) {
+		if (
+			Object.prototype.hasOwnProperty.call(obj, key) &&
+			obj[key][textNodeName] !== undefined
+		) {
 			obj[key] = obj[key][textNodeName];
 		} else if (typeof obj[key] === 'object' && obj[key] !== null) {
 			obj[key] = getValueFromTextNode(obj[key]);
 		}
 	}
+
 	return obj;
 };

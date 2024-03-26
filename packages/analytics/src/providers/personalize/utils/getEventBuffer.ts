@@ -1,19 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { 
-	AWSCredentials, 
-	haveCredentialsChanged 
+import {
+	AWSCredentials,
+	haveCredentialsChanged,
 } from '@aws-amplify/core/internals/utils';
 import {
 	PersonalizeEventsClient,
 	PutEventsCommand,
 } from '@aws-sdk/client-personalize-events';
-import { 
-	EventBuffer, 
-	groupBy, 
-	IAnalyticsClient
-} from '../../../utils';
+
+import { EventBuffer, IAnalyticsClient, groupBy } from '../../../utils';
 import { PersonalizeBufferConfig, PersonalizeBufferEvent } from '../types';
 
 /**
@@ -25,15 +22,17 @@ import { PersonalizeBufferConfig, PersonalizeBufferEvent } from '../types';
  * When a new session is initiated, the previous ones should be released.
  * */
 const eventBufferMap: Record<string, EventBuffer<PersonalizeBufferEvent>> = {};
-const cachedClients: Record<string, [PersonalizeEventsClient, AWSCredentials]> = {};
+const cachedClients: Record<string, [PersonalizeEventsClient, AWSCredentials]> =
+	{};
 
 const DELIMITER = '#';
 
 const createPutEventsCommand = (
 	ids: string,
-	events: PersonalizeBufferEvent[]
+	events: PersonalizeBufferEvent[],
 ): PutEventsCommand => {
 	const [trackingId, sessionId, userId] = ids.split(DELIMITER);
+
 	return new PutEventsCommand({
 		trackingId,
 		sessionId,
@@ -49,7 +48,7 @@ const createPutEventsCommand = (
 
 const submitEvents = async (
 	events: PersonalizeBufferEvent[],
-	client: PersonalizeEventsClient
+	client: PersonalizeEventsClient,
 ): Promise<PersonalizeBufferEvent[]> => {
 	const groupedByIds = Object.entries(
 		groupBy(
@@ -57,15 +56,16 @@ const submitEvents = async (
 				[event.trackingId, event.sessionId, event.userId]
 					.filter(id => !!id)
 					.join(DELIMITER),
-			events
-		)
+			events,
+		),
 	);
 
 	const requests = groupedByIds
-		.map(([ids, events]) => createPutEventsCommand(ids, events))
+		.map(([ids, groupedEvents]) => createPutEventsCommand(ids, groupedEvents))
 		.map(command => client.send(command));
 
 	await Promise.allSettled(requests);
+
 	return Promise.resolve([]);
 };
 
@@ -79,12 +79,16 @@ export const getEventBuffer = ({
 	userAgentValue,
 }: PersonalizeBufferConfig): EventBuffer<PersonalizeBufferEvent> => {
 	const sessionIdentityKey = [region, identityId].filter(x => !!x).join('-');
-	const [ cachedClient, cachedCredentials ] = cachedClients[sessionIdentityKey] ?? [];
+	const [cachedClient, cachedCredentials] =
+		cachedClients[sessionIdentityKey] ?? [];
 	let credentialsHaveChanged = false;
 
 	// Check if credentials have changed for the cached client
 	if (cachedClient) {
-		credentialsHaveChanged = haveCredentialsChanged(cachedCredentials, credentials);
+		credentialsHaveChanged = haveCredentialsChanged(
+			cachedCredentials,
+			credentials,
+		);
 	}
 
 	if (!eventBufferMap[sessionIdentityKey] || credentialsHaveChanged) {
@@ -96,11 +100,11 @@ export const getEventBuffer = ({
 						credentials,
 						customUserAgent: userAgentValue,
 					}),
-					credentials
+					credentials,
 				];
 			}
 
-			const [ personalizeClient ] = cachedClients[sessionIdentityKey];
+			const [personalizeClient] = cachedClients[sessionIdentityKey];
 
 			return events => submitEvents(events, personalizeClient);
 		};
@@ -112,11 +116,11 @@ export const getEventBuffer = ({
 					flushSize,
 					flushInterval,
 				},
-				getClient
+				getClient,
 			);
 
 		const releaseSessionKeys = Object.keys(eventBufferMap).filter(
-			key => key !== sessionIdentityKey
+			key => key !== sessionIdentityKey,
 		);
 		for (const releaseSessionKey of releaseSessionKeys) {
 			eventBufferMap[releaseSessionKey].flushAll().finally(() => {

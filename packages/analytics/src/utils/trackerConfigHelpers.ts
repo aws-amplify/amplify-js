@@ -8,12 +8,12 @@ import { AnalyticsConfigureAutoTrackInput } from '../types';
  * Validates tracker configuration.
  */
 export const validateTrackerConfiguration = (
-	input: AnalyticsConfigureAutoTrackInput
+	input: AnalyticsConfigureAutoTrackInput,
 ) => {
 	assertValidationError(
 		input.type === 'event' ||
 			input.type === 'pageView' ||
 			input.type === 'session',
-		AnalyticsValidationErrorCode.InvalidTracker
+		AnalyticsValidationErrorCode.InvalidTracker,
 	);
 };

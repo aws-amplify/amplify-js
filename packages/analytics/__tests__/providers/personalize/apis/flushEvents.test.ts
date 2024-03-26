@@ -26,7 +26,7 @@ describe('Analytics Personalize API: flushEvents', () => {
 	beforeEach(() => {
 		mockResolveConfig.mockReturnValue(mockPersonalizeConfig);
 		mockResolveCredentials.mockReturnValue(
-			Promise.resolve(mockCredentialConfig)
+			Promise.resolve(mockCredentialConfig),
 		);
 		mockGetEventBuffer.mockImplementation(() => ({
 			flushAll: mockFlushAll,
@@ -51,7 +51,7 @@ describe('Analytics Personalize API: flushEvents', () => {
 			expect.objectContaining({
 				...configWithoutTrackingId,
 				...mockCredentialConfig,
-			})
+			}),
 		);
 		expect(mockFlushAll).toHaveBeenCalledTimes(1);
 	});
@@ -63,7 +63,7 @@ describe('Analytics Personalize API: flushEvents', () => {
 		await new Promise(process.nextTick);
 		expect(loggerWarnSpy).toHaveBeenCalledWith(
 			expect.any(String),
-			expect.any(Error)
+			expect.any(Error),
 		);
 	});
 });

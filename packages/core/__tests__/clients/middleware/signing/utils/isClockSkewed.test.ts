@@ -6,7 +6,7 @@ import { isClockSkewed } from '../../../../../src/clients/middleware/signing/uti
 import { signingDate } from '../signer/signatureV4/testUtils/data';
 
 jest.mock(
-	'../../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate'
+	'../../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate',
 );
 
 const mockGetSkewCorrectedDate = getSkewCorrectedDate as jest.Mock;

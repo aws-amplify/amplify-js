@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSLexV2ProviderOption } from '../types';
 import { Amplify } from '@aws-amplify/core';
 
+import { AWSLexV2ProviderOption } from '../types';
+
 export const resolveBotConfig = (
-	botName: string
+	botName: string,
 ): AWSLexV2ProviderOption | undefined => {
 	const { [botName]: botConfig = undefined } =
 		Amplify.getConfig().Interactions?.LexV2 ?? {};

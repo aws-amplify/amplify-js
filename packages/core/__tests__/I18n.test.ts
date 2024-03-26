@@ -13,7 +13,7 @@ describe('I18n test', () => {
 		let languageGetterSpy;
 
 		beforeEach(() => {
-			languageGetterSpy = jest.spyOn(window.navigator, 'language', 'get')
+			languageGetterSpy = jest.spyOn(window.navigator, 'language', 'get');
 		});
 
 		test('no language', () => {
@@ -67,14 +67,14 @@ describe('I18n test', () => {
 		});
 
 		test('sets default language', () => {
-			languageGetterSpy.mockReturnValue('fr')
+			languageGetterSpy.mockReturnValue('fr');
 
 			const i18n = new I18n();
 
 			i18n.putVocabularies({
-				'fr': {
+				fr: {
 					'Sign In': 'Se connecter',
-				}
+				},
 			});
 
 			expect(i18n.get('Sign In')).toBe('Se connecter');

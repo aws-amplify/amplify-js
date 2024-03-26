@@ -3,10 +3,11 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
 	AuthVerifiableAttributeKey,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthDeliveryMedium } from '../../../types';
@@ -29,12 +30,12 @@ import { getUserContextData } from '../utils/userContextData';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  **/
 export async function resetPassword(
-	input: ResetPasswordInput
+	input: ResetPasswordInput,
 ): Promise<ResetPasswordOutput> {
-	const username = input.username;
+	const { username } = input;
 	assertValidationError(
 		!!username,
-		AuthValidationErrorCode.EmptyResetPasswordUsername
+		AuthValidationErrorCode.EmptyResetPasswordUsername,
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -57,9 +58,10 @@ export async function resetPassword(
 			ClientMetadata: clientMetadata,
 			ClientId: authConfig.userPoolClientId,
 			UserContextData,
-		}
+		},
 	);
 	const codeDeliveryDetails = res.CodeDeliveryDetails;
+
 	return {
 		isPasswordReset: false,
 		nextStep: {

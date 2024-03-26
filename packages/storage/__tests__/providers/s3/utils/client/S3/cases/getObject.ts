@@ -127,7 +127,7 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 		TagCount: Number(getObjectResponseHeaders['x-amz-tagging-count']),
 		ObjectLockMode: getObjectResponseHeaders['x-amz-object-lock-mode'],
 		ObjectLockRetainUntilDate: new Date(
-			getObjectResponseHeaders['x-amz-object-lock-retain-until-date']
+			getObjectResponseHeaders['x-amz-object-lock-retain-until-date'],
 		),
 		ObjectLockLegalHoldStatus:
 			getObjectResponseHeaders['x-amz-object-lock-legal-hold'],

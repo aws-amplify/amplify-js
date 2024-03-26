@@ -5,6 +5,8 @@ import { ConsoleLogger } from '@aws-amplify/core';
 import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty.js';
+import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import {
 	InAppMessage,
 	InAppMessageAction,
@@ -14,7 +16,7 @@ import {
 	InAppMessagingEvent,
 } from '../../../types';
 import { MetricsComparator, PinpointMessageEvent } from '../types';
-import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { resolveConfig } from './resolveConfig';
 import { resolveCredentials } from './resolveCredentials';
 import { CATEGORY } from './constants';
@@ -30,7 +32,7 @@ export const logger = new ConsoleLogger('InAppMessaging.Pinpoint.Utils');
 
 export const recordAnalyticsEvent = (
 	event: PinpointMessageEvent,
-	message: InAppMessage
+	message: InAppMessage,
 ) => {
 	const { appId, region } = resolveConfig();
 
@@ -53,7 +55,7 @@ export const recordAnalyticsEvent = (
 				identityId,
 				region,
 				userAgentValue: getInAppMessagingUserAgentString(
-					InAppMessagingAction.NotifyMessageInteraction
+					InAppMessagingAction.NotifyMessageInteraction,
 				),
 			});
 		})
@@ -66,24 +68,26 @@ export const recordAnalyticsEvent = (
 export const getStartOfDay = (): string => {
 	const now = new Date();
 	now.setHours(0, 0, 0, 0);
+
 	return now.toISOString();
 };
 
 export const matchesEventType = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ name: eventType }: InAppMessagingEvent
+	{ name: eventType }: InAppMessagingEvent,
 ) => {
 	const { EventType } = Schedule?.EventFilter?.Dimensions ?? {};
 	const memoKey = `${CampaignId}:${eventType}`;
-	if (!eventNameMemo.hasOwnProperty(memoKey)) {
+	if (!Object.prototype.hasOwnProperty.call(eventNameMemo, memoKey)) {
 		eventNameMemo[memoKey] = !!EventType?.Values?.includes(eventType);
 	}
+
 	return eventNameMemo[memoKey];
 };
 
 export const matchesAttributes = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ attributes = {} }: InAppMessagingEvent
+	{ attributes = {} }: InAppMessagingEvent,
 ): boolean => {
 	const { Attributes } = Schedule?.EventFilter?.Dimensions ?? {};
 	if (isEmpty(Attributes)) {
@@ -95,19 +99,20 @@ export const matchesAttributes = (
 		return false;
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(attributes)}`;
-	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
+	if (!Object.prototype.hasOwnProperty.call(eventAttributesMemo, memoKey)) {
 		eventAttributesMemo[memoKey] =
 			!Attributes ||
-			Object.entries(Attributes).every(
-				([key, { Values }]) => Values?.includes(attributes[key])
+			Object.entries(Attributes).every(([key, { Values }]) =>
+				Values?.includes(attributes[key]),
 			);
 	}
+
 	return eventAttributesMemo[memoKey];
 };
 
 export const matchesMetrics = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ metrics = {} }: InAppMessagingEvent
+	{ metrics = {} }: InAppMessagingEvent,
 ): boolean => {
 	const { Metrics } = Schedule?.EventFilter?.Dimensions ?? {};
 	if (isEmpty(Metrics)) {
@@ -119,20 +124,22 @@ export const matchesMetrics = (
 		return false;
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(metrics)}`;
-	if (!eventMetricsMemo.hasOwnProperty(memoKey)) {
+	if (!Object.prototype.hasOwnProperty.call(eventMetricsMemo, memoKey)) {
 		eventMetricsMemo[memoKey] =
 			!Metrics ||
 			Object.entries(Metrics).every(([key, { ComparisonOperator, Value }]) => {
 				const compare = getComparator(ComparisonOperator);
+
 				// if there is some unknown comparison operator, treat as a comparison failure
 				return compare && !!Value ? compare(Value, metrics[key]) : false;
 			});
 	}
+
 	return eventMetricsMemo[memoKey];
 };
 
 export const getComparator = (
-	operator?: string
+	operator?: string,
 ): MetricsComparator | undefined => {
 	switch (operator) {
 		case 'EQUAL':
@@ -156,6 +163,7 @@ export const isBeforeEndDate = ({
 	if (!Schedule?.EndDate) {
 		return true;
 	}
+
 	return new Date() < new Date(Schedule.EndDate);
 };
 
@@ -187,13 +195,13 @@ export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 		Number.parseInt(startHours, 10),
 		Number.parseInt(startMinutes, 10),
 		0,
-		0
+		0,
 	);
 	end.setHours(
 		Number.parseInt(endHours, 10),
 		Number.parseInt(endMinutes, 10),
 		0,
-		0
+		0,
 	);
 
 	// if quiet time includes midnight, bump the end time to the next day
@@ -201,11 +209,12 @@ export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 		end.setDate(end.getDate() + 1);
 	}
 
-	const isQuietTime = now >= start && now <= end;
-	if (isQuietTime) {
+	const isDuringQuietTime = now >= start && now <= end;
+	if (isDuringQuietTime) {
 		logger.debug('message filtered due to quiet time', message);
 	}
-	return isQuietTime;
+
+	return isDuringQuietTime;
 };
 
 export const clearMemo = () => {
@@ -225,7 +234,7 @@ export const clearMemo = () => {
 // - 2. Amplify correctly handles the legacy layout values from Pinpoint after they are updated
 
 export const interpretLayout = (
-	layout: NonNullable<PinpointInAppMessage['InAppMessage']>['Layout']
+	layout: NonNullable<PinpointInAppMessage['InAppMessage']>['Layout'],
 ): InAppMessageLayout => {
 	if (layout === 'MOBILE_FEED') {
 		return 'MODAL';
@@ -315,18 +324,19 @@ export const extractContent = ({
 					},
 				};
 			}
+
 			return extractedContent;
 		}) ?? []
 	);
 };
 
 export const extractMetadata = ({
-	InAppMessage,
+	InAppMessage: inAppMessage,
 	Priority,
 	Schedule,
 	TreatmentId,
 }: PinpointInAppMessage): InAppMessage['metadata'] => ({
-	customData: InAppMessage?.CustomConfig,
+	customData: inAppMessage?.CustomConfig,
 	endDate: Schedule?.EndDate,
 	priority: Priority,
 	treatmentId: TreatmentId,

@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HubInternal } from '@aws-amplify/core/internals/utils';
+
 import { signIn } from '../apis/signIn';
 import { SignInInput, SignInOutput } from '../types';
 import { AutoSignInEventData } from '../types/models';
 import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
-import { SignUpCommandOutput } from './clients/CognitoIdentityProvider/types';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
+
+import { SignUpCommandOutput } from './clients/CognitoIdentityProvider/types';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
@@ -29,7 +31,7 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 					}
 				}
 			}
-		}
+		},
 	);
 
 	// This will stop the listener if confirmSignUp is not resolved.
@@ -50,9 +52,8 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 type TimeOutOutput = ReturnType<typeof setTimeout>;
 function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
 	let timer: TimeOutOutput | undefined;
-	return function (
-		args: F extends (...args: infer A) => any ? A : never
-	): void {
+
+	return (args: F extends (...args: infer A) => any ? A : never): void => {
 		if (!timer) {
 			fun(...args);
 		}
@@ -65,8 +66,8 @@ function debounce<F extends (...args: any[]) => any>(fun: F, delay: number) {
 
 function handleAutoSignInWithLink(
 	signInInput: SignInInput,
-	resolve: Function,
-	reject: Function
+	resolve: (value: SignInOutput) => void,
+	reject: (reason?: any) => void,
 ) {
 	const start = Date.now();
 	const autoSignInPollingIntervalId = setInterval(async () => {
@@ -81,10 +82,9 @@ function handleAutoSignInWithLink(
 					message: 'The account was not confirmed on time.',
 					recoverySuggestion:
 						'Try to verify your account by clicking the link sent your email or phone and then login manually.',
-				})
+				}),
 			);
 			resetAutoSignIn();
-			return;
 		} else {
 			try {
 				const signInOutput = await signIn(signInInput);
@@ -93,7 +93,6 @@ function handleAutoSignInWithLink(
 					clearInterval(autoSignInPollingIntervalId);
 					setAutoSignInStarted(false);
 					resetAutoSignIn();
-					return;
 				}
 			} catch (error) {
 				clearInterval(autoSignInPollingIntervalId);
@@ -107,10 +106,10 @@ function handleAutoSignInWithLink(
 const debouncedAutoSignInWithLink = debounce(handleAutoSignInWithLink, 300);
 const debouncedAutoSignWithCodeOrUserConfirmed = debounce(
 	handleAutoSignInWithCodeOrUserConfirmed,
-	300
+	300,
 );
 
-let autoSignInStarted: boolean = false;
+let autoSignInStarted = false;
 
 let usernameUsedForAutoSignIn: string | undefined;
 
@@ -136,18 +135,18 @@ export function isSignUpComplete(output: SignUpCommandOutput): boolean {
 }
 
 export function autoSignInWhenUserIsConfirmedWithLink(
-	signInInput: SignInInput
+	signInInput: SignInInput,
 ): AutoSignInCallback {
 	return async () => {
-		return new Promise<SignInOutput>(async (resolve, reject) => {
+		return new Promise<SignInOutput>((resolve, reject) => {
 			debouncedAutoSignInWithLink([signInInput, resolve, reject]);
 		});
 	};
 }
 async function handleAutoSignInWithCodeOrUserConfirmed(
 	signInInput: SignInInput,
-	resolve: Function,
-	reject: Function
+	resolve: (value: SignInOutput) => void,
+	reject: (reason?: any) => void,
 ) {
 	try {
 		const output = await signIn(signInInput);
@@ -161,7 +160,7 @@ async function handleAutoSignInWithCodeOrUserConfirmed(
 
 function autoSignInWithCode(signInInput: SignInInput): AutoSignInCallback {
 	return async () => {
-		return new Promise<SignInOutput>(async (resolve, reject) => {
+		return new Promise<SignInOutput>((resolve, reject) => {
 			debouncedAutoSignWithCodeOrUserConfirmed([signInInput, resolve, reject]);
 		});
 	};
