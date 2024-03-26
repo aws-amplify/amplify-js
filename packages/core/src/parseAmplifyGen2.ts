@@ -6,7 +6,6 @@ import {
 import {
 	AuthType,
 	Gen2AuthMFAConfiguration,
-	Gen2AuthProperties,
 	Gen2OAuthIdentityProviders,
 } from './singleton/gen2/types';
 import { Gen2Config, LegacyConfig, ResourcesConfig } from './singleton/types';
@@ -21,102 +20,101 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 	const config: ResourcesConfig = {};
 
 	if (gen2Config?.storage) {
-		const storageProperties = gen2Config.storage;
+		/* eslint-disable camelcase */
+		const { bucket_name, aws_region } = gen2Config.storage;
 		config.Storage = {
 			S3: {
-				bucket: storageProperties.bucket_name,
-				region: storageProperties.aws_region,
+				bucket: bucket_name,
+				region: aws_region,
 			},
 		};
 	}
 
 	if (gen2Config?.auth) {
-		const authProperties = gen2Config.auth;
+		const {
+			user_pool_id,
+			user_pool_client_id,
+			identity_pool_id,
+			password_policy,
+			mfa_configuration,
+			mfa_methods,
+			unauthenticated_identities_enabled,
+			oauth,
+			username_attributes,
+			standard_required_attributes,
+		} = gen2Config.auth;
 
-		if (authProperties.identity_pool_id) {
+		if (identity_pool_id) {
 			config.Auth = {
 				Cognito: {
-					userPoolId: authProperties.user_pool_id,
-					userPoolClientId: authProperties.user_pool_client_id,
-					identityPoolId: authProperties.identity_pool_id,
+					userPoolId: user_pool_id,
+					userPoolClientId: user_pool_client_id,
+					identityPoolId: identity_pool_id,
 				},
 			};
 		} else {
 			config.Auth = {
 				Cognito: {
-					userPoolId: authProperties.user_pool_id,
-					userPoolClientId: authProperties.user_pool_client_id,
+					userPoolId: user_pool_id,
+					userPoolClientId: user_pool_client_id,
 				},
 			};
 		}
 
-		if (authProperties.password_policy) {
+		if (password_policy) {
 			config.Auth.Cognito.passwordFormat = {
-				requireLowercase: authProperties.password_policy?.require_lowercase,
-				requireNumbers: authProperties.password_policy?.require_numbers,
-				requireUppercase: authProperties.password_policy?.require_uppercase,
-				requireSpecialCharacters:
-					authProperties.password_policy?.require_symbols,
-				minLength: authProperties.password_policy?.min_length ?? 6,
+				requireLowercase: password_policy.require_lowercase,
+				requireNumbers: password_policy.require_numbers,
+				requireUppercase: password_policy.require_uppercase,
+				requireSpecialCharacters: password_policy.require_symbols,
+				minLength: password_policy.min_length ?? 6,
 			};
 		}
 
-		if (authProperties.mfa_configuration) {
+		if (mfa_configuration) {
 			config.Auth.Cognito.mfa = {
-				status: getMfaStatus(authProperties.mfa_configuration),
-				smsEnabled: authProperties.mfa_methods?.some(
-					method => method === 'SMS',
-				),
-				totpEnabled: authProperties.mfa_methods?.some(
-					method => method === 'TOTP',
-				),
+				status: getMfaStatus(mfa_configuration),
+				smsEnabled: mfa_methods?.some(method => method === 'SMS'),
+				totpEnabled: mfa_methods?.some(method => method === 'TOTP'),
 			};
 		}
 
-		if (authProperties.unauthenticated_identities_enabled) {
-			config.Auth.Cognito.allowGuestAccess =
-				authProperties.unauthenticated_identities_enabled;
+		if (unauthenticated_identities_enabled) {
+			config.Auth.Cognito.allowGuestAccess = unauthenticated_identities_enabled;
 		}
 
 		config.Auth.Cognito.loginWith = {};
 
-		if (hasOAuthConfig(authProperties)) {
-			config.Auth.Cognito.loginWith!.oauth = {
-				domain: authProperties.oauth!.domain,
-				redirectSignIn: authProperties.oauth!.redirect_sign_in_uri,
-				redirectSignOut: authProperties.oauth!.redirect_sign_out_uri,
-				responseType: authProperties.oauth!.response_type,
-				scopes: authProperties.oauth!.scopes,
-				providers: getOAuthProviders(authProperties.oauth!.identity_providers),
+		if (oauth) {
+			config.Auth.Cognito.loginWith.oauth = {
+				domain: oauth.domain,
+				redirectSignIn: oauth.redirect_sign_in_uri,
+				redirectSignOut: oauth.redirect_sign_out_uri,
+				responseType: oauth.response_type,
+				scopes: oauth.scopes,
+				providers: getOAuthProviders(oauth.identity_providers),
 			};
 		}
 
-		if (authProperties.user_verification_mechanisms) {
-			if (authProperties.username_attributes?.some(user => user === 'EMAIL')) {
+		if (username_attributes) {
+			if (username_attributes.some(user => user === 'EMAIL')) {
 				config.Auth.Cognito.loginWith.email = true;
 			}
 
-			if (
-				authProperties.username_attributes?.some(
-					user => user === 'PHONE_NUMBER',
-				)
-			) {
+			if (username_attributes.some(user => user === 'PHONE_NUMBER')) {
 				config.Auth.Cognito.loginWith.phone = true;
 			}
 
-			if (
-				authProperties.username_attributes?.some(user => user === 'USERNAME')
-			) {
+			if (username_attributes.some(user => user === 'USERNAME')) {
 				config.Auth.Cognito.loginWith.username = true;
 			}
 		}
 
-		if (authProperties.standard_required_attributes) {
-			config.Auth.Cognito.userAttributes =
-				authProperties.standard_required_attributes.reduce(
-					(acc, curr) => ({ ...acc, [curr]: { required: true } }),
-					{},
-				);
+		if (standard_required_attributes) {
+			config.Auth.Cognito.userAttributes = standard_required_attributes.reduce(
+				(acc, curr) => ({ ...acc, [curr]: { required: true } }),
+				{},
+			);
 		}
 
 		if (!config.Auth.Cognito.loginWith) {
@@ -125,12 +123,12 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 	}
 
 	if (gen2Config.analytics) {
-		const analyticsProperties = gen2Config.analytics;
+		const { amazon_pinpoint } = gen2Config.analytics;
 
-		if (analyticsProperties.amazon_pinpoint) {
+		if (amazon_pinpoint) {
 			const Pinpoint = {
-				appId: analyticsProperties.amazon_pinpoint.app_id,
-				region: analyticsProperties.amazon_pinpoint.aws_region,
+				appId: amazon_pinpoint.app_id,
+				region: amazon_pinpoint.aws_region,
 			};
 			if (!config.Analytics) {
 				config.Analytics = {
@@ -143,28 +141,33 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 	}
 
 	if (gen2Config.geo) {
-		const geoProperties = gen2Config.geo;
+		const { aws_region, geofence_collections, maps, search_indices } =
+			gen2Config.geo;
 		config.Geo = {
 			LocationService: {
-				region: geoProperties.aws_region,
-				searchIndices: geoProperties.search_indices,
-				geofenceCollections: geoProperties.geofence_collections,
-				maps: geoProperties.maps,
+				region: aws_region,
+				searchIndices: search_indices,
+				geofenceCollections: geofence_collections,
+				maps,
 			},
 		};
 	}
 
 	if (gen2Config.data) {
-		const dataConfig = gen2Config.data;
+		const {
+			aws_region,
+			default_authorization_type,
+			url,
+			api_key,
+			model_introspection,
+		} = gen2Config.data;
 
 		const GraphQL: APIGraphQLConfig = {
-			endpoint: dataConfig.url,
-			defaultAuthMode: getGraphQLAuthMode(
-				dataConfig.default_authorization_type,
-			),
-			region: dataConfig.aws_region,
-			apiKey: dataConfig.api_key,
-			modelIntrospection: dataConfig.model_introspection,
+			endpoint: url,
+			defaultAuthMode: getGraphQLAuthMode(default_authorization_type),
+			region: aws_region,
+			apiKey: api_key,
+			modelIntrospection: model_introspection,
 		};
 
 		if (!config.API) {
@@ -177,13 +180,13 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 	}
 
 	if (gen2Config.notifications) {
-		const notificationConfig = gen2Config.notifications;
+		const { aws_region, channels, pinpoint_app_id } = gen2Config.notifications;
 
-		if (notificationConfig.channels.in_app_messaging) {
+		if (channels.in_app_messaging) {
 			const InAppMessaging = {
 				Pinpoint: {
-					appId: notificationConfig.pinpoint_app_id,
-					region: notificationConfig.aws_region,
+					appId: pinpoint_app_id,
+					region: aws_region,
 				},
 			};
 			if (!config.Notifications) {
@@ -194,11 +197,11 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 				config.Notifications.InAppMessaging = InAppMessaging;
 			}
 		}
-		if (notificationConfig.channels.apns || notificationConfig.channels.fcm) {
+		if (channels.apns || channels.fcm) {
 			const PushNotification = {
 				Pinpoint: {
-					appId: notificationConfig.pinpoint_app_id,
-					region: notificationConfig.aws_region,
+					appId: pinpoint_app_id,
+					region: aws_region,
 				},
 			};
 
@@ -252,11 +255,6 @@ function getOAuthProviders(
 	});
 
 	return oauthProviders;
-}
-
-// TODO: create a type guard for oauth config
-function hasOAuthConfig(authProperties: Gen2AuthProperties): boolean {
-	return !!authProperties.oauth;
 }
 
 function getMfaStatus(
