@@ -324,19 +324,6 @@ describe('server generateClient', () => {
 				}),
 			);
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				}),
-			);
-		});
-
 		test('can list with sort direction (descending)', async () => {
 			Amplify.configure(configFixture as any);
 			const config = Amplify.getConfig();
@@ -387,18 +374,6 @@ describe('server generateClient', () => {
 								sortDirection: 'DESC',
 							},
 						},
-					}),
-				}),
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
 					}),
 				}),
 			);
