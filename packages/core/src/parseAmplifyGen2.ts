@@ -1,33 +1,37 @@
-import { OAuthProvider } from './libraryUtils';
+import { APIGraphQLConfig, GraphQLAuthMode } from './singleton/API/types';
 import {
-	APIGraphQLConfig,
-	APIRestConfig,
-	GraphQLAuthMode,
-} from './singleton/API/types';
-import { AuthType, Gen2AuthProperties } from './singleton/gen2/types';
+	CognitoUserPoolConfigMfaStatus,
+	OAuthProvider,
+} from './singleton/Auth/types';
+import {
+	AuthType,
+	Gen2AuthMFAConfiguration,
+	Gen2AuthProperties,
+	Gen2OAuthIdentityProviders,
+} from './singleton/gen2/types';
 import { Gen2Config, LegacyConfig, ResourcesConfig } from './singleton/types';
 
 export function isGen2Config(
-	resourceConfig: ResourcesConfig | LegacyConfig | Gen2Config,
-): resourceConfig is Gen2Config {
-	return !!(resourceConfig as Gen2Config).$id;
+	config: ResourcesConfig | LegacyConfig | Gen2Config,
+): config is Gen2Config {
+	return (config as Gen2Config).version === '1';
 }
 
-export function parseGen2Config(resourceConfig: Gen2Config): ResourcesConfig {
+export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 	const config: ResourcesConfig = {};
 
-	if (resourceConfig?.storage) {
-		const storageProperties = resourceConfig.storage;
+	if (gen2Config?.storage) {
+		const storageProperties = gen2Config.storage;
 		config.Storage = {
 			S3: {
-				bucket: storageProperties.name,
+				bucket: storageProperties.bucket_name,
 				region: storageProperties.aws_region,
 			},
 		};
 	}
 
-	if (resourceConfig?.auth) {
-		const authProperties = resourceConfig.auth;
+	if (gen2Config?.auth) {
+		const authProperties = gen2Config.auth;
 
 		if (authProperties.identity_pool_id) {
 			config.Auth = {
@@ -78,52 +82,50 @@ export function parseGen2Config(resourceConfig: Gen2Config): ResourcesConfig {
 
 		if (hasOAuthConfig(authProperties)) {
 			config.Auth.Cognito.loginWith!.oauth = {
-				domain: authProperties.oauth_domain!,
-				redirectSignIn: authProperties.oauth_redirect_sign_in!,
-				redirectSignOut: authProperties.oauth_redirect_sign_out!,
-				responseType: authProperties.oauth_response_type!,
-				scopes: authProperties.oauth_scopes!,
-				providers: getOAuthProviders(authProperties.identity_providers),
+				domain: authProperties.oauth!.domain,
+				redirectSignIn: authProperties.oauth!.redirect_sign_in_uri,
+				redirectSignOut: authProperties.oauth!.redirect_sign_out_uri,
+				responseType: authProperties.oauth!.response_type,
+				scopes: authProperties.oauth!.scopes,
+				providers: getOAuthProviders(authProperties.oauth!.identity_providers),
 			};
 		}
 
 		if (authProperties.user_verification_mechanisms) {
-			if (
-				authProperties.user_verification_mechanisms.some(
-					user => user === 'EMAIL',
-				)
-			) {
+			if (authProperties.username_attributes?.some(user => user === 'EMAIL')) {
 				config.Auth.Cognito.loginWith.email = true;
 			}
 
 			if (
-				authProperties.user_verification_mechanisms.some(
-					user => user === 'PHONE',
+				authProperties.username_attributes?.some(
+					user => user === 'PHONE_NUMBER',
 				)
 			) {
 				config.Auth.Cognito.loginWith.phone = true;
 			}
 
 			if (
-				authProperties.user_verification_mechanisms.some(
-					user => user === 'USERNAME',
-				)
+				authProperties.username_attributes?.some(user => user === 'USERNAME')
 			) {
 				config.Auth.Cognito.loginWith.username = true;
 			}
 		}
 
-		if (authProperties.standard_attributes) {
-			config.Auth.Cognito.userAttributes = authProperties.standard_attributes;
+		if (authProperties.standard_required_attributes) {
+			config.Auth.Cognito.userAttributes =
+				authProperties.standard_required_attributes.reduce(
+					(acc, curr) => ({ ...acc, [curr]: { required: true } }),
+					{},
+				);
 		}
 
-		if (config.Auth.Cognito.loginWith) {
+		if (!config.Auth.Cognito.loginWith) {
 			delete config.Auth.Cognito.loginWith;
 		}
 	}
 
-	if (resourceConfig.analytics) {
-		const analyticsProperties = resourceConfig.analytics;
+	if (gen2Config.analytics) {
+		const analyticsProperties = gen2Config.analytics;
 
 		if (analyticsProperties.amazon_pinpoint) {
 			const Pinpoint = {
@@ -138,93 +140,22 @@ export function parseGen2Config(resourceConfig: Gen2Config): ResourcesConfig {
 				config.Analytics!.Pinpoint = Pinpoint;
 			}
 		}
-
-		if (analyticsProperties.amazon_kinesis) {
-			const Kinesis = {
-				region: analyticsProperties.amazon_kinesis.aws_region,
-				bufferSize: analyticsProperties.amazon_kinesis.buffer_size,
-				flushInterval: analyticsProperties.amazon_kinesis.flush_interval,
-				flushSize: analyticsProperties.amazon_kinesis.flush_size,
-				resendLimit: analyticsProperties.amazon_kinesis.resend_limit,
-			};
-
-			if (!config.Analytics) {
-				config.Analytics = {
-					Kinesis,
-				};
-			} else {
-				config.Analytics!.Kinesis = Kinesis;
-			}
-		}
-
-		if (analyticsProperties.amazon_kinesis_firehose) {
-			const KinesisFirehose = {
-				region: analyticsProperties.amazon_kinesis_firehose.aws_region,
-				bufferSize: analyticsProperties.amazon_kinesis_firehose.buffer_size,
-				flushInterval:
-					analyticsProperties.amazon_kinesis_firehose.flush_interval,
-				flushSize: analyticsProperties.amazon_kinesis_firehose.flush_size,
-				resendLimit: analyticsProperties.amazon_kinesis_firehose.resend_limit,
-			};
-
-			if (!config.Analytics) {
-				config.Analytics = {
-					KinesisFirehose,
-				};
-			} else {
-				config.Analytics!.KinesisFirehose = KinesisFirehose;
-			}
-		}
 	}
 
-	if (resourceConfig.geo) {
-		const geoProperties = resourceConfig.geo;
+	if (gen2Config.geo) {
+		const geoProperties = gen2Config.geo;
 		config.Geo = {
 			LocationService: {
 				region: geoProperties.aws_region,
 				searchIndices: geoProperties.search_indices,
 				geofenceCollections: geoProperties.geofence_collections,
+				maps: geoProperties.maps,
 			},
-		};
-
-		const mapItems = geoProperties.maps?.items.reduce(
-			(acc, item) => {
-				acc[item.name] = item.style;
-
-				return acc;
-			},
-			{} as Record<string, string>,
-		);
-		if (mapItems && geoProperties.maps?.default) {
-			config.Geo!.LocationService.maps = {
-				default: geoProperties.maps.default,
-				items: mapItems,
-			};
-		}
-	}
-
-	if (resourceConfig.api) {
-		const apiProperties = resourceConfig.api;
-		const endpoints: Record<string, APIRestConfig> =
-			apiProperties.endpoints?.reduce(
-				(acc, item) => {
-					acc[item.name] = {
-						endpoint: item.url,
-						region: item.aws_region,
-						service: 'execute-api',
-					};
-
-					return acc;
-				},
-				{} as Record<string, APIRestConfig>,
-			);
-		config.API = {
-			REST: { ...endpoints },
 		};
 	}
 
-	if (resourceConfig.data) {
-		const dataConfig = resourceConfig.data;
+	if (gen2Config.data) {
+		const dataConfig = gen2Config.data;
 
 		const GraphQL: APIGraphQLConfig = {
 			endpoint: dataConfig.url,
@@ -245,8 +176,8 @@ export function parseGen2Config(resourceConfig: Gen2Config): ResourcesConfig {
 		}
 	}
 
-	if (resourceConfig.notifications) {
-		const notificationConfig = resourceConfig.notifications;
+	if (gen2Config.notifications) {
+		const notificationConfig = gen2Config.notifications;
 
 		if (notificationConfig.channels.in_app_messaging) {
 			const InAppMessaging = {
@@ -302,21 +233,21 @@ function getGraphQLAuthMode(authType: AuthType): GraphQLAuthMode {
 }
 
 function getOAuthProviders(
-	providers?: string[],
-): (OAuthProvider | { custom: string })[] {
-	const oauthProviders: (OAuthProvider | { custom: string })[] = [];
+	providers?: Gen2OAuthIdentityProviders[],
+): OAuthProvider[] {
+	const oauthProviders: OAuthProvider[] = [];
 	providers?.forEach(provider => {
-		if (
-			provider === 'Google' ||
-			provider === 'Amazon' ||
-			provider === 'Facebook' ||
-			provider === 'Apple'
-		) {
-			oauthProviders.push(provider);
-		} else {
-			oauthProviders.push({
-				custom: provider,
-			});
+		if (provider === 'GOOGLE') {
+			oauthProviders.push('Google');
+		}
+		if (provider === 'LOGIN_WITH_AMAZON') {
+			oauthProviders.push('Amazon');
+		}
+		if (provider === 'FACEBOOK') {
+			oauthProviders.push('Facebook');
+		}
+		if (provider === 'SIGN_IN_WITH_APPLE') {
+			oauthProviders.push('Apple');
 		}
 	});
 
@@ -324,22 +255,15 @@ function getOAuthProviders(
 }
 
 // TODO: create a type guard for oauth config
-function hasOAuthConfig(authProperties: Gen2AuthProperties) {
-	return (
-		!!authProperties.oauth_domain &&
-		!!authProperties.oauth_redirect_sign_in &&
-		!!authProperties.oauth_redirect_sign_out &&
-		!!authProperties.oauth_response_type &&
-		!!authProperties.oauth_scopes
-	);
+function hasOAuthConfig(authProperties: Gen2AuthProperties): boolean {
+	return !!authProperties.oauth;
 }
 
 function getMfaStatus(
-	mfaConfiguration: 'OPTIONAL' | 'REQUIRED' | 'NONE',
-): 'on' | 'off' | 'optional' {
+	mfaConfiguration: Gen2AuthMFAConfiguration,
+): CognitoUserPoolConfigMfaStatus {
 	if (mfaConfiguration === 'OPTIONAL') return 'optional';
 	if (mfaConfiguration === 'REQUIRED') return 'on';
-	if (mfaConfiguration === 'NONE') return 'off';
 
 	return 'off';
 }

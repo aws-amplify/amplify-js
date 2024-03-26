@@ -64,7 +64,6 @@ export {
 	AuthStandardAttributeKey,
 	AuthVerifiableAttributeKey,
 	AWSCredentials,
-	OAuthProvider,
 } from './singleton/Auth/types';
 export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
 

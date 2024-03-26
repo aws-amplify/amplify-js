@@ -4,17 +4,20 @@ describe('parseGen2Config tests', () => {
 	describe('auth tests', () => {
 		it('should parse auth happy path (all enabled)', () => {
 			const gen2Config: Gen2Config = {
-				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+				"version": "1",
 				"auth": {
 					"user_pool_id": 'us-east-1:',
 					"user_pool_client_id": "xxxx",
 					"aws_region": "us-east-1",
 					"identity_pool_id": "test",
-					"oauth_domain": "https://cognito.com...",
-					"oauth_redirect_sign_in": ["http://localhost:3000/welcome"],
-					"oauth_redirect_sign_out": ["http://localhost:3000/come-back-soon"],
-					"oauth_response_type": "code",
-					"oauth_scopes": ["profile", "..."],
+					"oauth": {
+						domain: "https://cognito.com...",
+						redirect_sign_in_uri: ["http://localhost:3000/welcome"],
+						redirect_sign_out_uri: ["http://localhost:3000/come-back-soon"],
+						response_type: "code",
+						scopes: ["profile", "..."],
+						identity_providers: ['GOOGLE'],
+					},
 					"password_policy": {
 						"min_length": 8,
 						"require_lowercase": true,
@@ -22,12 +25,7 @@ describe('parseGen2Config tests', () => {
 						"require_symbols": true,
 						"require_numbers": true
 					},
-					"identity_providers": ["Google", "Midway"],
-					"standard_attributes": {
-						"email": {
-							"required": true
-						}
-					},
+					"standard_required_attributes": ['email'],
 					"username_attributes": ["EMAIL"],
 					"user_verification_mechanisms": ["EMAIL"],
 					"unauthenticated_identities_enabled": true,
@@ -61,6 +59,26 @@ describe('parseGen2Config tests', () => {
 						},
 						"userPoolClientId": "xxxx",
 						"userPoolId": "us-east-1:",
+						"loginWith": {
+							"email": true,
+							"oauth": {
+								"domain": "https://cognito.com...",
+								"providers": [
+									"Google",
+								],
+								"redirectSignIn": [
+									"http://localhost:3000/welcome",
+								],
+								"redirectSignOut": [
+									"http://localhost:3000/come-back-soon",
+								],
+								"responseType": "code",
+								"scopes": [
+									"profile",
+									"...",
+								]
+							}
+						}
 					}
 				}
 			});
@@ -70,10 +88,10 @@ describe('parseGen2Config tests', () => {
 	describe('storage tests', () => {
 		it('should parse storage happy path', () => {
 			const gen2Config: Gen2Config = {
-				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+				"version": "1",
 				"storage": {
 					aws_region: 'us-west-2',
-					name: 'storage-bucket-test'
+					bucket_name: 'storage-bucket-test'
 				}
 			};
 
@@ -93,25 +111,11 @@ describe('parseGen2Config tests', () => {
 	describe('analytics tests', () => {
 		it('should parse all providers', () => {
 			const gen2Config: Gen2Config = {
-				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+				"version": "1",
 				"analytics": {
 					amazon_pinpoint: {
 						app_id: 'xxxxx',
 						aws_region: 'us-east-1'
-					},
-					amazon_kinesis: {
-						aws_region: 'us-west-2',
-						buffer_size: 10,
-						flush_interval: 1000,
-						flush_size: 100,
-						resend_limit: 10
-					},
-					amazon_kinesis_firehose: {
-						aws_region: 'us-west-1',
-						buffer_size: 9,
-						flush_interval: 999,
-						flush_size: 99,
-						resend_limit: 9
 					}
 				}
 			};
@@ -123,20 +127,6 @@ describe('parseGen2Config tests', () => {
 					"Pinpoint": {
 						"appId": "xxxxx",
 						"region": "us-east-1",
-					},
-					"Kinesis": {
-						"bufferSize": 10,
-						"flushInterval": 1000,
-						"flushSize": 100,
-						"region": "us-west-2",
-						"resendLimit": 10,
-					},
-					"KinesisFirehose": {
-						"bufferSize": 9,
-						"flushInterval": 999,
-						"flushSize": 99,
-						"region": "us-west-1",
-						"resendLimit": 9,
 					}
 				}
 			})
@@ -146,11 +136,13 @@ describe('parseGen2Config tests', () => {
 	describe('geo tests', () => {
 		it('should parse LocationService config', () => {
 			const gen2Config: Gen2Config = {
-				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+				"version": "1",
 				"geo": {
 					aws_region: 'us-east-1',
 					maps: {
-						items: [{ name: 'map1', style: 'color' }],
+						items: {
+							'map1': { name: 'map1', style: 'color' }
+						},
 						default: 'map1'
 					},
 					geofence_collections: {
@@ -178,7 +170,10 @@ describe('parseGen2Config tests', () => {
 						"maps": {
 							"default": "map1",
 							"items": {
-								"map1": "color",
+								"map1": {
+									style: "color",
+									name: 'map1'
+								},
 							},
 						},
 						"region": "us-east-1",
@@ -197,54 +192,10 @@ describe('parseGen2Config tests', () => {
 
 	});
 
-	describe('api tests', () => {
-		it('should configure multiple endpoints', () => {
-			const gen2Config: Gen2Config = {
-				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
-				"api": {
-					endpoints: [
-						{
-							name: 'api1',
-							url: 'https://api1.amazonapigw.com/',
-							aws_region: 'us-east-1',
-							authorization_types: ['AWS_IAM'],
-							default_authorization_type: 'AWS_IAM'
-						},
-						{
-							name: 'api2',
-							url: 'https://api2.amazonapigw.com/',
-							aws_region: 'us-east-2',
-							authorization_types: ['API_KEY'],
-							default_authorization_type: 'API_KEY'
-						}
-					]
-				}
-			};
-
-			const result = parseGen2Config(gen2Config);
-			expect(result).toEqual({
-				API: {
-					"REST": {
-						"api1": {
-							"endpoint": "https://api1.amazonapigw.com/",
-							"region": "us-east-1",
-							"service": "execute-api",
-						},
-						"api2": {
-							"endpoint": "https://api2.amazonapigw.com/",
-							"region": "us-east-2",
-							"service": "execute-api",
-						}
-					}
-				}
-			});
-		})
-	});
-
 	describe('data tests', () => {
 		it('should configure data', () => {
 			const gen2Config: Gen2Config = {
-				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+				"version": "1",
 				"data": {
 					aws_region: 'us-west-2',
 					url: 'https://api.appsyncaws.com/graphql',
@@ -270,17 +221,13 @@ describe('parseGen2Config tests', () => {
 		describe('notifications tests', () => {
 			it('should configure notifications', () => {
 				const gen2Config: Gen2Config = {
-					"$id": "https://amplify.aws/2024-02/outputs-schema.json",
+					"version": "1",
 					"notifications": {
 						aws_region: 'us-west-2',
 						pinpoint_app_id: 'appid123',
 						channels: {
-							in_app_messaging: {
-								default: true
-							},
-							apns: {
-								default: false
-							}
+							in_app_messaging: true,
+							apns: true
 						},
 					}
 				};

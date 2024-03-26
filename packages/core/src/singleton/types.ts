@@ -27,7 +27,6 @@ import { NotificationsConfig } from './Notifications/types';
 import { InteractionsConfig } from './Interactions/types';
 import {
 	Gen2AnalyticsProperties,
-	Gen2ApiProperties,
 	Gen2AuthProperties,
 	Gen2DataProperties,
 	Gen2GeoProperties,
@@ -46,12 +45,11 @@ export interface LegacyConfig {
 }
 
 export interface Gen2Config {
-	$id?: 'https://amplify.aws/2024-02/outputs-schema.json';
+	version?: '1';
 	storage?: Gen2StorageProperties;
 	auth?: Gen2AuthProperties;
 	analytics?: Gen2AnalyticsProperties;
 	geo?: Gen2GeoProperties;
-	api?: Gen2ApiProperties;
 	data?: Gen2DataProperties;
 	notifications?: Gen2NotificationsProperties;
 }
