@@ -7,8 +7,8 @@ import {
 	CustomQueries,
 	CustomSubscriptions,
 	EnumTypes,
-	ModelTypes,
 	ModelSortDirection,
+	ModelTypes,
 } from '@aws-amplify/data-schema-types';
 import { DocumentNode, GraphQLError, Source } from 'graphql';
 import { Observable } from 'rxjs';
