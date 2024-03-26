@@ -461,19 +461,19 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "13.61 kB"
+			"limit": "13.69 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "14.23 kB"
+			"limit": "14.32 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "13.50 kB"
+			"limit": "13.53 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
