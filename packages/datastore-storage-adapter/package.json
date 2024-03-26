@@ -43,5 +43,21 @@
 		"react-native-sqlite-storage": "5.0.0",
 		"sqlite3": "^5.0.2",
 		"typescript": "5.0.2"
+	},
+	"files": [
+		"dist/cjs",
+		"dist/esm",
+		"dist/umd",
+		"src",
+		"SQLiteAdapter",
+		"ExpoSQLiteAdapter"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/esm/index.d.ts",
+			"import": "./dist/esm/index.mjs",
+			"require": "./dist/cjs/index.js"
+		},
+		"./package.json": "./package.json"
 	}
 }

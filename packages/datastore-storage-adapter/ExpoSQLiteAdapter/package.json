@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/datastore-storage-adapter/ExpoSQLiteAdapter",
+	"types": "../dist/esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.d.ts",
+	"main": "../dist/cjs/ExpoSQLiteAdapter/ExpoSQLiteAdapter.js",
+	"module": "../dist/esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.mjs",
+	"react-native": "../src/ExpoSQLiteAdapter/ExpoSQLiteAdapter.ts",
+	"sideEffects": false
+}
