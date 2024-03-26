@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - main
+      - feat/remove-api-only
 
 jobs:
   e2e:
