@@ -65,10 +65,16 @@ export type UploadDataOutputPath = UploadTask<ItemPath>;
  */
 export type UploadDataOutput = UploadDataOutputKey | UploadDataOutputPath;
 
+/** @deprecated Use {@link GetPropertiesOutputPath} instead. */
+export type GetPropertiesOutputKey = ItemKey;
+export type GetPropertiesOutputPath = ItemPath;
+
 /**
  * Output type for S3 getProperties API.
  */
-export type GetPropertiesOutput = ItemKey;
+export type GetPropertiesOutput =
+	| GetPropertiesOutputKey
+	| GetPropertiesOutputPath;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.
@@ -93,4 +99,15 @@ export type CopyOutput = StrictUnion<CopyOutputKey | CopyOutputPath>;
 /**
  * Output type for S3 remove API.
  */
-export type RemoveOutput = Pick<ItemKey, 'key'>;
+export type RemoveOutput = StrictUnion<RemoveOutputKey | RemoveOutputPath>;
+
+/**
+ * @deprecated Use {@link RemoveOutputPath} instead.
+ * Output helper type with key for S3 remove API.
+ */
+export type RemoveOutputKey = Pick<ItemKey, 'key'>;
+
+/**
+ * Output helper type with path for S3 remove API.
+ */
+export type RemoveOutputPath = Pick<ItemPath, 'path'>;

@@ -8,10 +8,13 @@ import {
 	StorageCopyInputPath,
 	StorageDownloadDataInputKey,
 	StorageDownloadDataInputPath,
-	StorageGetPropertiesInput,
-	StorageGetUrlInput,
+	StorageGetPropertiesInputKey,
+	StorageGetPropertiesInputPath,
+	StorageGetUrlInputKey,
+	StorageGetUrlInputPath,
 	StorageListInput,
-	StorageRemoveInput,
+	StorageRemoveInputKey,
+	StorageRemoveInputPath,
 	StorageUploadDataInputKey,
 	StorageUploadDataInputPath,
 } from '../../../types';
@@ -20,8 +23,10 @@ import {
 	CopySourceOptionsKey,
 	DownloadDataOptionsKey,
 	DownloadDataOptionsPath,
-	GetPropertiesOptions,
-	GetUrlOptions,
+	GetPropertiesOptionsKey,
+	GetPropertiesOptionsPath,
+	GetUrlOptionsKey,
+	GetUrlOptionsPath,
 	ListAllOptions,
 	ListPaginateOptions,
 	RemoveOptions,
@@ -45,13 +50,24 @@ export type CopyInputPath = StorageCopyInputPath;
 /**
  * Input type for S3 getProperties API.
  */
-export type GetPropertiesInput =
-	StorageGetPropertiesInput<GetPropertiesOptions>;
+export type GetPropertiesInput = StrictUnion<
+	GetPropertiesInputKey | GetPropertiesInputPath
+>;
+
+/** @deprecated Use {@link GetPropertiesInputPath} instead. */
+export type GetPropertiesInputKey =
+	StorageGetPropertiesInputKey<GetPropertiesOptionsKey>;
+export type GetPropertiesInputPath =
+	StorageGetPropertiesInputPath<GetPropertiesOptionsPath>;
 
 /**
  * Input type for S3 getUrl API.
  */
-export type GetUrlInput = StorageGetUrlInput<GetUrlOptions>;
+export type GetUrlInput = StrictUnion<GetUrlInputKey | GetUrlInputPath>;
+
+/** @deprecated Use {@link GetUrlInputPath} instead. */
+export type GetUrlInputKey = StorageGetUrlInputKey<GetUrlOptionsKey>;
+export type GetUrlInputPath = StorageGetUrlInputPath<GetUrlOptionsPath>;
 
 /**
  * Input type for S3 list API. Lists all bucket objects.
@@ -64,9 +80,22 @@ export type ListAllInput = StorageListInput<ListAllOptions>;
 export type ListPaginateInput = StorageListInput<ListPaginateOptions>;
 
 /**
+ * @deprecated Use {@link RemoveInputPath} instead.
+ * Input type with key for S3 remove API.
+ */
+export type RemoveInputKey = StorageRemoveInputKey<RemoveOptions>;
+
+/**
+ * Input type with path for S3 remove API.
+ */
+export type RemoveInputPath = StorageRemoveInputPath<
+	Omit<RemoveOptions, 'accessLevel'>
+>;
+
+/**
  * Input type for S3 remove API.
  */
-export type RemoveInput = StorageRemoveInput<RemoveOptions>;
+export type RemoveInput = StrictUnion<RemoveInputKey | RemoveInputPath>;
 
 /**
  * Input type for S3 downloadData API.

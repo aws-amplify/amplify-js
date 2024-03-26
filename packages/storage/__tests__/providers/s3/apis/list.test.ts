@@ -55,7 +55,7 @@ const listResultItem = {
 	lastModified,
 	size,
 };
-const mockListObjectsV2ApiWithPages = pages => {
+const mockListObjectsV2ApiWithPages = (pages: number) => {
 	let methodCalls = 0;
 	mockListObject.mockClear();
 	mockListObject.mockImplementation(async (_, input) => {
