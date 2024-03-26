@@ -5177,7 +5177,7 @@ describe('generateClient', () => {
 
 		/**
 		 * Though sorting happens at the AppSync level, we still test the return
-		 * result order to protect against future regressions.
+		 * result in order to protect against regressions to the sort order.
 		 */
 		test('PK and SK index query, with sort direction (ascending)', async () => {
 			const spy = mockApiResponse({
@@ -5257,7 +5257,7 @@ describe('generateClient', () => {
 
 		/**
 		 * Though sorting happens at the AppSync level, we still test the return
-		 * result order to protect against future regressions.
+		 * result in order to protect against regressions to the sort order.
 		 */
 		test('PK and SK index query, with sort direction (descending)', async () => {
 			const spy = mockApiResponse({
