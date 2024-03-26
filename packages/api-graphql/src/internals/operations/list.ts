@@ -21,16 +21,17 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
+import { handleGraphQlError } from './utils';
 
 export function listFactory(
 	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
-	context = false
+	context = false,
 ) {
 	const listWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec,
-		args?: ListArgs
+		args?: ListArgs,
 	) => {
 		return _list(client, modelIntrospection, model, args, contextSpec);
 	};
@@ -47,7 +48,7 @@ async function _list(
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	args?: ListArgs & AuthModeParams,
-	contextSpec?: AmplifyServer.ContextSpec
+	contextSpec?: AmplifyServer.ContextSpec,
 ) {
 	const { name } = model;
 
@@ -55,13 +56,13 @@ async function _list(
 		modelIntrospection.models,
 		name,
 		'LIST',
-		args
+		args,
 	);
 	const variables = buildGraphQLVariables(
 		model,
 		'LIST',
 		args,
-		modelIntrospection
+		modelIntrospection,
 	);
 
 	try {
@@ -77,16 +78,16 @@ async function _list(
 						query,
 						variables,
 					},
-					headers
-			  )) as GraphQLResult<any>)
+					headers,
+				)) as GraphQLResult<any>)
 			: ((await (client as V6Client<Record<string, any>>).graphql(
 					{
 						...auth,
 						query,
 						variables,
 					},
-					headers
-			  )) as GraphQLResult<any>);
+					headers,
+				)) as GraphQLResult<any>);
 
 		// flatten response
 		if (data !== undefined) {
@@ -110,7 +111,7 @@ async function _list(
 						modelIntrospection,
 						auth.authMode,
 						auth.authToken,
-						!!contextSpec
+						!!contextSpec,
 					);
 
 					return {
@@ -128,15 +129,6 @@ async function _list(
 			};
 		}
 	} catch (error: any) {
-		if (error.errors) {
-			// graphql errors pass through
-			return {
-				...error,
-				data: [],
-			} as any;
-		} else {
-			// non-graphql errors re re-thrown
-			throw error;
-		}
+		return handleGraphQlError(error);
 	}
 }

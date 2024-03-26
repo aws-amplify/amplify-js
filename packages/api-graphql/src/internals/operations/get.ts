@@ -24,18 +24,19 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
+import { handleGraphQlError } from './utils';
 
 export function getFactory(
 	client: ClientWithModels,
 	modelIntrospection: ModelIntrospectionSchema,
 	model: SchemaModel,
 	operation: ModelOperation,
-	useContext = false
+	useContext = false,
 ) {
 	const getWithContext = async (
 		contextSpec: AmplifyServer.ContextSpec & GraphQLOptionsV6<unknown, string>,
 		arg?: any,
-		options?: any
+		options?: any,
 	) => {
 		return _get(
 			client,
@@ -44,7 +45,7 @@ export function getFactory(
 			arg,
 			options,
 			operation,
-			contextSpec
+			contextSpec,
 		);
 	};
 
@@ -62,7 +63,7 @@ async function _get(
 	arg: QueryArgs,
 	options: AuthModeParams & ListArgs,
 	operation: ModelOperation,
-	context?: AmplifyServer.ContextSpec
+	context?: AmplifyServer.ContextSpec,
 ) {
 	const { name } = model;
 
@@ -70,13 +71,13 @@ async function _get(
 		modelIntrospection.models,
 		name,
 		operation,
-		options
+		options,
 	);
 	const variables = buildGraphQLVariables(
 		model,
 		operation,
 		arg,
-		modelIntrospection
+		modelIntrospection,
 	);
 
 	try {
@@ -92,16 +93,16 @@ async function _get(
 						query,
 						variables,
 					},
-					headers
-			  )) as GraphQLResult<any>)
+					headers,
+				)) as GraphQLResult<any>)
 			: ((await (client as V6Client<Record<string, any>>).graphql(
 					{
 						...auth,
 						query,
 						variables,
 					},
-					headers
-			  )) as GraphQLResult<any>);
+					headers,
+				)) as GraphQLResult<any>);
 
 		// flatten response
 		if (data) {
@@ -119,7 +120,7 @@ async function _get(
 					modelIntrospection,
 					auth.authMode,
 					auth.authToken,
-					!!context
+					!!context,
 				);
 
 				return { data: initialized, extensions };
@@ -128,12 +129,6 @@ async function _get(
 			return { data: null, extensions };
 		}
 	} catch (error: any) {
-		if (error.errors) {
-			// graphql errors pass through
-			return error as any;
-		} else {
-			// non-graphql errors re re-thrown
-			throw error;
-		}
+		return handleGraphQlError(error);
 	}
 }
