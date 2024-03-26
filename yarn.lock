@@ -15,6 +15,14 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@aws-amplify/data-schema-types@*", "@aws-amplify/data-schema-types@^0.7.14":
+  version "0.7.14"
+  resolved "https://registry.npmjs.org/@aws-amplify/data-schema-types/-/data-schema-types-0.7.14.tgz#75504d040d7a85e1d1328e388f35e5ebd02572f4"
+  integrity sha512-zvo1j6NljHsV62KnEz560rTx9jJ1KfTz0OOqZjW/CP1AtWdlakM2ADBAn9z4AL+bKrt31CrAr55ZOAo6Uk+LTw==
+  dependencies:
+    "@aws-amplify/plugin-types" "^0.9.0-beta.1"
+    rxjs "^7.8.1"
+
 "@aws-amplify/data-schema@^0.14.1":
   version "0.14.1"
   resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.14.1.tgz#4208054e2c6c230a9abcc4607e3c38494dad3a38"
