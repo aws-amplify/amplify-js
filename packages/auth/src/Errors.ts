@@ -16,11 +16,6 @@ export class AuthError extends Error {
 		const { message, log } = authErrorMessages[type];
 		super(message);
 
-		// Hack for making the custom error class work when transpiled to es5
-		// TODO: Delete the following 2 lines after we change the build target to >= es2015
-		this.constructor = AuthError;
-		Object.setPrototypeOf(this, AuthError.prototype);
-
 		this.name = 'AuthError';
 		this.log = log || message;
 
@@ -31,11 +26,6 @@ export class AuthError extends Error {
 export class NoUserPoolError extends AuthError {
 	constructor(type: AuthErrorTypes) {
 		super(type);
-
-		// Hack for making the custom error class work when transpiled to es5
-		// TODO: Delete the following 2 lines after we change the build target to >= es2015
-		this.constructor = NoUserPoolError;
-		Object.setPrototypeOf(this, NoUserPoolError.prototype);
 
 		this.name = 'NoUserPoolError';
 	}
