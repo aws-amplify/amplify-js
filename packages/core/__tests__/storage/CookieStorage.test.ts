@@ -20,15 +20,13 @@ describe('CookieStorage', () => {
 				const _ = new CookieStorage({ sameSite: undefined });
 			}).toThrow(expectedError);
 			expect(() => {
-				// eslint-disable-next-line no-new
-				new CookieStorage({ sameSite: 'foo' as any });
+				const _ = new CookieStorage({ sameSite: 'foo' as any });
 			}).toThrow(expectedError);
 		});
 
 		it('SameSite value is "none" while secure is false', () => {
 			expect(() => {
-				// eslint-disable-next-line no-new
-				new CookieStorage({
+				const _ = new CookieStorage({
 					domain: cookieStorageDomain,
 					secure: false,
 					sameSite: 'none',
