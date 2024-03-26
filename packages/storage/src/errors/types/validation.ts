@@ -65,8 +65,7 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 			'Path or key parameter must be specified in the input. Both can not be specified at the same time.',
 	},
 	[StorageValidationErrorCode.InvalidStorageOperationPrefixInput]: {
-		message:
-			'Path or prefix parameter must be specified in the input. Both can not be specified at the same time.',
+		message: 'Both path and prefix can not be specified at the same time.',
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
 		message: 'Input `path` does not allow a leading slash (/).',
