@@ -313,7 +313,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
 							),
 							variables: {
 								id: 'some-id',
@@ -323,92 +323,91 @@ describe('server generateClient', () => {
 					}),
 				}),
 			);
+		});
+		test('can list with sort direction (descending)', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
 
-			test('can list with sort direction (descending)', async () => {
-				Amplify.configure(configFixture as any);
-				const config = Amplify.getConfig();
-
-				const spy = mockApiResponse({
-					data: {
-						listTodos: {
-							items: [
-								{
-									__typename: 'Todo',
-									...serverManagedFields,
-									name: 'some name',
-									description: 'something something',
-								},
-							],
-						},
-					},
-				});
-
-				const getAmplify = async (fn: any) => await fn(Amplify);
-
-				const client = generateClientWithAmplifyInstance<
-					Schema,
-					V6ClientSSRCookies<Schema>
-				>({
-					amplify: getAmplify,
-					config: config,
-				});
-
-				const { data } = await client.models.Todo.list({
-					id: 'some-id',
-					sortDirection: 'DESC',
-				});
-
-				expect(spy).toHaveBeenCalledWith(
-					expect.any(AmplifyClassV6),
-					expect.objectContaining({
-						options: expect.objectContaining({
-							headers: expect.objectContaining({
-								'X-Api-Key': 'FAKE-KEY',
-							}),
-							body: {
-								query: expect.stringContaining(
-									'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
-								),
-								variables: {
-									id: 'some-id',
-									sortDirection: 'DESC',
-								},
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
 							},
-						}),
-					}),
-				);
+						],
+					},
+				},
 			});
 
-			test('can custom query', async () => {
-				Amplify.configure(configFixture as any);
-				const config = Amplify.getConfig();
+			const getAmplify = async (fn: any) => await fn(Amplify);
 
-				const spy = mockApiResponse({
-					data: {
-						echo: {
-							resultContent: 'echo result content',
+			const client = generateClientWithAmplifyInstance<
+				Schema,
+				V6ClientSSRCookies<Schema>
+			>({
+				amplify: getAmplify,
+				config: config,
+			});
+
+			const { data } = await client.models.Todo.list({
+				id: 'some-id',
+				sortDirection: 'DESC',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
+							),
+							variables: {
+								id: 'some-id',
+								sortDirection: 'DESC',
+							},
 						},
+					}),
+				}),
+			);
+		});
+
+		test('can custom query', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
 					},
-				});
+				},
+			});
 
-				const getAmplify = async (fn: any) => await fn(Amplify);
+			const getAmplify = async (fn: any) => await fn(Amplify);
 
-				const client = generateClientWithAmplifyInstance<
-					Schema,
-					V6ClientSSRCookies<Schema>
-				>({
-					amplify: getAmplify,
-					config: config,
-				});
+			const client = generateClientWithAmplifyInstance<
+				Schema,
+				V6ClientSSRCookies<Schema>
+			>({
+				amplify: getAmplify,
+				config: config,
+			});
 
-				const result = await client.queries.echo({
-					argumentContent: 'echo argumentContent value',
-				});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
 
-				expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-				expect(result?.data).toEqual({
-					resultContent: 'echo result content',
-				});
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				resultContent: 'echo result content',
 			});
 		});
 		describe('with request', () => {
