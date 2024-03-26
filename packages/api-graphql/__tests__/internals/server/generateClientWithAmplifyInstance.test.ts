@@ -270,11 +270,6 @@ describe('server generateClient', () => {
 			);
 		});
 
-		/**
-		 * Though sorting happens at the AppSync level, we still test that
-		 * 1) that params are being accepted / don't error, and
-		 * 2) that there is no client-side logic that would disturb the sort order
-		 */
 		test('can list with sort direction (ascending)', async () => {
 			Amplify.configure(configFixture as any);
 			const config = Amplify.getConfig();
