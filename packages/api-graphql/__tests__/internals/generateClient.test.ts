@@ -382,6 +382,11 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
+		/**
+		 * Though sorting happens at the AppSync level, we still test that
+		 * 1) that params are being accepted / don't error, and
+		 * 2) that there is no client-side logic that would disturb the sort order
+		 */
 		test('can list() with sortDirection (ASC)', async () => {
 			const spy = mockApiResponse({
 				data: {

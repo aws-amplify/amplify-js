@@ -270,6 +270,145 @@ describe('server generateClient', () => {
 			);
 		});
 
+		/**
+		 * Though sorting happens at the AppSync level, we still test that
+		 * 1) that params are being accepted / don't error, and
+		 * 2) that there is no client-side logic that would disturb the sort order
+		 */
+		test('can list with sort direction (ascending)', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const getAmplify = async (fn: any) => await fn(Amplify);
+
+			const client = generateClientWithAmplifyInstance<
+				Schema,
+				V6ClientSSRCookies<Schema>
+			>({
+				amplify: getAmplify,
+				config: config,
+			});
+
+			const { data } = await client.models.Todo.list({
+				id: 'some-id',
+				sortDirection: 'ASC',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
+							),
+							variables: {
+								id: 'some-id',
+								sortDirection: 'ASC',
+							},
+						},
+					}),
+				}),
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
+						}),
+					}),
+				}),
+			);
+		});
+
+		test('can list with sort direction (descending)', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const getAmplify = async (fn: any) => await fn(Amplify);
+
+			const client = generateClientWithAmplifyInstance<
+				Schema,
+				V6ClientSSRCookies<Schema>
+			>({
+				amplify: getAmplify,
+				config: config,
+			});
+
+			const { data } = await client.models.Todo.list({
+				id: 'some-id',
+				sortDirection: 'DESC',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
+				expect.objectContaining({
+					options: expect.objectContaining({
+						headers: expect.objectContaining({
+							'X-Api-Key': 'FAKE-KEY',
+						}),
+						body: {
+							query: expect.stringContaining(
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
+							),
+							variables: {
+								id: 'some-id',
+								sortDirection: 'DESC',
+							},
+						},
+					}),
+				}),
+			);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.any(AmplifyClassV6),
+				expect.objectContaining({
+					options: expect.objectContaining({
+						body: expect.objectContaining({
+							// match nextToken in selection set
+							query: expect.stringMatching(/^\s*nextToken\s*$/m),
+						}),
+					}),
+				}),
+			);
+		});
+
 		test('can custom query', async () => {
 			Amplify.configure(configFixture as any);
 			const config = Amplify.getConfig();
