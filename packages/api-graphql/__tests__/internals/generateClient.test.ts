@@ -49,7 +49,7 @@ function makeAppSyncStreams() {
 	>;
 	const spy = jest.fn(request => {
 		const matchedType = (request.query as string).match(
-			/on(Create|Update|Delete)/
+			/on(Create|Update|Delete)/,
 		);
 		if (matchedType) {
 			return new Observable(subscriber => {
@@ -148,7 +148,7 @@ describe('generateClient', () => {
 			expect(() => {
 				client.models.Todo.create({ name: 'todo' });
 			}).toThrow(
-				'Could not generate client. This is likely due to Amplify.configure() not being called prior to generateClient().'
+				'Could not generate client. This is likely due to Amplify.configure() not being called prior to generateClient().',
 			);
 		});
 	});
@@ -300,7 +300,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -330,7 +330,7 @@ describe('generateClient', () => {
 					name: 'some name',
 					description: 'something something',
 					tags: ['one', 'two', 'three'],
-				})
+				}),
 			);
 		});
 
@@ -365,7 +365,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -446,7 +446,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some other name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -476,7 +476,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -639,7 +639,7 @@ describe('generateClient', () => {
 					id: 'note-id',
 					owner: 'wirejobviously',
 					body: 'some body',
-				})
+				}),
 			);
 		});
 
@@ -685,7 +685,7 @@ describe('generateClient', () => {
 					id: 'note-id',
 					owner: 'wirejobviously',
 					body: 'some body',
-				})
+				}),
 			);
 		});
 
@@ -731,7 +731,7 @@ describe('generateClient', () => {
 					id: 'note-id',
 					owner: 'wirejobviously',
 					body: 'some body',
-				})
+				}),
 			);
 		});
 
@@ -773,7 +773,7 @@ describe('generateClient', () => {
 					id: 'todo-id',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -813,7 +813,7 @@ describe('generateClient', () => {
 					__typename: 'TodoMetadata',
 					id: 'meta-id',
 					data: '{"field":"value"}',
-				})
+				}),
 			);
 		});
 	});
@@ -967,7 +967,7 @@ describe('generateClient', () => {
 				},
 				{
 					authMode: 'userPool',
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -1034,7 +1034,7 @@ describe('generateClient', () => {
 					id: 'some-id',
 					name: 'some other name',
 				},
-				{ authMode: 'userPool' }
+				{ authMode: 'userPool' },
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -1057,7 +1057,7 @@ describe('generateClient', () => {
 				{
 					id: 'some-id',
 				},
-				{ authMode: 'userPool' }
+				{ authMode: 'userPool' },
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -1089,7 +1089,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -1126,7 +1126,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -1163,7 +1163,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -1191,7 +1191,7 @@ describe('generateClient', () => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 				const { data } = await client.models.Todo.get(
 					{ id: 'todo-id' },
-					{ authMode: 'userPool' }
+					{ authMode: 'userPool' },
 				);
 
 				const getChildNotesSpy = mockApiResponse({
@@ -1232,7 +1232,7 @@ describe('generateClient', () => {
 					{ id: 'note-id' },
 					{
 						authMode: 'userPool',
-					}
+					},
 				);
 
 				const getChildNotesSpy = mockApiResponse({
@@ -1270,7 +1270,7 @@ describe('generateClient', () => {
 					{ id: 'todo-id' },
 					{
 						authMode: 'userPool',
-					}
+					},
 				);
 
 				const getChildMetaSpy = mockApiResponse({
@@ -1307,7 +1307,7 @@ describe('generateClient', () => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 				const { data } = await client.models.Todo.get(
 					{ id: 'todo-id' },
-					{ authMode: 'userPool' }
+					{ authMode: 'userPool' },
 				);
 
 				const getChildNotesSpy = mockApiResponse({
@@ -1348,7 +1348,7 @@ describe('generateClient', () => {
 					{ id: 'note-id' },
 					{
 						authMode: 'userPool',
-					}
+					},
 				);
 
 				const getChildNotesSpy = mockApiResponse({
@@ -1386,7 +1386,7 @@ describe('generateClient', () => {
 					{ id: 'todo-id' },
 					{
 						authMode: 'userPool',
-					}
+					},
 				);
 
 				const getChildMetaSpy = mockApiResponse({
@@ -1450,7 +1450,7 @@ describe('generateClient', () => {
 				{
 					authMode: 'lambda',
 					authToken: 'some-token',
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -1471,7 +1471,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 			await client.models.Todo.get(
 				{ id: 'asdf' },
-				{ authMode: 'lambda', authToken: 'some-token' }
+				{ authMode: 'lambda', authToken: 'some-token' },
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -1521,7 +1521,7 @@ describe('generateClient', () => {
 					id: 'some-id',
 					name: 'some other name',
 				},
-				{ authMode: 'lambda', authToken: 'some-token' }
+				{ authMode: 'lambda', authToken: 'some-token' },
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -1544,7 +1544,7 @@ describe('generateClient', () => {
 				{
 					id: 'some-id',
 				},
-				{ authMode: 'lambda', authToken: 'some-token' }
+				{ authMode: 'lambda', authToken: 'some-token' },
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -1577,7 +1577,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -1615,7 +1615,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -1653,7 +1653,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -1681,7 +1681,7 @@ describe('generateClient', () => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 				const { data } = await client.models.Todo.get(
 					{ id: 'todo-id' },
-					{ authMode: 'lambda', authToken: 'some-token' }
+					{ authMode: 'lambda', authToken: 'some-token' },
 				);
 
 				const getChildNotesSpy = mockApiResponse({
@@ -1723,7 +1723,7 @@ describe('generateClient', () => {
 					{
 						authMode: 'lambda',
 						authToken: 'some-token',
-					}
+					},
 				);
 
 				const getChildNotesSpy = mockApiResponse({
@@ -1762,7 +1762,7 @@ describe('generateClient', () => {
 					{
 						authMode: 'lambda',
 						authToken: 'some-token',
-					}
+					},
 				);
 
 				const getChildMetaSpy = mockApiResponse({
@@ -1799,7 +1799,7 @@ describe('generateClient', () => {
 				const client = generateClient<Schema>({ amplify: Amplify });
 				const { data } = await client.models.Todo.get(
 					{ id: 'todo-id' },
-					{ authMode: 'userPool' }
+					{ authMode: 'userPool' },
 				);
 
 				const getChildNotesSpy = mockApiResponse({
@@ -1840,7 +1840,7 @@ describe('generateClient', () => {
 					{ id: 'note-id' },
 					{
 						authMode: 'userPool',
-					}
+					},
 				);
 
 				const getChildNotesSpy = mockApiResponse({
@@ -1878,7 +1878,7 @@ describe('generateClient', () => {
 					{ id: 'todo-id' },
 					{
 						authMode: 'userPool',
-					}
+					},
 				);
 
 				const getChildMetaSpy = mockApiResponse({
@@ -2067,7 +2067,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -2105,7 +2105,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -2143,7 +2143,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'userPool',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -2553,7 +2553,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -2592,7 +2592,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -2631,7 +2631,7 @@ describe('generateClient', () => {
 						expect.objectContaining({
 							authenticationType: 'lambda',
 						}),
-						USER_AGENT_DETAILS
+						USER_AGENT_DETAILS,
 					);
 					done();
 				},
@@ -2914,7 +2914,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -2951,7 +2951,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -2990,7 +2990,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3022,7 +3022,7 @@ describe('generateClient', () => {
 					headers: {
 						'request-header': 'should exist',
 					},
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3035,7 +3035,7 @@ describe('generateClient', () => {
 							'client-header': 'should not exist',
 						}),
 					}),
-				})
+				}),
 			);
 
 			expect(data).toEqual(
@@ -3045,7 +3045,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3077,7 +3077,7 @@ describe('generateClient', () => {
 					headers: async () => ({
 						'request-header-function': 'should return this header',
 					}),
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3089,7 +3089,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3123,7 +3123,7 @@ describe('generateClient', () => {
 						'rq-qs': requestOptions?.queryString || 'should-not-be-present',
 						'rq-method': requestOptions?.method || 'should-not-be-present',
 					}),
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3135,7 +3135,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3168,7 +3168,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3196,7 +3196,7 @@ describe('generateClient', () => {
 					headers: {
 						'request-header': 'should exist',
 					},
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3208,7 +3208,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3248,7 +3248,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3291,7 +3291,7 @@ describe('generateClient', () => {
 							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
-				})
+				}),
 			);
 
 			expect(data.length).toBe(1);
@@ -3302,7 +3302,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3338,7 +3338,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some other name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3369,7 +3369,7 @@ describe('generateClient', () => {
 					headers: {
 						'request-header': 'should exist',
 					},
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3381,7 +3381,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some other name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3436,7 +3436,7 @@ describe('generateClient', () => {
 					headers: {
 						'request-header': 'should exist',
 					},
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3448,7 +3448,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3489,7 +3489,7 @@ describe('generateClient', () => {
 						spy,
 						'onCreateNote',
 						graphqlVariables,
-						customHeaders
+						customHeaders,
 					);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
@@ -3626,7 +3626,7 @@ describe('generateClient', () => {
 						spy,
 						'onUpdateNote',
 						graphqlVariables,
-						customHeaders
+						customHeaders,
 					);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
@@ -3675,7 +3675,7 @@ describe('generateClient', () => {
 						spy,
 						'onDeleteNote',
 						graphqlVariables,
-						customHeaders
+						customHeaders,
 					);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
@@ -3736,7 +3736,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3773,7 +3773,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3802,7 +3802,7 @@ describe('generateClient', () => {
 					headers: {
 						'request-header': 'should exist',
 					},
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3814,7 +3814,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3847,7 +3847,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3875,7 +3875,7 @@ describe('generateClient', () => {
 					headers: {
 						'request-header': 'should exist',
 					},
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -3887,7 +3887,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3927,7 +3927,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -3970,7 +3970,7 @@ describe('generateClient', () => {
 							query: expect.stringMatching(/^\s*nextToken\s*$/m),
 						}),
 					}),
-				})
+				}),
 			);
 
 			expect(data.length).toBe(1);
@@ -3981,7 +3981,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -4017,7 +4017,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some other name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -4048,7 +4048,7 @@ describe('generateClient', () => {
 					headers: {
 						'request-header': 'should exist',
 					},
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -4060,7 +4060,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some other name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -4095,7 +4095,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -4125,7 +4125,7 @@ describe('generateClient', () => {
 					headers: {
 						'request-header': 'should exist',
 					},
-				}
+				},
 			);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -4137,7 +4137,7 @@ describe('generateClient', () => {
 					owner: 'wirejobviously',
 					name: 'some name',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -4179,7 +4179,7 @@ describe('generateClient', () => {
 						spy,
 						'onCreateNote',
 						graphqlVariables,
-						customHeaders
+						customHeaders,
 					);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
@@ -4229,7 +4229,7 @@ describe('generateClient', () => {
 						spy,
 						'onUpdateNote',
 						graphqlVariables,
-						customHeaders
+						customHeaders,
 					);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
@@ -4279,7 +4279,7 @@ describe('generateClient', () => {
 						spy,
 						'onDeleteNote',
 						graphqlVariables,
-						customHeaders
+						customHeaders,
 					);
 					expect(value).toEqual(expect.objectContaining(noteToSend));
 					done();
@@ -4557,7 +4557,7 @@ describe('generateClient', () => {
 						callSequence.push('list');
 						resolve(result);
 					}, 15);
-				})
+				}),
 			);
 
 			const { streams, spy } = makeAppSyncStreams();
@@ -4640,7 +4640,7 @@ describe('generateClient', () => {
 						callSequence.push('list');
 						resolve(result);
 					}, 15);
-				})
+				}),
 			);
 
 			const { streams, spy } = makeAppSyncStreams();
@@ -4716,7 +4716,7 @@ describe('generateClient', () => {
 						callSequence.push('list');
 						resolve(result);
 					}, 15);
-				})
+				}),
 			);
 
 			const { streams, spy } = makeAppSyncStreams();
@@ -4913,7 +4913,7 @@ describe('generateClient', () => {
 									// configured fixture value is expected be `apiKey` for this test
 									authenticationType: 'apiKey',
 								}),
-								USER_AGENT_DETAILS
+								USER_AGENT_DETAILS,
 							);
 						}
 						done();
@@ -4940,7 +4940,7 @@ describe('generateClient', () => {
 									query: expect.stringContaining(op),
 									authenticationType: 'userPool',
 								}),
-								USER_AGENT_DETAILS
+								USER_AGENT_DETAILS,
 							);
 						}
 						done();
@@ -4971,7 +4971,7 @@ describe('generateClient', () => {
 									authenticationType: 'lambda',
 									authToken: 'some-token',
 								}),
-								USER_AGENT_DETAILS
+								USER_AGENT_DETAILS,
 							);
 						}
 						done();
@@ -5001,7 +5001,7 @@ describe('generateClient', () => {
 									query: expect.stringContaining(op),
 									authenticationType: 'userPool',
 								}),
-								USER_AGENT_DETAILS
+								USER_AGENT_DETAILS,
 							);
 						}
 						done();
@@ -5033,7 +5033,7 @@ describe('generateClient', () => {
 									authenticationType: 'lambda',
 									authToken: 'some-token',
 								}),
-								USER_AGENT_DETAILS
+								USER_AGENT_DETAILS,
 							);
 						}
 						done();
@@ -5195,7 +5195,7 @@ describe('generateClient', () => {
 					id: 'some-id',
 					title: 'Hello World',
 					description: 'something something',
-				})
+				}),
 			);
 		});
 
@@ -5234,7 +5234,7 @@ describe('generateClient', () => {
 					title: 'Hello World',
 					description: 'something something',
 					viewCount: 5,
-				})
+				}),
 			);
 		});
 	});
