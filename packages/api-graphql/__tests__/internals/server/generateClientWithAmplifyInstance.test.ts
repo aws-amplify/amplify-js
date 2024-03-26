@@ -81,8 +81,6 @@ describe('server generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			debugger;
-
 			expect(spy).toHaveBeenCalledWith(
 				expect.any(AmplifyClassV6),
 				expect.objectContaining({
@@ -92,7 +90,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
 							),
 							variables: {
 								filter: {
@@ -164,8 +162,6 @@ describe('server generateClient', () => {
 				nextToken: 'some-token',
 			});
 
-			debugger;
-
 			expect(spy).toHaveBeenCalledWith(
 				expect.any(AmplifyClassV6),
 				expect.objectContaining({
@@ -175,7 +171,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
 							),
 							variables: {
 								filter: {
@@ -246,7 +242,7 @@ describe('server generateClient', () => {
 						}),
 						body: {
 							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
+								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
 							),
 							variables: {
 								filter: {
