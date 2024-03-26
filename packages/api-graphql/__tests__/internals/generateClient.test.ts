@@ -5174,6 +5174,163 @@ describe('generateClient', () => {
 				}),
 			);
 		});
+
+		/**
+		 * Though sorting happens at the AppSync level, we still test that
+		 * 1) that params are being accepted / don't error, and
+		 * 2) that there is no client-side logic that would disturb the sort order
+		 */
+		test('PK and SK index query, with sort direction (ascending)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listByDescriptionAndViewCount: {
+						items: [
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'first',
+								description: 'match',
+								viewCount: 1,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'second',
+								description: 'match',
+								viewCount: 2,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'third',
+								description: 'match',
+								viewCount: 3,
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } =
+				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount(
+					{
+						description: 'match',
+						viewCount: { lt: 4 },
+					},
+					{
+						sortDirection: 'ASC',
+					},
+				);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data.length).toBe(3);
+			expect(data[0]).toEqual(
+				expect.objectContaining({
+					__typename: 'SecondaryIndexModel',
+					id: 'some-id',
+					title: 'first',
+					description: 'match',
+					viewCount: 1,
+				}),
+			);
+			expect(data[1]).toEqual(
+				expect.objectContaining({
+					__typename: 'SecondaryIndexModel',
+					id: 'some-id',
+					title: 'second',
+					description: 'match',
+					viewCount: 2,
+				}),
+			);
+			expect(data[2]).toEqual(
+				expect.objectContaining({
+					__typename: 'SecondaryIndexModel',
+					id: 'some-id',
+					title: 'third',
+					description: 'match',
+					viewCount: 3,
+				}),
+			);
+		});
+
+		test('PK and SK index query, with sort direction (descending)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listByDescriptionAndViewCount: {
+						items: [
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'third',
+								description: 'match',
+								viewCount: 3,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'second',
+								description: 'match',
+								viewCount: 2,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'first',
+								description: 'match',
+								viewCount: 1,
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } =
+				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount(
+					{
+						description: 'match',
+						viewCount: { lt: 4 },
+					},
+					{
+						sortDirection: 'DESC',
+					},
+				);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data.length).toBe(3);
+			expect(data[0]).toEqual(
+				expect.objectContaining({
+					__typename: 'SecondaryIndexModel',
+					id: 'some-id',
+					title: 'third',
+					description: 'match',
+					viewCount: 3,
+				}),
+			);
+			expect(data[1]).toEqual(
+				expect.objectContaining({
+					__typename: 'SecondaryIndexModel',
+					id: 'some-id',
+					title: 'second',
+					description: 'match',
+					viewCount: 2,
+				}),
+			);
+			expect(data[2]).toEqual(
+				expect.objectContaining({
+					__typename: 'SecondaryIndexModel',
+					id: 'some-id',
+					title: 'first',
+					description: 'match',
+					viewCount: 1,
+				}),
+			);
+		});
 	});
 
 	describe('custom operations', () => {
