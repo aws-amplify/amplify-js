@@ -18,10 +18,6 @@ export class CanceledError extends StorageError {
 			message: 'Upload is canceled by user',
 			...params,
 		});
-
-		// TODO: Delete the following 2 lines after we change the build target to >= es2015
-		this.constructor = CanceledError;
-		Object.setPrototypeOf(this, CanceledError.prototype);
 	}
 }
 
