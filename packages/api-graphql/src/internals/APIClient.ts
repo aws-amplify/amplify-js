@@ -735,7 +735,7 @@ export function generateGraphQLDocument(
 					sortDirection: 'ModelSortDirection',
 					...[primaryKeyFieldName, ...sortKeyFieldNames].reduce(
 						(acc: Record<string, any>, fieldName) => {
-							acc[fieldName] = `${fields[fieldName].type}!`;
+							acc[fieldName] = `${fields[fieldName].type}`;
 
 							return acc;
 						},
