@@ -13,6 +13,7 @@ export enum StorageValidationErrorCode {
 	NoDestinationPath = 'NoDestinationPath',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
+	InvalidStorageOperationPrefixInput = 'InvalidStorageOperationPrefixInput',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
 	InvalidStoragePathInput = 'InvalidStoragePathInput',
 	InvalidUploadSource = 'InvalidUploadSource',
@@ -62,6 +63,9 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.InvalidStorageOperationInput]: {
 		message:
 			'Path or key parameter must be specified in the input. Both can not be specified at the same time.',
+	},
+	[StorageValidationErrorCode.InvalidStorageOperationPrefixInput]: {
+		message: 'Both path and prefix can not be specified at the same time.',
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
 		message: 'Input `path` does not allow a leading slash (/).',

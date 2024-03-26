@@ -9,9 +9,10 @@ export {
 } from './common';
 export {
 	StorageOperationInput,
-	StorageListInput,
 	StorageGetPropertiesInputKey,
 	StorageGetPropertiesInputPath,
+	StorageListInputPrefix,
+	StorageListInputPath,
 	StorageRemoveInputPath,
 	StorageRemoveInputKey,
 	StorageDownloadDataInputKey,

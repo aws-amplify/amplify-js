@@ -14,7 +14,9 @@ import {
 export type StorageOperationInputType = StrictUnion<
 	StorageOperationInputKey | StorageOperationInputPath
 >;
-
+export type StorageOperationInputWithPrefixPath = StrictUnion<
+	StorageOperationInputPath | StorageOperationInputPrefix
+>;
 /** @deprecated Use {@link StorageOperationInputPath} instead. */
 export interface StorageOperationInputKey {
 	/** @deprecated Use `path` instead. */
@@ -22,6 +24,11 @@ export interface StorageOperationInputKey {
 }
 export interface StorageOperationInputPath {
 	path: string | (({ identityId }: { identityId?: string }) => string);
+}
+/** @deprecated Use {@link StorageOperationInputPath} instead. */
+export interface StorageOperationInputPrefix {
+	/** @deprecated Use `path` instead. */
+	prefix?: string;
 }
 export interface StorageOperationOptionsInput<Options> {
 	options?: Options;
@@ -53,12 +60,14 @@ export type StorageRemoveInputKey<Options> = StorageOperationInputKey &
 export type StorageRemoveInputPath<Options> = StorageOperationInputPath &
 	StorageOperationOptionsInput<Options>;
 
-export interface StorageListInput<
+/** @deprecated Use {@link StorageListInputPath} instead. */
+export type StorageListInputPrefix<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
-> {
-	prefix?: string;
-	options?: Options;
-}
+> = StorageOperationInputPrefix & StorageOperationOptionsInput<Options>;
+
+export type StorageListInputPath<
+	Options extends StorageListAllOptions | StorageListPaginateOptions,
+> = StorageOperationInputPath & StorageOperationOptionsInput<Options>;
 
 /** @deprecated Use {@link StorageGetUrlInputPath} instead. */
 export type StorageGetUrlInputKey<Options extends StorageOptions> =

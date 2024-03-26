@@ -7,11 +7,19 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 import {
 	ListAllInput,
 	ListAllOutput,
-	ListOutputItem,
+	ListAllOutputPath,
+	ListAllOutputPrefix,
+	ListOutputItemKey,
+	ListOutputItemPath,
 	ListPaginateInput,
 	ListPaginateOutput,
+	ListPaginateOutputPath,
+	ListPaginateOutputPrefix,
 } from '../../types';
-import { resolveS3ConfigAndInput } from '../../utils';
+import {
+	resolveS3ConfigAndInput,
+	validateStorageOperationInputWithPrefix,
+} from '../../utils';
 import { ResolvedS3Config } from '../../types/options';
 import {
 	ListObjectsV2Input,
@@ -20,25 +28,34 @@ import {
 } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
+import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
 
 const MAX_PAGE_SIZE = 1000;
 
 interface ListInputArgs {
 	s3Config: ResolvedS3Config;
 	listParams: ListObjectsV2Input;
-	prefix: string;
+	generatedPrefix?: string;
 }
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input?: ListAllInput | ListPaginateInput,
+	input: ListAllInput | ListPaginateInput,
 ): Promise<ListAllOutput | ListPaginateOutput> => {
-	const { options = {}, prefix: path = '' } = input ?? {};
+	const { options = {} } = input;
 	const {
 		s3Config,
 		bucket,
-		keyPrefix: prefix,
+		keyPrefix: generatedPrefix,
+		identityId,
 	} = await resolveS3ConfigAndInput(amplify, options);
+
+	const { inputType, objectKey } = validateStorageOperationInputWithPrefix(
+		input,
+		identityId,
+	);
+	const isInputWithPrefix = inputType === STORAGE_INPUT_PREFIX;
+
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
 	if (options?.listAll && (options?.pageSize || options?.nextToken)) {
 		const anyOptions = options as any;
@@ -50,27 +67,45 @@ export const list = async (
 	}
 	const listParams = {
 		Bucket: bucket,
-		Prefix: `${prefix}${path}`,
+		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
-	return options.listAll
-		? _listAll({ s3Config, listParams, prefix })
-		: _list({ s3Config, listParams, prefix });
+	const listInputArgs: ListInputArgs = {
+		s3Config,
+		listParams,
+	};
+	if (options.listAll) {
+		if (isInputWithPrefix) {
+			return _listAllPrefix({
+				...listInputArgs,
+				generatedPrefix,
+			});
+		} else {
+			return _listAllPath(listInputArgs);
+		}
+	} else {
+		if (inputType === STORAGE_INPUT_PREFIX) {
+			return _listPrefix({ ...listInputArgs, generatedPrefix });
+		} else {
+			return _listPath(listInputArgs);
+		}
+	}
 };
 
-const _listAll = async ({
+/** @deprecated Use {@link _listAllPath} instead. */
+const _listAllPrefix = async ({
 	s3Config,
 	listParams,
-	prefix,
-}: ListInputArgs): Promise<ListAllOutput> => {
-	const listResult: ListOutputItem[] = [];
+	generatedPrefix,
+}: ListInputArgs): Promise<ListAllOutputPrefix> => {
+	const listResult: ListOutputItemKey[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
-		const { items: pageResults, nextToken: pageNextToken } = await _list({
-			prefix,
+		const { items: pageResults, nextToken: pageNextToken } = await _listPrefix({
+			generatedPrefix,
 			s3Config,
 			listParams: {
 				...listParams,
@@ -87,11 +122,12 @@ const _listAll = async ({
 	};
 };
 
-const _list = async ({
+/** @deprecated Use {@link _listPath} instead. */
+const _listPrefix = async ({
 	s3Config,
 	listParams,
-	prefix,
-}: ListInputArgs): Promise<ListPaginateOutput> => {
+	generatedPrefix,
+}: ListInputArgs): Promise<ListPaginateOutputPrefix> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
@@ -112,15 +148,74 @@ const _list = async ({
 		};
 	}
 
-	const listResult = response.Contents.map(item => ({
-		key: item.Key!.substring(prefix.length),
-		eTag: item.ETag,
-		lastModified: item.LastModified,
-		size: item.Size,
-	}));
+	return {
+		items: response.Contents.map(item => ({
+			key: generatedPrefix
+				? item.Key!.substring(generatedPrefix.length)
+				: item.Key!,
+			eTag: item.ETag,
+			lastModified: item.LastModified,
+			size: item.Size,
+		})),
+		nextToken: response.NextContinuationToken,
+	};
+};
+
+const _listAllPath = async ({
+	s3Config,
+	listParams,
+}: ListInputArgs): Promise<ListAllOutputPath> => {
+	const listResult: ListOutputItemPath[] = [];
+	let continuationToken = listParams.ContinuationToken;
+	do {
+		const { items: pageResults, nextToken: pageNextToken } = await _listPath({
+			s3Config,
+			listParams: {
+				...listParams,
+				ContinuationToken: continuationToken,
+				MaxKeys: MAX_PAGE_SIZE,
+			},
+		});
+		listResult.push(...pageResults);
+		continuationToken = pageNextToken;
+	} while (continuationToken);
 
 	return {
 		items: listResult,
+	};
+};
+
+const _listPath = async ({
+	s3Config,
+	listParams,
+}: ListInputArgs): Promise<ListPaginateOutputPath> => {
+	const listParamsClone = { ...listParams };
+	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
+		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
+		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
+	}
+
+	const response: ListObjectsV2Output = await listObjectsV2(
+		{
+			...s3Config,
+			userAgentValue: getStorageUserAgentValue(StorageAction.List),
+		},
+		listParamsClone,
+	);
+
+	if (!response?.Contents) {
+		return {
+			items: [],
+		};
+	}
+
+	return {
+		items: response.Contents.map(item => ({
+			path: item.Key!,
+			eTag: item.ETag,
+			lastModified: item.LastModified,
+			size: item.Size,
+		})),
 		nextToken: response.NextContinuationToken,
 	};
 };
