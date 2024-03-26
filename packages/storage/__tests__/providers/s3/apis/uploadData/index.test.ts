@@ -154,21 +154,32 @@ describe('uploadData with path', () => {
 
 	describe('use putObject for small uploads', () => {
 		const smallData = { size: 5 * 1024 * 1024 } as any;
-		it('should use putObject if data size is <= 5MB', async () => {
-			const testInput = {
+		
+		test.each([
+			{
 				path: testPath,
-				data: smallData,
+			},
+			{
+				path: () => testPath,
+			},
+		])(
+			'should use putObject if data size is <= 5MB when path is $path', 
+			async ({ path }) => {
+				const testInput = {
+					path,
+					data: smallData,
+				}
+
+				uploadData(testInput);
+
+				expect(mockPutObjectJob).toHaveBeenCalledWith(
+					testInput, 
+					expect.any(AbortSignal), 
+					expect.any(Number)
+				);
+				expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
 			}
-
-			uploadData(testInput);
-
-			expect(mockPutObjectJob).toHaveBeenCalledWith(
-				testInput, 
-				expect.any(AbortSignal), 
-				expect.any(Number)
-			);
-			expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
-		});
+		);
 
 		it('should use uploadTask', async () => {
 			mockPutObjectJob.mockReturnValueOnce('putObjectJob');
