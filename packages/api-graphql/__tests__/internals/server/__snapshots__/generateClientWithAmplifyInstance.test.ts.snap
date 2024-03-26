@@ -1,37 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`server generateClient with cookies can custom query 1`] = `
-[
-  [
-    "AmplifyClassV6",
-    {
-      "abortController": AbortController {},
-      "options": {
-        "body": {
-          "query": "query ($argumentContent: String!) {
-  echo(argumentContent: $argumentContent) {
-    resultContent
-  }
-}
-",
-          "variables": {
-            "argumentContent": "echo argumentContent value",
-          },
-        },
-        "headers": {
-          "X-Api-Key": "FAKE-KEY",
-          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
-        },
-        "signingServiceInfo": undefined,
-        "withCredentials": undefined,
-      },
-      "url": "https://localhost/graphql",
-    },
-  ],
-]
-`;
-
-exports[`server generateClient with request can custom query 1`] = `
+exports[`server generateClient with cookies with request can custom query 1`] = `
 [
   [
     "AmplifyClassV6",

@@ -81,6 +81,8 @@ describe('server generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
+			debugger;
+
 			expect(spy).toHaveBeenCalledWith(
 				expect.any(AmplifyClassV6),
 				expect.objectContaining({
@@ -161,6 +163,8 @@ describe('server generateClient', () => {
 				filter: { name: { contains: 'name' } },
 				nextToken: 'some-token',
 			});
+
+			debugger;
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.any(AmplifyClassV6),
@@ -324,163 +328,168 @@ describe('server generateClient', () => {
 				}),
 			);
 
-		test('can list with sort direction (descending)', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
+			test('can list with sort direction (descending)', async () => {
+				Amplify.configure(configFixture as any);
+				const config = Amplify.getConfig();
 
-			const spy = mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'some name',
-								description: 'something something',
-							},
-						],
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const { data } = await client.models.Todo.list({
-				id: 'some-id',
-				sortDirection: 'DESC',
-			});
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
-							),
-							variables: {
-								id: 'some-id',
-								sortDirection: 'DESC',
-							},
+				const spy = mockApiResponse({
+					data: {
+						listTodos: {
+							items: [
+								{
+									__typename: 'Todo',
+									...serverManagedFields,
+									name: 'some name',
+									description: 'something something',
+								},
+							],
 						},
-					}),
-				}),
-			);
-		});
-
-		test('can custom query', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					echo: {
-						resultContent: 'echo result content',
 					},
-				},
+				});
+
+				const getAmplify = async (fn: any) => await fn(Amplify);
+
+				const client = generateClientWithAmplifyInstance<
+					Schema,
+					V6ClientSSRCookies<Schema>
+				>({
+					amplify: getAmplify,
+					config: config,
+				});
+
+				const { data } = await client.models.Todo.list({
+					id: 'some-id',
+					sortDirection: 'DESC',
+				});
+
+				expect(spy).toHaveBeenCalledWith(
+					expect.any(AmplifyClassV6),
+					expect.objectContaining({
+						options: expect.objectContaining({
+							headers: expect.objectContaining({
+								'X-Api-Key': 'FAKE-KEY',
+							}),
+							body: {
+								query: expect.stringContaining(
+									'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID!, $limit: Int, $nextToken: String)',
+								),
+								variables: {
+									id: 'some-id',
+									sortDirection: 'DESC',
+								},
+							},
+						}),
+					}),
+				);
 			});
 
-			const getAmplify = async (fn: any) => await fn(Amplify);
+			test('can custom query', async () => {
+				Amplify.configure(configFixture as any);
+				const config = Amplify.getConfig();
 
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
-				amplify: getAmplify,
-				config: config,
-			});
+				const spy = mockApiResponse({
+					data: {
+						echo: {
+							resultContent: 'echo result content',
+						},
+					},
+				});
 
-			const result = await client.queries.echo({
-				argumentContent: 'echo argumentContent value',
-			});
+				const getAmplify = async (fn: any) => await fn(Amplify);
 
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toEqual({
-				resultContent: 'echo result content',
+				const client = generateClientWithAmplifyInstance<
+					Schema,
+					V6ClientSSRCookies<Schema>
+				>({
+					amplify: getAmplify,
+					config: config,
+				});
+
+				const result = await client.queries.echo({
+					argumentContent: 'echo argumentContent value',
+				});
+
+				expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+				expect(result?.data).toEqual({
+					resultContent: 'echo result content',
+				});
 			});
 		});
-	});
-	describe('with request', () => {
-		test('subscriptions are disabled', () => {
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRRequest<Schema>
-			>({
-				amplify: null,
-				config: config,
+		describe('with request', () => {
+			test('subscriptions are disabled', () => {
+				const client = generateClientWithAmplifyInstance<
+					Schema,
+					V6ClientSSRRequest<Schema>
+				>({
+					amplify: null,
+					config: config,
+				});
+
+				expect(() => {
+					// @ts-expect-error
+					client.models.Note.onCreate().subscribe();
+				}).toThrow();
 			});
 
-			expect(() => {
-				// @ts-expect-error
-				client.models.Note.onCreate().subscribe();
-			}).toThrow();
-		});
+			test('contextSpec param gets passed through to client.graphql', async () => {
+				Amplify.configure(configFixture as any);
+				const config = Amplify.getConfig();
 
-		test('contextSpec param gets passed through to client.graphql', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
+				const client = generateClientWithAmplifyInstance<
+					Schema,
+					V6ClientSSRRequest<Schema>
+				>({
+					amplify: null,
+					config: config,
+				});
 
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRRequest<Schema>
-			>({
-				amplify: null,
-				config: config,
+				const mockContextSpec = {};
+
+				const spy = jest
+					.spyOn(client, 'graphql')
+					.mockImplementation(async () => {
+						const result: any = {};
+						return result;
+					});
+
+				await client.models.Note.list(mockContextSpec);
+
+				expect(spy).toHaveBeenCalledWith(
+					mockContextSpec,
+					expect.objectContaining({
+						query: expect.stringContaining('listNotes'),
+					}),
+					{},
+				);
 			});
 
-			const mockContextSpec = {};
+			test('can custom query', async () => {
+				Amplify.configure(configFixture as any);
+				const config = Amplify.getConfig();
 
-			const spy = jest.spyOn(client, 'graphql').mockImplementation(async () => {
-				const result: any = {};
-				return result;
+				const client = generateClientWithAmplifyInstance<
+					Schema,
+					V6ClientSSRRequest<Schema>
+				>({
+					amplify: null,
+					config: config,
+				});
+
+				const spy = jest
+					.spyOn(client, 'graphql')
+					.mockImplementation(async () => {
+						const result: any = {};
+						return result;
+					});
+
+				const mockContextSpec = { token: { value: Symbol('test') } };
+
+				const result = await client.queries.echo(mockContextSpec, {
+					argumentContent: 'echo argumentContent value',
+				});
+
+				expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 			});
-
-			await client.models.Note.list(mockContextSpec);
-
-			expect(spy).toHaveBeenCalledWith(
-				mockContextSpec,
-				expect.objectContaining({
-					query: expect.stringContaining('listNotes'),
-				}),
-				{},
-			);
-		});
-
-		test('can custom query', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRRequest<Schema>
-			>({
-				amplify: null,
-				config: config,
-			});
-
-			const spy = jest.spyOn(client, 'graphql').mockImplementation(async () => {
-				const result: any = {};
-				return result;
-			});
-
-			const mockContextSpec = { token: { value: Symbol('test') } };
-
-			const result = await client.queries.echo(mockContextSpec, {
-				argumentContent: 'echo argumentContent value',
-			});
-
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 	});
 });
