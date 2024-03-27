@@ -96,6 +96,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			nextStep: {
 				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 			},
+			userId: UserSub,
 		};
 	} else if (isSignUpComplete(clientOutput) && !isAutoSignInStarted()) {
 		return {
@@ -103,6 +104,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			nextStep: {
 				signUpStep: 'DONE',
 			},
+			userId: UserSub,
 		};
 	} else if (
 		!isSignUpComplete(clientOutput) &&
