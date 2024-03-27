@@ -25,11 +25,13 @@ export interface StorageOperationInputKey {
 export interface StorageOperationInputPath {
 	path: string | (({ identityId }: { identityId?: string }) => string);
 }
+
 /** @deprecated Use {@link StorageOperationInputPath} instead. */
 export interface StorageOperationInputPrefix {
 	/** @deprecated Use `path` instead. */
 	prefix?: string;
 }
+
 export interface StorageOperationOptionsInput<Options> {
 	options?: Options;
 }
@@ -76,10 +78,15 @@ export type StorageGetUrlInputKey<Options extends StorageOptions> =
 export type StorageGetUrlInputPath<Options> = StorageOperationInputPath &
 	StorageOperationOptionsInput<Options>;
 
-export type StorageUploadDataInput<Options extends StorageOptions> =
-	StorageOperationInput<Options> & {
-		data: StorageUploadDataPayload;
-	};
+/** @deprecated Use {@link StorageUploadDataInputPath} instead. */
+export type StorageUploadDataInputKey<Options extends StorageOptions> =
+	StorageOperationInputKey &
+		StorageOperationOptionsInput<Options> &
+		StorageUploadDataInputPayload;
+
+export type StorageUploadDataInputPath<Options> = StorageOperationInputPath &
+	StorageOperationOptionsInput<Options> &
+	StorageUploadDataInputPayload;
 
 /** @deprecated Use {@link StorageCopyInputPath} instead. */
 export interface StorageCopyInputKey<
@@ -113,3 +120,7 @@ export type StorageUploadDataPayload =
 	| ArrayBufferView
 	| ArrayBuffer
 	| string;
+
+export interface StorageUploadDataInputPayload {
+	data: StorageUploadDataPayload;
+}

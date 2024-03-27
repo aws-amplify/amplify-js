@@ -128,8 +128,7 @@ export type DownloadDataOptions = CommonOptions &
 export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions;
 export type DownloadDataOptionsPath = DownloadDataOptions;
 
-export type UploadDataOptions = WriteOptions &
-	CommonOptions &
+export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
 		 * The default content-disposition header value of the file when downloading it.
@@ -152,6 +151,10 @@ export type UploadDataOptions = WriteOptions &
 		 */
 		metadata?: Record<string, string>;
 	};
+
+/** @deprecated Use {@link UploadDataOptionsPath} instead. */
+export type UploadDataOptionsKey = WriteOptions & UploadDataOptions;
+export type UploadDataOptionsPath = UploadDataOptions;
 
 /** @deprecated This may be removed in the next major version. */
 export type CopySourceOptionsKey = ReadOptions & {

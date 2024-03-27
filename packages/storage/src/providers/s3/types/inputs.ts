@@ -16,7 +16,8 @@ import {
 	StorageListInputPrefix,
 	StorageRemoveInputKey,
 	StorageRemoveInputPath,
-	StorageUploadDataInput,
+	StorageUploadDataInputKey,
+	StorageUploadDataInputPath,
 } from '../../../types';
 import {
 	CopyDestinationOptionsKey,
@@ -32,7 +33,8 @@ import {
 	ListPaginateOptionsPath,
 	ListPaginateOptionsPrefix,
 	RemoveOptions,
-	UploadDataOptions,
+	UploadDataOptionsKey,
+	UploadDataOptionsPath,
 } from '../types';
 
 // TODO: support use accelerate endpoint option
@@ -139,4 +141,12 @@ export type DownloadDataInputPath =
 /**
  * Input type for S3 uploadData API.
  */
-export type UploadDataInput = StorageUploadDataInput<UploadDataOptions>;
+export type UploadDataInput = StrictUnion<
+	UploadDataInputKey | UploadDataInputPath
+>;
+
+/** @deprecated Use {@link UploadDataInputPath} instead. */
+export type UploadDataInputKey =
+	StorageUploadDataInputKey<UploadDataOptionsKey>;
+export type UploadDataInputPath =
+	StorageUploadDataInputPath<UploadDataOptionsPath>;
