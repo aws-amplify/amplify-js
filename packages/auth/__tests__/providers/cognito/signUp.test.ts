@@ -23,6 +23,8 @@ jest.mock(
 	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
+const userId = '1234567890';
+
 describe('signUp', () => {
 	const { user1 } = authAPITestParams;
 	// assert mocks
@@ -84,14 +86,14 @@ describe('signUp', () => {
 						attributeName: 'email',
 					},
 				},
-				userId: '1234567890',
+				userId,
 			});
 		});
 
 		it('should return `DONE` step when user is confirmed', async () => {
 			mockSignUp.mockResolvedValue({
 				UserConfirmed: true,
-				UserSub: '1234567890',
+				UserSub: userId,
 			});
 			const result = await signUp({
 				username: user1.username,
@@ -105,7 +107,7 @@ describe('signUp', () => {
 				nextStep: {
 					signUpStep: 'DONE',
 				},
-				userId: '1234567890',
+				userId,
 			});
 		});
 
@@ -141,14 +143,14 @@ describe('signUp', () => {
 						attributeName: 'email',
 					},
 				},
-				userId: '1234567890',
+				userId,
 			});
 		});
 
 		it('should return `COMPLETE_AUTO_SIGN_IN` step with `isSignUpComplete` true when autoSignIn is enabled and user is confirmed', async () => {
 			mockSignUp.mockResolvedValue({
 				UserConfirmed: true,
-				UserSub: '1234567890',
+				UserSub: userId,
 			});
 
 			const result = await signUp({
@@ -165,7 +167,7 @@ describe('signUp', () => {
 				nextStep: {
 					signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 				},
-				userId: '1234567890',
+				userId,
 			});
 		});
 	});
