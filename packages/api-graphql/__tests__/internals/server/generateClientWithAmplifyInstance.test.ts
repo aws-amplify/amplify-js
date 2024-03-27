@@ -81,40 +81,7 @@ describe('server generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				}),
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				}),
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
@@ -162,29 +129,7 @@ describe('server generateClient', () => {
 				nextToken: 'some-token',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-								nextToken: 'some-token',
-							},
-						},
-					}),
-				}),
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.any(AmplifyClassV6),
@@ -233,29 +178,7 @@ describe('server generateClient', () => {
 				limit: 5,
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-								limit: 5,
-							},
-						},
-					}),
-				}),
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.any(AmplifyClassV6),
@@ -304,25 +227,7 @@ describe('server generateClient', () => {
 				sortDirection: 'ASC',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
-							),
-							variables: {
-								id: 'some-id',
-								sortDirection: 'ASC',
-							},
-						},
-					}),
-				}),
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 		test('can list with sort direction (descending)', async () => {
 			Amplify.configure(configFixture as any);
@@ -358,25 +263,7 @@ describe('server generateClient', () => {
 				sortDirection: 'DESC',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String)',
-							),
-							variables: {
-								id: 'some-id',
-								sortDirection: 'DESC',
-							},
-						},
-					}),
-				}),
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 		});
 
 		test('can custom query', async () => {
