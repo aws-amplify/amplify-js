@@ -25,14 +25,6 @@ import {
 } from './Storage/types';
 import { NotificationsConfig } from './Notifications/types';
 import { InteractionsConfig } from './Interactions/types';
-import {
-	Gen2AnalyticsProperties,
-	Gen2AuthProperties,
-	Gen2DataProperties,
-	Gen2GeoProperties,
-	Gen2NotificationsProperties,
-	Gen2StorageProperties,
-} from './gen2/types';
 
 /**
  * Compatibility type representing the Amplify Gen 1 configuration file schema. This type should not be used directly.
@@ -42,16 +34,6 @@ export interface LegacyConfig {
 	 * @deprecated The field should not be used.
 	 */
 	aws_project_region?: string;
-}
-
-export interface Gen2Config {
-	version?: '1';
-	storage?: Gen2StorageProperties;
-	auth?: Gen2AuthProperties;
-	analytics?: Gen2AnalyticsProperties;
-	geo?: Gen2GeoProperties;
-	data?: Gen2DataProperties;
-	notifications?: Gen2NotificationsProperties;
 }
 
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &

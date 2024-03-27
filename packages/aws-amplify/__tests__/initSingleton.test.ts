@@ -72,36 +72,36 @@ describe('initSingleton (DefaultAmplify)', () => {
 	describe('Gen2 Amplify configure', () => {
 		it('should use Gen2 config type', () => {
 			const gen2Config: Gen2Config = {
-				"$id": "https://amplify.aws/2024-02/outputs-schema.json",
-				"storage": {
-					"aws_region": "us-east-1",
-					"name": "my-bucket-name"
+				'version': '1',
+				'storage': {
+					'aws_region': 'us-east-1',
+					'bucket_name': 'my-bucket-name'
 				},
-				"auth": {
-					"user_pool_id": 'us-east-1:',
-					"user_pool_client_id": "xxxx",
-					"aws_region": "us-east-1",
-					"identity_pool_id": "test"
+				'auth': {
+					'user_pool_id': 'us-east-1:',
+					'user_pool_client_id': 'xxxx',
+					'aws_region': 'us-east-1',
+					'identity_pool_id': 'test'
 				},
-				"analytics": {
+				'analytics': {
 					amazon_pinpoint: {
 						app_id: 'xxxxx',
 						aws_region: 'us-east-1'
 					}
 				},
-				"geo": {
+				'geo': {
 					aws_region: 'us-east-1',
 					maps: {
-						items: [{ name: 'map1', style: 'color' }],
+						items: { 'map1': { name: 'map1', style: 'color' } },
 						default: 'map1'
 					},
 					geofence_collections: {
-						items: ["a", "b", "c"],
-						default: "a"
+						items: ['a', 'b', 'c'],
+						default: 'a'
 					},
 					search_indices: {
-						items: ["a", "b", "c"],
-						default: "a"
+						items: ['a', 'b', 'c'],
+						default: 'a'
 					}
 				}
 			};
@@ -111,8 +111,8 @@ describe('initSingleton (DefaultAmplify)', () => {
 			expect(AmplifySingleton.configure).toHaveBeenCalledWith({
 				Storage: {
 					S3: {
-						bucket: "my-bucket-name",
-						region: "us-east-1"
+						bucket: 'my-bucket-name',
+						region: 'us-east-1'
 					},
 				},
 				Auth: {
@@ -124,33 +124,36 @@ describe('initSingleton (DefaultAmplify)', () => {
 				},
 				Analytics: {
 					Pinpoint: {
-						appId: "xxxxx",
-						region: "us-east-1",
+						appId: 'xxxxx',
+						region: 'us-east-1',
 					},
 				},
 				Geo: {
 					LocationService: {
-						"geofenceCollections": {
-							"default": "a",
-							"items": [
-								"a",
-								"b",
-								"c",
+						'geofenceCollections': {
+							'default': 'a',
+							'items': [
+								'a',
+								'b',
+								'c',
 							],
 						},
-						"maps": {
-							"default": "map1",
-							"items": {
-								"map1": "color",
+						'maps': {
+							'default': 'map1',
+							'items': {
+								'map1': {
+									'name': 'map1',
+									'style': 'color'
+								},
 							},
 						},
-						"region": "us-east-1",
-						"searchIndices": {
-							"default": "a",
-							"items": [
-								"a",
-								"b",
-								"c",
+						'region': 'us-east-1',
+						'searchIndices': {
+							'default': 'a',
+							'items': [
+								'a',
+								'b',
+								'c',
 							],
 						},
 					},

@@ -83,21 +83,25 @@ export interface Gen2DataProperties {
 	conflict_resolution_mode?: 'AUTO_MERGE' | 'OPTIMISTIC_CONCURRENCY' | 'LAMBDA';
 }
 
-export type NotificationChannels =
-	| 'in_app_messaging'
-	| 'fcm'
-	| 'apns'
-	| 'email'
-	| 'sms';
+type Gen2NotificationChannel =
+	| 'IN_APP_MESSAGING'
+	| 'FCM'
+	| 'APNS'
+	| 'EMAIL'
+	| 'SMS';
 
 export interface Gen2NotificationsProperties {
 	aws_region: string;
 	pinpoint_app_id: string;
-	channels: {
-		in_app_messaging?: boolean;
-		fcm?: boolean;
-		apns?: boolean;
-		email?: boolean;
-		sms?: boolean;
-	};
+	channels: Gen2NotificationChannel[];
+}
+
+export interface Gen2Config {
+	version?: string;
+	storage?: Gen2StorageProperties;
+	auth?: Gen2AuthProperties;
+	analytics?: Gen2AnalyticsProperties;
+	geo?: Gen2GeoProperties;
+	data?: Gen2DataProperties;
+	notifications?: Gen2NotificationsProperties;
 }

@@ -22,7 +22,8 @@ export {
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { isGen2Config, parseGen2Config } from './parseAmplifyGen2';
-export { LegacyConfig, Gen2Config } from './singleton/types';
+export { LegacyConfig } from './singleton/types';
+export { Gen2Config } from './singleton/gen2/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';

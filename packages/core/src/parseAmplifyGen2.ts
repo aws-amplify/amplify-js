@@ -1,3 +1,9 @@
+/* This is because JSON schema contains keys with snake_case */
+/* eslint-disable camelcase */
+
+/* Does not like exahaustive checks */
+/* eslint-disable no-case-declarations */
+
 import { APIGraphQLConfig, GraphQLAuthMode } from './singleton/API/types';
 import {
 	CognitoUserPoolConfigMfaStatus,
@@ -6,21 +12,22 @@ import {
 import {
 	AuthType,
 	Gen2AuthMFAConfiguration,
+	Gen2Config,
 	Gen2OAuthIdentityProviders,
 } from './singleton/gen2/types';
-import { Gen2Config, LegacyConfig, ResourcesConfig } from './singleton/types';
+import { LegacyConfig, ResourcesConfig } from './singleton/types';
 
 export function isGen2Config(
 	config: ResourcesConfig | LegacyConfig | Gen2Config,
 ): config is Gen2Config {
-	return (config as Gen2Config).version === '1';
+	// version format initially will be '1' but is expected to be something like x.y where x is major and y minor version
+	return ('' + (config as Gen2Config).version).startsWith('1');
 }
 
 export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 	const config: ResourcesConfig = {};
 
 	if (gen2Config?.storage) {
-		/* eslint-disable camelcase */
 		const { bucket_name, aws_region } = gen2Config.storage;
 		config.Storage = {
 			S3: {
@@ -44,19 +51,18 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 			standard_required_attributes,
 		} = gen2Config.auth;
 
+		config.Auth = {
+			Cognito: {
+				userPoolId: user_pool_id,
+				userPoolClientId: user_pool_client_id,
+			},
+		};
+
 		if (identity_pool_id) {
 			config.Auth = {
 				Cognito: {
-					userPoolId: user_pool_id,
-					userPoolClientId: user_pool_client_id,
+					...config.Auth.Cognito,
 					identityPoolId: identity_pool_id,
-				},
-			};
-		} else {
-			config.Auth = {
-				Cognito: {
-					userPoolId: user_pool_id,
-					userPoolClientId: user_pool_client_id,
 				},
 			};
 		}
@@ -74,8 +80,8 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 		if (mfa_configuration) {
 			config.Auth.Cognito.mfa = {
 				status: getMfaStatus(mfa_configuration),
-				smsEnabled: mfa_methods?.some(method => method === 'SMS'),
-				totpEnabled: mfa_methods?.some(method => method === 'TOTP'),
+				smsEnabled: mfa_methods?.includes('SMS'),
+				totpEnabled: mfa_methods?.includes('TOTP'),
 			};
 		}
 
@@ -83,31 +89,39 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 			config.Auth.Cognito.allowGuestAccess = unauthenticated_identities_enabled;
 		}
 
-		config.Auth.Cognito.loginWith = {};
-
 		if (oauth) {
-			config.Auth.Cognito.loginWith.oauth = {
-				domain: oauth.domain,
-				redirectSignIn: oauth.redirect_sign_in_uri,
-				redirectSignOut: oauth.redirect_sign_out_uri,
-				responseType: oauth.response_type,
-				scopes: oauth.scopes,
-				providers: getOAuthProviders(oauth.identity_providers),
+			config.Auth.Cognito.loginWith = {
+				...config.Auth.Cognito.loginWith,
+				oauth: {
+					domain: oauth.domain,
+					redirectSignIn: oauth.redirect_sign_in_uri,
+					redirectSignOut: oauth.redirect_sign_out_uri,
+					responseType: oauth.response_type,
+					scopes: oauth.scopes,
+					providers: getOAuthProviders(oauth.identity_providers),
+				},
 			};
 		}
 
-		if (username_attributes) {
-			if (username_attributes.some(user => user === 'EMAIL')) {
-				config.Auth.Cognito.loginWith.email = true;
-			}
+		if (username_attributes?.includes('EMAIL')) {
+			config.Auth.Cognito.loginWith = {
+				...config.Auth.Cognito.loginWith,
+				email: true,
+			};
+		}
 
-			if (username_attributes.some(user => user === 'PHONE_NUMBER')) {
-				config.Auth.Cognito.loginWith.phone = true;
-			}
+		if (username_attributes?.includes('PHONE_NUMBER')) {
+			config.Auth.Cognito.loginWith = {
+				...config.Auth.Cognito.loginWith,
+				phone: true,
+			};
+		}
 
-			if (username_attributes.some(user => user === 'USERNAME')) {
-				config.Auth.Cognito.loginWith.username = true;
-			}
+		if (username_attributes?.includes('USERNAME')) {
+			config.Auth.Cognito.loginWith = {
+				...config.Auth.Cognito.loginWith,
+				username: true,
+			};
 		}
 
 		if (standard_required_attributes) {
@@ -116,33 +130,25 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 				{},
 			);
 		}
-
-		if (!config.Auth.Cognito.loginWith) {
-			delete config.Auth.Cognito.loginWith;
-		}
 	}
 
 	if (gen2Config.analytics) {
 		const { amazon_pinpoint } = gen2Config.analytics;
 
 		if (amazon_pinpoint) {
-			const Pinpoint = {
-				appId: amazon_pinpoint.app_id,
-				region: amazon_pinpoint.aws_region,
+			config.Analytics = {
+				Pinpoint: {
+					appId: amazon_pinpoint.app_id,
+					region: amazon_pinpoint.aws_region,
+				},
 			};
-			if (!config.Analytics) {
-				config.Analytics = {
-					Pinpoint,
-				};
-			} else {
-				config.Analytics!.Pinpoint = Pinpoint;
-			}
 		}
 	}
 
 	if (gen2Config.geo) {
 		const { aws_region, geofence_collections, maps, search_indices } =
 			gen2Config.geo;
+
 		config.Geo = {
 			LocationService: {
 				region: aws_region,
@@ -170,34 +176,29 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 			modelIntrospection: model_introspection,
 		};
 
-		if (!config.API) {
-			config.API = {
-				GraphQL,
-			};
-		} else {
-			config.API.GraphQL = GraphQL;
-		}
+		config.API = {
+			...config.API,
+			GraphQL,
+		};
 	}
 
 	if (gen2Config.notifications) {
 		const { aws_region, channels, pinpoint_app_id } = gen2Config.notifications;
 
-		if (channels.in_app_messaging) {
+		if (channels.includes('IN_APP_MESSAGING')) {
 			const InAppMessaging = {
 				Pinpoint: {
 					appId: pinpoint_app_id,
 					region: aws_region,
 				},
 			};
-			if (!config.Notifications) {
-				config.Notifications = {
-					InAppMessaging,
-				};
-			} else {
-				config.Notifications.InAppMessaging = InAppMessaging;
-			}
+
+			config.Notifications = {
+				...config.Notifications,
+				InAppMessaging,
+			};
 		}
-		if (channels.apns || channels.fcm) {
+		if (channels.includes('APNS') || channels.includes('FCM')) {
 			const PushNotification = {
 				Pinpoint: {
 					appId: pinpoint_app_id,
@@ -205,13 +206,10 @@ export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
 				},
 			};
 
-			if (!config.Notifications) {
-				config.Notifications = {
-					PushNotification,
-				};
-			} else {
-				config.Notifications.PushNotification = PushNotification;
-			}
+			config.Notifications = {
+				...config.Notifications,
+				PushNotification,
+			};
 		}
 	}
 
@@ -231,7 +229,9 @@ function getGraphQLAuthMode(authType: AuthType): GraphQLAuthMode {
 		case 'OPENID_CONNECT':
 			return 'oidc';
 		default:
-			throw new Error('Invalid AuthMode configured');
+			// This makes sure all AuthTypes are handled.
+			const exhaustiveCheck: never = authType;
+			throw new Error(`Unhandled GraphQL Auth Mode: ${exhaustiveCheck}`);
 	}
 }
 
