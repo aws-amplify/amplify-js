@@ -1,22 +1,22 @@
 import { ConsoleLogger } from '../src';
-import { LoggingProvider, LogType } from '../src/Logger/types';
+import { LogType, LoggingProvider } from '../src/Logger/types';
 
 type LogEvent = 'verbose' | 'debug' | 'info' | 'warn' | 'error';
 
 describe('ConsoleLogger', () => {
 	beforeAll(() => {
-		jest.spyOn(console, 'log').mockImplementation(() => {});
-		jest.spyOn(console, 'error').mockImplementation(() => {});
-		jest.spyOn(console, 'warn').mockImplementation(() => {});
-		jest.spyOn(console, 'info').mockImplementation(() => {});
-		jest.spyOn(console, 'debug').mockImplementation(() => {});
+		jest.spyOn(console, 'log');
+		jest.spyOn(console, 'error');
+		jest.spyOn(console, 'warn');
+		jest.spyOn(console, 'info');
+		jest.spyOn(console, 'debug');
 	});
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
 
 	describe('pluggables', () => {
-		/*it('should store pluggables correctly when addPluggable is called', () => {
+		/* it('should store pluggables correctly when addPluggable is called', () => {
 			const provider = new AWSCloudWatchProvider();
 			const logger = new Logger('name');
 			logger.addPluggable(provider);
@@ -26,7 +26,7 @@ describe('ConsoleLogger', () => {
 			expect(pluggables[0].getProviderName()).toEqual(
 				AWS_CLOUDWATCH_PROVIDER_NAME
 			);
-		});*/
+		}); */
 
 		it('should do nothing when no plugin is provided to addPluggable', () => {
 			const logger = new ConsoleLogger('name');
@@ -38,16 +38,16 @@ describe('ConsoleLogger', () => {
 
 		it('should do nothing when a non-logging category plugin is provided to addPluggable', () => {
 			const provider = {
-				getCategoryName: function () {
+				getCategoryName: () => {
 					return 'non-logging';
 				},
-				getProviderName: function () {
+				getProviderName: () => {
 					return 'lol';
 				},
-				configure: function () {
+				configure: () => {
 					return {};
 				},
-				pushLogs: () => {},
+				pushLogs: jest.fn(),
 			} as LoggingProvider;
 
 			const logger = new ConsoleLogger('name');

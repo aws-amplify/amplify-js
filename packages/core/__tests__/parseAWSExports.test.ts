@@ -243,7 +243,7 @@ describe('parseAWSExports', () => {
 					signUpVerificationMethod: undefined,
 					userAttributes: {},
 					userPoolClientId: undefined,
-					userPoolId: userPoolId,
+					userPoolId,
 				},
 			},
 		});

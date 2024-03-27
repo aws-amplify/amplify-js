@@ -3,14 +3,15 @@
 
 import { presignUrl } from '../../../../../../src/clients/middleware/signing/signer/signatureV4/presignUrl';
 import { HttpRequest } from '../../../../../../src/clients/types';
+import { PresignUrlOptions } from '../../../../../../src/clients/middleware/signing/signer/signatureV4/types';
+import { getSignature } from '../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getSignature';
+
 import { signingTestTable } from './testUtils/signingTestTable';
 import {
 	formattedDates,
 	getDefaultRequest,
 	signingOptions,
 } from './testUtils/data';
-import { PresignUrlOptions } from '../../../../../../src/clients/middleware/signing/signer/signatureV4/types';
-import { getSignature } from '../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getSignature';
 
 jest.mock(
 	'../../../../../../src/clients/middleware/signing/signer/signatureV4/utils/getSignature',
@@ -40,6 +41,7 @@ describe('presignUrl', () => {
 					...signingOptions,
 					...options,
 				};
+
 				return [name, updatedRequest, updatedOptions, expectedUrl];
 			},
 		),

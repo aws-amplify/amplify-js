@@ -5,6 +5,7 @@ import { SignRequestOptions } from '../src/clients/middleware/signing/signer/sig
 import { Signer } from '../src/Signer';
 import { DateUtils } from '../src/Signer/DateUtils';
 import * as getSignatureModule from '../src/clients/middleware/signing/signer/signatureV4/utils/getSignature';
+
 import {
 	credentials,
 	credentialsWithToken,
@@ -39,6 +40,7 @@ describe('Signer.sign', () => {
 					...signingOptions,
 					...options,
 				};
+
 				return [name, updatedRequest, updatedOptions, expectedAuthorization];
 			},
 		),
@@ -46,22 +48,26 @@ describe('Signer.sign', () => {
 		'signs request with %s',
 		(
 			_,
-			{ url, ...request },
-			{ credentials, signingRegion, signingService },
+			{ url: testUrl, ...request },
+			{
+				credentials: testCredentials,
+				signingRegion: testSigningRegion,
+				signingService: testSigningService,
+			},
 			expected,
 		) => {
-			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+			const { accessKeyId, secretAccessKey, sessionToken } = testCredentials;
 			const accessInfo = {
 				access_key: accessKeyId,
 				secret_key: secretAccessKey,
 				session_token: sessionToken,
 			};
 			const serviceInfo = {
-				region: signingRegion,
-				service: signingService,
+				region: testSigningRegion,
+				service: testSigningService,
 			};
 			const signedRequest = Signer.sign(
-				{ ...request, url: url.toString() },
+				{ ...request, url: testUrl.toString() },
 				accessInfo as any,
 				serviceInfo as any,
 			);
@@ -146,6 +152,7 @@ describe('Signer.signUrl', () => {
 					...signingOptions,
 					...options,
 				};
+
 				return [name, updatedRequest, updatedOptions, expectedUrl];
 			},
 		),
@@ -153,22 +160,26 @@ describe('Signer.signUrl', () => {
 		'signs url with %s',
 		(
 			_,
-			{ url, ...request },
-			{ credentials, signingRegion, signingService },
+			{ url: testUrl, ...request },
+			{
+				credentials: testCredentials,
+				signingRegion: testSigningRegion,
+				signingService: testSigningService,
+			},
 			expected,
 		) => {
-			const { accessKeyId, secretAccessKey, sessionToken } = credentials;
+			const { accessKeyId, secretAccessKey, sessionToken } = testCredentials;
 			const accessInfo = {
 				access_key: accessKeyId,
 				secret_key: secretAccessKey,
 				session_token: sessionToken,
 			};
 			const serviceInfo = {
-				region: signingRegion,
-				service: signingService,
+				region: testSigningRegion,
+				service: testSigningService,
 			};
 			const signedUrl = Signer.signUrl(
-				{ ...request, url: url.toString() },
+				{ ...request, url: testUrl.toString() },
 				accessInfo,
 				serviceInfo as any,
 			);

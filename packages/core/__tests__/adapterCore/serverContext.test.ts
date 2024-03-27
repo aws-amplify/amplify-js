@@ -3,8 +3,8 @@
 
 import {
 	createAmplifyServerContext,
-	getAmplifyServerContext,
 	destroyAmplifyServerContext,
+	getAmplifyServerContext,
 } from '../../src/adapterCore';
 
 const mockConfigure = jest.fn();

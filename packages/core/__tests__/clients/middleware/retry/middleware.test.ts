@@ -4,8 +4,8 @@
 import { HttpResponse, MiddlewareHandler } from '../../../../src/clients/types';
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
 import {
-	retryMiddlewareFactory,
 	RetryOptions,
+	retryMiddlewareFactory,
 } from '../../../../src/clients/middleware/retry';
 
 jest.spyOn(global, 'setTimeout');
@@ -54,9 +54,9 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		});
 		const retryableHandler = getRetryableHandler(nextHandler);
 		expect.assertions(2);
-		let resp;
+
 		try {
-			resp = await retryableHandler(defaultRequest, {
+			await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
 				maxAttempts: 6,
 			});
@@ -94,7 +94,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 				(resp, error) => error.message !== 'UnretryableError',
 			);
 		try {
-			const resp = await retryableHandler(defaultRequest, {
+			await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
 				retryDecider,
 			});
@@ -155,8 +155,11 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const retryDecider = async () => true;
 		const computeDelay = jest.fn().mockImplementation(attempt => {
 			if (attempt === 1) {
-				setTimeout(() => controller.abort(), 100);
+				setTimeout(() => {
+					controller.abort();
+				}, 100);
 			}
+
 			return 200;
 		});
 		try {
@@ -182,15 +185,16 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const betweenRetryFunction = jest
 			.fn()
 			.mockRejectedValueOnce(new Error('MiddlewareRetryableError'))
-			.mockResolvedValue(void 0);
+			.mockResolvedValue(undefined);
 		const betweenRetryMiddleware =
 			() => (next: any, context: any) => async (args: any) => {
 				await betweenRetryFunction(args, context);
+
 				return next(args);
 			};
 
 		const doubleRetryableHandler = composeTransferHandler<
-			[RetryOptions, {}, RetryOptions]
+			[RetryOptions, Record<string, unknown>, RetryOptions]
 		>(coreHandler, [
 			retryMiddlewareFactory,
 			betweenRetryMiddleware,
@@ -201,6 +205,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 			.fn()
 			.mockImplementation((response, error: Error) => {
 				if (error && error.message.endsWith('RetryableError')) return true;
+
 				return false;
 			});
 		const computeDelay = jest.fn().mockReturnValue(0);

@@ -35,8 +35,25 @@ module.exports = {
 		'setupTests.ts',
 		'jest.setup.*',
 		'jest.config.*',
-		// temporarily disable lint on __tests__
-		'__tests__',
+		// 'packages/adapter-nextjs/__tests__',
+		'packages/analytics/__tests__',
+		'packages/api/__tests__',
+		'packages/api-graphql/__tests__',
+		'packages/api-rest/__tests__',
+		'packages/auth/__tests__',
+		// 'packages/aws-amplify/__tests__',
+		// 'packages/core/__tests__',
+		'packages/datastore/__tests__',
+		'packages/datastore-storage-adapter/__tests__',
+		'packages/geo/__tests__',
+		'packages/interactions/__tests__',
+		'packages/notifications/__tests__',
+		'packages/predictions/__tests__',
+		'packages/pubsub/__tests__',
+		'packages/react-native/__tests__',
+		'packages/rtn-push-notification/__tests__',
+		'packages/rtn-web-browser/__tests__',
+		'packages/storage/__tests__',
 		// will enable lint by packages
 		// 'adapter-nextjs',
 		// 'packages/analytics',
@@ -63,6 +80,10 @@ module.exports = {
 			'error',
 			{
 				allow: [
+					// exceptions for core package
+					'phone_number',
+					'search_indices',
+					// exceptions for api packages
 					'graphql_headers',
 					// exceptions for the legacy config
 					/^(aws_|amazon_)/,
@@ -105,6 +126,7 @@ module.exports = {
 		'no-useless-constructor': 'off',
 		'no-trailing-spaces': 'error',
 		'no-return-await': 'error',
+		'n/no-callback-literal': 'off',
 		'object-shorthand': 'error',
 		'prefer-destructuring': 'off',
 		'promise/catch-or-return': [

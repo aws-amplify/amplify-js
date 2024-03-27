@@ -3,7 +3,7 @@ import { CookieStorage } from '../../src/storage/CookieStorage';
 const cookieStorageDomain = 'https://testdomain.com';
 
 describe('CookieStorage', () => {
-	//defining a DOM to attach a cookie to
+	// defining a DOM to attach a cookie to
 	Object.defineProperty(document, 'cookie', { writable: true });
 
 	describe('Constructor methods', () => {
@@ -17,16 +17,16 @@ describe('CookieStorage', () => {
 			const expectedError =
 				'The sameSite value of cookieStorage must be "lax", "strict" or "none"';
 			expect(() => {
-				new CookieStorage({ sameSite: undefined });
+				const _ = new CookieStorage({ sameSite: undefined });
 			}).toThrow(expectedError);
 			expect(() => {
-				new CookieStorage({ sameSite: 'foo' as any });
+				const _ = new CookieStorage({ sameSite: 'foo' as any });
 			}).toThrow(expectedError);
 		});
 
 		it('SameSite value is "none" while secure is false', () => {
 			expect(() => {
-				new CookieStorage({
+				const _ = new CookieStorage({
 					domain: cookieStorageDomain,
 					secure: false,
 					sameSite: 'none',
@@ -63,11 +63,11 @@ describe('CookieStorage', () => {
 			});
 
 			it('Clearing cookies should remove all items within the storage', async () => {
-				const cookieStore = new CookieStorage(cookieStoreData);
-				await cookieStore.setItem('testKey2', 'testValue');
-				const tempReference = await cookieStore.getItem('testKey2');
-				await cookieStore.clear();
-				expect(await cookieStore.getItem('testKey2')).not.toEqual(
+				const testCookieStore = new CookieStorage(cookieStoreData);
+				await testCookieStore.setItem('testKey2', 'testValue');
+				const tempReference = await testCookieStore.getItem('testKey2');
+				await testCookieStore.clear();
+				expect(await testCookieStore.getItem('testKey2')).not.toEqual(
 					tempReference,
 				);
 			});

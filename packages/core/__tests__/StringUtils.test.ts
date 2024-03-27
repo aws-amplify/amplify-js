@@ -1,5 +1,7 @@
-import { urlSafeEncode, urlSafeDecode } from '../src/utils';
 import { TextDecoder, TextEncoder } from 'util';
+
+import { urlSafeDecode, urlSafeEncode } from '../src/utils';
+
 (global as any).TextEncoder = TextEncoder;
 (global as any).TextDecoder = TextDecoder;
 

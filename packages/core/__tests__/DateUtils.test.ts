@@ -1,16 +1,15 @@
 import { DateUtils } from '../src/Signer/DateUtils';
 
-// Mock Date (https://github.com/facebook/jest/issues/2234#issuecomment-308121037)
-const OriginalDate = Date;
-// @ts-ignore Type 'typeof Date' is not assignable to type 'DateConstructor'.
-Date = class extends Date {
-	// @ts-ignore Constructors for derived classes must contain a 'super' call.ts(2377)
-	constructor() {
-		return new OriginalDate('2020-01-01');
-	}
-};
-
 describe('DateUtils', () => {
+	beforeAll(() => {
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date('2020-01-01'));
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
 	describe('getDateWithClockOffset()', () => {
 		it('should return a new Date()', () => {
 			expect(DateUtils.getDateWithClockOffset()).toEqual(new Date());
@@ -63,7 +62,7 @@ describe('DateUtils', () => {
 
 		it('should be true when over 5 minutes', () => {
 			const serverDate = new Date();
-			serverDate.setMinutes(5);
+			serverDate.setMinutes(5, 0, 1000);
 
 			expect(DateUtils.isClockSkewed(serverDate)).toBe(true);
 		});

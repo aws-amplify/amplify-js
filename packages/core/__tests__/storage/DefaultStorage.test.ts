@@ -25,15 +25,14 @@ describe('DefaultStorage', () => {
 		expect(await defaultStorage.getItem(key)).toEqual(secondValue);
 	});
 
-	it('should not throw if trying to delete a non existing key', async () => {
+	it('should not throw if trying to delete a non existing key', () => {
 		const badKey = 'nonExistingKey';
-		await expect(() => {
-			defaultStorage.removeItem(badKey);
-		}).not.toThrow();
+
+		expect(defaultStorage.removeItem(badKey)).resolves.toBeUndefined();
 	});
 
 	it('should clear out storage', async () => {
 		await defaultStorage.clear();
-		expect(await defaultStorage.getItem(key)).toBeNull();
+		expect(defaultStorage.getItem(key)).resolves.toBeNull();
 	});
 });

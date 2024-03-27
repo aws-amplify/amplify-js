@@ -3,7 +3,7 @@ import { getByteLength } from '../../../src/Cache/utils/cacheHelpers';
 describe('cacheHelpers', () => {
 	describe('getByteLength()', () => {
 		test('happy case', () => {
-			const str: string = 'abc';
+			const str = 'abc';
 			expect(getByteLength(str)).toBe(3);
 
 			const str2: string = String.fromCharCode(0x80);

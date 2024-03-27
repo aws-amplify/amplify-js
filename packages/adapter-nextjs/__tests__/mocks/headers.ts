@@ -1,10 +1,11 @@
+import { Socket } from 'net';
+import { IncomingMessage } from 'http';
+
 import { NextApiRequest, NextApiResponse } from 'next/index.js';
 import {
 	NextApiRequestCookies,
 	NextApiRequestQuery,
 } from 'next/dist/server/api-utils/index.js';
-import { Socket } from 'net';
-import { IncomingMessage } from 'http';
 
 export type NextApiRequestOptions = Partial<NextApiRequestMock>;
 export class NextApiRequestMock

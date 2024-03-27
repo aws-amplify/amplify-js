@@ -1,10 +1,12 @@
+import { TextDecoder, TextEncoder } from 'util';
+
 import { Amplify } from '../../src/singleton';
-import { Hub, AMPLIFY_SYMBOL } from '../../src/Hub';
+import { AMPLIFY_SYMBOL, Hub } from '../../src/Hub';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
 import { CredentialsAndIdentityId } from '../../src/singleton/Auth/types';
-import { TextEncoder, TextDecoder } from 'util';
-import { fetchAuthSession, ResourcesConfig } from '../../src';
+import { ResourcesConfig, fetchAuthSession } from '../../src';
+
 Object.assign(global, { TextDecoder, TextEncoder });
 
 jest.mock('../../src/Hub', () => ({
@@ -16,7 +18,9 @@ jest.mock('../../src/Hub', () => ({
 
 const mockHubDispatch = Hub.dispatch as jest.Mock;
 
-type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
+type ArgumentTypes<F extends (...args: any[]) => any> = F extends (
+	...args: infer A
+) => any
 	? A
 	: never;
 
@@ -281,7 +285,7 @@ describe('Session tests', () => {
 	test('fetchAuthSession with credentials provider only', async () => {
 		const mockCredentials = {
 			accessKeyId: 'accessKeyValue',
-			secretAccessKey: 'secreatAccessKeyValue',
+			secretAccessKey: 'secretAccessKeyValue',
 		};
 		Amplify.configure(
 			{},
@@ -293,7 +297,7 @@ describe('Session tests', () => {
 								credentials: mockCredentials,
 							};
 						},
-						clearCredentialsAndIdentityId: () => {},
+						clearCredentialsAndIdentityId: jest.fn(),
 					},
 				},
 			},
@@ -359,11 +363,7 @@ describe('Session tests', () => {
 		};
 
 		const credentialsSpy = jest.fn(
-			async ({
-				tokens,
-				authConfig,
-				identityId,
-			}): Promise<CredentialsAndIdentityId> => {
+			async (): Promise<CredentialsAndIdentityId> => {
 				return {
 					credentials: {
 						accessKeyId: 'accessKeyIdValue',
@@ -389,7 +389,7 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentialsAndIdentityId: () => {},
+					clearCredentialsAndIdentityId: jest.fn(),
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,
@@ -454,11 +454,7 @@ describe('Session tests', () => {
 		};
 
 		const credentialsSpy = jest.fn(
-			async ({
-				tokens,
-				authConfig,
-				identityId,
-			}): Promise<CredentialsAndIdentityId> => {
+			async (_): Promise<CredentialsAndIdentityId> => {
 				return {
 					credentials: {
 						accessKeyId: 'accessKeyIdValue',
@@ -479,7 +475,7 @@ describe('Session tests', () => {
 			Auth: {
 				credentialsProvider: {
 					getCredentialsAndIdentityId: credentialsSpy,
-					clearCredentialsAndIdentityId: () => {},
+					clearCredentialsAndIdentityId: jest.fn(),
 				},
 				tokenProvider: {
 					getTokens: spyTokenProvider,
@@ -521,6 +517,7 @@ describe('Session tests', () => {
 			const token =
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0';
 			const mockToken = decodeJWT(token);
+
 			return {
 				accessToken: mockToken,
 			};
@@ -569,8 +566,7 @@ describe('Session tests', () => {
 			},
 		);
 
-		const action = async () =>
-			await auth.fetchAuthSession({ forceRefresh: true });
+		const action = async () => auth.fetchAuthSession({ forceRefresh: true });
 
 		await expect(action()).rejects.toThrow('no no no');
 
