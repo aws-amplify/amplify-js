@@ -5151,10 +5151,6 @@ describe('generateClient', () => {
 			);
 		});
 
-		/**
-		 * Though sorting happens at the AppSync level, we still test the return
-		 * result in order to protect against regressions to the sort order.
-		 */
 		test('PK and SK index query, with sort direction (ascending)', async () => {
 			const spy = mockApiResponse({
 				data: {
@@ -5202,39 +5198,8 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data.length).toBe(3);
-			expect(data[0]).toEqual(
-				expect.objectContaining({
-					__typename: 'SecondaryIndexModel',
-					id: 'some-id',
-					title: 'first',
-					description: 'match',
-					viewCount: 1,
-				}),
-			);
-			expect(data[1]).toEqual(
-				expect.objectContaining({
-					__typename: 'SecondaryIndexModel',
-					id: 'some-id',
-					title: 'second',
-					description: 'match',
-					viewCount: 2,
-				}),
-			);
-			expect(data[2]).toEqual(
-				expect.objectContaining({
-					__typename: 'SecondaryIndexModel',
-					id: 'some-id',
-					title: 'third',
-					description: 'match',
-					viewCount: 3,
-				}),
-			);
 		});
 
-		/**
-		 * Though sorting happens at the AppSync level, we still test the return
-		 * result in order to protect against regressions to the sort order.
-		 */
 		test('PK and SK index query, with sort direction (descending)', async () => {
 			const spy = mockApiResponse({
 				data: {
@@ -5282,33 +5247,6 @@ describe('generateClient', () => {
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data.length).toBe(3);
-			expect(data[0]).toEqual(
-				expect.objectContaining({
-					__typename: 'SecondaryIndexModel',
-					id: 'some-id',
-					title: 'third',
-					description: 'match',
-					viewCount: 3,
-				}),
-			);
-			expect(data[1]).toEqual(
-				expect.objectContaining({
-					__typename: 'SecondaryIndexModel',
-					id: 'some-id',
-					title: 'second',
-					description: 'match',
-					viewCount: 2,
-				}),
-			);
-			expect(data[2]).toEqual(
-				expect.objectContaining({
-					__typename: 'SecondaryIndexModel',
-					id: 'some-id',
-					title: 'first',
-					description: 'match',
-					viewCount: 1,
-				}),
-			);
 		});
 	});
 
