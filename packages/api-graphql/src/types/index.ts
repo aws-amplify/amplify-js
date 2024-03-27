@@ -7,6 +7,7 @@ import {
 	CustomQueries,
 	CustomSubscriptions,
 	EnumTypes,
+	ModelSortDirection,
 	ModelTypes,
 } from '@aws-amplify/data-schema-types';
 import { DocumentNode, GraphQLError, Source } from 'graphql';
@@ -464,6 +465,7 @@ export type QueryArgs = Record<string, unknown>;
 export interface ListArgs extends Record<string, unknown> {
 	selectionSet?: string[];
 	filter?: Record<string, unknown>;
+	sortDirection?: ModelSortDirection;
 	headers?: CustomHeaders;
 }
 
