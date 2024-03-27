@@ -10,7 +10,6 @@ import { cacheCognitoTokens } from '../../../../../src/providers/cognito/tokenPr
 import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
-import { cognitoUserPoolsTokenProvider } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 
@@ -44,14 +43,7 @@ jest.mock(
 		} as OAuthStore,
 	}),
 );
-jest.mock(
-	'../../../../../src/providers/cognito/tokenProvider/tokenProvider',
-	() => ({
-		cognitoUserPoolsTokenProvider: {
-			setWaitForInflightOAuth: jest.fn(),
-		},
-	}),
-);
+
 
 const mockHandleFailure = handleFailure as jest.Mock;
 const mockValidateState = validateState as jest.Mock;
@@ -60,7 +52,6 @@ const mockResolveAndClearInflightPromises =
 const mockCacheCognitoTokens = cacheCognitoTokens as jest.Mock;
 const mockHubDispatch = Hub.dispatch as jest.Mock;
 const mockDecodeJWT = decodeJWT as jest.Mock;
-// const mockCreateOAuthError = createOAuthError as jest.Mock;
 
 describe('completeOAuthFlow', () => {
 	let windowSpy = jest.spyOn(window, 'window', 'get');
@@ -91,9 +82,6 @@ describe('completeOAuthFlow', () => {
 		(oAuthStore.clearOAuthInflightData as jest.Mock).mockClear();
 		(oAuthStore.clearOAuthData as jest.Mock).mockClear();
 		(oAuthStore.storeOAuthSignIn as jest.Mock).mockClear();
-		(
-			cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
-		).mockClear();
 	});
 
 	it('handles error presented in the redirect url', async () => {
@@ -292,15 +280,6 @@ describe('completeOAuthFlow', () => {
 			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);
 			expect(oAuthStore.storeOAuthSignIn).toHaveBeenCalledWith(true, undefined);
 			expect(mockResolveAndClearInflightPromises).toHaveBeenCalledTimes(1);
-			expect(
-				cognitoUserPoolsTokenProvider.setWaitForInflightOAuth,
-			).toHaveBeenCalledTimes(1);
-
-			const waitForInflightOAuth = (
-				cognitoUserPoolsTokenProvider.setWaitForInflightOAuth as jest.Mock
-			).mock.calls[0][0];
-			expect(typeof waitForInflightOAuth).toBe('function');
-			expect(waitForInflightOAuth()).resolves.toBeUndefined();
 
 			expect(mockHubDispatch).toHaveBeenCalledTimes(2);
 			expect(mockReplaceState).toHaveBeenCalledWith(
