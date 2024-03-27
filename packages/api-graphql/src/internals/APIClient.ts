@@ -732,6 +732,15 @@ export function generateGraphQLDocument(
 			graphQLArguments ??
 				(graphQLArguments = {
 					filter: `Model${name}FilterInput`,
+					sortDirection: 'ModelSortDirection',
+					...[primaryKeyFieldName, ...sortKeyFieldNames].reduce(
+						(acc: Record<string, any>, fieldName) => {
+							acc[fieldName] = `${fields[fieldName].type}`;
+
+							return acc;
+						},
+						[],
+					),
 					limit: 'Int',
 					nextToken: 'String',
 				});
@@ -745,6 +754,7 @@ export function generateGraphQLDocument(
 				(graphQLArguments = {
 					...indexQueryArgs!,
 					filter: `Model${name}FilterInput`,
+					sortDirection: 'ModelSortDirection',
 					limit: 'Int',
 					nextToken: 'String',
 				});
@@ -858,6 +868,10 @@ export function buildGraphQLVariables(
 			if (arg?.filter) {
 				variables.filter = arg.filter;
 			}
+			if (arg?.sortDirection) {
+				variables.sortDirection = arg.sortDirection;
+				variables[primaryKeyFieldName] = arg[primaryKeyFieldName];
+			}
 			if (arg?.nextToken) {
 				variables.nextToken = arg.nextToken;
 			}
@@ -877,6 +891,11 @@ export function buildGraphQLVariables(
 			if (arg?.filter) {
 				variables.filter = arg.filter;
 			}
+
+			if (arg?.sortDirection) {
+				variables.sortDirection = arg.sortDirection;
+			}
+
 			if (arg?.nextToken) {
 				variables.nextToken = arg.nextToken;
 			}
