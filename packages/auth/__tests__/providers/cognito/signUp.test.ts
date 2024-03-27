@@ -110,7 +110,7 @@ describe('signUp', () => {
 		});
 
 		it('should return `COMPLETE_AUTO_SIGN_IN` step with `isSignUpComplete` false when autoSignIn is enabled and user isn`t confirmed yet', async () => {
-			// setup signUpVerificationMethod as link in auth config
+			// set up signUpVerificationMethod as link in auth config
 			(Amplify.getConfig as any).mockReturnValue({
 				Auth: {
 					Cognito: {
