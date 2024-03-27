@@ -12,7 +12,8 @@ import {
 	StorageGetPropertiesInputPath,
 	StorageGetUrlInputKey,
 	StorageGetUrlInputPath,
-	StorageListInput,
+	StorageListInputPath,
+	StorageListInputPrefix,
 	StorageRemoveInputKey,
 	StorageRemoveInputPath,
 	StorageUploadDataInputKey,
@@ -27,8 +28,10 @@ import {
 	GetPropertiesOptionsPath,
 	GetUrlOptionsKey,
 	GetUrlOptionsPath,
-	ListAllOptions,
-	ListPaginateOptions,
+	ListAllOptionsPath,
+	ListAllOptionsPrefix,
+	ListPaginateOptionsPath,
+	ListPaginateOptionsPrefix,
 	RemoveOptions,
 	UploadDataOptionsKey,
 	UploadDataOptionsPath,
@@ -72,12 +75,38 @@ export type GetUrlInputPath = StorageGetUrlInputPath<GetUrlOptionsPath>;
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInput = StorageListInput<ListAllOptions>;
+export type ListAllInput = StrictUnion<ListAllInputPath | ListAllInputPrefix>;
 
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateInput = StorageListInput<ListPaginateOptions>;
+export type ListPaginateInput = StrictUnion<
+	ListPaginateInputPath | ListPaginateInputPrefix
+>;
+
+/**
+ * Input type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllInputPath = StorageListInputPath<ListAllOptionsPath>;
+
+/**
+ * Input type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateInputPath =
+	StorageListInputPath<ListPaginateOptionsPath>;
+
+/**
+ * @deprecated Use {@link ListAllInputPath} instead.
+ * Input type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllInputPrefix = StorageListInputPrefix<ListAllOptionsPrefix>;
+
+/**
+ * @deprecated Use {@link ListPaginateInputPath} instead.
+ * Input type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateInputPrefix =
+	StorageListInputPrefix<ListPaginateOptionsPrefix>;
 
 /**
  * @deprecated Use {@link RemoveInputPath} instead.
@@ -103,7 +132,6 @@ export type RemoveInput = StrictUnion<RemoveInputKey | RemoveInputPath>;
 export type DownloadDataInput = StrictUnion<
 	DownloadDataInputKey | DownloadDataInputPath
 >;
-
 /** @deprecated Use {@link DownloadDataInputPath} instead. */
 export type DownloadDataInputKey =
 	StorageDownloadDataInputKey<DownloadDataOptionsKey>;

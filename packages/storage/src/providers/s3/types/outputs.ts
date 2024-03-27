@@ -28,9 +28,24 @@ export interface ItemBase {
 }
 
 /**
+ * @deprecated Use {@link ListOutputItemPath} instead.
+ * type for S3 list item with key.
+ */
+export type ListOutputItemKey = Omit<ItemKey, 'metadata'>;
+
+/**
+ * type for S3 list item with path.
+ */
+export type ListOutputItemPath = Omit<ItemPath, 'metadata'>;
+
+/**
  * @deprecated Use {@link ItemPath} instead.
  */
 export type ItemKey = ItemBase & StorageItemKey;
+
+/**
+ * type for S3 list item with path.
+ */
 export type ItemPath = ItemBase & StorageItemPath;
 
 /**
@@ -79,12 +94,40 @@ export type GetPropertiesOutput =
 /**
  * Output type for S3 list API. Lists all bucket objects.
  */
-export type ListAllOutput = StorageListOutput<ListOutputItem>;
+export type ListAllOutput = StrictUnion<
+	ListAllOutputPath | ListAllOutputPrefix
+>;
 
 /**
  * Output type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateOutput = StorageListOutput<ListOutputItem> & {
+export type ListPaginateOutput = StrictUnion<
+	ListPaginateOutputPath | ListPaginateOutputPrefix
+>;
+
+/**
+ * @deprecated Use {@link ListAllOutputPath} instead.
+ * Output type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllOutputPrefix = StorageListOutput<ListOutputItemKey>;
+
+/**
+ * Output type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllOutputPath = StorageListOutput<ListOutputItemPath>;
+
+/**
+ * @deprecated Use {@link ListPaginateOutputPath} instead.
+ * Output type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateOutputPrefix = StorageListOutput<ListOutputItemKey> & {
+	nextToken?: string;
+};
+
+/**
+ * Output type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateOutputPath = StorageListOutput<ListOutputItemPath> & {
 	nextToken?: string;
 };
 

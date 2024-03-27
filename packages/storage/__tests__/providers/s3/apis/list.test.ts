@@ -6,9 +6,10 @@ import { Amplify } from '@aws-amplify/core';
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3';
 import {
-	ListAllOptions,
-	ListPaginateOptions,
+	ListAllOptionsPrefix,
+	ListPaginateOptionsPrefix,
 } from '../../../../src/providers/s3/types';
+import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -26,7 +27,6 @@ const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 const mockListObject = listObjectsV2 as jest.Mock;
 const key = 'path/itemsKey';
-const path = key;
 const bucket = 'bucket';
 const region = 'region';
 const nextToken = 'nextToken';
@@ -89,7 +89,7 @@ describe('list API', () => {
 			},
 		});
 	});
-	describe('Happy Cases:', () => {
+	describe('Prefix: Happy Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
@@ -99,33 +99,37 @@ describe('list API', () => {
 				expectedPath: `public/`,
 			},
 			{
-				path,
-				expectedPath: `public/${path}`,
-			},
-			{
-				path,
 				options: { accessLevel: 'guest' },
-				expectedPath: `public/${path}`,
+				expectedPath: `public/`,
 			},
 			{
-				path,
+				key,
+				expectedPath: `public/${key}`,
+			},
+			{
+				key,
+				options: { accessLevel: 'guest' },
+				expectedPath: `public/${key}`,
+			},
+			{
+				key,
 				options: { accessLevel: 'private' },
-				expectedPath: `private/${defaultIdentityId}/${path}`,
+				expectedPath: `private/${defaultIdentityId}/${key}`,
 			},
 			{
-				path,
+				key,
 				options: { accessLevel: 'protected' },
-				expectedPath: `protected/${defaultIdentityId}/${path}`,
+				expectedPath: `protected/${defaultIdentityId}/${key}`,
 			},
 			{
-				path,
+				key,
 				options: { accessLevel: 'protected', targetIdentityId },
-				expectedPath: `protected/${targetIdentityId}/${path}`,
+				expectedPath: `protected/${targetIdentityId}/${key}`,
 			},
 		];
 
-		accessLevelTests.forEach(({ path, options, expectedPath }) => {
-			const pathMsg = path ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key, options, expectedPath }) => {
+			const pathMsg = key ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -139,14 +143,11 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				expect.assertions(4);
 				let response = await list({
-					prefix: path,
-					options: options as ListPaginateOptions,
+					prefix: key,
+					options: options as ListPaginateOptionsPrefix,
 				});
-				expect(response.items).toEqual([
-					{ ...listResultItem, key: path ?? '' },
-				]);
+				expect(response.items).toEqual([{ ...listResultItem, key: key ?? '' }]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
@@ -157,8 +158,8 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ path, options, expectedPath }) => {
-			const pathMsg = path ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key, options, expectedPath }) => {
+			const pathMsg = key ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -172,19 +173,16 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				expect.assertions(4);
 				const customPageSize = 5;
 				const response = await list({
-					prefix: path,
+					prefix: key,
 					options: {
-						...(options as ListPaginateOptions),
+						...(options as ListPaginateOptionsPrefix),
 						pageSize: customPageSize,
 						nextToken: nextToken,
 					},
 				});
-				expect(response.items).toEqual([
-					{ ...listResultItem, key: path ?? '' },
-				]);
+				expect(response.items).toEqual([{ ...listResultItem, key: key ?? '' }]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
@@ -196,8 +194,8 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ path, options, expectedPath }) => {
-			const pathMsg = path ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key, options, expectedPath }) => {
+			const pathMsg = key ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -206,13 +204,12 @@ describe('list API', () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-				expect.assertions(3);
 				let response = await list({
-					prefix: path,
-					options: options as ListPaginateOptions,
+					prefix: key,
+					options: options as ListPaginateOptionsPrefix,
 				});
 				expect(response.items).toEqual([]);
-				//
+
 				expect(response.nextToken).toEqual(undefined);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
@@ -222,21 +219,20 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ path, options, expectedPath }) => {
-			const pathMsg = path ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key, options, expectedPath }) => {
+			const pathMsg = key ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
 				: '';
 			it(`should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
-				expect.assertions(5);
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
-					prefix: path,
-					options: { ...options, listAll: true } as ListAllOptions,
+					prefix: key,
+					options: { ...options, listAll: true } as ListAllOptionsPrefix,
 				});
 
-				const listResult = { ...listResultItem, key: path ?? '' };
+				const listResult = { ...listResultItem, key: key ?? '' };
 				expect(result.items).toEqual([listResult, listResult, listResult]);
 				expect(result).not.toHaveProperty(nextToken);
 
@@ -269,6 +265,153 @@ describe('list API', () => {
 		});
 	});
 
+	describe('Path: Happy Cases:', () => {
+		const resolvePath = (path: string | Function) =>
+			typeof path === 'string' ? path : path({ identityId: defaultIdentityId });
+		afterEach(() => {
+			jest.clearAllMocks();
+			mockListObject.mockClear();
+		});
+		const pathAsFunctionAndStringTests = [
+			{
+				path: `public/${key}`,
+			},
+			{
+				path: ({ identityId }: any) => `protected/${identityId}/${key}`,
+			},
+		];
+
+		it.each(pathAsFunctionAndStringTests)(
+			'should list objects with pagination, default pageSize, custom path',
+			async ({ path }) => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: resolvePath(path),
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				let response = await list({
+					path,
+				});
+				expect(response.items).toEqual([
+					{ ...listResultItem, path: resolvePath(path) },
+				]);
+				expect(response.nextToken).toEqual(nextToken);
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: resolvePath(path),
+				});
+			},
+		);
+
+		it.each(pathAsFunctionAndStringTests)(
+			'should list objects with pagination using custom pageSize, nextToken and custom path: ${path}',
+			async ({ path }) => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: resolvePath(path),
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				const customPageSize = 5;
+				const response = await list({
+					path,
+					options: {
+						pageSize: customPageSize,
+						nextToken: nextToken,
+					},
+				});
+				expect(response.items).toEqual([
+					{ ...listResultItem, path: resolvePath(path) ?? '' },
+				]);
+				expect(response.nextToken).toEqual(nextToken);
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
+					Bucket: bucket,
+					Prefix: resolvePath(path),
+					ContinuationToken: nextToken,
+					MaxKeys: customPageSize,
+				});
+			},
+		);
+
+		it.each(pathAsFunctionAndStringTests)(
+			'should list objects with zero results with custom path: ${path}',
+			async ({ path }) => {
+				mockListObject.mockImplementationOnce(() => {
+					return {};
+				});
+				let response = await list({
+					path,
+				});
+				expect(response.items).toEqual([]);
+
+				expect(response.nextToken).toEqual(undefined);
+				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: resolvePath(path),
+				});
+			},
+		);
+
+		it.each(pathAsFunctionAndStringTests)(
+			'should list all objects having three pages with custom path: ${path}',
+			async ({ path }) => {
+				mockListObjectsV2ApiWithPages(3);
+				const result = await list({
+					path,
+					options: { listAll: true },
+				});
+
+				const listResult = {
+					...listResultItem,
+					path: resolvePath(path),
+				};
+				expect(result.items).toEqual([listResult, listResult, listResult]);
+				expect(result).not.toHaveProperty(nextToken);
+
+				// listing three times for three pages
+				expect(listObjectsV2).toHaveBeenCalledTimes(3);
+
+				// first input recieves undefined as the Continuation Token
+				expect(listObjectsV2).toHaveBeenNthCalledWith(
+					1,
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						Prefix: resolvePath(path),
+						MaxKeys: 1000,
+						ContinuationToken: undefined,
+					},
+				);
+				// last input recieves TEST_TOKEN as the Continuation Token
+				expect(listObjectsV2).toHaveBeenNthCalledWith(
+					3,
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						Prefix: resolvePath(path),
+						MaxKeys: 1000,
+						ContinuationToken: nextToken,
+					},
+				);
+			},
+		);
+	});
+
 	describe('Error Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
@@ -280,10 +423,10 @@ describe('list API', () => {
 					name: 'NotFound',
 				}),
 			);
-			expect.assertions(3);
 			try {
 				await list({});
 			} catch (error: any) {
+				expect.assertions(3);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
 					Bucket: bucket,
