@@ -24,14 +24,10 @@ export {
 	DownloadDataOutputPath,
 	GetUrlOutput,
 	UploadDataOutput,
-<<<<<<< HEAD
 	UploadDataOutputKey,
 	UploadDataOutputPath,
-	ListOutputItem,
-=======
 	ListOutputItemKey,
 	ListOutputItemPath,
->>>>>>> gen2-storage
 	ListAllOutput,
 	ListPaginateOutput,
 	ListAllOutputPrefix,
