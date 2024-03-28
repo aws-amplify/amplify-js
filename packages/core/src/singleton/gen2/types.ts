@@ -1,19 +1,22 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { ModelIntrospectionSchema } from '../API/types';
 import { AuthStandardAttributeKey } from '../Auth/types';
 
-export type Gen2OAuthIdentityProviders =
+export type Gen2OAuthIdentityProvider =
 	| 'GOOGLE'
 	| 'FACEBOOK'
 	| 'LOGIN_WITH_AMAZON'
 	| 'SIGN_IN_WITH_APPLE';
 
-type Gen2AuthUsernameAttributes = 'EMAIL' | 'PHONE_NUMBER' | 'USERNAME';
+type Gen2AuthUsernameAttribute = 'EMAIL' | 'PHONE_NUMBER' | 'USERNAME';
 
-type Gen2AuthUserVerificationTypes = 'EMAIL' | 'PHONE_NUMBER';
+type Gen2AuthUserVerificationMethod = 'EMAIL' | 'PHONE_NUMBER';
 
 export type Gen2AuthMFAConfiguration = 'OPTIONAL' | 'REQUIRED' | 'NONE';
 
-export type Gen2AuthMFAMethods = 'SMS' | 'TOTP';
+export type Gen2AuthMFAMethod = 'SMS' | 'TOTP';
 
 export interface Gen2AuthProperties {
 	aws_region: string;
@@ -29,7 +32,7 @@ export interface Gen2AuthProperties {
 		require_symbols: boolean;
 	};
 	oauth?: {
-		identity_providers: Gen2OAuthIdentityProviders[];
+		identity_providers: Gen2OAuthIdentityProvider[];
 		domain: string;
 		scopes: string[];
 		redirect_sign_in_uri: string[];
@@ -37,11 +40,11 @@ export interface Gen2AuthProperties {
 		response_type: 'code' | 'token';
 	};
 	standard_required_attributes?: AuthStandardAttributeKey[];
-	username_attributes?: Gen2AuthUsernameAttributes[];
-	user_verification_mechanisms?: Gen2AuthUserVerificationTypes[];
+	username_attributes?: Gen2AuthUsernameAttribute[];
+	user_verification_mechanisms?: Gen2AuthUserVerificationMethod[];
 	unauthenticated_identities_enabled?: boolean;
 	mfa_configuration?: Gen2AuthMFAConfiguration;
-	mfa_methods?: Gen2AuthMFAMethods[];
+	mfa_methods?: Gen2AuthMFAMethod[];
 }
 
 export interface Gen2StorageProperties {
