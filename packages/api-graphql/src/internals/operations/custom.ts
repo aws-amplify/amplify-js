@@ -27,6 +27,8 @@ import {
 	V6ClientSSRRequest,
 } from '../../types';
 
+import { handleSingularGraphQlError } from './utils';
+
 type CustomOperationOptions = AuthModeParams & ListArgs;
 
 // these are the 4 possible sets of arguments custom operations methods can receive
@@ -413,13 +415,7 @@ async function _op(
 			return { data: null, extensions };
 		}
 	} catch (error: any) {
-		if (error.errors) {
-			// graphql errors pass through
-			return error as any;
-		} else {
-			// non-graphql errors re re-thrown
-			throw error;
-		}
+		return handleSingularGraphQlError(error);
 	}
 }
 

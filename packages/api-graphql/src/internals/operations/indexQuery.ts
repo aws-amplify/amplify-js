@@ -5,7 +5,6 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
-import { handleGraphQlError } from './utils';
 
 import {
 	authModeParams,
@@ -23,6 +22,8 @@ import {
 	QueryArgs,
 	V6ClientSSRRequest,
 } from '../../types';
+
+import { handleListGraphQlError } from './utils';
 
 export interface IndexMeta {
 	queryField: string;
@@ -156,6 +157,6 @@ async function _indexQuery(
 			);
 		}
 	} catch (error: any) {
-		return handleGraphQlError(error);
+		return handleListGraphQlError(error);
 	}
 }

@@ -26,7 +26,7 @@ import {
 	V6ClientSSRRequest,
 } from '../../types';
 
-import { handleGraphQlError } from './utils';
+import { handleSingularGraphQlError } from './utils';
 
 export function getFactory(
 	client: ClientWithModels,
@@ -131,6 +131,6 @@ async function _get(
 			return { data: null, extensions };
 		}
 	} catch (error: any) {
-		return handleGraphQlError(error);
+		return handleSingularGraphQlError(error);
 	}
 }

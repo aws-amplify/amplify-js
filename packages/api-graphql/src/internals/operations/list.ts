@@ -5,7 +5,6 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
-import { handleGraphQlError } from './utils';
 
 import {
 	authModeParams,
@@ -23,6 +22,8 @@ import {
 	V6Client,
 	V6ClientSSRRequest,
 } from '../../types';
+
+import { handleListGraphQlError } from './utils';
 
 export function listFactory(
 	client: ClientWithModels,
@@ -125,6 +126,6 @@ async function _list(
 			};
 		}
 	} catch (error: any) {
-		return handleGraphQlError(error);
+		return handleListGraphQlError(error);
 	}
 }
