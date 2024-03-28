@@ -591,7 +591,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes();
+			const { data: notes } = await data!.notes();
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -637,7 +637,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes({ nextToken: 'some-token' });
+			const { data: notes } = await data!.notes({ nextToken: 'some-token' });
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -683,7 +683,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes({ limit: 5 });
+			const { data: notes } = await data!.notes({ limit: 5 });
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -726,7 +726,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: todo } = await data.todo();
+			const { data: todo } = await data!.todo();
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -767,7 +767,7 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: todo } = await data.meta();
+			const { data: todo } = await data!.meta();
 
 			expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 
@@ -1245,7 +1245,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1283,7 +1283,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1320,7 +1320,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1361,7 +1361,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'apiKey' });
+				await data!.notes({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1399,7 +1399,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'apiKey' });
+				await data!.todo({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1436,7 +1436,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'apiKey' });
+				await data!.meta({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1735,7 +1735,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1774,7 +1774,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1812,7 +1812,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1853,7 +1853,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
+				await data!.notes({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1891,7 +1891,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
+				await data!.todo({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1928,7 +1928,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
+				await data!.meta({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2227,7 +2227,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2263,7 +2263,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2298,7 +2298,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2339,7 +2339,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'apiKey' });
+				await data!.notes({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2375,7 +2375,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'apiKey' });
+				await data!.todo({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2410,7 +2410,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'apiKey' });
+				await data!.meta({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2716,7 +2716,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2753,7 +2753,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2789,7 +2789,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2830,7 +2830,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
+				await data!.notes({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2866,7 +2866,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
+				await data!.todo({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2901,7 +2901,7 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
+				await data!.meta({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});

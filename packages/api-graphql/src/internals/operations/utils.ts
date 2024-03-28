@@ -5,7 +5,6 @@
 /**
  * Handle errors for list and index query operations
  */
-// TODO: any reason we should use this? `errors: GraphQLFormattedError[] | undefined`
 export function handleListGraphQlError(error: any) {
 	if (error?.errors) {
 		// graphql errors pass through
