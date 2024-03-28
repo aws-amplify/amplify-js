@@ -44,7 +44,13 @@ export function isAmplifyOutputs(
 	config: ResourcesConfig | LegacyConfig | AmplifyOutputs,
 ): config is AmplifyOutputs {
 	// version format initially will be '1' but is expected to be something like x.y where x is major and y minor version
-	return ('' + (config as AmplifyOutputs).version).startsWith('1');
+	const { version } = config as AmplifyOutputs;
+
+	if (!version) {
+		return false;
+	}
+
+	return version.startsWith('1');
 }
 
 function parseStorage(
@@ -122,7 +128,6 @@ function parseAuth(
 
 	if (oauth) {
 		authConfig.Cognito.loginWith = {
-			...authConfig.Cognito.loginWith,
 			oauth: {
 				domain: oauth.domain,
 				redirectSignIn: oauth.redirect_sign_in_uri,
@@ -174,14 +179,13 @@ export function parseAnalytics(
 
 	const { amazon_pinpoint } = amplifyOutputsAnalyticsProperties;
 
-	if (amazon_pinpoint) {
-		return {
-			Pinpoint: {
-				appId: amazon_pinpoint.app_id,
-				region: amazon_pinpoint.aws_region,
-			},
-		};
-	}
+	return {
+		Pinpoint: {
+			appId: amazon_pinpoint.app_id,
+			region: amazon_pinpoint.aws_region,
+		},
+	};
+
 }
 
 function parseGeo(
@@ -242,19 +246,18 @@ function parseNotifications(
 	const { aws_region, channels, pinpoint_app_id } =
 		amplifyOutputsNotificationsProperties;
 
-	if (
-		!channels.includes('IN_APP_MESSAGING') &&
-		!channels.includes('APNS') &&
-		!channels.includes('FCM')
-	) {
+	const hasInAppMessaging = channels.includes('IN_APP_MESSAGING');
+	const hasPushNotification = channels.includes('APNS') || channels.includes('FCM');
+
+	if (!(hasInAppMessaging || hasPushNotification)) {
 		return undefined;
 	}
 
-	let InAppMessaging: InAppMessagingConfig | undefined;
-	let PushNotification: PushNotificationConfig | undefined;
+	// At this point, we know the Amplify outputs contains at least one supported channel
+	const notificationsConfig: NotificationsConfig = {} as NotificationsConfig;
 
-	if (channels.includes('IN_APP_MESSAGING')) {
-		InAppMessaging = {
+	if (hasInAppMessaging) {
+		notificationsConfig.InAppMessaging = {
 			Pinpoint: {
 				appId: pinpoint_app_id,
 				region: aws_region,
@@ -262,8 +265,8 @@ function parseNotifications(
 		};
 	}
 
-	if (channels.includes('APNS') || channels.includes('FCM')) {
-		PushNotification = {
+	if (hasPushNotification) {
+		notificationsConfig.PushNotification = {
 			Pinpoint: {
 				appId: pinpoint_app_id,
 				region: aws_region,
@@ -271,24 +274,7 @@ function parseNotifications(
 		};
 	}
 
-	if (PushNotification && InAppMessaging) {
-		return {
-			PushNotification,
-			InAppMessaging,
-		};
-	}
-
-	if (InAppMessaging) {
-		return {
-			InAppMessaging,
-		};
-	}
-
-	if (PushNotification) {
-		return {
-			PushNotification,
-		};
-	}
+	return notificationsConfig;
 }
 
 export function parseAmplifyOutputs(
@@ -348,9 +334,9 @@ const providerNames: Record<
 };
 
 function getOAuthProviders(
-	providers?: AmplifyOutputsOAuthIdentityProvider[],
+	providers: AmplifyOutputsOAuthIdentityProvider[] = [],
 ): OAuthProvider[] {
-	return (providers ?? []).map(provider => providerNames[provider]);
+	return providers.map(provider => providerNames[provider]);
 }
 
 function getMfaStatus(

@@ -69,9 +69,9 @@ describe('initSingleton (DefaultAmplify)', () => {
 		mockAmplifySingletonGetConfig.mockReset();
 	});
 
-	describe('Gen2 Amplify configure', () => {
-		it('should use Gen2 config type', () => {
-			const gen2Config: AmplifyOutputs = {
+	describe('Amplify configure with AmplifyOutputs format', () => {
+		it('should use AmplifyOutputs config type', () => {
+			const amplifyOutputs: AmplifyOutputs = {
 				'version': '1',
 				'storage': {
 					'aws_region': 'us-east-1',
@@ -106,7 +106,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 				}
 			};
 
-			Amplify.configure(gen2Config);
+			Amplify.configure(amplifyOutputs);
 
 			expect(AmplifySingleton.configure).toHaveBeenCalledWith({
 				Storage: {
