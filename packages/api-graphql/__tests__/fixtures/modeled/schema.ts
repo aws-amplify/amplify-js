@@ -220,6 +220,11 @@ const schema = a.schema({
 			description: a.string(),
 		})
 		.authorization([a.allow.groupsDefinedIn('groupsField')]),
+	ModelStaticGroup: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.specificGroup('Admin')]),
 	// #endregion
 });
 
