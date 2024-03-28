@@ -23,7 +23,7 @@ describe(fetchTransferHandler.name, () => {
 	const mockFetch = jest.fn();
 
 	beforeAll(() => {
-		global['fetch'] = mockFetch;
+		(global as any).fetch = mockFetch;
 	});
 
 	beforeEach(() => {
@@ -32,7 +32,7 @@ describe(fetchTransferHandler.name, () => {
 	});
 
 	it('should support abort signal', async () => {
-		const signal = new AbortController().signal;
+		const { signal } = new AbortController();
 		await fetchTransferHandler(mockRequest, { abortSignal: signal });
 		expect(mockFetch).toHaveBeenCalledTimes(1);
 		expect(mockFetch.mock.calls[0][1]).toEqual(
@@ -68,8 +68,8 @@ describe(fetchTransferHandler.name, () => {
 	});
 
 	it('should support headers', async () => {
-		mockFetchResponse.headers.forEach.mockImplementation((cb: any) => {
-			cb('foo', 'bar');
+		mockFetchResponse.headers.forEach.mockImplementation((callback: any) => {
+			callback('foo', 'bar');
 		});
 		const { headers } = await fetchTransferHandler(mockRequest, {});
 		expect(headers).toEqual({ bar: 'foo' });
