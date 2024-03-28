@@ -732,7 +732,6 @@ export function generateGraphQLDocument(
 			graphQLArguments ??
 				(graphQLArguments = {
 					filter: `Model${name}FilterInput`,
-					sortDirection: 'ModelSortDirection',
 					...(sortKeyFieldNames.length > 0
 						? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
 								(acc: Record<string, any>, fieldName) => {
@@ -740,7 +739,7 @@ export function generateGraphQLDocument(
 
 									return acc;
 								},
-								{},
+								{ sortDirection: 'ModelSortDirection' },
 							)
 						: []),
 					limit: 'Int',
