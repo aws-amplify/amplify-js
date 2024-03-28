@@ -18,7 +18,7 @@ export interface LibraryAPIOptions {
 	};
 }
 
-interface APIGraphQLConfig {
+export interface APIGraphQLConfig {
 	/**
 	 * Required GraphQL endpoint, must be a valid URL string.
 	 */
@@ -47,7 +47,7 @@ interface APIGraphQLConfig {
 	modelIntrospection?: ModelIntrospectionSchema;
 }
 
-interface APIRestConfig {
+export interface APIRestConfig {
 	/**
 	 * Required REST endpoint, must be a valid URL string.
 	 */

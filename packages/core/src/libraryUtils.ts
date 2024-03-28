@@ -21,7 +21,9 @@ export {
 	deDupeAsyncFunction,
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
+export { isAmplifyOutputs, parseAmplifyOutputs } from './parseAmplifyOutputs';
 export { LegacyConfig } from './singleton/types';
+export { AmplifyOutputs } from './singleton/AmplifyOutputs/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
