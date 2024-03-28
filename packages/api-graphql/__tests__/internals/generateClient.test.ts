@@ -812,7 +812,7 @@ describe('generateClient', () => {
 				id: 'does not matter',
 			});
 
-			expect(data).toBe(undefined);
+			expect(data).toBeNull();
 			expect(errors?.length).toBe(1);
 			expect(errors).toEqual(expectedErrors);
 		});
@@ -847,16 +847,15 @@ describe('generateClient', () => {
 				id: 'does not matter',
 			});
 
-			expect(data).toBe(undefined);
+			expect(data).toBeNull();
 			expect(errors?.length).toBe(1);
 			expect(errors).toEqual(expectedErrors);
 		});
 
-		// TODO:
-		test.skip('update() returns null with errors property', async () => {
+		test('update() returns null with errors property', async () => {
 			const expectedErrors = [
 				{
-					path: ['createTodo'],
+					path: ['updateTodo'],
 					data: null,
 					errorType: 'Unauthorized',
 					errorInfo: null,
@@ -867,32 +866,33 @@ describe('generateClient', () => {
 							sourceName: null,
 						},
 					],
-					message: 'Not Authorized to access createTodo on type Mutation',
+					message: 'Not Authorized to access updateTodo on type Mutation',
 				},
 			];
 
 			const spy = mockApiResponse({
 				data: {
-					getTodo: null,
+					updateTodo: null,
 				},
 				errors: expectedErrors,
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const { data, errors } = await client.models.Todo.create({
-				id: 'does not matter',
+
+			const { data, errors } = await client.models.Todo.update({
+				id: 'some_id',
+				name: 'does not matter',
 			});
 
-			expect(data).toBe(undefined);
+			expect(data).toBeNull();
 			expect(errors?.length).toBe(1);
 			expect(errors).toEqual(expectedErrors);
 		});
 
-		// TODO:
-		test.skip('delete() returns null with errors property', async () => {
+		test('delete() returns null with errors property', async () => {
 			const expectedErrors = [
 				{
-					path: ['createTodo'],
+					path: ['deleteTodo'],
 					data: null,
 					errorType: 'Unauthorized',
 					errorInfo: null,
@@ -903,23 +903,24 @@ describe('generateClient', () => {
 							sourceName: null,
 						},
 					],
-					message: 'Not Authorized to access createTodo on type Mutation',
+					message: 'Not Authorized to access deleteTodo on type Mutation',
 				},
 			];
 
 			const spy = mockApiResponse({
 				data: {
-					getTodo: null,
+					deleteTodo: null,
 				},
 				errors: expectedErrors,
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const { data, errors } = await client.models.Todo.create({
-				id: 'does not matter',
+
+			const { data, errors } = await client.models.Todo.delete({
+				id: 'some_id',
 			});
 
-			expect(data).toBe(undefined);
+			expect(data).toBeNull();
 			expect(errors?.length).toBe(1);
 			expect(errors).toEqual(expectedErrors);
 		});
@@ -5770,7 +5771,7 @@ describe('generateClient', () => {
 
 			// TODO: data should actually be null/undefined, pending discussion and fix.
 			// This is not strictly related to custom ops.
-			expect(data).toEqual({});
+			expect(data).toEqual(null);
 			expect(errors).toEqual([{ message: 'Network error' }]);
 		});
 
