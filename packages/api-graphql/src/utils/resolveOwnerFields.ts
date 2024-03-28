@@ -42,10 +42,7 @@ export function resolveOwnerFields(model: Model): string[] {
 			for (const rule of attr.properties.rules) {
 				if (rule.allow === 'owner') {
 					ownerFields.add(rule.ownerField || 'owner');
-				} else if (rule.allow === 'groups' && rule.groupsField !== undefined) {
-					// only valid for dynamic group(s)
-					// static group auth will have an array of predefined groups in the attribute, groups: string[]
-					// but `groupsField` will be undefined
+				} else if (rule.allow === 'groups') {
 					ownerFields.add(rule.groupsField);
 				}
 			}

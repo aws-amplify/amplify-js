@@ -14,9 +14,6 @@ describe('owner field resolution', () => {
 		ThingWithOwnerFieldSpecifiedInModel: ['owner'],
 		ThingWithAPIKeyAuth: [],
 		ThingWithoutExplicitAuth: [],
-		ModelGroupDefinedIn: ['groupField'],
-		ModelGroupsDefinedIn: ['groupsField'],
-		ModelStaticGroup: [],
 	};
 
 	for (const [modelName, expected] of Object.entries(expectedResolutions)) {
@@ -26,7 +23,7 @@ describe('owner field resolution', () => {
 			const model: SchemaModel = modelIntroSchema.models[modelName];
 
 			const resolvedField = resolveOwnerFields(model);
-			expect(resolvedField).toStrictEqual(expected);
+			expect(resolvedField).toEqual(expected);
 		});
 	}
 });

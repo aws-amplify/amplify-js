@@ -1,5 +1,5 @@
 /**
- * Generated from `./schema.ts` by amplify-backend generate config.
+ * Generated from `./schema.ts` by samsara.
  *
  * Cognito fields etc. omitted.
  */
@@ -1644,68 +1644,6 @@ const amplifyConfig = {
 									allow: 'groups',
 									groupsField: 'groupsField',
 									groupField: 'groups',
-									operations: ['create', 'update', 'delete', 'read'],
-								},
-							],
-						},
-					},
-				],
-				primaryKeyInfo: {
-					isCustomPrimaryKey: false,
-					primaryKeyFieldName: 'id',
-					sortKeyFieldNames: [],
-				},
-			},
-			ModelStaticGroup: {
-				name: 'ModelStaticGroup',
-				fields: {
-					id: {
-						name: 'id',
-						isArray: false,
-						type: 'ID',
-						isRequired: true,
-						attributes: [],
-					},
-					description: {
-						name: 'description',
-						isArray: false,
-						type: 'String',
-						isRequired: false,
-						attributes: [],
-					},
-					createdAt: {
-						name: 'createdAt',
-						isArray: false,
-						type: 'AWSDateTime',
-						isRequired: false,
-						attributes: [],
-						isReadOnly: true,
-					},
-					updatedAt: {
-						name: 'updatedAt',
-						isArray: false,
-						type: 'AWSDateTime',
-						isRequired: false,
-						attributes: [],
-						isReadOnly: true,
-					},
-				},
-				syncable: true,
-				pluralName: 'ModelStaticGroups',
-				attributes: [
-					{
-						type: 'model',
-						properties: {},
-					},
-					{
-						type: 'auth',
-						properties: {
-							rules: [
-								{
-									groupClaim: 'cognito:groups',
-									provider: 'userPools',
-									allow: 'groups',
-									groups: ['Admin'],
 									operations: ['create', 'update', 'delete', 'read'],
 								},
 							],
