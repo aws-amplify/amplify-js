@@ -1,9 +1,9 @@
-import { Gen2Config, parseGen2Config } from '../src/libraryUtils';
+import { AmplifyOutputs, parseAmplifyOutputs } from '../src/libraryUtils';
 
 describe('parseGen2Config tests', () => {
 	describe('auth tests', () => {
 		it('should parse auth happy path (all enabled)', () => {
-			const gen2Config: Gen2Config = {
+			const gen2Config: AmplifyOutputs = {
 				'version': '1',
 				'auth': {
 					'user_pool_id': 'us-east-1:',
@@ -34,7 +34,7 @@ describe('parseGen2Config tests', () => {
 				},
 			};
 
-			const result = parseGen2Config(gen2Config);
+			const result = parseAmplifyOutputs(gen2Config);
 			expect(result).toEqual({
 				'Auth': {
 					'Cognito': {
@@ -87,7 +87,7 @@ describe('parseGen2Config tests', () => {
 
 	describe('storage tests', () => {
 		it('should parse storage happy path', () => {
-			const gen2Config: Gen2Config = {
+			const gen2Config: AmplifyOutputs = {
 				'version': '1',
 				'storage': {
 					aws_region: 'us-west-2',
@@ -95,7 +95,7 @@ describe('parseGen2Config tests', () => {
 				}
 			};
 
-			const result = parseGen2Config(gen2Config);
+			const result = parseAmplifyOutputs(gen2Config);
 
 			expect(result).toEqual({
 				Storage: {
@@ -110,7 +110,7 @@ describe('parseGen2Config tests', () => {
 
 	describe('analytics tests', () => {
 		it('should parse all providers', () => {
-			const gen2Config: Gen2Config = {
+			const gen2Config: AmplifyOutputs = {
 				'version': '1',
 				'analytics': {
 					amazon_pinpoint: {
@@ -120,7 +120,7 @@ describe('parseGen2Config tests', () => {
 				}
 			};
 
-			const result = parseGen2Config(gen2Config);
+			const result = parseAmplifyOutputs(gen2Config);
 
 			expect(result).toEqual({
 				'Analytics': {
@@ -135,7 +135,7 @@ describe('parseGen2Config tests', () => {
 
 	describe('geo tests', () => {
 		it('should parse LocationService config', () => {
-			const gen2Config: Gen2Config = {
+			const gen2Config: AmplifyOutputs = {
 				'version': '1',
 				'geo': {
 					aws_region: 'us-east-1',
@@ -155,7 +155,7 @@ describe('parseGen2Config tests', () => {
 					}
 				}
 			};
-			const result = parseGen2Config(gen2Config);
+			const result = parseAmplifyOutputs(gen2Config);
 			expect(result).toEqual({
 				'Geo': {
 					'LocationService': {
@@ -194,7 +194,7 @@ describe('parseGen2Config tests', () => {
 
 	describe('data tests', () => {
 		it('should configure data', () => {
-			const gen2Config: Gen2Config = {
+			const gen2Config: AmplifyOutputs = {
 				'version': '1',
 				'data': {
 					aws_region: 'us-west-2',
@@ -205,7 +205,7 @@ describe('parseGen2Config tests', () => {
 				}
 			};
 
-			const result = parseGen2Config(gen2Config);
+			const result = parseAmplifyOutputs(gen2Config);
 			expect(result).toEqual({
 				API: {
 					'GraphQL': {
@@ -220,7 +220,7 @@ describe('parseGen2Config tests', () => {
 
 		describe('notifications tests', () => {
 			it('should configure notifications', () => {
-				const gen2Config: Gen2Config = {
+				const gen2Config: AmplifyOutputs = {
 					'version': '1',
 					'notifications': {
 						aws_region: 'us-west-2',
@@ -229,7 +229,7 @@ describe('parseGen2Config tests', () => {
 					}
 				};
 
-				const result = parseGen2Config(gen2Config);
+				const result = parseAmplifyOutputs(gen2Config);
 				expect(result).toEqual({
 					'Notifications': {
 						'InAppMessaging': {

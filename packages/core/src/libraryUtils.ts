@@ -21,9 +21,9 @@ export {
 	deDupeAsyncFunction,
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
-export { isGen2Config, parseGen2Config } from './parseAmplifyGen2';
+export { isAmplifyOutputs, parseAmplifyOutputs } from './parseAmplifyOutputs';
 export { LegacyConfig } from './singleton/types';
-export { Gen2Config } from './singleton/gen2/types';
+export { AmplifyOutputs } from './singleton/AmplifyOutputs/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';

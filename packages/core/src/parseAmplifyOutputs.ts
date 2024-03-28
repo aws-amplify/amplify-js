@@ -20,17 +20,17 @@ import { InAppMessagingConfig } from './singleton/Notifications/InAppMessaging/t
 import { PushNotificationConfig } from './singleton/Notifications/PushNotification/types';
 import { NotificationsConfig } from './singleton/Notifications/types';
 import {
+	AmplifyOutputs,
+	AmplifyOutputsAnalyticsProperties,
+	AmplifyOutputsAuthMFAConfiguration,
+	AmplifyOutputsAuthProperties,
+	AmplifyOutputsDataProperties,
+	AmplifyOutputsGeoProperties,
+	AmplifyOutputsNotificationsProperties,
+	AmplifyOutputsOAuthIdentityProvider,
+	AmplifyOutputsStorageProperties,
 	AuthType,
-	Gen2AnalyticsProperties,
-	Gen2AuthMFAConfiguration,
-	Gen2AuthProperties,
-	Gen2Config,
-	Gen2DataProperties,
-	Gen2GeoProperties,
-	Gen2NotificationsProperties,
-	Gen2OAuthIdentityProvider,
-	Gen2StorageProperties,
-} from './singleton/gen2/types';
+} from './singleton/AmplifyOutputs/types';
 import {
 	AnalyticsConfig,
 	AuthConfig,
@@ -40,21 +40,21 @@ import {
 	StorageConfig,
 } from './singleton/types';
 
-export function isGen2Config(
-	config: ResourcesConfig | LegacyConfig | Gen2Config,
-): config is Gen2Config {
+export function isAmplifyOutputs(
+	config: ResourcesConfig | LegacyConfig | AmplifyOutputs,
+): config is AmplifyOutputs {
 	// version format initially will be '1' but is expected to be something like x.y where x is major and y minor version
-	return ('' + (config as Gen2Config).version).startsWith('1');
+	return ('' + (config as AmplifyOutputs).version).startsWith('1');
 }
 
 function parseStorage(
-	gen2StorageProperties?: Gen2StorageProperties,
+	amplifyOutputsStorageProperties?: AmplifyOutputsStorageProperties,
 ): StorageConfig | undefined {
-	if (!gen2StorageProperties) {
+	if (!amplifyOutputsStorageProperties) {
 		return undefined;
 	}
 
-	const { bucket_name, aws_region } = gen2StorageProperties;
+	const { bucket_name, aws_region } = amplifyOutputsStorageProperties;
 
 	return {
 		S3: {
@@ -65,9 +65,9 @@ function parseStorage(
 }
 
 function parseAuth(
-	gen2AuthProperties?: Gen2AuthProperties,
+	amplifyOutputsAuthProperties?: AmplifyOutputsAuthProperties,
 ): AuthConfig | undefined {
-	if (!gen2AuthProperties) {
+	if (!amplifyOutputsAuthProperties) {
 		return undefined;
 	}
 
@@ -82,7 +82,7 @@ function parseAuth(
 		oauth,
 		username_attributes,
 		standard_required_attributes,
-	} = gen2AuthProperties;
+	} = amplifyOutputsAuthProperties;
 
 	const authConfig = {
 		Cognito: {
@@ -166,13 +166,13 @@ function parseAuth(
 }
 
 export function parseAnalytics(
-	gen2AnalyticsProperties?: Gen2AnalyticsProperties,
+	amplifyOutputsAnalyticsProperties?: AmplifyOutputsAnalyticsProperties,
 ): AnalyticsConfig | undefined {
-	if (!gen2AnalyticsProperties?.amazon_pinpoint) {
+	if (!amplifyOutputsAnalyticsProperties?.amazon_pinpoint) {
 		return undefined;
 	}
 
-	const { amazon_pinpoint } = gen2AnalyticsProperties;
+	const { amazon_pinpoint } = amplifyOutputsAnalyticsProperties;
 
 	if (amazon_pinpoint) {
 		return {
@@ -185,14 +185,14 @@ export function parseAnalytics(
 }
 
 function parseGeo(
-	gen2AnalyticsProperties?: Gen2GeoProperties,
+	amplifyOutputsAnalyticsProperties?: AmplifyOutputsGeoProperties,
 ): GeoConfig | undefined {
-	if (!gen2AnalyticsProperties) {
+	if (!amplifyOutputsAnalyticsProperties) {
 		return undefined;
 	}
 
 	const { aws_region, geofence_collections, maps, search_indices } =
-		gen2AnalyticsProperties;
+		amplifyOutputsAnalyticsProperties;
 
 	return {
 		LocationService: {
@@ -205,9 +205,9 @@ function parseGeo(
 }
 
 function parseData(
-	gen2DataProperties?: Gen2DataProperties,
+	amplifyOutputsDataProperties?: AmplifyOutputsDataProperties,
 ): APIConfig | undefined {
-	if (!gen2DataProperties) {
+	if (!amplifyOutputsDataProperties) {
 		return undefined;
 	}
 
@@ -217,7 +217,7 @@ function parseData(
 		url,
 		api_key,
 		model_introspection,
-	} = gen2DataProperties;
+	} = amplifyOutputsDataProperties;
 
 	const GraphQL: APIGraphQLConfig = {
 		endpoint: url,
@@ -233,13 +233,14 @@ function parseData(
 }
 
 function parseNotifications(
-	gen2NotificationsProperties?: Gen2NotificationsProperties,
+	amplifyOutputsNotificationsProperties?: AmplifyOutputsNotificationsProperties,
 ): NotificationsConfig | undefined {
-	if (!gen2NotificationsProperties) {
+	if (!amplifyOutputsNotificationsProperties) {
 		return undefined;
 	}
 
-	const { aws_region, channels, pinpoint_app_id } = gen2NotificationsProperties;
+	const { aws_region, channels, pinpoint_app_id } =
+		amplifyOutputsNotificationsProperties;
 
 	if (
 		!channels.includes('IN_APP_MESSAGING') &&
@@ -290,32 +291,34 @@ function parseNotifications(
 	}
 }
 
-export function parseGen2Config(gen2Config: Gen2Config): ResourcesConfig {
+export function parseAmplifyOutputs(
+	amplifyOutputs: AmplifyOutputs,
+): ResourcesConfig {
 	const resourcesConfig: ResourcesConfig = {};
 
-	if (gen2Config.storage) {
-		resourcesConfig.Storage = parseStorage(gen2Config.storage);
+	if (amplifyOutputs.storage) {
+		resourcesConfig.Storage = parseStorage(amplifyOutputs.storage);
 	}
 
-	if (gen2Config.auth) {
-		resourcesConfig.Auth = parseAuth(gen2Config.auth);
+	if (amplifyOutputs.auth) {
+		resourcesConfig.Auth = parseAuth(amplifyOutputs.auth);
 	}
 
-	if (gen2Config.analytics) {
-		resourcesConfig.Analytics = parseAnalytics(gen2Config.analytics);
+	if (amplifyOutputs.analytics) {
+		resourcesConfig.Analytics = parseAnalytics(amplifyOutputs.analytics);
 	}
 
-	if (gen2Config.geo) {
-		resourcesConfig.Geo = parseGeo(gen2Config.geo);
+	if (amplifyOutputs.geo) {
+		resourcesConfig.Geo = parseGeo(amplifyOutputs.geo);
 	}
 
-	if (gen2Config.data) {
-		resourcesConfig.API = parseData(gen2Config.data);
+	if (amplifyOutputs.data) {
+		resourcesConfig.API = parseData(amplifyOutputs.data);
 	}
 
-	if (gen2Config.notifications) {
+	if (amplifyOutputs.notifications) {
 		resourcesConfig.Notifications = parseNotifications(
-			gen2Config.notifications,
+			amplifyOutputs.notifications,
 		);
 	}
 
@@ -334,7 +337,10 @@ function getGraphQLAuthMode(authType: AuthType): GraphQLAuthMode {
 	return authModeNames[authType];
 }
 
-const providerNames: Record<Gen2OAuthIdentityProvider, OAuthProvider> = {
+const providerNames: Record<
+	AmplifyOutputsOAuthIdentityProvider,
+	OAuthProvider
+> = {
 	GOOGLE: 'Google',
 	LOGIN_WITH_AMAZON: 'Amazon',
 	FACEBOOK: 'Facebook',
@@ -342,13 +348,13 @@ const providerNames: Record<Gen2OAuthIdentityProvider, OAuthProvider> = {
 };
 
 function getOAuthProviders(
-	providers?: Gen2OAuthIdentityProvider[],
+	providers?: AmplifyOutputsOAuthIdentityProvider[],
 ): OAuthProvider[] {
 	return (providers ?? []).map(provider => providerNames[provider]);
 }
 
 function getMfaStatus(
-	mfaConfiguration: Gen2AuthMFAConfiguration,
+	mfaConfiguration: AmplifyOutputsAuthMFAConfiguration,
 ): CognitoUserPoolConfigMfaStatus {
 	if (mfaConfiguration === 'OPTIONAL') return 'optional';
 	if (mfaConfiguration === 'REQUIRED') return 'on';

@@ -13,7 +13,7 @@ import {
 } from '../src/auth/cognito';
 
 import { Amplify } from '../src';
-import { Gen2Config } from '@aws-amplify/core/internals/utils';
+import { AmplifyOutputs } from '@aws-amplify/core/internals/utils';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../src/auth/cognito', () => ({
@@ -71,7 +71,7 @@ describe('initSingleton (DefaultAmplify)', () => {
 
 	describe('Gen2 Amplify configure', () => {
 		it('should use Gen2 config type', () => {
-			const gen2Config: Gen2Config = {
+			const gen2Config: AmplifyOutputs = {
 				'version': '1',
 				'storage': {
 					'aws_region': 'us-east-1',

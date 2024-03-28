@@ -4,21 +4,27 @@
 import { ModelIntrospectionSchema } from '../API/types';
 import { AuthStandardAttributeKey } from '../Auth/types';
 
-export type Gen2OAuthIdentityProvider =
+export type AmplifyOutputsOAuthIdentityProvider =
 	| 'GOOGLE'
 	| 'FACEBOOK'
 	| 'LOGIN_WITH_AMAZON'
 	| 'SIGN_IN_WITH_APPLE';
 
-type Gen2AuthUsernameAttribute = 'EMAIL' | 'PHONE_NUMBER' | 'USERNAME';
+type AmplifyOutputsAuthUsernameAttribute =
+	| 'EMAIL'
+	| 'PHONE_NUMBER'
+	| 'USERNAME';
 
-type Gen2AuthUserVerificationMethod = 'EMAIL' | 'PHONE_NUMBER';
+type AmplifyOutputsAuthUserVerificationMethod = 'EMAIL' | 'PHONE_NUMBER';
 
-export type Gen2AuthMFAConfiguration = 'OPTIONAL' | 'REQUIRED' | 'NONE';
+export type AmplifyOutputsAuthMFAConfiguration =
+	| 'OPTIONAL'
+	| 'REQUIRED'
+	| 'NONE';
 
-export type Gen2AuthMFAMethod = 'SMS' | 'TOTP';
+export type AmplifyOutputsAuthMFAMethod = 'SMS' | 'TOTP';
 
-export interface Gen2AuthProperties {
+export interface AmplifyOutputsAuthProperties {
 	aws_region: string;
 	authentication_flow_type?: 'USER_SRP_AUTH' | 'CUSTOM_AUTH';
 	user_pool_id: string;
@@ -32,7 +38,7 @@ export interface Gen2AuthProperties {
 		require_symbols: boolean;
 	};
 	oauth?: {
-		identity_providers: Gen2OAuthIdentityProvider[];
+		identity_providers: AmplifyOutputsOAuthIdentityProvider[];
 		domain: string;
 		scopes: string[];
 		redirect_sign_in_uri: string[];
@@ -40,19 +46,19 @@ export interface Gen2AuthProperties {
 		response_type: 'code' | 'token';
 	};
 	standard_required_attributes?: AuthStandardAttributeKey[];
-	username_attributes?: Gen2AuthUsernameAttribute[];
-	user_verification_mechanisms?: Gen2AuthUserVerificationMethod[];
+	username_attributes?: AmplifyOutputsAuthUsernameAttribute[];
+	user_verification_mechanisms?: AmplifyOutputsAuthUserVerificationMethod[];
 	unauthenticated_identities_enabled?: boolean;
-	mfa_configuration?: Gen2AuthMFAConfiguration;
-	mfa_methods?: Gen2AuthMFAMethod[];
+	mfa_configuration?: AmplifyOutputsAuthMFAConfiguration;
+	mfa_methods?: AmplifyOutputsAuthMFAMethod[];
 }
 
-export interface Gen2StorageProperties {
+export interface AmplifyOutputsStorageProperties {
 	aws_region: string;
 	bucket_name: string;
 }
 
-export interface Gen2GeoProperties {
+export interface AmplifyOutputsGeoProperties {
 	aws_region: string;
 	maps?: {
 		items: Record<string, { name: string; style: string }>;
@@ -62,7 +68,7 @@ export interface Gen2GeoProperties {
 	geofence_collections?: { items: string[]; default: string };
 }
 
-export interface Gen2AnalyticsProperties {
+export interface AmplifyOutputsAnalyticsProperties {
 	amazon_pinpoint?: {
 		aws_region: string;
 		app_id: string;
@@ -76,7 +82,7 @@ export type AuthType =
 	| 'AWS_LAMBDA'
 	| 'OPENID_CONNECT';
 
-export interface Gen2DataProperties {
+export interface AmplifyOutputsDataProperties {
 	aws_region: string;
 	url: string;
 	default_authorization_type: AuthType;
@@ -86,25 +92,25 @@ export interface Gen2DataProperties {
 	conflict_resolution_mode?: 'AUTO_MERGE' | 'OPTIMISTIC_CONCURRENCY' | 'LAMBDA';
 }
 
-type Gen2NotificationChannel =
+type AmplifyOutputsNotificationChannel =
 	| 'IN_APP_MESSAGING'
 	| 'FCM'
 	| 'APNS'
 	| 'EMAIL'
 	| 'SMS';
 
-export interface Gen2NotificationsProperties {
+export interface AmplifyOutputsNotificationsProperties {
 	aws_region: string;
 	pinpoint_app_id: string;
-	channels: Gen2NotificationChannel[];
+	channels: AmplifyOutputsNotificationChannel[];
 }
 
-export interface Gen2Config {
+export interface AmplifyOutputs {
 	version?: string;
-	storage?: Gen2StorageProperties;
-	auth?: Gen2AuthProperties;
-	analytics?: Gen2AnalyticsProperties;
-	geo?: Gen2GeoProperties;
-	data?: Gen2DataProperties;
-	notifications?: Gen2NotificationsProperties;
+	storage?: AmplifyOutputsStorageProperties;
+	auth?: AmplifyOutputsAuthProperties;
+	analytics?: AmplifyOutputsAnalyticsProperties;
+	geo?: AmplifyOutputsGeoProperties;
+	data?: AmplifyOutputsDataProperties;
+	notifications?: AmplifyOutputsNotificationsProperties;
 }
