@@ -2,8 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ConsoleLogger } from '@aws-amplify/core';
-import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
-import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import {
+	InAppMessagingAction,
+	getClientInfo,
+} from '@aws-amplify/core/internals/utils';
+import type { 
+	InAppMessageCampaign as PinpointInAppMessage, 
+	InAppMessageButton,
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty.js';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
 
@@ -21,6 +27,7 @@ import { resolveConfig } from './resolveConfig';
 import { resolveCredentials } from './resolveCredentials';
 import { CATEGORY } from './constants';
 import { getInAppMessagingUserAgentString } from './userAgent';
+import { ButtonConfigPlatform } from '../../../types/message';
 
 const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 
@@ -251,6 +258,8 @@ export const interpretLayout = (
 export const extractContent = ({
 	InAppMessage: message,
 }: PinpointInAppMessage): InAppMessageContent[] => {
+	const clientInfo = getClientInfo();
+	const configPlatform = mapOSPlatform(clientInfo?.platform);
 	return (
 		message?.Content?.map(content => {
 			const {
@@ -261,8 +270,13 @@ export const extractContent = ({
 				PrimaryBtn,
 				SecondaryBtn,
 			} = content;
-			const defaultPrimaryButton = PrimaryBtn?.DefaultConfig;
-			const defaultSecondaryButton = SecondaryBtn?.DefaultConfig;
+
+			const defaultPrimaryButton = getButtonConfig(configPlatform, PrimaryBtn);
+			const defaultSecondaryButton = getButtonConfig(
+				configPlatform,
+				SecondaryBtn,
+			);
+
 			const extractedContent: InAppMessageContent = {};
 			if (BackgroundColor) {
 				extractedContent.container = {
@@ -341,3 +355,36 @@ export const extractMetadata = ({
 	priority: Priority,
 	treatmentId: TreatmentId,
 });
+
+export const mapOSPlatform = (os?: string): ButtonConfigPlatform => {
+	if (!os) return 'DefaultConfig';
+	// Check if running in a web browser
+	if (typeof window !== 'undefined' && typeof window.document !== 'undefined') {
+		return 'Web';
+	}
+	// Native environment checks
+	switch (os) {
+		case 'android':
+			return 'Android';
+		case 'ios':
+			return 'IOS';
+		default:
+			return 'DefaultConfig';
+	}
+};
+
+const getButtonConfig = (
+	configPlatform: ButtonConfigPlatform,
+	button?: InAppMessageButton,
+): InAppMessageButton['DefaultConfig'] | undefined => {
+	if (!button?.DefaultConfig) {
+		return;
+	}
+	if (!configPlatform || !button?.[configPlatform]) {
+		return button?.DefaultConfig;
+	}
+	return {
+		...button.DefaultConfig,
+		...button[configPlatform],
+	};
+};
