@@ -16,8 +16,6 @@ import {
 	CognitoUserPoolConfigMfaStatus,
 	OAuthProvider,
 } from './singleton/Auth/types';
-import { InAppMessagingConfig } from './singleton/Notifications/InAppMessaging/types';
-import { PushNotificationConfig } from './singleton/Notifications/PushNotification/types';
 import { NotificationsConfig } from './singleton/Notifications/types';
 import {
 	AmplifyOutputs,
@@ -185,7 +183,6 @@ export function parseAnalytics(
 			region: amazon_pinpoint.aws_region,
 		},
 	};
-
 }
 
 function parseGeo(
@@ -247,7 +244,8 @@ function parseNotifications(
 		amplifyOutputsNotificationsProperties;
 
 	const hasInAppMessaging = channels.includes('IN_APP_MESSAGING');
-	const hasPushNotification = channels.includes('APNS') || channels.includes('FCM');
+	const hasPushNotification =
+		channels.includes('APNS') || channels.includes('FCM');
 
 	if (!(hasInAppMessaging || hasPushNotification)) {
 		return undefined;
