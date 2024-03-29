@@ -1,7 +1,7 @@
 import {
-	retry,
-	jitteredExponentialRetry,
 	NonRetryableError,
+	jitteredExponentialRetry,
+	retry,
 } from '../src/utils/retry';
 import { BackgroundProcessManager } from '../src/BackgroundProcessManager';
 
@@ -60,9 +60,10 @@ describe('retry', () => {
 			}
 		}
 
-		function delayFunction(attempt, args) {
-			receivedAttempt = attempt;
+		function delayFunction(attemptForDelayed: number, args: any[] | undefined) {
+			receivedAttempt = attemptForDelayed;
 			receivedArgs = args;
+
 			return 1;
 		}
 
@@ -83,6 +84,7 @@ describe('retry', () => {
 				return false;
 			}
 			count++;
+
 			return 1;
 		}
 
