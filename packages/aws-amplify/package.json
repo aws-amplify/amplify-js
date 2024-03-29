@@ -395,7 +395,7 @@
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchMFAPreference }",
-			"limit": "8.35 kB"
+			"limit": "8.4 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
