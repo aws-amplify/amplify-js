@@ -252,14 +252,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -494,14 +488,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -620,14 +608,8 @@ exports[`generateClient basic model operations - authMode: CuP override at the t
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -965,14 +947,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -1207,14 +1183,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -1333,14 +1303,8 @@ exports[`generateClient basic model operations - authMode: CuP override in the c
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -1678,14 +1642,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -1923,14 +1881,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -2055,14 +2007,8 @@ exports[`generateClient basic model operations - authMode: lambda override at th
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -2400,14 +2346,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -2645,14 +2585,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -2777,14 +2711,8 @@ exports[`generateClient basic model operations - authMode: lambda override in th
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -3330,14 +3258,8 @@ exports[`generateClient basic model operations - custom client and request heade
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -3384,14 +3306,8 @@ exports[`generateClient basic model operations - custom client and request heade
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -3750,14 +3666,8 @@ exports[`generateClient basic model operations can lazy load @hasMany 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -3838,14 +3748,8 @@ exports[`generateClient basic model operations can lazy load @hasMany with limit
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -3927,14 +3831,8 @@ exports[`generateClient basic model operations can lazy load @hasMany with nextT
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelNoteFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listNotes(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelNoteFilterInput, $limit: Int, $nextToken: String) {
+  listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       body
@@ -4051,14 +3949,8 @@ exports[`generateClient basic model operations can list() 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -4104,14 +3996,8 @@ exports[`generateClient basic model operations can list() with limit 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -4158,14 +4044,8 @@ exports[`generateClient basic model operations can list() with nextToken 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -4648,14 +4528,8 @@ exports[`generateClient basic model operations with Amplify configuration option
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -4703,14 +4577,8 @@ exports[`generateClient basic model operations with Amplify configuration option
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -5094,14 +4962,8 @@ exports[`generateClient custom operations can return model (Post) that with lazy
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelCommentFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listComments(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelCommentFilterInput, $limit: Int, $nextToken: String) {
+  listComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       content
@@ -5635,14 +5497,8 @@ exports[`generateClient observeQuery can paginate through initial results 1`] = 
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -5678,14 +5534,8 @@ exports[`generateClient observeQuery can paginate through initial results 1`] = 
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name

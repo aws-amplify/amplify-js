@@ -39,14 +39,8 @@ exports[`server generateClient with cookies can list 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -92,14 +86,8 @@ exports[`server generateClient with cookies can list with limit 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -146,14 +134,8 @@ exports[`server generateClient with cookies can list with nextToken 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -200,14 +182,8 @@ exports[`server generateClient with cookies can list with sort direction (ascend
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
@@ -250,14 +226,8 @@ exports[`server generateClient with cookies can list with sort direction (descen
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelTodoFilterInput, $sortDirection: ModelSortDirection, $id: ID, $limit: Int, $nextToken: String) {
-  listTodos(
-    filter: $filter
-    sortDirection: $sortDirection
-    id: $id
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+          "query": "query ($filter: ModelTodoFilterInput, $limit: Int, $nextToken: String) {
+  listTodos(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
       name
