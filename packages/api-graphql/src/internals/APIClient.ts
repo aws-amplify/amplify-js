@@ -732,15 +732,16 @@ export function generateGraphQLDocument(
 			graphQLArguments ??
 				(graphQLArguments = {
 					filter: `Model${name}FilterInput`,
-					sortDirection: 'ModelSortDirection',
-					...[primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-						(acc: Record<string, any>, fieldName) => {
-							acc[fieldName] = `${fields[fieldName].type}`;
+					...(sortKeyFieldNames.length > 0
+						? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
+								(acc: Record<string, any>, fieldName) => {
+									acc[fieldName] = `${fields[fieldName].type}`;
 
-							return acc;
-						},
-						[],
-					),
+									return acc;
+								},
+								{ sortDirection: 'ModelSortDirection' },
+							)
+						: []),
 					limit: 'Int',
 					nextToken: 'String',
 				});
