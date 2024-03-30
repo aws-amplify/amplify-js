@@ -157,13 +157,13 @@ export type UploadDataOptionsKey = WriteOptions & UploadDataOptions;
 export type UploadDataOptionsPath = UploadDataOptions;
 
 /** @deprecated This may be removed in the next major version. */
-export type CopySourceOptionsKey = ReadOptions & {
+export type CopySourceOptionsWithKey = ReadOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };
 
 /** @deprecated This may be removed in the next major version. */
-export type CopyDestinationOptionsKey = WriteOptions & {
+export type CopyDestinationOptionsWithKey = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };

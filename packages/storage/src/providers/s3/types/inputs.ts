@@ -4,8 +4,8 @@
 import { StrictUnion } from '@aws-amplify/core/internals/utils';
 
 import {
-	StorageCopyInputKey,
-	StorageCopyInputPath,
+	StorageCopyInputWithKey,
+	StorageCopyInputWithPath,
 	StorageDownloadDataInputKey,
 	StorageDownloadDataInputPath,
 	StorageGetPropertiesInputKey,
@@ -20,8 +20,8 @@ import {
 	StorageUploadDataInputPath,
 } from '../../../types';
 import {
-	CopyDestinationOptionsKey,
-	CopySourceOptionsKey,
+	CopyDestinationOptionsWithKey,
+	CopySourceOptionsWithKey,
 	DownloadDataOptionsKey,
 	DownloadDataOptionsPath,
 	GetPropertiesOptionsKey,
@@ -41,14 +41,14 @@ import {
 /**
  * Input type for S3 copy API.
  */
-export type CopyInput = CopyInputKey | CopyInputPath;
+export type CopyInput = CopyInputWithKey | CopyInputWithPath;
 
-/** @deprecated Use {@link CopyInputPath} instead. */
-export type CopyInputKey = StorageCopyInputKey<
-	CopySourceOptionsKey,
-	CopyDestinationOptionsKey
+/** @deprecated Use {@link CopyInputWithPath} instead. */
+export type CopyInputWithKey = StorageCopyInputWithKey<
+	CopySourceOptionsWithKey,
+	CopyDestinationOptionsWithKey
 >;
-export type CopyInputPath = StorageCopyInputPath;
+export type CopyInputWithPath = StorageCopyInputWithPath;
 
 /**
  * Input type for S3 getProperties API.
