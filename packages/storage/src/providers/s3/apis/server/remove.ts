@@ -8,18 +8,18 @@ import {
 
 import {
 	RemoveInput,
-	RemoveInputKey,
-	RemoveInputPath,
+	RemoveInputWithKey,
+	RemoveInputWithPath,
 	RemoveOutput,
-	RemoveOutputKey,
-	RemoveOutputPath,
+	RemoveOutputWithKey,
+	RemoveOutputWithPath,
 } from '../../types';
 import { remove as removeInternal } from '../internal/remove';
 
 interface RemoveApi {
 	/**
 	 * Remove a file from your S3 bucket.
-	 * @param input - The `RemoveInputPath` object.
+	 * @param input - The `RemoveInputWithPath` object.
 	 * @param contextSpec - The context spec used to get the Amplify server context.
 	 * @return Output containing the removed object path.
 	 * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
@@ -28,14 +28,14 @@ interface RemoveApi {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: RemoveInputPath,
-	): Promise<RemoveOutputPath>;
+		input: RemoveInputWithPath,
+	): Promise<RemoveOutputWithPath>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/remove | path} instead.
 	 *
 	 * Remove a file from your S3 bucket.
-	 * @param input - The `RemoveInputKey` object.
+	 * @param input - The `RemoveInputWithKey` object.
 	 * @param contextSpec - The context spec used to get the Amplify server context.
 	 * @return Output containing the removed object key
 	 * @throws service: `S3Exception` - S3 service errors thrown while while removing the object
@@ -44,8 +44,8 @@ interface RemoveApi {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: RemoveInputKey,
-	): Promise<RemoveOutputKey>;
+		input: RemoveInputWithKey,
+	): Promise<RemoveOutputWithKey>;
 }
 
 export const remove: RemoveApi = <Output extends RemoveOutput>(

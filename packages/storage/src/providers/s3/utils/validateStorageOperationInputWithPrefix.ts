@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	StorageOperationInputPath,
+	StorageOperationInputWithPath,
 	StorageOperationInputWithPrefixPath,
 } from '../../../types/inputs';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
@@ -13,7 +13,7 @@ import { STORAGE_INPUT_PATH, STORAGE_INPUT_PREFIX } from './constants';
 // Local assertion function with StorageOperationInputWithPrefixPath as Input
 const _isInputWithPath = (
 	input: StorageOperationInputWithPrefixPath,
-): input is StorageOperationInputPath => {
+): input is StorageOperationInputWithPath => {
 	return input.path !== undefined;
 };
 

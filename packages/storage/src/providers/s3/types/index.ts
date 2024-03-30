@@ -41,8 +41,8 @@ export {
 	CopyOutputWithKey,
 	CopyOutputWithPath,
 	RemoveOutput,
-	RemoveOutputKey,
-	RemoveOutputPath,
+	RemoveOutputWithKey,
+	RemoveOutputWithPath,
 } from './outputs';
 export {
 	CopyInput,
@@ -54,8 +54,8 @@ export {
 	GetUrlInput,
 	GetUrlInputKey,
 	GetUrlInputPath,
-	RemoveInputKey,
-	RemoveInputPath,
+	RemoveInputWithKey,
+	RemoveInputWithPath,
 	RemoveInput,
 	DownloadDataInput,
 	DownloadDataInputKey,

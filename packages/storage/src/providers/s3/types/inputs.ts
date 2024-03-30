@@ -14,8 +14,8 @@ import {
 	StorageGetUrlInputPath,
 	StorageListInputPath,
 	StorageListInputPrefix,
-	StorageRemoveInputKey,
-	StorageRemoveInputPath,
+	StorageRemoveInputWithKey,
+	StorageRemoveInputWithPath,
 	StorageUploadDataInputKey,
 	StorageUploadDataInputPath,
 } from '../../../types';
@@ -109,22 +109,22 @@ export type ListPaginateInputPrefix =
 	StorageListInputPrefix<ListPaginateOptionsPrefix>;
 
 /**
- * @deprecated Use {@link RemoveInputPath} instead.
+ * @deprecated Use {@link RemoveInputWithPath} instead.
  * Input type with key for S3 remove API.
  */
-export type RemoveInputKey = StorageRemoveInputKey<RemoveOptions>;
+export type RemoveInputWithKey = StorageRemoveInputWithKey<RemoveOptions>;
 
 /**
  * Input type with path for S3 remove API.
  */
-export type RemoveInputPath = StorageRemoveInputPath<
+export type RemoveInputWithPath = StorageRemoveInputWithPath<
 	Omit<RemoveOptions, 'accessLevel'>
 >;
 
 /**
  * Input type for S3 remove API.
  */
-export type RemoveInput = StrictUnion<RemoveInputKey | RemoveInputPath>;
+export type RemoveInput = StrictUnion<RemoveInputWithKey | RemoveInputWithPath>;
 
 /**
  * Input type for S3 downloadData API.

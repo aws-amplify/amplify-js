@@ -11,22 +11,22 @@ import {
 
 // TODO: rename to StorageOperationInput once the other type with
 // the same named is removed
-export type StorageOperationInputType = StrictUnion<
-	StorageOperationInputKey | StorageOperationInputPath
+export type StorageOperationInputWithType = StrictUnion<
+	StorageOperationInputWithKey | StorageOperationInputWithPath
 >;
 export type StorageOperationInputWithPrefixPath = StrictUnion<
-	StorageOperationInputPath | StorageOperationInputPrefix
+	StorageOperationInputWithPath | StorageOperationInputPrefix
 >;
-/** @deprecated Use {@link StorageOperationInputPath} instead. */
-export interface StorageOperationInputKey {
+/** @deprecated Use {@link StorageOperationInputWithPath} instead. */
+export interface StorageOperationInputWithKey {
 	/** @deprecated Use `path` instead. */
 	key: string;
 }
-export interface StorageOperationInputPath {
+export interface StorageOperationInputWithPath {
 	path: string | (({ identityId }: { identityId?: string }) => string);
 }
 
-/** @deprecated Use {@link StorageOperationInputPath} instead. */
+/** @deprecated Use {@link StorageOperationInputWithPath} instead. */
 export interface StorageOperationInputPrefix {
 	/** @deprecated Use `path` instead. */
 	prefix?: string;
@@ -38,10 +38,10 @@ export interface StorageOperationOptionsInput<Options> {
 
 /** @deprecated Use {@link StorageDownloadDataInputPath} instead. */
 export type StorageDownloadDataInputKey<Options extends StorageOptions> =
-	StorageOperationInputKey & StorageOperationOptionsInput<Options>;
+	StorageOperationInputWithKey & StorageOperationOptionsInput<Options>;
 
-export type StorageDownloadDataInputPath<Options> = StorageOperationInputPath &
-	StorageOperationOptionsInput<Options>;
+export type StorageDownloadDataInputPath<Options> =
+	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
 // TODO: This needs to be removed after refactor of all storage APIs
 export interface StorageOperationInput<Options extends StorageOptions> {
@@ -51,16 +51,16 @@ export interface StorageOperationInput<Options extends StorageOptions> {
 
 /** @deprecated Use {@link StorageGetPropertiesInputPath} instead. */
 export type StorageGetPropertiesInputKey<Options extends StorageOptions> =
-	StorageOperationInputKey & StorageOperationInput<Options>;
+	StorageOperationInputWithKey & StorageOperationInput<Options>;
 
-export type StorageGetPropertiesInputPath<Options> = StorageOperationInputPath &
+export type StorageGetPropertiesInputPath<Options> =
+	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
+
+export type StorageRemoveInputWithKey<Options> = StorageOperationInputWithKey &
 	StorageOperationOptionsInput<Options>;
 
-export type StorageRemoveInputKey<Options> = StorageOperationInputKey &
-	StorageOperationOptionsInput<Options>;
-
-export type StorageRemoveInputPath<Options> = StorageOperationInputPath &
-	StorageOperationOptionsInput<Options>;
+export type StorageRemoveInputWithPath<Options> =
+	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
 /** @deprecated Use {@link StorageListInputPath} instead. */
 export type StorageListInputPrefix<
@@ -69,24 +69,25 @@ export type StorageListInputPrefix<
 
 export type StorageListInputPath<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
-> = StorageOperationInputPath & StorageOperationOptionsInput<Options>;
+> = StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
 /** @deprecated Use {@link StorageGetUrlInputPath} instead. */
 export type StorageGetUrlInputKey<Options extends StorageOptions> =
-	StorageOperationInputKey & StorageOperationInput<Options>;
+	StorageOperationInputWithKey & StorageOperationInput<Options>;
 
-export type StorageGetUrlInputPath<Options> = StorageOperationInputPath &
+export type StorageGetUrlInputPath<Options> = StorageOperationInputWithPath &
 	StorageOperationOptionsInput<Options>;
 
 /** @deprecated Use {@link StorageUploadDataInputPath} instead. */
 export type StorageUploadDataInputKey<Options extends StorageOptions> =
-	StorageOperationInputKey &
+	StorageOperationInputWithKey &
 		StorageOperationOptionsInput<Options> &
 		StorageUploadDataInputPayload;
 
-export type StorageUploadDataInputPath<Options> = StorageOperationInputPath &
-	StorageOperationOptionsInput<Options> &
-	StorageUploadDataInputPayload;
+export type StorageUploadDataInputPath<Options> =
+	StorageOperationInputWithPath &
+		StorageOperationOptionsInput<Options> &
+		StorageUploadDataInputPayload;
 
 /** @deprecated Use {@link StorageCopyInputWithPath} instead. */
 export interface StorageCopyInputWithKey<
@@ -102,11 +103,11 @@ export interface StorageCopyInputWithKey<
 }
 
 export interface StorageCopyInputWithPath {
-	source: StorageOperationInputPath & {
+	source: StorageOperationInputWithPath & {
 		/** @deprecated Use path instead. */
 		key?: never;
 	};
-	destination: StorageOperationInputPath & {
+	destination: StorageOperationInputWithPath & {
 		/** @deprecated Use path instead. */
 		key?: never;
 	};

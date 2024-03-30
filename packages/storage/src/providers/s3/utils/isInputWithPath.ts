@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	StorageOperationInputPath,
-	StorageOperationInputType,
+	StorageOperationInputWithPath,
+	StorageOperationInputWithType,
 } from '../../../types/inputs';
 
 export const isInputWithPath = (
-	input: StorageOperationInputType,
-): input is StorageOperationInputPath => {
+	input: StorageOperationInputWithType,
+): input is StorageOperationInputWithPath => {
 	return input.path !== undefined;
 };

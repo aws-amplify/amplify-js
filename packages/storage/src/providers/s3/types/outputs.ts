@@ -142,15 +142,17 @@ export type CopyOutput = StrictUnion<CopyOutputWithKey | CopyOutputWithPath>;
 /**
  * Output type for S3 remove API.
  */
-export type RemoveOutput = StrictUnion<RemoveOutputKey | RemoveOutputPath>;
+export type RemoveOutput = StrictUnion<
+	RemoveOutputWithKey | RemoveOutputWithPath
+>;
 
 /**
- * @deprecated Use {@link RemoveOutputPath} instead.
+ * @deprecated Use {@link RemoveOutputWithPath} instead.
  * Output helper type with key for S3 remove API.
  */
-export type RemoveOutputKey = Pick<ItemKey, 'key'>;
+export type RemoveOutputWithKey = Pick<ItemKey, 'key'>;
 
 /**
  * Output helper type with path for S3 remove API.
  */
-export type RemoveOutputPath = Pick<ItemPath, 'path'>;
+export type RemoveOutputWithPath = Pick<ItemPath, 'path'>;
