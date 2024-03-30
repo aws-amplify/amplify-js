@@ -16,7 +16,7 @@ export const getRetryDecider =
 			(error as Error & { code: string }) ??
 			(await errorParser(response)) ??
 			undefined;
-		const errorCode = parsedError?.code;
+		const errorCode = parsedError?.code || parsedError?.name;
 		const statusCode = response?.statusCode;
 
 		return (
