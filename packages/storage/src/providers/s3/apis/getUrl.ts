@@ -50,7 +50,7 @@ interface GetUrl {
 	 *
 	 */
 	(input: GetUrlInputKey): Promise<GetUrlOutput>;
+	(input: GetUrlInput): Promise<GetUrlOutput>;
 }
 
-export const getUrl: GetUrl = (input: GetUrlInput): Promise<GetUrlOutput> =>
-	getUrlInternal(Amplify, input);
+export const getUrl: GetUrl = input => getUrlInternal(Amplify, input);

@@ -4,7 +4,7 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { GetUrlInput, GetUrlOutput } from '../../types';
+import { GetUrlInput, GetUrlInputKey, GetUrlOutput } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client';
 import {
@@ -19,6 +19,9 @@ import {
 } from '../../utils/constants';
 
 import { getProperties } from './getProperties';
+
+const isGetUrlInputKey = (input: GetUrlInput): input is GetUrlInputKey =>
+	!!(input as GetUrlInputKey)?.key;
 
 export const getUrl = async (
 	amplify: AmplifyClassV6,
@@ -40,9 +43,9 @@ export const getUrl = async (
 			amplify,
 			{
 				options: getUrlOptions,
-				...((inputType === STORAGE_INPUT_KEY
+				...(isGetUrlInputKey(input)
 					? { key: input.key }
-					: { path: input.path }) as GetUrlInput),
+					: { path: input.path }),
 			},
 			StorageAction.GetUrl,
 		);
@@ -66,14 +69,8 @@ export const getUrl = async (
 	// expiresAt is the minimum of credential expiration and url expiration
 	return {
 		url: await getPresignedGetObjectUrl(
-			{
-				...s3Config,
-				expiration: urlExpirationInSec,
-			},
-			{
-				Bucket: bucket,
-				Key: finalKey,
-			},
+			{ ...s3Config, expiration: urlExpirationInSec },
+			{ Bucket: bucket, Key: finalKey },
 		),
 		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),
 	};

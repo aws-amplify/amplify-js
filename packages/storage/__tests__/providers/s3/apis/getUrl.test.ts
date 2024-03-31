@@ -3,15 +3,12 @@
 
 import { getUrl } from '../../../../src/providers/s3/apis';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
-import {
-	GetUrlOptionsKey,
-	GetUrlOptionsPath,
-} from '../../../../src/providers/s3/types';
+import { GetUrlOptionsPath } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -84,19 +81,22 @@ describe('getUrl test with key', () => {
 				expectedKey: `public/${key}`,
 			},
 			{
-				options: { accessLevel: 'guest' },
+				options: { accessLevel: 'guest' as StorageAccessLevel },
 				expectedKey: `public/${key}`,
 			},
 			{
-				options: { accessLevel: 'private' },
+				options: { accessLevel: 'private' as StorageAccessLevel },
 				expectedKey: `private/${defaultIdentityId}/${key}`,
 			},
 			{
-				options: { accessLevel: 'protected' },
+				options: { accessLevel: 'protected' as StorageAccessLevel },
 				expectedKey: `protected/${defaultIdentityId}/${key}`,
 			},
 			{
-				options: { accessLevel: 'protected', targetIdentityId },
+				options: {
+					accessLevel: 'protected' as StorageAccessLevel,
+					targetIdentityId,
+				},
 				expectedKey: `protected/${targetIdentityId}/${key}`,
 			},
 		])(
@@ -111,7 +111,7 @@ describe('getUrl test with key', () => {
 					options: {
 						...options,
 						validateObjectExistence: true,
-					} as GetUrlOptionsKey,
+					},
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);

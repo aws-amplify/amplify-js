@@ -100,7 +100,7 @@ export type ListPaginateOptionsPath = Omit<
 /**
  * Input options type for S3 getUrl API.
  */
-export type GetUrlOptions = CommonOptions & {
+export interface GetUrlOptions extends CommonOptions {
 	/**
 	 * Whether to head object to make sure the object existence before downloading.
 	 * @default false
@@ -111,7 +111,7 @@ export type GetUrlOptions = CommonOptions & {
 	 * @default 900 (15 minutes)
 	 */
 	expiresIn?: number;
-};
+}
 
 /** @deprecated Use {@link GetUrlOptionsPath} instead. */
 export type GetUrlOptionsKey = ReadOptions & GetUrlOptions;
