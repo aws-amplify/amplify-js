@@ -15,7 +15,7 @@ export type StorageOperationInputWithType = StrictUnion<
 	StorageOperationInputWithKey | StorageOperationInputWithPath
 >;
 export type StorageOperationInputWithPrefixPath = StrictUnion<
-	StorageOperationInputWithPath | StorageOperationInputPrefix
+	StorageOperationInputWithPath | StorageOperationInputWithPrefix
 >;
 /** @deprecated Use {@link StorageOperationInputWithPath} instead. */
 export interface StorageOperationInputWithKey {
@@ -27,7 +27,7 @@ export interface StorageOperationInputWithPath {
 }
 
 /** @deprecated Use {@link StorageOperationInputWithPath} instead. */
-export interface StorageOperationInputPrefix {
+export interface StorageOperationInputWithPrefix {
 	/** @deprecated Use `path` instead. */
 	prefix?: string;
 }
@@ -65,7 +65,7 @@ export type StorageRemoveInputWithPath<Options> =
 /** @deprecated Use {@link StorageListInputWithPath} instead. */
 export type StorageListInputWithPrefix<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
-> = StorageOperationInputPrefix & StorageOperationOptionsInput<Options>;
+> = StorageOperationInputWithPrefix & StorageOperationOptionsInput<Options>;
 
 export type StorageListInputWithPath<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
