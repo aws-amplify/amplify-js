@@ -6,11 +6,11 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	DownloadDataInput,
-	DownloadDataInputKey,
-	DownloadDataInputPath,
+	DownloadDataInputWithKey,
+	DownloadDataInputWithPath,
 	DownloadDataOutput,
-	DownloadDataOutputKey,
-	DownloadDataOutputPath,
+	DownloadDataOutputWithKey,
+	DownloadDataOutputWithPath,
 } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { createDownloadTask, validateStorageOperationInput } from '../utils';
@@ -19,8 +19,8 @@ import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
 import {
 	StorageDownloadDataOutput,
-	StorageItemKey,
-	StorageItemPath,
+	StorageItemWithKey,
+	StorageItemWithPath,
 } from '../../../types';
 import { STORAGE_INPUT_KEY } from '../utils/constants';
 
@@ -28,7 +28,7 @@ interface DownloadData {
 	/**
 	 * Download S3 object data to memory
 	 *
-	 * @param input - The DownloadDataInputPath object.
+	 * @param input - The DownloadDataInputWithPath object.
 	 * @returns A cancelable task exposing result promise from `result` property.
 	 * @throws service: `S3Exception` - thrown when checking for existence of the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -55,14 +55,14 @@ interface DownloadData {
 	 * }
 	 *```
 	 */
-	(input: DownloadDataInputPath): DownloadDataOutputPath;
+	(input: DownloadDataInputWithPath): DownloadDataOutputWithPath;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
 	 *
 	 * Download S3 object data to memory
 	 *
-	 * @param input - The DownloadDataInputKey object.
+	 * @param input - The DownloadDataInputWithKey object.
 	 * @returns A cancelable task exposing result promise from `result` property.
 	 * @throws service: `S3Exception` - thrown when checking for existence of the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -89,7 +89,7 @@ interface DownloadData {
 	 * }
 	 *```
 	 */
-	(input: DownloadDataInputKey): DownloadDataOutputKey;
+	(input: DownloadDataInputWithKey): DownloadDataOutputWithKey;
 }
 
 export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
@@ -110,7 +110,7 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 const downloadDataJob =
 	(downloadDataInput: DownloadDataInput, abortSignal: AbortSignal) =>
 	async (): Promise<
-		StorageDownloadDataOutput<StorageItemKey | StorageItemPath>
+		StorageDownloadDataOutput<StorageItemWithKey | StorageItemWithPath>
 	> => {
 		const { options: downloadDataOptions } = downloadDataInput;
 		const { bucket, keyPrefix, s3Config, identityId } =

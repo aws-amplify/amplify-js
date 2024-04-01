@@ -36,11 +36,11 @@ export interface StorageOperationOptionsInput<Options> {
 	options?: Options;
 }
 
-/** @deprecated Use {@link StorageDownloadDataInputPath} instead. */
-export type StorageDownloadDataInputKey<Options extends StorageOptions> =
+/** @deprecated Use {@link StorageDownloadDataInputWithPath} instead. */
+export type StorageDownloadDataInputWithKey<Options extends StorageOptions> =
 	StorageOperationInputWithKey & StorageOperationOptionsInput<Options>;
 
-export type StorageDownloadDataInputPath<Options> =
+export type StorageDownloadDataInputWithPath<Options> =
 	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
 // TODO: This needs to be removed after refactor of all storage APIs

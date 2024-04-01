@@ -15,8 +15,8 @@ export {
 	StorageListInputWithPath,
 	StorageRemoveInputWithPath,
 	StorageRemoveInputWithKey,
-	StorageDownloadDataInputKey,
-	StorageDownloadDataInputPath,
+	StorageDownloadDataInputWithKey,
+	StorageDownloadDataInputWithPath,
 	StorageUploadDataInputKey,
 	StorageUploadDataInputPath,
 	StorageCopyInputWithKey,
@@ -33,8 +33,8 @@ export {
 } from './options';
 export {
 	StorageItem,
-	StorageItemKey,
-	StorageItemPath,
+	StorageItemWithKey,
+	StorageItemWithPath,
 	StorageListOutput,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,

@@ -27,15 +27,15 @@ export interface StorageItemBase {
 	metadata?: Record<string, string>;
 }
 
-/** @deprecated Use {@link StorageItemPath} instead. */
-export type StorageItemKey = StorageItemBase & {
+/** @deprecated Use {@link StorageItemWithPath} instead. */
+export type StorageItemWithKey = StorageItemBase & {
 	/**
 	 * Key of the object.
 	 */
 	key: string;
 };
 
-export type StorageItemPath = StorageItemBase & {
+export type StorageItemWithPath = StorageItemBase & {
 	/**
 	 * Path of the object.
 	 */
@@ -45,7 +45,7 @@ export type StorageItemPath = StorageItemBase & {
 /**
  * A storage item can be identified either by a key or a path.
  */
-export type StorageItem = StorageItemKey | StorageItemPath;
+export type StorageItem = StorageItemWithKey | StorageItemWithPath;
 
 export type StorageDownloadDataOutput<Item extends StorageItem> = Item & {
 	body: ResponseBodyMixin;

@@ -7,8 +7,8 @@ import {
 	DownloadTask,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,
-	StorageItemKey,
-	StorageItemPath,
+	StorageItemWithKey,
+	StorageItemWithPath,
 	StorageListOutput,
 	UploadTask,
 } from '../../../types';
@@ -41,30 +41,32 @@ export type ListOutputItemWithPath = Omit<ItemPath, 'metadata'>;
 /**
  * @deprecated Use {@link ItemPath} instead.
  */
-export type ItemKey = ItemBase & StorageItemKey;
+export type ItemKey = ItemBase & StorageItemWithKey;
 
 /**
  * type for S3 list item with path.
  */
-export type ItemPath = ItemBase & StorageItemPath;
+export type ItemPath = ItemBase & StorageItemWithPath;
 
 /**
  * type for S3 list item.
  */
 export type ListOutputItem = Omit<ItemKey, 'metadata'>;
 
-/** @deprecated Use {@link DownloadDataOutputPath} instead. */
-export type DownloadDataOutputKey = DownloadTask<
+/** @deprecated Use {@link DownloadDataOutputWithPath} instead. */
+export type DownloadDataOutputWithKey = DownloadTask<
 	StorageDownloadDataOutput<ItemKey>
 >;
-export type DownloadDataOutputPath = DownloadTask<
+export type DownloadDataOutputWithPath = DownloadTask<
 	StorageDownloadDataOutput<ItemPath>
 >;
 
 /**
  * Output type for S3 downloadData API.
  */
-export type DownloadDataOutput = DownloadDataOutputKey | DownloadDataOutputPath;
+export type DownloadDataOutput =
+	| DownloadDataOutputWithKey
+	| DownloadDataOutputWithPath;
 
 /**
  * Output type for S3 getUrl API.

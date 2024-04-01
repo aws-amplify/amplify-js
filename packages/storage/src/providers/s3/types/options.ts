@@ -127,9 +127,9 @@ export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
 	BytesRangeOptions;
 
-/** @deprecated Use {@link DownloadDataOptionsPath} instead. */
-export type DownloadDataOptionsKey = ReadOptions & DownloadDataOptions;
-export type DownloadDataOptionsPath = DownloadDataOptions;
+/** @deprecated Use {@link DownloadDataOptionsWithPath} instead. */
+export type DownloadDataOptionsWithKey = ReadOptions & DownloadDataOptions;
+export type DownloadDataOptionsWithPath = DownloadDataOptions;
 
 export type UploadDataOptions = CommonOptions &
 	TransferOptions & {

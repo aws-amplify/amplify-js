@@ -6,8 +6,8 @@ import { StrictUnion } from '@aws-amplify/core/internals/utils';
 import {
 	StorageCopyInputWithKey,
 	StorageCopyInputWithPath,
-	StorageDownloadDataInputKey,
-	StorageDownloadDataInputPath,
+	StorageDownloadDataInputWithKey,
+	StorageDownloadDataInputWithPath,
 	StorageGetPropertiesInputWithKey,
 	StorageGetPropertiesInputWithPath,
 	StorageGetUrlInputWithKey,
@@ -22,8 +22,8 @@ import {
 import {
 	CopyDestinationOptionsWithKey,
 	CopySourceOptionsWithKey,
-	DownloadDataOptionsKey,
-	DownloadDataOptionsPath,
+	DownloadDataOptionsWithKey,
+	DownloadDataOptionsWithPath,
 	GetPropertiesOptionsWithKey,
 	GetPropertiesOptionsWithPath,
 	GetUrlOptionsWithKey,
@@ -136,13 +136,13 @@ export type RemoveInput = StrictUnion<RemoveInputWithKey | RemoveInputWithPath>;
  * Input type for S3 downloadData API.
  */
 export type DownloadDataInput = StrictUnion<
-	DownloadDataInputKey | DownloadDataInputPath
+	DownloadDataInputWithKey | DownloadDataInputWithPath
 >;
-/** @deprecated Use {@link DownloadDataInputPath} instead. */
-export type DownloadDataInputKey =
-	StorageDownloadDataInputKey<DownloadDataOptionsKey>;
-export type DownloadDataInputPath =
-	StorageDownloadDataInputPath<DownloadDataOptionsPath>;
+/** @deprecated Use {@link DownloadDataInputWithPath} instead. */
+export type DownloadDataInputWithKey =
+	StorageDownloadDataInputWithKey<DownloadDataOptionsWithKey>;
+export type DownloadDataInputWithPath =
+	StorageDownloadDataInputWithPath<DownloadDataOptionsWithPath>;
 
 /**
  * Input type for S3 uploadData API.
