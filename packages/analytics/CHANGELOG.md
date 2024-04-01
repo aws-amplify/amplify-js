@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 7.0.26 (2024-04-01)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
 ## 7.0.25 (2024-03-30)
 
 **Note:** Version bump only for package @aws-amplify/analytics
