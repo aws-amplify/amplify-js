@@ -113,9 +113,9 @@ export type GetUrlOptions = CommonOptions & {
 	expiresIn?: number;
 };
 
-/** @deprecated Use {@link GetUrlOptionsPath} instead. */
-export type GetUrlOptionsKey = ReadOptions & GetUrlOptions;
-export type GetUrlOptionsPath = GetUrlOptions;
+/** @deprecated Use {@link GetUrlOptionsWithPath} instead. */
+export type GetUrlOptionsWithKey = ReadOptions & GetUrlOptions;
+export type GetUrlOptionsWithPath = GetUrlOptions;
 
 /**
  * Input options type for S3 downloadData API.

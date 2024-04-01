@@ -21,8 +21,8 @@ export {
 	StorageUploadDataInputPath,
 	StorageCopyInputWithKey,
 	StorageCopyInputWithPath,
-	StorageGetUrlInputKey,
-	StorageGetUrlInputPath,
+	StorageGetUrlInputWithKey,
+	StorageGetUrlInputWithPath,
 	StorageUploadDataPayload,
 } from './inputs';
 export {

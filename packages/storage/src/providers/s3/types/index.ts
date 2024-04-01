@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export {
-	GetUrlOptionsKey,
-	GetUrlOptionsPath,
+	GetUrlOptionsWithKey,
+	GetUrlOptionsWithPath,
 	UploadDataOptionsPath,
 	UploadDataOptionsKey,
 	GetPropertiesOptionsKey,
@@ -52,8 +52,8 @@ export {
 	GetPropertiesInputKey,
 	GetPropertiesInputPath,
 	GetUrlInput,
-	GetUrlInputKey,
-	GetUrlInputPath,
+	GetUrlInputWithKey,
+	GetUrlInputWithPath,
 	RemoveInputWithKey,
 	RemoveInputWithPath,
 	RemoveInput,

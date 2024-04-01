@@ -71,12 +71,12 @@ export type StorageListInputPath<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
 > = StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
-/** @deprecated Use {@link StorageGetUrlInputPath} instead. */
-export type StorageGetUrlInputKey<Options extends StorageOptions> =
+/** @deprecated Use {@link StorageGetUrlInputWithPath} instead. */
+export type StorageGetUrlInputWithKey<Options extends StorageOptions> =
 	StorageOperationInputWithKey & StorageOperationInput<Options>;
 
-export type StorageGetUrlInputPath<Options> = StorageOperationInputWithPath &
-	StorageOperationOptionsInput<Options>;
+export type StorageGetUrlInputWithPath<Options> =
+	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
 /** @deprecated Use {@link StorageUploadDataInputPath} instead. */
 export type StorageUploadDataInputKey<Options extends StorageOptions> =
