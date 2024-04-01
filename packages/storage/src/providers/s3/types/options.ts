@@ -57,9 +57,9 @@ interface TransferOptions {
 /**
  * Input options type for S3 getProperties API.
  */
-/** @deprecated Use {@link GetPropertiesOptionsPath} instead. */
-export type GetPropertiesOptionsKey = ReadOptions & CommonOptions;
-export type GetPropertiesOptionsPath = CommonOptions;
+/** @deprecated Use {@link GetPropertiesOptionsWithPath} instead. */
+export type GetPropertiesOptionsWithKey = ReadOptions & CommonOptions;
+export type GetPropertiesOptionsWithPath = CommonOptions;
 
 /**
  * Input options type for S3 getProperties API.

@@ -80,16 +80,16 @@ export type UploadDataOutputPath = UploadTask<ItemPath>;
  */
 export type UploadDataOutput = UploadDataOutputKey | UploadDataOutputPath;
 
-/** @deprecated Use {@link GetPropertiesOutputPath} instead. */
-export type GetPropertiesOutputKey = ItemKey;
-export type GetPropertiesOutputPath = ItemPath;
+/** @deprecated Use {@link GetPropertiesOutputWithPath} instead. */
+export type GetPropertiesOutputWithKey = ItemKey;
+export type GetPropertiesOutputWithPath = ItemPath;
 
 /**
  * Output type for S3 getProperties API.
  */
 export type GetPropertiesOutput =
-	| GetPropertiesOutputKey
-	| GetPropertiesOutputPath;
+	| GetPropertiesOutputWithKey
+	| GetPropertiesOutputWithPath;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.

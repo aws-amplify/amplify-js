@@ -49,11 +49,11 @@ export interface StorageOperationInput<Options extends StorageOptions> {
 	options?: Options;
 }
 
-/** @deprecated Use {@link StorageGetPropertiesInputPath} instead. */
-export type StorageGetPropertiesInputKey<Options extends StorageOptions> =
+/** @deprecated Use {@link StorageGetPropertiesInputWithPath} instead. */
+export type StorageGetPropertiesInputWithKey<Options extends StorageOptions> =
 	StorageOperationInputWithKey & StorageOperationInput<Options>;
 
-export type StorageGetPropertiesInputPath<Options> =
+export type StorageGetPropertiesInputWithPath<Options> =
 	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
 export type StorageRemoveInputWithKey<Options> = StorageOperationInputWithKey &

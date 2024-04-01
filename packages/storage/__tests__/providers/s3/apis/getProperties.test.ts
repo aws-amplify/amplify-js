@@ -6,8 +6,8 @@ import { getProperties } from '../../../../src/providers/s3';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import {
-	GetPropertiesOptionsKey,
-	GetPropertiesOptionsPath,
+	GetPropertiesOptionsWithKey,
+	GetPropertiesOptionsWithPath,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -111,7 +111,7 @@ describe('getProperties with key', () => {
 				expect(
 					await getProperties({
 						key,
-						options: options as GetPropertiesOptionsKey,
+						options: options as GetPropertiesOptionsWithKey,
 					}),
 				).toEqual(expected);
 				expect(headObject).toHaveBeenCalledTimes(1);
@@ -218,7 +218,7 @@ describe('Happy cases: With path', () => {
 						path: testPath,
 						options: {
 							useAccelerateEndpoint: true,
-						} as GetPropertiesOptionsPath,
+						} as GetPropertiesOptionsWithPath,
 					}),
 				).toEqual(expected);
 				expect(headObject).toHaveBeenCalledTimes(1);
