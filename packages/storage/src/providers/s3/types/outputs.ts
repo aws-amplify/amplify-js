@@ -31,34 +31,34 @@ export interface ItemBase {
  * @deprecated Use {@link ListOutputItemWithPath} instead.
  * type for S3 list item with key.
  */
-export type ListOutputItemWithKey = Omit<ItemKey, 'metadata'>;
+export type ListOutputItemWithKey = Omit<ItemWithKey, 'metadata'>;
 
 /**
  * type for S3 list item with path.
  */
-export type ListOutputItemWithPath = Omit<ItemPath, 'metadata'>;
+export type ListOutputItemWithPath = Omit<ItemWithPath, 'metadata'>;
 
 /**
- * @deprecated Use {@link ItemPath} instead.
+ * @deprecated Use {@link ItemWithPath} instead.
  */
-export type ItemKey = ItemBase & StorageItemWithKey;
+export type ItemWithKey = ItemBase & StorageItemWithKey;
 
 /**
  * type for S3 list item with path.
  */
-export type ItemPath = ItemBase & StorageItemWithPath;
+export type ItemWithPath = ItemBase & StorageItemWithPath;
 
 /**
  * type for S3 list item.
  */
-export type ListOutputItem = Omit<ItemKey, 'metadata'>;
+export type ListOutputItem = Omit<ItemWithKey, 'metadata'>;
 
 /** @deprecated Use {@link DownloadDataOutputWithPath} instead. */
 export type DownloadDataOutputWithKey = DownloadTask<
-	StorageDownloadDataOutput<ItemKey>
+	StorageDownloadDataOutput<ItemWithKey>
 >;
 export type DownloadDataOutputWithPath = DownloadTask<
-	StorageDownloadDataOutput<ItemPath>
+	StorageDownloadDataOutput<ItemWithPath>
 >;
 
 /**
@@ -73,18 +73,20 @@ export type DownloadDataOutput =
  */
 export type GetUrlOutput = StorageGetUrlOutput;
 
-/** @deprecated Use {@link UploadDataOutputPath} instead. */
-export type UploadDataOutputKey = UploadTask<ItemKey>;
-export type UploadDataOutputPath = UploadTask<ItemPath>;
+/** @deprecated Use {@link UploadDataOutputWithPath} instead. */
+export type UploadDataOutputWithKey = UploadTask<ItemWithKey>;
+export type UploadDataOutputWithPath = UploadTask<ItemWithPath>;
 
 /**
  * Output type for S3 uploadData API.
  */
-export type UploadDataOutput = UploadDataOutputKey | UploadDataOutputPath;
+export type UploadDataOutput =
+	| UploadDataOutputWithKey
+	| UploadDataOutputWithPath;
 
 /** @deprecated Use {@link GetPropertiesOutputWithPath} instead. */
-export type GetPropertiesOutputWithKey = ItemKey;
-export type GetPropertiesOutputWithPath = ItemPath;
+export type GetPropertiesOutputWithKey = ItemWithKey;
+export type GetPropertiesOutputWithPath = ItemWithPath;
 
 /**
  * Output type for S3 getProperties API.
@@ -138,8 +140,8 @@ export type ListPaginateOutputWithPath =
 /**
  * @deprecated Use {@link CopyOutputWithPath} instead.
  */
-export type CopyOutputWithKey = Pick<ItemKey, 'key'>;
-export type CopyOutputWithPath = Pick<ItemPath, 'path'>;
+export type CopyOutputWithKey = Pick<ItemWithKey, 'key'>;
+export type CopyOutputWithPath = Pick<ItemWithPath, 'path'>;
 
 export type CopyOutput = StrictUnion<CopyOutputWithKey | CopyOutputWithPath>;
 
@@ -154,9 +156,9 @@ export type RemoveOutput = StrictUnion<
  * @deprecated Use {@link RemoveOutputWithPath} instead.
  * Output helper type with key for S3 remove API.
  */
-export type RemoveOutputWithKey = Pick<ItemKey, 'key'>;
+export type RemoveOutputWithKey = Pick<ItemWithKey, 'key'>;
 
 /**
  * Output helper type with path for S3 remove API.
  */
-export type RemoveOutputWithPath = Pick<ItemPath, 'path'>;
+export type RemoveOutputWithPath = Pick<ItemWithPath, 'path'>;

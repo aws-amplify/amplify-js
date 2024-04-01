@@ -78,13 +78,13 @@ export type StorageGetUrlInputWithKey<Options extends StorageOptions> =
 export type StorageGetUrlInputWithPath<Options> =
 	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
-/** @deprecated Use {@link StorageUploadDataInputPath} instead. */
-export type StorageUploadDataInputKey<Options extends StorageOptions> =
+/** @deprecated Use {@link StorageUploadDataInputWithPath} instead. */
+export type StorageUploadDataInputWithKey<Options extends StorageOptions> =
 	StorageOperationInputWithKey &
 		StorageOperationOptionsInput<Options> &
 		StorageUploadDataInputPayload;
 
-export type StorageUploadDataInputPath<Options> =
+export type StorageUploadDataInputWithPath<Options> =
 	StorageOperationInputWithPath &
 		StorageOperationOptionsInput<Options> &
 		StorageUploadDataInputPayload;

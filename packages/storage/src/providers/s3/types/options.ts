@@ -155,9 +155,9 @@ export type UploadDataOptions = CommonOptions &
 		metadata?: Record<string, string>;
 	};
 
-/** @deprecated Use {@link UploadDataOptionsPath} instead. */
-export type UploadDataOptionsKey = WriteOptions & UploadDataOptions;
-export type UploadDataOptionsPath = UploadDataOptions;
+/** @deprecated Use {@link UploadDataOptionsWithPath} instead. */
+export type UploadDataOptionsWithKey = WriteOptions & UploadDataOptions;
+export type UploadDataOptionsWithPath = UploadDataOptions;
 
 /** @deprecated This may be removed in the next major version. */
 export type CopySourceOptionsWithKey = ReadOptions & {

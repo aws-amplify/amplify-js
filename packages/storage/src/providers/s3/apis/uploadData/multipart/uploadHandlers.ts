@@ -9,13 +9,16 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../../utils';
-import { ItemKey, ItemPath } from '../../../types/outputs';
+import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
 	STORAGE_INPUT_KEY,
 } from '../../../utils/constants';
-import { ResolvedS3Config, UploadDataOptionsKey } from '../../../types/options';
+import {
+	ResolvedS3Config,
+	UploadDataOptionsWithKey,
+} from '../../../types/options';
 import { StorageError } from '../../../../../errors/StorageError';
 import { CanceledError } from '../../../../../errors/CanceledError';
 import {
@@ -43,7 +46,9 @@ export const getMultipartUploadHandlers = (
 	uploadDataInput: UploadDataInput,
 	size?: number,
 ) => {
-	let resolveCallback: ((value: ItemKey | ItemPath) => void) | undefined;
+	let resolveCallback:
+		| ((value: ItemWithKey | ItemWithPath) => void)
+		| undefined;
 	let rejectCallback: ((reason?: any) => void) | undefined;
 	let inProgressUpload:
 		| {
@@ -64,7 +69,7 @@ export const getMultipartUploadHandlers = (
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
 	let isAbortSignalFromPause = false;
 
-	const startUpload = async (): Promise<ItemKey | ItemPath> => {
+	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const resolvedS3Options = await resolveS3ConfigAndInput(
 			Amplify,
@@ -94,7 +99,7 @@ export const getMultipartUploadHandlers = (
 
 		// Resolve "key" specific options
 		if (inputType === STORAGE_INPUT_KEY) {
-			const accessLevel = (uploadDataOptions as UploadDataOptionsKey)
+			const accessLevel = (uploadDataOptions as UploadDataOptionsWithKey)
 				?.accessLevel;
 
 			resolvedKeyPrefix = resolvedS3Options.keyPrefix;
@@ -233,7 +238,7 @@ export const getMultipartUploadHandlers = (
 			});
 
 	const multipartUploadJob = () =>
-		new Promise<ItemKey | ItemPath>((resolve, reject) => {
+		new Promise<ItemWithKey | ItemWithPath>((resolve, reject) => {
 			resolveCallback = resolve;
 			rejectCallback = reject;
 			startUploadWithResumability();
