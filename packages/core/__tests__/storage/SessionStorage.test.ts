@@ -27,6 +27,7 @@ describe('sessionStorage', () => {
 
 	it('should not throw if trying to delete a non existing key', async () => {
 		const badKey = 'nonExistingKey';
+		// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 		await expect(() => {
 			sessionStorage.removeItem(badKey);
 		}).not.toThrow();

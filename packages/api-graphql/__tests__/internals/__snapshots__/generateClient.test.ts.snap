@@ -4084,6 +4084,100 @@ exports[`generateClient basic model operations can list() with nextToken 1`] = `
 ]
 `;
 
+exports[`generateClient basic model operations can list() with sortDirection (ASC) 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($filter: ModelThingWithCustomPkFilterInput, $sortDirection: ModelSortDirection, $cpk_cluster_key: String, $cpk_sort_key: String, $limit: Int, $nextToken: String) {
+  listThingWithCustomPks(
+    filter: $filter
+    sortDirection: $sortDirection
+    cpk_cluster_key: $cpk_cluster_key
+    cpk_sort_key: $cpk_sort_key
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      cpk_cluster_key
+      cpk_sort_key
+      otherField
+      createdAt
+      updatedAt
+    }
+    nextToken
+    __typename
+  }
+}
+",
+          "variables": {
+            "cpk_cluster_key": "1",
+            "sortDirection": "ASC",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient basic model operations can list() with sortDirection (DESC) 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($filter: ModelThingWithCustomPkFilterInput, $sortDirection: ModelSortDirection, $cpk_cluster_key: String, $cpk_sort_key: String, $limit: Int, $nextToken: String) {
+  listThingWithCustomPks(
+    filter: $filter
+    sortDirection: $sortDirection
+    cpk_cluster_key: $cpk_cluster_key
+    cpk_sort_key: $cpk_sort_key
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      cpk_cluster_key
+      cpk_sort_key
+      otherField
+      createdAt
+      updatedAt
+    }
+    nextToken
+    __typename
+  }
+}
+",
+          "variables": {
+            "cpk_cluster_key": "1",
+            "sortDirection": "DESC",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
 exports[`generateClient basic model operations can update() 1`] = `
 [
   [
@@ -5197,11 +5291,12 @@ exports[`generateClient index queries PK and SK index query 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($description: String!, $viewCount: ModelIntKeyConditionInput, $filter: ModelSecondaryIndexModelFilterInput, $limit: Int, $nextToken: String) {
+          "query": "query ($description: String!, $viewCount: ModelIntKeyConditionInput, $filter: ModelSecondaryIndexModelFilterInput, $sortDirection: ModelSortDirection, $limit: Int, $nextToken: String) {
   listByDescriptionAndViewCount(
     description: $description
     viewCount: $viewCount
     filter: $filter
+    sortDirection: $sortDirection
     limit: $limit
     nextToken: $nextToken
   ) {
@@ -5240,6 +5335,112 @@ exports[`generateClient index queries PK and SK index query 1`] = `
 ]
 `;
 
+exports[`generateClient index queries PK and SK index query, with sort direction (ascending) 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($description: String!, $viewCount: ModelIntKeyConditionInput, $filter: ModelSecondaryIndexModelFilterInput, $sortDirection: ModelSortDirection, $limit: Int, $nextToken: String) {
+  listByDescriptionAndViewCount(
+    description: $description
+    viewCount: $viewCount
+    filter: $filter
+    sortDirection: $sortDirection
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      title
+      description
+      viewCount
+      status
+      createdAt
+      updatedAt
+    }
+    nextToken
+    __typename
+  }
+}
+",
+          "variables": {
+            "description": "match",
+            "sortDirection": "ASC",
+            "viewCount": {
+              "lt": 4,
+            },
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient index queries PK and SK index query, with sort direction (descending) 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($description: String!, $viewCount: ModelIntKeyConditionInput, $filter: ModelSecondaryIndexModelFilterInput, $sortDirection: ModelSortDirection, $limit: Int, $nextToken: String) {
+  listByDescriptionAndViewCount(
+    description: $description
+    viewCount: $viewCount
+    filter: $filter
+    sortDirection: $sortDirection
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      title
+      description
+      viewCount
+      status
+      createdAt
+      updatedAt
+    }
+    nextToken
+    __typename
+  }
+}
+",
+          "variables": {
+            "description": "match",
+            "sortDirection": "DESC",
+            "viewCount": {
+              "lt": 4,
+            },
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
 exports[`generateClient index queries PK-only index query 1`] = `
 [
   [
@@ -5248,10 +5449,11 @@ exports[`generateClient index queries PK-only index query 1`] = `
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($title: String!, $filter: ModelSecondaryIndexModelFilterInput, $limit: Int, $nextToken: String) {
+          "query": "query ($title: String!, $filter: ModelSecondaryIndexModelFilterInput, $sortDirection: ModelSortDirection, $limit: Int, $nextToken: String) {
   listByTitle(
     title: $title
     filter: $filter
+    sortDirection: $sortDirection
     limit: $limit
     nextToken: $nextToken
   ) {
