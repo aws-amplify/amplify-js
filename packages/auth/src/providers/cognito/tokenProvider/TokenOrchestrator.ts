@@ -10,6 +10,7 @@ import {
 import {
 	AMPLIFY_SYMBOL,
 	assertTokenProviderConfig,
+	isBrowser,
 	isTokenExpired,
 } from '@aws-amplify/core/internals/utils';
 
@@ -32,25 +33,29 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
 	inflightPromise: Promise<void> | undefined;
-	waitForInflightOAuth: () => Promise<void> = async () => {
-		if (!(await oAuthStore.loadOAuthInFlight())) {
-			return;
-		}
+	waitForInflightOAuth: () => Promise<void> = isBrowser()
+		? async () => {
+				if (!(await oAuthStore.loadOAuthInFlight())) {
+					return;
+				}
 
-		if (this.inflightPromise) {
-			return this.inflightPromise;
-		}
+				if (this.inflightPromise) {
+					return this.inflightPromise;
+				}
 
-		// when there is valid oauth config and there is an inflight oauth flow, try
-		// to block async calls that require fetching tokens before the oauth flow completes
-		// e.g. getCurrentUser, fetchAuthSession etc.
+				// when there is valid oauth config and there is an inflight oauth flow, try
+				// to block async calls that require fetching tokens before the oauth flow completes
+				// e.g. getCurrentUser, fetchAuthSession etc.
 
-		this.inflightPromise = new Promise<void>((resolve, _reject) => {
-			addInflightPromise(resolve);
-		});
+				this.inflightPromise = new Promise<void>((resolve, _reject) => {
+					addInflightPromise(resolve);
+				});
 
-		return this.inflightPromise;
-	};
+				return this.inflightPromise;
+			}
+		: async () => {
+				// no-op for non-browser environments
+			};
 
 	setAuthConfig(authConfig: AuthConfig) {
 		oAuthStore.setAuthConfig(authConfig.Cognito as CognitoUserPoolConfig);
