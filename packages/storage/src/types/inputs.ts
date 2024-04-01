@@ -11,7 +11,7 @@ import {
 
 // TODO: rename to StorageOperationInput once the other type with
 // the same named is removed
-export type StorageOperationInputWithType = StrictUnion<
+export type StorageOperationInputType = StrictUnion<
 	StorageOperationInputWithKey | StorageOperationInputWithPath
 >;
 export type StorageOperationInputWithPrefixPath = StrictUnion<
