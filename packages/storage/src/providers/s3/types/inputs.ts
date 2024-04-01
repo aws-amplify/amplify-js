@@ -12,8 +12,8 @@ import {
 	StorageGetPropertiesInputWithPath,
 	StorageGetUrlInputWithKey,
 	StorageGetUrlInputWithPath,
-	StorageListInputPath,
-	StorageListInputPrefix,
+	StorageListInputWithPath,
+	StorageListInputWithPrefix,
 	StorageRemoveInputWithKey,
 	StorageRemoveInputWithPath,
 	StorageUploadDataInputKey,
@@ -28,10 +28,10 @@ import {
 	GetPropertiesOptionsWithPath,
 	GetUrlOptionsWithKey,
 	GetUrlOptionsWithPath,
-	ListAllOptionsPath,
-	ListAllOptionsPrefix,
-	ListPaginateOptionsPath,
-	ListPaginateOptionsPrefix,
+	ListAllOptionsWithPath,
+	ListAllOptionsWithPrefix,
+	ListPaginateOptionsWithPath,
+	ListPaginateOptionsWithPrefix,
 	RemoveOptions,
 	UploadDataOptionsKey,
 	UploadDataOptionsPath,
@@ -77,38 +77,42 @@ export type GetUrlInputWithPath =
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInput = StrictUnion<ListAllInputPath | ListAllInputPrefix>;
+export type ListAllInput = StrictUnion<
+	ListAllInputWithPath | ListAllInputWithPrefix
+>;
 
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
 export type ListPaginateInput = StrictUnion<
-	ListPaginateInputPath | ListPaginateInputPrefix
+	ListPaginateInputWithPath | ListPaginateInputWithPrefix
 >;
 
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInputPath = StorageListInputPath<ListAllOptionsPath>;
+export type ListAllInputWithPath =
+	StorageListInputWithPath<ListAllOptionsWithPath>;
 
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateInputPath =
-	StorageListInputPath<ListPaginateOptionsPath>;
+export type ListPaginateInputWithPath =
+	StorageListInputWithPath<ListPaginateOptionsWithPath>;
 
 /**
- * @deprecated Use {@link ListAllInputPath} instead.
+ * @deprecated Use {@link ListAllInputWithPath} instead.
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInputPrefix = StorageListInputPrefix<ListAllOptionsPrefix>;
+export type ListAllInputWithPrefix =
+	StorageListInputWithPrefix<ListAllOptionsWithPrefix>;
 
 /**
- * @deprecated Use {@link ListPaginateInputPath} instead.
+ * @deprecated Use {@link ListPaginateInputWithPath} instead.
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateInputPrefix =
-	StorageListInputPrefix<ListPaginateOptionsPrefix>;
+export type ListPaginateInputWithPrefix =
+	StorageListInputWithPrefix<ListPaginateOptionsWithPrefix>;
 
 /**
  * @deprecated Use {@link RemoveInputWithPath} instead.

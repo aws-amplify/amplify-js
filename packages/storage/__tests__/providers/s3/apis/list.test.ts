@@ -6,8 +6,8 @@ import { Amplify } from '@aws-amplify/core';
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3';
 import {
-	ListAllOptionsPrefix,
-	ListPaginateOptionsPrefix,
+	ListAllOptionsWithPrefix,
+	ListPaginateOptionsWithPrefix,
 } from '../../../../src/providers/s3/types';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 
@@ -145,7 +145,7 @@ describe('list API', () => {
 				});
 				let response = await list({
 					prefix: key,
-					options: options as ListPaginateOptionsPrefix,
+					options: options as ListPaginateOptionsWithPrefix,
 				});
 				expect(response.items).toEqual([{ ...listResultItem, key: key ?? '' }]);
 				expect(response.nextToken).toEqual(nextToken);
@@ -177,7 +177,7 @@ describe('list API', () => {
 				const response = await list({
 					prefix: key,
 					options: {
-						...(options as ListPaginateOptionsPrefix),
+						...(options as ListPaginateOptionsWithPrefix),
 						pageSize: customPageSize,
 						nextToken: nextToken,
 					},
@@ -206,7 +206,7 @@ describe('list API', () => {
 				});
 				let response = await list({
 					prefix: key,
-					options: options as ListPaginateOptionsPrefix,
+					options: options as ListPaginateOptionsWithPrefix,
 				});
 				expect(response.items).toEqual([]);
 
@@ -229,7 +229,7 @@ describe('list API', () => {
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
 					prefix: key,
-					options: { ...options, listAll: true } as ListAllOptionsPrefix,
+					options: { ...options, listAll: true } as ListAllOptionsWithPrefix,
 				});
 
 				const listResult = { ...listResultItem, key: key ?? '' };

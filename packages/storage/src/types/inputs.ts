@@ -62,12 +62,12 @@ export type StorageRemoveInputWithKey<Options> = StorageOperationInputWithKey &
 export type StorageRemoveInputWithPath<Options> =
 	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
-/** @deprecated Use {@link StorageListInputPath} instead. */
-export type StorageListInputPrefix<
+/** @deprecated Use {@link StorageListInputWithPath} instead. */
+export type StorageListInputWithPrefix<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
 > = StorageOperationInputPrefix & StorageOperationOptionsInput<Options>;
 
-export type StorageListInputPath<
+export type StorageListInputWithPath<
 	Options extends StorageListAllOptions | StorageListPaginateOptions,
 > = StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 

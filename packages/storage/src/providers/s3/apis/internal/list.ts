@@ -7,14 +7,14 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 import {
 	ListAllInput,
 	ListAllOutput,
-	ListAllOutputPath,
-	ListAllOutputPrefix,
-	ListOutputItemKey,
-	ListOutputItemPath,
+	ListAllOutputWithPath,
+	ListAllOutputWithPrefix,
+	ListOutputItemWithKey,
+	ListOutputItemWithPath,
 	ListPaginateInput,
 	ListPaginateOutput,
-	ListPaginateOutputPath,
-	ListPaginateOutputPrefix,
+	ListPaginateOutputWithPath,
+	ListPaginateOutputWithPrefix,
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
@@ -79,40 +79,41 @@ export const list = async (
 	};
 	if (options.listAll) {
 		if (isInputWithPrefix) {
-			return _listAllPrefix({
+			return _listAllWithPrefix({
 				...listInputArgs,
 				generatedPrefix,
 			});
 		} else {
-			return _listAllPath(listInputArgs);
+			return _listAllWithPath(listInputArgs);
 		}
 	} else {
 		if (inputType === STORAGE_INPUT_PREFIX) {
-			return _listPrefix({ ...listInputArgs, generatedPrefix });
+			return _listWithPrefix({ ...listInputArgs, generatedPrefix });
 		} else {
-			return _listPath(listInputArgs);
+			return _listWithPath(listInputArgs);
 		}
 	}
 };
 
-/** @deprecated Use {@link _listAllPath} instead. */
-const _listAllPrefix = async ({
+/** @deprecated Use {@link _listAllWithPath} instead. */
+const _listAllWithPrefix = async ({
 	s3Config,
 	listParams,
 	generatedPrefix,
-}: ListInputArgs): Promise<ListAllOutputPrefix> => {
-	const listResult: ListOutputItemKey[] = [];
+}: ListInputArgs): Promise<ListAllOutputWithPrefix> => {
+	const listResult: ListOutputItemWithKey[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
-		const { items: pageResults, nextToken: pageNextToken } = await _listPrefix({
-			generatedPrefix,
-			s3Config,
-			listParams: {
-				...listParams,
-				ContinuationToken: continuationToken,
-				MaxKeys: MAX_PAGE_SIZE,
-			},
-		});
+		const { items: pageResults, nextToken: pageNextToken } =
+			await _listWithPrefix({
+				generatedPrefix,
+				s3Config,
+				listParams: {
+					...listParams,
+					ContinuationToken: continuationToken,
+					MaxKeys: MAX_PAGE_SIZE,
+				},
+			});
 		listResult.push(...pageResults);
 		continuationToken = pageNextToken;
 	} while (continuationToken);
@@ -122,12 +123,12 @@ const _listAllPrefix = async ({
 	};
 };
 
-/** @deprecated Use {@link _listPath} instead. */
-const _listPrefix = async ({
+/** @deprecated Use {@link _listWithPath} instead. */
+const _listWithPrefix = async ({
 	s3Config,
 	listParams,
 	generatedPrefix,
-}: ListInputArgs): Promise<ListPaginateOutputPrefix> => {
+}: ListInputArgs): Promise<ListPaginateOutputWithPrefix> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
@@ -161,21 +162,22 @@ const _listPrefix = async ({
 	};
 };
 
-const _listAllPath = async ({
+const _listAllWithPath = async ({
 	s3Config,
 	listParams,
-}: ListInputArgs): Promise<ListAllOutputPath> => {
-	const listResult: ListOutputItemPath[] = [];
+}: ListInputArgs): Promise<ListAllOutputWithPath> => {
+	const listResult: ListOutputItemWithPath[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
-		const { items: pageResults, nextToken: pageNextToken } = await _listPath({
-			s3Config,
-			listParams: {
-				...listParams,
-				ContinuationToken: continuationToken,
-				MaxKeys: MAX_PAGE_SIZE,
-			},
-		});
+		const { items: pageResults, nextToken: pageNextToken } =
+			await _listWithPath({
+				s3Config,
+				listParams: {
+					...listParams,
+					ContinuationToken: continuationToken,
+					MaxKeys: MAX_PAGE_SIZE,
+				},
+			});
 		listResult.push(...pageResults);
 		continuationToken = pageNextToken;
 	} while (continuationToken);
@@ -185,10 +187,10 @@ const _listAllPath = async ({
 	};
 };
 
-const _listPath = async ({
+const _listWithPath = async ({
 	s3Config,
 	listParams,
-}: ListInputArgs): Promise<ListPaginateOutputPath> => {
+}: ListInputArgs): Promise<ListPaginateOutputWithPath> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
