@@ -3,9 +3,9 @@
 
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
-	getInAppMessages,
 	GetInAppMessagesInput,
 	GetInAppMessagesOutput,
+	getInAppMessages,
 } from '../../../src/awsClients/pinpoint';
 import {
 	mockApplicationId,
