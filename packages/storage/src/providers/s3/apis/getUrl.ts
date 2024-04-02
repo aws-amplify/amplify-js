@@ -5,8 +5,8 @@ import { Amplify } from '@aws-amplify/core';
 
 import {
 	GetUrlInput,
-	GetUrlInputKey,
-	GetUrlInputPath,
+	GetUrlInputWithKey,
+	GetUrlInputWithPath,
 	GetUrlOutput,
 } from '../types';
 
@@ -22,14 +22,14 @@ interface GetUrl {
 	 * to true, this method will verify the given object already exists in S3 before returning a presigned
 	 * URL, and will throw `StorageError` if the object does not exist.
 	 *
-	 * @param input - The `GetUrlInputPath` object.
+	 * @param input - The `GetUrlInputWithPath` object.
 	 * @returns Presigned URL and timestamp when the URL MAY expire.
 	 * @throws service: `S3Exception` - thrown when checking for existence of the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors
 	 * thrown either username or key are not defined.
 	 *
 	 */
-	(input: GetUrlInputPath): Promise<GetUrlOutput>;
+	(input: GetUrlInputWithPath): Promise<GetUrlOutput>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/download/#generate-a-download-url | path} instead.
@@ -42,14 +42,14 @@ interface GetUrl {
 	 * to true, this method will verify the given object already exists in S3 before returning a presigned
 	 * URL, and will throw `StorageError` if the object does not exist.
 	 *
-	 * @param input - The `GetUrlInputKey` object.
+	 * @param input - The `GetUrlInputWithKey` object.
 	 * @returns Presigned URL and timestamp when the URL MAY expire.
 	 * @throws service: `S3Exception` - thrown when checking for existence of the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors
 	 * thrown either username or key are not defined.
 	 *
 	 */
-	(input: GetUrlInputKey): Promise<GetUrlOutput>;
+	(input: GetUrlInputWithKey): Promise<GetUrlOutput>;
 }
 
 export const getUrl: GetUrl = (input: GetUrlInput): Promise<GetUrlOutput> =>

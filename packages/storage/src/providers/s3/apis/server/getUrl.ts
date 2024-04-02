@@ -8,8 +8,8 @@ import {
 
 import {
 	GetUrlInput,
-	GetUrlInputKey,
-	GetUrlInputPath,
+	GetUrlInputWithKey,
+	GetUrlInputWithPath,
 	GetUrlOutput,
 } from '../../types';
 import { getUrl as getUrlInternal } from '../internal/getUrl';
@@ -25,7 +25,7 @@ interface GetUrl {
 	 * URL, and will throw `StorageError` if the object does not exist.
 	 *
 	 * @param contextSpec - The isolated server context.
-	 * @param input - The `GetUrlInputPath` object.
+	 * @param input - The `GetUrlInputWithPath` object.
 	 * @returns Presigned URL and timestamp when the URL MAY expire.
 	 * @throws service: `S3Exception` - thrown when checking for existence of the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -34,7 +34,7 @@ interface GetUrl {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: GetUrlInputPath,
+		input: GetUrlInputWithPath,
 	): Promise<GetUrlOutput>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
@@ -49,7 +49,7 @@ interface GetUrl {
 	 * URL, and will throw `StorageError` if the object does not exist.
 	 *
 	 * @param contextSpec - The isolated server context.
-	 * @param input - The `GetUrlInputKey` object.
+	 * @param input - The `GetUrlInputWithKey` object.
 	 * @returns Presigned URL and timestamp when the URL MAY expire.
 	 * @throws service: `S3Exception` - thrown when checking for existence of the object
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -58,7 +58,7 @@ interface GetUrl {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: GetUrlInputKey,
+		input: GetUrlInputWithKey,
 	): Promise<GetUrlOutput>;
 }
 export const getUrl: GetUrl = async (

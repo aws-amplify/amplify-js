@@ -4,149 +4,155 @@
 import { StrictUnion } from '@aws-amplify/core/internals/utils';
 
 import {
-	StorageCopyInputKey,
-	StorageCopyInputPath,
-	StorageDownloadDataInputKey,
-	StorageDownloadDataInputPath,
-	StorageGetPropertiesInputKey,
-	StorageGetPropertiesInputPath,
-	StorageGetUrlInputKey,
-	StorageGetUrlInputPath,
-	StorageListInputPath,
-	StorageListInputPrefix,
-	StorageRemoveInputKey,
-	StorageRemoveInputPath,
-	StorageUploadDataInputKey,
-	StorageUploadDataInputPath,
+	StorageCopyInputWithKey,
+	StorageCopyInputWithPath,
+	StorageDownloadDataInputWithKey,
+	StorageDownloadDataInputWithPath,
+	StorageGetPropertiesInputWithKey,
+	StorageGetPropertiesInputWithPath,
+	StorageGetUrlInputWithKey,
+	StorageGetUrlInputWithPath,
+	StorageListInputWithPath,
+	StorageListInputWithPrefix,
+	StorageRemoveInputWithKey,
+	StorageRemoveInputWithPath,
+	StorageUploadDataInputWithKey,
+	StorageUploadDataInputWithPath,
 } from '../../../types';
 import {
-	CopyDestinationOptionsKey,
-	CopySourceOptionsKey,
-	DownloadDataOptionsKey,
-	DownloadDataOptionsPath,
-	GetPropertiesOptionsKey,
-	GetPropertiesOptionsPath,
-	GetUrlOptionsKey,
-	GetUrlOptionsPath,
-	ListAllOptionsPath,
-	ListAllOptionsPrefix,
-	ListPaginateOptionsPath,
-	ListPaginateOptionsPrefix,
+	CopyDestinationOptionsWithKey,
+	CopySourceOptionsWithKey,
+	DownloadDataOptionsWithKey,
+	DownloadDataOptionsWithPath,
+	GetPropertiesOptionsWithKey,
+	GetPropertiesOptionsWithPath,
+	GetUrlOptionsWithKey,
+	GetUrlOptionsWithPath,
+	ListAllOptionsWithPath,
+	ListAllOptionsWithPrefix,
+	ListPaginateOptionsWithPath,
+	ListPaginateOptionsWithPrefix,
 	RemoveOptions,
-	UploadDataOptionsKey,
-	UploadDataOptionsPath,
+	UploadDataOptionsWithKey,
+	UploadDataOptionsWithPath,
 } from '../types';
 
 // TODO: support use accelerate endpoint option
 /**
  * Input type for S3 copy API.
  */
-export type CopyInput = CopyInputKey | CopyInputPath;
+export type CopyInput = CopyInputWithKey | CopyInputWithPath;
 
-/** @deprecated Use {@link CopyInputPath} instead. */
-export type CopyInputKey = StorageCopyInputKey<
-	CopySourceOptionsKey,
-	CopyDestinationOptionsKey
+/** @deprecated Use {@link CopyInputWithPath} instead. */
+export type CopyInputWithKey = StorageCopyInputWithKey<
+	CopySourceOptionsWithKey,
+	CopyDestinationOptionsWithKey
 >;
-export type CopyInputPath = StorageCopyInputPath;
+export type CopyInputWithPath = StorageCopyInputWithPath;
 
 /**
  * Input type for S3 getProperties API.
  */
 export type GetPropertiesInput = StrictUnion<
-	GetPropertiesInputKey | GetPropertiesInputPath
+	GetPropertiesInputWithKey | GetPropertiesInputWithPath
 >;
 
-/** @deprecated Use {@link GetPropertiesInputPath} instead. */
-export type GetPropertiesInputKey =
-	StorageGetPropertiesInputKey<GetPropertiesOptionsKey>;
-export type GetPropertiesInputPath =
-	StorageGetPropertiesInputPath<GetPropertiesOptionsPath>;
+/** @deprecated Use {@link GetPropertiesInputWithPath} instead. */
+export type GetPropertiesInputWithKey =
+	StorageGetPropertiesInputWithKey<GetPropertiesOptionsWithKey>;
+export type GetPropertiesInputWithPath =
+	StorageGetPropertiesInputWithPath<GetPropertiesOptionsWithPath>;
 
 /**
  * Input type for S3 getUrl API.
  */
-export type GetUrlInput = StrictUnion<GetUrlInputKey | GetUrlInputPath>;
+export type GetUrlInput = StrictUnion<GetUrlInputWithKey | GetUrlInputWithPath>;
 
-/** @deprecated Use {@link GetUrlInputPath} instead. */
-export type GetUrlInputKey = StorageGetUrlInputKey<GetUrlOptionsKey>;
-export type GetUrlInputPath = StorageGetUrlInputPath<GetUrlOptionsPath>;
+/** @deprecated Use {@link GetUrlInputWithPath} instead. */
+export type GetUrlInputWithKey =
+	StorageGetUrlInputWithKey<GetUrlOptionsWithKey>;
+export type GetUrlInputWithPath =
+	StorageGetUrlInputWithPath<GetUrlOptionsWithPath>;
 
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInput = StrictUnion<ListAllInputPath | ListAllInputPrefix>;
+export type ListAllInput = StrictUnion<
+	ListAllInputWithPath | ListAllInputWithPrefix
+>;
 
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
 export type ListPaginateInput = StrictUnion<
-	ListPaginateInputPath | ListPaginateInputPrefix
+	ListPaginateInputWithPath | ListPaginateInputWithPrefix
 >;
 
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInputPath = StorageListInputPath<ListAllOptionsPath>;
+export type ListAllInputWithPath =
+	StorageListInputWithPath<ListAllOptionsWithPath>;
 
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateInputPath =
-	StorageListInputPath<ListPaginateOptionsPath>;
+export type ListPaginateInputWithPath =
+	StorageListInputWithPath<ListPaginateOptionsWithPath>;
 
 /**
- * @deprecated Use {@link ListAllInputPath} instead.
+ * @deprecated Use {@link ListAllInputWithPath} instead.
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInputPrefix = StorageListInputPrefix<ListAllOptionsPrefix>;
+export type ListAllInputWithPrefix =
+	StorageListInputWithPrefix<ListAllOptionsWithPrefix>;
 
 /**
- * @deprecated Use {@link ListPaginateInputPath} instead.
+ * @deprecated Use {@link ListPaginateInputWithPath} instead.
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateInputPrefix =
-	StorageListInputPrefix<ListPaginateOptionsPrefix>;
+export type ListPaginateInputWithPrefix =
+	StorageListInputWithPrefix<ListPaginateOptionsWithPrefix>;
 
 /**
- * @deprecated Use {@link RemoveInputPath} instead.
+ * @deprecated Use {@link RemoveInputWithPath} instead.
  * Input type with key for S3 remove API.
  */
-export type RemoveInputKey = StorageRemoveInputKey<RemoveOptions>;
+export type RemoveInputWithKey = StorageRemoveInputWithKey<RemoveOptions>;
 
 /**
  * Input type with path for S3 remove API.
  */
-export type RemoveInputPath = StorageRemoveInputPath<
+export type RemoveInputWithPath = StorageRemoveInputWithPath<
 	Omit<RemoveOptions, 'accessLevel'>
 >;
 
 /**
  * Input type for S3 remove API.
  */
-export type RemoveInput = StrictUnion<RemoveInputKey | RemoveInputPath>;
+export type RemoveInput = StrictUnion<RemoveInputWithKey | RemoveInputWithPath>;
 
 /**
  * Input type for S3 downloadData API.
  */
 export type DownloadDataInput = StrictUnion<
-	DownloadDataInputKey | DownloadDataInputPath
+	DownloadDataInputWithKey | DownloadDataInputWithPath
 >;
-/** @deprecated Use {@link DownloadDataInputPath} instead. */
-export type DownloadDataInputKey =
-	StorageDownloadDataInputKey<DownloadDataOptionsKey>;
-export type DownloadDataInputPath =
-	StorageDownloadDataInputPath<DownloadDataOptionsPath>;
+/** @deprecated Use {@link DownloadDataInputWithPath} instead. */
+export type DownloadDataInputWithKey =
+	StorageDownloadDataInputWithKey<DownloadDataOptionsWithKey>;
+export type DownloadDataInputWithPath =
+	StorageDownloadDataInputWithPath<DownloadDataOptionsWithPath>;
 
 /**
  * Input type for S3 uploadData API.
  */
 export type UploadDataInput = StrictUnion<
-	UploadDataInputKey | UploadDataInputPath
+	UploadDataInputWithKey | UploadDataInputWithPath
 >;
 
-/** @deprecated Use {@link UploadDataInputPath} instead. */
-export type UploadDataInputKey =
-	StorageUploadDataInputKey<UploadDataOptionsKey>;
-export type UploadDataInputPath =
-	StorageUploadDataInputPath<UploadDataOptionsPath>;
+/** @deprecated Use {@link UploadDataInputWithPath} instead. */
+export type UploadDataInputWithKey =
+	StorageUploadDataInputWithKey<UploadDataOptionsWithKey>;
+export type UploadDataInputWithPath =
+	StorageUploadDataInputWithPath<UploadDataOptionsWithPath>;

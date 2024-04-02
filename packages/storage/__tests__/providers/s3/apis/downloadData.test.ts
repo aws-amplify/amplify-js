@@ -10,8 +10,8 @@ import {
 	validateStorageOperationInput,
 } from '../../../../src/providers/s3/utils';
 import {
-	DownloadDataOptionsKey,
-	DownloadDataOptionsPath,
+	DownloadDataOptionsWithKey,
+	DownloadDataOptionsWithPath,
 } from '../../../../src/providers/s3/types';
 import {
 	STORAGE_INPUT_KEY,
@@ -107,7 +107,7 @@ describe('downloadData with key', () => {
 					...options,
 					useAccelerateEndpoint: true,
 					onProgress,
-				} as DownloadDataOptionsKey,
+				} as DownloadDataOptionsWithKey,
 			});
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			await job();
@@ -235,7 +235,7 @@ describe('downloadData with path', () => {
 				options: {
 					useAccelerateEndpoint: true,
 					onProgress,
-				} as DownloadDataOptionsPath,
+				} as DownloadDataOptionsWithPath,
 			});
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			await job();

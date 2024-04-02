@@ -9,8 +9,8 @@ import {
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
 import {
-	GetUrlOptionsKey,
-	GetUrlOptionsPath,
+	GetUrlOptionsWithKey,
+	GetUrlOptionsWithPath,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -111,7 +111,7 @@ describe('getUrl test with key', () => {
 					options: {
 						...options,
 						validateObjectExistence: true,
-					} as GetUrlOptionsKey,
+					} as GetUrlOptionsWithKey,
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
@@ -208,7 +208,7 @@ describe('getUrl test with path', () => {
 					path,
 					options: {
 						validateObjectExistence: true,
-					} as GetUrlOptionsPath,
+					} as GetUrlOptionsWithPath,
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);

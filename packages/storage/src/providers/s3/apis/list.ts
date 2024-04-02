@@ -4,17 +4,17 @@ import { Amplify } from '@aws-amplify/core';
 
 import {
 	ListAllInput,
-	ListAllInputPath,
-	ListAllInputPrefix,
+	ListAllInputWithPath,
+	ListAllInputWithPrefix,
 	ListAllOutput,
-	ListAllOutputPath,
-	ListAllOutputPrefix,
+	ListAllOutputWithPath,
+	ListAllOutputWithPrefix,
 	ListPaginateInput,
-	ListPaginateInputPath,
-	ListPaginateInputPrefix,
+	ListPaginateInputWithPath,
+	ListPaginateInputWithPrefix,
 	ListPaginateOutput,
-	ListPaginateOutputPath,
-	ListPaginateOutputPrefix,
+	ListPaginateOutputWithPath,
+	ListPaginateOutputWithPrefix,
 } from '../types';
 
 import { list as listInternal } from './internal/list';
@@ -23,41 +23,41 @@ interface ListApi {
 	/**
 	 * List files in pages with the given `path`.
 	 * `pageSize` is defaulted to 1000. Additionally, the result will include a `nextToken` if there are more items to retrieve.
-	 * @param input - The `ListPaginateInputPath` object.
+	 * @param input - The `ListPaginateInputWithPath` object.
 	 * @returns A list of objects with path and metadata
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
 	 */
-	(input: ListPaginateInputPath): Promise<ListPaginateOutputPath>;
+	(input: ListPaginateInputWithPath): Promise<ListPaginateOutputWithPath>;
 	/**
 	 * List all files from S3 for a given `path`. You can set `listAll` to true in `options` to get all the files from S3.
-	 * @param input - The `ListAllInputPath` object.
+	 * @param input - The `ListAllInputWithPath` object.
 	 * @returns A list of all objects with path and metadata
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
 	 */
-	(input: ListAllInputPath): Promise<ListAllOutputPath>;
+	(input: ListAllInputWithPath): Promise<ListAllOutputWithPath>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
 	 * List files in pages with the given `prefix`.
 	 * `pageSize` is defaulted to 1000. Additionally, the result will include a `nextToken` if there are more items to retrieve.
-	 * @param input - The `ListPaginateInputPrefix` object.
+	 * @param input - The `ListPaginateInputWithPrefix` object.
 	 * @returns A list of objects with key and metadata
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
 	 */
-	(input?: ListPaginateInputPrefix): Promise<ListPaginateOutputPrefix>;
+	(input?: ListPaginateInputWithPrefix): Promise<ListPaginateOutputWithPrefix>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
 	 * List all files from S3 for a given `prefix`. You can set `listAll` to true in `options` to get all the files from S3.
-	 * @param input - The `ListAllInputPrefix` object.
+	 * @param input - The `ListAllInputWithPrefix` object.
 	 * @returns A list of all objects with key and metadata
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
 	 */
-	(input?: ListAllInputPrefix): Promise<ListAllOutputPrefix>;
+	(input?: ListAllInputWithPrefix): Promise<ListAllOutputWithPrefix>;
 }
 
 export const list: ListApi = <

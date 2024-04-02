@@ -8,8 +8,8 @@ import { StorageValidationErrorCode } from '../../../../src/errors/types/validat
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 import {
-	CopySourceOptionsKey,
-	CopyDestinationOptionsKey,
+	CopySourceOptionsWithKey,
+	CopyDestinationOptionsWithKey,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -165,11 +165,11 @@ describe('copy API', () => {
 						expect(
 							await copy({
 								source: {
-									...(source as CopySourceOptionsKey),
+									...(source as CopySourceOptionsWithKey),
 									key: sourceKey,
 								},
 								destination: {
-									...(destination as CopyDestinationOptionsKey),
+									...(destination as CopyDestinationOptionsWithKey),
 									key: destinationKey,
 								},
 							}),

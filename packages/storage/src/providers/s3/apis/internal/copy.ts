@@ -6,11 +6,11 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	CopyInput,
-	CopyInputKey,
-	CopyInputPath,
+	CopyInputWithKey,
+	CopyInputWithPath,
 	CopyOutput,
-	CopyOutputKey,
-	CopyOutputPath,
+	CopyOutputWithKey,
+	CopyOutputWithPath,
 } from '../../types';
 import { ResolvedS3Config } from '../../types/options';
 import {
@@ -24,7 +24,7 @@ import { copyObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 
-const isCopyInputWithPath = (input: CopyInput): input is CopyInputPath =>
+const isCopyInputWithPath = (input: CopyInput): input is CopyInputWithPath =>
 	isInputWithPath(input.source);
 
 export const copy = async (
@@ -38,8 +38,8 @@ export const copy = async (
 
 const copyWithPath = async (
 	amplify: AmplifyClassV6,
-	input: CopyInputPath,
-): Promise<CopyOutputPath> => {
+	input: CopyInputWithPath,
+): Promise<CopyOutputWithPath> => {
 	const { source, destination } = input;
 	const { s3Config, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify);
@@ -76,8 +76,8 @@ const copyWithPath = async (
 /** @deprecated Use {@link copyWithPath} instead. */
 export const copyWithKey = async (
 	amplify: AmplifyClassV6,
-	input: CopyInputKey,
-): Promise<CopyOutputKey> => {
+	input: CopyInputWithKey,
+): Promise<CopyOutputWithKey> => {
 	const {
 		source: { key: sourceKey },
 		destination: { key: destinationKey },
