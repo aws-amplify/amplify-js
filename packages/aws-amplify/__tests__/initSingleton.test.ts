@@ -7,11 +7,11 @@ import {
 	ResourcesConfig,
 	defaultStorage,
 } from '@aws-amplify/core';
-import {
-	cognitoUserPoolsTokenProvider,
-	cognitoCredentialsProvider,
-} from '../src/auth/cognito';
 
+import {
+	cognitoCredentialsProvider,
+	cognitoUserPoolsTokenProvider,
+} from '../src/auth/cognito';
 import { Amplify } from '../src';
 
 jest.mock('@aws-amplify/core');

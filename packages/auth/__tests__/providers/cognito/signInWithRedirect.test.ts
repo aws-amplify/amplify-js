@@ -191,6 +191,9 @@ describe('signInWithRedirect', () => {
 	});
 
 	describe('specifications on react-native', () => {
+		beforeAll(() => {
+			mockIsBrowser.mockReturnValue(false);
+		});
 		it('invokes `completeOAuthFlow` when `openAuthSession`completes', async () => {
 			const mockOpenAuthSessionResult = {
 				type: 'success',
@@ -258,6 +261,19 @@ describe('signInWithRedirect', () => {
 				}),
 			);
 			expect(mockHandleFailure).toHaveBeenCalledWith(expectedError);
+		});
+		it('should not set the Oauth flag on non-browser environments', async () => {
+			const mockOpenAuthSessionResult = {
+				type: 'success',
+				url: 'http://redrect-in-react-native.com',
+			};
+			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
+
+			await signInWithRedirect({
+				provider: 'Google',
+			});
+
+			expect(oAuthStore.storeOAuthInFlight).toHaveBeenCalledTimes(0);
 		});
 	});
 

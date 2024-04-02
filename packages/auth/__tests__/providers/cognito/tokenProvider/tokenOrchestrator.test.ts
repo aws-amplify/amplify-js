@@ -1,10 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Hub } from '@aws-amplify/core';
-import { assertTokenProviderConfig } from '@aws-amplify/core/internals/utils';
 import { tokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider';
 import { CognitoAuthTokens } from '../../../../src/providers/cognito/tokenProvider/types';
+import { oAuthStore } from '../../../../src/providers/cognito/utils/oauth/oAuthStore';
 
 jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('@aws-amplify/core', () => ({
@@ -13,6 +12,7 @@ jest.mock('@aws-amplify/core', () => ({
 		dispatch: jest.fn(),
 	},
 }));
+jest.mock('../../../../src/providers/cognito/utils/oauth/oAuthStore');
 
 describe('tokenOrchestrator', () => {
 	const mockTokenRefresher = jest.fn();
@@ -27,9 +27,18 @@ describe('tokenOrchestrator', () => {
 	};
 
 	beforeAll(() => {
+		tokenOrchestrator.waitForInflightOAuth = jest.fn();
 		tokenOrchestrator.setTokenRefresher(mockTokenRefresher);
 		tokenOrchestrator.setAuthTokenStore(mockTokenStore);
 	});
+
+	beforeEach(() => {
+		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(Promise.resolve(false));
+	})
+
+	afterEach(() => {
+		(oAuthStore.loadOAuthInFlight as jest.Mock).mockClear();
+	})
 
 	describe('refreshTokens method', () => {
 		it('calls the set tokenRefresher, tokenStore and Hub while refreshing tokens', async () => {
@@ -52,7 +61,7 @@ describe('tokenOrchestrator', () => {
 					payload: {},
 				},
 				clockDrift: 300,
-				username: testUsername,
+				username: testUsername
 			};
 			mockTokenRefresher.mockResolvedValueOnce(mockTokens);
 			mockTokenStore.storeTokens.mockResolvedValue(void 0);
