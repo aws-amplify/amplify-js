@@ -48,6 +48,11 @@ interface Copy {
 		contextSpec: AmplifyServer.ContextSpec,
 		input: CopyInputWithKey,
 	): Promise<CopyOutputWithKey>;
+
+	(
+		contextSpec: AmplifyServer.ContextSpec,
+		input: CopyInputWithPath | CopyInputWithKey,
+	): Promise<CopyOutput>;
 }
 
 export const copy: Copy = <Output extends CopyOutput>(

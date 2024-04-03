@@ -48,6 +48,10 @@ interface GetProperties {
 		contextSpec: AmplifyServer.ContextSpec,
 		input: GetPropertiesInputWithKey,
 	): Promise<GetPropertiesOutputWithKey>;
+	(
+		contextSpec: AmplifyServer.ContextSpec,
+		input: GetPropertiesInputWithPath | GetPropertiesInputWithKey,
+	): Promise<GetPropertiesOutput>;
 }
 
 export const getProperties: GetProperties = <
