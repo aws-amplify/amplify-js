@@ -9,9 +9,7 @@ import {
 	StorageOptions,
 } from './options';
 
-// TODO: rename to StorageOperationInput once the other type with
-// the same named is removed
-export type StorageOperationInputType = StrictUnion<
+export type StorageOperationInput = StrictUnion<
 	StorageOperationInputWithKey | StorageOperationInputWithPath
 >;
 export type StorageOperationInputWithPrefixPath = StrictUnion<
@@ -43,15 +41,9 @@ export type StorageDownloadDataInputWithKey<Options extends StorageOptions> =
 export type StorageDownloadDataInputWithPath<Options> =
 	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
 
-// TODO: This needs to be removed after refactor of all storage APIs
-export interface StorageOperationInput<Options extends StorageOptions> {
-	key: string;
-	options?: Options;
-}
-
 /** @deprecated Use {@link StorageGetPropertiesInputWithPath} instead. */
 export type StorageGetPropertiesInputWithKey<Options extends StorageOptions> =
-	StorageOperationInputWithKey & StorageOperationInput<Options>;
+	StorageOperationInputWithKey & StorageOperationOptionsInput<Options>;
 
 export type StorageGetPropertiesInputWithPath<Options> =
 	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
@@ -73,7 +65,7 @@ export type StorageListInputWithPath<
 
 /** @deprecated Use {@link StorageGetUrlInputWithPath} instead. */
 export type StorageGetUrlInputWithKey<Options extends StorageOptions> =
-	StorageOperationInputWithKey & StorageOperationInput<Options>;
+	StorageOperationInputWithKey & StorageOperationOptionsInput<Options>;
 
 export type StorageGetUrlInputWithPath<Options> =
 	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
