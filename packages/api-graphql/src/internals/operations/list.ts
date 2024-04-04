@@ -5,6 +5,7 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
+import isEmpty from 'lodash/isEmpty.js';
 
 import {
 	authModeParams,
@@ -62,9 +63,9 @@ async function _list(
 		modelIntrospection,
 	);
 
-	try {
-		const auth = authModeParams(client, args);
+	const auth = authModeParams(client, args);
 
+	try {
 		const headers = getCustomHeaders(client, args?.headers);
 
 		const { data, extensions } = contextSpec
@@ -126,6 +127,67 @@ async function _list(
 			};
 		}
 	} catch (error: any) {
-		return handleListGraphQlError(error);
+		/**
+		 * The `data` type returned by `error` here could be:
+		 * 1) `null`
+		 * 2) an empty array
+		 * 3) "populated" but with a `null` value `{ getPost: null }`
+		 * 4) an actual record `{ getPost: { id: '1', title: 'Hello, World!' } }`
+		 */
+		const { data, errors } = error;
+
+		/**
+		 * `data` is not `null`, and is not an empty array:
+		 */
+		if (data !== undefined && !isEmpty(data) && errors) {
+			const [key] = Object.keys(data);
+
+			if (data[key].items) {
+				const flattenedResult = flattenItems(data)[key];
+
+				/**
+				 * `flattenedResult` could be `null` here (e.g. `data: { getPost: null }`)
+				 * if `flattenedResult`, result is an actual record:
+				 */
+				if (flattenedResult) {
+					// don't init if custom selection set
+					if (args?.selectionSet) {
+						return {
+							data: flattenedResult,
+							nextToken: data[key].nextToken,
+							errors,
+						};
+					} else {
+						const initialized = initializeModel(
+							client,
+							name,
+							flattenedResult,
+							modelIntrospection,
+							auth.authMode,
+							auth.authToken,
+							!!contextSpec,
+						);
+
+						return {
+							data: initialized,
+							nextToken: data[key].nextToken,
+							errors,
+						};
+					}
+				}
+
+				return {
+					data: data[key],
+					nextToken: data[key].nextToken,
+					errors,
+				};
+			} else {
+				// was `data: { getPost: null }`)
+				return handleListGraphQlError(error);
+			}
+		} else {
+			// `data` is `null`:
+			return handleListGraphQlError(error);
+		}
 	}
 }

@@ -6,6 +6,7 @@ import {
 	ModelIntrospectionSchema,
 } from '@aws-amplify/core/internals/utils';
 import { map } from 'rxjs';
+import isEmpty from 'lodash/isEmpty.js';
 
 import {
 	authModeParams,
@@ -415,7 +416,50 @@ async function _op(
 			return { data: null, extensions };
 		}
 	} catch (error: any) {
-		return handleSingularGraphQlError(error);
+		/**
+		 * The `data` type returned by `error` here could be:
+		 * 1) `null`
+		 * 2) an empty object
+		 * 3) "populated" but with a `null` value `{ getPost: null }`
+		 * 4) an actual record `{ getPost: { id: '1', title: 'Hello, World!' } }`
+		 */
+		const { data, errors } = error;
+
+		/**
+		 * `data` is not `null`, and is not an empty object:
+		 */
+		if (data && !isEmpty(data) && errors) {
+			const [key] = Object.keys(data);
+			const flattenedResult = flattenItems(data)[key];
+
+			/**
+			 * `flattenedResult` could be `null` here (e.g. `data: { getPost: null }`)
+			 * if `flattenedResult`, result is an actual record:
+			 */
+			if (flattenedResult) {
+				// TODO: custom selection set. current selection set is default selection set only
+				// custom selection set requires data-schema-type + runtime updates above.
+				const [initialized] = returnTypeModelName
+					? initializeModel(
+							client,
+							returnTypeModelName,
+							[flattenedResult],
+							modelIntrospection,
+							auth.authMode,
+							auth.authToken,
+							!!context,
+						)
+					: [flattenedResult];
+
+				return { data: initialized, errors };
+			} else {
+				// was `data: { getPost: null }`)
+				return handleSingularGraphQlError(error);
+			}
+		} else {
+			// `data` is `null`:
+			return handleSingularGraphQlError(error);
+		}
 	}
 }
 
