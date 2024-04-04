@@ -126,7 +126,7 @@ interface UploadData {
 	 * ```
 	 */
 	(input: UploadDataInputWithKey): UploadDataOutputWithKey;
-	(input: UploadDataInputWithPath | UploadDataInputWithKey): UploadDataOutput;
+	(input: UploadDataInput): UploadDataOutput;
 }
 
 export const uploadData: UploadData = <Output extends UploadDataOutput>(

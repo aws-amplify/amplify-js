@@ -50,7 +50,7 @@ interface GetProperties {
 	): Promise<GetPropertiesOutputWithKey>;
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: GetPropertiesInputWithPath | GetPropertiesInputWithKey,
+		input: GetPropertiesInput,
 	): Promise<GetPropertiesOutput>;
 }
 

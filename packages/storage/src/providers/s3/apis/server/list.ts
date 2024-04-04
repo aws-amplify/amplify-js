@@ -76,11 +76,11 @@ interface ListApi {
 	): Promise<ListAllOutputWithPrefix>;
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListPaginateInputWithPath | ListPaginateInputWithPrefix,
+		input?: ListPaginateInput,
 	): Promise<ListPaginateOutput>;
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListAllInputWithPath | ListAllInputWithPrefix,
+		input?: ListAllInput,
 	): Promise<ListAllOutput>;
 }
 

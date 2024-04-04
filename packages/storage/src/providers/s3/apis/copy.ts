@@ -39,7 +39,7 @@ interface Copy {
 	 * source or destination key is not defined.
 	 */
 	(input: CopyInputWithKey): Promise<CopyOutputWithKey>;
-	(input: CopyInputWithPath | CopyInputWithKey): Promise<CopyOutput>;
+	(input: CopyInput): Promise<CopyOutput>;
 }
 
 export const copy: Copy = <Output extends CopyOutput>(

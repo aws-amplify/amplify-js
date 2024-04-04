@@ -48,7 +48,7 @@ interface RemoveApi {
 	): Promise<RemoveOutputWithKey>;
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: RemoveInputWithPath | RemoveInputWithKey,
+		input: RemoveInput,
 	): Promise<RemoveOutput>;
 }
 

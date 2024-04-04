@@ -58,12 +58,8 @@ interface ListApi {
 	 * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
 	 */
 	(input?: ListAllInputWithPrefix): Promise<ListAllOutputWithPrefix>;
-	(
-		input?: ListAllInputWithPath | ListAllInputWithPrefix,
-	): Promise<ListAllOutput>;
-	(
-		input?: ListPaginateInputWithPath | ListPaginateInputWithPrefix,
-	): Promise<ListPaginateOutput>;
+	(input?: ListAllInput): Promise<ListAllOutput>;
+	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 }
 
 export const list: ListApi = <

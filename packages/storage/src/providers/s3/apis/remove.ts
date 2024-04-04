@@ -36,7 +36,7 @@ interface RemoveApi {
 	 * when there is no key or its empty.
 	 */
 	(input: RemoveInputWithKey): Promise<RemoveOutputWithKey>;
-	(input: RemoveInputWithPath | RemoveInputWithKey): Promise<RemoveOutput>;
+	(input: RemoveInput): Promise<RemoveOutput>;
 }
 
 export const remove: RemoveApi = <Output extends RemoveOutput>(

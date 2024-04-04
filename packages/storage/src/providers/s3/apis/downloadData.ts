@@ -90,9 +90,7 @@ interface DownloadData {
 	 *```
 	 */
 	(input: DownloadDataInputWithKey): DownloadDataOutputWithKey;
-	(
-		input: DownloadDataInputWithPath | DownloadDataInputWithKey,
-	): DownloadDataOutput;
+	(input: DownloadDataInput): DownloadDataOutput;
 }
 
 export const downloadData: DownloadData = <Output extends DownloadDataOutput>(

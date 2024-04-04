@@ -51,7 +51,7 @@ interface Copy {
 
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: CopyInputWithPath | CopyInputWithKey,
+		input: CopyInput,
 	): Promise<CopyOutput>;
 }
 
