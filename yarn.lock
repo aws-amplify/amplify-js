@@ -23,10 +23,10 @@
     "@aws-amplify/plugin-types" "^0.9.0-beta.1"
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema@^0.14.1":
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.14.1.tgz#4208054e2c6c230a9abcc4607e3c38494dad3a38"
-  integrity sha512-V7Gx/HpNf7mOW90XBQMb94/whrysQ+NJCamb7aKSglXqWMVnc0zamFSkt2L+N0+avG+hEJaE+vH3157HfMYamA==
+"@aws-amplify/data-schema@0.14.6":
+  version "0.14.6"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.14.6.tgz#93b5604ae948afa6fdab72f5136b010b22c1693e"
+  integrity sha512-V7oSZCHfu10+VtaDGjdRAXRrLndffU//yW+lCuU5INwTuIIe3gb+Xr1db9Kr1hf2igMg/R8MgOHakwkfi5hIVA==
   dependencies:
     "@aws-amplify/data-schema-types" "*"
     "@types/aws-lambda" "^8.10.134"

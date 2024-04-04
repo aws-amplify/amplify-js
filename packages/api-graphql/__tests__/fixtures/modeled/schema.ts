@@ -188,14 +188,12 @@ const schema = a.schema({
 	onPostLiked: a
 		.subscription()
 		.for(a.ref('likePostReturnPost'))
-		.returns(a.ref('Post'))
 		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
 
 	onPostUpdated: a
 		.subscription()
 		.for(a.ref('Post').mutations(['update']))
 		.arguments({ postId: a.string() })
-		.returns(a.ref('Post'))
 		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
 	//#endregion
 
@@ -220,6 +218,11 @@ const schema = a.schema({
 			description: a.string(),
 		})
 		.authorization([a.allow.groupsDefinedIn('groupsField')]),
+	ModelStaticGroup: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.specificGroup('Admin')]),
 	// #endregion
 });
 

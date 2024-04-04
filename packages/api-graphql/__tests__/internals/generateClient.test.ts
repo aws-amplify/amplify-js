@@ -49,6 +49,7 @@ describe('generateClient', () => {
 			'CustomImplicitOwner',
 			'ModelGroupDefinedIn',
 			'ModelGroupsDefinedIn',
+			'ModelStaticGroup',
 		];
 
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
