@@ -23,15 +23,9 @@
     "@aws-amplify/plugin-types" "^0.9.0-beta.1"
     rxjs "^7.8.1"
 
-<<<<<<< HEAD
 "@aws-amplify/data-schema@^0.14.8":
   version "0.14.8"
   resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.14.8.tgz#7532a0dfe77a1df8cbcc461bbed7511c7380f9a9"
-=======
-"@aws-amplify/data-schema@^0.14.6":
-  version "0.14.8"
-  resolved "https://registry.npmjs.org/@aws-amplify/data-schema/-/data-schema-0.14.8.tgz#7532a0dfe77a1df8cbcc461bbed7511c7380f9a9"
->>>>>>> d78d9a89f (minor fixes for index query; update comments)
   integrity sha512-UQuGily4kDkT91MG6ktb913TydOQehvqC76w9IRiN6dvpj/iqGPO6Iilc8kEo42mVnIwfll7k49N/WzW3QobWw==
   dependencies:
     "@aws-amplify/data-schema-types" "*"
