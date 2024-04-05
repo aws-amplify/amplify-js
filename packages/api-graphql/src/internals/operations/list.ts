@@ -130,15 +130,13 @@ async function _list(
 		/**
 		 * The `data` type returned by `error` here could be:
 		 * 1) `null`
-		 * 2) an empty array
-		 * 3) "populated" but with a `null` value `{ getPost: null }`
-		 * 4) an actual record `{ getPost: { id: '1', title: 'Hello, World!' } }`
+		 * 2) an empty object
+		 * 3) "populated" but with a `null` value `data: { listPosts: null }`
+		 * 4) actual records `data: { listPosts: items: [{ id: '1', ...etc }] }`
 		 */
 		const { data, errors } = error;
 
-		/**
-		 * `data` is not `null`, and is not an empty array:
-		 */
+		// `data` is not `null`, and is not an empty object:
 		if (data !== undefined && !isEmpty(data) && errors) {
 			const [key] = Object.keys(data);
 
@@ -146,15 +144,15 @@ async function _list(
 				const flattenedResult = flattenItems(data)[key];
 
 				/**
-				 * `flattenedResult` could be `null` here (e.g. `data: { getPost: null }`)
-				 * if `flattenedResult`, result is an actual record:
+				 * Check exists since `flattenedResult` could be `null`.
+				 * if `flattenedResult` exists, result is an actual record.
 				 */
 				if (flattenedResult) {
 					// don't init if custom selection set
 					if (args?.selectionSet) {
 						return {
 							data: flattenedResult,
-							nextToken: data[key].nextToken,
+							nextToken: data[key]?.nextToken,
 							errors,
 						};
 					} else {
@@ -168,9 +166,10 @@ async function _list(
 							!!contextSpec,
 						);
 
+						// data is full record w/out selection set:
 						return {
 							data: initialized,
-							nextToken: data[key].nextToken,
+							nextToken: data[key]?.nextToken,
 							errors,
 						};
 					}
@@ -178,15 +177,15 @@ async function _list(
 
 				return {
 					data: data[key],
-					nextToken: data[key].nextToken,
+					nextToken: data[key]?.nextToken,
 					errors,
 				};
 			} else {
-				// was `data: { getPost: null }`)
+				// response is of type `data: { getPost: null }`)
 				return handleListGraphQlError(error);
 			}
 		} else {
-			// `data` is `null`:
+			// `data` is `null` or an empty object:
 			return handleListGraphQlError(error);
 		}
 	}

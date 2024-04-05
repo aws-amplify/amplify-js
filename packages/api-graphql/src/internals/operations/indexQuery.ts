@@ -5,6 +5,7 @@ import {
 	ModelIntrospectionSchema,
 	SchemaModel,
 } from '@aws-amplify/core/internals/utils';
+import isEmpty from 'lodash/isEmpty.js';
 
 import {
 	authModeParams,
@@ -157,6 +158,46 @@ async function _indexQuery(
 			);
 		}
 	} catch (error: any) {
-		return handleListGraphQlError(error);
+		/**
+		 * The `data` type returned by `error` here could be:
+		 * 1) `null`
+		 * 2) an empty object
+		 * 3) "populated" but with a `null` value:
+		 *   `data: { listByExampleId: null }`
+		 * 4) an actual record:
+		 *   `data: { listByExampleId: items: [{ id: '1', ...etc } }]`
+		 */
+		const { data, errors } = error;
+
+		// `data` is not `null`, and is not an empty object:
+		if (data !== undefined && !isEmpty(data) && errors) {
+			const [key] = Object.keys(data);
+
+			if (data[key]?.items) {
+				const flattenedResult = flattenItems(data)[key];
+
+				/**
+				 * Check exists since `flattenedResult` could be `null`.
+				 * if `flattenedResult` exists, result is an actual record.
+				 */
+				if (flattenedResult) {
+					return {
+						data: args?.selectionSet
+							? flattenedResult
+							: modelInitializer(flattenedResult),
+						nextToken: data[key]?.nextToken,
+					};
+				}
+			}
+
+			// response is of type `data: { listByExampleId: null }`
+			return {
+				data: data[key],
+				nextToken: data[key]?.nextToken,
+			};
+		} else {
+			// `data` is `null` or an empty object:
+			return handleListGraphQlError(error);
+		}
 	}
 }
