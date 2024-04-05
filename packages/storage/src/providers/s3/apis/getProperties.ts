@@ -38,6 +38,7 @@ interface GetProperties {
 	 * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
 	 */
 	(input: GetPropertiesInputWithKey): Promise<GetPropertiesOutputWithKey>;
+	(input: GetPropertiesInput): Promise<GetPropertiesOutput>;
 }
 
 export const getProperties: GetProperties = <

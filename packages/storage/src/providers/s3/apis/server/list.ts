@@ -74,6 +74,14 @@ interface ListApi {
 		contextSpec: AmplifyServer.ContextSpec,
 		input?: ListAllInputWithPrefix,
 	): Promise<ListAllOutputWithPrefix>;
+	(
+		contextSpec: AmplifyServer.ContextSpec,
+		input?: ListPaginateInput,
+	): Promise<ListPaginateOutput>;
+	(
+		contextSpec: AmplifyServer.ContextSpec,
+		input?: ListAllInput,
+	): Promise<ListAllOutput>;
 }
 
 export const list: ListApi = <

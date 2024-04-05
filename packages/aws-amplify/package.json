@@ -473,7 +473,7 @@
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "13.55 kB"
+			"limit": "13.56 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",

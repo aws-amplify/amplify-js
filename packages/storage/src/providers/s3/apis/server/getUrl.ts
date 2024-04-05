@@ -60,6 +60,10 @@ interface GetUrl {
 		contextSpec: AmplifyServer.ContextSpec,
 		input: GetUrlInputWithKey,
 	): Promise<GetUrlOutput>;
+	(
+		contextSpec: AmplifyServer.ContextSpec,
+		input: GetUrlInput,
+	): Promise<GetUrlOutput>;
 }
 export const getUrl: GetUrl = async (
 	contextSpec: AmplifyServer.ContextSpec,

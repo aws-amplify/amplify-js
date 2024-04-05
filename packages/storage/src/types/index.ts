@@ -8,7 +8,6 @@ export {
 	UploadTask,
 } from './common';
 export {
-	StorageOperationInput,
 	StorageGetPropertiesInputWithKey,
 	StorageGetPropertiesInputWithPath,
 	StorageListInputWithPrefix,
