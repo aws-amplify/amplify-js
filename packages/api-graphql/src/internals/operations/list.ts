@@ -142,7 +142,7 @@ async function _list(
 		if (data !== undefined && !isEmpty(data) && errors) {
 			const [key] = Object.keys(data);
 
-			if (data[key].items) {
+			if (data[key]?.items) {
 				const flattenedResult = flattenItems(data)[key];
 
 				/**
