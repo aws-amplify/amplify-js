@@ -2,6 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { GraphQLAPI, GraphQLAPIClass, graphqlOperation } from './GraphQLAPI';
-export type * from '@aws-amplify/data-schema';
+export * from './types';
 
 export { CONNECTION_STATE_CHANGE } from './Providers/constants';

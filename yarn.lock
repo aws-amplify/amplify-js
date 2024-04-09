@@ -24,10 +24,10 @@
     graphql "15.8.0"
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema@^0.14.25":
-  version "0.14.25"
-  resolved "http://localhost:4873/@aws-amplify/data-schema/-/data-schema-0.14.25.tgz#7b2045353c103d1852ff26564f3eace3dafe9c77"
-  integrity sha512-PCqXTubY+FRVOb3pGoZUfFFIxcOBoucX1O61csCKWl2TIhoJF2+hH4G8KLeKI4GRFMfnqhTBDcru53ZQqiWmJQ==
+"@aws-amplify/data-schema@^0.14.27":
+  version "0.14.27"
+  resolved "http://localhost:4873/@aws-amplify/data-schema/-/data-schema-0.14.27.tgz#cd00be1890dceab8ae9dad6a89068f168cda2252"
+  integrity sha512-Sf6VlzUXyQA3sCSpa8ba3dBQWE4AkVjjlcKPLDIcoFnkoeoTV0L1nyakCVkdc42G+1m05DIk2mKJJccoMhDudA==
   dependencies:
     "@aws-amplify/data-schema-types" "*"
     "@types/aws-lambda" "^8.10.134"
