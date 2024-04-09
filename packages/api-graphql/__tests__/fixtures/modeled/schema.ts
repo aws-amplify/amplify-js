@@ -188,14 +188,12 @@ const schema = a.schema({
 	onPostLiked: a
 		.subscription()
 		.for(a.ref('likePostReturnPost'))
-		.returns(a.ref('Post'))
 		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
 
 	onPostUpdated: a
 		.subscription()
 		.for(a.ref('Post').mutations(['update']))
 		.arguments({ postId: a.string() })
-		.returns(a.ref('Post'))
 		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
 	//#endregion
 
