@@ -2,20 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ModelIntrospectionSchema } from '../API/types';
-import { AuthStandardAttributeKey } from '../Auth/types';
 
 export type AmplifyOutputsOAuthIdentityProvider =
 	| 'GOOGLE'
 	| 'FACEBOOK'
 	| 'LOGIN_WITH_AMAZON'
 	| 'SIGN_IN_WITH_APPLE';
-
-type AmplifyOutputsAuthUsernameAttribute =
-	| 'EMAIL'
-	| 'PHONE_NUMBER'
-	| 'USERNAME';
-
-type AmplifyOutputsAuthUserVerificationMethod = 'EMAIL' | 'PHONE_NUMBER';
 
 export type AmplifyOutputsAuthMFAConfiguration =
 	| 'OPTIONAL'
@@ -38,19 +30,19 @@ export interface AmplifyOutputsAuthProperties {
 		require_symbols: boolean;
 	};
 	oauth?: {
-		identity_providers: AmplifyOutputsOAuthIdentityProvider[];
+		identity_providers: string[];
 		domain: string;
 		scopes: string[];
 		redirect_sign_in_uri: string[];
 		redirect_sign_out_uri: string[];
-		response_type: 'code' | 'token';
+		response_type: string;
 	};
-	standard_required_attributes?: AuthStandardAttributeKey[];
-	username_attributes?: AmplifyOutputsAuthUsernameAttribute[];
-	user_verification_mechanisms?: AmplifyOutputsAuthUserVerificationMethod[];
+	standard_required_attributes?: string[];
+	username_attributes?: string[];
+	user_verification_types?: string[];
 	unauthenticated_identities_enabled?: boolean;
-	mfa_configuration?: AmplifyOutputsAuthMFAConfiguration;
-	mfa_methods?: AmplifyOutputsAuthMFAMethod[];
+	mfa_configuration?: string;
+	mfa_methods?: string[];
 }
 
 export interface AmplifyOutputsStorageProperties {
@@ -85,24 +77,17 @@ export type AuthType =
 export interface AmplifyOutputsDataProperties {
 	aws_region: string;
 	url: string;
-	default_authorization_type: AuthType;
-	authorization_types: AuthType[];
+	default_authorization_type: string;
+	authorization_types: string[];
 	model_introspection?: ModelIntrospectionSchema;
 	api_key?: string;
-	conflict_resolution_mode?: 'AUTO_MERGE' | 'OPTIMISTIC_CONCURRENCY' | 'LAMBDA';
+	conflict_resolution_mode?: string;
 }
-
-type AmplifyOutputsNotificationChannel =
-	| 'IN_APP_MESSAGING'
-	| 'FCM'
-	| 'APNS'
-	| 'EMAIL'
-	| 'SMS';
 
 export interface AmplifyOutputsNotificationsProperties {
 	aws_region: string;
-	pinpoint_app_id: string;
-	channels: AmplifyOutputsNotificationChannel[];
+	amazon_pinpoint_app_id: string;
+	channels: string[];
 }
 
 export interface AmplifyOutputs {

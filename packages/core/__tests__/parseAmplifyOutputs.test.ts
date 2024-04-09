@@ -1,9 +1,106 @@
 import { AmplifyOutputs, parseAmplifyOutputs } from '../src/libraryUtils';
-
+import amplifyOutputs from './amplify_outputs.json';
 describe('parseAmplifyOutputs tests', () => {
 	describe('auth tests', () => {
+
+		it('should parse from amplify-outputs.json', async () => {
+			const result = parseAmplifyOutputs(amplifyOutputs);
+
+			expect(result).toEqual({
+				"API": {
+					"GraphQL": {
+						"apiKey": "non",
+						"defaultAuthMode": "apiKey",
+						"endpoint": "dolore dolor do cillum nulla",
+						"modelIntrospection": undefined,
+						"region": "regasd",
+					},
+				},
+				"Auth": {
+					"Cognito": {
+						"allowGuestAccess": true,
+						"identityPoolId": "Lorem",
+						"loginWith": {
+							"email": true,
+							"oauth": {
+								"domain": "proident dolore do mollit ad",
+								"providers": [
+									"Facebook",
+									"Apple",
+									"Google",
+								],
+								"redirectSignIn": [
+									"Duis",
+									"ipsum velit in dolore",
+								],
+								"redirectSignOut": [
+									"Excepteur pariatur cillum officia",
+									"incididunt in Ut Excepteur commodo",
+								],
+								"responseType": "token",
+								"scopes": [
+									"incididunt proident",
+								],
+							},
+							"phone": true,
+						},
+						"mfa": {
+							"smsEnabled": true,
+							"status": "optional",
+							"totpEnabled": true,
+						},
+						"userAttributes": {
+							"address": {
+								"required": true,
+							},
+							"email": {
+								"required": true,
+							},
+							"family_name": {
+								"required": true,
+							},
+							"locale": {
+								"required": true,
+							},
+							"sub": {
+								"required": true,
+							},
+						},
+						"userPoolClientId": "voluptate",
+						"userPoolId": "sit velit dolor magna est",
+					},
+				},
+				"Geo": {
+					"LocationService": {
+						"geofenceCollections": {
+							"default": "ullamco incididunt aliquip",
+							"items": [
+								"fugiat ea irure dolor",
+								"Ut",
+								"culpa ut enim exercitation",
+								"labore",
+								"ex pariatur est ullamco",
+							],
+						},
+						"maps": undefined,
+						"region": "tempor",
+						"searchIndices": {
+							"default": "exercitation fugiat ut dolor sed",
+							"items": [
+								"commodo Lorem",
+								"reprehenderit consequat",
+								"amet",
+								"aliquip deserunt",
+								"ea dolor in proident",
+							],
+						},
+					},
+				},
+			});
+		});
+
 		it('should parse auth happy path (all enabled)', () => {
-			const amplifyOutputs: AmplifyOutputs = {
+			const amplifyOutputs = {
 				'version': '1',
 				'auth': {
 					'user_pool_id': 'us-east-1:',
@@ -26,8 +123,8 @@ describe('parseAmplifyOutputs tests', () => {
 						'require_numbers': true
 					},
 					'standard_required_attributes': ['email'],
-					'username_attributes': ['EMAIL'],
-					'user_verification_mechanisms': ['EMAIL'],
+					'username_attributes': ['email'],
+					'user_verification_types': ['email'],
 					'unauthenticated_identities_enabled': true,
 					'mfa_configuration': 'OPTIONAL',
 					'mfa_methods': ['SMS']
@@ -224,7 +321,7 @@ describe('parseAmplifyOutputs tests', () => {
 					'version': '1',
 					'notifications': {
 						aws_region: 'us-west-2',
-						pinpoint_app_id: 'appid123',
+						amazon_pinpoint_app_id: 'appid123',
 						channels: ['APNS', 'EMAIL', 'FCM', 'IN_APP_MESSAGING', 'SMS'],
 					}
 				};
