@@ -7,7 +7,7 @@ import {
 	ClientExtensionsSSRRequest,
 	CustomHeaders,
 	ModelSortDirection,
-} from '@aws-amplify/data-schema';
+} from '@aws-amplify/data-schema/runtime';
 import { DocumentNode, GraphQLError, Source } from 'graphql';
 import { Observable } from 'rxjs';
 import {
@@ -20,7 +20,7 @@ export { OperationTypeNode } from 'graphql';
 
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 
-export { SelectionSet } from '@aws-amplify/data-schema';
+export { SelectionSet } from '@aws-amplify/data-schema/runtime';
 
 export { CommonPublicClientOptions } from '../internals/types';
 

@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { addSchemaToClientWithInstance } from '@aws-amplify/data-schema';
+import { addSchemaToClientWithInstance } from '@aws-amplify/data-schema/runtime';
 
 import {
 	CommonPublicClientOptions,

@@ -8,7 +8,7 @@ import {
 	EnumTypes,
 	ModelTypes,
 	addSchemaToClient,
-} from '@aws-amplify/data-schema';
+} from '@aws-amplify/data-schema/runtime';
 
 import {
 	V6Client,
