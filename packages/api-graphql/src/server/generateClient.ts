@@ -5,17 +5,17 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
-
-import { generateClientWithAmplifyInstance } from '../internals/server';
 import {
+	CustomHeaders,
 	GenerateServerClientParams,
 	GraphQLMethod,
 	GraphQLMethodSSR,
 	GraphQLOptionsV6,
 	V6ClientSSRRequest,
 	__amplify,
-} from '../types';
+} from '@aws-amplify/data-schema';
+
+import { generateClientWithAmplifyInstance } from '../internals/server';
 
 /**
  * Generates an GraphQL API client that works with Amplify server context.

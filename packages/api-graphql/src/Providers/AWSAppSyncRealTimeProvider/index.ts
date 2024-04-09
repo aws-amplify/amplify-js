@@ -22,7 +22,7 @@ import {
 	isNonRetryableError,
 	jitteredExponentialRetry,
 } from '@aws-amplify/core/internals/utils';
-import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
+import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema';
 
 import {
 	CONTROL_MSG,

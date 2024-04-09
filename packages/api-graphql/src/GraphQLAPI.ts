@@ -2,10 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { ApiAction, Category } from '@aws-amplify/core/internals/utils';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import {
+	CustomHeaders,
+	GraphQLOptions,
+	GraphQLResult,
+} from '@aws-amplify/data-schema';
 import { Observable } from 'rxjs';
 
-import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
 
 export const graphqlOperation = (

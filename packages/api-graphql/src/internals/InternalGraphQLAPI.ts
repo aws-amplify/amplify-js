@@ -21,10 +21,16 @@ import {
 	post,
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
-import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
+import {
+	CustomHeaders,
+	GraphQLOperation,
+	GraphQLOptions,
+	GraphQLResult,
+	RequestOptions,
+	isGraphQLResponseWithErrors,
+} from '@aws-amplify/data-schema';
 
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
-import { GraphQLOperation, GraphQLOptions, GraphQLResult } from '../types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthorizedError } from '../utils/errors/repackageAuthError';
 import {
@@ -36,8 +42,6 @@ import {
 	NO_VALID_CREDENTIALS,
 } from '../utils/errors/constants';
 import { GraphQLApiError, createGraphQLResultWithError } from '../utils/errors';
-
-import { isGraphQLResponseWithErrors } from './utils/runtimeTypeGuards/isGraphQLResponseWithErrors';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 

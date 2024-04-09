@@ -114,7 +114,8 @@ export function graphql<
 	 * any validation or type-guarding here.
 	 */
 	const result = GraphQLAPI.graphql(
-		this[__amplify],
+		// TODO: move V6Client back into this package?
+		this[__amplify] as any,
 		options,
 		additionalHeaders,
 	);

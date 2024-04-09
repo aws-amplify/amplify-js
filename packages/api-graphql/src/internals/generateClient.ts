@@ -7,7 +7,8 @@ import {
 	CustomSubscriptions,
 	EnumTypes,
 	ModelTypes,
-} from '@aws-amplify/data-schema-types';
+	addSchemaToClient,
+} from '@aws-amplify/data-schema';
 
 import {
 	V6Client,
@@ -17,17 +18,9 @@ import {
 	__headers,
 } from '../types';
 
-import { cancel, graphql, isCancelError } from './v6';
-import { generateEnumsProperty } from './utils/clientProperties/generateEnumsProperty';
-import { generateModelsProperty } from './utils/clientProperties/generateModelsProperty';
 import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
-import {
-	generateCustomMutationsProperty,
-	generateCustomQueriesProperty,
-	generateCustomSubscriptionsProperty,
-} from './generateCustomOperationsProperty';
+import { cancel, graphql, isCancelError } from './v6';
 import { ClientGenerationParams } from './types';
-import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 
 /**
  * @private
@@ -40,7 +33,7 @@ import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/is
  */
 export function generateClient<T extends Record<any, any> = never>(
 	params: ClientGenerationParams,
-): V6Client<T> {
+): V6Client {
 	const client = {
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
@@ -59,17 +52,7 @@ export function generateClient<T extends Record<any, any> = never>(
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
 
 	if (isApiGraphQLConfig(apiGraphqlConfig)) {
-		client.models = generateModelsProperty<T>(client, apiGraphqlConfig);
-		client.enums = generateEnumsProperty<T>(apiGraphqlConfig);
-		client.queries = generateCustomQueriesProperty<T>(client, apiGraphqlConfig);
-		client.mutations = generateCustomMutationsProperty<T>(
-			client,
-			apiGraphqlConfig,
-		);
-		client.subscriptions = generateCustomSubscriptionsProperty(
-			client,
-			apiGraphqlConfig,
-		);
+		addSchemaToClient(client, apiGraphqlConfig);
 	} else {
 		// This happens when the `Amplify.configure()` call gets evaluated after the `generateClient()` call.
 		//
@@ -98,20 +81,7 @@ const generateModelsPropertyOnAmplifyConfigure = (clientRef: any) => {
 		const apiGraphQLConfig = coreEvent.payload.data.API?.GraphQL;
 
 		if (isApiGraphQLConfig(apiGraphQLConfig)) {
-			clientRef.models = generateModelsProperty(clientRef, apiGraphQLConfig);
-			clientRef.enums = generateEnumsProperty(apiGraphQLConfig);
-			clientRef.queries = generateCustomQueriesProperty(
-				clientRef,
-				apiGraphQLConfig,
-			);
-			clientRef.mutations = generateCustomMutationsProperty(
-				clientRef,
-				apiGraphQLConfig,
-			);
-			clientRef.subscriptions = generateCustomSubscriptionsProperty(
-				clientRef,
-				apiGraphQLConfig,
-			);
+			addSchemaToClient(clientRef, apiGraphQLConfig);
 		}
 	});
 };

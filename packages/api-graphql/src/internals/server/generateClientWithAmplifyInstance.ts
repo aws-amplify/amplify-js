@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { cancel, graphql, isCancelError } from '..';
+import {
+	ClientExtensionsSSRCookies,
+	ClientExtensionsSSRRequest,
+	addSchemaToClientWithInstance,
+} from '@aws-amplify/data-schema';
+
 import {
 	CommonPublicClientOptions,
 	ServerClientGenerationParams,
@@ -11,15 +16,10 @@ import {
 	__authMode,
 	__authToken,
 	__headers,
+	getInternals,
 } from '../../types';
 import { isApiGraphQLConfig } from '../utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
-import { generateEnumsProperty } from '../utils/clientProperties/generateEnumsProperty';
-import {
-	generateCustomMutationsProperty,
-	generateCustomQueriesProperty,
-} from '../generateCustomOperationsProperty';
-
-import { generateModelsProperty } from './generateModelsProperty';
+import { cancel, graphql, isCancelError } from '..';
 
 /**
  * @private
@@ -35,11 +35,13 @@ import { generateModelsProperty } from './generateModelsProperty';
 export function generateClientWithAmplifyInstance<
 	T extends Record<any, any> = never,
 	ClientType extends
-		| V6ClientSSRRequest<T>
-		| V6ClientSSRCookies<T> = V6ClientSSRCookies<T>,
+		| V6ClientSSRRequest
+		| V6ClientSSRCookies = V6ClientSSRCookies,
 >(
 	params: ServerClientGenerationParams & CommonPublicClientOptions,
-): ClientType {
+): ClientType extends V6ClientSSRRequest
+	? ClientType & ClientExtensionsSSRRequest<T>
+	: ClientType & ClientExtensionsSSRCookies<T> {
 	const client = {
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
@@ -53,14 +55,8 @@ export function generateClientWithAmplifyInstance<
 	const apiGraphqlConfig = params.config?.API?.GraphQL;
 
 	if (isApiGraphQLConfig(apiGraphqlConfig)) {
-		client.models = generateModelsProperty<T>(client, params);
-		client.enums = generateEnumsProperty<T>(apiGraphqlConfig);
-		client.queries = generateCustomQueriesProperty<T>(client, apiGraphqlConfig);
-		client.mutations = generateCustomMutationsProperty<T>(
-			client,
-			apiGraphqlConfig,
-		);
+		addSchemaToClientWithInstance<T>(client, params, getInternals);
 	}
 
-	return client as ClientType;
+	return client as any;
 }
