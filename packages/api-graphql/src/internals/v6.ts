@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import { CustomHeaders } from '@aws-amplify/data-schema';
 
 import { GraphQLAPI } from '../GraphQLAPI';
 import {

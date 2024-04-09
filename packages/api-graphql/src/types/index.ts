@@ -1,7 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
-import { CustomHeaders, ModelSortDirection } from '@aws-amplify/data-schema';
+import {
+	ClientExtensions,
+	ClientExtensionsSSRCookies,
+	ClientExtensionsSSRRequest,
+	CustomHeaders,
+	ModelSortDirection,
+} from '@aws-amplify/data-schema';
 import { DocumentNode, GraphQLError, Source } from 'graphql';
 import { Observable } from 'rxjs';
 import {
@@ -382,7 +388,7 @@ export type ClientWithModels =
 	| V6ClientSSRRequest
 	| V6ClientSSRCookies;
 
-export interface V6Client {
+export type V6Client<T extends Record<any, any> = never> = {
 	[__amplify]: AmplifyClassV6;
 	[__authMode]?: GraphQLAuthMode;
 	[__authToken]?: string;
@@ -390,9 +396,9 @@ export interface V6Client {
 	graphql: GraphQLMethod;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
-}
+} & ClientExtensions<T>;
 
-export interface V6ClientSSRRequest {
+export type V6ClientSSRRequest<T extends Record<any, any> = never> = {
 	[__amplify]: AmplifyClassV6;
 	[__authMode]?: GraphQLAuthMode;
 	[__authToken]?: string;
@@ -400,9 +406,9 @@ export interface V6ClientSSRRequest {
 	graphql: GraphQLMethodSSR;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
-}
+} & ClientExtensionsSSRRequest<T>;
 
-export interface V6ClientSSRCookies {
+export type V6ClientSSRCookies<T extends Record<any, any> = never> = {
 	[__amplify]: AmplifyClassV6;
 	[__authMode]?: GraphQLAuthMode;
 	[__authToken]?: string;
@@ -410,7 +416,7 @@ export interface V6ClientSSRCookies {
 	graphql: GraphQLMethod;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
-}
+} & ClientExtensionsSSRCookies<T>;
 
 export type GraphQLMethod = <
 	FALLBACK_TYPES = unknown,

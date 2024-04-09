@@ -16,9 +16,11 @@ import {
 	__authMode,
 	__authToken,
 	__headers,
+	getInternals,
 } from '../types';
 
 import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
+import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 import { cancel, graphql, isCancelError } from './v6';
 import { ClientGenerationParams } from './types';
 
@@ -33,7 +35,7 @@ import { ClientGenerationParams } from './types';
  */
 export function generateClient<T extends Record<any, any> = never>(
 	params: ClientGenerationParams,
-): V6Client {
+): V6Client<T> {
 	const client = {
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
@@ -52,7 +54,7 @@ export function generateClient<T extends Record<any, any> = never>(
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
 
 	if (isApiGraphQLConfig(apiGraphqlConfig)) {
-		addSchemaToClient(client, apiGraphqlConfig);
+		addSchemaToClient(client, apiGraphqlConfig, getInternals);
 	} else {
 		// This happens when the `Amplify.configure()` call gets evaluated after the `generateClient()` call.
 		//
@@ -69,7 +71,7 @@ export function generateClient<T extends Record<any, any> = never>(
 		generateModelsPropertyOnAmplifyConfigure(client);
 	}
 
-	return client as V6Client<T>;
+	return client as any;
 }
 
 const generateModelsPropertyOnAmplifyConfigure = (clientRef: any) => {
@@ -81,7 +83,7 @@ const generateModelsPropertyOnAmplifyConfigure = (clientRef: any) => {
 		const apiGraphQLConfig = coreEvent.payload.data.API?.GraphQL;
 
 		if (isApiGraphQLConfig(apiGraphQLConfig)) {
-			addSchemaToClient(clientRef, apiGraphQLConfig);
+			addSchemaToClient(clientRef, apiGraphQLConfig, getInternals);
 		}
 	});
 };

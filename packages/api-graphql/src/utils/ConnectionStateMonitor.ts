@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Observable, Observer, SubscriptionLike, filter, map } from 'rxjs';
-import { ConnectionState } from '@aws-amplify/data-schema';
+
+import { ConnectionState } from '../types/PubSub';
 
 import { ReachabilityMonitor } from './ReachabilityMonitor';
 
