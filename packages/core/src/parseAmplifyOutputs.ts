@@ -20,14 +20,11 @@ import { NotificationsConfig } from './singleton/Notifications/types';
 import {
 	AmplifyOutputs,
 	AmplifyOutputsAnalyticsProperties,
-	AmplifyOutputsAuthMFAConfiguration,
 	AmplifyOutputsAuthProperties,
 	AmplifyOutputsDataProperties,
 	AmplifyOutputsGeoProperties,
 	AmplifyOutputsNotificationsProperties,
-	AmplifyOutputsOAuthIdentityProvider,
 	AmplifyOutputsStorageProperties,
-	AuthType,
 } from './singleton/AmplifyOutputs/types';
 import {
 	AnalyticsConfig,
@@ -130,31 +127,24 @@ function parseAuth(
 				domain: oauth.domain,
 				redirectSignIn: oauth.redirect_sign_in_uri,
 				redirectSignOut: oauth.redirect_sign_out_uri,
-				responseType: oauth.response_type,
+				responseType: oauth.response_type === 'token' ? 'token' : 'code',
 				scopes: oauth.scopes,
 				providers: getOAuthProviders(oauth.identity_providers),
 			},
 		};
 	}
 
-	if (username_attributes?.includes('EMAIL')) {
+	if (username_attributes?.includes('email')) {
 		authConfig.Cognito.loginWith = {
 			...authConfig.Cognito.loginWith,
 			email: true,
 		};
 	}
 
-	if (username_attributes?.includes('PHONE_NUMBER')) {
+	if (username_attributes?.includes('phone_number')) {
 		authConfig.Cognito.loginWith = {
 			...authConfig.Cognito.loginWith,
 			phone: true,
-		};
-	}
-
-	if (username_attributes?.includes('USERNAME')) {
-		authConfig.Cognito.loginWith = {
-			...authConfig.Cognito.loginWith,
-			username: true,
 		};
 	}
 
@@ -240,7 +230,7 @@ function parseNotifications(
 		return undefined;
 	}
 
-	const { aws_region, channels, pinpoint_app_id } =
+	const { aws_region, channels, amazon_pinpoint_app_id } =
 		amplifyOutputsNotificationsProperties;
 
 	const hasInAppMessaging = channels.includes('IN_APP_MESSAGING');
@@ -257,7 +247,7 @@ function parseNotifications(
 	if (hasInAppMessaging) {
 		notificationsConfig.InAppMessaging = {
 			Pinpoint: {
-				appId: pinpoint_app_id,
+				appId: amazon_pinpoint_app_id,
 				region: aws_region,
 			},
 		};
@@ -266,7 +256,7 @@ function parseNotifications(
 	if (hasPushNotification) {
 		notificationsConfig.PushNotification = {
 			Pinpoint: {
-				appId: pinpoint_app_id,
+				appId: amazon_pinpoint_app_id,
 				region: aws_region,
 			},
 		};
@@ -309,7 +299,7 @@ export function parseAmplifyOutputs(
 	return resourcesConfig;
 }
 
-const authModeNames: Record<AuthType, GraphQLAuthMode> = {
+const authModeNames: Record<string, GraphQLAuthMode> = {
 	AMAZON_COGNITO_USER_POOLS: 'userPool',
 	API_KEY: 'apiKey',
 	AWS_IAM: 'iam',
@@ -317,28 +307,23 @@ const authModeNames: Record<AuthType, GraphQLAuthMode> = {
 	OPENID_CONNECT: 'oidc',
 };
 
-function getGraphQLAuthMode(authType: AuthType): GraphQLAuthMode {
+function getGraphQLAuthMode(authType: string): GraphQLAuthMode {
 	return authModeNames[authType];
 }
 
-const providerNames: Record<
-	AmplifyOutputsOAuthIdentityProvider,
-	OAuthProvider
-> = {
+const providerNames: Record<string, OAuthProvider> = {
 	GOOGLE: 'Google',
 	LOGIN_WITH_AMAZON: 'Amazon',
 	FACEBOOK: 'Facebook',
 	SIGN_IN_WITH_APPLE: 'Apple',
 };
 
-function getOAuthProviders(
-	providers: AmplifyOutputsOAuthIdentityProvider[] = [],
-): OAuthProvider[] {
+function getOAuthProviders(providers: string[] = []): OAuthProvider[] {
 	return providers.map(provider => providerNames[provider]);
 }
 
 function getMfaStatus(
-	mfaConfiguration: AmplifyOutputsAuthMFAConfiguration,
+	mfaConfiguration: string,
 ): CognitoUserPoolConfigMfaStatus {
 	if (mfaConfiguration === 'OPTIONAL') return 'optional';
 	if (mfaConfiguration === 'REQUIRED') return 'on';
