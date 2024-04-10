@@ -91,9 +91,7 @@ export type GetPropertiesOutputWithPath = ItemWithPath;
 /**
  * Output type for S3 getProperties API.
  */
-export type GetPropertiesOutput =
-	| GetPropertiesOutputWithKey
-	| GetPropertiesOutputWithPath;
+export type GetPropertiesOutput = ItemWithKey & ItemWithPath;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.
