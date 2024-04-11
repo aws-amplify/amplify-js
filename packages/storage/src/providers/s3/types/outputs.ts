@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StrictUnion } from '@aws-amplify/core/internals/utils';
-
 import {
 	DownloadTask,
 	StorageDownloadDataOutput,
@@ -28,15 +26,9 @@ export interface ItemBase {
 }
 
 /**
- * @deprecated Use {@link ListOutputItemWithPath} instead.
- * type for S3 list item with key.
+ * type for S3 list item.
  */
-export type ListOutputItemWithKey = Omit<ItemWithKey, 'metadata'>;
-
-/**
- * type for S3 list item with path.
- */
-export type ListOutputItemWithPath = Omit<ItemWithPath, 'metadata'>;
+export type ListOutputItem = Omit<ItemWithKeyAndPath, 'metadata'>;
 
 /**
  * @deprecated Use {@link ItemWithPath} instead.
@@ -53,11 +45,6 @@ export type ItemWithKeyAndPath = ItemBase &
 	StorageItemWithPath;
 
 /**
- * type for S3 list item.
- */
-export type ListOutputItem = Omit<ItemWithKey, 'metadata'>;
-
-/**
  * Output type for S3 downloadData API.
  */
 export type DownloadDataOutput = DownloadTask<
@@ -65,61 +52,19 @@ export type DownloadDataOutput = DownloadTask<
 >;
 
 /**
- * Output type for S3 getUrl API.
- */
-export type GetUrlOutput = StorageGetUrlOutput;
-
-/**
  * Output type for S3 uploadData API.
  */
 export type UploadDataOutput = UploadTask<ItemWithKeyAndPath>;
 
 /**
+ * Output type for S3 getUrl API.
+ */
+export type GetUrlOutput = StorageGetUrlOutput;
+
+/**
  * Output type for S3 getProperties API.
  */
 export type GetPropertiesOutput = ItemWithKeyAndPath;
-
-/**
- * Output type for S3 list API. Lists all bucket objects.
- */
-export type ListAllOutput = StrictUnion<
-	ListAllOutputWithPath | ListAllOutputWithPrefix
->;
-
-/**
- * Output type for S3 list API. Lists bucket objects with pagination.
- */
-export type ListPaginateOutput = StrictUnion<
-	ListPaginateOutputWithPath | ListPaginateOutputWithPrefix
->;
-
-/**
- * @deprecated Use {@link ListAllOutputWithPath} instead.
- * Output type for S3 list API. Lists all bucket objects.
- */
-export type ListAllOutputWithPrefix = StorageListOutput<ListOutputItemWithKey>;
-
-/**
- * Output type for S3 list API. Lists all bucket objects.
- */
-export type ListAllOutputWithPath = StorageListOutput<ListOutputItemWithPath>;
-
-/**
- * @deprecated Use {@link ListPaginateOutputWithPath} instead.
- * Output type for S3 list API. Lists bucket objects with pagination.
- */
-export type ListPaginateOutputWithPrefix =
-	StorageListOutput<ListOutputItemWithKey> & {
-		nextToken?: string;
-	};
-
-/**
- * Output type for S3 list API. Lists bucket objects with pagination.
- */
-export type ListPaginateOutputWithPath =
-	StorageListOutput<ListOutputItemWithPath> & {
-		nextToken?: string;
-	};
 
 /**
  * Output type for S3 Copy API.
@@ -130,3 +75,15 @@ export type CopyOutput = Pick<ItemWithKeyAndPath, 'key' | 'path'>;
  * Output type for S3 remove API.
  */
 export type RemoveOutput = Pick<ItemWithKeyAndPath, 'key' | 'path'>;
+
+/**
+ * Output type for S3 list API. Lists all bucket objects.
+ */
+export type ListAllOutput = StorageListOutput<ListOutputItem>;
+
+/**
+ * Output type for S3 list API. Lists bucket objects with pagination.
+ */
+export type ListPaginateOutput = StorageListOutput<ListOutputItem> & {
+	nextToken?: string;
+};
