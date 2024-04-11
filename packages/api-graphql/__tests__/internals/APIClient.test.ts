@@ -415,6 +415,42 @@ describe('flattenItems', () => {
 
 			expect(selSet).toEqual(expected);
 		});
+
+		it('generates expected default selection set for nested model and custom type', () => {
+			const set = customSelectionSetToIR(modelIntroSchema, 'Warehouse', [
+				'id',
+				'name',
+				'products.*'
+			]);
+
+			const expected = {
+				id: '',
+				name: '',
+				products: {
+					items: {
+						createdAt: '',
+						updatedAt: '',
+						warehouseProductsId: '',
+						description: '',
+						factoryId: '',
+						owner: '',
+						sku: '',
+						trackingMeta: {
+							note: '',
+							productMeta: {
+								deepMeta: {
+									content: '',
+								},
+								releaseDate: '',
+								status: '',
+							}
+						}
+					}
+				}
+			}
+
+			expect(set).toEqual(expected);
+		});
 	});
 
 	describe('generateSelectionSet', () => {
@@ -431,7 +467,7 @@ describe('flattenItems', () => {
 			const generated = generateSelectionSet(modelIntroSchema, 'Product');
 
 			const expected =
-				'sku factoryId warehouseId description trackingMeta { productMeta { releaseDate status deepMeta { content } } note } owner createdAt updatedAt';
+				'sku factoryId description trackingMeta { productMeta { releaseDate status deepMeta { content } } note } warehouseProductsId createdAt updatedAt owner';
 
 			expect(generated).toEqual(expected);
 		});
