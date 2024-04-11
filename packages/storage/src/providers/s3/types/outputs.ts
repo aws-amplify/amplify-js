@@ -48,25 +48,21 @@ export type ItemWithKey = ItemBase & StorageItemWithKey;
  */
 export type ItemWithPath = ItemBase & StorageItemWithPath;
 
+export type ItemWithKeyAndPath = ItemBase &
+	StorageItemWithKey &
+	StorageItemWithPath;
+
 /**
  * type for S3 list item.
  */
 export type ListOutputItem = Omit<ItemWithKey, 'metadata'>;
 
-/** @deprecated Use {@link DownloadDataOutputWithPath} instead. */
-export type DownloadDataOutputWithKey = DownloadTask<
-	StorageDownloadDataOutput<ItemWithKey>
->;
-export type DownloadDataOutputWithPath = DownloadTask<
-	StorageDownloadDataOutput<ItemWithPath>
->;
-
 /**
  * Output type for S3 downloadData API.
  */
-export type DownloadDataOutput =
-	| DownloadDataOutputWithKey
-	| DownloadDataOutputWithPath;
+export type DownloadDataOutput = DownloadTask<
+	StorageDownloadDataOutput<ItemWithPath & ItemWithKey>
+>;
 
 /**
  * Output type for S3 getUrl API.
@@ -84,14 +80,10 @@ export type UploadDataOutput =
 	| UploadDataOutputWithKey
 	| UploadDataOutputWithPath;
 
-/** @deprecated Use {@link GetPropertiesOutputWithPath} instead. */
-export type GetPropertiesOutputWithKey = ItemWithKey;
-export type GetPropertiesOutputWithPath = ItemWithPath;
-
 /**
  * Output type for S3 getProperties API.
  */
-export type GetPropertiesOutput = ItemWithKey & ItemWithPath;
+export type GetPropertiesOutput = ItemWithKeyAndPath;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.
@@ -146,4 +138,4 @@ export type CopyOutput = StrictUnion<CopyOutputWithKey | CopyOutputWithPath>;
 /**
  * Output type for S3 remove API.
  */
-export type RemoveOutput = Pick<ItemWithKey & ItemWithPath, 'key' | 'path'>;
+export type RemoveOutput = Pick<ItemWithKeyAndPath, 'key' | 'path'>;

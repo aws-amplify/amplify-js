@@ -11,8 +11,6 @@ import {
 	RemoveInputWithKey,
 	RemoveInputWithPath,
 	RemoveOutput,
-	RemoveOutputWithKey,
-	RemoveOutputWithPath,
 } from '../../types';
 import { remove as removeInternal } from '../internal/remove';
 
@@ -29,7 +27,7 @@ interface RemoveApi {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: RemoveInputWithPath,
-	): Promise<RemoveOutputWithPath>;
+	): Promise<RemoveOutput>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/remove | path} instead.
@@ -45,7 +43,7 @@ interface RemoveApi {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: RemoveInputWithKey,
-	): Promise<RemoveOutputWithKey>;
+	): Promise<RemoveOutput>;
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: RemoveInput,

@@ -20,8 +20,6 @@ export {
 } from './options';
 export {
 	DownloadDataOutput,
-	DownloadDataOutputWithKey,
-	DownloadDataOutputWithPath,
 	GetUrlOutput,
 	UploadDataOutput,
 	UploadDataOutputWithKey,
@@ -35,14 +33,11 @@ export {
 	ListPaginateOutputWithPath,
 	ListPaginateOutputWithPrefix,
 	GetPropertiesOutput,
-	GetPropertiesOutputWithKey,
-	GetPropertiesOutputWithPath,
 	CopyOutput,
 	CopyOutputWithKey,
 	CopyOutputWithPath,
 	RemoveOutput,
-	RemoveOutputWithKey,
-	RemoveOutputWithPath,
+	ItemWithKeyAndPath,
 } from './outputs';
 export {
 	CopyInput,
