@@ -7,6 +7,7 @@ import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
 import { StorageOptions } from '../../../../src/types';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
+import { type } from 'os';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
