@@ -8,8 +8,8 @@ import { list } from '../../../../src/providers/s3';
 import {
 	ListAllOptionsWithPrefix,
 	ListPaginateOptionsWithPrefix,
+	ListPaginateOutput,
 } from '../../../../src/providers/s3/types';
-import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -148,7 +148,7 @@ describe('list API', () => {
 					options: options as ListPaginateOptionsWithPrefix,
 				});
 				expect(response.items).toEqual([
-					{ ...listResultItem, key: key ?? '', path: key ?? '' },
+					{ ...listResultItem, key: key ?? '', path: expectedPath ?? '' },
 				]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -176,7 +176,7 @@ describe('list API', () => {
 					};
 				});
 				const customPageSize = 5;
-				const response = await list({
+				const response: ListPaginateOutput = await list({
 					prefix: key,
 					options: {
 						...(options as ListPaginateOptionsWithPrefix),
@@ -185,7 +185,7 @@ describe('list API', () => {
 					},
 				});
 				expect(response.items).toEqual([
-					{ ...listResultItem, key: key ?? '', path: key ?? '' },
+					{ ...listResultItem, key: key ?? '', path: expectedPath ?? '' },
 				]);
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -239,7 +239,7 @@ describe('list API', () => {
 				const listResult = {
 					...listResultItem,
 					key: key ?? '',
-					path: key ?? '',
+					path: expectedPath ?? '',
 				};
 				expect(result.items).toEqual([listResult, listResult, listResult]);
 				expect(result).not.toHaveProperty(nextToken);

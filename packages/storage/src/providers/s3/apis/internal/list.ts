@@ -82,7 +82,7 @@ export const list = async (
 			return _listAllWithPath(listInputArgs);
 		}
 	} else {
-		if (inputType === STORAGE_INPUT_PREFIX) {
+		if (isInputWithPrefix) {
 			return _listWithPrefix({ ...listInputArgs, generatedPrefix });
 		} else {
 			return _listWithPath(listInputArgs);
@@ -152,7 +152,7 @@ const _listWithPrefix = async ({
 
 			return {
 				key: finalKey,
-				path: finalKey,
+				path: item.Key!,
 				eTag: item.ETag,
 				lastModified: item.LastModified,
 				size: item.Size,
