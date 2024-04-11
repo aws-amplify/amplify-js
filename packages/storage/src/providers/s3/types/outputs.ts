@@ -5,8 +5,7 @@ import {
 	DownloadTask,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,
-	StorageItemWithKey,
-	StorageItemWithPath,
+	StorageItem,
 	StorageListOutput,
 	UploadTask,
 } from '../../../types';
@@ -30,25 +29,13 @@ export interface ItemBase {
  */
 export type ListOutputItem = Omit<ItemWithKeyAndPath, 'metadata'>;
 
-/**
- * @deprecated Use {@link ItemWithPath} instead.
- */
-export type ItemWithKey = ItemBase & StorageItemWithKey;
-
-/**
- * type for S3 list item with path.
- */
-export type ItemWithPath = ItemBase & StorageItemWithPath;
-
-export type ItemWithKeyAndPath = ItemBase &
-	StorageItemWithKey &
-	StorageItemWithPath;
+export type ItemWithKeyAndPath = ItemBase & StorageItem;
 
 /**
  * Output type for S3 downloadData API.
  */
 export type DownloadDataOutput = DownloadTask<
-	StorageDownloadDataOutput<ItemWithPath & ItemWithKey>
+	StorageDownloadDataOutput<ItemWithKeyAndPath>
 >;
 
 /**

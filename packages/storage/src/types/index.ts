@@ -32,8 +32,6 @@ export {
 } from './options';
 export {
 	StorageItem,
-	StorageItemWithKey,
-	StorageItemWithPath,
 	StorageListOutput,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,
