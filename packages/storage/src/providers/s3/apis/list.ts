@@ -7,14 +7,10 @@ import {
 	ListAllInputWithPath,
 	ListAllInputWithPrefix,
 	ListAllOutput,
-	ListAllOutputWithPath,
-	ListAllOutputWithPrefix,
 	ListPaginateInput,
 	ListPaginateInputWithPath,
 	ListPaginateInputWithPrefix,
 	ListPaginateOutput,
-	ListPaginateOutputWithPath,
-	ListPaginateOutputWithPrefix,
 } from '../types';
 
 import { list as listInternal } from './internal/list';
@@ -28,7 +24,7 @@ interface ListApi {
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
 	 */
-	(input: ListPaginateInputWithPath): Promise<ListPaginateOutputWithPath>;
+	(input: ListPaginateInputWithPath): Promise<ListPaginateOutput>;
 	/**
 	 * List all files from S3 for a given `path`. You can set `listAll` to true in `options` to get all the files from S3.
 	 * @param input - The `ListAllInputWithPath` object.
@@ -36,7 +32,7 @@ interface ListApi {
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
 	 */
-	(input: ListAllInputWithPath): Promise<ListAllOutputWithPath>;
+	(input: ListAllInputWithPath): Promise<ListAllOutput>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -47,7 +43,7 @@ interface ListApi {
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
 	 */
-	(input?: ListPaginateInputWithPrefix): Promise<ListPaginateOutputWithPrefix>;
+	(input?: ListPaginateInputWithPrefix): Promise<ListPaginateOutput>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -57,7 +53,7 @@ interface ListApi {
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
 	 */
-	(input?: ListAllInputWithPrefix): Promise<ListAllOutputWithPrefix>;
+	(input?: ListAllInputWithPrefix): Promise<ListAllOutput>;
 	(input?: ListAllInput): Promise<ListAllOutput>;
 	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 }

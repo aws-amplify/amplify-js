@@ -11,8 +11,6 @@ import {
 	GetPropertiesInputWithKey,
 	GetPropertiesInputWithPath,
 	GetPropertiesOutput,
-	GetPropertiesOutputWithKey,
-	GetPropertiesOutputWithPath,
 } from '../../types';
 import { getProperties as getPropertiesInternal } from '../internal/getProperties';
 
@@ -30,7 +28,7 @@ interface GetProperties {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: GetPropertiesInputWithPath,
-	): Promise<GetPropertiesOutputWithPath>;
+	): Promise<GetPropertiesOutput>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/get-properties/ | path} instead.
@@ -47,7 +45,7 @@ interface GetProperties {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: GetPropertiesInputWithKey,
-	): Promise<GetPropertiesOutputWithKey>;
+	): Promise<GetPropertiesOutput>;
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: GetPropertiesInput,

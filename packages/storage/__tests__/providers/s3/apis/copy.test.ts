@@ -34,7 +34,6 @@ const bucket = 'bucket';
 const region = 'region';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
-const copyResult = { key: destinationKey };
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -161,6 +160,11 @@ describe('copy API', () => {
 					const targetIdentityIdMsg = source?.targetIdentityId
 						? `with targetIdentityId`
 						: '';
+					const copyResult = {
+						key: destinationKey,
+						path: expectedDestinationKey,
+					};
+
 					it(`should copy ${source.accessLevel} ${targetIdentityIdMsg} -> ${destination.accessLevel}`, async () => {
 						expect(
 							await copy({
@@ -223,7 +227,10 @@ describe('copy API', () => {
 							source: { path: sourcePath },
 							destination: { path: destinationPath },
 						}),
-					).toEqual({ path: expectedDestinationPath });
+					).toEqual({
+						path: expectedDestinationPath,
+						key: expectedDestinationPath,
+					});
 					expect(copyObject).toHaveBeenCalledTimes(1);
 					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 						...copyObjectClientBaseParams,

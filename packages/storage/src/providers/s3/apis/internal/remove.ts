@@ -50,8 +50,10 @@ export const remove = async (
 	return inputType === STORAGE_INPUT_KEY
 		? {
 				key: objectKey,
+				path: finalKey,
 			}
 		: {
-				path: objectKey,
+				path: finalKey,
+				key: finalKey,
 			};
 };

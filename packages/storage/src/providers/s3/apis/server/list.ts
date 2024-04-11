@@ -10,14 +10,10 @@ import {
 	ListAllInputWithPath,
 	ListAllInputWithPrefix,
 	ListAllOutput,
-	ListAllOutputWithPath,
-	ListAllOutputWithPrefix,
 	ListPaginateInput,
 	ListPaginateInputWithPath,
 	ListPaginateInputWithPrefix,
 	ListPaginateOutput,
-	ListPaginateOutputWithPath,
-	ListPaginateOutputWithPrefix,
 } from '../../types';
 import { list as listInternal } from '../internal/list';
 
@@ -34,7 +30,7 @@ interface ListApi {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: ListPaginateInputWithPath,
-	): Promise<ListPaginateOutputWithPath>;
+	): Promise<ListPaginateOutput>;
 	/**
 	 * List all files from S3 for a given `path`. You can set `listAll` to true in `options` to get all the files from S3.
 	 * @param input - The `ListAllInputWithPath` object.
@@ -46,7 +42,7 @@ interface ListApi {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: ListAllInputWithPath,
-	): Promise<ListAllOutputWithPath>;
+	): Promise<ListAllOutput>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -60,7 +56,7 @@ interface ListApi {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input?: ListPaginateInputWithPrefix,
-	): Promise<ListPaginateOutputWithPrefix>;
+	): Promise<ListPaginateOutput>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -73,7 +69,7 @@ interface ListApi {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input?: ListAllInputWithPrefix,
-	): Promise<ListAllOutputWithPrefix>;
+	): Promise<ListAllOutput>;
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input?: ListPaginateInput,

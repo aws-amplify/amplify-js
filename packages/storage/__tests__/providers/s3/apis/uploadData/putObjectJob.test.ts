@@ -58,6 +58,7 @@ describe('putObjectJob with key', () => {
 	it('should supply the correct parameters to putObject API handler', async () => {
 		const abortController = new AbortController();
 		const key = 'key';
+		const finalKey = `public/${key}`;
 		const data = 'data';
 		const contentType = 'contentType';
 		const contentDisposition = 'contentDisposition';
@@ -84,6 +85,7 @@ describe('putObjectJob with key', () => {
 		const result = await job();
 		expect(result).toEqual({
 			key,
+			path: finalKey,
 			eTag: 'eTag',
 			versionId: 'versionId',
 			contentType: 'contentType',
@@ -101,7 +103,7 @@ describe('putObjectJob with key', () => {
 			},
 			{
 				Bucket: 'bucket',
-				Key: `public/${key}`,
+				Key: finalKey,
 				Body: data,
 				ContentType: contentType,
 				ContentDisposition: contentDisposition,
@@ -143,7 +145,7 @@ describe('putObjectJob with path', () => {
 			expectedKey: testPath,
 		},
 	])(
-		'should supply the correct parameters to putObject API handler when path is $path', 
+		'should supply the correct parameters to putObject API handler when path is $path',
 		async ({ path, expectedKey }) => {
 			const abortController = new AbortController();
 			const data = 'data';
@@ -172,6 +174,7 @@ describe('putObjectJob with path', () => {
 			const result = await job();
 			expect(result).toEqual({
 				path: expectedKey,
+				key: expectedKey,
 				eTag: 'eTag',
 				versionId: 'versionId',
 				contentType: 'contentType',
@@ -198,7 +201,7 @@ describe('putObjectJob with path', () => {
 					ContentMD5: undefined,
 				},
 			);
-		}
+		},
 	);
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
