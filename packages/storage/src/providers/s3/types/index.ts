@@ -22,8 +22,6 @@ export {
 	DownloadDataOutput,
 	GetUrlOutput,
 	UploadDataOutput,
-	UploadDataOutputWithKey,
-	UploadDataOutputWithPath,
 	ListOutputItemWithKey,
 	ListOutputItemWithPath,
 	ListAllOutput,

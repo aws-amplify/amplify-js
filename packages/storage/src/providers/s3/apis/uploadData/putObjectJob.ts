@@ -10,7 +10,7 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
-import { ItemWithKey, ItemWithPath } from '../../types/outputs';
+import { ItemWithKeyAndPath } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
@@ -26,7 +26,7 @@ export const putObjectJob =
 		abortSignal: AbortSignal,
 		totalLength?: number,
 	) =>
-	async (): Promise<ItemWithKey | ItemWithPath> => {
+	async (): Promise<ItemWithKeyAndPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
@@ -75,6 +75,6 @@ export const putObjectJob =
 		};
 
 		return inputType === STORAGE_INPUT_KEY
-			? { key: objectKey, ...result }
-			: { path: objectKey, ...result };
+			? { key: objectKey, path: finalKey, ...result }
+			: { path: finalKey, key: finalKey, ...result };
 	};
