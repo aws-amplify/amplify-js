@@ -128,12 +128,9 @@ export type ListPaginateOutputWithPath =
 	};
 
 /**
- * @deprecated Use {@link CopyOutputWithPath} instead.
+ * Output type for S3 Copy API.
  */
-export type CopyOutputWithKey = Pick<ItemWithKey, 'key'>;
-export type CopyOutputWithPath = Pick<ItemWithPath, 'path'>;
-
-export type CopyOutput = StrictUnion<CopyOutputWithKey | CopyOutputWithPath>;
+export type CopyOutput = Pick<ItemWithKeyAndPath, 'key' | 'path'>;
 
 /**
  * Output type for S3 remove API.

@@ -34,8 +34,6 @@ export {
 	ListPaginateOutputWithPrefix,
 	GetPropertiesOutput,
 	CopyOutput,
-	CopyOutputWithKey,
-	CopyOutputWithPath,
 	RemoveOutput,
 	ItemWithKeyAndPath,
 } from './outputs';

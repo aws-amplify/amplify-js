@@ -8,8 +8,6 @@ import {
 	CopyInputWithKey,
 	CopyInputWithPath,
 	CopyOutput,
-	CopyOutputWithKey,
-	CopyOutputWithPath,
 } from '../types';
 
 import { copy as copyInternal } from './internal/copy';
@@ -24,7 +22,7 @@ interface Copy {
 	 * @throws validation: `StorageValidationErrorCode` - Thrown when
 	 * source or destination path is not defined.
 	 */
-	(input: CopyInputWithPath): Promise<CopyOutputWithPath>;
+	(input: CopyInputWithPath): Promise<CopyOutput>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/copy | path} instead.
@@ -38,7 +36,7 @@ interface Copy {
 	 * @throws validation: `StorageValidationErrorCode` - Thrown when
 	 * source or destination key is not defined.
 	 */
-	(input: CopyInputWithKey): Promise<CopyOutputWithKey>;
+	(input: CopyInputWithKey): Promise<CopyOutput>;
 	(input: CopyInput): Promise<CopyOutput>;
 }
 
