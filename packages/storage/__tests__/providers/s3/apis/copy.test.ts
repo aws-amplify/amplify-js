@@ -172,18 +172,17 @@ describe('copy API', () => {
 					};
 
 					it(`should copy ${source.accessLevel} ${targetIdentityIdMsg} -> ${destination.accessLevel}`, async () => {
-						expect(
-							await copyWrapper({
-								source: {
-									...(source as CopySourceOptionsWithKey),
-									key: sourceKey,
-								},
-								destination: {
-									...(destination as CopyDestinationOptionsWithKey),
-									key: destinationKey,
-								},
-							}),
-						).toEqual(copyResult);
+						const { key, path } = await copyWrapper({
+							source: {
+								...(source as CopySourceOptionsWithKey),
+								key: sourceKey,
+							},
+							destination: {
+								...(destination as CopyDestinationOptionsWithKey),
+								key: destinationKey,
+							},
+						});
+						expect({ key, path }).toEqual(copyResult);
 						expect(copyObject).toHaveBeenCalledTimes(1);
 						expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 							...copyObjectClientBaseParams,
@@ -228,14 +227,13 @@ describe('copy API', () => {
 					destinationPath,
 					expectedDestinationPath,
 				}) => {
-					expect(
-						await copyWrapper({
-							source: { path: sourcePath },
-							destination: { path: destinationPath },
-						}),
-					).toEqual({
-						path: expectedDestinationPath,
+					const { key, path } = await copyWrapper({
+						source: { path: sourcePath },
+						destination: { path: destinationPath },
+					});
+					expect({ key, path }).toEqual({
 						key: expectedDestinationPath,
+						path: expectedDestinationPath,
 					});
 					expect(copyObject).toHaveBeenCalledTimes(1);
 					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
