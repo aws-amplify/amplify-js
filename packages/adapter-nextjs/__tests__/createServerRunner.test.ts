@@ -3,7 +3,6 @@
 
 import { ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
 import { NextServer } from '../src/types';
-import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 
 const mockAmplifyConfig: ResourcesConfig = {
 	Auth: {
