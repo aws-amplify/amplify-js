@@ -2,13 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig } from '../index';
-import {
-	AmplifyOutputs,
-	LegacyConfig,
-	isAmplifyOutputs,
-	parseAWSExports,
-	parseAmplifyOutputs,
-} from '../libraryUtils';
+import { AmplifyOutputs } from '../singleton/AmplifyOutputs/types';
+import { LegacyConfig } from '../singleton/types';
+import { parseAWSExports } from '../parseAWSExports';
+import { isAmplifyOutputs, parseAmplifyOutputs } from '../parseAmplifyOutputs';
 
 /**
  * Parses the variety of configuration shapes that Amplify can accept into a ResourcesConfig.
