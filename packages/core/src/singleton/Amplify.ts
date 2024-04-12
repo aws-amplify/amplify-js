@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AMPLIFY_SYMBOL, Hub } from '../Hub';
-import { parseAWSExports } from '../parseAWSExports';
 import { deepFreeze } from '../utils';
 import { parseAmplifyConfig } from '../libraryUtils';
 
