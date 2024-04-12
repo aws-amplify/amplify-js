@@ -11,7 +11,10 @@ import {
 	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 } from '@aws-amplify/api-graphql';
-import { GraphQLAuthMode, parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
+import {
+	GraphQLAuthMode,
+	parseAmplifyConfig,
+} from '@aws-amplify/core/internals/utils';
 
 import { NextServer } from '../types';
 

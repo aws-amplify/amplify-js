@@ -4,7 +4,7 @@
 import { GetServerSidePropsContext as NextGetServerSidePropsContext } from 'next';
 import { NextRequest, NextResponse } from 'next/server.js';
 import { cookies } from 'next/headers.js';
-import { LegacyConfig, AmplifyOutputs } from 'aws-amplify/adapter-core';
+import { AmplifyOutputs, LegacyConfig } from 'aws-amplify/adapter-core';
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import { ResourcesConfig } from '@aws-amplify/core';
 
