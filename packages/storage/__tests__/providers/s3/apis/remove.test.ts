@@ -7,6 +7,11 @@ import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
 import { StorageOptions } from '../../../../src/types';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
+import {
+	RemoveInput,
+	RemoveOptions,
+	RemoveOutput,
+} from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -23,7 +28,7 @@ jest.mock('@aws-amplify/core', () => ({
 const mockDeleteObject = deleteObject as jest.Mock;
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
-const key = 'key';
+const inputKey = 'key';
 const bucket = 'bucket';
 const region = 'region';
 const defaultIdentityId = 'defaultIdentityId';
@@ -37,6 +42,9 @@ const deleteObjectClientConfig = {
 	region,
 	userAgentValue: expect.any(String),
 };
+
+const removeWrapper = (input: RemoveInput): Promise<RemoveOutput> =>
+	remove(input);
 
 describe('remove API', () => {
 	beforeAll(() => {
@@ -67,29 +75,30 @@ describe('remove API', () => {
 			});
 			[
 				{
-					expectedKey: `public/${key}`,
+					expectedKey: `public/${inputKey}`,
 				},
 				{
 					options: { accessLevel: 'guest' },
-					expectedKey: `public/${key}`,
+					expectedKey: `public/${inputKey}`,
 				},
 				{
 					options: { accessLevel: 'private' },
-					expectedKey: `private/${defaultIdentityId}/${key}`,
+					expectedKey: `private/${defaultIdentityId}/${inputKey}`,
 				},
 				{
 					options: { accessLevel: 'protected' },
-					expectedKey: `protected/${defaultIdentityId}/${key}`,
+					expectedKey: `protected/${defaultIdentityId}/${inputKey}`,
 				},
 			].forEach(({ options, expectedKey }) => {
 				const accessLevel = options?.accessLevel ?? 'default';
-				const removeResultKey = { key };
 
 				it(`should remove object with ${accessLevel} accessLevel`, async () => {
-					expect.assertions(3);
-					expect(
-						await remove({ key, options: options as StorageOptions }),
-					).toEqual({ ...removeResultKey, path: expectedKey });
+					const removeResult = { key: inputKey, path: expectedKey };
+					const { key, path } = await removeWrapper({
+						key: inputKey,
+						options: options as RemoveOptions,
+					});
+					expect({ key, path }).toEqual(removeResult);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 						Bucket: bucket,
@@ -111,28 +120,28 @@ describe('remove API', () => {
 			});
 			[
 				{
-					path: `public/${key}`,
+					path: `public/${inputKey}`,
 				},
 				{
-					path: ({ identityId }: any) => `protected/${identityId}/${key}`,
+					path: ({ identityId }: any) => `protected/${identityId}/${inputKey}`,
 				},
-			].forEach(({ path }) => {
-				const resolvePath =
-					typeof path === 'string'
-						? path
-						: path({ identityId: defaultIdentityId });
+			].forEach(({ path: inputPath }) => {
+				const resolvedPath =
+					typeof inputPath === 'string'
+						? inputPath
+						: inputPath({ identityId: defaultIdentityId });
 				const removeResultPath = {
-					path: resolvePath,
-					key: resolvePath,
+					path: resolvedPath,
+					key: resolvedPath,
 				};
 
 				it(`should remove object for the given path`, async () => {
-					expect.assertions(3);
-					expect(await remove({ path })).toEqual(removeResultPath);
+					const { key, path } = await removeWrapper({ path: inputPath });
+					expect({ key, path }).toEqual(removeResultPath);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 						Bucket: bucket,
-						Key: resolvePath,
+						Key: resolvedPath,
 					});
 				});
 			});
@@ -153,7 +162,7 @@ describe('remove API', () => {
 			expect.assertions(3);
 			const key = 'wrongKey';
 			try {
-				await remove({ key });
+				await removeWrapper({ key });
 			} catch (error: any) {
 				expect(deleteObject).toHaveBeenCalledTimes(1);
 				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
@@ -166,7 +175,7 @@ describe('remove API', () => {
 		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
 			expect.assertions(1);
 			try {
-				await remove({ path: '' });
+				await removeWrapper({ path: '' });
 			} catch (error: any) {
 				expect(error.name).toBe(
 					StorageValidationErrorCode.InvalidStorageOperationInput,
