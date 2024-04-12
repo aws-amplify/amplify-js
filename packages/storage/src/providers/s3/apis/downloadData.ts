@@ -9,14 +9,13 @@ import {
 	DownloadDataInputWithKey,
 	DownloadDataInputWithPath,
 	DownloadDataOutput,
-	ItemWithKeyAndPath,
 } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { createDownloadTask, validateStorageOperationInput } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
-import { StorageDownloadDataOutput } from '../../../types';
+import { StorageDownloadDataOutput, StorageItem } from '../../../types';
 import { STORAGE_INPUT_KEY } from '../utils/constants';
 
 interface DownloadData {
@@ -105,7 +104,7 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 
 const downloadDataJob =
 	(downloadDataInput: DownloadDataInput, abortSignal: AbortSignal) =>
-	async (): Promise<StorageDownloadDataOutput<ItemWithKeyAndPath>> => {
+	async (): Promise<StorageDownloadDataOutput<StorageItem>> => {
 		const { options: downloadDataOptions } = downloadDataInput;
 		const { bucket, keyPrefix, s3Config, identityId } =
 			await resolveS3ConfigAndInput(Amplify, downloadDataOptions);

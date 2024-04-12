@@ -10,10 +10,10 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
-import { ItemWithKeyAndPath } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
+import { StorageItem } from '../../../../types';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -26,7 +26,7 @@ export const putObjectJob =
 		abortSignal: AbortSignal,
 		totalLength?: number,
 	) =>
-	async (): Promise<ItemWithKeyAndPath> => {
+	async (): Promise<StorageItem> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);

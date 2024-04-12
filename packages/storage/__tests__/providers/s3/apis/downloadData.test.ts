@@ -12,13 +12,12 @@ import {
 import {
 	DownloadDataOptionsWithKey,
 	DownloadDataOptionsWithPath,
-	ItemWithKeyAndPath,
 } from '../../../../src/providers/s3/types';
 import {
 	STORAGE_INPUT_KEY,
 	STORAGE_INPUT_PATH,
 } from '../../../../src/providers/s3/utils/constants';
-import { StorageDownloadDataOutput } from '../../../../src/types';
+import { StorageDownloadDataOutput, StorageItem } from '../../../../src/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
@@ -113,7 +112,7 @@ describe('downloadData with key', () => {
 				} as DownloadDataOptionsWithKey,
 			}).result;
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
-			const { key, path, body }: StorageDownloadDataOutput<ItemWithKeyAndPath> =
+			const { key, path, body }: StorageDownloadDataOutput<StorageItem> =
 				await job();
 			expect({ key, path, body }).toEqual({
 				key: inputKey,
@@ -139,21 +138,15 @@ describe('downloadData with key', () => {
 	);
 
 	it('should assign the getObject API handler response to the result with key', async () => {
-		const lastModified = 'lastModified';
-		const contentLength = 'contentLength';
-		const eTag = 'eTag';
-		const metadata = 'metadata';
-		const versionId = 'versionId';
-		const contentType = 'contentType';
 		const expectedKey = `public/${inputKey}`;
 		(getObject as jest.Mock).mockResolvedValueOnce({
 			Body: 'body',
-			LastModified: lastModified,
-			ContentLength: contentLength,
-			ETag: eTag,
-			Metadata: metadata,
-			VersionId: versionId,
-			ContentType: contentType,
+			LastModified: 'lastModified',
+			ContentLength: 'contentLength',
+			ETag: 'eTag',
+			Metadata: 'metadata',
+			VersionId: 'versionId',
+			ContentType: 'contentType',
 		});
 		downloadData({ key: inputKey });
 		const job = mockCreateDownloadTask.mock.calls[0][0].job;
@@ -161,19 +154,34 @@ describe('downloadData with key', () => {
 			key,
 			path,
 			body,
-			...others
-		}: StorageDownloadDataOutput<ItemWithKeyAndPath> = await job();
+			contentType,
+			eTag,
+			lastModified,
+			metadata,
+			size,
+			versionId,
+		}: StorageDownloadDataOutput<StorageItem> = await job();
 		expect(getObject).toHaveBeenCalledTimes(1);
-		expect({ key, path, body, ...others }).toEqual({
+		expect({
+			key,
+			path,
+			body,
+			contentType,
+			eTag,
+			lastModified,
+			metadata,
+			size,
+			versionId,
+		}).toEqual({
 			key: inputKey,
 			path: expectedKey,
 			body: 'body',
-			lastModified,
-			size: contentLength,
-			eTag,
-			metadata,
-			versionId,
-			contentType,
+			lastModified: 'lastModified',
+			size: 'contentLength',
+			eTag: 'eTag',
+			metadata: 'metadata',
+			versionId: 'versionId',
+			contentType: 'contentType',
 		});
 	});
 
@@ -256,7 +264,7 @@ describe('downloadData with path', () => {
 				key,
 				path: resultPath,
 				body,
-			}: StorageDownloadDataOutput<ItemWithKeyAndPath> = await job();
+			}: StorageDownloadDataOutput<StorageItem> = await job();
 			expect({
 				key,
 				path: resultPath,
@@ -285,46 +293,49 @@ describe('downloadData with path', () => {
 	);
 
 	it('should assign the getObject API handler response to the result with path', async () => {
-		const lastModified = 'lastModified';
-		const contentLength = 'contentLength';
-		const eTag = 'eTag';
-		const metadata = 'metadata';
-		const versionId = 'versionId';
-		const contentType = 'contentType';
-		const path = inputPath;
 		(getObject as jest.Mock).mockResolvedValueOnce({
 			Body: 'body',
-			LastModified: lastModified,
-			ContentLength: contentLength,
-			ETag: eTag,
-			Metadata: metadata,
-			VersionId: versionId,
-			ContentType: contentType,
+			LastModified: 'lastModified',
+			ContentLength: 'contentLength',
+			ETag: 'eTag',
+			Metadata: 'metadata',
+			VersionId: 'versionId',
+			ContentType: 'contentType',
 		});
-		downloadData({ path });
+		downloadData({ path: inputPath });
 		const job = mockCreateDownloadTask.mock.calls[0][0].job;
 		const {
 			key,
-			path: resultPath,
+			path,
 			body,
-			...others
-		}: StorageDownloadDataOutput<ItemWithKeyAndPath> = await job();
+			contentType,
+			eTag,
+			lastModified,
+			metadata,
+			size,
+			versionId,
+		}: StorageDownloadDataOutput<StorageItem> = await job();
 		expect(getObject).toHaveBeenCalledTimes(1);
 		expect({
 			key,
-			path: resultPath,
-			body,
-			...others,
-		}).toEqual({
 			path,
-			key: path,
-			body: 'body',
-			lastModified,
-			size: contentLength,
-			eTag,
-			metadata,
-			versionId,
+			body,
 			contentType,
+			eTag,
+			lastModified,
+			metadata,
+			size,
+			versionId,
+		}).toEqual({
+			key: inputPath,
+			path: inputPath,
+			body: 'body',
+			lastModified: 'lastModified',
+			size: 'contentLength',
+			eTag: 'eTag',
+			metadata: 'metadata',
+			versionId: 'versionId',
+			contentType: 'contentType',
 		});
 	});
 

@@ -113,11 +113,29 @@ describe('getProperties with key', () => {
 					Bucket: 'bucket',
 					Key: generatedKey,
 				};
-				const { key, path, ...others } = await getProperties({
+				const {
+					key,
+					path,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				} = await getProperties({
 					key: inputKey,
 					options: options as GetPropertiesOptionsWithKey,
 				});
-				expect({ key, path, ...others }).toEqual({
+				expect({
+					key,
+					path,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				}).toEqual({
 					key: inputKey,
 					path: generatedKey,
 					...expectedResult,
@@ -212,13 +230,31 @@ describe('Happy cases: With path', () => {
 					Bucket: 'bucket',
 					Key: expectedPath,
 				};
-				const { key, path, ...others } = await getProperties({
+				const {
+					key,
+					path,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				} = await getProperties({
 					path: testPath,
 					options: {
 						useAccelerateEndpoint: true,
 					},
 				});
-				expect({ key, path, ...others }).toEqual({
+				expect({
+					key,
+					path,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				}).toEqual({
 					key: expectedPath,
 					path: expectedPath,
 					...expectedResult,

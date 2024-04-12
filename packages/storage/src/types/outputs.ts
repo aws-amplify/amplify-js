@@ -8,6 +8,21 @@ import { ResponseBodyMixin } from '@aws-amplify/core/internals/aws-client-utils'
  */
 export interface StorageItemBase {
 	/**
+	 * @deprecated This may be removed in next major version
+	 * Key of the object
+	 */
+	key: string;
+	/**
+	 * Path of the object
+	 */
+	path: string;
+}
+
+/**
+ * A storage item can be identified either by a key or a path.
+ */
+export type StorageItem = StorageItemBase & {
+	/**
 	 * Creation date of the object.
 	 */
 	lastModified?: Date;
@@ -25,21 +40,19 @@ export interface StorageItemBase {
 	 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
 	 */
 	metadata?: Record<string, string>;
-}
-
-/**
- * A storage item can be identified either by a key or a path.
- */
-export type StorageItem = StorageItemBase & {
-	/** @deprecated This may be removed in next major version */
-	key: string;
-	path: string;
+	/**
+	 * VersionId used to reference a specific version of the object.
+	 */
+	versionId?: string;
+	/**
+	 * A standard MIME type describing the format of the object data.
+	 */
+	contentType?: string;
 };
 
 export type StorageDownloadDataOutput<Item extends StorageItem> = Item & {
 	body: ResponseBodyMixin;
 };
-
 export interface StorageGetUrlOutput {
 	/**
 	 * presigned URL of the given object.
@@ -50,9 +63,6 @@ export interface StorageGetUrlOutput {
 	 */
 	expiresAt: Date;
 }
-
-export type StorageUploadOutput<Item extends StorageItem> = Item;
-
 export interface StorageListOutput<Item extends StorageItem> {
 	/**
 	 * List of items returned by the list API.

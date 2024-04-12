@@ -6,42 +6,27 @@ import {
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,
 	StorageItem,
+	StorageItemBase,
 	StorageListOutput,
 	UploadTask,
 } from '../../../types';
 
 /**
- * Base type for an S3 item.
- */
-export interface ItemBase {
-	/**
-	 * VersionId used to reference a specific version of the object.
-	 */
-	versionId?: string;
-	/**
-	 * A standard MIME type describing the format of the object data.
-	 */
-	contentType?: string;
-}
-
-/**
  * type for S3 list item.
  */
-export type ListOutputItem = Omit<ItemWithKeyAndPath, 'metadata'>;
-
-export type ItemWithKeyAndPath = ItemBase & StorageItem;
+export type ListOutputItem = Omit<StorageItem, 'metadata'>;
 
 /**
  * Output type for S3 downloadData API.
  */
 export type DownloadDataOutput = DownloadTask<
-	StorageDownloadDataOutput<ItemWithKeyAndPath>
+	StorageDownloadDataOutput<StorageItem>
 >;
 
 /**
  * Output type for S3 uploadData API.
  */
-export type UploadDataOutput = UploadTask<ItemWithKeyAndPath>;
+export type UploadDataOutput = UploadTask<StorageItem>;
 
 /**
  * Output type for S3 getUrl API.
@@ -51,17 +36,17 @@ export type GetUrlOutput = StorageGetUrlOutput;
 /**
  * Output type for S3 getProperties API.
  */
-export type GetPropertiesOutput = ItemWithKeyAndPath;
+export type GetPropertiesOutput = StorageItem;
 
 /**
  * Output type for S3 Copy API.
  */
-export type CopyOutput = Pick<ItemWithKeyAndPath, 'key' | 'path'>;
+export type CopyOutput = StorageItemBase;
 
 /**
  * Output type for S3 remove API.
  */
-export type RemoveOutput = Pick<ItemWithKeyAndPath, 'key' | 'path'>;
+export type RemoveOutput = StorageItemBase;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.

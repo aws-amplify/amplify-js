@@ -60,10 +60,10 @@ describe('putObjectJob with key', () => {
 		const inputKey = 'key';
 		const finalKey = `public/${inputKey}`;
 		const data = 'data';
-		const contentType = 'contentType';
+		const mockContentType = 'contentType';
 		const contentDisposition = 'contentDisposition';
 		const contentEncoding = 'contentEncoding';
-		const metadata = { key: 'value' };
+		const mockMetadata = { key: 'value' };
 		const onProgress = jest.fn();
 		const useAccelerateEndpoint = true;
 
@@ -74,16 +74,34 @@ describe('putObjectJob with key', () => {
 				options: {
 					contentDisposition,
 					contentEncoding,
-					contentType,
-					metadata,
+					contentType: mockContentType,
+					metadata: mockMetadata,
 					onProgress,
 					useAccelerateEndpoint,
 				},
 			},
 			abortController.signal,
 		);
-		const { key, path, ...others } = await job();
-		expect({ key, path, ...others }).toEqual({
+		const {
+			key,
+			path,
+			contentType,
+			eTag,
+			lastModified,
+			metadata,
+			size,
+			versionId,
+		} = await job();
+		expect({
+			key,
+			path,
+			contentType,
+			eTag,
+			lastModified,
+			metadata,
+			size,
+			versionId,
+		}).toEqual({
 			key: inputKey,
 			path: finalKey,
 			eTag: 'eTag',
@@ -149,10 +167,10 @@ describe('putObjectJob with path', () => {
 		async ({ path: inputPath, expectedKey }) => {
 			const abortController = new AbortController();
 			const data = 'data';
-			const contentType = 'contentType';
+			const mockContentType = 'contentType';
 			const contentDisposition = 'contentDisposition';
 			const contentEncoding = 'contentEncoding';
-			const metadata = { key: 'value' };
+			const mockMetadata = { key: 'value' };
 			const onProgress = jest.fn();
 			const useAccelerateEndpoint = true;
 
@@ -163,16 +181,34 @@ describe('putObjectJob with path', () => {
 					options: {
 						contentDisposition,
 						contentEncoding,
-						contentType,
-						metadata,
+						contentType: mockContentType,
+						metadata: mockMetadata,
 						onProgress,
 						useAccelerateEndpoint,
 					},
 				},
 				abortController.signal,
 			);
-			const { key, path, ...others } = await job();
-			expect({ key, path, ...others }).toEqual({
+			const {
+				key,
+				path,
+				contentType,
+				eTag,
+				lastModified,
+				metadata,
+				size,
+				versionId,
+			} = await job();
+			expect({
+				key,
+				path,
+				contentType,
+				eTag,
+				lastModified,
+				metadata,
+				size,
+				versionId,
+			}).toEqual({
 				path: expectedKey,
 				key: expectedKey,
 				eTag: 'eTag',

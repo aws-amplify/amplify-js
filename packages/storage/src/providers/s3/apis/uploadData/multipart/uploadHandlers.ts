@@ -9,7 +9,6 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../../utils';
-import { ItemWithKeyAndPath } from '../../../types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
@@ -29,6 +28,7 @@ import {
 } from '../../../utils/client';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
+import { StorageItem } from '../../../../../types';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -46,7 +46,7 @@ export const getMultipartUploadHandlers = (
 	uploadDataInput: UploadDataInput,
 	size?: number,
 ) => {
-	let resolveCallback: ((value: ItemWithKeyAndPath) => void) | undefined;
+	let resolveCallback: ((value: StorageItem) => void) | undefined;
 	let rejectCallback: ((reason?: any) => void) | undefined;
 	let inProgressUpload:
 		| {
@@ -67,7 +67,7 @@ export const getMultipartUploadHandlers = (
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
 	let isAbortSignalFromPause = false;
 
-	const startUpload = async (): Promise<ItemWithKeyAndPath> => {
+	const startUpload = async (): Promise<StorageItem> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const resolvedS3Options = await resolveS3ConfigAndInput(
 			Amplify,
@@ -236,7 +236,7 @@ export const getMultipartUploadHandlers = (
 			});
 
 	const multipartUploadJob = () =>
-		new Promise<ItemWithKeyAndPath>((resolve, reject) => {
+		new Promise<StorageItem>((resolve, reject) => {
 			resolveCallback = resolve;
 			rejectCallback = reject;
 			startUploadWithResumability();
