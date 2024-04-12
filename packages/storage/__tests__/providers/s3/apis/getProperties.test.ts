@@ -6,8 +6,9 @@ import { getProperties } from '../../../../src/providers/s3';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 import {
+	GetPropertiesInput,
 	GetPropertiesOptionsWithKey,
-	GetPropertiesOptionsWithPath,
+	GetPropertiesOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -33,10 +34,23 @@ const credentials: AWSCredentials = {
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
-const key = 'key';
+const inputKey = 'key';
 const path = 'path';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+
+const expectedResult = {
+	size: '100',
+	contentType: 'text/plain',
+	eTag: 'etag',
+	metadata: { key: 'value' },
+	lastModified: 'last-modified',
+	versionId: 'version-id',
+};
+
+const getPropertiesWrapper = (
+	input: GetPropertiesInput,
+): Promise<GetPropertiesOutput> => getProperties(input);
 
 describe('getProperties with key', () => {
 	beforeAll(() => {
@@ -54,15 +68,6 @@ describe('getProperties with key', () => {
 		});
 	});
 	describe('Happy cases: With key', () => {
-		const expected = {
-			key,
-			size: '100',
-			contentType: 'text/plain',
-			eTag: 'etag',
-			metadata: { key: 'value' },
-			lastModified: 'last-modified',
-			versionId: 'version-id',
-		};
 		const config = {
 			credentials,
 			region: 'region',
@@ -83,37 +88,40 @@ describe('getProperties with key', () => {
 		});
 		test.each([
 			{
-				expectedKey: `public/${key}`,
+				generatedKey: `public/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'guest' },
-				expectedKey: `public/${key}`,
+				generatedKey: `public/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'private' },
-				expectedKey: `private/${defaultIdentityId}/${key}`,
+				generatedKey: `private/${defaultIdentityId}/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'protected' },
-				expectedKey: `protected/${defaultIdentityId}/${key}`,
+				generatedKey: `protected/${defaultIdentityId}/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: `protected/${targetIdentityId}/${key}`,
+				generatedKey: `protected/${targetIdentityId}/${inputKey}`,
 			},
 		])(
-			'should getProperties with key $expectedKey',
-			async ({ options, expectedKey }) => {
+			'should getProperties with key $generatedKey',
+			async ({ options, generatedKey }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
-					Key: expectedKey,
+					Key: generatedKey,
 				};
-				expect(
-					await getProperties({
-						key,
-						options: options as GetPropertiesOptionsWithKey,
-					}),
-				).toEqual({ ...expected, path: expectedKey });
+				const { key, path, ...others } = await getProperties({
+					key: inputKey,
+					options: options as GetPropertiesOptionsWithKey,
+				});
+				expect({ key, path, ...others }).toEqual({
+					key: inputKey,
+					path: generatedKey,
+					...expectedResult,
+				});
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
 			},
@@ -133,7 +141,7 @@ describe('getProperties with key', () => {
 			);
 			expect.assertions(3);
 			try {
-				await getProperties({ key });
+				await getProperties({ key: inputKey });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(
@@ -144,7 +152,7 @@ describe('getProperties with key', () => {
 					},
 					{
 						Bucket: 'bucket',
-						Key: `public/${key}`,
+						Key: `public/${inputKey}`,
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
@@ -169,16 +177,6 @@ describe('Happy cases: With path', () => {
 		});
 	});
 	describe('getProperties with path', () => {
-		const expected = {
-			key: path,
-			path,
-			size: '100',
-			contentType: 'text/plain',
-			eTag: 'etag',
-			metadata: { key: 'value' },
-			lastModified: 'last-modified',
-			versionId: 'version-id',
-		};
 		const config = {
 			credentials,
 			region: 'region',
@@ -201,27 +199,30 @@ describe('Happy cases: With path', () => {
 		test.each([
 			{
 				testPath: path,
-				expectedKey: path,
+				expectedPath: path,
 			},
 			{
 				testPath: () => path,
-				expectedKey: path,
+				expectedPath: path,
 			},
 		])(
-			'should getProperties with path $path and expectedKey $expectedKey',
-			async ({ testPath, expectedKey }) => {
+			'should getProperties with path $path and expectedPath $expectedPath',
+			async ({ testPath, expectedPath }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
-					Key: expectedKey,
+					Key: expectedPath,
 				};
-				expect(
-					await getProperties({
-						path: testPath,
-						options: {
-							useAccelerateEndpoint: true,
-						} as GetPropertiesOptionsWithPath,
-					}),
-				).toEqual(expected);
+				const { key, path, ...others } = await getProperties({
+					path: testPath,
+					options: {
+						useAccelerateEndpoint: true,
+					},
+				});
+				expect({ key, path, ...others }).toEqual({
+					key: expectedPath,
+					path: expectedPath,
+					...expectedResult,
+				});
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
 			},

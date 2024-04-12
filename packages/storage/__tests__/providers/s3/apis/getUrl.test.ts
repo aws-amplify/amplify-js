@@ -9,8 +9,10 @@ import {
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
 import {
+	GetUrlInput,
 	GetUrlOptionsWithKey,
 	GetUrlOptionsWithPath,
+	GetUrlOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -38,6 +40,9 @@ const credentials: AWSCredentials = {
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 
+const getUrlWrapper = (input: GetUrlInput): Promise<GetUrlOutput> =>
+	getUrl(input);
+
 describe('getUrl test with key', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
@@ -64,7 +69,7 @@ describe('getUrl test with key', () => {
 		beforeEach(() => {
 			(headObject as jest.Mock).mockImplementation(() => {
 				return {
-					Key: 'key',
+					Key: key,
 					ContentLength: '100',
 					ContentType: 'text/plain',
 					ETag: 'etag',
@@ -106,7 +111,7 @@ describe('getUrl test with key', () => {
 					Bucket: bucket,
 					Key: expectedKey,
 				};
-				const result = await getUrl({
+				const { url, expiresAt } = await getUrlWrapper({
 					key,
 					options: {
 						...options,
@@ -116,8 +121,11 @@ describe('getUrl test with key', () => {
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-				expect(result.url).toEqual({
-					url: new URL('https://google.com'),
+				expect({ url, expiresAt }).toEqual({
+					url: {
+						url: new URL('https://google.com'),
+					},
+					expiresAt: expect.any(Date),
 				});
 			},
 		);
@@ -135,7 +143,7 @@ describe('getUrl test with key', () => {
 			});
 			expect.assertions(2);
 			try {
-				await getUrl({
+				await getUrlWrapper({
 					key: 'invalid_key',
 					options: { validateObjectExistence: true },
 				});
@@ -204,7 +212,7 @@ describe('getUrl test with path', () => {
 					Bucket: bucket,
 					Key: expectedKey,
 				};
-				const result = await getUrl({
+				const { url, expiresAt } = await getUrlWrapper({
 					path,
 					options: {
 						validateObjectExistence: true,
@@ -213,8 +221,11 @@ describe('getUrl test with path', () => {
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-				expect(result.url).toEqual({
-					url: new URL('https://google.com'),
+				expect({ url, expiresAt }).toEqual({
+					url: {
+						url: new URL('https://google.com'),
+					},
+					expiresAt: expect.any(Date),
 				});
 			},
 		);
@@ -232,7 +243,7 @@ describe('getUrl test with path', () => {
 			});
 			expect.assertions(2);
 			try {
-				await getUrl({
+				await getUrlWrapper({
 					path: 'invalid_key',
 					options: { validateObjectExistence: true },
 				});
