@@ -11,10 +11,9 @@ import {
 	V6ClientSSRCookies,
 	V6ClientSSRRequest,
 } from '@aws-amplify/api-graphql';
-import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { GraphQLAuthMode, parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 
 import { NextServer } from '../types';
-import { getAmplifyConfig } from '../utils';
 
 import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 
@@ -98,7 +97,7 @@ export function generateServerClientUsingCookies<
 export function generateServerClientUsingReqRes<
 	T extends Record<any, any> = never,
 >({ config, authMode, authToken }: ReqClientParams): V6ClientSSRRequest<T> {
-	const amplifyConfig = getAmplifyConfig(config);
+	const amplifyConfig = parseAmplifyConfig(config);
 
 	return generateClient<T>({
 		config: amplifyConfig,

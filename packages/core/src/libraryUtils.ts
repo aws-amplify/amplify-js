@@ -27,6 +27,7 @@ export { AmplifyOutputs } from './singleton/AmplifyOutputs/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
+export { parseAmplifyConfig } from './utils/parseAmplifyConfig';
 
 // Auth utilities
 export {

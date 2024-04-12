@@ -3,6 +3,7 @@
 import { AMPLIFY_SYMBOL, Hub } from '../Hub';
 import { parseAWSExports } from '../parseAWSExports';
 import { deepFreeze } from '../utils';
+import { parseAmplifyConfig } from '../libraryUtils';
 
 import {
 	AmplifyOutputs,
@@ -52,13 +53,7 @@ export class AmplifyClass {
 		resourcesConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
 		libraryOptions?: LibraryOptions,
 	): void {
-		let resolvedResourceConfig: ResourcesConfig;
-
-		if (Object.keys(resourcesConfig).some(key => key.startsWith('aws_'))) {
-			resolvedResourceConfig = parseAWSExports(resourcesConfig);
-		} else {
-			resolvedResourceConfig = resourcesConfig as ResourcesConfig;
-		}
+		const resolvedResourceConfig = parseAmplifyConfig(resourcesConfig);
 
 		this.resourcesConfig = resolvedResourceConfig;
 
