@@ -57,8 +57,8 @@ mockPutObject.mockResolvedValue({
 describe('putObjectJob with key', () => {
 	it('should supply the correct parameters to putObject API handler', async () => {
 		const abortController = new AbortController();
-		const key = 'key';
-		const finalKey = `public/${key}`;
+		const inputKey = 'key';
+		const finalKey = `public/${inputKey}`;
 		const data = 'data';
 		const contentType = 'contentType';
 		const contentDisposition = 'contentDisposition';
@@ -69,7 +69,7 @@ describe('putObjectJob with key', () => {
 
 		const job = putObjectJob(
 			{
-				key,
+				key: inputKey,
 				data,
 				options: {
 					contentDisposition,
@@ -82,9 +82,9 @@ describe('putObjectJob with key', () => {
 			},
 			abortController.signal,
 		);
-		const result = await job();
-		expect(result).toEqual({
-			key,
+		const { key, path, ...others } = await job();
+		expect({ key, path, ...others }).toEqual({
+			key: inputKey,
 			path: finalKey,
 			eTag: 'eTag',
 			versionId: 'versionId',
@@ -146,7 +146,7 @@ describe('putObjectJob with path', () => {
 		},
 	])(
 		'should supply the correct parameters to putObject API handler when path is $path',
-		async ({ path, expectedKey }) => {
+		async ({ path: inputPath, expectedKey }) => {
 			const abortController = new AbortController();
 			const data = 'data';
 			const contentType = 'contentType';
@@ -158,7 +158,7 @@ describe('putObjectJob with path', () => {
 
 			const job = putObjectJob(
 				{
-					path,
+					path: inputPath,
 					data,
 					options: {
 						contentDisposition,
@@ -171,8 +171,8 @@ describe('putObjectJob with path', () => {
 				},
 				abortController.signal,
 			);
-			const result = await job();
-			expect(result).toEqual({
+			const { key, path, ...others } = await job();
+			expect({ key, path, ...others }).toEqual({
 				path: expectedKey,
 				key: expectedKey,
 				eTag: 'eTag',

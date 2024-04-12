@@ -191,7 +191,7 @@ describe('getMultipartUploadHandlers with key', () => {
 						data: twoPartsPayload,
 						options: options as StorageOptions,
 					});
-					const result = await multipartUploadJob();
+					const { key, path, eTag } = await multipartUploadJob();
 					expect(mockCreateMultipartUpload).toHaveBeenCalledWith(
 						expect.objectContaining({
 							credentials,
@@ -204,8 +204,12 @@ describe('getMultipartUploadHandlers with key', () => {
 							ContentType: defaultContentType,
 						}),
 					);
-					expect(result).toEqual(
-						expect.objectContaining({ key: defaultKey, eTag: 'etag' }),
+					expect({ key, path, eTag }).toEqual(
+						expect.objectContaining({
+							key: defaultKey,
+							path: expectedKey,
+							eTag: 'etag',
+						}),
 					);
 					expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 					expect(mockUploadPart).toHaveBeenCalledTimes(2);
@@ -678,10 +682,10 @@ describe('getMultipartUploadHandlers with path', () => {
 				expectedKey: testPath,
 			},
 			{
-				path: ({identityId}: any) => `testPath/${identityId}/object`,
+				path: ({ identityId }: any) => `testPath/${identityId}/object`,
 				expectedKey: `testPath/${defaultIdentityId}/object`,
 			},
-		].forEach(({ path, expectedKey }) => {
+		].forEach(({ path: inputPath, expectedKey }) => {
 			it.each([
 				['file', new File([getBlob(8 * MB)], 'someName')],
 				['blob', getBlob(8 * MB)],
@@ -693,10 +697,10 @@ describe('getMultipartUploadHandlers with path', () => {
 				async (_, twoPartsPayload) => {
 					mockMultipartUploadSuccess();
 					const { multipartUploadJob } = getMultipartUploadHandlers({
-						path: path,
+						path: inputPath,
 						data: twoPartsPayload,
 					});
-					const result = await multipartUploadJob();
+					const { key, path, eTag } = await multipartUploadJob();
 					expect(mockCreateMultipartUpload).toHaveBeenCalledWith(
 						expect.objectContaining({
 							credentials,
@@ -709,8 +713,12 @@ describe('getMultipartUploadHandlers with path', () => {
 							ContentType: defaultContentType,
 						}),
 					);
-					expect(result).toEqual(
-						expect.objectContaining({ path: expectedKey, eTag: 'etag' }),
+					expect({ key, path, eTag }).toEqual(
+						expect.objectContaining({
+							key: expectedKey,
+							path: expectedKey,
+							eTag: 'etag',
+						}),
 					);
 					expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 					expect(mockUploadPart).toHaveBeenCalledTimes(2);
@@ -910,7 +918,9 @@ describe('getMultipartUploadHandlers with path', () => {
 			const lastModifiedRegex = /someName_\d{13}_/;
 
 			expect(Object.keys(cacheValue)).toEqual([
-				expect.stringMatching(new RegExp(lastModifiedRegex.source + testPathCacheKey)),
+				expect.stringMatching(
+					new RegExp(lastModifiedRegex.source + testPathCacheKey),
+				),
 			]);
 		});
 
