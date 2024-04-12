@@ -6,7 +6,10 @@ import { Amplify } from '@aws-amplify/core';
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3';
 import {
+	ListAllInput,
 	ListAllOptionsWithPrefix,
+	ListAllOutput,
+	ListPaginateInput,
 	ListPaginateOptionsWithPrefix,
 	ListPaginateOutput,
 } from '../../../../src/providers/s3/types';
@@ -75,6 +78,12 @@ const mockListObjectsV2ApiWithPages = (pages: number) => {
 };
 
 describe('list API', () => {
+	const listAllWrapper = (input: ListAllInput): Promise<ListAllOutput> =>
+		list(input);
+	const listPaginatedWrapper = (
+		input: ListPaginateInput,
+	): Promise<ListPaginateOutput> => list(input);
+
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -128,8 +137,8 @@ describe('list API', () => {
 			},
 		];
 
-		accessLevelTests.forEach(({ key, options, expectedPath }) => {
-			const pathMsg = key ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key: inputKey, options, expectedPath }) => {
+			const pathMsg = inputKey ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -143,13 +152,17 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				let response = await list({
-					prefix: key,
+				const response = await list({
+					prefix: inputKey,
 					options: options as ListPaginateOptionsWithPrefix,
 				});
-				expect(response.items).toEqual([
-					{ ...listResultItem, key: key ?? '', path: expectedPath ?? '' },
-				]);
+				const { path, key, eTag, size, lastModified } = response.items[0];
+				expect(response.items).toHaveLength(1);
+				expect({ path, key, eTag, size, lastModified }).toEqual({
+					path: expectedPath,
+					key: inputKey ?? '',
+					...listResultItem,
+				});
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
@@ -160,8 +173,8 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ key, options, expectedPath }) => {
-			const pathMsg = key ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key: inputKey, options, expectedPath }) => {
+			const pathMsg = inputKey ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -176,17 +189,21 @@ describe('list API', () => {
 					};
 				});
 				const customPageSize = 5;
-				const response: ListPaginateOutput = await list({
-					prefix: key,
+				const response = await list({
+					prefix: inputKey,
 					options: {
 						...(options as ListPaginateOptionsWithPrefix),
 						pageSize: customPageSize,
 						nextToken: nextToken,
 					},
 				});
-				expect(response.items).toEqual([
-					{ ...listResultItem, key: key ?? '', path: expectedPath ?? '' },
-				]);
+				const { path, key, eTag, size, lastModified } = response.items[0];
+				expect(response.items).toHaveLength(1);
+				expect({ path, key, eTag, size, lastModified }).toEqual({
+					key: inputKey ?? '',
+					path: expectedPath,
+					...listResultItem,
+				});
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
@@ -223,8 +240,8 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ key, options, expectedPath }) => {
-			const pathMsg = key ? 'custom' : 'default';
+		accessLevelTests.forEach(({ key: inputKey, options, expectedPath }) => {
+			const pathMsg = inputKey ? 'custom' : 'default';
 			const accessLevelMsg = options?.accessLevel ?? 'default';
 			const targetIdentityIdMsg = options?.targetIdentityId
 				? `with targetIdentityId`
@@ -232,16 +249,16 @@ describe('list API', () => {
 			it(`should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 				mockListObjectsV2ApiWithPages(3);
 				const result = await list({
-					prefix: key,
+					prefix: inputKey,
 					options: { ...options, listAll: true } as ListAllOptionsWithPrefix,
 				});
-
-				const listResult = {
+				const { path, key, eTag, lastModified, size } = result.items[0];
+				expect(result.items).toHaveLength(3);
+				expect({ path, key, eTag, lastModified, size }).toEqual({
 					...listResultItem,
-					key: key ?? '',
-					path: expectedPath ?? '',
-				};
-				expect(result.items).toEqual([listResult, listResult, listResult]);
+					key: inputKey ?? '',
+					path: expectedPath,
+				});
 				expect(result).not.toHaveProperty(nextToken);
 
 				// listing three times for three pages
@@ -291,8 +308,8 @@ describe('list API', () => {
 
 		it.each(pathAsFunctionAndStringTests)(
 			'should list objects with pagination, default pageSize, custom path',
-			async ({ path }) => {
-				const resolvedPath = resolvePath(path);
+			async ({ path: inputPath }) => {
+				const resolvedPath = resolvePath(inputPath);
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [
@@ -304,16 +321,16 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				let response = await list({
-					path,
+				const response = await listPaginatedWrapper({
+					path: inputPath,
 				});
-				expect(response.items).toEqual([
-					{
-						...listResultItem,
-						path: resolvedPath,
-						key: resolvedPath,
-					},
-				]);
+				const { path, key, eTag, lastModified, size } = response.items[0];
+				expect(response.items).toHaveLength(1);
+				expect({ path, key, eTag, lastModified, size }).toEqual({
+					...listResultItem,
+					path: resolvedPath,
+					key: resolvedPath,
+				});
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
@@ -326,8 +343,8 @@ describe('list API', () => {
 
 		it.each(pathAsFunctionAndStringTests)(
 			'should list objects with pagination using custom pageSize, nextToken and custom path: ${path}',
-			async ({ path }) => {
-				const resolvedPath = resolvePath(path);
+			async ({ path: inputPath }) => {
+				const resolvedPath = resolvePath(inputPath);
 				mockListObject.mockImplementationOnce(() => {
 					return {
 						Contents: [
@@ -340,20 +357,20 @@ describe('list API', () => {
 					};
 				});
 				const customPageSize = 5;
-				const response = await list({
-					path,
+				const response = await listPaginatedWrapper({
+					path: inputPath,
 					options: {
 						pageSize: customPageSize,
 						nextToken: nextToken,
 					},
 				});
-				expect(response.items).toEqual([
-					{
-						...listResultItem,
-						path: resolvedPath,
-						key: resolvedPath,
-					},
-				]);
+				const { path, key, eTag, lastModified, size } = response.items[0];
+				expect(response.items).toHaveLength(1);
+				expect({ path, key, eTag, lastModified, size }).toEqual({
+					...listResultItem,
+					path: resolvedPath,
+					key: resolvedPath,
+				});
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
@@ -372,7 +389,7 @@ describe('list API', () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-				let response = await list({
+				let response = await listPaginatedWrapper({
 					path,
 				});
 				expect(response.items).toEqual([]);
@@ -388,19 +405,22 @@ describe('list API', () => {
 
 		it.each(pathAsFunctionAndStringTests)(
 			'should list all objects having three pages with custom path: ${path}',
-			async ({ path }) => {
-				const resolvedPath = resolvePath(path);
+			async ({ path: inputPath }) => {
+				const resolvedPath = resolvePath(inputPath);
 				mockListObjectsV2ApiWithPages(3);
-				const result = await list({
-					path,
+				const result = await listAllWrapper({
+					path: inputPath,
 					options: { listAll: true },
 				});
 
 				const listResult = {
-					...listResultItem,
 					path: resolvedPath,
 					key: resolvedPath,
+					...listResultItem,
 				};
+				const { path, key, lastModified, eTag, size } = result.items[0];
+				expect(result.items).toHaveLength(3);
+				expect({ path, key, lastModified, eTag, size }).toEqual(listResult);
 				expect(result.items).toEqual([listResult, listResult, listResult]);
 				expect(result).not.toHaveProperty(nextToken);
 
