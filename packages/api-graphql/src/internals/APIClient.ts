@@ -721,6 +721,44 @@ export function generateGraphQLDocument(
 		selectionSet as ListArgs['selectionSet'],
 	);
 
+	// default PK args for get and list operations
+	// modified below for CPK
+	const getPkArgs = {
+		[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
+	};
+	const listPkArgs = {};
+
+	const generateSkArgs = (op: 'get' | 'list') => {
+		return sortKeyFieldNames.reduce(
+			(acc: Record<string, any>, fieldName: string) => {
+				const fieldType = fields[fieldName].type;
+
+				if (op === 'get') {
+					acc[fieldName] = `${fieldType}!`;
+				} else if (op === 'list') {
+					acc[fieldName] = `Model${fieldType}KeyConditionInput`;
+				}
+
+				return acc;
+			},
+			{},
+		);
+	};
+
+	if (isCustomPrimaryKey) {
+		Object.assign(getPkArgs, {
+			...generateSkArgs('get'),
+		});
+
+		Object.assign(listPkArgs, {
+			// PK is only included in list query field args in the generated GQL
+			// when explicitly specifying PK with .identifier(['fieldName']) or @primaryKey in the schema definition
+			[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}`, // PK is always a nullable arg for list (no `!` after the type)
+			...generateSkArgs('list'),
+			sortDirection: 'ModelSortDirection',
+		});
+	}
+
 	switch (modelOperation) {
 		case 'CREATE':
 		case 'UPDATE':
@@ -736,36 +774,15 @@ export function generateGraphQLDocument(
 		// TODO(Eslint): this this case clause correct without the break statement?
 		// eslint-disable-next-line no-fallthrough
 		case 'READ':
-			graphQLArguments ??
-				(graphQLArguments = isCustomPrimaryKey
-					? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-							(acc: Record<string, any>, fieldName) => {
-								acc[fieldName] = `${fields[fieldName].type}!`;
-
-								return acc;
-							},
-							{},
-						)
-					: {
-							[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}!`,
-						});
+			graphQLArguments ?? (graphQLArguments = getPkArgs);
 			graphQLSelectionSet ?? (graphQLSelectionSet = selectionSetFields);
 		// TODO(Eslint): this this case clause correct without the break statement?
 		// eslint-disable-next-line no-fallthrough
 		case 'LIST':
 			graphQLArguments ??
 				(graphQLArguments = {
+					...listPkArgs,
 					filter: `Model${name}FilterInput`,
-					...(sortKeyFieldNames.length > 0
-						? [primaryKeyFieldName, ...sortKeyFieldNames].reduce(
-								(acc: Record<string, any>, fieldName) => {
-									acc[fieldName] = `${fields[fieldName].type}`;
-
-									return acc;
-								},
-								{ sortDirection: 'ModelSortDirection' },
-							)
-						: []),
 					limit: 'Int',
 					nextToken: 'String',
 				});
