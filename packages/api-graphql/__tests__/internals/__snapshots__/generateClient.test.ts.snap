@@ -4092,11 +4092,11 @@ exports[`generateClient basic model operations can list() with sortDirection (AS
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($cpk_cluster_key: String, $cpk_sort_key: ModelStringKeyConditionInput, $sortDirection: ModelSortDirection, $filter: ModelThingWithCustomPkFilterInput, $limit: Int, $nextToken: String) {
+          "query": "query ($cpk_cluster_key: String, $sortDirection: ModelSortDirection, $cpk_sort_key: ModelStringKeyConditionInput, $filter: ModelThingWithCustomPkFilterInput, $limit: Int, $nextToken: String) {
   listThingWithCustomPks(
     cpk_cluster_key: $cpk_cluster_key
-    cpk_sort_key: $cpk_sort_key
     sortDirection: $sortDirection
+    cpk_sort_key: $cpk_sort_key
     filter: $filter
     limit: $limit
     nextToken: $nextToken
@@ -4139,11 +4139,11 @@ exports[`generateClient basic model operations can list() with sortDirection (DE
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($cpk_cluster_key: String, $cpk_sort_key: ModelStringKeyConditionInput, $sortDirection: ModelSortDirection, $filter: ModelThingWithCustomPkFilterInput, $limit: Int, $nextToken: String) {
+          "query": "query ($cpk_cluster_key: String, $sortDirection: ModelSortDirection, $cpk_sort_key: ModelStringKeyConditionInput, $filter: ModelThingWithCustomPkFilterInput, $limit: Int, $nextToken: String) {
   listThingWithCustomPks(
     cpk_cluster_key: $cpk_cluster_key
-    cpk_sort_key: $cpk_sort_key
     sortDirection: $sortDirection
+    cpk_sort_key: $cpk_sort_key
     filter: $filter
     limit: $limit
     nextToken: $nextToken

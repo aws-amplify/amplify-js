@@ -746,17 +746,18 @@ export function generateGraphQLDocument(
 	};
 
 	if (isCustomPrimaryKey) {
-		Object.assign(getPkArgs, {
-			...generateSkArgs('get'),
-		});
+		Object.assign(getPkArgs, generateSkArgs('get'));
 
-		Object.assign(listPkArgs, {
-			// PK is only included in list query field args in the generated GQL
-			// when explicitly specifying PK with .identifier(['fieldName']) or @primaryKey in the schema definition
-			[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}`, // PK is always a nullable arg for list (no `!` after the type)
-			...generateSkArgs('list'),
-			sortDirection: 'ModelSortDirection',
-		});
+		Object.assign(
+			listPkArgs,
+			{
+				// PK is only included in list query field args in the generated GQL
+				// when explicitly specifying PK with .identifier(['fieldName']) or @primaryKey in the schema definition
+				[primaryKeyFieldName]: `${fields[primaryKeyFieldName].type}`, // PK is always a nullable arg for list (no `!` after the type)
+				sortDirection: 'ModelSortDirection',
+			},
+			generateSkArgs('list'),
+		);
 	}
 
 	switch (modelOperation) {
