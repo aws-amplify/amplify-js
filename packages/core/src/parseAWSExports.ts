@@ -91,31 +91,42 @@ export const parseAWSExports = (
 	}
 
 	// Notifications
-	const { InAppMessaging, Push } = Notifications ?? {};
-	if (InAppMessaging?.AWSPinpoint || Push?.AWSPinpoint) {
-		if (InAppMessaging?.AWSPinpoint) {
-			const { appId, region } = InAppMessaging.AWSPinpoint;
-			amplifyConfig.Notifications = {
-				InAppMessaging: {
-					Pinpoint: {
-						appId,
-						region,
-					},
+	const { InAppMessaging, APNS, FCM, Push } = Notifications ?? {};
+	if (InAppMessaging?.AWSPinpoint) {
+		const { appId, region } = InAppMessaging.AWSPinpoint;
+		amplifyConfig.Notifications = {
+			InAppMessaging: {
+				Pinpoint: {
+					appId,
+					region,
 				},
-			};
-		}
-		if (Push?.AWSPinpoint) {
-			const { appId, region } = Push.AWSPinpoint;
-			amplifyConfig.Notifications = {
-				...amplifyConfig.Notifications,
-				PushNotification: {
-					Pinpoint: {
-						appId,
-						region,
-					},
+			},
+		};
+	}
+
+	// backward compatibility
+	if (Push?.AWSPinpoint) {
+		const { appId, region } = Push.AWSPinpoint;
+		amplifyConfig.Notifications = {
+			...amplifyConfig.Notifications,
+			PushNotification: {
+				Pinpoint: {
+					appId,
+					region,
 				},
-			};
-		}
+			},
+		};
+	} else if (!!APNS || !!FCM) {
+		const { appId, region } = APNS?.AWSPinpoint ?? FCM?.AWSPinpoint;
+		amplifyConfig.Notifications = {
+			...amplifyConfig.Notifications,
+			PushNotification: {
+				Pinpoint: {
+					appId,
+					region,
+				},
+			},
+		};
 	}
 
 	// Interactions
