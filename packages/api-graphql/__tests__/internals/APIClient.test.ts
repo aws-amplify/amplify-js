@@ -563,7 +563,7 @@ describe('generateGraphQLDocument()', () => {
 					modelOperation
 				);
 
-				expect(document.includes(expectedArgs)).toBe(true);
+				expect(document).toEqual(expect.stringContaining(expectedArgs))
 			}
 		);
 	});
