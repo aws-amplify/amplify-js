@@ -1,4 +1,4 @@
-import { Hub, AMPLIFY_SYMBOL } from '../src/Hub';
+import { Hub } from '../src/Hub';
 import { ConsoleLogger } from '../src';
 
 describe('Hub', () => {
@@ -9,7 +9,7 @@ describe('Hub', () => {
 	});
 
 	test('happy case', () => {
-		const listener = jest.fn(() => {});
+		const listener = jest.fn();
 
 		Hub.listen('auth', listener);
 
@@ -28,7 +28,7 @@ describe('Hub', () => {
 	});
 
 	test('Protected channel', () => {
-		const listener = jest.fn(() => {});
+		const listener = jest.fn();
 
 		Hub.listen('auth', listener);
 
@@ -50,7 +50,7 @@ describe('Hub', () => {
 	});
 
 	test('Protected channel - ui', () => {
-		const listener = jest.fn(() => {});
+		const listener = jest.fn();
 
 		Hub.listen('ui', listener);
 
@@ -67,7 +67,7 @@ describe('Hub', () => {
 		);
 	});
 	test('Remove listener', () => {
-		const listener = jest.fn(() => {});
+		const listener = jest.fn();
 
 		const unsubscribe = Hub.listen('auth', listener);
 

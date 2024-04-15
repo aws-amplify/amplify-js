@@ -1,18 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { graphql, cancel, isCancelError } from '..';
-import { generateModelsProperty } from './generateModelsProperty';
-import { Hub } from '@aws-amplify/core';
+import { cancel, graphql, isCancelError } from '..';
 import {
+	CommonPublicClientOptions,
+	ServerClientGenerationParams,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
 	__amplify,
 	__authMode,
 	__authToken,
 	__headers,
-	V6ClientSSRRequest,
-	V6ClientSSRCookies,
-	ServerClientGenerationParams,
-	CommonPublicClientOptions,
 } from '../../types';
 import { isApiGraphQLConfig } from '../utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
 import { generateEnumsProperty } from '../utils/clientProperties/generateEnumsProperty';
@@ -20,6 +18,8 @@ import {
 	generateCustomMutationsProperty,
 	generateCustomQueriesProperty,
 } from '../generateCustomOperationsProperty';
+
+import { generateModelsProperty } from './generateModelsProperty';
 
 /**
  * @private

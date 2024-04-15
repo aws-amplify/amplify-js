@@ -1,7 +1,6 @@
 {
 	"editor.detectIndentation": false,
 	"editor.insertSpaces": false,
-	"editor.tabSize": 4,
 	"prettier.requireConfig": true,
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"formattingToggle.affects": [

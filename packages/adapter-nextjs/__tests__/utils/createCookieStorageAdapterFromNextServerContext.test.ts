@@ -1,17 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { IncomingMessage, ServerResponse } from 'http';
+import { Socket } from 'net';
+
 import { enableFetchMocks } from 'jest-fetch-mock';
+import { NextRequest, NextResponse } from 'next/server.js';
+import { cookies } from 'next/headers.js';
+
+import {
+	DATE_IN_THE_PAST,
+	createCookieStorageAdapterFromNextServerContext,
+} from '../../src/utils/createCookieStorageAdapterFromNextServerContext';
 
 // Make global Request available during test
 enableFetchMocks();
-
-import { NextRequest, NextResponse } from 'next/server.js';
-import { cookies } from 'next/headers.js';
-import { createCookieStorageAdapterFromNextServerContext } from '../../src/utils/createCookieStorageAdapterFromNextServerContext';
-import { DATE_IN_THE_PAST } from '../../src/utils/createCookieStorageAdapterFromNextServerContext';
-import { IncomingMessage, ServerResponse } from 'http';
-import { Socket } from 'net';
 
 jest.mock('next/headers', () => ({
 	cookies: jest.fn(),

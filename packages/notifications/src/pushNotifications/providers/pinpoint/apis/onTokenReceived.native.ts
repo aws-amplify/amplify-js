@@ -7,5 +7,6 @@ import { OnTokenReceived } from '../types';
 
 export const onTokenReceived: OnTokenReceived = input => {
 	assertIsInitialized();
+
 	return addEventListener('tokenReceived', input);
 };

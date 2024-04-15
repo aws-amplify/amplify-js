@@ -2,13 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
 import {
-	initializeModel,
-	generateGraphQLDocument,
+	ModelIntrospectionSchema,
+	SchemaModel,
+} from '@aws-amplify/core/internals/utils';
+
+import {
+	ModelOperation,
+	authModeParams,
 	buildGraphQLVariables,
 	flattenItems,
-	authModeParams,
-	ModelOperation,
+	generateGraphQLDocument,
 	getCustomHeaders,
+	initializeModel,
 } from '../APIClient';
 import {
 	AuthModeParams,
@@ -20,10 +25,6 @@ import {
 	V6Client,
 	V6ClientSSRRequest,
 } from '../../types';
-import {
-	ModelIntrospectionSchema,
-	SchemaModel,
-} from '@aws-amplify/core/internals/utils';
 
 export function getFactory(
 	client: ClientWithModels,

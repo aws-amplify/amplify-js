@@ -3,8 +3,8 @@
 
 import { composeTransferHandler } from '../../../../src/clients/internal/composeTransferHandler';
 import {
-	signingMiddlewareFactory,
 	SigningOptions,
+	signingMiddlewareFactory,
 } from '../../../../src/clients/middleware/signing';
 import { getSkewCorrectedDate } from '../../../../src/clients/middleware/signing/utils/getSkewCorrectedDate';
 import { getUpdatedSystemClockOffset } from '../../../../src/clients/middleware/signing/utils/getUpdatedSystemClockOffset';
@@ -13,6 +13,7 @@ import {
 	HttpResponse,
 	MiddlewareHandler,
 } from '../../../../src/clients/types';
+
 import {
 	credentials,
 	signingDate,

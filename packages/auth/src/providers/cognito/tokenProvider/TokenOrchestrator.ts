@@ -3,17 +3,21 @@
 import {
 	AuthConfig,
 	AuthTokens,
+	CognitoUserPoolConfig,
 	FetchAuthSessionOptions,
 	Hub,
 } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
 	assertTokenProviderConfig,
+	isBrowser,
 	isTokenExpired,
 } from '@aws-amplify/core/internals/utils';
 
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../errors/AuthError';
+import { oAuthStore } from '../utils/oauth/oAuthStore';
+import { addInflightPromise } from '../utils/oauth/inflightPromise';
 import { CognitoAuthSignInDetails } from '../types';
 
 import {
@@ -28,11 +32,33 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 	private authConfig?: AuthConfig;
 	tokenStore?: AuthTokenStore;
 	tokenRefresher?: TokenRefresher;
-	waitForInflightOAuth: () => Promise<void> = async () => {
-		// no-op
-	};
+	inflightPromise: Promise<void> | undefined;
+	waitForInflightOAuth: () => Promise<void> = isBrowser()
+		? async () => {
+				if (!(await oAuthStore.loadOAuthInFlight())) {
+					return;
+				}
+
+				if (this.inflightPromise) {
+					return this.inflightPromise;
+				}
+
+				// when there is valid oauth config and there is an inflight oauth flow, try
+				// to block async calls that require fetching tokens before the oauth flow completes
+				// e.g. getCurrentUser, fetchAuthSession etc.
+
+				this.inflightPromise = new Promise<void>((resolve, _reject) => {
+					addInflightPromise(resolve);
+				});
+
+				return this.inflightPromise;
+			}
+		: async () => {
+				// no-op for non-browser environments
+			};
 
 	setAuthConfig(authConfig: AuthConfig) {
+		oAuthStore.setAuthConfig(authConfig.Cognito as CognitoUserPoolConfig);
 		this.authConfig = authConfig;
 	}
 
@@ -42,10 +68,6 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	setAuthTokenStore(tokenStore: AuthTokenStore) {
 		this.tokenStore = tokenStore;
-	}
-
-	setWaitForInflightOAuth(waitForInflightOAuth: () => Promise<void>) {
-		this.waitForInflightOAuth = waitForInflightOAuth;
 	}
 
 	getTokenStore(): AuthTokenStore {
@@ -84,6 +106,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 			return null;
 		}
 		await this.waitForInflightOAuth();
+		this.inflightPromise = undefined;
 		tokens = await this.getTokenStore().loadTokens();
 		const username = await this.getTokenStore().getLastAuthUser();
 
@@ -127,12 +150,13 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 		username: string;
 	}): Promise<CognitoAuthTokens | null> {
 		try {
+			const { signInDetails } = tokens;
 			const newTokens = await this.getTokenRefresher()({
 				tokens,
 				authConfig: this.authConfig,
 				username,
 			});
-
+			newTokens.signInDetails = signInDetails;
 			await this.setTokens({ tokens: newTokens });
 			Hub.dispatch('auth', { event: 'tokenRefresh' }, 'Auth', AMPLIFY_SYMBOL);
 

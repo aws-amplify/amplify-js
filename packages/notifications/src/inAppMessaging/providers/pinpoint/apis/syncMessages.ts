@@ -5,19 +5,20 @@ import { InAppMessagingAction } from '@aws-amplify/core/internals/utils';
 import { resolveEndpointId } from '@aws-amplify/core/internals/providers/pinpoint';
 import { defaultStorage } from '@aws-amplify/core';
 import {
-	resolveConfig,
-	resolveCredentials,
-	getInAppMessagingUserAgentString,
-	STORAGE_KEY_SUFFIX,
-	PINPOINT_KEY_PREFIX,
-	CATEGORY,
-	CHANNEL_TYPE,
-} from '../utils';
-import {
-	getInAppMessages,
 	GetInAppMessagesInput,
 	GetInAppMessagesOutput,
+	getInAppMessages,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+
+import {
+	CATEGORY,
+	CHANNEL_TYPE,
+	PINPOINT_KEY_PREFIX,
+	STORAGE_KEY_SUFFIX,
+	getInAppMessagingUserAgentString,
+	resolveConfig,
+	resolveCredentials,
+} from '../utils';
 import {
 	InAppMessagingValidationErrorCode,
 	assertServiceError,
@@ -80,6 +81,7 @@ async function fetchInAppMessages() {
 		);
 		const { InAppMessageCampaigns: messages } =
 			response.InAppMessagesResponse ?? {};
+
 		return messages;
 	} catch (error) {
 		assertServiceError(error);

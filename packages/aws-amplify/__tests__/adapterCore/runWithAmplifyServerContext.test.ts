@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { runWithAmplifyServerContext } from '../../src/adapter-core';
 import {
 	createAmplifyServerContext,
 	destroyAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+
+import { runWithAmplifyServerContext } from '../../src/adapter-core';
 
 // mock serverContext
 jest.mock('@aws-amplify/core/internals/adapter-core');

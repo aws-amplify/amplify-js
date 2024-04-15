@@ -27,9 +27,11 @@ let conflictHandler: InAppMessageConflictHandler = (
 		if (!endDateA && endDateB) {
 			return 1;
 		}
+
 		// otherwise, compare them
 		return new Date(endDateA) < new Date(endDateB) ? -1 : 1;
 	});
+
 	// always return the top sorted
 	return sorted[0];
 };

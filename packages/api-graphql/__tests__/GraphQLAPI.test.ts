@@ -14,6 +14,9 @@ import {
 import { GetThreadQuery } from './fixtures/with-types/API';
 import { AWSAppSyncRealTimeProvider } from '../src/Providers/AWSAppSyncRealTimeProvider';
 import { Observable, of } from 'rxjs';
+import { GraphQLApiError } from '../src/utils/errors';
+import { NO_ENDPOINT } from '../src/utils/errors/constants';
+import { GraphQLError } from 'graphql';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -61,13 +64,13 @@ const client = {
 	isCancelError,
 } as V6Client;
 
-afterEach(() => {
-	jest.restoreAllMocks();
-});
+const mockFetchAuthSession = (Amplify as any).Auth
+	.fetchAuthSession as jest.Mock;
 
 describe('API test', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	describe('graphql test', () => {
@@ -738,32 +741,9 @@ describe('API test', () => {
 		});
 
 		test('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
-			Amplify.configure({
-				API: {
-					GraphQL: {
-						defaultAuthMode: 'apiKey',
-						apiKey: 'FAKE-KEY',
-						endpoint: 'https://localhost/graphql',
-						region: 'local-host-h4x',
-					},
-				},
-			});
-
-			Amplify.configure({
-				API: {
-					GraphQL: {
-						defaultAuthMode: 'apiKey',
-						apiKey: 'FAKE-KEY',
-						endpoint: 'https://localhost/graphql',
-						region: 'local-host-h4x',
-					},
-				},
-			});
-		});
-
-		test('multi-auth default case api-key, OIDC as auth mode, but no federatedSign', async () => {
-			const prevMockAccessToken = mockAccessToken;
-			mockAccessToken = null;
+			mockFetchAuthSession.mockRejectedValueOnce(
+				new Error('mock failing fetchAuthSession() call here.'),
+			);
 
 			Amplify.configure({
 				API: {
@@ -806,9 +786,6 @@ describe('API test', () => {
 					authMode: 'oidc',
 				}),
 			).rejects.toThrow('No current user');
-
-			// Cleanup:
-			mockAccessToken = prevMockAccessToken;
 		});
 
 		test('multi-auth using CUP as auth mode, but no userpool', async () => {
@@ -1340,6 +1317,82 @@ describe('API test', () => {
 						withCredentials: true,
 					}),
 				},
+			);
+		});
+
+		test('throws a GraphQLResult with NO_ENDPOINT error when endpoint is not configured', () => {
+			const expectedGraphQLApiError = new GraphQLApiError(NO_ENDPOINT);
+
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						region: 'local-host-h4x',
+					} as any,
+				},
+			});
+
+			const graphqlVariables = { id: 'some-id' };
+
+			expect(() =>
+				client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+					authMode: 'iam',
+				}),
+			).rejects.toEqual(
+				expect.objectContaining({
+					errors: expect.arrayContaining([
+						new GraphQLError(
+							expectedGraphQLApiError.message,
+							null,
+							null,
+							null,
+							null,
+							expectedGraphQLApiError,
+						),
+					]),
+				}),
+			);
+		});
+
+		test('throws a GraphQLResult with NetworkError when the `post()` API throws for network error', () => {
+			const postAPIThrownError = new Error('Network error');
+			jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockRejectedValueOnce(postAPIThrownError);
+
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'userPool',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const graphqlVariables = { id: 'some-id' };
+
+			expect(
+				client.graphql({
+					query: typedQueries.getThread,
+					variables: graphqlVariables,
+				}),
+			).rejects.toEqual(
+				expect.objectContaining({
+					errors: expect.arrayContaining([
+						new GraphQLError(
+							postAPIThrownError.message,
+							null,
+							null,
+							null,
+							null,
+							postAPIThrownError,
+						),
+					]),
+				}),
 			);
 		});
 	});

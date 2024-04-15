@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
+
 import { PushNotificationMessage } from '../../../types';
 import {
 	OnNotificationReceivedInBackground,

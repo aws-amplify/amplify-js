@@ -8,7 +8,7 @@ export type PinpointMessageEvent =
 
 export type PinpointMessageEventSource = '_campaign' | '_journey';
 
-export type AnalyticsEventAttributes = {
+export interface AnalyticsEventAttributes {
 	source: PinpointMessageEventSource;
 	attributes: Record<string, string>;
-};
+}
