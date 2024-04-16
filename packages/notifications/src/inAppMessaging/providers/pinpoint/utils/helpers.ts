@@ -6,9 +6,9 @@ import {
 	InAppMessagingAction,
 	getClientInfo,
 } from '@aws-amplify/core/internals/utils';
-import type { 
-	InAppMessageCampaign as PinpointInAppMessage, 
+import type {
 	InAppMessageButton,
+	InAppMessageCampaign as PinpointInAppMessage,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import isEmpty from 'lodash/isEmpty.js';
 import { record as recordCore } from '@aws-amplify/core/internals/providers/pinpoint';
@@ -22,12 +22,12 @@ import {
 	InAppMessagingEvent,
 } from '../../../types';
 import { MetricsComparator, PinpointMessageEvent } from '../types';
+import { ButtonConfigPlatform } from '../../../types/message';
 
 import { resolveConfig } from './resolveConfig';
 import { resolveCredentials } from './resolveCredentials';
 import { CATEGORY } from './constants';
 import { getInAppMessagingUserAgentString } from './userAgent';
-import { ButtonConfigPlatform } from '../../../types/message';
 
 const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 
@@ -260,6 +260,7 @@ export const extractContent = ({
 }: PinpointInAppMessage): InAppMessageContent[] => {
 	const clientInfo = getClientInfo();
 	const configPlatform = mapOSPlatform(clientInfo?.platform);
+
 	return (
 		message?.Content?.map(content => {
 			const {
@@ -383,6 +384,7 @@ const getButtonConfig = (
 	if (!configPlatform || !button?.[configPlatform]) {
 		return button?.DefaultConfig;
 	}
+
 	return {
 		...button.DefaultConfig,
 		...button[configPlatform],
