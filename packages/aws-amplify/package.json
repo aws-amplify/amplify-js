@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.0.27",
+	"version": "6.0.28",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -277,10 +277,10 @@
 	],
 	"dependencies": {
 		"@aws-amplify/analytics": "7.0.27",
-		"@aws-amplify/api": "6.0.27",
+		"@aws-amplify/api": "6.0.28",
 		"@aws-amplify/auth": "6.0.27",
 		"@aws-amplify/core": "6.0.27",
-		"@aws-amplify/datastore": "5.0.27",
+		"@aws-amplify/datastore": "5.0.28",
 		"@aws-amplify/notifications": "2.0.27",
 		"@aws-amplify/storage": "6.0.27",
 		"tslib": "^2.5.0"
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "38.5 kB"
+			"limit": "39.0 kB"
 		},
 		{
 			"name": "[API] REST API handlers",

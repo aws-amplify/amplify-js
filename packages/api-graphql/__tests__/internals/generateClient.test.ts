@@ -45,6 +45,7 @@ describe('generateClient', () => {
 			'Post',
 			'Comment',
 			'Product',
+			'Warehouse',
 			'ImplicitOwner',
 			'CustomImplicitOwner',
 			'ModelGroupDefinedIn',
@@ -5330,7 +5331,6 @@ describe('generateClient', () => {
 			const mockReturnData = {
 				sku: 'sku',
 				factoryId: 'factoryId',
-				warehouseId: 'warehouseId',
 				description: 'description',
 				trackingMeta: {
 					productMeta: {
@@ -5357,7 +5357,10 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toEqual(mockReturnData);
+			expect(result?.data).toEqual({
+				...mockReturnData,
+				warehouse: expect.any(Function),
+			});
 		});
 
 		test('can query with returnType of string', async () => {
