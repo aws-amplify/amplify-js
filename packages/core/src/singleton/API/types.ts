@@ -108,6 +108,7 @@ export interface ModelIntrospectionSchema {
 	enums: SchemaEnums;
 	queries?: CustomOperations;
 	mutations?: CustomOperations;
+	subscriptions?: CustomOperations;
 }
 
 /**
@@ -154,7 +155,7 @@ export interface CustomOperation {
 	type: FieldType;
 	isArray: boolean;
 	isRequired: boolean;
-	arguments: CustomOperationArguments;
+	arguments?: CustomOperationArguments;
 }
 
 export type CustomOperationArguments = Record<string, CustomOperationArgument>;

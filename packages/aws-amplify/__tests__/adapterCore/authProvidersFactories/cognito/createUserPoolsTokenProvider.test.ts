@@ -6,9 +6,9 @@ import {
 	TokenOrchestrator,
 	refreshAuthTokens,
 } from '@aws-amplify/auth/cognito';
-
 import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
-import { createUserPoolsTokenProvider } from '../../../../src/adapterCore';
+
+import { createUserPoolsTokenProvider } from '../../../../src/adapter-core';
 
 jest.mock('@aws-amplify/auth/cognito');
 

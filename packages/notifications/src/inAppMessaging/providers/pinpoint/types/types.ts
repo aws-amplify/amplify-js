@@ -5,16 +5,16 @@ import { InAppMessage } from '../../../types';
 
 export type InAppMessageCountMap = Record<string, number>;
 
-export type DailyInAppMessageCounter = {
+export interface DailyInAppMessageCounter {
 	count: number;
 	lastCountTimestamp: string;
-};
+}
 
-export type InAppMessageCounts = {
+export interface InAppMessageCounts {
 	sessionCount: number;
 	dailyCount: number;
 	totalCount: number;
-};
+}
 
 export type MetricsComparator = (
 	metricsVal: number,

@@ -18,5 +18,6 @@ type SchemaModel = ModelIntrospectionSchema['models'][string];
  */
 export function resolvePKFields(model: SchemaModel) {
 	const { primaryKeyFieldName, sortKeyFieldNames } = model.primaryKeyInfo;
+
 	return [primaryKeyFieldName, ...sortKeyFieldNames];
 }

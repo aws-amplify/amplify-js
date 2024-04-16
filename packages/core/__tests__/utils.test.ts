@@ -1,8 +1,8 @@
 'use strict';
 
 import {
-	jitteredExponentialRetry,
 	NonRetryableError,
+	jitteredExponentialRetry,
 	urlSafeDecode,
 	urlSafeEncode,
 } from '../src/utils';
@@ -14,8 +14,6 @@ import { DateUtils } from '../src/Signer/DateUtils';
 ConsoleLogger.LOG_LEVEL = 'DEBUG';
 
 describe('Util', () => {
-	beforeEach(() => {});
-
 	describe('DateUtils', () => {
 		test('isClockSkewError', () => {
 			expect(

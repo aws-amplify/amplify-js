@@ -4,8 +4,8 @@
 import {
 	appId,
 	endpointId as defaultEndpointId,
-	uuid,
 	event as defaultEvent,
+	uuid,
 } from '../../testUtils/data';
 
 export const getExpectedPutEventsInput = ({

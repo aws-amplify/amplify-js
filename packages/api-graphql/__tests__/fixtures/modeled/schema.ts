@@ -83,23 +83,27 @@ const schema = a.schema({
 			viewCount: a.integer(),
 			status: a.enum(['draft', 'pending', 'published']),
 		})
-		.secondaryIndexes([
-			a.index('title'),
-			a.index('description').sortKeys(['viewCount']),
+		.secondaryIndexes(index => [
+			index('title'),
+			index('description').sortKeys(['viewCount']),
 		]),
 	Product: a
 		.model({
 			sku: a.string().required(),
 			factoryId: a.string().required(),
-			warehouseId: a.string().required(),
 			description: a.string(),
+			warehouse: a.belongsTo("Warehouse"),
 			trackingMeta: a.customType({
 				productMeta: a.ref('ProductMeta'),
 				note: a.string(),
 			}),
 		})
-		.identifier(['sku', 'factoryId', 'warehouseId'])
-		.authorization([a.allow.public()]),
+		.identifier(['sku', 'factoryId'])
+		.authorization([a.allow.owner(), a.allow.public().to(["read"])]),
+	Warehouse: a.model({
+			name: a.string().required(),
+			products: a.hasMany("Product"),
+		}).authorization([a.allow.owner(), a.allow.public().to(["read"])]),
 	ProductMeta: a.customType({
 		releaseDate: a.date(),
 		status: a.enum(['in_production', 'discontinued']),
@@ -120,7 +124,7 @@ const schema = a.schema({
 			argumentContent: a.string().required(),
 		})
 		.returns(a.ref('EchoResult'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.public()]),
 
 	// custom query returning a primitive type
@@ -130,7 +134,7 @@ const schema = a.schema({
 			inputString: a.string().required(),
 		})
 		.returns(a.string())
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.public()]),
 	echoNestedCustomTypes: a
 		.query()
@@ -138,7 +142,7 @@ const schema = a.schema({
 			input: a.string().required(),
 		})
 		.returns(a.ref('ProductTrackingMeta'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.public()]),
 	echoModelHasNestedTypes: a
 		.query()
@@ -146,7 +150,7 @@ const schema = a.schema({
 			input: a.string().required(),
 		})
 		.returns(a.ref('Product'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.public()]),
 	// custom mutation returning a non-model type
 	PostLikeResult: a.customType({
@@ -158,7 +162,7 @@ const schema = a.schema({
 			postId: a.id().required(),
 		})
 		.returns(a.ref('PostLikeResult'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.private()]),
 
 	// custom mutation returning a model type
@@ -182,10 +186,48 @@ const schema = a.schema({
 			postId: a.id().required(),
 		})
 		.returns(a.ref('Post'))
-		.function('echoFunction')
+		.handler(a.handler.function('echoFunction'))
 		.authorization([a.allow.private()]),
 
+	onPostLiked: a
+		.subscription()
+		.for(a.ref('likePostReturnPost'))
+		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
+
+	onPostUpdated: a
+		.subscription()
+		.for(a.ref('Post').mutations(['update']))
+		.arguments({ postId: a.string() })
+		.handler(a.handler.custom({ entry: './jsResolver_base.js' })),
 	//#endregion
+
+	// #region implicit ownership models
+	ImplicitOwner: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.owner()]),
+	CustomImplicitOwner: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.owner().inField('customOwner')]),
+	ModelGroupDefinedIn: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.groupDefinedIn('groupField')]),
+	ModelGroupsDefinedIn: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.groupsDefinedIn('groupsField')]),
+	ModelStaticGroup: a
+		.model({
+			description: a.string(),
+		})
+		.authorization([a.allow.specificGroup('Admin')]),
+	// #endregion
 });
 
 export type Schema = ClientSchema<typeof schema>;

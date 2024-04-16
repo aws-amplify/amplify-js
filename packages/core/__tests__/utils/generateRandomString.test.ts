@@ -17,6 +17,7 @@ describe('generateRandomString()', () => {
 		mathRandomSpy.mockImplementation(() => {
 			const returnValue = counter;
 			counter += 5;
+
 			return parseFloat(`0.${returnValue}`);
 		});
 
