@@ -91,15 +91,19 @@ const schema = a.schema({
 		.model({
 			sku: a.string().required(),
 			factoryId: a.string().required(),
-			warehouseId: a.string().required(),
 			description: a.string(),
+			warehouse: a.belongsTo("Warehouse"),
 			trackingMeta: a.customType({
 				productMeta: a.ref('ProductMeta'),
 				note: a.string(),
 			}),
 		})
-		.identifier(['sku', 'factoryId', 'warehouseId'])
-		.authorization([a.allow.public()]),
+		.identifier(['sku', 'factoryId'])
+		.authorization([a.allow.owner(), a.allow.public().to(["read"])]),
+	Warehouse: a.model({
+			name: a.string().required(),
+			products: a.hasMany("Product"),
+		}).authorization([a.allow.owner(), a.allow.public().to(["read"])]),
 	ProductMeta: a.customType({
 		releaseDate: a.date(),
 		status: a.enum(['in_production', 'discontinued']),

@@ -4092,12 +4092,12 @@ exports[`generateClient basic model operations can list() with sortDirection (AS
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelThingWithCustomPkFilterInput, $sortDirection: ModelSortDirection, $cpk_cluster_key: String, $cpk_sort_key: String, $limit: Int, $nextToken: String) {
+          "query": "query ($cpk_cluster_key: String, $sortDirection: ModelSortDirection, $cpk_sort_key: ModelStringKeyConditionInput, $filter: ModelThingWithCustomPkFilterInput, $limit: Int, $nextToken: String) {
   listThingWithCustomPks(
-    filter: $filter
-    sortDirection: $sortDirection
     cpk_cluster_key: $cpk_cluster_key
+    sortDirection: $sortDirection
     cpk_sort_key: $cpk_sort_key
+    filter: $filter
     limit: $limit
     nextToken: $nextToken
   ) {
@@ -4139,12 +4139,12 @@ exports[`generateClient basic model operations can list() with sortDirection (DE
       "abortController": AbortController {},
       "options": {
         "body": {
-          "query": "query ($filter: ModelThingWithCustomPkFilterInput, $sortDirection: ModelSortDirection, $cpk_cluster_key: String, $cpk_sort_key: String, $limit: Int, $nextToken: String) {
+          "query": "query ($cpk_cluster_key: String, $sortDirection: ModelSortDirection, $cpk_sort_key: ModelStringKeyConditionInput, $filter: ModelThingWithCustomPkFilterInput, $limit: Int, $nextToken: String) {
   listThingWithCustomPks(
-    filter: $filter
-    sortDirection: $sortDirection
     cpk_cluster_key: $cpk_cluster_key
+    sortDirection: $sortDirection
     cpk_sort_key: $cpk_sort_key
+    filter: $filter
     limit: $limit
     nextToken: $nextToken
   ) {
@@ -4786,7 +4786,6 @@ exports[`generateClient custom operations can query with returnType of a model t
   echoModelHasNestedTypes(argumentContent: $argumentContent) {
     sku
     factoryId
-    warehouseId
     description
     trackingMeta {
       productMeta {
@@ -4798,9 +4797,10 @@ exports[`generateClient custom operations can query with returnType of a model t
       }
       note
     }
-    owner
+    warehouseProductsId
     createdAt
     updatedAt
+    owner
   }
 }
 ",

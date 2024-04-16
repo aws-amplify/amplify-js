@@ -9,10 +9,10 @@ import { map } from 'rxjs';
 
 import {
 	authModeParams,
-	defaultSelectionSetForNonModelWithIR,
 	flattenItems,
 	generateSelectionSet,
 	getCustomHeaders,
+	getDefaultSelectionSetForNonModelWithIR,
 	initializeModel,
 	selectionSetIRToString,
 } from '../APIClient';
@@ -290,7 +290,7 @@ function operationSelectionSet(
 		const nonModel = modelIntrospection.nonModels[operation.type.nonModel];
 
 		return `{${selectionSetIRToString(
-			defaultSelectionSetForNonModelWithIR(nonModel, modelIntrospection),
+			getDefaultSelectionSetForNonModelWithIR(nonModel, modelIntrospection),
 		)}}`;
 	} else if (hasStringField(operation.type, 'model')) {
 		return `{${generateSelectionSet(modelIntrospection, operation.type.model)}}`;
