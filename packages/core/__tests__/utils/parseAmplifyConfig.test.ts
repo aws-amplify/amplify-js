@@ -60,8 +60,7 @@ describe('parseAmplifyConfig', () => {
 	});
 
 	it('parses Gen2 config objects into ResourcesConfig', () => {
-		mockIsAmplifyOutputs.mockReturnValue(true);
-		
+		mockIsAmplifyOutputs.mockReturnValueOnce(true);
 		const parsedConfig = parseAmplifyConfig(testAmplifyOutputs);
 
 		// Verify that a provided Gen2 config is parsed into a ResourcesConfig
