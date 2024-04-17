@@ -5,8 +5,8 @@ import { SendInput, SendOutput } from '../types';
 import { resolveBotConfig } from '../utils';
 import { lexProvider } from '../AWSLexProvider';
 import {
-	assertValidationError,
 	InteractionsValidationErrorCode,
+	assertValidationError,
 } from '../../errors';
 
 export const send = async (input: SendInput): Promise<SendOutput> => {
@@ -17,5 +17,6 @@ export const send = async (input: SendInput): Promise<SendOutput> => {
 		InteractionsValidationErrorCode.NoBotConfig,
 		`Bot ${botName} does not exist.`,
 	);
+
 	return lexProvider.sendMessage(botConfig, message);
 };

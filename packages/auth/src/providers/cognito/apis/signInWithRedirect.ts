@@ -6,6 +6,7 @@ import {
 	AuthAction,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
+	isBrowser,
 	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
 
@@ -87,7 +88,7 @@ const oauthSignIn = async ({
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
 	const redirectUri = getRedirectUrl(oauthConfig.redirectSignIn);
 
-	oAuthStore.storeOAuthInFlight(true);
+	if (isBrowser()) oAuthStore.storeOAuthInFlight(true);
 	oAuthStore.storeOAuthState(state);
 	oAuthStore.storePKCE(value);
 

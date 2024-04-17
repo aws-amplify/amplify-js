@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ResourcesConfig, sharedInMemoryStorage } from '@aws-amplify/core';
+
 import { NextServer } from '../src/types';
 
 const mockAmplifyConfig: ResourcesConfig = {
@@ -50,7 +51,7 @@ describe('createServerRunner', () => {
 			parseAmplifyConfig: mockParseAmplifyConfig,
 		}));
 
-		createServerRunner = require('../src').createServerRunner;
+		({ createServerRunner } = require('../src'));
 	});
 
 	afterEach(() => {
@@ -76,7 +77,7 @@ describe('createServerRunner', () => {
 	describe('runWithAmplifyServerContext', () => {
 		describe('when amplifyConfig.Auth is not defined', () => {
 			it('should call runWithAmplifyServerContextCore without Auth library options', () => {
-				const mockAmplifyConfigAnalytics: ResourcesConfig = {
+				const mockAmplifyConfigWithoutAuth: ResourcesConfig = {
 					Analytics: {
 						Pinpoint: {
 							appId: 'app-id',
@@ -85,15 +86,15 @@ describe('createServerRunner', () => {
 					},
 				};
 
-				mockParseAmplifyConfig.mockReturnValue(mockAmplifyConfigAnalytics);
+				mockParseAmplifyConfig.mockReturnValue(mockAmplifyConfigWithoutAuth);
 
 				const { runWithAmplifyServerContext } = createServerRunner({
-					config: mockAmplifyConfigAnalytics,
+					config: mockAmplifyConfigWithoutAuth,
 				});
 				const operation = jest.fn();
 				runWithAmplifyServerContext({ operation, nextServerContext: null });
 				expect(mockRunWithAmplifyServerContextCore).toHaveBeenCalledWith(
-					mockAmplifyConfigAnalytics,
+					mockAmplifyConfigWithoutAuth,
 					{},
 					operation,
 				);
@@ -103,7 +104,7 @@ describe('createServerRunner', () => {
 		describe('when amplifyConfig.Auth is defined', () => {
 			beforeEach(() => {
 				mockParseAmplifyConfig.mockReturnValue(mockAmplifyConfig);
-			})
+			});
 
 			describe('when nextServerContext is null (opt-in unauthenticated role)', () => {
 				it('should create auth providers with sharedInMemoryStorage', () => {

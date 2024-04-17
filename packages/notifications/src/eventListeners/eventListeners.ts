@@ -1,9 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { EventListener, EventListenerRemover, EventType } from './types';
+import {
+	EventListener,
+	EventListenerHandler,
+	EventListenerRemover,
+	EventType,
+} from './types';
 
-const eventListeners: Record<string, Set<EventListener<Function>>> = {};
+const eventListeners: Record<
+	string,
+	Set<EventListener<EventListenerHandler>>
+> = {};
 
 export const notifyEventListeners = (type: EventType, ...args: any[]): void => {
 	eventListeners[type]?.forEach(listener => {
@@ -17,15 +25,11 @@ export const notifyEventListenersAndAwaitHandlers = (
 ): Promise<void[]> =>
 	Promise.all<void>(
 		Array.from(eventListeners[type] ?? []).map(async listener => {
-			try {
-				await listener.handleEvent(...args);
-			} catch (err) {
-				throw err;
-			}
+			await listener.handleEvent(...args);
 		}),
 	);
 
-export const addEventListener = <EventHandler extends Function>(
+export const addEventListener = <EventHandler extends EventListenerHandler>(
 	type: EventType,
 	handler: EventHandler,
 ): EventListenerRemover => {
@@ -40,7 +44,10 @@ export const addEventListener = <EventHandler extends Function>(
 		},
 	};
 	eventListeners[type].add(listener);
+
 	return {
-		remove: () => listener.remove(),
+		remove: () => {
+			listener.remove();
+		},
 	};
 };

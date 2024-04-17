@@ -67,6 +67,8 @@ export function createCancellableOperation(
 				const canceledError = new CanceledError({
 					...(message && { message }),
 					underlyingError: error,
+					recoverySuggestion:
+						'The API request was explicitly canceled. If this is not intended, validate if you called the `cancel()` function on the API request erroneously.',
 				});
 				logger.debug(error);
 				throw canceledError;

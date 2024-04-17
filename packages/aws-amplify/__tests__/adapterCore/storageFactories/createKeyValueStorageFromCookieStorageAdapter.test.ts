@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createKeyValueStorageFromCookieStorageAdapter } from '../../../src/adapterCore';
-import { defaultSetCookieOptions } from '../../../src/adapterCore/storageFactories/createKeyValueStorageFromCookieStorageAdapter';
+import { createKeyValueStorageFromCookieStorageAdapter } from '../../../src/adapter-core';
+import { defaultSetCookieOptions } from '../../../src/adapter-core/storageFactories/createKeyValueStorageFromCookieStorageAdapter';
 
 const mockCookiesStorageAdapter = {
 	getAll: jest.fn(),

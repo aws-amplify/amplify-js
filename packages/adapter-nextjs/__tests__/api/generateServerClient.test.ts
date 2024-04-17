@@ -1,12 +1,11 @@
 import { ResourcesConfig } from '@aws-amplify/core';
 import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
+
 import {
 	generateServerClientUsingCookies,
 	generateServerClientUsingReqRes,
 } from '../../src/api';
-import {
-	createRunWithAmplifyServerContext,
-} from '../../src/utils';
+import { createRunWithAmplifyServerContext } from '../../src/utils';
 import { NextApiRequestMock, NextApiResponseMock } from '../mocks/headers';
 import { createServerRunnerForAPI } from '../../src/api/createServerRunnerForAPI';
 
@@ -62,7 +61,7 @@ describe('generateServerClientUsingCookies', () => {
 	});
 
 	it('should call createRunWithAmplifyServerContext to create runWithAmplifyServerContext function', async () => {
-		const cookies = (await headers).cookies;
+		const { cookies } = await headers;
 
 		generateServerClientUsingCookies({ config: mockAmplifyConfig, cookies });
 		expect(mockCreateRunWithAmplifyServerContext).toHaveBeenCalledWith({
@@ -97,7 +96,7 @@ describe('generateServerClient', () => {
 		}));
 
 		jest.mock('@aws-amplify/core/internals/adapter-core', () => ({
-			getAmplifyServerContext: () => {},
+			getAmplifyServerContext: jest.fn(),
 		}));
 
 		const client = generateServerClientUsingReqRes({
