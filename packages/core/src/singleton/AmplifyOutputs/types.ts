@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ModelIntrospectionSchema } from '../API/types';
-
 export type AmplifyOutputsOAuthIdentityProvider =
 	| 'GOOGLE'
 	| 'FACEBOOK'
@@ -79,7 +77,7 @@ export interface AmplifyOutputsDataProperties {
 	url: string;
 	default_authorization_type: string;
 	authorization_types: string[];
-	model_introspection?: ModelIntrospectionSchema;
+	model_introspection?: object;
 	api_key?: string;
 	conflict_resolution_mode?: string;
 }

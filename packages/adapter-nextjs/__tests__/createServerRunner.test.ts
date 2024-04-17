@@ -30,7 +30,7 @@ jest.mock(
 describe('createServerRunner', () => {
 	let createServerRunner: any;
 
-	const mockParseAWSExports = jest.fn();
+	const mockParseAmplifyConfig = jest.fn();
 	const mockCreateAWSCredentialsAndIdentityIdProvider = jest.fn();
 	const mockCreateKeyValueStorageFromCookieStorageAdapter = jest.fn();
 	const mockCreateUserPoolsTokenProvider = jest.fn();
@@ -47,23 +47,23 @@ describe('createServerRunner', () => {
 			runWithAmplifyServerContext: mockRunWithAmplifyServerContextCore,
 		}));
 		jest.doMock('@aws-amplify/core/internals/utils', () => ({
-			parseAWSExports: mockParseAWSExports,
+			parseAmplifyConfig: mockParseAmplifyConfig,
 		}));
 
 		createServerRunner = require('../src').createServerRunner;
 	});
 
 	afterEach(() => {
-		mockParseAWSExports.mockClear();
+		mockParseAmplifyConfig.mockClear();
 		mockCreateAWSCredentialsAndIdentityIdProvider.mockClear();
 		mockCreateKeyValueStorageFromCookieStorageAdapter.mockClear();
 		mockCreateUserPoolsTokenProvider.mockClear();
 		mockRunWithAmplifyServerContextCore.mockClear();
 	});
 
-	it('calls parseAWSExports when the config object is imported from amplify configuration file', () => {
+	it('calls parseAmplifyConfig when the config object is imported from amplify configuration file', () => {
 		createServerRunner({ config: { aws_project_region: 'us-west-2' } });
-		expect(mockParseAWSExports).toHaveBeenCalled();
+		expect(mockParseAmplifyConfig).toHaveBeenCalled();
 	});
 
 	it('returns runWithAmplifyServerContext function', () => {
@@ -76,7 +76,7 @@ describe('createServerRunner', () => {
 	describe('runWithAmplifyServerContext', () => {
 		describe('when amplifyConfig.Auth is not defined', () => {
 			it('should call runWithAmplifyServerContextCore without Auth library options', () => {
-				const mockAmplifyConfig: ResourcesConfig = {
+				const mockAmplifyConfigAnalytics: ResourcesConfig = {
 					Analytics: {
 						Pinpoint: {
 							appId: 'app-id',
@@ -84,13 +84,16 @@ describe('createServerRunner', () => {
 						},
 					},
 				};
+
+				mockParseAmplifyConfig.mockReturnValue(mockAmplifyConfigAnalytics);
+
 				const { runWithAmplifyServerContext } = createServerRunner({
-					config: mockAmplifyConfig,
+					config: mockAmplifyConfigAnalytics,
 				});
 				const operation = jest.fn();
 				runWithAmplifyServerContext({ operation, nextServerContext: null });
 				expect(mockRunWithAmplifyServerContextCore).toHaveBeenCalledWith(
-					mockAmplifyConfig,
+					mockAmplifyConfigAnalytics,
 					{},
 					operation,
 				);
@@ -98,6 +101,10 @@ describe('createServerRunner', () => {
 		});
 
 		describe('when amplifyConfig.Auth is defined', () => {
+			beforeEach(() => {
+				mockParseAmplifyConfig.mockReturnValue(mockAmplifyConfig);
+			})
+
 			describe('when nextServerContext is null (opt-in unauthenticated role)', () => {
 				it('should create auth providers with sharedInMemoryStorage', () => {
 					const { runWithAmplifyServerContext } = createServerRunner({
