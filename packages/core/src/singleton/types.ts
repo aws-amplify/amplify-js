@@ -26,6 +26,8 @@ import {
 import { NotificationsConfig } from './Notifications/types';
 import { InteractionsConfig } from './Interactions/types';
 
+export { AmplifyOutputs } from './AmplifyOutputs/types';
+
 /**
  * Compatibility type representing the Amplify Gen 1 configuration file schema. This type should not be used directly.
  */

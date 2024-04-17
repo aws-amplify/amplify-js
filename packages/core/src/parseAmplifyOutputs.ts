@@ -11,6 +11,7 @@ import {
 	APIConfig,
 	APIGraphQLConfig,
 	GraphQLAuthMode,
+	ModelIntrospectionSchema,
 } from './singleton/API/types';
 import {
 	CognitoUserPoolConfigMfaStatus,
@@ -215,7 +216,7 @@ function parseData(
 		defaultAuthMode: getGraphQLAuthMode(default_authorization_type),
 		region: aws_region,
 		apiKey: api_key,
-		modelIntrospection: model_introspection,
+		modelIntrospection: model_introspection as ModelIntrospectionSchema,
 	};
 
 	return {

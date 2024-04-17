@@ -10,9 +10,7 @@ import {
 import {
 	AmplifyOutputs,
 	LegacyConfig,
-	isAmplifyOutputs,
-	parseAWSExports,
-	parseAmplifyOutputs,
+	parseAmplifyConfig,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -37,15 +35,7 @@ export const DefaultAmplify = {
 		resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
 		libraryOptions?: LibraryOptions,
 	): void {
-		let resolvedResourceConfig: ResourcesConfig;
-
-		if (Object.keys(resourceConfig).some(key => key.startsWith('aws_'))) {
-			resolvedResourceConfig = parseAWSExports(resourceConfig);
-		} else if (isAmplifyOutputs(resourceConfig)) {
-			resolvedResourceConfig = parseAmplifyOutputs(resourceConfig);
-		} else {
-			resolvedResourceConfig = resourceConfig as ResourcesConfig;
-		}
+		const resolvedResourceConfig = parseAmplifyConfig(resourceConfig);
 
 		// If no Auth config is provided, no special handling will be required, configure as is.
 		// Otherwise, we can assume an Auth config is provided from here on.

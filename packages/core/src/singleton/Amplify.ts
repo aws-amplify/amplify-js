@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AMPLIFY_SYMBOL, Hub } from '../Hub';
-import { parseAWSExports } from '../parseAWSExports';
 import { deepFreeze } from '../utils';
+import { parseAmplifyConfig } from '../libraryUtils';
 
 import {
+	AmplifyOutputs,
 	AuthConfig,
 	LegacyConfig,
 	LibraryOptions,
@@ -48,16 +49,10 @@ export class AmplifyClass {
 	 * @param libraryOptions - Additional options for customizing the behavior of the library.
 	 */
 	configure(
-		resourcesConfig: ResourcesConfig | LegacyConfig,
+		resourcesConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
 		libraryOptions?: LibraryOptions,
 	): void {
-		let resolvedResourceConfig: ResourcesConfig;
-
-		if (Object.keys(resourcesConfig).some(key => key.startsWith('aws_'))) {
-			resolvedResourceConfig = parseAWSExports(resourcesConfig);
-		} else {
-			resolvedResourceConfig = resourcesConfig as ResourcesConfig;
-		}
+		const resolvedResourceConfig = parseAmplifyConfig(resourcesConfig);
 
 		this.resourcesConfig = resolvedResourceConfig;
 
