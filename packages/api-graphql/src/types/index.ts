@@ -388,30 +388,30 @@ export type ClientWithModels =
 	| V6ClientSSRCookies;
 
 export type V6Client<T extends Record<any, any> = never> = {
-	[__amplify]: AmplifyClassV6;
-	[__authMode]?: GraphQLAuthMode;
-	[__authToken]?: string;
-	[__headers]?: CustomHeaders;
+	// [__amplify]: AmplifyClassV6;
+	// [__authMode]?: GraphQLAuthMode;
+	// [__authToken]?: string;
+	// [__headers]?: CustomHeaders;
 	graphql: GraphQLMethod;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
 } & ClientExtensions<T>;
 
 export type V6ClientSSRRequest<T extends Record<any, any> = never> = {
-	[__amplify]: AmplifyClassV6;
-	[__authMode]?: GraphQLAuthMode;
-	[__authToken]?: string;
-	[__headers]?: CustomHeaders;
+	// [__amplify]: AmplifyClassV6;
+	// [__authMode]?: GraphQLAuthMode;
+	// [__authToken]?: string;
+	// [__headers]?: CustomHeaders;
 	graphql: GraphQLMethodSSR;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
 } & ClientExtensionsSSRRequest<T>;
 
 export type V6ClientSSRCookies<T extends Record<any, any> = never> = {
-	[__amplify]: AmplifyClassV6;
-	[__authMode]?: GraphQLAuthMode;
-	[__authToken]?: string;
-	[__headers]?: CustomHeaders;
+	// [__amplify]: AmplifyClassV6;
+	// [__authMode]?: GraphQLAuthMode;
+	// [__authToken]?: string;
+	// [__headers]?: CustomHeaders;
 	graphql: GraphQLMethod;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
