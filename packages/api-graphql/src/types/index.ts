@@ -2,9 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import {
+	BaseClient,
 	ClientExtensions,
 	ClientExtensionsSSRCookies,
 	ClientExtensionsSSRRequest,
+	ClientInternals,
 	CustomHeaders,
 	ModelSortDirection,
 } from '@aws-amplify/data-schema/runtime';
@@ -369,18 +371,15 @@ export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
 export const __headers = Symbol('headers');
 
-export function getInternals(client: {
-	[__amplify]: AmplifyClassV6;
-	[__authMode]: GraphQLAuthMode | undefined;
-	[__authToken]: string | undefined;
-	[__headers]: CustomHeaders | undefined;
-}) {
+export function getInternals(client: BaseClient): ClientInternals {
+	const c = client as any;
+
 	return {
-		amplify: client[__amplify],
-		authMode: client[__authMode],
-		authToken: client[__authToken],
-		headers: client[__headers],
-	};
+		amplify: c[__amplify],
+		authMode: c[__authMode],
+		authToken: c[__authToken],
+		headers: c[__headers],
+	} as any;
 }
 
 export type ClientWithModels =
