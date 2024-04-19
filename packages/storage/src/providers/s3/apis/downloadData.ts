@@ -9,14 +9,19 @@ import {
 	DownloadDataInputWithKey,
 	DownloadDataInputWithPath,
 	DownloadDataOutput,
-	ItemWithKeyAndPath,
+	DownloadDataOutputWithKey,
+	DownloadDataOutputWithPath,
 } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { createDownloadTask, validateStorageOperationInput } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
-import { StorageDownloadDataOutput } from '../../../types';
+import {
+	StorageDownloadDataOutput,
+	StorageItemWithKey,
+	StorageItemWithPath,
+} from '../../../types';
 import { STORAGE_INPUT_KEY } from '../utils/constants';
 
 interface DownloadData {
@@ -50,7 +55,7 @@ interface DownloadData {
 	 * }
 	 *```
 	 */
-	(input: DownloadDataInputWithPath): DownloadDataOutput;
+	(input: DownloadDataInputWithPath): DownloadDataOutputWithPath;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
@@ -84,7 +89,7 @@ interface DownloadData {
 	 * }
 	 *```
 	 */
-	(input: DownloadDataInputWithKey): DownloadDataOutput;
+	(input: DownloadDataInputWithKey): DownloadDataOutputWithKey;
 	(input: DownloadDataInput): DownloadDataOutput;
 }
 
@@ -105,7 +110,9 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 
 const downloadDataJob =
 	(downloadDataInput: DownloadDataInput, abortSignal: AbortSignal) =>
-	async (): Promise<StorageDownloadDataOutput<ItemWithKeyAndPath>> => {
+	async (): Promise<
+		StorageDownloadDataOutput<StorageItemWithKey | StorageItemWithPath>
+	> => {
 		const { options: downloadDataOptions } = downloadDataInput;
 		const { bucket, keyPrefix, s3Config, identityId } =
 			await resolveS3ConfigAndInput(Amplify, downloadDataOptions);
@@ -153,6 +160,6 @@ const downloadDataJob =
 		};
 
 		return inputType === STORAGE_INPUT_KEY
-			? { key: objectKey, path: finalKey, ...result }
-			: { path: finalKey, key: finalKey, ...result };
+			? { key: objectKey, ...result }
+			: { path: finalKey, ...result };
 	};

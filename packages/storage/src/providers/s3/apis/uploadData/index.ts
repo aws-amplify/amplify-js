@@ -6,6 +6,8 @@ import {
 	UploadDataInputWithKey,
 	UploadDataInputWithPath,
 	UploadDataOutput,
+	UploadDataOutputWithKey,
+	UploadDataOutputWithPath,
 } from '../../types';
 import { createUploadTask } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
@@ -68,7 +70,7 @@ interface UploadData {
 	 * await uploadTask.result;
 	 * ```
 	 */
-	(input: UploadDataInputWithPath): UploadDataOutput;
+	(input: UploadDataInputWithPath): UploadDataOutputWithPath;
 
 	/**
 	 * Upload data to the specified S3 object key. By default uses single PUT operation to upload if the payload is less than 5MB.
@@ -123,7 +125,7 @@ interface UploadData {
 	 * await uploadTask.result;
 	 * ```
 	 */
-	(input: UploadDataInputWithKey): UploadDataOutput;
+	(input: UploadDataInputWithKey): UploadDataOutputWithKey;
 	(input: UploadDataInput): UploadDataOutput;
 }
 

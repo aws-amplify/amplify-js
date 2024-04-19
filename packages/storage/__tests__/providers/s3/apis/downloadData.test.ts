@@ -138,7 +138,6 @@ describe('downloadData with key', () => {
 		const contentType = 'contentType';
 		const body = 'body';
 		const key = 'key';
-		const expectedKey = `public/${key}`;
 		(getObject as jest.Mock).mockResolvedValueOnce({
 			Body: body,
 			LastModified: lastModified,
@@ -154,7 +153,6 @@ describe('downloadData with key', () => {
 		expect(getObject).toHaveBeenCalledTimes(1);
 		expect(result).toEqual({
 			key,
-			path: `public/${key}`,
 			body,
 			lastModified,
 			size: contentLength,
@@ -283,7 +281,6 @@ describe('downloadData with path', () => {
 		expect(getObject).toHaveBeenCalledTimes(1);
 		expect(result).toEqual({
 			path,
-			key: path,
 			body,
 			lastModified,
 			size: contentLength,

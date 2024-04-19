@@ -53,6 +53,6 @@ export const getProperties = async (
 	};
 
 	return inputType === STORAGE_INPUT_KEY
-		? { key: objectKey, path: finalKey, ...result }
-		: { path: finalKey, key: finalKey, ...result };
+		? { key: objectKey, ...result }
+		: { path: objectKey, ...result };
 };

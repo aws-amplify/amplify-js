@@ -10,6 +10,8 @@ import {
 	CopyInputWithKey,
 	CopyInputWithPath,
 	CopyOutput,
+	CopyOutputWithKey,
+	CopyOutputWithPath,
 } from '../../types';
 import { copy as copyInternal } from '../internal/copy';
 
@@ -27,7 +29,7 @@ interface Copy {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: CopyInputWithPath,
-	): Promise<CopyOutput>;
+	): Promise<CopyOutputWithPath>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/copy | path} instead.
@@ -45,7 +47,7 @@ interface Copy {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: CopyInputWithKey,
-	): Promise<CopyOutput>;
+	): Promise<CopyOutputWithKey>;
 
 	(
 		contextSpec: AmplifyServer.ContextSpec,

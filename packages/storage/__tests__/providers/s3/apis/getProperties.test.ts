@@ -113,7 +113,7 @@ describe('getProperties with key', () => {
 						key,
 						options: options as GetPropertiesOptionsWithKey,
 					}),
-				).toEqual({ ...expected, path: expectedKey });
+				).toEqual(expected);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
 			},
@@ -170,7 +170,6 @@ describe('Happy cases: With path', () => {
 	});
 	describe('getProperties with path', () => {
 		const expected = {
-			key: path,
 			path,
 			size: '100',
 			contentType: 'text/plain',

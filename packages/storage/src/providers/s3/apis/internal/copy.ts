@@ -9,6 +9,8 @@ import {
 	CopyInputWithKey,
 	CopyInputWithPath,
 	CopyOutput,
+	CopyOutputWithKey,
+	CopyOutputWithPath,
 } from '../../types';
 import { ResolvedS3Config } from '../../types/options';
 import {
@@ -37,7 +39,7 @@ export const copy = async (
 const copyWithPath = async (
 	amplify: AmplifyClassV6,
 	input: CopyInputWithPath,
-): Promise<CopyOutput> => {
+): Promise<CopyOutputWithPath> => {
 	const { source, destination } = input;
 	const { s3Config, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify);
@@ -68,14 +70,14 @@ const copyWithPath = async (
 		s3Config,
 	});
 
-	return { path: finalCopyDestination, key: finalCopyDestination };
+	return { path: finalCopyDestination };
 };
 
 /** @deprecated Use {@link copyWithPath} instead. */
 export const copyWithKey = async (
 	amplify: AmplifyClassV6,
 	input: CopyInputWithKey,
-): Promise<CopyOutput> => {
+): Promise<CopyOutputWithKey> => {
 	const {
 		source: { key: sourceKey },
 		destination: { key: destinationKey },
@@ -111,7 +113,6 @@ export const copyWithKey = async (
 
 	return {
 		key: destinationKey,
-		path: finalCopyDestination,
 	};
 };
 

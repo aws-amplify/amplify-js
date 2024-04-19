@@ -27,6 +27,7 @@ const key = 'key';
 const bucket = 'bucket';
 const region = 'region';
 const defaultIdentityId = 'defaultIdentityId';
+const removeResultKey = { key };
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -83,13 +84,12 @@ describe('remove API', () => {
 				},
 			].forEach(({ options, expectedKey }) => {
 				const accessLevel = options?.accessLevel ?? 'default';
-				const removeResultKey = { key };
 
 				it(`should remove object with ${accessLevel} accessLevel`, async () => {
 					expect.assertions(3);
 					expect(
 						await remove({ key, options: options as StorageOptions }),
-					).toEqual({ ...removeResultKey, path: expectedKey });
+					).toEqual(removeResultKey);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 						Bucket: bucket,
@@ -99,6 +99,10 @@ describe('remove API', () => {
 			});
 		});
 		describe('With Path', () => {
+			const resolvePath = (path: string | Function) =>
+				typeof path === 'string'
+					? path
+					: path({ identityId: defaultIdentityId });
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
 					return {
@@ -117,13 +121,8 @@ describe('remove API', () => {
 					path: ({ identityId }: any) => `protected/${identityId}/${key}`,
 				},
 			].forEach(({ path }) => {
-				const resolvePath =
-					typeof path === 'string'
-						? path
-						: path({ identityId: defaultIdentityId });
 				const removeResultPath = {
-					path: resolvePath,
-					key: resolvePath,
+					path: resolvePath(path),
 				};
 
 				it(`should remove object for the given path`, async () => {
@@ -132,14 +131,14 @@ describe('remove API', () => {
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 						Bucket: bucket,
-						Key: resolvePath,
+						Key: resolvePath(path),
 					});
 				});
 			});
 		});
 	});
 
-	describe('Error Cases', () => {
+	describe('Error Path Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
