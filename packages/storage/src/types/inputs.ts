@@ -19,7 +19,7 @@ export type StorageOperationInputWithPrefixPath = StrictUnion<
 export interface StorageOperationInputWithKey {
 	/** @deprecated Use `path` instead. */
 	key: string;
-	// path?: never;
+	path?: never;
 }
 export interface StorageOperationInputWithPath {
 	path: string | (({ identityId }: { identityId?: string }) => string);
@@ -49,7 +49,9 @@ export type StorageGetPropertiesInputWithKey<Options extends StorageOptions> =
 	StorageOperationInputWithKey & StorageOperationOptionsInput<Options>;
 
 export type StorageGetPropertiesInputWithPath<Options> =
-	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
+	StorageOperationInputWithPath & {
+		key?: never;
+	} & StorageOperationOptionsInput<Options>;
 
 export type StorageRemoveInputWithKey<Options> = StorageOperationInputWithKey &
 	StorageOperationOptionsInput<Options>;
