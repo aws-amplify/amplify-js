@@ -5,16 +5,12 @@ import { Amplify } from '@aws-amplify/core';
 import {
 	ListAllInput,
 	ListAllInputWithPath,
-	ListAllInputWithPrefix,
 	ListAllOutput,
 	ListAllOutputWithPath,
-	ListAllOutputWithPrefix,
 	ListPaginateInput,
 	ListPaginateInputWithPath,
-	ListPaginateInputWithPrefix,
 	ListPaginateOutput,
 	ListPaginateOutputWithPath,
-	ListPaginateOutputWithPrefix,
 } from '../types';
 
 import { list as listInternal } from './internal/list';
@@ -47,7 +43,7 @@ interface ListApi {
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode` - thrown when there are issues with credentials
 	 */
-	(input?: ListPaginateInputWithPrefix): Promise<ListPaginateOutputWithPrefix>;
+	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -57,13 +53,19 @@ interface ListApi {
 	 * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
 	 * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
 	 */
-	(input?: ListAllInputWithPrefix): Promise<ListAllOutputWithPrefix>;
 	(input?: ListAllInput): Promise<ListAllOutput>;
-	(input?: ListPaginateInput): Promise<ListPaginateOutput>;
 }
 
 export const list: ListApi = <
-	Output extends ListAllOutput | ListPaginateOutput,
+	Output extends
+		| ListAllOutput
+		| ListPaginateOutput
+		| ListAllOutputWithPath
+		| ListPaginateOutputWithPath,
 >(
-	input?: ListAllInput | ListPaginateInput,
+	input?:
+		| ListAllInput
+		| ListPaginateInput
+		| ListAllInputWithPath
+		| ListPaginateInputWithPath,
 ): Promise<Output> => listInternal(Amplify, input ?? {}) as Promise<Output>;

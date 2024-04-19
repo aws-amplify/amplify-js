@@ -6,15 +6,15 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	ListAllInput,
+	ListAllInputWithPath,
 	ListAllOutput,
 	ListAllOutputWithPath,
-	ListAllOutputWithPrefix,
 	ListOutputItemWithKey,
 	ListOutputItemWithPath,
 	ListPaginateInput,
+	ListPaginateInputWithPath,
 	ListPaginateOutput,
 	ListPaginateOutputWithPath,
-	ListPaginateOutputWithPrefix,
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
@@ -40,8 +40,17 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input: ListAllInput | ListPaginateInput,
-): Promise<ListAllOutput | ListPaginateOutput> => {
+	input:
+		| ListAllInput
+		| ListPaginateInput
+		| ListAllInputWithPath
+		| ListPaginateInputWithPath,
+): Promise<
+	| ListAllOutput
+	| ListPaginateOutput
+	| ListAllOutputWithPath
+	| ListAllOutputWithPath
+> => {
 	const { options = {} } = input;
 	const {
 		s3Config,
@@ -100,7 +109,7 @@ const _listAllWithPrefix = async ({
 	s3Config,
 	listParams,
 	generatedPrefix,
-}: ListInputArgs): Promise<ListAllOutputWithPrefix> => {
+}: ListInputArgs): Promise<ListAllOutput> => {
 	const listResult: ListOutputItemWithKey[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
@@ -128,7 +137,7 @@ const _listWithPrefix = async ({
 	s3Config,
 	listParams,
 	generatedPrefix,
-}: ListInputArgs): Promise<ListPaginateOutputWithPrefix> => {
+}: ListInputArgs): Promise<ListPaginateOutput> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);

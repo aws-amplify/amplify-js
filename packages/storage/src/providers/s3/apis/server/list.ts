@@ -8,16 +8,12 @@ import {
 import {
 	ListAllInput,
 	ListAllInputWithPath,
-	ListAllInputWithPrefix,
 	ListAllOutput,
 	ListAllOutputWithPath,
-	ListAllOutputWithPrefix,
 	ListPaginateInput,
 	ListPaginateInputWithPath,
-	ListPaginateInputWithPrefix,
 	ListPaginateOutput,
 	ListPaginateOutputWithPath,
-	ListPaginateOutputWithPrefix,
 } from '../../types';
 import { list as listInternal } from '../internal/list';
 
@@ -59,8 +55,8 @@ interface ListApi {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListPaginateInputWithPrefix,
-	): Promise<ListPaginateOutputWithPrefix>;
+		input?: ListPaginateInput,
+	): Promise<ListPaginateOutput>;
 	/**
 	 * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -72,23 +68,23 @@ interface ListApi {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListAllInputWithPrefix,
-	): Promise<ListAllOutputWithPrefix>;
-	(
-		contextSpec: AmplifyServer.ContextSpec,
-		input?: ListPaginateInput,
-	): Promise<ListPaginateOutput>;
-	(
-		contextSpec: AmplifyServer.ContextSpec,
 		input?: ListAllInput,
 	): Promise<ListAllOutput>;
 }
 
 export const list: ListApi = <
-	Output extends ListAllOutput | ListPaginateOutput,
+	Output extends
+		| ListAllOutput
+		| ListPaginateOutput
+		| ListAllOutputWithPath
+		| ListPaginateOutputWithPath,
 >(
 	contextSpec: AmplifyServer.ContextSpec,
-	input?: ListAllInput | ListPaginateInput,
+	input?:
+		| ListAllInput
+		| ListPaginateInput
+		| ListAllInputWithPath
+		| ListPaginateInputWithPath,
 ): Promise<Output> =>
 	listInternal(
 		getAmplifyServerContext(contextSpec).amplify,
