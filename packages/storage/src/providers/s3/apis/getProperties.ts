@@ -5,10 +5,8 @@ import { Amplify } from '@aws-amplify/core';
 
 import {
 	GetPropertiesInput,
-	GetPropertiesInputWithKey,
 	GetPropertiesInputWithPath,
 	GetPropertiesOutput,
-	GetPropertiesOutputWithKey,
 	GetPropertiesOutputWithPath,
 } from '../types';
 
@@ -37,12 +35,11 @@ interface GetProperties {
 	 * @throws An `S3Exception` when the underlying S3 service returned error.
 	 * @throws A `StorageValidationErrorCode` when API call parameters are invalid.
 	 */
-	(input: GetPropertiesInputWithKey): Promise<GetPropertiesOutputWithKey>;
 	(input: GetPropertiesInput): Promise<GetPropertiesOutput>;
 }
 
 export const getProperties: GetProperties = <
-	Output extends GetPropertiesOutput,
+	Output extends GetPropertiesOutput | GetPropertiesOutputWithPath,
 >(
-	input: GetPropertiesInput,
+	input: GetPropertiesInput | GetPropertiesInputWithPath,
 ): Promise<Output> => getPropertiesInternal(Amplify, input) as Promise<Output>;

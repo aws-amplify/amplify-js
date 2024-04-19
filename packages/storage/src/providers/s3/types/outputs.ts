@@ -68,6 +68,7 @@ export type DownloadDataOutputWithPath = DownloadTask<
  * Output type for S3 getUrl API.
  */
 export type GetUrlOutput = StorageGetUrlOutput;
+export type GetUrlOutputWithPath = StorageGetUrlOutput;
 
 /**
  * Output type for S3 uploadData API.
@@ -77,15 +78,8 @@ export type UploadDataOutput = UploadTask<ItemWithKey>;
 export type UploadDataOutputWithPath = UploadTask<ItemWithPath>;
 
 /** @deprecated Use {@link GetPropertiesOutputWithPath} instead. */
-export type GetPropertiesOutputWithKey = ItemWithKey;
+export type GetPropertiesOutput = ItemWithKey;
 export type GetPropertiesOutputWithPath = ItemWithPath;
-
-/**
- * Output type for S3 getProperties API.
- */
-export type GetPropertiesOutput =
-	| GetPropertiesOutputWithKey
-	| GetPropertiesOutputWithPath;
 
 /**
  * Output type for S3 list API. Lists all bucket objects.

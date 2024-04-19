@@ -8,9 +8,9 @@ import {
 
 import {
 	GetUrlInput,
-	GetUrlInputWithKey,
 	GetUrlInputWithPath,
 	GetUrlOutput,
+	GetUrlOutputWithPath,
 } from '../../types';
 import { getUrl as getUrlInternal } from '../internal/getUrl';
 
@@ -35,7 +35,7 @@ interface GetUrl {
 	(
 		contextSpec: AmplifyServer.ContextSpec,
 		input: GetUrlInputWithPath,
-	): Promise<GetUrlOutput>;
+	): Promise<GetUrlOutputWithPath>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/download/#generate-a-download-url | path} instead.
@@ -58,15 +58,11 @@ interface GetUrl {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: GetUrlInputWithKey,
-	): Promise<GetUrlOutput>;
-	(
-		contextSpec: AmplifyServer.ContextSpec,
 		input: GetUrlInput,
 	): Promise<GetUrlOutput>;
 }
 export const getUrl: GetUrl = async (
 	contextSpec: AmplifyServer.ContextSpec,
-	input: GetUrlInput,
-): Promise<GetUrlOutput> =>
+	input: GetUrlInput | GetUrlInputWithPath,
+): Promise<GetUrlOutput | GetUrlOutputWithPath> =>
 	getUrlInternal(getAmplifyServerContext(contextSpec).amplify, input);

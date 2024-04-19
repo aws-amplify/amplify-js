@@ -53,12 +53,8 @@ export type CopyInputWithPath = StorageCopyInputWithPath;
 /**
  * Input type for S3 getProperties API.
  */
-export type GetPropertiesInput = StrictUnion<
-	GetPropertiesInputWithKey | GetPropertiesInputWithPath
->;
-
 /** @deprecated Use {@link GetPropertiesInputWithPath} instead. */
-export type GetPropertiesInputWithKey =
+export type GetPropertiesInput =
 	StorageGetPropertiesInputWithKey<GetPropertiesOptionsWithKey>;
 export type GetPropertiesInputWithPath =
 	StorageGetPropertiesInputWithPath<GetPropertiesOptionsWithPath>;
@@ -66,11 +62,8 @@ export type GetPropertiesInputWithPath =
 /**
  * Input type for S3 getUrl API.
  */
-export type GetUrlInput = StrictUnion<GetUrlInputWithKey | GetUrlInputWithPath>;
-
 /** @deprecated Use {@link GetUrlInputWithPath} instead. */
-export type GetUrlInputWithKey =
-	StorageGetUrlInputWithKey<GetUrlOptionsWithKey>;
+export type GetUrlInput = StorageGetUrlInputWithKey<GetUrlOptionsWithKey>;
 export type GetUrlInputWithPath =
 	StorageGetUrlInputWithPath<GetUrlOptionsWithPath>;
 

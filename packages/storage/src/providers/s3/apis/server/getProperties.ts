@@ -8,10 +8,8 @@ import {
 
 import {
 	GetPropertiesInput,
-	GetPropertiesInputWithKey,
 	GetPropertiesInputWithPath,
 	GetPropertiesOutput,
-	GetPropertiesOutputWithKey,
 	GetPropertiesOutputWithPath,
 } from '../../types';
 import { getProperties as getPropertiesInternal } from '../internal/getProperties';
@@ -46,19 +44,15 @@ interface GetProperties {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: GetPropertiesInputWithKey,
-	): Promise<GetPropertiesOutputWithKey>;
-	(
-		contextSpec: AmplifyServer.ContextSpec,
 		input: GetPropertiesInput,
 	): Promise<GetPropertiesOutput>;
 }
 
 export const getProperties: GetProperties = <
-	Output extends GetPropertiesOutput,
+	Output extends GetPropertiesOutput | GetPropertiesOutputWithPath,
 >(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: GetPropertiesInput,
+	input: GetPropertiesInput | GetPropertiesInputWithPath,
 ): Promise<Output> =>
 	getPropertiesInternal(
 		getAmplifyServerContext(contextSpec).amplify,

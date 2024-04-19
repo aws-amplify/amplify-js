@@ -5,9 +5,9 @@ import { Amplify } from '@aws-amplify/core';
 
 import {
 	GetUrlInput,
-	GetUrlInputWithKey,
 	GetUrlInputWithPath,
 	GetUrlOutput,
+	GetUrlOutputWithPath,
 } from '../types';
 
 import { getUrl as getUrlInternal } from './internal/getUrl';
@@ -29,7 +29,7 @@ interface GetUrl {
 	 * thrown either username or key are not defined.
 	 *
 	 */
-	(input: GetUrlInputWithPath): Promise<GetUrlOutput>;
+	(input: GetUrlInputWithPath): Promise<GetUrlOutputWithPath>;
 	/**
 	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
 	 * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/download/#generate-a-download-url | path} instead.
@@ -49,9 +49,10 @@ interface GetUrl {
 	 * thrown either username or key are not defined.
 	 *
 	 */
-	(input: GetUrlInputWithKey): Promise<GetUrlOutput>;
 	(input: GetUrlInput): Promise<GetUrlOutput>;
 }
 
-export const getUrl: GetUrl = (input: GetUrlInput): Promise<GetUrlOutput> =>
+export const getUrl: GetUrl = (
+	input: GetUrlInput | GetUrlInputWithPath,
+): Promise<GetUrlOutput | GetUrlOutputWithPath> =>
 	getUrlInternal(Amplify, input);

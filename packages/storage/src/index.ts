@@ -20,8 +20,10 @@ export {
 	ListAllInput,
 	ListPaginateInput,
 	GetPropertiesInput,
+	GetPropertiesInputWithPath,
 	CopyInput,
 	GetUrlInput,
+	GetUrlInputWithPath,
 } from './providers/s3/types/inputs';
 
 export {
@@ -33,8 +35,10 @@ export {
 	ListAllOutput,
 	ListPaginateOutput,
 	GetPropertiesOutput,
+	GetPropertiesOutputWithPath,
 	CopyOutput,
 	GetUrlOutput,
+	GetUrlOutputWithPath,
 } from './providers/s3/types/outputs';
 
 export { TransferProgressEvent } from './types';
