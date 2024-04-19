@@ -15,21 +15,21 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aws-amplify/data-schema-types@*":
-  version "0.9.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/data-schema-types/-/data-schema-types-0.9.0.tgz#aff434696b71bda325f8aa7131d728c8746ab65b"
-  integrity sha512-hA5M6D+4ET25h9y9+VZ4VRbh/KGdtpm8/skyMvhvAwPmE//kYpuP1x3JDl5A8RiAhqZiYLVK/ckNRnWMYSeyfg==
+"@aws-amplify/data-schema-types@0.0.0-types-versions-20240419160146":
+  version "0.0.0-types-versions-20240419160146"
+  resolved "https://registry.npmjs.org/@aws-amplify/data-schema-types/-/data-schema-types-0.0.0-types-versions-20240419160146.tgz#e01529876536a2c86d83d9ccef2c8062649074d4"
+  integrity sha512-2BHcsSVvhPX4zwr7dbqqheWx3lNSXAGdpyPRdAmdPwGh0LK9R3PYOcmp8Hr+b0MqAWz1gHhUkfODXnWuiTCgQg==
   dependencies:
     "@aws-amplify/plugin-types" "^0.9.0-beta.1"
     graphql "15.8.0"
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema@^0.16.0":
-  version "0.16.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/data-schema/-/data-schema-0.16.0.tgz#5a4ab787646009a0f57a0b685ae606ba359fb76a"
-  integrity sha512-2EU2Ujr6/OS4/yOOWLtsFrebTd0VYJ2woB5BQVSlBOWqrx2B06OBReSgkZA6pg1bMymuleDEyI1lnSrn1ozBcw==
+"@aws-amplify/data-schema@types-versions":
+  version "0.0.0-types-versions-20240419160146"
+  resolved "https://registry.npmjs.org/@aws-amplify/data-schema/-/data-schema-0.0.0-types-versions-20240419160146.tgz#c560c8416ed8a91b513e4daa8d4c7fe9eb473f8a"
+  integrity sha512-kJmekA/qwmeGJGntyOjV1qdH1NeuHX9lMV7xsx9GoWbv194goqNgepiOl6tpGHZlnHcejQPf4XPH2KwT/JoCWQ==
   dependencies:
-    "@aws-amplify/data-schema-types" "*"
+    "@aws-amplify/data-schema-types" "0.0.0-types-versions-20240419160146"
     "@types/aws-lambda" "^8.10.134"
     rxjs "^7.8.1"
 

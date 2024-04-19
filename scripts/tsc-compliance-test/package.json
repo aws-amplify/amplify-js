@@ -10,7 +10,7 @@
 	},
 	"scripts": {
 		"test:compliance": "yarn test:compliance:ts4.2 && yarn test:compliance:skipLibCheck",
-		"test:compliance:ts4.2": "tsc -p tsconfig.ts4_2.json",
+		"test:compliance:ts4.2": "tsc -p tsconfig.ts4_2.json --traceResolution",
 		"test:compliance:skipLibCheck": "tsc -p tsconfig.skipLibCheck.json"
 	}
 }
