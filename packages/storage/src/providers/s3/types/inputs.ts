@@ -39,10 +39,9 @@ import {
 /**
  * Input type for S3 copy API.
  */
-export type CopyInput = CopyInputWithKey | CopyInputWithPath;
 
 /** @deprecated Use {@link CopyInputWithPath} instead. */
-export type CopyInputWithKey = StorageCopyInputWithKey<
+export type CopyInput = StorageCopyInputWithKey<
 	CopySourceOptionsWithKey,
 	CopyDestinationOptionsWithKey
 >;

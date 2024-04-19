@@ -34,14 +34,12 @@ export {
 	GetPropertiesOutput,
 	GetPropertiesOutputWithPath,
 	CopyOutput,
-	CopyOutputWithKey,
 	CopyOutputWithPath,
 	RemoveOutput,
 	RemoveOutputWithPath,
 } from './outputs';
 export {
 	CopyInput,
-	CopyInputWithKey,
 	CopyInputWithPath,
 	GetPropertiesInput,
 	GetPropertiesInputWithPath,

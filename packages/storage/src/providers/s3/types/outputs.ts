@@ -1,8 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StrictUnion } from '@aws-amplify/core/internals/utils';
-
 import {
 	DownloadTask,
 	StorageDownloadDataOutput,
@@ -111,10 +109,8 @@ export type ListPaginateOutputWithPath =
 /**
  * @deprecated Use {@link CopyOutputWithPath} instead.
  */
-export type CopyOutputWithKey = Pick<ItemWithKey, 'key'>;
+export type CopyOutput = Pick<ItemWithKey, 'key'>;
 export type CopyOutputWithPath = Pick<ItemWithPath, 'path'>;
-
-export type CopyOutput = StrictUnion<CopyOutputWithKey | CopyOutputWithPath>;
 
 /**
  * @deprecated Use {@link RemoveOutputWithPath} instead.

@@ -5,10 +5,8 @@ import { Amplify } from '@aws-amplify/core';
 
 import {
 	CopyInput,
-	CopyInputWithKey,
 	CopyInputWithPath,
 	CopyOutput,
-	CopyOutputWithKey,
 	CopyOutputWithPath,
 } from '../types';
 
@@ -38,10 +36,9 @@ interface Copy {
 	 * @throws validation: `StorageValidationErrorCode` - Thrown when
 	 * source or destination key is not defined.
 	 */
-	(input: CopyInputWithKey): Promise<CopyOutputWithKey>;
 	(input: CopyInput): Promise<CopyOutput>;
 }
 
-export const copy: Copy = <Output extends CopyOutput>(
-	input: CopyInput,
+export const copy: Copy = <Output extends CopyOutput | CopyOutputWithPath>(
+	input: CopyInput | CopyInputWithPath,
 ): Promise<Output> => copyInternal(Amplify, input) as Promise<Output>;

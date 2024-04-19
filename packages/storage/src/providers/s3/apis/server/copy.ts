@@ -7,10 +7,8 @@ import {
 
 import {
 	CopyInput,
-	CopyInputWithKey,
 	CopyInputWithPath,
 	CopyOutput,
-	CopyOutputWithKey,
 	CopyOutputWithPath,
 } from '../../types';
 import { copy as copyInternal } from '../internal/copy';
@@ -46,18 +44,13 @@ interface Copy {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: CopyInputWithKey,
-	): Promise<CopyOutputWithKey>;
-
-	(
-		contextSpec: AmplifyServer.ContextSpec,
 		input: CopyInput,
 	): Promise<CopyOutput>;
 }
 
-export const copy: Copy = <Output extends CopyOutput>(
+export const copy: Copy = <Output extends CopyOutput | CopyOutputWithPath>(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: CopyInput,
+	input: CopyInput | CopyInputWithPath,
 ): Promise<Output> =>
 	copyInternal(
 		getAmplifyServerContext(contextSpec).amplify,
