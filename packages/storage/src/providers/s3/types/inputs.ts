@@ -72,7 +72,7 @@ export type GetPropertiesInputWithPath =
 /**
  * Input type for S3 getUrl API.
  */
-export type GetUrlInput = StrictUnion<GetUrlInputWithKey | GetUrlInputWithPath>;
+export type GetUrlInput = GetUrlInputWithKey | GetUrlInputWithPath;
 
 /** @deprecated Use {@link GetUrlInputWithPath} instead. */
 export type GetUrlInputWithKey =

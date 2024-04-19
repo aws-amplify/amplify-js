@@ -77,7 +77,9 @@ export type StorageGetUrlInputWithKey<Options extends StorageOptions> =
 	StorageOperationInputWithKey & StorageOperationOptionsInput<Options>;
 
 export type StorageGetUrlInputWithPath<Options> =
-	StorageOperationInputWithPath & StorageOperationOptionsInput<Options>;
+	StorageOperationInputWithPath & {
+		key?: never;
+	} & StorageOperationOptionsInput<Options>;
 
 /** @deprecated Use {@link StorageUploadDataInputWithPath} instead. */
 export type StorageUploadDataInputWithKey<Options extends StorageOptions> =
