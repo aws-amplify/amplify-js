@@ -3,5 +3,3 @@
 
 export { resolveConfig } from './resolveConfig';
 export { resolveLibraryOptions } from './resolveLibraryOptions';
-export { resolvePKFields } from './resolvePKFields';
-export { findIndexByFields } from './findIndexByFields';

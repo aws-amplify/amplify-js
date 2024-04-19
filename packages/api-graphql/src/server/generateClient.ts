@@ -5,7 +5,7 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 import { generateClientWithAmplifyInstance } from '../internals/server';
 import {

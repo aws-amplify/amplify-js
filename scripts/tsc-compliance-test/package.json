@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"private": true,
 	"devDependencies": {
-		"@types/node": "^16.11.7",
+		"@types/node": "16.18.82",
 		"aws-amplify": "6.0.28",
 		"typescript": "4.2.x"
 	},
