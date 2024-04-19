@@ -7,8 +7,7 @@ import {
 	CustomSubscriptions,
 	EnumTypes,
 	ModelTypes,
-	addSchemaToClient,
-} from '@aws-amplify/data-schema/runtime';
+} from '@aws-amplify/data-schema-types';
 
 import {
 	V6Client,
@@ -16,13 +15,19 @@ import {
 	__authMode,
 	__authToken,
 	__headers,
-	getInternals,
 } from '../types';
 
-import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
-import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 import { cancel, graphql, isCancelError } from './v6';
+import { generateEnumsProperty } from './utils/clientProperties/generateEnumsProperty';
+import { generateModelsProperty } from './utils/clientProperties/generateModelsProperty';
+import { isApiGraphQLConfig } from './utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
+import {
+	generateCustomMutationsProperty,
+	generateCustomQueriesProperty,
+	generateCustomSubscriptionsProperty,
+} from './generateCustomOperationsProperty';
 import { ClientGenerationParams } from './types';
+import { isConfigureEventWithResourceConfig } from './utils/runtimeTypeGuards/isConfigureEventWithResourceConfig';
 
 /**
  * @private
@@ -54,7 +59,17 @@ export function generateClient<T extends Record<any, any> = never>(
 	const apiGraphqlConfig = params.amplify.getConfig().API?.GraphQL;
 
 	if (isApiGraphQLConfig(apiGraphqlConfig)) {
-		addSchemaToClient(client, apiGraphqlConfig, getInternals);
+		client.models = generateModelsProperty<T>(client, apiGraphqlConfig);
+		client.enums = generateEnumsProperty<T>(apiGraphqlConfig);
+		client.queries = generateCustomQueriesProperty<T>(client, apiGraphqlConfig);
+		client.mutations = generateCustomMutationsProperty<T>(
+			client,
+			apiGraphqlConfig,
+		);
+		client.subscriptions = generateCustomSubscriptionsProperty(
+			client,
+			apiGraphqlConfig,
+		);
 	} else {
 		// This happens when the `Amplify.configure()` call gets evaluated after the `generateClient()` call.
 		//
@@ -71,7 +86,7 @@ export function generateClient<T extends Record<any, any> = never>(
 		generateModelsPropertyOnAmplifyConfigure(client);
 	}
 
-	return client as any;
+	return client as V6Client<T>;
 }
 
 const generateModelsPropertyOnAmplifyConfigure = (clientRef: any) => {
@@ -83,7 +98,20 @@ const generateModelsPropertyOnAmplifyConfigure = (clientRef: any) => {
 		const apiGraphQLConfig = coreEvent.payload.data.API?.GraphQL;
 
 		if (isApiGraphQLConfig(apiGraphQLConfig)) {
-			addSchemaToClient(clientRef, apiGraphQLConfig, getInternals);
+			clientRef.models = generateModelsProperty(clientRef, apiGraphQLConfig);
+			clientRef.enums = generateEnumsProperty(apiGraphQLConfig);
+			clientRef.queries = generateCustomQueriesProperty(
+				clientRef,
+				apiGraphQLConfig,
+			);
+			clientRef.mutations = generateCustomMutationsProperty(
+				clientRef,
+				apiGraphQLConfig,
+			);
+			clientRef.subscriptions = generateCustomSubscriptionsProperty(
+				clientRef,
+				apiGraphQLConfig,
+			);
 		}
 	});
 };

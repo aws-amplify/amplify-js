@@ -5,44 +5,42 @@ const schema = a.schema({
 		.model({
 			name: a.string(),
 			description: a.string(),
-			notes: a.hasMany('Note', 'todoNotesId'),
-			todoMetaId: a.id(),
-			meta: a.hasOne('TodoMetadata', 'todoMetaId'),
+			notes: a.hasMany('Note'),
+			meta: a.hasOne('TodoMetadata'),
 			status: a.enum(['NOT_STARTED', 'STARTED', 'DONE', 'CANCELED']),
 			tags: a.string().array(),
 		})
-		.authorization(allow => [allow.publicApiKey(), allow.owner()]),
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	Note: a
 		.model({
 			body: a.string().required(),
-			todoNotesId: a.id(),
-			todo: a.belongsTo('Todo', 'todoNotesId'),
+			todo: a.belongsTo('Todo'),
 		})
-		.authorization(allow => [allow.publicApiKey(), allow.owner()]),
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	TodoMetadata: a
 		.model({
 			data: a.json(),
 		})
-		.authorization(allow => [allow.publicApiKey(), allow.owner()]),
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	ThingWithCustomerOwnerField: a
 		.model({
 			id: a.id(),
 			description: a.string(),
 		})
-		.authorization(allow => [allow.ownerDefinedIn('customField', 'userPools')]),
+		.authorization([a.allow.owner('userPools').inField('customField')]),
 	ThingWithOwnerFieldSpecifiedInModel: a
 		.model({
 			id: a.id(),
 			name: a.string(),
 			owner: a.string(),
 		})
-		.authorization(allow => [allow.owner()]),
+		.authorization([a.allow.owner()]),
 	ThingWithAPIKeyAuth: a
 		.model({
 			id: a.id(),
 			description: a.string(),
 		})
-		.authorization(allow => [allow.publicApiKey()]),
+		.authorization([a.allow.public('apiKey')]),
 	ThingWithoutExplicitAuth: a.model({
 		id: a.id(),
 		description: a.string(),
@@ -62,27 +60,22 @@ const schema = a.schema({
 
 	CommunityPost: a.model({
 		id: a.id().required(),
-		communityPostPollId: a.id(),
-		poll: a.hasOne('CommunityPoll', 'communityPostPollId'),
+		poll: a.hasOne('CommunityPoll'),
 		metadata: a.ref('CommunityPostMetadata'),
 	}),
 	CommunityPoll: a.model({
 		id: a.id().required(),
 		question: a.string().required(),
-		answers: a.hasMany('CommunityPollAnswer', 'communityPollAnswersId').valueRequired()
+		answers: a.hasMany('CommunityPollAnswer').arrayRequired().valueRequired(),
 	}),
 	CommunityPollAnswer: a.model({
 		id: a.id().required(),
 		answer: a.string().required(),
-		communityPollAnswersId: a.id(),
-		votes: a.hasMany('CommunityPollVote', 'communityPollAnswerVotesId').valueRequired(),
+		votes: a.hasMany('CommunityPollVote').arrayRequired().valueRequired(),
 	}),
 	CommunityPollVote: a
-		.model({
-			id: a.id().required(),
-			communityPollAnswerVotesId: a.id()
-		})
-		.authorization(allow => [allow.publicApiKey(), allow.owner()]),
+		.model({ id: a.id().required() })
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	SecondaryIndexModel: a
 		.model({
 			title: a.string(),
@@ -99,19 +92,18 @@ const schema = a.schema({
 			sku: a.string().required(),
 			factoryId: a.string().required(),
 			description: a.string(),
-			warehouseProductsId: a.id(),
-			warehouse: a.belongsTo("Warehouse", 'warehouseProductsId'),
+			warehouse: a.belongsTo("Warehouse"),
 			trackingMeta: a.customType({
 				productMeta: a.ref('ProductMeta'),
 				note: a.string(),
 			}),
 		})
 		.identifier(['sku', 'factoryId'])
-		.authorization(allow => [allow.owner(), allow.publicApiKey().to(["read"])]),
+		.authorization([a.allow.owner(), a.allow.public().to(["read"])]),
 	Warehouse: a.model({
 			name: a.string().required(),
-			products: a.hasMany("Product", 'warehouseProductsId'),
-		}).authorization(allow => [allow.owner(), allow.publicApiKey().to(["read"])]),
+			products: a.hasMany("Product"),
+		}).authorization([a.allow.owner(), a.allow.public().to(["read"])]),
 	ProductMeta: a.customType({
 		releaseDate: a.date(),
 		status: a.enum(['in_production', 'discontinued']),
@@ -133,7 +125,7 @@ const schema = a.schema({
 		})
 		.returns(a.ref('EchoResult'))
 		.handler(a.handler.function('echoFunction'))
-		.authorization(allow => [allow.publicApiKey()]),
+		.authorization([a.allow.public()]),
 
 	// custom query returning a primitive type
 	echoString: a
@@ -143,7 +135,7 @@ const schema = a.schema({
 		})
 		.returns(a.string())
 		.handler(a.handler.function('echoFunction'))
-		.authorization(allow => [allow.publicApiKey()]),
+		.authorization([a.allow.public()]),
 	echoNestedCustomTypes: a
 		.query()
 		.arguments({
@@ -151,7 +143,7 @@ const schema = a.schema({
 		})
 		.returns(a.ref('ProductTrackingMeta'))
 		.handler(a.handler.function('echoFunction'))
-		.authorization(allow => [allow.publicApiKey()]),
+		.authorization([a.allow.public()]),
 	echoModelHasNestedTypes: a
 		.query()
 		.arguments({
@@ -159,7 +151,7 @@ const schema = a.schema({
 		})
 		.returns(a.ref('Product'))
 		.handler(a.handler.function('echoFunction'))
-		.authorization(allow => [allow.publicApiKey()]),
+		.authorization([a.allow.public()]),
 	// custom mutation returning a non-model type
 	PostLikeResult: a.customType({
 		likes: a.integer().required(),
@@ -171,24 +163,23 @@ const schema = a.schema({
 		})
 		.returns(a.ref('PostLikeResult'))
 		.handler(a.handler.function('echoFunction'))
-		.authorization(allow => [allow.guest()]),
+		.authorization([a.allow.private()]),
 
 	// custom mutation returning a model type
 	Post: a
 		.model({
 			id: a.id().required(),
 			content: a.string(),
-			comments: a.hasMany('Comment', 'postCommentsId'),
+			comments: a.hasMany('Comment'),
 		})
-		.authorization(allow => [allow.publicApiKey(), allow.owner()]),
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	Comment: a
 		.model({
 			id: a.id().required(),
 			content: a.string().required(),
-			postCommentsId: a.id().required(),
-			post: a.belongsTo('Post', 'postCommentsId'),
+			post: a.belongsTo('Post'),
 		})
-		.authorization(allow => [allow.publicApiKey(), allow.owner()]),
+		.authorization([a.allow.public('apiKey'), a.allow.owner()]),
 	likePostReturnPost: a
 		.mutation()
 		.arguments({
@@ -196,7 +187,7 @@ const schema = a.schema({
 		})
 		.returns(a.ref('Post'))
 		.handler(a.handler.function('echoFunction'))
-		.authorization(allow => [allow.guest()]),
+		.authorization([a.allow.private()]),
 
 	onPostLiked: a
 		.subscription()
@@ -215,27 +206,27 @@ const schema = a.schema({
 		.model({
 			description: a.string(),
 		})
-		.authorization(allow => [allow.owner()]),
+		.authorization([a.allow.owner()]),
 	CustomImplicitOwner: a
 		.model({
 			description: a.string(),
 		})
-		.authorization(allow => [allow.ownerDefinedIn('customOwner')]),
+		.authorization([a.allow.owner().inField('customOwner')]),
 	ModelGroupDefinedIn: a
 		.model({
 			description: a.string(),
 		})
-		.authorization(allow => [allow.groupDefinedIn('groupField')]),
+		.authorization([a.allow.groupDefinedIn('groupField')]),
 	ModelGroupsDefinedIn: a
 		.model({
 			description: a.string(),
 		})
-		.authorization(allow => [allow.groupsDefinedIn('groupsField')]),
+		.authorization([a.allow.groupsDefinedIn('groupsField')]),
 	ModelStaticGroup: a
 		.model({
 			description: a.string(),
 		})
-		.authorization(allow => [allow.group('Admin')]),
+		.authorization([a.allow.specificGroup('Admin')]),
 	// #endregion
 });
 

@@ -1,13 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
 	GraphQLOptionsV6,
 	GraphQLResponseV6,
 	V6Client,
-	getInternals,
+	__amplify,
+	__authMode,
+	__authToken,
 } from '../types';
 
 /**
@@ -103,9 +105,8 @@ export function graphql<
 	additionalHeaders?: CustomHeaders,
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	// inject client-level auth
-	const internals = getInternals(this as any);
-	options.authMode = options.authMode || internals.authMode;
-	options.authToken = options.authToken || internals.authToken;
+	options.authMode = options.authMode || this[__authMode];
+	options.authToken = options.authToken || this[__authToken];
 
 	/**
 	 * The correctness of these typings depends on correct string branding or overrides.
@@ -113,8 +114,7 @@ export function graphql<
 	 * any validation or type-guarding here.
 	 */
 	const result = GraphQLAPI.graphql(
-		// TODO: move V6Client back into this package?
-		internals.amplify as any,
+		this[__amplify],
 		options,
 		additionalHeaders,
 	);

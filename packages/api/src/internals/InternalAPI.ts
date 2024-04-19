@@ -17,7 +17,7 @@ import {
 	CustomUserAgentDetails,
 } from '@aws-amplify/core/internals/utils';
 import { Observable } from 'rxjs';
-import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
+import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 /**
  * NOTE!

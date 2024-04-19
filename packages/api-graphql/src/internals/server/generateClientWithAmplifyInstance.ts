@@ -1,8 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { addSchemaToClientWithInstance } from '@aws-amplify/data-schema/runtime';
-
+import { cancel, graphql, isCancelError } from '..';
 import {
 	CommonPublicClientOptions,
 	ServerClientGenerationParams,
@@ -12,10 +11,15 @@ import {
 	__authMode,
 	__authToken,
 	__headers,
-	getInternals,
 } from '../../types';
 import { isApiGraphQLConfig } from '../utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
-import { cancel, graphql, isCancelError } from '..';
+import { generateEnumsProperty } from '../utils/clientProperties/generateEnumsProperty';
+import {
+	generateCustomMutationsProperty,
+	generateCustomQueriesProperty,
+} from '../generateCustomOperationsProperty';
+
+import { generateModelsProperty } from './generateModelsProperty';
 
 /**
  * @private
@@ -49,8 +53,14 @@ export function generateClientWithAmplifyInstance<
 	const apiGraphqlConfig = params.config?.API?.GraphQL;
 
 	if (isApiGraphQLConfig(apiGraphqlConfig)) {
-		addSchemaToClientWithInstance<T>(client, params, getInternals);
+		client.models = generateModelsProperty<T>(client, params);
+		client.enums = generateEnumsProperty<T>(apiGraphqlConfig);
+		client.queries = generateCustomQueriesProperty<T>(client, apiGraphqlConfig);
+		client.mutations = generateCustomMutationsProperty<T>(
+			client,
+			apiGraphqlConfig,
+		);
 	}
 
-	return client as any;
+	return client as ClientType;
 }
