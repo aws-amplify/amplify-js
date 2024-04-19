@@ -5058,10 +5058,10 @@
   dependencies:
     undici-types "~5.26.4"
 
-"@types/node@^16.11.7":
-  version "16.18.96"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.18.96.tgz#eb0012d23ff53d14d64ec8a352bf89792de6aade"
-  integrity sha512-84iSqGXoO+Ha16j8pRZ/L90vDMKX04QTYMTfYeE1WrjWaZXuchBehGUZEpNgx7JnmlrIHdnABmpjrQjhCnNldQ==
+"@types/node@16.18.82":
+  version "16.18.82"
+  resolved "https://registry.npmjs.org/@types/node/-/node-16.18.82.tgz#58d734b4acaa5be339864bbec9cd8024dd0b43d5"
+  integrity sha512-pcDZtkx9z8XYV+ius2P3Ot2VVrcYOfXffBQUBuiszrlUzKSmoDYqo+mV+IoL8iIiIjjtOMvNSmH1hwJ+Q+f96Q==
 
 "@types/node@^18.0.0":
   version "18.19.31"
@@ -7282,9 +7282,9 @@ ejs@^3.1.7:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.668:
-  version "1.4.743"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.743.tgz#69a8cbaa72946b8c320e131e7bb8c2df86a6687a"
-  integrity sha512-AYgFmGUanfwZd4QmlGl9KBjoHRvJi6FUnbmfSr6NUk2JKCdHRHpljFGgxLp7L5h0p7uANrLzv0OgHo4TaCk4gA==
+  version "1.4.744"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.744.tgz#d19cdfdbd81bd800b71773702bcbaa129a3b2e8f"
+  integrity sha512-nAGcF0yeKKfrP13LMFr5U1eghfFSvFLg302VUFzWlcjPOnUYd52yU5x6PBYrujhNbc4jYmZFrGZFK+xasaEzVA==
 
 emittery@^0.13.1:
   version "0.13.1"
@@ -12055,9 +12055,9 @@ nocache@^3.0.1:
   integrity sha512-WDD0bdg9mbq6F4mRxEYcPWwfA1vxd0mrvKOyxI7Xj/atfRHVeutzuWByG//jfm4uPzp0y4Kj051EORCBSQMycw==
 
 node-abi@^3.3.0:
-  version "3.59.0"
-  resolved "https://registry.npmjs.org/node-abi/-/node-abi-3.59.0.tgz#9822e323f8239f603f319103b2d8bcb7a6a01ef6"
-  integrity sha512-HyyfzvTLCE8b1SX2nWimlra8cibEsypcSu/Az4SXMhWhtuctkwAX7qsEYNjUOIoYtPV884oN3wtYTN+iZKBtvw==
+  version "3.60.0"
+  resolved "https://registry.npmjs.org/node-abi/-/node-abi-3.60.0.tgz#a325b13b3c401c2230202897559fbf0b5f9a90ac"
+  integrity sha512-zcGgwoXbzw9NczqbGzAWL/ToDYAxv1V8gL1D67ClbdkIfeeDBbY0GelZtC25ayLvVjr2q2cloHeQV1R0QAWqRQ==
   dependencies:
     semver "^7.3.5"
 
