@@ -20,7 +20,6 @@ export {
 } from './options';
 export {
 	DownloadDataOutput,
-	DownloadDataOutputWithKey,
 	DownloadDataOutputWithPath,
 	GetUrlOutput,
 	UploadDataOutput,
@@ -40,7 +39,6 @@ export {
 	CopyOutputWithKey,
 	CopyOutputWithPath,
 	RemoveOutput,
-	RemoveOutputWithKey,
 	RemoveOutputWithPath,
 } from './outputs';
 export {
@@ -53,11 +51,9 @@ export {
 	GetUrlInput,
 	GetUrlInputWithKey,
 	GetUrlInputWithPath,
-	RemoveInputWithKey,
 	RemoveInputWithPath,
 	RemoveInput,
 	DownloadDataInput,
-	DownloadDataInputWithKey,
 	DownloadDataInputWithPath,
 	UploadDataInput,
 	UploadDataInputWithPath,

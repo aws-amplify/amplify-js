@@ -5,10 +5,8 @@ import { Amplify } from '@aws-amplify/core';
 
 import {
 	RemoveInput,
-	RemoveInputWithKey,
 	RemoveInputWithPath,
 	RemoveOutput,
-	RemoveOutputWithKey,
 	RemoveOutputWithPath,
 } from '../types';
 
@@ -35,10 +33,11 @@ interface RemoveApi {
 	 * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
 	 * when there is no key or its empty.
 	 */
-	(input: RemoveInputWithKey): Promise<RemoveOutputWithKey>;
 	(input: RemoveInput): Promise<RemoveOutput>;
 }
 
-export const remove: RemoveApi = <Output extends RemoveOutput>(
-	input: RemoveInput,
+export const remove: RemoveApi = <
+	Output extends RemoveOutput | RemoveOutputWithPath,
+>(
+	input: RemoveInput | RemoveInputWithPath,
 ): Promise<Output> => removeInternal(Amplify, input) as Promise<Output>;

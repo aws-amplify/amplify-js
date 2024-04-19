@@ -118,7 +118,7 @@ export type ListPaginateInputWithPrefix =
  * @deprecated Use {@link RemoveInputWithPath} instead.
  * Input type with key for S3 remove API.
  */
-export type RemoveInputWithKey = StorageRemoveInputWithKey<RemoveOptions>;
+export type RemoveInput = StorageRemoveInputWithKey<RemoveOptions>;
 
 /**
  * Input type with path for S3 remove API.
@@ -128,18 +128,10 @@ export type RemoveInputWithPath = StorageRemoveInputWithPath<
 >;
 
 /**
- * Input type for S3 remove API.
- */
-export type RemoveInput = StrictUnion<RemoveInputWithKey | RemoveInputWithPath>;
-
-/**
  * Input type for S3 downloadData API.
  */
-export type DownloadDataInput = StrictUnion<
-	DownloadDataInputWithKey | DownloadDataInputWithPath
->;
 /** @deprecated Use {@link DownloadDataInputWithPath} instead. */
-export type DownloadDataInputWithKey =
+export type DownloadDataInput =
 	StorageDownloadDataInputWithKey<DownloadDataOptionsWithKey>;
 export type DownloadDataInputWithPath =
 	StorageDownloadDataInputWithPath<DownloadDataOptionsWithPath>;

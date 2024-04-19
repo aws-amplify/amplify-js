@@ -6,10 +6,8 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	DownloadDataInput,
-	DownloadDataInputWithKey,
 	DownloadDataInputWithPath,
 	DownloadDataOutput,
-	DownloadDataOutputWithKey,
 	DownloadDataOutputWithPath,
 } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
@@ -89,12 +87,13 @@ interface DownloadData {
 	 * }
 	 *```
 	 */
-	(input: DownloadDataInputWithKey): DownloadDataOutputWithKey;
 	(input: DownloadDataInput): DownloadDataOutput;
 }
 
-export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
-	input: DownloadDataInput,
+export const downloadData: DownloadData = <
+	Output extends DownloadDataOutput | DownloadDataOutputWithPath,
+>(
+	input: DownloadDataInput | DownloadDataInputWithPath,
 ): Output => {
 	const abortController = new AbortController();
 
@@ -109,7 +108,10 @@ export const downloadData: DownloadData = <Output extends DownloadDataOutput>(
 };
 
 const downloadDataJob =
-	(downloadDataInput: DownloadDataInput, abortSignal: AbortSignal) =>
+	(
+		downloadDataInput: DownloadDataInput | DownloadDataInputWithPath,
+		abortSignal: AbortSignal,
+	) =>
 	async (): Promise<
 		StorageDownloadDataOutput<StorageItemWithKey | StorageItemWithPath>
 	> => {

@@ -8,10 +8,8 @@ import {
 
 import {
 	RemoveInput,
-	RemoveInputWithKey,
 	RemoveInputWithPath,
 	RemoveOutput,
-	RemoveOutputWithKey,
 	RemoveOutputWithPath,
 } from '../../types';
 import { remove as removeInternal } from '../internal/remove';
@@ -44,17 +42,15 @@ interface RemoveApi {
 	 */
 	(
 		contextSpec: AmplifyServer.ContextSpec,
-		input: RemoveInputWithKey,
-	): Promise<RemoveOutputWithKey>;
-	(
-		contextSpec: AmplifyServer.ContextSpec,
 		input: RemoveInput,
 	): Promise<RemoveOutput>;
 }
 
-export const remove: RemoveApi = <Output extends RemoveOutput>(
+export const remove: RemoveApi = <
+	Output extends RemoveOutput | RemoveOutputWithPath,
+>(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: RemoveInput,
+	input: RemoveInput | RemoveInputWithPath,
 ): Promise<Output> =>
 	removeInternal(
 		getAmplifyServerContext(contextSpec).amplify,

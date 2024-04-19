@@ -53,20 +53,16 @@ export type ItemWithPath = ItemBase & StorageItemWithPath;
  */
 export type ListOutputItem = Omit<ItemWithKey, 'metadata'>;
 
+/**
+ * Output type for S3 downloadData API.
+ */
 /** @deprecated Use {@link DownloadDataOutputWithPath} instead. */
-export type DownloadDataOutputWithKey = DownloadTask<
+export type DownloadDataOutput = DownloadTask<
 	StorageDownloadDataOutput<ItemWithKey>
 >;
 export type DownloadDataOutputWithPath = DownloadTask<
 	StorageDownloadDataOutput<ItemWithPath>
 >;
-
-/**
- * Output type for S3 downloadData API.
- */
-export type DownloadDataOutput =
-	| DownloadDataOutputWithKey
-	| DownloadDataOutputWithPath;
 
 /**
  * Output type for S3 getUrl API.
@@ -142,17 +138,10 @@ export type CopyOutputWithPath = Pick<ItemWithPath, 'path'>;
 export type CopyOutput = StrictUnion<CopyOutputWithKey | CopyOutputWithPath>;
 
 /**
- * Output type for S3 remove API.
- */
-export type RemoveOutput = StrictUnion<
-	RemoveOutputWithKey | RemoveOutputWithPath
->;
-
-/**
  * @deprecated Use {@link RemoveOutputWithPath} instead.
  * Output helper type with key for S3 remove API.
  */
-export type RemoveOutputWithKey = Pick<ItemWithKey, 'key'>;
+export type RemoveOutput = Pick<ItemWithKey, 'key'>;
 
 /**
  * Output helper type with path for S3 remove API.
