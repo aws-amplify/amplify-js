@@ -73,16 +73,12 @@ export type DownloadDataOutput =
  */
 export type GetUrlOutput = StorageGetUrlOutput;
 
-/** @deprecated Use {@link UploadDataOutputWithPath} instead. */
-export type UploadDataOutputWithKey = UploadTask<ItemWithKey>;
-export type UploadDataOutputWithPath = UploadTask<ItemWithPath>;
-
 /**
  * Output type for S3 uploadData API.
  */
-export type UploadDataOutput =
-	| UploadDataOutputWithKey
-	| UploadDataOutputWithPath;
+/** @deprecated Use {@link UploadDataOutputWithPath} instead. */
+export type UploadDataOutput = UploadTask<ItemWithKey>;
+export type UploadDataOutputWithPath = UploadTask<ItemWithPath>;
 
 /** @deprecated Use {@link GetPropertiesOutputWithPath} instead. */
 export type GetPropertiesOutputWithKey = ItemWithKey;

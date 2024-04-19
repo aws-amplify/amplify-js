@@ -4,7 +4,7 @@
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput } from '../../../types';
+import { UploadDataInput, UploadDataInputWithPath } from '../../../types';
 import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
@@ -43,7 +43,7 @@ import { getDataChunker } from './getDataChunker';
  * @internal
  */
 export const getMultipartUploadHandlers = (
-	uploadDataInput: UploadDataInput,
+	uploadDataInput: UploadDataInput | UploadDataInputWithPath,
 	size?: number,
 ) => {
 	let resolveCallback:

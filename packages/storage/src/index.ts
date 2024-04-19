@@ -13,6 +13,7 @@ export {
 
 export {
 	UploadDataInput,
+	UploadDataInputWithPath,
 	DownloadDataInput,
 	RemoveInput,
 	ListAllInput,
@@ -24,6 +25,7 @@ export {
 
 export {
 	UploadDataOutput,
+	UploadDataOutputWithPath,
 	DownloadDataOutput,
 	RemoveOutput,
 	ListAllOutput,

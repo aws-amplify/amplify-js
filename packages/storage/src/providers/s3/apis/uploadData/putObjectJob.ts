@@ -4,7 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput } from '../../types';
+import { UploadDataInput, UploadDataInputWithPath } from '../../types';
 import {
 	calculateContentMd5,
 	resolveS3ConfigAndInput,
@@ -22,7 +22,7 @@ import { STORAGE_INPUT_KEY } from '../../utils/constants';
  */
 export const putObjectJob =
 	(
-		uploadDataInput: UploadDataInput,
+		uploadDataInput: UploadDataInput | UploadDataInputWithPath,
 		abortSignal: AbortSignal,
 		totalLength?: number,
 	) =>

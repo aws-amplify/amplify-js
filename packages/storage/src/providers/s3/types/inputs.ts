@@ -147,12 +147,8 @@ export type DownloadDataInputWithPath =
 /**
  * Input type for S3 uploadData API.
  */
-export type UploadDataInput = StrictUnion<
-	UploadDataInputWithKey | UploadDataInputWithPath
->;
-
 /** @deprecated Use {@link UploadDataInputWithPath} instead. */
-export type UploadDataInputWithKey =
+export type UploadDataInput =
 	StorageUploadDataInputWithKey<UploadDataOptionsWithKey>;
 export type UploadDataInputWithPath =
 	StorageUploadDataInputWithPath<UploadDataOptionsWithPath>;

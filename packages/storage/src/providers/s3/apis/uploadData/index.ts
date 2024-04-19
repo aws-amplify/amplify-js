@@ -3,10 +3,8 @@
 
 import {
 	UploadDataInput,
-	UploadDataInputWithKey,
 	UploadDataInputWithPath,
 	UploadDataOutput,
-	UploadDataOutputWithKey,
 	UploadDataOutputWithPath,
 } from '../../types';
 import { createUploadTask } from '../../utils';
@@ -125,12 +123,13 @@ interface UploadData {
 	 * await uploadTask.result;
 	 * ```
 	 */
-	(input: UploadDataInputWithKey): UploadDataOutputWithKey;
 	(input: UploadDataInput): UploadDataOutput;
 }
 
-export const uploadData: UploadData = <Output extends UploadDataOutput>(
-	input: UploadDataInput,
+export const uploadData: UploadData = <
+	Output extends UploadDataOutput | UploadDataOutputWithPath,
+>(
+	input: UploadDataInput | UploadDataInputWithPath,
 ): Output => {
 	const { data } = input;
 
