@@ -21,7 +21,9 @@ import {
 } from '../../../types';
 import {
 	CopyDestinationOptionsWithKey,
+	CopyDestinationOptionsWithPath,
 	CopySourceOptionsWithKey,
+	CopySourceOptionsWithPath,
 	DownloadDataOptionsWithKey,
 	DownloadDataOptionsWithPath,
 	GetPropertiesOptionsWithKey,
@@ -49,7 +51,10 @@ export type CopyInputWithKey = StorageCopyInputWithKey<
 	CopySourceOptionsWithKey,
 	CopyDestinationOptionsWithKey
 >;
-export type CopyInputWithPath = StorageCopyInputWithPath;
+export type CopyInputWithPath = StorageCopyInputWithPath<
+	CopySourceOptionsWithPath,
+	CopyDestinationOptionsWithPath
+>;
 
 /**
  * Input type for S3 getProperties API.

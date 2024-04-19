@@ -101,12 +101,15 @@ export interface StorageCopyInputWithKey<
 	};
 }
 
-export interface StorageCopyInputWithPath {
-	source: StorageOperationInputWithPath & {
+export interface StorageCopyInputWithPath<
+	SourceOptions extends StorageOptions,
+	DestinationOptions extends StorageOptions,
+> {
+	source: SourceOptions & {
 		/** @deprecated Use path instead. */
 		key?: never;
 	};
-	destination: StorageOperationInputWithPath & {
+	destination: DestinationOptions & {
 		/** @deprecated Use path instead. */
 		key?: never;
 	};

@@ -181,6 +181,15 @@ export type CopyDestinationOptionsWithKey = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };
+export type CopySourceOptionsWithPath = ReadOptionsNever & {
+	/** @deprecated This may be removed in the next major version. */
+	path: string | (({ identityId }: { identityId?: string }) => string);
+};
+
+export type CopyDestinationOptionsWithPath = WriteOptionsNever & {
+	/** @deprecated This may be removed in the next major version. */
+	path: string | (({ identityId }: { identityId?: string }) => string);
+};
 
 /**
  * Internal only type for S3 API handlers' config parameter.

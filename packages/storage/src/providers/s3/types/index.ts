@@ -18,6 +18,8 @@ export {
 	DownloadDataOptionsWithKey,
 	CopyDestinationOptionsWithKey,
 	CopySourceOptionsWithKey,
+	CopyDestinationOptionsWithPath,
+	CopySourceOptionsWithPath,
 } from './options';
 export {
 	DownloadDataOutput,
