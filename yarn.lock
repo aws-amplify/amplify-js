@@ -17,7 +17,7 @@
 
 "@aws-amplify/data-schema-types@*":
   version "0.9.0"
-  resolved "https://registry.npmjs.org/@aws-amplify/data-schema-types/-/data-schema-types-0.9.0.tgz#aff434696b71bda325f8aa7131d728c8746ab65b"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema-types/-/data-schema-types-0.9.0.tgz#aff434696b71bda325f8aa7131d728c8746ab65b"
   integrity sha512-hA5M6D+4ET25h9y9+VZ4VRbh/KGdtpm8/skyMvhvAwPmE//kYpuP1x3JDl5A8RiAhqZiYLVK/ckNRnWMYSeyfg==
   dependencies:
     "@aws-amplify/plugin-types" "^0.9.0-beta.1"
@@ -26,7 +26,7 @@
 
 "@aws-amplify/data-schema@^0.16.1":
   version "0.16.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/data-schema/-/data-schema-0.16.1.tgz#bed4ed97905c33ffc1cdb6e407507afb39ac7dfd"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/data-schema/-/data-schema-0.16.1.tgz#bed4ed97905c33ffc1cdb6e407507afb39ac7dfd"
   integrity sha512-JQfsxLJ0p6hoAjmKuDss/xZCLh7OeT1ZdKLl0r1o8Mky51bTad1wUKHTSFhKpr1nu14OJl7SIeD+yE4FM3nuVQ==
   dependencies:
     "@aws-amplify/data-schema-types" "*"
@@ -34,9 +34,9 @@
     rxjs "^7.8.1"
 
 "@aws-amplify/plugin-types@^0.9.0-beta.1":
-  version "0.9.0-beta.1"
-  resolved "https://registry.npmjs.org/@aws-amplify/plugin-types/-/plugin-types-0.9.0-beta.1.tgz#066af0646b379b4c999668253e87754e67fc7427"
-  integrity sha512-5eJ2SYoXbq4ZSvBjCgStXSejNOKuBkxYVXqOXZP4xP5C9iIpUYG36s9xP+IdhWDm9K/yxklp8OUMr8YGc0g7tw==
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/plugin-types/-/plugin-types-0.9.0.tgz#45a3361bac7fcb74d0ceecabe84f0627d0812a89"
+  integrity sha512-dOwuyjRWKHvKSxcCwycdBTb6clRr2/soW1hL+HaXyTN69+dQanQegpS6ylmVwbPPiy9q2LCbqaw+5Np7bacLgw==
 
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"
@@ -5033,7 +5033,7 @@
 
 "@types/node@16.18.82":
   version "16.18.82"
-  resolved "https://registry.npmjs.org/@types/node/-/node-16.18.82.tgz#58d734b4acaa5be339864bbec9cd8024dd0b43d5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.82.tgz#58d734b4acaa5be339864bbec9cd8024dd0b43d5"
   integrity sha512-pcDZtkx9z8XYV+ius2P3Ot2VVrcYOfXffBQUBuiszrlUzKSmoDYqo+mV+IoL8iIiIjjtOMvNSmH1hwJ+Q+f96Q==
 
 "@types/node@^18.0.0":
@@ -14426,7 +14426,7 @@ tar-stream@^2.1.4, tar-stream@~2.2.0:
 
 tar@6.1.11, tar@6.2.1, tar@^6.0.2, tar@^6.1.11, tar@^6.1.2:
   version "6.2.1"
-  resolved "https://registry.npmjs.org/tar/-/tar-6.2.1.tgz#717549c541bc3c2af15751bea94b1dd068d4b03a"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-6.2.1.tgz#717549c541bc3c2af15751bea94b1dd068d4b03a"
   integrity sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==
   dependencies:
     chownr "^2.0.0"
