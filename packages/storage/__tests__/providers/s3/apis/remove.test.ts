@@ -45,6 +45,10 @@ const removeWrapper = (input: RemoveInput): Promise<RemoveOutput> => {
 };
 
 describe('remove API', () => {
+	/**
+	 * TODO: Verify test case for passing input with key, with path, through a wrapper function
+	 * TODO: Remove type casting on tests, deep destructure the input */
+
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,

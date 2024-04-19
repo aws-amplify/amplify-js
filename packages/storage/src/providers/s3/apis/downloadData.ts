@@ -157,15 +157,3 @@ const downloadDataJob =
 			? { key: objectKey, path: finalKey, ...result }
 			: { path: finalKey, key: finalKey, ...result };
 	};
-
-// const wrapper = (input: DownloadDataInput) => {
-// 	const { key, options } = input;
-// 	const { accessLevel, useAccelerateEndpoint } = options!;
-
-// 	return 'hi';
-// };
-
-// downloadData({
-// 	key: '',
-// 	options: { accessLevel: 'protected', targetIdentityId: '' },
-// });

@@ -78,23 +78,20 @@ export type GetUrlInputWithPath =
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInput = StrictUnion<
-	ListAllInputWithPath | ListAllInputWithPrefix
->;
+export type ListAllInput = ListAllInputWithPath | ListAllInputWithPrefix;
 
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateInput = StrictUnion<
-	ListPaginateInputWithPath | ListPaginateInputWithPrefix
->;
+export type ListPaginateInput =
+	| ListPaginateInputWithPath
+	| ListPaginateInputWithPrefix;
 
 /**
  * Input type for S3 list API. Lists all bucket objects.
  */
 export type ListAllInputWithPath =
 	StorageListInputWithPath<ListAllOptionsWithPath>;
-
 /**
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
