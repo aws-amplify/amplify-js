@@ -37,6 +37,18 @@ interface WriteOptions {
 	accessLevel?: StorageAccessLevel;
 }
 
+interface ReadOptionsNever {
+	/** @deprecated This may be removed in the next major version. */
+	accessLevel?: never;
+	/** @deprecated This may be removed in the next major version. */
+	targetIdentityId?: never;
+}
+
+interface WriteOptionsNever {
+	/** @deprecated This may be removed in the next major version. */
+	accessLevel?: never;
+}
+
 interface BytesRangeOptions {
 	bytesRange?: {
 		start: number;
@@ -59,12 +71,14 @@ interface TransferOptions {
  */
 /** @deprecated Use {@link GetPropertiesOptionsWithPath} instead. */
 export type GetPropertiesOptionsWithKey = ReadOptions & CommonOptions;
-export type GetPropertiesOptionsWithPath = CommonOptions;
+export type GetPropertiesOptionsWithPath = CommonOptions & ReadOptionsNever;
 
 /**
+ * @deprecated Use {@link RemoveInputWithPath} instead.
  * Input options type for S3 getProperties API.
  */
-export type RemoveOptions = WriteOptions & CommonOptions;
+export type RemoveOptionsWithKey = WriteOptions & CommonOptions;
+export type RemoveOptionsWithPath = WriteOptionsNever & CommonOptions;
 
 /**
  * @deprecated Use {@link ListAllOptionsWithPath} instead.
@@ -85,19 +99,15 @@ export type ListPaginateOptionsWithPrefix = StorageListPaginateOptions &
 /**
  * Input options type with path for S3 list all API.
  */
-export type ListAllOptionsWithPath = Omit<
-	StorageListAllOptions,
-	'accessLevel'
-> &
+export type ListAllOptionsWithPath = StorageListAllOptions &
+	ReadOptionsNever &
 	CommonOptions;
 
 /**
  * Input options type with path for S3 list API to paginate items.
  */
-export type ListPaginateOptionsWithPath = Omit<
-	StorageListPaginateOptions,
-	'accessLevel'
-> &
+export type ListPaginateOptionsWithPath = StorageListPaginateOptions &
+	ReadOptionsNever &
 	CommonOptions;
 
 /**
@@ -118,7 +128,7 @@ export type GetUrlOptions = CommonOptions & {
 
 /** @deprecated Use {@link GetUrlOptionsWithPath} instead. */
 export type GetUrlOptionsWithKey = ReadOptions & GetUrlOptions;
-export type GetUrlOptionsWithPath = GetUrlOptions;
+export type GetUrlOptionsWithPath = GetUrlOptions & ReadOptionsNever;
 
 /**
  * Input options type for S3 downloadData API.
@@ -129,7 +139,8 @@ export type DownloadDataOptions = CommonOptions &
 
 /** @deprecated Use {@link DownloadDataOptionsWithPath} instead. */
 export type DownloadDataOptionsWithKey = ReadOptions & DownloadDataOptions;
-export type DownloadDataOptionsWithPath = DownloadDataOptions;
+export type DownloadDataOptionsWithPath = DownloadDataOptions &
+	ReadOptionsNever;
 
 export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
@@ -157,7 +168,7 @@ export type UploadDataOptions = CommonOptions &
 
 /** @deprecated Use {@link UploadDataOptionsWithPath} instead. */
 export type UploadDataOptionsWithKey = WriteOptions & UploadDataOptions;
-export type UploadDataOptionsWithPath = UploadDataOptions;
+export type UploadDataOptionsWithPath = UploadDataOptions & WriteOptionsNever;
 
 /** @deprecated This may be removed in the next major version. */
 export type CopySourceOptionsWithKey = ReadOptions & {

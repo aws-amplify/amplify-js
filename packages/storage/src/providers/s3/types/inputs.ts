@@ -32,7 +32,8 @@ import {
 	ListAllOptionsWithPrefix,
 	ListPaginateOptionsWithPath,
 	ListPaginateOptionsWithPrefix,
-	RemoveOptions,
+	RemoveOptionsWithKey,
+	RemoveOptionsWithPath,
 	UploadDataOptionsWithKey,
 	UploadDataOptionsWithPath,
 } from '../types';
@@ -118,14 +119,14 @@ export type ListPaginateInputWithPrefix =
  * @deprecated Use {@link RemoveInputWithPath} instead.
  * Input type with key for S3 remove API.
  */
-export type RemoveInputWithKey = StorageRemoveInputWithKey<RemoveOptions>;
+export type RemoveInputWithKey =
+	StorageRemoveInputWithKey<RemoveOptionsWithKey>;
 
 /**
  * Input type with path for S3 remove API.
  */
-export type RemoveInputWithPath = StorageRemoveInputWithPath<
-	Omit<RemoveOptions, 'accessLevel'>
->;
+export type RemoveInputWithPath =
+	StorageRemoveInputWithPath<RemoveOptionsWithPath>;
 
 /**
  * Input type for S3 remove API.

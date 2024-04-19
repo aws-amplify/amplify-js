@@ -36,16 +36,7 @@ export const getUrl = async (
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
 	if (getUrlOptions?.validateObjectExistence) {
-		await getProperties(
-			amplify,
-			{
-				options: getUrlOptions,
-				...((inputType === STORAGE_INPUT_KEY
-					? { key: input.key }
-					: { path: input.path }) as GetUrlInput),
-			},
-			StorageAction.GetUrl,
-		);
+		await getProperties(amplify, input, StorageAction.GetUrl);
 	}
 
 	let urlExpirationInSec =

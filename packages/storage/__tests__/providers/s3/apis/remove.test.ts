@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
-import { StorageOptions } from '../../../../src/types';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
+import { RemoveInput, RemoveOutput } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -38,6 +38,12 @@ const deleteObjectClientConfig = {
 	userAgentValue: expect.any(String),
 };
 
+const removeWrapper = (input: RemoveInput): Promise<RemoveOutput> => {
+	// const { key, options } = input;
+	// const { accessLevel, useAccelerateEndpoint } = options!;
+	return remove(input);
+};
+
 describe('remove API', () => {
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
@@ -65,7 +71,10 @@ describe('remove API', () => {
 			afterEach(() => {
 				jest.clearAllMocks();
 			});
-			[
+			const mockTestCases: Array<{
+				options?: { accessLevel: StorageAccessLevel };
+				expectedKey: string;
+			}> = [
 				{
 					expectedKey: `public/${key}`,
 				},
@@ -81,15 +90,19 @@ describe('remove API', () => {
 					options: { accessLevel: 'protected' },
 					expectedKey: `protected/${defaultIdentityId}/${key}`,
 				},
-			].forEach(({ options, expectedKey }) => {
+			];
+
+			mockTestCases.forEach(({ options, expectedKey }) => {
 				const accessLevel = options?.accessLevel ?? 'default';
 				const removeResultKey = { key };
 
 				it(`should remove object with ${accessLevel} accessLevel`, async () => {
-					expect.assertions(3);
-					expect(
-						await remove({ key, options: options as StorageOptions }),
-					).toEqual({ ...removeResultKey, path: expectedKey });
+					const removeResult = { key: removeResultKey, path: expectedKey };
+					const { key, path } = await removeWrapper({
+						...removeResultKey,
+						options: { accessLevel: options?.accessLevel },
+					});
+					expect({ key, path }).toEqual(removeResult);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 						Bucket: bucket,

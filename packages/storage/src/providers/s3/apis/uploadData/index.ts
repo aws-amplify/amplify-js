@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -165,3 +166,16 @@ export const uploadData: UploadData = <Output extends UploadDataOutput>(
 		}) as Output;
 	}
 };
+
+// const wrapper = (input: UploadDataInput) => {
+// 	const { key, options } = input;
+// 	const { accessLevel, useAccelerateEndpoint } = options!;
+
+// 	return uploadData(input);
+// };
+
+// uploadData({ key: '', data: '', options: { accessLevel: 'guest' } });
+
+// const options: { accessLevel: StorageAccessLevel } = { accessLevel: 'guest' };
+
+// uploadData({ key: '', data: '', options });

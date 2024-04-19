@@ -3,14 +3,16 @@
 
 import { getUrl } from '../../../../src/providers/s3/apis';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
 import {
+	GetUrlInput,
 	GetUrlOptionsWithKey,
 	GetUrlOptionsWithPath,
+	GetUrlOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -37,6 +39,11 @@ const credentials: AWSCredentials = {
 };
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+
+const getUrlWrapper = (input: GetUrlInput): Promise<GetUrlOutput> =>
+	getUrl(input);
+
+// getUrlWrapper({ key: 'key', options: { accessLevel: 'guest' } });
 
 describe('getUrl test with key', () => {
 	beforeAll(() => {
@@ -79,7 +86,10 @@ describe('getUrl test with key', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		test.each([
+		const mockTestCases: Array<{
+			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
+			expectedKey: string;
+		}> = [
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -99,7 +109,9 @@ describe('getUrl test with key', () => {
 				options: { accessLevel: 'protected', targetIdentityId },
 				expectedKey: `protected/${targetIdentityId}/${key}`,
 			},
-		])(
+		];
+
+		test.each(mockTestCases)(
 			'should getUrl with key $expectedKey',
 			async ({ options, expectedKey }) => {
 				const headObjectOptions = {
