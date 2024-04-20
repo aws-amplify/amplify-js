@@ -9,7 +9,7 @@ on:
   push:
     branches:
       # Change this to your branch name where "example-preid" corresponds to the preid you want your changes released on
-      - feat/example-preid-branch/main
+      - feat/with-data-schema-16-1/main
 
 jobs:
   e2e:
@@ -28,7 +28,6 @@ jobs:
 
   preid-release:
     needs:
-      - e2e
       - parse-preid
     secrets: inherit
     uses: ./.github/workflows/callable-npm-publish-preid.yml
