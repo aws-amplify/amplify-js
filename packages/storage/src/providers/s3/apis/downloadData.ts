@@ -22,79 +22,77 @@ import {
 } from '../../../types';
 import { STORAGE_INPUT_KEY } from '../utils/constants';
 
-interface DownloadData {
-	/**
-	 * Download S3 object data to memory
-	 *
-	 * @param input - The DownloadDataInputWithPath object.
-	 * @returns A cancelable task exposing result promise from `result` property.
-	 * @throws service: `S3Exception` - thrown when checking for existence of the object
-	 * @throws validation: `StorageValidationErrorCode` - Validation errors
-	 *
-	 * @example
-	 * ```ts
-	 * // Download a file from s3 bucket
-	 * const { body, eTag } = await downloadData({ path, options: {
-	 *   onProgress, // Optional progress callback.
-	 * } }).result;
-	 * ```
-	 * @example
-	 * ```ts
-	 * // Cancel a task
-	 * const downloadTask = downloadData({ path });
-	 * //...
-	 * downloadTask.cancel();
-	 * try {
-	 * 	await downloadTask.result;
-	 * } catch (error) {
-	 * 	if(isCancelError(error)) {
-	 *    // Handle error thrown by task cancelation.
-	 * 	}
-	 * }
-	 *```
-	 */
-	(input: DownloadDataInputWithPath): DownloadDataOutputWithPath;
-	/**
-	 * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
-	 * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
-	 *
-	 * Download S3 object data to memory
-	 *
-	 * @param input - The DownloadDataInputWithKey object.
-	 * @returns A cancelable task exposing result promise from `result` property.
-	 * @throws service: `S3Exception` - thrown when checking for existence of the object
-	 * @throws validation: `StorageValidationErrorCode` - Validation errors
-	 *
-	 * @example
-	 * ```ts
-	 * // Download a file from s3 bucket
-	 * const { body, eTag } = await downloadData({ key, options: {
-	 *   onProgress, // Optional progress callback.
-	 * } }).result;
-	 * ```
-	 * @example
-	 * ```ts
-	 * // Cancel a task
-	 * const downloadTask = downloadData({ key });
-	 * //...
-	 * downloadTask.cancel();
-	 * try {
-	 * 	await downloadTask.result;
-	 * } catch (error) {
-	 * 	if(isCancelError(error)) {
-	 *    // Handle error thrown by task cancelation.
-	 * 	}
-	 * }
-	 *```
-	 */
-	(input: DownloadDataInput): DownloadDataOutput;
-}
+/**
+ * Download S3 object data to memory
+ *
+ * @param input - The DownloadDataInputWithPath object.
+ * @returns A cancelable task exposing result promise from `result` property.
+ * @throws service: `S3Exception` - thrown when checking for existence of the object
+ * @throws validation: `StorageValidationErrorCode` - Validation errors
+ *
+ * @example
+ * ```ts
+ * // Download a file from s3 bucket
+ * const { body, eTag } = await downloadData({ path, options: {
+ *   onProgress, // Optional progress callback.
+ * } }).result;
+ * ```
+ * @example
+ * ```ts
+ * // Cancel a task
+ * const downloadTask = downloadData({ path });
+ * //...
+ * downloadTask.cancel();
+ * try {
+ * 	await downloadTask.result;
+ * } catch (error) {
+ * 	if(isCancelError(error)) {
+ *    // Handle error thrown by task cancelation.
+ * 	}
+ * }
+ *```
+ */
+export function downloadData(
+	input: DownloadDataInputWithPath,
+): DownloadDataOutputWithPath;
+/**
+ * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
+ * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
+ *
+ * Download S3 object data to memory
+ *
+ * @param input - The DownloadDataInputWithKey object.
+ * @returns A cancelable task exposing result promise from `result` property.
+ * @throws service: `S3Exception` - thrown when checking for existence of the object
+ * @throws validation: `StorageValidationErrorCode` - Validation errors
+ *
+ * @example
+ * ```ts
+ * // Download a file from s3 bucket
+ * const { body, eTag } = await downloadData({ key, options: {
+ *   onProgress, // Optional progress callback.
+ * } }).result;
+ * ```
+ * @example
+ * ```ts
+ * // Cancel a task
+ * const downloadTask = downloadData({ key });
+ * //...
+ * downloadTask.cancel();
+ * try {
+ * 	await downloadTask.result;
+ * } catch (error) {
+ * 	if(isCancelError(error)) {
+ *    // Handle error thrown by task cancelation.
+ * 	}
+ * }
+ *```
+ */
+export function downloadData(input: DownloadDataInput): DownloadDataOutput;
 
-export const downloadData: DownloadData = <
-	Output extends DownloadDataOutput | DownloadDataOutputWithPath,
->(
+export function downloadData(
 	input: DownloadDataInput | DownloadDataInputWithPath,
-): Output => {
+) {
 	const abortController = new AbortController();
 
 	const downloadTask = createDownloadTask({
@@ -104,8 +102,8 @@ export const downloadData: DownloadData = <
 		},
 	});
 
-	return downloadTask as Output;
-};
+	return downloadTask;
+}
 
 const downloadDataJob =
 	(
