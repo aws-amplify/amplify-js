@@ -76,8 +76,8 @@ export type UploadDataOutput = UploadTask<ItemWithKey>;
 export type UploadDataOutputWithPath = UploadTask<ItemWithPath>;
 
 /** @deprecated Use {@link GetPropertiesOutputWithPath} instead. */
-export type GetPropertiesOutput = ItemWithKey;
-export type GetPropertiesOutputWithPath = ItemWithPath;
+export type GetPropertiesOutput = ItemBase & StorageItemWithKey;
+export type GetPropertiesOutputWithPath = ItemBase & StorageItemWithPath;
 
 /**
  * @deprecated Use {@link ListAllOutputWithPath} instead.
