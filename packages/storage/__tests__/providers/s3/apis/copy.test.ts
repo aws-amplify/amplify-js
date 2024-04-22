@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { StorageError } from '../../../../src/errors/StorageError';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 import {
-	CopySourceOptionsWithKey,
-	CopyDestinationOptionsWithKey,
+	CopyInput,
+	CopyInputWithPath,
+	CopyOutput,
+	CopyOutputWithPath,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -68,6 +70,8 @@ describe('copy API', () => {
 
 	describe('Happy Cases', () => {
 		describe('With key', () => {
+			const copyWrapper = async (input: CopyInput): Promise<CopyOutput> =>
+				copy(input);
 			beforeEach(() => {
 				mockCopyObject.mockImplementation(() => {
 					return {
@@ -78,7 +82,14 @@ describe('copy API', () => {
 			afterEach(() => {
 				jest.clearAllMocks();
 			});
-			[
+			const testCases: Array<{
+				source: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
+				destination: {
+					accessLevel?: StorageAccessLevel;
+				};
+				expectedSourceKey: string;
+				expectedDestinationKey: string;
+			}> = [
 				{
 					source: { accessLevel: 'guest' },
 					destination: { accessLevel: 'guest' },
@@ -151,7 +162,8 @@ describe('copy API', () => {
 					expectedSourceKey: `${bucket}/protected/${targetIdentityId}/${sourceKey}`,
 					expectedDestinationKey: `protected/${defaultIdentityId}/${destinationKey}`,
 				},
-			].forEach(
+			];
+			testCases.forEach(
 				({
 					source,
 					destination,
@@ -162,18 +174,17 @@ describe('copy API', () => {
 						? `with targetIdentityId`
 						: '';
 					it(`should copy ${source.accessLevel} ${targetIdentityIdMsg} -> ${destination.accessLevel}`, async () => {
-						expect(
-							await copy({
-								source: {
-									...(source as CopySourceOptionsWithKey),
-									key: sourceKey,
-								},
-								destination: {
-									...(destination as CopyDestinationOptionsWithKey),
-									key: destinationKey,
-								},
-							}),
-						).toEqual(copyResult);
+						const { key } = await copyWrapper({
+							source: {
+								...source,
+								key: sourceKey,
+							},
+							destination: {
+								...destination,
+								key: destinationKey,
+							},
+						});
+						expect({ key }).toEqual(copyResult);
 						expect(copyObject).toHaveBeenCalledTimes(1);
 						expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 							...copyObjectClientBaseParams,
@@ -186,6 +197,10 @@ describe('copy API', () => {
 		});
 
 		describe('With path', () => {
+			const copyWrapper = async (
+				input: CopyInputWithPath,
+			): Promise<CopyOutputWithPath> => copy(input);
+
 			beforeEach(() => {
 				mockCopyObject.mockImplementation(() => {
 					return {
@@ -218,12 +233,11 @@ describe('copy API', () => {
 					destinationPath,
 					expectedDestinationPath,
 				}) => {
-					expect(
-						await copy({
-							source: { path: sourcePath },
-							destination: { path: destinationPath },
-						}),
-					).toEqual({ path: expectedDestinationPath });
+					const { path } = await copyWrapper({
+						source: { path: sourcePath },
+						destination: { path: destinationPath },
+					});
+					expect({ path }).toEqual({ path: expectedDestinationPath });
 					expect(copyObject).toHaveBeenCalledTimes(1);
 					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 						...copyObjectClientBaseParams,

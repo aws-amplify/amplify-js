@@ -11,8 +11,6 @@ import {
 import {
 	GetUrlInput,
 	GetUrlInputWithPath,
-	GetUrlOptionsWithKey,
-	GetUrlOptionsWithPath,
 	GetUrlOutput,
 	GetUrlOutputWithPath,
 } from '../../../../src/providers/s3/types';
