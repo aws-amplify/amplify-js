@@ -7,20 +7,20 @@ import {
 
 import {
 	ListAllInput,
-	ListAllInputWithPath,
 	ListAllOutput,
-	ListAllOutputWithPath,
+	ListAllWithPathInput,
+	ListAllWithPathOutput,
 	ListPaginateInput,
-	ListPaginateInputWithPath,
 	ListPaginateOutput,
-	ListPaginateOutputWithPath,
+	ListPaginateWithPathInput,
+	ListPaginateWithPathOutput,
 } from '../../types';
 import { list as listInternal } from '../internal/list';
 
 /**
  * List files in pages with the given `path`.
  * `pageSize` is defaulted to 1000. Additionally, the result will include a `nextToken` if there are more items to retrieve.
- * @param input - The `ListPaginateInputWithPath` object.
+ * @param input - The `ListPaginateWithPathInput` object.
  * @param contextSpec - The context spec used to get the Amplify server context.
  * @returns A list of objects with path and metadata
  * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
@@ -28,11 +28,11 @@ import { list as listInternal } from '../internal/list';
  */
 export function list(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: ListPaginateInputWithPath,
-): Promise<ListPaginateOutputWithPath>;
+	input: ListPaginateWithPathInput,
+): Promise<ListPaginateWithPathOutput>;
 /**
  * List all files from S3 for a given `path`. You can set `listAll` to true in `options` to get all the files from S3.
- * @param input - The `ListAllInputWithPath` object.
+ * @param input - The `ListAllWithPathInput` object.
  * @param contextSpec - The context spec used to get the Amplify server context.
  * @returns A list of all objects with path and metadata
  * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
@@ -40,8 +40,8 @@ export function list(
  */
 export function list(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: ListAllInputWithPath,
-): Promise<ListAllOutputWithPath>;
+	input: ListAllWithPathInput,
+): Promise<ListAllWithPathOutput>;
 /**
  * @deprecated The `prefix` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/list | path} instead.
@@ -75,8 +75,8 @@ export function list(
 	input?:
 		| ListAllInput
 		| ListPaginateInput
-		| ListAllInputWithPath
-		| ListPaginateInputWithPath,
+		| ListAllWithPathInput
+		| ListPaginateWithPathInput,
 ) {
 	return listInternal(
 		getAmplifyServerContext(contextSpec).amplify,

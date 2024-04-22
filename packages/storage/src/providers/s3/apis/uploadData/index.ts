@@ -3,9 +3,9 @@
 
 import {
 	UploadDataInput,
-	UploadDataInputWithPath,
 	UploadDataOutput,
-	UploadDataOutputWithPath,
+	UploadDataWithPathInput,
+	UploadDataWithPathOutput,
 } from '../../types';
 import { createUploadTask } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
@@ -27,7 +27,7 @@ import { getMultipartUploadHandlers } from './multipart';
  * @throws Service: `S3Exception` thrown when checking for existence of the object.
  * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
  *
- * @param input - A `UploadDataInputWithPath` object.
+ * @param input - A `UploadDataWithPathInput` object.
  *
  * @returns A cancelable and resumable task exposing result promise from `result`
  * 	property.
@@ -68,8 +68,8 @@ import { getMultipartUploadHandlers } from './multipart';
  * ```
  */
 export function uploadData(
-	input: UploadDataInputWithPath,
-): UploadDataOutputWithPath;
+	input: UploadDataWithPathInput,
+): UploadDataWithPathOutput;
 
 /**
  * Upload data to the specified S3 object key. By default uses single PUT operation to upload if the payload is less than 5MB.
@@ -85,7 +85,7 @@ export function uploadData(
  * @throws Service: `S3Exception` thrown when checking for existence of the object.
  * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
  *
- * @param input - A UploadDataInputWithKey object.
+ * @param input - A UploadDataInput object.
  *
  * @returns A cancelable and resumable task exposing result promise from the `result` property.
  *
@@ -126,7 +126,7 @@ export function uploadData(
  */
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
-export function uploadData(input: UploadDataInput | UploadDataInputWithPath) {
+export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
 	const { data } = input;
 
 	const dataByteLength = byteLength(data);

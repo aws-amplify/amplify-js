@@ -8,9 +8,9 @@ import {
 
 import {
 	GetUrlInput,
-	GetUrlInputWithPath,
 	GetUrlOutput,
-	GetUrlOutputWithPath,
+	GetUrlWithPathInput,
+	GetUrlWithPathOutput,
 } from '../../types';
 import { getUrl as getUrlInternal } from '../internal/getUrl';
 
@@ -24,7 +24,7 @@ import { getUrl as getUrlInternal } from '../internal/getUrl';
  * URL, and will throw `StorageError` if the object does not exist.
  *
  * @param contextSpec - The isolated server context.
- * @param input - The `GetUrlInputWithPath` object.
+ * @param input - The `GetUrlWithPathInput` object.
  * @returns Presigned URL and timestamp when the URL MAY expire.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -33,8 +33,8 @@ import { getUrl as getUrlInternal } from '../internal/getUrl';
  */
 export function getUrl(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: GetUrlInputWithPath,
-): Promise<GetUrlOutputWithPath>;
+	input: GetUrlWithPathInput,
+): Promise<GetUrlWithPathOutput>;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/download/#generate-a-download-url | path} instead.
@@ -62,7 +62,7 @@ export function getUrl(
 
 export function getUrl(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: GetUrlInput | GetUrlInputWithPath,
+	input: GetUrlInput | GetUrlWithPathInput,
 ) {
 	return getUrlInternal(getAmplifyServerContext(contextSpec).amplify, input);
 }

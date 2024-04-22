@@ -5,9 +5,9 @@ import { Amplify } from '@aws-amplify/core';
 
 import {
 	GetUrlInput,
-	GetUrlInputWithPath,
 	GetUrlOutput,
-	GetUrlOutputWithPath,
+	GetUrlWithPathInput,
+	GetUrlWithPathOutput,
 } from '../types';
 
 import { getUrl as getUrlInternal } from './internal/getUrl';
@@ -21,7 +21,7 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  * to true, this method will verify the given object already exists in S3 before returning a presigned
  * URL, and will throw `StorageError` if the object does not exist.
  *
- * @param input - The `GetUrlInputWithPath` object.
+ * @param input - The `GetUrlWithPathInput` object.
  * @returns Presigned URL and timestamp when the URL MAY expire.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -29,8 +29,8 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  *
  */
 export function getUrl(
-	input: GetUrlInputWithPath,
-): Promise<GetUrlOutputWithPath>;
+	input: GetUrlWithPathInput,
+): Promise<GetUrlWithPathOutput>;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/javascript/build-a-backend/storage/download/#generate-a-download-url | path} instead.
@@ -43,7 +43,7 @@ export function getUrl(
  * to true, this method will verify the given object already exists in S3 before returning a presigned
  * URL, and will throw `StorageError` if the object does not exist.
  *
- * @param input - The `GetUrlInputWithKey` object.
+ * @param input - The `GetUrlInput` object.
  * @returns Presigned URL and timestamp when the URL MAY expire.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -52,6 +52,6 @@ export function getUrl(
  */
 export function getUrl(input: GetUrlInput): Promise<GetUrlOutput>;
 
-export function getUrl(input: GetUrlInput | GetUrlInputWithPath) {
+export function getUrl(input: GetUrlInput | GetUrlWithPathInput) {
 	return getUrlInternal(Amplify, input);
 }

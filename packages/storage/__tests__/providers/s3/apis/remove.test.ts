@@ -8,9 +8,9 @@ import { remove } from '../../../../src/providers/s3/apis';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 import {
 	RemoveInput,
-	RemoveInputWithPath,
+	RemoveWithPathInput,
 	RemoveOutput,
-	RemoveOutputWithPath,
+	RemoveWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -113,8 +113,8 @@ describe('remove API', () => {
 		});
 		describe('With Path', () => {
 			const removeWrapper = (
-				input: RemoveInputWithPath,
-			): Promise<RemoveOutputWithPath> => remove(input);
+				input: RemoveWithPathInput,
+			): Promise<RemoveWithPathOutput> => remove(input);
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
 					return {

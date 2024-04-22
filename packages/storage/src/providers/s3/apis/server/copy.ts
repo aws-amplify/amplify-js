@@ -7,9 +7,9 @@ import {
 
 import {
 	CopyInput,
-	CopyInputWithPath,
 	CopyOutput,
-	CopyOutputWithPath,
+	CopyWithPathInput,
+	CopyWithPathOutput,
 } from '../../types';
 import { copy as copyInternal } from '../internal/copy';
 
@@ -17,7 +17,7 @@ import { copy as copyInternal } from '../internal/copy';
  * Copy an object from a source to a destination object within the same bucket.
  *
  * @param contextSpec - The isolated server context.
- * @param input - The CopyInputWithPath object.
+ * @param input - The CopyWithPathInput object.
  * @returns Output containing the destination object path.
  * @throws service: `S3Exception` - Thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Thrown when
@@ -25,8 +25,8 @@ import { copy as copyInternal } from '../internal/copy';
  */
 export function copy(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: CopyInputWithPath,
-): Promise<CopyOutputWithPath>;
+	input: CopyWithPathInput,
+): Promise<CopyWithPathOutput>;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/copy | path} instead.
@@ -35,7 +35,7 @@ export function copy(
  * different accessLevel or identityId (if source object's accessLevel is 'protected').
  *
  * @param contextSpec - The isolated server context.
- * @param input - The CopyInputWithKey object.
+ * @param input - The CopyInput object.
  * @returns Output containing the destination object key.
  * @throws service: `S3Exception` - Thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Thrown when
@@ -48,7 +48,7 @@ export function copy(
 
 export function copy(
 	contextSpec: AmplifyServer.ContextSpec,
-	input: CopyInput | CopyInputWithPath,
+	input: CopyInput | CopyWithPathInput,
 ) {
 	return copyInternal(getAmplifyServerContext(contextSpec).amplify, input);
 }

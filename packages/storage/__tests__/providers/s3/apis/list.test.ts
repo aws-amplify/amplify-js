@@ -7,15 +7,14 @@ import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3';
 import {
 	ListAllInput,
-	ListAllInputWithPath,
+	ListAllWithPathInput,
 	ListAllOutput,
-	ListAllOutputWithPath,
+	ListAllWithPathOutput,
 	ListPaginateInput,
-	ListPaginateInputWithPath,
+	ListPaginateWithPathInput,
 	ListPaginateOutput,
-	ListPaginateOutputWithPath,
+	ListPaginateWithPathOutput,
 } from '../../../../src/providers/s3/types';
-import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -294,11 +293,11 @@ describe('list API', () => {
 
 	describe('Path: Happy Cases:', () => {
 		const listAllWrapper = (
-			input: ListAllInputWithPath,
-		): Promise<ListAllOutputWithPath> => list(input);
+			input: ListAllWithPathInput,
+		): Promise<ListAllWithPathOutput> => list(input);
 		const listPaginatedWrapper = (
-			input: ListPaginateInputWithPath,
-		): Promise<ListPaginateOutputWithPath> => list(input);
+			input: ListPaginateWithPathInput,
+		): Promise<ListPaginateWithPathOutput> => list(input);
 		const resolvePath = (path: string | Function) =>
 			typeof path === 'string' ? path : path({ identityId: defaultIdentityId });
 		afterEach(() => {

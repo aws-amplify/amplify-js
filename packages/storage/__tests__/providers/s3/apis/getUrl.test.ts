@@ -10,9 +10,9 @@ import {
 } from '../../../../src/providers/s3/utils/client';
 import {
 	GetUrlInput,
-	GetUrlInputWithPath,
+	GetUrlWithPathInput,
 	GetUrlOutput,
-	GetUrlOutputWithPath,
+	GetUrlWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -162,8 +162,8 @@ describe('getUrl test with key', () => {
 
 describe('getUrl test with path', () => {
 	const getUrlWrapper = (
-		input: GetUrlInputWithPath,
-	): Promise<GetUrlOutputWithPath> => getUrl(input);
+		input: GetUrlWithPathInput,
+	): Promise<GetUrlWithPathOutput> => getUrl(input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,

@@ -6,9 +6,9 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	GetPropertiesInput,
-	GetPropertiesInputWithPath,
 	GetPropertiesOutput,
-	GetPropertiesOutputWithPath,
+	GetPropertiesWithPathInput,
+	GetPropertiesWithPathOutput,
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
@@ -21,9 +21,9 @@ import { STORAGE_INPUT_KEY } from '../../utils/constants';
 
 export const getProperties = async (
 	amplify: AmplifyClassV6,
-	input: GetPropertiesInput | GetPropertiesInputWithPath,
+	input: GetPropertiesInput | GetPropertiesWithPathInput,
 	action?: StorageAction,
-): Promise<GetPropertiesOutput | GetPropertiesOutputWithPath> => {
+): Promise<GetPropertiesOutput | GetPropertiesWithPathOutput> => {
 	const { options: getPropertiesOptions } = input;
 	const { s3Config, bucket, keyPrefix, identityId } =
 		await resolveS3ConfigAndInput(amplify, getPropertiesOptions);

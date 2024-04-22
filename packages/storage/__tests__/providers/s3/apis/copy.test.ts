@@ -9,9 +9,9 @@ import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 import {
 	CopyInput,
-	CopyInputWithPath,
+	CopyWithPathInput,
 	CopyOutput,
-	CopyOutputWithPath,
+	CopyWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -198,8 +198,8 @@ describe('copy API', () => {
 
 		describe('With path', () => {
 			const copyWrapper = async (
-				input: CopyInputWithPath,
-			): Promise<CopyOutputWithPath> => copy(input);
+				input: CopyWithPathInput,
+			): Promise<CopyWithPathOutput> => copy(input);
 
 			beforeEach(() => {
 				mockCopyObject.mockImplementation(() => {

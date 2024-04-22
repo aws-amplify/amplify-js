@@ -6,9 +6,9 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	GetUrlInput,
-	GetUrlInputWithPath,
 	GetUrlOutput,
-	GetUrlOutputWithPath,
+	GetUrlWithPathInput,
+	GetUrlWithPathOutput,
 } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client';
@@ -27,8 +27,8 @@ import { getProperties } from './getProperties';
 
 export const getUrl = async (
 	amplify: AmplifyClassV6,
-	input: GetUrlInput | GetUrlInputWithPath,
-): Promise<GetUrlOutput | GetUrlOutputWithPath> => {
+	input: GetUrlInput | GetUrlWithPathInput,
+): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
 	const { options: getUrlOptions } = input;
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify, getUrlOptions);

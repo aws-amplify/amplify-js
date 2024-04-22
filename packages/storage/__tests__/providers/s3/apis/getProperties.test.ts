@@ -7,10 +7,9 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import {
 	GetPropertiesInput,
-	GetPropertiesInputWithPath,
-	GetPropertiesOptionsWithKey,
+	GetPropertiesWithPathInput,
 	GetPropertiesOutput,
-	GetPropertiesOutputWithPath,
+	GetPropertiesWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -130,7 +129,7 @@ describe('getProperties with key', () => {
 					versionId,
 				} = await getPropertiesWrapper({
 					key: inputKey,
-					options: options as GetPropertiesOptionsWithKey,
+					options: options,
 				});
 				expect({
 					key,
@@ -185,8 +184,8 @@ describe('getProperties with key', () => {
 
 describe('Happy cases: With path', () => {
 	const getPropertiesWrapper = (
-		input: GetPropertiesInputWithPath,
-	): Promise<GetPropertiesOutputWithPath> => getProperties(input);
+		input: GetPropertiesWithPathInput,
+	): Promise<GetPropertiesWithPathOutput> => getProperties(input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,

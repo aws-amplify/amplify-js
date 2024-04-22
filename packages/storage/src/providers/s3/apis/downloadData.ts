@@ -6,9 +6,9 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	DownloadDataInput,
-	DownloadDataInputWithPath,
 	DownloadDataOutput,
-	DownloadDataOutputWithPath,
+	DownloadDataWithPathInput,
+	DownloadDataWithPathOutput,
 } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { createDownloadTask, validateStorageOperationInput } from '../utils';
@@ -25,7 +25,7 @@ import { STORAGE_INPUT_KEY } from '../utils/constants';
 /**
  * Download S3 object data to memory
  *
- * @param input - The DownloadDataInputWithPath object.
+ * @param input - The DownloadDataWithPathInput object.
  * @returns A cancelable task exposing result promise from `result` property.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -53,15 +53,15 @@ import { STORAGE_INPUT_KEY } from '../utils/constants';
  *```
  */
 export function downloadData(
-	input: DownloadDataInputWithPath,
-): DownloadDataOutputWithPath;
+	input: DownloadDataWithPathInput,
+): DownloadDataWithPathOutput;
 /**
  * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
  *
  * Download S3 object data to memory
  *
- * @param input - The DownloadDataInputWithKey object.
+ * @param input - The DownloadDataInput object.
  * @returns A cancelable task exposing result promise from `result` property.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors
@@ -91,7 +91,7 @@ export function downloadData(
 export function downloadData(input: DownloadDataInput): DownloadDataOutput;
 
 export function downloadData(
-	input: DownloadDataInput | DownloadDataInputWithPath,
+	input: DownloadDataInput | DownloadDataWithPathInput,
 ) {
 	const abortController = new AbortController();
 
@@ -107,7 +107,7 @@ export function downloadData(
 
 const downloadDataJob =
 	(
-		downloadDataInput: DownloadDataInput | DownloadDataInputWithPath,
+		downloadDataInput: DownloadDataInput | DownloadDataWithPathInput,
 		abortSignal: AbortSignal,
 	) =>
 	async (): Promise<

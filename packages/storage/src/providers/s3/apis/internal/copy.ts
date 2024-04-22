@@ -6,9 +6,9 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
 	CopyInput,
-	CopyInputWithPath,
 	CopyOutput,
-	CopyOutputWithPath,
+	CopyWithPathInput,
+	CopyWithPathOutput,
 } from '../../types';
 import { ResolvedS3Config } from '../../types/options';
 import {
@@ -23,13 +23,13 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 
 const isCopyInputWithPath = (
-	input: CopyInput | CopyInputWithPath,
-): input is CopyInputWithPath => isInputWithPath(input.source);
+	input: CopyInput | CopyWithPathInput,
+): input is CopyWithPathInput => isInputWithPath(input.source);
 
 export const copy = async (
 	amplify: AmplifyClassV6,
-	input: CopyInput | CopyInputWithPath,
-): Promise<CopyOutput | CopyOutputWithPath> => {
+	input: CopyInput | CopyWithPathInput,
+): Promise<CopyOutput | CopyWithPathOutput> => {
 	return isCopyInputWithPath(input)
 		? copyWithPath(amplify, input)
 		: copyWithKey(amplify, input);
@@ -37,8 +37,8 @@ export const copy = async (
 
 const copyWithPath = async (
 	amplify: AmplifyClassV6,
-	input: CopyInputWithPath,
-): Promise<CopyOutputWithPath> => {
+	input: CopyWithPathInput,
+): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
 	const { s3Config, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify);
