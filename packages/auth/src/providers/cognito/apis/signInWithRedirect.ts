@@ -24,6 +24,7 @@ import {
 	oAuthStore,
 } from '../utils/oauth';
 import { createOAuthError } from '../utils/oauth/createOAuthError';
+import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -109,6 +110,11 @@ const oauthSignIn = async ({
 
 	// TODO(v6): use URL object instead
 	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
+
+	// this will be effective only on the following scenarios:
+	// 1. the user cancels the OAuth flow on web, and
+	// 2. when bfcache is enabled
+	listenForOAuthFlowCancellation(oAuthStore);
 
 	// the following is effective only in react-native as openAuthSession resolves only in react-native
 	const { type, error, url } =
