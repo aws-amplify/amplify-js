@@ -11,7 +11,6 @@ import {
 } from '../../../../src/providers/s3/utils';
 import {
 	DownloadDataInput,
-	DownloadDataInputWithPath,
 	DownloadDataOptionsWithKey,
 	DownloadDataOptionsWithPath,
 } from '../../../../src/providers/s3/types';
@@ -19,10 +18,7 @@ import {
 	STORAGE_INPUT_KEY,
 	STORAGE_INPUT_PATH,
 } from '../../../../src/providers/s3/utils/constants';
-import {
-	StorageDownloadDataOutput,
-	StorageItemWithKey,
-} from '../../../../src/types';
+import { StorageDownloadDataOutput } from '../../../../src/types';
 import {
 	ItemWithKey,
 	ItemWithPath,
@@ -117,7 +113,7 @@ describe('downloadData with key', () => {
 		async ({ options, expectedKey }) => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 			const onProgress = jest.fn();
-			await downloadData({
+			downloadData({
 				key: inputKey,
 				options: {
 					...options,

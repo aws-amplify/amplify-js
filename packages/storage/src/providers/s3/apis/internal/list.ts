@@ -96,7 +96,7 @@ export const list = async (
 			return _listAllWithPath(listInputArgs);
 		}
 	} else {
-		if (inputType === STORAGE_INPUT_PREFIX) {
+		if (isInputWithPrefix) {
 			return _listWithPrefix({ ...listInputArgs, generatedPrefix });
 		} else {
 			return _listWithPath(listInputArgs);
