@@ -57,24 +57,25 @@ mockPutObject.mockResolvedValue({
 describe('putObjectJob with key', () => {
 	it('should supply the correct parameters to putObject API handler', async () => {
 		const abortController = new AbortController();
-		const key = 'key';
+		const inputKey = 'key';
+		const finalKey = `public/${inputKey}`;
 		const data = 'data';
-		const contentType = 'contentType';
+		const mockContentType = 'contentType';
 		const contentDisposition = 'contentDisposition';
 		const contentEncoding = 'contentEncoding';
-		const metadata = { key: 'value' };
+		const mockMetadata = { key: 'value' };
 		const onProgress = jest.fn();
 		const useAccelerateEndpoint = true;
 
 		const job = putObjectJob(
 			{
-				key,
+				key: inputKey,
 				data,
 				options: {
 					contentDisposition,
 					contentEncoding,
-					contentType,
-					metadata,
+					contentType: mockContentType,
+					metadata: mockMetadata,
 					onProgress,
 					useAccelerateEndpoint,
 				},
@@ -83,7 +84,7 @@ describe('putObjectJob with key', () => {
 		);
 		const result = await job();
 		expect(result).toEqual({
-			key,
+			key: inputKey,
 			eTag: 'eTag',
 			versionId: 'versionId',
 			contentType: 'contentType',
@@ -101,12 +102,12 @@ describe('putObjectJob with key', () => {
 			},
 			{
 				Bucket: 'bucket',
-				Key: `public/${key}`,
+				Key: finalKey,
 				Body: data,
-				ContentType: contentType,
+				ContentType: mockContentType,
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
-				Metadata: metadata,
+				Metadata: mockMetadata,
 				ContentMD5: undefined,
 			},
 		);
@@ -143,26 +144,26 @@ describe('putObjectJob with path', () => {
 			expectedKey: testPath,
 		},
 	])(
-		'should supply the correct parameters to putObject API handler when path is $path', 
-		async ({ path, expectedKey }) => {
+		'should supply the correct parameters to putObject API handler when path is $path',
+		async ({ path: inputPath, expectedKey }) => {
 			const abortController = new AbortController();
 			const data = 'data';
-			const contentType = 'contentType';
+			const mockContentType = 'contentType';
 			const contentDisposition = 'contentDisposition';
 			const contentEncoding = 'contentEncoding';
-			const metadata = { key: 'value' };
+			const mockMetadata = { key: 'value' };
 			const onProgress = jest.fn();
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
 				{
-					path,
+					path: inputPath,
 					data,
 					options: {
 						contentDisposition,
 						contentEncoding,
-						contentType,
-						metadata,
+						contentType: mockContentType,
+						metadata: mockMetadata,
 						onProgress,
 						useAccelerateEndpoint,
 					},
@@ -191,14 +192,14 @@ describe('putObjectJob with path', () => {
 					Bucket: 'bucket',
 					Key: expectedKey,
 					Body: data,
-					ContentType: contentType,
+					ContentType: mockContentType,
 					ContentDisposition: contentDisposition,
 					ContentEncoding: contentEncoding,
-					Metadata: metadata,
+					Metadata: mockMetadata,
 					ContentMD5: undefined,
 				},
 			);
-		}
+		},
 	);
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
