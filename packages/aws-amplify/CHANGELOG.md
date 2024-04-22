@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.29](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.0.28...aws-amplify@6.0.29) (2024-04-22)
+
+### Bug Fixes
+
+- **api-graphql:** incorrect list sk arg type ([#13249](https://github.com/aws-amplify/amplify-js/issues/13249)) ([f37faeb](https://github.com/aws-amplify/amplify-js/commit/f37faebacddeed66ce5bc1d7f78b8d1d46aecb17))
+
 ## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.0.27...aws-amplify@6.0.28) (2024-04-09)
 
 **Note:** Version bump only for package aws-amplify

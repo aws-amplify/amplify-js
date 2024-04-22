@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.0.28...@aws-amplify/api-graphql@4.0.29) (2024-04-22)
+
+### Bug Fixes
+
+- **api-graphql:** incorrect custom selection set for nested model.model.customType ([#13216](https://github.com/aws-amplify/amplify-js/issues/13216)) ([390c159](https://github.com/aws-amplify/amplify-js/commit/390c159cd976b744701d504a9d3929e80f7e2b72))
+- **api-graphql:** incorrect list sk arg type ([#13249](https://github.com/aws-amplify/amplify-js/issues/13249)) ([f37faeb](https://github.com/aws-amplify/amplify-js/commit/f37faebacddeed66ce5bc1d7f78b8d1d46aecb17))
+
 ## [4.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.0.27...@aws-amplify/api-graphql@4.0.28) (2024-04-09)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql
