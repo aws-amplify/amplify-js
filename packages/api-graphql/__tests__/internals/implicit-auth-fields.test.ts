@@ -43,6 +43,11 @@ describe('implicit auth field handling', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
+
+			// TS can't see that all of these `.get()` methods align.
+			// We're ignoring the errors because the types are a little convoluted
+			// and they aren't the point of this test
+			// @ts-ignore
 			const { data } = await client.models[modelName].get({ id: 'some-id' });
 
 			expectSelectionSetContains(spy, [authField]);
@@ -67,6 +72,12 @@ describe('implicit auth field handling', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
+
+			// TS having a hard time seeing that all of these `.list()` methods align
+			// in the way we're using them here.
+			// We're ignoring the errors because the types are a little convoluted
+			// and they aren't the point of this test
+			// @ts-ignore
 			const { data } = await client.models[modelName].list({
 				filter: { [authField]: { contains: 'something' } },
 			});

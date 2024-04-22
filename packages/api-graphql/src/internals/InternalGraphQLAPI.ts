@@ -21,7 +21,10 @@ import {
 	post,
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
-import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
+import {
+	CustomHeaders,
+	RequestOptions,
+} from '@aws-amplify/data-schema/runtime';
 
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
 import { GraphQLOperation, GraphQLOptions, GraphQLResult } from '../types';

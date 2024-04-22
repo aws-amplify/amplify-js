@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import {
+	BaseClient,
+	ClientExtensions,
+	ClientExtensionsSSRCookies,
+	ClientExtensionsSSRRequest,
+	ClientInternals,
 	CustomHeaders,
-	CustomMutations,
-	CustomQueries,
-	CustomSubscriptions,
-	EnumTypes,
 	ModelSortDirection,
-	ModelTypes,
-} from '@aws-amplify/data-schema-types';
+} from '@aws-amplify/data-schema/runtime';
 import { DocumentNode, GraphQLError, Source } from 'graphql';
 import { Observable } from 'rxjs';
 import {
@@ -22,7 +22,7 @@ export { OperationTypeNode } from 'graphql';
 
 export { CONTROL_MSG, ConnectionState } from './PubSub';
 
-export { SelectionSet } from '@aws-amplify/data-schema-types';
+export { SelectionSet } from '@aws-amplify/data-schema/runtime';
 
 export { CommonPublicClientOptions } from '../internals/types';
 
@@ -366,68 +366,44 @@ export type GeneratedSubscription<InputType, OutputType> = string & {
 	__generatedSubscriptionOutput: OutputType;
 };
 
-type FilteredKeys<T> = {
-	[P in keyof T]: T[P] extends never ? never : P;
-}[keyof T];
-
-type ExcludeNeverFields<O> = {
-	[K in FilteredKeys<O>]: O[K];
-};
-
 export const __amplify = Symbol('amplify');
 export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
 export const __headers = Symbol('headers');
 
-export type ClientWithModels =
-	| V6Client<Record<string, any>>
-	| V6ClientSSRRequest<Record<string, any>>
-	| V6ClientSSRCookies<Record<string, any>>;
+export function getInternals(client: BaseClient): ClientInternals {
+	const c = client as any;
 
-export type V6Client<T extends Record<any, any> = never> = ExcludeNeverFields<{
-	[__amplify]: AmplifyClassV6;
-	[__authMode]?: GraphQLAuthMode;
-	[__authToken]?: string;
-	[__headers]?: CustomHeaders;
+	return {
+		amplify: c[__amplify],
+		authMode: c[__authMode],
+		authToken: c[__authToken],
+		headers: c[__headers],
+	} as any;
+}
+
+export type ClientWithModels =
+	| V6Client
+	| V6ClientSSRRequest
+	| V6ClientSSRCookies;
+
+export type V6Client<T extends Record<any, any> = never> = {
 	graphql: GraphQLMethod;
 	cancel(promise: Promise<any>, message?: string): boolean;
 	isCancelError(error: any): boolean;
-	models: ModelTypes<T>;
-	enums: EnumTypes<T>;
-	queries: CustomQueries<T>;
-	mutations: CustomMutations<T>;
-	subscriptions: CustomSubscriptions<T>;
-}>;
+} & ClientExtensions<T>;
 
-export type V6ClientSSRRequest<T extends Record<any, any> = never> =
-	ExcludeNeverFields<{
-		[__amplify]: AmplifyClassV6;
-		[__authMode]?: GraphQLAuthMode;
-		[__authToken]?: string;
-		[__headers]?: CustomHeaders;
-		graphql: GraphQLMethodSSR;
-		cancel(promise: Promise<any>, message?: string): boolean;
-		isCancelError(error: any): boolean;
-		models: ModelTypes<T, 'REQUEST'>;
-		enums: EnumTypes<T>;
-		queries: CustomQueries<T, 'REQUEST'>;
-		mutations: CustomMutations<T, 'REQUEST'>;
-	}>;
+export type V6ClientSSRRequest<T extends Record<any, any> = never> = {
+	graphql: GraphQLMethodSSR;
+	cancel(promise: Promise<any>, message?: string): boolean;
+	isCancelError(error: any): boolean;
+} & ClientExtensionsSSRRequest<T>;
 
-export type V6ClientSSRCookies<T extends Record<any, any> = never> =
-	ExcludeNeverFields<{
-		[__amplify]: AmplifyClassV6;
-		[__authMode]?: GraphQLAuthMode;
-		[__authToken]?: string;
-		[__headers]?: CustomHeaders;
-		graphql: GraphQLMethod;
-		cancel(promise: Promise<any>, message?: string): boolean;
-		isCancelError(error: any): boolean;
-		models: ModelTypes<T, 'COOKIES'>;
-		enums: EnumTypes<T>;
-		queries: CustomQueries<T, 'COOKIES'>;
-		mutations: CustomMutations<T, 'COOKIES'>;
-	}>;
+export type V6ClientSSRCookies<T extends Record<any, any> = never> = {
+	graphql: GraphQLMethod;
+	cancel(promise: Promise<any>, message?: string): boolean;
+	isCancelError(error: any): boolean;
+} & ClientExtensionsSSRCookies<T>;
 
 export type GraphQLMethod = <
 	FALLBACK_TYPES = unknown,
