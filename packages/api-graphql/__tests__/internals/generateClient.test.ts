@@ -870,7 +870,7 @@ describe('generateClient', () => {
 			expect(errors).toEqual(expectedErrors);
 		});
 
-		test('get() returns null with errors property', async () => {
+		test('returns object in which `data` is null and `errors` contains expected error', async () => {
 			const expectedErrors = [
 				{
 					path: ['getTodo'],
