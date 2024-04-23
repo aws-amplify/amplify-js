@@ -49,10 +49,10 @@ jest.mock('@aws-amplify/core', () => {
 });
 
 jest.mock('../../../src/providers/cognito/utils/signInHelpers');
+
 jest.mock('../../../src/providers/cognito/utils/oauth', () => ({
 	...jest.requireActual('../../../src/providers/cognito/utils/oauth'),
 	completeOAuthFlow: jest.fn(),
-	handleFailure: jest.fn(),
 	generateCodeVerifier: jest.fn(),
 	generateState: jest.fn(),
 }));
@@ -71,6 +71,7 @@ jest.mock('../../../src/providers/cognito/utils/oauth/oAuthStore', () => ({
 		clearOAuthInflightData: jest.fn(),
 	} as OAuthStore,
 }));
+jest.mock('../../../src/providers/cognito/utils/oauth/handleFailure');
 jest.mock('../../../src/providers/cognito/utils/oauth/createOAuthError');
 jest.mock('../../../src/utils');
 

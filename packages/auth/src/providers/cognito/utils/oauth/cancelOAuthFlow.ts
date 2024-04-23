@@ -5,7 +5,7 @@ import { OAuthStore } from '../types';
 
 import { createOAuthError } from './createOAuthError';
 
-import { handleFailure } from './index';
+import { handleFailure } from './handleFailure';
 
 export const listenForOAuthFlowCancellation = (store: OAuthStore) => {
 	async function handleCancelOAuthFlow(event: PageTransitionEvent) {
