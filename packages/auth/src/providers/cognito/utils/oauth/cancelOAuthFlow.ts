@@ -4,7 +4,6 @@
 import { OAuthStore } from '../types';
 
 import { createOAuthError } from './createOAuthError';
-
 import { handleFailure } from './handleFailure';
 
 export const listenForOAuthFlowCancellation = (store: OAuthStore) => {
