@@ -190,7 +190,7 @@ describe('signInWithRedirect', () => {
 			});
 		});
 
-		it('invokes handleFailure when user cancelled the oauth flow', async () => {
+		it('invokes handleFailure when user cancels the oauth flow', async () => {
 			const error = new Error('OAuth flow was cancelled.')
 			const mockOpenAuthSessionResult = {
 				type: undefined,
@@ -198,6 +198,7 @@ describe('signInWithRedirect', () => {
 			mockCreateOAuthError.mockReturnValueOnce(error);
 			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
 			oAuthStore.loadOAuthInFlight = jest.fn().mockResolvedValueOnce(true);
+			const currentAddEventlistener = window.addEventListener;
 			window.addEventListener = jest.fn((event: string, cb: any) => {
 				cb({ persisted: true });
 			});
@@ -205,6 +206,8 @@ describe('signInWithRedirect', () => {
 			await signInWithRedirect({ provider: 'Google' });
 			expect(mockCreateOAuthError).toHaveBeenCalledTimes(1);
 			expect(mockHandleFailure).toHaveBeenCalledWith(error);
+		    
+			window.addEventListener = currentAddEventlistener;
 		})
 	});
 

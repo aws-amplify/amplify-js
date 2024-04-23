@@ -9,8 +9,8 @@ import { handleFailure } from './index';
 
 export const listenForOAuthFlowCancellation = (store: OAuthStore) => {
 	async function handleCancelOAuthFlow(event: PageTransitionEvent) {
-		const isBackEventWithBfcache = event.persisted;
-		if (isBackEventWithBfcache && (await store.loadOAuthInFlight())) {
+		const isBfcache = event.persisted;
+		if (isBfcache && (await store.loadOAuthInFlight())) {
 			const error = createOAuthError('User cancelled OAuth flow.');
 			await handleFailure(error);
 		}

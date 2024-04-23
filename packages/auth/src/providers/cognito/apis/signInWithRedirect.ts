@@ -111,8 +111,8 @@ const oauthSignIn = async ({
 	// TODO(v6): use URL object instead
 	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
 
-	// this will be effective only on the following scenarios:
-	// 1. the user cancels the OAuth flow on web, and
+	// this will only take effect in the following scenarios:
+	// 1. the user cancels the OAuth flow on web via back button, and
 	// 2. when bfcache is enabled
 	listenForOAuthFlowCancellation(oAuthStore);
 
