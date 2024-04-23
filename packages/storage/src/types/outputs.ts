@@ -30,6 +30,7 @@ export interface StorageItemBase {
 /** @deprecated Use {@link StorageItemWithPath} instead. */
 export type StorageItemWithKey = StorageItemBase & {
 	/**
+	 * @deprecated This may be removed in next major version.
 	 * Key of the object.
 	 */
 	key: string;
