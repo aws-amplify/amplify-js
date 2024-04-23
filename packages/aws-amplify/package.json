@@ -437,7 +437,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "19.40 kB"
+			"limit": "19.44 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
