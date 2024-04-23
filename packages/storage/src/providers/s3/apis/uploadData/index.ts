@@ -85,7 +85,7 @@ export function uploadData(
  * @throws Service: `S3Exception` thrown when checking for existence of the object.
  * @throws Validation: `StorageValidationErrorCode` thrown when a validation error occurs.
  *
- * @param input - A UploadDataInput object.
+ * @param input - A `UploadDataInput` object.
  *
  * @returns A cancelable and resumable task exposing result promise from the `result` property.
  *

@@ -9,7 +9,7 @@ import {
 	ListAllOutput,
 	ListAllWithPathInput,
 	ListAllWithPathOutput,
-	ListOutputItemWithKey,
+	ListOutputItem,
 	ListOutputItemWithPath,
 	ListPaginateInput,
 	ListPaginateOutput,
@@ -49,7 +49,7 @@ export const list = async (
 	| ListAllOutput
 	| ListPaginateOutput
 	| ListAllWithPathOutput
-	| ListAllWithPathOutput
+	| ListPaginateWithPathOutput
 > => {
 	const { options = {} } = input;
 	const {
@@ -110,7 +110,7 @@ const _listAllWithPrefix = async ({
 	listParams,
 	generatedPrefix,
 }: ListInputArgs): Promise<ListAllOutput> => {
-	const listResult: ListOutputItemWithKey[] = [];
+	const listResult: ListOutputItem[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
 		const { items: pageResults, nextToken: pageNextToken } =

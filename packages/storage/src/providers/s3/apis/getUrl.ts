@@ -22,7 +22,7 @@ import { getUrl as getUrlInternal } from './internal/getUrl';
  * URL, and will throw `StorageError` if the object does not exist.
  *
  * @param input - The `GetUrlWithPathInput` object.
- * @returns Presigned URL and timestamp when the URL MAY expire.
+ * @returns Presigned URL and timestamp when the URL may expire.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors
  * thrown either username or key are not defined.
@@ -44,7 +44,7 @@ export function getUrl(
  * URL, and will throw `StorageError` if the object does not exist.
  *
  * @param input - The `GetUrlInput` object.
- * @returns Presigned URL and timestamp when the URL MAY expire.
+ * @returns Presigned URL and timestamp when the URL may expire.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors
  * thrown either username or key are not defined.

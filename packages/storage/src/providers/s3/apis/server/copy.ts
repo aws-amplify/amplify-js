@@ -17,7 +17,7 @@ import { copy as copyInternal } from '../internal/copy';
  * Copy an object from a source to a destination object within the same bucket.
  *
  * @param contextSpec - The isolated server context.
- * @param input - The CopyWithPathInput object.
+ * @param input - The `CopyWithPathInput` object.
  * @returns Output containing the destination object path.
  * @throws service: `S3Exception` - Thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Thrown when
@@ -35,7 +35,7 @@ export function copy(
  * different accessLevel or identityId (if source object's accessLevel is 'protected').
  *
  * @param contextSpec - The isolated server context.
- * @param input - The CopyInput object.
+ * @param input - The `CopyInput` object.
  * @returns Output containing the destination object key.
  * @throws service: `S3Exception` - Thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Thrown when

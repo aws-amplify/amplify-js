@@ -35,7 +35,7 @@ export {
 	CopyWithPathOutput,
 	GetUrlOutput,
 	GetUrlWithPathOutput,
-	ListOutputItemWithKey,
+	ListOutputItem,
 	ListOutputItemWithPath,
 } from './outputs';
 export {

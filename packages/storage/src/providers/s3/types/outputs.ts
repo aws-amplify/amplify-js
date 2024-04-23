@@ -29,7 +29,7 @@ export interface ItemBase {
  * @deprecated Use {@link ListOutputItemWithPath} instead.
  * type for S3 list item with key.
  */
-export type ListOutputItemWithKey = Omit<ItemWithKey, 'metadata'>;
+export type ListOutputItem = Omit<ItemWithKey, 'metadata'>;
 
 /**
  * type for S3 list item with path.
@@ -45,11 +45,6 @@ export type ItemWithKey = ItemBase & StorageItemWithKey;
  * type for S3 list item with path.
  */
 export type ItemWithPath = ItemBase & StorageItemWithPath;
-
-/**
- * type for S3 list item.
- */
-export type ListOutputItem = Omit<ItemWithKey, 'metadata'>;
 
 /**
  * Output type for S3 downloadData API.
@@ -77,7 +72,7 @@ export type GetUrlWithPathOutput = StorageGetUrlOutput;
 
 /**
  * Output type for S3 uploadData API.
- *  @deprecated Use {@link UploadDataOutputWithPath} instead.
+ *  @deprecated Use {@link UploadDataWithPathOutput} instead.
  */
 export type UploadDataOutput = UploadTask<ItemWithKey>;
 /**
@@ -87,7 +82,7 @@ export type UploadDataWithPathOutput = UploadTask<ItemWithPath>;
 
 /**
  * Output type for S3 getProperties API.
- * @deprecated Use {@link GetPropertiesOutputWithPath} instead.
+ * @deprecated Use {@link GetPropertiesWithPathOutput} instead.
  * */
 export type GetPropertiesOutput = ItemBase & StorageItemWithKey;
 /**
@@ -96,10 +91,10 @@ export type GetPropertiesOutput = ItemBase & StorageItemWithKey;
 export type GetPropertiesWithPathOutput = ItemBase & StorageItemWithPath;
 
 /**
- * @deprecated Use {@link ListAllOutputWithPath} instead.
+ * @deprecated Use {@link ListAllWithPathOutput} instead.
  * Output type for S3 list API. Lists all bucket objects.
  */
-export type ListAllOutput = StorageListOutput<ListOutputItemWithKey>;
+export type ListAllOutput = StorageListOutput<ListOutputItem>;
 
 /**
  * Output type with path for S3 list API. Lists all bucket objects.
@@ -107,10 +102,10 @@ export type ListAllOutput = StorageListOutput<ListOutputItemWithKey>;
 export type ListAllWithPathOutput = StorageListOutput<ListOutputItemWithPath>;
 
 /**
- * @deprecated Use {@link ListPaginateOutputWithPath} instead.
+ * @deprecated Use {@link ListPaginateWithPathOutput} instead.
  * Output type for S3 list API. Lists bucket objects with pagination.
  */
-export type ListPaginateOutput = StorageListOutput<ListOutputItemWithKey> & {
+export type ListPaginateOutput = StorageListOutput<ListOutputItem> & {
 	nextToken?: string;
 };
 
@@ -124,7 +119,7 @@ export type ListPaginateWithPathOutput =
 
 /**
  *  Output type with path for S3 copy API.
- * @deprecated Use {@link CopyOutputWithPath} instead.
+ * @deprecated Use {@link CopyWithPathOutput} instead.
  */
 export type CopyOutput = Pick<ItemWithKey, 'key'>;
 /**
@@ -133,7 +128,7 @@ export type CopyOutput = Pick<ItemWithKey, 'key'>;
 export type CopyWithPathOutput = Pick<ItemWithPath, 'path'>;
 
 /**
- * @deprecated Use {@link RemoveOutputWithPath} instead.
+ * @deprecated Use {@link RemoveWithPathOutput} instead.
  * Output type with key for S3 remove API.
  */
 export type RemoveOutput = Pick<ItemWithKey, 'key'>;
