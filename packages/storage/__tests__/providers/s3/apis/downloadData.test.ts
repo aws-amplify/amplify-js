@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { getObject } from '../../../../src/providers/s3/utils/client';
 import { downloadData } from '../../../../src/providers/s3';
 import {
@@ -11,8 +11,7 @@ import {
 } from '../../../../src/providers/s3/utils';
 import {
 	DownloadDataInput,
-	DownloadDataOptionsWithKey,
-	DownloadDataOptionsWithPath,
+	DownloadDataWithPathInput,
 } from '../../../../src/providers/s3/types';
 import {
 	STORAGE_INPUT_KEY,
@@ -88,7 +87,10 @@ describe('downloadData with key', () => {
 		expect(downloadData(mockDownloadInput)).toBe('downloadTask');
 	});
 
-	test.each([
+	const testCases: Array<{
+		expectedKey: string;
+		options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
+	}> = [
 		{
 			expectedKey: `public/${inputKey}`,
 		},
@@ -108,7 +110,9 @@ describe('downloadData with key', () => {
 			options: { accessLevel: 'protected', targetIdentityId },
 			expectedKey: `protected/${targetIdentityId}/${inputKey}`,
 		},
-	])(
+	];
+
+	test.each(testCases)(
 		'should supply the correct parameters to getObject API handler with $expectedKey accessLevel',
 		async ({ options, expectedKey }) => {
 			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
@@ -119,7 +123,7 @@ describe('downloadData with key', () => {
 					...options,
 					useAccelerateEndpoint: true,
 					onProgress,
-				} as DownloadDataOptionsWithKey,
+				},
 			}).result;
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			const { key, body }: StorageDownloadDataOutput<ItemWithKey> = await job();
@@ -240,7 +244,11 @@ describe('downloadData with path', () => {
 	});
 
 	it('should return a download task with path', async () => {
-		expect(downloadData({ path: inputPath })).toBe('downloadTask');
+		const mockDownloadInput: DownloadDataWithPathInput = {
+			path: inputPath,
+			options: { useAccelerateEndpoint: true },
+		};
+		expect(downloadData(mockDownloadInput)).toBe('downloadTask');
 	});
 
 	test.each([
@@ -262,7 +270,7 @@ describe('downloadData with path', () => {
 				options: {
 					useAccelerateEndpoint: true,
 					onProgress,
-				} as DownloadDataOptionsWithPath,
+				},
 			});
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			const {
@@ -344,7 +352,7 @@ describe('downloadData with path', () => {
 		(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 
 		downloadData({
-			path: 'mockPath',
+			path: inputPath,
 			options: {
 				bytesRange: { start, end },
 			},
