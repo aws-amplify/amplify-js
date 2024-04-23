@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.0.27...@aws-amplify/core@6.0.28) (2024-04-22)
+
+### Bug Fixes
+
+- **message overrides:** extract message content with Platform-Specific Overrides ([#12917](https://github.com/aws-amplify/amplify-js/issues/12917)) ([cb91437](https://github.com/aws-amplify/amplify-js/commit/cb914374263262c84c6337dddca1f17fb7dd204a))
+
 ## 6.0.27 (2024-04-02)
 
 **Note:** Version bump only for package @aws-amplify/core

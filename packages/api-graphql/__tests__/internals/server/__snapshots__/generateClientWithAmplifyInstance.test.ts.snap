@@ -270,10 +270,10 @@ exports[`server generateClient with cookies with request can custom query 1`] = 
       "authMode": undefined,
       "authToken": undefined,
       "query": "
-		query($argumentContent: String!) {
-			echo(argumentContent: $argumentContent) {resultContent}
-		}
-	",
+    query($argumentContent: String!) {
+      echo(argumentContent: $argumentContent) {resultContent}
+    }
+  ",
       "variables": {
         "argumentContent": "echo argumentContent value",
       },
