@@ -4,15 +4,17 @@
 import { OAuthStore } from '../types';
 
 import { createOAuthError } from './createOAuthError';
-import { handleFailure,  } from './index';
+
+import { handleFailure } from './index';
 
 export const listenForOAuthFlowCancellation = (store: OAuthStore) => {
-	async function handleCancelOauthFlow(event: PageTransitionEvent) {
-		const isOAuthInFlight = await store.loadOAuthInFlight();
-		if (event.persisted && isOAuthInFlight) {  
-			await handleFailure(createOAuthError('User cancelled OAuth flow.'));
-			window.removeEventListener('pageshow', handleCancelOauthFlow);
+	async function handleCancelOAuthFlow(event: PageTransitionEvent) {
+		const isBackEventWithBfcache = event.persisted;
+		if (isBackEventWithBfcache && (await store.loadOAuthInFlight())) {
+			const error = createOAuthError('User cancelled OAuth flow.');
+			await handleFailure(error);
 		}
+		window.removeEventListener('pageshow', handleCancelOAuthFlow);
 	}
-	window.addEventListener('pageshow', handleCancelOauthFlow);
+	window.addEventListener('pageshow', handleCancelOAuthFlow);
 };

@@ -47,6 +47,7 @@ jest.mock('@aws-amplify/core', () => {
 		ConsoleLogger: jest.fn(),
 	};
 });
+
 jest.mock('../../../src/providers/cognito/utils/signInHelpers');
 jest.mock('../../../src/providers/cognito/utils/oauth', () => ({
 	...jest.requireActual('../../../src/providers/cognito/utils/oauth'),
@@ -188,6 +189,23 @@ describe('signInWithRedirect', () => {
 				);
 			});
 		});
+
+		it('invokes handleFailure when user cancelled the oauth flow', async () => {
+			const error = new Error('OAuth flow was cancelled.')
+			const mockOpenAuthSessionResult = {
+				type: undefined,
+			};
+			mockCreateOAuthError.mockReturnValueOnce(error);
+			mockOpenAuthSession.mockResolvedValueOnce(mockOpenAuthSessionResult);
+			oAuthStore.loadOAuthInFlight = jest.fn().mockResolvedValueOnce(true);
+			window.addEventListener = jest.fn((event: string, cb: any) => {
+				cb({ persisted: true });
+			});
+
+			await signInWithRedirect({ provider: 'Google' });
+			expect(mockCreateOAuthError).toHaveBeenCalledTimes(1);
+			expect(mockHandleFailure).toHaveBeenCalledWith(error);
+		})
 	});
 
 	describe('specifications on react-native', () => {
@@ -275,6 +293,7 @@ describe('signInWithRedirect', () => {
 
 			expect(oAuthStore.storeOAuthInFlight).toHaveBeenCalledTimes(0);
 		});
+
 	});
 
 	describe('errors', () => {
@@ -304,5 +323,6 @@ describe('signInWithRedirect', () => {
 
 			await expect(signInWithRedirect()).rejects.toThrow(mockError);
 		});
+
 	});
 });
