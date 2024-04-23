@@ -48,7 +48,7 @@ export type ItemWithPath = ItemBase & StorageItemWithPath;
 
 /**
  * Output type for S3 downloadData API.
- * @deprecated Use {@link DownloadDataOutputWithPath} instead.
+ * @deprecated Use {@link DownloadDataWithPathOutput} instead.
  */
 export type DownloadDataOutput = DownloadTask<
 	StorageDownloadDataOutput<ItemWithKey>
