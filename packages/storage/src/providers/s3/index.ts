@@ -13,22 +13,38 @@ export {
 
 export {
 	UploadDataInput,
+	UploadDataWithPathInput,
 	DownloadDataInput,
+	DownloadDataWithPathInput,
 	RemoveInput,
+	RemoveWithPathInput,
 	ListAllInput,
+	ListAllWithPathInput,
 	ListPaginateInput,
+	ListPaginateWithPathInput,
 	GetPropertiesInput,
+	GetPropertiesWithPathInput,
 	CopyInput,
+	CopyWithPathInput,
 	GetUrlInput,
+	GetUrlWithPathInput,
 } from './types/inputs';
 
 export {
 	UploadDataOutput,
+	UploadDataWithPathOutput,
 	DownloadDataOutput,
+	DownloadDataWithPathOutput,
 	RemoveOutput,
+	RemoveWithPathOutput,
 	ListAllOutput,
+	ListAllWithPathOutput,
 	ListPaginateOutput,
+	ListPaginateWithPathOutput,
 	GetPropertiesOutput,
+	GetPropertiesWithPathOutput,
 	CopyOutput,
+	CopyWithPathOutput,
 	GetUrlOutput,
+	GetUrlWithPathOutput,
 } from './types/outputs';

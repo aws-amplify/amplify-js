@@ -4,13 +4,13 @@
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput } from '../../types';
+import { UploadDataInput, UploadDataWithPathInput } from '../../types';
 import {
 	calculateContentMd5,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
-import { ItemWithKeyAndPath } from '../../types/outputs';
+import { ItemWithKey, ItemWithPath } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
@@ -22,11 +22,11 @@ import { STORAGE_INPUT_KEY } from '../../utils/constants';
  */
 export const putObjectJob =
 	(
-		uploadDataInput: UploadDataInput,
+		uploadDataInput: UploadDataInput | UploadDataWithPathInput,
 		abortSignal: AbortSignal,
 		totalLength?: number,
 	) =>
-	async (): Promise<ItemWithKeyAndPath> => {
+	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
@@ -75,6 +75,6 @@ export const putObjectJob =
 		};
 
 		return inputType === STORAGE_INPUT_KEY
-			? { key: objectKey, path: finalKey, ...result }
-			: { path: finalKey, key: finalKey, ...result };
+			? { key: objectKey, ...result }
+			: { path: objectKey, ...result };
 	};

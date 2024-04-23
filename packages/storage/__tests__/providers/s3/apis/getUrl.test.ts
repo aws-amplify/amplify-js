@@ -3,14 +3,16 @@
 
 import { getUrl } from '../../../../src/providers/s3/apis';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
 import {
-	GetUrlOptionsWithKey,
-	GetUrlOptionsWithPath,
+	GetUrlInput,
+	GetUrlWithPathInput,
+	GetUrlOutput,
+	GetUrlWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -37,8 +39,11 @@ const credentials: AWSCredentials = {
 };
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+const mockURL = new URL('https://google.com');
 
 describe('getUrl test with key', () => {
+	const getUrlWrapper = (input: GetUrlInput): Promise<GetUrlOutput> =>
+		getUrl(input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -62,24 +67,28 @@ describe('getUrl test with key', () => {
 		};
 		const key = 'key';
 		beforeEach(() => {
-			(headObject as jest.Mock).mockImplementation(() => {
-				return {
-					Key: 'key',
-					ContentLength: '100',
-					ContentType: 'text/plain',
-					ETag: 'etag',
-					LastModified: 'last-modified',
-					Metadata: { key: 'value' },
-				};
+			(headObject as jest.MockedFunction<typeof headObject>).mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { meta: 'value' },
+				$metadata: {} as any,
 			});
-			(getPresignedGetObjectUrl as jest.Mock).mockReturnValueOnce({
-				url: new URL('https://google.com'),
-			});
+			(
+				getPresignedGetObjectUrl as jest.MockedFunction<
+					typeof getPresignedGetObjectUrl
+				>
+			).mockResolvedValue(mockURL);
 		});
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		test.each([
+
+		const testCases: Array<{
+			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
+			expectedKey: string;
+		}> = [
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -99,26 +108,30 @@ describe('getUrl test with key', () => {
 				options: { accessLevel: 'protected', targetIdentityId },
 				expectedKey: `protected/${targetIdentityId}/${key}`,
 			},
-		])(
+		];
+
+		test.each(testCases)(
 			'should getUrl with key $expectedKey',
 			async ({ options, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: bucket,
 					Key: expectedKey,
 				};
-				const result = await getUrl({
+				const { url, expiresAt } = await getUrlWrapper({
 					key,
 					options: {
 						...options,
 						validateObjectExistence: true,
-					} as GetUrlOptionsWithKey,
+					},
 				});
+				const expectedResult = {
+					url: mockURL,
+					expiresAt: expect.any(Date),
+				};
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-				expect(result.url).toEqual({
-					url: new URL('https://google.com'),
-				});
+				expect({ url, expiresAt }).toEqual(expectedResult);
 			},
 		);
 	});
@@ -135,7 +148,7 @@ describe('getUrl test with key', () => {
 			});
 			expect.assertions(2);
 			try {
-				await getUrl({
+				await getUrlWrapper({
 					key: 'invalid_key',
 					options: { validateObjectExistence: true },
 				});
@@ -148,6 +161,9 @@ describe('getUrl test with key', () => {
 });
 
 describe('getUrl test with path', () => {
+	const getUrlWrapper = (
+		input: GetUrlWithPathInput,
+	): Promise<GetUrlWithPathOutput> => getUrl(input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -170,19 +186,19 @@ describe('getUrl test with path', () => {
 			userAgentValue: expect.any(String),
 		};
 		beforeEach(() => {
-			(headObject as jest.Mock).mockImplementation(() => {
-				return {
-					Key: 'path',
-					ContentLength: '100',
-					ContentType: 'text/plain',
-					ETag: 'etag',
-					LastModified: 'last-modified',
-					Metadata: { key: 'value' },
-				};
+			(headObject as jest.MockedFunction<typeof headObject>).mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { meta: 'value' },
+				$metadata: {} as any,
 			});
-			(getPresignedGetObjectUrl as jest.Mock).mockReturnValueOnce({
-				url: new URL('https://google.com'),
-			});
+			(
+				getPresignedGetObjectUrl as jest.MockedFunction<
+					typeof getPresignedGetObjectUrl
+				>
+			).mockResolvedValue(mockURL);
 		});
 		afterEach(() => {
 			jest.clearAllMocks();
@@ -204,17 +220,18 @@ describe('getUrl test with path', () => {
 					Bucket: bucket,
 					Key: expectedKey,
 				};
-				const result = await getUrl({
+				const { url, expiresAt } = await getUrlWrapper({
 					path,
 					options: {
 						validateObjectExistence: true,
-					} as GetUrlOptionsWithPath,
+					},
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-				expect(result.url).toEqual({
-					url: new URL('https://google.com'),
+				expect({ url, expiresAt }).toEqual({
+					url: mockURL,
+					expiresAt: expect.any(Date),
 				});
 			},
 		);
@@ -232,7 +249,7 @@ describe('getUrl test with path', () => {
 			});
 			expect.assertions(2);
 			try {
-				await getUrl({
+				await getUrlWrapper({
 					path: 'invalid_key',
 					options: { validateObjectExistence: true },
 				});

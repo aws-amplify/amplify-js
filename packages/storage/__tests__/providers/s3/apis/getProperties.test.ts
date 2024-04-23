@@ -4,10 +4,12 @@
 import { headObject } from '../../../../src/providers/s3/utils/client';
 import { getProperties } from '../../../../src/providers/s3';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import {
-	GetPropertiesOptionsWithKey,
-	GetPropertiesOptionsWithPath,
+	GetPropertiesInput,
+	GetPropertiesWithPathInput,
+	GetPropertiesOutput,
+	GetPropertiesWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
@@ -22,7 +24,7 @@ jest.mock('@aws-amplify/core', () => ({
 		},
 	},
 }));
-const mockHeadObject = headObject as jest.Mock;
+const mockHeadObject = headObject as jest.MockedFunction<typeof headObject>;
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
@@ -33,12 +35,24 @@ const credentials: AWSCredentials = {
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
-const key = 'key';
-const path = 'path';
+const inputKey = 'key';
+const inputPath = 'path';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 
+const expectedResult = {
+	size: 100,
+	contentType: 'text/plain',
+	eTag: 'etag',
+	metadata: { key: 'value' },
+	lastModified: new Date('01-01-1980'),
+	versionId: 'version-id',
+};
+
 describe('getProperties with key', () => {
+	const getPropertiesWrapper = (
+		input: GetPropertiesInput,
+	): Promise<GetPropertiesOutput> => getProperties(input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -54,66 +68,81 @@ describe('getProperties with key', () => {
 		});
 	});
 	describe('Happy cases: With key', () => {
-		const expected = {
-			key,
-			size: '100',
-			contentType: 'text/plain',
-			eTag: 'etag',
-			metadata: { key: 'value' },
-			lastModified: 'last-modified',
-			versionId: 'version-id',
-		};
 		const config = {
 			credentials,
 			region: 'region',
 			userAgentValue: expect.any(String),
 		};
 		beforeEach(() => {
-			mockHeadObject.mockReturnValueOnce({
-				ContentLength: '100',
+			mockHeadObject.mockResolvedValue({
+				ContentLength: 100,
 				ContentType: 'text/plain',
 				ETag: 'etag',
-				LastModified: 'last-modified',
+				LastModified: new Date('01-01-1980'),
 				Metadata: { key: 'value' },
 				VersionId: 'version-id',
+				$metadata: {} as any,
 			});
 		});
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		test.each([
+
+		const testCases: Array<{
+			expectedKey: string;
+			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
+		}> = [
 			{
-				expectedKey: `public/${key}`,
+				expectedKey: `public/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'guest' },
-				expectedKey: `public/${key}`,
+				expectedKey: `public/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'private' },
-				expectedKey: `private/${defaultIdentityId}/${key}`,
+				expectedKey: `private/${defaultIdentityId}/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'protected' },
-				expectedKey: `protected/${defaultIdentityId}/${key}`,
+				expectedKey: `protected/${defaultIdentityId}/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: `protected/${targetIdentityId}/${key}`,
+				expectedKey: `protected/${targetIdentityId}/${inputKey}`,
 			},
-		])(
+		];
+		test.each(testCases)(
 			'should getProperties with key $expectedKey',
 			async ({ options, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,
 				};
-				expect(
-					await getProperties({
-						key,
-						options: options as GetPropertiesOptionsWithKey,
-					}),
-				).toEqual({ ...expected, path: expectedKey });
+				const {
+					key,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				} = await getPropertiesWrapper({
+					key: inputKey,
+					options,
+				});
+				expect({
+					key,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				}).toEqual({
+					key: inputKey,
+					...expectedResult,
+				});
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
 			},
@@ -133,7 +162,7 @@ describe('getProperties with key', () => {
 			);
 			expect.assertions(3);
 			try {
-				await getProperties({ key });
+				await getPropertiesWrapper({ key: inputKey });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(
@@ -144,7 +173,7 @@ describe('getProperties with key', () => {
 					},
 					{
 						Bucket: 'bucket',
-						Key: `public/${key}`,
+						Key: `public/${inputKey}`,
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
@@ -154,6 +183,9 @@ describe('getProperties with key', () => {
 });
 
 describe('Happy cases: With path', () => {
+	const getPropertiesWrapper = (
+		input: GetPropertiesWithPathInput,
+	): Promise<GetPropertiesWithPathOutput> => getProperties(input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -169,16 +201,6 @@ describe('Happy cases: With path', () => {
 		});
 	});
 	describe('getProperties with path', () => {
-		const expected = {
-			key: path,
-			path,
-			size: '100',
-			contentType: 'text/plain',
-			eTag: 'etag',
-			metadata: { key: 'value' },
-			lastModified: 'last-modified',
-			versionId: 'version-id',
-		};
 		const config = {
 			credentials,
 			region: 'region',
@@ -186,13 +208,14 @@ describe('Happy cases: With path', () => {
 			userAgentValue: expect.any(String),
 		};
 		beforeEach(() => {
-			mockHeadObject.mockReturnValueOnce({
-				ContentLength: '100',
+			mockHeadObject.mockResolvedValue({
+				ContentLength: 100,
 				ContentType: 'text/plain',
 				ETag: 'etag',
-				LastModified: 'last-modified',
+				LastModified: new Date('01-01-1980'),
 				Metadata: { key: 'value' },
 				VersionId: 'version-id',
+				$metadata: {} as any,
 			});
 		});
 		afterEach(() => {
@@ -200,28 +223,46 @@ describe('Happy cases: With path', () => {
 		});
 		test.each([
 			{
-				testPath: path,
-				expectedKey: path,
+				testPath: inputPath,
+				expectedPath: inputPath,
 			},
 			{
-				testPath: () => path,
-				expectedKey: path,
+				testPath: () => inputPath,
+				expectedPath: inputPath,
 			},
 		])(
-			'should getProperties with path $path and expectedKey $expectedKey',
-			async ({ testPath, expectedKey }) => {
+			'should getProperties with path $path and expectedPath $expectedPath',
+			async ({ testPath, expectedPath }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
-					Key: expectedKey,
+					Key: expectedPath,
 				};
-				expect(
-					await getProperties({
-						path: testPath,
-						options: {
-							useAccelerateEndpoint: true,
-						} as GetPropertiesOptionsWithPath,
-					}),
-				).toEqual(expected);
+				const {
+					path,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				} = await getPropertiesWrapper({
+					path: testPath,
+					options: {
+						useAccelerateEndpoint: true,
+					},
+				});
+				expect({
+					path,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				}).toEqual({
+					path: expectedPath,
+					...expectedResult,
+				});
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
 			},
@@ -241,7 +282,7 @@ describe('Happy cases: With path', () => {
 			);
 			expect.assertions(3);
 			try {
-				await getProperties({ path });
+				await getPropertiesWrapper({ path: inputPath });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(
@@ -252,7 +293,7 @@ describe('Happy cases: With path', () => {
 					},
 					{
 						Bucket: 'bucket',
-						Key: path,
+						Key: inputPath,
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);

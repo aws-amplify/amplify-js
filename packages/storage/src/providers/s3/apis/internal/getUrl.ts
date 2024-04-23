@@ -4,7 +4,12 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { GetUrlInput, GetUrlOutput } from '../../types';
+import {
+	GetUrlInput,
+	GetUrlOutput,
+	GetUrlWithPathInput,
+	GetUrlWithPathOutput,
+} from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client';
 import {
@@ -22,8 +27,8 @@ import { getProperties } from './getProperties';
 
 export const getUrl = async (
 	amplify: AmplifyClassV6,
-	input: GetUrlInput,
-): Promise<GetUrlOutput> => {
+	input: GetUrlInput | GetUrlWithPathInput,
+): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
 	const { options: getUrlOptions } = input;
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput(amplify, getUrlOptions);
@@ -36,16 +41,7 @@ export const getUrl = async (
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
 	if (getUrlOptions?.validateObjectExistence) {
-		await getProperties(
-			amplify,
-			{
-				options: getUrlOptions,
-				...((inputType === STORAGE_INPUT_KEY
-					? { key: input.key }
-					: { path: input.path }) as GetUrlInput),
-			},
-			StorageAction.GetUrl,
-		);
+		await getProperties(amplify, input, StorageAction.GetUrl);
 	}
 
 	let urlExpirationInSec =

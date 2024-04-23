@@ -7,8 +7,14 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 import {
 	ListAllInput,
 	ListAllOutput,
+	ListAllWithPathInput,
+	ListAllWithPathOutput,
+	ListOutputItem,
+	ListOutputItemWithPath,
 	ListPaginateInput,
 	ListPaginateOutput,
+	ListPaginateWithPathInput,
+	ListPaginateWithPathOutput,
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
@@ -23,7 +29,6 @@ import {
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
-import { ListOutputItem } from '../../types/outputs';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -35,8 +40,17 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input: ListAllInput | ListPaginateInput,
-): Promise<ListAllOutput | ListPaginateOutput> => {
+	input:
+		| ListAllInput
+		| ListPaginateInput
+		| ListAllWithPathInput
+		| ListPaginateWithPathInput,
+): Promise<
+	| ListAllOutput
+	| ListPaginateOutput
+	| ListAllWithPathOutput
+	| ListPaginateWithPathOutput
+> => {
 	const { options = {} } = input;
 	const {
 		s3Config,
@@ -145,19 +159,14 @@ const _listWithPrefix = async ({
 	}
 
 	return {
-		items: response.Contents.map(item => {
-			const finalKey = generatedPrefix
+		items: response.Contents.map(item => ({
+			key: generatedPrefix
 				? item.Key!.substring(generatedPrefix.length)
-				: item.Key!;
-
-			return {
-				key: finalKey,
-				path: item.Key!,
-				eTag: item.ETag,
-				lastModified: item.LastModified,
-				size: item.Size,
-			};
-		}),
+				: item.Key!,
+			eTag: item.ETag,
+			lastModified: item.LastModified,
+			size: item.Size,
+		})),
 		nextToken: response.NextContinuationToken,
 	};
 };
@@ -165,8 +174,8 @@ const _listWithPrefix = async ({
 const _listAllWithPath = async ({
 	s3Config,
 	listParams,
-}: ListInputArgs): Promise<ListAllOutput> => {
-	const listResult: ListOutputItem[] = [];
+}: ListInputArgs): Promise<ListAllWithPathOutput> => {
+	const listResult: ListOutputItemWithPath[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
 		const { items: pageResults, nextToken: pageNextToken } =
@@ -190,7 +199,7 @@ const _listAllWithPath = async ({
 const _listWithPath = async ({
 	s3Config,
 	listParams,
-}: ListInputArgs): Promise<ListPaginateOutput> => {
+}: ListInputArgs): Promise<ListPaginateWithPathOutput> => {
 	const listParamsClone = { ...listParams };
 	if (!listParamsClone.MaxKeys || listParamsClone.MaxKeys > MAX_PAGE_SIZE) {
 		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
@@ -214,7 +223,6 @@ const _listWithPath = async ({
 	return {
 		items: response.Contents.map(item => ({
 			path: item.Key!,
-			key: item.Key!,
 			eTag: item.ETag,
 			lastModified: item.LastModified,
 			size: item.Size,

@@ -57,25 +57,24 @@ mockPutObject.mockResolvedValue({
 describe('putObjectJob with key', () => {
 	it('should supply the correct parameters to putObject API handler', async () => {
 		const abortController = new AbortController();
-		const key = 'key';
-		const finalKey = `public/${key}`;
+		const inputKey = 'key';
 		const data = 'data';
-		const contentType = 'contentType';
+		const mockContentType = 'contentType';
 		const contentDisposition = 'contentDisposition';
 		const contentEncoding = 'contentEncoding';
-		const metadata = { key: 'value' };
+		const mockMetadata = { key: 'value' };
 		const onProgress = jest.fn();
 		const useAccelerateEndpoint = true;
 
 		const job = putObjectJob(
 			{
-				key,
+				key: inputKey,
 				data,
 				options: {
 					contentDisposition,
 					contentEncoding,
-					contentType,
-					metadata,
+					contentType: mockContentType,
+					metadata: mockMetadata,
 					onProgress,
 					useAccelerateEndpoint,
 				},
@@ -84,8 +83,7 @@ describe('putObjectJob with key', () => {
 		);
 		const result = await job();
 		expect(result).toEqual({
-			key,
-			path: finalKey,
+			key: inputKey,
 			eTag: 'eTag',
 			versionId: 'versionId',
 			contentType: 'contentType',
@@ -103,12 +101,12 @@ describe('putObjectJob with key', () => {
 			},
 			{
 				Bucket: 'bucket',
-				Key: finalKey,
+				Key: `public/${inputKey}`,
 				Body: data,
-				ContentType: contentType,
+				ContentType: mockContentType,
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
-				Metadata: metadata,
+				Metadata: mockMetadata,
 				ContentMD5: undefined,
 			},
 		);
@@ -146,25 +144,25 @@ describe('putObjectJob with path', () => {
 		},
 	])(
 		'should supply the correct parameters to putObject API handler when path is $path',
-		async ({ path, expectedKey }) => {
+		async ({ path: inputPath, expectedKey }) => {
 			const abortController = new AbortController();
 			const data = 'data';
-			const contentType = 'contentType';
+			const mockContentType = 'contentType';
 			const contentDisposition = 'contentDisposition';
 			const contentEncoding = 'contentEncoding';
-			const metadata = { key: 'value' };
+			const mockMetadata = { key: 'value' };
 			const onProgress = jest.fn();
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
 				{
-					path,
+					path: inputPath,
 					data,
 					options: {
 						contentDisposition,
 						contentEncoding,
-						contentType,
-						metadata,
+						contentType: mockContentType,
+						metadata: mockMetadata,
 						onProgress,
 						useAccelerateEndpoint,
 					},
@@ -174,7 +172,6 @@ describe('putObjectJob with path', () => {
 			const result = await job();
 			expect(result).toEqual({
 				path: expectedKey,
-				key: expectedKey,
 				eTag: 'eTag',
 				versionId: 'versionId',
 				contentType: 'contentType',
@@ -194,10 +191,10 @@ describe('putObjectJob with path', () => {
 					Bucket: 'bucket',
 					Key: expectedKey,
 					Body: data,
-					ContentType: contentType,
+					ContentType: mockContentType,
 					ContentDisposition: contentDisposition,
 					ContentEncoding: contentEncoding,
-					Metadata: metadata,
+					Metadata: mockMetadata,
 					ContentMD5: undefined,
 				},
 			);

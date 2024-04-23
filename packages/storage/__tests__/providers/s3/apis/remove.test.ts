@@ -2,11 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
-import { StorageOptions } from '../../../../src/types';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
+import {
+	RemoveInput,
+	RemoveWithPathInput,
+	RemoveOutput,
+	RemoveWithPathOutput,
+} from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -23,7 +28,7 @@ jest.mock('@aws-amplify/core', () => ({
 const mockDeleteObject = deleteObject as jest.Mock;
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
-const key = 'key';
+const inputKey = 'key';
 const bucket = 'bucket';
 const region = 'region';
 const defaultIdentityId = 'defaultIdentityId';
@@ -55,6 +60,9 @@ describe('remove API', () => {
 	});
 	describe('Happy Cases', () => {
 		describe('With Key', () => {
+			const removeWrapper = (input: RemoveInput): Promise<RemoveOutput> =>
+				remove(input);
+
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
 					return {
@@ -65,31 +73,36 @@ describe('remove API', () => {
 			afterEach(() => {
 				jest.clearAllMocks();
 			});
-			[
+			const testCases: Array<{
+				expectedKey: string;
+				options?: { accessLevel?: StorageAccessLevel };
+			}> = [
 				{
-					expectedKey: `public/${key}`,
+					expectedKey: `public/${inputKey}`,
 				},
 				{
 					options: { accessLevel: 'guest' },
-					expectedKey: `public/${key}`,
+					expectedKey: `public/${inputKey}`,
 				},
 				{
 					options: { accessLevel: 'private' },
-					expectedKey: `private/${defaultIdentityId}/${key}`,
+					expectedKey: `private/${defaultIdentityId}/${inputKey}`,
 				},
 				{
 					options: { accessLevel: 'protected' },
-					expectedKey: `protected/${defaultIdentityId}/${key}`,
+					expectedKey: `protected/${defaultIdentityId}/${inputKey}`,
 				},
-			].forEach(({ options, expectedKey }) => {
+			];
+
+			testCases.forEach(({ options, expectedKey }) => {
 				const accessLevel = options?.accessLevel ?? 'default';
-				const removeResultKey = { key };
 
 				it(`should remove object with ${accessLevel} accessLevel`, async () => {
-					expect.assertions(3);
-					expect(
-						await remove({ key, options: options as StorageOptions }),
-					).toEqual({ ...removeResultKey, path: expectedKey });
+					const { key } = await removeWrapper({
+						key: inputKey,
+						options: options,
+					});
+					expect(key).toEqual(inputKey);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 						Bucket: bucket,
@@ -99,6 +112,9 @@ describe('remove API', () => {
 			});
 		});
 		describe('With Path', () => {
+			const removeWrapper = (
+				input: RemoveWithPathInput,
+			): Promise<RemoveWithPathOutput> => remove(input);
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
 					return {
@@ -111,35 +127,32 @@ describe('remove API', () => {
 			});
 			[
 				{
-					path: `public/${key}`,
+					path: `public/${inputKey}`,
 				},
 				{
-					path: ({ identityId }: any) => `protected/${identityId}/${key}`,
+					path: ({ identityId }: { identityId?: string }) =>
+						`protected/${identityId}/${inputKey}`,
 				},
-			].forEach(({ path }) => {
-				const resolvePath =
-					typeof path === 'string'
-						? path
-						: path({ identityId: defaultIdentityId });
-				const removeResultPath = {
-					path: resolvePath,
-					key: resolvePath,
-				};
+			].forEach(({ path: inputPath }) => {
+				const resolvedPath =
+					typeof inputPath === 'string'
+						? inputPath
+						: inputPath({ identityId: defaultIdentityId });
 
 				it(`should remove object for the given path`, async () => {
-					expect.assertions(3);
-					expect(await remove({ path })).toEqual(removeResultPath);
+					const { path } = await removeWrapper({ path: inputPath });
+					expect(path).toEqual(resolvedPath);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 						Bucket: bucket,
-						Key: resolvePath,
+						Key: resolvedPath,
 					});
 				});
 			});
 		});
 	});
 
-	describe('Error Cases', () => {
+	describe('Error Cases:', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});

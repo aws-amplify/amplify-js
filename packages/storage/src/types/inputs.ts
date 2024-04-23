@@ -86,23 +86,13 @@ export interface StorageCopyInputWithKey<
 	SourceOptions extends StorageOptions,
 	DestinationOptions extends StorageOptions,
 > {
-	source: SourceOptions & {
-		path?: never;
-	};
-	destination: DestinationOptions & {
-		path?: never;
-	};
+	source: SourceOptions;
+	destination: DestinationOptions;
 }
 
 export interface StorageCopyInputWithPath {
-	source: StorageOperationInputWithPath & {
-		/** @deprecated Use path instead. */
-		key?: never;
-	};
-	destination: StorageOperationInputWithPath & {
-		/** @deprecated Use path instead. */
-		key?: never;
-	};
+	source: StorageOperationInputWithPath;
+	destination: StorageOperationInputWithPath;
 }
 
 /**
