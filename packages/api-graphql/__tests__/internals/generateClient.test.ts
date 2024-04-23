@@ -5922,7 +5922,7 @@ describe('generateClient', () => {
 
 			// TODO: data should actually be null/undefined, pending discussion and fix.
 			// This is not strictly related to custom ops.
-			expect(data).toEqual(null);
+			expect(data).toBeNull();
 			expect(errors).toEqual([{ message: 'Network error' }]);
 		});
 
