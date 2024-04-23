@@ -678,7 +678,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				expectedKey: testPath,
 			},
 			{
-				path: ({ identityId }: { identityId: string }) =>
+				path: ({ identityId }: { identityId?: string }) =>
 					`testPath/${identityId}/object`,
 				expectedKey: `testPath/${defaultIdentityId}/object`,
 			},
