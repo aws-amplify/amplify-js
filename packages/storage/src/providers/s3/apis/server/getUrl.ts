@@ -48,7 +48,7 @@ export function getUrl(
  * URL, and will throw `StorageError` if the object does not exist.
  *
  * @param contextSpec - The isolated server context.
- * @param input - The `GetUrlInputWithKey` object.
+ * @param input - The `GetUrlInput` object.
  * @returns Presigned URL and timestamp when the URL MAY expire.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors

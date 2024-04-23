@@ -47,6 +47,15 @@ const bucket = 'bucket';
 const region = 'region';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+const mockDownloadResultBase = {
+	body: 'body',
+	lastModified: 'lastModified',
+	size: 'contentLength',
+	eTag: 'eTag',
+	metadata: 'metadata',
+	versionId: 'versionId',
+	contentType: 'contentType',
+};
 
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockCreateDownloadTask = createDownloadTask as jest.Mock;
@@ -124,7 +133,7 @@ describe('downloadData with key', () => {
 					useAccelerateEndpoint: true,
 					onProgress,
 				},
-			}).result;
+			});
 			const job = mockCreateDownloadTask.mock.calls[0][0].job;
 			const { key, body }: StorageDownloadDataOutput<ItemWithKey> = await job();
 			expect({ key, body }).toEqual({
@@ -150,7 +159,6 @@ describe('downloadData with key', () => {
 	);
 
 	it('should assign the getObject API handler response to the result with key', async () => {
-		const expectedKey = `public/${inputKey}`;
 		(getObject as jest.Mock).mockResolvedValueOnce({
 			Body: 'body',
 			LastModified: 'lastModified',
@@ -184,13 +192,7 @@ describe('downloadData with key', () => {
 			versionId,
 		}).toEqual({
 			key: inputKey,
-			body: 'body',
-			lastModified: 'lastModified',
-			size: 'contentLength',
-			eTag: 'eTag',
-			metadata: 'metadata',
-			versionId: 'versionId',
-			contentType: 'contentType',
+			...mockDownloadResultBase,
 		});
 	});
 
@@ -336,13 +338,7 @@ describe('downloadData with path', () => {
 			versionId,
 		}).toEqual({
 			path: inputPath,
-			body: 'body',
-			lastModified: 'lastModified',
-			size: 'contentLength',
-			eTag: 'eTag',
-			metadata: 'metadata',
-			versionId: 'versionId',
-			contentType: 'contentType',
+			...mockDownloadResultBase,
 		});
 	});
 

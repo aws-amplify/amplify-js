@@ -36,7 +36,6 @@ const bucket = 'bucket';
 const region = 'region';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
-const copyResult = { key: destinationKey };
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -184,7 +183,7 @@ describe('copy API', () => {
 								key: destinationKey,
 							},
 						});
-						expect({ key }).toEqual(copyResult);
+						expect(key).toEqual(destinationKey);
 						expect(copyObject).toHaveBeenCalledTimes(1);
 						expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 							...copyObjectClientBaseParams,
@@ -237,7 +236,7 @@ describe('copy API', () => {
 						source: { path: sourcePath },
 						destination: { path: destinationPath },
 					});
-					expect({ path }).toEqual({ path: expectedDestinationPath });
+					expect(path).toEqual(expectedDestinationPath);
 					expect(copyObject).toHaveBeenCalledTimes(1);
 					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 						...copyObjectClientBaseParams,

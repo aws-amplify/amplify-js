@@ -10,6 +10,7 @@ import {
 } from '../../../../../src/errors/types/validation';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
+import { UploadDataInput, UploadDataWithPathInput } from '../../../../../src';
 
 jest.mock('../../../../../src/providers/s3/utils/');
 jest.mock('../../../../../src/providers/s3/apis/uploadData/putObjectJob');
@@ -35,12 +36,11 @@ describe('uploadData with key', () => {
 
 	describe('validation', () => {
 		it('should throw if data size is too big', async () => {
-			expect(() =>
-				uploadData({
-					key: 'key',
-					data: { size: MAX_OBJECT_SIZE + 1 } as any,
-				}),
-			).toThrow(
+			const mockUploadInput: UploadDataInput = {
+				key: 'key',
+				data: { size: MAX_OBJECT_SIZE + 1 } as any,
+			};
+			expect(() => uploadData(mockUploadInput)).toThrow(
 				expect.objectContaining(
 					validationErrorMap[StorageValidationErrorCode.ObjectIsTooLarge],
 				),
@@ -131,12 +131,11 @@ describe('uploadData with path', () => {
 
 	describe('validation', () => {
 		it('should throw if data size is too big', async () => {
-			expect(() =>
-				uploadData({
-					path: testPath,
-					data: { size: MAX_OBJECT_SIZE + 1 } as any,
-				}),
-			).toThrow(
+			const mockUploadInput: UploadDataWithPathInput = {
+				path: testPath,
+				data: { size: MAX_OBJECT_SIZE + 1 } as any,
+			};
+			expect(() => uploadData(mockUploadInput)).toThrow(
 				expect.objectContaining(
 					validationErrorMap[StorageValidationErrorCode.ObjectIsTooLarge],
 				),
@@ -154,7 +153,7 @@ describe('uploadData with path', () => {
 
 	describe('use putObject for small uploads', () => {
 		const smallData = { size: 5 * 1024 * 1024 } as any;
-		
+
 		test.each([
 			{
 				path: testPath,
@@ -163,22 +162,22 @@ describe('uploadData with path', () => {
 				path: () => testPath,
 			},
 		])(
-			'should use putObject if data size is <= 5MB when path is $path', 
+			'should use putObject if data size is <= 5MB when path is $path',
 			async ({ path }) => {
 				const testInput = {
 					path,
 					data: smallData,
-				}
+				};
 
 				uploadData(testInput);
 
 				expect(mockPutObjectJob).toHaveBeenCalledWith(
-					testInput, 
-					expect.any(AbortSignal), 
-					expect.any(Number)
+					testInput,
+					expect.any(AbortSignal),
+					expect.any(Number),
 				);
 				expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
-			}
+			},
 		);
 
 		it('should use uploadTask', async () => {
@@ -207,12 +206,15 @@ describe('uploadData with path', () => {
 			const testInput = {
 				path: testPath,
 				data: biggerData,
-			}
+			};
 
 			uploadData(testInput);
 
 			expect(mockPutObjectJob).not.toHaveBeenCalled();
-			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(testInput, expect.any(Number));
+			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(
+				testInput,
+				expect.any(Number),
+			);
 		});
 
 		it('should use uploadTask', async () => {

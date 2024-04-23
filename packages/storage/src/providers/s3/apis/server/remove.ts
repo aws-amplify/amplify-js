@@ -32,7 +32,7 @@ export function remove(
  * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/remove | path} instead.
  *
  * Remove a file from your S3 bucket.
- * @param input - The `RemoveInputWithKey` object.
+ * @param input - The `RemoveInput` object.
  * @param contextSpec - The context spec used to get the Amplify server context.
  * @return Output containing the removed object key
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object

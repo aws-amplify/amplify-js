@@ -58,7 +58,6 @@ describe('putObjectJob with key', () => {
 	it('should supply the correct parameters to putObject API handler', async () => {
 		const abortController = new AbortController();
 		const inputKey = 'key';
-		const finalKey = `public/${inputKey}`;
 		const data = 'data';
 		const mockContentType = 'contentType';
 		const contentDisposition = 'contentDisposition';
@@ -102,7 +101,7 @@ describe('putObjectJob with key', () => {
 			},
 			{
 				Bucket: 'bucket',
-				Key: finalKey,
+				Key: `public/${inputKey}`,
 				Body: data,
 				ContentType: mockContentType,
 				ContentDisposition: contentDisposition,

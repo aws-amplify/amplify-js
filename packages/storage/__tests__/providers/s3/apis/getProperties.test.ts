@@ -89,35 +89,35 @@ describe('getProperties with key', () => {
 		});
 
 		const testCases: Array<{
-			generatedKey: string;
+			expectedKey: string;
 			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
 		}> = [
 			{
-				generatedKey: `public/${inputKey}`,
+				expectedKey: `public/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'guest' },
-				generatedKey: `public/${inputKey}`,
+				expectedKey: `public/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'private' },
-				generatedKey: `private/${defaultIdentityId}/${inputKey}`,
+				expectedKey: `private/${defaultIdentityId}/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'protected' },
-				generatedKey: `protected/${defaultIdentityId}/${inputKey}`,
+				expectedKey: `protected/${defaultIdentityId}/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'protected', targetIdentityId },
-				generatedKey: `protected/${targetIdentityId}/${inputKey}`,
+				expectedKey: `protected/${targetIdentityId}/${inputKey}`,
 			},
 		];
 		test.each(testCases)(
-			'should getProperties with key $generatedKey',
-			async ({ options, generatedKey }) => {
+			'should getProperties with key $expectedKey',
+			async ({ options, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
-					Key: generatedKey,
+					Key: expectedKey,
 				};
 				const {
 					key,
@@ -129,7 +129,7 @@ describe('getProperties with key', () => {
 					versionId,
 				} = await getPropertiesWrapper({
 					key: inputKey,
-					options: options,
+					options,
 				});
 				expect({
 					key,

@@ -102,7 +102,7 @@ describe('remove API', () => {
 						key: inputKey,
 						options: options,
 					});
-					expect({ key }).toEqual({ key: inputKey });
+					expect(key).toEqual(inputKey);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
 						Bucket: bucket,
@@ -130,7 +130,8 @@ describe('remove API', () => {
 					path: `public/${inputKey}`,
 				},
 				{
-					path: ({ identityId }: any) => `protected/${identityId}/${inputKey}`,
+					path: ({ identityId }: { identityId?: string }) =>
+						`protected/${identityId}/${inputKey}`,
 				},
 			].forEach(({ path: inputPath }) => {
 				const resolvedPath =
