@@ -222,7 +222,7 @@ describe('parseAmplifyOutputs tests', () => {
 					aws_region: 'us-east-1',
 					maps: {
 						items: {
-							map1: { name: 'map1', style: 'color' },
+							map1: { style: 'color' },
 						},
 						default: 'map1',
 					},
@@ -249,7 +249,6 @@ describe('parseAmplifyOutputs tests', () => {
 							items: {
 								map1: {
 									style: 'color',
-									name: 'map1',
 								},
 							},
 						},

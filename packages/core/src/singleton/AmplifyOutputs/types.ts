@@ -51,7 +51,7 @@ export interface AmplifyOutputsStorageProperties {
 export interface AmplifyOutputsGeoProperties {
 	aws_region: string;
 	maps?: {
-		items: Record<string, { name: string; style: string }>;
+		items: Record<string, unknown>;
 		default: string;
 	};
 	search_indices?: { items: string[]; default: string };
