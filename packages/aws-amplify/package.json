@@ -276,12 +276,12 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.27",
-		"@aws-amplify/api": "6.0.28",
+		"@aws-amplify/analytics": "7.0.28",
+		"@aws-amplify/api": "6.0.29",
 		"@aws-amplify/auth": "6.2.0",
-		"@aws-amplify/core": "6.0.27",
-		"@aws-amplify/datastore": "5.0.28",
-		"@aws-amplify/notifications": "2.0.27",
+		"@aws-amplify/core": "6.0.28",
+		"@aws-amplify/datastore": "5.0.29",
+		"@aws-amplify/notifications": "2.0.28",
 		"@aws-amplify/storage": "6.3.0",
 		"tslib": "^2.5.0"
 	},
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "39.0 kB"
+			"limit": "39.5 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -437,7 +437,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "19.40 kB"
+			"limit": "19.44 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",

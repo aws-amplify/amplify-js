@@ -62,7 +62,7 @@ const client = {
 	graphql,
 	cancel,
 	isCancelError,
-} as V6Client;
+} as unknown as V6Client;
 
 const mockFetchAuthSession = (Amplify as any).Auth
 	.fetchAuthSession as jest.Mock;
@@ -1142,7 +1142,7 @@ describe('API test', () => {
 				[__amplify]: AmplifyCore,
 				graphql,
 				cancel,
-			} as V6Client;
+			} as unknown as V6Client;
 
 			Amplify.configure(
 				{
@@ -1242,7 +1242,7 @@ describe('API test', () => {
 				[__amplify]: AmplifyCore,
 				graphql,
 				cancel,
-			} as V6Client;
+			} as unknown as V6Client;
 
 			Amplify.configure(
 				{

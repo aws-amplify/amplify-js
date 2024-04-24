@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
+import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
 /**
  * @private

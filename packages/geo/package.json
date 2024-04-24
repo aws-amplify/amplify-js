@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "3.0.27",
+	"version": "3.0.28",
 	"description": "Geo category for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -76,7 +76,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.27",
+		"@aws-amplify/core": "6.0.28",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [

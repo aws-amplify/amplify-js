@@ -33,7 +33,7 @@ export function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
 		const [_, postOptions] = call;
 		const userAgent = postOptions?.options?.headers?.['x-amz-user-agent'];
 		if (userAgent) {
-			const staticUserAgent = userAgent.replace(/\/[\d.]+/g, '/latest');
+			const staticUserAgent = userAgent.replace(/\/[\w\d.+-]+/g, '/latest');
 			postOptions.options.headers['x-amz-user-agent'] = staticUserAgent;
 		}
 		// Calling of `post` API with an instance of `AmplifyClassV6` has been
