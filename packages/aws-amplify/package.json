@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.0.29",
+	"version": "6.0.30",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -278,7 +278,7 @@
 	"dependencies": {
 		"@aws-amplify/analytics": "7.0.28",
 		"@aws-amplify/api": "6.0.29",
-		"@aws-amplify/auth": "6.0.28",
+		"@aws-amplify/auth": "6.0.29",
 		"@aws-amplify/core": "6.0.28",
 		"@aws-amplify/datastore": "5.0.29",
 		"@aws-amplify/notifications": "2.0.28",
@@ -437,7 +437,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "19.40 kB"
+			"limit": "19.44 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
