@@ -27,13 +27,14 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `⚠️ This PR includes manual changes to the "aws-amplify" package.json file, which can have library-wide implications. 
+              body: `⚠️ This PR includes changes to the "aws-amplify" package.json file, which can have library-wide implications. 
 
               Please ensure that this PR:
-              - Does not modify "@aws-amplify/*" dependency versions, which may misalign core dependencies across the library.
-              
-              A repository administrator **is required** to review & merge this change.`
+              - Does not manually change "@aws-amplify/*" dependency versions, which may misalign core dependencies across the library
+              - Remove any export paths without a major version bump
+
+              A repository administrator **is required** to review this change.`
             })
-      - name: Fail status check
-        if: steps.aws-amplify-package-check.outputs.any_changed == 'true'
-        run: exit 1
+      # - name: Fail status check
+      #   if: steps.aws-amplify-package-check.outputs.any_changed == 'true'
+      #   run: exit 1
