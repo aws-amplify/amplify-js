@@ -66,8 +66,7 @@ describe('createDownloadTask', () => {
 				job: jest.fn(),
 				onCancel,
 			});
-			// TODO[AllanZhengYP]: Use ts-expect-error instead after upgrading Jest.
-			// @ts-ignore
+			// @ts-expect-error assign to read-only
 			task.state = state;
 			task.cancel();
 			expect(onCancel).not.toHaveBeenCalled();

@@ -67,8 +67,7 @@ describe('createUploadTask', () => {
 				job: jest.fn(),
 				onCancel,
 			});
-			// TODO[AllanZhengYP]: Use ts-expect-error instead after upgrading Jest.
-			// @ts-ignore
+			// @ts-expect-error assign to read-only
 			task.state = state;
 			task.cancel();
 			expect(onCancel).not.toHaveBeenCalled();
@@ -100,8 +99,7 @@ describe('createUploadTask', () => {
 				onPause,
 				isMultipartUpload: true,
 			});
-			// TODO[AllanZhengYP]: Use ts-expect-error instead after upgrading Jest.
-			// @ts-ignore
+			// @ts-expect-error assign to read-only
 			task.state = state;
 			task.pause();
 			expect(onPause).not.toHaveBeenCalled();
@@ -134,8 +132,7 @@ describe('createUploadTask', () => {
 				onResume,
 				isMultipartUpload: true,
 			});
-			// TODO[AllanZhengYP]: Use ts-expect-error instead after upgrading Jest.
-			// @ts-ignore
+			// @ts-expect-error assign to read-only
 			task.state = state;
 			task.resume();
 			expect(onResume).not.toHaveBeenCalled();

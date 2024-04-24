@@ -261,18 +261,17 @@ describe('copy API', () => {
 				}),
 			);
 			expect.assertions(3);
-			const sourceKey = 'SourceKeyNotFound';
-			const destinationKey = 'destinationKey';
+			const missingSourceKey = 'SourceKeyNotFound';
 			try {
 				await copy({
-					source: { key: sourceKey },
+					source: { key: missingSourceKey },
 					destination: { key: destinationKey },
 				});
 			} catch (error: any) {
 				expect(copyObject).toHaveBeenCalledTimes(1);
 				expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
 					...copyObjectClientBaseParams,
-					CopySource: `${bucket}/public/${sourceKey}`,
+					CopySource: `${bucket}/public/${missingSourceKey}`,
 					Key: `public/${destinationKey}`,
 				});
 				expect(error.$metadata.httpStatusCode).toBe(404);
@@ -282,7 +281,7 @@ describe('copy API', () => {
 		it('should return a path not found error when source uses path and destination uses key', async () => {
 			expect.assertions(2);
 			try {
-				// @ts-expect-error
+				// @ts-expect-error mismatch copy input not allowed
 				await copy({
 					source: { path: 'sourcePath' },
 					destination: { key: 'destinationKey' },
@@ -297,7 +296,7 @@ describe('copy API', () => {
 		it('should return a key not found error when source uses key and destination uses path', async () => {
 			expect.assertions(2);
 			try {
-				// @ts-expect-error
+				// @ts-expect-error mismatch copy input not allowed
 				await copy({
 					source: { key: 'sourcePath' },
 					destination: { path: 'destinationKey' },
