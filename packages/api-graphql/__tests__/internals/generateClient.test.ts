@@ -644,6 +644,10 @@ describe('generateClient', () => {
 				},
 			});
 
+			expect(data).not.toBeNull();
+
+			expect(data).not.toBeNull();
+
 			const { data: notes } = await data!.notes();
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -689,6 +693,8 @@ describe('generateClient', () => {
 					},
 				},
 			});
+
+			expect(data).not.toBeNull();
 
 			const { data: notes } = await data!.notes({ nextToken: 'some-token' });
 
@@ -736,6 +742,8 @@ describe('generateClient', () => {
 				},
 			});
 
+			expect(data).not.toBeNull();
+
 			const { data: notes } = await data!.notes({ limit: 5 });
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -779,6 +787,8 @@ describe('generateClient', () => {
 				},
 			});
 
+			expect(data).not.toBeNull();
+
 			const { data: todo } = await data!.todo();
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -819,6 +829,8 @@ describe('generateClient', () => {
 					},
 				},
 			});
+
+			expect(data).not.toBeNull();
 
 			const { data: todo } = await data!.meta();
 
@@ -1298,6 +1310,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -1336,6 +1350,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -1372,6 +1388,8 @@ describe('generateClient', () => {
 						},
 					},
 				});
+
+				expect(data).not.toBeNull();
 
 				await data!.meta();
 
@@ -1414,6 +1432,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.notes({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -1452,6 +1472,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.todo({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -1488,6 +1510,8 @@ describe('generateClient', () => {
 						},
 					},
 				});
+
+				expect(data).not.toBeNull();
 
 				await data!.meta({ authMode: 'apiKey' });
 
@@ -1788,6 +1812,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -1827,6 +1853,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -1864,6 +1892,8 @@ describe('generateClient', () => {
 						},
 					},
 				});
+
+				expect(data).not.toBeNull();
 
 				await data!.meta();
 
@@ -1906,6 +1936,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.notes({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -1944,6 +1976,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.todo({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -1980,6 +2014,8 @@ describe('generateClient', () => {
 						},
 					},
 				});
+
+				expect(data).not.toBeNull();
 
 				await data!.meta({ authMode: 'lambda', authToken: 'some-token' });
 
@@ -2280,6 +2316,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -2316,6 +2354,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -2350,6 +2390,8 @@ describe('generateClient', () => {
 						},
 					},
 				});
+
+				expect(data).not.toBeNull();
 
 				await data!.meta();
 
@@ -2392,6 +2434,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.notes({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -2428,6 +2472,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.todo({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -2462,6 +2508,8 @@ describe('generateClient', () => {
 						},
 					},
 				});
+
+				expect(data).not.toBeNull();
 
 				await data!.meta({ authMode: 'apiKey' });
 
@@ -2769,6 +2817,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -2806,6 +2856,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -2841,6 +2893,8 @@ describe('generateClient', () => {
 						},
 					},
 				});
+
+				expect(data).not.toBeNull();
 
 				await data!.meta();
 
@@ -2883,6 +2937,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.notes({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -2919,6 +2975,8 @@ describe('generateClient', () => {
 					},
 				});
 
+				expect(data).not.toBeNull();
+
 				await data!.todo({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
@@ -2953,6 +3011,8 @@ describe('generateClient', () => {
 						},
 					},
 				});
+
+				expect(data).not.toBeNull();
 
 				await data!.meta({ authMode: 'lambda', authToken: 'some-token' });
 
@@ -5641,6 +5701,8 @@ describe('generateClient', () => {
 					},
 				},
 			});
+
+			expect(result.data).not.toBeNull();
 
 			const { data: comments } = await result.data!.comments();
 
