@@ -375,7 +375,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const { data } = await client.models.Todo.list({
+			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
 				limit: 5,
 			});
@@ -401,7 +401,7 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({ amplify: Amplify });
 
-			const { data } = await client.models.ThingWithCustomPk.list({
+			await client.models.ThingWithCustomPk.list({
 				cpk_cluster_key: '1',
 				sortDirection: 'ASC',
 			});
@@ -427,7 +427,7 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({ amplify: Amplify });
 
-			const { data } = await client.models.ThingWithCustomPk.list({
+			await client.models.ThingWithCustomPk.list({
 				cpk_cluster_key: '1',
 				sortDirection: 'DESC',
 			});
@@ -935,7 +935,7 @@ describe('generateClient', () => {
 				},
 			];
 
-			const spy = mockApiResponse({
+			mockApiResponse({
 				data: {
 					updateTodo: null,
 				},
@@ -1008,7 +1008,7 @@ describe('generateClient', () => {
 				},
 			];
 
-			const spy = mockApiResponse({
+			mockApiResponse({
 				data: {
 					listTodos: null,
 				},
@@ -5673,7 +5673,7 @@ describe('generateClient', () => {
 				updatedAt: '2024-02-21T21:30:29.826Z',
 			};
 
-			const likePostSpy = mockApiResponse({
+			mockApiResponse({
 				data: { likePostReturnPost },
 			});
 
@@ -5840,7 +5840,7 @@ describe('generateClient', () => {
 					someHeader: 'some header value',
 				},
 			});
-			const result = await client.queries.echo({
+			await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
 			});
 
@@ -5859,7 +5859,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({
 				amplify: Amplify,
 			});
-			const result = await client.queries.echo(
+			await client.queries.echo(
 				{
 					argumentContent: 'echo argumentContent value',
 				},
@@ -5887,7 +5887,7 @@ describe('generateClient', () => {
 				authMode: 'lambda',
 				authToken: 'my-auth-token',
 			});
-			const result = await client.queries.echo({
+			await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
 			});
 
@@ -5906,7 +5906,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({
 				amplify: Amplify,
 			});
-			const result = await client.queries.echo(
+			await client.queries.echo(
 				{
 					argumentContent: 'echo argumentContent value',
 				},
@@ -5949,7 +5949,7 @@ describe('generateClient', () => {
 		});
 
 		test('graphql error handling', async () => {
-			const spy = mockApiResponse({
+			mockApiResponse({
 				data: null,
 				errors: [{ message: 'some graphql error' }],
 			});
@@ -5994,7 +5994,7 @@ describe('generateClient', () => {
 			// package up a lot of different errors types into `{ errors }` as possible.
 			// But, a clear example where this doesn't occur is request cancellations.
 
-			const spy = mockApiResponse(
+			mockApiResponse(
 				new Promise(resolve => {
 					// slight delay to give us time to cancel the request.
 					setTimeout(
