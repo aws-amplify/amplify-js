@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { s3TransferHandler } from '../../../../../../src/providers/s3/utils/client/runtime/s3TransferHandler/fetch';
+import { StorageError } from '../../../../../../src/errors/StorageError';
 
 import cases from './cases';
-import { StorageError } from '../../../../../../src/errors/StorageError';
 
 jest.mock(
 	'../../../../../../src/providers/s3/utils/client/runtime/s3TransferHandler/fetch',
@@ -30,6 +31,7 @@ const mockBinaryResponse = ({
 		blob: async () => new Blob([body], { type: 'plain/text' }),
 		text: async () => body,
 	} as HttpResponse['body'];
+
 	return {
 		statusCode: status,
 		headers,

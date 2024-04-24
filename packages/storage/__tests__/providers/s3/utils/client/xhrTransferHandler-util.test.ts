@@ -3,13 +3,14 @@
 
 import { xhrTransferHandler } from '../../../../../src/providers/s3/utils/client/runtime/xhrTransferHandler';
 import { isCancelError } from '../../../../../src/errors/CanceledError';
+
 import {
-	spyOnXhr,
+	mockProgressEvents,
+	mockXhrReadyState,
 	mockXhrResponse,
+	spyOnXhr,
 	triggerNetWorkError,
 	triggerServerSideAbort,
-	mockXhrReadyState,
-	mockProgressEvents,
 } from './testUtils/mocks';
 
 jest.mock('@aws-amplify/core');

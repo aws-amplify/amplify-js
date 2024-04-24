@@ -5,8 +5,8 @@ import { uploadData } from '../../../../../src/providers/s3/apis';
 import { MAX_OBJECT_SIZE } from '../../../../../src/providers/s3/utils/constants';
 import { createUploadTask } from '../../../../../src/providers/s3/utils';
 import {
-	validationErrorMap,
 	StorageValidationErrorCode,
+	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';

@@ -3,14 +3,15 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
 import { StorageError } from '../../../../src/errors/StorageError';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 import {
 	CopyInput,
-	CopyWithPathInput,
 	CopyOutput,
+	CopyWithPathInput,
 	CopyWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
@@ -81,14 +82,14 @@ describe('copy API', () => {
 			afterEach(() => {
 				jest.clearAllMocks();
 			});
-			const testCases: Array<{
+			const testCases: {
 				source: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
 				destination: {
 					accessLevel?: StorageAccessLevel;
 				};
 				expectedSourceKey: string;
 				expectedDestinationKey: string;
-			}> = [
+			}[] = [
 				{
 					source: { accessLevel: 'guest' },
 					destination: { accessLevel: 'guest' },

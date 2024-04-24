@@ -3,18 +3,19 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, defaultStorage } from '@aws-amplify/core';
+
 import {
-	createMultipartUpload,
-	uploadPart,
-	completeMultipartUpload,
 	abortMultipartUpload,
-	listParts,
+	completeMultipartUpload,
+	createMultipartUpload,
 	headObject,
+	listParts,
+	uploadPart,
 } from '../../../../../src/providers/s3/utils/client';
 import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
 import {
-	validationErrorMap,
 	StorageValidationErrorCode,
+	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
 import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
 import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
@@ -88,7 +89,7 @@ const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 const mockMultipartUploadCancellation = (
 	beforeUploadPartResponseCallback?: () => void,
 ) => {
-	mockCreateMultipartUpload.mockImplementation(async ({ abortSignal }) => ({
+	mockCreateMultipartUpload.mockImplementation(async () => ({
 		UploadId: 'uploadId',
 	}));
 
@@ -97,6 +98,7 @@ const mockMultipartUploadCancellation = (
 		if (abortSignal?.aborted) {
 			throw new Error('AbortError');
 		}
+
 		return {
 			ETag: `etag-${PartNumber}`,
 			PartNumber,
@@ -239,6 +241,7 @@ describe('getMultipartUploadHandlers with key', () => {
 					if (end - start !== buffer?.byteLength) {
 						buffer = new ArrayBuffer(end - start);
 					}
+
 					return buffer;
 				}),
 			} as any as File;
@@ -745,6 +748,7 @@ describe('getMultipartUploadHandlers with path', () => {
 					if (end - start !== buffer?.byteLength) {
 						buffer = new ArrayBuffer(end - start);
 					}
+
 					return buffer;
 				}),
 			} as any as File;
@@ -996,7 +1000,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockMultipartUploadSuccess(disableAssertion);
 			mockListParts.mockResolvedValueOnce({ Parts: [] });
 			const size = 8 * MB;
-			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers(
+			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),

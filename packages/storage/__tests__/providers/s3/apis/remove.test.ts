@@ -3,13 +3,14 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
 import { deleteObject } from '../../../../src/providers/s3/utils/client';
 import { remove } from '../../../../src/providers/s3/apis';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 import {
 	RemoveInput,
-	RemoveWithPathInput,
 	RemoveOutput,
+	RemoveWithPathInput,
 	RemoveWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
@@ -73,10 +74,10 @@ describe('remove API', () => {
 			afterEach(() => {
 				jest.clearAllMocks();
 			});
-			const testCases: Array<{
+			const testCases: {
 				expectedKey: string;
 				options?: { accessLevel?: StorageAccessLevel };
-			}> = [
+			}[] = [
 				{
 					expectedKey: `public/${inputKey}`,
 				},
@@ -100,7 +101,7 @@ describe('remove API', () => {
 				it(`should remove object with ${accessLevel} accessLevel`, async () => {
 					const { key } = await removeWrapper({
 						key: inputKey,
-						options: options,
+						options,
 					});
 					expect(key).toEqual(inputKey);
 					expect(deleteObject).toHaveBeenCalledTimes(1);

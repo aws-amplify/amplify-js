@@ -3,16 +3,17 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3';
 import {
 	ListAllInput,
-	ListAllWithPathInput,
 	ListAllOutput,
+	ListAllWithPathInput,
 	ListAllWithPathOutput,
 	ListPaginateInput,
-	ListPaginateWithPathInput,
 	ListPaginateOutput,
+	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
@@ -64,7 +65,7 @@ const mockListObjectsV2ApiWithPages = (pages: number) => {
 	let methodCalls = 0;
 	mockListObject.mockClear();
 	mockListObject.mockImplementation(async (_, input) => {
-		let token: string | undefined = undefined;
+		let token: string | undefined;
 		methodCalls++;
 		if (methodCalls > pages) {
 			fail(`listObjectsV2 calls are more than expected. Expected ${pages}`);
@@ -72,6 +73,7 @@ const mockListObjectsV2ApiWithPages = (pages: number) => {
 		if (input.ContinuationToken === undefined || methodCalls < pages) {
 			token = nextToken;
 		}
+
 		return {
 			Contents: [{ ...listObjectClientBaseResultItem, Key: input.Prefix }],
 			NextContinuationToken: token,
@@ -104,14 +106,14 @@ describe('list API', () => {
 			jest.clearAllMocks();
 		});
 
-		const accessLevelTests: Array<{
+		const accessLevelTests: {
 			prefix?: string;
 			expectedKey: string;
 			options?: {
 				accessLevel?: StorageAccessLevel;
 				targetIdentityId?: string;
 			};
-		}> = [
+		}[] = [
 			{
 				expectedKey: `public/`,
 			},
@@ -160,7 +162,7 @@ describe('list API', () => {
 				});
 				const response = await listPaginatedWrapper({
 					prefix,
-					options: options,
+					options,
 				});
 				const { key, eTag, size, lastModified } = response.items[0];
 				expect(response.items).toHaveLength(1);
@@ -197,7 +199,7 @@ describe('list API', () => {
 					options: {
 						...options,
 						pageSize: customPageSize,
-						nextToken: nextToken,
+						nextToken,
 					},
 				});
 				const { key, eTag, size, lastModified } = response.items[0];
@@ -227,7 +229,7 @@ describe('list API', () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-				let response = await listPaginatedWrapper({
+				const response = await listPaginatedWrapper({
 					prefix,
 					options,
 				});
@@ -368,7 +370,7 @@ describe('list API', () => {
 					path: resolvedPath,
 					options: {
 						pageSize: customPageSize,
-						nextToken: nextToken,
+						nextToken,
 					},
 				});
 				const { path, eTag, lastModified, size } = response.items[0];
@@ -394,7 +396,7 @@ describe('list API', () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-				let response = await listPaginatedWrapper({
+				const response = await listPaginatedWrapper({
 					path: resolvePath(path),
 				});
 				expect(response.items).toEqual([]);
