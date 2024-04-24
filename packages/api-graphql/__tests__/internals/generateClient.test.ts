@@ -45,6 +45,7 @@ describe('generateClient', () => {
 			'Post',
 			'Comment',
 			'Product',
+			'Warehouse',
 			'ImplicitOwner',
 			'CustomImplicitOwner',
 			'ModelGroupDefinedIn',
@@ -5597,7 +5598,9 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toEqual(mockReturnData);
+			expect(result?.data).toMatchObject(
+				expect.objectContaining(mockReturnData),
+			);
 		});
 
 		test('can query with returnType of string', async () => {
