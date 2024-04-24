@@ -35,6 +35,3 @@ jobs:
 
               A repository administrator **is required** to review this change.`
             })
-      # - name: Fail status check
-      #   if: steps.aws-amplify-package-check.outputs.any_changed == 'true'
-      #   run: exit 1
