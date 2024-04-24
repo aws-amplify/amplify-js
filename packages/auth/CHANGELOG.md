@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.0.28...@aws-amplify/auth@6.0.29) (2024-04-24)
+
+### Bug Fixes
+
+- **auth:** listen for pageshow event listener ([9844af8](https://github.com/aws-amplify/amplify-js/commit/9844af82f8ea21090b123c64890fb356b25180e3))
+
 ## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.0.27...@aws-amplify/auth@6.0.28) (2024-04-22)
 
 **Note:** Version bump only for package @aws-amplify/auth
