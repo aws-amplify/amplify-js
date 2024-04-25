@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - next/main
+      - feat/rest-gen2
 
 jobs:
   e2e:
