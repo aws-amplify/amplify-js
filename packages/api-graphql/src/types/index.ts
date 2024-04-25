@@ -40,7 +40,7 @@ export interface GraphQLOptions {
 	userAgentSuffix?: string;
 }
 
-export interface GraphQLResult<T = object> {
+export interface GraphQLResult<T = object | null> {
 	data: T;
 	errors?: GraphQLError[];
 	extensions?: Record<string, any>;
