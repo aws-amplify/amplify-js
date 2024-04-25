@@ -178,10 +178,10 @@ export class DefaultTokenStore implements AuthTokenStore {
 			authKeys.randomPasswordKey,
 		);
 
-		return randomPassword
+		return randomPassword && deviceGroupKey && deviceKey
 			? {
-					deviceKey: deviceKey ?? undefined,
-					deviceGroupKey: deviceGroupKey ?? undefined,
+					deviceKey,
+					deviceGroupKey,
 					randomPassword,
 				}
 			: null;
