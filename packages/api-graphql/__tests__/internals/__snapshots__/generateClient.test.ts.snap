@@ -5292,7 +5292,7 @@ exports[`generateClient index queries PK and SK index query 1`] = `
       "options": {
         "body": {
           "query": "query ($description: String!, $viewCount: ModelIntKeyConditionInput, $filter: ModelSecondaryIndexModelFilterInput, $sortDirection: ModelSortDirection, $limit: Int, $nextToken: String) {
-  listByDescriptionAndViewCount(
+  listSecondaryIndexModelByDescriptionAndViewCount(
     description: $description
     viewCount: $viewCount
     filter: $filter
@@ -5344,7 +5344,7 @@ exports[`generateClient index queries PK and SK index query, with sort direction
       "options": {
         "body": {
           "query": "query ($description: String!, $viewCount: ModelIntKeyConditionInput, $filter: ModelSecondaryIndexModelFilterInput, $sortDirection: ModelSortDirection, $limit: Int, $nextToken: String) {
-  listByDescriptionAndViewCount(
+  listSecondaryIndexModelByDescriptionAndViewCount(
     description: $description
     viewCount: $viewCount
     filter: $filter
@@ -5397,7 +5397,7 @@ exports[`generateClient index queries PK and SK index query, with sort direction
       "options": {
         "body": {
           "query": "query ($description: String!, $viewCount: ModelIntKeyConditionInput, $filter: ModelSecondaryIndexModelFilterInput, $sortDirection: ModelSortDirection, $limit: Int, $nextToken: String) {
-  listByDescriptionAndViewCount(
+  listSecondaryIndexModelByDescriptionAndViewCount(
     description: $description
     viewCount: $viewCount
     filter: $filter
@@ -5450,7 +5450,7 @@ exports[`generateClient index queries PK-only index query 1`] = `
       "options": {
         "body": {
           "query": "query ($title: String!, $filter: ModelSecondaryIndexModelFilterInput, $sortDirection: ModelSortDirection, $limit: Int, $nextToken: String) {
-  listByTitle(
+  listSecondaryIndexModelByTitle(
     title: $title
     filter: $filter
     sortDirection: $sortDirection
