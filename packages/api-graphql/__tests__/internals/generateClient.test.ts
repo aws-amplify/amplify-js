@@ -5337,9 +5337,10 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({ amplify: Amplify });
 
-			const { data } = await client.models.SecondaryIndexModel.listByTitle({
-				title: 'Hello World',
-			});
+			const { data } =
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByTitle({
+					title: 'Hello World',
+				});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
@@ -5374,10 +5375,12 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const { data } =
-				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount({
-					description: 'something something',
-					viewCount: { gt: 4 },
-				});
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
+					{
+						description: 'something something',
+						viewCount: { gt: 4 },
+					},
+				);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
@@ -5427,7 +5430,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const { data } =
-				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount(
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
 					{
 						description: 'match',
 						viewCount: { lt: 4 },
@@ -5476,7 +5479,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const { data } =
-				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount(
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
 					{
 						description: 'match',
 						viewCount: { lt: 4 },
