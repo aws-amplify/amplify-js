@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "39.80 kB"
+			"limit": "39.99 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -437,7 +437,7 @@
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "20.98 kB"
+			"limit": "21.10 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
@@ -455,7 +455,7 @@
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "21.42 kB"
+			"limit": "21.45 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
