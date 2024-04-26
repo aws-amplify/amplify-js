@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - ashwin-test-detox-iphone15
+      - manoj-update-detox-version
 
 jobs:
   e2e:
