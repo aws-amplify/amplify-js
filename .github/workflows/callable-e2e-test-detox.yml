@@ -46,7 +46,7 @@ jobs:
         shell: bash
       - name: Start iOS simulator (background)
         run: |
-          xcrun simctl boot "iPhone 11" &
+          xcrun simctl boot "iPhone 15" &
         shell: bash
       - name: Start Metro Packager (background)
         run: |
