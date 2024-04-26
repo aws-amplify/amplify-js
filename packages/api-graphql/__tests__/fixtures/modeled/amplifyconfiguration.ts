@@ -1041,7 +1041,7 @@ const amplifyConfig = {
 						type: 'key',
 						properties: {
 							name: 'secondaryIndexModelsByTitle',
-							queryField: 'listByTitle',
+							queryField: 'listSecondaryIndexModelByTitle',
 							fields: ['title'],
 						},
 					},
@@ -1049,7 +1049,7 @@ const amplifyConfig = {
 						type: 'key',
 						properties: {
 							name: 'secondaryIndexModelsByDescriptionAndViewCount',
-							queryField: 'listByDescriptionAndViewCount',
+							queryField: 'listSecondaryIndexModelByDescriptionAndViewCount',
 							fields: ['description', 'viewCount'],
 						},
 					},
