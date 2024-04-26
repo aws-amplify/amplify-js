@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ResourcesConfig } from 'aws-amplify';
+import { LibraryOptions, ResourcesConfig } from 'aws-amplify';
 
 import { createRunWithAmplifyServerContext, getAmplifyConfig } from './utils';
 import { NextServer } from './types';
@@ -16,6 +16,7 @@ import { NextServer } from './types';
  * @param input The input used to create the `runWithAmplifyServerContext` function.
  * @param input.config The {@link ResourcesConfig} imported from the `amplifyconfiguration.json` file or manually
  * created.
+ * @param input.libraryOptions The {@link LibraryOptions} additional options for the library.
  * @returns An object that contains the `runWithAmplifyServerContext` function.
  *
  * @example
@@ -26,12 +27,14 @@ import { NextServer } from './types';
  */
 export const createServerRunner: NextServer.CreateServerRunner = ({
 	config,
+	libraryOptions,
 }) => {
 	const amplifyConfig = getAmplifyConfig(config);
 
 	return {
 		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
 			config: amplifyConfig,
+			libraryOptions,
 		}),
 	};
 };

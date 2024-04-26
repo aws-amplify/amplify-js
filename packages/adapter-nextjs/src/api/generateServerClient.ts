@@ -21,6 +21,7 @@ import { createServerRunnerForAPI } from './createServerRunnerForAPI';
 interface CookiesClientParams {
 	cookies: NextServer.ServerComponentContext['cookies'];
 	config: NextServer.CreateServerRunnerInput['config'];
+	libraryOptions?: NextServer.CreateServerRunnerInput['libraryOptions'];
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
 }
@@ -45,6 +46,7 @@ export function generateServerClientUsingCookies<
 >({
 	config,
 	cookies,
+	libraryOptions,
 	authMode,
 	authToken,
 }: CookiesClientParams): V6ClientSSRCookies<T> {
@@ -59,7 +61,7 @@ export function generateServerClientUsingCookies<
 	}
 
 	const { runWithAmplifyServerContext, resourcesConfig } =
-		createServerRunnerForAPI({ config });
+		createServerRunnerForAPI({ config, libraryOptions });
 
 	// This function reference gets passed down to InternalGraphQLAPI.ts.graphql
 	// where this._graphql is passed in as the `fn` argument
