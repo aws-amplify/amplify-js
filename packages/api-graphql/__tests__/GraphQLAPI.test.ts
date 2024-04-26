@@ -3,7 +3,9 @@ import { graphql, cancel, isCancelError } from '../src/internals/v6';
 import { Amplify } from 'aws-amplify';
 import { Amplify as AmplifyCore } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
+import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import { expectGet } from './utils/expects';
+import { InternalGraphQLAPIClass } from '../src/internals/InternalGraphQLAPI';
 
 import {
 	__amplify,
@@ -640,6 +642,75 @@ describe('API test', () => {
 				query: typedQueries.getThread,
 				variables: graphqlVariables,
 				authMode: 'iam',
+			});
+
+			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
+			const errors = result.errors;
+
+			expect(errors).toBe(undefined);
+			expect(thread).toEqual(graphqlResponse.data.getThread);
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
+				}),
+				{
+					abortController: expect.any(AbortController),
+					url: new URL('https://localhost/graphql'),
+					options: expect.objectContaining({
+						headers: expect.not.objectContaining({ 'X-Api-Key': 'FAKE-KEY' }),
+						signingServiceInfo: expect.objectContaining({
+							region: 'local-host-h4x',
+							service: 'appsync',
+						}),
+					}),
+				},
+			);
+		});
+
+		test('multi-auth default case api-key, using identityPool as auth mode', async () => {
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const threadToGet = {
+				id: 'some-id',
+				topic: 'something reasonably interesting',
+			};
+
+			const graphqlVariables = { id: 'some-id' };
+
+			const graphqlResponse = {
+				data: {
+					getThread: {
+						__typename: 'Thread',
+						...serverManagedFields,
+						...threadToGet,
+					},
+				},
+			};
+
+			const spy = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
+
+			const result: GraphQLResult<GetThreadQuery> = await client.graphql({
+				query: typedQueries.getThread,
+				variables: graphqlVariables,
+				authMode: 'identityPool',
 			});
 
 			const thread: GetThreadQuery['getThread'] = result.data?.getThread;
@@ -1393,6 +1464,97 @@ describe('API test', () => {
 						),
 					]),
 				}),
+			);
+		});
+
+		test('identityPool alias with query', async () => {
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const graphqlVariables = { id: 'some-id' };
+
+			const graphqlResponse = {
+				data: {
+					getThread: {},
+				},
+			};
+
+			const spy = jest.spyOn(
+				InternalGraphQLAPIClass.prototype as any,
+				'_headerBasedAuth',
+			);
+
+			const spy2 = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
+
+			await client.graphql({
+				query: typedQueries.getThread,
+				variables: graphqlVariables,
+				authMode: 'identityPool',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					Auth: expect.any(Object),
+					configure: expect.any(Function),
+					getConfig: expect.any(Function),
+				}),
+				'iam',
+				{},
+			);
+		});
+
+		test('identityPool alias with subscription', async () => {
+			Amplify.configure({
+				API: {
+					GraphQL: {
+						defaultAuthMode: 'apiKey',
+						apiKey: 'FAKE-KEY',
+						endpoint: 'https://localhost/graphql',
+						region: 'local-host-h4x',
+					},
+				},
+			});
+
+			const graphqlResponse = {
+				data: {
+					getThread: {},
+				},
+			};
+
+			const spy = jest.spyOn(AWSAppSyncRealTimeProvider.prototype, 'subscribe');
+
+			const _spy2 = jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockReturnValue({
+					body: {
+						json: () => graphqlResponse,
+					},
+				});
+
+			await client.graphql({
+				query: typedSubscriptions.onCreateThread,
+				authMode: 'identityPool',
+			});
+
+			expect(spy).toHaveBeenCalledWith(
+				expect.objectContaining({
+					authenticationType: 'iam',
+				}),
+				expect.objectContaining({}),
 			);
 		});
 	});
