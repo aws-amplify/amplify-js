@@ -81,7 +81,9 @@ export type GraphQLAuthMode =
 	| 'apiKey'
 	| 'oidc'
 	| 'userPool'
+	// @deprecated; use 'identityPool'
 	| 'iam'
+	| 'identityPool'
 	| 'lambda'
 	| 'none';
 

@@ -61,6 +61,8 @@ const dispatchApiEvent = (payload: HubPayload) => {
 	Hub.dispatch('api', payload, 'PubSub', AMPLIFY_SYMBOL);
 };
 
+// resolved/actual AuthMode values. identityPool gets resolves to IAM upstream in InternalGraphQLAPI._graphqlSubscribe
+type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
 export interface ObserverQuery {
 	observer: PubSubContentObserver;
 	query: string;
@@ -96,7 +98,7 @@ interface ParsedMessagePayload {
 
 export interface AWSAppSyncRealTimeProviderOptions {
 	appSyncGraphqlEndpoint?: string;
-	authenticationType?: GraphQLAuthMode;
+	authenticationType?: ResolvedGraphQLAuthModes;
 	query?: string;
 	variables?: Record<string, DocumentType>;
 	apiKey?: string;
@@ -935,7 +937,7 @@ export class AWSAppSyncRealTimeProvider {
 		Record<string, unknown> | undefined
 	> {
 		const headerHandler: {
-			[key in GraphQLAuthMode]: (
+			[key in ResolvedGraphQLAuthModes]: (
 				arg0: AWSAppSyncRealTimeAuthInput,
 			) => Promise<Record<string, unknown>> | Record<string, unknown>;
 		} = {
