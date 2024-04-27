@@ -255,9 +255,7 @@ export const parseAWSExports = (
 						...amazon_location_service,
 						maps: amazon_location_service.maps,
 						geofenceCollections: amazon_location_service.geofenceCollections,
-						searchIndices:
-							amazon_location_service.search_indices ??
-							amazon_location_service.searchIndices,
+						searchIndices: amazon_location_service.search_indices,
 						region: amazon_location_service.region,
 					},
 				}

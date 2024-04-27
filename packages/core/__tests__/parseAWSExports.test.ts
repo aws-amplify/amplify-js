@@ -197,29 +197,6 @@ describe('parseAWSExports', () => {
 		).toStrictEqual(expected);
 	});
 
-	it('should parse valid aws-exports.js for Geo', () => {
-		const expected = {
-			Geo: {
-				LocationService: amazonLocationServiceV4,
-			},
-		};
-		// aws-exports.js has geo "search_indices" in snake_case
-		expect(
-			parseAWSExports({
-				aws_project_region: 'us-west-2',
-				geo: { amazon_location_service: amazonLocationService },
-			}),
-		).toStrictEqual(expected);
-
-		// aws-exports.js has geo "searchIndices" in camelCase
-		expect(
-			parseAWSExports({
-				aws_project_region: 'us-west-2',
-				geo: { amazon_location_service: amazonLocationServiceV4 },
-			}),
-		).toStrictEqual(expected);
-	});
-
 	it('should fallback to IAM auth mode if Appsync auth type is invalid', () => {
 		expect(
 			parseAWSExports({
