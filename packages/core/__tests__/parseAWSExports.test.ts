@@ -33,7 +33,7 @@ describe('parseAWSExports', () => {
 		},
 		region,
 	};
-	const amazonLocationServiceV4 = {
+	const expectedAmazonLocationServiceV4 = {
 		maps: {
 			items: {
 				geoJsExampleMap1: {
@@ -44,10 +44,6 @@ describe('parseAWSExports', () => {
 				},
 			},
 			default: 'geoJsExampleMap1',
-		},
-		search_indices: {
-			items: ['geoJSSearchExample'],
-			default: 'geoJSSearchExample',
 		},
 		searchIndices: {
 			items: ['geoJSSearchExample'],
@@ -122,7 +118,7 @@ describe('parseAWSExports', () => {
 				},
 			},
 			Geo: {
-				LocationService: amazonLocationServiceV4,
+				LocationService: expectedAmazonLocationServiceV4,
 			},
 			Storage: {
 				S3: {
