@@ -39,7 +39,7 @@ export const parseXmlBody = async (response: HttpResponse): Promise<any> => {
 		try {
 			return parser.parse(data);
 		} catch (error) {
-			throw new Error('Failed to parse XML response.');
+			throw new Error(`Failed to parse XML response: ${error}`);
 		}
 	}
 

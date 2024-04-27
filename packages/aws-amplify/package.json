@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.0.29",
+	"version": "6.1.4",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -277,12 +277,12 @@
 	],
 	"dependencies": {
 		"@aws-amplify/analytics": "7.0.28",
-		"@aws-amplify/api": "6.0.29",
-		"@aws-amplify/auth": "6.0.28",
+		"@aws-amplify/api": "6.0.30",
+		"@aws-amplify/auth": "6.2.1",
 		"@aws-amplify/core": "6.0.28",
-		"@aws-amplify/datastore": "5.0.29",
+		"@aws-amplify/datastore": "5.0.30",
 		"@aws-amplify/notifications": "2.0.28",
-		"@aws-amplify/storage": "6.0.28",
+		"@aws-amplify/storage": "6.3.1",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -293,31 +293,31 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "16.50 kB"
+			"limit": "17.02 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./dist/esm/analytics/kinesis/index.mjs",
 			"import": "{ record }",
-			"limit": "45.50 kB"
+			"limit": "48.56 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
 			"path": "./dist/esm/analytics/kinesis-firehose/index.mjs",
 			"import": "{ record }",
-			"limit": "42.50 kB"
+			"limit": "45.68 kB"
 		},
 		{
 			"name": "[Analytics] record (Personalize)",
 			"path": "./dist/esm/analytics/personalize/index.mjs",
 			"import": "{ record }",
-			"limit": "46.50 kB"
+			"limit": "49.50 kB"
 		},
 		{
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.00 kB"
+			"limit": "15.52 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "39.0 kB"
+			"limit": "39.99 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -353,13 +353,13 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "9.03 kB"
+			"limit": "12.44 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmResetPassword }",
-			"limit": "9.00 kB"
+			"limit": "12.39 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
@@ -371,7 +371,7 @@
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resendSignUpCode }",
-			"limit": "9.00 kB"
+			"limit": "12.40 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -383,31 +383,31 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "26.50 kB"
+			"limit": "28.09 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "8.6 kB"
+			"limit": "11.74 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchMFAPreference }",
-			"limit": "8.4 kB"
+			"limit": "11.78 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "9.28 kB"
+			"limit": "12.59 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "9.22 kB"
+			"limit": "12.63 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -419,85 +419,85 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "8.46 kB"
+			"limit": "11.87 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "4.34 kB"
+			"limit": "7.75 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmUserAttribute }",
-			"limit": "9.19 kB"
+			"limit": "12.61 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "19.40 kB"
+			"limit": "21.10 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "8.29 kB"
+			"limit": "11.69 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "28.50 kB"
+			"limit": "29.90 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "19.90 kB"
+			"limit": "21.45 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "13.50 kB"
+			"limit": "14.54 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "14.00 kB"
+			"limit": "15.17 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "13.50 kB"
+			"limit": "14.43 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "14.50 kB"
+			"limit": "15.51 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "14.00 kB"
+			"limit": "14.94 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "13.50 kB"
+			"limit": "14.29 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "18.50 kB"
+			"limit": "19.64 kB"
 		}
 	]
 }

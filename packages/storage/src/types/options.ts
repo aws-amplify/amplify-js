@@ -4,6 +4,7 @@
 import { StorageAccessLevel } from '@aws-amplify/core';
 
 export interface StorageOptions {
+	/** @deprecated This may be removed in the next major version. */
 	accessLevel?: StorageAccessLevel;
 }
 

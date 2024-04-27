@@ -4,8 +4,13 @@
 import { headObject } from '../../../../src/providers/s3/utils/client';
 import { getProperties } from '../../../../src/providers/s3';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
-import { GetPropertiesOptions } from '../../../../src/providers/s3/types';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import {
+	GetPropertiesInput,
+	GetPropertiesWithPathInput,
+	GetPropertiesOutput,
+	GetPropertiesWithPathOutput,
+} from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -19,7 +24,7 @@ jest.mock('@aws-amplify/core', () => ({
 		},
 	},
 }));
-const mockHeadObject = headObject as jest.Mock;
+const mockHeadObject = headObject as jest.MockedFunction<typeof headObject>;
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
@@ -30,10 +35,24 @@ const credentials: AWSCredentials = {
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
 };
+const inputKey = 'key';
+const inputPath = 'path';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 
-describe('getProperties api', () => {
+const expectedResult = {
+	size: 100,
+	contentType: 'text/plain',
+	eTag: 'etag',
+	metadata: { key: 'value' },
+	lastModified: new Date('01-01-1980'),
+	versionId: 'version-id',
+};
+
+describe('getProperties with key', () => {
+	const getPropertiesWrapper = (
+		input: GetPropertiesInput,
+	): Promise<GetPropertiesOutput> => getProperties(input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -48,79 +67,89 @@ describe('getProperties api', () => {
 			},
 		});
 	});
-	describe('getProperties happy path ', () => {
-		const expected = {
-			key: 'key',
-			size: '100',
-			contentType: 'text/plain',
-			eTag: 'etag',
-			metadata: { key: 'value' },
-			lastModified: 'last-modified',
-			versionId: 'version-id',
-		};
+	describe('Happy cases: With key', () => {
 		const config = {
 			credentials,
 			region: 'region',
 			userAgentValue: expect.any(String),
 		};
-		const key = 'key';
 		beforeEach(() => {
-			mockHeadObject.mockReturnValueOnce({
-				ContentLength: '100',
+			mockHeadObject.mockResolvedValue({
+				ContentLength: 100,
 				ContentType: 'text/plain',
 				ETag: 'etag',
-				LastModified: 'last-modified',
+				LastModified: new Date('01-01-1980'),
 				Metadata: { key: 'value' },
 				VersionId: 'version-id',
+				$metadata: {} as any,
 			});
 		});
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		[
+
+		const testCases: Array<{
+			expectedKey: string;
+			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
+		}> = [
 			{
-				expectedKey: `public/${key}`,
+				expectedKey: `public/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'guest' },
-				expectedKey: `public/${key}`,
+				expectedKey: `public/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'private' },
-				expectedKey: `private/${defaultIdentityId}/${key}`,
+				expectedKey: `private/${defaultIdentityId}/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'protected' },
-				expectedKey: `protected/${defaultIdentityId}/${key}`,
+				expectedKey: `protected/${defaultIdentityId}/${inputKey}`,
 			},
 			{
 				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: `protected/${targetIdentityId}/${key}`,
+				expectedKey: `protected/${targetIdentityId}/${inputKey}`,
 			},
-		].forEach(({ options, expectedKey }) => {
-			const accessLevelMsg = options?.accessLevel ?? 'default';
-			const targetIdentityIdMsg = options?.targetIdentityId
-				? `and targetIdentityId`
-				: '';
-			it(`should getProperties with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+		];
+		test.each(testCases)(
+			'should getProperties with key $expectedKey',
+			async ({ options, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: 'bucket',
 					Key: expectedKey,
 				};
-				expect.assertions(3);
-				expect(
-					await getProperties({
-						key,
-						options: options as GetPropertiesOptions,
-					}),
-				).toEqual(expected);
+				const {
+					key,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				} = await getPropertiesWrapper({
+					key: inputKey,
+					options,
+				});
+				expect({
+					key,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				}).toEqual({
+					key: inputKey,
+					...expectedResult,
+				});
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-			});
-		});
+			},
+		);
 	});
 
-	describe('getProperties error path', () => {
+	describe('Error cases :  With key', () => {
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
@@ -133,7 +162,7 @@ describe('getProperties api', () => {
 			);
 			expect.assertions(3);
 			try {
-				await getProperties({ key: 'keyed' });
+				await getPropertiesWrapper({ key: inputKey });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(
@@ -144,7 +173,127 @@ describe('getProperties api', () => {
 					},
 					{
 						Bucket: 'bucket',
-						Key: 'public/keyed',
+						Key: `public/${inputKey}`,
+					},
+				);
+				expect(error.$metadata.httpStatusCode).toBe(404);
+			}
+		});
+	});
+});
+
+describe('Happy cases: With path', () => {
+	const getPropertiesWrapper = (
+		input: GetPropertiesWithPathInput,
+	): Promise<GetPropertiesWithPathOutput> => getProperties(input);
+	beforeAll(() => {
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId: defaultIdentityId,
+		});
+		mockGetConfig.mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+				},
+			},
+		});
+	});
+	describe('getProperties with path', () => {
+		const config = {
+			credentials,
+			region: 'region',
+			useAccelerateEndpoint: true,
+			userAgentValue: expect.any(String),
+		};
+		beforeEach(() => {
+			mockHeadObject.mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { key: 'value' },
+				VersionId: 'version-id',
+				$metadata: {} as any,
+			});
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+		test.each([
+			{
+				testPath: inputPath,
+				expectedPath: inputPath,
+			},
+			{
+				testPath: () => inputPath,
+				expectedPath: inputPath,
+			},
+		])(
+			'should getProperties with path $path and expectedPath $expectedPath',
+			async ({ testPath, expectedPath }) => {
+				const headObjectOptions = {
+					Bucket: 'bucket',
+					Key: expectedPath,
+				};
+				const {
+					path,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				} = await getPropertiesWrapper({
+					path: testPath,
+					options: {
+						useAccelerateEndpoint: true,
+					},
+				});
+				expect({
+					path,
+					contentType,
+					eTag,
+					lastModified,
+					metadata,
+					size,
+					versionId,
+				}).toEqual({
+					path: expectedPath,
+					...expectedResult,
+				});
+				expect(headObject).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+			},
+		);
+	});
+
+	describe('Error cases :  With path', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+		it('getProperties should return a not found error', async () => {
+			mockHeadObject.mockRejectedValueOnce(
+				Object.assign(new Error(), {
+					$metadata: { httpStatusCode: 404 },
+					name: 'NotFound',
+				}),
+			);
+			expect.assertions(3);
+			try {
+				await getPropertiesWrapper({ path: inputPath });
+			} catch (error: any) {
+				expect(headObject).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledWith(
+					{
+						credentials,
+						region: 'region',
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: 'bucket',
+						Key: inputPath,
 					},
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);

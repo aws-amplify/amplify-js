@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.0.29...@aws-amplify/auth@6.2.1) (2024-04-26)
+
+### Bug Fixes
+
+- **auth:** Impossibility to sign-in when RandomKeyPassword missing ([1ba64c4](https://github.com/aws-amplify/amplify-js/commit/1ba64c4f5d09365cd3df76b46073ac825519cf00))
+- bump package versions ([#13254](https://github.com/aws-amplify/amplify-js/issues/13254)) ([aa490b9](https://github.com/aws-amplify/amplify-js/commit/aa490b9bcbd2a442d9726937cfa59ef8b7859306))
+
+## [6.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.0.28...@aws-amplify/auth@6.0.29) (2024-04-24)
+
+### Bug Fixes
+
+- **auth:** listen for pageshow event listener ([9844af8](https://github.com/aws-amplify/amplify-js/commit/9844af82f8ea21090b123c64890fb356b25180e3))
+
 ## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.0.27...@aws-amplify/auth@6.0.28) (2024-04-22)
 
 **Note:** Version bump only for package @aws-amplify/auth

@@ -7,7 +7,10 @@ export {
 	createAWSCredentialsAndIdentityIdProvider,
 	createUserPoolsTokenProvider,
 } from './authProvidersFactories/cognito';
-export { LegacyConfig } from '@aws-amplify/core/internals/utils';
+export {
+	LegacyConfig,
+	AmplifyOutputs,
+} from '@aws-amplify/core/internals/utils';
 export {
 	AmplifyServer,
 	CookieStorage,

@@ -751,6 +751,15 @@ tests:
   #   spec: in-app-messaging
   #   browser: *minimal_browser_list
 
+  # GEN2 STORAGE
+  # - test_name: integ_react_storage
+  #   desc: 'React Storage Gen2'
+  #   framework: react
+  #   category: storage
+  #   sample_name: [storage-gen2]
+  #   spec: storage-gen2
+  #   browser: *minimal_browser_list
+
   # - test_name: integ_duplicate_packages
   #   desc: 'Duplicate Package Errors'
   #   framework: react
