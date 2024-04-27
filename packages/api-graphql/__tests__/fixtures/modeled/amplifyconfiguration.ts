@@ -1,5 +1,5 @@
 /**
- * Generated from `./schema.ts` by samsara.
+ * Generated from `./schema.ts` by amplify-backend generate config.
  *
  * Cognito fields etc. omitted.
  */
@@ -1278,12 +1278,18 @@ const amplifyConfig = {
 						isRequired: true,
 						attributes: [],
 					},
-					warehouseId: {
-						name: 'warehouseId',
+					warehouse: {
+						name: 'warehouse',
 						isArray: false,
-						type: 'String',
-						isRequired: true,
+						type: {
+							model: 'Warehouse',
+						},
+						isRequired: false,
 						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetNames: ['warehouseProductsId'],
+						},
 					},
 					description: {
 						name: 'description',
@@ -1301,10 +1307,10 @@ const amplifyConfig = {
 						isRequired: false,
 						attributes: [],
 					},
-					owner: {
-						name: 'owner',
+					warehouseProductsId: {
+						name: 'warehouseProductsId',
 						isArray: false,
-						type: 'String',
+						type: 'ID',
 						isRequired: false,
 						attributes: [],
 					},
@@ -1312,15 +1318,17 @@ const amplifyConfig = {
 						name: 'createdAt',
 						isArray: false,
 						type: 'AWSDateTime',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
+						isReadOnly: true,
 					},
 					updatedAt: {
 						name: 'updatedAt',
 						isArray: false,
 						type: 'AWSDateTime',
-						isRequired: true,
+						isRequired: false,
 						attributes: [],
+						isReadOnly: true,
 					},
 				},
 				syncable: true,
@@ -1333,7 +1341,7 @@ const amplifyConfig = {
 					{
 						type: 'key',
 						properties: {
-							fields: ['sku', 'factoryId', 'warehouseId'],
+							fields: ['sku', 'factoryId'],
 						},
 					},
 					{
@@ -1358,7 +1366,87 @@ const amplifyConfig = {
 				primaryKeyInfo: {
 					isCustomPrimaryKey: true,
 					primaryKeyFieldName: 'sku',
-					sortKeyFieldNames: ['factoryId', 'warehouseId'],
+					sortKeyFieldNames: ['factoryId'],
+				},
+			},
+			Warehouse: {
+				name: 'Warehouse',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					name: {
+						name: 'name',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					products: {
+						name: 'products',
+						isArray: true,
+						type: {
+							model: 'Product',
+						},
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: ['warehouseProductsId'],
+						},
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'Warehouses',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									provider: 'userPools',
+									ownerField: 'owner',
+									allow: 'owner',
+									identityClaim: 'cognito:username',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+								{
+									allow: 'public',
+									operations: ['read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
 				},
 			},
 			ImplicitOwner: {
@@ -1644,6 +1732,68 @@ const amplifyConfig = {
 									allow: 'groups',
 									groupsField: 'groupsField',
 									groupField: 'groups',
+									operations: ['create', 'update', 'delete', 'read'],
+								},
+							],
+						},
+					},
+				],
+				primaryKeyInfo: {
+					isCustomPrimaryKey: false,
+					primaryKeyFieldName: 'id',
+					sortKeyFieldNames: [],
+				},
+			},
+			ModelStaticGroup: {
+				name: 'ModelStaticGroup',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+				},
+				syncable: true,
+				pluralName: 'ModelStaticGroups',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'auth',
+						properties: {
+							rules: [
+								{
+									groupClaim: 'cognito:groups',
+									provider: 'userPools',
+									allow: 'groups',
+									groups: ['Admin'],
 									operations: ['create', 'update', 'delete', 'read'],
 								},
 							],

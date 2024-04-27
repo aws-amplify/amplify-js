@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.27...@aws-amplify/notifications@2.0.28) (2024-04-22)
+
+### Bug Fixes
+
+- **message overrides:** extract message content with Platform-Specific Overrides ([#12917](https://github.com/aws-amplify/amplify-js/issues/12917)) ([cb91437](https://github.com/aws-amplify/amplify-js/commit/cb914374263262c84c6337dddca1f17fb7dd204a))
+
+## 2.0.27 (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## 2.0.26 (2024-04-01)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## 2.0.25 (2024-03-30)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## 2.0.24 (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
 ## 2.0.23 (2024-03-25)
 
 **Note:** Version bump only for package @aws-amplify/notifications

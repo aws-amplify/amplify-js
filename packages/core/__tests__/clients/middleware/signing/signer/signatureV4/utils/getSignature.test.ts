@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	credentials,
 	credentialScope,
+	credentials,
 	formattedDates,
 	getDefaultRequest,
 	signingRegion,

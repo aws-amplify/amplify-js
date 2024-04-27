@@ -45,10 +45,12 @@ describe('generateClient', () => {
 			'Post',
 			'Comment',
 			'Product',
+			'Warehouse',
 			'ImplicitOwner',
 			'CustomImplicitOwner',
 			'ModelGroupDefinedIn',
 			'ModelGroupsDefinedIn',
+			'ModelStaticGroup',
 		];
 
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
@@ -377,6 +379,58 @@ describe('generateClient', () => {
 			const { data } = await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
 				limit: 5,
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('can list() with sortDirection (ASC)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listThingWithCustomPks: {
+						items: [
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'a',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } = await client.models.ThingWithCustomPk.list({
+				cpk_cluster_key: '1',
+				sortDirection: 'ASC',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('can list() with sortDirection (DESC)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listThingWithCustomPks: {
+						items: [
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'c',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } = await client.models.ThingWithCustomPk.list({
+				cpk_cluster_key: '1',
+				sortDirection: 'DESC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -5098,6 +5152,104 @@ describe('generateClient', () => {
 				}),
 			);
 		});
+
+		test('PK and SK index query, with sort direction (ascending)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listByDescriptionAndViewCount: {
+						items: [
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'first',
+								description: 'match',
+								viewCount: 1,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'second',
+								description: 'match',
+								viewCount: 2,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'third',
+								description: 'match',
+								viewCount: 3,
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } =
+				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount(
+					{
+						description: 'match',
+						viewCount: { lt: 4 },
+					},
+					{
+						sortDirection: 'ASC',
+					},
+				);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data.length).toBe(3);
+		});
+
+		test('PK and SK index query, with sort direction (descending)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listByDescriptionAndViewCount: {
+						items: [
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'third',
+								description: 'match',
+								viewCount: 3,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'second',
+								description: 'match',
+								viewCount: 2,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'first',
+								description: 'match',
+								viewCount: 1,
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } =
+				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount(
+					{
+						description: 'match',
+						viewCount: { lt: 4 },
+					},
+					{
+						sortDirection: 'DESC',
+					},
+				);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data.length).toBe(3);
+		});
 	});
 
 	describe('custom operations', () => {
@@ -5179,7 +5331,6 @@ describe('generateClient', () => {
 			const mockReturnData = {
 				sku: 'sku',
 				factoryId: 'factoryId',
-				warehouseId: 'warehouseId',
 				description: 'description',
 				trackingMeta: {
 					productMeta: {
@@ -5206,7 +5357,10 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toEqual(mockReturnData);
+			expect(result?.data).toEqual({
+				...mockReturnData,
+				warehouse: expect.any(Function),
+			});
 		});
 
 		test('can query with returnType of string', async () => {

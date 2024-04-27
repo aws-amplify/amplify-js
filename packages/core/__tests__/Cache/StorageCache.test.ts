@@ -46,8 +46,8 @@ describe('StorageCache', () => {
 		}
 	}
 	// create test helpers
-	const getStorageCache = (config?: CacheConfig) =>
-		new StorageCacheTest(config);
+	const getStorageCache = (storageCacheConfig?: CacheConfig) =>
+		new StorageCacheTest(storageCacheConfig);
 
 	beforeAll(() => {
 		mockGetCurrentSizeKey.mockReturnValue(currentSizeKey);

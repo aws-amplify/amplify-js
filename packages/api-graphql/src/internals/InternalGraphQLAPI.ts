@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	DocumentNode,
-	GraphQLError,
 	OperationDefinitionNode,
 	OperationTypeNode,
 	parse,
@@ -22,17 +21,26 @@ import {
 	post,
 	updateRequestToBeCancellable,
 } from '@aws-amplify/api-rest/internals';
-import { CustomHeaders, RequestOptions } from '@aws-amplify/data-schema-types';
+import {
+	CustomHeaders,
+	RequestOptions,
+} from '@aws-amplify/data-schema/runtime';
 
 import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvider';
-import {
-	GraphQLAuthError,
-	GraphQLOperation,
-	GraphQLOptions,
-	GraphQLResult,
-} from '../types';
+import { GraphQLOperation, GraphQLOptions, GraphQLResult } from '../types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
-import { repackageUnauthError } from '../utils/errors/repackageAuthError';
+import { repackageUnauthorizedError } from '../utils/errors/repackageAuthError';
+import {
+	NO_API_KEY,
+	NO_AUTH_TOKEN_HEADER,
+	NO_ENDPOINT,
+	NO_SIGNED_IN_USER,
+	NO_VALID_AUTH_TOKEN,
+	NO_VALID_CREDENTIALS,
+} from '../utils/errors/constants';
+import { GraphQLApiError, createGraphQLResultWithError } from '../utils/errors';
+
+import { isGraphQLResponseWithErrors } from './utils/runtimeTypeGuards/isGraphQLResponseWithErrors';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -76,7 +84,7 @@ export class InternalGraphQLAPIClass {
 		switch (authMode) {
 			case 'apiKey':
 				if (!apiKey) {
-					throw new Error(GraphQLAuthError.NO_API_KEY);
+					throw new GraphQLApiError(NO_API_KEY);
 				}
 				headers = {
 					'X-Api-Key': apiKey,
@@ -85,33 +93,44 @@ export class InternalGraphQLAPIClass {
 			case 'iam': {
 				const session = await amplify.Auth.fetchAuthSession();
 				if (session.credentials === undefined) {
-					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
+					throw new GraphQLApiError(NO_VALID_CREDENTIALS);
 				}
 				break;
 			}
 			case 'oidc':
-			case 'userPool':
+			case 'userPool': {
+				let token: string | undefined;
+
 				try {
-					const token = (
+					token = (
 						await amplify.Auth.fetchAuthSession()
 					).tokens?.accessToken.toString();
-
-					if (!token) {
-						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
-					}
-					headers = {
-						Authorization: token,
-					};
 				} catch (e) {
-					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
+					// fetchAuthSession failed
+					throw new GraphQLApiError({
+						...NO_SIGNED_IN_USER,
+						underlyingError: e,
+					});
 				}
+
+				// `fetchAuthSession()` succeeded but didn't return `tokens`.
+				// This may happen when unauthenticated access is enabled and there is
+				// no user signed in.
+				if (!token) {
+					throw new GraphQLApiError(NO_VALID_AUTH_TOKEN);
+				}
+
+				headers = {
+					Authorization: token,
+				};
 				break;
+			}
 			case 'lambda':
 				if (
 					typeof additionalHeaders === 'object' &&
 					!additionalHeaders.Authorization
 				) {
-					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
+					throw new GraphQLApiError(NO_AUTH_TOKEN_HEADER);
 				}
 
 				headers = {
@@ -350,18 +369,15 @@ export class InternalGraphQLAPIClass {
 		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
-			const error = new GraphQLError('No graphql endpoint provided.');
-			// TODO(Eslint): refactor this to throw an Error instead of a plain object
-			// eslint-disable-next-line no-throw-literal
-			throw {
-				data: {},
-				errors: [error],
-			};
+			throw createGraphQLResultWithError<T>(new GraphQLApiError(NO_ENDPOINT));
 		}
 
 		let response: any;
 
 		try {
+			// See the inline doc of the REST `post()` API for possible errors to be thrown.
+			// As these errors are catastrophic they should be caught and handled by GraphQL
+			// API consumers.
 			const { body: responseBody } = await this._api.post(amplify, {
 				url: new AmplifyUrl(endpoint),
 				options: {
@@ -373,39 +389,20 @@ export class InternalGraphQLAPIClass {
 				abortController,
 			});
 
-			const result = await responseBody.json();
-
-			response = result;
-		} catch (err) {
-			// If the exception is because user intentionally
-			// cancelled the request, do not modify the exception
-			// so that clients can identify the exception correctly.
-			if (this.isCancelError(err)) {
-				throw err;
+			response = await responseBody.json();
+		} catch (error) {
+			if (this.isCancelError(error)) {
+				throw error;
 			}
 
-			response = {
-				data: {},
-				errors: [
-					new GraphQLError(
-						(err as any).message,
-						null,
-						null,
-						null,
-						null,
-						err as any,
-					),
-				],
-			};
+			response = createGraphQLResultWithError<T>(error as any);
 		}
 
-		const { errors } = response;
-
-		if (errors && errors.length) {
-			throw repackageUnauthError(response);
+		if (isGraphQLResponseWithErrors(response)) {
+			throw repackageUnauthorizedError(response);
 		}
 
-		return response;
+		return response as unknown as GraphQLResult<T>;
 	}
 
 	/**
@@ -463,7 +460,7 @@ export class InternalGraphQLAPIClass {
 			.pipe(
 				catchError(e => {
 					if (e.errors) {
-						throw repackageUnauthError(e);
+						throw repackageUnauthorizedError(e);
 					}
 					throw e;
 				}),

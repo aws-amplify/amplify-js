@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.0.23",
+	"version": "6.0.29",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.23",
-		"@aws-amplify/api": "6.0.23",
-		"@aws-amplify/auth": "6.0.23",
-		"@aws-amplify/core": "6.0.23",
-		"@aws-amplify/datastore": "5.0.23",
-		"@aws-amplify/notifications": "2.0.23",
-		"@aws-amplify/storage": "6.0.23",
+		"@aws-amplify/analytics": "7.0.28",
+		"@aws-amplify/api": "6.0.29",
+		"@aws-amplify/auth": "6.0.28",
+		"@aws-amplify/core": "6.0.28",
+		"@aws-amplify/datastore": "5.0.29",
+		"@aws-amplify/notifications": "2.0.28",
+		"@aws-amplify/storage": "6.0.28",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "38.00 kB"
+			"limit": "39.0 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -383,7 +383,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "26.48 kB"
+			"limit": "26.50 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -395,7 +395,7 @@
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchMFAPreference }",
-			"limit": "8.35 kB"
+			"limit": "8.4 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
@@ -455,7 +455,7 @@
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "19.80 kB"
+			"limit": "19.90 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
