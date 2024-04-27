@@ -252,9 +252,12 @@ export const parseAWSExports = (
 		(amplifyConfig as any).Geo = amazon_location_service
 			? {
 					LocationService: {
+						...amazon_location_service,
 						maps: amazon_location_service.maps,
 						geofenceCollections: amazon_location_service.geofenceCollections,
-						searchIndices: amazon_location_service.search_indices,
+						searchIndices:
+							amazon_location_service.search_indices ??
+							amazon_location_service.searchIndices,
 						region: amazon_location_service.region,
 					},
 				}
