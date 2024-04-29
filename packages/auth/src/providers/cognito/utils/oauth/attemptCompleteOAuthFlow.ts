@@ -7,13 +7,13 @@ import {
 	assertOAuthConfig,
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
+import { getAuthUserAgentValue } from '../../../../utils';
+
 import { oAuthStore } from './oAuthStore';
 import { completeOAuthFlow } from './completeOAuthFlow';
-import { getAuthUserAgentValue } from '../../../../utils';
 import { getRedirectUrl } from './getRedirectUrl';
 import { handleFailure } from './handleFailure';
-import { cognitoUserPoolsTokenProvider } from '../../tokenProvider';
-import { addInflightPromise } from './inflightPromise';
 
 export const attemptCompleteOAuthFlow = async (
 	authConfig: AuthConfig['Cognito'],
@@ -33,16 +33,6 @@ export const attemptCompleteOAuthFlow = async (
 	if (!(await oAuthStore.loadOAuthInFlight())) {
 		return;
 	}
-
-	// when there is valid oauth config and there is an inflight oauth flow, try
-	// to block async calls that require fetching tokens before the oauth flow completes
-	// e.g. getCurrentUser, fetchAuthSession etc.
-	const asyncGetSessionBlocker = new Promise<void>((resolve, _) => {
-		addInflightPromise(resolve);
-	});
-	cognitoUserPoolsTokenProvider.setWaitForInflightOAuth(
-		() => asyncGetSessionBlocker,
-	);
 
 	try {
 		const currentUrl = window.location.href;

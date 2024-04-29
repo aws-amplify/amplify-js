@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api-graphql",
-	"version": "4.0.17",
+	"version": "4.1.0",
 	"description": "Api-graphql category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -24,7 +24,8 @@
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint 'src/**/*.ts' && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 70.0"
 	},
 	"exports": {
@@ -71,7 +72,6 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@aws-amplify/data-schema": "^0.13.4",
 		"@rollup/plugin-typescript": "11.1.5",
 		"rollup": "^4.9.6",
 		"typescript": "5.0.2"
@@ -84,9 +84,9 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-amplify/api-rest": "4.0.17",
-		"@aws-amplify/core": "6.0.17",
-		"@aws-amplify/data-schema-types": "^0.7.3",
+		"@aws-amplify/api-rest": "4.0.29",
+		"@aws-amplify/core": "6.1.0",
+		"@aws-amplify/data-schema": "^1.0.0",
 		"@aws-sdk/types": "3.387.0",
 		"graphql": "15.8.0",
 		"rxjs": "^7.8.1",

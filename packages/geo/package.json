@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "3.0.17",
+	"version": "3.0.29",
 	"description": "Geo category for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -24,7 +24,8 @@
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",
-		"lint": "tslint '{__tests__,src}/**/*.ts' && npm run ts-coverage",
+		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
+		"lint:fix": "eslint '**/*.{ts,tsx}' --fix",
 		"ts-coverage": "typescript-coverage-report -p ./tsconfig.build.json -t 84.00"
 	},
 	"exports": {
@@ -75,7 +76,7 @@
 		"@aws-amplify/core": "^6.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.17",
+		"@aws-amplify/core": "6.1.0",
 		"typescript": "5.0.2"
 	},
 	"size-limit": [

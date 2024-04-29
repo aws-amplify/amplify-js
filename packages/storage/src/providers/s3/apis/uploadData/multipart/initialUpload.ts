@@ -18,8 +18,8 @@ interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
 	data: StorageUploadDataPayload;
 	bucket: string;
-	accessLevel: StorageAccessLevel;
-	keyPrefix: string;
+	accessLevel?: StorageAccessLevel;
+	keyPrefix?: string;
 	key: string;
 	contentType?: string;
 	contentDisposition?: string;
@@ -54,7 +54,7 @@ export const loadOrCreateMultipartUpload = async ({
 	metadata,
 	abortSignal,
 }: LoadOrCreateMultipartUploadOptions): Promise<LoadOrCreateMultipartUploadResult> => {
-	const finalKey = keyPrefix + key;
+	const finalKey = keyPrefix !== undefined ? keyPrefix + key : key;
 
 	let cachedUpload:
 		| {
@@ -75,6 +75,7 @@ export const loadOrCreateMultipartUpload = async ({
 			accessLevel,
 			key,
 		});
+
 		const cachedUploadParts = await findCachedUploadParts({
 			s3Config,
 			cacheKey: uploadCacheKey,

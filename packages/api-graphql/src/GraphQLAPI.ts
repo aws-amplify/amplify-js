@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
-import { Category, ApiAction } from '@aws-amplify/core/internals/utils';
+import { ApiAction, Category } from '@aws-amplify/core/internals/utils';
+import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
+import { Observable } from 'rxjs';
+
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
-import { Observable } from 'rxjs';
 
 export const graphqlOperation = (
 	query: any,

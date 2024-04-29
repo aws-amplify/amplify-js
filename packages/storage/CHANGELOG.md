@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.3.1...@aws-amplify/storage@6.4.0) (2024-04-29)
+
+### Bug Fixes
+
+- **storage:** refactor storage API types ([#13207](https://github.com/aws-amplify/amplify-js/issues/13207)) ([a94480d](https://github.com/aws-amplify/amplify-js/commit/a94480dfc58c521cbbb81b3a534f8543727831dc))
+
+### Features
+
+- add gen2 path parameter to getProperties and getUrl ([#13144](https://github.com/aws-amplify/amplify-js/issues/13144)) ([6456588](https://github.com/aws-amplify/amplify-js/commit/6456588bae501f92233ace4a6698d14db1f3557a))
+- **storage:** add path support to copy API ([#13104](https://github.com/aws-amplify/amplify-js/issues/13104)) ([3e6528d](https://github.com/aws-amplify/amplify-js/commit/3e6528d5fc40d2d985d38d97e2a0e8120a80728e))
+- **storage:** list API to accept both prefix and path ([#13100](https://github.com/aws-amplify/amplify-js/issues/13100)) ([872a817](https://github.com/aws-amplify/amplify-js/commit/872a8171d4b30a8b751e08bd64170d074beb9739))
+- **storage:** remove api takes path or key ([#13115](https://github.com/aws-amplify/amplify-js/issues/13115)) ([bef4777](https://github.com/aws-amplify/amplify-js/commit/bef4777ec96d3e2de6f390addedc7bde8016a692))
+- **storage:** uploadData path parameter support ([#13099](https://github.com/aws-amplify/amplify-js/issues/13099)) ([68a88bb](https://github.com/aws-amplify/amplify-js/commit/68a88bb4be020e60e08bf7325edd8a55a03cd177))
+
+## [6.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.0.28...@aws-amplify/storage@6.3.1) (2024-04-26)
+
+### Bug Fixes
+
+- bump package versions ([#13254](https://github.com/aws-amplify/amplify-js/issues/13254)) ([aa490b9](https://github.com/aws-amplify/amplify-js/commit/aa490b9bcbd2a442d9726937cfa59ef8b7859306))
+
+## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.0.27...@aws-amplify/storage@6.0.28) (2024-04-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.27 (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.26 (2024-04-01)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.25 (2024-03-30)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.24 (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.23 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.22 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.21 (2024-03-19)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.20 (2024-03-11)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.19 (2024-03-05)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## 6.0.18 (2024-02-27)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 ## 6.0.17 (2024-02-19)
 
 ### Reverts

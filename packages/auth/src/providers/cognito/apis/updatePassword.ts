@@ -1,16 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import {
+	AuthAction,
+	assertTokenProviderConfig,
+} from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { UpdatePasswordInput } from '../types';
 import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
-import {
-	assertTokenProviderConfig,
-	AuthAction,
-} from '@aws-amplify/core/internals/utils';
 import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';

@@ -3,6 +3,69 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.0.30...@aws-amplify/api-graphql@4.1.0) (2024-04-29)
+
+### Features
+
+- **api-graphql:** alias authMode identityPool -> iam ([#13299](https://github.com/aws-amplify/amplify-js/issues/13299)) ([a5d176b](https://github.com/aws-amplify/amplify-js/commit/a5d176b3c9ec1cecd265740e8b4579327ef98e1f))
+
+## [4.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.0.29...@aws-amplify/api-graphql@4.0.30) (2024-04-26)
+
+### Bug Fixes
+
+- **data:** tests for error response fix ([#13279](https://github.com/aws-amplify/amplify-js/issues/13279)) ([1aef1ee](https://github.com/aws-amplify/amplify-js/commit/1aef1ee0e65d1489e4d86d19a6d017f852f3bafd))
+
+## [4.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.0.28...@aws-amplify/api-graphql@4.0.29) (2024-04-22)
+
+### Bug Fixes
+
+- **api-graphql:** incorrect custom selection set for nested model.model.customType ([#13216](https://github.com/aws-amplify/amplify-js/issues/13216)) ([390c159](https://github.com/aws-amplify/amplify-js/commit/390c159cd976b744701d504a9d3929e80f7e2b72))
+- **api-graphql:** incorrect list sk arg type ([#13249](https://github.com/aws-amplify/amplify-js/issues/13249)) ([f37faeb](https://github.com/aws-amplify/amplify-js/commit/f37faebacddeed66ce5bc1d7f78b8d1d46aecb17))
+
+## [4.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.0.27...@aws-amplify/api-graphql@4.0.28) (2024-04-09)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.27 (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.26 (2024-04-01)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.25 (2024-03-30)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.24 (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.23 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.22 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.21 (2024-03-19)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.20 (2024-03-11)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.19 (2024-03-05)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+## 4.0.18 (2024-02-27)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
 ## 4.0.17 (2024-02-19)
 
 ### Reverts

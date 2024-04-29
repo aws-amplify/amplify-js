@@ -5,12 +5,9 @@ import {
 	CognitoAWSCredentialsAndIdentityIdProvider,
 	DefaultIdentityIdStore,
 } from '@aws-amplify/auth/cognito';
-import {
-	CredentialsAndIdentityIdProvider,
-	AuthConfig,
-	KeyValueStorageInterface,
-} from '@aws-amplify/core';
-import { createAWSCredentialsAndIdentityIdProvider } from '../../../../src/adapterCore';
+import { AuthConfig, KeyValueStorageInterface } from '@aws-amplify/core';
+
+import { createAWSCredentialsAndIdentityIdProvider } from '../../../../src/adapter-core';
 
 jest.mock('@aws-amplify/auth/cognito');
 

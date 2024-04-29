@@ -14,7 +14,18 @@ import {
 import { AuthError } from '../../../src';
 import { createKeysForAuthStorage } from '../../../src/providers/cognito/tokenProvider/TokenStore';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+jest.mock('../../../src/providers/cognito/utils/dispatchSignedInHubEvent');
 
+jest.mock('../../../src/providers/cognito/utils/srp', () => {
+	return {
+		...jest.requireActual('../../../src/providers/cognito/utils/srp'),
+		getAuthenticationHelper: jest.fn(() => ({
+			A: { toString: jest.fn() },
+			getPasswordAuthenticationKey: jest.fn(),
+		})),
+		getSignatureString: jest.fn(),
+	}
+})
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
@@ -55,13 +66,27 @@ function setDeviceKeys() {
 		mockedDeviceMetadata.randomPasswordKey,
 	);
 }
+type DeviceKey = 'deviceKey' | 'deviceGroupKey' | 'randomPasswordKey';
+function deleteDeviceKey(key: DeviceKey) {
+	switch (key) {
+		case 'deviceKey':
+			localStorage.removeItem(authKeys.deviceKey);
+			break
+		case 'deviceGroupKey':
+			localStorage.removeItem(authKeys.deviceGroupKey);
+			break
+		case 'randomPasswordKey':
+			localStorage.removeItem(authKeys.randomPasswordKey);
+			break
+	}
+}
 
 describe('signIn API happy path cases', () => {
-	let handleUserSRPAuthflowSpy;
+	let handleUserSRPAuthflowSpy = jest
+		.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
 
 	beforeEach(() => {
-		handleUserSRPAuthflowSpy = jest
-			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
+		handleUserSRPAuthflowSpy
 			.mockImplementation(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
 					authAPITestParams.RespondToAuthChallengeCommandOutput,
@@ -162,6 +187,58 @@ describe('signIn API happy path cases', () => {
 			tokenOrchestrator,
 		);
 	});
+
+	describe('sign in with device keys', () => {
+		const initiateAuthSpy = jest
+			.spyOn(clients, 'initiateAuth')
+		const respondToAuthChallengeAuthSpy = jest
+			.spyOn(clients, 'respondToAuthChallenge')
+		beforeEach(() => {
+			setDeviceKeys();
+			handleUserSRPAuthflowSpy.mockRestore();
+			initiateAuthSpy.mockResolvedValueOnce({
+				ChallengeName: 'SRP_AUTH',
+				Session: '1234234232',
+				$metadata: {},
+				ChallengeParameters: {
+					USER_ID_FOR_SRP: lastAuthUser,
+				}
+			});
+			respondToAuthChallengeAuthSpy.mockResolvedValueOnce(authAPITestParams.RespondToAuthChallengeCommandOutput);
+		})
+
+		afterEach(() => {
+			initiateAuthSpy.mockClear();
+			respondToAuthChallengeAuthSpy.mockClear();
+		})
+
+		test('respondToAuthChallenge should include device key in the request', async () => {
+
+			await signIn({
+				username: lastAuthUser,
+				password: 'XXXXXXXX',
+			});
+
+			expect(respondToAuthChallengeAuthSpy).toHaveBeenCalledTimes(1);
+			const deviceKeyFromRequest = respondToAuthChallengeAuthSpy.mock.calls[0][1].ChallengeResponses?.DEVICE_KEY
+			expect(deviceKeyFromRequest).toBe('mockedKey')
+
+		})
+		const deviceKeys: DeviceKey[] = ['deviceKey', 'deviceGroupKey', 'randomPasswordKey']
+		test.each(deviceKeys)('respondToAuthChallenge should not include device key in the request if any device key in storage is deleted', async deviceKey => {
+           deleteDeviceKey(deviceKey);
+			await signIn({
+				username: lastAuthUser,
+				password: 'XXXXXXXX',
+			});
+
+			expect(respondToAuthChallengeAuthSpy).toHaveBeenCalledTimes(1);
+			const deviceKeyFromRequest = respondToAuthChallengeAuthSpy.mock.calls[0][1].ChallengeResponses?.DEVICE_KEY
+			expect(deviceKeyFromRequest).toBe(undefined)
+
+		})
+	})
+
 });
 
 describe('Cognito ASF', () => {

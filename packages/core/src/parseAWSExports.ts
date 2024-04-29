@@ -249,15 +249,14 @@ export const parseAWSExports = (
 	// Geo
 	if (geo) {
 		const { amazon_location_service } = geo;
-		(amplifyConfig as any).Geo = amazon_location_service
-			? {
-					LocationService: {
-						...amazon_location_service,
-						searchIndices: amazon_location_service.search_indices,
-						region: amazon_location_service.region,
-					},
-				}
-			: { ...geo };
+		amplifyConfig.Geo = {
+			LocationService: {
+				maps: amazon_location_service.maps,
+				geofenceCollections: amazon_location_service.geofenceCollections,
+				searchIndices: amazon_location_service.search_indices,
+				region: amazon_location_service.region,
+			},
+		};
 	}
 
 	// REST API

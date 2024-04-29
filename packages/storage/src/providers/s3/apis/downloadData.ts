@@ -4,33 +4,43 @@
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { DownloadDataInput, DownloadDataOutput, S3Exception } from '../types';
+import {
+	DownloadDataInput,
+	DownloadDataOutput,
+	DownloadDataWithPathInput,
+	DownloadDataWithPathOutput,
+} from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
-import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { createDownloadTask } from '../utils';
+import { createDownloadTask, validateStorageOperationInput } from '../utils';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
+import {
+	StorageDownloadDataOutput,
+	StorageItemWithKey,
+	StorageItemWithPath,
+} from '../../../types';
+import { STORAGE_INPUT_KEY } from '../utils/constants';
 
 /**
  * Download S3 object data to memory
  *
- * @param input - The DownloadDataInput object.
+ * @param input - The `DownloadDataWithPathInput` object.
  * @returns A cancelable task exposing result promise from `result` property.
- * @throws service: {@link S3Exception} - thrown when checking for existence of the object
- * @throws validation: {@link StorageValidationErrorCode } - Validation errors
+ * @throws service: `S3Exception` - thrown when checking for existence of the object
+ * @throws validation: `StorageValidationErrorCode` - Validation errors
  *
  * @example
  * ```ts
  * // Download a file from s3 bucket
- * const { body, eTag } = await downloadData({ key, data: file, options: {
+ * const { body, eTag } = await downloadData({ path, options: {
  *   onProgress, // Optional progress callback.
  * } }).result;
  * ```
  * @example
  * ```ts
  * // Cancel a task
- * const downloadTask = downloadData({ key, data: file });
+ * const downloadTask = downloadData({ path });
  * //...
  * downloadTask.cancel();
  * try {
@@ -42,7 +52,47 @@ import { logger } from '../../../utils';
  * }
  *```
  */
-export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
+export function downloadData(
+	input: DownloadDataWithPathInput,
+): DownloadDataWithPathOutput;
+/**
+ * @deprecated The `key` and `accessLevel` parameters are deprecated and may be removed in the next major version.
+ * Please use {@link https://docs.amplify.aws/react/build-a-backend/storage/download/#downloaddata | path} instead.
+ *
+ * Download S3 object data to memory
+ *
+ * @param input - The `DownloadDataInput` object.
+ * @returns A cancelable task exposing result promise from `result` property.
+ * @throws service: `S3Exception` - thrown when checking for existence of the object
+ * @throws validation: `StorageValidationErrorCode` - Validation errors
+ *
+ * @example
+ * ```ts
+ * // Download a file from s3 bucket
+ * const { body, eTag } = await downloadData({ key, options: {
+ *   onProgress, // Optional progress callback.
+ * } }).result;
+ * ```
+ * @example
+ * ```ts
+ * // Cancel a task
+ * const downloadTask = downloadData({ key });
+ * //...
+ * downloadTask.cancel();
+ * try {
+ * 	await downloadTask.result;
+ * } catch (error) {
+ * 	if(isCancelError(error)) {
+ *    // Handle error thrown by task cancelation.
+ * 	}
+ * }
+ *```
+ */
+export function downloadData(input: DownloadDataInput): DownloadDataOutput;
+
+export function downloadData(
+	input: DownloadDataInput | DownloadDataWithPathInput,
+) {
 	const abortController = new AbortController();
 
 	const downloadTask = createDownloadTask({
@@ -53,21 +103,27 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput => {
 	});
 
 	return downloadTask;
-};
+}
 
 const downloadDataJob =
 	(
-		{ options: downloadDataOptions, key }: DownloadDataInput,
+		downloadDataInput: DownloadDataInput | DownloadDataWithPathInput,
 		abortSignal: AbortSignal,
 	) =>
-	async () => {
-		const { bucket, keyPrefix, s3Config } = await resolveS3ConfigAndInput(
-			Amplify,
-			downloadDataOptions,
+	async (): Promise<
+		StorageDownloadDataOutput<StorageItemWithKey | StorageItemWithPath>
+	> => {
+		const { options: downloadDataOptions } = downloadDataInput;
+		const { bucket, keyPrefix, s3Config, identityId } =
+			await resolveS3ConfigAndInput(Amplify, downloadDataOptions);
+		const { inputType, objectKey } = validateStorageOperationInput(
+			downloadDataInput,
+			identityId,
 		);
-		const finalKey = keyPrefix + key;
+		const finalKey =
+			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
-		logger.debug(`download ${key} from ${finalKey}.`);
+		logger.debug(`download ${objectKey} from ${finalKey}.`);
 
 		const {
 			Body: body,
@@ -93,8 +149,7 @@ const downloadDataJob =
 			},
 		);
 
-		return {
-			key,
+		const result = {
 			body,
 			lastModified,
 			size,
@@ -103,4 +158,8 @@ const downloadDataJob =
 			metadata,
 			versionId,
 		};
+
+		return inputType === STORAGE_INPUT_KEY
+			? { key: objectKey, ...result }
+			: { path: objectKey, ...result };
 	};

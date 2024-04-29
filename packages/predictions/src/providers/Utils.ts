@@ -7,14 +7,15 @@
 export function makeCamelCase(obj?: any, keys?: string[]) {
 	if (!obj) return undefined;
 	const newObj = {};
-	const keysToRename = keys ? keys : Object.keys(obj);
+	const keysToRename = keys || Object.keys(obj);
 	keysToRename.forEach(key => {
-		if (obj.hasOwnProperty(key)) {
+		if (Object.prototype.hasOwnProperty.call(obj, key)) {
 			// change the key to camelcase.
 			const camelCaseKey = key.charAt(0).toLowerCase() + key.substr(1);
 			Object.assign(newObj, { [camelCaseKey]: obj[key] });
 		}
 	});
+
 	return newObj;
 }
 
@@ -23,6 +24,7 @@ export function makeCamelCase(obj?: any, keys?: string[]) {
  */
 export function makeCamelCaseArray(objArr?: object[], keys?: string[]) {
 	if (!objArr) return undefined;
+
 	return objArr.map(obj => makeCamelCase(obj, keys));
 }
 
@@ -30,18 +32,18 @@ export function makeCamelCaseArray(objArr?: object[], keys?: string[]) {
  * Converts blob to array buffer
  */
 export function blobToArrayBuffer(blob: Blob): Promise<Uint8Array> {
-	return new Promise((res, rej) => {
+	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = _event => {
-			res(reader.result as Uint8Array);
+			resolve(reader.result as Uint8Array);
 		};
 		reader.onerror = err => {
-			rej(err);
+			reject(err);
 		};
 		try {
 			reader.readAsArrayBuffer(blob);
 		} catch (err) {
-			rej(err); // in case user gives invalid type
+			reject(err); // in case user gives invalid type
 		}
 	});
 }

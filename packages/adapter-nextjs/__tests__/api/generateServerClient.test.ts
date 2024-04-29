@@ -1,12 +1,11 @@
 import { ResourcesConfig } from '@aws-amplify/core';
+import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
+
 import {
 	generateServerClientUsingCookies,
 	generateServerClientUsingReqRes,
 } from '../../src/api';
-import {
-	getAmplifyConfig,
-	createRunWithAmplifyServerContext,
-} from '../../src/utils';
+import { createRunWithAmplifyServerContext } from '../../src/utils';
 import { NextApiRequestMock, NextApiResponseMock } from '../mocks/headers';
 import { createServerRunnerForAPI } from '../../src/api/createServerRunnerForAPI';
 
@@ -33,13 +32,16 @@ const mockAmplifyConfig: ResourcesConfig = {
 
 jest.mock('../../src/utils', () => ({
 	createRunWithAmplifyServerContext: jest.fn(() => jest.fn()),
-	getAmplifyConfig: jest.fn(() => mockAmplifyConfig),
 	createCookieStorageAdapterFromNextServerContext: jest.fn(),
+}));
+jest.mock('@aws-amplify/core/internals/utils', () => ({
+	...jest.requireActual('@aws-amplify/core/internals/utils'),
+	parseAmplifyConfig: jest.fn(() => mockAmplifyConfig),
 }));
 
 jest.mock('aws-amplify/adapter-core');
 
-const mockGetAmplifyConfig = getAmplifyConfig as jest.Mock;
+const mockParseAmplifyConfig = parseAmplifyConfig as jest.Mock;
 const mockCreateRunWithAmplifyServerContext =
 	createRunWithAmplifyServerContext as jest.Mock;
 
@@ -59,7 +61,7 @@ describe('generateServerClientUsingCookies', () => {
 	});
 
 	it('should call createRunWithAmplifyServerContext to create runWithAmplifyServerContext function', async () => {
-		const cookies = (await headers).cookies;
+		const { cookies } = await headers;
 
 		generateServerClientUsingCookies({ config: mockAmplifyConfig, cookies });
 		expect(mockCreateRunWithAmplifyServerContext).toHaveBeenCalledWith({
@@ -76,7 +78,7 @@ describe('generateServerClient', () => {
 
 	it('should call getAmlifyConfig', async () => {
 		generateServerClientUsingReqRes({ config: mockAmplifyConfig });
-		expect(mockGetAmplifyConfig).toHaveBeenCalled();
+		expect(mockParseAmplifyConfig).toHaveBeenCalled();
 	});
 
 	// TODO: figure out proper mocks and unskip
@@ -94,7 +96,7 @@ describe('generateServerClient', () => {
 		}));
 
 		jest.mock('@aws-amplify/core/internals/adapter-core', () => ({
-			getAmplifyServerContext: () => {},
+			getAmplifyServerContext: jest.fn(),
 		}));
 
 		const client = generateServerClientUsingReqRes({

@@ -18,11 +18,22 @@ interface CommonOptions {
 	useAccelerateEndpoint?: boolean;
 }
 
+/** @deprecated This may be removed in the next major version. */
 type ReadOptions =
-	| { accessLevel?: 'guest' | 'private' }
-	| { accessLevel: 'protected'; targetIdentityId?: string };
+	| {
+			/** @deprecated This may be removed in the next major version. */
+			accessLevel?: 'guest' | 'private';
+	  }
+	| {
+			/** @deprecated This may be removed in the next major version. */
+			accessLevel: 'protected';
+			/** @deprecated This may be removed in the next major version. */
+			targetIdentityId?: string;
+	  };
 
+/** @deprecated This may be removed in the next major version. */
 interface WriteOptions {
+	/** @deprecated This may be removed in the next major version. */
 	accessLevel?: StorageAccessLevel;
 }
 
@@ -46,7 +57,9 @@ interface TransferOptions {
 /**
  * Input options type for S3 getProperties API.
  */
-export type GetPropertiesOptions = ReadOptions & CommonOptions;
+/** @deprecated Use {@link GetPropertiesOptionsWithPath} instead. */
+export type GetPropertiesOptionsWithKey = ReadOptions & CommonOptions;
+export type GetPropertiesOptionsWithPath = CommonOptions;
 
 /**
  * Input options type for S3 getProperties API.
@@ -54,46 +67,71 @@ export type GetPropertiesOptions = ReadOptions & CommonOptions;
 export type RemoveOptions = WriteOptions & CommonOptions;
 
 /**
- * Input options type for S3 list API.
+ * @deprecated Use {@link ListAllOptionsWithPath} instead.
+ * Input options type with prefix for S3 list all API.
  */
-export type ListAllOptions = StorageListAllOptions &
+export type ListAllOptionsWithPrefix = StorageListAllOptions &
 	ReadOptions &
 	CommonOptions;
 
 /**
- * Input options type for S3 list API.
+ * @deprecated Use {@link ListPaginateOptionsWithPath} instead.
+ * Input options type with prefix for S3 list API to paginate items.
  */
-export type ListPaginateOptions = StorageListPaginateOptions &
+export type ListPaginateOptionsWithPrefix = StorageListPaginateOptions &
 	ReadOptions &
+	CommonOptions;
+
+/**
+ * Input options type with path for S3 list all API.
+ */
+export type ListAllOptionsWithPath = Omit<
+	StorageListAllOptions,
+	'accessLevel'
+> &
+	CommonOptions;
+
+/**
+ * Input options type with path for S3 list API to paginate items.
+ */
+export type ListPaginateOptionsWithPath = Omit<
+	StorageListPaginateOptions,
+	'accessLevel'
+> &
 	CommonOptions;
 
 /**
  * Input options type for S3 getUrl API.
  */
-export type GetUrlOptions = ReadOptions &
-	CommonOptions & {
-		/**
-		 * Whether to head object to make sure the object existence before downloading.
-		 * @default false
-		 */
-		validateObjectExistence?: boolean;
-		/**
-		 * Number of seconds till the URL expires.
-		 * @default 900 (15 minutes)
-		 */
-		expiresIn?: number;
-	};
+export type GetUrlOptions = CommonOptions & {
+	/**
+	 * Whether to head object to make sure the object existence before downloading.
+	 * @default false
+	 */
+	validateObjectExistence?: boolean;
+	/**
+	 * Number of seconds till the URL expires.
+	 * @default 900 (15 minutes)
+	 */
+	expiresIn?: number;
+};
+
+/** @deprecated Use {@link GetUrlOptionsWithPath} instead. */
+export type GetUrlOptionsWithKey = ReadOptions & GetUrlOptions;
+export type GetUrlOptionsWithPath = GetUrlOptions;
 
 /**
  * Input options type for S3 downloadData API.
  */
-export type DownloadDataOptions = ReadOptions &
-	CommonOptions &
+export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
 	BytesRangeOptions;
 
-export type UploadDataOptions = WriteOptions &
-	CommonOptions &
+/** @deprecated Use {@link DownloadDataOptionsWithPath} instead. */
+export type DownloadDataOptionsWithKey = ReadOptions & DownloadDataOptions;
+export type DownloadDataOptionsWithPath = DownloadDataOptions;
+
+export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
 		 * The default content-disposition header value of the file when downloading it.
@@ -117,11 +155,19 @@ export type UploadDataOptions = WriteOptions &
 		metadata?: Record<string, string>;
 	};
 
-export type CopySourceOptions = ReadOptions & {
+/** @deprecated Use {@link UploadDataOptionsWithPath} instead. */
+export type UploadDataOptionsWithKey = WriteOptions & UploadDataOptions;
+export type UploadDataOptionsWithPath = UploadDataOptions;
+
+/** @deprecated This may be removed in the next major version. */
+export type CopySourceOptionsWithKey = ReadOptions & {
+	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };
 
-export type CopyDestinationOptions = WriteOptions & {
+/** @deprecated This may be removed in the next major version. */
+export type CopyDestinationOptionsWithKey = WriteOptions & {
+	/** @deprecated This may be removed in the next major version. */
 	key: string;
 };
 

@@ -1,9 +1,9 @@
-import * as raw from '../../../src';
 import { Amplify, AmplifyClassV6, ResourcesConfig } from '@aws-amplify/core';
 import { generateClientWithAmplifyInstance } from '../../../src/internals/server';
 import configFixture from '../../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../../fixtures/modeled/schema';
 import { V6ClientSSRRequest, V6ClientSSRCookies } from '../../../src/types';
+import { mockApiResponse, normalizePostGraphqlCalls } from '../../utils';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -25,26 +25,11 @@ const config: ResourcesConfig = {
 	},
 };
 
-/**
- *
- * @param value Value to be returned. Will be `awaited`, and can
- * therefore be a simple JSON value or a `Promise`.
- * @returns
- */
-function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
-			const result = await value;
-			return {
-				body: {
-					json: () => result,
-				},
-			};
-		});
-}
-
 describe('server generateClient', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('with cookies', () => {
 		test('subscriptions are disabled', () => {
 			const getAmplify = async (fn: any) => await fn(Amplify);
@@ -96,40 +81,7 @@ describe('server generateClient', () => {
 				filter: { name: { contains: 'name' } },
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-							},
-						},
-					}),
-				}),
-			);
-
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						body: expect.objectContaining({
-							// match nextToken in selection set
-							query: expect.stringMatching(/^\s*nextToken\s*$/m),
-						}),
-					}),
-				}),
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(data.length).toBe(1);
 			expect(data[0]).toEqual(
@@ -177,29 +129,7 @@ describe('server generateClient', () => {
 				nextToken: 'some-token',
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-								nextToken: 'some-token',
-							},
-						},
-					}),
-				}),
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.any(AmplifyClassV6),
@@ -248,29 +178,7 @@ describe('server generateClient', () => {
 				limit: 5,
 			});
 
-			expect(spy).toHaveBeenCalledWith(
-				expect.any(AmplifyClassV6),
-				expect.objectContaining({
-					options: expect.objectContaining({
-						headers: expect.objectContaining({
-							'X-Api-Key': 'FAKE-KEY',
-						}),
-						body: {
-							query: expect.stringContaining(
-								'listTodos(filter: $filter, limit: $limit, nextToken: $nextToken)',
-							),
-							variables: {
-								filter: {
-									name: {
-										contains: 'name',
-									},
-								},
-								limit: 5,
-							},
-						},
-					}),
-				}),
-			);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
 			expect(spy).toHaveBeenCalledWith(
 				expect.any(AmplifyClassV6),
@@ -284,51 +192,186 @@ describe('server generateClient', () => {
 				}),
 			);
 		});
-	});
-	describe('with request', () => {
-		test('subscriptions are disabled', () => {
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRRequest<Schema>
-			>({
-				amplify: null,
-				config: config,
-			});
 
-			expect(() => {
-				// @ts-expect-error
-				client.models.Note.onCreate().subscribe();
-			}).toThrow();
-		});
-
-		test('contextSpec param gets passed through to client.graphql', async () => {
+		test('can list with sort direction (ascending)', async () => {
 			Amplify.configure(configFixture as any);
 			const config = Amplify.getConfig();
 
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const getAmplify = async (fn: any) => await fn(Amplify);
+
 			const client = generateClientWithAmplifyInstance<
 				Schema,
-				V6ClientSSRRequest<Schema>
+				V6ClientSSRCookies<Schema>
 			>({
-				amplify: null,
+				amplify: getAmplify,
 				config: config,
 			});
 
-			const mockContextSpec = {};
-
-			const spy = jest.spyOn(client, 'graphql').mockImplementation(async () => {
-				const result: any = {};
-				return result;
+			const { data } = await client.models.Todo.list({
+				id: 'some-id',
+				sortDirection: 'ASC',
 			});
 
-			await client.models.Note.list(mockContextSpec);
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+		test('can list with sort direction (descending)', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
 
-			expect(spy).toHaveBeenCalledWith(
-				mockContextSpec,
-				expect.objectContaining({
-					query: expect.stringContaining('listNotes'),
-				}),
-				{},
-			);
+			const spy = mockApiResponse({
+				data: {
+					listTodos: {
+						items: [
+							{
+								__typename: 'Todo',
+								...serverManagedFields,
+								name: 'some name',
+								description: 'something something',
+							},
+						],
+					},
+				},
+			});
+
+			const getAmplify = async (fn: any) => await fn(Amplify);
+
+			const client = generateClientWithAmplifyInstance<
+				Schema,
+				V6ClientSSRCookies<Schema>
+			>({
+				amplify: getAmplify,
+				config: config,
+			});
+
+			const { data } = await client.models.Todo.list({
+				id: 'some-id',
+				sortDirection: 'DESC',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('can custom query', async () => {
+			Amplify.configure(configFixture as any);
+			const config = Amplify.getConfig();
+
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const getAmplify = async (fn: any) => await fn(Amplify);
+
+			const client = generateClientWithAmplifyInstance<
+				Schema,
+				V6ClientSSRCookies<Schema>
+			>({
+				amplify: getAmplify,
+				config: config,
+			});
+
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				resultContent: 'echo result content',
+			});
+		});
+		describe('with request', () => {
+			test('subscriptions are disabled', () => {
+				const client = generateClientWithAmplifyInstance<
+					Schema,
+					V6ClientSSRRequest<Schema>
+				>({
+					amplify: null,
+					config: config,
+				});
+
+				expect(() => {
+					// @ts-expect-error
+					client.models.Note.onCreate().subscribe();
+				}).toThrow();
+			});
+
+			test('contextSpec param gets passed through to client.graphql', async () => {
+				Amplify.configure(configFixture as any);
+				const config = Amplify.getConfig();
+
+				const client = generateClientWithAmplifyInstance<
+					Schema,
+					V6ClientSSRRequest<Schema>
+				>({
+					amplify: null,
+					config: config,
+				});
+
+				const mockContextSpec = {};
+
+				const spy = jest
+					.spyOn(client, 'graphql')
+					.mockImplementation(async () => {
+						const result: any = {};
+						return result;
+					});
+
+				await client.models.Note.list(mockContextSpec);
+
+				expect(spy).toHaveBeenCalledWith(
+					mockContextSpec,
+					expect.objectContaining({
+						query: expect.stringContaining('listNotes'),
+					}),
+					{},
+				);
+			});
+
+			test('can custom query', async () => {
+				Amplify.configure(configFixture as any);
+				const config = Amplify.getConfig();
+
+				const client = generateClientWithAmplifyInstance<
+					Schema,
+					V6ClientSSRRequest<Schema>
+				>({
+					amplify: null,
+					config: config,
+				});
+
+				const spy = jest
+					.spyOn(client, 'graphql')
+					.mockImplementation(async () => {
+						const result: any = {};
+						return result;
+					});
+
+				const mockContextSpec = { token: { value: Symbol('test') } };
+
+				const result = await client.queries.echo(mockContextSpec, {
+					argumentContent: 'echo argumentContent value',
+				});
+
+				expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			});
 		});
 	});
 });

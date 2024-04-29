@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.0.28...@aws-amplify/core@6.1.0) (2024-04-29)
+
+### Bug Fixes
+
+- Fix SSR & AmplifyOutput types when using Gen2 configuration files ([#13247](https://github.com/aws-amplify/amplify-js/issues/13247)) ([f797dc5](https://github.com/aws-amplify/amplify-js/commit/f797dc539f57a55a325b227d8205813b122d7789))
+- **geo:** update amplify config geo schema ([#13290](https://github.com/aws-amplify/amplify-js/issues/13290)) ([3cca682](https://github.com/aws-amplify/amplify-js/commit/3cca6822ad4b76ab8966654923363635d92587f0))
+
+### Features
+
+- **api-graphql:** alias authMode identityPool -> iam ([#13299](https://github.com/aws-amplify/amplify-js/issues/13299)) ([a5d176b](https://github.com/aws-amplify/amplify-js/commit/a5d176b3c9ec1cecd265740e8b4579327ef98e1f))
+
+## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.0.27...@aws-amplify/core@6.0.28) (2024-04-22)
+
+### Bug Fixes
+
+- **message overrides:** extract message content with Platform-Specific Overrides ([#12917](https://github.com/aws-amplify/amplify-js/issues/12917)) ([cb91437](https://github.com/aws-amplify/amplify-js/commit/cb914374263262c84c6337dddca1f17fb7dd204a))
+
+## 6.0.27 (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.26 (2024-04-01)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.25 (2024-03-30)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.24 (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.23 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.22 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.21 (2024-03-19)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.20 (2024-03-11)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.19 (2024-03-05)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## 6.0.18 (2024-02-27)
+
+**Note:** Version bump only for package @aws-amplify/core
+
 ## 6.0.17 (2024-02-19)
 
 ### Reverts

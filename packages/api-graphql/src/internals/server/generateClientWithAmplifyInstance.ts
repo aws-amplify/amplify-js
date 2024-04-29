@@ -1,17 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { graphql, cancel, isCancelError } from '..';
-import { generateModelsProperty } from './generateModelsProperty';
+import { addSchemaToClientWithInstance } from '@aws-amplify/data-schema/runtime';
+
 import {
+	CommonPublicClientOptions,
+	ServerClientGenerationParams,
+	V6ClientSSRCookies,
+	V6ClientSSRRequest,
 	__amplify,
 	__authMode,
 	__authToken,
-	V6ClientSSRRequest,
-	V6ClientSSRCookies,
-	ServerClientGenerationParams,
-	CommonPublicClientOptions,
+	__headers,
+	getInternals,
 } from '../../types';
+import { isApiGraphQLConfig } from '../utils/runtimeTypeGuards/isApiGraphQLProviderConfig';
+import { cancel, graphql, isCancelError } from '..';
 
 /**
  * @private
@@ -36,12 +40,17 @@ export function generateClientWithAmplifyInstance<
 		[__amplify]: params.amplify,
 		[__authMode]: params.authMode,
 		[__authToken]: params.authToken,
+		[__headers]: params.headers,
 		graphql,
 		cancel,
 		isCancelError,
 	} as any;
 
-	client.models = generateModelsProperty<T>(client, params);
+	const apiGraphqlConfig = params.config?.API?.GraphQL;
 
-	return client as ClientType;
+	if (isApiGraphQLConfig(apiGraphqlConfig)) {
+		addSchemaToClientWithInstance<T>(client, params, getInternals);
+	}
+
+	return client as any;
 }

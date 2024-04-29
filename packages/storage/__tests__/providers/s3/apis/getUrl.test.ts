@@ -3,12 +3,17 @@
 
 import { getUrl } from '../../../../src/providers/s3/apis';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
-import { GetUrlOptions } from '../../../../src/providers/s3/types';
+import {
+	GetUrlInput,
+	GetUrlWithPathInput,
+	GetUrlOutput,
+	GetUrlWithPathOutput,
+} from '../../../../src/providers/s3/types';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -34,8 +39,11 @@ const credentials: AWSCredentials = {
 };
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+const mockURL = new URL('https://google.com');
 
-describe('getUrl test', () => {
+describe('getUrl test with key', () => {
+	const getUrlWrapper = (input: GetUrlInput): Promise<GetUrlOutput> =>
+		getUrl(input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -51,7 +59,7 @@ describe('getUrl test', () => {
 		});
 	});
 
-	describe('getUrl happy path', () => {
+	describe('Happy cases: With key', () => {
 		const config = {
 			credentials,
 			region,
@@ -59,24 +67,28 @@ describe('getUrl test', () => {
 		};
 		const key = 'key';
 		beforeEach(() => {
-			(headObject as jest.Mock).mockImplementation(() => {
-				return {
-					Key: 'key',
-					ContentLength: '100',
-					ContentType: 'text/plain',
-					ETag: 'etag',
-					LastModified: 'last-modified',
-					Metadata: { key: 'value' },
-				};
+			(headObject as jest.MockedFunction<typeof headObject>).mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { meta: 'value' },
+				$metadata: {} as any,
 			});
-			(getPresignedGetObjectUrl as jest.Mock).mockReturnValueOnce({
-				url: new URL('https://google.com'),
-			});
+			(
+				getPresignedGetObjectUrl as jest.MockedFunction<
+					typeof getPresignedGetObjectUrl
+				>
+			).mockResolvedValue(mockURL);
 		});
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
-		[
+
+		const testCases: Array<{
+			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
+			expectedKey: string;
+		}> = [
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -96,34 +108,34 @@ describe('getUrl test', () => {
 				options: { accessLevel: 'protected', targetIdentityId },
 				expectedKey: `protected/${targetIdentityId}/${key}`,
 			},
-		].forEach(({ options, expectedKey }) => {
-			const accessLevelMsg = options?.accessLevel ?? 'default';
-			const targetIdentityIdMsg = options?.targetIdentityId
-				? `and targetIdentityId`
-				: '';
-			it(`should getUrl with ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+		];
+
+		test.each(testCases)(
+			'should getUrl with key $expectedKey',
+			async ({ options, expectedKey }) => {
 				const headObjectOptions = {
 					Bucket: bucket,
 					Key: expectedKey,
 				};
-				expect.assertions(4);
-				const result = await getUrl({
+				const { url, expiresAt } = await getUrlWrapper({
 					key,
 					options: {
 						...options,
 						validateObjectExistence: true,
-					} as GetUrlOptions,
+					},
 				});
+				const expectedResult = {
+					url: mockURL,
+					expiresAt: expect.any(Date),
+				};
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
-				expect(result.url).toEqual({
-					url: new URL('https://google.com'),
-				});
-			});
-		});
+				expect({ url, expiresAt }).toEqual(expectedResult);
+			},
+		);
 	});
-	describe('getUrl error path', () => {
+	describe('Error cases :  With key', () => {
 		afterAll(() => {
 			jest.clearAllMocks();
 		});
@@ -136,8 +148,109 @@ describe('getUrl test', () => {
 			});
 			expect.assertions(2);
 			try {
-				await getUrl({
+				await getUrlWrapper({
 					key: 'invalid_key',
+					options: { validateObjectExistence: true },
+				});
+			} catch (error: any) {
+				expect(headObject).toHaveBeenCalledTimes(1);
+				expect(error.$metadata?.httpStatusCode).toBe(404);
+			}
+		});
+	});
+});
+
+describe('getUrl test with path', () => {
+	const getUrlWrapper = (
+		input: GetUrlWithPathInput,
+	): Promise<GetUrlWithPathOutput> => getUrl(input);
+	beforeAll(() => {
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId: defaultIdentityId,
+		});
+		mockGetConfig.mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+				},
+			},
+		});
+	});
+
+	describe('Happy cases: With path', () => {
+		const config = {
+			credentials,
+			region,
+			userAgentValue: expect.any(String),
+		};
+		beforeEach(() => {
+			(headObject as jest.MockedFunction<typeof headObject>).mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { meta: 'value' },
+				$metadata: {} as any,
+			});
+			(
+				getPresignedGetObjectUrl as jest.MockedFunction<
+					typeof getPresignedGetObjectUrl
+				>
+			).mockResolvedValue(mockURL);
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test.each([
+			{
+				path: 'path',
+				expectedKey: 'path',
+			},
+			{
+				path: () => 'path',
+				expectedKey: 'path',
+			},
+		])(
+			'should getUrl with path $path and expectedKey $expectedKey',
+			async ({ path, expectedKey }) => {
+				const headObjectOptions = {
+					Bucket: bucket,
+					Key: expectedKey,
+				};
+				const { url, expiresAt } = await getUrlWrapper({
+					path,
+					options: {
+						validateObjectExistence: true,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+				expect({ url, expiresAt }).toEqual({
+					url: mockURL,
+					expiresAt: expect.any(Date),
+				});
+			},
+		);
+	});
+	describe('Error cases :  With path', () => {
+		afterAll(() => {
+			jest.clearAllMocks();
+		});
+		it('should return not found error when the object is not found', async () => {
+			(headObject as jest.Mock).mockImplementation(() => {
+				throw Object.assign(new Error(), {
+					$metadata: { httpStatusCode: 404 },
+					name: 'NotFound',
+				});
+			});
+			expect.assertions(2);
+			try {
+				await getUrlWrapper({
+					path: 'invalid_key',
 					options: { validateObjectExistence: true },
 				});
 			} catch (error: any) {

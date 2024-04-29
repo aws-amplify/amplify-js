@@ -3,7 +3,7 @@
 
 import { getEventBuffer } from '../../../../src/providers/pinpoint/utils/getEventBuffer';
 import { flushEvents } from '../../../../src/providers/pinpoint';
-import { appId, region, credentials, identityId } from '../testUtils/data';
+import { appId, credentials, identityId, region } from '../testUtils/data';
 import {
 	BUFFER_SIZE,
 	FLUSH_INTERVAL,
