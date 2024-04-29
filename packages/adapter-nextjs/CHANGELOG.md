@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.1.4...@aws-amplify/adapter-nextjs@1.1.5) (2024-04-29)
+
+### Bug Fixes
+
+- Fix SSR & AmplifyOutput types when using Gen2 configuration files ([#13247](https://github.com/aws-amplify/amplify-js/issues/13247)) ([f797dc5](https://github.com/aws-amplify/amplify-js/commit/f797dc539f57a55a325b227d8205813b122d7789))
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.0.30...@aws-amplify/adapter-nextjs@1.1.4) (2024-04-26)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.0.30...@aws-amplify/api-graphql@4.1.0) (2024-04-29)
+
+### Features
+
+- **api-graphql:** alias authMode identityPool -> iam ([#13299](https://github.com/aws-amplify/amplify-js/issues/13299)) ([a5d176b](https://github.com/aws-amplify/amplify-js/commit/a5d176b3c9ec1cecd265740e8b4579327ef98e1f))
+
 ## [4.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.0.29...@aws-amplify/api-graphql@4.0.30) (2024-04-26)
 
 ### Bug Fixes
