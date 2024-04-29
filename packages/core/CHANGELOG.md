@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.0.28...@aws-amplify/core@6.1.0) (2024-04-29)
+
+### Bug Fixes
+
+- Fix SSR & AmplifyOutput types when using Gen2 configuration files ([#13247](https://github.com/aws-amplify/amplify-js/issues/13247)) ([f797dc5](https://github.com/aws-amplify/amplify-js/commit/f797dc539f57a55a325b227d8205813b122d7789))
+- **geo:** update amplify config geo schema ([#13290](https://github.com/aws-amplify/amplify-js/issues/13290)) ([3cca682](https://github.com/aws-amplify/amplify-js/commit/3cca6822ad4b76ab8966654923363635d92587f0))
+
+### Features
+
+- **api-graphql:** alias authMode identityPool -> iam ([#13299](https://github.com/aws-amplify/amplify-js/issues/13299)) ([a5d176b](https://github.com/aws-amplify/amplify-js/commit/a5d176b3c9ec1cecd265740e8b4579327ef98e1f))
+
 ## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.0.27...@aws-amplify/core@6.0.28) (2024-04-22)
 
 ### Bug Fixes
