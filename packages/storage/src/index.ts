@@ -13,24 +13,40 @@ export {
 
 export {
 	UploadDataInput,
+	UploadDataWithPathInput,
 	DownloadDataInput,
+	DownloadDataWithPathInput,
 	RemoveInput,
+	RemoveWithPathInput,
 	ListAllInput,
+	ListAllWithPathInput,
 	ListPaginateInput,
+	ListPaginateWithPathInput,
 	GetPropertiesInput,
+	GetPropertiesWithPathInput,
 	CopyInput,
+	CopyWithPathInput,
 	GetUrlInput,
+	GetUrlWithPathInput,
 } from './providers/s3/types/inputs';
 
 export {
 	UploadDataOutput,
+	UploadDataWithPathOutput,
 	DownloadDataOutput,
+	DownloadDataWithPathOutput,
 	RemoveOutput,
+	RemoveWithPathOutput,
 	ListAllOutput,
+	ListAllWithPathOutput,
 	ListPaginateOutput,
+	ListPaginateWithPathOutput,
 	GetPropertiesOutput,
+	GetPropertiesWithPathOutput,
 	CopyOutput,
+	CopyWithPathOutput,
 	GetUrlOutput,
+	GetUrlWithPathOutput,
 } from './providers/s3/types/outputs';
 
 export { TransferProgressEvent } from './types';

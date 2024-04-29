@@ -8,8 +8,9 @@ import {
 	defaultStorage,
 } from '@aws-amplify/core';
 import {
+	AmplifyOutputs,
 	LegacyConfig,
-	parseAWSExports,
+	parseAmplifyConfig,
 } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -31,16 +32,10 @@ export const DefaultAmplify = {
 	 * Amplify.configure(config);
 	 */
 	configure(
-		resourceConfig: ResourcesConfig | LegacyConfig,
+		resourceConfig: ResourcesConfig | LegacyConfig | AmplifyOutputs,
 		libraryOptions?: LibraryOptions,
 	): void {
-		let resolvedResourceConfig: ResourcesConfig;
-
-		if (Object.keys(resourceConfig).some(key => key.startsWith('aws_'))) {
-			resolvedResourceConfig = parseAWSExports(resourceConfig);
-		} else {
-			resolvedResourceConfig = resourceConfig as ResourcesConfig;
-		}
+		const resolvedResourceConfig = parseAmplifyConfig(resourceConfig);
 
 		// If no Auth config is provided, no special handling will be required, configure as is.
 		// Otherwise, we can assume an Auth config is provided from here on.

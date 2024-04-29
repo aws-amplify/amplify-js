@@ -31,7 +31,7 @@ jest.mock(
 describe('createServerRunner', () => {
 	let createServerRunner: any;
 
-	const mockParseAWSExports = jest.fn();
+	const mockParseAmplifyConfig = jest.fn();
 	const mockCreateAWSCredentialsAndIdentityIdProvider = jest.fn();
 	const mockCreateKeyValueStorageFromCookieStorageAdapter = jest.fn();
 	const mockCreateUserPoolsTokenProvider = jest.fn();
@@ -48,23 +48,23 @@ describe('createServerRunner', () => {
 			runWithAmplifyServerContext: mockRunWithAmplifyServerContextCore,
 		}));
 		jest.doMock('@aws-amplify/core/internals/utils', () => ({
-			parseAWSExports: mockParseAWSExports,
+			parseAmplifyConfig: mockParseAmplifyConfig,
 		}));
 
 		({ createServerRunner } = require('../src'));
 	});
 
 	afterEach(() => {
-		mockParseAWSExports.mockClear();
+		mockParseAmplifyConfig.mockClear();
 		mockCreateAWSCredentialsAndIdentityIdProvider.mockClear();
 		mockCreateKeyValueStorageFromCookieStorageAdapter.mockClear();
 		mockCreateUserPoolsTokenProvider.mockClear();
 		mockRunWithAmplifyServerContextCore.mockClear();
 	});
 
-	it('calls parseAWSExports when the config object is imported from amplify configuration file', () => {
+	it('calls parseAmplifyConfig when the config object is imported from amplify configuration file', () => {
 		createServerRunner({ config: { aws_project_region: 'us-west-2' } });
-		expect(mockParseAWSExports).toHaveBeenCalled();
+		expect(mockParseAmplifyConfig).toHaveBeenCalled();
 	});
 
 	it('returns runWithAmplifyServerContext function', () => {
@@ -85,6 +85,9 @@ describe('createServerRunner', () => {
 						},
 					},
 				};
+
+				mockParseAmplifyConfig.mockReturnValue(mockAmplifyConfigWithoutAuth);
+
 				const { runWithAmplifyServerContext } = createServerRunner({
 					config: mockAmplifyConfigWithoutAuth,
 				});
@@ -99,6 +102,10 @@ describe('createServerRunner', () => {
 		});
 
 		describe('when amplifyConfig.Auth is defined', () => {
+			beforeEach(() => {
+				mockParseAmplifyConfig.mockReturnValue(mockAmplifyConfig);
+			});
+
 			describe('when nextServerContext is null (opt-in unauthenticated role)', () => {
 				it('should create auth providers with sharedInMemoryStorage', () => {
 					const { runWithAmplifyServerContext } = createServerRunner({

@@ -5,7 +5,6 @@ import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
 
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
-import { StorageError } from '../../../errors/StorageError';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
 import { ResolvedS3Config } from '../types/options';
 
@@ -22,6 +21,7 @@ interface ResolvedS3ConfigAndInput {
 	bucket: string;
 	keyPrefix: string;
 	isObjectLockEnabled?: boolean;
+	identityId?: string;
 }
 
 /**
@@ -30,7 +30,7 @@ interface ResolvedS3ConfigAndInput {
  * @param {AmplifyClassV6} amplify The Amplify instance.
  * @param {S3ApiOptions} apiOptions The input options for S3 provider.
  * @returns {Promise<ResolvedS3ConfigAndInput>} The resolved common input options for S3 API handlers.
- * @throws A {@link StorageError} with `error.name` from {@link StorageValidationErrorCode} indicating invalid
+ * @throws A `StorageError` with `error.name` from `StorageValidationErrorCode` indicating invalid
  *   configurations or Amplify library options.
  *
  * @internal
@@ -84,6 +84,7 @@ export const resolveS3ConfigAndInput = async (
 		},
 		bucket,
 		keyPrefix,
+		identityId,
 		isObjectLockEnabled,
 	};
 };
