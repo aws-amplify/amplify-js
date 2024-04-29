@@ -18,7 +18,7 @@ export interface LibraryAPIOptions {
 	};
 }
 
-interface APIGraphQLConfig {
+export interface APIGraphQLConfig {
 	/**
 	 * Required GraphQL endpoint, must be a valid URL string.
 	 */
@@ -47,7 +47,7 @@ interface APIGraphQLConfig {
 	modelIntrospection?: ModelIntrospectionSchema;
 }
 
-interface APIRestConfig {
+export interface APIRestConfig {
 	/**
 	 * Required REST endpoint, must be a valid URL string.
 	 */
@@ -81,7 +81,9 @@ export type GraphQLAuthMode =
 	| 'apiKey'
 	| 'oidc'
 	| 'userPool'
+	// @deprecated; use 'identityPool'
 	| 'iam'
+	| 'identityPool'
 	| 'lambda'
 	| 'none';
 
@@ -106,6 +108,9 @@ export interface ModelIntrospectionSchema {
 	models: SchemaModels;
 	nonModels: SchemaNonModels;
 	enums: SchemaEnums;
+	queries?: CustomOperations;
+	mutations?: CustomOperations;
+	subscriptions?: CustomOperations;
 }
 
 /**
@@ -114,6 +119,7 @@ export interface ModelIntrospectionSchema {
 export type SchemaModels = Record<string, SchemaModel>;
 export type SchemaNonModels = Record<string, SchemaNonModel>;
 export type SchemaEnums = Record<string, SchemaEnum>;
+export type CustomOperations = Record<string, CustomOperation>;
 
 export interface SchemaModel {
 	name: string;
@@ -146,6 +152,24 @@ export interface SecondaryIndexAttribute {
 	};
 }
 
+export interface CustomOperation {
+	name: string;
+	type: FieldType;
+	isArray: boolean;
+	isRequired: boolean;
+	arguments?: CustomOperationArguments;
+}
+
+export type CustomOperationArguments = Record<string, CustomOperationArgument>;
+
+export interface CustomOperationArgument {
+	name: string;
+	type: FieldType;
+	isArray: boolean;
+	isRequired: boolean;
+	isArrayNullable?: boolean;
+}
+
 /**
  * Field Definition
  */
@@ -163,6 +187,9 @@ export interface Field {
 
 export interface ModelFieldType {
 	model: string;
+}
+export interface NonModelFieldType {
+	nonModel: string;
 }
 
 export type FieldType =
@@ -182,7 +209,7 @@ export type FieldType =
 	| 'AWSPhone'
 	| { enum: string }
 	| ModelFieldType
-	| { nonModel: string };
+	| NonModelFieldType;
 export type FieldAttribute = ModelAttribute;
 
 /**

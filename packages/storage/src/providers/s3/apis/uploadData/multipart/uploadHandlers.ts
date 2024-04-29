@@ -4,14 +4,21 @@
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput } from '../../../types';
-import { resolveS3ConfigAndInput } from '../../../utils';
-import { Item as S3Item } from '../../../types/outputs';
+import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
+import {
+	resolveS3ConfigAndInput,
+	validateStorageOperationInput,
+} from '../../../utils';
+import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
+	STORAGE_INPUT_KEY,
 } from '../../../utils/constants';
-import { ResolvedS3Config } from '../../../types/options';
+import {
+	ResolvedS3Config,
+	UploadDataOptionsWithKey,
+} from '../../../types/options';
 import { StorageError } from '../../../../../errors/StorageError';
 import { CanceledError } from '../../../../../errors/CanceledError';
 import {
@@ -36,10 +43,12 @@ import { getDataChunker } from './getDataChunker';
  * @internal
  */
 export const getMultipartUploadHandlers = (
-	{ options: uploadDataOptions, key, data }: UploadDataInput,
+	uploadDataInput: UploadDataInput | UploadDataWithPathInput,
 	size?: number,
 ) => {
-	let resolveCallback: ((value: S3Item) => void) | undefined;
+	let resolveCallback:
+		| ((value: ItemWithKey | ItemWithPath) => void)
+		| undefined;
 	let rejectCallback: ((reason?: any) => void) | undefined;
 	let inProgressUpload:
 		| {
@@ -49,43 +58,62 @@ export const getMultipartUploadHandlers = (
 		| undefined;
 	let resolvedS3Config: ResolvedS3Config | undefined;
 	let abortController: AbortController | undefined;
+	let resolvedAccessLevel: StorageAccessLevel | undefined;
 	let resolvedBucket: string | undefined;
 	let resolvedKeyPrefix: string | undefined;
+	let resolvedIdentityId: string | undefined;
 	let uploadCacheKey: string | undefined;
+	let finalKey: string;
 	// Special flag that differentiates HTTP requests abort error caused by pause() from ones caused by cancel().
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
 	let isAbortSignalFromPause = false;
 
-	const startUpload = async (): Promise<S3Item> => {
+	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
+		const { options: uploadDataOptions, data } = uploadDataInput;
 		const resolvedS3Options = await resolveS3ConfigAndInput(
 			Amplify,
 			uploadDataOptions,
 		);
 
-		resolvedS3Config = resolvedS3Options.s3Config;
-		resolvedBucket = resolvedS3Options.bucket;
-		resolvedKeyPrefix = resolvedS3Options.keyPrefix;
-
 		abortController = new AbortController();
 		isAbortSignalFromPause = false;
+		resolvedS3Config = resolvedS3Options.s3Config;
+		resolvedBucket = resolvedS3Options.bucket;
+		resolvedIdentityId = resolvedS3Options.identityId;
+
+		const { inputType, objectKey } = validateStorageOperationInput(
+			uploadDataInput,
+			resolvedIdentityId,
+		);
 
 		const {
 			contentDisposition,
 			contentEncoding,
 			contentType = 'application/octet-stream',
 			metadata,
-			accessLevel,
 			onProgress,
 		} = uploadDataOptions ?? {};
+
+		finalKey = objectKey;
+
+		// Resolve "key" specific options
+		if (inputType === STORAGE_INPUT_KEY) {
+			const accessLevel = (uploadDataOptions as UploadDataOptionsWithKey)
+				?.accessLevel;
+
+			resolvedKeyPrefix = resolvedS3Options.keyPrefix;
+			finalKey = resolvedKeyPrefix + objectKey;
+			resolvedAccessLevel = resolveAccessLevel(accessLevel);
+		}
 
 		if (!inProgressUpload) {
 			const { uploadId, cachedParts } = await loadOrCreateMultipartUpload({
 				s3Config: resolvedS3Config,
-				accessLevel: resolveAccessLevel(accessLevel),
+				accessLevel: resolvedAccessLevel,
 				bucket: resolvedBucket,
 				keyPrefix: resolvedKeyPrefix,
-				key,
+				key: objectKey,
 				contentType,
 				contentDisposition,
 				contentEncoding,
@@ -100,15 +128,14 @@ export const getMultipartUploadHandlers = (
 			};
 		}
 
-		const finalKey = resolvedKeyPrefix + key;
 		uploadCacheKey = size
 			? getUploadsCacheKey({
 					file: data instanceof File ? data : undefined,
-					accessLevel: resolveAccessLevel(uploadDataOptions?.accessLevel),
+					accessLevel: resolvedAccessLevel,
 					contentType: uploadDataOptions?.contentType,
 					bucket: resolvedBucket!,
 					size,
-					key,
+					key: objectKey,
 				})
 			: undefined;
 
@@ -186,12 +213,15 @@ export const getMultipartUploadHandlers = (
 			await removeCachedUpload(uploadCacheKey);
 		}
 
-		return {
-			key,
+		const result = {
 			eTag,
 			contentType,
 			metadata,
 		};
+
+		return inputType === STORAGE_INPUT_KEY
+			? { key: objectKey, ...result }
+			: { path: objectKey, ...result };
 	};
 
 	const startUploadWithResumability = () =>
@@ -208,7 +238,7 @@ export const getMultipartUploadHandlers = (
 			});
 
 	const multipartUploadJob = () =>
-		new Promise<S3Item>((resolve, reject) => {
+		new Promise<ItemWithKey | ItemWithPath>((resolve, reject) => {
 			resolveCallback = resolve;
 			rejectCallback = reject;
 			startUploadWithResumability();
@@ -232,7 +262,7 @@ export const getMultipartUploadHandlers = (
 			// 3. clear multipart upload on server side.
 			await abortMultipartUpload(resolvedS3Config!, {
 				Bucket: resolvedBucket,
-				Key: resolvedKeyPrefix! + key,
+				Key: finalKey,
 				UploadId: inProgressUpload?.uploadId,
 			});
 		};

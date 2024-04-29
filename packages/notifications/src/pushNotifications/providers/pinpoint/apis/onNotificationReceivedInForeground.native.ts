@@ -8,5 +8,6 @@ import { OnNotificationReceivedInForeground } from '../types';
 export const onNotificationReceivedInForeground: OnNotificationReceivedInForeground =
 	input => {
 		assertIsInitialized();
+
 		return addEventListener('foregroundMessageReceived', input);
 	};

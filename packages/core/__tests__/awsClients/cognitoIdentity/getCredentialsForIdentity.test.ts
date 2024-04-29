@@ -1,8 +1,8 @@
 import { fetchTransferHandler } from '../../../src/clients/handlers/fetch';
 import {
-	getCredentialsForIdentity,
 	GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityOutput,
+	getCredentialsForIdentity,
 } from '../../../src/awsClients/cognitoIdentity';
 import {
 	cognitoIdentityHandlerOptions,

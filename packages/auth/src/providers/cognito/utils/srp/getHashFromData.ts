@@ -3,6 +3,7 @@
 
 import { Sha256 } from '@aws-crypto/sha256-js';
 import { SourceData } from '@smithy/types';
+
 import { getHexFromBytes } from './getHexFromBytes';
 
 /**
@@ -17,5 +18,6 @@ export const getHashFromData = (data: SourceData): string => {
 
 	const hashedData = sha256.digestSync();
 	const hashHexFromUint8 = getHexFromBytes(hashedData);
+
 	return new Array(64 - hashHexFromUint8.length).join('0') + hashHexFromUint8;
 };

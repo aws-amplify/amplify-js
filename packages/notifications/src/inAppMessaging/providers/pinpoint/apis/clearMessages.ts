@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { defaultStorage } from '@aws-amplify/core';
-import { STORAGE_KEY_SUFFIX, PINPOINT_KEY_PREFIX } from '../utils';
 
+import { PINPOINT_KEY_PREFIX, STORAGE_KEY_SUFFIX } from '../utils';
 import { InAppMessagingValidationErrorCode } from '../../../errors';
 import { assertIsInitialized } from '../../../utils';
 
@@ -22,5 +22,6 @@ import { assertIsInitialized } from '../../../utils';
 export async function clearMessages(): Promise<void> {
 	assertIsInitialized();
 	const key = `${PINPOINT_KEY_PREFIX}${STORAGE_KEY_SUFFIX}`;
-	return await defaultStorage.removeItem(key);
+
+	await defaultStorage.removeItem(key);
 }

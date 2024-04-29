@@ -3,9 +3,10 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
-	assertTokenProviderConfig,
 	AuthAction,
+	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
+
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { ConfirmResetPasswordInput } from '../types';
@@ -64,7 +65,7 @@ export async function confirmResetPassword(
 			Password: newPassword,
 			ClientMetadata: metadata,
 			ClientId: authConfig.userPoolClientId,
-			UserContextData: UserContextData,
+			UserContextData,
 		},
 	);
 }

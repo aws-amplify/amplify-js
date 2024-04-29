@@ -6,23 +6,25 @@ import {
 	AuthAction,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
+	isBrowser,
 	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
+
 import '../utils/oauth/enableOAuthListener';
 import { cognitoHostedUIIdentityProviderMap } from '../types/models';
 import { getAuthUserAgentValue, openAuthSession } from '../../../utils';
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInWithRedirectInput } from '../types';
 import {
+	completeOAuthFlow,
 	generateCodeVerifier,
 	generateState,
 	getRedirectUrl,
 	handleFailure,
-	completeOAuthFlow,
 	oAuthStore,
 } from '../utils/oauth';
-import { AuthError } from '../../../errors/AuthError';
 import { createOAuthError } from '../utils/oauth/createOAuthError';
+import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -74,11 +76,11 @@ const oauthSignIn = async ({
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const randomState = generateState();
 
-	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito 
+	/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito
 	single-encodes/decodes url on first sign in and double-encodes/decodes url
-	when user already signed in. Using encodeURIComponent, Base32, Base64 add 
-	characters % or = which on further encoding becomes unsafe. '=' create issue 
-	for parsing query params. 
+	when user already signed in. Using encodeURIComponent, Base32, Base64 add
+	characters % or = which on further encoding becomes unsafe. '=' create issue
+	for parsing query params.
 	Refer: https://github.com/aws-amplify/amplify-js/issues/5218 */
 	const state = customState
 		? `${randomState}-${urlSafeEncode(customState)}`
@@ -87,7 +89,7 @@ const oauthSignIn = async ({
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
 	const redirectUri = getRedirectUrl(oauthConfig.redirectSignIn);
 
-	oAuthStore.storeOAuthInFlight(true);
+	if (isBrowser()) oAuthStore.storeOAuthInFlight(true);
 	oAuthStore.storeOAuthState(state);
 	oAuthStore.storePKCE(value);
 
@@ -109,6 +111,11 @@ const oauthSignIn = async ({
 	// TODO(v6): use URL object instead
 	const oAuthUrl = `https://${domain}/oauth2/authorize?${queryString}`;
 
+	// this will only take effect in the following scenarios:
+	// 1. the user cancels the OAuth flow on web via back button, and
+	// 2. when bfcache is enabled
+	listenForOAuthFlowCancellation(oAuthStore);
+
 	// the following is effective only in react-native as openAuthSession resolves only in react-native
 	const { type, error, url } =
 		(await openAuthSession(oAuthUrl, redirectSignIn, preferPrivateSession)) ??
@@ -129,9 +136,9 @@ const oauthSignIn = async ({
 				preferPrivateSession,
 			});
 		}
-	} catch (error) {
-		await handleFailure(error);
+	} catch (err) {
+		await handleFailure(err);
 		// rethrow the error so it can be caught by `await signInWithRedirect()` in react-native
-		throw error;
+		throw err;
 	}
 };

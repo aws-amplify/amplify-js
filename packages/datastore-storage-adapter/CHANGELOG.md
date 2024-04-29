@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.29...@aws-amplify/datastore-storage-adapter@2.1.30) (2024-04-26)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## [2.1.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.28...@aws-amplify/datastore-storage-adapter@2.1.29) (2024-04-22)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## [2.1.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.27...@aws-amplify/datastore-storage-adapter@2.1.28) (2024-04-09)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.27 (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.26 (2024-04-01)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.25 (2024-03-30)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.24 (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.23 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.22 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.21 (2024-03-19)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.20 (2024-03-11)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.19 (2024-03-05)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.18 (2024-02-27)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## 2.1.17 (2024-02-19)
+
+### Reverts
+
+- Revert "chore(release): Publish" (#13027) ([f6f4f42](https://github.com/aws-amplify/amplify-js/commit/f6f4f42befa04ed3c1502fa0adf17c6700abfddf)), closes [#13027](https://github.com/aws-amplify/amplify-js/issues/13027)
+
 ## 2.1.16 (2024-02-09)
 
 **Note:** Version bump only for package @aws-amplify/datastore-storage-adapter

@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observer } from 'rxjs';
+
 export interface SubscriptionObserver<T> {
 	closed: boolean;
 	next(value: T): void;

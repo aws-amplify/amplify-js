@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { StrictUnion } from '../../types';
 import { AtLeastOne } from '../types';
 
 // From https://github.com/awslabs/aws-jwt-verify/blob/main/src/safe-json-parse.ts
@@ -74,6 +75,11 @@ export interface FetchAuthSessionOptions {
 export interface AuthTokens {
 	idToken?: JWT;
 	accessToken: JWT;
+	/**
+	 * @deprecated
+	 * Use getCurrentUser to access signInDetails
+	 */
+	signInDetails?: AWSAuthSignInDetails;
 }
 
 export type AuthStandardAttributeKey =
@@ -114,12 +120,6 @@ export type CognitoProviderConfig = StrictUnion<
 	| AuthUserPoolAndIdentityPoolConfig
 >;
 
-type UnionKeys<T> = T extends T ? keyof T : never;
-type StrictUnionHelper<T, TAll> = T extends any
-	? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>>
-	: never;
-export type StrictUnion<T> = StrictUnionHelper<T, T>;
-
 export interface AuthIdentityPoolConfig {
 	Cognito: CognitoIdentityPoolConfig & {
 		userPoolClientId?: never;
@@ -145,6 +145,8 @@ export interface AuthUserPoolConfig {
 	};
 }
 
+export type CognitoUserPoolConfigMfaStatus = 'on' | 'off' | 'optional';
+
 export interface CognitoUserPoolConfig {
 	userPoolClientId: string;
 	userPoolId: string;
@@ -158,7 +160,7 @@ export interface CognitoUserPoolConfig {
 	};
 	userAttributes?: AuthConfigUserAttributes;
 	mfa?: {
-		status?: 'on' | 'off' | 'optional';
+		status?: CognitoUserPoolConfigMfaStatus;
 		totpEnabled?: boolean;
 		smsEnabled?: boolean;
 	};
@@ -238,3 +240,22 @@ export interface AWSCredentials {
 	sessionToken?: string;
 	expiration?: Date;
 }
+
+// copied from packages/auth/src/providers/cognito/types/models.ts#L94
+/**
+ * @deprecated
+ */
+interface AWSAuthSignInDetails {
+	loginId?: string;
+	authFlowType?: AuthFlowType;
+}
+
+// copied from packages/auth/src/providers/cognito/types/models.ts#L22
+/**
+ * @deprecated
+ */
+type AuthFlowType =
+	| 'USER_SRP_AUTH'
+	| 'CUSTOM_WITH_SRP'
+	| 'CUSTOM_WITHOUT_SRP'
+	| 'USER_PASSWORD_AUTH';

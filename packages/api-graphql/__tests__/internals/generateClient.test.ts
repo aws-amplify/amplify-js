@@ -3,14 +3,16 @@ import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
+import { from } from 'rxjs';
 import {
+	normalizePostGraphqlCalls,
 	expectSub,
 	expectSubWithHeaders,
 	expectSubWithHeadersFn,
 	expectSubWithlibraryConfigHeaders,
-} from '../utils/expects';
-import { Observable, from } from 'rxjs';
-import * as internals from '../../src/internals';
+	makeAppSyncStreams,
+	mockApiResponse,
+} from '../utils/index';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -18,91 +20,6 @@ const serverManagedFields = {
 	createdAt: new Date().toISOString(),
 	updatedAt: new Date().toISOString(),
 };
-
-/**
- *
- * @param value Value to be returned. Will be `awaited`, and can
- * therefore be a simple JSON value or a `Promise`.
- * @returns
- */
-function mockApiResponse(value: any) {
-	return jest
-		.spyOn((raw.GraphQLAPI as any)._api, 'post')
-		.mockImplementation(async () => {
-			const result = await value;
-			return {
-				body: {
-					json: () => result,
-				},
-			};
-		});
-}
-
-function makeAppSyncStreams() {
-	const streams = {} as Partial<
-		Record<
-			'create' | 'update' | 'delete',
-			{
-				next: (message: any) => void;
-			}
-		>
-	>;
-	const spy = jest.fn(request => {
-		const matchedType = (request.query as string).match(
-			/on(Create|Update|Delete)/,
-		);
-		if (matchedType) {
-			return new Observable(subscriber => {
-				streams[
-					matchedType[1].toLowerCase() as 'create' | 'update' | 'delete'
-				] = subscriber;
-			});
-		}
-	});
-	(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
-	return { streams, spy };
-}
-
-/**
- * For each call against the spy, assuming the spy is a `post()` spy,
- * replaces fields that are likely to change between calls (or library version revs)
- * with static values. When possible, on the unpredicable portions of these values
- * are replaced.
- *
- * ## THIS IS DESTRUCTIVE
- *
- * The original `spy.mocks.calls` will be updated *and* returned.
- *
- * For example,
- *
- * ```plain
- * headers.x-amz-user-agent: "aws-amplify/6.0.5 api/1 framework/0"
- * ```
- *
- * Is replaced with:
- *
- * ```plain
- * headers.x-amz-user-agent: "aws-amplify/latest api/latest framework/latest"
- * ```
- *
- * @param spy The Jest spy
- */
-function normalizePostGraphqlCalls(spy: jest.SpyInstance<any, any>) {
-	return spy.mock.calls.map((call: any) => {
-		// The 1st param in `call` is an instance of `AmplifyClassV6`
-		// The 2nd param in `call` is the actual `postOptions`
-		const [_, postOptions] = call;
-		const userAgent = postOptions?.options?.headers?.['x-amz-user-agent'];
-		if (userAgent) {
-			const staticUserAgent = userAgent.replace(/\/[\d.]+/g, '/latest');
-			postOptions.options.headers['x-amz-user-agent'] = staticUserAgent;
-		}
-		// Calling of `post` API with an instance of `AmplifyClassV6` has been
-		// unit tested in other test suites. To reduce the noise in the generated
-		// snapshot, we hide the details of the instance here.
-		return ['AmplifyClassV6', postOptions];
-	});
-}
 
 const USER_AGENT_DETAILS = {
 	action: '1',
@@ -125,6 +42,15 @@ describe('generateClient', () => {
 			'CommunityPollVote',
 			'CommunityPost',
 			'SecondaryIndexModel',
+			'Post',
+			'Comment',
+			'Product',
+			'Warehouse',
+			'ImplicitOwner',
+			'CustomImplicitOwner',
+			'ModelGroupDefinedIn',
+			'ModelGroupsDefinedIn',
+			'ModelStaticGroup',
 		];
 
 		it('generates `models` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
@@ -159,7 +85,7 @@ describe('generateClient', () => {
 	});
 
 	describe('client `enums` property', () => {
-		const expectedEnumsProperties = ['Status'];
+		const expectedEnumsProperties = ['Status', 'ProductMetaStatus'];
 
 		it('generates `enums` property when Amplify.getConfig() returns valid GraphQL provider config', () => {
 			Amplify.configure(configFixture); // clear the resource config
@@ -185,7 +111,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			expect(() => {
-				client.enums.Status.values();
+				client.enums.SecondaryIndexModelStatus.values();
 			}).toThrow(
 				'Client could not be generated. This is likely due to `Amplify.configure()` not being called prior to `generateClient()` or because the configuration passed to `Amplify.configure()` is missing GraphQL provider configuration.',
 			);
@@ -450,9 +376,61 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const { data } = await client.models.Todo.list({
+			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
 				limit: 5,
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('can list() with sortDirection (ASC)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listThingWithCustomPks: {
+						items: [
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'a',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			await client.models.ThingWithCustomPk.list({
+				cpk_cluster_key: '1',
+				sortDirection: 'ASC',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('can list() with sortDirection (DESC)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listThingWithCustomPks: {
+						items: [
+							{
+								__typename: 'ThingWithCustomPk',
+								...serverManagedFields,
+								cpk_cluster_key: '1',
+								cpk_sort_key: 'c',
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			await client.models.ThingWithCustomPk.list({
+				cpk_cluster_key: '1',
+				sortDirection: 'DESC',
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
@@ -667,7 +645,11 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes();
+			expect(data).not.toBeNull();
+
+			expect(data).not.toBeNull();
+
+			const { data: notes } = await data!.notes();
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -713,7 +695,9 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes({ nextToken: 'some-token' });
+			expect(data).not.toBeNull();
+
+			const { data: notes } = await data!.notes({ nextToken: 'some-token' });
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -759,7 +743,9 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes({ limit: 5 });
+			expect(data).not.toBeNull();
+
+			const { data: notes } = await data!.notes({ limit: 5 });
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -802,7 +788,9 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: todo } = await data.todo();
+			expect(data).not.toBeNull();
+
+			const { data: todo } = await data!.todo();
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -843,7 +831,9 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: todo } = await data.meta();
+			expect(data).not.toBeNull();
+
+			const { data: todo } = await data!.meta();
 
 			expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 
@@ -854,6 +844,186 @@ describe('generateClient', () => {
 					data: '{"field":"value"}',
 				}),
 			);
+		});
+	});
+
+	describe('error handling', () => {
+		test('create() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['createTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access createTodo on type Mutation',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					getTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.create({
+				id: 'does not matter',
+			});
+
+			expect(data).toBeNull();
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('returns object in which `data` is null and `errors` contains expected error', async () => {
+			const expectedErrors = [
+				{
+					path: ['getTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access getTodo on type Query',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					getTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.get({
+				id: 'does not matter',
+			});
+
+			expect(data).toBeNull();
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('update() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['updateTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access updateTodo on type Mutation',
+				},
+			];
+
+			mockApiResponse({
+				data: {
+					updateTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data, errors } = await client.models.Todo.update({
+				id: 'some_id',
+				name: 'does not matter',
+			});
+
+			expect(data).toBeNull();
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('delete() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['deleteTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access deleteTodo on type Mutation',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					deleteTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data, errors } = await client.models.Todo.delete({
+				id: 'some_id',
+			});
+
+			expect(data).toBeNull();
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('list() returns empty list with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['listTodos'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access listTodos on type Query',
+				},
+			];
+
+			mockApiResponse({
+				data: {
+					listTodos: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+			});
+
+			expect(data.length).toBe(0);
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
 		});
 	});
 
@@ -1141,7 +1311,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				expect(data).not.toBeNull();
+
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1179,7 +1351,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				expect(data).not.toBeNull();
+
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1216,7 +1390,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				expect(data).not.toBeNull();
+
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1257,7 +1433,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.notes({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1295,7 +1473,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.todo({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1332,7 +1512,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.meta({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1631,7 +1813,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				expect(data).not.toBeNull();
+
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1670,7 +1854,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				expect(data).not.toBeNull();
+
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1708,7 +1894,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				expect(data).not.toBeNull();
+
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1749,7 +1937,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.notes({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1787,7 +1977,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.todo({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1824,7 +2016,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.meta({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1993,7 +2187,9 @@ describe('generateClient', () => {
 			const spy = jest.fn(() => from([graphqlMessage]));
 			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
 
-			client.models.Note.onCreate().subscribe({
+			const onC = client.models.Note.onCreate();
+
+			onC.subscribe({
 				next(value) {
 					expect(spy).toHaveBeenCalledWith(
 						expect.objectContaining({
@@ -2121,7 +2317,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				expect(data).not.toBeNull();
+
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2157,7 +2355,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				expect(data).not.toBeNull();
+
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2192,7 +2392,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				expect(data).not.toBeNull();
+
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2233,7 +2435,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.notes({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2269,7 +2473,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.todo({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2304,7 +2510,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.meta({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2610,7 +2818,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				expect(data).not.toBeNull();
+
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2647,7 +2857,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				expect(data).not.toBeNull();
+
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2683,7 +2895,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				expect(data).not.toBeNull();
+
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2724,7 +2938,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.notes({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2760,7 +2976,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.todo({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2795,7 +3013,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.meta({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -5117,9 +5337,10 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({ amplify: Amplify });
 
-			const { data } = await client.models.SecondaryIndexModel.listByTitle({
-				title: 'Hello World',
-			});
+			const { data } =
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByTitle({
+					title: 'Hello World',
+				});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
@@ -5154,10 +5375,12 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const { data } =
-				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount({
-					description: 'something something',
-					viewCount: { gt: 4 },
-				});
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
+					{
+						description: 'something something',
+						viewCount: { gt: 4 },
+					},
+				);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
@@ -5171,6 +5394,640 @@ describe('generateClient', () => {
 					viewCount: 5,
 				}),
 			);
+		});
+
+		test('PK and SK index query, with sort direction (ascending)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listByDescriptionAndViewCount: {
+						items: [
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'first',
+								description: 'match',
+								viewCount: 1,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'second',
+								description: 'match',
+								viewCount: 2,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'third',
+								description: 'match',
+								viewCount: 3,
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } =
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
+					{
+						description: 'match',
+						viewCount: { lt: 4 },
+					},
+					{
+						sortDirection: 'ASC',
+					},
+				);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data.length).toBe(3);
+		});
+
+		test('PK and SK index query, with sort direction (descending)', async () => {
+			const spy = mockApiResponse({
+				data: {
+					listByDescriptionAndViewCount: {
+						items: [
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'third',
+								description: 'match',
+								viewCount: 3,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'second',
+								description: 'match',
+								viewCount: 2,
+							},
+							{
+								__typename: 'SecondaryIndexModel',
+								...serverManagedFields,
+								title: 'first',
+								description: 'match',
+								viewCount: 1,
+							},
+						],
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data } =
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
+					{
+						description: 'match',
+						viewCount: { lt: 4 },
+					},
+					{
+						sortDirection: 'DESC',
+					},
+				);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+
+			expect(data.length).toBe(3);
+		});
+	});
+
+	describe('custom operations', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+			jest.resetAllMocks();
+			jest.restoreAllMocks();
+
+			Amplify.configure(configFixture as any);
+
+			jest
+				.spyOn(Amplify.Auth, 'fetchAuthSession')
+				.mockImplementation(async () => {
+					return {
+						tokens: {
+							accessToken: {
+								toString: () => 'test',
+							},
+						},
+						credentials: {
+							accessKeyId: 'test',
+							secretAccessKey: 'test',
+						},
+					} as any;
+				});
+		});
+
+		test('can query with returnType of customType', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				resultContent: 'echo result content',
+			});
+		});
+
+		test('can query with returnType of nested custom types', async () => {
+			const mockReturnData = {
+				note: 'test node',
+				productMeta: {
+					releaseDate: '2024-03-04',
+					status: 'in_production',
+					deepMeta: {
+						content: 'test deep meta content',
+					},
+				},
+			};
+			const spy = mockApiResponse({
+				data: {
+					echoNestedCustomTypes: mockReturnData,
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echoNestedCustomTypes({
+				input: 'test input',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual(mockReturnData);
+		});
+
+		test('can query with returnType of a model that has nested custom types', async () => {
+			const mockReturnData = {
+				sku: 'sku',
+				factoryId: 'factoryId',
+				warehouseId: 'warehouseId',
+				description: 'description',
+				trackingMeta: {
+					productMeta: {
+						releaseDate: '2024-03-04',
+						status: 'discontinued',
+						deepMeta: {
+							content: 'test content',
+						},
+					},
+					note: 'test note',
+				},
+			};
+			const spy = mockApiResponse({
+				data: {
+					echoNestedCustomTypes: mockReturnData,
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echoModelHasNestedTypes({
+				input: 'test input',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toMatchObject(
+				expect.objectContaining(mockReturnData),
+			);
+		});
+
+		test('can query with returnType of string', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echoString: 'echo result content',
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echoString({
+				inputString: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual('echo result content');
+		});
+
+		test('can mutate with returnType of customType', async () => {
+			const spy = mockApiResponse({
+				data: {
+					likePost: {
+						likes: 123,
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePost({
+				postId: 'post-abc',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual({
+				likes: 123,
+			});
+		});
+
+		test('can mutate with returnType of model (Post)', async () => {
+			const likePostReturnPost = {
+				id: 'post-123',
+				content: 'some really slick content',
+				owner: null,
+				createdAt: '2024-02-21T21:30:29.826Z',
+				updatedAt: '2024-02-21T21:30:29.826Z',
+			};
+
+			const spy = mockApiResponse({
+				data: { likePostReturnPost },
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePostReturnPost({
+				postId: 'post-abc',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+			expect(result?.data).toEqual(expect.objectContaining(likePostReturnPost));
+		});
+
+		test('can return model (Post) that with lazy-loading props', async () => {
+			const likePostReturnPost = {
+				id: 'post-123',
+				content: 'some really slick content',
+				owner: null,
+				createdAt: '2024-02-21T21:30:29.826Z',
+				updatedAt: '2024-02-21T21:30:29.826Z',
+			};
+
+			mockApiResponse({
+				data: { likePostReturnPost },
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.mutations.likePostReturnPost({
+				postId: 'post-abc',
+			});
+
+			const listCommentItem = {
+				content: 'some content',
+				createdAt: '2024-02-09T16:42:52.486Z',
+				id: 'comment123',
+				owner: '8d0a5587-1d0f-4d05-b120-ecae23ee1f0e',
+				postCommentsId: 'post-123',
+				updatedAt: '2024-02-09T16:42:52.486Z',
+			};
+
+			const lazyLoadCommentsSpy = mockApiResponse({
+				data: {
+					listComments: {
+						items: [listCommentItem],
+						nextToken: null,
+					},
+				},
+			});
+
+			expect(result.data).not.toBeNull();
+
+			const { data: comments } = await result.data!.comments();
+
+			expect(normalizePostGraphqlCalls(lazyLoadCommentsSpy)).toMatchSnapshot();
+			expect(comments[0]).toEqual(expect.objectContaining(listCommentItem));
+		});
+
+		test('can subscribe to custom subscription', done => {
+			const postToSend = {
+				__typename: 'Post',
+				...serverManagedFields,
+				content: 'a lovely post',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onPostLiked: postToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const spyGql = jest.spyOn(raw.GraphQLAPI as any, 'graphql');
+
+			const expectedOperation = 'subscription';
+			const expectedFieldAndSelectionSet =
+				'onPostLiked {id content owner createdAt updatedAt}';
+
+			const sub = client.subscriptions.onPostLiked().subscribe({
+				next(value) {
+					expect(value).toEqual(expect.objectContaining(postToSend));
+
+					expect(spyGql).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							query: expect.stringContaining(expectedOperation),
+							variables: {},
+						}),
+						expect.anything(),
+					);
+					expect(spyGql).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							query: expect.stringContaining(expectedFieldAndSelectionSet),
+							variables: {},
+						}),
+						expect.anything(),
+					);
+					done();
+				},
+				error(error) {
+					expect(error).toBeUndefined();
+					done('bad news!');
+				},
+			});
+
+			sub.unsubscribe();
+		});
+
+		test('can subscribe to custom subscription with args', done => {
+			const postToSend = {
+				__typename: 'Post',
+				...serverManagedFields,
+				postId: 'abc123',
+				content: 'a lovely post',
+			};
+
+			const graphqlMessage = {
+				data: {
+					onPostLiked: postToSend,
+				},
+			};
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const spy = jest.fn(() => from([graphqlMessage]));
+			(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+			const spyGql = jest.spyOn(raw.GraphQLAPI as any, 'graphql');
+
+			const expectedOperation = 'subscription($postId: String)';
+			const expectedFieldAndSelectionSet =
+				'onPostUpdated(postId: $postId) {id content owner createdAt updatedAt}';
+
+			const sub = client.subscriptions
+				.onPostUpdated({ postId: 'abc123' })
+				.subscribe({
+					next(value) {
+						expect(value).toEqual(expect.objectContaining(postToSend));
+
+						expect(spyGql).toHaveBeenCalledWith(
+							expect.anything(),
+							expect.objectContaining({
+								query: expect.stringContaining(expectedOperation),
+
+								variables: { postId: 'abc123' },
+							}),
+							expect.anything(),
+						);
+						expect(spyGql).toHaveBeenCalledWith(
+							expect.anything(),
+							expect.objectContaining({
+								query: expect.stringContaining(expectedFieldAndSelectionSet),
+
+								variables: { postId: 'abc123' },
+							}),
+							expect.anything(),
+						);
+						done();
+					},
+					error(error) {
+						expect(error).toBeUndefined();
+						done('bad news!');
+					},
+				});
+
+			sub.unsubscribe();
+		});
+
+		test('includes client level headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				headers: {
+					someHeader: 'some header value',
+				},
+			});
+			await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('includes call level headers', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			await client.queries.echo(
+				{
+					argumentContent: 'echo argumentContent value',
+				},
+				{
+					headers: {
+						callSiteHeaders: 'some header value',
+					},
+				},
+			);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses client authMode', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+				authMode: 'lambda',
+				authToken: 'my-auth-token',
+			});
+			await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses call site authMode', async () => {
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			await client.queries.echo(
+				{
+					argumentContent: 'echo argumentContent value',
+				},
+				{
+					authMode: 'lambda',
+					authToken: 'my-auth-token',
+				},
+			);
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('uses config level headers if available', async () => {
+			Amplify.configure(configFixture as any, {
+				API: {
+					GraphQL: {
+						headers: async () => ({
+							'config-level-header': 'config header value',
+						}),
+					},
+				},
+			});
+
+			const spy = mockApiResponse({
+				data: {
+					echo: {
+						resultContent: 'echo result content',
+					},
+				},
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const result = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
+		});
+
+		test('graphql error handling', async () => {
+			mockApiResponse({
+				data: null,
+				errors: [{ message: 'some graphql error' }],
+			});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+			const { data, errors } = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			expect(data).toBeNull();
+			expect(errors).toEqual([{ message: 'some graphql error' }]);
+		});
+
+		test('network error handling', async () => {
+			jest
+				.spyOn((raw.GraphQLAPI as any)._api, 'post')
+				.mockImplementation(async () => {
+					// not strictly what I expect a network error will look like,
+					// but represents the guts of `post` throwing any generic error.
+					throw new Error('Network error');
+				});
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+
+			const { data, errors } = await client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			// TODO: data should actually be null/undefined, pending discussion and fix.
+			// This is not strictly related to custom ops.
+			expect(data).toBeNull();
+			expect(errors).toEqual([{ message: 'Network error' }]);
+		});
+
+		test('core error handling', async () => {
+			// Basically, we want to ensure exceptions we throw aren't simply swallowed.
+			// The list of errors that are thrown appears to be pretty small, since we
+			// package up a lot of different errors types into `{ errors }` as possible.
+			// But, a clear example where this doesn't occur is request cancellations.
+
+			mockApiResponse(
+				new Promise(resolve => {
+					// slight delay to give us time to cancel the request.
+					setTimeout(
+						() =>
+							resolve({
+								data: {
+									echo: {
+										resultContent: 'echo result content',
+									},
+								},
+							}),
+						1,
+					);
+				}),
+			);
+
+			const client = generateClient<Schema>({
+				amplify: Amplify,
+			});
+
+			const result = client.queries.echo({
+				argumentContent: 'echo argumentContent value',
+			});
+
+			client.cancel(result);
+
+			expect(result).resolves.toThrow();
 		});
 	});
 });

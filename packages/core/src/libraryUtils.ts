@@ -1,10 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import WordArray from './utils/WordArray';
+
 /*
 This file maps top-level exports from `@aws-amplify/core/internals/utils`. These are intended to be internal
 utils for use throughout the library.
 */
+
 // Core utilities
 export {
 	generateRandomString,
@@ -20,10 +21,14 @@ export {
 	deDupeAsyncFunction,
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
+export { isAmplifyOutputs, parseAmplifyOutputs } from './parseAmplifyOutputs';
 export { LegacyConfig } from './singleton/types';
+export { AmplifyOutputs } from './singleton/AmplifyOutputs/types';
 export { ADD_OAUTH_LISTENER } from './singleton/constants';
 export { amplifyUuid } from './utils/amplifyUuid';
 export { AmplifyUrl, AmplifyUrlSearchParams } from './utils/amplifyUrl';
+export { parseAmplifyConfig } from './utils/parseAmplifyConfig';
+export { getClientInfo } from './utils';
 
 // Auth utilities
 export {
@@ -40,9 +45,16 @@ export {
 	DocumentType,
 	GraphQLAuthMode,
 	ModelFieldType,
+	NonModelFieldType,
 	ModelIntrospectionSchema,
 	SchemaModel,
 	SchemaModels,
+	SchemaNonModel,
+	SchemaNonModels,
+	CustomOperations,
+	CustomOperation,
+	CustomOperationArguments,
+	CustomOperationArgument,
 	ModelAttribute,
 	SecondaryIndexAttribute,
 	GraphQLProviderConfig,
@@ -50,7 +62,6 @@ export {
 export { Signer } from './Signer';
 export {
 	JWT,
-	StrictUnion,
 	CognitoIdentityPoolConfig,
 	JwtPayload,
 	AuthStandardAttributeKey,
@@ -112,10 +123,11 @@ export { Reachability } from './Reachability';
 export { USER_AGENT_HEADER } from './constants';
 export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
+export { StrictUnion } from './types';
 export { base64Decoder, base64Encoder } from './utils/convert';
 export { getCrypto } from './utils/globalHelpers';
 export { cryptoSecureRandomInt } from './utils/cryptoSecureRandomInt';
-export { WordArray };
+export { WordArray } from './utils/WordArray';
 
 // Hub
 export { HubInternal } from './Hub';

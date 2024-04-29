@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	Category,
-	getAmplifyUserAgentObject,
-	getAmplifyUserAgent,
 	InAppMessagingAction,
+	getAmplifyUserAgent,
+	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
 import { UserAgent } from '@aws-sdk/types';
 

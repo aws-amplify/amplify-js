@@ -1,38 +1,34 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AmplifyErrorParams,
-	GraphQLAuthMode,
-} from '@aws-amplify/core/internals/utils';
-
-type ErrorObject = {
-	errors: AmplifyErrorParams[];
-};
+import { GraphQLResult } from '../../types';
 
 /**
  * Checks to see if the given response or subscription message contains an
- * unauth error. If it does, it changes the error message to include instructions
+ * Unauthorized error. If it does, it changes the error message to include instructions
  * for the app developer.
  */
-export function repackageUnauthError<T extends ErrorObject>(content: T): T {
+export function repackageUnauthorizedError<T extends GraphQLResult<any>>(
+	content: T,
+): T {
 	if (content.errors && Array.isArray(content.errors)) {
 		content.errors.forEach(e => {
-			if (isUnauthError(e)) {
+			if (isUnauthorizedError(e)) {
 				e.message = 'Unauthorized';
-				e.recoverySuggestion =
+				(e as any).recoverySuggestion =
 					`If you're calling an Amplify-generated API, make sure ` +
 					`to set the "authMode" in generateClient({ authMode: '...' }) to the backend authorization ` +
 					`rule's auth provider ('apiKey', 'userPool', 'iam', 'oidc', 'lambda')`;
 			}
 		});
 	}
+
 	return content;
 }
 
-function isUnauthError(error: any): boolean {
+function isUnauthorizedError(error: any): boolean {
 	// Error pattern corresponding to appsync calls
-	if (error?.['originalError']?.['name']?.startsWith('UnauthorizedException')) {
+	if (error?.originalError?.name?.startsWith('UnauthorizedException')) {
 		return true;
 	}
 	// Error pattern corresponding to appsync subscriptions
@@ -42,5 +38,6 @@ function isUnauthError(error: any): boolean {
 	) {
 		return true;
 	}
+
 	return false;
 }

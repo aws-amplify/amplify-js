@@ -5,6 +5,8 @@ import {
 	AmplifyServer,
 	getAmplifyServerContext,
 } from '@aws-amplify/core/internals/adapter-core';
+import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
+
 import { generateClientWithAmplifyInstance } from '../internals/server';
 import {
 	GenerateServerClientParams,
@@ -14,7 +16,6 @@ import {
 	V6ClientSSRRequest,
 	__amplify,
 } from '../types';
-import { CustomHeaders } from '@aws-amplify/data-schema-types';
 
 /**
  * Generates an GraphQL API client that works with Amplify server context.
@@ -55,6 +56,7 @@ export function generateClient<T extends Record<any, any> = never>({
 		additionalHeaders?: CustomHeaders,
 	) => {
 		const amplifyInstance = getAmplifyServerContext(contextSpec).amplify;
+
 		return prevGraphql.call(
 			{ [__amplify]: amplifyInstance },
 			options,
@@ -63,5 +65,6 @@ export function generateClient<T extends Record<any, any> = never>({
 	};
 
 	client.graphql = wrappedGraphql as unknown as GraphQLMethodSSR;
+
 	return client;
 }

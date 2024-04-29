@@ -17,11 +17,11 @@ describe('ServiceWorker test', () => {
 				serviceWorker.enablePush('publicKey');
 			};
 
-			return expect(enablePush).toThrow(AmplifyError);
+			expect(enablePush).toThrow(AmplifyError);
 		});
 		test('fails when registering', async () => {
 			(global as any).navigator.serviceWorker = {
-				register: () => Promise.reject('an error'),
+				register: () => Promise.reject(new Error('an error')),
 			};
 
 			const serviceWorker = new ServiceWorker();
@@ -38,7 +38,11 @@ describe('ServiceWorker test', () => {
 		const statuses = ['installing', 'waiting', 'active'];
 		statuses.forEach(status => {
 			test(`can register (${status})`, () => {
-				const bla = { [status]: { addEventListener: () => {} } };
+				const bla = {
+					[status]: {
+						addEventListener: jest.fn(),
+					},
+				};
 				(global as any).navigator.serviceWorker = {
 					register: () => Promise.resolve(bla),
 				};
@@ -62,7 +66,7 @@ describe('ServiceWorker test', () => {
 				const serviceWorker = new ServiceWorker();
 				await serviceWorker.register();
 
-				return expect(bla[status].addEventListener).toHaveBeenCalledTimes(2);
+				expect(bla[status].addEventListener).toHaveBeenCalledTimes(2);
 			});
 		});
 	});
@@ -80,7 +84,7 @@ describe('ServiceWorker test', () => {
 
 			serviceWorker.send('A message');
 
-			return expect(bla.installing.postMessage).toHaveBeenCalledTimes(0);
+			expect(bla.installing.postMessage).toHaveBeenCalledTimes(0);
 		});
 		test('can send string message after registration', async () => {
 			const bla = {
@@ -96,9 +100,7 @@ describe('ServiceWorker test', () => {
 
 			serviceWorker.send('A message');
 
-			return expect(bla.installing.postMessage).toHaveBeenCalledWith(
-				'A message',
-			);
+			expect(bla.installing.postMessage).toHaveBeenCalledWith('A message');
 		});
 		test('can send object message after registration', async () => {
 			const bla = {
@@ -114,7 +116,7 @@ describe('ServiceWorker test', () => {
 
 			serviceWorker.send({ property: 'value' });
 
-			return expect(bla.installing.postMessage).toHaveBeenCalledWith(
+			expect(bla.installing.postMessage).toHaveBeenCalledWith(
 				JSON.stringify({ property: 'value' }),
 			);
 		});

@@ -1,19 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Observable, Observer, SubscriptionLike, map, filter } from 'rxjs';
+import { Observable, Observer, SubscriptionLike, filter, map } from 'rxjs';
+
 import { ConnectionState } from '../types/PubSub';
+
 import { ReachabilityMonitor } from './ReachabilityMonitor';
 
 // Internal types for tracking different connection states
 type LinkedConnectionState = 'connected' | 'disconnected';
 type LinkedHealthState = 'healthy' | 'unhealthy';
-type LinkedConnectionStates = {
+interface LinkedConnectionStates {
 	networkState: LinkedConnectionState;
 	connectionState: LinkedConnectionState | 'connecting';
 	intendedConnectionState: LinkedConnectionState;
 	keepAliveState: LinkedHealthState;
-};
+}
 
 export const CONNECTION_CHANGE: {
 	[key in
@@ -53,6 +55,7 @@ export class ConnectionStateMonitor {
 	private _linkedConnectionStateObserver:
 		| Observer<LinkedConnectionStates>
 		| undefined;
+
 	private _networkMonitoringSubscription?: SubscriptionLike;
 	private _initialNetworkStateSubscription?: SubscriptionLike;
 
@@ -132,6 +135,7 @@ export class ConnectionStateMonitor {
 				filter(current => {
 					const toInclude = current !== previous;
 					previous = current;
+
 					return toInclude;
 				}),
 			);
@@ -196,6 +200,7 @@ export class ConnectionStateMonitor {
 		// All remaining states directly correspond to the connection state
 		if (connectionState === 'connecting') return ConnectionState.Connecting;
 		if (connectionState === 'disconnected') return ConnectionState.Disconnected;
+
 		return ConnectionState.Connected;
 	}
 }

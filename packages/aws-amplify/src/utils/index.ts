@@ -18,4 +18,4 @@ export {
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
 
-export { parseAWSExports as parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
+export { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
