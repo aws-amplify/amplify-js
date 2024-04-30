@@ -73,7 +73,7 @@ export const identifyUser = async (input: IdentifyUserInput): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
 	const { address, optOut, userAttributes } = options ?? {};
-	updateEndpoint({
+	await updateEndpoint({
 		address,
 		channelType: CHANNEL_TYPE,
 		optOut,

@@ -46,8 +46,8 @@ describe('identifyUser (native)', () => {
 	});
 
 	afterEach(() => {
-		mockUpdateEndpoint.mockClear();
 		mockAssertIsInitialized.mockReset();
+		mockUpdateEndpoint.mockReset();
 	});
 
 	it('must be initialized', async () => {
@@ -101,5 +101,14 @@ describe('identifyUser (native)', () => {
 			userAgentValue,
 			userAttributes,
 		});
+	});
+
+	it('rejects if underlying promise rejects', async () => {
+		mockUpdateEndpoint.mockRejectedValue(new Error());
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {},
+		};
+		await expect(identifyUser(input)).rejects.toBeDefined();
 	});
 });
