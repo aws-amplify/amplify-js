@@ -36,6 +36,7 @@ describe('parseAmplifyOutputs tests', () => {
 								scopes: ['incididunt proident'],
 							},
 							phone: true,
+							username: false,
 						},
 						mfa: {
 							smsEnabled: true,
@@ -151,6 +152,8 @@ describe('parseAmplifyOutputs tests', () => {
 						userPoolId: 'us-east-1:',
 						loginWith: {
 							email: true,
+							phone: false,
+							username: false,
 							oauth: {
 								domain: 'https://cognito.com...',
 								providers: ['Google'],
@@ -164,6 +167,34 @@ describe('parseAmplifyOutputs tests', () => {
 				},
 			});
 		});
+	});
+
+	it('should correctly set loginWith options', () => {
+		const testAmplifyOutputs = JSON.parse(JSON.stringify(mockAmplifyOutputs));
+
+		// Phone only
+		testAmplifyOutputs.auth.username_attributes = ['phone_number'];
+		let result = parseAmplifyOutputs(testAmplifyOutputs);
+
+		expect(result.Auth?.Cognito.loginWith?.email).toBe(false);
+		expect(result.Auth?.Cognito.loginWith?.phone).toBe(true);
+		expect(result.Auth?.Cognito.loginWith?.username).toBe(false);
+
+		// Email only
+		testAmplifyOutputs.auth.username_attributes = ['email'];
+		result = parseAmplifyOutputs(testAmplifyOutputs);
+
+		expect(result.Auth?.Cognito.loginWith?.email).toBe(true);
+		expect(result.Auth?.Cognito.loginWith?.phone).toBe(false);
+		expect(result.Auth?.Cognito.loginWith?.username).toBe(false);
+
+		// Email & phone
+		testAmplifyOutputs.auth.username_attributes = ['email', 'phone_number'];
+		result = parseAmplifyOutputs(testAmplifyOutputs);
+
+		expect(result.Auth?.Cognito.loginWith?.email).toBe(true);
+		expect(result.Auth?.Cognito.loginWith?.phone).toBe(true);
+		expect(result.Auth?.Cognito.loginWith?.username).toBe(false);
 	});
 
 	describe('storage tests', () => {

@@ -135,17 +135,12 @@ function parseAuth(
 		};
 	}
 
-	if (username_attributes?.includes('email')) {
+	if (username_attributes) {
 		authConfig.Cognito.loginWith = {
 			...authConfig.Cognito.loginWith,
-			email: true,
-		};
-	}
-
-	if (username_attributes?.includes('phone_number')) {
-		authConfig.Cognito.loginWith = {
-			...authConfig.Cognito.loginWith,
-			phone: true,
+			email: username_attributes.includes('email'),
+			phone: username_attributes.includes('phone_number'),
+			username: false, // Username sign-in is not possible with Gen2
 		};
 	}
 
