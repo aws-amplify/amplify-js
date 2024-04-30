@@ -145,3 +145,11 @@ tests:
     spec: auth-rsc
     browser: [chrome]
     backend: gen2
+  - test_name: integ_next_sign_in_with_oauth
+    desc: 'Sign-in with the OAuth flow'
+    framework: next
+    category: auth
+    sample_name: [sign-in-with-oauth]
+    spec: sign-in-with-oauth
+    browser: [chrome]
+    backend: gen2
