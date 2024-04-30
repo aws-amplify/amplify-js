@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - next/main
+      - feat/enable-auth-gen2
 
 jobs:
   e2e:
