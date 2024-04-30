@@ -1,0 +1,69 @@
+{
+	"aws_project_region": "us-west-2",
+	"aws_cognito_identity_pool_id": "mock-idp-id",
+	"aws_cognito_username_attributes": ["PHONE_NUMBER", "EMAIL"],
+	"aws_cognito_signup_attributes": ["EMAIL", "ADDRESS", "LOCALE"],
+	"aws_cognito_mfa_configuration": "OPTIONAL",
+	"aws_cognito_mfa_types": ["TOTP", "SMS"],
+	"aws_cognito_password_protection_settings": {
+		"passwordPolicyMinLength": 6,
+		"passwordPolicyCharacters": [
+			"REQUIRES_SYMBOLS",
+			"REQUIRES_UPPERCASE",
+			"REQUIRES_LOWERCASE",
+			"REQUIRES_NUMBERS"
+		]
+	},
+	"oauth": {
+		"domain": "mock-oauth-domain",
+		"scope": ["phone"],
+		"redirectSignIn": "mock-sign-in-uri",
+		"redirectSignOut": "mock-sign-out-uri",
+		"responseType": "token"
+	},
+	"aws_cognito_verification_mechanisms": ["EMAIL"],
+	"aws_cognito_social_providers": ["FACEBOOK", "APPLE", "GOOGLE"],
+	"aws_mobile_analytics_app_id": "mock-pinpoint-app-id",
+	"aws_mobile_analytics_app_region": "us-west-2",
+	"aws_user_files_s3_bucket": "mock-storage-bucket",
+	"aws_user_files_s3_bucket_region": "us-west-2",
+	"aws_user_pools_id": "mock-cup-id",
+	"aws_user_pools_web_client_id": "mock-cup-client-id",
+	"geo": { 
+		"amazon_location_service": {
+			"search_indices": {
+				"items": [
+					"mock-geo-search-item",
+					"mock-geo-search-item-alt"
+				],
+				"default": "mock-geo-search-item"
+			},
+			"geofenceCollections": {
+				"items": [
+					"mock-geo-fence-item",
+					"mock-geo-fence-item-alt"
+				],
+				"default": "mock-geo-fence-item"
+			},
+			"region": "us-west-2"
+		} 
+	},
+	"aws_appsync_graphqlEndpoint": "mock-data-url",
+	"aws_appsync_apiKey": "mock-data-api-key",
+	"aws_appsync_region": "us-west-2",
+	"aws_appsync_authenticationType": "API_KEY",
+	"Notifications": {
+		"InAppMessaging": { 
+			"AWSPinpoint": {
+				"appId": "mock-pinpoint-app-id",
+				"region": "us-west-2"
+			}
+		},
+		"Push": {
+			"AWSPinpoint": {
+				"appId": "mock-pinpoint-app-id",
+				"region": "us-west-2"
+			}
+		}
+	}
+}

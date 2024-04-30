@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 import { AmplifyOutputs, parseAmplifyOutputs } from '../src/libraryUtils';
-
-import mockAmplifyOutputs from './amplify_outputs.json';
+import mockAmplifyOutputs from '../__mocks__/configMocks/amplify_outputs.json';
 
 describe('parseAmplifyOutputs tests', () => {
 	describe('auth tests', () => {
@@ -11,29 +10,26 @@ describe('parseAmplifyOutputs tests', () => {
 			expect(result).toEqual({
 				API: {
 					GraphQL: {
-						apiKey: 'non',
+						apiKey: 'mock-data-api-key',
 						defaultAuthMode: 'apiKey',
-						endpoint: 'dolore dolor do cillum nulla',
+						endpoint: 'mock-data-url',
 						modelIntrospection: undefined,
-						region: 'regasd',
+						region: 'us-west-2',
 					},
 				},
 				Auth: {
 					Cognito: {
 						allowGuestAccess: true,
-						identityPoolId: 'Lorem',
+						identityPoolId: 'mock-idp-id',
 						loginWith: {
 							email: true,
 							oauth: {
-								domain: 'proident dolore do mollit ad',
+								domain: 'mock-oauth-domain',
 								providers: ['Facebook', 'Apple', 'Google'],
-								redirectSignIn: ['Duis', 'ipsum velit in dolore'],
-								redirectSignOut: [
-									'Excepteur pariatur cillum officia',
-									'incididunt in Ut Excepteur commodo',
-								],
+								redirectSignIn: ['mock-sign-in-uri'],
+								redirectSignOut: ['mock-sign-out-uri'],
 								responseType: 'token',
-								scopes: ['incididunt proident'],
+								scopes: ['phone'],
 							},
 							phone: true,
 							username: false,
@@ -43,6 +39,13 @@ describe('parseAmplifyOutputs tests', () => {
 							status: 'optional',
 							totpEnabled: true,
 						},
+						passwordFormat: {
+							minLength: 6,
+							requireLowercase: true,
+							requireNumbers: true,
+							requireSpecialCharacters: true,
+							requireUppercase: true,
+						},
 						userAttributes: {
 							address: {
 								required: true,
@@ -50,43 +53,51 @@ describe('parseAmplifyOutputs tests', () => {
 							email: {
 								required: true,
 							},
-							family_name: {
-								required: true,
-							},
 							locale: {
 								required: true,
 							},
-							sub: {
-								required: true,
-							},
 						},
-						userPoolClientId: 'voluptate',
-						userPoolId: 'sit velit dolor magna est',
+						userPoolClientId: 'mock-cup-client-id',
+						userPoolId: 'mock-cup-id',
 					},
 				},
 				Geo: {
 					LocationService: {
 						geofenceCollections: {
-							default: 'ullamco incididunt aliquip',
-							items: [
-								'fugiat ea irure dolor',
-								'Ut',
-								'culpa ut enim exercitation',
-								'labore',
-								'ex pariatur est ullamco',
-							],
+							default: 'mock-geo-fence-item',
+							items: ['mock-geo-fence-item', 'mock-geo-fence-item-alt'],
 						},
 						maps: undefined,
-						region: 'tempor',
+						region: 'us-west-2',
 						searchIndices: {
-							default: 'exercitation fugiat ut dolor sed',
-							items: [
-								'commodo Lorem',
-								'reprehenderit consequat',
-								'amet',
-								'aliquip deserunt',
-								'ea dolor in proident',
-							],
+							default: 'mock-geo-search-item',
+							items: ['mock-geo-search-item', 'mock-geo-search-item-alt'],
+						},
+					},
+				},
+				Storage: {
+					S3: {
+						bucket: 'mock-storage-bucket',
+						region: 'us-west-2',
+					},
+				},
+				Analytics: {
+					Pinpoint: {
+						appId: 'mock-pinpoint-app-id',
+						region: 'us-west-2',
+					},
+				},
+				Notifications: {
+					InAppMessaging: {
+						Pinpoint: {
+							appId: 'mock-pinpoint-app-id',
+							region: 'us-west-2',
+						},
+					},
+					PushNotification: {
+						Pinpoint: {
+							appId: 'mock-pinpoint-app-id',
+							region: 'us-west-2',
 						},
 					},
 				},
