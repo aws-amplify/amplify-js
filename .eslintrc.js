@@ -64,7 +64,7 @@ module.exports = {
 		// 'packages/aws-amplify',
 		// 'packages/core',
 		// 'packages/datastore',
-		'packages/datastore-storage-adapter',
+		// 'packages/datastore-storage-adapter',
 		// 'packages/geo',
 		// 'packages/interactions',
 		// 'packages/notifications',
