@@ -22,6 +22,9 @@ on:
       browser:
         required: true
         type: string
+      backend:
+        required: true
+        type: string
       amplifyjs_dir:
         required: true
         type: boolean
@@ -73,6 +76,7 @@ jobs:
           E2E_SAMPLE_NAME: ${{ matrix.sample_name }}
           E2E_SPEC: ${{ inputs.spec }}
           E2E_BROWSER: ${{ matrix.browser }}
+          E2E_BACKEND: ${{ inputs.backend }}
           E2E_AMPLIFY_JS_DIR: ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
@@ -85,6 +89,7 @@ jobs:
           $E2E_SPEC \
           $E2E_BROWSER \
           dev \
+          $E2E_BACKEND \
           $E2E_AMPLIFY_JS_DIR" \
           -n $E2E_RETRY_COUNT
 
@@ -97,6 +102,7 @@ jobs:
           E2E_SAMPLE_NAME: ${{ matrix.sample_name }}
           E2E_SPEC: ${{ inputs.spec }}
           E2E_BROWSER: ${{ matrix.browser }}
+          E2E_BACKEND: ${{ inputs.backend }}
           E2E_AMPLIFY_JS_DIR: ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
@@ -109,6 +115,7 @@ jobs:
           $E2E_SPEC \
           $E2E_BROWSER \
           prod \
+          $E2E_BACKEND \
           $E2E_AMPLIFY_JS_DIR" \
           -n $E2E_RETRY_COUNT
       - name: Upload artifact
@@ -121,3 +128,4 @@ jobs:
             amplify-js-samples-staging/cypress/videos
             amplify-js-samples-staging/cypress/screenshots
           retention-days: 14
+          
