@@ -98,9 +98,10 @@ export function getSQLiteType(
 			return 'TEXT';
 		case 'Float':
 			return 'REAL';
-		default:
+		default: {
 			const _: never = scalar as never;
 			throw new Error(`unknown type ${scalar as string}`);
+		}
 	}
 }
 
@@ -342,10 +343,11 @@ export const whereConditionFromPredicateObject = ({
 			case 'notContains':
 				statement = [`instr("${field}", ?) ${logicalOperator}`, [operand]];
 				break;
-			default:
+			default: {
 				const _: never = logicalOperatorKey;
 				// Incorrect WHERE clause can result in data loss
 				throw new Error('Cannot map predicate to a valid WHERE clause');
+			}
 		}
 
 		return statement;
@@ -364,12 +366,13 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 	return [whereClause, params];
 
 	function recurse(
-		predicate: PredicatesGroup<T> | PredicateObject<T>,
-		result = [],
-		params = [],
+		recursedPredicate: PredicatesGroup<T> | PredicateObject<T>,
+		recursedResult = [],
+		recursedParams = [],
 	): void {
-		if (isPredicateGroup(predicate)) {
-			const { type: groupType, predicates: groupPredicates } = predicate;
+		if (isPredicateGroup(recursedPredicate)) {
+			const { type: groupType, predicates: groupPredicates } =
+				recursedPredicate;
 			let filterType = '';
 			let isNegation = false;
 			switch (groupType) {
@@ -382,25 +385,26 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 				case 'or':
 					filterType = 'OR';
 					break;
-				default:
+				default: {
 					const _: never = groupType as never;
 					throw new Error(`Invalid ${groupType}`);
+				}
 			}
 
 			const groupResult = [];
 			for (const p of groupPredicates) {
-				recurse(p, groupResult, params);
+				recurse(p, groupResult, recursedParams);
 			}
-			result.push(
+			recursedResult.push(
 				`${isNegation ? 'NOT' : ''}(${groupResult.join(` ${filterType} `)})`,
 			);
-		} else if (isPredicateObj(predicate)) {
+		} else if (isPredicateObj(recursedPredicate)) {
 			const [condition, conditionParams] =
-				whereConditionFromPredicateObject(predicate);
+				whereConditionFromPredicateObject(recursedPredicate);
 
-			result.push(condition);
+			recursedResult.push(condition);
 
-			params.push(...conditionParams);
+			recursedParams.push(...conditionParams);
 		}
 	}
 }

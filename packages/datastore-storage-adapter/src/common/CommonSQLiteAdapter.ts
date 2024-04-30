@@ -70,9 +70,9 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		) => PersistentModelConstructor<any>,
 	) {
 		if (!this.initPromise) {
-			this.initPromise = new Promise((res, rej) => {
-				this.resolve = res;
-				this.reject = rej;
+			this.initPromise = new Promise((_resolve, _reject) => {
+				this.resolve = _resolve;
+				this.reject = _reject;
 			});
 		} else {
 			await this.initPromise;
@@ -89,6 +89,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 				this.schema.namespaces.user.models,
 			).some(model =>
 				Object.values(model.fields).some(field =>
+					// eslint-disable-next-line no-prototype-builtins
 					field.association?.hasOwnProperty('targetNames'),
 				),
 			);
@@ -158,13 +159,19 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			const { modelName, item, instance } = resItem;
 			const { id } = item;
 
-			const [queryStatement, params] = queryByIdStatement(id, modelName);
-			const fromDB = await this.db.get(queryStatement, params);
+			const [queryStatementForRestItem, paramsForRestItem] = queryByIdStatement(
+				id,
+				modelName,
+			);
+			const fromDBForRestItem = await this.db.get(
+				queryStatementForRestItem,
+				paramsForRestItem,
+			);
 
 			const opType: OpType =
-				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
+				fromDBForRestItem === undefined ? OpType.INSERT : OpType.UPDATE;
 
-			const saveStatement = fromDB
+			const saveStatement = fromDBForRestItem
 				? modelUpdateStatement(instance, modelName)
 				: modelInsertStatement(instance, modelName);
 
@@ -247,10 +254,10 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 				page,
 			);
 
-			return await this.db.getAll(queryStatement, params);
+			return this.db.getAll(queryStatement, params);
 		})()) as T[];
 
-		return await this.load(namespaceName, modelConstructor.name, records);
+		return this.load(namespaceName, modelConstructor.name, records);
 	}
 
 	private async getById<T extends PersistentModel>(
@@ -401,7 +408,8 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			const { id, _deleted } = item;
 
 			const { instance } = connectedModels.find(
-				({ instance }) => instance.id === id,
+				({ instance: connectedModelInstance }) =>
+					connectedModelInstance.id === id,
 			);
 
 			if (_deleted) {

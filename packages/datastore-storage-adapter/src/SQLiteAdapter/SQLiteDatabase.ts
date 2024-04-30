@@ -140,7 +140,14 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 				},
 				logger.warn,
 			);
-			tx.executeSql(deleteStatement, deleteParams, () => {}, logger.warn);
+			tx.executeSql(
+				deleteStatement,
+				deleteParams,
+				() => {
+					// no-op
+				},
+				logger.warn,
+			);
 		});
 
 		return results;

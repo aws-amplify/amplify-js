@@ -107,21 +107,23 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	public batchQuery<T = any>(
 		queryParameterizedStatements = new Set<ParameterizedStatement>(),
 	): Promise<T[]> {
-		return new Promise((resolveTransaction, rejectTransaction) => {
+		return new Promise((resolve, reject) => {
+			const resolveTransaction = resolve;
+			const rejectTransaction = reject;
 			this.db.transaction(async transaction => {
 				try {
 					const results: any[] = await Promise.all(
 						[...queryParameterizedStatements].map(
 							([statement, params]) =>
-								new Promise((resolve, reject) => {
+								new Promise((_resolve, _reject) => {
 									transaction.executeSql(
 										statement,
 										params,
 										(_, result) => {
-											resolve(result.rows._array[0]);
+											_resolve(result.rows._array[0]);
 										},
 										(_, error) => {
-											reject(error);
+											_reject(error);
 											logger.warn(error);
 
 											return true;
@@ -143,22 +145,24 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		saveParameterizedStatements = new Set<ParameterizedStatement>(),
 		deleteParameterizedStatements?: Set<ParameterizedStatement>,
 	): Promise<void> {
-		return new Promise((resolveTransaction, rejectTransaction) => {
+		return new Promise((resolve, reject) => {
+			const resolveTransaction = resolve;
+			const rejectTransaction = reject;
 			this.db.transaction(async transaction => {
 				try {
 					// await for all sql statements promises to resolve
 					await Promise.all(
 						[...saveParameterizedStatements].map(
 							([statement, params]) =>
-								new Promise((resolve, reject) => {
+								new Promise((_resolve, _reject) => {
 									transaction.executeSql(
 										statement,
 										params,
 										() => {
-											resolve(null);
+											_resolve(null);
 										},
 										(_, error) => {
-											reject(error);
+											_reject(error);
 											logger.warn(error);
 
 											return true;
@@ -171,15 +175,15 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 						await Promise.all(
 							[...deleteParameterizedStatements].map(
 								([statement, params]) =>
-									new Promise((resolve, reject) => {
+									new Promise((_resolve, _reject) => {
 										transaction.executeSql(
 											statement,
 											params,
 											() => {
-												resolve(null);
+												_resolve(null);
 											},
 											(_, error) => {
-												reject(error);
+												_reject(error);
 												logger.warn(error);
 
 												return true;
@@ -205,33 +209,35 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		const [queryStatement, queryParams] = queryParameterizedStatement;
 		const [deleteStatement, deleteParams] = deleteParameterizedStatement;
 
-		return new Promise((resolveTransaction, rejectTransaction) => {
+		return new Promise((resolve, reject) => {
+			const resolveTransaction = resolve;
+			const rejectTransaction = reject;
 			this.db.transaction(async transaction => {
 				try {
-					const result: T[] = await new Promise((resolve, reject) => {
+					const result: T[] = await new Promise((_resolve, _reject) => {
 						transaction.executeSql(
 							queryStatement,
 							queryParams,
-							(_, result) => {
-								resolve(result.rows._array || []);
+							(_, sqlResult) => {
+								_resolve(sqlResult.rows._array || []);
 							},
 							(_, error) => {
-								reject(error);
+								_reject(error);
 								logger.warn(error);
 
 								return true;
 							},
 						);
 					});
-					await new Promise((resolve, reject) => {
+					await new Promise((_resolve, _reject) => {
 						transaction.executeSql(
 							deleteStatement,
 							deleteParams,
 							() => {
-								resolve(null);
+								_resolve(null);
 							},
 							(_, error) => {
-								reject(error);
+								_reject(error);
 								logger.warn(error);
 
 								return true;
@@ -248,21 +254,23 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	private executeStatements(statements: string[]): Promise<void> {
-		return new Promise((resolveTransaction, rejectTransaction) => {
+		return new Promise((resolve, reject) => {
+			const resolveTransaction = resolve;
+			const rejectTransaction = reject;
 			this.db.transaction(async transaction => {
 				try {
 					await Promise.all(
 						statements.map(
 							statement =>
-								new Promise((resolve, reject) => {
+								new Promise((_resolve, _reject) => {
 									transaction.executeSql(
 										statement,
 										[],
 										() => {
-											resolve(null);
+											_resolve(null);
 										},
 										(_, error) => {
-											reject(error);
+											_reject(error);
 
 											return true;
 										},
