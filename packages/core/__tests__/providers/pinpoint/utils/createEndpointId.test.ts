@@ -42,11 +42,13 @@ describe('Pinpoint Provider Util: createEndpointId', () => {
 		expect(mockAmplifyUuid).toHaveBeenCalled();
 	});
 
-	it('clears a created endpoint id for a category', () => {
-		const newUuid = `new-${uuid}`;
-		mockAmplifyUuid.mockReturnValue(newUuid);
-		clearCreatedEndpointId(appId, category);
+	describe('clearCreatedEndpointId()', () => {
+		it('can create a new endpoint id for a category after clearing', () => {
+			const newUuid = `new-${uuid}`;
+			mockAmplifyUuid.mockReturnValue(newUuid);
+			clearCreatedEndpointId(appId, category);
 
-		expect(createEndpointId(appId, category)).toBe(newUuid);
+			expect(createEndpointId(appId, category)).toBe(newUuid);
+		});
 	});
 });
