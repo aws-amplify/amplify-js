@@ -1,11 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { MutationEvent } from './index';
 import { ModelPredicateCreator } from '../predicates';
 import {
 	ExclusiveStorage as Storage,
-	StorageFacade,
 	Storage as StorageClass,
+	StorageFacade,
 } from '../storage/storage';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
@@ -15,8 +14,11 @@ import {
 	QueryOne,
 	SchemaModel,
 } from '../types';
-import { USER, SYNC, directedValueEquality } from '../util';
-import { getIdentifierValue, TransformerMutationType } from './utils';
+import { SYNC, USER, directedValueEquality } from '../util';
+
+import { TransformerMutationType, getIdentifierValue } from './utils';
+
+import { MutationEvent } from './index';
 
 // TODO: Persist deleted ids
 // https://github.com/aws-amplify/amplify-js/blob/datastore-docs/packages/datastore/docs/sync-engine.md#outbox
@@ -27,7 +29,7 @@ class MutationEventOutbox {
 		private readonly schema: InternalSchema,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly ownSymbol: Symbol,
+		private readonly ownSymbol: symbol,
 	) {}
 
 	public async enqueue(
@@ -36,7 +38,7 @@ class MutationEventOutbox {
 	): Promise<void> {
 		await storage.runExclusive(async s => {
 			const mutationEventModelDefinition =
-				this.schema.namespaces[SYNC].models['MutationEvent'];
+				this.schema.namespaces[SYNC].models.MutationEvent;
 
 			// `id` is the key for the record in the mutationEvent;
 			// `modelId` is the key for the actual record that was mutated
@@ -56,6 +58,7 @@ class MutationEventOutbox {
 			// No other record with same modelId, so enqueue
 			if (first === undefined) {
 				await s.save(mutationEvent, undefined, this.ownSymbol);
+
 				return;
 			}
 
@@ -205,10 +208,9 @@ class MutationEventOutbox {
 		}
 
 		const mutationEventModelDefinition =
-			this.schema.namespaces[SYNC].models['MutationEvent'];
+			this.schema.namespaces[SYNC].models.MutationEvent;
 
-		const userModelDefinition =
-			this.schema.namespaces['user'].models[head.model];
+		const userModelDefinition = this.schema.namespaces.user.models[head.model];
 
 		const recordId = getIdentifierValue(userModelDefinition, record);
 
@@ -279,7 +281,7 @@ class MutationEventOutbox {
 		});
 	}
 
-	/* 
+	/*
 	if a model is using custom timestamp fields
 	the custom field names will be stored in the model attributes
 

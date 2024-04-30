@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, Observer, SubscriptionLike } from 'rxjs';
-import { ReachabilityMonitor } from './datastoreReachability';
 import { ConsoleLogger } from '@aws-amplify/core';
+
+import { ReachabilityMonitor } from './datastoreReachability';
 
 const logger = new ConsoleLogger('DataStore');
 
 const RECONNECTING_IN = 5000; // 5s this may be configurable in the future
 
-type ConnectionStatus = {
+interface ConnectionStatus {
 	// Might add other params in the future
 	online: boolean;
-};
+}
 
 export default class DataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
@@ -28,6 +29,7 @@ export default class DataStoreConnectivity {
 		if (this.observer) {
 			throw new Error('Subscriber already exists');
 		}
+
 		return new Observable(observer => {
 			this.observer = observer;
 			// Will be used to forward socket connection changes, enhancing Reachability
@@ -57,7 +59,6 @@ export default class DataStoreConnectivity {
 	// for consistency with other background processors.
 	async stop() {
 		this.unsubscribe();
-		return;
 	}
 
 	socketDisconnected() {

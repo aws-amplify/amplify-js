@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	PersistentModel,
-	SchemaModel,
-	SortPredicate,
 	ProducerSortPredicate,
+	SchemaModel,
 	SortDirection,
+	SortPredicate,
 	SortPredicatesGroup,
 } from '../types';
 
@@ -43,6 +43,7 @@ export class ModelSortPredicateCreator {
 
 						return receiver;
 					};
+
 					return result;
 				},
 			}),
@@ -61,7 +62,7 @@ export class ModelSortPredicateCreator {
 
 	static getPredicates<T extends PersistentModel>(
 		predicate: SortPredicate<T>,
-		throwOnInvalid: boolean = true,
+		throwOnInvalid = true,
 	): SortPredicatesGroup<T> {
 		if (
 			throwOnInvalid &&

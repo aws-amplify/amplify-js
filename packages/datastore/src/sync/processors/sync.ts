@@ -4,40 +4,40 @@ import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Observable } from 'rxjs';
 import {
-	InternalSchema,
-	ModelInstanceMetadata,
-	SchemaModel,
-	ModelPredicate,
-	PredicatesGroup,
-	GraphQLFilter,
-	AuthModeStrategy,
-	ErrorHandler,
-	ProcessName,
-	AmplifyContext,
-} from '../../types';
-import {
-	buildGraphQLOperation,
-	getModelAuthModes,
-	getClientSideAuthError,
-	getForbiddenError,
-	predicateToGraphQLFilter,
-	getTokenForCustomAuth,
-} from '../utils';
-import {
-	jitteredExponentialRetry,
+	BackgroundProcessManager,
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	NonRetryableError,
-	BackgroundProcessManager,
 	GraphQLAuthMode,
-	AmplifyError,
+	NonRetryableError,
+	jitteredExponentialRetry,
 } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 
-import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
-
+import {
+	AmplifyContext,
+	AuthModeStrategy,
+	ErrorHandler,
+	GraphQLFilter,
+	InternalSchema,
+	ModelInstanceMetadata,
+	ModelPredicate,
+	PredicatesGroup,
+	ProcessName,
+	SchemaModel,
+} from '../../types';
+import {
+	buildGraphQLOperation,
+	getClientSideAuthError,
+	getForbiddenError,
+	getModelAuthModes,
+	getTokenForCustomAuth,
+	predicateToGraphQLFilter,
+} from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
+
 import { getSyncErrorType } from './errorMaps';
+
 const opResultDefaults = {
 	items: [],
 	nextToken: null,
@@ -149,6 +149,7 @@ class SyncProcessor {
 				logger.debug(
 					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
+
 				return response;
 			} catch (error) {
 				authModeAttempts++;
@@ -174,6 +175,7 @@ class SyncProcessor {
 						readAuthModes[authModeAttempts - 1]
 					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
+
 				return await authModeRetry();
 			}
 		};
@@ -206,13 +208,16 @@ class SyncProcessor {
 		authMode: GraphQLAuthMode;
 		onTerminate: Promise<void>;
 	}): Promise<
-		GraphQLResult<{
-			[opName: string]: {
-				items: T[];
-				nextToken: string;
-				startedAt: number;
-			};
-		}>
+		GraphQLResult<
+			Record<
+				string,
+				{
+					items: T[];
+					nextToken: string;
+					startedAt: number;
+				}
+			>
+		>
 	> {
 		return await jitteredExponentialRetry(
 			async (query, variables) => {
@@ -368,6 +373,7 @@ class SyncProcessor {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
 						map.set(namespace.models[modelName], typeLastSync!);
 					}
+
 					return map;
 				},
 				new Map<SchemaModel, [string, number]>(),
@@ -407,7 +413,10 @@ class SyncProcessor {
 										logger.debug(
 											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`,
 										);
-										return res();
+
+										res();
+
+										return;
 									}
 
 									const limit = Math.min(
@@ -500,13 +509,13 @@ class SyncProcessor {
 	}
 }
 
-export type SyncModelPage = {
+export interface SyncModelPage {
 	namespace: string;
 	modelDefinition: SchemaModel;
 	items: ModelInstanceMetadata[];
 	startedAt: number;
 	done: boolean;
 	isFullSync: boolean;
-};
+}
 
 export { SyncProcessor };

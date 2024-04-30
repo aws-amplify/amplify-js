@@ -3,43 +3,45 @@
 import { GraphQLAuthError } from '@aws-amplify/api';
 import type { GraphQLError } from 'graphql';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
+	AuthModeStrategy,
 	AuthorizationRule,
 	GraphQLCondition,
-	GraphQLFilter,
 	GraphQLField,
-	isEnumFieldType,
-	isGraphQLScalarType,
-	isPredicateObj,
-	isSchemaModel,
-	isSchemaModelWithAttributes,
-	isTargetNameAssociation,
-	isNonModelFieldType,
+	GraphQLFilter,
+	InternalSchema,
+	ModelAttributes,
 	ModelFields,
 	ModelInstanceMetadata,
+	ModelOperation,
 	OpType,
 	PersistentModel,
 	PersistentModelConstructor,
-	PredicatesGroup,
 	PredicateObject,
+	PredicatesGroup,
 	RelationshipType,
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
-	ModelOperation,
-	InternalSchema,
-	AuthModeStrategy,
-	ModelAttributes,
+	isEnumFieldType,
+	isGraphQLScalarType,
+	isNonModelFieldType,
 	isPredicateGroup,
+	isPredicateObj,
+	isSchemaModel,
+	isSchemaModelWithAttributes,
+	isTargetNameAssociation,
 } from '../types';
 import {
-	extractPrimaryKeyFieldNames,
-	establishRelationAndKeys,
 	IDENTIFIER_KEY_SEPARATOR,
+	establishRelationAndKeys,
+	extractPrimaryKeyFieldNames,
 } from '../util';
+
 import { MutationEvent } from './';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 const logger = new ConsoleLogger('DataStore');
 
@@ -64,10 +66,10 @@ const dummyMetadata: ModelInstanceMetadata = {
 	_deleted: undefined!,
 };
 
-const metadataFields = <(keyof ModelInstanceMetadata)[]>(
-	Object.keys(dummyMetadata)
-);
-export function getMetadataFields(): ReadonlyArray<string> {
+const metadataFields = Object.keys(
+	dummyMetadata,
+) as (keyof ModelInstanceMetadata)[];
+export function getMetadataFields(): readonly string[] {
 	return metadataFields;
 }
 
@@ -107,6 +109,7 @@ function getImplicitOwnerField(
 	if (!scalarFields.owner && ownerFields.includes('owner')) {
 		return ['owner'];
 	}
+
 	return [];
 }
 
@@ -124,6 +127,7 @@ function getOwnerFields(
 			}
 		});
 	}
+
 	return ownerFields;
 }
 
@@ -174,7 +178,7 @@ function getConnectionFields(
 							const [relations] = establishRelationAndKeys(namespace);
 
 							const connectedModelName =
-								modelDefinition.fields[name].type['model'];
+								modelDefinition.fields[name].type.model;
 
 							const byPkIndex = relations[connectedModelName].indexes.find(
 								([name]) => name === 'byPk',
@@ -293,6 +297,7 @@ export function getAuthorizationRules(
 		if (isOwnerAuth) {
 			// owner rules has least priority
 			resultRules.push(authRule);
+
 			return;
 		}
 
@@ -308,7 +313,7 @@ export function buildSubscriptionGraphQLOperation(
 	transformerMutationType: TransformerMutationType,
 	isOwnerAuthorization: boolean,
 	ownerField: string,
-	filterArg: boolean = false,
+	filterArg = false,
 ): [TransformerMutationType, string, string] {
 	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
@@ -453,6 +458,7 @@ export function createMutationInstanceFromModelOperation<
 		if (isAWSJSON) {
 			return JSON.stringify(v);
 		}
+
 		return v;
 	};
 
@@ -491,12 +497,13 @@ export function predicateToGraphQLCondition(
 	// key fields from the predicate/condition when ALL of the keyFields are present and using `eq` operators
 
 	const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
 	return predicateToGraphQLFilter(predicate, keyFields) as GraphQLCondition;
 }
 /**
  * @param predicatesGroup - Predicate Group
 	@returns GQL Filter Expression from Predicate Group
-	
+
 	@remarks Flattens redundant list predicates
 	@example
 
@@ -537,6 +544,7 @@ export function predicateToGraphQLFilter(
 			};
 
 			children.push(gqlField);
+
 			return;
 		}
 
@@ -557,6 +565,7 @@ export function predicateToGraphQLFilter(
 		) {
 			delete result[type];
 			Object.assign(result, child);
+
 			return result;
 		}
 	}
@@ -693,6 +702,7 @@ export function repeatedFieldInGroup(
 			}
 			seen[fieldName] = true;
 		}
+
 		return null;
 	};
 
@@ -779,6 +789,7 @@ export function generateRTFRemediation(
 					`Dynamic auth modes, such as owner auth and dynamic group auth factor in to the number of combinations you're using.\n` +
 					`You currently have ${dynamicAuthModeFields.size} dynamic auth mode(s) configured on this model: ${dynamicAuthFieldsStr}.`;
 			}
+
 			return message;
 		}
 
@@ -796,7 +807,7 @@ export function generateRTFRemediation(
 }
 
 export function getUserGroupsFromToken(
-	token: { [field: string]: any },
+	token: Record<string, any>,
 	rule: AuthorizationRule,
 ): string[] {
 	// validate token against groupClaim
@@ -861,6 +872,7 @@ export async function getModelAuthModes({
 	} catch (error) {
 		logger.debug(`Error getting auth modes for model: ${modelName}`, error);
 	}
+
 	return modelAuthModes;
 }
 
@@ -883,12 +895,13 @@ export function getForbiddenError(error) {
 			)}`
 		);
 	}
+
 	return null;
 }
 
 export function resolveServiceErrorStatusCode(error: unknown): number | null {
-	if (error?.['$metadata']?.['httpStatusCode']) {
-		return Number(error?.['$metadata']?.['httpStatusCode']);
+	if (error?.$metadata?.httpStatusCode) {
+		return Number(error?.$metadata?.httpStatusCode);
 	} else if ((error as GraphQLError)?.originalError) {
 		return resolveServiceErrorStatusCode(
 			(error as GraphQLError)?.originalError,
@@ -906,6 +919,7 @@ export function getClientSideAuthError(error) {
 		clientSideAuthErrors.find(clientError =>
 			error.message.includes(clientError),
 		);
+
 	return clientSideError || null;
 }
 
@@ -920,6 +934,7 @@ export async function getTokenForCustomAuth(
 		if (functionAuthProvider && typeof functionAuthProvider === 'function') {
 			try {
 				const { token } = await functionAuthProvider();
+
 				return token;
 			} catch (error) {
 				throw new Error(

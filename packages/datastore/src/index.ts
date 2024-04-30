@@ -1,5 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import {
+	USER,
+	isModelConstructor,
+	isNonModelConstructor,
+	traverseModel,
+	validatePredicate,
+} from './util';
+
 export {
 	DataStore,
 	DataStoreClass,
@@ -15,14 +23,6 @@ export {
 	ModelSortPredicateCreator,
 } from './predicates';
 export { Adapter as StorageAdapter } from './storage/adapter';
-
-import {
-	traverseModel,
-	validatePredicate,
-	USER,
-	isNonModelConstructor,
-	isModelConstructor,
-} from './util';
 
 export { NAMESPACES } from './util';
 

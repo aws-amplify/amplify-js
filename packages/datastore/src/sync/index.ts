@@ -1,37 +1,41 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { BackgroundProcessManager } from '@aws-amplify/core/internals/utils';
-import { Hub, ConsoleLogger } from '@aws-amplify/core';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
+import { Observable, SubscriptionLike, filter, of } from 'rxjs';
+import {
+	ConnectionState,
+	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
+	CONTROL_MSG as PUBSUB_CONTROL_MSG,
+} from '@aws-amplify/api-graphql';
 
-import { filter, Observable, of, SubscriptionLike } from 'rxjs';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import {
+	AmplifyContext,
+	AuthModeStrategy,
 	ConflictHandler,
 	ControlMessageType,
 	ErrorHandler,
 	InternalSchema,
+	ManagedIdentifier,
 	ModelInit,
 	ModelInstanceMetadata,
+	ModelPredicate,
 	MutableModel,
 	NamespaceResolver,
 	OpType,
+	OptionallyManagedIdentifier,
 	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
 	SchemaNamespace,
 	TypeConstructorMap,
-	ModelPredicate,
-	AuthModeStrategy,
-	ManagedIdentifier,
-	OptionallyManagedIdentifier,
-	AmplifyContext,
 } from '../types';
-// tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
+import { SYNC, USER, getNow } from '../util';
 
-import { getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
@@ -39,30 +43,25 @@ import { MutationProcessor } from './processors/mutation';
 import { CONTROL_MSG, SubscriptionProcessor } from './processors/subscription';
 import { SyncProcessor } from './processors/sync';
 import {
+	TransformerMutationType,
 	createMutationInstanceFromModelOperation,
 	getIdentifierValue,
 	predicateToGraphQLCondition,
-	TransformerMutationType,
 } from './utils';
-
-import {
-	CONTROL_MSG as PUBSUB_CONTROL_MSG,
-	ConnectionState,
-	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
-} from '@aws-amplify/api-graphql';
 
 const logger = new ConsoleLogger('DataStore');
 
 const ownSymbol = Symbol('sync');
 
-type StartParams = {
+interface StartParams {
 	fullSyncInterval: number;
-};
+}
 
 export declare class MutationEvent {
 	readonly [__modelMeta__]: {
 		identifier: OptionallyManagedIdentifier<MutationEvent, 'id'>;
 	};
+
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
@@ -80,6 +79,7 @@ export declare class ModelMetadata {
 	readonly [__modelMeta__]: {
 		identifier: ManagedIdentifier<ModelMetadata, 'id'>;
 	};
+
 	public readonly id: string;
 	public readonly namespace: string;
 	public readonly model: string;
@@ -116,15 +116,17 @@ export class SyncEngine {
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
 	private readonly datastoreConnectivity: DataStoreConnectivity;
-	private readonly modelSyncedStatus: WeakMap<
+	private readonly modelSyncedStatus = new WeakMap<
 		PersistentModelConstructor<any>,
 		boolean
-	> = new WeakMap();
+	>();
+
 	private unsleepSyncQueriesObservable: (() => void) | null;
 	private waitForSleepState: Promise<void>;
 	private syncQueriesObservableStartSleeping: (
 		value?: void | PromiseLike<void>,
 	) => void;
+
 	private stopDisruptionListener: () => void;
 	private connectionDisrupted = false;
 
@@ -159,9 +161,8 @@ export class SyncEngine {
 			this.syncQueriesObservableStartSleeping = resolve;
 		});
 
-		const MutationEvent = this.modelClasses[
-			'MutationEvent'
-		] as PersistentModelConstructor<MutationEvent>;
+		const MutationEvent = this.modelClasses
+			.MutationEvent as PersistentModelConstructor<MutationEvent>;
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
@@ -219,6 +220,7 @@ export class SyncEngine {
 					await this.setupModels(params);
 				} catch (err) {
 					observer.error(err);
+
 					return;
 				}
 
@@ -248,7 +250,7 @@ export class SyncEngine {
 
 										this.stopDisruptionListener =
 											this.startDisruptionListener();
-										//#region GraphQL Subscriptions
+										// #region GraphQL Subscriptions
 										[ctlSubsObservable, dataSubsObservable] =
 											this.subscriptionsProcessor.start();
 
@@ -276,6 +278,7 @@ export class SyncEngine {
 										} catch (err) {
 											observer.error(err);
 											failedStarting();
+
 											return;
 										}
 
@@ -285,9 +288,9 @@ export class SyncEngine {
 											type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
 										});
 
-										//#endregion
+										// #endregion
 
-										//#region Base & Sync queries
+										// #region Base & Sync queries
 										try {
 											await new Promise<void>((resolve, reject) => {
 												const syncQuerySubscription =
@@ -319,11 +322,12 @@ export class SyncEngine {
 										} catch (error) {
 											observer.error(error);
 											failedStarting();
+
 											return;
 										}
-										//#endregion
+										// #endregion
 
-										//#region process mutations (outbox)
+										// #region process mutations (outbox)
 										subscriptions.push(
 											this.mutationsProcessor
 												.start()
@@ -364,9 +368,9 @@ export class SyncEngine {
 														}, 'mutation processor event'),
 												),
 										);
-										//#endregion
+										// #endregion
 
-										//#region Merge subscriptions buffer
+										// #region Merge subscriptions buffer
 										subscriptions.push(
 											dataSubsObservable!.subscribe(
 												([_transformerMutationType, modelDefinition, item]) =>
@@ -390,7 +394,7 @@ export class SyncEngine {
 													}, 'subscription dataSubsObservable event'),
 											),
 										);
-										//#endregion
+										// #endregion
 									} else if (!online) {
 										this.online = online;
 
@@ -401,7 +405,9 @@ export class SyncEngine {
 											},
 										});
 
-										subscriptions.forEach(sub => sub.unsubscribe());
+										subscriptions.forEach(sub => {
+											sub.unsubscribe();
+										});
 										subscriptions = [];
 									}
 
@@ -416,6 +422,7 @@ export class SyncEngine {
 					.pipe(
 						filter(({ model }) => {
 							const modelDefinition = this.getModelDefinition(model);
+
 							return modelDefinition.syncable === true;
 						}),
 					)
@@ -424,9 +431,8 @@ export class SyncEngine {
 							this.runningProcesses.add(async () => {
 								const namespace =
 									this.schema.namespaces[this.namespaceResolver(model)];
-								const MutationEventConstructor = this.modelClasses[
-									'MutationEvent'
-								] as PersistentModelConstructor<MutationEvent>;
+								const MutationEventConstructor = this.modelClasses
+									.MutationEvent as PersistentModelConstructor<MutationEvent>;
 								const modelDefinition = this.getModelDefinition(model);
 								const graphQLCondition = predicateToGraphQLCondition(
 									condition!,
@@ -494,7 +500,7 @@ export class SyncEngine {
 	private async getModelsMetadataWithNextFullSync(
 		currentTimeStamp: number,
 	): Promise<Map<SchemaModel, [string, number]>> {
-		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
+		const modelLastSync = new Map<SchemaModel, [string, number]>(
 			(
 				await this.runningProcesses.add(
 					() => this.getModelsMetadata(),
@@ -541,14 +547,14 @@ export class SyncEngine {
 					let terminated = false;
 
 					while (!observer.closed && !terminated) {
-						const count: WeakMap<
+						const count = new WeakMap<
 							PersistentModelConstructor<any>,
 							{
 								new: number;
 								updated: number;
 								deleted: number;
 							}
-						> = new WeakMap();
+						>();
 
 						const modelLastSync = await this.getModelsMetadataWithNextFullSync(
 							Date.now(),
@@ -563,7 +569,9 @@ export class SyncEngine {
 						let lastStartedAt: number;
 						await new Promise<void>((resolve, reject) => {
 							if (!this.runningProcesses.isOpen) resolve();
-							onTerminate.then(() => resolve());
+							onTerminate.then(() => {
+								resolve();
+							});
 							syncQueriesSubscription = this.syncQueriesProcessor
 								.start(modelLastSync)
 								.subscribe({
@@ -613,6 +621,7 @@ export class SyncEngine {
 												}
 
 												oneByOne.push(item);
+
 												return false;
 											});
 
@@ -661,7 +670,7 @@ export class SyncEngine {
 										if (done) {
 											const { name: modelName } = modelDefinition;
 
-											//#region update last sync for type
+											// #region update last sync for type
 											let modelMetadata = await this.getModelMetadata(
 												namespace,
 												modelName,
@@ -694,7 +703,7 @@ export class SyncEngine {
 												undefined,
 												ownSymbol,
 											);
-											//#endregion
+											// #endregion
 
 											const counts = count.get(modelConstructor);
 
@@ -785,6 +794,7 @@ export class SyncEngine {
 
 							this.unsleepSyncQueriesObservable = unsleep;
 							this.syncQueriesObservableStartSleeping();
+
 							return sleep;
 						}, 'syncQueriesObservable sleep');
 
@@ -1074,6 +1084,7 @@ export class SyncEngine {
 				},
 			},
 		};
+
 		return namespace;
 	}
 

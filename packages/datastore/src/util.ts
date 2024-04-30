@@ -1,40 +1,41 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { monotonicFactory, ULID } from 'ulid';
+import { ULID, monotonicFactory } from 'ulid';
 import {
-	amplifyUuid,
 	AmplifyUrl,
 	WordArray,
+	amplifyUuid,
 } from '@aws-amplify/core/internals/utils';
-import { produce, applyPatches, Patch } from 'immer';
+import { Patch, applyPatches, produce } from 'immer';
+
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
-	isPredicateGroup,
-	isPredicateObj,
+	DeferredCallbackResolverOptions,
+	IndexesType,
+	LimitTimerRaceResolvedValues,
+	ModelAssociation,
+	ModelAttribute,
+	ModelAttributes,
+	ModelKeys,
+	NonModelTypeConstructor,
+	PaginationInput,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateGroups,
 	PredicateObject,
 	PredicatesGroup,
-	RelationshipType,
 	RelationType,
-	ModelKeys,
-	ModelAttributes,
+	RelationshipType,
+	SchemaModel,
 	SchemaNamespace,
-	SortPredicatesGroup,
 	SortDirection,
+	SortPredicatesGroup,
+	isModelAttributeCompositeKey,
 	isModelAttributeKey,
 	isModelAttributePrimaryKey,
-	isModelAttributeCompositeKey,
-	NonModelTypeConstructor,
-	PaginationInput,
-	DeferredCallbackResolverOptions,
-	LimitTimerRaceResolvedValues,
-	SchemaModel,
-	ModelAttribute,
-	IndexesType,
-	ModelAssociation,
+	isPredicateGroup,
+	isPredicateObj,
 } from './types';
 import { ModelSortPredicateCreator } from './predicates';
 
@@ -73,14 +74,14 @@ export enum NAMESPACES {
 	STORAGE = 'storage',
 }
 
-const DATASTORE = NAMESPACES.DATASTORE;
-const USER = NAMESPACES.USER;
-const SYNC = NAMESPACES.SYNC;
-const STORAGE = NAMESPACES.STORAGE;
+const { DATASTORE } = NAMESPACES;
+const { USER } = NAMESPACES;
+const { SYNC } = NAMESPACES;
+const { STORAGE } = NAMESPACES;
 
 export { USER, SYNC, STORAGE, DATASTORE };
 
-export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
+export const exhaustiveCheck = (obj: never, throwOnError = true) => {
 	if (throwOnError) {
 		throw new Error(`Invalid ${obj}`);
 	}
@@ -127,6 +128,7 @@ export const validatePredicate = <T extends PersistentModel>(
 
 		if (isPredicateGroup(predicateOrGroup)) {
 			const { type, predicates } = predicateOrGroup;
+
 			return validatePredicate(model, type, predicates);
 		}
 
@@ -155,22 +157,24 @@ export const validatePredicateField = <T>(
 		case 'gt':
 			return value > operand;
 		case 'between':
-			const [min, max] = <[T, T]>operand;
+			const [min, max] = operand as [T, T];
+
 			return value >= min && value <= max;
 		case 'beginsWith':
 			return (
 				!isNullOrUndefined(value) &&
-				(<string>(<unknown>value)).startsWith(<string>(<unknown>operand))
+				(value as unknown as string).startsWith(operand as unknown as string)
 			);
 		case 'contains':
 			return (
 				!isNullOrUndefined(value) &&
-				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) > -1
+				(value as unknown as string).indexOf(operand as unknown as string) > -1
 			);
 		case 'notContains':
 			return (
 				isNullOrUndefined(value) ||
-				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
+				(value as unknown as string).indexOf(operand as unknown as string) ===
+					-1
 			);
 		default:
 			return false;
@@ -181,7 +185,7 @@ export const isModelConstructor = <T extends PersistentModel>(
 	obj: any,
 ): obj is PersistentModelConstructor<T> => {
 	return (
-		obj && typeof (<PersistentModelConstructor<T>>obj).copyOf === 'function'
+		obj && typeof (obj as PersistentModelConstructor<T>).copyOf === 'function'
 	);
 };
 
@@ -268,7 +272,7 @@ export const isPrivateMode = () => {
 
 			privateModeCheckResult = true;
 
-			return resolve(false);
+			resolve(false);
 		};
 
 		if (privateModeCheckResult === true) {
@@ -276,10 +280,16 @@ export const isPrivateMode = () => {
 		}
 
 		if (privateModeCheckResult === false) {
-			return isPrivate();
+			isPrivate();
+
+			return;
 		}
 
-		if (indexedDB === null) return isPrivate();
+		if (indexedDB === null) {
+			isPrivate();
+
+			return;
+		}
 
 		db = indexedDB.open(dbname);
 		db.onerror = isPrivate;
@@ -313,7 +323,9 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 
 		const db: IDBDatabase | false = await new Promise(resolve => {
 			const dbOpenRequest = indexedDB.open(dbName);
-			dbOpenRequest.onerror = () => resolve(false);
+			dbOpenRequest.onerror = () => {
+				resolve(false);
+			};
 
 			dbOpenRequest.onsuccess = () => {
 				const db = dbOpenRequest.result;
@@ -323,7 +335,9 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 			dbOpenRequest.onupgradeneeded = (event: any) => {
 				const db = event?.target?.result;
 
-				db.onerror = () => resolve(false);
+				db.onerror = () => {
+					resolve(false);
+				};
 
 				const store = db.createObjectStore(storeName, {
 					autoIncrement: true,
@@ -352,7 +366,9 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 
 			const getRequest = index.get([1]);
 
-			getRequest.onerror = () => resolve(false);
+			getRequest.onerror = () => {
+				resolve(false);
+			};
 
 			getRequest.onsuccess = (event: any) => {
 				resolve(event?.target?.result);
@@ -486,7 +502,7 @@ export function sortCompareFunction<T extends PersistentModel>(
 export function directedValueEquality(
 	fromObject: object,
 	againstObject: object,
-	nullish: boolean = false,
+	nullish = false,
 ) {
 	const aKeys = Object.keys(fromObject);
 
@@ -507,11 +523,7 @@ export function directedValueEquality(
 // returns true if equal by value
 // if nullish is true, treat undefined and null values as equal
 // to normalize for GQL response values for undefined fields
-export function valuesEqual(
-	valA: any,
-	valB: any,
-	nullish: boolean = false,
-): boolean {
+export function valuesEqual(valA: any, valB: any, nullish = false): boolean {
 	let a = valA;
 	let b = valB;
 
@@ -610,6 +622,7 @@ export function inMemoryPagination<T extends PersistentModel>(
 
 		return records.slice(start, end);
 	}
+
 	return records;
 }
 
@@ -629,6 +642,7 @@ export async function asyncSome(
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -648,6 +662,7 @@ export async function asyncEvery(
 			return false;
 		}
 	}
+
 	return true;
 }
 
@@ -669,6 +684,7 @@ export async function asyncFilter<T>(
 			results.push(item);
 		}
 	}
+
 	return results;
 }
 
@@ -701,6 +717,7 @@ export const isAWSEmail = (val: string): boolean => {
 export const isAWSJSON = (val: string): boolean => {
 	try {
 		JSON.parse(val);
+
 		return true;
 	} catch {
 		return false;
@@ -836,6 +853,7 @@ export function mergePatches<T>(
 			patches = p;
 		},
 	);
+
 	return patches!;
 }
 
@@ -845,7 +863,7 @@ export const getStorename = (namespace: string, modelName: string) => {
 	return storeName;
 };
 
-//#region Key Utils
+// #region Key Utils
 
 /*
   When we have GSI(s) with composite sort keys defined on a model
@@ -903,6 +921,7 @@ export const processCompositeKeys = (
 
 			if (combined.length === 0) {
 				combined.push(sortKeyFieldsSet);
+
 				return combined;
 			}
 
@@ -966,6 +985,7 @@ export const extractPrimaryKeysAndValues = <T extends PersistentModel>(
 ): any => {
 	const primaryKeysAndValues = {};
 	keyFields.forEach(key => (primaryKeysAndValues[key] = model[key]));
+
 	return primaryKeysAndValues;
 };
 
@@ -1012,14 +1032,14 @@ export const establishRelationAndKeys = (
 				typeof fieldAttribute.type === 'object' &&
 				'model' in fieldAttribute.type
 			) {
-				const connectionType = fieldAttribute.association!.connectionType;
+				const { connectionType } = fieldAttribute.association!;
 				relationship[mKey].relationTypes.push({
 					fieldName: fieldAttribute.name,
 					modelName: fieldAttribute.type.model,
 					relationType: connectionType,
-					targetName: fieldAttribute.association!['targetName'],
-					targetNames: fieldAttribute.association!['targetNames'],
-					associatedWith: fieldAttribute.association!['associatedWith'],
+					targetName: fieldAttribute.association!.targetName,
+					targetNames: fieldAttribute.association!.targetNames,
+					associatedWith: fieldAttribute.association!.associatedWith,
 				});
 
 				if (connectionType === 'BELONGS_TO') {
@@ -1093,9 +1113,11 @@ export const getIndex = (
 		if (relItem.modelName === src) {
 			const targetNames = extractTargetNamesFromSrc(relItem);
 			indexName = targetNames && indexNameFromKeys(targetNames);
+
 			return true;
 		}
 	});
+
 	return indexName;
 };
 
@@ -1112,6 +1134,7 @@ export const getIndexFromAssociation = (
 	}
 
 	const associationIndex = indexes.find(([idxName]) => idxName === indexName);
+
 	return associationIndex && associationIndex[0];
 };
 
@@ -1144,6 +1167,7 @@ export const indexNameFromKeys = (keys: string[]): string => {
 		if (idx === 0) {
 			return cur;
 		}
+
 		return `${prev}${IDENTIFIER_KEY_SEPARATOR}${cur}`;
 	}, '');
 };
@@ -1170,7 +1194,7 @@ export const getIndexKeys = (
 	return [ID];
 };
 
-//#endregion
+// #endregion
 
 /**
  * Determine what the managed timestamp field names are for the given model definition

@@ -1,38 +1,38 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	PersistentModel,
+	AllFieldOperators,
 	ModelFieldType,
 	ModelMeta,
-	ModelPredicate as StoragePredicate,
-	AllFieldOperators,
-	PredicateInternalsKey,
 	V5ModelPredicate as ModelPredicate,
+	PersistentModel,
+	PredicateInternalsKey,
 	RecursiveModelPredicate,
-	RecursiveModelPredicateExtender,
 	RecursiveModelPredicateAggregateExtender,
+	RecursiveModelPredicateExtender,
+	ModelPredicate as StoragePredicate,
 } from '../types';
+import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
+import { ModelRelationship } from '../storage/relationship';
+import { asyncEvery, asyncSome } from '../util';
 
 import {
 	ModelPredicateCreator as FlatModelPredicateCreator,
 	comparisonKeys,
 } from './index';
-import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
-import { ModelRelationship } from '../storage/relationship';
-import { asyncSome, asyncEvery } from '../util';
 
 const ops = [...comparisonKeys] as AllFieldOperators[];
 
 type GroupOperator = 'and' | 'or' | 'not';
 
-type UntypedCondition = {
-	fetch: (storage: StorageAdapter) => Promise<Record<string, any>[]>;
-	matches: (item: Record<string, any>) => Promise<boolean>;
+interface UntypedCondition {
+	fetch(storage: StorageAdapter): Promise<Record<string, any>[]>;
+	matches(item: Record<string, any>): Promise<boolean>;
 	copy(
 		extract?: GroupCondition,
 	): [UntypedCondition, GroupCondition | undefined];
 	toAST(): any;
-};
+}
 
 /**
  * A map from keys (exposed to customers) to the internal predicate data
@@ -52,6 +52,7 @@ const predicateInternalsMap = new Map<PredicateInternalsKey, GroupCondition>();
 const registerPredicateInternals = (condition: GroupCondition, key?: any) => {
 	const finalKey = key || new PredicateInternalsKey();
 	predicateInternalsMap.set(finalKey, condition);
+
 	return finalKey;
 };
 
@@ -72,6 +73,7 @@ export const internals = (key: any) => {
 			"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`.",
 		);
 	}
+
 	return predicateInternalsMap.get(key)!;
 };
 
@@ -217,6 +219,7 @@ export class FieldCondition {
 		const operation = operations[this.operator as keyof typeof operations];
 		if (operation) {
 			const result = operation();
+
 			return result;
 		} else {
 			throw new Error(`Invalid operator given: ${this.operator}`);
@@ -234,6 +237,7 @@ export class FieldCondition {
 		 */
 		const argumentCount = count => {
 			const argsClause = count === 1 ? 'argument is' : 'arguments are';
+
 			return () => {
 				if (this.operands.length !== count) {
 					return `Exactly ${count} ${argsClause} required.`;
@@ -278,6 +282,7 @@ export class FieldCondition {
  */
 const getGroupId = (() => {
 	let seed = 1;
+
 	return () => `group_${seed++}`;
 })();
 
@@ -345,7 +350,7 @@ export class GroupCondition {
 		 * This is used to guard against infinitely fetch -> optimize -> fetch
 		 * recursion.
 		 */
-		public isOptimized: boolean = false,
+		public isOptimized = false,
 	) {}
 
 	/**
@@ -386,6 +391,7 @@ export class GroupCondition {
 	 */
 	withFieldConditionsOnly(negate: boolean) {
 		const negateChildren = negate !== (this.operator === 'not');
+
 		return new GroupCondition(
 			this.model,
 			undefined,
@@ -495,7 +501,7 @@ export class GroupCondition {
 			return this.optimized().fetch(storage);
 		}
 
-		const resultGroups: Array<Record<string, any>[]> = [];
+		const resultGroups: Record<string, any>[][] = [];
 
 		const operator = (negate ? negations[this.operator] : this.operator) as
 			| 'or'
@@ -564,7 +570,7 @@ export class GroupCondition {
 
 				const relationship = ModelRelationship.from(this.model, g.field);
 
-				type JoinCondition = { [x: string]: { eq: any } };
+				type JoinCondition = Record<string, { eq: any }>;
 				if (relationship) {
 					const allJoinConditions: { and: JoinCondition[] }[] = [];
 					for (const relative of relatives) {
@@ -665,7 +671,7 @@ export class GroupCondition {
 	 */
 	async matches(
 		item: Record<string, any>,
-		ignoreFieldName: boolean = false,
+		ignoreFieldName = false,
 	): Promise<boolean> {
 		const itemToCheck =
 			this.field && !ignoreFieldName ? await item[this.field] : item;
@@ -686,6 +692,7 @@ export class GroupCondition {
 					return true;
 				}
 			}
+
 			return false;
 		}
 
@@ -699,6 +706,7 @@ export class GroupCondition {
 					'Invalid arguments! `not()` accepts exactly one predicate expression.',
 				);
 			}
+
 			return !(await this.operands[0].matches(itemToCheck));
 		} else {
 			throw new Error('Invalid group operator!');
@@ -769,7 +777,7 @@ export class GroupCondition {
  */
 export function recursivePredicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>,
-	allowRecursion: boolean = true,
+	allowRecursion = true,
 	field?: string,
 	query?: GroupCondition,
 	tail?: GroupCondition,
@@ -796,6 +804,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 			query,
 			newTail,
 		);
+
 		return { query, newTail, newLink };
 	};
 
@@ -945,6 +954,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 							newquery,
 							newtail,
 						);
+
 						return newlink;
 					} else {
 						throw new Error(

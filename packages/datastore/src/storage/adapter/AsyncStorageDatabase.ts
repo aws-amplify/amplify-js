@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { ULID } from 'ulid';
+
 import {
 	ModelInstanceMetadata,
 	OpType,
@@ -13,6 +14,7 @@ import {
 	indexNameFromKeys,
 	monotonicUlidFactory,
 } from '../../util';
+
 import { createInMemoryStore } from './InMemoryStore';
 
 const DB_NAME = '@AmplifyDatastore';
@@ -161,7 +163,7 @@ class AsyncStorageDatabase {
 			);
 
 			allItemsKeys.push(key);
-			itemsMap[key] = { ulid, model: <T>(<unknown>item) };
+			itemsMap[key] = { ulid, model: item as unknown as T };
 
 			if (_deleted) {
 				keysToDelete.add(key);
@@ -180,6 +182,7 @@ class AsyncStorageDatabase {
 		await new Promise<void>((resolve, reject) => {
 			if (keysToDelete.size === 0) {
 				resolve();
+
 				return;
 			}
 
@@ -208,6 +211,7 @@ class AsyncStorageDatabase {
 		await new Promise<void>((resolve, reject) => {
 			if (keysToSave.size === 0) {
 				resolve();
+
 				return;
 			}
 
@@ -258,6 +262,7 @@ class AsyncStorageDatabase {
 		const itemKey = this.getKeyForItem(storeName, keyValuePath, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
+
 		return record;
 	}
 
@@ -269,11 +274,13 @@ class AsyncStorageDatabase {
 				? (() => {
 						let id: string, ulid: string;
 						for ([id, ulid] of collection) break; // Get first element of the set
+
 						return [id!, ulid!];
 					})()
 				: (() => {
 						let id: string, ulid: string;
 						for ([id, ulid] of collection); // Get last element of the set
+
 						return [id!, ulid!];
 					})();
 		const itemKey = this.getKeyForItem(storeName, itemId, ulid);

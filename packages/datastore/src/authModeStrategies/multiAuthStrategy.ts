@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { fetchAuthSession } from '@aws-amplify/core';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+
 import {
+	AmplifyContext,
 	AuthModeStrategy,
+	ModelAttributeAuthAllow,
 	ModelAttributeAuthProperty,
 	ModelAttributeAuthProvider,
-	ModelAttributeAuthAllow,
-	AmplifyContext,
 } from '../types';
-import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 function getProviderFromRule(
 	rule: ModelAttributeAuthProperty,
@@ -21,6 +22,7 @@ function getProviderFromRule(
 	if (rule.allow === 'public' && !rule.provider) {
 		return ModelAttributeAuthProvider.API_KEY;
 	}
+
 	return rule.provider!;
 }
 
@@ -48,6 +50,7 @@ function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
 					providerSortPriority.indexOf(getProviderFromRule(b))
 				);
 			}
+
 			return (
 				allowSortPriority.indexOf(a.allow) - allowSortPriority.indexOf(b.allow)
 			);
@@ -164,5 +167,6 @@ export const multiAuthStrategy: (
 				return getAuthRules({ currentUser, rules: sortedRules });
 			}
 		}
+
 		return [];
 	};

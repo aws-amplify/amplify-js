@@ -3,61 +3,61 @@
 import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import {
+	BackgroundProcessManager,
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	jitteredBackoff,
-	NonRetryableError,
-	retry,
-	BackgroundProcessManager,
 	GraphQLAuthMode,
-	AmplifyError,
+	NonRetryableError,
+	jitteredBackoff,
+	retry,
 } from '@aws-amplify/core/internals/utils';
-
 import { Observable, Observer } from 'rxjs';
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
+	AmplifyContext,
 	AuthModeStrategy,
 	ConflictHandler,
 	DISCARD,
 	ErrorHandler,
 	GraphQLCondition,
 	InternalSchema,
-	isModelFieldType,
-	isTargetNameAssociation,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModel,
 	PersistentModelConstructor,
+	ProcessName,
 	SchemaModel,
 	TypeConstructorMap,
-	ProcessName,
-	AmplifyContext,
+	isModelFieldType,
+	isTargetNameAssociation,
 } from '../../types';
-import { extractTargetNamesFromSrc, USER, ID } from '../../util';
+import { ID, USER, extractTargetNamesFromSrc } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
+	TransformerMutationType,
 	buildGraphQLOperation,
 	createMutationInstanceFromModelOperation,
 	getModelAuthModes,
-	TransformerMutationType,
 	getTokenForCustomAuth,
 } from '../utils';
+
 import { getMutationErrorType } from './errorMaps';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 const MAX_ATTEMPTS = 10;
 
 const logger = new ConsoleLogger('DataStore');
 
-type MutationProcessorEvent = {
+interface MutationProcessorEvent {
 	operation: TransformerMutationType;
 	modelDefinition: SchemaModel;
 	model: PersistentModel;
 	hasMore: boolean;
-};
+}
 
 class MutationProcessor {
 	/**
@@ -73,7 +73,8 @@ class MutationProcessor {
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
-	private processing: boolean = false;
+
+	private processing = false;
 
 	private runningProcesses = new BackgroundProcessManager();
 
@@ -260,6 +261,7 @@ class MutationProcessor {
 										operationAuthModes[authModeAttempts]
 									}`,
 								);
+
 								return await authModeRetry();
 							}
 						};
@@ -361,13 +363,11 @@ class MutationProcessor {
 
 				do {
 					try {
-						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await this.amplifyContext.InternalAPI.graphql(
-								tryWith,
-								undefined,
-								customUserAgentDetails,
-							)
-						);
+						const result = (await this.amplifyContext.InternalAPI.graphql(
+							tryWith,
+							undefined,
+							customUserAgentDetails,
+						)) as GraphQLResult<Record<string, PersistentModel>>;
 
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
 						// through generic params.
@@ -434,18 +434,17 @@ class MutationProcessor {
 										this.amplifyConfig,
 									);
 
-									const serverData = <
-										GraphQLResult<Record<string, PersistentModel>>
-									>await this.amplifyContext.InternalAPI.graphql(
-										{
-											query,
-											variables: { id: variables.input.id },
-											authMode,
-											authToken,
-										},
-										undefined,
-										customUserAgentDetails,
-									);
+									const serverData =
+										(await this.amplifyContext.InternalAPI.graphql(
+											{
+												query,
+												variables: { id: variables.input.id },
+												authMode,
+												authToken,
+											},
+											undefined,
+											customUserAgentDetails,
+										)) as GraphQLResult<Record<string, PersistentModel>>;
 
 									// onTerminate cancel graphql()
 
@@ -543,7 +542,9 @@ class MutationProcessor {
 			([transformerMutationType]) => transformerMutationType === operation,
 		)!;
 
-		const { _version, ...parsedData } = <ModelInstanceMetadata>JSON.parse(data);
+		const { _version, ...parsedData } = JSON.parse(
+			data,
+		) as ModelInstanceMetadata;
 
 		// include all the fields that comprise a custom PK if one is specified
 		const deleteInput = {};
@@ -552,14 +553,14 @@ class MutationProcessor {
 				deleteInput[pkField] = parsedData[pkField];
 			}
 		} else {
-			deleteInput[ID] = (<any>parsedData).id;
+			deleteInput[ID] = (parsedData as any).id;
 		}
 
 		let mutationInput;
 
 		if (operation === TransformerMutationType.DELETE) {
 			// For DELETE mutations, only the key(s) are included in the input
-			mutationInput = <ModelInstanceMetadata>deleteInput;
+			mutationInput = deleteInput as ModelInstanceMetadata;
 		} else {
 			// Otherwise, we construct the mutation input with the following logic
 			mutationInput = {};
@@ -615,7 +616,7 @@ class MutationProcessor {
 			_version,
 		};
 
-		const graphQLCondition = <GraphQLCondition>JSON.parse(condition);
+		const graphQLCondition = JSON.parse(condition) as GraphQLCondition;
 
 		const variables = {
 			input,
@@ -628,6 +629,7 @@ class MutationProcessor {
 								: null,
 					}),
 		};
+
 		return [query, variables, graphQLCondition, opName, modelDefinition];
 	}
 
