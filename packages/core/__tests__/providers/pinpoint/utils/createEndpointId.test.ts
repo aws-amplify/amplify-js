@@ -14,10 +14,15 @@ describe('Pinpoint Provider Util: createEndpointId', () => {
 	// assert mocks
 	const mockAmplifyUuid = amplifyUuid as jest.Mock;
 
+	afterEach(() => {
+		mockAmplifyUuid.mockReset();
+	});
+
 	it('returns a new endpoint id for a category', () => {
 		mockAmplifyUuid.mockReturnValue(uuid);
 
 		expect(createEndpointId(appId, category)).toBe(uuid);
+		expect(mockAmplifyUuid).toHaveBeenCalled();
 	});
 
 	it('returns the same endpoint id for a category', () => {
@@ -25,6 +30,7 @@ describe('Pinpoint Provider Util: createEndpointId', () => {
 		mockAmplifyUuid.mockReturnValue(newUuid);
 
 		expect(createEndpointId(appId, category)).toBe(uuid);
+		expect(mockAmplifyUuid).not.toHaveBeenCalled();
 	});
 
 	it('returns a new endpoint id for a different category', () => {
@@ -33,6 +39,7 @@ describe('Pinpoint Provider Util: createEndpointId', () => {
 		mockAmplifyUuid.mockReturnValue(newUuid);
 
 		expect(createEndpointId(appId, newCategory)).toBe(newUuid);
+		expect(mockAmplifyUuid).toHaveBeenCalled();
 	});
 
 	it('clears a created endpoint id for a category', () => {
