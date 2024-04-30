@@ -260,6 +260,7 @@ export enum GraphQLScalarType {
 	AWSIPAddress,
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace GraphQLScalarType {
 	export function getJSType(
 		scalar: keyof Omit<
@@ -346,7 +347,7 @@ export interface ModelFieldType {
 	model: string;
 	modelConstructor?: ModelMeta<PersistentModel>;
 }
-export function isModelFieldType<T extends PersistentModel>(
+export function isModelFieldType<_ extends PersistentModel>(
 	obj: any,
 ): obj is ModelFieldType {
 	const modelField: keyof ModelFieldType = 'model';
@@ -544,14 +545,6 @@ type OptionalRelativesOf<T> =
 
 type OmitOptionalRelatives<T> = Omit<T, OptionalRelativesOf<T>>;
 type PickOptionalRelatives<T> = Pick<T, OptionalRelativesOf<T>>;
-type OmitOptionalFields<T> = Omit<
-	T,
-	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
->;
-type PickOptionalFields<T> = Pick<
-	T,
-	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
->;
 
 export interface DefaultPersistentModelMetaData {
 	identifier: ManagedIdentifier<{ id: string }, 'id'>;
@@ -584,6 +577,7 @@ export type MetadataReadOnlyFields<
 // This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
 export type ModelInitBase<
 	T extends PersistentModel,
+	// eslint-disable-next-line @typescript-eslint/ban-types
 	M extends PersistentModelMetaData<T> = {},
 > = Omit<
 	T,
@@ -598,6 +592,7 @@ export type ModelInitBase<
 
 export type ModelInit<
 	T extends PersistentModel,
+	// eslint-disable-next-line @typescript-eslint/ban-types
 	M extends PersistentModelMetaData<T> = {},
 > = {
 	[P in keyof OmitOptionalRelatives<ModelInitBase<T, M>>]: SettableFieldType<
@@ -623,6 +618,7 @@ type DeepWritable<T> = {
 
 export type MutableModel<
 	T extends PersistentModel,
+	// eslint-disable-next-line @typescript-eslint/ban-types
 	M extends PersistentModelMetaData<T> = {},
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
@@ -1210,7 +1206,7 @@ export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
 ) => PredicateInternalsKey[];
 
 export type ValuePredicate<
-	RT extends PersistentModel,
+	_RT extends PersistentModel,
 	MT extends MatchableTypes,
 > = {
 	[K in AllFieldOperators]: K extends 'between'

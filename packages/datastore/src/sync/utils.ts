@@ -45,13 +45,13 @@ import { MutationEvent } from './';
 
 const logger = new ConsoleLogger('DataStore');
 
-enum GraphQLOperationType {
-	LIST = 'query',
-	CREATE = 'mutation',
-	UPDATE = 'mutation',
-	DELETE = 'mutation',
-	GET = 'query',
-}
+const GraphQLOperationType = {
+	LIST: 'query',
+	CREATE: 'mutation',
+	UPDATE: 'mutation',
+	DELETE: 'mutation',
+	GET: 'query',
+};
 
 export enum TransformerMutationType {
 	CREATE = 'Create',
@@ -120,7 +120,9 @@ function getOwnerFields(
 	if (isSchemaModelWithAttributes(modelDefinition)) {
 		modelDefinition.attributes!.forEach(attr => {
 			if (attr.properties && attr.properties.rules) {
-				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
+				const rule = attr.properties.rules.find(
+					currentRule => currentRule.allow === 'owner',
+				);
 				if (rule && rule.ownerField) {
 					ownerFields.push(rule.ownerField);
 				}
@@ -177,11 +179,12 @@ function getConnectionFields(
 							// Need to retrieve relations in order to get connected model keys
 							const [relations] = establishRelationAndKeys(namespace);
 
-							const connectedModelName =
-								modelDefinition.fields[name].type.model;
+							const connectedModelName = (
+								modelDefinition.fields[name].type as any
+							).model;
 
 							const byPkIndex = relations[connectedModelName].indexes.find(
-								([name]) => name === 'byPk',
+								([currentName]) => currentName === 'byPk',
 							);
 							const keyFields = byPkIndex && byPkIndex[1];
 							const keyFieldSelectionSet = keyFields?.join(' ');
@@ -212,17 +215,18 @@ function getNonModelFields(
 		if (isNonModelFieldType(type)) {
 			const typeDefinition = namespace.nonModels![type.nonModel];
 			const scalarFields = Object.values(getScalarFields(typeDefinition)).map(
-				({ name }) => name,
+				({ name: currentName }) => currentName,
 			);
 
 			const nested: string[] = [];
 			Object.values(typeDefinition.fields).forEach(field => {
-				const { type, name } = field;
+				const { type: fieldType, name: fieldName } = field;
 
-				if (isNonModelFieldType(type)) {
-					const typeDefinition = namespace.nonModels![type.nonModel];
+				if (isNonModelFieldType(fieldType)) {
+					const nonModelTypeDefinition =
+						namespace.nonModels![fieldType.nonModel];
 					nested.push(
-						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`,
+						`${fieldName} { ${generateSelectionSet(namespace, nonModelTypeDefinition)} }`,
 					);
 				}
 			});
@@ -900,8 +904,8 @@ export function getForbiddenError(error) {
 }
 
 export function resolveServiceErrorStatusCode(error: unknown): number | null {
-	if (error?.$metadata?.httpStatusCode) {
-		return Number(error?.$metadata?.httpStatusCode);
+	if ((error as any)?.$metadata?.httpStatusCode) {
+		return Number((error as any)?.$metadata?.httpStatusCode);
 	} else if ((error as GraphQLError)?.originalError) {
 		return resolveServiceErrorStatusCode(
 			(error as GraphQLError)?.originalError,

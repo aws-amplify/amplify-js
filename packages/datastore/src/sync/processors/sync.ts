@@ -176,7 +176,7 @@ class SyncProcessor {
 					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
 
-				return await authModeRetry();
+				return authModeRetry();
 			}
 		};
 
@@ -219,8 +219,8 @@ class SyncProcessor {
 			>
 		>
 	> {
-		return await jitteredExponentialRetry(
-			async (query, variables) => {
+		return jitteredExponentialRetry(
+			async (retriedQuery, retriedVariables) => {
 				try {
 					const authToken = await getTokenForCustomAuth(
 						authMode,
@@ -234,8 +234,8 @@ class SyncProcessor {
 
 					return await this.amplifyContext.InternalAPI.graphql(
 						{
-							query,
-							variables,
+							query: retriedQuery,
+							variables: retriedVariables,
 							authMode,
 							authToken,
 						},
@@ -280,6 +280,7 @@ class SyncProcessor {
 						await Promise.all(
 							otherErrors.map(async err => {
 								try {
+									// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 									await this.errorHandler({
 										recoverySuggestion:
 											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -400,7 +401,8 @@ class SyncProcessor {
 								parentPromises.get(`${namespace}_${parent}`),
 							);
 
-							const promise = new Promise<void>(async res => {
+							// eslint-disable-next-line no-async-promise-executor
+							const promise = new Promise<void>(async resolve => {
 								await Promise.all(promises);
 
 								do {
@@ -414,7 +416,7 @@ class SyncProcessor {
 											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`,
 										);
 
-										res();
+										resolve();
 
 										return;
 									}
@@ -440,6 +442,7 @@ class SyncProcessor {
 										));
 									} catch (error) {
 										try {
+											// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 											await this.errorHandler({
 												recoverySuggestion:
 													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -481,7 +484,7 @@ class SyncProcessor {
 									});
 								} while (!done);
 
-								res();
+								resolve();
 							});
 
 							parentPromises.set(

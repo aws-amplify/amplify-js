@@ -82,9 +82,9 @@ export abstract class StorageAdapterBase implements Adapter {
 		await this.preSetUpChecks();
 
 		if (!this.initPromise) {
-			this.initPromise = new Promise((res, rej) => {
-				this.resolve = res;
-				this.reject = rej;
+			this.initPromise = new Promise((resolve, reject) => {
+				this.resolve = resolve;
+				this.reject = reject;
 			});
 		} else {
 			await this.initPromise;
@@ -200,14 +200,14 @@ export abstract class StorageAdapterBase implements Adapter {
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
-				const storeName = getStorename(namespaceName, modelName);
-				set.add(storeName);
+				const resolvedStoreName = getStorename(namespaceName, modelName);
+				set.add(resolvedStoreName);
 				const keys = getIndexKeys(
 					this.schema.namespaces[namespaceName],
 					modelName,
 				);
 
-				return { storeName, item, instance, keys };
+				return { storeName: resolvedStoreName, item, instance, keys };
 			},
 		);
 

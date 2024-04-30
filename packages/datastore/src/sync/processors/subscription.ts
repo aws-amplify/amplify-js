@@ -163,6 +163,7 @@ class SubscriptionProcessor {
 
 		const validGroup =
 			(authMode === 'oidc' || authMode === 'userPool') &&
+			// eslint-disable-next-line array-callback-return
 			groupAuthRules.find(groupAuthRule => {
 				// validate token against groupClaim
 				if (oidcTokenPayload) {
@@ -232,7 +233,7 @@ class SubscriptionProcessor {
 	}
 
 	private hubQueryCompletionListener(
-		completed: Function,
+		completed: () => void,
 		capsule: HubCapsule<'datastore', { event: string }>,
 	) {
 		const {
@@ -369,7 +370,7 @@ class SubscriptionProcessor {
 										};
 
 										if (addFilter && predicatesGroup) {
-											variables.filter =
+											(variables as any).filter =
 												predicateToGraphQLFilter(predicatesGroup);
 										}
 
@@ -433,13 +434,12 @@ class SubscriptionProcessor {
 														return;
 													}
 
-													const predicatesGroup =
+													const resolvedPredicatesGroup =
 														ModelPredicateCreator.getPredicates(
 															this.syncPredicates.get(modelDefinition)!,
 															false,
 														);
 
-													// @ts-ignore
 													const { [opName]: record } = data;
 
 													// checking incoming subscription against syncPredicate.
@@ -449,7 +449,7 @@ class SubscriptionProcessor {
 													if (
 														this.passesPredicateValidation(
 															record,
-															predicatesGroup!,
+															resolvedPredicatesGroup!,
 														)
 													) {
 														this.pushToBuffer(
@@ -464,6 +464,7 @@ class SubscriptionProcessor {
 													const {
 														errors: [{ message = '' } = {}],
 													} = ({
+														// eslint-disable-next-line no-empty-pattern
 														errors: [],
 													} = subscriptionError);
 
@@ -549,6 +550,7 @@ class SubscriptionProcessor {
 													logger.warn('subscriptionError', message);
 
 													try {
+														// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 														await this.errorHandler({
 															recoverySuggestion:
 																'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -588,11 +590,11 @@ class SubscriptionProcessor {
 											(async () => {
 												let boundFunction: any;
 												let removeBoundFunctionListener: () => void;
-												await new Promise(res => {
-													subscriptionReadyCallback = res;
+												await new Promise(resolve => {
+													subscriptionReadyCallback = resolve;
 													boundFunction = this.hubQueryCompletionListener.bind(
 														this,
-														res,
+														resolve,
 													);
 													removeBoundFunctionListener = Hub.listen(
 														'api',

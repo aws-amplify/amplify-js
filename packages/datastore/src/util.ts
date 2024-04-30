@@ -156,10 +156,11 @@ export const validatePredicateField = <T>(
 			return value >= operand;
 		case 'gt':
 			return value > operand;
-		case 'between':
+		case 'between': {
 			const [min, max] = operand as [T, T];
 
 			return value >= min && value <= max;
+		}
 		case 'beginsWith':
 			return (
 				!isNullOrUndefined(value) &&
@@ -224,7 +225,9 @@ export const traverseModel = <T extends PersistentModel>(
 		instance: T;
 	}[] = [];
 
-	const newInstance = modelConstructor.copyOf(instance, () => {});
+	const newInstance = modelConstructor.copyOf(instance, () => {
+		// no-op
+	});
 
 	result.unshift({
 		modelName: srcModelName,
@@ -255,6 +258,7 @@ let privateModeCheckResult;
 export const isPrivateMode = () => {
 	return new Promise(resolve => {
 		const dbname = amplifyUuid();
+		// eslint-disable-next-line prefer-const
 		let db;
 
 		const isPrivate = () => {
@@ -328,18 +332,18 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 			};
 
 			dbOpenRequest.onsuccess = () => {
-				const db = dbOpenRequest.result;
-				resolve(db);
+				const openedDb = dbOpenRequest.result;
+				resolve(openedDb);
 			};
 
 			dbOpenRequest.onupgradeneeded = (event: any) => {
-				const db = event?.target?.result;
+				const upgradedDb = event?.target?.result;
 
-				db.onerror = () => {
+				upgradedDb.onerror = () => {
 					resolve(false);
 				};
 
-				const store = db.createObjectStore(storeName, {
+				const store = upgradedDb.createObjectStore(storeName, {
 					autoIncrement: true,
 				});
 
@@ -376,6 +380,7 @@ export const isSafariCompatabilityMode: () => Promise<boolean> = async () => {
 		});
 
 		if (db && typeof db.close === 'function') {
+			// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 			await db.close();
 		}
 
@@ -747,6 +752,7 @@ export class DeferredPromise {
 	public resolve: (value: string | PromiseLike<string>) => void;
 	public reject: () => void;
 	constructor() {
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 		this.promise = new Promise(
 			(resolve: (value: string | PromiseLike<string>) => void, reject) => {
@@ -763,7 +769,10 @@ export class DeferredCallbackResolver {
 	private maxInterval: number;
 	private timer: ReturnType<typeof setTimeout>;
 	private raceInFlight = false;
-	private callback = () => {};
+	private callback = () => {
+		// no-op
+	};
+
 	private errorHandler: (error: string) => void;
 	private defaultErrorHandler = (
 		msg = 'DeferredCallbackResolver error',
@@ -778,7 +787,7 @@ export class DeferredCallbackResolver {
 	}
 
 	private startTimer(): void {
-		this.timerPromise = new Promise((resolve, reject) => {
+		this.timerPromise = new Promise((resolve, _reject) => {
 			this.timer = setTimeout(() => {
 				resolve(LimitTimerRaceResolvedValues.TIMER);
 			}, this.maxInterval);
@@ -803,6 +812,7 @@ export class DeferredCallbackResolver {
 			this.raceInFlight = false;
 			this.limitPromise = new DeferredPromise();
 
+			// eslint-disable-next-line no-unsafe-finally
 			return winner!;
 		}
 	}
@@ -1039,7 +1049,8 @@ export const establishRelationAndKeys = (
 					relationType: connectionType,
 					targetName: fieldAttribute.association!.targetName,
 					targetNames: fieldAttribute.association!.targetNames,
-					associatedWith: fieldAttribute.association!.associatedWith,
+					// eslint-disable-next-line dot-notation
+					associatedWith: fieldAttribute.association!['associatedWith'],
 				});
 
 				if (connectionType === 'BELONGS_TO') {
@@ -1109,6 +1120,7 @@ export const getIndex = (
 	src: string,
 ): string | undefined => {
 	let indexName;
+	// eslint-disable-next-line array-callback-return
 	rel.some((relItem: RelationType) => {
 		if (relItem.modelName === src) {
 			const targetNames = extractTargetNamesFromSrc(relItem);

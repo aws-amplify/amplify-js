@@ -26,9 +26,13 @@ import { StorageAdapterBase } from './StorageAdapterBase';
 export class AsyncStorageAdapter extends StorageAdapterBase {
 	protected db!: AsyncStorageDatabase;
 
-	// no-ops for this adapter
-	protected async preSetUpChecks() {}
-	protected async preOpCheck() {}
+	protected async preSetUpChecks() {
+		// no-ops for AsyncStorageAdapter
+	}
+
+	protected async preOpCheck() {
+		// no-ops for AsyncStorageAdapter
+	}
 
 	/**
 	 * Open AsyncStorage database
@@ -79,16 +83,20 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 
 			const keyValuesPath = this.getIndexKeyValuesPath(model);
 
-			const { instance } = connectedModels.find(({ instance }) => {
-				const instanceKeyValuesPath = this.getIndexKeyValuesPath(instance);
+			const { instance } = connectedModels.find(
+				({ instance: connectedModelInstance }) => {
+					const instanceKeyValuesPath = this.getIndexKeyValuesPath(
+						connectedModelInstance,
+					);
 
-				return keysEqual([instanceKeyValuesPath], [keyValuesPath]);
-			})!;
+					return keysEqual([instanceKeyValuesPath], [keyValuesPath]);
+				},
+			)!;
 
 			batch.push(instance);
 		}
 
-		return await this.db.batchSave(storeName, batch, keys);
+		return this.db.batchSave(storeName, batch, keys);
 	}
 
 	protected async _get<T>(storeName: string, keyArr: string[]): Promise<T> {
@@ -112,12 +120,15 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 		for await (const resItem of connectionStoreNames) {
-			const { storeName, item, instance, keys } = resItem;
+			const { storeName: storeNameForRestItem, item, instance, keys } = resItem;
 
 			const itemKeyValues: string[] = keys.map(key => item[key]);
 
-			const fromDB = (await this._get(storeName, itemKeyValues)) as T;
-			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
+			const fromDBForRestItem = (await this._get(
+				storeNameForRestItem,
+				itemKeyValues,
+			)) as T;
+			const opType: OpType = fromDBForRestItem ? OpType.UPDATE : OpType.INSERT;
 
 			if (
 				keysEqual(itemKeyValues, modelKeyValues) ||
@@ -125,7 +136,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 			) {
 				await this.db.save(
 					item,
-					storeName,
+					storeNameForRestItem,
 					keys,
 					itemKeyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR),
 				);
@@ -174,7 +185,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 			return this.getAll(storeName);
 		})()) as T[];
 
-		return await this.load(namespaceName, modelConstructor.name, records);
+		return this.load(namespaceName, modelConstructor.name, records);
 	}
 
 	private async getByKey<T extends PersistentModel>(
@@ -187,7 +198,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 	private async getAll<T extends PersistentModel>(
 		storeName: string,
 	): Promise<T[]> {
-		return await this.db.getAll(storeName);
+		return this.db.getAll(storeName);
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(

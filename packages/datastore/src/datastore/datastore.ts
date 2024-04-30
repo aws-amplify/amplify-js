@@ -221,6 +221,8 @@ const buildSeedPredicate = <T extends PersistentModel>(
 };
 
 // exporting syncClasses for testing outbox.test.ts
+// TODO(eslint): refactor not to export non-constant
+// eslint-disable-next-line import/no-mutable-exports
 export let syncClasses: TypeConstructorMap;
 let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
@@ -490,7 +492,7 @@ const checkSchemaCodegenVersion = (codegenVersion: string) => {
 	let isValid = false;
 	try {
 		const versionParts = codegenVersion.split('.');
-		const [major, minor, patch, patchrevision] = versionParts;
+		const [major, minor] = versionParts;
 		isValid = Number(major) === majorVersion && Number(minor) >= minorVersion;
 	} catch (err) {
 		console.log(`Error parsing codegen version: ${codegenVersion}\n${err}`);
@@ -548,12 +550,12 @@ export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 const instancesMetadata = new WeakSet<ModelInit<any, any>>();
 
 function modelInstanceCreator<T extends PersistentModel>(
-	modelConstructor: PersistentModelConstructor<T>,
+	ModelConstructor: PersistentModelConstructor<T>,
 	init: Partial<T>,
 ): T {
 	instancesMetadata.add(init);
 
-	return new modelConstructor(init as ModelInit<T, PersistentModelMetaData<T>>);
+	return new ModelConstructor(init as ModelInit<T, PersistentModelMetaData<T>>);
 }
 
 const validateModelFields =
@@ -652,6 +654,7 @@ const validateModelFields =
 						}
 					}
 				} else if (!isRequired && v === undefined) {
+					// no-op for this branch but still to filter this branch out
 				} else if (typeof v !== jsType && v !== null) {
 					throw new Error(
 						`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`,
@@ -905,7 +908,7 @@ const createModelClass = <T extends PersistentModel>(
 								{ source },
 							);
 						}
-						(draft as Object)[key] = source[key];
+						(draft as object)[key] = source[key];
 					});
 
 					const modelValidator = validateModelFields(modelDefinition);
@@ -994,7 +997,7 @@ const createModelClass = <T extends PersistentModel>(
 					// Avoid validation error when processing AppSync response with nested
 					// selection set. Nested entitites lack version field and can not be validated
 					// TODO: explore a more reliable method to solve this
-					if (model.hasOwnProperty('_version')) {
+					if (Object.prototype.hasOwnProperty.call(model, '_version')) {
 						const modelConstructor = Object.getPrototypeOf(model || {})
 							.constructor as PersistentModelConstructor<T>;
 
@@ -1040,7 +1043,7 @@ const createModelClass = <T extends PersistentModel>(
 				// if the memos already has a result for this field, we'll use it.
 				// there is no "cache" invalidation of any kind; memos are permanent to
 				// keep an immutable perception of the instance.
-				if (!instanceMemos.hasOwnProperty(field)) {
+				if (!Object.prototype.hasOwnProperty.call(instanceMemos, field)) {
 					// before we populate the memo, we need to know where to look for relatives.
 					// today, this only supports DataStore. Models aren't managed elsewhere in Amplify.
 					if (getAttachment(this) === ModelAttachment.DataStore) {
@@ -1052,12 +1055,14 @@ const createModelClass = <T extends PersistentModel>(
 							relationship.remoteModelConstructor as PersistentModelConstructor<T>,
 							base =>
 								base.and(q => {
-									return relationship.remoteJoinFields.map((field, index) => {
-										// TODO: anything we can use instead of `any` here?
-										return (q[field] as T[typeof field]).eq(
-											this[relationship.localJoinFields[index]],
-										);
-									});
+									return relationship.remoteJoinFields.map(
+										(joinField, index) => {
+											// TODO: anything we can use instead of `any` here?
+											return (q[joinField] as T[typeof joinField]).eq(
+												this[relationship.localJoinFields[index]],
+											);
+										},
+									);
 								}),
 						);
 
@@ -1301,14 +1306,14 @@ async function checkSchemaVersion(
 	storage: Storage,
 	version: string,
 ): Promise<void> {
-	const Setting =
+	const SettingCtor =
 		dataStoreClasses.Setting as PersistentModelConstructor<Setting>;
 
 	const modelDefinition = schema.namespaces[DATASTORE].models.Setting;
 
 	await storage.runExclusive(async s => {
 		const [schemaVersionSetting] = await s.query(
-			Setting,
+			SettingCtor,
 			ModelPredicateCreator.createFromAST(modelDefinition, {
 				and: { key: { eq: SETTING_SCHEMA_VERSION } },
 			}),
@@ -1326,7 +1331,7 @@ async function checkSchemaVersion(
 			}
 		} else {
 			await s.save(
-				modelInstanceCreator(Setting, {
+				modelInstanceCreator(SettingCtor, {
 					key: SETTING_SCHEMA_VERSION,
 					value: JSON.stringify(version),
 				}),
@@ -1404,8 +1409,8 @@ class DataStore {
 	private errorHandler!: (error: SyncError<PersistentModel>) => void;
 	private fullSyncInterval!: number;
 	private initialized?: Promise<void>;
-	private initReject!: Function;
-	private initResolve!: Function;
+	private initReject!: () => void;
+	private initResolve!: () => void;
 	private maxRecordsToSync!: number;
 	private storage?: Storage;
 	private sync?: SyncEngine;
@@ -1513,9 +1518,9 @@ class DataStore {
 				this.state = DataStoreState.Starting;
 				if (this.initialized === undefined) {
 					logger.debug('Starting DataStore');
-					this.initialized = new Promise((res, rej) => {
-						this.initResolve = res;
-						this.initReject = rej;
+					this.initialized = new Promise((resolve, reject) => {
+						this.initResolve = resolve;
+						this.initReject = reject;
 					});
 				} else {
 					await this.initialized;
@@ -1831,12 +1836,7 @@ class DataStore {
 					: undefined;
 
 				const [savedModel] = await this.storage.runExclusive(async s => {
-					const saved = await s.save(
-						model,
-						producedCondition,
-						undefined,
-						patchesTuple,
-					);
+					await s.save(model, producedCondition, undefined, patchesTuple);
 
 					return s.query<T>(
 						modelConstructor,
@@ -2074,10 +2074,10 @@ class DataStore {
 
 		if (modelOrConstructor && modelConstructor === undefined) {
 			const model = modelOrConstructor as T;
-			const modelConstructor =
-				model && (Object.getPrototypeOf(model) as Object).constructor;
+			const resolvedModelConstructor =
+				model && (Object.getPrototypeOf(model) as object).constructor;
 
-			if (isValidModelConstructor<T>(modelConstructor)) {
+			if (isValidModelConstructor<T>(resolvedModelConstructor)) {
 				if (identifierOrCriteria) {
 					logger.warn('idOrCriteria is ignored when using a model instance', {
 						model,
@@ -2085,7 +2085,7 @@ class DataStore {
 					});
 				}
 
-				return this.observe(modelConstructor, model.id);
+				return this.observe(resolvedModelConstructor, model.id);
 			} else {
 				const msg =
 					'The model is not an instance of a PersistentModelConstructor';
@@ -2282,10 +2282,11 @@ class DataStore {
 						// to have visibility into items that move from in-set to out-of-set.
 						// We need to explicitly remove those items from the existing snapshot.
 						handle = this.observe(model).subscribe(
-							({ element, model, opType }) =>
+							({ element, model: observedModel, opType }) =>
 								this.runningProcesses.isOpen &&
 								this.runningProcesses.add(async () => {
-									const itemModelDefinition = getModelDefinition(model)!;
+									const itemModelDefinition =
+										getModelDefinition(observedModel)!;
 									const idOrPk = getIdentifierValue(
 										itemModelDefinition,
 										element,
@@ -2320,7 +2321,7 @@ class DataStore {
 									}
 
 									const isSynced =
-										this.sync?.getModelSyncedStatus(model) ?? false;
+										this.sync?.getModelSyncedStatus(observedModel) ?? false;
 
 									const limit =
 										itemsChanged.size - deletedItemIds.length >=
@@ -2409,8 +2410,11 @@ class DataStore {
 			 * @param itemsToSort A array of model type.
 			 */
 			const sortItems = (itemsToSort: T[]): void => {
-				const modelDefinition = getModelDefinition(model);
-				const pagination = this.processPagination(modelDefinition!, options);
+				const sortingModelDefinition = getModelDefinition(model);
+				const pagination = this.processPagination(
+					sortingModelDefinition!,
+					options,
+				);
 
 				const sortPredicates = ModelSortPredicateCreator.getPredicates(
 					pagination!.sort!,
@@ -2456,8 +2460,6 @@ class DataStore {
 		const {
 			DataStore: configDataStore,
 			authModeStrategyType: configAuthModeStrategyType,
-			conflictHandler: configConflictHandler,
-			errorHandler: configErrorHandler,
 			maxRecordsToSync: configMaxRecordsToSync,
 			syncPageSize: configSyncPageSize,
 			fullSyncInterval: configFullSyncInterval,

@@ -115,7 +115,7 @@ export class FieldCondition {
 	 * @param extract Not used. Present only to fulfill the `UntypedCondition` interface.
 	 * @returns A new, identitical `FieldCondition`.
 	 */
-	copy(extract?: GroupCondition): [FieldCondition, GroupCondition | undefined] {
+	copy(): [FieldCondition, GroupCondition | undefined] {
 		return [
 			new FieldCondition(this.field, this.operator, [...this.operands]),
 			undefined,
@@ -193,7 +193,8 @@ export class FieldCondition {
 	 * @param storage N/A. If ever implemented, the storage adapter to query.
 	 * @returns N/A. If ever implemented, return items from `storage` that match.
 	 */
-	async fetch(storage: StorageAdapter): Promise<Record<string, any>[]> {
+	async fetch(): Promise<Record<string, any>[]> {
+		// eslint-disable-next-line prefer-promise-reject-errors
 		return Promise.reject('No implementation needed [yet].');
 	}
 
@@ -796,16 +797,16 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	registerPredicateInternals(baseCondition, link);
 
 	const copyLink = () => {
-		const [query, newTail] = baseCondition.copy(tailCondition);
+		const [copiedQuery, newTail] = baseCondition.copy(tailCondition);
 		const newLink = recursivePredicateFor(
 			ModelType,
 			allowRecursion,
 			undefined,
-			query,
+			copiedQuery,
 			newTail,
 		);
 
-		return { query, newTail, newLink };
+		return { query: copiedQuery, newTail, newLink };
 	};
 
 	// Adds .or() and .and() methods to the link.
@@ -814,7 +815,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		link[op] = (builder: RecursiveModelPredicateAggregateExtender<T>) => {
 			// or() and and() will return a copy of the original link
 			// to head off mutability concerns.
-			const { query, newTail } = copyLink();
+			const { query: copiedLinkQuery, newTail } = copyLink();
 
 			const childConditions = builder(
 				recursivePredicateFor(ModelType, allowRecursion),
@@ -838,7 +839,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 			);
 
 			// FinalPredicate
-			return registerPredicateInternals(query);
+			return registerPredicateInternals(copiedLinkQuery);
 		};
 	});
 
@@ -848,7 +849,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	): PredicateInternalsKey => {
 		// not() will return a copy of the original link
 		// to head off mutability concerns.
-		const { query, newTail } = copyLink();
+		const { query: copiedLinkQuery, newTail } = copyLink();
 
 		// unlike and() and or(), the customer will supply a "singular" child predicate.
 		// the difference being: not() does not accept an array of predicate-like objects.
@@ -862,7 +863,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		// A `FinalModelPredicate`.
 		// Return a thing that can no longer be extended, but instead used to `async filter(items)`
 		// or query storage: `.__query.fetch(storage)`.
-		return registerPredicateInternals(query);
+		return registerPredicateInternals(copiedLinkQuery);
 	};
 
 	// For each field on the model schema, we want to add a getter
@@ -890,7 +891,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 							[operator]: (...operands: any[]) => {
 								// build off a fresh copy of the existing `link`, just in case
 								// the same link is being used elsewhere by the customer.
-								const { query, newTail } = copyLink();
+								const { query: copiedLinkQuery, newTail } = copyLink();
 
 								// normalize operands. if any of the values are `undefiend`, use
 								// `null` instead, because that's what will be stored cross-platform.
@@ -907,7 +908,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 								// A `FinalModelPredicate`.
 								// Return a thing that can no longer be extended, but instead used to `async filter(items)`
 								// or query storage: `.__query.fetch(storage)`.
-								return registerPredicateInternals(query);
+								return registerPredicateInternals(copiedLinkQuery);
 							},
 						};
 					}, {});

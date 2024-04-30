@@ -74,12 +74,12 @@ class AsyncStorageDatabase {
 					if (id === undefined) {
 						// It is an old entry (without ulid). Need to migrate to new key format
 
-						const id = ulidOrId;
+						const resolvedId = ulidOrId;
 
 						const newUlid = this.getMonotonicFactory(storeName)();
 
-						const oldKey = this.getLegacyKeyForItem(storeName, id);
-						const newKey = this.getKeyForItem(storeName, id, newUlid);
+						const oldKey = this.getLegacyKeyForItem(storeName, resolvedId);
+						const newKey = this.getKeyForItem(storeName, resolvedId, newUlid);
 
 						const item = await this.storage.getItem(oldKey);
 
@@ -272,16 +272,17 @@ class AsyncStorageDatabase {
 		const [itemId, ulid] =
 			firstOrLast === QueryOne.FIRST
 				? (() => {
-						let id: string, ulid: string;
-						for ([id, ulid] of collection) break; // Get first element of the set
+						let resolvedId: string, resolvedUlid: string;
+						// eslint-disable-next-line no-unreachable-loop
+						for ([resolvedId, resolvedUlid] of collection) break; // Get first element of the set
 
-						return [id!, ulid!];
+						return [resolvedId!, resolvedUlid!];
 					})()
 				: (() => {
-						let id: string, ulid: string;
-						for ([id, ulid] of collection); // Get last element of the set
+						let resolvedId: string, resolvedUlid: string;
+						for ([resolvedId, resolvedUlid] of collection); // Get last element of the set
 
-						return [id!, ulid!];
+						return [resolvedId!, resolvedUlid!];
 					})();
 		const itemKey = this.getKeyForItem(storeName, itemId, ulid);
 

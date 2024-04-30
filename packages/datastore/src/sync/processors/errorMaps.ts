@@ -63,6 +63,7 @@ function unwrapObservableError(observableError: any) {
 	const {
 		errors: [error],
 	} = ({
+		// eslint-disable-next-line no-empty-pattern
 		errors: [],
 	} = observableError);
 

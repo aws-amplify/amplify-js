@@ -67,7 +67,7 @@ class ModelMerger {
 
 		const page = [...itemsMap.values()];
 
-		return await storage.batchSave(modelConstructor, page, this.ownSymbol);
+		return storage.batchSave(modelConstructor, page, this.ownSymbol);
 	}
 }
 

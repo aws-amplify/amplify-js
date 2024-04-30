@@ -88,9 +88,9 @@ class StorageClass implements StorageFacade {
 		let resolve: (value?: void | PromiseLike<void>) => void;
 		let reject: (value?: void | PromiseLike<void>) => void;
 
-		this.initialized = new Promise<void>((res, rej) => {
-			resolve = res;
-			reject = rej;
+		this.initialized = new Promise<void>((_resolve, _reject) => {
+			resolve = _resolve;
+			reject = _reject;
 		});
 
 		this.adapter!.setUp(
@@ -156,7 +156,7 @@ class StorageClass implements StorageFacade {
 
 			const element = updateMutationInput || savedElement;
 
-			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
+			const modelConstructor = (Object.getPrototypeOf(savedElement) as object)
 				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
@@ -230,7 +230,7 @@ class StorageClass implements StorageFacade {
 		}
 
 		deleted.forEach(model => {
-			const modelConstructor = (Object.getPrototypeOf(model) as Object)
+			const resolvedModelConstructor = (Object.getPrototypeOf(model) as object)
 				.constructor as PersistentModelConstructor<T>;
 
 			let theCondition: PredicatesGroup<any> | undefined;
@@ -243,7 +243,7 @@ class StorageClass implements StorageFacade {
 			}
 
 			this.pushStream.next({
-				model: modelConstructor,
+				model: resolvedModelConstructor,
 				opType: OpType.DELETE,
 				element: model,
 				mutator,
@@ -264,7 +264,7 @@ class StorageClass implements StorageFacade {
 			throw new Error('Storage adapter is missing');
 		}
 
-		return await this.adapter.query(modelConstructor, predicate, pagination);
+		return this.adapter.query(modelConstructor, predicate, pagination);
 	}
 
 	async queryOne<T extends PersistentModel>(
@@ -276,7 +276,7 @@ class StorageClass implements StorageFacade {
 			throw new Error('Storage adapter is missing');
 		}
 
-		return await this.adapter.queryOne(modelConstructor, firstOrLast);
+		return this.adapter.queryOne(modelConstructor, firstOrLast);
 	}
 
 	observe<T extends PersistentModel>(

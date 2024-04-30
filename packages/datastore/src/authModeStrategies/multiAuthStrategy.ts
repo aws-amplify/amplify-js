@@ -141,7 +141,7 @@ function getAuthRules({
 export const multiAuthStrategy: (
 	amplifyContext: AmplifyContext,
 ) => AuthModeStrategy =
-	(amplifyContext: AmplifyContext) =>
+	() =>
 	async ({ schema, modelName }) => {
 		let currentUser;
 		try {

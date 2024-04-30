@@ -1,11 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Observable, Observer, SubscriptionLike } from 'rxjs';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 import { ReachabilityMonitor } from './datastoreReachability';
-
-const logger = new ConsoleLogger('DataStore');
 
 const RECONNECTING_IN = 5000; // 5s this may be configurable in the future
 

@@ -27,7 +27,7 @@ class MutationEventOutbox {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
+		private readonly _MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly ownSymbol: symbol,
 	) {}
@@ -53,7 +53,7 @@ class MutationEventOutbox {
 			);
 
 			// Check if there are any other records with same id
-			const [first] = await s.query(this.MutationEvent, predicate);
+			const [first] = await s.query(this._MutationEvent, predicate);
 
 			// No other record with same modelId, so enqueue
 			if (first === undefined) {
@@ -67,7 +67,7 @@ class MutationEventOutbox {
 
 			if (first.operation === TransformerMutationType.CREATE) {
 				if (incomingMutationType === TransformerMutationType.DELETE) {
-					await s.delete(this.MutationEvent, predicate);
+					await s.delete(this._MutationEvent, predicate);
 				} else {
 					// first gets updated with the incoming mutation's data, condition intentionally skipped
 
@@ -75,7 +75,7 @@ class MutationEventOutbox {
 					// data loss, since update mutations only include changed fields
 					const merged = this.mergeUserFields(first, mutationEvent);
 					await s.save(
-						this.MutationEvent.copyOf(first, draft => {
+						this._MutationEvent.copyOf(first, draft => {
 							draft.data = merged.data;
 						}),
 						undefined,
@@ -92,7 +92,7 @@ class MutationEventOutbox {
 					merged = this.mergeUserFields(first, mutationEvent);
 
 					// delete all for model
-					await s.delete(this.MutationEvent, predicate);
+					await s.delete(this._MutationEvent, predicate);
 				}
 
 				merged = merged! || mutationEvent;
@@ -128,7 +128,7 @@ class MutationEventOutbox {
 	 * @param storage
 	 */
 	public async peek(storage: StorageFacade): Promise<MutationEvent> {
-		const head = await storage.queryOne(this.MutationEvent, QueryOne.FIRST);
+		const head = await storage.queryOne(this._MutationEvent, QueryOne.FIRST);
 
 		this.inProgressMutationEventId = head ? head.id : undefined!;
 
@@ -146,7 +146,7 @@ class MutationEventOutbox {
 		const modelId = getIdentifierValue(userModelDefinition, model);
 
 		const mutationEvents = await storage.query(
-			this.MutationEvent,
+			this._MutationEvent,
 			ModelPredicateCreator.createFromAST(mutationEventModelDefinition, {
 				and: { modelId: { eq: modelId } },
 			}),
@@ -156,7 +156,7 @@ class MutationEventOutbox {
 	}
 
 	public async getModelIds(storage: StorageFacade): Promise<Set<string>> {
-		const mutationEvents = await storage.query(this.MutationEvent);
+		const mutationEvents = await storage.query(this._MutationEvent);
 
 		const result = new Set<string>();
 
@@ -225,7 +225,7 @@ class MutationEventOutbox {
 		);
 
 		const outdatedMutations = await storage.query(
-			this.MutationEvent,
+			this._MutationEvent,
 			predicate,
 		);
 
@@ -238,16 +238,16 @@ class MutationEventOutbox {
 
 			const newData = { ...oldData, _version, _lastChangedAt };
 
-			return this.MutationEvent.copyOf(m, draft => {
+			return this._MutationEvent.copyOf(m, draft => {
 				draft.data = JSON.stringify(newData);
 			});
 		});
 
-		await storage.delete(this.MutationEvent, predicate);
+		await storage.delete(this._MutationEvent, predicate);
 
 		await Promise.all(
-			reconciledMutations.map(
-				async m => await storage.save(m, undefined, this.ownSymbol),
+			reconciledMutations.map(async m =>
+				storage.save(m, undefined, this.ownSymbol),
 			),
 		);
 	}
@@ -275,7 +275,7 @@ class MutationEventOutbox {
 			...currentData,
 		});
 
-		return this.modelInstanceCreator(this.MutationEvent, {
+		return this.modelInstanceCreator(this._MutationEvent, {
 			...current,
 			data,
 		});

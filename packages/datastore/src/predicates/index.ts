@@ -100,7 +100,8 @@ export const PredicateAll = Symbol('A predicate that matches all records');
 
 export class Predicates {
 	public static get ALL(): typeof PredicateAll {
-		const predicate = c => c as ProducerModelPredicate<any>;
+		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+		const predicate = <ProducerModelPredicate<any>>(c => c);
 
 		predicatesAllSet.add(predicate);
 

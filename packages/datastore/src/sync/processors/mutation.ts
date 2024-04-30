@@ -84,7 +84,7 @@ class MutationProcessor {
 		private readonly userClasses: TypeConstructorMap,
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
+		private readonly _MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
@@ -217,7 +217,7 @@ class MutationProcessor {
 									data,
 									condition,
 									modelConstructor,
-									this.MutationEvent,
+									this._MutationEvent,
 									head,
 									operationAuthModes[authModeAttempts],
 									onTerminate,
@@ -237,6 +237,7 @@ class MutationProcessor {
 										}`,
 									);
 									try {
+										// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 										await this.errorHandler({
 											recoverySuggestion:
 												'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -262,7 +263,7 @@ class MutationProcessor {
 									}`,
 								);
 
-								return await authModeRetry();
+								return authModeRetry();
 							}
 						};
 
@@ -315,30 +316,30 @@ class MutationProcessor {
 		data: string,
 		condition: string,
 		modelConstructor: PersistentModelConstructor<PersistentModel>,
-		MutationEvent: PersistentModelConstructor<MutationEvent>,
+		MutationEventCtor: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GraphQLAuthMode,
 		onTerminate: Promise<void>,
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
 	> {
-		return await retry(
+		return retry(
 			async (
-				model: string,
-				operation: TransformerMutationType,
-				data: string,
-				condition: string,
-				modelConstructor: PersistentModelConstructor<PersistentModel>,
-				MutationEvent: PersistentModelConstructor<MutationEvent>,
-				mutationEvent: MutationEvent,
+				retriedModel: string,
+				retriedOperation: TransformerMutationType,
+				retriedData: string,
+				retriedCondition: string,
+				retriedModelConstructor: PersistentModelConstructor<PersistentModel>,
+				retiredMutationEventCtor: PersistentModelConstructor<MutationEvent>,
+				retiredMutationEvent: MutationEvent,
 			) => {
 				const [query, variables, graphQLCondition, opName, modelDefinition] =
 					this.createQueryVariables(
 						namespaceName,
-						model,
-						operation,
-						data,
-						condition,
+						retriedModel,
+						retriedOperation,
+						retriedData,
+						retriedCondition,
 					);
 
 				const authToken = await getTokenForCustomAuth(
@@ -354,7 +355,7 @@ class MutationProcessor {
 				};
 				let attempt = 0;
 
-				const opType = this.opTypeFromTransformerOperation(operation);
+				const opType = this.opTypeFromTransformerOperation(retriedOperation);
 
 				const customUserAgentDetails: CustomUserAgentDetails = {
 					category: Category.DataStore,
@@ -402,20 +403,20 @@ class MutationProcessor {
 								} else {
 									try {
 										retryWith = await this.conflictHandler!({
-											modelConstructor,
+											modelConstructor: retriedModelConstructor,
 											localModel: this.modelInstanceCreator(
-												modelConstructor,
+												retriedModelConstructor,
 												variables.input,
 											),
 											remoteModel: this.modelInstanceCreator(
-												modelConstructor,
+												retriedModelConstructor,
 												error.data,
 											),
 											operation: opType,
 											attempts: attempt,
 										});
-									} catch (err) {
-										logger.warn('conflict trycatch', err);
+									} catch (caughtErr) {
+										logger.warn('conflict trycatch', caughtErr);
 										continue;
 									}
 								}
@@ -423,13 +424,13 @@ class MutationProcessor {
 								if (retryWith === DISCARD) {
 									// Query latest from server and notify merger
 
-									const [[, opName, query]] = buildGraphQLOperation(
+									const [[, builtOpName, builtQuery]] = buildGraphQLOperation(
 										this.schema.namespaces[namespaceName],
 										modelDefinition,
 										'GET',
 									);
 
-									const authToken = await getTokenForCustomAuth(
+									const newAuthToken = await getTokenForCustomAuth(
 										authMode,
 										this.amplifyConfig,
 									);
@@ -437,10 +438,10 @@ class MutationProcessor {
 									const serverData =
 										(await this.amplifyContext.InternalAPI.graphql(
 											{
-												query,
+												query: builtQuery,
 												variables: { id: variables.input.id },
 												authMode,
-												authToken,
+												authToken: newAuthToken,
 											},
 											undefined,
 											customUserAgentDetails,
@@ -448,7 +449,7 @@ class MutationProcessor {
 
 									// onTerminate cancel graphql()
 
-									return [serverData, opName, modelDefinition];
+									return [serverData, builtOpName, modelDefinition];
 								}
 
 								const namespace = this.schema.namespaces[namespaceName];
@@ -459,12 +460,12 @@ class MutationProcessor {
 										namespace.relationships!,
 										modelDefinition,
 										opType,
-										modelConstructor,
+										retriedModelConstructor,
 										retryWith,
 										graphQLCondition,
-										MutationEvent,
+										retiredMutationEventCtor,
 										this.modelInstanceCreator,
-										mutationEvent.id,
+										retiredMutationEvent.id,
 									);
 
 								await this.storage.save(updatedMutation);
@@ -477,19 +478,23 @@ class MutationProcessor {
 											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
 										localModel: variables.input,
 										message: error.message,
-										operation,
+										operation: retriedOperation,
 										errorType: getMutationErrorType(error),
 										errorInfo: error.errorInfo,
 										process: ProcessName.mutate,
 										cause: error,
 										remoteModel: error.data
-											? this.modelInstanceCreator(modelConstructor, error.data)
+											? this.modelInstanceCreator(
+													retriedModelConstructor,
+													error.data,
+												)
 											: null!,
 									});
-								} catch (err) {
-									logger.warn('Mutation error handler failed with:', err);
+								} catch (caughtErr) {
+									logger.warn('Mutation error handler failed with:', caughtErr);
 								} finally {
 									// Return empty tuple, dequeues the mutation
+									// eslint-disable-next-line no-unsafe-finally
 									return error.data
 										? [
 												{ data: { [opName]: error.data } },
@@ -505,6 +510,7 @@ class MutationProcessor {
 							throw new NonRetryableError(err);
 						}
 					}
+					// eslint-disable-next-line no-unmodified-loop-condition
 				} while (tryWith);
 			},
 			[
@@ -513,7 +519,7 @@ class MutationProcessor {
 				data,
 				condition,
 				modelConstructor,
-				MutationEvent,
+				MutationEventCtor,
 				mutationEvent,
 			],
 			safeJitteredBackoff,
@@ -599,7 +605,7 @@ class MutationProcessor {
 				// scalar fields / non-model types
 
 				if (operation === TransformerMutationType.UPDATE) {
-					if (!parsedData.hasOwnProperty(name)) {
+					if (!Object.prototype.hasOwnProperty.call(parsedData, name)) {
 						// for update mutations - strip out a field if it's unchanged
 						continue;
 					}

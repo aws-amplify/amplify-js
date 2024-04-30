@@ -13,6 +13,7 @@ export {
 	DataStoreClass,
 	initSchema,
 	ModelInstanceCreator,
+	// eslint-disable-next-line import/export
 	AsyncCollection,
 	AsyncItem,
 } from './datastore/datastore';
@@ -34,4 +35,5 @@ export const utils = {
 	isModelConstructor,
 };
 
+// eslint-disable-next-line import/export
 export * from './types';

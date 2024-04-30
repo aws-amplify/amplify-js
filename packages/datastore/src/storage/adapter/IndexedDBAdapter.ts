@@ -79,7 +79,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 	 * @returns IDB Database instance
 	 */
 	protected async initDb(): Promise<idb.IDBPDatabase> {
-		return await idb.openDB(this.dbName, DB_VERSION, {
+		return idb.openDB(this.dbName, DB_VERSION, {
 			upgrade: async (db, oldVersion, newVersion, txn) => {
 				// create new database
 				if (oldVersion === 0) {
@@ -228,22 +228,25 @@ class IndexedDBAdapter extends StorageAdapterBase {
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 		for await (const resItem of connectionStoreNames) {
-			const { storeName, item, instance, keys } = resItem;
-			const store = tx.objectStore(storeName);
+			const { storeName: storeNameForRestItem, item, instance, keys } = resItem;
+			const storeForRestItem = tx.objectStore(storeNameForRestItem);
 
 			const itemKeyValues: string[] = keys.map(key => item[key]);
 
-			const fromDB = (await this._get(store, itemKeyValues)) as T;
-			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
+			const fromDBForRestItem = (await this._get(
+				storeForRestItem,
+				itemKeyValues,
+			)) as T;
+			const opType: OpType = fromDBForRestItem ? OpType.UPDATE : OpType.INSERT;
 
 			if (
 				keysEqual(itemKeyValues, modelKeyValues) ||
 				opType === OpType.INSERT
 			) {
-				const key = await store
+				const key = await storeForRestItem
 					.index('byPk')
 					.getKey(this.canonicalKeyPath(itemKeyValues));
-				await store.put(item, key);
+				await storeForRestItem.put(item, key);
 				result.push([instance, opType]);
 			}
 		}
@@ -304,7 +307,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			return this.getAll(storeName);
 		})()) as T[];
 
-		return await this.load(namespaceName, modelConstructor.name, records);
+		return this.load(namespaceName, modelConstructor.name, records);
 	}
 
 	async queryOne<T extends PersistentModel>(
@@ -361,11 +364,15 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			const key = await index.getKey(this.canonicalKeyPath(keyValues));
 
 			if (!_deleted) {
-				const { instance } = connectedModels.find(({ instance }) => {
-					const instanceKeyValues = this.getIndexKeyValuesFromModel(instance);
+				const { instance } = connectedModels.find(
+					({ instance: connectedModelInstance }) => {
+						const instanceKeyValues = this.getIndexKeyValuesFromModel(
+							connectedModelInstance,
+						);
 
-					return keysEqual(instanceKeyValues, keyValues);
-				})!;
+						return keysEqual(instanceKeyValues, keyValues);
+					},
+				)!;
 
 				result.push([
 					instance as unknown as T,
@@ -426,12 +433,11 @@ class IndexedDBAdapter extends StorageAdapterBase {
 	// #region platform-specific helper methods
 
 	private async checkPrivate() {
-		const isPrivate = await isPrivateMode().then(isPrivate => {
-			return isPrivate;
-		});
+		const isPrivate = await isPrivateMode();
 		if (isPrivate) {
 			logger.error("IndexedDB not supported in this browser's private mode");
 
+			// eslint-disable-next-line prefer-promise-reject-errors
 			return Promise.reject(
 				"IndexedDB not supported in this browser's private mode",
 			);
@@ -497,7 +503,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 	private async getAll<T extends PersistentModel>(
 		storeName: string,
 	): Promise<T[]> {
-		return await this.db.getAll(storeName);
+		return this.db.getAll(storeName);
 	}
 
 	/**
@@ -571,7 +577,7 @@ class IndexedDBAdapter extends StorageAdapterBase {
 			isPredicateGroup(predicateObjs[0]) &&
 			(predicateObjs[0] as PredicatesGroup<T>).type !== 'not'
 		) {
-			type = (predicateObjs[0] as PredicatesGroup<T>).type;
+			({ type } = predicateObjs[0] as PredicatesGroup<T>);
 			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
 		}
 

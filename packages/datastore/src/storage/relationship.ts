@@ -213,6 +213,7 @@ export class ModelRelationship<T> {
 			// This case is theoretically unnecessary going forward.
 			return [this.explicitRemoteAssociation.targetName!];
 		} else if (this.explicitRemoteAssociation?.targetNames) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
 			return this.explicitRemoteAssociation?.targetNames!;
 		} else if (this.localAssociatedWith) {
 			return this.localAssociatedWith;
