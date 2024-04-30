@@ -3,7 +3,8 @@
 import { ConsoleLogger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
 import { deleteAsync, documentDirectory } from 'expo-file-system';
-import { openDatabase, WebSQLDatabase } from 'expo-sqlite';
+import { WebSQLDatabase, openDatabase } from 'expo-sqlite';
+
 import { DB_NAME } from '../common/constants';
 import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 
@@ -11,9 +12,9 @@ const logger = new ConsoleLogger('ExpoSQLiteDatabase');
 
 /*
 
-Note: 
-ExpoSQLite transaction error callbacks require returning a boolean value to indicate whether the 
-error was handled or not. Returning a true value indicates the error was handled and does not 
+Note:
+ExpoSQLite transaction error callbacks require returning a boolean value to indicate whether the
+error was handled or not. Returning a true value indicates the error was handled and does not
 rollback the whole transaction.
 
 */
@@ -56,6 +57,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 		params: (string | number)[],
 	): Promise<T> {
 		const results: T[] = await this.getAll(statement, params);
+
 		return results[0];
 	}
 
@@ -74,6 +76,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					(_, error) => {
 						reject(error);
 						logger.warn(error);
+
 						return true;
 					},
 				);
@@ -93,6 +96,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 					(_, error) => {
 						reject(error);
 						logger.warn(error);
+
 						return true;
 					},
 				);
@@ -101,7 +105,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	public batchQuery<T = any>(
-		queryParameterizedStatements: Set<ParameterizedStatement> = new Set(),
+		queryParameterizedStatements = new Set<ParameterizedStatement>(),
 	): Promise<T[]> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
 			this.db.transaction(async transaction => {
@@ -119,6 +123,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 										(_, error) => {
 											reject(error);
 											logger.warn(error);
+
 											return true;
 										},
 									);
@@ -135,7 +140,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	public batchSave(
-		saveParameterizedStatements: Set<ParameterizedStatement> = new Set(),
+		saveParameterizedStatements = new Set<ParameterizedStatement>(),
 		deleteParameterizedStatements?: Set<ParameterizedStatement>,
 	): Promise<void> {
 		return new Promise((resolveTransaction, rejectTransaction) => {
@@ -155,6 +160,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 										(_, error) => {
 											reject(error);
 											logger.warn(error);
+
 											return true;
 										},
 									);
@@ -165,7 +171,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 						await Promise.all(
 							[...deleteParameterizedStatements].map(
 								([statement, params]) =>
-									new Promise((resolve, reject) =>
+									new Promise((resolve, reject) => {
 										transaction.executeSql(
 											statement,
 											params,
@@ -175,10 +181,11 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 											(_, error) => {
 												reject(error);
 												logger.warn(error);
+
 												return true;
 											},
-										),
-									),
+										);
+									}),
 							),
 						);
 					}
@@ -211,6 +218,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 							(_, error) => {
 								reject(error);
 								logger.warn(error);
+
 								return true;
 							},
 						);
@@ -225,6 +233,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 							(_, error) => {
 								reject(error);
 								logger.warn(error);
+
 								return true;
 							},
 						);
@@ -254,6 +263,7 @@ class ExpoSQLiteDatabase implements CommonSQLiteDatabase {
 										},
 										(_, error) => {
 											reject(error);
+
 											return true;
 										},
 									);

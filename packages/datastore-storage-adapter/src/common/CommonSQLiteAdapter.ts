@@ -2,26 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 import { ConsoleLogger } from '@aws-amplify/core';
 import {
-	generateSchemaStatements,
-	queryByIdStatement,
-	modelUpdateStatement,
-	modelInsertStatement,
-	queryAllStatement,
-	queryOneStatement,
-	deleteByIdStatement,
-	deleteByPredicateStatement,
-} from '../common/SQLiteUtils';
-
-import {
-	StorageAdapter,
+	InternalSchema,
 	ModelInstanceCreator,
+	ModelPredicate,
 	ModelPredicateCreator,
 	ModelSortPredicateCreator,
-	InternalSchema,
-	isPredicateObj,
-	ModelPredicate,
-	NamespaceResolver,
 	NAMESPACES,
+	NamespaceResolver,
 	OpType,
 	PaginationInput,
 	PersistentModel,
@@ -29,12 +16,26 @@ import {
 	PredicateObject,
 	PredicatesGroup,
 	QueryOne,
+	StorageAdapter,
+	isPredicateObj,
 	utils,
 } from '@aws-amplify/datastore';
+
+import {
+	deleteByIdStatement,
+	deleteByPredicateStatement,
+	generateSchemaStatements,
+	modelInsertStatement,
+	modelUpdateStatement,
+	queryAllStatement,
+	queryByIdStatement,
+	queryOneStatement,
+} from '../common/SQLiteUtils';
+
 import {
 	CommonSQLiteDatabase,
-	ParameterizedStatement,
 	ModelInstanceMetadataWithId,
+	ParameterizedStatement,
 } from './types';
 
 const { traverseModel, validatePredicate, isModelConstructor } = utils;
@@ -49,6 +50,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 		namsespaceName: string,
 		modelName: string,
 	) => PersistentModelConstructor<any>;
+
 	private db: CommonSQLiteDatabase;
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
@@ -74,6 +76,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			});
 		} else {
 			await this.initPromise;
+
 			return;
 		}
 		this.schema = theSchema;
@@ -205,6 +208,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			for (const r of relations) {
 				delete record[r.fieldName];
 			}
+
 			return this.modelInstanceCreator(modelConstructor, record);
 		});
 	}
@@ -228,9 +232,10 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 
 		const queryById = predicates && this.idFromPredicate(predicates);
 
-		const records: T[] = <T[]>await (async () => {
+		const records: T[] = (await (async () => {
 			if (queryById) {
 				const record = await this.getById(tableName, queryById);
+
 				return record ? [record] : [];
 			}
 
@@ -243,7 +248,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 			);
 
 			return await this.db.getAll(queryStatement, params);
-		})();
+		})()) as T[];
 
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
@@ -403,7 +408,7 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 				// create the delete statements right away
 				const deleteStatement = deleteByIdStatement(instance.id, tableName);
 				deleteStatements.add(deleteStatement);
-				result.push([<T>(<unknown>item), OpType.DELETE]);
+				result.push([item as unknown as T, OpType.DELETE]);
 			} else {
 				// query statements for the saves at first
 				const queryStatement = queryByIdStatement(id, tableName);
@@ -423,14 +428,14 @@ export class CommonSQLiteAdapter implements StorageAdapter {
 					tableName,
 				);
 				saveStatements.add(insertStatement);
-				result.push([<T>(<unknown>itemsToSave[idx]), OpType.INSERT]);
+				result.push([itemsToSave[idx] as unknown as T, OpType.INSERT]);
 			} else {
 				const updateStatement = modelUpdateStatement(
 					itemsToSave[idx],
 					tableName,
 				);
 				saveStatements.add(updateStatement);
-				result.push([<T>(<unknown>itemsToSave[idx]), OpType.UPDATE]);
+				result.push([itemsToSave[idx] as unknown as T, OpType.UPDATE]);
 			}
 		});
 

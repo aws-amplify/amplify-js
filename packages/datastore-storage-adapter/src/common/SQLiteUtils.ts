@@ -1,24 +1,24 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	GraphQLScalarType,
 	InternalSchema,
-	SchemaModel,
-	ModelField,
-	PersistentModel,
-	isGraphQLScalarType,
-	QueryOne,
-	PredicatesGroup,
-	isPredicateObj,
-	SortPredicatesGroup,
-	PredicateObject,
-	isPredicateGroup,
-	isModelFieldType,
-	isTargetNameAssociation,
-	isModelAttributeAuth,
 	ModelAttributeAuth,
 	ModelAuthRule,
+	ModelField,
+	PersistentModel,
+	PredicateObject,
+	PredicatesGroup,
+	QueryOne,
+	SchemaModel,
+	SortPredicatesGroup,
+	isGraphQLScalarType,
+	isModelAttributeAuth,
+	isModelFieldType,
+	isPredicateGroup,
+	isPredicateObj,
+	isTargetNameAssociation,
 	utils,
-	GraphQLScalarType,
 } from '@aws-amplify/datastore';
 
 import { ParameterizedStatement } from './types';
@@ -43,6 +43,7 @@ const updateSet: (model: any) => [any, any] = model => {
 		.filter(([k]) => k !== 'id')
 		.map(([k, v]) => {
 			values.push(prepareValueForDML(v));
+
 			return `"${k}"=?`;
 		})
 		.join(', ');
@@ -136,13 +137,14 @@ export const implicitAuthFieldsForModel: (model: SchemaModel) => string[] = (
 		const authFieldExplicitlyDefined = Object.values(model.fields).find(
 			(f: ModelField) => f.name === authField,
 		);
+
 		return !authFieldExplicitlyDefined;
 	});
 };
 
 export function modelCreateTableStatement(
 	model: SchemaModel,
-	userModel: boolean = false,
+	userModel = false,
 ): string {
 	// implicitly defined auth fields, e.g., `owner`, `groupsField`, etc.
 	const implicitAuthFields = implicitAuthFieldsForModel(model);
@@ -210,6 +212,7 @@ export function modelCreateTableStatement(
 	const createTableStatement = `CREATE TABLE IF NOT EXISTS "${
 		model.name
 	}" (${fields.join(', ')});`;
+
 	return createTableStatement;
 }
 
@@ -316,7 +319,7 @@ export const whereConditionFromPredicateObject = ({
 		return [`"${field}" ${comparisonOperator} ?`, [operand]];
 	}
 
-	const logicalOperatorKey = <keyof typeof logicalOperatorMap>operator;
+	const logicalOperatorKey = operator as keyof typeof logicalOperatorMap;
 
 	const logicalOperator = logicalOperatorMap[logicalOperatorKey];
 
@@ -367,7 +370,7 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 	): void {
 		if (isPredicateGroup(predicate)) {
 			const { type: groupType, predicates: groupPredicates } = predicate;
-			let filterType: string = '';
+			let filterType = '';
 			let isNegation = false;
 			switch (groupType) {
 				case 'not':
@@ -423,7 +426,7 @@ export function orderByClauseFromSort<T extends PersistentModel>(
 
 export function limitClauseFromPagination(
 	limit: number,
-	page: number = 0,
+	page = 0,
 ): ParameterizedStatement {
 	const params = [limit];
 	let clause = 'LIMIT ?';
@@ -483,6 +486,7 @@ export function deleteByIdStatement(
 	tableName: string,
 ): ParameterizedStatement {
 	const deleteStatement = `DELETE FROM "${tableName}" WHERE "id"=?`;
+
 	return [deleteStatement, [id]];
 }
 
@@ -498,5 +502,6 @@ export function deleteByPredicateStatement<T extends PersistentModel>(
 		statement += ` ${whereClause}`;
 		params.push(...whereParams);
 	}
+
 	return [statement, params];
 }
