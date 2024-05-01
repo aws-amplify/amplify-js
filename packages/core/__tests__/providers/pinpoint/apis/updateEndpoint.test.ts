@@ -17,7 +17,9 @@ import {
 	clientDemographic,
 	credentials,
 	endpointId,
+	identityId,
 	region,
+	userAttributes,
 	userId,
 	userProfile,
 	uuid,
@@ -130,7 +132,8 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		);
 	});
 
-	it('merges demographics', async () => {
+	it('merges demographics with client info on endpoint creation', async () => {
+		mockGetEndpointId.mockReturnValue(undefined);
 		const partialDemographic = { ...demographic } as any;
 		delete partialDemographic.make;
 		delete partialDemographic.model;
@@ -146,12 +149,65 @@ describe('Pinpoint Provider API: updateEndpoint', () => {
 		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
 			{ credentials, region },
 			getExpectedInput({
+				endpointId: createdEndpointId,
 				demographic: {
 					...demographic,
 					make: clientDemographic.make,
 					model: clientDemographic.model,
 				},
 			}),
+		);
+	});
+
+	it('does not merge demographics with client info on endpoint update', async () => {
+		const partialDemographic = { ...demographic } as any;
+		delete partialDemographic.make;
+		delete partialDemographic.model;
+		await updateEndpoint({
+			appId,
+			category,
+			credentials,
+			region,
+			userProfile: {
+				demographic: partialDemographic,
+			},
+		});
+		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
+			{ credentials, region },
+			getExpectedInput({ demographic: partialDemographic }),
+		);
+	});
+
+	it('falls back to idenity id on endpoint creation', async () => {
+		mockGetEndpointId.mockReturnValue(undefined);
+		await updateEndpoint({
+			appId,
+			category,
+			credentials,
+			identityId,
+			region,
+		});
+		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
+			{ credentials, region },
+			getExpectedInput({
+				endpointId: createdEndpointId,
+				userId: identityId,
+			}),
+		);
+	});
+
+	it('does not fall back to idenity id on endpoint update', async () => {
+		await updateEndpoint({
+			appId,
+			category,
+			credentials,
+			identityId,
+			region,
+			userAttributes,
+		});
+		expect(mockClientUpdateEndpoint).toHaveBeenCalledWith(
+			{ credentials, region },
+			getExpectedInput({ userAttributes }),
 		);
 	});
 
