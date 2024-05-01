@@ -22,10 +22,18 @@ import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
 
 //#region Schema types
-export type Schema = UserSchema & {
+/**
+ * @deprecated If you intended to use the Schema for `generateClient`, then you've imported the wrong Schema type.
+ * Use `import { type Schema } from '../amplify/data/resource' instead. If you intended to import the type for DataStore
+ * Schemas, then import "DataStoreSchema" instead.
+ */
+export type Schema = DataStoreSchema;
+
+export type DataStoreSchema = UserSchema & {
 	version: string;
 	codegenVersion: string;
 };
+
 export type UserSchema = {
 	models: SchemaModels;
 	nonModels?: SchemaNonModels;
