@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.52 kB"
+			"limit": "15.53 kB"
 		},
 		{
 			"name": "[Analytics] enable",

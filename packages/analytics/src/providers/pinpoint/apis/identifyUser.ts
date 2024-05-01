@@ -65,7 +65,7 @@ export const identifyUser = async ({
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
 	const { userAttributes } = options ?? {};
-	updateEndpoint({
+	await updateEndpoint({
 		appId,
 		category: 'Analytics',
 		credentials,
