@@ -60,7 +60,7 @@
 	"scripts": {
 		"build": "npm run clean && npm run build:esm-cjs",
 		"build-with-test": "npm test && npm run build",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"clean": "npm run clean:size && rimraf dist",
 		"clean:size": "rimraf dual-publish-tmp tmp*",

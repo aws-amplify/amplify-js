@@ -239,7 +239,7 @@
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf lib-esm lib dist",
