@@ -140,7 +140,8 @@ function parseAuth(
 			...authConfig.Cognito.loginWith,
 			email: username_attributes.includes('email'),
 			phone: username_attributes.includes('phone_number'),
-			username: false, // Signing in with a username is not supported in Gen2
+			// Signing in with a username is not currently supported in Gen2, this should always evaluate to false
+			username: username_attributes.includes('username'),
 		};
 	}
 
