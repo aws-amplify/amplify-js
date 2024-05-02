@@ -1,0 +1,78 @@
+{
+	"$schema": "adipisicing cillum",
+	"version": "1",
+	"auth": {
+		"aws_region": "us-west-2",
+		"user_pool_id": "mock-cup-id",
+		"user_pool_client_id": "mock-cup-client-id",
+		"identity_pool_id": "mock-idp-id",
+		"oauth": {
+			"identity_providers": ["FACEBOOK", "SIGN_IN_WITH_APPLE", "GOOGLE"],
+			"domain": "mock-oauth-domain",
+			"scopes": ["phone"],
+			"redirect_sign_in_uri": ["mock-sign-in-uri"],
+			"redirect_sign_out_uri": ["mock-sign-out-uri"],
+			"response_type": "token"
+		},
+		"standard_required_attributes": [
+			"address",
+			"locale",
+			"email"
+		],
+		"username_attributes": ["phone_number", "email"],
+		"user_verification_types": ["email"],
+		"unauthenticated_identities_enabled": true,
+		"mfa_configuration": "OPTIONAL",
+		"mfa_methods": ["TOTP", "SMS"],
+		"password_policy": {
+			"require_lowercase": true,
+			"require_numbers": true,
+			"require_uppercase": true,
+			"require_symbols": true,
+			"min_length": 6
+		}
+	},
+	"data": {
+		"aws_region": "us-west-2",
+		"url": "mock-data-url",
+		"api_key": "mock-data-api-key",
+		"default_authorization_type": "API_KEY",
+		"authorization_types": []
+	},
+	"geo": {
+		"aws_region": "us-west-2",
+		"search_indices": {
+			"items": [
+				"mock-geo-search-item",
+				"mock-geo-search-item-alt"
+			],
+			"default": "mock-geo-search-item"
+		},
+		"geofence_collections": {
+			"items": [
+				"mock-geo-fence-item",
+				"mock-geo-fence-item-alt"
+			],
+			"default": "mock-geo-fence-item"
+		}
+	},
+	"custom": {
+		"custom-prop": -51806024,
+		"custom-prop-alt": 87599986
+	},
+	"notifications": {
+		"aws_region": "us-west-2",
+		"amazon_pinpoint_app_id": "mock-pinpoint-app-id",
+		"channels": ["IN_APP_MESSAGING", "APNS"]
+	},
+	"analytics": {
+		"amazon_pinpoint": {
+			"app_id": "mock-pinpoint-app-id",
+			"aws_region": "us-west-2"
+		}
+	},
+	"storage": {
+		"bucket_name": "mock-storage-bucket",
+		"aws_region": "us-west-2"
+	}
+}
