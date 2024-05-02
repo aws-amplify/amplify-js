@@ -522,6 +522,81 @@ tests:
     spec: sign-in-with-oauth
     browser: [chrome]
 
+  # AUTH GEN2
+  - test_name: integ_react_javascript_authentication_gen2
+    desc: 'React Authentication'
+    framework: react
+    category: auth
+    sample_name: [javascript-auth]
+    spec: functional-auth
+    browser: *minimal_browser_list
+    backend: gen2
+  - test_name: integ_react_auth_1_guest_to_authenticated_user_gen2
+    desc: 'Guest to Authenticated User'
+    framework: react
+    category: auth
+    sample_name: [guest-to-auth-user]
+    spec: guest-to-auth-user
+    browser: *minimal_browser_list
+    backend: gen2
+  - test_name: integ_react_typescript_authentication_gen2
+    desc: 'React Typescript Authentication'
+    framework: react
+    category: auth
+    sample_name: [typescript-auth]
+    spec: functional-auth
+    browser: *minimal_browser_list
+    backend: gen2
+  - test_name: integ_react_auth_2_sign_in_after_sign_up_gen2
+    desc: 'Sign In after Sign Up'
+    framework: react
+    category: auth
+    sample_name: [auto-signin-after-signup]
+    spec: auto-signin-after-signup
+    browser: *minimal_browser_list
+    backend: gen2
+  - test_name: integ_react_device_tracking_gen2
+    desc: 'cognito-device-tracking'
+    framework: react
+    category: auth
+    sample_name: [device-tracking]
+    spec: device-tracking
+    browser: *minimal_browser_list
+    backend: gen2
+  - test_name: integ_react_delete_user_gen2
+    desc: 'delete-user'
+    framework: react
+    category: auth
+    sample_name: [delete-user]
+    spec: delete-user
+    browser: *minimal_browser_list
+    backend: gen2
+  - test_name: integ_next_auth_authenticator_and_ssr_page_gen2
+    desc: 'Authenticator and SSR page'
+    framework: next
+    category: auth
+    sample_name: [auth-ssr]
+    spec: auth-ssr
+    browser: [chrome]
+    backend: gen2
+  - test_name: integ_next_auth_authenticator_and_rsc_page_gen2
+    desc: 'Authenticator and RSC page'
+    framework: next
+    category: auth
+    sample_name: [auth-rsc]
+    spec: auth-rsc
+    browser: [chrome]
+    backend: gen2
+  - test_name: integ_next_sign_in_with_oauth_gen2
+    desc: 'Sign-in with the OAuth flow'
+    framework: next
+    category: auth
+    sample_name: [sign-in-with-oauth]
+    spec: sign-in-with-oauth
+    browser: [chrome]
+    backend: gen2
+    
+
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
 
