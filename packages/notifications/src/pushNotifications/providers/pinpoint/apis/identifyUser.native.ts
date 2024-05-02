@@ -21,7 +21,7 @@ export const identifyUser: IdentifyUser = async ({
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
 	const { address, optOut, userAttributes } = options ?? {};
-	updateEndpoint({
+	await updateEndpoint({
 		address,
 		channelType: getChannelType(),
 		optOut,
