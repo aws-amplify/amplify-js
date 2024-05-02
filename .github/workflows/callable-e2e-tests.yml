@@ -40,6 +40,7 @@ jobs:
       amplifyjs_dir: ${{ matrix.integ-config.amplifyjs_dir || false }}
       sample_name: ${{ toJSON(matrix.integ-config.sample_name) || '[""]' }}
       browser: ${{ toJSON(matrix.integ-config.browser) || '[""]' }}
+      backend: ${{ matrix.integ-config.backend }}
       timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
       retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
