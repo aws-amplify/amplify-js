@@ -36,7 +36,22 @@
 	},
 	"workspaces": {
 		"packages": [
-			"packages/*"
+			"packages/amazon-cognito-identity-js", 
+			"packages/analytics", 
+			"packages/api", 
+			"packages/api-graphql", 
+			"packages/api-rest", 
+			"packages/auth",
+			"packages/aws-amplify",
+			"packages/aws-amplify-react-native",
+			"packages/cache",
+			"packages/core",
+			"packages/datastore",
+			"packages/interactions",
+			"packages/predictions",
+			"packages/pubsub",
+			"packages/pushnotification",
+			"packages/storage"
 		],
 		"nohoist": [
 			"**/@types/react-native",
@@ -54,14 +69,14 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@babel/cli": "^7.0.0",
-		"@babel/core": "^7.0.0",
+		"@babel/cli": "7.17.0",
+		"@babel/core": "7.17.2",
 		"@babel/preset-env": "^7.0.0",
 		"@babel/preset-react": "^7.0.0",
 		"@types/jest": "^24.0.18",
 		"@types/node": "^8.9.5",
 		"@types/puppeteer": "1.3.0",
-		"babel-loader": "^8.0.0",
+		"babel-loader": "^8.3.0",
 		"bundlewatch": "^0.3.1",
 		"codecov": "^3.6.5",
 		"compression-webpack-plugin": "^1.1.3",
@@ -91,14 +106,20 @@
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
-		"winston": "^3.2.1"
+		"winston": "^3.2.1",
+		"@types/lodash": "4.14.182"
 	},
 	"resolutions": {
+		"@babel/generator": "7.19.6",
+		"@babel/helpers": "7.19.4",
+		"@babel/helper-skip-transparent-expression-wrappers": "7.18.9",
 		"@babel/types": "7.12.10",
 		"@types/babel__traverse": "7.0.8",
+		"@babel/traverse": "7.17.9",
 		"@types/react": "16.9.10",
 		"terser": "4.6.7",
-		"npm-packlist": "1.1.12"
+		"npm-packlist": "1.1.12",
+		"zone": "https://registry.yarnpkg.com/@cunneen/zone/-/zone-0.3.6.tgz"
 	},
 	"bundlewatch": {
 		"files": [
