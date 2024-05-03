@@ -1,7 +1,24 @@
 {
 	"npmClient": "yarn",
 	"useWorkspaces": true,
-	"packages": ["packages/*"],
+	"packages": [
+		"packages/amazon-cognito-identity-js", 
+		"packages/analytics", 
+		"packages/api", 
+		"packages/api-graphql", 
+		"packages/api-rest", 
+		"packages/auth",
+		"packages/aws-amplify",
+		"packages/aws-amplify-react-native",
+		"packages/cache",
+		"packages/core",
+		"packages/datastore",
+		"packages/interactions",
+		"packages/predictions",
+		"packages/pubsub",
+		"packages/pushnotification",
+		"packages/storage"
+	],
 	"exact": true,
 	"version": "independent"
 }
