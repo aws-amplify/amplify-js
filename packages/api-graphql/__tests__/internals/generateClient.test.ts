@@ -376,7 +376,7 @@ describe('generateClient', () => {
 			});
 
 			const client = generateClient<Schema>({ amplify: Amplify });
-			const { data } = await client.models.Todo.list({
+			await client.models.Todo.list({
 				filter: { name: { contains: 'name' } },
 				limit: 5,
 			});
@@ -402,7 +402,7 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({ amplify: Amplify });
 
-			const { data } = await client.models.ThingWithCustomPk.list({
+			await client.models.ThingWithCustomPk.list({
 				cpk_cluster_key: '1',
 				sortDirection: 'ASC',
 			});
@@ -428,7 +428,7 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({ amplify: Amplify });
 
-			const { data } = await client.models.ThingWithCustomPk.list({
+			await client.models.ThingWithCustomPk.list({
 				cpk_cluster_key: '1',
 				sortDirection: 'DESC',
 			});
@@ -645,7 +645,11 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes();
+			expect(data).not.toBeNull();
+
+			expect(data).not.toBeNull();
+
+			const { data: notes } = await data!.notes();
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -691,7 +695,9 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes({ nextToken: 'some-token' });
+			expect(data).not.toBeNull();
+
+			const { data: notes } = await data!.notes({ nextToken: 'some-token' });
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -737,7 +743,9 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: notes } = await data.notes({ limit: 5 });
+			expect(data).not.toBeNull();
+
+			const { data: notes } = await data!.notes({ limit: 5 });
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -780,7 +788,9 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: todo } = await data.todo();
+			expect(data).not.toBeNull();
+
+			const { data: todo } = await data!.todo();
 
 			expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 
@@ -821,7 +831,9 @@ describe('generateClient', () => {
 				},
 			});
 
-			const { data: todo } = await data.meta();
+			expect(data).not.toBeNull();
+
+			const { data: todo } = await data!.meta();
 
 			expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 
@@ -832,6 +844,186 @@ describe('generateClient', () => {
 					data: '{"field":"value"}',
 				}),
 			);
+		});
+	});
+
+	describe('error handling', () => {
+		test('create() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['createTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access createTodo on type Mutation',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					getTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.create({
+				id: 'does not matter',
+			});
+
+			expect(data).toBeNull();
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('returns object in which `data` is null and `errors` contains expected error', async () => {
+			const expectedErrors = [
+				{
+					path: ['getTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access getTodo on type Query',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					getTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.get({
+				id: 'does not matter',
+			});
+
+			expect(data).toBeNull();
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('update() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['updateTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access updateTodo on type Mutation',
+				},
+			];
+
+			mockApiResponse({
+				data: {
+					updateTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data, errors } = await client.models.Todo.update({
+				id: 'some_id',
+				name: 'does not matter',
+			});
+
+			expect(data).toBeNull();
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('delete() returns null with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['deleteTodo'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access deleteTodo on type Mutation',
+				},
+			];
+
+			const spy = mockApiResponse({
+				data: {
+					deleteTodo: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+
+			const { data, errors } = await client.models.Todo.delete({
+				id: 'some_id',
+			});
+
+			expect(data).toBeNull();
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
+		});
+
+		test('list() returns empty list with errors property', async () => {
+			const expectedErrors = [
+				{
+					path: ['listTodos'],
+					data: null,
+					errorType: 'Unauthorized',
+					errorInfo: null,
+					locations: [
+						{
+							line: 2,
+							column: 3,
+							sourceName: null,
+						},
+					],
+					message: 'Not Authorized to access listTodos on type Query',
+				},
+			];
+
+			mockApiResponse({
+				data: {
+					listTodos: null,
+				},
+				errors: expectedErrors,
+			});
+
+			const client = generateClient<Schema>({ amplify: Amplify });
+			const { data, errors } = await client.models.Todo.list({
+				filter: { name: { contains: 'name' } },
+			});
+
+			expect(data.length).toBe(0);
+			expect(errors?.length).toBe(1);
+			expect(errors).toEqual(expectedErrors);
 		});
 	});
 
@@ -1119,7 +1311,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				expect(data).not.toBeNull();
+
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1157,7 +1351,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				expect(data).not.toBeNull();
+
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1194,7 +1390,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				expect(data).not.toBeNull();
+
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1235,7 +1433,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.notes({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1273,7 +1473,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.todo({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1310,7 +1512,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.meta({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1609,7 +1813,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				expect(data).not.toBeNull();
+
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1648,7 +1854,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				expect(data).not.toBeNull();
+
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1686,7 +1894,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				expect(data).not.toBeNull();
+
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -1727,7 +1937,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.notes({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1765,7 +1977,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.todo({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -1802,7 +2016,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.meta({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2101,7 +2317,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				expect(data).not.toBeNull();
+
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2137,7 +2355,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				expect(data).not.toBeNull();
+
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2172,7 +2392,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				expect(data).not.toBeNull();
+
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2213,7 +2435,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.notes({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2249,7 +2473,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.todo({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2284,7 +2510,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'apiKey' });
+				expect(data).not.toBeNull();
+
+				await data!.meta({ authMode: 'apiKey' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2590,7 +2818,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes();
+				expect(data).not.toBeNull();
+
+				await data!.notes();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2627,7 +2857,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo();
+				expect(data).not.toBeNull();
+
+				await data!.todo();
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2663,7 +2895,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta();
+				expect(data).not.toBeNull();
+
+				await data!.meta();
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -2704,7 +2938,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.notes({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.notes({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2740,7 +2976,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.todo({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.todo({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildNotesSpy)).toMatchSnapshot();
 			});
@@ -2775,7 +3013,9 @@ describe('generateClient', () => {
 					},
 				});
 
-				await data.meta({ authMode: 'lambda', authToken: 'some-token' });
+				expect(data).not.toBeNull();
+
+				await data!.meta({ authMode: 'lambda', authToken: 'some-token' });
 
 				expect(normalizePostGraphqlCalls(getChildMetaSpy)).toMatchSnapshot();
 			});
@@ -5097,9 +5337,10 @@ describe('generateClient', () => {
 
 			const client = generateClient<Schema>({ amplify: Amplify });
 
-			const { data } = await client.models.SecondaryIndexModel.listByTitle({
-				title: 'Hello World',
-			});
+			const { data } =
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByTitle({
+					title: 'Hello World',
+				});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
@@ -5134,10 +5375,12 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const { data } =
-				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount({
-					description: 'something something',
-					viewCount: { gt: 4 },
-				});
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
+					{
+						description: 'something something',
+						viewCount: { gt: 4 },
+					},
+				);
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 
@@ -5187,7 +5430,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const { data } =
-				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount(
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
 					{
 						description: 'match',
 						viewCount: { lt: 4 },
@@ -5236,7 +5479,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({ amplify: Amplify });
 
 			const { data } =
-				await client.models.SecondaryIndexModel.listByDescriptionAndViewCount(
+				await client.models.SecondaryIndexModel.listSecondaryIndexModelByDescriptionAndViewCount(
 					{
 						description: 'match',
 						viewCount: { lt: 4 },
@@ -5331,6 +5574,7 @@ describe('generateClient', () => {
 			const mockReturnData = {
 				sku: 'sku',
 				factoryId: 'factoryId',
+				warehouseId: 'warehouseId',
 				description: 'description',
 				trackingMeta: {
 					productMeta: {
@@ -5357,10 +5601,9 @@ describe('generateClient', () => {
 			});
 
 			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toEqual({
-				...mockReturnData,
-				warehouse: expect.any(Function),
-			});
+			expect(result?.data).toMatchObject(
+				expect.objectContaining(mockReturnData),
+			);
 		});
 
 		test('can query with returnType of string', async () => {
@@ -5436,7 +5679,7 @@ describe('generateClient', () => {
 				updatedAt: '2024-02-21T21:30:29.826Z',
 			};
 
-			const likePostSpy = mockApiResponse({
+			mockApiResponse({
 				data: { likePostReturnPost },
 			});
 
@@ -5464,6 +5707,8 @@ describe('generateClient', () => {
 					},
 				},
 			});
+
+			expect(result.data).not.toBeNull();
 
 			const { data: comments } = await result.data!.comments();
 
@@ -5601,7 +5846,7 @@ describe('generateClient', () => {
 					someHeader: 'some header value',
 				},
 			});
-			const result = await client.queries.echo({
+			await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
 			});
 
@@ -5620,7 +5865,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({
 				amplify: Amplify,
 			});
-			const result = await client.queries.echo(
+			await client.queries.echo(
 				{
 					argumentContent: 'echo argumentContent value',
 				},
@@ -5648,7 +5893,7 @@ describe('generateClient', () => {
 				authMode: 'lambda',
 				authToken: 'my-auth-token',
 			});
-			const result = await client.queries.echo({
+			await client.queries.echo({
 				argumentContent: 'echo argumentContent value',
 			});
 
@@ -5667,7 +5912,7 @@ describe('generateClient', () => {
 			const client = generateClient<Schema>({
 				amplify: Amplify,
 			});
-			const result = await client.queries.echo(
+			await client.queries.echo(
 				{
 					argumentContent: 'echo argumentContent value',
 				},
@@ -5710,7 +5955,7 @@ describe('generateClient', () => {
 		});
 
 		test('graphql error handling', async () => {
-			const spy = mockApiResponse({
+			mockApiResponse({
 				data: null,
 				errors: [{ message: 'some graphql error' }],
 			});
@@ -5745,7 +5990,7 @@ describe('generateClient', () => {
 
 			// TODO: data should actually be null/undefined, pending discussion and fix.
 			// This is not strictly related to custom ops.
-			expect(data).toEqual({});
+			expect(data).toBeNull();
 			expect(errors).toEqual([{ message: 'Network error' }]);
 		});
 
@@ -5755,7 +6000,7 @@ describe('generateClient', () => {
 			// package up a lot of different errors types into `{ errors }` as possible.
 			// But, a clear example where this doesn't occur is request cancellations.
 
-			const spy = mockApiResponse(
+			mockApiResponse(
 				new Promise(resolve => {
 					// slight delay to give us time to cancel the request.
 					setTimeout(

@@ -2,12 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
-import type { InAppMessageCampaign as PinpointInAppMessage } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+import {
+	type InAppMessageCampaign as PinpointInAppMessage,
+	OverrideButtonConfiguration,
+} from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import {
 	InAppMessage,
+	InAppMessageContent,
 	InAppMessagingEvent,
 } from '../../src/inAppMessaging/types';
 import { PushNotificationMessage } from '../../src/pushNotifications';
+import { ButtonConfigPlatform } from '../../src/inAppMessaging/types/message';
 
 export const credentials = {
 	credentials: {
@@ -183,7 +188,7 @@ export const pinpointInAppMessage: PinpointInAppMessage = {
 	TreatmentId: 'T1',
 };
 
-export const extractedContent = [
+export const extractedContent: InAppMessageContent[] = [
 	{
 		body: {
 			content: 'Body content',
@@ -206,6 +211,67 @@ export const extractedContent = [
 			style: { backgroundColor: '#88FFFF', borderRadius: 4, color: '#FFFFFF' },
 			title: 'Link button',
 			url: 'http://link.fakeurl',
+		},
+	},
+];
+
+export const nativeButtonOverrides: {
+	configPlatform: 'ios' | 'android';
+	mappedPlatform: ButtonConfigPlatform;
+	buttonOverrides: {
+		primaryButton: OverrideButtonConfiguration;
+		secondaryButton: OverrideButtonConfiguration;
+	};
+}[] = [
+	{
+		configPlatform: 'android',
+		mappedPlatform: 'Android',
+		buttonOverrides: {
+			primaryButton: {
+				ButtonAction: 'DEEP_LINK',
+				Link: 'android-app://primaryButtonLink',
+			},
+			secondaryButton: {
+				ButtonAction: 'LINK',
+				Link: 'android-app://secondaryButtonLink',
+			},
+		},
+	},
+	{
+		configPlatform: 'ios',
+		mappedPlatform: 'IOS',
+		buttonOverrides: {
+			primaryButton: {
+				ButtonAction: 'DEEP_LINK',
+				Link: 'ios-app://primaryButtonLink',
+			},
+			secondaryButton: {
+				ButtonAction: 'LINK',
+				Link: 'ios-app://secondaryButtonLink',
+			},
+		},
+	},
+];
+export const browserButtonOverrides: {
+	configPlatform: 'web';
+	mappedPlatform: ButtonConfigPlatform;
+	buttonOverrides: {
+		primaryButton: OverrideButtonConfiguration;
+		secondaryButton: OverrideButtonConfiguration;
+	};
+}[] = [
+	{
+		configPlatform: 'web',
+		mappedPlatform: 'Web',
+		buttonOverrides: {
+			primaryButton: {
+				ButtonAction: 'LINK',
+				Link: 'https://webPrimaryButtonLink.com',
+			},
+			secondaryButton: {
+				ButtonAction: 'LINK',
+				Link: 'https://webSecondaryButtonLink.com',
+			},
 		},
 	},
 ];
@@ -295,3 +361,23 @@ export const completionHandlerId = 'completion-handler-id';
 export const userAgentValue = 'user-agent-value';
 
 export const channelType = 'APNS_SANDBOX';
+
+export const browserConfigTestCases = [
+	{ os: 'android', expectedPlatform: 'Web' },
+	{ os: 'ios', expectedPlatform: 'Web' },
+	{ os: 'windows', expectedPlatform: 'Web' },
+	{ os: 'macos', expectedPlatform: 'Web' },
+	{ os: 'linux', expectedPlatform: 'Web' },
+	{ os: 'unix', expectedPlatform: 'Web' },
+	{ os: 'unknown', expectedPlatform: 'Web' },
+];
+
+export const nonBrowserConfigTestCases = [
+	{ os: 'android', expectedPlatform: 'Android' },
+	{ os: 'ios', expectedPlatform: 'IOS' },
+	{ os: 'windows', expectedPlatform: 'DefaultConfig' },
+	{ os: 'macos', expectedPlatform: 'DefaultConfig' },
+	{ os: 'linux', expectedPlatform: 'DefaultConfig' },
+	{ os: 'unix', expectedPlatform: 'DefaultConfig' },
+	{ os: 'unknown', expectedPlatform: 'DefaultConfig' },
+];

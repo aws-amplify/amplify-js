@@ -17,7 +17,7 @@ on:
 jobs:
   e2e-test:
     name: E2E-Detox ${{ inputs.test_name }}
-    runs-on: macos-latest
+    runs-on: macos-12
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
     steps:

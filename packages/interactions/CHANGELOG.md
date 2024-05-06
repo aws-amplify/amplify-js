@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.0.28...@aws-amplify/interactions@6.0.29) (2024-04-29)
+
+### Bug Fixes
+
+- Fix SSR & AmplifyOutput types when using Gen2 configuration files ([#13247](https://github.com/aws-amplify/amplify-js/issues/13247)) ([f797dc5](https://github.com/aws-amplify/amplify-js/commit/f797dc539f57a55a325b227d8205813b122d7789))
+
+## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.0.27...@aws-amplify/interactions@6.0.28) (2024-04-22)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
 ## 6.0.27 (2024-04-02)
 
 **Note:** Version bump only for package @aws-amplify/interactions

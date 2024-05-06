@@ -146,6 +146,8 @@ export interface AuthUserPoolConfig {
 	};
 }
 
+export type CognitoUserPoolConfigMfaStatus = 'on' | 'off' | 'optional';
+
 export interface CognitoUserPoolConfig {
 	userPoolClientId: string;
 	userPoolId: string;
@@ -160,7 +162,7 @@ export interface CognitoUserPoolConfig {
 	};
 	userAttributes?: AuthConfigUserAttributes;
 	mfa?: {
-		status?: 'on' | 'off' | 'optional';
+		status?: CognitoUserPoolConfigMfaStatus;
 		totpEnabled?: boolean;
 		smsEnabled?: boolean;
 	};

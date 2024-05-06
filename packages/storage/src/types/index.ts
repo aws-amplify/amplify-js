@@ -8,14 +8,20 @@ export {
 	UploadTask,
 } from './common';
 export {
-	StorageOperationInput,
-	StorageListInput,
-	StorageGetPropertiesInput,
-	StorageRemoveInput,
-	StorageDownloadDataInput,
-	StorageUploadDataInput,
-	StorageCopyInput,
-	StorageGetUrlInput,
+	StorageGetPropertiesInputWithKey,
+	StorageGetPropertiesInputWithPath,
+	StorageListInputWithPrefix,
+	StorageListInputWithPath,
+	StorageRemoveInputWithPath,
+	StorageRemoveInputWithKey,
+	StorageDownloadDataInputWithKey,
+	StorageDownloadDataInputWithPath,
+	StorageUploadDataInputWithKey,
+	StorageUploadDataInputWithPath,
+	StorageCopyInputWithKey,
+	StorageCopyInputWithPath,
+	StorageGetUrlInputWithKey,
+	StorageGetUrlInputWithPath,
 	StorageUploadDataPayload,
 } from './inputs';
 export {
@@ -26,6 +32,8 @@ export {
 } from './options';
 export {
 	StorageItem,
+	StorageItemWithKey,
+	StorageItemWithPath,
 	StorageListOutput,
 	StorageDownloadDataOutput,
 	StorageGetUrlOutput,

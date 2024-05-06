@@ -16,4 +16,6 @@ export interface RTNCore {
 		b: string;
 		u: string;
 	}): Promise<string>;
+
+	getDeviceName(): Promise<string>;
 }
