@@ -26,7 +26,10 @@ describe('fetchDevices', () => {
 	const dateEpoch = 1.696296885807e9;
 	const date = new Date(dateEpoch * 1000);
 	const clientResponseDevice = {
-		DeviceAttributes: [{ Name: 'attributeName', Value: 'attributeValue' }],
+		DeviceAttributes: [
+			{ Name: 'attributeName', Value: 'attributeValue' },
+			{ Name: 'device_name', Value: 'deviceNameValue' },
+		],
 		DeviceCreateDate: dateEpoch,
 		DeviceKey: 'DeviceKey',
 		DeviceLastAuthenticatedDate: dateEpoch,
@@ -34,9 +37,10 @@ describe('fetchDevices', () => {
 	};
 	const apiOutputDevice = {
 		id: 'DeviceKey',
-		name: undefined,
+		name: 'deviceNameValue',
 		attributes: {
 			attributeName: 'attributeValue',
+			device_name: 'deviceNameValue',
 		},
 		createDate: date,
 		lastModifiedDate: date,

@@ -38,7 +38,7 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 	});
 
 	beforeEach(() => {
-		mockUpdateEndpoint.mockClear();
+		mockUpdateEndpoint.mockReset();
 	});
 
 	it('passes through parameter along with Analytics boilerplate to core Pinpoint identifyUser API', async () => {
@@ -81,5 +81,14 @@ describe('Analytics Pinpoint Provider API: identifyUser', () => {
 			userAgentValue,
 			userAttributes,
 		});
+	});
+
+	it('rejects if underlying promise rejects', async () => {
+		mockUpdateEndpoint.mockRejectedValue(new Error());
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {},
+		};
+		await expect(identifyUser(input)).rejects.toBeDefined();
 	});
 });

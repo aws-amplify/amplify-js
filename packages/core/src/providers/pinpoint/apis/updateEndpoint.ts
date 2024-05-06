@@ -9,6 +9,10 @@ import {
 } from '../../../awsClients/pinpoint';
 import { PinpointUpdateEndpointInput } from '../types';
 import { cacheEndpointId } from '../utils/cacheEndpointId';
+import {
+	clearCreatedEndpointId,
+	createEndpointId,
+} from '../utils/createEndpointId';
 import { getEndpointId } from '../utils/getEndpointId';
 
 /**
@@ -30,7 +34,9 @@ export const updateEndpoint = async ({
 }: PinpointUpdateEndpointInput): Promise<void> => {
 	const endpointId = await getEndpointId(appId, category);
 	// only generate a new endpoint id if one was not found in cache
-	const createdEndpointId = !endpointId ? amplifyUuid() : undefined;
+	const createdEndpointId = !endpointId
+		? createEndpointId(appId, category)
+		: undefined;
 	const {
 		customProperties,
 		demographic,
@@ -91,9 +97,17 @@ export const updateEndpoint = async ({
 			},
 		},
 	};
-	await clientUpdateEndpoint({ credentials, region, userAgentValue }, input);
-	// if we had to create an endpoint id, we need to now cache it
-	if (createdEndpointId) {
-		return cacheEndpointId(appId, category, createdEndpointId);
+	try {
+		await clientUpdateEndpoint({ credentials, region, userAgentValue }, input);
+		// if we had to create an endpoint id, we need to now cache it
+		if (createdEndpointId) {
+			await cacheEndpointId(appId, category, createdEndpointId);
+		}
+	} finally {
+		// at this point, we completely reset the behavior so even if the update was unsuccessful
+		// we can just start over with a newly created endpoint id
+		if (createdEndpointId) {
+			clearCreatedEndpointId(appId, category);
+		}
 	}
 };

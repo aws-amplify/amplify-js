@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.1.4",
+	"version": "6.2.0",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -239,7 +239,7 @@
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf lib-esm lib dist",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.28",
-		"@aws-amplify/api": "6.0.30",
-		"@aws-amplify/auth": "6.2.1",
-		"@aws-amplify/core": "6.0.28",
-		"@aws-amplify/datastore": "5.0.30",
-		"@aws-amplify/notifications": "2.0.28",
-		"@aws-amplify/storage": "6.3.1",
+		"@aws-amplify/analytics": "7.0.29",
+		"@aws-amplify/api": "6.0.31",
+		"@aws-amplify/auth": "6.2.2",
+		"@aws-amplify/core": "6.1.0",
+		"@aws-amplify/datastore": "5.0.31",
+		"@aws-amplify/notifications": "2.0.29",
+		"@aws-amplify/storage": "6.4.0",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.02 kB"
+			"limit": "17.05 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.52 kB"
+			"limit": "15.53 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "39.99 kB"
+			"limit": "40.09 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -383,7 +383,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "28.09 kB"
+			"limit": "28.26 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -449,13 +449,13 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "29.90 kB"
+			"limit": "30.06 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "21.45 kB"
+			"limit": "21.47 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",

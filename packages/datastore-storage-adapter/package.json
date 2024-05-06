@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore-storage-adapter",
-	"version": "2.1.30",
+	"version": "2.1.31",
 	"description": "SQLite storage adapter for Amplify DataStore ",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -13,7 +13,7 @@
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf dist lib lib-esm",
@@ -32,11 +32,11 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.0.0"
+		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.28",
-		"@aws-amplify/datastore": "5.0.30",
+		"@aws-amplify/core": "6.1.0",
+		"@aws-amplify/datastore": "5.0.31",
 		"@types/react-native-sqlite-storage": "5.0.1",
 		"expo-file-system": "13.1.4",
 		"expo-sqlite": "10.1.0",

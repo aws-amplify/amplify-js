@@ -135,17 +135,13 @@ function parseAuth(
 		};
 	}
 
-	if (username_attributes?.includes('email')) {
+	if (username_attributes) {
 		authConfig.Cognito.loginWith = {
 			...authConfig.Cognito.loginWith,
-			email: true,
-		};
-	}
-
-	if (username_attributes?.includes('phone_number')) {
-		authConfig.Cognito.loginWith = {
-			...authConfig.Cognito.loginWith,
-			phone: true,
+			email: username_attributes.includes('email'),
+			phone: username_attributes.includes('phone_number'),
+			// Signing in with a username is not currently supported in Gen2, this should always evaluate to false
+			username: username_attributes.includes('username'),
 		};
 	}
 

@@ -7,6 +7,7 @@ import {
 	AuthAction,
 	assertTokenProviderConfig,
 	base64Encoder,
+	getDeviceName,
 } from '@aws-amplify/core/internals/utils';
 
 import { ClientMetadata, ConfirmSignInOptions } from '../types';
@@ -1072,6 +1073,7 @@ export async function getNewDeviceMetatada(
 			{ region: getRegion(userPoolId) },
 			{
 				AccessToken: accessToken,
+				DeviceName: await getDeviceName(),
 				DeviceKey: newDeviceMetadata?.DeviceKey,
 				DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
 			},

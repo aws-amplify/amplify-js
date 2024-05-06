@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "5.0.30",
+	"version": "5.0.31",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -18,7 +18,7 @@
 		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
@@ -43,7 +43,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/api": "6.0.30",
+		"@aws-amplify/api": "6.0.31",
 		"buffer": "4.9.2",
 		"idb": "5.0.6",
 		"immer": "9.0.6",
@@ -51,10 +51,10 @@
 		"ulid": "^2.3.0"
 	},
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.0.0"
+		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.0.28",
+		"@aws-amplify/core": "6.1.0",
 		"@aws-amplify/react-native": "1.0.28",
 		"@types/uuid-validate": "^0.0.1",
 		"dexie": "3.2.2",
