@@ -44,7 +44,7 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 	});
 
 	beforeEach(() => {
-		mockUpdateEndpoint.mockClear();
+		mockUpdateEndpoint.mockReset();
 	});
 
 	it('passes through parameters to core Pinpoint updateEndpoint API', async () => {
@@ -92,5 +92,14 @@ describe('InAppMessaging Pinpoint Provider API: identifyUser', () => {
 			userAgentValue,
 			userAttributes,
 		});
+	});
+
+	it('rejects if underlying promise rejects', async () => {
+		mockUpdateEndpoint.mockRejectedValue(new Error());
+		const input: IdentifyUserInput = {
+			userId: 'user-id',
+			userProfile: {},
+		};
+		await expect(identifyUser(input)).rejects.toBeDefined();
 	});
 });

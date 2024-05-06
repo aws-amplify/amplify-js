@@ -239,7 +239,7 @@
 		"test:size": "size-limit",
 		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf lib-esm lib dist",
@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.02 kB"
+			"limit": "17.05 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.52 kB"
+			"limit": "15.53 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -383,7 +383,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "28.10 kB"
+			"limit": "28.26 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -449,7 +449,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "29.90 kB"
+			"limit": "30.06 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",

@@ -18,7 +18,7 @@
 		"test:size": "size-limit",
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
@@ -51,7 +51,7 @@
 		"ulid": "^2.3.0"
 	},
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.0.0"
+		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.1.0",

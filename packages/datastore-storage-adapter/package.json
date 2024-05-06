@@ -13,7 +13,7 @@
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "rimraf dist lib lib-esm",
@@ -32,7 +32,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"peerDependencies": {
-		"@aws-amplify/core": "^6.0.0"
+		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.1.0",
