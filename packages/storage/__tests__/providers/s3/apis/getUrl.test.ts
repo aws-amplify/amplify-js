@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getUrl } from '../../../../src/providers/s3/apis';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
+import { getUrl } from '../../../../src/providers/s3/apis';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
 import {
 	GetUrlInput,
-	GetUrlWithPathInput,
 	GetUrlOutput,
+	GetUrlWithPathInput,
 	GetUrlWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
@@ -85,10 +86,10 @@ describe('getUrl test with key', () => {
 			jest.clearAllMocks();
 		});
 
-		const testCases: Array<{
+		const testCases: {
 			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
 			expectedKey: string;
-		}> = [
+		}[] = [
 			{
 				expectedKey: `public/${key}`,
 			},

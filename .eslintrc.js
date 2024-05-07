@@ -53,7 +53,7 @@ module.exports = {
 		'packages/react-native/__tests__',
 		'packages/rtn-push-notification/__tests__',
 		'packages/rtn-web-browser/__tests__',
-		'packages/storage/__tests__',
+		// 'packages/storage/__tests__',
 		// will enable lint by packages
 		// 'adapter-nextjs',
 		// 'packages/analytics',

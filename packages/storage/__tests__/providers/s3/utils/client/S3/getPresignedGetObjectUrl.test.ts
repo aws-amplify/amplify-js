@@ -2,18 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { presignUrl } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { getPresignedGetObjectUrl } from '../../../../../../src/providers/s3/utils/client';
+
 import { defaultConfig } from './cases/shared';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
 	const original = jest.requireActual(
 		'@aws-amplify/core/internals/aws-client-utils',
 	);
-	const presignUrl = original.presignUrl;
+	const { presignUrl: getPresignedUrl } = original;
 
 	return {
 		...original,
-		presignUrl: jest.fn((...args) => presignUrl.apply(null, args)),
+		presignUrl: jest.fn((...args) => getPresignedUrl(...args)),
 	};
 });
 
