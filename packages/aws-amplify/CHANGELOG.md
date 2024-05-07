@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.2.0...aws-amplify@6.3.0) (2024-05-07)
+
+### Bug Fixes
+
+- **core:** Always set login methods when parsing Gen2 config files ([#13315](https://github.com/aws-amplify/amplify-js/issues/13315)) ([f65cae2](https://github.com/aws-amplify/amplify-js/commit/f65cae2c0e288bec0d43fd1826dd224b4aa30a69))
+
+### Features
+
+- **auth:** add a default deviceName when remembering device ([#13022](https://github.com/aws-amplify/amplify-js/issues/13022)) ([5f34186](https://github.com/aws-amplify/amplify-js/commit/5f3418678a06ac43ed8bf700649703c1cf280eeb))
+
 # [6.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.1.4...aws-amplify@6.2.0) (2024-04-29)
 
 ### Bug Fixes
