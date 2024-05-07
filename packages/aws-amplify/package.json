@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.05 kB"
+			"limit": "17.08 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.53 kB"
+			"limit": "15.57 kB"
 		},
 		{
 			"name": "[Analytics] enable",
