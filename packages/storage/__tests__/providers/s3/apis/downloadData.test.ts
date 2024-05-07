@@ -3,6 +3,7 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
 import { getObject } from '../../../../src/providers/s3/utils/client';
 import { downloadData } from '../../../../src/providers/s3';
 import {
@@ -91,15 +92,15 @@ describe('downloadData with key', () => {
 	it('should return a download task with key', async () => {
 		const mockDownloadInput: DownloadDataInput = {
 			key: inputKey,
-			options: { accessLevel: 'protected', targetIdentityId: targetIdentityId },
+			options: { accessLevel: 'protected', targetIdentityId },
 		};
 		expect(downloadData(mockDownloadInput)).toBe('downloadTask');
 	});
 
-	const testCases: Array<{
+	const testCases: {
 		expectedKey: string;
 		options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
-	}> = [
+	}[] = [
 		{
 			expectedKey: `public/${inputKey}`,
 		},
@@ -134,7 +135,7 @@ describe('downloadData with key', () => {
 					onProgress,
 				},
 			});
-			const job = mockCreateDownloadTask.mock.calls[0][0].job;
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
 			const { key, body }: StorageDownloadDataOutput<ItemWithKey> = await job();
 			expect({ key, body }).toEqual({
 				key: inputKey,
@@ -169,7 +170,7 @@ describe('downloadData with key', () => {
 			ContentType: 'contentType',
 		});
 		downloadData({ key: inputKey });
-		const job = mockCreateDownloadTask.mock.calls[0][0].job;
+		const { job } = mockCreateDownloadTask.mock.calls[0][0];
 		const {
 			key,
 			body,
@@ -208,7 +209,7 @@ describe('downloadData with key', () => {
 			},
 		});
 
-		const job = mockCreateDownloadTask.mock.calls[0][0].job;
+		const { job } = mockCreateDownloadTask.mock.calls[0][0];
 		await job();
 
 		expect(getObject).toHaveBeenCalledWith(
@@ -274,7 +275,7 @@ describe('downloadData with path', () => {
 					onProgress,
 				},
 			});
-			const job = mockCreateDownloadTask.mock.calls[0][0].job;
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
 			const {
 				path: resultPath,
 				body,
@@ -315,7 +316,7 @@ describe('downloadData with path', () => {
 			ContentType: 'contentType',
 		});
 		downloadData({ path: inputPath });
-		const job = mockCreateDownloadTask.mock.calls[0][0].job;
+		const { job } = mockCreateDownloadTask.mock.calls[0][0];
 		const {
 			path,
 			body,
@@ -354,7 +355,7 @@ describe('downloadData with path', () => {
 			},
 		});
 
-		const job = mockCreateDownloadTask.mock.calls[0][0].job;
+		const { job } = mockCreateDownloadTask.mock.calls[0][0];
 		await job();
 
 		expect(getObject).toHaveBeenCalledWith(

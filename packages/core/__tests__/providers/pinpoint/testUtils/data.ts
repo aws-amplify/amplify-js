@@ -27,6 +27,9 @@ export const event = {
 };
 export const identityId = 'identity-id';
 export const region = 'region';
+export const userAttributes = {
+	attr: ['attr-value-one', 'attr-value-two'],
+};
 export const userId = 'user-id';
 export const userProfile = {
 	customProperties: {

@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { headObject } from '../../../../src/providers/s3/utils/client';
-import { getProperties } from '../../../../src/providers/s3';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
+import { headObject } from '../../../../src/providers/s3/utils/client';
+import { getProperties } from '../../../../src/providers/s3';
 import {
 	GetPropertiesInput,
-	GetPropertiesWithPathInput,
 	GetPropertiesOutput,
+	GetPropertiesWithPathInput,
 	GetPropertiesWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
@@ -88,10 +89,10 @@ describe('getProperties with key', () => {
 			jest.clearAllMocks();
 		});
 
-		const testCases: Array<{
+		const testCases: {
 			expectedKey: string;
 			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
-		}> = [
+		}[] = [
 			{
 				expectedKey: `public/${inputKey}`,
 			},

@@ -3,16 +3,17 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
 import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
 import { list } from '../../../../src/providers/s3';
 import {
 	ListAllInput,
-	ListAllWithPathInput,
 	ListAllOutput,
+	ListAllWithPathInput,
 	ListAllWithPathOutput,
 	ListPaginateInput,
-	ListPaginateWithPathInput,
 	ListPaginateOutput,
+	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
 } from '../../../../src/providers/s3/types';
 
@@ -31,15 +32,15 @@ jest.mock('@aws-amplify/core', () => ({
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 const mockListObject = listObjectsV2 as jest.Mock;
-const key = 'path/itemsKey';
+const inputKey = 'path/itemsKey';
 const bucket = 'bucket';
 const region = 'region';
 const nextToken = 'nextToken';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
-const eTag = 'eTag';
-const lastModified = 'lastModified';
-const size = 'size';
+const etagValue = 'eTag';
+const lastModifiedValue = 'lastModified';
+const sizeValue = 'size';
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -51,20 +52,20 @@ const listObjectClientConfig = {
 	userAgentValue: expect.any(String),
 };
 const listObjectClientBaseResultItem = {
-	ETag: eTag,
-	LastModified: lastModified,
-	Size: size,
+	ETag: etagValue,
+	LastModified: lastModifiedValue,
+	Size: sizeValue,
 };
 const listResultItem = {
-	eTag,
-	lastModified,
-	size,
+	eTag: etagValue,
+	lastModified: lastModifiedValue,
+	size: sizeValue,
 };
 const mockListObjectsV2ApiWithPages = (pages: number) => {
 	let methodCalls = 0;
 	mockListObject.mockClear();
 	mockListObject.mockImplementation(async (_, input) => {
-		let token: string | undefined = undefined;
+		let token: string | undefined;
 		methodCalls++;
 		if (methodCalls > pages) {
 			fail(`listObjectsV2 calls are more than expected. Expected ${pages}`);
@@ -72,6 +73,7 @@ const mockListObjectsV2ApiWithPages = (pages: number) => {
 		if (input.ContinuationToken === undefined || methodCalls < pages) {
 			token = nextToken;
 		}
+
 		return {
 			Contents: [{ ...listObjectClientBaseResultItem, Key: input.Prefix }],
 			NextContinuationToken: token,
@@ -104,14 +106,14 @@ describe('list API', () => {
 			jest.clearAllMocks();
 		});
 
-		const accessLevelTests: Array<{
+		const accessLevelTests: {
 			prefix?: string;
 			expectedKey: string;
 			options?: {
 				accessLevel?: StorageAccessLevel;
 				targetIdentityId?: string;
 			};
-		}> = [
+		}[] = [
 			{
 				expectedKey: `public/`,
 			},
@@ -120,28 +122,28 @@ describe('list API', () => {
 				expectedKey: `public/`,
 			},
 			{
-				prefix: key,
-				expectedKey: `public/${key}`,
+				prefix: inputKey,
+				expectedKey: `public/${inputKey}`,
 			},
 			{
-				prefix: key,
+				prefix: inputKey,
 				options: { accessLevel: 'guest' },
-				expectedKey: `public/${key}`,
+				expectedKey: `public/${inputKey}`,
 			},
 			{
-				prefix: key,
+				prefix: inputKey,
 				options: { accessLevel: 'private' },
-				expectedKey: `private/${defaultIdentityId}/${key}`,
+				expectedKey: `private/${defaultIdentityId}/${inputKey}`,
 			},
 			{
-				prefix: key,
+				prefix: inputKey,
 				options: { accessLevel: 'protected' },
-				expectedKey: `protected/${defaultIdentityId}/${key}`,
+				expectedKey: `protected/${defaultIdentityId}/${inputKey}`,
 			},
 			{
-				prefix: key,
+				prefix: inputKey,
 				options: { accessLevel: 'protected', targetIdentityId },
-				expectedKey: `protected/${targetIdentityId}/${key}`,
+				expectedKey: `protected/${targetIdentityId}/${inputKey}`,
 			},
 		];
 
@@ -160,7 +162,7 @@ describe('list API', () => {
 				});
 				const response = await listPaginatedWrapper({
 					prefix,
-					options: options,
+					options,
 				});
 				const { key, eTag, size, lastModified } = response.items[0];
 				expect(response.items).toHaveLength(1);
@@ -197,7 +199,7 @@ describe('list API', () => {
 					options: {
 						...options,
 						pageSize: customPageSize,
-						nextToken: nextToken,
+						nextToken,
 					},
 				});
 				const { key, eTag, size, lastModified } = response.items[0];
@@ -227,7 +229,7 @@ describe('list API', () => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-				let response = await listPaginatedWrapper({
+				const response = await listPaginatedWrapper({
 					prefix,
 					options,
 				});
@@ -242,53 +244,55 @@ describe('list API', () => {
 			});
 		});
 
-		accessLevelTests.forEach(({ prefix: inputKey, options, expectedKey }) => {
-			const pathMsg = inputKey ? 'custom' : 'default';
-			const accessLevelMsg = options?.accessLevel ?? 'default';
-			const targetIdentityIdMsg = options?.targetIdentityId
-				? `with targetIdentityId`
-				: '';
-			it(`should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
-				mockListObjectsV2ApiWithPages(3);
-				const result = await listAllWrapper({
-					prefix: inputKey,
-					options: { ...options, listAll: true },
-				});
-				const { key, eTag, lastModified, size } = result.items[0];
-				expect(result.items).toHaveLength(3);
-				expect({ key, eTag, lastModified, size }).toEqual({
-					...listResultItem,
-					key: inputKey ?? '',
-				});
-				expect(result).not.toHaveProperty(nextToken);
+		accessLevelTests.forEach(
+			({ prefix: inputPrefix, options, expectedKey }) => {
+				const pathMsg = inputPrefix ? 'custom' : 'default';
+				const accessLevelMsg = options?.accessLevel ?? 'default';
+				const targetIdentityIdMsg = options?.targetIdentityId
+					? `with targetIdentityId`
+					: '';
+				it(`should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
+					mockListObjectsV2ApiWithPages(3);
+					const result = await listAllWrapper({
+						prefix: inputPrefix,
+						options: { ...options, listAll: true },
+					});
+					const { key, eTag, lastModified, size } = result.items[0];
+					expect(result.items).toHaveLength(3);
+					expect({ key, eTag, lastModified, size }).toEqual({
+						...listResultItem,
+						key: inputPrefix ?? '',
+					});
+					expect(result).not.toHaveProperty(nextToken);
 
-				// listing three times for three pages
-				expect(listObjectsV2).toHaveBeenCalledTimes(3);
+					// listing three times for three pages
+					expect(listObjectsV2).toHaveBeenCalledTimes(3);
 
-				// first input recieves undefined as the Continuation Token
-				expect(listObjectsV2).toHaveBeenNthCalledWith(
-					1,
-					listObjectClientConfig,
-					{
-						Bucket: bucket,
-						Prefix: expectedKey,
-						MaxKeys: 1000,
-						ContinuationToken: undefined,
-					},
-				);
-				// last input recieves TEST_TOKEN as the Continuation Token
-				expect(listObjectsV2).toHaveBeenNthCalledWith(
-					3,
-					listObjectClientConfig,
-					{
-						Bucket: bucket,
-						Prefix: expectedKey,
-						MaxKeys: 1000,
-						ContinuationToken: nextToken,
-					},
-				);
-			});
-		});
+					// first input recieves undefined as the Continuation Token
+					expect(listObjectsV2).toHaveBeenNthCalledWith(
+						1,
+						listObjectClientConfig,
+						{
+							Bucket: bucket,
+							Prefix: expectedKey,
+							MaxKeys: 1000,
+							ContinuationToken: undefined,
+						},
+					);
+					// last input recieves TEST_TOKEN as the Continuation Token
+					expect(listObjectsV2).toHaveBeenNthCalledWith(
+						3,
+						listObjectClientConfig,
+						{
+							Bucket: bucket,
+							Prefix: expectedKey,
+							MaxKeys: 1000,
+							ContinuationToken: nextToken,
+						},
+					);
+				});
+			},
+		);
 	});
 
 	describe('Path: Happy Cases:', () => {
@@ -298,7 +302,9 @@ describe('list API', () => {
 		const listPaginatedWrapper = (
 			input: ListPaginateWithPathInput,
 		): Promise<ListPaginateWithPathOutput> => list(input);
-		const resolvePath = (path: string | Function) =>
+		const resolvePath = (
+			path: string | (({ identityId }: { identityId: string }) => string),
+		) =>
 			typeof path === 'string' ? path : path({ identityId: defaultIdentityId });
 		afterEach(() => {
 			jest.clearAllMocks();
@@ -306,11 +312,11 @@ describe('list API', () => {
 		});
 		const pathTestCases = [
 			{
-				path: `public/${key}`,
+				path: `public/${inputKey}`,
 			},
 			{
 				path: ({ identityId }: { identityId: string }) =>
-					`protected/${identityId}/${key}`,
+					`protected/${identityId}/${inputKey}`,
 			},
 		];
 
@@ -349,7 +355,7 @@ describe('list API', () => {
 		);
 
 		it.each(pathTestCases)(
-			'should list objects with pagination using custom pageSize, nextToken and custom path: ${path}',
+			'should list objects with pagination using custom pageSize, nextToken and custom path: $path',
 			async ({ path: inputPath }) => {
 				const resolvedPath = resolvePath(inputPath);
 				mockListObject.mockImplementationOnce(() => {
@@ -368,7 +374,7 @@ describe('list API', () => {
 					path: resolvedPath,
 					options: {
 						pageSize: customPageSize,
-						nextToken: nextToken,
+						nextToken,
 					},
 				});
 				const { path, eTag, lastModified, size } = response.items[0];
@@ -389,12 +395,12 @@ describe('list API', () => {
 		);
 
 		it.each(pathTestCases)(
-			'should list objects with zero results with custom path: ${path}',
+			'should list objects with zero results with custom path: $path',
 			async ({ path }) => {
 				mockListObject.mockImplementationOnce(() => {
 					return {};
 				});
-				let response = await listPaginatedWrapper({
+				const response = await listPaginatedWrapper({
 					path: resolvePath(path),
 				});
 				expect(response.items).toEqual([]);
@@ -409,7 +415,7 @@ describe('list API', () => {
 		);
 
 		it.each(pathTestCases)(
-			'should list all objects having three pages with custom path: ${path}',
+			'should list all objects having three pages with custom path: $path',
 			async ({ path: inputPath }) => {
 				const resolvedPath = resolvePath(inputPath);
 				mockListObjectsV2ApiWithPages(3);

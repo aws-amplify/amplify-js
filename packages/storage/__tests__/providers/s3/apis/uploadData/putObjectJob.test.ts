@@ -3,6 +3,7 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
+
 import { putObject } from '../../../../../src/providers/s3/utils/client';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
@@ -10,6 +11,7 @@ import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/pu
 jest.mock('../../../../../src/providers/s3/utils/client');
 jest.mock('../../../../../src/providers/s3/utils', () => {
 	const utils = jest.requireActual('../../../../../src/providers/s3/utils');
+
 	return {
 		...utils,
 		calculateContentMd5: jest.fn(),
