@@ -1,11 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Observable, filter, map, Subject } from 'rxjs';
+import { Observable, Subject, filter, map } from 'rxjs';
 import { Patch } from 'immer';
+import { Mutex } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import {
 	InternalSchema,
+	InternalSubscriptionMessage,
 	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
@@ -16,26 +20,24 @@ import {
 	PredicatesGroup,
 	QueryOne,
 	SchemaNamespace,
-	InternalSubscriptionMessage,
 	SubscriptionMessage,
 	isTargetNameAssociation,
 } from '../types';
 import {
-	isModelConstructor,
+	NAMESPACES,
 	STORAGE,
+	isModelConstructor,
 	validatePredicate,
 	valuesEqual,
-	NAMESPACES,
 } from '../util';
 import { getIdentifierValue } from '../sync/utils';
+
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
-import { Mutex } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 export type StorageSubscriptionMessage<T extends PersistentModel> =
 	InternalSubscriptionMessage<T> & {
-		mutator?: Symbol;
+		mutator?: symbol;
 	};
 
 export type StorageFacade = Omit<Adapter, 'setUp'>;
@@ -78,6 +80,7 @@ class StorageClass implements StorageFacade {
 	async init() {
 		if (this.initialized !== undefined) {
 			await this.initialized;
+
 			return;
 		}
 		logger.debug('Starting Storage');
@@ -85,9 +88,9 @@ class StorageClass implements StorageFacade {
 		let resolve: (value?: void | PromiseLike<void>) => void;
 		let reject: (value?: void | PromiseLike<void>) => void;
 
-		this.initialized = new Promise<void>((res, rej) => {
-			resolve = res;
-			reject = rej;
+		this.initialized = new Promise<void>((_resolve, _reject) => {
+			resolve = _resolve;
+			reject = _reject;
 		});
 
 		this.adapter!.setUp(
@@ -104,7 +107,7 @@ class StorageClass implements StorageFacade {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
+		mutator?: symbol,
 		patchesTuple?: [Patch[], PersistentModel],
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.init();
@@ -153,7 +156,7 @@ class StorageClass implements StorageFacade {
 
 			const element = updateMutationInput || savedElement;
 
-			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
+			const modelConstructor = (Object.getPrototypeOf(savedElement) as object)
 				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
@@ -175,17 +178,19 @@ class StorageClass implements StorageFacade {
 	delete<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
+		mutator?: symbol,
 	): Promise<[T[], T[]]>;
+
 	delete<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
+		mutator?: symbol,
 	): Promise<[T[], T[]]>;
+
 	async delete<T extends PersistentModel>(
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
+		mutator?: symbol,
 	): Promise<[T[], T[]]> {
 		await this.init();
 		if (!this.adapter) {
@@ -212,6 +217,7 @@ class StorageClass implements StorageFacade {
 		const modelIds = new Set(
 			models.map(model => {
 				const modelId = getIdentifierValue(modelDefinition, model);
+
 				return modelId;
 			}),
 		);
@@ -224,7 +230,7 @@ class StorageClass implements StorageFacade {
 		}
 
 		deleted.forEach(model => {
-			const modelConstructor = (Object.getPrototypeOf(model) as Object)
+			const resolvedModelConstructor = (Object.getPrototypeOf(model) as object)
 				.constructor as PersistentModelConstructor<T>;
 
 			let theCondition: PredicatesGroup<any> | undefined;
@@ -237,7 +243,7 @@ class StorageClass implements StorageFacade {
 			}
 
 			this.pushStream.next({
-				model: modelConstructor,
+				model: resolvedModelConstructor,
 				opType: OpType.DELETE,
 				element: model,
 				mutator,
@@ -258,7 +264,7 @@ class StorageClass implements StorageFacade {
 			throw new Error('Storage adapter is missing');
 		}
 
-		return await this.adapter.query(modelConstructor, predicate, pagination);
+		return this.adapter.query(modelConstructor, predicate, pagination);
 	}
 
 	async queryOne<T extends PersistentModel>(
@@ -270,13 +276,13 @@ class StorageClass implements StorageFacade {
 			throw new Error('Storage adapter is missing');
 		}
 
-		return await this.adapter.queryOne(modelConstructor, firstOrLast);
+		return this.adapter.queryOne(modelConstructor, firstOrLast);
 	}
 
 	observe<T extends PersistentModel>(
 		modelConstructor?: PersistentModelConstructor<T> | null,
 		predicate?: ModelPredicate<T> | null,
-		skipOwn?: Symbol,
+		skipOwn?: symbol,
 	): Observable<SubscriptionMessage<T>> {
 		const listenToAll = !modelConstructor;
 		const { predicates, type } =
@@ -331,7 +337,7 @@ class StorageClass implements StorageFacade {
 	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[],
-		mutator?: Symbol,
+		mutator?: symbol,
 	): Promise<[T, OpType][]> {
 		await this.init();
 		if (!this.adapter) {
@@ -367,9 +373,9 @@ class StorageClass implements StorageFacade {
 		const [patches, source] = patchesTuple!;
 		const updatedElement = {};
 		// extract array of updated fields from patches
-		const updatedFields = <string[]>(
-			patches.map(patch => patch.path && patch.path[0])
-		);
+		const updatedFields = patches.map(
+			patch => patch.path && patch.path[0],
+		) as string[];
 
 		// check model def for association and replace with targetName if exists
 		const modelConstructor = Object.getPrototypeOf(model)
@@ -487,13 +493,13 @@ class ExclusiveStorage implements StorageFacade {
 	}
 
 	runExclusive<T>(fn: (storage: StorageClass) => Promise<T>) {
-		return <Promise<T>>this.mutex.runExclusive(fn.bind(this, this.storage));
+		return this.mutex.runExclusive(fn.bind(this, this.storage)) as Promise<T>;
 	}
 
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
+		mutator?: symbol,
 		patchesTuple?: [Patch[], PersistentModel],
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
@@ -504,17 +510,19 @@ class ExclusiveStorage implements StorageFacade {
 	async delete<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
+		mutator?: symbol,
 	): Promise<[T[], T[]]>;
+
 	async delete<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
+		mutator?: symbol,
 	): Promise<[T[], T[]]>;
+
 	async delete<T extends PersistentModel>(
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
+		mutator?: symbol,
 	): Promise<[T[], T[]]> {
 		return this.runExclusive<[T[], T[]]>(storage => {
 			if (isModelConstructor(modelOrModelConstructor)) {
@@ -555,7 +563,7 @@ class ExclusiveStorage implements StorageFacade {
 	observe<T extends PersistentModel>(
 		modelConstructor?: PersistentModelConstructor<T> | null,
 		predicate?: ModelPredicate<T> | null,
-		skipOwn?: Symbol,
+		skipOwn?: symbol,
 	): Observable<SubscriptionMessage<T>> {
 		return this.storage.observe(modelConstructor, predicate, skipOwn);
 	}

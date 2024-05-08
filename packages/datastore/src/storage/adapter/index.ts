@@ -17,10 +17,10 @@ export interface Adapter extends SystemComponent {
 		model: T,
 		condition?: ModelPredicate<T>,
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]>;
-	delete: <T extends PersistentModel>(
+	delete<T extends PersistentModel>(
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>,
-	) => Promise<[T[], T[]]>;
+	): Promise<[T[], T[]]>;
 	query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,

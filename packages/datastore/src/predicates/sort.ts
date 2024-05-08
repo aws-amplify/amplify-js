@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	PersistentModel,
-	SchemaModel,
-	SortPredicate,
 	ProducerSortPredicate,
+	SchemaModel,
 	SortDirection,
+	SortPredicate,
 	SortPredicatesGroup,
 } from '../types';
 
@@ -21,32 +21,29 @@ export class ModelSortPredicateCreator {
 		const { name: modelName } = modelDefinition;
 		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
 
-		let handler: ProxyHandler<SortPredicate<T>>;
-		const predicate = new Proxy(
-			{} as SortPredicate<T>,
-			(handler = {
-				get(_target, propertyKey, receiver: SortPredicate<T>) {
-					const field = propertyKey as keyof T;
+		const predicate = new Proxy({} as SortPredicate<T>, {
+			get(_target, propertyKey, receiver: SortPredicate<T>) {
+				const field = propertyKey as keyof T;
 
-					if (!fieldNames.has(field)) {
-						throw new Error(
-							`Invalid field for model. field: ${String(
-								field,
-							)}, model: ${modelName}`,
-						);
-					}
+				if (!fieldNames.has(field)) {
+					throw new Error(
+						`Invalid field for model. field: ${String(
+							field,
+						)}, model: ${modelName}`,
+					);
+				}
 
-					const result = (sortDirection: SortDirection) => {
-						ModelSortPredicateCreator.sortPredicateGroupsMap
-							.get(receiver)
-							?.push({ field, sortDirection });
+				const result = (sortDirection: SortDirection) => {
+					ModelSortPredicateCreator.sortPredicateGroupsMap
+						.get(receiver)
+						?.push({ field, sortDirection });
 
-						return receiver;
-					};
-					return result;
-				},
-			}),
-		);
+					return receiver;
+				};
+
+				return result;
+			},
+		});
 
 		ModelSortPredicateCreator.sortPredicateGroupsMap.set(predicate, []);
 
@@ -61,7 +58,7 @@ export class ModelSortPredicateCreator {
 
 	static getPredicates<T extends PersistentModel>(
 		predicate: SortPredicate<T>,
-		throwOnInvalid: boolean = true,
+		throwOnInvalid = true,
 	): SortPredicatesGroup<T> {
 		if (
 			throwOnInvalid &&
