@@ -7,4 +7,4 @@ export {
 	PinpointServiceOptions,
 	UpdateEndpointException,
 } from './types';
-export { resolveEndpointId } from './utils';
+export { getEndpointId, resolveEndpointId } from './utils';
