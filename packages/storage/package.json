@@ -69,6 +69,7 @@
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/md5-js": "2.0.7",
 		"buffer": "4.9.2",
+		"crc-32": "^1.2.2",
 		"fast-xml-parser": "^4.2.5",
 		"tslib": "^2.5.0"
 	},
