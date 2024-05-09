@@ -19,7 +19,7 @@ export const oAuthSignOutRedirect = async (
 	const signoutUri = getRedirectUrl(redirectSignOut);
 	const oAuthLogoutEndpoint = `https://${domain}/logout?${Object.entries({
 		client_id: userPoolClientId,
-		logout_uri: encodeURIComponent(signoutUri),
+		logout_uri: encodeURIComponent('http://localhost:8000/signout.html'),
 	})
 		.map(([k, v]) => `${k}=${v}`)
 		.join('&')}`;
