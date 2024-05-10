@@ -118,8 +118,6 @@
 		"terser-webpack-plugin": "^5.3.6",
 		"ts-jest": "^29.1.1",
 		"ts-loader": "^9.4.3",
-		"tslint": "^5.7.0",
-		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "0.25.8",
 		"typedoc-plugin-extras": "^3.0.0",
 		"typedoc-plugin-missing-exports": "^2.2.0",
