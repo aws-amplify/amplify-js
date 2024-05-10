@@ -55,14 +55,18 @@ describe('inflightDeviceRegistration', () => {
 		});
 
 		it('should reject the promise', async () => {
+			const underlyingError = new Error('underlying-error');
 			const blockedFunction = jest.fn();
 			const promise = getInflightDeviceRegistration()?.then(() => {
 				blockedFunction();
 			});
 
 			expect(blockedFunction).not.toHaveBeenCalled();
-			rejectInflightDeviceRegistration(new Error());
-			await expect(promise).rejects.toThrow('Failed to register device');
+			rejectInflightDeviceRegistration(underlyingError);
+			await expect(promise).rejects.toMatchObject({
+				name: 'DeviceRegistrationFailed',
+				underlyingError,
+			});
 			expect(blockedFunction).not.toHaveBeenCalled();
 		});
 	});
