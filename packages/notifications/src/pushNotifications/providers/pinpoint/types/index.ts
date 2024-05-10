@@ -37,4 +37,8 @@ export {
 	OnTokenReceivedOutput,
 } from './outputs';
 export { IdentifyUserOptions } from './options';
-export { ChannelType } from './pushNotifications';
+export {
+	ChannelType,
+	InflightDeviceRegistration,
+	InflightDeviceRegistrationResolver,
+} from './pushNotifications';
