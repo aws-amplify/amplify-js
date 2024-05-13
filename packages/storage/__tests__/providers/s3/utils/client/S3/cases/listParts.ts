@@ -3,13 +3,14 @@
 
 import { listParts } from '../../../../../../../src/providers/s3/utils/client';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
+
 import {
-	defaultConfig,
 	DEFAULT_RESPONSE_HEADERS,
+	defaultConfig,
 	expectedMetadata,
 } from './shared';
 
-//API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html
+// API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html
 const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 	'happy case',
 	'listParts',

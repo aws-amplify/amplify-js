@@ -4,40 +4,40 @@ import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import { Observable } from 'rxjs';
 import {
-	InternalSchema,
-	ModelInstanceMetadata,
-	SchemaModel,
-	ModelPredicate,
-	PredicatesGroup,
-	GraphQLFilter,
-	AuthModeStrategy,
-	ErrorHandler,
-	ProcessName,
-	AmplifyContext,
-} from '../../types';
-import {
-	buildGraphQLOperation,
-	getModelAuthModes,
-	getClientSideAuthError,
-	getForbiddenError,
-	predicateToGraphQLFilter,
-	getTokenForCustomAuth,
-} from '../utils';
-import {
-	jitteredExponentialRetry,
+	BackgroundProcessManager,
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	NonRetryableError,
-	BackgroundProcessManager,
 	GraphQLAuthMode,
-	AmplifyError,
+	NonRetryableError,
+	jitteredExponentialRetry,
 } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 
-import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
-
+import {
+	AmplifyContext,
+	AuthModeStrategy,
+	ErrorHandler,
+	GraphQLFilter,
+	InternalSchema,
+	ModelInstanceMetadata,
+	ModelPredicate,
+	PredicatesGroup,
+	ProcessName,
+	SchemaModel,
+} from '../../types';
+import {
+	buildGraphQLOperation,
+	getClientSideAuthError,
+	getForbiddenError,
+	getModelAuthModes,
+	getTokenForCustomAuth,
+	predicateToGraphQLFilter,
+} from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
+
 import { getSyncErrorType } from './errorMaps';
+
 const opResultDefaults = {
 	items: [],
 	nextToken: null,
@@ -149,6 +149,7 @@ class SyncProcessor {
 				logger.debug(
 					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
+
 				return response;
 			} catch (error) {
 				authModeAttempts++;
@@ -174,7 +175,8 @@ class SyncProcessor {
 						readAuthModes[authModeAttempts - 1]
 					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`,
 				);
-				return await authModeRetry();
+
+				return authModeRetry();
 			}
 		};
 
@@ -206,16 +208,19 @@ class SyncProcessor {
 		authMode: GraphQLAuthMode;
 		onTerminate: Promise<void>;
 	}): Promise<
-		GraphQLResult<{
-			[opName: string]: {
-				items: T[];
-				nextToken: string;
-				startedAt: number;
-			};
-		}>
+		GraphQLResult<
+			Record<
+				string,
+				{
+					items: T[];
+					nextToken: string;
+					startedAt: number;
+				}
+			>
+		>
 	> {
-		return await jitteredExponentialRetry(
-			async (query, variables) => {
+		return jitteredExponentialRetry(
+			async (retriedQuery, retriedVariables) => {
 				try {
 					const authToken = await getTokenForCustomAuth(
 						authMode,
@@ -229,8 +234,8 @@ class SyncProcessor {
 
 					return await this.amplifyContext.InternalAPI.graphql(
 						{
-							query,
-							variables,
+							query: retriedQuery,
+							variables: retriedVariables,
 							authMode,
 							authToken,
 						},
@@ -275,6 +280,7 @@ class SyncProcessor {
 						await Promise.all(
 							otherErrors.map(async err => {
 								try {
+									// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 									await this.errorHandler({
 										recoverySuggestion:
 											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -368,6 +374,7 @@ class SyncProcessor {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
 						map.set(namespace.models[modelName], typeLastSync!);
 					}
+
 					return map;
 				},
 				new Map<SchemaModel, [string, number]>(),
@@ -394,7 +401,8 @@ class SyncProcessor {
 								parentPromises.get(`${namespace}_${parent}`),
 							);
 
-							const promise = new Promise<void>(async res => {
+							// eslint-disable-next-line no-async-promise-executor
+							const promise = new Promise<void>(async resolve => {
 								await Promise.all(promises);
 
 								do {
@@ -407,7 +415,10 @@ class SyncProcessor {
 										logger.debug(
 											`Sync processor has been stopped, terminating sync for ${modelDefinition.name}`,
 										);
-										return res();
+
+										resolve();
+
+										return;
 									}
 
 									const limit = Math.min(
@@ -431,6 +442,7 @@ class SyncProcessor {
 										));
 									} catch (error) {
 										try {
+											// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 											await this.errorHandler({
 												recoverySuggestion:
 													'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -472,7 +484,7 @@ class SyncProcessor {
 									});
 								} while (!done);
 
-								res();
+								resolve();
 							});
 
 							parentPromises.set(
@@ -500,13 +512,13 @@ class SyncProcessor {
 	}
 }
 
-export type SyncModelPage = {
+export interface SyncModelPage {
 	namespace: string;
 	modelDefinition: SchemaModel;
 	items: ModelInstanceMetadata[];
 	startedAt: number;
 	done: boolean;
 	isFullSync: boolean;
-};
+}
 
 export { SyncProcessor };
