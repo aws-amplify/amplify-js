@@ -12,6 +12,7 @@ import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
+	prefferedSignOutUrl?: string,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn } = await store.loadOAuthSignIn();
 
@@ -21,6 +22,6 @@ export const handleOAuthSignOut = async (
 
 	if (isOAuthSignIn) {
 		// On web, this will always end up being a void action
-		return oAuthSignOutRedirect(cognitoConfig);
+		return oAuthSignOutRedirect(cognitoConfig, false, prefferedSignOutUrl);
 	}
 };

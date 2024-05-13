@@ -47,6 +47,7 @@ export interface AuthSignInInput<
 }
 export interface AuthSignOutInput {
 	global: boolean;
+	prefferedSignOutUrl?: string;
 }
 
 export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';
