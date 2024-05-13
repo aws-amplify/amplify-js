@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.2.0...@aws-amplify/core@6.2.1) (2024-05-13)
+
+### Bug Fixes
+
+- Prevent overwriting with fallbacks when updating endpoint ([#13330](https://github.com/aws-amplify/amplify-js/issues/13330)) ([d7b837e](https://github.com/aws-amplify/amplify-js/commit/d7b837edba0dff209fb4a596fcb4531ce0a66e21))
+- Wait for endpoint creation to identify user ([#13353](https://github.com/aws-amplify/amplify-js/issues/13353)) ([f17cdf0](https://github.com/aws-amplify/amplify-js/commit/f17cdf0077387ee275bea245632f1a9b88089e1e))
+
 # [6.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.1.0...@aws-amplify/core@6.2.0) (2024-05-07)
 
 ### Bug Fixes
