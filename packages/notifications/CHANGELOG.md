@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.30...@aws-amplify/notifications@2.0.31) (2024-05-13)
+
+### Bug Fixes
+
+- Wait for endpoint creation to identify user ([#13353](https://github.com/aws-amplify/amplify-js/issues/13353)) ([f17cdf0](https://github.com/aws-amplify/amplify-js/commit/f17cdf0077387ee275bea245632f1a9b88089e1e))
+
 ## [2.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.29...@aws-amplify/notifications@2.0.30) (2024-05-07)
 
 ### Bug Fixes
