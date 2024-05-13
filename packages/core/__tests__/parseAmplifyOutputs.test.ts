@@ -25,7 +25,7 @@ describe('parseAmplifyOutputs tests', () => {
 							email: true,
 							oauth: {
 								domain: 'mock-oauth-domain',
-								providers: ['Facebook', 'Apple', 'Google'],
+								providers: ['Facebook', 'Apple', 'Google', 'Amazon'],
 								redirectSignIn: ['mock-sign-in-uri'],
 								redirectSignOut: ['mock-sign-out-uri'],
 								responseType: 'token',

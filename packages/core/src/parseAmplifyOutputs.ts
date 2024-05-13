@@ -310,9 +310,9 @@ function getGraphQLAuthMode(authType: string): GraphQLAuthMode {
 
 const providerNames: Record<string, OAuthProvider> = {
 	GOOGLE: 'Google',
-	LOGIN_WITH_AMAZON: 'Amazon',
+	AMAZON: 'Amazon',
 	FACEBOOK: 'Facebook',
-	SIGN_IN_WITH_APPLE: 'Apple',
+	APPLE: 'Apple',
 };
 
 function getOAuthProviders(providers: string[] = []): OAuthProvider[] {

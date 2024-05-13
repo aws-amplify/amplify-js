@@ -7,7 +7,7 @@
 		"user_pool_client_id": "mock-cup-client-id",
 		"identity_pool_id": "mock-idp-id",
 		"oauth": {
-			"identity_providers": ["FACEBOOK", "SIGN_IN_WITH_APPLE", "GOOGLE"],
+			"identity_providers": ["FACEBOOK", "APPLE", "GOOGLE", "AMAZON"],
 			"domain": "mock-oauth-domain",
 			"scopes": ["phone"],
 			"redirect_sign_in_uri": ["mock-sign-in-uri"],

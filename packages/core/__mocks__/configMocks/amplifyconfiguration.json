@@ -22,7 +22,7 @@
 		"responseType": "token"
 	},
 	"aws_cognito_verification_mechanisms": ["EMAIL"],
-	"aws_cognito_social_providers": ["FACEBOOK", "APPLE", "GOOGLE"],
+	"aws_cognito_social_providers": ["FACEBOOK", "APPLE", "GOOGLE", "AMAZON"],
 	"aws_mobile_analytics_app_id": "mock-pinpoint-app-id",
 	"aws_mobile_analytics_app_region": "us-west-2",
 	"aws_user_files_s3_bucket": "mock-storage-bucket",
