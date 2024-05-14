@@ -15,7 +15,7 @@ jobs:
   prebuild-macos:
     uses: ./.github/workflows/callable-prebuild-amplify-js.yml
     with:
-      runs_on: macos-12
+      runs_on: macos-latest
   prebuild-samples-staging:
     secrets: inherit
     uses: ./.github/workflows/callable-prebuild-samples-staging.yml
