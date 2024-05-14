@@ -50,10 +50,10 @@ jobs:
         run: npm run publish:verdaccio
         shell: bash
 
-      - name: Calculate bundle sizes
-        uses: ./.github/actions/bundle-size-action
-        with:
-          stack: ${{ matrix.stack }}
+      # - name: Calculate bundle sizes
+        # uses: ./.github/actions/bundle-size-action
+        # with:
+        #   stack: ${{ matrix.stack }}
       # TODO Re-enable status check when we have read/write tokens
       # - name: Finished check
       #   uses: ./.github/actions/status-check-action

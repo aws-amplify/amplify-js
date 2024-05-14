@@ -49,7 +49,7 @@
     "@aws-amplify/cache": "3.1.57",
     "@aws-amplify/core": "3.8.24",
     "@aws-amplify/pubsub": "3.3.3",
-    "graphql": "14.0.0",
+    "graphql": "15.8.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },

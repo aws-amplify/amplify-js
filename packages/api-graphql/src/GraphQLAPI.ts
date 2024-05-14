@@ -12,7 +12,7 @@
  */
 import { GraphQLError } from 'graphql/error/GraphQLError';
 // @ts-ignore
-import { OperationDefinitionNode } from 'graphql/language';
+import { DocumentNode, OperationDefinitionNode } from 'graphql/language';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import Observable from 'zen-observable-ts';
@@ -187,9 +187,9 @@ export class GraphQLAPIClass {
 	 */
 	getGraphqlOperationType(operation) {
 		const doc = parse(operation);
-		const {
-			definitions: [{ operation: operationType }],
-		} = doc;
+		const definitions =
+		doc.definitions as ReadonlyArray<OperationDefinitionNode>;
+	    const [{ operation: operationType }] = definitions;
 
 		return operationType;
 	}
@@ -273,7 +273,7 @@ export class GraphQLAPIClass {
 		};
 
 		const body = {
-			query: print(query),
+			query: print(query as DocumentNode),
 			variables,
 		};
 
@@ -363,7 +363,7 @@ export class GraphQLAPIClass {
 				appSyncGraphqlEndpoint,
 				authenticationType,
 				apiKey,
-				query: print(query),
+				query: print(query as DocumentNode),
 				region,
 				variables,
 				graphql_headers,
