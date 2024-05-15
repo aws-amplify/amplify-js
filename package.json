@@ -31,7 +31,22 @@
 		}
 	},
 	"workspaces": [
-		"packages/*"
+		"packages/amazon-cognito-identity-js", 
+		"packages/analytics", 
+		"packages/api", 
+		"packages/api-graphql", 
+		"packages/api-rest", 
+		"packages/auth",
+		"packages/aws-amplify",
+		"packages/aws-amplify-react-native",
+		"packages/cache",
+		"packages/core",
+		"packages/datastore",
+		"packages/interactions",
+		"packages/predictions",
+		"packages/pubsub",
+		"packages/pushnotification",
+		"packages/storage"
 	],
 	"repository": {
 		"type": "git",
@@ -78,7 +93,8 @@
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
-		"winston": "^3.2.1"
+		"winston": "^3.2.1",
+		"@types/lodash": "4.14.182"
 	},
 	"resolutions": {
 		"terser": "4.6.7"
