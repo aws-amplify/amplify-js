@@ -77,3 +77,4 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 };
 
 export const refreshAuthTokens = deDupeAsyncFunction(refreshAuthTokensFunction);
+export const refreshAuthTokensWithoutDedupe = refreshAuthTokensFunction;
