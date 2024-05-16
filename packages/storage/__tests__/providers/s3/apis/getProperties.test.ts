@@ -12,6 +12,7 @@ import {
 	GetPropertiesWithPathInput,
 	GetPropertiesWithPathOutput,
 } from '../../../../src/providers/s3/types';
+import './testUtils';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -145,7 +146,10 @@ describe('getProperties with key', () => {
 					...expectedResult,
 				});
 				expect(headObject).toHaveBeenCalledTimes(1);
-				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					config,
+					headObjectOptions,
+				);
 			},
 		);
 	});
@@ -166,7 +170,7 @@ describe('getProperties with key', () => {
 				await getPropertiesWrapper({ key: inputKey });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
-				expect(headObject).toHaveBeenCalledWith(
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
 					{
 						credentials,
 						region: 'region',
@@ -265,7 +269,10 @@ describe('Happy cases: With path', () => {
 					...expectedResult,
 				});
 				expect(headObject).toHaveBeenCalledTimes(1);
-				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					config,
+					headObjectOptions,
+				);
 			},
 		);
 	});
@@ -286,7 +293,7 @@ describe('Happy cases: With path', () => {
 				await getPropertiesWrapper({ path: inputPath });
 			} catch (error: any) {
 				expect(headObject).toHaveBeenCalledTimes(1);
-				expect(headObject).toHaveBeenCalledWith(
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
 					{
 						credentials,
 						region: 'region',

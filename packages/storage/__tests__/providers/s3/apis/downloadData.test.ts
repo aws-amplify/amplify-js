@@ -23,6 +23,7 @@ import {
 	ItemWithKey,
 	ItemWithPath,
 } from '../../../../src/providers/s3/types/outputs';
+import './testUtils';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
@@ -142,7 +143,7 @@ describe('downloadData with key', () => {
 				body: 'body',
 			});
 			expect(getObject).toHaveBeenCalledTimes(1);
-			expect(getObject).toHaveBeenCalledWith(
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
 				{
 					credentials,
 					region,
@@ -288,7 +289,7 @@ describe('downloadData with path', () => {
 				body: 'body',
 			});
 			expect(getObject).toHaveBeenCalledTimes(1);
-			expect(getObject).toHaveBeenCalledWith(
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
 				{
 					credentials,
 					region,
