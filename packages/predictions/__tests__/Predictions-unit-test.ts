@@ -358,7 +358,7 @@ describe('Predictions test', () => {
 				predictions.convert(input, { providerName: 'WRONG_NAME' });
 			} catch (e) {
 				expect(e.message).toMatch(
-					"Cannot read property 'convert' of undefined"
+					"Cannot read properties of undefined (reading 'convert')"
 				);
 			}
 		});

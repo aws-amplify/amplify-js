@@ -21,7 +21,7 @@ import Amplify, {
 	Constants,
 } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-import { GraphQLOptions, GraphQLResult } from './types';
+import { GraphQLAuthError, GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
 import { v4 as uuid } from 'uuid';
@@ -317,10 +317,14 @@ export default class APIClass {
 				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				const session = await Auth.currentSession();
-				headers = {
-					Authorization: session.getAccessToken().getJwtToken(),
-				};
+				try {
+					const session = await Auth.currentSession();
+					headers = {
+						Authorization: session.getAccessToken().getJwtToken(),
+					};
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
+				}
 				break;
 			default:
 				headers = {
@@ -465,8 +469,8 @@ export default class APIClass {
 					const additionalheaders = {
 						...(authenticationType === 'API_KEY'
 							? {
-									'x-amz-subscriber-id': this.clientIdentifier,
-							  }
+								'x-amz-subscriber-id': this.clientIdentifier,
+							}
 							: {}),
 					};
 
