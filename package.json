@@ -27,9 +27,23 @@
 			"pre-commit": "pretty-quick --staged"
 		}
 	},
-	"workspaces": [
-		"packages/*"
-	],
+	"workspaces": {
+		"packages": [
+			"packages/amazon-cognito-identity-js", 
+			"packages/analytics", 
+			"packages/api",
+			"packages/auth",
+			"packages/aws-amplify",
+			"packages/aws-amplify-react-native",
+			"packages/cache",
+			"packages/core",
+			"packages/interactions",
+			"packages/predictions",
+			"packages/pubsub",
+			"packages/pushnotification",
+			"packages/storage"
+		]
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"
