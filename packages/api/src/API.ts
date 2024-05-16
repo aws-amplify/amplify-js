@@ -315,7 +315,6 @@ export default class APIClass {
 				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				
 				try {
 					const session = await Auth.currentSession();
 					headers = {
@@ -324,10 +323,6 @@ export default class APIClass {
 				} catch (e) {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
-				const session = await Auth.currentSession();
-				headers = {
-					Authorization: session.getAccessToken().getJwtToken(),
-				};
 				break;
 			default:
 				headers = {
