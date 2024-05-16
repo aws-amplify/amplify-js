@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { OperationDefinitionNode, GraphQLError } from 'graphql';
+import { OperationDefinitionNode, GraphQLError, DocumentNode } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
@@ -22,7 +22,7 @@ import Amplify, {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
-import { GraphQLOptions, GraphQLResult } from './types';
+import { GraphQLAuthError, GraphQLOptions, GraphQLResult } from './types';
 import Cache from '@aws-amplify/cache';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -315,10 +315,14 @@ export default class APIClass {
 				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				const session = await Auth.currentSession();
-				headers = {
-					Authorization: session.getAccessToken().getJwtToken(),
-				};
+				try {
+					const session = await Auth.currentSession();
+					headers = {
+						Authorization: session.getAccessToken().getJwtToken(),
+					};
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
+				}
 				break;
 			default:
 				headers = {
@@ -336,10 +340,9 @@ export default class APIClass {
 	 */
 	getGraphqlOperationType(operation) {
 		const doc = parse(operation);
-		const {
-			definitions: [{ operation: operationType }],
-		} = doc;
-
+		const definitions =
+			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
+		const [{ operation: operationType }] = definitions;
 		return operationType;
 	}
 
@@ -411,7 +414,7 @@ export default class APIClass {
 		};
 
 		const body = {
-			query: print(query),
+			query: print(query as DocumentNode),
 			variables,
 		};
 
@@ -475,7 +478,7 @@ export default class APIClass {
 				appSyncGraphqlEndpoint,
 				authenticationType,
 				apiKey,
-				query: print(query),
+				query: print(query as DocumentNode),
 				region,
 				variables,
 				graphql_headers,
