@@ -168,7 +168,33 @@ describe('internal post', () => {
 		);
 	});
 
-	it('should call unauthenticatedHandler with custom x-api-key header and signingServiceInfo', async () => {
+	it('should call authenticatedHandler with custom x-api-key header and serviceSigningInfo', async () => {
+		await post(mockAmplifyInstance, {
+			url: apiGatewayUrl,
+			options: {
+				headers: {
+					'x-api-key': '123',
+				},
+				signingServiceInfo: {},
+			},
+		});
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+			expect.objectContaining({
+				headers: {
+					'x-api-key': '123',
+				},
+			}),
+			expect.anything(),
+		);
+		expect(mockUnauthenticatedHandler).not.toHaveBeenCalled();
+	});
+
+	it('should call unauthenticatedHandler with custom x-api-key header if credential is not set', async () => {
+		mockFetchAuthSession.mockClear();
+		mockFetchAuthSession.mockRejectedValue(
+			new Error('Mock error as credentials not configured'),
+		);
+
 		await post(mockAmplifyInstance, {
 			url: apiGatewayUrl,
 			options: {

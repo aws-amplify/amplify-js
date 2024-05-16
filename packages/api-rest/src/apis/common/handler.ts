@@ -100,7 +100,7 @@ export const transferHandler = async (
 const iamAuthApplicable = (
 	{ headers }: HttpRequest,
 	signingServiceInfo?: SigningServiceInfo,
-) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;
+) => !headers.authorization && !!signingServiceInfo;
 
 const resolveCredentials = async (
 	amplify: AmplifyClassV6,
