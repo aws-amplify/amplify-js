@@ -1,10 +1,1 @@
-/packages/auth @elorzafe
-/packages/analytics @iartemiev
-/packages/pubsub @manueliglesias
-/packages/xr @jordanranz
-/packages/amplify-ui @jordanranz
-/packages/aws-amplify-react-native @Ashish-Nanda
-/packages/pushnotification @Ashish-Nanda
-/packages/datastore @manueliglesias
-/.github/ @sammartinez
-/.circleci/ @iartemiev
+* @aws-amplify/amplify-js
