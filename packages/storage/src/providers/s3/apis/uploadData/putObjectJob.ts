@@ -65,7 +65,7 @@ export const putObjectJob =
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
-				ChecksumCRC32,
+				ChecksumCRC32: ChecksumCRC32.checksum,
 			},
 		);
 		stopTimer(`upload-${totalLength}`);

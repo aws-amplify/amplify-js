@@ -1,40 +1,34 @@
 import crc32 from "crc-32";
 
+export interface CRC32Checksum {
+  checksum: string;
+  seed: number;
+}
+
 export const calculateContentCRC32 = async (
   content: Blob | string | ArrayBuffer | ArrayBufferView,
-): Promise<string> => {
+  seed = 0
+): Promise<CRC32Checksum> => {
+  let internalSeed = seed;
   if (typeof content === 'string') {
-    return hexToBase64(padZeros(crc32.str(content).toString(16)));
-  } else {
-    let buffer: ArrayBuffer;
-    if (content instanceof ArrayBuffer) {
-      buffer = content;
-    } else if (ArrayBuffer.isView(content)) {
-      buffer = content.buffer;
-    } else {
-      buffer = await readFileToArrayBuffer(content);
-    }
-
-    return hexToBase64(padZeros((crc32.buf(new Uint8Array(buffer)) >>> 0).toString(16)));
+    internalSeed = crc32.str(content, internalSeed);
   }
-};
+  else if (ArrayBuffer.isView(content)) {
+    internalSeed = crc32.buf(new Uint8Array(content.buffer), internalSeed) >>> 0;
+  } else if (content instanceof ArrayBuffer) {
+    internalSeed = crc32.buf(new Uint8Array(content), internalSeed) >>> 0;
+  } else {
+    await content.stream().pipeTo(new WritableStream<Uint8Array>({
+      write(chunk) {
+        internalSeed = crc32.buf(chunk, internalSeed) >>> 0;
+      },
+    }));
+  }
 
-const readFileToArrayBuffer = (file: Blob): Promise<ArrayBuffer> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (reader.result) {
-        resolve(reader.result as ArrayBuffer);
-      }
-      reader.onabort = () => {
-        reject(new Error('Read aborted'));
-      };
-      reader.onerror = () => {
-        reject(reader.error);
-      };
-    };
-    if (file !== undefined) reader.readAsArrayBuffer(file);
-  });
+  return {
+    checksum: hexToBase64(padZeros(internalSeed.toString(16))),
+    seed: internalSeed,
+  };
 };
 
 const padZeros = (input: string) => {
