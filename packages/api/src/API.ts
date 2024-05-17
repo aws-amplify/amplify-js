@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { OperationDefinitionNode, GraphQLError } from 'graphql';
+import { OperationDefinitionNode, GraphQLError, DocumentNode } from 'graphql';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import * as Observable from 'zen-observable';
@@ -342,11 +342,10 @@ export default class APIClass {
 	 */
 	getGraphqlOperationType(operation) {
 		const doc = parse(operation);
-		const {
-			definitions: [{ operation: operationType }],
-		} = doc;
+		const [definition] =
+			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
 
-		return operationType;
+		return definition.operation;
 	}
 
 	/**
@@ -409,7 +408,7 @@ export default class APIClass {
 		};
 
 		const body = {
-			query: print(query),
+			query: print(query as DocumentNode),
 			variables,
 		};
 
