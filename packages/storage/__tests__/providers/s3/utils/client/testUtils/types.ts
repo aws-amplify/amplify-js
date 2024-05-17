@@ -3,11 +3,11 @@
 
 import { HttpRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
-type MockFetchResponse = {
+interface MockFetchResponse {
 	body: BodyInit;
 	headers: HeadersInit;
 	status: number;
-};
+}
 
 // TODO: remove this after upgrading ts-jest
 type Awaited<T> = T extends PromiseLike<infer U> ? U : never;
@@ -31,7 +31,7 @@ type ApiFunctionalTestErrorCase<ApiHandler extends (...args: any) => any> = [
 	Parameters<ApiHandler>[1], // input
 	HttpRequest, // expected request
 	MockFetchResponse, // response
-	{}, // error
+	{ name: string; message: string }, // error
 ];
 
 /**
@@ -62,13 +62,13 @@ export type XhrProgressEvent = Pick<
  */
 export type XhrSpy = Writeable<XMLHttpRequest> & {
 	uploadListeners: Partial<{
-		[name in keyof XMLHttpRequestEventTargetEventMap]: Array<
-			(event: XMLHttpRequestEventTargetEventMap[name]) => void
-		>;
+		[name in keyof XMLHttpRequestEventTargetEventMap]: ((
+			event: XMLHttpRequestEventTargetEventMap[name],
+		) => void)[];
 	}>;
 	listeners: Partial<{
-		[name in keyof XMLHttpRequestEventMap]: Array<
-			(event: XMLHttpRequestEventMap[name]) => void
-		>;
+		[name in keyof XMLHttpRequestEventMap]: ((
+			event: XMLHttpRequestEventMap[name],
+		) => void)[];
 	}>;
 };

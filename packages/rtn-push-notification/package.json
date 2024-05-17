@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/rtn-push-notification",
-	"version": "1.2.28",
+	"version": "1.2.29",
 	"description": "React Native module for aws-amplify push notifications",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -14,7 +14,7 @@
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"test:android": "./android/gradlew test -p ./android",
 		"build-with-test": "npm run clean && npm test && tsc",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs",
 		"clean": "rimraf lib-esm lib dist",

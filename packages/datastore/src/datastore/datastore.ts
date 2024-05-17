@@ -1,110 +1,108 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { InternalAPI } from '@aws-amplify/api/internals';
-import { Amplify, Hub, Cache, ConsoleLogger } from '@aws-amplify/core';
-
+import { Amplify, Cache, ConsoleLogger, Hub } from '@aws-amplify/core';
 import {
 	Draft,
+	Patch,
+	enablePatches,
 	immerable,
 	produce,
 	setAutoFreeze,
-	enablePatches,
-	Patch,
 } from 'immer';
-import { amplifyUuid, isBrowser } from '@aws-amplify/core/internals/utils';
+import {
+	BackgroundProcessManager,
+	amplifyUuid,
+} from '@aws-amplify/core/internals/utils';
 import { Observable, SubscriptionLike, filter } from 'rxjs';
+
 import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
-	isPredicatesAll,
 	ModelPredicateCreator,
 	ModelSortPredicateCreator,
 	PredicateAll,
+	isPredicatesAll,
 } from '../predicates';
 import { Adapter } from '../storage/adapter';
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ModelRelationship } from '../storage/relationship';
 import { ControlMessage, SyncEngine } from '../sync';
 import {
+	AmplifyContext,
 	AuthModeStrategy,
+	AuthModeStrategyType,
 	ConflictHandler,
 	DataStoreConfig,
+	DataStoreSnapshot,
+	ErrorHandler,
 	GraphQLScalarType,
+	IdentifierFieldOrIdentifierObject,
 	InternalSchema,
-	isGraphQLScalarType,
-	isSchemaModelWithAttributes,
+	ManagedIdentifier,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
 	ModelPredicate,
-	ModelField,
-	SortPredicate,
+	ModelPredicateExtender,
 	MutableModel,
 	NamespaceResolver,
 	NonModelTypeConstructor,
-	ProducerPaginationInput,
+	ObserveQueryOptions,
 	PaginationInput,
 	PersistentModel,
 	PersistentModelConstructor,
-	ProducerModelPredicate,
+	PersistentModelMetaData,
+	ProducerPaginationInput,
+	RecursiveModelPredicateExtender,
 	Schema,
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
+	SortPredicate,
 	SubscriptionMessage,
-	DataStoreSnapshot,
 	SyncConflict,
 	SyncError,
-	TypeConstructorMap,
-	ErrorHandler,
 	SyncExpression,
-	AuthModeStrategyType,
-	isNonModelFieldType,
-	isModelFieldType,
-	ObserveQueryOptions,
-	ManagedIdentifier,
-	PersistentModelMetaData,
-	IdentifierFieldOrIdentifierObject,
+	TypeConstructorMap,
+	isGraphQLScalarType,
 	isIdentifierObject,
-	AmplifyContext,
-	isFieldAssociation,
-	RecursiveModelPredicateExtender,
-	ModelPredicateExtender,
+	isModelFieldType,
+	isNonModelFieldType,
+	isSchemaModelWithAttributes,
 } from '../types';
-// tslint:disable:no-duplicate-imports
 import type { __modelMeta__ } from '../types';
-import { isNode } from './utils';
-
 import {
 	DATASTORE,
-	errorMessages,
-	establishRelationAndKeys,
-	isModelConstructor,
-	monotonicUlidFactory,
+	DeferredCallbackResolver,
 	NAMESPACES,
 	STORAGE,
 	SYNC,
 	USER,
-	isNullOrUndefined,
-	registerNonModelClass,
-	sortCompareFunction,
-	DeferredCallbackResolver,
-	inMemoryPagination,
+	errorMessages,
+	establishRelationAndKeys,
 	extractPrimaryKeyFieldNames,
 	extractPrimaryKeysAndValues,
+	getTimestampFields,
+	inMemoryPagination,
 	isIdManaged,
 	isIdOptionallyManaged,
+	isModelConstructor,
+	isNullOrUndefined,
 	mergePatches,
-	getTimestampFields,
+	monotonicUlidFactory,
+	registerNonModelClass,
+	sortCompareFunction,
 } from '../util';
 import {
-	recursivePredicateFor,
-	predicateFor,
 	GroupCondition,
 	internals,
+	predicateFor,
+	recursivePredicateFor,
 } from '../predicates/next';
 import { getIdentifierValue } from '../sync/utils';
 import DataStoreConnectivity from '../sync/datastoreConnectivity';
-import { BackgroundProcessManager } from '@aws-amplify/core/internals/utils';
+
+import { isNode } from './utils';
 
 setAutoFreeze(true);
 enablePatches();
@@ -113,10 +111,10 @@ const logger = new ConsoleLogger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
 
-type SettingMetaData = {
+interface SettingMetaData {
 	identifier: ManagedIdentifier<Setting, 'id'>;
 	readOnlyFields: never;
-};
+}
 declare class Setting {
 	public readonly [__modelMeta__]: SettingMetaData;
 	constructor(init: ModelInit<Setting, SettingMetaData>);
@@ -124,6 +122,7 @@ declare class Setting {
 		src: Setting,
 		mutator: (draft: MutableModel<Setting, SettingMetaData>) => void | Setting,
 	): Setting;
+
 	public readonly id: string;
 	public readonly key: string;
 	public readonly value: string;
@@ -178,6 +177,7 @@ const namespaceResolver: NamespaceResolver = modelConstructor => {
 			`Namespace Resolver for '${modelConstructor.name}' not found! This is probably a bug in '@amplify-js/datastore'.`,
 		);
 	}
+
 	return resolver;
 };
 
@@ -221,6 +221,8 @@ const buildSeedPredicate = <T extends PersistentModel>(
 };
 
 // exporting syncClasses for testing outbox.test.ts
+// TODO(eslint): refactor not to export non-constant
+// eslint-disable-next-line import/no-mutable-exports
 export let syncClasses: TypeConstructorMap;
 let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
@@ -282,6 +284,7 @@ export function attached<T extends PersistentModel | PersistentModel[]>(
 	} else {
 		result && attachedModelInstances.set(result, attachment);
 	}
+
 	return result;
 }
 
@@ -355,10 +358,10 @@ const initSchema = (userSchema: Schema) => {
 					field =>
 						field.association &&
 						field.association.connectionType === 'BELONGS_TO' &&
-						(<ModelFieldType>field.type).model !== model.name,
+						(field.type as ModelFieldType).model !== model.name,
 				)
 				.forEach(field =>
-					connectedModels.push((<ModelFieldType>field.type).model),
+					connectedModels.push((field.type as ModelFieldType).model),
 				);
 
 			modelAssociations.set(model.name, connectedModels);
@@ -367,7 +370,7 @@ const initSchema = (userSchema: Schema) => {
 			// (such as predicate builders) don't have to reach back into "DataStore" space
 			// to go looking for it.
 			Object.values(model.fields).forEach(field => {
-				const relatedModel = userClasses[(<ModelFieldType>field.type).model];
+				const relatedModel = userClasses[(field.type as ModelFieldType).model];
 				if (isModelConstructor(relatedModel)) {
 					Object.defineProperty(field.type, 'modelConstructor', {
 						get: () => {
@@ -376,6 +379,7 @@ const initSchema = (userSchema: Schema) => {
 								throw new Error(
 									`Could not find model definition for ${relatedModel.name}`,
 								);
+
 							return {
 								builder: relatedModel,
 								schema: relatedModelDefinition,
@@ -390,8 +394,8 @@ const initSchema = (userSchema: Schema) => {
 			// index fields into the model definition.
 			// definition.cloudFields = { ...definition.fields };
 
-			const indexes =
-				schema.namespaces[namespace].relationships![model.name].indexes;
+			const { indexes } =
+				schema.namespaces[namespace].relationships![model.name];
 
 			const indexFields = new Set<string>();
 			for (const index of indexes) {
@@ -488,7 +492,7 @@ const checkSchemaCodegenVersion = (codegenVersion: string) => {
 	let isValid = false;
 	try {
 		const versionParts = codegenVersion.split('.');
-		const [major, minor, patch, patchrevision] = versionParts;
+		const [major, minor] = versionParts;
 		isValid = Number(major) === majorVersion && Number(minor) >= minorVersion;
 	} catch (err) {
 		console.log(`Error parsing codegen version: ${codegenVersion}\n${err}`);
@@ -546,12 +550,12 @@ export declare type ModelInstanceCreator = typeof modelInstanceCreator;
 const instancesMetadata = new WeakSet<ModelInit<any, any>>();
 
 function modelInstanceCreator<T extends PersistentModel>(
-	modelConstructor: PersistentModelConstructor<T>,
+	ModelConstructor: PersistentModelConstructor<T>,
 	init: Partial<T>,
 ): T {
 	instancesMetadata.add(init);
 
-	return new modelConstructor(<ModelInit<T, PersistentModelMetaData<T>>>init);
+	return new ModelConstructor(init as ModelInit<T, PersistentModelMetaData<T>>);
 }
 
 const validateModelFields =
@@ -597,6 +601,7 @@ const validateModelFields =
 					if (typeof v === 'string') {
 						try {
 							JSON.parse(v);
+
 							return;
 						} catch (error) {
 							throw new Error(`Field ${name} is an invalid JSON object. ${v}`);
@@ -618,11 +623,11 @@ const validateModelFields =
 
 					if (
 						!isNullOrUndefined(v) &&
-						(<[]>v).some(e =>
+						(v as []).some(e =>
 							isNullOrUndefined(e) ? isRequired : typeof e !== jsType,
 						)
 					) {
-						const elemTypes = (<[]>v)
+						const elemTypes = (v as [])
 							.map(e => (e === null ? 'null' : typeof e))
 							.join(',');
 
@@ -632,7 +637,7 @@ const validateModelFields =
 					}
 
 					if (validateScalar && !isNullOrUndefined(v)) {
-						const validationStatus = (<[]>v).map(e => {
+						const validationStatus = (v as []).map(e => {
 							if (!isNullOrUndefined(e)) {
 								return validateScalar(e);
 							} else if (isNullOrUndefined(e) && !isRequired) {
@@ -649,7 +654,7 @@ const validateModelFields =
 						}
 					}
 				} else if (!isRequired && v === undefined) {
-					return;
+					// no-op for this branch but still to filter this branch out
 				} else if (typeof v !== jsType && v !== null) {
 					throw new Error(
 						`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`,
@@ -771,7 +776,7 @@ const initializeInstance = <T extends PersistentModel>(
 		const parsedValue = castInstanceType(modelDefinition, k, v);
 
 		modelValidator(k, parsedValue);
-		(<any>draft)[k] = parsedValue;
+		(draft as any)[k] = parsedValue;
 	});
 };
 
@@ -799,14 +804,14 @@ const normalize = <T extends PersistentModel>(
 	draft: Draft<T>,
 ) => {
 	for (const k of Object.keys(modelDefinition.fields)) {
-		if (draft[k] === undefined) (<any>draft)[k] = null;
+		if (draft[k] === undefined) (draft as any)[k] = null;
 	}
 };
 
 const createModelClass = <T extends PersistentModel>(
 	modelDefinition: SchemaModel,
 ) => {
-	const clazz = <PersistentModelConstructor<T>>(<unknown>class Model {
+	const clazz = class Model {
 		constructor(init: ModelInit<T>) {
 			// we create a base instance first so we can distinguish which fields were explicitly
 			// set by customer code versus those set by normalization. only those fields
@@ -822,10 +827,12 @@ const createModelClass = <T extends PersistentModel>(
 
 					const modelInstanceMetadata: ModelInstanceMetadata =
 						isInternallyInitialized
-							? <ModelInstanceMetadata>(<unknown>init)
-							: <ModelInstanceMetadata>{};
+							? (init as unknown as ModelInstanceMetadata)
+							: ({} as ModelInstanceMetadata);
 
-					type ModelWithIDIdentifier = { id: string };
+					interface ModelWithIDIdentifier {
+						id: string;
+					}
 
 					const { id: _id } =
 						modelInstanceMetadata as unknown as ModelWithIDIdentifier;
@@ -839,10 +846,10 @@ const createModelClass = <T extends PersistentModel>(
 								? amplifyUuid()
 								: ulid();
 
-						(<ModelWithIDIdentifier>(<unknown>draft)).id = id;
+						(draft as unknown as ModelWithIDIdentifier).id = id;
 					} else if (isIdOptionallyManaged(modelDefinition)) {
 						// only auto-populate if the id was not provided
-						(<ModelWithIDIdentifier>(<unknown>draft)).id =
+						(draft as unknown as ModelWithIDIdentifier).id =
 							draft.id || amplifyUuid();
 					}
 
@@ -868,8 +875,9 @@ const createModelClass = <T extends PersistentModel>(
 			// "cloud managed" fields, like createdAt and updatedAt.)
 			const normalized = produce(
 				baseInstance,
-				(draft: Draft<T & ModelInstanceMetadata>) =>
-					normalize(modelDefinition, draft),
+				(draft: Draft<T & ModelInstanceMetadata>) => {
+					normalize(modelDefinition, draft);
+				},
 			);
 
 			initPatches.set(normalized, patches);
@@ -889,7 +897,7 @@ const createModelClass = <T extends PersistentModel>(
 			const model = produce(
 				source,
 				draft => {
-					fn(<MutableModel<T>>draft);
+					fn(draft as MutableModel<T>);
 
 					const keyNames = extractPrimaryKeyFieldNames(modelDefinition);
 					// Keys are immutable
@@ -900,7 +908,7 @@ const createModelClass = <T extends PersistentModel>(
 								{ source },
 							);
 						}
-						(draft as Object)[key] = source[key];
+						(draft as object)[key] = source[key];
 					});
 
 					const modelValidator = validateModelFields(modelDefinition);
@@ -962,7 +970,7 @@ const createModelClass = <T extends PersistentModel>(
 
 			return attached(instance, ModelAttachment.DataStore);
 		}
-	});
+	} as unknown as PersistentModelConstructor<T>;
 
 	clazz[immerable] = true;
 
@@ -977,7 +985,7 @@ const createModelClass = <T extends PersistentModel>(
 		pkField: extractPrimaryKeyFieldNames(modelDefinition),
 	});
 	for (const relationship of allModelRelationships) {
-		const field = relationship.field;
+		const { field } = relationship;
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
 			set(model: T | undefined | null) {
@@ -989,7 +997,7 @@ const createModelClass = <T extends PersistentModel>(
 					// Avoid validation error when processing AppSync response with nested
 					// selection set. Nested entitites lack version field and can not be validated
 					// TODO: explore a more reliable method to solve this
-					if (model.hasOwnProperty('_version')) {
+					if (Object.prototype.hasOwnProperty.call(model, '_version')) {
 						const modelConstructor = Object.getPrototypeOf(model || {})
 							.constructor as PersistentModelConstructor<T>;
 
@@ -1035,7 +1043,7 @@ const createModelClass = <T extends PersistentModel>(
 				// if the memos already has a result for this field, we'll use it.
 				// there is no "cache" invalidation of any kind; memos are permanent to
 				// keep an immutable perception of the instance.
-				if (!instanceMemos.hasOwnProperty(field)) {
+				if (!Object.prototype.hasOwnProperty.call(instanceMemos, field)) {
 					// before we populate the memo, we need to know where to look for relatives.
 					// today, this only supports DataStore. Models aren't managed elsewhere in Amplify.
 					if (getAttachment(this) === ModelAttachment.DataStore) {
@@ -1047,12 +1055,14 @@ const createModelClass = <T extends PersistentModel>(
 							relationship.remoteModelConstructor as PersistentModelConstructor<T>,
 							base =>
 								base.and(q => {
-									return relationship.remoteJoinFields.map((field, index) => {
-										// TODO: anything we can use instead of `any` here?
-										return (q[field] as T[typeof field]).eq(
-											this[relationship.localJoinFields[index]],
-										);
-									});
+									return relationship.remoteJoinFields.map(
+										(joinField, index) => {
+											// TODO: anything we can use instead of `any` here?
+											return (q[joinField] as T[typeof joinField]).eq(
+												this[relationship.localJoinFields[index]],
+											);
+										},
+									);
 								}),
 						);
 
@@ -1109,9 +1119,9 @@ export class AsyncItem<T> extends Promise<T> {}
  * This collection can be async-iterated or turned directly into an array using `toArray()`.
  */
 export class AsyncCollection<T> implements AsyncIterable<T> {
-	private values: Array<any> | Promise<Array<any>>;
+	private values: any[] | Promise<any[]>;
 
-	constructor(values: Array<any> | Promise<Array<any>>) {
+	constructor(values: any[] | Promise<any[]>) {
 		this.values = values;
 	}
 
@@ -1129,6 +1139,7 @@ export class AsyncCollection<T> implements AsyncIterable<T> {
 	[Symbol.asyncIterator](): AsyncIterator<T> {
 		let values;
 		let index = 0;
+
 		return {
 			next: async () => {
 				if (!values) values = await this.values;
@@ -1138,8 +1149,10 @@ export class AsyncCollection<T> implements AsyncIterable<T> {
 						done: false,
 					};
 					index++;
+
 					return result;
 				}
+
 				return {
 					value: null,
 					done: true,
@@ -1169,6 +1182,7 @@ export class AsyncCollection<T> implements AsyncIterable<T> {
 				break;
 			}
 		}
+
 		return output;
 	}
 }
@@ -1206,7 +1220,7 @@ const checkReadOnlyPropertyOnUpdate = (
 const createNonModelClass = <T extends PersistentModel>(
 	typeDefinition: SchemaNonModel,
 ) => {
-	const clazz = <NonModelTypeConstructor<T>>(<unknown>class Model {
+	const clazz = class Model {
 		constructor(init: ModelInit<T>) {
 			const instance = produce(
 				this,
@@ -1217,7 +1231,7 @@ const createNonModelClass = <T extends PersistentModel>(
 
 			return instance;
 		}
-	});
+	} as unknown as NonModelTypeConstructor<T>;
 
 	clazz[immerable] = true;
 
@@ -1235,6 +1249,7 @@ function isQueryOne(obj: any): obj is string {
 function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	const { localModel, modelConstructor, remoteModel } = conflictData;
 	const { _version } = remoteModel;
+
 	return modelInstanceCreator(modelConstructor, { ...localModel, _version });
 }
 
@@ -1291,14 +1306,14 @@ async function checkSchemaVersion(
 	storage: Storage,
 	version: string,
 ): Promise<void> {
-	const Setting =
+	const SettingCtor =
 		dataStoreClasses.Setting as PersistentModelConstructor<Setting>;
 
 	const modelDefinition = schema.namespaces[DATASTORE].models.Setting;
 
 	await storage.runExclusive(async s => {
 		const [schemaVersionSetting] = await s.query(
-			Setting,
+			SettingCtor,
 			ModelPredicateCreator.createFromAST(modelDefinition, {
 				and: { key: { eq: SETTING_SCHEMA_VERSION } },
 			}),
@@ -1316,7 +1331,7 @@ async function checkSchemaVersion(
 			}
 		} else {
 			await s.save(
-				modelInstanceCreator(Setting, {
+				modelInstanceCreator(SettingCtor, {
 					key: SETTING_SCHEMA_VERSION,
 					value: JSON.stringify(version),
 				}),
@@ -1394,8 +1409,8 @@ class DataStore {
 	private errorHandler!: (error: SyncError<PersistentModel>) => void;
 	private fullSyncInterval!: number;
 	private initialized?: Promise<void>;
-	private initReject!: Function;
-	private initResolve!: Function;
+	private initReject!: () => void;
+	private initResolve!: () => void;
 	private maxRecordsToSync!: number;
 	private storage?: Storage;
 	private sync?: SyncEngine;
@@ -1403,12 +1418,14 @@ class DataStore {
 	private syncExpressions!: SyncExpression[];
 	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any> | null> =
 		new WeakMap<SchemaModel, ModelPredicate<any>>();
+
 	private sessionId?: string;
 	private storageAdapter!: Adapter;
 	// object that gets passed to descendent classes. Allows us to pass these down by reference
 	private amplifyContext: AmplifyContext = {
 		InternalAPI: this.InternalAPI,
 	};
+
 	private connectivityMonitor?: DataStoreConnectivity;
 
 	/**
@@ -1501,12 +1518,13 @@ class DataStore {
 				this.state = DataStoreState.Starting;
 				if (this.initialized === undefined) {
 					logger.debug('Starting DataStore');
-					this.initialized = new Promise((res, rej) => {
-						this.initResolve = res;
-						this.initReject = rej;
+					this.initialized = new Promise((resolve, reject) => {
+						this.initResolve = resolve;
+						this.initReject = reject;
 					});
 				} else {
 					await this.initialized;
+
 					return;
 				}
 
@@ -1629,7 +1647,7 @@ class DataStore {
 					throw new Error('No storage to query');
 				}
 
-				//#region Input validation
+				// #region Input validation
 
 				if (!isValidModelConstructor(modelConstructor)) {
 					const msg = 'Constructor is not for a valid model';
@@ -1675,10 +1693,10 @@ class DataStore {
 					);
 				} else {
 					// Object is being queried using object literal syntax
-					if (isIdentifierObject(<T>identifierOrCriteria, modelDefinition)) {
+					if (isIdentifierObject(identifierOrCriteria as T, modelDefinition)) {
 						const predicate = ModelPredicateCreator.createForPk<T>(
 							modelDefinition,
-							<T>identifierOrCriteria,
+							identifierOrCriteria as T,
 						);
 						result = await this.storage.query<T>(
 							modelConstructor,
@@ -1710,7 +1728,7 @@ class DataStore {
 					}
 				}
 
-				//#endregion
+				// #endregion
 
 				const returnOne =
 					isQueryOne(identifierOrCriteria) ||
@@ -1757,7 +1775,9 @@ class DataStore {
 					| undefined = updatedPatchesTuple || initPatchesTuple;
 
 				const modelConstructor: PersistentModelConstructor<T> | undefined =
-					model ? <PersistentModelConstructor<T>>model.constructor : undefined;
+					model
+						? (model.constructor as PersistentModelConstructor<T>)
+						: undefined;
 
 				if (!isValidModelConstructor(modelConstructor)) {
 					const msg = 'Object is not an instance of a valid model';
@@ -1816,12 +1836,8 @@ class DataStore {
 					: undefined;
 
 				const [savedModel] = await this.storage.runExclusive(async s => {
-					const saved = await s.save(
-						model,
-						producedCondition,
-						undefined,
-						patchesTuple,
-					);
+					await s.save(model, producedCondition, undefined, patchesTuple);
+
 					return s.query<T>(
 						modelConstructor,
 						ModelPredicateCreator.createForPk(modelDefinition, model),
@@ -1942,7 +1958,7 @@ class DataStore {
 						if (isIdentifierObject(identifierOrCriteria, modelDefinition)) {
 							condition = ModelPredicateCreator.createForPk<T>(
 								modelDefinition,
-								<T>identifierOrCriteria,
+								identifierOrCriteria as T,
 							);
 						} else {
 							condition = internals(
@@ -2057,11 +2073,11 @@ class DataStore {
 				: undefined;
 
 		if (modelOrConstructor && modelConstructor === undefined) {
-			const model = <T>modelOrConstructor;
-			const modelConstructor =
-				model && (<Object>Object.getPrototypeOf(model)).constructor;
+			const model = modelOrConstructor as T;
+			const resolvedModelConstructor =
+				model && (Object.getPrototypeOf(model) as object).constructor;
 
-			if (isValidModelConstructor<T>(modelConstructor)) {
+			if (isValidModelConstructor<T>(resolvedModelConstructor)) {
 				if (identifierOrCriteria) {
 					logger.warn('idOrCriteria is ignored when using a model instance', {
 						model,
@@ -2069,7 +2085,7 @@ class DataStore {
 					});
 				}
 
-				return this.observe(modelConstructor, model.id);
+				return this.observe(resolvedModelConstructor, model.id);
 			} else {
 				const msg =
 					'The model is not an instance of a PersistentModelConstructor';
@@ -2169,8 +2185,12 @@ class DataStore {
 										observer.next(message as SubscriptionMessage<T>);
 									}
 								}, 'datastore observe message handler'),
-							error: err => observer.error(err),
-							complete: () => observer.complete(),
+							error: err => {
+								observer.error(err);
+							},
+							complete: () => {
+								observer.complete();
+							},
 						});
 				}, 'datastore observe observable initialization')
 				.catch(this.handleAddProcError('DataStore.observe()'))
@@ -2189,13 +2209,11 @@ class DataStore {
 		});
 	};
 
-	observeQuery: {
-		<T extends PersistentModel>(
-			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: RecursiveModelPredicateExtender<T> | typeof PredicateAll,
-			paginationProducer?: ObserveQueryOptions<T>,
-		): Observable<DataStoreSnapshot<T>>;
-	} = <T extends PersistentModel>(
+	observeQuery: <T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		criteria?: RecursiveModelPredicateExtender<T> | typeof PredicateAll,
+		paginationProducer?: ObserveQueryOptions<T>,
+	) => Observable<DataStoreSnapshot<T>> = <T extends PersistentModel>(
 		model: PersistentModelConstructor<T>,
 		criteria?: RecursiveModelPredicateExtender<T> | typeof PredicateAll,
 		options?: ObserveQueryOptions<T>,
@@ -2264,10 +2282,11 @@ class DataStore {
 						// to have visibility into items that move from in-set to out-of-set.
 						// We need to explicitly remove those items from the existing snapshot.
 						handle = this.observe(model).subscribe(
-							({ element, model, opType }) =>
+							({ element, model: observedModel, opType }) =>
 								this.runningProcesses.isOpen &&
 								this.runningProcesses.add(async () => {
-									const itemModelDefinition = getModelDefinition(model)!;
+									const itemModelDefinition =
+										getModelDefinition(observedModel)!;
 									const idOrPk = getIdentifierValue(
 										itemModelDefinition,
 										element,
@@ -2302,7 +2321,7 @@ class DataStore {
 									}
 
 									const isSynced =
-										this.sync?.getModelSyncedStatus(model) ?? false;
+										this.sync?.getModelSyncedStatus(observedModel) ?? false;
 
 									const limit =
 										itemsChanged.size - deletedItemIds.length >=
@@ -2391,8 +2410,11 @@ class DataStore {
 			 * @param itemsToSort A array of model type.
 			 */
 			const sortItems = (itemsToSort: T[]): void => {
-				const modelDefinition = getModelDefinition(model);
-				const pagination = this.processPagination(modelDefinition!, options);
+				const sortingModelDefinition = getModelDefinition(model);
+				const pagination = this.processPagination(
+					sortingModelDefinition!,
+					options,
+				);
 
 				const sortPredicates = ModelSortPredicateCreator.getPredicates(
 					pagination!.sort!,
@@ -2438,8 +2460,6 @@ class DataStore {
 		const {
 			DataStore: configDataStore,
 			authModeStrategyType: configAuthModeStrategyType,
-			conflictHandler: configConflictHandler,
-			errorHandler: configErrorHandler,
 			maxRecordsToSync: configMaxRecordsToSync,
 			syncPageSize: configSyncPageSize,
 			fullSyncInterval: configFullSyncInterval,
@@ -2700,6 +2720,7 @@ class DataStore {
 	): Promise<ModelPredicateExtender<T>> {
 		try {
 			const condition = await conditionProducer();
+
 			return condition || conditionProducer;
 		} catch (error) {
 			if (error instanceof TypeError) {
@@ -2719,6 +2740,7 @@ class DataStore {
 					`You can only utilize one Sync Expression per model.
           Subsequent sync expressions for the ${name} model will be ignored.`,
 				);
+
 				return map;
 			}
 

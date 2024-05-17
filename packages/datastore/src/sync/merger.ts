@@ -7,6 +7,7 @@ import {
 	PersistentModelConstructor,
 	SchemaModel,
 } from '../types';
+
 import { MutationEventOutbox } from './outbox';
 import { getIdentifierValue } from './utils';
 
@@ -14,7 +15,7 @@ import { getIdentifierValue } from './utils';
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
-		private readonly ownSymbol: Symbol,
+		private readonly ownSymbol: symbol,
 	) {}
 
 	/**
@@ -55,7 +56,7 @@ class ModelMerger {
 		items: ModelInstanceMetadata[],
 		modelDefinition: SchemaModel,
 	): Promise<[ModelInstanceMetadata, OpType][]> {
-		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
+		const itemsMap = new Map<string, ModelInstanceMetadata>();
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
@@ -66,7 +67,7 @@ class ModelMerger {
 
 		const page = [...itemsMap.values()];
 
-		return await storage.batchSave(modelConstructor, page, this.ownSymbol);
+		return storage.batchSave(modelConstructor, page, this.ownSymbol);
 	}
 }
 

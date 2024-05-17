@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "6.0.31",
+	"version": "6.0.33",
 	"description": "Api category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -17,7 +17,7 @@
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
 		"build-with-test": "npm test && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
-		"build:esm-cjs": "rollup -c rollup.config.mjs",
+		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
 		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
@@ -79,8 +79,8 @@
 		"server"
 	],
 	"dependencies": {
-		"@aws-amplify/api-graphql": "4.1.0",
-		"@aws-amplify/api-rest": "4.0.29",
+		"@aws-amplify/api-graphql": "4.1.2",
+		"@aws-amplify/api-rest": "4.0.31",
 		"tslib": "^2.5.0"
 	}
 }

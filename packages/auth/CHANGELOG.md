@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.1...@aws-amplify/auth@6.3.2) (2024-05-16)
+
+### Bug Fixes
+
+- **ssr-adapter:** refreshToken may return the same tokens across requests ([#13387](https://github.com/aws-amplify/amplify-js/issues/13387)) ([2e5e2f1](https://github.com/aws-amplify/amplify-js/commit/2e5e2f1ab49edfd4c5f4abbf2391633da29bd476))
+
+## [6.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.0...@aws-amplify/auth@6.3.1) (2024-05-13)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [6.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.2.2...@aws-amplify/auth@6.3.0) (2024-05-07)
+
+### Features
+
+- **auth:** add a default deviceName when remembering device ([#13022](https://github.com/aws-amplify/amplify-js/issues/13022)) ([5f34186](https://github.com/aws-amplify/amplify-js/commit/5f3418678a06ac43ed8bf700649703c1cf280eeb))
+
 ## [6.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.2.1...@aws-amplify/auth@6.2.2) (2024-04-29)
 
 **Note:** Version bump only for package @aws-amplify/auth

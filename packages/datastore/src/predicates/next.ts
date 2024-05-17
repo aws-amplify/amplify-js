@@ -1,38 +1,38 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
-	PersistentModel,
+	AllFieldOperators,
 	ModelFieldType,
 	ModelMeta,
-	ModelPredicate as StoragePredicate,
-	AllFieldOperators,
-	PredicateInternalsKey,
 	V5ModelPredicate as ModelPredicate,
+	PersistentModel,
+	PredicateInternalsKey,
 	RecursiveModelPredicate,
-	RecursiveModelPredicateExtender,
 	RecursiveModelPredicateAggregateExtender,
+	RecursiveModelPredicateExtender,
+	ModelPredicate as StoragePredicate,
 } from '../types';
+import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
+import { ModelRelationship } from '../storage/relationship';
+import { asyncEvery, asyncSome } from '../util';
 
 import {
 	ModelPredicateCreator as FlatModelPredicateCreator,
 	comparisonKeys,
 } from './index';
-import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
-import { ModelRelationship } from '../storage/relationship';
-import { asyncSome, asyncEvery } from '../util';
 
 const ops = [...comparisonKeys] as AllFieldOperators[];
 
 type GroupOperator = 'and' | 'or' | 'not';
 
-type UntypedCondition = {
-	fetch: (storage: StorageAdapter) => Promise<Record<string, any>[]>;
-	matches: (item: Record<string, any>) => Promise<boolean>;
+interface UntypedCondition {
+	fetch(storage: StorageAdapter): Promise<Record<string, any>[]>;
+	matches(item: Record<string, any>): Promise<boolean>;
 	copy(
 		extract?: GroupCondition,
 	): [UntypedCondition, GroupCondition | undefined];
 	toAST(): any;
-};
+}
 
 /**
  * A map from keys (exposed to customers) to the internal predicate data
@@ -52,6 +52,7 @@ const predicateInternalsMap = new Map<PredicateInternalsKey, GroupCondition>();
 const registerPredicateInternals = (condition: GroupCondition, key?: any) => {
 	const finalKey = key || new PredicateInternalsKey();
 	predicateInternalsMap.set(finalKey, condition);
+
 	return finalKey;
 };
 
@@ -72,6 +73,7 @@ export const internals = (key: any) => {
 			"Invalid predicate. Terminate your predicate with a valid condition (e.g., `p => p.field.eq('value')`) or pass `Predicates.ALL`.",
 		);
 	}
+
 	return predicateInternalsMap.get(key)!;
 };
 
@@ -113,7 +115,7 @@ export class FieldCondition {
 	 * @param extract Not used. Present only to fulfill the `UntypedCondition` interface.
 	 * @returns A new, identitical `FieldCondition`.
 	 */
-	copy(extract?: GroupCondition): [FieldCondition, GroupCondition | undefined] {
+	copy(): [FieldCondition, GroupCondition | undefined] {
 		return [
 			new FieldCondition(this.field, this.operator, [...this.operands]),
 			undefined,
@@ -191,7 +193,8 @@ export class FieldCondition {
 	 * @param storage N/A. If ever implemented, the storage adapter to query.
 	 * @returns N/A. If ever implemented, return items from `storage` that match.
 	 */
-	async fetch(storage: StorageAdapter): Promise<Record<string, any>[]> {
+	async fetch(): Promise<Record<string, any>[]> {
+		// eslint-disable-next-line prefer-promise-reject-errors
 		return Promise.reject('No implementation needed [yet].');
 	}
 
@@ -217,6 +220,7 @@ export class FieldCondition {
 		const operation = operations[this.operator as keyof typeof operations];
 		if (operation) {
 			const result = operation();
+
 			return result;
 		} else {
 			throw new Error(`Invalid operator given: ${this.operator}`);
@@ -234,6 +238,7 @@ export class FieldCondition {
 		 */
 		const argumentCount = count => {
 			const argsClause = count === 1 ? 'argument is' : 'arguments are';
+
 			return () => {
 				if (this.operands.length !== count) {
 					return `Exactly ${count} ${argsClause} required.`;
@@ -278,6 +283,7 @@ export class FieldCondition {
  */
 const getGroupId = (() => {
 	let seed = 1;
+
 	return () => `group_${seed++}`;
 })();
 
@@ -345,7 +351,7 @@ export class GroupCondition {
 		 * This is used to guard against infinitely fetch -> optimize -> fetch
 		 * recursion.
 		 */
-		public isOptimized: boolean = false,
+		public isOptimized = false,
 	) {}
 
 	/**
@@ -386,6 +392,7 @@ export class GroupCondition {
 	 */
 	withFieldConditionsOnly(negate: boolean) {
 		const negateChildren = negate !== (this.operator === 'not');
+
 		return new GroupCondition(
 			this.model,
 			undefined,
@@ -495,7 +502,7 @@ export class GroupCondition {
 			return this.optimized().fetch(storage);
 		}
 
-		const resultGroups: Array<Record<string, any>[]> = [];
+		const resultGroups: Record<string, any>[][] = [];
 
 		const operator = (negate ? negations[this.operator] : this.operator) as
 			| 'or'
@@ -564,7 +571,7 @@ export class GroupCondition {
 
 				const relationship = ModelRelationship.from(this.model, g.field);
 
-				type JoinCondition = { [x: string]: { eq: any } };
+				type JoinCondition = Record<string, { eq: any }>;
 				if (relationship) {
 					const allJoinConditions: { and: JoinCondition[] }[] = [];
 					for (const relative of relatives) {
@@ -665,7 +672,7 @@ export class GroupCondition {
 	 */
 	async matches(
 		item: Record<string, any>,
-		ignoreFieldName: boolean = false,
+		ignoreFieldName = false,
 	): Promise<boolean> {
 		const itemToCheck =
 			this.field && !ignoreFieldName ? await item[this.field] : item;
@@ -686,6 +693,7 @@ export class GroupCondition {
 					return true;
 				}
 			}
+
 			return false;
 		}
 
@@ -699,6 +707,7 @@ export class GroupCondition {
 					'Invalid arguments! `not()` accepts exactly one predicate expression.',
 				);
 			}
+
 			return !(await this.operands[0].matches(itemToCheck));
 		} else {
 			throw new Error('Invalid group operator!');
@@ -769,7 +778,7 @@ export class GroupCondition {
  */
 export function recursivePredicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>,
-	allowRecursion: boolean = true,
+	allowRecursion = true,
 	field?: string,
 	query?: GroupCondition,
 	tail?: GroupCondition,
@@ -788,15 +797,16 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	registerPredicateInternals(baseCondition, link);
 
 	const copyLink = () => {
-		const [query, newTail] = baseCondition.copy(tailCondition);
+		const [copiedQuery, newTail] = baseCondition.copy(tailCondition);
 		const newLink = recursivePredicateFor(
 			ModelType,
 			allowRecursion,
 			undefined,
-			query,
+			copiedQuery,
 			newTail,
 		);
-		return { query, newTail, newLink };
+
+		return { query: copiedQuery, newTail, newLink };
 	};
 
 	// Adds .or() and .and() methods to the link.
@@ -805,7 +815,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		link[op] = (builder: RecursiveModelPredicateAggregateExtender<T>) => {
 			// or() and and() will return a copy of the original link
 			// to head off mutability concerns.
-			const { query, newTail } = copyLink();
+			const { query: copiedLinkQuery, newTail } = copyLink();
 
 			const childConditions = builder(
 				recursivePredicateFor(ModelType, allowRecursion),
@@ -829,7 +839,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 			);
 
 			// FinalPredicate
-			return registerPredicateInternals(query);
+			return registerPredicateInternals(copiedLinkQuery);
 		};
 	});
 
@@ -839,7 +849,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 	): PredicateInternalsKey => {
 		// not() will return a copy of the original link
 		// to head off mutability concerns.
-		const { query, newTail } = copyLink();
+		const { query: copiedLinkQuery, newTail } = copyLink();
 
 		// unlike and() and or(), the customer will supply a "singular" child predicate.
 		// the difference being: not() does not accept an array of predicate-like objects.
@@ -853,7 +863,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 		// A `FinalModelPredicate`.
 		// Return a thing that can no longer be extended, but instead used to `async filter(items)`
 		// or query storage: `.__query.fetch(storage)`.
-		return registerPredicateInternals(query);
+		return registerPredicateInternals(copiedLinkQuery);
 	};
 
 	// For each field on the model schema, we want to add a getter
@@ -881,7 +891,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 							[operator]: (...operands: any[]) => {
 								// build off a fresh copy of the existing `link`, just in case
 								// the same link is being used elsewhere by the customer.
-								const { query, newTail } = copyLink();
+								const { query: copiedLinkQuery, newTail } = copyLink();
 
 								// normalize operands. if any of the values are `undefiend`, use
 								// `null` instead, because that's what will be stored cross-platform.
@@ -898,7 +908,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 								// A `FinalModelPredicate`.
 								// Return a thing that can no longer be extended, but instead used to `async filter(items)`
 								// or query storage: `.__query.fetch(storage)`.
-								return registerPredicateInternals(query);
+								return registerPredicateInternals(copiedLinkQuery);
 							},
 						};
 					}, {});
@@ -945,6 +955,7 @@ export function recursivePredicateFor<T extends PersistentModel>(
 							newquery,
 							newtail,
 						);
+
 						return newlink;
 					} else {
 						throw new Error(

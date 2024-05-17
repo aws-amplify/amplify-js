@@ -3,16 +3,18 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
 import { StorageError } from '../../../../src/errors/StorageError';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 import { copyObject } from '../../../../src/providers/s3/utils/client';
 import { copy } from '../../../../src/providers/s3/apis';
 import {
 	CopyInput,
-	CopyWithPathInput,
 	CopyOutput,
+	CopyWithPathInput,
 	CopyWithPathOutput,
 } from '../../../../src/providers/s3/types';
+import './testUtils';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -81,14 +83,14 @@ describe('copy API', () => {
 			afterEach(() => {
 				jest.clearAllMocks();
 			});
-			const testCases: Array<{
+			const testCases: {
 				source: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
 				destination: {
 					accessLevel?: StorageAccessLevel;
 				};
 				expectedSourceKey: string;
 				expectedDestinationKey: string;
-			}> = [
+			}[] = [
 				{
 					source: { accessLevel: 'guest' },
 					destination: { accessLevel: 'guest' },
@@ -185,11 +187,14 @@ describe('copy API', () => {
 						});
 						expect(key).toEqual(destinationKey);
 						expect(copyObject).toHaveBeenCalledTimes(1);
-						expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-							...copyObjectClientBaseParams,
-							CopySource: expectedSourceKey,
-							Key: expectedDestinationKey,
-						});
+						await expect(copyObject).toBeLastCalledWithConfigAndInput(
+							copyObjectClientConfig,
+							{
+								...copyObjectClientBaseParams,
+								CopySource: expectedSourceKey,
+								Key: expectedDestinationKey,
+							},
+						);
 					});
 				},
 			);
@@ -238,11 +243,14 @@ describe('copy API', () => {
 					});
 					expect(path).toEqual(expectedDestinationPath);
 					expect(copyObject).toHaveBeenCalledTimes(1);
-					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-						...copyObjectClientBaseParams,
-						CopySource: `${bucket}/${expectedSourcePath}`,
-						Key: expectedDestinationPath,
-					});
+					await expect(copyObject).toBeLastCalledWithConfigAndInput(
+						copyObjectClientConfig,
+						{
+							...copyObjectClientBaseParams,
+							CopySource: `${bucket}/${expectedSourcePath}`,
+							Key: expectedDestinationPath,
+						},
+					);
 				},
 			);
 		});
@@ -260,20 +268,22 @@ describe('copy API', () => {
 				}),
 			);
 			expect.assertions(3);
-			const sourceKey = 'SourceKeyNotFound';
-			const destinationKey = 'destinationKey';
+			const missingSourceKey = 'SourceKeyNotFound';
 			try {
 				await copy({
-					source: { key: sourceKey },
+					source: { key: missingSourceKey },
 					destination: { key: destinationKey },
 				});
 			} catch (error: any) {
 				expect(copyObject).toHaveBeenCalledTimes(1);
-				expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-					...copyObjectClientBaseParams,
-					CopySource: `${bucket}/public/${sourceKey}`,
-					Key: `public/${destinationKey}`,
-				});
+				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+					copyObjectClientConfig,
+					{
+						...copyObjectClientBaseParams,
+						CopySource: `${bucket}/public/${missingSourceKey}`,
+						Key: `public/${destinationKey}`,
+					},
+				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});
@@ -281,7 +291,7 @@ describe('copy API', () => {
 		it('should return a path not found error when source uses path and destination uses key', async () => {
 			expect.assertions(2);
 			try {
-				// @ts-expect-error
+				// @ts-expect-error mismatch copy input not allowed
 				await copy({
 					source: { path: 'sourcePath' },
 					destination: { key: 'destinationKey' },
@@ -296,7 +306,7 @@ describe('copy API', () => {
 		it('should return a key not found error when source uses key and destination uses path', async () => {
 			expect.assertions(2);
 			try {
-				// @ts-expect-error
+				// @ts-expect-error mismatch copy input not allowed
 				await copy({
 					source: { key: 'sourcePath' },
 					destination: { path: 'destinationKey' },
