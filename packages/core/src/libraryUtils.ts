@@ -69,6 +69,7 @@ export {
 	AWSCredentials,
 } from './singleton/Auth/types';
 export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
+export { isValidCognitoToken } from './utils/isValidCognitoToken';
 
 // Platform & user-agent utilities
 export {

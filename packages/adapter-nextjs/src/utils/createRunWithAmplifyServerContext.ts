@@ -11,6 +11,7 @@ import {
 
 import { NextServer } from '../types';
 
+import { validator } from './validator';
 import { createCookieStorageAdapterFromNextServerContext } from './createCookieStorageAdapterFromNextServerContext';
 
 export const createRunWithAmplifyServerContext = ({
@@ -34,6 +35,11 @@ export const createRunWithAmplifyServerContext = ({
 								createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
 								),
+								validator({
+									userPoolId: resourcesConfig?.Auth.Cognito?.userPoolId,
+									userPoolClientId:
+										resourcesConfig?.Auth.Cognito?.userPoolClientId,
+								}),
 							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,
