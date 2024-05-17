@@ -13,7 +13,11 @@ import {
 	resolveCredentials,
 	setToken,
 } from '../../../../../src/pushNotifications/utils';
-import { resolveConfig } from '../../../../../src/pushNotifications//providers/pinpoint/utils';
+import {
+	rejectInflightDeviceRegistration,
+	resolveConfig,
+	resolveInflightDeviceRegistration,
+} from '../../../../../src/pushNotifications//providers/pinpoint/utils';
 import {
 	completionHandlerId,
 	credentials,
@@ -56,8 +60,12 @@ describe('initializePushNotifications (native)', () => {
 	const mockGetToken = getToken as jest.Mock;
 	const mockInitialize = initialize as jest.Mock;
 	const mockIsInitialized = isInitialized as jest.Mock;
+	const mockRejectInflightDeviceRegistration =
+		rejectInflightDeviceRegistration as jest.Mock;
 	const mockResolveCredentials = resolveCredentials as jest.Mock;
 	const mockResolveConfig = resolveConfig as jest.Mock;
+	const mockResolveInflightDeviceRegistration =
+		resolveInflightDeviceRegistration as jest.Mock;
 	const mockSetToken = setToken as jest.Mock;
 	const mockNotifyEventListeners = notifyEventListeners as jest.Mock;
 	const mockNotifyEventListenersAndAwaitHandlers =
@@ -114,6 +122,8 @@ describe('initializePushNotifications (native)', () => {
 		mockEventListenerRemover.remove.mockClear();
 		mockNotifyEventListeners.mockClear();
 		mockNotifyEventListenersAndAwaitHandlers.mockClear();
+		mockRejectInflightDeviceRegistration.mockClear();
+		mockResolveInflightDeviceRegistration.mockClear();
 	});
 
 	it('only enables once', () => {
@@ -236,29 +246,29 @@ describe('initializePushNotifications (native)', () => {
 
 	describe('token received', () => {
 		it('registers and calls token received listener', done => {
+			expect.assertions(6);
 			mockGetToken.mockReturnValue(undefined);
 			mockAddTokenEventListener.mockImplementation(
 				async (heardEvent, handler) => {
 					if (heardEvent === NativeEvent.TOKEN_RECEIVED) {
 						await handler(pushToken);
+						expect(mockAddTokenEventListener).toHaveBeenCalledWith(
+							NativeEvent.TOKEN_RECEIVED,
+							expect.any(Function),
+						);
+						expect(mockSetToken).toHaveBeenCalledWith(pushToken);
+						expect(mockNotifyEventListeners).toHaveBeenCalledWith(
+							'tokenReceived',
+							pushToken,
+						);
+						expect(mockUpdateEndpoint).toHaveBeenCalled();
+						expect(mockResolveInflightDeviceRegistration).toHaveBeenCalled();
+						expect(mockRejectInflightDeviceRegistration).not.toHaveBeenCalled();
+						done();
 					}
 				},
 			);
-			mockUpdateEndpoint.mockImplementation(() => {
-				expect(mockUpdateEndpoint).toHaveBeenCalled();
-				done();
-			});
 			initializePushNotifications();
-
-			expect(mockAddTokenEventListener).toHaveBeenCalledWith(
-				NativeEvent.TOKEN_RECEIVED,
-				expect.any(Function),
-			);
-			expect(mockSetToken).toHaveBeenCalledWith(pushToken);
-			expect(mockNotifyEventListeners).toHaveBeenCalledWith(
-				'tokenReceived',
-				pushToken,
-			);
 		});
 
 		it('should not be invoke token received listener with the same token twice', () => {
@@ -292,6 +302,7 @@ describe('initializePushNotifications (native)', () => {
 		});
 
 		it('throws if device registration fails', done => {
+			expect.assertions(3);
 			mockUpdateEndpoint.mockImplementation(() => {
 				throw new Error();
 			});
@@ -299,6 +310,10 @@ describe('initializePushNotifications (native)', () => {
 				async (heardEvent, handler) => {
 					if (heardEvent === NativeEvent.TOKEN_RECEIVED) {
 						await expect(handler(pushToken)).rejects.toThrow();
+						expect(
+							mockResolveInflightDeviceRegistration,
+						).not.toHaveBeenCalled();
+						expect(mockRejectInflightDeviceRegistration).toHaveBeenCalled();
 						done();
 					}
 				},

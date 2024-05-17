@@ -8,6 +8,5 @@ node_modules/**
 *.log
 tsconfig.json
 tsfmt.json
-tslint.json
 typeDoc.js
 webpack.config.js

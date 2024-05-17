@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "2.0.30",
+	"version": "2.0.31",
 	"description": "Notifications category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -12,7 +12,7 @@
 	},
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage --logHeapUsage",
-		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",
+		"test:watch": "jest -w 1 --watch",
 		"build-with-test": "npm run clean && npm run build",
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
@@ -98,8 +98,8 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.2.0",
-		"@aws-amplify/react-native": "1.1.0",
+		"@aws-amplify/core": "6.2.1",
+		"@aws-amplify/react-native": "1.1.1",
 		"typescript": "5.0.2"
 	}
 }

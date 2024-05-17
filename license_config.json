@@ -38,7 +38,8 @@
 		"**/Gemfile",
 		"**/.rollup.cache",
 		"**/rollup.config.mjs",
-		"rollup"
+		"rollup",
+		".husky"
 	],
 	"ignoreFile": ".gitignore",
 	"license": "license_header.txt",
