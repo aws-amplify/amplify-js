@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { KeyValueStorageInterface } from '@aws-amplify/core';
+import { KeyValueStorageInterface } from '../../../index';
 
-export type Validator = Partial<
+export type KeyValueStorageValidator = Partial<
 	Record<keyof KeyValueStorageInterface, ValidatorFunction>
 >;
 

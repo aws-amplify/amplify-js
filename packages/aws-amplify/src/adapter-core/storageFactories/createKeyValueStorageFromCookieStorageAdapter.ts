@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KeyValueStorageInterface } from '@aws-amplify/core';
-import { CookieStorage } from '@aws-amplify/core/internals/adapter-core';
-
-import { Validator } from './types';
+import {
+	CookieStorage,
+	KeyValueStorageValidator,
+} from '@aws-amplify/core/internals/adapter-core';
 
 export const defaultSetCookieOptions: CookieStorage.SetCookieOptions = {
 	// TODO: allow configure with a public interface
@@ -20,7 +21,7 @@ const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
  */
 export const createKeyValueStorageFromCookieStorageAdapter = (
 	cookieStorageAdapter: CookieStorage.Adapter,
-	validatorMap?: Validator,
+	validatorMap?: KeyValueStorageValidator,
 ): KeyValueStorageInterface => {
 	return {
 		setItem(key, value) {

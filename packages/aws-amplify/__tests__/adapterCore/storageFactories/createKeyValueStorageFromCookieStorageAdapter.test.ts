@@ -22,7 +22,7 @@ describe('keyValueStorage', () => {
 		});
 
 		describe('the returned key value storage', () => {
-			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+			let keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
 				mockCookiesStorageAdapter,
 			);
 
@@ -55,6 +55,12 @@ describe('keyValueStorage', () => {
 			});
 
 			it('should get item', async () => {
+				const getItemValidator = jest.fn().mockImplementation(() => true);
+				keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+					mockCookiesStorageAdapter,
+					{ getItem: getItemValidator },
+				);
+
 				const testKey = 'testKey';
 				const testValue = 'testValue';
 				mockCookiesStorageAdapter.get.mockReturnValueOnce({
@@ -63,6 +69,7 @@ describe('keyValueStorage', () => {
 				});
 				const value = await keyValueStorage.getItem(testKey);
 				expect(value).toBe(testValue);
+				expect(getItemValidator).toHaveBeenCalledTimes(1);
 			});
 
 			it('should get null if item not found', async () => {

@@ -2,27 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { isValidCognitoToken } from '@aws-amplify/core/internals/utils';
-import { KeyValueStorageInterface } from '@aws-amplify/core';
-
-// TODO import type from here
-// import { Validator } from '@aws-amplify/core/internals/adapter-core';
-
-export type Validator = Partial<
-	Record<keyof KeyValueStorageInterface, ValidatorFunction>
->;
-
-type ValidatorFunction = (...args: any[]) => Promise<boolean>;
+import { KeyValueStorageValidator } from '@aws-amplify/core/internals/adapter-core';
 
 /**
  * Creates a validator object for validating methods in a KeyValueStorage.
  */
-export const validator = ({
+export const createTokenValidator = ({
 	userPoolId,
 	userPoolClientId: clientId,
 }: {
 	userPoolId: string | undefined;
 	userPoolClientId: string | undefined;
-}): Validator => {
+}): KeyValueStorageValidator => {
 	return {
 		// validate access, id tokens
 		getItem: async (key: string, value: string): Promise<boolean> => {
