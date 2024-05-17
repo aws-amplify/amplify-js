@@ -18,7 +18,7 @@ export {
 	retry,
 	urlSafeDecode,
 	urlSafeEncode,
-	deDupeAsyncFunction,
+	dedupeAsyncFunction,
 } from './utils';
 export { parseAWSExports } from './parseAWSExports';
 export { isAmplifyOutputs, parseAmplifyOutputs } from './parseAmplifyOutputs';

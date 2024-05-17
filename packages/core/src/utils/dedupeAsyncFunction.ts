@@ -7,7 +7,7 @@
  * @param asyncFunction - asyncFunction to be deduped.
  * @returns - the return type of the callback
  */
-export const deDupeAsyncFunction = <A extends any[], R>(
+export const dedupeAsyncFunction = <A extends any[], R>(
 	asyncFunction: (...args: A) => Promise<R>,
 ) => {
 	let inflightPromise: Promise<R> | undefined;

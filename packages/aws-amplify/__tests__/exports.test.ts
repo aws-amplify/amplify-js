@@ -218,8 +218,7 @@ describe('aws-amplify Exports', () => {
 					'DefaultIdentityIdStore',
 					'TokenOrchestrator',
 					'DefaultTokenStore',
-					'refreshAuthTokens',
-					'refreshAuthTokensWithoutDedupe',
+					'createAuthTokenRefresher',
 				].sort(),
 			);
 		});
