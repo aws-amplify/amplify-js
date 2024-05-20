@@ -4,16 +4,17 @@
 import { isValidCognitoToken } from '@aws-amplify/core/internals/utils';
 import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adapter-core';
 
+interface CreateTokenValidatorInput {
+	userPoolId?: string;
+	userPoolClientId?: string;
+}
 /**
  * Creates a validator object for validating methods in a KeyValueStorage.
  */
 export const createTokenValidator = ({
 	userPoolId,
 	userPoolClientId: clientId,
-interface CreateTokenValidatorProps {
- userPoolId?: string;
- userPoolClientId?: string;
-}
+}: CreateTokenValidatorInput): KeyValueStorageMethodValidator => {
 	return {
 		// validate access, id tokens
 		getItem: async (key: string, value: string): Promise<boolean> => {
