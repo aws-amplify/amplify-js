@@ -7,4 +7,4 @@ type AmplifyServerContextSpec = AmplifyServer.ContextSpec;
 
 export { AmplifyServerContextSpec, AmplifyServer };
 export { CookieStorage } from './cookieStorage';
-export { KeyValueStorageValidator } from './KeyValueStorageValidator';
+export { KeyValueStorageMethodValidator } from './KeyValueStorageMethodValidator';

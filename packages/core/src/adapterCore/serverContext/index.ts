@@ -10,5 +10,5 @@ export {
 export {
 	AmplifyServer,
 	CookieStorage,
-	KeyValueStorageValidator,
+	KeyValueStorageMethodValidator,
 } from './types';

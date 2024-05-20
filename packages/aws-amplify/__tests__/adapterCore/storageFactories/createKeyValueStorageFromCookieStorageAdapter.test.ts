@@ -22,7 +22,7 @@ describe('keyValueStorage', () => {
 		});
 
 		describe('the returned key value storage', () => {
-			let keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
 				mockCookiesStorageAdapter,
 			);
 
@@ -55,12 +55,6 @@ describe('keyValueStorage', () => {
 			});
 
 			it('should get item', async () => {
-				const getItemValidator = jest.fn().mockImplementation(() => true);
-				keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
-					mockCookiesStorageAdapter,
-					{ getItem: getItemValidator },
-				);
-
 				const testKey = 'testKey';
 				const testValue = 'testValue';
 				mockCookiesStorageAdapter.get.mockReturnValueOnce({
@@ -69,7 +63,6 @@ describe('keyValueStorage', () => {
 				});
 				const value = await keyValueStorage.getItem(testKey);
 				expect(value).toBe(testValue);
-				expect(getItemValidator).toHaveBeenCalledTimes(1);
 			});
 
 			it('should get null if item not found', async () => {
@@ -89,6 +82,45 @@ describe('keyValueStorage', () => {
 				expect(() => {
 					keyValueStorage.clear();
 				}).toThrow('This method has not implemented.');
+			});
+		});
+
+		describe('in conjunction with token validator', () => {
+			const testKey = 'testKey';
+			const testValue = 'testValue';
+
+			beforeEach(() => {
+				mockCookiesStorageAdapter.get.mockReturnValueOnce({
+					name: testKey,
+					value: testValue,
+				});
+			});
+			afterEach(() => {
+				jest.clearAllMocks();
+			});
+
+			it('should return item successfully if validation passes when getting item', async () => {
+				const getItemValidator = jest.fn().mockImplementation(() => true);
+				const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+					mockCookiesStorageAdapter,
+					{ getItem: getItemValidator },
+				);
+
+				const value = await keyValueStorage.getItem(testKey);
+				expect(value).toBe(testValue);
+				expect(getItemValidator).toHaveBeenCalledTimes(1);
+			});
+
+			it('should return null if validation fails when getting item', async () => {
+				const getItemValidator = jest.fn().mockImplementation(() => false);
+				const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+					mockCookiesStorageAdapter,
+					{ getItem: getItemValidator },
+				);
+
+				const value = await keyValueStorage.getItem(testKey);
+				expect(value).toBe(null);
+				expect(getItemValidator).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

@@ -4,7 +4,7 @@
 import { KeyValueStorageInterface } from '@aws-amplify/core';
 import {
 	CookieStorage,
-	KeyValueStorageValidator,
+	KeyValueStorageMethodValidator,
 } from '@aws-amplify/core/internals/adapter-core';
 
 export const defaultSetCookieOptions: CookieStorage.SetCookieOptions = {
@@ -21,7 +21,7 @@ const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
  */
 export const createKeyValueStorageFromCookieStorageAdapter = (
 	cookieStorageAdapter: CookieStorage.Adapter,
-	validatorMap?: KeyValueStorageValidator,
+	validatorMap?: KeyValueStorageMethodValidator,
 ): KeyValueStorageInterface => {
 	return {
 		setItem(key, value) {

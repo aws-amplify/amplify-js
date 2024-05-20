@@ -7,6 +7,6 @@ export {
 	destroyAmplifyServerContext,
 	AmplifyServer,
 	CookieStorage,
-	KeyValueStorageValidator,
+	KeyValueStorageMethodValidator,
 } from './serverContext';
 export { AmplifyServerContextError } from './error';
