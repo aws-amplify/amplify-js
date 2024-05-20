@@ -30,6 +30,8 @@ export const isValidCognitoToken = async (input: {
 
 		return true;
 	} catch (error) {
+		// TODO (ashwinkumar6): surface invalid cognito token error to customer
+		// TODO: clear invalid tokens from Storage
 		return false;
 	}
 };
