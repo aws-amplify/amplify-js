@@ -3,7 +3,7 @@
 
 import { KeyValueStorageInterface } from '../../../types/storage';
 
-export type KeyValueStorageValidator = Partial<
+export type KeyValueStorageMethodValidator = Partial<
 	Record<keyof KeyValueStorageInterface, ValidatorFunction>
 >;
 
