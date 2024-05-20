@@ -34,7 +34,7 @@ describe('Validator', () => {
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
-	it('should return a key value storage', () => {
+	it('should return a validator', () => {
 		expect(createTokenValidator(tokenValidatorInput)).toBeDefined();
 	});
 
