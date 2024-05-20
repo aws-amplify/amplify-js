@@ -10,10 +10,10 @@ import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adap
 export const createTokenValidator = ({
 	userPoolId,
 	userPoolClientId: clientId,
-}: {
-	userPoolId: string | undefined;
-	userPoolClientId: string | undefined;
-}): KeyValueStorageMethodValidator => {
+interface CreateTokenValidatorProps {
+ userPoolId?: string;
+ userPoolClientId?: string;
+}
 	return {
 		// validate access, id tokens
 		getItem: async (key: string, value: string): Promise<boolean> => {
