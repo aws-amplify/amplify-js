@@ -89,19 +89,19 @@
 			"name": "Interactions (default to Lex v2)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "52.52 kB"
+			"limit": "52.64 kB"
 		},
 		{
 			"name": "Interactions (Lex v2)",
 			"path": "./dist/esm/lex-v2/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "52.52 kB"
+			"limit": "52.64 kB"
 		},
 		{
 			"name": "Interactions (Lex v1)",
 			"path": "./dist/esm/lex-v1/index.mjs",
 			"import": "{ Interactions }",
-			"limit": "47.33 kB"
+			"limit": "47.45 kB"
 		}
 	]
 }
