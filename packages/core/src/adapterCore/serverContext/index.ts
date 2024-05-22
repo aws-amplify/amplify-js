@@ -7,8 +7,4 @@ export {
 	getAmplifyServerContext,
 } from './serverContext';
 
-export {
-	AmplifyServer,
-	CookieStorage,
-	KeyValueStorageMethodValidator,
-} from './types';
+export { AmplifyServer, CookieStorage } from './types';
