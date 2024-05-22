@@ -4,7 +4,7 @@ import { CognitoIdentityCredentials } from 'aws-sdk';
 import { Signer, Credentials, Constants } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import API, { graphqlOperation } from '../src/API';
-import { GRAPHQL_AUTH_MODE } from '../src/types';
+import { GRAPHQL_AUTH_MODE, GraphQLAuthError } from '../src/types';
 import { RestClient } from '../src/RestClient';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
@@ -597,7 +597,7 @@ describe('API test', () => {
 					variables,
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
 				})
-			).rejects.toThrowError('No userPool');
+			).rejects.toThrowError(GraphQLAuthError.NO_CURRENT_USER);
 		});
 
 		test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {

@@ -84,3 +84,10 @@ export interface GraphQLResult {
 	errors?: [object];
 	extensions?: { [key: string]: any };
 }
+
+export enum GraphQLAuthError {
+	NO_API_KEY = 'No api-key configured',
+	NO_CURRENT_USER = 'No current user',
+	NO_CREDENTIALS = 'No credentials',
+	NO_FEDERATED_JWT = 'No federated jwt',
+}
