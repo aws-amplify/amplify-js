@@ -14,6 +14,7 @@ import {
 	CopyWithPathInput,
 	CopyWithPathOutput,
 } from '../../../../src/providers/s3/types';
+import './testUtils';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -186,11 +187,14 @@ describe('copy API', () => {
 						});
 						expect(key).toEqual(destinationKey);
 						expect(copyObject).toHaveBeenCalledTimes(1);
-						expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-							...copyObjectClientBaseParams,
-							CopySource: expectedSourceKey,
-							Key: expectedDestinationKey,
-						});
+						await expect(copyObject).toBeLastCalledWithConfigAndInput(
+							copyObjectClientConfig,
+							{
+								...copyObjectClientBaseParams,
+								CopySource: expectedSourceKey,
+								Key: expectedDestinationKey,
+							},
+						);
 					});
 				},
 			);
@@ -239,11 +243,14 @@ describe('copy API', () => {
 					});
 					expect(path).toEqual(expectedDestinationPath);
 					expect(copyObject).toHaveBeenCalledTimes(1);
-					expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-						...copyObjectClientBaseParams,
-						CopySource: `${bucket}/${expectedSourcePath}`,
-						Key: expectedDestinationPath,
-					});
+					await expect(copyObject).toBeLastCalledWithConfigAndInput(
+						copyObjectClientConfig,
+						{
+							...copyObjectClientBaseParams,
+							CopySource: `${bucket}/${expectedSourcePath}`,
+							Key: expectedDestinationPath,
+						},
+					);
 				},
 			);
 		});
@@ -269,11 +276,14 @@ describe('copy API', () => {
 				});
 			} catch (error: any) {
 				expect(copyObject).toHaveBeenCalledTimes(1);
-				expect(copyObject).toHaveBeenCalledWith(copyObjectClientConfig, {
-					...copyObjectClientBaseParams,
-					CopySource: `${bucket}/public/${missingSourceKey}`,
-					Key: `public/${destinationKey}`,
-				});
+				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+					copyObjectClientConfig,
+					{
+						...copyObjectClientBaseParams,
+						CopySource: `${bucket}/public/${missingSourceKey}`,
+						Key: `public/${destinationKey}`,
+					},
+				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});

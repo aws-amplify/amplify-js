@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAccessLevel } from '@aws-amplify/core';
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
+import { SigningOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { TransferProgressEvent } from '../../../types';
 import {
@@ -176,9 +176,8 @@ export type CopyDestinationOptionsWithKey = WriteOptions & {
  *
  * @internal
  */
-export interface ResolvedS3Config {
-	region: string;
-	credentials: AWSCredentials;
+export interface ResolvedS3Config
+	extends Pick<SigningOptions, 'credentials' | 'region'> {
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
