@@ -116,6 +116,6 @@ export class AmplifyClass {
  * The `Amplify` utility is used to configure the library.
  *
  * @remarks
- * `Amplify` is responsible for orchestrating cross-category communication within the library.
+ * `Amplify` orchestrates cross-category communication within the library.
  */
 export const Amplify = new AmplifyClass();
