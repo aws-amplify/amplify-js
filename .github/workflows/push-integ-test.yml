@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - ashwin-ci-main
+      - ashwin-ci-main-withNewYarnLock
 
 jobs:
   e2e:
