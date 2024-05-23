@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.4.2...@aws-amplify/storage@6.4.3) (2024-05-23)
+
+### Bug Fixes
+
+- **storage:** credentials expires after 1 hour ([#13329](https://github.com/aws-amplify/amplify-js/issues/13329)) ([d7d33da](https://github.com/aws-amplify/amplify-js/commit/d7d33da192ff610c01fcdd417460ddd79d3dcb8d))
+
 ## [6.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.4.1...@aws-amplify/storage@6.4.2) (2024-05-13)
 
 **Note:** Version bump only for package @aws-amplify/storage
