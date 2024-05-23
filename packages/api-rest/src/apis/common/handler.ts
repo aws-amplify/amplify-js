@@ -21,6 +21,7 @@ import {
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse } from '../../types';
+import { iamAuthApplicableGQL } from '../../utils/iamAuthApplicable';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
@@ -47,6 +48,10 @@ export const transferHandler = async (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions & { abortSignal: AbortSignal },
 	signingServiceInfo?: SigningServiceInfo,
+	iamAuthApplicable: (
+		{ headers }: HttpRequest,
+		signingServiceInfo?: SigningServiceInfo,
+	) => boolean = iamAuthApplicableGQL,
 ): Promise<RestApiResponse> => {
 	const { url, method, headers, body, withCredentials, abortSignal } = options;
 	const resolvedBody = body
@@ -96,11 +101,6 @@ export const transferHandler = async (
 		body: response.body,
 	};
 };
-
-const iamAuthApplicable = (
-	{ headers }: HttpRequest,
-	signingServiceInfo?: SigningServiceInfo,
-) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;
 
 const resolveCredentials = async (
 	amplify: AmplifyClassV6,

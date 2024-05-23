@@ -25,6 +25,7 @@ import {
 	parseSigningInfo,
 	resolveApiUrl,
 } from '../../utils';
+import { iamAuthApplicablePublic } from '../../utils/iamAuthApplicable';
 
 import { transferHandler } from './handler';
 
@@ -72,6 +73,7 @@ const publicHandler = (
 				abortSignal,
 			},
 			signingServiceInfo,
+			iamAuthApplicablePublic,
 		);
 	});
 
