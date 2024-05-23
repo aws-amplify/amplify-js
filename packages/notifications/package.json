@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/notifications",
-	"version": "2.0.31",
+	"version": "2.0.32",
 	"description": "Notifications category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -98,7 +98,7 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.2.1",
+		"@aws-amplify/core": "6.3.0",
 		"@aws-amplify/react-native": "1.1.1",
 		"typescript": "5.0.2"
 	}
