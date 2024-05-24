@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { deleteUser } from '../../../src/providers/cognito';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import { deleteUser as providerDeleteUser } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { DeleteUserException } from '../../../src/providers/cognito/types/errors';
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
+
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 

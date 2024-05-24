@@ -3,11 +3,12 @@
 
 import {
 	Amplify,
-	clearCredentials,
 	ConsoleLogger,
 	Hub,
+	clearCredentials,
 } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import {
@@ -190,7 +191,7 @@ describe('signOut', () => {
 					domain: 'hosted-ui.test',
 					redirectSignIn: ['https://myapp.test/completeSignIn/'],
 					redirectSignOut: ['https://myapp.test/completeSignOut/'],
-					responseType: 'code' as 'code', // assert string union instead of string type
+					responseType: 'code' as const, // assert string union instead of string type
 					scopes: [],
 				},
 			},

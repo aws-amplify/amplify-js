@@ -2,18 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	CognitoAWSCredentialsAndIdentityIdProvider,
-	DefaultIdentityIdStore,
-} from '../../../src/providers/cognito';
-import { authAPITestParams } from './testUtils/authApiTestParams';
-import { AuthError } from '../../../src/errors/AuthError';
-import {
 	GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityOutput,
 	ResourcesConfig,
 	getCredentialsForIdentity,
 	sharedInMemoryStorage,
 } from '@aws-amplify/core';
+
+import {
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
+} from '../../../src/providers/cognito';
+import { AuthError } from '../../../src/errors/AuthError';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
@@ -99,7 +101,7 @@ describe('Guest Credentials', () => {
 				{ IdentityId: 'identity-id-test' },
 			);
 			expect(
-				cognitoCredentialsProvider['_nextCredentialsRefresh'],
+				cognitoCredentialsProvider._nextCredentialsRefresh,
 			).toBeGreaterThan(0);
 		});
 		test('in-memory guest creds are returned if not expired and not past TTL', async () => {

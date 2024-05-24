@@ -33,19 +33,21 @@ describe('tokenOrchestrator', () => {
 	});
 
 	beforeEach(() => {
-		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(Promise.resolve(false));
-	})
+		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(
+			Promise.resolve(false),
+		);
+	});
 
 	afterEach(() => {
 		(oAuthStore.loadOAuthInFlight as jest.Mock).mockClear();
-	})
+	});
 
 	describe('refreshTokens method', () => {
 		it('calls the set tokenRefresher, tokenStore and Hub while refreshing tokens', async () => {
 			const testUsername = 'username';
-			const testSignInDetails= {
-				authFlowType:'CUSTOM_WITHOUT_SRP',
-				loginId: testUsername
+			const testSignInDetails = {
+				authFlowType: 'CUSTOM_WITHOUT_SRP',
+				loginId: testUsername,
 			} as const;
 			const testInputTokens = {
 				accessToken: {
@@ -53,7 +55,7 @@ describe('tokenOrchestrator', () => {
 				},
 				clockDrift: 400000,
 				username: testUsername,
-				signInDetails:testSignInDetails
+				signInDetails: testSignInDetails,
 			};
 			// mock tokens should not include signInDetails
 			const mockTokens: CognitoAuthTokens = {
@@ -61,11 +63,11 @@ describe('tokenOrchestrator', () => {
 					payload: {},
 				},
 				clockDrift: 300,
-				username: testUsername
+				username: testUsername,
 			};
 			mockTokenRefresher.mockResolvedValueOnce(mockTokens);
 			mockTokenStore.storeTokens.mockResolvedValue(void 0);
-			const newTokens = await tokenOrchestrator['refreshTokens']({
+			const newTokens = await tokenOrchestrator.refreshTokens({
 				tokens: testInputTokens,
 				username: testUsername,
 			});
@@ -83,7 +85,7 @@ describe('tokenOrchestrator', () => {
 
 			// ensure the result is correct
 			expect(newTokens).toEqual(mockTokens);
-			expect(newTokens?.signInDetails).toEqual(testSignInDetails)
+			expect(newTokens?.signInDetails).toEqual(testSignInDetails);
 		});
 	});
 });

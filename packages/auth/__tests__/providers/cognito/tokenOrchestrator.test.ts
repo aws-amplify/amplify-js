@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import { Hub, ResourcesConfig } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+
+import { TokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import { addInflightPromise } from '../../../src/providers/cognito/utils/oauth/inflightPromise';
 import { oAuthStore } from '../../../src/providers/cognito/utils/oauth';
 
@@ -37,13 +38,9 @@ const validAuthConfig: ResourcesConfig = {
 	},
 };
 
-jest.mock(
-	'../../../src/providers/cognito/utils/oauth/inflightPromise',
-	() => ({
-		addInflightPromise: jest.fn(),
-	}),
-);
-
+jest.mock('../../../src/providers/cognito/utils/oauth/inflightPromise', () => ({
+	addInflightPromise: jest.fn(),
+}));
 
 const currentDate = new Date();
 
@@ -107,9 +104,9 @@ describe('TokenOrchestrator', () => {
 	const tokenOrchestrator = new TokenOrchestrator();
 	describe('Happy Path Cases:', () => {
 		beforeAll(() => {
-			mockAddInflightPromise.mockImplementation((resolver) => {
+			mockAddInflightPromise.mockImplementation(resolver => {
 				resolver();
-			})
+			});
 			tokenOrchestrator.setAuthConfig(validAuthConfig.Auth!);
 			tokenOrchestrator.setAuthTokenStore(mockAuthTokenStore);
 			tokenOrchestrator.setTokenRefresher(mockTokenRefresher);
@@ -143,20 +140,19 @@ describe('TokenOrchestrator', () => {
 		});
 
 		it('Should call addInflightPromise when OAuth is inflight', async () => {
-			 mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
+			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
 			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
-         
-		    expect(await tokenOrchestrator.getTokens()).resolves;
- 
+
+			expect(await tokenOrchestrator.getTokens()).resolves;
+
 			expect(addInflightPromise).toHaveBeenCalledWith(expect.any(Function));
 			expect(mockAddInflightPromise).toHaveBeenCalledTimes(1);
-	
+
 			const inflightPromiseResolver = mockAddInflightPromise.mock.calls[0][0];
 			inflightPromiseResolver();
 
-		
 			const tokens = await tokenOrchestrator.getTokens();
 			expect(tokens?.accessToken).toEqual(validAuthTokens.accessToken);
-		})
+		});
 	});
 });

@@ -1,12 +1,15 @@
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { refreshAuthTokens } from '../../../src/providers/cognito/utils/refreshAuthTokens';
 import { CognitoAuthTokens } from '../../../src/providers/cognito/tokenProvider/types';
 import { initiateAuth } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { mockAccessToken, mockRequestId } from './testUtils/data';
 import {
 	oAuthTokenRefreshException,
 	tokenRefreshException,
 } from '../../../src/providers/cognito/utils/types';
+
+import { mockAccessToken, mockRequestId } from './testUtils/data';
+
 jest.mock(
 	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
@@ -80,7 +83,7 @@ describe('refreshToken', () => {
 		});
 
 		it('should send UserContextData', async () => {
-			window['AmazonCognitoAdvancedSecurityData'] = {
+			window.AmazonCognitoAdvancedSecurityData = {
 				getData() {
 					return 'abcd';
 				},
@@ -114,7 +117,7 @@ describe('refreshToken', () => {
 					UserContextData: { EncodedData: 'abcd' },
 				}),
 			);
-			window['AmazonCognitoAdvancedSecurityData'] = undefined;
+			window.AmazonCognitoAdvancedSecurityData = undefined;
 		});
 	});
 

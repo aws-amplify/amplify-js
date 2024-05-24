@@ -3,28 +3,25 @@
 
 import { Amplify } from '@aws-amplify/core';
 import {
+	ADD_OAUTH_LISTENER,
 	assertOAuthConfig,
 	assertTokenProviderConfig,
-	urlSafeEncode,
 	isBrowser,
-	ADD_OAUTH_LISTENER,
+	urlSafeEncode,
 } from '@aws-amplify/core/internals/utils';
+
 import { assertUserNotAuthenticated } from '../../../src/providers/cognito/utils/signInHelpers';
 import {
+	completeOAuthFlow,
 	generateCodeVerifier,
 	generateState,
-} from '../../../src/providers/cognito/utils/oauth';
-import { getAuthUserAgentValue, openAuthSession } from '../../../src/utils';
-import {
 	handleFailure,
 	oAuthStore,
-	completeOAuthFlow,
 } from '../../../src/providers/cognito/utils/oauth';
+import { getAuthUserAgentValue, openAuthSession } from '../../../src/utils';
 import { attemptCompleteOAuthFlow } from '../../../src/providers/cognito/utils/oauth/attemptCompleteOAuthFlow';
 import { createOAuthError } from '../../../src/providers/cognito/utils/oauth/createOAuthError';
-
 import { signInWithRedirect } from '../../../src/providers/cognito/apis/signInWithRedirect';
-
 import type { OAuthStore } from '../../../src/providers/cognito/utils/types';
 import { mockAuthConfigWithOAuth } from '../../mockData';
 
@@ -39,6 +36,7 @@ jest.mock('@aws-amplify/core', () => {
 	const { ADD_OAUTH_LISTENER } = jest.requireActual(
 		'@aws-amplify/core/internals/utils',
 	);
+
 	return {
 		Amplify: {
 			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
@@ -192,7 +190,7 @@ describe('signInWithRedirect', () => {
 		});
 
 		it('invokes handleFailure when user cancels the oauth flow', async () => {
-			const error = new Error('OAuth flow was cancelled.')
+			const error = new Error('OAuth flow was cancelled.');
 			const mockOpenAuthSessionResult = {
 				type: undefined,
 			};
@@ -207,9 +205,9 @@ describe('signInWithRedirect', () => {
 			await signInWithRedirect({ provider: 'Google' });
 			expect(mockCreateOAuthError).toHaveBeenCalledTimes(1);
 			expect(mockHandleFailure).toHaveBeenCalledWith(error);
-		    
+
 			window.addEventListener = currentAddEventlistener;
-		})
+		});
 	});
 
 	describe('specifications on react-native', () => {
@@ -297,7 +295,6 @@ describe('signInWithRedirect', () => {
 
 			expect(oAuthStore.storeOAuthInFlight).toHaveBeenCalledTimes(0);
 		});
-
 	});
 
 	describe('errors', () => {
@@ -327,6 +324,5 @@ describe('signInWithRedirect', () => {
 
 			await expect(signInWithRedirect()).rejects.toThrow(mockError);
 		});
-
 	});
 });

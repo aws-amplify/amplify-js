@@ -3,10 +3,12 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { fetchDevices } from '../../../src/providers/cognito';
 import { listDevices } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { ListDevicesException } from '../../../src/providers/cognito/types/errors';
+
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 

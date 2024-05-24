@@ -1,11 +1,11 @@
-import { Amplify } from '@aws-amplify/core';
-import { fetchAuthSession } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import {
 	CognitoAWSCredentialsAndIdentityIdProvider,
-	cognitoUserPoolsTokenProvider,
 	cognitoCredentialsProvider,
+	cognitoUserPoolsTokenProvider,
 } from '../../../src/providers/cognito';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 describe('fetchAuthSession behavior for IdentityPools only', () => {
 	let credentialsProviderSpy;
