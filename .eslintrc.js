@@ -40,7 +40,7 @@ module.exports = {
 		'packages/api/__tests__',
 		'packages/api-graphql/__tests__',
 		'packages/api-rest/__tests__',
-		'packages/auth/__tests__',
+		// 'packages/auth/__tests__',
 		// 'packages/aws-amplify/__tests__',
 		// 'packages/core/__tests__',
 		'packages/datastore/__tests__',
