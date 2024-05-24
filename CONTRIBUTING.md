@@ -218,7 +218,7 @@ _[Skip step 1 to 3 if you have already done this]_
      - revert: Reverts a previous commit
    - Use slashes to separate parts of branch names
    - Hyphenate well-defined branch name
-5. Once your work is committed and you're ready to share, run test `yarn test`. Be sure to write tests to cover any added or modified code. Be especially vigilant when testing changes that affect shared code resources in order to catch problems such as race conditions.
+5. Be sure to write tests to cover any added or modified code. Be especially vigilant when testing changes that affect shared code resources in order to catch problems such as race conditions. Once your work is committed and you're ready to share, run test `yarn test` on root-level package.
 
    **Note:** Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
 
