@@ -82,9 +82,11 @@ module.exports = {
 					'logout_uri',
 					'id_token',
 					'access_token',
+					'refresh_token',
 					'token_type',
 					'expires_in',
 					'error_description',
+					'error_message',
 					// exceptions for the notifications package
 					'campaign_id',
 					'delivery_type',

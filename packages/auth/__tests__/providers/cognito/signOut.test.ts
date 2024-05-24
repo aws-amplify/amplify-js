@@ -33,6 +33,7 @@ jest.mock('../../../src/providers/cognito/utils/signInWithRedirectStore');
 jest.mock('../../../src/utils');
 
 describe('signOut', () => {
+	// eslint-disable-next-line camelcase
 	const accessToken = { payload: { origin_jti: 'revocation-id' } };
 	const region = 'us-west-2';
 	const cognitoConfig = {

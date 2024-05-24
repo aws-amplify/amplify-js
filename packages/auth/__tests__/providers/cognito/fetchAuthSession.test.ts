@@ -8,7 +8,7 @@ import {
 } from '../../../src/providers/cognito';
 
 describe('fetchAuthSession behavior for IdentityPools only', () => {
-	let credentialsProviderSpy;
+	let credentialsProviderSpy: jest.SpyInstance;
 	afterEach(() => {
 		jest.resetAllMocks();
 		jest.clearAllMocks();
@@ -75,9 +75,8 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 });
 
 describe('fetchAuthSession behavior for UserPools only', () => {
-	let tokenProviderSpy;
 	beforeEach(() => {
-		tokenProviderSpy = jest
+		jest
 			.spyOn(cognitoUserPoolsTokenProvider, 'getTokens')
 			.mockImplementation(async () => {
 				return {

@@ -32,7 +32,7 @@ Amplify.configure({
 });
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 describe('signIn API happy path cases', () => {
-	let handleCustomAuthFlowWithoutSRPSpy;
+	let handleCustomAuthFlowWithoutSRPSpy: jest.SpyInstance;
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -85,7 +85,7 @@ describe('signIn API happy path cases', () => {
 });
 
 describe('Cognito ASF', () => {
-	let initiateAuthSpy;
+	let initiateAuthSpy: jest.SpyInstance;
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -105,7 +105,7 @@ describe('Cognito ASF', () => {
 				}),
 			);
 		// load Cognito ASF polyfill
-		window.AmazonCognitoAdvancedSecurityData = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -114,11 +114,11 @@ describe('Cognito ASF', () => {
 
 	afterEach(() => {
 		initiateAuthSpy.mockClear();
-		window.AmazonCognitoAdvancedSecurityData = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 
 	test('signIn API should send UserContextData', async () => {
-		const result = await signIn({
+		await signIn({
 			username: authAPITestParams.user1.username,
 			options: {
 				authFlowType: 'CUSTOM_WITHOUT_SRP',

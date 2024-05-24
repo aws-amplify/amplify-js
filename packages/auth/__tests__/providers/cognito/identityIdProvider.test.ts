@@ -47,17 +47,19 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 	beforeAll(() => {
 		jest.spyOn(Amplify, 'getConfig').mockImplementationOnce(() => ampConfig);
 
-		mockGetId.mockImplementation(async (config: {}, params: GetIdInput) => {
-			if (params.Logins && Object.keys(params.Logins).length === 0) {
-				return {
-					IdentityId: authAPITestParams.GuestIdentityId.id,
-				} as GetIdOutput;
-			} else {
-				return {
-					IdentityId: authAPITestParams.PrimaryIdentityId.id,
-				} as GetIdOutput;
-			}
-		});
+		mockGetId.mockImplementation(
+			async (_config: object, params: GetIdInput) => {
+				if (params.Logins && Object.keys(params.Logins).length === 0) {
+					return {
+						IdentityId: authAPITestParams.GuestIdentityId.id,
+					} as GetIdOutput;
+				} else {
+					return {
+						IdentityId: authAPITestParams.PrimaryIdentityId.id,
+					} as GetIdOutput;
+				}
+			},
+		);
 	});
 
 	afterEach(() => {

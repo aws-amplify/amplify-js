@@ -42,6 +42,7 @@ describe('fetchDevices', () => {
 		name: 'deviceNameValue',
 		attributes: {
 			attributeName: 'attributeValue',
+			// eslint-disable-next-line camelcase
 			device_name: 'deviceNameValue',
 		},
 		createDate: date,

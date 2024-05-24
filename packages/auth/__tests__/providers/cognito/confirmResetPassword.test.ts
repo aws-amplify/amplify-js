@@ -44,9 +44,9 @@ describe('confirmResetPassword', () => {
 	});
 
 	it('should call the confirmForgotPassword and return void', async () => {
-		expect(
-			await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest),
-		).toBeUndefined();
+		await expect(
+			confirmResetPassword(authAPITestParams.confirmResetPasswordRequest),
+		).resolves.toBeUndefined();
 		expect(mockConfirmForgotPassword).toHaveBeenCalled();
 	});
 
@@ -137,7 +137,7 @@ describe('confirmResetPassword', () => {
 	});
 
 	it('should add UserContextData', async () => {
-		window.AmazonCognitoAdvancedSecurityData = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -164,6 +164,6 @@ describe('confirmResetPassword', () => {
 				},
 			}),
 		);
-		window.AmazonCognitoAdvancedSecurityData = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 });

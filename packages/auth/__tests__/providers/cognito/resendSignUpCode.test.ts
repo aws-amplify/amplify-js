@@ -89,7 +89,7 @@ describe('resendSignUpCode', () => {
 	});
 
 	it('should send UserContextData', async () => {
-		window.AmazonCognitoAdvancedSecurityData = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -111,6 +111,6 @@ describe('resendSignUpCode', () => {
 			},
 		);
 		expect(mockResendConfirmationCode).toHaveBeenCalledTimes(1);
-		window.AmazonCognitoAdvancedSecurityData = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 });

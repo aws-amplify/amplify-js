@@ -32,7 +32,7 @@ const authConfig = {
 const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 
 describe('confirmSignIn API happy path cases', () => {
-	let handleChallengeNameSpy;
+	let handleChallengeNameSpy: jest.SpyInstance;
 	const { username } = authAPITestParams.user1;
 	const { password } = authAPITestParams.user1;
 
@@ -276,8 +276,8 @@ describe('confirmSignIn API happy path cases', () => {
 });
 
 describe('Cognito ASF', () => {
-	let respondToAuthChallengeSpy;
-	let handleUserSRPAuthFlowSpy;
+	let respondToAuthChallengeSpy: jest.SpyInstance;
+	let handleUserSRPAuthFlowSpy: jest.SpyInstance;
 
 	const { username } = authAPITestParams.user1;
 	const { password } = authAPITestParams.user1;
@@ -287,7 +287,7 @@ describe('Cognito ASF', () => {
 		});
 
 		// load Cognito ASF polyfill
-		window.AmazonCognitoAdvancedSecurityData = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -318,7 +318,7 @@ describe('Cognito ASF', () => {
 	afterEach(() => {
 		respondToAuthChallengeSpy.mockClear();
 		handleUserSRPAuthFlowSpy.mockClear();
-		window.AmazonCognitoAdvancedSecurityData = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 
 	afterAll(() => {
@@ -415,16 +415,14 @@ describe('Cognito ASF', () => {
 		Amplify.configure({
 			Auth: authConfig,
 		});
-		const handleUserSRPAuthflowSpy = jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: 'SOFTWARE_TOKEN_MFA',
-					Session: '1234234232',
-					$metadata: {},
-					ChallengeParameters: {},
-				}),
-			);
+		jest.spyOn(signInHelpers, 'handleUserSRPAuthFlow').mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+				ChallengeName: 'SOFTWARE_TOKEN_MFA',
+				Session: '1234234232',
+				$metadata: {},
+				ChallengeParameters: {},
+			}),
+		);
 
 		const result = await signIn({ username, password });
 
@@ -460,16 +458,14 @@ describe('Cognito ASF', () => {
 		Amplify.configure({
 			Auth: authConfig,
 		});
-		const handleUserSRPAuthflowSpy = jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: 'NEW_PASSWORD_REQUIRED',
-					Session: '1234234232',
-					$metadata: {},
-					ChallengeParameters: {},
-				}),
-			);
+		jest.spyOn(signInHelpers, 'handleUserSRPAuthFlow').mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+				ChallengeName: 'NEW_PASSWORD_REQUIRED',
+				Session: '1234234232',
+				$metadata: {},
+				ChallengeParameters: {},
+			}),
+		);
 
 		const result = await signIn({ username, password });
 
@@ -506,16 +502,14 @@ describe('Cognito ASF', () => {
 		Amplify.configure({
 			Auth: authConfig,
 		});
-		const handleUserSRPAuthflowSpy = jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: 'CUSTOM_CHALLENGE',
-					Session: '1234234232',
-					$metadata: {},
-					ChallengeParameters: {},
-				}),
-			);
+		jest.spyOn(signInHelpers, 'handleUserSRPAuthFlow').mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+				ChallengeName: 'CUSTOM_CHALLENGE',
+				Session: '1234234232',
+				$metadata: {},
+				ChallengeParameters: {},
+			}),
+		);
 
 		const result = await signIn({ username, password });
 

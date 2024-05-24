@@ -143,7 +143,7 @@ describe('TokenOrchestrator', () => {
 			mockAuthTokenStore.loadTokens.mockResolvedValue(validAuthTokens);
 			(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(true);
 
-			expect(await tokenOrchestrator.getTokens()).resolves;
+			await tokenOrchestrator.getTokens();
 
 			expect(addInflightPromise).toHaveBeenCalledWith(expect.any(Function));
 			expect(mockAddInflightPromise).toHaveBeenCalledTimes(1);

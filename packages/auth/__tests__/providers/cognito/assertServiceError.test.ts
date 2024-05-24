@@ -8,7 +8,9 @@ describe('asserts service errors', () => {
 	test('it should throw an unknown error when error is null', () => {
 		try {
 			const error = null;
-			expect(assertServiceError(error)).toThrow();
+			expect(() => {
+				assertServiceError(error);
+			}).toThrow();
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AmplifyErrorCode.Unknown);
@@ -17,7 +19,9 @@ describe('asserts service errors', () => {
 	test('it should throw an unknown error when error is a TypeError', () => {
 		try {
 			const error = new TypeError('TypeError');
-			expect(assertServiceError(error)).toThrow();
+			expect(() => {
+				assertServiceError(error);
+			}).toThrow();
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AmplifyErrorCode.Unknown);
@@ -26,7 +30,9 @@ describe('asserts service errors', () => {
 	test('it should throw an unknown error when error does not have a name', () => {
 		try {
 			const error = new Error('Error');
-			expect(assertServiceError(error)).toThrow();
+			expect(() => {
+				assertServiceError(error);
+			}).toThrow();
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(AmplifyErrorCode.Unknown);
@@ -35,6 +41,8 @@ describe('asserts service errors', () => {
 	test('it should not throw if the error is coming from the service', () => {
 		const error = new Error('Service Error');
 		error.name = InitiateAuthException.InternalErrorException;
-		expect(assertServiceError(error)).toBeUndefined();
+		expect(() => {
+			assertServiceError(error);
+		}).not.toThrow();
 	});
 });

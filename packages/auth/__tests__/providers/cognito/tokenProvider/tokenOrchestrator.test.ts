@@ -66,8 +66,8 @@ describe('tokenOrchestrator', () => {
 				username: testUsername,
 			};
 			mockTokenRefresher.mockResolvedValueOnce(mockTokens);
-			mockTokenStore.storeTokens.mockResolvedValue(void 0);
-			const newTokens = await tokenOrchestrator.refreshTokens({
+			mockTokenStore.storeTokens.mockResolvedValue(undefined);
+			const newTokens = await (tokenOrchestrator as any).refreshTokens({
 				tokens: testInputTokens,
 				username: testUsername,
 			});

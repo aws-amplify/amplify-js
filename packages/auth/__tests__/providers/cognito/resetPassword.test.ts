@@ -92,7 +92,7 @@ describe('resetPassword', () => {
 	});
 
 	it('should send UserContextData', async () => {
-		window.AmazonCognitoAdvancedSecurityData = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -112,6 +112,6 @@ describe('resetPassword', () => {
 				UserContextData: { EncodedData: 'abcd' },
 			}),
 		);
-		window.AmazonCognitoAdvancedSecurityData = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 });

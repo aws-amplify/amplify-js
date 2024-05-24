@@ -33,14 +33,14 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => true),
 }));
 jest.mock('@aws-amplify/core', () => {
-	const { ADD_OAUTH_LISTENER } = jest.requireActual(
+	const { ADD_OAUTH_LISTENER: ACTUAL_ADD_OAUTH_LISTENER } = jest.requireActual(
 		'@aws-amplify/core/internals/utils',
 	);
 
 	return {
 		Amplify: {
 			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
-			[ADD_OAUTH_LISTENER]: jest.fn(),
+			[ACTUAL_ADD_OAUTH_LISTENER]: jest.fn(),
 		},
 		ConsoleLogger: jest.fn(),
 	};

@@ -83,7 +83,7 @@ describe('refreshToken', () => {
 		});
 
 		it('should send UserContextData', async () => {
-			window.AmazonCognitoAdvancedSecurityData = {
+			(window as any).AmazonCognitoAdvancedSecurityData = {
 				getData() {
 					return 'abcd';
 				},
@@ -117,7 +117,7 @@ describe('refreshToken', () => {
 					UserContextData: { EncodedData: 'abcd' },
 				}),
 			);
-			window.AmazonCognitoAdvancedSecurityData = undefined;
+			(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 		});
 	});
 
@@ -156,8 +156,7 @@ describe('refreshToken', () => {
 		it('should throw an exception when cognito tokens are not available', async () => {
 			await expect(
 				refreshAuthTokens({
-					// @ts-ignore
-					tokens: {},
+					tokens: {} as any,
 					authConfig: {
 						Cognito: {
 							userPoolId: 'us-east-1_aaaaaaa',

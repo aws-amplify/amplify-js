@@ -256,7 +256,7 @@ describe('signIn API happy path cases', () => {
 });
 
 describe('Cognito ASF', () => {
-	let initiateAuthSpy;
+	let initiateAuthSpy: jest.SpyInstance;
 
 	beforeAll(() => {
 		jest.restoreAllMocks();
@@ -273,7 +273,7 @@ describe('Cognito ASF', () => {
 				},
 			}));
 		// load Cognito ASF polyfill
-		window.AmazonCognitoAdvancedSecurityData = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -282,7 +282,7 @@ describe('Cognito ASF', () => {
 
 	afterEach(() => {
 		initiateAuthSpy.mockClear();
-		window.AmazonCognitoAdvancedSecurityData = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 
 	test('signIn SRP should send UserContextData', async () => {

@@ -33,7 +33,7 @@ Amplify.configure({
 	Auth: authConfig,
 });
 describe('signIn API happy path cases', () => {
-	let handleUserPasswordFlowSpy;
+	let handleUserPasswordFlowSpy: jest.SpyInstance;
 
 	beforeEach(() => {
 		handleUserPasswordFlowSpy = jest
@@ -79,7 +79,7 @@ describe('signIn API happy path cases', () => {
 });
 
 describe('Cognito ASF', () => {
-	let initiateAuthSpy;
+	let initiateAuthSpy: jest.SpyInstance;
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -96,7 +96,7 @@ describe('Cognito ASF', () => {
 				},
 			}));
 		// load Cognito ASF polyfill
-		window.AmazonCognitoAdvancedSecurityData = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -105,7 +105,7 @@ describe('Cognito ASF', () => {
 
 	afterEach(() => {
 		initiateAuthSpy.mockClear();
-		window.AmazonCognitoAdvancedSecurityData = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 
 	test('signIn API should send UserContextData', async () => {
