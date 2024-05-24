@@ -46,7 +46,7 @@ describe('Analytics Personalize API: flushEvents', () => {
 		await new Promise(process.nextTick);
 		expect(mockResolveConfig).toHaveBeenCalledTimes(1);
 		expect(mockResolveCredentials).toHaveBeenCalledTimes(1);
-		const { trackingId, ...configWithoutTrackingId } = mockPersonalizeConfig;
+		const { trackingId: _, ...configWithoutTrackingId } = mockPersonalizeConfig;
 		expect(mockGetEventBuffer).toHaveBeenNthCalledWith(
 			1,
 			expect.objectContaining({
