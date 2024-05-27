@@ -8,7 +8,7 @@ function bytesToBase64(bytes: Uint8Array): string {
 }
 
 export function utf8Encode(input: string): Uint8Array {
-	return new TextEncoder().encode(input);
+	return new TextEncoder().encode(atob(input));
 }
 
 export function toBase64(input: string | ArrayBufferView): string {
