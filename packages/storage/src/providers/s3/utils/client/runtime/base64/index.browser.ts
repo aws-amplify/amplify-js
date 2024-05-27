@@ -8,7 +8,6 @@ function bytesToBase64(bytes: Uint8Array): string {
 }
 
 export function utf8Encode(input: string): Uint8Array {
-	// return new TextEncoder().encode(atob(input));
 	const binaryData = atob(input);
 	const bytes = new Uint8Array(binaryData.length);
 
