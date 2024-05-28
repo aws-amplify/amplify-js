@@ -4,24 +4,24 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	authenticatedHandler,
-	unauthenticatedHandler,
 	parseJsonError,
+	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 
 import {
-	get,
-	post,
-	put,
 	del,
+	get,
 	head,
 	patch,
+	post,
+	put,
 } from '../../../src/apis/common/publicApis';
 import {
 	RestApiError,
+	RestApiValidationErrorCode,
 	isCancelError,
 	validationErrorMap,
-	RestApiValidationErrorCode,
 } from '../../../src/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
@@ -29,7 +29,7 @@ jest.mock('@aws-amplify/core/internals/aws-client-utils');
 const mockAuthenticatedHandler = authenticatedHandler as jest.Mock;
 const mockUnauthenticatedHandler = unauthenticatedHandler as jest.Mock;
 const mockFetchAuthSession = jest.fn();
-let mockConfig = {
+const mockConfig = {
 	API: {
 		REST: {
 			restApi1: {
@@ -304,6 +304,7 @@ describe('public APIs', () => {
 				mockParseJsonError.mockImplementationOnce(async response => {
 					const errorResponsePayload = await response.body?.json();
 					const error = new Error(errorResponsePayload.message);
+
 					return Object.assign(error, {
 						name: errorResponsePayload.name,
 					});
@@ -349,6 +350,7 @@ describe('public APIs', () => {
 				mockParseJsonError.mockImplementationOnce(async response => {
 					const errorResponsePayload = await response.body?.json();
 					const error = new Error(errorResponsePayload.message);
+
 					return Object.assign(error, {
 						name: errorResponsePayload.name,
 					});
