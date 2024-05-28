@@ -234,7 +234,7 @@ describe('internal post', () => {
 		let underLyingHandlerReject;
 		mockUnauthenticatedHandler.mockReset();
 		mockUnauthenticatedHandler.mockReturnValue(
-			new Promise((_, reject) => {
+			new Promise((_resolve, reject) => {
 				underLyingHandlerReject = reject;
 			}),
 		);

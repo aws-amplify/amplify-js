@@ -23,6 +23,7 @@ import {
 	isCancelError,
 	validationErrorMap,
 } from '../../../src/errors';
+import { RestApiResponse } from '../../../src/types';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
@@ -125,8 +126,9 @@ describe('public APIs', () => {
 				});
 				expect(response.statusCode).toBe(200);
 				if (fn !== head && fn !== del) {
-					// @ts-ignore HEAD and DELETE does not have a response body.
-					expect(await response.body.json()).toEqual({ foo: 'bar' });
+					expect(await (response as RestApiResponse).body.json()).toEqual({
+						foo: 'bar',
+					});
 				}
 			});
 
@@ -387,7 +389,7 @@ describe('public APIs', () => {
 				let underLyingHandlerReject;
 				mockAuthenticatedHandler.mockReset();
 				mockAuthenticatedHandler.mockReturnValue(
-					new Promise((_, reject) => {
+					new Promise((_resolve, reject) => {
 						underLyingHandlerReject = reject;
 					}),
 				);
