@@ -91,12 +91,6 @@ describe('AmazonLocationServiceProvider', () => {
 		(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 	});
 
-	describe('constructor', () => {
-		test('happy case', () => {
-			const provider = new AmazonLocationServiceProvider();
-		});
-	});
-
 	describe('getCategory', () => {
 		test('should return "Geo" when asked for category', () => {
 			const geo = new AmazonLocationServiceProvider();
@@ -311,9 +305,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
-				return Promise.reject();
-			});
+			(fetchAuthSession as jest.Mock).mockRejectedValueOnce('Auth Error');
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
@@ -477,9 +469,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
-				return Promise.reject();
-			});
+			(fetchAuthSession as jest.Mock).mockRejectedValueOnce('Auth Error');
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
@@ -560,9 +550,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
-				return Promise.reject();
-			});
+			(fetchAuthSession as jest.Mock).mockRejectedValueOnce('Auth Error');
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
@@ -656,9 +644,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
-				return Promise.reject();
-			});
+			(fetchAuthSession as jest.Mock).mockRejectedValueOnce('Auth Error');
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
@@ -781,13 +767,13 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 
 			const results = await locationProvider.saveGeofences(input);
-			const badResults = input.slice(20, 30).map(input => {
+			const badResults = input.slice(20, 30).map(result => {
 				return {
 					error: {
 						code: 'APIConnectionError',
 						message: 'Bad network call',
 					},
-					geofenceId: input.geofenceId,
+					geofenceId: result.geofenceId,
 				};
 			});
 			const expected = {
@@ -887,7 +873,7 @@ describe('AmazonLocationServiceProvider', () => {
 				status: 'ACTIVE',
 			};
 
-			await expect(results).toEqual(expected);
+			expect(results).toEqual(expected);
 		});
 
 		test('getGeofence errors when a bad geofenceId is given', async () => {

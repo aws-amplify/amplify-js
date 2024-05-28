@@ -68,8 +68,9 @@ describe('Geo utility functions', () => {
 
 	describe('validateLinearRing', () => {
 		test('should not throw an error for a valid LinearRing', () => {
-			const result = validateLinearRing(validLinearRing);
-			expect(() => result).not.toThrow();
+			expect(() => {
+				validateLinearRing(validLinearRing);
+			}).not.toThrow();
 		});
 		test('should error if first and last coordinates do not match', () => {
 			expect(() => {
@@ -181,8 +182,9 @@ describe('Geo utility functions', () => {
 
 	describe('validateGeofencesInput', () => {
 		test('should not throw an error for valid geofences', () => {
-			const result = validateGeofencesInput(validGeofences);
-			expect(() => result).not.toThrow();
+			expect(() => {
+				validateGeofencesInput(validGeofences);
+			}).not.toThrow();
 		});
 		test('should error if a geofenceId is not unique', () => {
 			expect(() => {

@@ -88,13 +88,6 @@ describe('Geo', () => {
 		jest.clearAllMocks();
 	});
 
-	describe('constructor', () => {
-		test('happy case', () => {
-			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
-			const geo = new GeoClass();
-		});
-	});
-
 	describe('getModuleName', () => {
 		(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 		const geo = new GeoClass();
