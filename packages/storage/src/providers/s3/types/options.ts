@@ -16,6 +16,8 @@ interface CommonOptions {
 	 * @default false
 	 */
 	useAccelerateEndpoint?: boolean;
+	/** Bucket name */
+	bucket?: string;
 }
 
 /** @deprecated This may be removed in the next major version. */
