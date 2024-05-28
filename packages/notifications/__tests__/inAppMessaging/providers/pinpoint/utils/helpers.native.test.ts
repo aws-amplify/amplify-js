@@ -8,14 +8,16 @@ import {
 	extractContent,
 	mapOSPlatform,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils/helpers';
-
 import {
-	nonBrowserConfigTestCases,
-	pinpointInAppMessage,
 	extractedContent,
 	nativeButtonOverrides,
+	nonBrowserConfigTestCases,
+	pinpointInAppMessage,
 } from '../../../../testUtils/data';
-import { mergeExpectedContentWithExpectedOverride, mergeInAppMessageWithOverrides } from '../../../../testUtils/mergeInAppMessageWithOverrides';
+import {
+	mergeExpectedContentWithExpectedOverride,
+	mergeInAppMessageWithOverrides,
+} from '../../../../testUtils/mergeInAppMessageWithOverrides';
 
 jest.mock('@aws-amplify/core');
 
@@ -23,6 +25,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => {
 	const originalModule = jest.requireActual(
 		'@aws-amplify/core/internals/utils',
 	);
+
 	return {
 		...originalModule,
 		getClientInfo: jest.fn(), // Setup as a Jest mock function without implementation
