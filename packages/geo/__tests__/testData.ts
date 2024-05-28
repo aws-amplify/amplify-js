@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
+import { GeoConfig } from '@aws-amplify/core';
+import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 
 import {
 	Coordinates,
-	LinearRing,
-	GeofencePolygon,
-	GeofenceInput,
-	PolygonGeometry,
 	Geofence,
+	GeofenceInput,
+	GeofencePolygon,
+	LinearRing,
+	PolygonGeometry,
 } from '../src/types';
-import { GeoConfig } from '@aws-amplify/core';
-import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 
 export const credentials = {
 	accessKeyId: 'accessKeyId',

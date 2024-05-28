@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { fetchAuthSession, Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	LocationClient,
-	SearchPlaceIndexForTextCommand,
-	SearchPlaceIndexForSuggestionsCommand,
-	SearchPlaceIndexForPositionCommand,
 	GetPlaceCommand,
+	LocationClient,
+	SearchPlaceIndexForPositionCommand,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForTextCommand,
 } from '@aws-sdk/client-location';
 import camelcaseKeys from 'camelcase-keys';
 
@@ -20,18 +20,17 @@ import {
 } from '../src/types';
 
 import {
-	credentials,
-	awsConfig,
 	TestPlacePascalCase,
-	testPlaceCamelCase,
-	validGeometry,
-	validGeofences,
-	validGeofence1,
-	singleGeofenceCamelcaseResults,
-	batchGeofencesCamelcaseResults,
+	awsConfig,
 	awsConfigGeoV4,
+	batchGeofencesCamelcaseResults,
+	credentials,
+	singleGeofenceCamelcaseResults,
+	testPlaceCamelCase,
+	validGeofence1,
+	validGeofences,
+	validGeometry,
 } from './testData';
-
 import {
 	mockBatchPutGeofenceCommand,
 	mockGetGeofenceCommand,
@@ -73,6 +72,7 @@ LocationClient.prototype.send = jest.fn(async command => {
 
 jest.mock('@aws-amplify/core', () => {
 	const originalModule = jest.requireActual('@aws-amplify/core');
+
 	return {
 		...originalModule,
 		fetchAuthSession: jest.fn(),
@@ -173,10 +173,10 @@ describe('Geo', () => {
 
 			const maps: AmazonLocationServiceMapStyle[] = [];
 			const availableMaps = awsConfig.geo.amazon_location_service.maps.items;
-			const region = awsConfig.geo.amazon_location_service.region;
+			const { region } = awsConfig.geo.amazon_location_service;
 
 			for (const mapName in availableMaps) {
-				const style = availableMaps[mapName].style;
+				const { style } = availableMaps[mapName];
 				maps.push({ mapName, style, region });
 			}
 
@@ -223,9 +223,9 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 
 			const mapName = awsConfig.geo.amazon_location_service.maps.default;
-			const style =
-				awsConfig.geo.amazon_location_service.maps.items[mapName].style;
-			const region = awsConfig.geo.amazon_location_service.region;
+			const { style } =
+				awsConfig.geo.amazon_location_service.maps.items[mapName];
+			const { region } = awsConfig.geo.amazon_location_service;
 			const testMap = { mapName, style, region };
 
 			const defaultMapsResource = geo.getDefaultMap();
@@ -248,7 +248,7 @@ describe('Geo', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -274,7 +274,7 @@ describe('Geo', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -303,7 +303,7 @@ describe('Geo', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -365,7 +365,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -411,7 +411,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -436,7 +436,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -464,7 +464,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -527,7 +527,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Position: testCoordinates,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -553,7 +553,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Position: testCoordinates,
 				IndexName: searchOptions.searchIndexName,
@@ -595,7 +595,7 @@ describe('Geo', () => {
 
 			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			const output = {
 				Entries: [
 					{
@@ -674,7 +674,7 @@ describe('Geo', () => {
 
 			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			const output = {
 				GeofenceId: 'testGeofenceId',
 				CollectionName: 'geofenceCollectionExample',
