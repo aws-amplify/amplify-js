@@ -18,6 +18,8 @@ interface CommonOptions {
 	useAccelerateEndpoint?: boolean;
 	/** Bucket name */
 	bucket?: string;
+	/** Region */
+	region?: string;
 }
 
 /** @deprecated This may be removed in the next major version. */

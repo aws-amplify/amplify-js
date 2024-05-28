@@ -14,6 +14,8 @@ interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
+	bucket?: string;
+	region?: string;
 }
 
 interface ResolvedS3ConfigAndInput {
@@ -62,8 +64,15 @@ export const resolveS3ConfigAndInput = async (
 		return credentials;
 	};
 
-	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
+	let { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
 		amplify.getConfig()?.Storage?.S3 ?? {};
+
+	if (apiOptions?.bucket && apiOptions.region) {
+		const { bucket: optionsBucket, region: optionsRegion } = apiOptions;
+		bucket = optionsBucket;
+		region = optionsRegion;
+	}
+
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 
