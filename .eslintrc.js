@@ -45,7 +45,7 @@ module.exports = {
 		// 'packages/core/__tests__',
 		'packages/datastore/__tests__',
 		'packages/datastore-storage-adapter/__tests__',
-		'packages/geo/__tests__',
+		// 'packages/geo/__tests__',
 		'packages/interactions/__tests__',
 		'packages/notifications/__tests__',
 		'packages/predictions/__tests__',
