@@ -173,6 +173,9 @@ export class MqttOverWS extends AbstractPubSub<MqttOptions> {
 				return;
 			}
 			this.disconnect(clientId);
+			clientIdObservers.forEach(observer => {
+				observer.error(errorCode);
+			});
 		}
 	}
 
