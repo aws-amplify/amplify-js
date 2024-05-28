@@ -56,12 +56,21 @@ function parseStorage(
 		return undefined;
 	}
 
-	const { bucket_name, aws_region } = amplifyOutputsStorageProperties;
+	const { bucket_name, aws_region, all_buckets } =
+		amplifyOutputsStorageProperties;
 
 	return {
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
+			buckets:
+				all_buckets &&
+				// eslint-disable-next-line @typescript-eslint/no-shadow
+				all_buckets.map(({ bucket_name, friendly_name, isDefault }) => ({
+					bucket: bucket_name,
+					alias: friendly_name,
+					isDefault,
+				})),
 		},
 	};
 }

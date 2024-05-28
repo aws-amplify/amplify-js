@@ -16,6 +16,12 @@ export interface S3ProviderConfig {
 		 * @internal
 		 */
 		dangerouslyConnectToHttpEndpointForTesting?: string;
+		friendly_name?: string;
+		buckets?: {
+			bucket: string;
+			alias: string;
+			isDefault?: boolean;
+		}[];
 	};
 }
 
