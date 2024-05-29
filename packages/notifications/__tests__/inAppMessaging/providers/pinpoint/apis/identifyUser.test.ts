@@ -1,19 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import {
 	identifyUser,
 	initializeInAppMessaging,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import {
-	resolveCredentials,
-	resolveConfig,
-	getInAppMessagingUserAgentString,
 	CATEGORY,
 	CHANNEL_TYPE,
+	getInAppMessagingUserAgentString,
+	resolveConfig,
+	resolveCredentials,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
-import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
-
 import { IdentifyUserInput } from '../../../../../src/inAppMessaging/providers/pinpoint/types';
 
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');
