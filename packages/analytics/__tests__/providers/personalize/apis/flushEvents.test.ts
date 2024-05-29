@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import {
 	getEventBuffer,
 	resolveConfig,
@@ -11,7 +13,6 @@ import {
 	mockPersonalizeConfig,
 } from '../../../testUtils/mockConstants';
 import { flushEvents } from '../../../../src/providers/personalize';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/personalize/utils');
@@ -45,7 +46,7 @@ describe('Analytics Personalize API: flushEvents', () => {
 		await new Promise(process.nextTick);
 		expect(mockResolveConfig).toHaveBeenCalledTimes(1);
 		expect(mockResolveCredentials).toHaveBeenCalledTimes(1);
-		const { trackingId, ...configWithoutTrackingId } = mockPersonalizeConfig;
+		const { trackingId: _, ...configWithoutTrackingId } = mockPersonalizeConfig;
 		expect(mockGetEventBuffer).toHaveBeenNthCalledWith(
 			1,
 			expect.objectContaining({

@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
-import { resolveConfig } from '../../../../src/providers/personalize/utils';
+
 import {
 	DEFAULT_PERSONALIZE_CONFIG,
 	PERSONALIZE_FLUSH_SIZE_MAX,
+	resolveConfig,
 } from '../../../../src/providers/personalize/utils';
 
 describe('Analytics Personalize Provider Util: resolveConfig', () => {
