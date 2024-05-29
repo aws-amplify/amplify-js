@@ -1,40 +1,40 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { fetchAuthSession, Amplify, GeoConfig } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	LocationClient,
-	SearchPlaceIndexForTextCommand,
-	SearchPlaceIndexForSuggestionsCommand,
-	SearchPlaceIndexForPositionCommand,
 	GetPlaceCommand,
+	LocationClient,
+	SearchPlaceIndexForPositionCommand,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForTextCommand,
 } from '@aws-sdk/client-location';
+import camelcaseKeys from 'camelcase-keys';
 
 import { AmazonLocationServiceProvider } from '../../src/providers/location-service/AmazonLocationServiceProvider';
 import {
-	credentials,
-	awsConfig,
 	TestPlacePascalCase,
+	awsConfig,
+	awsConfigGeoV4,
+	batchGeofencesCamelcaseResults,
+	clockwiseGeofence,
+	credentials,
 	testPlaceCamelCase,
 	validGeofences,
-	batchGeofencesCamelcaseResults,
 	validGeometry,
-	clockwiseGeofence,
-	awsConfigGeoV4,
 } from '../testData';
 import {
 	createGeofenceInputArray,
 	mockBatchPutGeofenceCommand,
+	mockDeleteGeofencesCommand,
 	mockGetGeofenceCommand,
 	mockListGeofencesCommand,
-	mockDeleteGeofencesCommand,
 } from '../testUtils';
 import {
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
-	Coordinates,
 	AmazonLocationServiceGeofence,
+	Coordinates,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
 } from '../../src/types';
-import camelcaseKeys from 'camelcase-keys';
 
 LocationClient.prototype.send = jest.fn(async command => {
 	if (
@@ -71,6 +71,7 @@ LocationClient.prototype.send = jest.fn(async command => {
 
 jest.mock('@aws-amplify/core', () => {
 	const originalModule = jest.requireActual('@aws-amplify/core');
+
 	return {
 		...originalModule,
 		fetchAuthSession: jest.fn(),
@@ -88,12 +89,6 @@ describe('AmazonLocationServiceProvider', () => {
 
 	beforeEach(() => {
 		(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
-	});
-
-	describe('constructor', () => {
-		test('happy case', () => {
-			const provider = new AmazonLocationServiceProvider();
-		});
 	});
 
 	describe('getCategory', () => {
@@ -126,9 +121,9 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const maps: any[] = [];
 			const availableMaps = awsConfig.geo.amazon_location_service.maps.items;
-			const region = awsConfig.geo.amazon_location_service.region;
+			const { region } = awsConfig.geo.amazon_location_service;
 			for (const mapName in availableMaps) {
-				const style = availableMaps[mapName].style;
+				const { style } = availableMaps[mapName];
 				maps.push({ mapName, style, region });
 			}
 
@@ -168,9 +163,9 @@ describe('AmazonLocationServiceProvider', () => {
 			const provider = new AmazonLocationServiceProvider(awsConfigGeoV4);
 
 			const mapName = awsConfig.geo.amazon_location_service.maps.default;
-			const style =
-				awsConfig.geo.amazon_location_service.maps.items[mapName].style;
-			const region = awsConfig.geo.amazon_location_service.region;
+			const { style } =
+				awsConfig.geo.amazon_location_service.maps.items[mapName];
+			const { region } = awsConfig.geo.amazon_location_service;
 
 			const testMap = { mapName, style, region };
 
@@ -196,7 +191,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -227,7 +222,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 
 			expect(input).toEqual({
 				Text: testString,
@@ -262,7 +257,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(resultsWithConstraints).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -310,9 +305,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
-				return Promise.reject();
-			});
+			(fetchAuthSession as jest.Mock).mockRejectedValueOnce('Auth Error');
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
@@ -364,7 +357,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -395,7 +388,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 
 			expect(input).toEqual({
 				Text: testString,
@@ -428,7 +421,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(resultsWithConstraints).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -476,9 +469,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
-				return Promise.reject();
-			});
+			(fetchAuthSession as jest.Mock).mockRejectedValueOnce('Auth Error');
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
@@ -524,7 +515,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -559,9 +550,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
-				return Promise.reject();
-			});
+			(fetchAuthSession as jest.Mock).mockRejectedValueOnce('Auth Error');
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
@@ -606,7 +595,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Position: testCoordinates,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -634,7 +623,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Position: testCoordinates,
 				IndexName: searchOptions.searchIndexName,
@@ -655,9 +644,7 @@ describe('AmazonLocationServiceProvider', () => {
 		});
 
 		test('should fail if _getCredentials fails ', async () => {
-			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
-				return Promise.reject();
-			});
+			(fetchAuthSession as jest.Mock).mockRejectedValueOnce('Auth Error');
 
 			const locationProvider = new AmazonLocationServiceProvider();
 
@@ -775,17 +762,18 @@ describe('AmazonLocationServiceProvider', () => {
 					}),
 					Errors: [],
 				};
+
 				return Promise.resolve(resolution);
 			});
 
 			const results = await locationProvider.saveGeofences(input);
-			const badResults = input.slice(20, 30).map(input => {
+			const badResults = input.slice(20, 30).map(result => {
 				return {
 					error: {
 						code: 'APIConnectionError',
 						message: 'Bad network call',
 					},
-					geofenceId: input.geofenceId,
+					geofenceId: result.geofenceId,
 				};
 			});
 			const expected = {
@@ -885,7 +873,7 @@ describe('AmazonLocationServiceProvider', () => {
 				status: 'ACTIVE',
 			};
 
-			await expect(results).toEqual(expected);
+			expect(results).toEqual(expected);
 		});
 
 		test('getGeofence errors when a bad geofenceId is given', async () => {
@@ -1084,6 +1072,7 @@ describe('AmazonLocationServiceProvider', () => {
 						},
 					],
 				};
+
 				return Promise.resolve(resolution);
 			});
 

@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Cache } from '@aws-amplify/core';
-import { isBrowser, amplifyUuid } from '@aws-amplify/core/internals/utils';
+import { amplifyUuid, isBrowser } from '@aws-amplify/core/internals/utils';
+
 import {
 	resolveCachedSession,
 	updateCachedSession,
