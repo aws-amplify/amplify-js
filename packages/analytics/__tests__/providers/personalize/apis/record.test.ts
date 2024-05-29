@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import {
 	autoTrackMedia,
 	getEventBuffer,
@@ -13,7 +15,6 @@ import {
 	mockPersonalizeConfig,
 } from '../../../testUtils/mockConstants';
 import { record } from '../../../../src/providers/personalize';
-import { ConsoleLogger } from '@aws-amplify/core';
 import { RecordInput as PersonalizeRecordInput } from '../../../../src/providers/personalize/types';
 import {
 	IDENTIFY_EVENT_TYPE,
