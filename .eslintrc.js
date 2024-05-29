@@ -36,7 +36,7 @@ module.exports = {
 		'jest.setup.*',
 		'jest.config.*',
 		// 'packages/adapter-nextjs/__tests__',
-		'packages/analytics/__tests__',
+		// 'packages/analytics/__tests__',
 		'packages/api/__tests__',
 		'packages/api-graphql/__tests__',
 		// 'packages/api-rest/__tests__',
