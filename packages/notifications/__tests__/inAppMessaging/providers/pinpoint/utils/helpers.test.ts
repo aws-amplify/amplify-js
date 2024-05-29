@@ -15,15 +15,14 @@ import {
 	matchesEventType,
 	matchesMetrics,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils/helpers';
-
 import {
+	browserButtonOverrides,
+	browserConfigTestCases,
 	extractedContent,
 	extractedMetadata,
 	pinpointInAppMessage,
-	browserConfigTestCases,
-	browserButtonOverrides,
 } from '../../../../testUtils/data';
-import {  InAppMessagingEvent } from '../../../../../src/inAppMessaging/types';
+import { InAppMessagingEvent } from '../../../../../src/inAppMessaging/types';
 import {
 	mergeExpectedContentWithExpectedOverride,
 	mergeInAppMessageWithOverrides,
@@ -37,6 +36,7 @@ jest.mock('@aws-amplify/core/internals/utils', () => {
 	const originalModule = jest.requireActual(
 		'@aws-amplify/core/internals/utils',
 	);
+
 	return {
 		...originalModule,
 		getClientInfo: jest.fn(), // Setup as a Jest mock function without implementation

@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { defaultStorage } from '@aws-amplify/core';
+
 import {
 	clearMessages,
 	initializeInAppMessaging,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import {
-	STORAGE_KEY_SUFFIX,
 	PINPOINT_KEY_PREFIX,
+	STORAGE_KEY_SUFFIX,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
 

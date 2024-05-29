@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { record } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { resolveCredentials } from '../../../../../src/pushNotifications/utils';
 import { getAnalyticsEvent } from '../../../../../src/pushNotifications/providers/pinpoint/utils/getAnalyticsEvent';
 import { getChannelType } from '../../../../../src/pushNotifications/providers/pinpoint/utils/getChannelType';
 import { resolveConfig } from '../../../../../src/pushNotifications/providers/pinpoint/utils/resolveConfig';
 import { createMessageEventRecorder } from '../../../../../src/pushNotifications/providers/pinpoint/utils/createMessageEventRecorder';
-
 import {
 	analyticsEvent,
 	channelType,
