@@ -127,6 +127,7 @@ export interface AwsCognitoOAuthOpts {
 	redirectSignOut: string;
 	responseType: string;
 	options?: object;
+	idpEnabled?: boolean;
 	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
 }
 

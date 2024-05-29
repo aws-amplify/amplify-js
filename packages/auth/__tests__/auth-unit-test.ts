@@ -281,6 +281,7 @@ const createMockLocalStorage = () =>
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
+import * as urlListener from '../src/urlListener';
 import { Credentials, StorageHelper, Hub } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
@@ -3544,6 +3545,53 @@ describe('auth unit test', () => {
 			spyon3.mockClear();
 			expect(urlOpener).not.toBeCalled();
 		});
+
+		test('should add SP initiated inflight flag to local storage', async () => {
+			const localStorageSetItemMock = jest.fn();
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => {
+					return {
+						setItem: localStorageSetItemMock,
+						getItem: jest.fn(),
+						removeItem: jest.fn(),
+					};
+				});
+			let user;
+			jest.spyOn(Credentials, 'set').mockImplementationOnce(() => {
+				user = { name: 'username', email: 'xxx@email.com' };
+				return Promise.resolve('cred' as any);
+			});
+			jest
+				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
+				.mockImplementation(() => {
+					if (!user) return Promise.reject('error');
+					else return Promise.resolve(user);
+				});
+
+			const options: AuthOptions = {
+				region: 'region',
+				identityPoolId: 'awsCognitoIdentityPoolId',
+				userPoolId: 'userPoolId',
+				oauth: {
+					domain: 'mydomain.auth.us-east-1.amazoncognito.com',
+					scope: ['aws.cognito.signin.user.admin'],
+					redirectSignIn: 'http://localhost:3000/',
+					redirectSignOut: 'http://localhost:3000/',
+					responseType: 'code',
+					urlOpener: jest.fn(),
+				},
+			};
+
+			const auth = new Auth(options);
+			await auth.federatedSignIn();
+
+			expect(localStorageSetItemMock).toBeCalled();
+			expect(localStorageSetItemMock).toHaveBeenCalledWith(
+				'amplify-sp-initiated-oauth-inFlight',
+				'true'
+			);
+		});
 	});
 
 	describe('handleAuthResponse test', () => {
@@ -3559,6 +3607,12 @@ describe('auth unit test', () => {
 				.mockImplementation(() => {
 					return {
 						setItem() {
+							return null;
+						},
+						getItem() {
+							return null;
+						},
+						removeItem() {
 							return null;
 						},
 					};
@@ -3756,6 +3810,75 @@ describe('auth unit test', () => {
 				'',
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			);
+		});
+	});
+
+	describe('OAuth flow', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test('should call urlListener by default', async () => {
+			const urlListenerSpy = jest.spyOn(urlListener, 'default');
+			const options: AuthOptions = {
+				region: 'region',
+				userPoolId: 'userPoolId',
+				oauth: {
+					domain: 'mydomain.auth.us-east-1.amazoncognito.com',
+					scope: ['aws.cognito.signin.user.admin'],
+					redirectSignIn: 'http://localhost:3000/',
+					redirectSignOut: 'http://localhost:3000/',
+					responseType: 'code',
+				},
+				identityPoolId: 'awsCognitoIdentityPoolId',
+			};
+			new Auth(options);
+			expect(urlListenerSpy).toHaveBeenCalledTimes(1);
+		});
+
+		test('should not call urlListener when IDP initiated oauth is disabled', async () => {
+			const urlListenerSpy = jest.spyOn(urlListener, 'default');
+			const options: AuthOptions = {
+				region: 'region',
+				userPoolId: 'userPoolId',
+				oauth: {
+					domain: 'mydomain.auth.us-east-1.amazoncognito.com',
+					scope: ['aws.cognito.signin.user.admin'],
+					redirectSignIn: 'http://localhost:3000/',
+					redirectSignOut: 'http://localhost:3000/',
+					responseType: 'code',
+					idpEnabled: false,
+				},
+				identityPoolId: 'awsCognitoIdentityPoolId',
+			};
+			new Auth(options);
+			expect(urlListenerSpy).not.toHaveBeenCalled();
+		});
+
+		test('should call urlListener when SP initiated oauth is in flight and IDP is disabled', async () => {
+			const mockLocalStorage = createMockLocalStorage();
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => mockLocalStorage);
+			mockLocalStorage.setItem('amplify-sp-initiated-oauth-inFlight', 'true');
+
+			const urlListenerSpy = jest.spyOn(urlListener, 'default');
+
+			const options: AuthOptions = {
+				region: 'region',
+				userPoolId: 'userPoolId',
+				oauth: {
+					domain: 'mydomain.auth.us-east-1.amazoncognito.com',
+					scope: ['aws.cognito.signin.user.admin'],
+					redirectSignIn: 'http://localhost:3000/',
+					redirectSignOut: 'http://localhost:3000/',
+					responseType: 'code',
+					idpEnabled: false,
+				},
+				identityPoolId: 'awsCognitoIdentityPoolId',
+			};
+			new Auth(options);
+			expect(urlListenerSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 
