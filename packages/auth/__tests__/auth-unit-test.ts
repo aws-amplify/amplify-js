@@ -3820,36 +3820,18 @@ describe('auth unit test', () => {
 
 		test('should call urlListener by default', async () => {
 			const urlListenerSpy = jest.spyOn(urlListener, 'default');
-			const options: AuthOptions = {
-				region: 'region',
-				userPoolId: 'userPoolId',
-				oauth: {
-					domain: 'mydomain.auth.us-east-1.amazoncognito.com',
-					scope: ['aws.cognito.signin.user.admin'],
-					redirectSignIn: 'http://localhost:3000/',
-					redirectSignOut: 'http://localhost:3000/',
-					responseType: 'code',
-				},
-				identityPoolId: 'awsCognitoIdentityPoolId',
-			};
-			new Auth(options);
+			new Auth(authOptionsWithHostedUIConfig);
 			expect(urlListenerSpy).toHaveBeenCalledTimes(1);
 		});
 
 		test('should not call urlListener when IDP initiated oauth is disabled', async () => {
 			const urlListenerSpy = jest.spyOn(urlListener, 'default');
 			const options: AuthOptions = {
-				region: 'region',
-				userPoolId: 'userPoolId',
+				...authOptionsWithHostedUIConfig,
 				oauth: {
-					domain: 'mydomain.auth.us-east-1.amazoncognito.com',
-					scope: ['aws.cognito.signin.user.admin'],
-					redirectSignIn: 'http://localhost:3000/',
-					redirectSignOut: 'http://localhost:3000/',
-					responseType: 'code',
+					...authOptionsWithHostedUIConfig.oauth!,
 					idpEnabled: false,
 				},
-				identityPoolId: 'awsCognitoIdentityPoolId',
 			};
 			new Auth(options);
 			expect(urlListenerSpy).not.toHaveBeenCalled();
@@ -3865,17 +3847,11 @@ describe('auth unit test', () => {
 			const urlListenerSpy = jest.spyOn(urlListener, 'default');
 
 			const options: AuthOptions = {
-				region: 'region',
-				userPoolId: 'userPoolId',
+				...authOptionsWithHostedUIConfig,
 				oauth: {
-					domain: 'mydomain.auth.us-east-1.amazoncognito.com',
-					scope: ['aws.cognito.signin.user.admin'],
-					redirectSignIn: 'http://localhost:3000/',
-					redirectSignOut: 'http://localhost:3000/',
-					responseType: 'code',
+					...authOptionsWithHostedUIConfig.oauth!,
 					idpEnabled: false,
 				},
-				identityPoolId: 'awsCognitoIdentityPoolId',
 			};
 			new Auth(options);
 			expect(urlListenerSpy).toHaveBeenCalledTimes(1);
