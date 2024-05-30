@@ -109,7 +109,7 @@ Run watch mode while editing (auth for example):
 
 ```
 npx lerna exec --scope @aws-amplify/auth yarn link
-npx lerna exec --scope @aws-amplify/auth yarn build:esm:watch
+npx lerna exec --scope @aws-amplify/auth yarn build:watch
 ```
 
 Or run the whole library in watch mode if you are working on multiple packages
@@ -117,7 +117,7 @@ Or run the whole library in watch mode if you are working on multiple packages
 ```
 yarn build # Build the whole library
 yarn link-all # Make all the packages available to link
-yarn build:esm:watch # All packages are building ES6 modules in watch mode
+yarn build:watch # All packages are building in watch mode
 ```
 
 In your sample project, you can now link specific packages

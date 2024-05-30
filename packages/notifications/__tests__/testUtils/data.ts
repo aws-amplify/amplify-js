@@ -3,9 +3,10 @@
 
 import { PinpointAnalyticsEvent } from '@aws-amplify/core/internals/providers/pinpoint';
 import {
-	type InAppMessageCampaign as PinpointInAppMessage,
 	OverrideButtonConfiguration,
+	type InAppMessageCampaign as PinpointInAppMessage,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+
 import {
 	InAppMessage,
 	InAppMessageContent,

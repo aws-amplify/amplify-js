@@ -3,8 +3,8 @@
 
 import { inAppMessages } from '../../../../testUtils/data';
 import {
-	notifyEventListeners,
 	addEventListener,
+	notifyEventListeners,
 } from '../../../../../src/eventListeners';
 import {
 	initializeInAppMessaging,
