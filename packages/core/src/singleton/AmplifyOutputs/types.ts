@@ -48,7 +48,7 @@ export interface AmplifyOutputsStorageProperties {
 	bucket_name: string;
 	friendly_name: string;
 	all_buckets: {
-		isDefault: boolean;
+		isDefault?: boolean;
 		friendly_name: string;
 		bucket_name: string;
 	}[];
