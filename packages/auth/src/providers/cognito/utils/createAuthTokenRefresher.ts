@@ -4,19 +4,19 @@
 import { AuthConfig } from '@aws-amplify/core';
 import {
 	assertTokenProviderConfig,
-	deDupeAsyncFunction,
 	decodeJWT,
+	dedupeAsyncFunction,
 } from '@aws-amplify/core/internals/utils';
 
 import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
-import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
-import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
 
+import { initiateAuth } from './clients/CognitoIdentityProvider';
+import { getRegion } from './clients/CognitoIdentityProvider/utils';
+import { assertAuthTokensWithRefreshToken } from './types';
 import { getUserContextData } from './userContextData';
 
-const refreshAuthTokensFunction: TokenRefresher = async ({
+const refreshAuthTokens: TokenRefresher = async ({
 	tokens,
 	authConfig,
 	username,
@@ -76,5 +76,5 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 	};
 };
 
-export const refreshAuthTokens = deDupeAsyncFunction(refreshAuthTokensFunction);
-export const refreshAuthTokensWithoutDedupe = refreshAuthTokensFunction;
+export const createAuthTokenRefresher = () =>
+	dedupeAsyncFunction(refreshAuthTokens);

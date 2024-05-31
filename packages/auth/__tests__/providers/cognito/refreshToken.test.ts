@@ -1,5 +1,5 @@
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import { refreshAuthTokens } from '../../../src/providers/cognito/utils/refreshAuthTokens';
+import { createAuthTokenRefresher } from '../../../src/providers/cognito/utils/createAuthTokenRefresher';
 import { CognitoAuthTokens } from '../../../src/providers/cognito/tokenProvider/types';
 import { initiateAuth } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { mockAccessToken, mockRequestId } from './testUtils/data';
@@ -14,6 +14,7 @@ jest.mock(
 describe('refreshToken', () => {
 	const mockedUsername = 'mockedUsername';
 	const mockedRefreshToken = 'mockedRefreshToken';
+	const refreshAuthTokens = createAuthTokenRefresher();
 	// assert mocks
 	const mockInitiateAuth = initiateAuth as jest.Mock;
 	describe('positive cases', () => {

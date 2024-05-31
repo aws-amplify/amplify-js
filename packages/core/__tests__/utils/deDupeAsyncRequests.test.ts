@@ -1,4 +1,4 @@
-import { deDupeAsyncFunction } from '../../src/utils/deDupeAsyncFunction';
+import { dedupeAsyncFunction } from '../../src/utils/dedupeAsyncFunction';
 
 describe('dedupeAsyncFunction()', () => {
 	const numberOfConcurrentCalls = 10;
@@ -13,14 +13,14 @@ describe('dedupeAsyncFunction()', () => {
 	});
 
 	it('should invoke the mockServiceFunction', async () => {
-		const deDupedFunction = deDupeAsyncFunction(mockServiceFunction);
+		const deDupedFunction = dedupeAsyncFunction(mockServiceFunction);
 
 		deDupedFunction();
 		expect(mockServiceFunction).toHaveBeenCalledTimes(1);
 	});
 
 	it('should invoke the mockServiceFunction one time during concurrent sync calls', () => {
-		const deDupedFunction = deDupeAsyncFunction(mockServiceFunction);
+		const deDupedFunction = dedupeAsyncFunction(mockServiceFunction);
 		for (let i = 0; i < numberOfConcurrentCalls; i++) {
 			deDupedFunction();
 		}
@@ -28,13 +28,13 @@ describe('dedupeAsyncFunction()', () => {
 	});
 
 	it('should return a value once the mockServiceFunction is resolved', async () => {
-		const deDupedFunction = deDupeAsyncFunction(mockServiceFunction);
+		const deDupedFunction = dedupeAsyncFunction(mockServiceFunction);
 		expect(await deDupedFunction()).toEqual(mockReturnValue);
 		expect(mockServiceFunction).toHaveBeenCalledTimes(1);
 	});
 
 	it('should allow to invoke the mockServiceFunction again after the promise has being resolved', async () => {
-		const deDupedFunction = deDupeAsyncFunction(mockServiceFunction);
+		const deDupedFunction = dedupeAsyncFunction(mockServiceFunction);
 		for (let i = 0; i < numberOfConcurrentCalls; i++) {
 			expect(deDupedFunction()).toBeInstanceOf(Promise);
 		}
