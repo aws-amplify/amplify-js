@@ -5,6 +5,7 @@ import {
 	getEndpointId,
 	updateEndpoint,
 } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { assertIsInitialized } from '../../../../../src/pushNotifications/errors/errorHelpers';
 import { identifyUser } from '../../../../../src/pushNotifications/providers/pinpoint/apis/identifyUser.native';
 import { IdentifyUserInput } from '../../../../../src/pushNotifications/providers/pinpoint/types';

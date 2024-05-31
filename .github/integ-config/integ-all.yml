@@ -297,12 +297,12 @@ tests:
   #   spec: consecutive-saves
   #   browser: *minimal_browser_list
   # - test_name: integ_react_datastore_consecutive_saves_v2
-    # desc: 'DataStore - Subs Disabled CLI v2'
-    # framework: react
-    # category: datastore
-    # sample_name: [v2/consecutive-saves-v2]
-    # spec: consecutive-saves
-    # browser: *minimal_browser_list
+  #   desc: 'DataStore - Subs Disabled CLI v2'
+  #   framework: react
+  #   category: datastore
+  #   sample_name: [v2/consecutive-saves-v2]
+  #   spec: consecutive-saves
+  #   browser: *minimal_browser_list
   # - test_name: integ_react_datastore_observe_query
   #   desc: 'DataStore - Observe Query'
   #   framework: react
@@ -703,13 +703,13 @@ tests:
   #   # Temp fix:
   #   browser: [chrome]
   # - test_name: integ_react_geo_search_outside_map
-    # desc: 'Search Outside Map'
-    # framework: react
-    # category: geo
-    # sample_name: [search-outside-map]
-    # spec: search-outside-map
-    # # Temp fix:
-    # browser: [chrome]
+  #  desc: 'Search Outside Map'
+  #  framework: react
+  #  category: geo
+  #  sample_name: [search-outside-map]
+  #  spec: search-outside-map
+  #  # Temp fix:
+  #  browser: [chrome]
   # - test_name: integ_javascript_geo_display_map
   #   desc: 'Display Map'
   #   framework: javascript
@@ -743,12 +743,12 @@ tests:
   #   spec: chatbot-v1
   #   browser: *minimal_browser_list
   # - test_name: integ_react_interactions_chatbot_v2
-    # desc: 'Chatbot V2'
-    # framework: react
-    # category: interactions
-    # sample_name: [lex-test-component]
-    # spec: chatbot-v2
-    # browser: *minimal_browser_list
+  #  desc: 'Chatbot V2'
+  #  framework: react
+  #  category: interactions
+  #  sample_name: [lex-test-component]
+  #  spec: chatbot-v2
+  #  browser: *minimal_browser_list
   # - test_name: integ_angular_interactions
   #   desc: 'Angular Interactions'
   #   framework: angular
