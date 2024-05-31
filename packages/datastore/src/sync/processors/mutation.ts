@@ -3,61 +3,61 @@
 import { GraphQLResult } from '@aws-amplify/api';
 import { InternalAPI } from '@aws-amplify/api/internals';
 import {
+	BackgroundProcessManager,
 	Category,
 	CustomUserAgentDetails,
 	DataStoreAction,
-	jitteredBackoff,
-	NonRetryableError,
-	retry,
-	BackgroundProcessManager,
 	GraphQLAuthMode,
-	AmplifyError,
+	NonRetryableError,
+	jitteredBackoff,
+	retry,
 } from '@aws-amplify/core/internals/utils';
-
 import { Observable, Observer } from 'rxjs';
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
+	AmplifyContext,
 	AuthModeStrategy,
 	ConflictHandler,
 	DISCARD,
 	ErrorHandler,
 	GraphQLCondition,
 	InternalSchema,
-	isModelFieldType,
-	isTargetNameAssociation,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModel,
 	PersistentModelConstructor,
+	ProcessName,
 	SchemaModel,
 	TypeConstructorMap,
-	ProcessName,
-	AmplifyContext,
+	isModelFieldType,
+	isTargetNameAssociation,
 } from '../../types';
-import { extractTargetNamesFromSrc, USER, ID } from '../../util';
+import { ID, USER, extractTargetNamesFromSrc } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
+	TransformerMutationType,
 	buildGraphQLOperation,
 	createMutationInstanceFromModelOperation,
 	getModelAuthModes,
-	TransformerMutationType,
 	getTokenForCustomAuth,
 } from '../utils';
+
 import { getMutationErrorType } from './errorMaps';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 const MAX_ATTEMPTS = 10;
 
 const logger = new ConsoleLogger('DataStore');
 
-type MutationProcessorEvent = {
+interface MutationProcessorEvent {
 	operation: TransformerMutationType;
 	modelDefinition: SchemaModel;
 	model: PersistentModel;
 	hasMore: boolean;
-};
+}
 
 class MutationProcessor {
 	/**
@@ -73,7 +73,8 @@ class MutationProcessor {
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
-	private processing: boolean = false;
+
+	private processing = false;
 
 	private runningProcesses = new BackgroundProcessManager();
 
@@ -83,7 +84,7 @@ class MutationProcessor {
 		private readonly userClasses: TypeConstructorMap,
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
+		private readonly _MutationEvent: PersistentModelConstructor<MutationEvent>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
@@ -216,7 +217,7 @@ class MutationProcessor {
 									data,
 									condition,
 									modelConstructor,
-									this.MutationEvent,
+									this._MutationEvent,
 									head,
 									operationAuthModes[authModeAttempts],
 									onTerminate,
@@ -236,6 +237,7 @@ class MutationProcessor {
 										}`,
 									);
 									try {
+										// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 										await this.errorHandler({
 											recoverySuggestion:
 												'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
@@ -260,7 +262,8 @@ class MutationProcessor {
 										operationAuthModes[authModeAttempts]
 									}`,
 								);
-								return await authModeRetry();
+
+								return authModeRetry();
 							}
 						};
 
@@ -313,30 +316,30 @@ class MutationProcessor {
 		data: string,
 		condition: string,
 		modelConstructor: PersistentModelConstructor<PersistentModel>,
-		MutationEvent: PersistentModelConstructor<MutationEvent>,
+		MutationEventCtor: PersistentModelConstructor<MutationEvent>,
 		mutationEvent: MutationEvent,
 		authMode: GraphQLAuthMode,
 		onTerminate: Promise<void>,
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
 	> {
-		return await retry(
+		return retry(
 			async (
-				model: string,
-				operation: TransformerMutationType,
-				data: string,
-				condition: string,
-				modelConstructor: PersistentModelConstructor<PersistentModel>,
-				MutationEvent: PersistentModelConstructor<MutationEvent>,
-				mutationEvent: MutationEvent,
+				retriedModel: string,
+				retriedOperation: TransformerMutationType,
+				retriedData: string,
+				retriedCondition: string,
+				retriedModelConstructor: PersistentModelConstructor<PersistentModel>,
+				retiredMutationEventCtor: PersistentModelConstructor<MutationEvent>,
+				retiredMutationEvent: MutationEvent,
 			) => {
 				const [query, variables, graphQLCondition, opName, modelDefinition] =
 					this.createQueryVariables(
 						namespaceName,
-						model,
-						operation,
-						data,
-						condition,
+						retriedModel,
+						retriedOperation,
+						retriedData,
+						retriedCondition,
 					);
 
 				const authToken = await getTokenForCustomAuth(
@@ -352,7 +355,7 @@ class MutationProcessor {
 				};
 				let attempt = 0;
 
-				const opType = this.opTypeFromTransformerOperation(operation);
+				const opType = this.opTypeFromTransformerOperation(retriedOperation);
 
 				const customUserAgentDetails: CustomUserAgentDetails = {
 					category: Category.DataStore,
@@ -361,13 +364,11 @@ class MutationProcessor {
 
 				do {
 					try {
-						const result = <GraphQLResult<Record<string, PersistentModel>>>(
-							await this.amplifyContext.InternalAPI.graphql(
-								tryWith,
-								undefined,
-								customUserAgentDetails,
-							)
-						);
+						const result = (await this.amplifyContext.InternalAPI.graphql(
+							tryWith,
+							undefined,
+							customUserAgentDetails,
+						)) as GraphQLResult<Record<string, PersistentModel>>;
 
 						// Use `as any` because TypeScript doesn't seem to like passing tuples
 						// through generic params.
@@ -402,20 +403,20 @@ class MutationProcessor {
 								} else {
 									try {
 										retryWith = await this.conflictHandler!({
-											modelConstructor,
+											modelConstructor: retriedModelConstructor,
 											localModel: this.modelInstanceCreator(
-												modelConstructor,
+												retriedModelConstructor,
 												variables.input,
 											),
 											remoteModel: this.modelInstanceCreator(
-												modelConstructor,
+												retriedModelConstructor,
 												error.data,
 											),
 											operation: opType,
 											attempts: attempt,
 										});
-									} catch (err) {
-										logger.warn('conflict trycatch', err);
+									} catch (caughtErr) {
+										logger.warn('conflict trycatch', caughtErr);
 										continue;
 									}
 								}
@@ -423,33 +424,32 @@ class MutationProcessor {
 								if (retryWith === DISCARD) {
 									// Query latest from server and notify merger
 
-									const [[, opName, query]] = buildGraphQLOperation(
+									const [[, builtOpName, builtQuery]] = buildGraphQLOperation(
 										this.schema.namespaces[namespaceName],
 										modelDefinition,
 										'GET',
 									);
 
-									const authToken = await getTokenForCustomAuth(
+									const newAuthToken = await getTokenForCustomAuth(
 										authMode,
 										this.amplifyConfig,
 									);
 
-									const serverData = <
-										GraphQLResult<Record<string, PersistentModel>>
-									>await this.amplifyContext.InternalAPI.graphql(
-										{
-											query,
-											variables: { id: variables.input.id },
-											authMode,
-											authToken,
-										},
-										undefined,
-										customUserAgentDetails,
-									);
+									const serverData =
+										(await this.amplifyContext.InternalAPI.graphql(
+											{
+												query: builtQuery,
+												variables: { id: variables.input.id },
+												authMode,
+												authToken: newAuthToken,
+											},
+											undefined,
+											customUserAgentDetails,
+										)) as GraphQLResult<Record<string, PersistentModel>>;
 
 									// onTerminate cancel graphql()
 
-									return [serverData, opName, modelDefinition];
+									return [serverData, builtOpName, modelDefinition];
 								}
 
 								const namespace = this.schema.namespaces[namespaceName];
@@ -460,12 +460,12 @@ class MutationProcessor {
 										namespace.relationships!,
 										modelDefinition,
 										opType,
-										modelConstructor,
+										retriedModelConstructor,
 										retryWith,
 										graphQLCondition,
-										MutationEvent,
+										retiredMutationEventCtor,
 										this.modelInstanceCreator,
-										mutationEvent.id,
+										retiredMutationEvent.id,
 									);
 
 								await this.storage.save(updatedMutation);
@@ -478,19 +478,23 @@ class MutationProcessor {
 											'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
 										localModel: variables.input,
 										message: error.message,
-										operation,
+										operation: retriedOperation,
 										errorType: getMutationErrorType(error),
 										errorInfo: error.errorInfo,
 										process: ProcessName.mutate,
 										cause: error,
 										remoteModel: error.data
-											? this.modelInstanceCreator(modelConstructor, error.data)
+											? this.modelInstanceCreator(
+													retriedModelConstructor,
+													error.data,
+												)
 											: null!,
 									});
-								} catch (err) {
-									logger.warn('Mutation error handler failed with:', err);
+								} catch (caughtErr) {
+									logger.warn('Mutation error handler failed with:', caughtErr);
 								} finally {
 									// Return empty tuple, dequeues the mutation
+									// eslint-disable-next-line no-unsafe-finally
 									return error.data
 										? [
 												{ data: { [opName]: error.data } },
@@ -506,6 +510,7 @@ class MutationProcessor {
 							throw new NonRetryableError(err);
 						}
 					}
+					// eslint-disable-next-line no-unmodified-loop-condition
 				} while (tryWith);
 			},
 			[
@@ -514,7 +519,7 @@ class MutationProcessor {
 				data,
 				condition,
 				modelConstructor,
-				MutationEvent,
+				MutationEventCtor,
 				mutationEvent,
 			],
 			safeJitteredBackoff,
@@ -543,7 +548,9 @@ class MutationProcessor {
 			([transformerMutationType]) => transformerMutationType === operation,
 		)!;
 
-		const { _version, ...parsedData } = <ModelInstanceMetadata>JSON.parse(data);
+		const { _version, ...parsedData } = JSON.parse(
+			data,
+		) as ModelInstanceMetadata;
 
 		// include all the fields that comprise a custom PK if one is specified
 		const deleteInput = {};
@@ -552,14 +559,14 @@ class MutationProcessor {
 				deleteInput[pkField] = parsedData[pkField];
 			}
 		} else {
-			deleteInput[ID] = (<any>parsedData).id;
+			deleteInput[ID] = (parsedData as any).id;
 		}
 
 		let mutationInput;
 
 		if (operation === TransformerMutationType.DELETE) {
 			// For DELETE mutations, only the key(s) are included in the input
-			mutationInput = <ModelInstanceMetadata>deleteInput;
+			mutationInput = deleteInput as ModelInstanceMetadata;
 		} else {
 			// Otherwise, we construct the mutation input with the following logic
 			mutationInput = {};
@@ -598,7 +605,7 @@ class MutationProcessor {
 				// scalar fields / non-model types
 
 				if (operation === TransformerMutationType.UPDATE) {
-					if (!parsedData.hasOwnProperty(name)) {
+					if (!Object.prototype.hasOwnProperty.call(parsedData, name)) {
 						// for update mutations - strip out a field if it's unchanged
 						continue;
 					}
@@ -615,7 +622,7 @@ class MutationProcessor {
 			_version,
 		};
 
-		const graphQLCondition = <GraphQLCondition>JSON.parse(condition);
+		const graphQLCondition = JSON.parse(condition) as GraphQLCondition;
 
 		const variables = {
 			input,
@@ -628,6 +635,7 @@ class MutationProcessor {
 								: null,
 					}),
 		};
+
 		return [query, variables, graphQLCondition, opName, modelDefinition];
 	}
 

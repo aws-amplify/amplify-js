@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import AsyncStorageDatabase from './AsyncStorageDatabase';
 import {
 	ModelInstanceMetadata,
 	ModelPredicate,
@@ -13,21 +12,27 @@ import {
 } from '../../types';
 import {
 	DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
-	traverseModel,
-	validatePredicate,
+	getIndexKeys,
+	getStorename,
 	inMemoryPagination,
 	keysEqual,
-	getStorename,
-	getIndexKeys,
+	traverseModel,
+	validatePredicate,
 } from '../../util';
+
+import AsyncStorageDatabase from './AsyncStorageDatabase';
 import { StorageAdapterBase } from './StorageAdapterBase';
 
 export class AsyncStorageAdapter extends StorageAdapterBase {
 	protected db!: AsyncStorageDatabase;
 
-	// no-ops for this adapter
-	protected async preSetUpChecks() {}
-	protected async preOpCheck() {}
+	protected async preSetUpChecks() {
+		// no-ops for AsyncStorageAdapter
+	}
+
+	protected async preOpCheck() {
+		// no-ops for AsyncStorageAdapter
+	}
 
 	/**
 	 * Open AsyncStorage database
@@ -40,6 +45,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 	protected async initDb(): Promise<AsyncStorageDatabase> {
 		const db = new AsyncStorageDatabase();
 		await db.init();
+
 		return db;
 	}
 
@@ -77,15 +83,20 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 
 			const keyValuesPath = this.getIndexKeyValuesPath(model);
 
-			const { instance } = connectedModels.find(({ instance }) => {
-				const instanceKeyValuesPath = this.getIndexKeyValuesPath(instance);
-				return keysEqual([instanceKeyValuesPath], [keyValuesPath]);
-			})!;
+			const { instance } = connectedModels.find(
+				({ instance: connectedModelInstance }) => {
+					const instanceKeyValuesPath = this.getIndexKeyValuesPath(
+						connectedModelInstance,
+					);
+
+					return keysEqual([instanceKeyValuesPath], [keyValuesPath]);
+				},
+			)!;
 
 			batch.push(instance);
 		}
 
-		return await this.db.batchSave(storeName, batch, keys);
+		return this.db.batchSave(storeName, batch, keys);
 	}
 
 	protected async _get<T>(storeName: string, keyArr: string[]): Promise<T> {
@@ -93,7 +104,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 			DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR,
 		);
 
-		return <T>await this.db.get(itemKeyValuesPath, storeName);
+		return (await this.db.get(itemKeyValuesPath, storeName)) as T;
 	}
 
 	async save<T extends PersistentModel>(
@@ -109,12 +120,15 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 		for await (const resItem of connectionStoreNames) {
-			const { storeName, item, instance, keys } = resItem;
+			const { storeName: storeNameForRestItem, item, instance, keys } = resItem;
 
 			const itemKeyValues: string[] = keys.map(key => item[key]);
 
-			const fromDB = <T>await this._get(storeName, itemKeyValues);
-			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
+			const fromDBForRestItem = (await this._get(
+				storeNameForRestItem,
+				itemKeyValues,
+			)) as T;
+			const opType: OpType = fromDBForRestItem ? OpType.UPDATE : OpType.INSERT;
 
 			if (
 				keysEqual(itemKeyValues, modelKeyValues) ||
@@ -122,7 +136,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 			) {
 				await this.db.save(
 					item,
-					storeName,
+					storeNameForRestItem,
 					keys,
 					itemKeyValues.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR),
 				);
@@ -130,6 +144,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 				result.push([instance, opType]);
 			}
 		}
+
 		return result;
 	}
 
@@ -151,36 +166,39 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 			if (queryByKey) {
 				const keyValues = queryByKey.join(DEFAULT_PRIMARY_KEY_VALUE_SEPARATOR);
 				const record = await this.getByKey(storeName, keyValues);
+
 				return record ? [record] : [];
 			}
 
 			if (predicates) {
 				const filtered = await this.filterOnPredicate(storeName, predicates);
+
 				return this.inMemoryPagination(filtered, pagination);
 			}
 
 			if (hasSort || hasPagination) {
 				const all = await this.getAll(storeName);
+
 				return this.inMemoryPagination(all, pagination);
 			}
 
 			return this.getAll(storeName);
 		})()) as T[];
 
-		return await this.load(namespaceName, modelConstructor.name, records);
+		return this.load(namespaceName, modelConstructor.name, records);
 	}
 
 	private async getByKey<T extends PersistentModel>(
 		storeName: string,
 		keyValuePath: string,
 	): Promise<T> {
-		return <T>await this.db.get(keyValuePath, storeName);
+		return (await this.db.get(keyValuePath, storeName)) as T;
 	}
 
 	private async getAll<T extends PersistentModel>(
 		storeName: string,
 	): Promise<T[]> {
-		return await this.db.getAll(storeName);
+		return this.db.getAll(storeName);
 	}
 
 	private async filterOnPredicate<T extends PersistentModel>(
@@ -189,7 +207,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 	) {
 		const { predicates: predicateObjs, type } = predicates;
 
-		const all = <T[]>await this.getAll(storeName);
+		const all = (await this.getAll(storeName)) as T[];
 
 		const filtered = predicateObjs
 			? all.filter(m => validatePredicate(m, type, predicateObjs))
@@ -210,7 +228,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		firstOrLast: QueryOne = QueryOne.FIRST,
 	): Promise<T | undefined> {
 		const storeName = this.getStorenameForModel(modelConstructor);
-		const result = <T>await this.db.getOne(firstOrLast, storeName);
+		const result = (await this.db.getOne(firstOrLast, storeName)) as T;
 
 		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
@@ -232,7 +250,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		}
 	}
 
-	//#region platform-specific helper methods
+	// #region platform-specific helper methods
 
 	/**
 	 * Retrieves concatenated primary key values from a model
@@ -246,7 +264,7 @@ export class AsyncStorageAdapter extends StorageAdapterBase {
 		);
 	}
 
-	//#endregion
+	// #endregion
 }
 
 export default new AsyncStorageAdapter();

@@ -3,9 +3,10 @@
 
 import { completeMultipartUpload } from '../../../../../../../src/providers/s3/utils/client';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
+
 import {
-	defaultConfig,
 	DEFAULT_RESPONSE_HEADERS,
+	defaultConfig,
 	expectedMetadata,
 } from './shared';
 

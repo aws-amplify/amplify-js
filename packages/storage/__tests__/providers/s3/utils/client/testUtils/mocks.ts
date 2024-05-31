@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { XhrSpy, XhrProgressEvent } from './types';
+import { XhrProgressEvent, XhrSpy } from './types';
 
 /**
  * Mock XMLHttpRequest instance so we can spy on the methods and listeners.
@@ -29,7 +29,8 @@ export const spyOnXhr = (): XhrSpy => {
 		}),
 		abort: jest.fn(),
 	};
-	window['XMLHttpRequest'] = jest.fn(() => mockRequest) as any;
+	window.XMLHttpRequest = jest.fn(() => mockRequest) as any;
+
 	return Object.assign(mockRequest, {
 		uploadListeners,
 		listeners,
@@ -79,8 +80,8 @@ export const mockXhrResponse = (
  */
 export const mockProgressEvents = (options: {
 	mockXhr: XhrSpy;
-	uploadEvents?: Array<XhrProgressEvent>;
-	downloadEvents?: Array<XhrProgressEvent>;
+	uploadEvents?: XhrProgressEvent[];
+	downloadEvents?: XhrProgressEvent[];
 }) => {
 	const { mockXhr, uploadEvents, downloadEvents } = options;
 	uploadEvents?.forEach(event => {

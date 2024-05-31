@@ -53,20 +53,27 @@ describe('resolveS3ConfigAndInput', () => {
 		},
 	});
 
-	it('should call fetchAuthSession with forceRefresh false for credentials and identityId', async () => {
+	it('should call fetchAuthSession for credentials and identityId', async () => {
+		expect.assertions(1);
 		await resolveS3ConfigAndInput(Amplify, {});
-		expect(mockFetchAuthSession).toHaveBeenCalledWith({
-			forceRefresh: false,
-		});
+		expect(mockFetchAuthSession).toHaveBeenCalled();
 	});
 
 	it('should throw if credentials are not available', async () => {
-		mockFetchAuthSession.mockResolvedValueOnce({
+		expect.assertions(1);
+		mockFetchAuthSession.mockResolvedValue({
 			identityId: targetIdentityId,
 		});
-		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
-			validationErrorMap[StorageValidationErrorCode.NoCredentials],
-		);
+		const {
+			s3Config: { credentials: credentialsProvider },
+		} = await resolveS3ConfigAndInput(Amplify, {});
+		if (typeof credentialsProvider === 'function') {
+			await expect(credentialsProvider()).rejects.toMatchObject(
+				validationErrorMap[StorageValidationErrorCode.NoCredentials],
+			);
+		} else {
+			fail('Expect credentials to be a function');
+		}
 	});
 
 	it('should throw if identityId is not available', async () => {

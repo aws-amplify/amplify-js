@@ -3,13 +3,14 @@
 
 import { xhrTransferHandler } from '../../../../../src/providers/s3/utils/client/runtime/xhrTransferHandler';
 import { isCancelError } from '../../../../../src/errors/CanceledError';
+
 import {
-	spyOnXhr,
+	mockProgressEvents,
+	mockXhrReadyState,
 	mockXhrResponse,
+	spyOnXhr,
 	triggerNetWorkError,
 	triggerServerSideAbort,
-	mockXhrReadyState,
-	mockProgressEvents,
 } from './testUtils/mocks';
 
 jest.mock('@aws-amplify/core');
@@ -33,22 +34,22 @@ const mockReadablStreamCtor = jest.fn();
 describe('xhrTransferHandler', () => {
 	const originalXhr = window.XMLHttpRequest;
 	const originalReadableStream = window.ReadableStream;
-	const originalFileReaderCtor = window.FileReader;
+	const OriginalFileReaderCtor = window.FileReader;
 	beforeEach(() => {
 		jest.resetAllMocks();
 		window.ReadableStream = mockReadablStreamCtor;
 		window.FileReader = Object.assign(
 			jest.fn().mockImplementation(() => {
-				return new originalFileReaderCtor();
+				return new OriginalFileReaderCtor();
 			}),
-			{ ...originalFileReaderCtor },
+			{ ...OriginalFileReaderCtor },
 		);
 	});
 
 	afterEach(() => {
 		window.XMLHttpRequest = originalXhr;
 		window.ReadableStream = originalReadableStream;
-		window.FileReader = originalFileReaderCtor;
+		window.FileReader = OriginalFileReaderCtor;
 	});
 
 	it('should call xhr.open with the correct arguments', async () => {

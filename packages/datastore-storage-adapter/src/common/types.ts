@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { PersistentModel, ModelInstanceMetadata } from '@aws-amplify/datastore';
+import { ModelInstanceMetadata, PersistentModel } from '@aws-amplify/datastore';
 
 export interface CommonSQLiteDatabase {
 	init(): Promise<void>;

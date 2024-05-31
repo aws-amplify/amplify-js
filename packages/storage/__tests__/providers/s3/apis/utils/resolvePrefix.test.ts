@@ -3,8 +3,8 @@
 
 import { resolvePrefix } from '../../../../../src/utils/resolvePrefix';
 import {
-	validationErrorMap,
 	StorageValidationErrorCode,
+	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
 
 describe('resolvePrefix', () => {

@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { headObject } from '../../../../../../../src/providers/s3/utils/client';
-import { toBase64 } from '../../../../../../../src/providers/s3/utils/client/utils';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
+
 import {
-	defaultConfig,
 	DEFAULT_RESPONSE_HEADERS,
+	defaultConfig,
 	expectedMetadata,
 } from './shared';
 

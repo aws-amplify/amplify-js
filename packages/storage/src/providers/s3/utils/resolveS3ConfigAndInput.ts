@@ -39,15 +39,28 @@ export const resolveS3ConfigAndInput = async (
 	amplify: AmplifyClassV6,
 	apiOptions?: S3ApiOptions,
 ): Promise<ResolvedS3ConfigAndInput> => {
-	// identityId is always cached in memory if forceRefresh is not set. So we can safely make calls here.
-	const { credentials, identityId } = await amplify.Auth.fetchAuthSession({
-		forceRefresh: false,
-	});
-	assertValidationError(
-		!!credentials,
-		StorageValidationErrorCode.NoCredentials,
-	);
+	/**
+	 * IdentityId is always cached in memory so we can safely make calls here. It
+	 * should be stable even for unauthenticated users, regardless of credentials.
+	 */
+	const { identityId } = await amplify.Auth.fetchAuthSession();
 	assertValidationError(!!identityId, StorageValidationErrorCode.NoIdentityId);
+
+	/**
+	 * A credentials provider function instead of a static credentials object is
+	 * used because the long-running tasks like multipart upload may span over the
+	 * credentials expiry. Auth.fetchAuthSession() automatically refreshes the
+	 * credentials if they are expired.
+	 */
+	const credentialsProvider = async () => {
+		const { credentials } = await amplify.Auth.fetchAuthSession();
+		assertValidationError(
+			!!credentials,
+			StorageValidationErrorCode.NoCredentials,
+		);
+
+		return credentials;
+	};
 
 	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
 		amplify.getConfig()?.Storage?.S3 ?? {};
@@ -72,7 +85,7 @@ export const resolveS3ConfigAndInput = async (
 
 	return {
 		s3Config: {
-			credentials,
+			credentials: credentialsProvider,
 			region,
 			useAccelerateEndpoint: apiOptions?.useAccelerateEndpoint,
 			...(dangerouslyConnectToHttpEndpointForTesting

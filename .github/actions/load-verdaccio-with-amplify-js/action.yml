@@ -48,3 +48,11 @@ runs:
         scripts/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
         yarn info aws-amplify@unstable description
         npm info aws-amplify@unstable version
+    - name: Upload artifact
+      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+      if: failure()
+      with:
+        name: ${{ inputs.test_name }}-npm-log
+        if-no-files-found: ignore
+        path: /Users/runner/.npm/_logs/
+        retention-days: 3

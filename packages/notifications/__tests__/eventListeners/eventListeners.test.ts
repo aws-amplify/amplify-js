@@ -48,7 +48,7 @@ describe('Event listeners', () => {
 	});
 
 	it('can handle async error', async () => {
-		const mockHandler = jest.fn().mockImplementation(() => {
+		mockHandler.mockImplementation(() => {
 			throw new Error();
 		});
 		const params = { foo: 'foo' };

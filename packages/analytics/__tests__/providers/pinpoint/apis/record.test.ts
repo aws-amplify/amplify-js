@@ -1,6 +1,6 @@
-import { Hub } from '@aws-amplify/core';
+import { ConsoleLogger, Hub } from '@aws-amplify/core';
 import { record as pinpointRecord } from '@aws-amplify/core/internals/providers/pinpoint';
-import { ConsoleLogger } from '@aws-amplify/core';
+
 import { record } from '../../../../src/providers/pinpoint';
 import {
 	resolveConfig,
@@ -9,16 +9,17 @@ import {
 import { AnalyticsValidationErrorCode } from '../../../../src/errors';
 import { RecordInput } from '../../../../src/providers/pinpoint/types';
 import {
-	isAnalyticsEnabled,
 	getAnalyticsUserAgentString,
+	isAnalyticsEnabled,
 } from '../../../../src/utils';
+
 import {
 	appId,
+	config,
+	credentials,
+	event,
 	identityId,
 	region,
-	event,
-	credentials,
-	config,
 } from './testUtils/data';
 
 jest.mock('@aws-amplify/core');

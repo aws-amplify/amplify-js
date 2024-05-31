@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.1.0...@aws-amplify/react-native@1.1.1) (2024-05-13)
+
+**Note:** Version bump only for package @aws-amplify/react-native
+
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/react-native@1.0.28...@aws-amplify/react-native@1.1.0) (2024-05-07)
+
+### Features
+
+- **react-native:** add getDeviceName util ([#13015](https://github.com/aws-amplify/amplify-js/issues/13015)) ([36b5d1e](https://github.com/aws-amplify/amplify-js/commit/36b5d1ef6c6151edfe26213a03eb4a1051058ca4))
+
 ## 1.0.28 (2024-04-02)
 
 **Note:** Version bump only for package @aws-amplify/react-native

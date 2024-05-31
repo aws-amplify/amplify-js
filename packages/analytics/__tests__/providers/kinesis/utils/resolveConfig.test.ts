@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import { resolveConfig } from '../../../../src/providers/kinesis/utils/resolveConfig';
 import { DEFAULT_KINESIS_CONFIG } from '../../../../src/providers/kinesis/utils/constants';
 

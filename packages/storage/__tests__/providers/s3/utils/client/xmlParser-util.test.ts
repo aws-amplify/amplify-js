@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import cases from './xmlParser-fixture';
 import { parser as browserParser } from '../../../../../src/providers/s3/utils/client/runtime/index.browser';
 import { parser as nodeParser } from '../../../../../src/providers/s3/utils/client/runtime/index';
+
+import cases from './xmlParser-fixture';
 
 describe('xmlParser for browsers', () => {
 	cases.forEach(({ spec, xml, expected }) => {

@@ -3,6 +3,7 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger } from '@aws-amplify/core';
 import { PersistentModel } from '@aws-amplify/datastore';
+
 import { DB_NAME } from '../common/constants';
 import { CommonSQLiteDatabase, ParameterizedStatement } from '../common/types';
 
@@ -16,7 +17,7 @@ if (ConsoleLogger.LOG_LEVEL === 'DEBUG') {
 
 /*
 
-Note: 
+Note:
 I purposely avoided using arrow functions () => {} in this class,
 Because I ran into issues with them in some of the SQLite method callbacks
 
@@ -41,7 +42,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 	}
 
 	public async createSchema(statements: string[]): Promise<void> {
-		return await this.executeStatements(statements);
+		await this.executeStatements(statements);
 	}
 
 	public async clear(): Promise<void> {
@@ -56,6 +57,7 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 		params: (string | number)[],
 	): Promise<T> {
 		const results: T[] = await this.getAll(statement, params);
+
 		return results[0];
 	}
 
@@ -138,7 +140,14 @@ class SQLiteDatabase implements CommonSQLiteDatabase {
 				},
 				logger.warn,
 			);
-			tx.executeSql(deleteStatement, deleteParams, () => {}, logger.warn);
+			tx.executeSql(
+				deleteStatement,
+				deleteParams,
+				() => {
+					// no-op
+				},
+				logger.warn,
+			);
 		});
 
 		return results;

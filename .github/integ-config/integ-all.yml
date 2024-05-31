@@ -595,7 +595,6 @@ tests:
     spec: sign-in-with-oauth
     browser: [chrome]
     backend: gen2
-    
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.

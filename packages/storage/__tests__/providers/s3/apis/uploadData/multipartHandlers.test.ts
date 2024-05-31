@@ -3,23 +3,25 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, defaultStorage } from '@aws-amplify/core';
+
 import {
-	createMultipartUpload,
-	uploadPart,
-	completeMultipartUpload,
 	abortMultipartUpload,
-	listParts,
+	completeMultipartUpload,
+	createMultipartUpload,
 	headObject,
+	listParts,
+	uploadPart,
 } from '../../../../../src/providers/s3/utils/client';
 import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
 import {
-	validationErrorMap,
 	StorageValidationErrorCode,
+	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
 import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
 import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
+import '../testUtils';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client');
@@ -39,14 +41,14 @@ const defaultCacheKey = '8388608_application/octet-stream_bucket_public_key';
 const testPath = 'testPath/object';
 const testPathCacheKey = `8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
 
-const mockCreateMultipartUpload = createMultipartUpload as jest.Mock;
-const mockUploadPart = uploadPart as jest.Mock;
-const mockCompleteMultipartUpload = completeMultipartUpload as jest.Mock;
-const mockAbortMultipartUpload = abortMultipartUpload as jest.Mock;
-const mockListParts = listParts as jest.Mock;
-const mockHeadObject = headObject as jest.Mock;
+const mockCreateMultipartUpload = jest.mocked(createMultipartUpload);
+const mockUploadPart = jest.mocked(uploadPart);
+const mockCompleteMultipartUpload = jest.mocked(completeMultipartUpload);
+const mockAbortMultipartUpload = jest.mocked(abortMultipartUpload);
+const mockListParts = jest.mocked(listParts);
+const mockHeadObject = jest.mocked(headObject);
 
-const disableAssertion = true;
+const disableAssertionFlag = true;
 
 const MB = 1024 * 1024;
 
@@ -54,20 +56,23 @@ const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 	let totalSize = 0;
 	mockCreateMultipartUpload.mockResolvedValueOnce({
 		UploadId: 'uploadId',
+		$metadata: {},
 	});
+	// @ts-expect-error Special mock to make uploadPart return input part number
 	mockUploadPart.mockImplementation(async (s3Config, input) => {
 		if (!disableAssertion) {
 			expect(input.UploadId).toEqual('uploadId');
 		}
 
 		// mock 2 invocation of onProgress callback to simulate progress
-		s3Config?.onUploadProgress({
-			transferredBytes: input.Body.byteLength / 2,
-			totalBytes: input.Body.byteLength,
+		const body = input.Body as ArrayBuffer;
+		s3Config?.onUploadProgress?.({
+			transferredBytes: body.byteLength / 2,
+			totalBytes: body.byteLength,
 		});
-		s3Config?.onUploadProgress({
-			transferredBytes: input.Body.byteLength,
-			totalBytes: input.Body.byteLength,
+		s3Config?.onUploadProgress?.({
+			transferredBytes: body.byteLength,
+			totalBytes: body.byteLength,
 		});
 
 		totalSize += byteLength(input.Body)!;
@@ -79,34 +84,42 @@ const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 	});
 	mockCompleteMultipartUpload.mockResolvedValueOnce({
 		ETag: 'etag',
+		$metadata: {},
 	});
 	mockHeadObject.mockResolvedValueOnce({
 		ContentLength: totalSize,
+		$metadata: {},
 	});
 };
 
 const mockMultipartUploadCancellation = (
 	beforeUploadPartResponseCallback?: () => void,
 ) => {
-	mockCreateMultipartUpload.mockImplementation(async ({ abortSignal }) => ({
+	mockCreateMultipartUpload.mockImplementation(async () => ({
 		UploadId: 'uploadId',
+		$metadata: {},
 	}));
 
+	// @ts-expect-error Only need partial mock
 	mockUploadPart.mockImplementation(async ({ abortSignal }, { PartNumber }) => {
 		beforeUploadPartResponseCallback?.();
 		if (abortSignal?.aborted) {
 			throw new Error('AbortError');
 		}
+
 		return {
 			ETag: `etag-${PartNumber}`,
 			PartNumber,
 		};
 	});
 
-	mockAbortMultipartUpload.mockResolvedValueOnce({});
+	mockAbortMultipartUpload.mockResolvedValueOnce({
+		$metadata: {},
+	});
 	// Mock resumed upload and completed upload successfully
 	mockCompleteMultipartUpload.mockResolvedValueOnce({
 		ETag: 'etag',
+		$metadata: {},
 	});
 };
 
@@ -192,7 +205,9 @@ describe('getMultipartUploadHandlers with key', () => {
 						options: options as StorageOptions,
 					});
 					const result = await multipartUploadJob();
-					expect(mockCreateMultipartUpload).toHaveBeenCalledWith(
+					await expect(
+						mockCreateMultipartUpload,
+					).toBeLastCalledWithConfigAndInput(
 						expect.objectContaining({
 							credentials,
 							region,
@@ -239,6 +254,7 @@ describe('getMultipartUploadHandlers with key', () => {
 					if (end - start !== buffer?.byteLength) {
 						buffer = new ArrayBuffer(end - start);
 					}
+
 					return buffer;
 				}),
 			} as any as File;
@@ -255,15 +271,18 @@ describe('getMultipartUploadHandlers with key', () => {
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
 			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
-			expect(mockUploadPart.mock.calls[0][1].Body.byteLength).toEqual(10 * MB); // The part size should be adjusted from default 5MB to 10MB.
+			expect(
+				(mockUploadPart.mock.calls[0][1].Body as ArrayBuffer).byteLength,
+			).toEqual(10 * MB); // The part size should be adjusted from default 5MB to 10MB.
 		});
 
 		it('should throw error when remote and local file sizes do not match upon completed upload', async () => {
 			expect.assertions(1);
-			mockMultipartUploadSuccess(disableAssertion);
+			mockMultipartUploadSuccess(disableAssertionFlag);
 			mockHeadObject.mockReset();
 			mockHeadObject.mockResolvedValue({
 				ContentLength: 1,
+				$metadata: {},
 			});
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
@@ -298,7 +317,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 		it('should handle error case: finish multipart upload failed', async () => {
 			expect.assertions(1);
-			mockMultipartUploadSuccess(disableAssertion);
+			mockMultipartUploadSuccess(disableAssertionFlag);
 			mockCompleteMultipartUpload.mockReset();
 			mockCompleteMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
@@ -311,10 +330,11 @@ describe('getMultipartUploadHandlers with key', () => {
 
 		it('should handle error case: upload a body that splits in two parts but second part fails', async () => {
 			expect.assertions(3);
-			mockMultipartUploadSuccess(disableAssertion);
+			mockMultipartUploadSuccess(disableAssertionFlag);
 			mockUploadPart.mockReset();
 			mockUploadPart.mockResolvedValueOnce({
 				ETag: `etag-1`,
+				// @ts-expect-error Special mock to make uploadPart return input part number.
 				PartNumber: 1,
 			});
 			mockUploadPart.mockRejectedValueOnce(new Error('error'));
@@ -367,7 +387,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				}),
 			);
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -385,7 +405,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 		it('should cache the upload with file including file lastModified property', async () => {
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -420,7 +440,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				}),
 			);
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -438,7 +458,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 		it('should cache upload task if new upload task is created', async () => {
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -465,7 +485,7 @@ describe('getMultipartUploadHandlers with key', () => {
 
 		it('should remove from cache if upload task is completed', async () => {
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -486,10 +506,10 @@ describe('getMultipartUploadHandlers with key', () => {
 
 		it('should remove from cache if upload task is canceled', async () => {
 			expect.assertions(2);
-			mockMultipartUploadSuccess(disableAssertion);
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockMultipartUploadSuccess(disableAssertionFlag);
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
-			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers(
+			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
@@ -609,6 +629,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			);
 			mockListParts.mockResolvedValue({
 				Parts: [{ PartNumber: 1 }],
+				$metadata: {},
 			});
 
 			const onProgress = jest.fn();
@@ -698,7 +719,9 @@ describe('getMultipartUploadHandlers with path', () => {
 						data: twoPartsPayload,
 					});
 					const result = await multipartUploadJob();
-					expect(mockCreateMultipartUpload).toHaveBeenCalledWith(
+					await expect(
+						mockCreateMultipartUpload,
+					).toBeLastCalledWithConfigAndInput(
 						expect.objectContaining({
 							credentials,
 							region,
@@ -745,6 +768,7 @@ describe('getMultipartUploadHandlers with path', () => {
 					if (end - start !== buffer?.byteLength) {
 						buffer = new ArrayBuffer(end - start);
 					}
+
 					return buffer;
 				}),
 			} as any as File;
@@ -761,15 +785,18 @@ describe('getMultipartUploadHandlers with path', () => {
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
 			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
-			expect(mockUploadPart.mock.calls[0][1].Body.byteLength).toEqual(10 * MB); // The part size should be adjusted from default 5MB to 10MB.
+			expect(
+				(mockUploadPart.mock.calls[0][1].Body as ArrayBuffer).byteLength,
+			).toEqual(10 * MB); // The part size should be adjusted from default 5MB to 10MB.
 		});
 
 		it('should throw error when remote and local file sizes do not match upon completed upload', async () => {
 			expect.assertions(1);
-			mockMultipartUploadSuccess(disableAssertion);
+			mockMultipartUploadSuccess(disableAssertionFlag);
 			mockHeadObject.mockReset();
 			mockHeadObject.mockResolvedValue({
 				ContentLength: 1,
+				$metadata: {},
 			});
 
 			const { multipartUploadJob } = getMultipartUploadHandlers(
@@ -804,7 +831,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 		it('should handle error case: finish multipart upload failed', async () => {
 			expect.assertions(1);
-			mockMultipartUploadSuccess(disableAssertion);
+			mockMultipartUploadSuccess(disableAssertionFlag);
 			mockCompleteMultipartUpload.mockReset();
 			mockCompleteMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
@@ -817,10 +844,11 @@ describe('getMultipartUploadHandlers with path', () => {
 
 		it('should handle error case: upload a body that splits in two parts but second part fails', async () => {
 			expect.assertions(3);
-			mockMultipartUploadSuccess(disableAssertion);
+			mockMultipartUploadSuccess(disableAssertionFlag);
 			mockUploadPart.mockReset();
 			mockUploadPart.mockResolvedValueOnce({
 				ETag: `etag-1`,
+				// @ts-expect-error Special mock to make uploadPart return input part number.
 				PartNumber: 1,
 			});
 			mockUploadPart.mockRejectedValueOnce(new Error('error'));
@@ -873,7 +901,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				}),
 			);
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -891,7 +919,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 		it('should cache the upload with file including file lastModified property', async () => {
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -929,7 +957,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				}),
 			);
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -947,7 +975,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 		it('should cache upload task if new upload task is created', async () => {
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -972,7 +1000,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 		it('should remove from cache if upload task is completed', async () => {
 			mockMultipartUploadSuccess();
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
@@ -993,10 +1021,10 @@ describe('getMultipartUploadHandlers with path', () => {
 
 		it('should remove from cache if upload task is canceled', async () => {
 			expect.assertions(2);
-			mockMultipartUploadSuccess(disableAssertion);
-			mockListParts.mockResolvedValueOnce({ Parts: [] });
+			mockMultipartUploadSuccess(disableAssertionFlag);
+			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;
-			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers(
+			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
@@ -1116,6 +1144,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			);
 			mockListParts.mockResolvedValue({
 				Parts: [{ PartNumber: 1 }],
+				$metadata: {},
 			});
 
 			const onProgress = jest.fn();

@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Adapter } from './index';
+import type { IDBPDatabase, IDBPObjectStore } from 'idb';
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
-	isPredicateObj,
 	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
@@ -16,21 +17,23 @@ import {
 	PredicateObject,
 	PredicatesGroup,
 	QueryOne,
+	isPredicateObj,
 } from '../../types';
 import {
 	NAMESPACES,
-	getStorename,
-	getIndexKeys,
+	extractPrimaryKeyFieldNames,
 	extractPrimaryKeyValues,
+	getIndexKeys,
+	getStorename,
+	isModelConstructor,
 	traverseModel,
 	validatePredicate,
-	isModelConstructor,
-	extractPrimaryKeyFieldNames,
 } from '../../util';
-import type { IDBPDatabase, IDBPObjectStore } from 'idb';
-import type AsyncStorageDatabase from './AsyncStorageDatabase';
 import { ModelRelationship } from '../relationship';
-import { ConsoleLogger } from '@aws-amplify/core';
+
+import type AsyncStorageDatabase from './AsyncStorageDatabase';
+
+import { Adapter } from './index';
 
 const logger = new ConsoleLogger('DataStore');
 const DB_NAME = 'amplify-datastore';
@@ -46,6 +49,7 @@ export abstract class StorageAdapterBase implements Adapter {
 		namsespaceName: NAMESPACES,
 		modelName: string,
 	) => PersistentModelConstructor<any>;
+
 	protected initPromise!: Promise<void>;
 	protected resolve!: (value?: any) => void;
 	protected reject!: (value?: any) => void;
@@ -78,12 +82,13 @@ export abstract class StorageAdapterBase implements Adapter {
 		await this.preSetUpChecks();
 
 		if (!this.initPromise) {
-			this.initPromise = new Promise((res, rej) => {
-				this.resolve = res;
-				this.reject = rej;
+			this.initPromise = new Promise((resolve, reject) => {
+				this.resolve = resolve;
+				this.reject = reject;
 			});
 		} else {
 			await this.initPromise;
+
 			return;
 		}
 		if (sessionId) {
@@ -195,13 +200,14 @@ export abstract class StorageAdapterBase implements Adapter {
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
-				const storeName = getStorename(namespaceName, modelName);
-				set.add(storeName);
+				const resolvedStoreName = getStorename(namespaceName, modelName);
+				set.add(resolvedStoreName);
 				const keys = getIndexKeys(
 					this.schema.namespaces[namespaceName],
 					modelName,
 				);
-				return { storeName, item, instance, keys };
+
+				return { storeName: resolvedStoreName, item, instance, keys };
 			},
 		);
 
@@ -397,7 +403,7 @@ export abstract class StorageAdapterBase implements Adapter {
 
 				const deletedModels = deleteQueue.reduce(
 					(acc, { items }) => acc.concat(items),
-					<T[]>[],
+					[] as T[],
 				);
 
 				return [models, deletedModels];
@@ -413,7 +419,7 @@ export abstract class StorageAdapterBase implements Adapter {
 
 				const deletedModels = deleteQueue.reduce(
 					(acc, { items }) => acc.concat(items),
-					<T[]>[],
+					[] as T[],
 				);
 
 				return [models, deletedModels];
@@ -471,7 +477,7 @@ export abstract class StorageAdapterBase implements Adapter {
 
 			const deletedModels = deleteQueue.reduce(
 				(acc, { items }) => acc.concat(items),
-				<T[]>[],
+				[] as T[],
 			);
 
 			return [[model], deletedModels];

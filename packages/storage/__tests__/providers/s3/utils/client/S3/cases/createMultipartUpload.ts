@@ -3,12 +3,13 @@
 
 import { createMultipartUpload } from '../../../../../../../src/providers/s3/utils/client';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
+
 import {
-	defaultConfig,
 	DEFAULT_RESPONSE_HEADERS,
+	defaultConfig,
 	expectedMetadata,
 } from './shared';
-import { putObjectRequest, expectedPutObjectRequestHeaders } from './putObject';
+import { expectedPutObjectRequestHeaders, putObjectRequest } from './putObject';
 
 // API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
 const createMultiPartUploadHappyCase: ApiFunctionalTestCase<

@@ -1,19 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getUrl } from '../../../../src/providers/s3/apis';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+
+import { getUrl } from '../../../../src/providers/s3/apis';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
 } from '../../../../src/providers/s3/utils/client';
 import {
 	GetUrlInput,
-	GetUrlWithPathInput,
 	GetUrlOutput,
+	GetUrlWithPathInput,
 	GetUrlWithPathOutput,
 } from '../../../../src/providers/s3/types';
+import './testUtils';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -30,8 +32,8 @@ jest.mock('@aws-amplify/core', () => ({
 
 const bucket = 'bucket';
 const region = 'region';
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
+const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
+const mockGetConfig = jest.mocked(Amplify.getConfig);
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -67,7 +69,7 @@ describe('getUrl test with key', () => {
 		};
 		const key = 'key';
 		beforeEach(() => {
-			(headObject as jest.MockedFunction<typeof headObject>).mockResolvedValue({
+			jest.mocked(headObject).mockResolvedValue({
 				ContentLength: 100,
 				ContentType: 'text/plain',
 				ETag: 'etag',
@@ -75,20 +77,16 @@ describe('getUrl test with key', () => {
 				Metadata: { meta: 'value' },
 				$metadata: {} as any,
 			});
-			(
-				getPresignedGetObjectUrl as jest.MockedFunction<
-					typeof getPresignedGetObjectUrl
-				>
-			).mockResolvedValue(mockURL);
+			jest.mocked(getPresignedGetObjectUrl).mockResolvedValue(mockURL);
 		});
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
 
-		const testCases: Array<{
+		const testCases: {
 			options?: { accessLevel?: StorageAccessLevel; targetIdentityId?: string };
 			expectedKey: string;
-		}> = [
+		}[] = [
 			{
 				expectedKey: `public/${key}`,
 			},
@@ -130,7 +128,10 @@ describe('getUrl test with key', () => {
 				};
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
-				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					config,
+					headObjectOptions,
+				);
 				expect({ url, expiresAt }).toEqual(expectedResult);
 			},
 		);
@@ -186,7 +187,7 @@ describe('getUrl test with path', () => {
 			userAgentValue: expect.any(String),
 		};
 		beforeEach(() => {
-			(headObject as jest.MockedFunction<typeof headObject>).mockResolvedValue({
+			jest.mocked(headObject).mockResolvedValue({
 				ContentLength: 100,
 				ContentType: 'text/plain',
 				ETag: 'etag',
@@ -194,11 +195,7 @@ describe('getUrl test with path', () => {
 				Metadata: { meta: 'value' },
 				$metadata: {} as any,
 			});
-			(
-				getPresignedGetObjectUrl as jest.MockedFunction<
-					typeof getPresignedGetObjectUrl
-				>
-			).mockResolvedValue(mockURL);
+			jest.mocked(getPresignedGetObjectUrl).mockResolvedValue(mockURL);
 		});
 		afterEach(() => {
 			jest.clearAllMocks();
@@ -228,7 +225,10 @@ describe('getUrl test with path', () => {
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
 				expect(headObject).toHaveBeenCalledTimes(1);
-				expect(headObject).toHaveBeenCalledWith(config, headObjectOptions);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					config,
+					headObjectOptions,
+				);
 				expect({ url, expiresAt }).toEqual({
 					url: mockURL,
 					expiresAt: expect.any(Date),

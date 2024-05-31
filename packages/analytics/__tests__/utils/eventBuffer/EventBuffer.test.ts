@@ -4,14 +4,14 @@
 import { EventBuffer } from '../../../src/utils';
 
 describe('EventBuffer', () => {
-	type TestEvent = {
+	interface TestEvent {
 		id: string;
 		timestamp: number;
-	};
+	}
 
 	it('append events in order', done => {
 		const result: TestEvent[] = [];
-		const eventBuffer: EventBuffer<TestEvent> = new EventBuffer(
+		const eventBuffer = new EventBuffer<TestEvent>(
 			{
 				bufferSize: 2,
 				flushSize: 1,
@@ -19,6 +19,7 @@ describe('EventBuffer', () => {
 			},
 			() => events => {
 				result.push(...events);
+
 				return Promise.resolve([]);
 			},
 		);
@@ -27,7 +28,9 @@ describe('EventBuffer', () => {
 			{ id: '1', timestamp: 1 },
 			{ id: '2', timestamp: 2 },
 		];
-		testEvents.forEach(x => eventBuffer.append(x));
+		testEvents.forEach(x => {
+			eventBuffer.append(x);
+		});
 		setTimeout(() => {
 			eventBuffer.release();
 			expect(result[0]).toEqual(testEvents[0]);
@@ -44,7 +47,7 @@ describe('EventBuffer', () => {
 			{ id: '3', timestamp: 3 },
 		];
 
-		const eventBuffer: EventBuffer<TestEvent> = new EventBuffer(
+		const eventBuffer = new EventBuffer<TestEvent>(
 			{
 				bufferSize: 3,
 				flushSize: 1,
@@ -52,11 +55,14 @@ describe('EventBuffer', () => {
 			},
 			() => events => {
 				results.push(events.length);
+
 				return Promise.resolve(events);
 			},
 		);
 
-		testEvents.forEach(x => eventBuffer.append(x));
+		testEvents.forEach(x => {
+			eventBuffer.append(x);
+		});
 		setTimeout(() => {
 			eventBuffer.release();
 			expect(results.filter(x => x === testEvents.length).length).toEqual(1);
@@ -76,7 +82,7 @@ describe('EventBuffer', () => {
 			{ id: '3', timestamp: 3 },
 		];
 
-		const eventBuffer: EventBuffer<TestEvent> = new EventBuffer(
+		const eventBuffer = new EventBuffer<TestEvent>(
 			{
 				bufferSize: 3,
 				flushSize: 1,
@@ -84,11 +90,14 @@ describe('EventBuffer', () => {
 			},
 			() => events => {
 				results.push(...events);
+
 				return Promise.resolve([]);
 			},
 		);
 
-		testEvents.forEach(x => eventBuffer.append(x));
+		testEvents.forEach(x => {
+			eventBuffer.append(x);
+		});
 		setTimeout(() => {
 			eventBuffer.release();
 		}, 100);
