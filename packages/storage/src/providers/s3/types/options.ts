@@ -17,7 +17,7 @@ interface CommonOptions {
 	 */
 	useAccelerateEndpoint?: boolean;
 	/** Bucket name */
-	bucket?: string;
+	bucket?: string | Bucket;
 	/** Region */
 	region?: string;
 }
@@ -185,4 +185,12 @@ export interface ResolvedS3Config
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
+}
+
+/** Bucket to store files/objects */
+export interface Bucket {
+	name: string;
+	alias: string;
+	region: string;
+	isDefault?: boolean;
 }

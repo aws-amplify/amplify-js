@@ -6,7 +6,7 @@ import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
-import { ResolvedS3Config } from '../types/options';
+import { Bucket, ResolvedS3Config } from '../types/options';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 
@@ -14,7 +14,7 @@ interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
-	bucket?: string;
+	bucket?: string | Bucket;
 	region?: string;
 }
 
@@ -64,13 +64,30 @@ export const resolveS3ConfigAndInput = async (
 		return credentials;
 	};
 
-	let { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
-		amplify.getConfig()?.Storage?.S3 ?? {};
+	let {
+		bucket,
+		region,
+		dangerouslyConnectToHttpEndpointForTesting,
+		buckets,
+	}: {
+		bucket?: string;
+		region?: string;
+		dangerouslyConnectToHttpEndpointForTesting?: string;
+		buckets?: Bucket[];
+	} = amplify.getConfig()?.Storage?.S3 ?? {};
 
-	if (apiOptions?.bucket && apiOptions.region) {
+	if (apiOptions?.bucket && typeof apiOptions.bucket === 'string') {
 		const { bucket: optionsBucket, region: optionsRegion } = apiOptions;
 		bucket = optionsBucket;
-		region = optionsRegion;
+		region = optionsRegion ?? region;
+	}
+
+	if (apiOptions?.bucket && typeof apiOptions.bucket !== 'string') {
+		const bucketName = apiOptions.bucket.name;
+		const foundBucket =
+			buckets && buckets.find(item => item.name === bucketName);
+		bucket = foundBucket?.name;
+		region = foundBucket?.region;
 	}
 
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
