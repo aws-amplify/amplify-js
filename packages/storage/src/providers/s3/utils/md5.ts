@@ -3,7 +3,7 @@
 
 import { Md5 } from '@smithy/md5-js';
 
-import { toBase64, utf8Encode } from './client/utils';
+import { toBase64 } from './client/utils';
 
 export const calculateContentMd5 = async (
 	content: Blob | string | ArrayBuffer | ArrayBufferView,
@@ -13,30 +13,22 @@ export const calculateContentMd5 = async (
 		hasher.update(content);
 	} else if (ArrayBuffer.isView(content) || content instanceof ArrayBuffer) {
 		const blob = new Blob([content]);
-		const buffer = await readFileToBase64(blob);
+		const buffer = await readFile(blob);
 		hasher.update(buffer);
 	} else {
-		const buffer = await readFileToBase64(content);
-		hasher.update(utf8Encode(buffer));
+		const buffer = await readFile(content);
+		hasher.update(buffer);
 	}
 	const digest = await hasher.digest();
 
 	return toBase64(digest);
 };
 
-const readFileToBase64 = (blob: Blob): Promise<string> => {
-	return new Promise((resolve, reject) => {
+const readFile = (file: Blob): Promise<ArrayBuffer> =>
+	new Promise((resolve, reject) => {
 		const reader = new FileReader();
-		reader.onloadend = () => {
-			// reference: https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
-			// response from readAsDataURL is always prepended with "data:*/*;base64,"
-			// reference: https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readyState
-			if (reader.readyState !== 2) {
-				reject(new Error('Reader aborted too early'));
-
-				return;
-			}
-			resolve((reader.result as string).split(',')[1]);
+		reader.onload = () => {
+			resolve(reader.result as ArrayBuffer);
 		};
 		reader.onabort = () => {
 			reject(new Error('Read aborted'));
@@ -44,7 +36,5 @@ const readFileToBase64 = (blob: Blob): Promise<string> => {
 		reader.onerror = () => {
 			reject(reader.error);
 		};
-		// reader.readAsArrayBuffer is not available in RN
-		reader.readAsDataURL(blob);
+		reader.readAsArrayBuffer(file);
 	});
-};
