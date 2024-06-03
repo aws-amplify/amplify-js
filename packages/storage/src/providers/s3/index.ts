@@ -9,6 +9,7 @@ export {
 	getProperties,
 	copy,
 	getUrl,
+	getBuckets,
 } from './apis';
 
 export {
