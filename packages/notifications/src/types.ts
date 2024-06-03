@@ -28,7 +28,7 @@ export interface NotificationsProvider {
 export interface NotificationsConfig {
 	Notifications?: {
 		InAppMessaging?: InAppMessagingConfig;
-		PushNotification?: PushNotificationConfig;
+		Push?: PushNotificationConfig;
 	};
 }
 
