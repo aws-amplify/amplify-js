@@ -9,7 +9,6 @@ export {
 	CANCELED_ERROR_MESSAGE,
 	CONTENT_SHA256_HEADER,
 	toBase64,
-	utf8Encode,
 } from '../runtime';
 export {
 	buildStorageServiceError,
