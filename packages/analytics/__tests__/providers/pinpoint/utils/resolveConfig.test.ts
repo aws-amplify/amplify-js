@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import { resolveConfig } from '../../../../src/providers/pinpoint/utils';
 
 describe('Analytics Pinpoint Provider Util: resolveConfig', () => {

@@ -5,13 +5,13 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { ApiError } from '@aws-amplify/core/internals/utils';
 import {
 	authenticatedHandler,
-	unauthenticatedHandler,
 	parseJsonError,
+	unauthenticatedHandler,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
 import {
-	post,
 	cancel,
+	post,
 	updateRequestToBeCancellable,
 } from '../../../src/apis/common/internalPost';
 import { RestApiError, isCancelError } from '../../../src/errors';
@@ -234,7 +234,7 @@ describe('internal post', () => {
 		let underLyingHandlerReject;
 		mockUnauthenticatedHandler.mockReset();
 		mockUnauthenticatedHandler.mockReturnValue(
-			new Promise((_, reject) => {
+			new Promise((_resolve, reject) => {
 				underLyingHandlerReject = reject;
 			}),
 		);
@@ -281,6 +281,7 @@ describe('internal post', () => {
 		mockParseJsonError.mockImplementationOnce(async response => {
 			const errorResponsePayload = await response.body?.json();
 			const error = new Error(errorResponsePayload.message);
+
 			return Object.assign(error, {
 				name: errorResponsePayload.name,
 			});
@@ -325,6 +326,7 @@ describe('internal post', () => {
 		mockParseJsonError.mockImplementationOnce(async response => {
 			const errorResponsePayload = await response.body?.json();
 			const error = new Error(errorResponsePayload.message);
+
 			return Object.assign(error, {
 				name: errorResponsePayload.name,
 			});

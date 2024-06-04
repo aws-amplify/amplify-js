@@ -1,17 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ConsoleLogger } from '@aws-amplify/core';
+
 import {
 	getEventBuffer,
 	resolveConfig,
 } from '../../../../src/providers/kinesis-firehose/utils';
 import { resolveCredentials } from '../../../../src/utils';
 import {
-	mockKinesisConfig,
 	mockCredentialConfig,
+	mockKinesisConfig,
 } from '../../../testUtils/mockConstants';
 import { flushEvents } from '../../../../src/providers/kinesis-firehose/apis';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 jest.mock('../../../../src/utils');
 jest.mock('../../../../src/providers/kinesis-firehose/utils');

@@ -109,7 +109,7 @@ Run watch mode while editing (auth for example):
 
 ```
 npx lerna exec --scope @aws-amplify/auth yarn link
-npx lerna exec --scope @aws-amplify/auth yarn build:esm:watch
+npx lerna exec --scope @aws-amplify/auth yarn build:watch
 ```
 
 Or run the whole library in watch mode if you are working on multiple packages
@@ -117,7 +117,7 @@ Or run the whole library in watch mode if you are working on multiple packages
 ```
 yarn build # Build the whole library
 yarn link-all # Make all the packages available to link
-yarn build:esm:watch # All packages are building ES6 modules in watch mode
+yarn build:watch # All packages are building in watch mode
 ```
 
 In your sample project, you can now link specific packages
@@ -218,7 +218,7 @@ _[Skip step 1 to 3 if you have already done this]_
      - revert: Reverts a previous commit
    - Use slashes to separate parts of branch names
    - Hyphenate well-defined branch name
-5. Once your work is committed and you're ready to share, run test `yarn test`.
+5. Be sure to write tests to cover any added or modified code. Be especially vigilant when testing changes that affect shared code resources in order to catch problems such as race conditions. Once your work is committed and you're ready to share, run test `yarn test` on root-level package.
 
    **Note:** Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
 

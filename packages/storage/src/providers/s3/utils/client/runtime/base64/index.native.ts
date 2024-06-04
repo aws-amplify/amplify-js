@@ -3,10 +3,6 @@
 
 import { Buffer } from 'buffer';
 
-export function utf8Encode(input: string): Uint8Array {
-	return Buffer.from(input, 'utf-8');
-}
-
 export function toBase64(input: string | ArrayBufferView): string {
 	if (typeof input === 'string') {
 		return Buffer.from(input, 'utf-8').toString('base64');

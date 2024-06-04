@@ -1,11 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	getInflightDeviceRegistration,
-	rejectInflightDeviceRegistration,
-	resolveInflightDeviceRegistration,
-} from '../../../../../src/pushNotifications/providers/pinpoint/utils/inflightDeviceRegistration';
 import { InflightDeviceRegistration } from '../../../../../src/pushNotifications/providers/pinpoint/types';
 
 describe('inflightDeviceRegistration', () => {

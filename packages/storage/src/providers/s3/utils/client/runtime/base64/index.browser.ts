@@ -7,13 +7,9 @@ function bytesToBase64(bytes: Uint8Array): string {
 	return btoa(base64Str);
 }
 
-export function utf8Encode(input: string): Uint8Array {
-	return new TextEncoder().encode(input);
-}
-
 export function toBase64(input: string | ArrayBufferView): string {
 	if (typeof input === 'string') {
-		return bytesToBase64(utf8Encode(input));
+		return bytesToBase64(new TextEncoder().encode(input));
 	}
 
 	return bytesToBase64(

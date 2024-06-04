@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { cloneDeep } from 'lodash';
+
 import {
 	pinpointInAppMessage,
 	simpleInAppMessagingEvent,
@@ -9,7 +11,6 @@ import {
 	incrementMessageCounts,
 	processInAppMessages,
 } from '../../../src/inAppMessaging/providers/pinpoint/utils';
-import { cloneDeep } from 'lodash';
 import {
 	isBeforeEndDate,
 	matchesAttributes,
