@@ -6,7 +6,6 @@ import {
 	AuthConfigUserAttributes,
 	LegacyUserAttributeKey,
 	OAuthConfig,
-	OAuthProvider,
 } from './singleton/Auth/types';
 import { ResourcesConfig } from './singleton/types';
 
@@ -320,10 +319,12 @@ const getOAuthConfig = ({
 	responseType,
 });
 
-const parseSocialProviders = (aws_cognito_social_providers: string[]) => {
+const parseSocialProviders = (
+	aws_cognito_social_providers: string[],
+): string[] => {
 	return aws_cognito_social_providers.map((provider: string) => {
 		const updatedProvider = provider.toLowerCase();
 
 		return updatedProvider.charAt(0).toUpperCase() + updatedProvider.slice(1);
-	}) as OAuthProvider[];
+	});
 };
