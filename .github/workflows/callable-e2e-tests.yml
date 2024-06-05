@@ -14,8 +14,6 @@ jobs:
       - name: Read integ config files
         id: load_config
         run: |
-          echo "INTEG_CONFIG=$(cat .github/integ-config/integ-all.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
-          echo "INTEG_CONFIG_HEADLESS=$(cat .github/integ-config/integ-all-headless.yml | yq '.tests' -o=json | jq -c .)" >> $GITHUB_OUTPUT
           echo "DETOX_INTEG_CONFIG=$(cat .github/integ-config/detox-integ-all.yml | yq -o=json | jq -c .)" >> $GITHUB_OUTPUT
         working-directory: ./amplify-js
     outputs:
