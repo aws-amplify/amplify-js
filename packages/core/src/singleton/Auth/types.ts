@@ -179,7 +179,7 @@ export interface OAuthConfig {
 	redirectSignIn: string[];
 	redirectSignOut: string[];
 	responseType: 'code' | 'token';
-	providers?: (OAuthProvider | CustomProvider)[];
+	providers?: (OAuthProvider | CustomProvider)[] | string[];
 }
 
 export type OAuthProvider = 'Google' | 'Facebook' | 'Amazon' | 'Apple';

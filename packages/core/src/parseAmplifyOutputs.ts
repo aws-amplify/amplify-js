@@ -315,8 +315,8 @@ const providerNames: Record<string, OAuthProvider> = {
 	SIGN_IN_WITH_APPLE: 'Apple',
 };
 
-function getOAuthProviders(providers: string[] = []): OAuthProvider[] {
-	return providers.map(provider => providerNames[provider]);
+function getOAuthProviders(providers: string[] = []): string[] {
+	return providers.map(provider => providerNames[provider] ?? provider);
 }
 
 function getMfaStatus(
