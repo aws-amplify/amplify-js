@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.08 kB"
+			"limit": "17.09 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.57 kB"
+			"limit": "15.59 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -383,7 +383,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "28.26 kB"
+			"limit": "28.27 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -401,7 +401,7 @@
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "12.59 kB"
+			"limit": "12.6 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
