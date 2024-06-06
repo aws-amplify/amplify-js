@@ -170,6 +170,39 @@ describe('signUp', () => {
 				userId,
 			});
 		});
+
+		it('should send UserContextData', async () => {
+			window['AmazonCognitoAdvancedSecurityData'] = {
+				getData() {
+					return 'abcd';
+				},
+			};
+			await signUp({
+				username: user1.username,
+				password: user1.password,
+				options: {
+					userAttributes: { email: user1.email },
+				},
+			});
+	
+			expect(mockSignUp).toHaveBeenCalledWith(
+				{
+					region: 'us-west-2',
+					userAgentValue: expect.any(String),
+				},
+				{
+					ClientMetadata: undefined,
+					Password: user1.password,
+					UserAttributes: [{ Name: 'email', Value: user1.email }],
+					Username: user1.username,
+					ValidationData: undefined,
+					ClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					UserContextData: { EncodedData: 'abcd' },
+				},
+			);
+			expect(mockSignUp).toHaveBeenCalledTimes(1);
+			window['AmazonCognitoAdvancedSecurityData'] = undefined;
+		});
 	});
 
 	describe('Error Path Cases:', () => {
