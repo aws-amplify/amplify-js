@@ -25,6 +25,7 @@ import {
 	setAutoSignInStarted,
 	setUsernameUsedForAutoSignIn,
 } from '../utils/signUpHelpers';
+import { getUserContextData } from '../utils/userContextData';
 import { getAuthUserAgentValue } from '../../../utils';
 
 import { setAutoSignIn } from './autoSignIn';
@@ -62,7 +63,6 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		username,
 		options: signInServiceOptions,
 	};
-
 	// if the authFlowType is 'CUSTOM_WITHOUT_SRP' then we don't include the password
 	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
 		signInInput.password = password;
@@ -71,6 +71,15 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		setUsernameUsedForAutoSignIn(username);
 		setAutoSignInStarted(true);
 	}
+
+	const { userPoolId, userPoolClientId } = authConfig;
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
 	const clientOutput = await signUpClient(
 		{
 			region: getRegion(authConfig.userPoolId),
@@ -84,6 +93,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			ClientMetadata: clientMetadata,
 			ValidationData: validationData && toAttributeType(validationData),
 			ClientId: authConfig.userPoolClientId,
+			UserContextData,
 		},
 	);
 	const { UserSub, CodeDeliveryDetails } = clientOutput;
