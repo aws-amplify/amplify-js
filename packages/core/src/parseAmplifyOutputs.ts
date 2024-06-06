@@ -316,7 +316,13 @@ const providerNames: Record<string, OAuthProvider> = {
 };
 
 function getOAuthProviders(providers: string[] = []): OAuthProvider[] {
-	return providers.map(provider => providerNames[provider]);
+	return providers.reduce((oAuthProviders, provider) => {
+		if (providerNames[provider] !== undefined) {
+			oAuthProviders.push(providerNames[provider]);
+		}
+
+		return oAuthProviders;
+	}, [] as OAuthProvider[]);
 }
 
 function getMfaStatus(
