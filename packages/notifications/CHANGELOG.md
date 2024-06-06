@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@1.6.12...@aws-amplify/notifications@1.6.13) (2024-06-06)
+
+### Bug Fixes
+
+- **notifications:** Fixed type error for Push Notification config ([#13454](https://github.com/aws-amplify/amplify-js/issues/13454)) ([2db4f85](https://github.com/aws-amplify/amplify-js/commit/2db4f85ae60cd9e6974b3533c74ef1094d5c9da1))
+
 ## 1.6.12 (2024-03-21)
 
 ### Bug Fixes
