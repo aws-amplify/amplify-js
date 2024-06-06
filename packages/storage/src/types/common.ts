@@ -55,3 +55,16 @@ export type DownloadTask<Result> = Omit<
 >;
 
 export type UploadTask<Result> = TransferTask<Result>;
+
+/**
+ * Subpath between a root path and a depth
+ *
+ */
+export interface Subpath {
+	path: string;
+}
+
+/**
+ * Depth of a path
+ */
+export type ListDepth = 'max' | 1;
