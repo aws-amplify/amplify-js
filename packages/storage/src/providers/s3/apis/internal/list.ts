@@ -201,7 +201,7 @@ const _listAllWithPath = async ({
 
 	return {
 		items: listResult,
-		...(subpaths.length > 0 ? { subpaths } : {}),
+		...getOptionWithSubpaths(subpaths),
 	};
 };
 
@@ -233,7 +233,7 @@ const _listWithPath = async ({
 	if (!Contents) {
 		return {
 			items: [],
-			...(subpaths && subpaths.length > 0 ? { subpaths } : {}),
+			...getOptionWithSubpaths(subpaths),
 		};
 	}
 
@@ -245,7 +245,7 @@ const _listWithPath = async ({
 			size: item.Size,
 		})),
 		nextToken: NextContinuationToken,
-		...(subpaths && subpaths.length > 0 ? { subpaths } : {}),
+		...getOptionWithSubpaths(subpaths),
 	};
 };
 
@@ -265,4 +265,8 @@ function mapCommonPrefixesToSubpaths(
 	}));
 
 	return mappedSubpaths as Subpath[] | undefined;
+}
+
+function getOptionWithSubpaths(subpaths?: Subpath[]) {
+	return subpaths && subpaths.length > 0 ? { subpaths } : {};
 }
