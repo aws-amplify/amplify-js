@@ -3,8 +3,6 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-import { ListDepth } from './common';
-
 export interface StorageOptions {
 	/** @deprecated This may be removed in the next major version. */
 	accessLevel?: StorageAccessLevel;
@@ -12,14 +10,14 @@ export interface StorageOptions {
 
 export type StorageListAllOptions = StorageOptions & {
 	listAll: true;
-	maximumDepth?: ListDepth;
+	delimiter?: string;
 };
 
 export type StorageListPaginateOptions = StorageOptions & {
 	listAll?: false;
 	pageSize?: number;
 	nextToken?: string;
-	maximumDepth?: ListDepth;
+	delimiter?: string;
 };
 
 export type StorageRemoveOptions = StorageOptions;

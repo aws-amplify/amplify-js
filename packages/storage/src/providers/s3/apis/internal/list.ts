@@ -29,7 +29,7 @@ import {
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
-import { ListDepth, Subpath } from '../../../../types';
+import { Subpath } from '../../../../types';
 import { CommonPrefix } from '../../utils/client/types';
 
 const MAX_PAGE_SIZE = 1000;
@@ -81,7 +81,7 @@ export const list = async (
 		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
-		Delimiter: mapMaximumDepthToDelimiter(options?.maximumDepth),
+		Delimiter: options?.delimiter,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -248,14 +248,6 @@ const _listWithPath = async ({
 		...getOptionWithSubpaths(subpaths),
 	};
 };
-
-function mapMaximumDepthToDelimiter(
-	maximumDepth?: ListDepth,
-): string | undefined {
-	if (maximumDepth === 1) {
-		return '/';
-	}
-}
 
 function mapCommonPrefixesToSubpaths(
 	commonPrefixes?: CommonPrefix[],

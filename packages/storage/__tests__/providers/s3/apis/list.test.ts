@@ -549,7 +549,7 @@ describe('list API', () => {
 			const { items, subpaths } = await list({
 				path: mockedPath,
 				options: {
-					maximumDepth: 1,
+					delimiter: '/',
 				},
 			});
 			expect(items).toHaveLength(3);
@@ -574,7 +574,7 @@ describe('list API', () => {
 			const { items, subpaths } = await list({
 				path: mockedPath,
 				options: {
-					maximumDepth: 1,
+					delimiter: '/',
 					listAll: true,
 				},
 			});
@@ -600,7 +600,7 @@ describe('list API', () => {
 			const { items, subpaths } = await list({
 				path: mockedPath,
 				options: {
-					maximumDepth: 1,
+					delimiter: '/',
 					pageSize: 3,
 				},
 			});

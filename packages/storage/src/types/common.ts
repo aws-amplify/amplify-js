@@ -63,8 +63,3 @@ export type UploadTask<Result> = TransferTask<Result>;
 export interface Subpath {
 	path: string;
 }
-
-/**
- * Depth of a path
- */
-export type ListDepth = 'max' | 1;
