@@ -6,7 +6,6 @@ export {
 	TransferProgressEvent,
 	TransferTaskState,
 	UploadTask,
-	ListDepth,
 	Subpath,
 } from './common';
 export {

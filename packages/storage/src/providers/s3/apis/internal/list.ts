@@ -216,21 +216,20 @@ const _listWithPath = async ({
 	}
 
 	const {
-		Contents,
-		NextContinuationToken,
-		CommonPrefixes,
-	}: ListObjectsV2Output =
-		(await listObjectsV2(
-			{
-				...s3Config,
-				userAgentValue: getStorageUserAgentValue(StorageAction.List),
-			},
-			listParamsClone,
-		)) ?? {};
+		Contents: contents,
+		NextContinuationToken: nextContinuationToken,
+		CommonPrefixes: commonPrefixes,
+	}: ListObjectsV2Output = (await listObjectsV2(
+		{
+			...s3Config,
+			userAgentValue: getStorageUserAgentValue(StorageAction.List),
+		},
+		listParamsClone,
+	)) ?? {};
 
-	const subpaths = mapCommonPrefixesToSubpaths(CommonPrefixes);
+	const subpaths = mapCommonPrefixesToSubpaths(commonPrefixes);
 
-	if (!Contents) {
+	if (!contents) {
 		return {
 			items: [],
 			...getOptionWithSubpaths(subpaths),
@@ -238,13 +237,13 @@ const _listWithPath = async ({
 	}
 
 	return {
-		items: Contents.map(item => ({
+		items: contents.map(item => ({
 			path: item.Key!,
 			eTag: item.ETag,
 			lastModified: item.LastModified,
 			size: item.Size,
 		})),
-		nextToken: NextContinuationToken,
+		nextToken: nextContinuationToken,
 		...getOptionWithSubpaths(subpaths),
 	};
 };
