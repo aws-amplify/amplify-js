@@ -29,6 +29,8 @@ import {
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
+import { ListDepth, Subpath } from '../../../../types';
+import { CommonPrefix } from '../../utils/client/types';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -79,6 +81,7 @@ export const list = async (
 		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
+		Delimiter: mapMaximumDepthToDelimiter(options?.maximumDepth),
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -129,6 +132,7 @@ const _listAllWithPrefix = async ({
 
 	return {
 		items: listResult,
+		subpaths: [],
 	};
 };
 
@@ -176,23 +180,29 @@ const _listAllWithPath = async ({
 	listParams,
 }: ListInputArgs): Promise<ListAllWithPathOutput> => {
 	const listResult: ListOutputItemWithPath[] = [];
+	const subpaths: Subpath[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
-		const { items: pageResults, nextToken: pageNextToken } =
-			await _listWithPath({
-				s3Config,
-				listParams: {
-					...listParams,
-					ContinuationToken: continuationToken,
-					MaxKeys: MAX_PAGE_SIZE,
-				},
-			});
+		const {
+			items: pageResults,
+			subpaths: pageSubpaths,
+			nextToken: pageNextToken,
+		} = await _listWithPath({
+			s3Config,
+			listParams: {
+				...listParams,
+				ContinuationToken: continuationToken,
+				MaxKeys: MAX_PAGE_SIZE,
+			},
+		});
 		listResult.push(...pageResults);
+		subpaths.push(...(pageSubpaths ?? []));
 		continuationToken = pageNextToken;
 	} while (continuationToken);
 
 	return {
 		items: listResult,
+		subpaths,
 	};
 };
 
@@ -206,27 +216,58 @@ const _listWithPath = async ({
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
 	}
 
-	const response: ListObjectsV2Output = await listObjectsV2(
-		{
-			...s3Config,
-			userAgentValue: getStorageUserAgentValue(StorageAction.List),
-		},
-		listParamsClone,
-	);
+	const {
+		Contents,
+		NextContinuationToken,
+		CommonPrefixes,
+	}: ListObjectsV2Output =
+		(await listObjectsV2(
+			{
+				...s3Config,
+				userAgentValue: getStorageUserAgentValue(StorageAction.List),
+			},
+			listParamsClone,
+		)) ?? {};
 
-	if (!response?.Contents) {
+	const subpaths =
+		CommonPrefixes && mapCommonPrefixesToSubpaths(CommonPrefixes);
+
+	if (!Contents) {
 		return {
 			items: [],
+			subpaths,
 		};
 	}
 
 	return {
-		items: response.Contents.map(item => ({
+		items: Contents.map(item => ({
 			path: item.Key!,
 			eTag: item.ETag,
 			lastModified: item.LastModified,
 			size: item.Size,
 		})),
-		nextToken: response.NextContinuationToken,
+		nextToken: NextContinuationToken,
+		subpaths,
 	};
 };
+
+function mapMaximumDepthToDelimiter(
+	maximumDepth?: ListDepth,
+): string | undefined {
+	if (maximumDepth === 1) {
+		return '/';
+	}
+}
+
+function mapCommonPrefixesToSubpaths(
+	commonPrefixes: CommonPrefix[],
+): Subpath[] | undefined {
+	const mappedSubpaths = commonPrefixes?.map(({ Prefix }) => ({
+		path: Prefix,
+	}));
+	const filteredSubpaths = mappedSubpaths?.filter(({ path }) => !!path) as
+		| Subpath[]
+		| undefined;
+
+	return filteredSubpaths;
+}
