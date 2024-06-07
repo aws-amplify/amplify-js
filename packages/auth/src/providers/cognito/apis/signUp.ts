@@ -82,7 +82,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 
 	const clientOutput = await signUpClient(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegion(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignUp),
 		},
 		{
@@ -92,7 +92,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 				options?.userAttributes && toAttributeType(options?.userAttributes),
 			ClientMetadata: clientMetadata,
 			ValidationData: validationData && toAttributeType(validationData),
-			ClientId: authConfig.userPoolClientId,
+			ClientId: userPoolClientId,
 			UserContextData,
 		},
 	);
