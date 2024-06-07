@@ -11,4 +11,4 @@ export {
 } from './constants';
 export { s3TransferHandler } from './s3TransferHandler/fetch';
 export { parser } from './xmlParser/pureJs';
-export { toBase64, utf8Encode } from './index.native';
+export { toBase64 } from './index.native';

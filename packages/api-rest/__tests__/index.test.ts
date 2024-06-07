@@ -3,14 +3,14 @@
 
 import { Amplify } from '@aws-amplify/core';
 
-import { get, post, put, del, patch, head } from '../src/index';
+import { del, get, head, patch, post, put } from '../src/index';
 import {
+	del as commonDel,
 	get as commonGet,
+	head as commonHead,
+	patch as commonPatch,
 	post as commonPost,
 	put as commonPut,
-	del as commonDel,
-	patch as commonPatch,
-	head as commonHead,
 } from '../src/apis/common/publicApis';
 
 jest.mock('../src/apis/common/publicApis');

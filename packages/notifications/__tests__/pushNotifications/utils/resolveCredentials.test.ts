@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetchAuthSession } from '@aws-amplify/core';
+
 import { resolveCredentials } from '../../../src/pushNotifications/utils';
 import { credentials } from '../../testUtils/data';
 

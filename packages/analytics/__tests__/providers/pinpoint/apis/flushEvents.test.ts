@@ -1,16 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { flushEvents as pinpointFlushEvents } from '@aws-amplify/core/internals/providers/pinpoint';
+import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
+import { ConsoleLogger } from '@aws-amplify/core';
+
+import { flushEvents } from '../../../../src';
 import {
 	resolveConfig,
 	resolveCredentials,
 } from '../../../../src/providers/pinpoint/utils';
-import { config, credentials, identityId } from './testUtils/data';
-import { flushEvents } from '../../../../src';
-import { flushEvents as pinpointFlushEvents } from '@aws-amplify/core/internals/providers/pinpoint';
-import { AnalyticsAction } from '@aws-amplify/core/internals/utils';
-import { ConsoleLogger } from '@aws-amplify/core';
 import { getAnalyticsUserAgentString } from '../../../../src/utils';
+
+import { config, credentials, identityId } from './testUtils/data';
 
 jest.mock('../../../../src/providers/pinpoint/utils');
 jest.mock('@aws-amplify/core/internals/providers/pinpoint');

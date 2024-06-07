@@ -595,6 +595,13 @@ tests:
     spec: sign-in-with-oauth
     browser: [chrome]
     backend: gen2
+  - test_name: integ_vue_sign_in_with_oauth_gen2
+    desc: 'Sign-in with the OAuth flow'
+    framework: vue
+    category: auth
+    sample_name: [sign-in-with-oauth]
+    spec: sign-in-with-oauth
+    browser: [chrome]
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.

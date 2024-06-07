@@ -1,4 +1,5 @@
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
+import { JwtExpiredError } from 'aws-jwt-verify/error';
 
 import { isValidCognitoToken } from '../../src/utils/isValidCognitoToken';
 
@@ -27,6 +28,31 @@ describe('isValidCognitoToken', () => {
 	it('should return true for a valid token', async () => {
 		const mockVerifier: any = {
 			verify: jest.fn().mockResolvedValue({}),
+		};
+		mockedCreate.mockReturnValue(mockVerifier);
+
+		const isValid = await isValidCognitoToken({
+			token,
+			userPoolId,
+			clientId,
+			tokenType,
+		});
+		expect(isValid).toBe(true);
+		expect(CognitoJwtVerifier.create).toHaveBeenCalledWith({
+			userPoolId,
+			clientId,
+			tokenUse: tokenType,
+		});
+		expect(mockVerifier.verify).toHaveBeenCalledWith(token);
+	});
+
+	it('should return true for a token that has valid signature and expired', async () => {
+		const mockVerifier: any = {
+			verify: jest
+				.fn()
+				.mockRejectedValue(
+					new JwtExpiredError('Token expired', 'mocked-token'),
+				),
 		};
 		mockedCreate.mockReturnValue(mockVerifier);
 

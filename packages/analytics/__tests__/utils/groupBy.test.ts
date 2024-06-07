@@ -4,11 +4,11 @@
 import { groupBy } from '../../src/utils';
 
 describe('Generic groupBy util function', () => {
-	type TestType = {
+	interface TestType {
 		x: number;
 		y: string;
 		z: boolean;
-	};
+	}
 
 	const testData: TestType[] = [
 		{
@@ -31,8 +31,8 @@ describe('Generic groupBy util function', () => {
 	it('group list by groupId function', () => {
 		const result = groupBy(x => x.y, testData);
 		expect(new Set(Object.keys(result))).toEqual(new Set(['a', 'b']));
-		expect(result['a'].length).toStrictEqual(1);
-		expect(result['a'][0]).toStrictEqual(testData[0]);
-		expect(result['b'].length).toStrictEqual(2);
+		expect(result.a.length).toStrictEqual(1);
+		expect(result.a[0]).toStrictEqual(testData[0]);
+		expect(result.b.length).toStrictEqual(2);
 	});
 });

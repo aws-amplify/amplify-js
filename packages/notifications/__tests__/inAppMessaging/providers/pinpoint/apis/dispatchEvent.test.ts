@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { defaultStorage } from '@aws-amplify/core';
+
 import {
 	dispatchEvent,
 	initializeInAppMessaging,

@@ -5,8 +5,8 @@ import { getEventBuffer } from '../../../../src/providers/kinesis/utils/getEvent
 import { EventBuffer } from '../../../../src/utils';
 import {
 	mockBufferConfig,
-	mockKinesisConfig,
 	mockCredentialConfig,
+	mockKinesisConfig,
 } from '../../../testUtils/mockConstants';
 
 jest.mock('../../../../src/utils');

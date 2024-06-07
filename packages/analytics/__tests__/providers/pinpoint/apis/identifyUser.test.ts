@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { updateEndpoint } from '@aws-amplify/core/internals/providers/pinpoint';
+
 import { identifyUser } from '../../../../src/providers/pinpoint/apis';
 import { IdentifyUserInput } from '../../../../src/providers/pinpoint/types';
 import {

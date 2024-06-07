@@ -5,10 +5,10 @@
 
 ## Testing DataStore changes locally
 - On first build:
-	- Within **amplify-js**: `yarn && yarn build && yarn link-all && yarn build:esm:watch`
+	- Within **amplify-js**: `yarn && yarn build && yarn link-all && yarn build:watch`
 	- Within sample app: `yarn && yarn link aws-amplify && yarn link @aws-amplify/datastore && yarn start`
 - On subsequent builds (useful if something isn't working):
-	- Within **amplify-js**: `yarn clean && yarn build && yarn link-all && yarn build:esm:watch`
+	- Within **amplify-js**: `yarn clean && yarn build && yarn link-all && yarn build:watch`
 	- Within sample app: `rm -rf node_modules && yarn && yarn link aws-amplify && yarn link @aws-amplify/datastore && yarn start`
 
 ## Contributing to these docs
