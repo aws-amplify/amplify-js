@@ -132,7 +132,6 @@ const _listAllWithPrefix = async ({
 
 	return {
 		items: listResult,
-		subpaths: [],
 	};
 };
 
@@ -202,7 +201,7 @@ const _listAllWithPath = async ({
 
 	return {
 		items: listResult,
-		subpaths,
+		...(subpaths.length > 0 ? { subpaths } : {}),
 	};
 };
 
@@ -229,13 +228,12 @@ const _listWithPath = async ({
 			listParamsClone,
 		)) ?? {};
 
-	const subpaths =
-		CommonPrefixes && mapCommonPrefixesToSubpaths(CommonPrefixes);
+	const subpaths = mapCommonPrefixesToSubpaths(CommonPrefixes);
 
 	if (!Contents) {
 		return {
 			items: [],
-			subpaths,
+			...(subpaths && subpaths.length > 0 ? { subpaths } : {}),
 		};
 	}
 
@@ -247,7 +245,7 @@ const _listWithPath = async ({
 			size: item.Size,
 		})),
 		nextToken: NextContinuationToken,
-		subpaths,
+		...(subpaths && subpaths.length > 0 ? { subpaths } : {}),
 	};
 };
 
@@ -260,14 +258,11 @@ function mapMaximumDepthToDelimiter(
 }
 
 function mapCommonPrefixesToSubpaths(
-	commonPrefixes: CommonPrefix[],
+	commonPrefixes?: CommonPrefix[],
 ): Subpath[] | undefined {
 	const mappedSubpaths = commonPrefixes?.map(({ Prefix }) => ({
 		path: Prefix,
 	}));
-	const filteredSubpaths = mappedSubpaths?.filter(({ path }) => !!path) as
-		| Subpath[]
-		| undefined;
 
-	return filteredSubpaths;
+	return mappedSubpaths as Subpath[] | undefined;
 }
