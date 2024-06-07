@@ -29,31 +29,25 @@
 	"aws_user_files_s3_bucket_region": "us-west-2",
 	"aws_user_pools_id": "mock-cup-id",
 	"aws_user_pools_web_client_id": "mock-cup-client-id",
-	"geo": { 
+	"geo": {
 		"amazon_location_service": {
 			"search_indices": {
-				"items": [
-					"mock-geo-search-item",
-					"mock-geo-search-item-alt"
-				],
+				"items": ["mock-geo-search-item", "mock-geo-search-item-alt"],
 				"default": "mock-geo-search-item"
 			},
 			"geofenceCollections": {
-				"items": [
-					"mock-geo-fence-item",
-					"mock-geo-fence-item-alt"
-				],
+				"items": ["mock-geo-fence-item", "mock-geo-fence-item-alt"],
 				"default": "mock-geo-fence-item"
 			},
 			"region": "us-west-2"
-		} 
+		}
 	},
 	"aws_appsync_graphqlEndpoint": "mock-data-url",
 	"aws_appsync_apiKey": "mock-data-api-key",
 	"aws_appsync_region": "us-west-2",
 	"aws_appsync_authenticationType": "API_KEY",
 	"Notifications": {
-		"InAppMessaging": { 
+		"InAppMessaging": {
 			"AWSPinpoint": {
 				"appId": "mock-pinpoint-app-id",
 				"region": "us-west-2"
