@@ -110,6 +110,9 @@ const getInitialState = (): SignInState => {
 	const signInSession =
 		sessionStorage.getItem(SIGN_IN_STATE_KEYS.signInSession) ?? ('' as string);
 
+	// Clear SignInStage from sessionStorage after re-hydration
+	clearPersistedSignInState();
+
 	return {
 		username,
 		challengeName,
@@ -140,7 +143,7 @@ export function setActiveSignInState(state: SignInState): void {
 	persistSignInState(state);
 }
 
-// Free saved sign in states up from both memory and sessionStorage
+// Clear saved sign in states from both memory and sessionStorage
 export function cleanActiveSignInState(): void {
 	signInStore.dispatch({ type: 'SET_INITIAL_STATE' });
 	clearPersistedSignInState();
