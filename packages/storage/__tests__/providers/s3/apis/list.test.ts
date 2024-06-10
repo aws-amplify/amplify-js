@@ -536,16 +536,18 @@ describe('list API', () => {
 
 		const mockedPath = 'photos/';
 
+		beforeEach(() => {
+			mockListObject.mockResolvedValueOnce({
+				Contents: mockedContents,
+				CommonPrefixes: mockedCommonPrefixes,
+			});
+		});
 		afterEach(() => {
 			jest.clearAllMocks();
 			mockListObject.mockClear();
 		});
 
-		it('should return subpaths when maxiumDepth is passed in the request', async () => {
-			mockListObject.mockResolvedValueOnce({
-				Contents: mockedContents,
-				CommonPrefixes: mockedCommonPrefixes,
-			});
+		it('should return subpaths when delimiter is passed in the request', async () => {
 			const { items, subpaths } = await list({
 				path: mockedPath,
 				options: {
@@ -553,7 +555,11 @@ describe('list API', () => {
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toHaveLength(3);
+			expect(subpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -566,11 +572,7 @@ describe('list API', () => {
 			);
 		});
 
-		it('should return subpaths when maxiumDepth and listAll are passed in the request', async () => {
-			mockListObject.mockResolvedValueOnce({
-				Contents: mockedContents,
-				CommonPrefixes: mockedCommonPrefixes,
-			});
+		it('should return subpaths when delimiter and listAll are passed in the request', async () => {
 			const { items, subpaths } = await list({
 				path: mockedPath,
 				options: {
@@ -579,7 +581,11 @@ describe('list API', () => {
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toHaveLength(3);
+			expect(subpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -592,11 +598,7 @@ describe('list API', () => {
 			);
 		});
 
-		it('should return subpaths when maxiumDepth is pageSize are passed in the request', async () => {
-			mockListObject.mockResolvedValueOnce({
-				Contents: mockedContents,
-				CommonPrefixes: mockedCommonPrefixes,
-			});
+		it('should return subpaths when delimiter is pageSize are passed in the request', async () => {
 			const { items, subpaths } = await list({
 				path: mockedPath,
 				options: {
@@ -605,7 +607,11 @@ describe('list API', () => {
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toHaveLength(3);
+			expect(subpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
