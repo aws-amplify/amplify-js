@@ -29,7 +29,6 @@ import {
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
-import { Subpath } from '../../../../types';
 import { CommonPrefix } from '../../utils/client/types';
 
 const MAX_PAGE_SIZE = 1000;
@@ -179,7 +178,7 @@ const _listAllWithPath = async ({
 	listParams,
 }: ListInputArgs): Promise<ListAllWithPathOutput> => {
 	const listResult: ListOutputItemWithPath[] = [];
-	const subpaths: Subpath[] = [];
+	const subpaths: string[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
 		const {
@@ -201,7 +200,7 @@ const _listAllWithPath = async ({
 
 	return {
 		items: listResult,
-		...getOptionWithSubpaths(subpaths),
+		...getSubpaths(subpaths),
 	};
 };
 
@@ -232,7 +231,7 @@ const _listWithPath = async ({
 	if (!contents) {
 		return {
 			items: [],
-			...getOptionWithSubpaths(subpaths),
+			...getSubpaths(subpaths),
 		};
 	}
 
@@ -244,20 +243,18 @@ const _listWithPath = async ({
 			size: item.Size,
 		})),
 		nextToken: nextContinuationToken,
-		...getOptionWithSubpaths(subpaths),
+		...getSubpaths(subpaths),
 	};
 };
 
 function mapCommonPrefixesToSubpaths(
 	commonPrefixes?: CommonPrefix[],
-): Subpath[] | undefined {
-	const mappedSubpaths = commonPrefixes?.map(({ Prefix }) => ({
-		path: Prefix,
-	}));
+): string[] | undefined {
+	const mappedSubpaths = commonPrefixes?.map(({ Prefix }) => Prefix);
 
-	return mappedSubpaths as Subpath[] | undefined;
+	return mappedSubpaths?.filter((subpath): subpath is string => !!subpath);
 }
 
-function getOptionWithSubpaths(subpaths?: Subpath[]) {
+function getSubpaths(subpaths?: string[]) {
 	return subpaths && subpaths.length > 0 ? { subpaths } : {};
 }

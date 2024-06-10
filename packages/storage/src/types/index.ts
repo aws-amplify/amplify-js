@@ -6,7 +6,6 @@ export {
 	TransferProgressEvent,
 	TransferTaskState,
 	UploadTask,
-	Subpath,
 } from './common';
 export {
 	StorageGetPropertiesInputWithKey,

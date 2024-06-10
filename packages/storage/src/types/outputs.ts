@@ -3,8 +3,6 @@
 
 import { ResponseBodyMixin } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { Subpath } from './common';
-
 /**
  * Base type for a storage item.
  */
@@ -75,5 +73,5 @@ export interface StorageListOutput<Item extends StorageItem> {
 	/**
 	 * List of subpaths returned by the list API.
 	 */
-	subpaths?: Subpath[];
+	subpaths?: string[];
 }
