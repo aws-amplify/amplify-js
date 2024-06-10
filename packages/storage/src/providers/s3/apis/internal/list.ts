@@ -218,13 +218,13 @@ const _listWithPath = async ({
 		Contents: contents,
 		NextContinuationToken: nextContinuationToken,
 		CommonPrefixes: commonPrefixes,
-	}: ListObjectsV2Output = (await listObjectsV2(
+	}: ListObjectsV2Output = await listObjectsV2(
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
 		},
 		listParamsClone,
-	)) ?? {};
+	);
 
 	const subpaths = mapCommonPrefixesToSubpaths(commonPrefixes);
 
