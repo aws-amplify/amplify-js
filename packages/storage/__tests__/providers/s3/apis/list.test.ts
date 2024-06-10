@@ -512,4 +512,116 @@ describe('list API', () => {
 			}
 		});
 	});
+
+	describe('with delimiter', () => {
+		const mockedContents = [
+			{
+				Key: 'photos/',
+				...listObjectClientBaseResultItem,
+			},
+			{
+				Key: 'photos/2023.png',
+				...listObjectClientBaseResultItem,
+			},
+			{
+				Key: 'photos/2024.png',
+				...listObjectClientBaseResultItem,
+			},
+		];
+		const mockedCommonPrefixes = [
+			{ Prefix: 'photos/2023/' },
+			{ Prefix: 'photos/2024/' },
+			{ Prefix: 'photos/2025/' },
+		];
+
+		const mockedPath = 'photos/';
+
+		beforeEach(() => {
+			mockListObject.mockResolvedValueOnce({
+				Contents: mockedContents,
+				CommonPrefixes: mockedCommonPrefixes,
+			});
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+			mockListObject.mockClear();
+		});
+
+		it('should return subpaths when delimiter is passed in the request', async () => {
+			const { items, subpaths } = await list({
+				path: mockedPath,
+				options: {
+					delimiter: '/',
+				},
+			});
+			expect(items).toHaveLength(3);
+			expect(subpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: '/',
+				},
+			);
+		});
+
+		it('should return subpaths when delimiter and listAll are passed in the request', async () => {
+			const { items, subpaths } = await list({
+				path: mockedPath,
+				options: {
+					delimiter: '/',
+					listAll: true,
+				},
+			});
+			expect(items).toHaveLength(3);
+			expect(subpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: '/',
+				},
+			);
+		});
+
+		it('should return subpaths when delimiter is pageSize are passed in the request', async () => {
+			const { items, subpaths } = await list({
+				path: mockedPath,
+				options: {
+					delimiter: '/',
+					pageSize: 3,
+				},
+			});
+			expect(items).toHaveLength(3);
+			expect(subpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 3,
+					Prefix: mockedPath,
+					Delimiter: '/',
+				},
+			);
+		});
+	});
 });

@@ -29,6 +29,7 @@ import {
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
+import { CommonPrefix } from '../../utils/client/types';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -79,6 +80,7 @@ export const list = async (
 		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
+		Delimiter: options?.delimiter,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -176,23 +178,29 @@ const _listAllWithPath = async ({
 	listParams,
 }: ListInputArgs): Promise<ListAllWithPathOutput> => {
 	const listResult: ListOutputItemWithPath[] = [];
+	const subpaths: string[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
-		const { items: pageResults, nextToken: pageNextToken } =
-			await _listWithPath({
-				s3Config,
-				listParams: {
-					...listParams,
-					ContinuationToken: continuationToken,
-					MaxKeys: MAX_PAGE_SIZE,
-				},
-			});
+		const {
+			items: pageResults,
+			subpaths: pageSubpaths,
+			nextToken: pageNextToken,
+		} = await _listWithPath({
+			s3Config,
+			listParams: {
+				...listParams,
+				ContinuationToken: continuationToken,
+				MaxKeys: MAX_PAGE_SIZE,
+			},
+		});
 		listResult.push(...pageResults);
+		subpaths.push(...(pageSubpaths ?? []));
 		continuationToken = pageNextToken;
 	} while (continuationToken);
 
 	return {
 		items: listResult,
+		...parseSubpaths(subpaths),
 	};
 };
 
@@ -206,7 +214,11 @@ const _listWithPath = async ({
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
 	}
 
-	const response: ListObjectsV2Output = await listObjectsV2(
+	const {
+		Contents: contents,
+		NextContinuationToken: nextContinuationToken,
+		CommonPrefixes: commonPrefixes,
+	}: ListObjectsV2Output = await listObjectsV2(
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
@@ -214,19 +226,35 @@ const _listWithPath = async ({
 		listParamsClone,
 	);
 
-	if (!response?.Contents) {
+	const subpaths = mapCommonPrefixesToSubpaths(commonPrefixes);
+
+	if (!contents) {
 		return {
 			items: [],
+			...parseSubpaths(subpaths),
 		};
 	}
 
 	return {
-		items: response.Contents.map(item => ({
+		items: contents.map(item => ({
 			path: item.Key!,
 			eTag: item.ETag,
 			lastModified: item.LastModified,
 			size: item.Size,
 		})),
-		nextToken: response.NextContinuationToken,
+		nextToken: nextContinuationToken,
+		...parseSubpaths(subpaths),
 	};
 };
+
+function mapCommonPrefixesToSubpaths(
+	commonPrefixes?: CommonPrefix[],
+): string[] | undefined {
+	const mappedSubpaths = commonPrefixes?.map(({ Prefix }) => Prefix);
+
+	return mappedSubpaths?.filter((subpath): subpath is string => !!subpath);
+}
+
+function parseSubpaths(subpaths?: string[]) {
+	return subpaths && subpaths.length > 0 ? { subpaths } : {};
+}

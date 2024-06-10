@@ -70,4 +70,9 @@ export interface StorageListOutput<Item extends StorageItem> {
 	 * List of items returned by the list API.
 	 */
 	items: Item[];
+	/**
+	 * List of subpaths returned by the list API when a delimiter option is passed
+	 * in the request of the list API.
+	 */
+	subpaths?: string[];
 }

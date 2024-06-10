@@ -10,12 +10,14 @@ export interface StorageOptions {
 
 export type StorageListAllOptions = StorageOptions & {
 	listAll: true;
+	delimiter?: string;
 };
 
 export type StorageListPaginateOptions = StorageOptions & {
 	listAll?: false;
 	pageSize?: number;
 	nextToken?: string;
+	delimiter?: string;
 };
 
 export type StorageRemoveOptions = StorageOptions;
