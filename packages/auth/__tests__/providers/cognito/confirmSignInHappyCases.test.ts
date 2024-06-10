@@ -33,8 +33,7 @@ const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 
 describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy: jest.SpyInstance;
-	const { username } = authAPITestParams.user1;
-	const { password } = authAPITestParams.user1;
+	const { username, password } = authAPITestParams.user1;
 
 	beforeEach(async () => {
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);

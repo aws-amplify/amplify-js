@@ -75,7 +75,7 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 });
 
 describe('fetchAuthSession behavior for UserPools only', () => {
-	beforeEach(() => {
+	beforeAll(() => {
 		jest
 			.spyOn(cognitoUserPoolsTokenProvider, 'getTokens')
 			.mockImplementation(async () => {
