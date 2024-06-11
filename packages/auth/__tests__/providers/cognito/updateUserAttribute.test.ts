@@ -3,8 +3,10 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { updateUserAttribute } from '../../../src/providers/cognito';
 import { updateUserAttributes } from '../../../src/providers/cognito/apis/updateUserAttributes';
+
 import { mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 

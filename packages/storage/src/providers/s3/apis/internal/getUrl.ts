@@ -46,7 +46,11 @@ export const getUrl = async (
 
 	let urlExpirationInSec =
 		getUrlOptions?.expiresIn ?? DEFAULT_PRESIGN_EXPIRATION;
-	const awsCredExpiration = s3Config.credentials?.expiration;
+	const resolvedCredential =
+		typeof s3Config.credentials === 'function'
+			? await s3Config.credentials()
+			: s3Config.credentials;
+	const awsCredExpiration = resolvedCredential.expiration;
 	if (awsCredExpiration) {
 		const awsCredExpirationInSec = Math.floor(
 			(awsCredExpiration.getTime() - Date.now()) / 1000,
@@ -64,6 +68,7 @@ export const getUrl = async (
 		url: await getPresignedGetObjectUrl(
 			{
 				...s3Config,
+				credentials: resolvedCredential,
 				expiration: urlExpirationInSec,
 			},
 			{

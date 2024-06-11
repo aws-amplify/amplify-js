@@ -7,6 +7,7 @@ import { Amplify } from '@aws-amplify/core';
 import { putObject } from '../../../../../src/providers/s3/utils/client';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
+import '../testUtils';
 
 jest.mock('../../../../../src/providers/s3/utils/client');
 jest.mock('../../../../../src/providers/s3/utils', () => {
@@ -35,14 +36,14 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const identityId = 'identityId';
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockPutObject = putObject as jest.Mock;
+const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
+const mockPutObject = jest.mocked(putObject);
 
 mockFetchAuthSession.mockResolvedValue({
 	credentials,
 	identityId,
 });
-(Amplify.getConfig as jest.Mock).mockReturnValue({
+jest.mocked(Amplify.getConfig).mockReturnValue({
 	Storage: {
 		S3: {
 			bucket: 'bucket',
@@ -53,10 +54,15 @@ mockFetchAuthSession.mockResolvedValue({
 mockPutObject.mockResolvedValue({
 	ETag: 'eTag',
 	VersionId: 'versionId',
+	$metadata: {},
 });
 
 /* TODO Remove suite when `key` parameter is removed */
 describe('putObjectJob with key', () => {
+	beforeEach(() => {
+		mockPutObject.mockClear();
+	});
+
 	it('should supply the correct parameters to putObject API handler', async () => {
 		const abortController = new AbortController();
 		const inputKey = 'key';
@@ -92,7 +98,8 @@ describe('putObjectJob with key', () => {
 			metadata: { key: 'value' },
 			size: undefined,
 		});
-		expect(mockPutObject).toHaveBeenCalledWith(
+		expect(mockPutObject).toHaveBeenCalledTimes(1);
+		await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
 			{
 				credentials,
 				region: 'region',
@@ -135,6 +142,10 @@ describe('putObjectJob with key', () => {
 });
 
 describe('putObjectJob with path', () => {
+	beforeEach(() => {
+		mockPutObject.mockClear();
+	});
+
 	test.each([
 		{
 			path: testPath,
@@ -180,7 +191,8 @@ describe('putObjectJob with path', () => {
 				metadata: { key: 'value' },
 				size: undefined,
 			});
-			expect(mockPutObject).toHaveBeenCalledWith(
+			expect(mockPutObject).toHaveBeenCalledTimes(1);
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
 				{
 					credentials,
 					region: 'region',

@@ -1,17 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
+import { GeoConfig } from '@aws-amplify/core';
+import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 
 import {
 	Coordinates,
-	LinearRing,
-	GeofencePolygon,
-	GeofenceInput,
-	PolygonGeometry,
 	Geofence,
+	GeofenceInput,
+	GeofencePolygon,
+	LinearRing,
+	PolygonGeometry,
 } from '../src/types';
-import { GeoConfig } from '@aws-amplify/core';
-import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 
 export const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -85,6 +85,7 @@ export const validCoordinates4: Coordinates = [
 	-123.14909934997559, 49.29132171993048,
 ];
 export const validCoordinates5: Coordinates = [
+	// eslint-disable-next-line @typescript-eslint/no-loss-of-precision
 	-123.14695358276361, 49.290090146520431,
 ];
 
@@ -239,7 +240,7 @@ export const singleGeofenceCamelcaseResults = {
 };
 
 export const batchGeofencesCamelcaseResults = {
-	successes: validGeofences.map(({ geofenceId }, i) => {
+	successes: validGeofences.map(({ geofenceId }) => {
 		return {
 			createTime: '2020-04-01T21:00:00.000Z',
 			updateTime: '2020-04-01T21:00:00.000Z',

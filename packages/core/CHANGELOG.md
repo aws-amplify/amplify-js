@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.1...@aws-amplify/core@6.3.2) (2024-06-07)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.0...@aws-amplify/core@6.3.1) (2024-05-23)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+# [6.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.2.1...@aws-amplify/core@6.3.0) (2024-05-23)
+
+### Features
+
+- **core:** validate if access and id tokens are valid cognito tokens ([#13385](https://github.com/aws-amplify/amplify-js/issues/13385)) ([0b72b32](https://github.com/aws-amplify/amplify-js/commit/0b72b32348dc63bbc11596a062338ee9ddfa9177))
+
+### Reverts
+
+- Revert "feat(core): validate if access and id tokens are valid cognito tokens (#13385)" (#13410) ([82d53fa](https://github.com/aws-amplify/amplify-js/commit/82d53fab4e47e988b26811cb8b6fe09abbdbda4b)), closes [#13385](https://github.com/aws-amplify/amplify-js/issues/13385) [#13410](https://github.com/aws-amplify/amplify-js/issues/13410)
+
+## [6.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.2.0...@aws-amplify/core@6.2.1) (2024-05-13)
+
+### Bug Fixes
+
+- Prevent overwriting with fallbacks when updating endpoint ([#13330](https://github.com/aws-amplify/amplify-js/issues/13330)) ([d7b837e](https://github.com/aws-amplify/amplify-js/commit/d7b837edba0dff209fb4a596fcb4531ce0a66e21))
+- Wait for endpoint creation to identify user ([#13353](https://github.com/aws-amplify/amplify-js/issues/13353)) ([f17cdf0](https://github.com/aws-amplify/amplify-js/commit/f17cdf0077387ee275bea245632f1a9b88089e1e))
+
 # [6.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.1.0...@aws-amplify/core@6.2.0) (2024-05-07)
 
 ### Bug Fixes

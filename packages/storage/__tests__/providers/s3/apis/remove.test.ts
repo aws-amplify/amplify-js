@@ -13,6 +13,7 @@ import {
 	RemoveWithPathInput,
 	RemoveWithPathOutput,
 } from '../../../../src/providers/s3/types';
+import './testUtils';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -105,10 +106,13 @@ describe('remove API', () => {
 					});
 					expect(key).toEqual(inputKey);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
-					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-						Bucket: bucket,
-						Key: expectedKey,
-					});
+					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+						deleteObjectClientConfig,
+						{
+							Bucket: bucket,
+							Key: expectedKey,
+						},
+					);
 				});
 			});
 		});
@@ -144,10 +148,13 @@ describe('remove API', () => {
 					const { path } = await removeWrapper({ path: inputPath });
 					expect(path).toEqual(resolvedPath);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
-					expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-						Bucket: bucket,
-						Key: resolvedPath,
-					});
+					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+						deleteObjectClientConfig,
+						{
+							Bucket: bucket,
+							Key: resolvedPath,
+						},
+					);
 				});
 			});
 		});
@@ -170,10 +177,13 @@ describe('remove API', () => {
 				await remove({ key });
 			} catch (error: any) {
 				expect(deleteObject).toHaveBeenCalledTimes(1);
-				expect(deleteObject).toHaveBeenCalledWith(deleteObjectClientConfig, {
-					Bucket: bucket,
-					Key: `public/${key}`,
-				});
+				await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+					deleteObjectClientConfig,
+					{
+						Bucket: bucket,
+						Key: `public/${key}`,
+					},
+				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});

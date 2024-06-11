@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/react-native",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "React Native core module for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -11,7 +11,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "tslint 'src/**/*.ts'",
+		"test": "echo 'no-op'",
 		"test:android": "./android/gradlew test -p ./android",
 		"build-with-test": "npm run clean && npm test && tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
@@ -34,7 +34,7 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/rtn-push-notification": "1.2.29",
-		"@aws-amplify/rtn-web-browser": "1.0.29",
+		"@aws-amplify/rtn-web-browser": "1.0.30",
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
 		"@types/base-64": "1.0.0",

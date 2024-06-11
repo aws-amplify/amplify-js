@@ -11,10 +11,7 @@ import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oa
 import { getRedirectUrl } from '../../../../../src/providers/cognito/utils/oauth/getRedirectUrl';
 import { oAuthStore } from '../../../../../src/providers/cognito/utils/oauth/oAuthStore';
 import { mockAuthConfigWithOAuth } from '../../../../mockData';
-import { tokenOrchestrator } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
-
 import type { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
-import { addInflightPromise } from '../../../../../src/providers/cognito/utils/oauth/inflightPromise';
 
 jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow');
@@ -51,7 +48,7 @@ const mockCompleteOAuthFlow = completeOAuthFlow as jest.Mock;
 const mockGetRedirectUrl = getRedirectUrl as jest.Mock;
 
 describe('attemptCompleteOAuthFlow', () => {
-	let windowSpy = jest.spyOn(window, 'window', 'get');
+	const windowSpy = jest.spyOn(window, 'window', 'get');
 	const mockRedirectUrl = 'http://localhost:3000/';
 
 	beforeAll(() => {
@@ -110,9 +107,7 @@ describe('attemptCompleteOAuthFlow', () => {
 				redirectUri: 'http://localhost:3000/',
 			}),
 		);
-
 	});
-
 
 	test.each([
 		['assertTokenProviderConfig', mockAssertTokenProviderConfig],

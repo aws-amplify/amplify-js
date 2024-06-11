@@ -6,6 +6,7 @@ import {
 	PushNotificationAction,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
+
 import { getPushNotificationUserAgentString } from '../../../src/pushNotifications/utils/getPushNotificationUserAgentString';
 import { userAgentValue } from '../../testUtils/data';
 

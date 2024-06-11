@@ -3,12 +3,14 @@
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { rememberDevice } from '../../../src/providers/cognito';
 import { UpdateDeviceStatusException } from '../../../src/providers/cognito/types/errors';
 import { updateDeviceStatus } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import { DeviceMetadata } from '../../../src/providers/cognito/tokenProvider/types';
+
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 

@@ -3,10 +3,11 @@
 
 import { Sha256 } from '@aws-crypto/sha256-js';
 import {
+	base64Encoder,
 	generateRandomString,
 	getCrypto,
-	base64Encoder,
 } from '@aws-amplify/core/internals/utils';
+
 import {
 	generateCodeVerifier,
 	generateState,

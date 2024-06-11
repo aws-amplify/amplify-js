@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Hub } from '@aws-amplify/core';
+import { sessionListener } from '@aws-amplify/core/internals/utils';
+
 import {
-	notifyEventListeners,
 	addEventListener,
+	notifyEventListeners,
 } from '../../../../../src/eventListeners';
 import { initializeInAppMessaging } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
-import { sessionListener } from '@aws-amplify/core/internals/utils';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/eventListeners');

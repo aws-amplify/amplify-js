@@ -1,12 +1,13 @@
 import {
+	BatchDeleteGeofenceCommand,
 	BatchPutGeofenceCommand,
 	GetGeofenceCommand,
 	ListGeofencesCommand,
-	BatchDeleteGeofenceCommand,
 } from '@aws-sdk/client-location';
 
-import { validPolygon, validGeometry } from './testData';
 import { Geofence } from '../src/types';
+
+import { validGeometry, validPolygon } from './testData';
 
 export function createGeofenceInputArray(numberOfGeofences) {
 	const geofences: Geofence[] = [];
@@ -16,6 +17,7 @@ export function createGeofenceInputArray(numberOfGeofences) {
 			geometry: validGeometry,
 		});
 	}
+
 	return geofences;
 }
 
@@ -32,6 +34,7 @@ export function createGeofenceOutputArray(numberOfGeofences) {
 			UpdateTime: '2020-04-01T21:00:00.000Z',
 		});
 	}
+
 	return geofences;
 }
 
@@ -76,6 +79,7 @@ export function mockListGeofencesCommand(command) {
 				NextToken: 'THIS IS YOUR SECOND TOKEN',
 			};
 		}
+
 		return {
 			Entries: geofences.slice(0, 100),
 			NextToken: 'THIS IS YOUR TOKEN',

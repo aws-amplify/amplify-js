@@ -3,21 +3,22 @@
 
 import { defaultStorage } from '@aws-amplify/core';
 import {
+	resolveEndpointId,
+	updateEndpoint,
+} from '@aws-amplify/core/internals/providers/pinpoint';
+import { getInAppMessages } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+
+import {
 	initializeInAppMessaging,
 	syncMessages,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/apis';
 import {
 	STORAGE_KEY_SUFFIX,
-	resolveCredentials,
-	resolveConfig,
 	getInAppMessagingUserAgentString,
+	resolveConfig,
+	resolveCredentials,
 } from '../../../../../src/inAppMessaging/providers/pinpoint/utils';
 import { simpleInAppMessages } from '../../../../testUtils/data';
-import {
-	updateEndpoint,
-	resolveEndpointId,
-} from '@aws-amplify/core/internals/providers/pinpoint';
-import { getInAppMessages } from '@aws-amplify/core/internals/aws-clients/pinpoint';
 import { InAppMessagingError } from '../../../../../src/inAppMessaging/errors';
 
 jest.mock('@aws-amplify/core/internals/aws-clients/pinpoint');
