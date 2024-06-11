@@ -3,10 +3,7 @@
 
 import { HttpRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
-interface SigningServiceInfo {
-	service?: string;
-	region?: string;
-}
+import { SigningServiceInfo } from '../types';
 
 export const iamAuthApplicableForGraphQL = (
 	{ headers }: HttpRequest,

@@ -20,7 +20,7 @@ import {
 	parseSigningInfo,
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
-import { RestApiResponse } from '../../types';
+import { RestApiResponse, SigningServiceInfo } from '../../types';
 import { iamAuthApplicableForGraphQL } from '../../utils/iamAuthApplicable';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
@@ -28,11 +28,6 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	headers?: Headers;
 	withCredentials?: boolean;
 };
-
-interface SigningServiceInfo {
-	service?: string;
-	region?: string;
-}
 
 /**
  * Make REST API call with best-effort IAM auth.
