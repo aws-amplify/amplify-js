@@ -15,7 +15,6 @@ export const handleOAuthSignOut = async (
 	preferredSignOutUrl?: string,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn } = await store.loadOAuthSignIn();
-
 	// Clear everything before attempting to visted logout endpoint since the current application
 	// state could be wiped away on redirect
 	await completeOAuthSignOut(store);

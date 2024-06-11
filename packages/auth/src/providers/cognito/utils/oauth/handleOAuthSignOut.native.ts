@@ -15,7 +15,6 @@ export const handleOAuthSignOut = async (
 	preferredSignOutUrl?: string,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn, preferPrivateSession } = await store.loadOAuthSignIn();
-
 	if (isOAuthSignIn) {
 		const result = await oAuthSignOutRedirect(
 			cognitoConfig,
