@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Hub, decodeJWT } from '@aws-amplify/core';
+
 import { handleFailure } from '../../../../../src/providers/cognito/utils/oauth/handleFailure';
 import { validateState } from '../../../../../src/providers/cognito/utils/oauth/validateState';
 import { resolveAndClearInflightPromises } from '../../../../../src/providers/cognito/utils/oauth/inflightPromise';
@@ -10,7 +11,6 @@ import { cacheCognitoTokens } from '../../../../../src/providers/cognito/tokenPr
 import { AuthError } from '../../../../../src/errors/AuthError';
 import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
-
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 
 jest.mock('@aws-amplify/core', () => ({
@@ -44,7 +44,6 @@ jest.mock(
 	}),
 );
 
-
 const mockHandleFailure = handleFailure as jest.Mock;
 const mockValidateState = validateState as jest.Mock;
 const mockResolveAndClearInflightPromises =
@@ -54,7 +53,7 @@ const mockHubDispatch = Hub.dispatch as jest.Mock;
 const mockDecodeJWT = decodeJWT as jest.Mock;
 
 describe('completeOAuthFlow', () => {
-	let windowSpy = jest.spyOn(window, 'window', 'get');
+	const windowSpy = jest.spyOn(window, 'window', 'get');
 	const mockFetch = jest.fn();
 	const mockReplaceState = jest.fn();
 

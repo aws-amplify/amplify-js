@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { clearCredentials, Hub } from '@aws-amplify/core';
+import { Hub, clearCredentials } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+
 import { tokenOrchestrator } from '../../../../../src/providers/cognito/tokenProvider/tokenProvider';
 import { completeOAuthSignOut } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthSignOut';
 import { DefaultOAuthStore } from '../../../../../src/providers/cognito/utils/signInWithRedirectStore';

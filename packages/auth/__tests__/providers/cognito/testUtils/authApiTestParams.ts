@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { AuthSignInOutput } from '../../../../src/types';
 
 export const authAPITestParams = {

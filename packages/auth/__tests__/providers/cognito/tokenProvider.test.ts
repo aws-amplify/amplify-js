@@ -1,18 +1,22 @@
 import { KeyValueStorageInterface } from '@aws-amplify/core';
-import { DefaultTokenStore } from '../../../src/providers/cognito';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
+import { DefaultTokenStore } from '../../../src/providers/cognito';
 
 class MemoryStorage implements KeyValueStorageInterface {
 	store: Record<string, string> = {};
 	async setItem(key: string, value: string): Promise<void> {
 		this.store[key] = value;
 	}
+
 	async getItem(key: string): Promise<string | null> {
 		return this.store[key];
 	}
+
 	async removeItem(key: string): Promise<void> {
 		delete this.store[key];
 	}
+
 	async clear(): Promise<void> {
 		this.store = {};
 	}
