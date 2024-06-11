@@ -73,3 +73,5 @@ export {
 	SendUserAttributeVerificationCodeOutput,
 	FetchDevicesOutput,
 } from './outputs';
+
+export { SyncKeyValueStorageInterface } from './storage';
