@@ -1,15 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { authAPITestParams } from './testUtils/authApiTestParams';
 import { Amplify, Identity, ResourcesConfig, getId } from '@aws-amplify/core';
-import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
 import {
 	GetIdInput,
 	GetIdOutput,
 } from '@aws-amplify/core/internals/aws-clients/cognitoIdentity';
-import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
+
+import { DefaultIdentityIdStore } from '../../../src/providers/cognito/credentialsProvider/IdentityIdStore';
+import { cognitoIdentityIdProvider } from '../../../src/providers/cognito/credentialsProvider/IdentityIdProvider';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
@@ -45,17 +47,19 @@ describe('Cognito IdentityId Provider Happy Path Cases:', () => {
 	beforeAll(() => {
 		jest.spyOn(Amplify, 'getConfig').mockImplementationOnce(() => ampConfig);
 
-		mockGetId.mockImplementation(async (config: {}, params: GetIdInput) => {
-			if (params.Logins && Object.keys(params.Logins).length === 0) {
-				return {
-					IdentityId: authAPITestParams.GuestIdentityId.id,
-				} as GetIdOutput;
-			} else {
-				return {
-					IdentityId: authAPITestParams.PrimaryIdentityId.id,
-				} as GetIdOutput;
-			}
-		});
+		mockGetId.mockImplementation(
+			async (_config: object, params: GetIdInput) => {
+				if (params.Logins && Object.keys(params.Logins).length === 0) {
+					return {
+						IdentityId: authAPITestParams.GuestIdentityId.id,
+					} as GetIdOutput;
+				} else {
+					return {
+						IdentityId: authAPITestParams.PrimaryIdentityId.id,
+					} as GetIdOutput;
+				}
+			},
+		);
 	});
 
 	afterEach(() => {

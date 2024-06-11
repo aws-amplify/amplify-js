@@ -1,17 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { authAPITestParams } from './testUtils/authApiTestParams';
+import { Amplify } from 'aws-amplify';
+
 import { signIn } from '../../../src/providers/cognito';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInWithCustomSRPAuth } from '../../../src/providers/cognito/apis/signInWithCustomSRPAuth';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { Amplify } from 'aws-amplify';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -30,7 +32,7 @@ Amplify.configure({
 });
 
 describe('signIn API happy path cases', () => {
-	let handleCustomSRPAuthFlowSpy;
+	let handleCustomSRPAuthFlowSpy: jest.SpyInstance;
 
 	beforeEach(() => {
 		handleCustomSRPAuthFlowSpy = jest
@@ -72,8 +74,8 @@ describe('signIn API happy path cases', () => {
 	});
 
 	test('handleCustomSRPAuthFlow should be called with clientMetada from request', async () => {
-		const username = authAPITestParams.user1.username;
-		const password = authAPITestParams.user1.password;
+		const { username } = authAPITestParams.user1;
+		const { password } = authAPITestParams.user1;
 		await signInWithCustomSRPAuth({
 			username,
 			password,
@@ -90,7 +92,7 @@ describe('signIn API happy path cases', () => {
 });
 
 describe('Cognito ASF', () => {
-	let initiateAuthSpy;
+	let initiateAuthSpy: jest.SpyInstance;
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -107,7 +109,7 @@ describe('Cognito ASF', () => {
 				},
 			}));
 		// load Cognito ASF polyfill
-		window['AmazonCognitoAdvancedSecurityData'] = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -116,7 +118,7 @@ describe('Cognito ASF', () => {
 
 	afterEach(() => {
 		initiateAuthSpy.mockClear();
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 
 	test('signIn API invoked with CUSTOM_WITH_SRP should send UserContextData', async () => {

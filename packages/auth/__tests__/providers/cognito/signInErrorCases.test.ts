@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
-import { authAPITestParams } from './testUtils/authApiTestParams';
-import { signIn, getCurrentUser } from '../../../src/providers/cognito';
+import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import { initiateAuth } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 

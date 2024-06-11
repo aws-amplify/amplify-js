@@ -1,14 +1,14 @@
-import { Amplify } from '@aws-amplify/core';
-import { fetchAuthSession } from '@aws-amplify/core';
-import {
-	CognitoAWSCredentialsAndIdentityIdProvider,
-	cognitoUserPoolsTokenProvider,
-	cognitoCredentialsProvider,
-} from '../../../src/providers/cognito';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
+import {
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	cognitoCredentialsProvider,
+	cognitoUserPoolsTokenProvider,
+} from '../../../src/providers/cognito';
+
 describe('fetchAuthSession behavior for IdentityPools only', () => {
-	let credentialsProviderSpy;
+	let credentialsProviderSpy: jest.SpyInstance;
 	afterEach(() => {
 		jest.resetAllMocks();
 		jest.clearAllMocks();
@@ -75,9 +75,8 @@ describe('fetchAuthSession behavior for IdentityPools only', () => {
 });
 
 describe('fetchAuthSession behavior for UserPools only', () => {
-	let tokenProviderSpy;
-	beforeEach(() => {
-		tokenProviderSpy = jest
+	beforeAll(() => {
+		jest
 			.spyOn(cognitoUserPoolsTokenProvider, 'getTokens')
 			.mockImplementation(async () => {
 				return {
