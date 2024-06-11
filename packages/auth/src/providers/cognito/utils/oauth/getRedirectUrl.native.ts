@@ -4,11 +4,19 @@
 import { invalidRedirectException } from '../../../../errors/constants';
 
 /** @internal */
-export function getRedirectUrl(redirects: string[]): string {
-	const redirectUrl = redirects?.find(
-		redirect =>
-			!redirect.startsWith('http://') && !redirect.startsWith('https://'),
-	);
+export function getRedirectUrl(
+	redirects: string[],
+	preferredSignOutUrl?: string,
+): string {
+	let redirectUrl;
+	if (preferredSignOutUrl) {
+		redirectUrl = redirects?.find(redirect => redirect === preferredSignOutUrl);
+	} else {
+		redirectUrl = redirects?.find(
+			redirect =>
+				!redirect.startsWith('http://') && !redirect.startsWith('https://'),
+		);
+	}
 	if (!redirectUrl) {
 		throw invalidRedirectException;
 	}

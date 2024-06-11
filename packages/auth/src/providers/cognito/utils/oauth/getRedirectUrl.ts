@@ -6,7 +6,10 @@ import {
 } from '../../../../errors/constants';
 
 /** @internal */
-export function getRedirectUrl(redirects: string[]): string {
+export function getRedirectUrl(
+	redirects: string[],
+	preferredSignOutUrl?: string,
+): string {
 	const redirectUrlFromTheSameOrigin =
 		redirects?.find(isSameOriginAndPathName) ??
 		redirects?.find(isTheSameDomain);
