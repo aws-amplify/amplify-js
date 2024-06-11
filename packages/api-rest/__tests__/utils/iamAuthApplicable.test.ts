@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpRequest } from '@aws-amplify/core/internals/aws-client-utils';
+
 import {
 	iamAuthApplicableForGraphQL,
 	iamAuthApplicableForPublic,
@@ -11,7 +12,7 @@ describe('iamAuthApplicable', () => {
 	const url = new URL('https://url');
 	const baseRequest: HttpRequest = {
 		headers: {},
-		url: url,
+		url,
 		method: 'put',
 	};
 
