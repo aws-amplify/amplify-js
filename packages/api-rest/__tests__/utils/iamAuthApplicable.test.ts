@@ -26,7 +26,7 @@ describe('iamAuthApplicable', () => {
 		it('should return false if there is an authorization header', () => {
 			const request = {
 				...baseRequest,
-				headers: { authorization: 'Bearer token' },
+				headers: { authorization: 'SampleToken' },
 			};
 			const signingServiceInfo = {};
 			expect(iamAuthApplicableForGraphQL(request, signingServiceInfo)).toBe(
@@ -58,7 +58,7 @@ describe('iamAuthApplicable', () => {
 		it('should return false if there is an authorization header', () => {
 			const request = {
 				...baseRequest,
-				headers: { authorization: 'Bearer token' },
+				headers: { authorization: 'SampleToken' },
 			};
 			const signingServiceInfo = {};
 			expect(iamAuthApplicableForPublic(request, signingServiceInfo)).toBe(
