@@ -17,14 +17,15 @@ export const oAuthSignOutRedirect = async (
 	assertOAuthConfig(authConfig);
 	const { loginWith, userPoolClientId } = authConfig;
 	const { domain, redirectSignOut } = loginWith.oauth;
-	const signoutUri = getRedirectUrl(redirectSignOut);
+
+	const signoutUri = getRedirectUrl(redirectSignOut, preferredSignOutUrl);
+
 	const oAuthLogoutEndpoint = `https://${domain}/logout?${Object.entries({
 		client_id: userPoolClientId,
 		logout_uri: encodeURIComponent(preferredSignOutUrl ?? signoutUri),
 	})
 		.map(([k, v]) => `${k}=${v}`)
 		.join('&')}`;
-
 	return openAuthSession(
 		oAuthLogoutEndpoint,
 		redirectSignOut,
