@@ -21,7 +21,7 @@ import {
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse } from '../../types';
-import { iamAuthApplicableGQL } from '../../utils/iamAuthApplicable';
+import { iamAuthApplicableForGraphQL } from '../../utils/iamAuthApplicable';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
@@ -51,7 +51,7 @@ export const transferHandler = async (
 	iamAuthApplicable: (
 		{ headers }: HttpRequest,
 		signingServiceInfo?: SigningServiceInfo,
-	) => boolean = iamAuthApplicableGQL,
+	) => boolean = iamAuthApplicableForGraphQL,
 ): Promise<RestApiResponse> => {
 	const { url, method, headers, body, withCredentials, abortSignal } = options;
 	const resolvedBody = body
@@ -74,6 +74,7 @@ export const transferHandler = async (
 	};
 
 	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+
 	let response: RestApiResponse;
 	const credentials = await resolveCredentials(amplify);
 	if (isIamAuthApplicable && credentials) {

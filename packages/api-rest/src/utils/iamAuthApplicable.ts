@@ -8,12 +8,12 @@ interface SigningServiceInfo {
 	region?: string;
 }
 
-export const iamAuthApplicableGQL = (
+export const iamAuthApplicableForGraphQL = (
 	{ headers }: HttpRequest,
 	signingServiceInfo?: SigningServiceInfo,
 ) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;
 
-export const iamAuthApplicablePublic = (
+export const iamAuthApplicableForPublic = (
 	{ headers }: HttpRequest,
 	signingServiceInfo?: SigningServiceInfo,
 ) => !headers.authorization && !!signingServiceInfo;
