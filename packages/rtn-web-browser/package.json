@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/rtn-web-browser",
-	"version": "1.0.29",
+	"version": "1.0.30",
 	"description": "React Native module for aws-amplify web browser",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -11,7 +11,7 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "tslint 'src/**/*.ts'",
+		"test": "echo 'no-op'",
 		"test:android": "./android/gradlew test -p ./android",
 		"build-with-test": "npm run clean && npm test && tsc",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",

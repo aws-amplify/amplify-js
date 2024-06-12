@@ -1,14 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
-import { fetchAuthSession } from '@aws-amplify/core';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { confirmUserAttribute } from '../../../src/providers/cognito';
 import { VerifyUserAttributeException } from '../../../src/providers/cognito/types/errors';
 import { verifyUserAttribute } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
+
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 

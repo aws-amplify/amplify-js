@@ -171,7 +171,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 			return allCookies;
 		},
 		set(name, value, options) {
-			response.setHeader(
+			response.appendHeader(
 				'Set-Cookie',
 				`${ensureEncodedForJSCookie(name)}=${value};${
 					options ? serializeSetCookieOptions(options) : ''
@@ -179,7 +179,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 			);
 		},
 		delete(name) {
-			response.setHeader(
+			response.appendHeader(
 				'Set-Cookie',
 				`${ensureEncodedForJSCookie(
 					name,

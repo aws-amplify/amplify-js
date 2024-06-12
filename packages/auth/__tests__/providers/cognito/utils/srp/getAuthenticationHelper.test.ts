@@ -28,8 +28,8 @@ describe('getAuthenticationHelper', () => {
 	it('should generate with non-deterministic seeding', async () => {
 		const arr: string[] = [];
 		for (let i = 0; i < 20; i++) {
-			const helper = await getAuthenticationHelper('TestPoolName');
-			arr.push(helper.a.toString(16));
+			const newHelper = await getAuthenticationHelper('TestPoolName');
+			arr.push(newHelper.a.toString(16));
 		}
 		expect(arr.length).toBe(new Set(arr).size);
 	});

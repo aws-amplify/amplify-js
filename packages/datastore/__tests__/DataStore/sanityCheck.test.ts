@@ -196,7 +196,6 @@ describe('DataStore sanity testing checks', () => {
 							await DataStore.start();
 						});
 
-						// tslint:disable-next-line: max-line-length
 						test(`starting after unawaited clear results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();
@@ -210,7 +209,6 @@ describe('DataStore sanity testing checks', () => {
 							await clearing;
 						});
 
-						// tslint:disable-next-line: max-line-length
 						test(`starting after unawaited stop results in a DX-friendly error (${connectedState}, ${environment})`, async () => {
 							({ DataStore, Post } = getDataStore({ online, isNode }));
 							await DataStore.start();

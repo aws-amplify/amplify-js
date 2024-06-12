@@ -17,10 +17,18 @@ export const expectedMetadata = {
 	httpStatusCode: 200,
 };
 
+const region = 'us-east-1';
+const staticCredentials = {
+	accessKeyId: 'key',
+	secretAccessKey: 'secret',
+};
+
 export const defaultConfig = {
-	region: 'us-east-1',
-	credentials: {
-		accessKeyId: 'key',
-		secretAccessKey: 'secret',
-	},
+	region,
+	credentials: async () => staticCredentials,
+};
+
+export const defaultConfigWithStaticCredentials = {
+	region,
+	credentials: staticCredentials,
 };

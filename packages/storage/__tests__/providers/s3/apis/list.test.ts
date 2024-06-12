@@ -16,6 +16,7 @@ import {
 	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
 } from '../../../../src/providers/s3/types';
+import './testUtils';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -172,11 +173,14 @@ describe('list API', () => {
 				});
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
-				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
-					Bucket: bucket,
-					MaxKeys: 1000,
-					Prefix: expectedKey,
-				});
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: expectedKey,
+					},
+				);
 			});
 		});
 
@@ -210,12 +214,15 @@ describe('list API', () => {
 				});
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
-				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
-					Bucket: bucket,
-					Prefix: expectedKey,
-					ContinuationToken: nextToken,
-					MaxKeys: customPageSize,
-				});
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						Prefix: expectedKey,
+						ContinuationToken: nextToken,
+						MaxKeys: customPageSize,
+					},
+				);
 			});
 		});
 
@@ -236,11 +243,15 @@ describe('list API', () => {
 				expect(response.items).toEqual([]);
 
 				expect(response.nextToken).toEqual(undefined);
-				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
-					Bucket: bucket,
-					MaxKeys: 1000,
-					Prefix: expectedKey,
-				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: expectedKey,
+					},
+				);
 			});
 		});
 
@@ -268,8 +279,8 @@ describe('list API', () => {
 					// listing three times for three pages
 					expect(listObjectsV2).toHaveBeenCalledTimes(3);
 
-					// first input recieves undefined as the Continuation Token
-					expect(listObjectsV2).toHaveBeenNthCalledWith(
+					// first input receives undefined as the Continuation Token
+					await expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
 						1,
 						listObjectClientConfig,
 						{
@@ -279,8 +290,8 @@ describe('list API', () => {
 							ContinuationToken: undefined,
 						},
 					);
-					// last input recieves TEST_TOKEN as the Continuation Token
-					expect(listObjectsV2).toHaveBeenNthCalledWith(
+					// last input receives TEST_TOKEN as the Continuation Token
+					await expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
 						3,
 						listObjectClientConfig,
 						{
@@ -346,11 +357,14 @@ describe('list API', () => {
 				});
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
-				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
-					Bucket: bucket,
-					MaxKeys: 1000,
-					Prefix: resolvePath(inputPath),
-				});
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: resolvePath(inputPath),
+					},
+				);
 			},
 		);
 
@@ -385,12 +399,15 @@ describe('list API', () => {
 				});
 				expect(response.nextToken).toEqual(nextToken);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
-				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
-					Bucket: bucket,
-					Prefix: resolvePath(inputPath),
-					ContinuationToken: nextToken,
-					MaxKeys: customPageSize,
-				});
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						Prefix: resolvePath(inputPath),
+						ContinuationToken: nextToken,
+						MaxKeys: customPageSize,
+					},
+				);
 			},
 		);
 
@@ -406,11 +423,15 @@ describe('list API', () => {
 				expect(response.items).toEqual([]);
 
 				expect(response.nextToken).toEqual(undefined);
-				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
-					Bucket: bucket,
-					MaxKeys: 1000,
-					Prefix: resolvePath(path),
-				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: resolvePath(path),
+					},
+				);
 			},
 		);
 
@@ -437,8 +458,8 @@ describe('list API', () => {
 				// listing three times for three pages
 				expect(listObjectsV2).toHaveBeenCalledTimes(3);
 
-				// first input recieves undefined as the Continuation Token
-				expect(listObjectsV2).toHaveBeenNthCalledWith(
+				// first input receives undefined as the Continuation Token
+				await expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
 					1,
 					listObjectClientConfig,
 					{
@@ -448,8 +469,8 @@ describe('list API', () => {
 						ContinuationToken: undefined,
 					},
 				);
-				// last input recieves TEST_TOKEN as the Continuation Token
-				expect(listObjectsV2).toHaveBeenNthCalledWith(
+				// last input receives TEST_TOKEN as the Continuation Token
+				await expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
 					3,
 					listObjectClientConfig,
 					{
@@ -479,11 +500,14 @@ describe('list API', () => {
 			} catch (error: any) {
 				expect.assertions(3);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
-				expect(listObjectsV2).toHaveBeenCalledWith(listObjectClientConfig, {
-					Bucket: bucket,
-					MaxKeys: 1000,
-					Prefix: 'public/',
-				});
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: 'public/',
+					},
+				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});

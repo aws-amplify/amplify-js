@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getAnalyticsEvent } from '../../../../../src/pushNotifications/providers/pinpoint/utils/getAnalyticsEvent';
-
 import {
 	androidCampaignData,
 	androidJourneyData,

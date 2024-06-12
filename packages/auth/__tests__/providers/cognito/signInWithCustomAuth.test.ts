@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from 'aws-amplify';
-import { authAPITestParams } from './testUtils/authApiTestParams';
+
 import { signIn } from '../../../src/providers/cognito';
 import { signInWithCustomAuth } from '../../../src/providers/cognito/apis/signInWithCustomAuth';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
@@ -12,6 +12,8 @@ import {
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -30,7 +32,7 @@ Amplify.configure({
 });
 cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 describe('signIn API happy path cases', () => {
-	let handleCustomAuthFlowWithoutSRPSpy;
+	let handleCustomAuthFlowWithoutSRPSpy: jest.SpyInstance;
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -67,7 +69,7 @@ describe('signIn API happy path cases', () => {
 		expect(handleCustomAuthFlowWithoutSRPSpy).toHaveBeenCalledTimes(1);
 	});
 	test('handleCustomAuthFlowWithoutSRP should be called with clientMetada from request', async () => {
-		const username = authAPITestParams.user1.username;
+		const { username } = authAPITestParams.user1;
 
 		await signInWithCustomAuth({
 			username,
@@ -83,7 +85,7 @@ describe('signIn API happy path cases', () => {
 });
 
 describe('Cognito ASF', () => {
-	let initiateAuthSpy;
+	let initiateAuthSpy: jest.SpyInstance;
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -103,7 +105,7 @@ describe('Cognito ASF', () => {
 				}),
 			);
 		// load Cognito ASF polyfill
-		window['AmazonCognitoAdvancedSecurityData'] = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -112,11 +114,11 @@ describe('Cognito ASF', () => {
 
 	afterEach(() => {
 		initiateAuthSpy.mockClear();
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 
 	test('signIn API should send UserContextData', async () => {
-		const result = await signIn({
+		await signIn({
 			username: authAPITestParams.user1.username,
 			options: {
 				authFlowType: 'CUSTOM_WITHOUT_SRP',

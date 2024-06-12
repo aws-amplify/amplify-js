@@ -24,7 +24,6 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 #### Visit our [documentation site](https://docs.amplify.aws/) to learn more about AWS Amplify. Please see the [Amplify JavaScript](https://docs.amplify.aws/lib/q/platform/js/) page for information around the full list of features we support.
 
-- [Demo Applications](https://github.com/aws-amplify/amplify-js-samples)
 - [Contributing](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md)
 
 ### Features

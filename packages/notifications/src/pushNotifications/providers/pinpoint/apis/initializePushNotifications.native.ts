@@ -23,7 +23,9 @@ import {
 import {
 	createMessageEventRecorder,
 	getChannelType,
+	rejectInflightDeviceRegistration,
 	resolveConfig,
+	resolveInflightDeviceRegistration,
 } from '../utils';
 
 const {
@@ -203,16 +205,24 @@ const addAnalyticsListeners = (): void => {
 const registerDevice = async (address: string): Promise<void> => {
 	const { credentials, identityId } = await resolveCredentials();
 	const { appId, region } = resolveConfig();
-	await updateEndpoint({
-		address,
-		appId,
-		category: 'PushNotification',
-		credentials,
-		region,
-		channelType: getChannelType(),
-		identityId,
-		userAgentValue: getPushNotificationUserAgentString(
-			PushNotificationAction.InitializePushNotifications,
-		),
-	});
+	try {
+		await updateEndpoint({
+			address,
+			appId,
+			category: 'PushNotification',
+			credentials,
+			region,
+			channelType: getChannelType(),
+			identityId,
+			userAgentValue: getPushNotificationUserAgentString(
+				PushNotificationAction.InitializePushNotifications,
+			),
+		});
+		// always resolve inflight device registration promise here even though the promise is only awaited on by
+		// `identifyUser` when no endpoint is found in the cache
+		resolveInflightDeviceRegistration();
+	} catch (underlyingError) {
+		rejectInflightDeviceRegistration(underlyingError);
+		throw underlyingError;
+	}
 };

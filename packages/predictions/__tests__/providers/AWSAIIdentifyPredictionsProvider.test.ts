@@ -291,7 +291,6 @@ mockGetUrl.mockImplementation(({ key, options }) => {
 		);
 	} else {
 		const identityId = options?.targetIdentityId || 'identityId';
-		// tslint:disable-next-line: max-line-length
 		url = new URL(
 			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityId}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
