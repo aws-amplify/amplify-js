@@ -91,7 +91,6 @@ const getDefaultState = (): SignInState => ({
 
 // Hydrate signInStore from Synced Session Storage
 const setInitialState = (): SignInState => {
-
 	const expiry = syncedSessionStorage.getItem(
 		SIGN_IN_STATE_KEYS.expiry,
 	) as string;
@@ -129,7 +128,9 @@ const createStore: Store<SignInState, SignInAction> = reducer => {
 };
 
 // Synchronous Session Storage
-export const syncedSessionStorage = new SyncKeyValueStorage();
+export const syncedSessionStorage = new SyncKeyValueStorage(
+	window.sessionStorage,
+);
 
 export const signInStore = createStore(signInReducer);
 
