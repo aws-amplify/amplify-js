@@ -839,3 +839,13 @@ tests:
   #   sample_name: duplicate-packages
   #   spec: duplicate-packages
   #   browser: *minimal_browser_list
+
+  # SSR context isolation
+  - test_name: integ_ssr_context_isolation
+    desc: 'SSR Context Isolation'
+    framework: next
+    category: ssr-adapter
+    sample_name: ssr-context-isolation
+    spec: ssr-context-isolation
+    yarn_script: ci:ssr-context-isolation
+    browser: [chrome]
