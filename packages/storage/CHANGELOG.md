@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.4.5...@aws-amplify/storage@6.4.6) (2024-06-07)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.4.4...@aws-amplify/storage@6.4.5) (2024-06-04)
+
+### Bug Fixes
+
+- **storage:** Fix MD5 calculation ([#13458](https://github.com/aws-amplify/amplify-js/issues/13458)) ([30b5b85](https://github.com/aws-amplify/amplify-js/commit/30b5b851f3562a338d6afb82a3a98835ac78ccfb))
+
 ## [6.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.4.3...@aws-amplify/storage@6.4.4) (2024-05-23)
 
 **Note:** Version bump only for package @aws-amplify/storage

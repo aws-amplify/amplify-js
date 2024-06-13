@@ -10,4 +10,4 @@ export {
 } from './constants';
 export { s3TransferHandler } from './s3TransferHandler/xhr';
 export { parser } from './xmlParser/pureJs';
-export { toBase64, utf8Encode } from './base64/index.native';
+export { toBase64 } from './base64/index.native';

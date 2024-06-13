@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { AssociateSoftwareTokenException } from '../../../src/providers/cognito/types/errors';
 import { associateSoftwareToken } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { setUpTOTP } from '../../../src/providers/cognito';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
