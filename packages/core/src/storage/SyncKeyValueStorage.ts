@@ -1,14 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PlatformNotSupportedError } from '@aws-amplify/core/internals/utils';
-
-import { SyncKeyValueStorageInterface } from '../../types';
+import { PlatformNotSupportedError } from '../errors';
+import { SyncSessionStorageInterface } from '../types';
 
 /**
  * @internal
  */
-export class SyncKeyValueStorage implements SyncKeyValueStorageInterface {
+export class SyncKeyValueStorage implements SyncSessionStorageInterface {
 	storage?: Storage;
 
 	constructor(storage?: Storage) {
