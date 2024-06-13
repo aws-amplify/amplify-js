@@ -6,6 +6,7 @@ import {
 	Category,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
+
 import { getAuthUserAgentValue } from '../../src/utils';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({

@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { confirmResetPassword } from '../../../src/providers/cognito';
 import { ConfirmForgotPasswordException } from '../../../src/providers/cognito/types/errors';
 import { confirmForgotPassword } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
@@ -42,9 +44,9 @@ describe('confirmResetPassword', () => {
 	});
 
 	it('should call the confirmForgotPassword and return void', async () => {
-		expect(
-			await confirmResetPassword(authAPITestParams.confirmResetPasswordRequest),
-		).toBeUndefined();
+		await expect(
+			confirmResetPassword(authAPITestParams.confirmResetPasswordRequest),
+		).resolves.toBeUndefined();
 		expect(mockConfirmForgotPassword).toHaveBeenCalled();
 	});
 
@@ -135,7 +137,7 @@ describe('confirmResetPassword', () => {
 	});
 
 	it('should add UserContextData', async () => {
-		window['AmazonCognitoAdvancedSecurityData'] = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -162,6 +164,6 @@ describe('confirmResetPassword', () => {
 				},
 			}),
 		);
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 });

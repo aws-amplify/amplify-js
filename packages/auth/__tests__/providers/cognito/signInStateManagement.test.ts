@@ -1,13 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { authAPITestParams } from './testUtils/authApiTestParams';
-import { signIn, getCurrentUser } from '../../../src/providers/cognito';
+import { Amplify } from '@aws-amplify/core';
+
+import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
-import { Amplify } from '@aws-amplify/core';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
+
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
@@ -16,8 +19,8 @@ const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 describe('local sign-in state management tests', () => {
 	const session = '1234234232';
 	const challengeName = 'SMS_MFA';
-	const username = authAPITestParams.user1.username;
-	const password = authAPITestParams.user1.password;
+	const { username } = authAPITestParams.user1;
+	const { password } = authAPITestParams.user1;
 	const authConfig = {
 		Cognito: {
 			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
