@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetchAuthSession } from '@aws-amplify/core';
+
 import { AnalyticsError } from '../../../../src/errors';
 import { resolveCredentials } from '../../../../src/providers/pinpoint/utils';
 

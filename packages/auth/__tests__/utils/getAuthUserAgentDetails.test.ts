@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthAction, Category } from '@aws-amplify/core/internals/utils';
+
 import { getAuthUserAgentDetails } from '../../src/utils';
 
 describe('getAuthUserAgentDetails', () => {

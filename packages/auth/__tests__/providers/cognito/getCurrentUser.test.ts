@@ -3,9 +3,11 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { getCurrentUser } from '../../../src/providers/cognito';
 import { USER_UNAUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
+
 import { mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 

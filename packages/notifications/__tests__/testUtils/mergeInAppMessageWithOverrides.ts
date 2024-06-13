@@ -6,6 +6,7 @@ import {
 	InAppMessageCampaign,
 	OverrideButtonConfiguration,
 } from '@aws-amplify/core/internals/aws-clients/pinpoint';
+
 import {
 	ButtonConfigPlatform,
 	InAppMessageButton,
@@ -34,6 +35,7 @@ export const mergeInAppMessageWithOverrides = (
 			},
 		};
 	}
+
 	return message;
 };
 
@@ -44,7 +46,7 @@ export const mergeExpectedContentWithExpectedOverride = (
 		secondaryButton: OverrideButtonConfiguration;
 	},
 ): InAppMessageContent => {
-	let expectedContent = cloneDeep(inAppMessage);
+	const expectedContent = cloneDeep(inAppMessage);
 	expectedContent.primaryButton = {
 		...expectedContent.primaryButton,
 		action: expectedButtonConfig.primaryButton.ButtonAction,
@@ -55,5 +57,6 @@ export const mergeExpectedContentWithExpectedOverride = (
 		action: expectedButtonConfig.secondaryButton.ButtonAction,
 		url: expectedButtonConfig.secondaryButton.Link,
 	} as InAppMessageButton;
+
 	return expectedContent;
 };

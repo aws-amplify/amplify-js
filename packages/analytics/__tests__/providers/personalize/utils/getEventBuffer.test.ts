@@ -4,8 +4,8 @@
 import { EventBuffer } from '../../../../src/utils';
 import {
 	mockBufferConfig,
-	mockPersonalizeConfig,
 	mockCredentialConfig,
+	mockPersonalizeConfig,
 } from '../../../testUtils/mockConstants';
 import { getEventBuffer } from '../../../../src/providers/personalize/utils';
 
