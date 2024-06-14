@@ -17,6 +17,7 @@ interface SignInState {
 
 type SignInAction =
 	| { type: 'SET_INITIAL_STATE' }
+	| { type: 'SET_EMPTY_STATE' }
 	| { type: 'SET_SIGN_IN_STATE'; value: SignInState }
 	| { type: 'SET_USERNAME'; value?: string }
 	| { type: 'SET_CHALLENGE_NAME'; value?: ChallengeName }
@@ -64,6 +65,8 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 			};
 		case 'SET_INITIAL_STATE':
 			return setInitialState();
+		case 'SET_EMPTY_STATE':
+			return getDefaultState();
 		default:
 			return state;
 	}
@@ -76,21 +79,16 @@ const isExpired = (expiryDate: string): boolean => {
 	return expiryTimestamp <= currentTimestamp;
 };
 
-const clearPersistedSignInState = (keys: Record<string, string>) => {
-	for (const key in keys) {
+const clearPersistedSignInState = () => {
+	for (const key in signInStateKeys) {
 		syncSessionStorage.removeItem(key);
 	}
 };
 
 // Clear saved sign in states from both memory and Synced Session Storage
 export function cleanActiveSignInState(): void {
-	signInStore.dispatch({ type: 'SET_INITIAL_STATE' });
-	clearSignInStateKeysFromSessionStorage();
-}
-
-// Clear stored values for sign in state keys in Synced Session Storage
-export function clearSignInStateKeysFromSessionStorage(): void {
-	clearPersistedSignInState(signInStateKeys);
+	signInStore.dispatch({ type: 'SET_EMPTY_STATE' });
+	cleanActiveSignInState();
 }
 
 const getDefaultState = (): SignInState => ({
@@ -101,10 +99,14 @@ const getDefaultState = (): SignInState => ({
 
 // Hydrate signInStore from Synced Session Storage
 const setInitialState = (): SignInState => {
+	if (!syncSessionStorage) {
+		return getDefaultState();
+	}
+
 	const expiry = syncSessionStorage.getItem(signInStateKeys.expiry) as string;
 	if (isExpired(expiry)) {
 		logger.warn('Sign-in session expired');
-		clearPersistedSignInState(signInStateKeys);
+		clearPersistedSignInState();
 
 		return getDefaultState();
 	}
