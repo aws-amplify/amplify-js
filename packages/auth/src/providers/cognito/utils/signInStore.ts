@@ -17,11 +17,11 @@ interface SignInState {
 
 type SignInAction =
 	| { type: 'SET_INITIAL_STATE' }
-	| { type: 'SET_EMPTY_STATE' }
 	| { type: 'SET_SIGN_IN_STATE'; value: SignInState }
 	| { type: 'SET_USERNAME'; value?: string }
 	| { type: 'SET_CHALLENGE_NAME'; value?: ChallengeName }
-	| { type: 'SET_SIGN_IN_SESSION'; value?: string };
+	| { type: 'SET_SIGN_IN_SESSION'; value?: string }
+	| { type: 'RESET_STATE' };
 
 type Store<State, Action> = (reducer: Reducer<State, Action>) => {
 	getState(): ReturnType<Reducer<State, Action>>;
@@ -64,15 +64,18 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 				username: action.value,
 			};
 		case 'SET_INITIAL_STATE':
-			return setInitialState();
-		case 'SET_EMPTY_STATE':
+			return initializeState();
+		case 'RESET_STATE':
 			return getDefaultState();
 		default:
 			return state;
 	}
 };
 
-const isExpired = (expiryDate: string): boolean => {
+const isExpired = (expiryDate: string | null): boolean => {
+	if (!expiryDate) {
+		return true;
+	}
 	const expiryTimestamp = Number(expiryDate);
 	const currentTimestamp = Date.now();
 
@@ -87,8 +90,8 @@ const clearPersistedSignInState = () => {
 
 // Clear saved sign in states from both memory and Synced Session Storage
 export function cleanActiveSignInState(): void {
-	signInStore.dispatch({ type: 'SET_EMPTY_STATE' });
-	cleanActiveSignInState();
+	signInStore.dispatch({ type: 'RESET_STATE' });
+	clearPersistedSignInState();
 }
 
 const getDefaultState = (): SignInState => ({
@@ -98,12 +101,8 @@ const getDefaultState = (): SignInState => ({
 });
 
 // Hydrate signInStore from Synced Session Storage
-const setInitialState = (): SignInState => {
-	if (!syncSessionStorage) {
-		return getDefaultState();
-	}
-
-	const expiry = syncSessionStorage.getItem(signInStateKeys.expiry) as string;
+const initializeState = (): SignInState => {
+	const expiry = syncSessionStorage.getItem(signInStateKeys.expiry);
 	if (isExpired(expiry)) {
 		logger.warn('Sign-in session expired');
 		clearPersistedSignInState();
@@ -150,6 +149,7 @@ export function setActiveSignInState(state: SignInState): void {
 	persistSignInState(syncSessionStorage, state);
 }
 
+// Save local state into Session Storage
 const persistSignInState = (
 	storage = syncSessionStorage,
 	{
