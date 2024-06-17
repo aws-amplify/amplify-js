@@ -14,8 +14,10 @@ interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
-	bucket?: string | Bucket;
-	region?: string;
+	bucket?: {
+		name: string;
+		region: string;
+	};
 }
 
 interface ResolvedS3ConfigAndInput {
@@ -76,13 +78,7 @@ export const resolveS3ConfigAndInput = async (
 		buckets?: Bucket[];
 	} = amplify.getConfig()?.Storage?.S3 ?? {};
 
-	if (apiOptions?.bucket && typeof apiOptions.bucket === 'string') {
-		const { bucket: optionsBucket, region: optionsRegion } = apiOptions;
-		bucket = optionsBucket;
-		region = optionsRegion ?? region;
-	}
-
-	if (apiOptions?.bucket && typeof apiOptions.bucket !== 'string') {
+	if (apiOptions?.bucket) {
 		const bucketName = apiOptions.bucket.name;
 		const foundBucket =
 			buckets && buckets.find(item => item.name === bucketName);

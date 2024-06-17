@@ -16,10 +16,11 @@ interface CommonOptions {
 	 * @default false
 	 */
 	useAccelerateEndpoint?: boolean;
-	/** Bucket name */
-	bucket?: string | Bucket;
-	/** Region */
-	region?: string;
+	/** Bucket information */
+	bucket?: {
+		name: string;
+		region: string;
+	};
 }
 
 /** @deprecated This may be removed in the next major version. */
@@ -192,5 +193,4 @@ export interface Bucket {
 	name: string;
 	alias: string;
 	region: string;
-	isDefault?: boolean;
 }

@@ -63,14 +63,15 @@ function parseStorage(
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
-			buckets: all_buckets.map(item => {
-				return {
-					name: item.bucket_name,
-					alias: item.friendly_name,
-					region: aws_region,
-					isDefault: item.isDefault ?? false,
-				};
-			}),
+			buckets:
+				all_buckets &&
+				all_buckets.map(item => {
+					return {
+						name: item.bucket_name,
+						alias: item.friendly_name,
+						region: aws_region,
+					};
+				}),
 		},
 	};
 }

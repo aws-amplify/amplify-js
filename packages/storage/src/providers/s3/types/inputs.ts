@@ -47,7 +47,20 @@ export type CopyInput = StorageCopyInputWithKey<
 /**
  * Input type with path for S3 copy API.
  */
-export type CopyWithPathInput = StorageCopyInputWithPath;
+export type CopyWithPathInput = StorageCopyInputWithPath<
+	{
+		bucket?: {
+			name: string;
+			region: string;
+		};
+	},
+	{
+		bucket?: {
+			name: string;
+			region: string;
+		};
+	}
+>;
 
 /**
  * @deprecated Use {@link GetPropertiesWithPathInput} instead.

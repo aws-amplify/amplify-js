@@ -11,7 +11,6 @@ interface Bucket {
 	name: string;
 	alias: string;
 	region: string;
-	isDefault?: boolean;
 }
 
 export interface S3ProviderConfig {

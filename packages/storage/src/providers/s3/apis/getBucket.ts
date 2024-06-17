@@ -5,8 +5,13 @@ import { Amplify } from '@aws-amplify/core';
 
 import { Bucket } from '../types/options';
 
-export const getBuckets = (): Bucket[] => {
+export const getBucket = (alias: string): Bucket => {
 	const allBuckets = Amplify.getConfig().Storage?.S3.buckets ?? [];
+	const foundBucket = allBuckets.find(item => item.alias === alias);
 
-	return allBuckets;
+	if (!foundBucket) {
+		throw new Error(`Bucket with alias ${alias} not found`);
+	}
+
+	return foundBucket;
 };
