@@ -24,7 +24,7 @@ describe('oAuthSignOutRedirect', () => {
 				domain,
 				redirectSignIn: ['https://myapp.test/completeSignIn/'],
 				redirectSignOut: [signOutRedirectUrl],
-				responseType: 'code' as 'code', // assert string union instead of string type
+				responseType: 'code' as const, // assert string union instead of string type
 				scopes: [],
 			},
 		},

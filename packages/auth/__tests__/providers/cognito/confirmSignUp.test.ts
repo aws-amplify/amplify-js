@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import { confirmSignUp } from '../../../src/providers/cognito';
 import { confirmSignUp as providerConfirmSignUp } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmSignUpException } from '../../../src/providers/cognito/types/errors';
 import { ConfirmSignUpCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
@@ -142,7 +144,7 @@ describe('confirmSignUp', () => {
 	});
 
 	it('should send UserContextData', async () => {
-		window['AmazonCognitoAdvancedSecurityData'] = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -169,6 +171,6 @@ describe('confirmSignUp', () => {
 			},
 		);
 		expect(mockConfirmSignUp).toHaveBeenCalledTimes(1);
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 });

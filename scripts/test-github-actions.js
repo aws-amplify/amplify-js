@@ -43,7 +43,7 @@ for (const file of [...workflowYmlFiles, ...actionYmlFiles]) {
 	const runCommandValues = getKeyValuesFor('run', ymlContents);
 	for (const val of runCommandValues) {
 		if (val.match(variableTemplatePattern)) {
-			console.log(`There is an inline variabled used in ${file}`);
+			console.log(`There is an inline variable used in ${file}`);
 			exitCode = 1;
 		}
 	}

@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import {
 	UpdateMFAPreferenceInput,
 	updateMFAPreference,
@@ -10,8 +12,7 @@ import { setUserMFAPreference } from '../../../src/providers/cognito/utils/clien
 import { AuthError } from '../../../src/errors/AuthError';
 import { SetUserMFAPreferenceException } from '../../../src/providers/cognito/types/errors';
 import { getMFASettings } from '../../../src/providers/cognito/apis/updateMFAPreference';
-import { SetUserMFAPreferenceCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
