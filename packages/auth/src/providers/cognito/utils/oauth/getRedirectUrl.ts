@@ -8,19 +8,31 @@ import {
 /** @internal */
 export function getRedirectUrl(
 	redirects: string[],
-	preferredSignOutUrl?: string,
+	_preferredSignOutUrl?: string,
 ): string {
-	const redirectUrlFromTheSameOrigin =
-		redirects?.find(isSameOriginAndPathName) ??
-		redirects?.find(isTheSameDomain);
-	const redirectUrlFromDifferentOrigin =
-		redirects?.find(isHttps) ?? redirects?.find(isHttp);
-	if (redirectUrlFromTheSameOrigin) {
-		return redirectUrlFromTheSameOrigin;
-	} else if (redirectUrlFromDifferentOrigin) {
-		throw invalidOriginException;
+	if (_preferredSignOutUrl) {
+		const redirectUrl = redirects?.find(
+			redirect => redirect === _preferredSignOutUrl,
+		);
+		if (!redirectUrl) {
+			throw invalidRedirectException;
+		}
+
+		return redirectUrl;
+	} else {
+		const redirectUrlFromTheSameOrigin =
+			redirects?.find(isSameOriginAndPathName) ??
+			redirects?.find(isTheSameDomain);
+		const redirectUrlFromDifferentOrigin =
+			redirects?.find(isHttps) ?? redirects?.find(isHttp);
+
+		if (redirectUrlFromTheSameOrigin) {
+			return redirectUrlFromTheSameOrigin;
+		} else if (redirectUrlFromDifferentOrigin) {
+			throw invalidOriginException;
+		}
+		throw invalidRedirectException;
 	}
-	throw invalidRedirectException;
 }
 
 // origin + pathname => https://example.com/app

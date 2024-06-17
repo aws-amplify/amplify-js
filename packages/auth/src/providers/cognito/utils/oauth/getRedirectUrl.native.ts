@@ -8,18 +8,23 @@ export function getRedirectUrl(
 	redirects: string[],
 	preferredSignOutUrl?: string,
 ): string {
-	let redirectUrl;
-	if (preferredSignOutUrl) {
-		redirectUrl = redirects?.find(redirect => redirect === preferredSignOutUrl);
-	} else {
-		redirectUrl = redirects?.find(
-			redirect =>
-				!redirect.startsWith('http://') && !redirect.startsWith('https://'),
-		);
-	}
-	if (!redirectUrl) {
+	let preferredRedirectUrl;
+	// Always check for a non http/s url (appScheme)
+	const appSchemeRedirectUrl = redirects?.find(
+		redirect =>
+			!redirect.startsWith('http://') && !redirect.startsWith('https://'),
+	);
+	if (!appSchemeRedirectUrl) {
 		throw invalidRedirectException;
 	}
+	if (preferredSignOutUrl) {
+		preferredRedirectUrl = redirects?.find(
+			redirect => redirect === preferredSignOutUrl,
+		);
+		if (!preferredRedirectUrl) {
+			throw invalidRedirectException;
+		}
+	}
 
-	return redirectUrl;
+	return preferredRedirectUrl ?? appSchemeRedirectUrl;
 }
