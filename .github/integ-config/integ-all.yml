@@ -366,13 +366,6 @@ tests:
     sample_name: [v2/amplify-docs-examples]
     spec: amplify-docs-examples
     browser: [chrome]
-  - test_name: integ_react_datastore_websocket_disruption
-    desc: 'DataStore - WebSocket Disruption'
-    framework: react
-    category: datastore
-    sample_name: [websocket-disruption]
-    spec: websocket-disruption
-    browser: *minimal_browser_list
   - test_name: integ_vanilla_js_datastore_basic_crud
     desc: 'Vanilla JS + Webpack 4 + DataStore - Basic CRUD'
     framework: javascript
@@ -846,3 +839,13 @@ tests:
   #   sample_name: duplicate-packages
   #   spec: duplicate-packages
   #   browser: *minimal_browser_list
+
+  # SSR context isolation
+  - test_name: integ_ssr_context_isolation
+    desc: 'SSR Context Isolation'
+    framework: next
+    category: ssr-adapter
+    sample_name: ssr-context-isolation
+    spec: ssr-context-isolation
+    yarn_script: ci:ssr-context-isolation
+    browser: [chrome]
