@@ -186,7 +186,6 @@ describe('signUp', () => {
 					userAttributes: { email: user1.email },
 				},
 			});
-
 			expect(mockSignUp).toHaveBeenCalledWith(
 				{
 					region: 'us-west-2',
