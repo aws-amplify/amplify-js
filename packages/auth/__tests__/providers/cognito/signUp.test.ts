@@ -174,7 +174,7 @@ describe('signUp', () => {
 		});
 
 		it('should send UserContextData', async () => {
-			window['AmazonCognitoAdvancedSecurityData'] = {
+			window.AmazonCognitoAdvancedSecurityData = {
 				getData() {
 					return 'abcd';
 				},
@@ -186,7 +186,7 @@ describe('signUp', () => {
 					userAttributes: { email: user1.email },
 				},
 			});
-	
+
 			expect(mockSignUp).toHaveBeenCalledWith(
 				{
 					region: 'us-west-2',
@@ -203,7 +203,7 @@ describe('signUp', () => {
 				},
 			);
 			expect(mockSignUp).toHaveBeenCalledTimes(1);
-			window['AmazonCognitoAdvancedSecurityData'] = undefined;
+			window.AmazonCognitoAdvancedSecurityData = undefined;
 		});
 	});
 

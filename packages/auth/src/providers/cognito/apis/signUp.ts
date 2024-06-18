@@ -74,12 +74,6 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 
 	const { userPoolId, userPoolClientId } = authConfig;
 
-	const UserContextData = getUserContextData({
-		username,
-		userPoolId,
-		userPoolClientId,
-	});
-
 	const clientOutput = await signUpClient(
 		{
 			region: getRegion(userPoolId),
@@ -93,7 +87,11 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			ClientMetadata: clientMetadata,
 			ValidationData: validationData && toAttributeType(validationData),
 			ClientId: userPoolClientId,
-			UserContextData,
+			UserContextData: getUserContextData({
+				username,
+				userPoolId,
+				userPoolClientId,
+			}),
 		},
 	);
 	const { UserSub, CodeDeliveryDetails } = clientOutput;
