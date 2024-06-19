@@ -30,6 +30,7 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/types';
+import { StorageSubpathStrategy } from '../../../../types';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -80,7 +81,7 @@ export const list = async (
 		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
-		Delimiter: options?.delimiter,
+		Delimiter: getDelimiter(options.subpathStrategy),
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -88,6 +89,7 @@ export const list = async (
 		s3Config,
 		listParams,
 	};
+
 	if (options.listAll) {
 		if (isInputWithPrefix) {
 			return _listAllWithPrefix({
@@ -178,12 +180,12 @@ const _listAllWithPath = async ({
 	listParams,
 }: ListInputArgs): Promise<ListAllWithPathOutput> => {
 	const listResult: ListOutputItemWithPath[] = [];
-	const subpaths: string[] = [];
+	const excludedSubpaths: string[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
 		const {
 			items: pageResults,
-			subpaths: pageSubpaths,
+			excludedSubpaths: pageExcludedSubpaths,
 			nextToken: pageNextToken,
 		} = await _listWithPath({
 			s3Config,
@@ -194,13 +196,13 @@ const _listAllWithPath = async ({
 			},
 		});
 		listResult.push(...pageResults);
-		subpaths.push(...(pageSubpaths ?? []));
+		excludedSubpaths.push(...(pageExcludedSubpaths ?? []));
 		continuationToken = pageNextToken;
 	} while (continuationToken);
 
 	return {
 		items: listResult,
-		...parseSubpaths(subpaths),
+		...parseExcludedSubpaths(excludedSubpaths),
 	};
 };
 
@@ -226,12 +228,12 @@ const _listWithPath = async ({
 		listParamsClone,
 	);
 
-	const subpaths = mapCommonPrefixesToSubpaths(commonPrefixes);
+	const excludedSubpaths = mapCommonPrefixesToExcludedSubpaths(commonPrefixes);
 
 	if (!contents) {
 		return {
 			items: [],
-			...parseSubpaths(subpaths),
+			...parseExcludedSubpaths(excludedSubpaths),
 		};
 	}
 
@@ -243,18 +245,32 @@ const _listWithPath = async ({
 			size: item.Size,
 		})),
 		nextToken: nextContinuationToken,
-		...parseSubpaths(subpaths),
+		...parseExcludedSubpaths(excludedSubpaths),
 	};
 };
 
-function mapCommonPrefixesToSubpaths(
+function mapCommonPrefixesToExcludedSubpaths(
 	commonPrefixes?: CommonPrefix[],
 ): string[] | undefined {
 	const mappedSubpaths = commonPrefixes?.map(({ Prefix }) => Prefix);
 
-	return mappedSubpaths?.filter((subpath): subpath is string => !!subpath);
+	return mappedSubpaths?.filter(
+		(excludedSubpath): excludedSubpath is string => !!excludedSubpath,
+	);
 }
 
-function parseSubpaths(subpaths?: string[]) {
-	return subpaths && subpaths.length > 0 ? { subpaths } : {};
+function parseExcludedSubpaths(excludedSubpaths?: string[]) {
+	return excludedSubpaths && excludedSubpaths.length > 0
+		? { excludedSubpaths }
+		: {};
+}
+
+function getDelimiter(
+	subpathStrategy?: StorageSubpathStrategy,
+): string | undefined {
+	if (subpathStrategy?.strategy === 'exclude') {
+		const delimiter = subpathStrategy?.delimiter ?? '/';
+
+		return delimiter;
+	}
 }
