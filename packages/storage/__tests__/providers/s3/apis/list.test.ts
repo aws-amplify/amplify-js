@@ -512,4 +512,159 @@ describe('list API', () => {
 			}
 		});
 	});
+
+	describe('with delimiter', () => {
+		const mockedContents = [
+			{
+				Key: 'photos/',
+				...listObjectClientBaseResultItem,
+			},
+			{
+				Key: 'photos/2023.png',
+				...listObjectClientBaseResultItem,
+			},
+			{
+				Key: 'photos/2024.png',
+				...listObjectClientBaseResultItem,
+			},
+		];
+		const mockedCommonPrefixes = [
+			{ Prefix: 'photos/2023/' },
+			{ Prefix: 'photos/2024/' },
+			{ Prefix: 'photos/2025/' },
+		];
+
+		const mockedPath = 'photos/';
+
+		beforeEach(() => {
+			mockListObject.mockResolvedValueOnce({
+				Contents: mockedContents,
+				CommonPrefixes: mockedCommonPrefixes,
+			});
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+			mockListObject.mockClear();
+		});
+
+		it('should return excludedSubpaths when "exclude" strategy is passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: { strategy: 'exclude' },
+				},
+			});
+			expect(items).toHaveLength(3);
+			expect(excludedSubpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: '/',
+				},
+			);
+		});
+
+		it('should return excludedSubpaths when "exclude" strategy and listAll are passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: { strategy: 'exclude' },
+					listAll: true,
+				},
+			});
+			expect(items).toHaveLength(3);
+			expect(excludedSubpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: '/',
+				},
+			);
+		});
+
+		it('should return excludedSubpaths when "exclude" strategy and pageSize are passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: { strategy: 'exclude' },
+					pageSize: 3,
+				},
+			});
+			expect(items).toHaveLength(3);
+			expect(excludedSubpaths).toEqual([
+				'photos/2023/',
+				'photos/2024/',
+				'photos/2025/',
+			]);
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 3,
+					Prefix: mockedPath,
+					Delimiter: '/',
+				},
+			);
+		});
+
+		it('should listObjectsV2 contain a custom Delimiter when "exclude" with delimiter is passed', async () => {
+			await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: {
+						strategy: 'exclude',
+						delimiter: '-',
+					},
+				},
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: '-',
+				},
+			);
+		});
+
+		it('should listObjectsV2 contain an undefined Delimiter when "include" strategy is passed', async () => {
+			await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: {
+						strategy: 'include',
+					},
+				},
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: undefined,
+				},
+			);
+		});
+	});
 });
