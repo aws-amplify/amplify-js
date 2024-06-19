@@ -547,15 +547,15 @@ describe('list API', () => {
 			mockListObject.mockClear();
 		});
 
-		it('should return subpaths when delimiter is passed in the request', async () => {
-			const { items, subpaths } = await list({
+		it('should return excludedSubpaths when "exclude" strategy is passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
 				path: mockedPath,
 				options: {
-					delimiter: '/',
+					subpathStrategy: { strategy: 'exclude' },
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toEqual([
+			expect(excludedSubpaths).toEqual([
 				'photos/2023/',
 				'photos/2024/',
 				'photos/2025/',
@@ -572,16 +572,16 @@ describe('list API', () => {
 			);
 		});
 
-		it('should return subpaths when delimiter and listAll are passed in the request', async () => {
-			const { items, subpaths } = await list({
+		it('should return excludedSubpaths when "exclude" strategy and listAll are passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
 				path: mockedPath,
 				options: {
-					delimiter: '/',
+					subpathStrategy: { strategy: 'exclude' },
 					listAll: true,
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toEqual([
+			expect(excludedSubpaths).toEqual([
 				'photos/2023/',
 				'photos/2024/',
 				'photos/2025/',
@@ -598,16 +598,16 @@ describe('list API', () => {
 			);
 		});
 
-		it('should return subpaths when delimiter is pageSize are passed in the request', async () => {
-			const { items, subpaths } = await list({
+		it('should return excludedSubpaths when "exclude" strategy and pageSize are passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
 				path: mockedPath,
 				options: {
-					delimiter: '/',
+					subpathStrategy: { strategy: 'exclude' },
 					pageSize: 3,
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toEqual([
+			expect(excludedSubpaths).toEqual([
 				'photos/2023/',
 				'photos/2024/',
 				'photos/2025/',
@@ -620,6 +620,49 @@ describe('list API', () => {
 					MaxKeys: 3,
 					Prefix: mockedPath,
 					Delimiter: '/',
+				},
+			);
+		});
+
+		it('should listObjectsV2 contain a custom Delimiter when "exclude" with delimiter is passed', async () => {
+			await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: {
+						strategy: 'exclude',
+						delimiter: '-',
+					},
+				},
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: '-',
+				},
+			);
+		});
+
+		it('should listObjectsV2 contain an undefined Delimiter when "include" strategy is passed', async () => {
+			await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: {
+						strategy: 'include',
+					},
+				},
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: undefined,
 				},
 			);
 		});
