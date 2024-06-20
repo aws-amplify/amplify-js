@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { SyncSessionStorage } from '../../src/storage/SyncSessionStorage';
+import { syncSessionStorage } from '../../src';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -85,5 +86,38 @@ describe('SyncSessionStorage', () => {
 		expect(() => {
 			sessionStorage.removeItem(badKey);
 		}).not.toThrow();
+	});
+
+	test('syncSessionStorage instance should show the same behavior', () => {
+		sessionStorage.clear();
+		syncSessionStorage.clear();
+		sessionStorage.setItem(signInStateKeys.username, user1.username);
+		syncSessionStorage.setItem(signInStateKeys.username, user1.username);
+		sessionStorage.setItem(signInStateKeys.challengeName, user1.challengeName);
+		syncSessionStorage.setItem(
+			signInStateKeys.challengeName,
+			user1.challengeName,
+		);
+		sessionStorage.setItem(signInStateKeys.signInSession, user1.signInSession);
+		syncSessionStorage.setItem(
+			signInStateKeys.signInSession,
+			user1.signInSession,
+		);
+
+		sessionStorage.setItem(signInStateKeys.expiry, user1.expiry);
+		syncSessionStorage.setItem(signInStateKeys.expiry, user1.expiry);
+
+		expect(syncSessionStorage.getItem(signInStateKeys.username)).toEqual(
+			sessionStorage.getItem(signInStateKeys.username),
+		);
+		expect(syncSessionStorage.getItem(signInStateKeys.challengeName)).toEqual(
+			sessionStorage.getItem(signInStateKeys.challengeName),
+		);
+		expect(syncSessionStorage.getItem(signInStateKeys.signInSession)).toEqual(
+			sessionStorage.getItem(signInStateKeys.signInSession),
+		);
+		expect(syncSessionStorage.getItem(signInStateKeys.expiry)).toEqual(
+			sessionStorage.getItem(signInStateKeys.expiry),
+		);
 	});
 });
