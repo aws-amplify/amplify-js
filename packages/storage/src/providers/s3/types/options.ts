@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAccessLevel } from '@aws-amplify/core';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { SigningOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { TransferProgressEvent } from '../../../types';
@@ -10,12 +11,34 @@ import {
 	StorageListPaginateOptions,
 } from '../../../types/options';
 
+/**
+ * @internal
+ */
+export type Permission = 'READ' | 'READWRITE' | 'WRITE';
+
+/**
+ * @internal
+ */
+export type LocationCredentialsProvider = (options: {
+	forceRefresh?: boolean;
+	locations: { bucket: string; path: string }[];
+	permission: Permission;
+}) => Promise<{ credentials: AWSCredentials }>;
+
 interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
 	 */
 	useAccelerateEndpoint?: boolean;
+
+	/**
+	 * Async function returning AWS credentials for an API call. This function
+	 * is invoked with S3 locations(bucket and path).
+	 * If omitted, the global credentials configured in Amplify Auth
+	 * would be used.
+	 */
+	locationCredentialsProvider?: LocationCredentialsProvider;
 }
 
 /** @deprecated This may be removed in the next major version. */
