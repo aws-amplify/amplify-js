@@ -39,7 +39,7 @@ export interface AccessGrant extends LocationAccess {
 	// The Amazon Resource Name (ARN) of an AWS IAM Identity Center application associated with your
 	// Identity Center instance. If the grant includes an application ARN, the grantee can only access
 	// the S3 data through this application.
-	readonly applicationArn?: string;
+	readonly applicationArn: string | undefined;
 }
 
 /**
@@ -47,7 +47,7 @@ export interface AccessGrant extends LocationAccess {
  */
 export interface ListLocationsOutput<T extends LocationAccess> {
 	locations: T[];
-	nextToken?: string;
+	nextToken: string | undefined;
 }
 
 // Interface for listLocations() handler
