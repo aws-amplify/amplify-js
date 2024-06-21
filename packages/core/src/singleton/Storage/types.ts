@@ -7,9 +7,10 @@ import { AtLeastOne } from '../types';
 export type StorageAccessLevel = 'guest' | 'protected' | 'private';
 
 /** Bucket to store files/objects */
-interface Bucket {
-	name: string;
-	alias: string;
+export interface BucketInfo {
+	/** actual bucket name */
+	bucketName: string;
+	/** Region of the bucket */
 	region: string;
 }
 
@@ -23,7 +24,7 @@ export interface S3ProviderConfig {
 		 * @internal
 		 */
 		dangerouslyConnectToHttpEndpointForTesting?: string;
-		buckets?: Bucket[];
+		buckets?: Record<string, BucketInfo>;
 	};
 }
 

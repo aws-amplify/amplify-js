@@ -4,7 +4,7 @@
 /* This is because JSON schema contains keys with snake_case */
 /* eslint-disable camelcase */
 
-/* Does not like exahaustive checks */
+/* Does not like exhaustive checks */
 /* eslint-disable no-case-declarations */
 
 import {
@@ -35,6 +35,7 @@ import {
 	ResourcesConfig,
 	StorageConfig,
 } from './singleton/types';
+import { BucketInfo } from './singleton/Storage/types';
 
 export function isAmplifyOutputs(
 	config: ResourcesConfig | LegacyConfig | AmplifyOutputs,
@@ -59,19 +60,21 @@ function parseStorage(
 	const { bucket_name, aws_region, all_buckets } =
 		amplifyOutputsStorageProperties;
 
+	const buckets: Record<string, BucketInfo> = {};
+	all_buckets?.forEach(
+		({ name, bucket_name: bucketName, aws_region: region }) => {
+			buckets[name] = {
+				bucketName,
+				region,
+			};
+		},
+	);
+
 	return {
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
-			buckets:
-				all_buckets &&
-				all_buckets.map(item => {
-					return {
-						name: item.bucket_name,
-						alias: item.friendly_name,
-						region: aws_region,
-					};
-				}),
+			buckets,
 		},
 	};
 }

@@ -47,10 +47,11 @@ export interface AmplifyOutputsStorageProperties {
 	aws_region: string;
 	bucket_name: string;
 	friendly_name: string;
-	all_buckets: {
+	all_buckets?: {
 		isDefault?: boolean;
-		friendly_name: string;
+		name: string;
 		bucket_name: string;
+		aws_region: string;
 	}[];
 }
 
