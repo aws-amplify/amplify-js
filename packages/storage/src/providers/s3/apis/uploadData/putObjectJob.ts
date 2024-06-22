@@ -6,7 +6,6 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput, UploadDataWithPathInput } from '../../types';
 import {
-	calculateContentMd5,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
@@ -15,7 +14,7 @@ import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
 import { calculateContentCRC32 } from '../../utils/crc32';
-import { startTimer, stopTimer } from '../../../../utils/performance';
+// import { startTimer, stopTimer } from '../../../../utils/performance';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -30,7 +29,7 @@ export const putObjectJob =
 	) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
-		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
+		const { bucket, keyPrefix, s3Config, identityId } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
@@ -46,10 +45,12 @@ export const putObjectJob =
 			metadata,
 			onProgress,
 		} = uploadDataOptions ?? {};
-		startTimer(`upload-${totalLength}`);
-		startTimer(`checksum-${totalLength}`);
+
+		// performance code does not work in Jest
+		// startTimer(`upload-${totalLength}`);
+		// startTimer(`checksum-${totalLength}`);
 		const ChecksumCRC32 = await calculateContentCRC32(data);
-		stopTimer(`checksum-${totalLength}`);
+		// stopTimer(`checksum-${totalLength}`);
 		const { ETag: eTag, VersionId: versionId } = await putObject(
 			{
 				...s3Config,
@@ -68,7 +69,7 @@ export const putObjectJob =
 				ChecksumCRC32: ChecksumCRC32.checksum,
 			},
 		);
-		stopTimer(`upload-${totalLength}`);
+		// stopTimer(`upload-${totalLength}`);
 
 		const result = {
 			eTag,

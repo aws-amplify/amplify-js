@@ -5,7 +5,6 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
 import { putObject } from '../../../../../src/providers/s3/utils/client';
-import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
 
@@ -116,28 +115,9 @@ describe('putObjectJob with key', () => {
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: mockMetadata,
-				ContentMD5: undefined,
+				ChecksumCRC32: 'UgwMnQ==',
 			},
 		);
-	});
-
-	it('should set ContentMD5 if object lock is enabled', async () => {
-		Amplify.libraryOptions = {
-			Storage: {
-				S3: {
-					isObjectLockEnabled: true,
-				},
-			},
-		};
-		const job = putObjectJob(
-			{
-				key: 'key',
-				data: 'data',
-			},
-			new AbortController().signal,
-		);
-		await job();
-		expect(calculateContentMd5).toHaveBeenCalledWith('data');
 	});
 });
 
@@ -209,28 +189,9 @@ describe('putObjectJob with path', () => {
 					ContentDisposition: contentDisposition,
 					ContentEncoding: contentEncoding,
 					Metadata: mockMetadata,
-					ContentMD5: undefined,
+					ChecksumCRC32: 'UgwMnQ==',
 				},
 			);
 		},
 	);
-
-	it('should set ContentMD5 if object lock is enabled', async () => {
-		Amplify.libraryOptions = {
-			Storage: {
-				S3: {
-					isObjectLockEnabled: true,
-				},
-			},
-		};
-		const job = putObjectJob(
-			{
-				path: testPath,
-				data: 'data',
-			},
-			new AbortController().signal,
-		);
-		await job();
-		expect(calculateContentMd5).toHaveBeenCalledWith('data');
-	});
 });

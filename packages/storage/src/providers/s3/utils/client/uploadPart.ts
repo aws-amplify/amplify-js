@@ -29,7 +29,13 @@ import {
 // and will be set by browser or fetch polyfill.
 export type UploadPartInput = Pick<
 	UploadPartCommandInput,
-	'PartNumber' | 'Body' | 'UploadId' | 'Bucket' | 'Key' | 'ContentMD5'
+	| 'PartNumber'
+	| 'Body'
+	| 'UploadId'
+	| 'Bucket'
+	| 'Key'
+	| 'ContentMD5'
+	| 'ChecksumCRC32'
 >;
 
 export type UploadPartOutput = Pick<
@@ -42,9 +48,9 @@ const uploadPartSerializer = async (
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
-		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
+		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
+		'content-type': 'application/octet-stream',
 	};
-	headers['content-type'] = 'application/octet-stream';
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);

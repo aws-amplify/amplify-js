@@ -29,6 +29,7 @@ import {
 } from '../../../utils/client';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
+import { calculateContentCRC32 } from '../../../utils/crc32';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -139,14 +140,28 @@ export const getMultipartUploadHandlers = (
 				})
 			: undefined;
 
+		const crc32List: ArrayBuffer[] = [];
+		const dataChunkerCrc32 = getDataChunker(data, size);
+		for (const { data: checkData } of dataChunkerCrc32) {
+			crc32List.push(
+				(await calculateContentCRC32(checkData)).checksumArrayBuffer,
+			);
+		}
+		const finalCRC32 = `${(await calculateContentCRC32(new Blob(crc32List))).checksum}-${crc32List.length}`;
+
 		const dataChunker = getDataChunker(data, size);
 		const completedPartNumberSet = new Set<number>(
 			inProgressUpload.completedParts.map(({ PartNumber }) => PartNumber!),
 		);
-		const onPartUploadCompletion = (partNumber: number, eTag: string) => {
+		const onPartUploadCompletion = (
+			partNumber: number,
+			eTag: string,
+			crc32: string,
+		) => {
 			inProgressUpload?.completedParts.push({
 				PartNumber: partNumber,
 				ETag: eTag,
+				ChecksumCRC32: crc32,
 			});
 		};
 		const concurrentUploadsProgressTracker =
@@ -185,6 +200,7 @@ export const getMultipartUploadHandlers = (
 				Bucket: resolvedBucket,
 				Key: finalKey,
 				UploadId: inProgressUpload.uploadId,
+				ChecksumCRC32: finalCRC32,
 				MultipartUpload: {
 					Parts: inProgressUpload.completedParts.sort(
 						(partA, partB) => partA.PartNumber! - partB.PartNumber!,

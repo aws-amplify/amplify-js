@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
+import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
+
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, defaultStorage } from '@aws-amplify/core';
 
@@ -22,9 +25,25 @@ import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byte
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
 import '../testUtils';
+import { calculateContentCRC32 } from '../../../../../src/providers/s3/utils/crc32';
+
+// this can be removed if we are mocking all of crc32
+global.Blob = BlobPolyfill as any;
+global.File = FilePolyfill as any;
+global.WritableStream = WritableStreamPolyfill as any;
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client');
+
+jest.mock('../../../../../src/providers/s3/utils/crc32', () => ({
+	...jest.requireActual('../../../../../src/providers/s3/utils/crc32'),
+	calculateContentCRC32: jest
+		.fn()
+		.mockImplementation(
+			jest.requireActual('../../../../../src/providers/s3/utils/crc32')
+				.calculateContentCRC32,
+		),
+}));
 
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
@@ -47,10 +66,20 @@ const mockCompleteMultipartUpload = jest.mocked(completeMultipartUpload);
 const mockAbortMultipartUpload = jest.mocked(abortMultipartUpload);
 const mockListParts = jest.mocked(listParts);
 const mockHeadObject = jest.mocked(headObject);
+const mockCalculateContentCRC32 = jest.mocked(calculateContentCRC32);
 
 const disableAssertionFlag = true;
 
 const MB = 1024 * 1024;
+
+const mockCalculateContentCRC32Mocked = () => {
+	mockCalculateContentCRC32.mockReset();
+	mockCalculateContentCRC32.mockResolvedValue({
+		checksumArrayBuffer: new ArrayBuffer(0),
+		checksum: 'mockChecksum',
+		seed: 0,
+	});
+};
 
 const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 	let totalSize = 0;
@@ -243,6 +272,7 @@ describe('getMultipartUploadHandlers with key', () => {
 		});
 
 		it('should upload a body that exceeds the size of default part size and parts count', async () => {
+			mockCalculateContentCRC32Mocked();
 			let buffer: ArrayBuffer;
 			const file = {
 				__proto__: File.prototype,
@@ -267,7 +297,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				file.size,
 			);
 			await multipartUploadJob();
-			expect(file.slice).toHaveBeenCalledTimes(10_000); // S3 limit of parts count
+			expect(file.slice).toHaveBeenCalledTimes(10_000 * 2); // S3 limit of parts count double for crc32 calculations
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
 			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
@@ -757,6 +787,7 @@ describe('getMultipartUploadHandlers with path', () => {
 		});
 
 		it('should upload a body that exceeds the size of default part size and parts count', async () => {
+			mockCalculateContentCRC32Mocked();
 			let buffer: ArrayBuffer;
 			const file = {
 				__proto__: File.prototype,
@@ -781,7 +812,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				file.size,
 			);
 			await multipartUploadJob();
-			expect(file.slice).toHaveBeenCalledTimes(10_000); // S3 limit of parts count
+			expect(file.slice).toHaveBeenCalledTimes(10_000 * 2); // S3 limit of parts count double for crc32 calculations
 			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 			expect(mockUploadPart).toHaveBeenCalledTimes(10_000);
 			expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
