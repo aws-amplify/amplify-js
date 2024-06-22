@@ -41,7 +41,10 @@ const createMultipartUploadSerializer = async (
 	input: CreateMultipartUploadInput,
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectConfigsToHeaders(input);
+	const headers = {
+		...(await serializeObjectConfigsToHeaders(input)),
+		'x-amz-checksum-algorithm': 'CRC32',
+	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);

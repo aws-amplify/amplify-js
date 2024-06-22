@@ -3,9 +3,10 @@
 
 import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
-import { calculateContentMd5 } from '../../../utils';
 import { uploadPart } from '../../../utils/client';
 import { logger } from '../../../../../utils';
+import { calculateContentCRC32 } from '../../../utils/crc32';
+import { calculateContentMd5 } from '../../../utils';
 
 import { PartToUpload } from './getDataChunker';
 
@@ -18,7 +19,7 @@ interface UploadPartExecutorOptions {
 	finalKey: string;
 	uploadId: string;
 	isObjectLockEnabled?: boolean;
-	onPartUploadCompletion(partNumber: number, eTag: string): void;
+	onPartUploadCompletion(partNumber: number, eTag: string, crc32: string): void;
 	onProgress?(event: TransferProgressEvent): void;
 }
 
@@ -49,6 +50,7 @@ export const uploadPartExecutor = async ({
 			});
 		} else {
 			// handle cancel error
+			const crc32 = await calculateContentCRC32(data);
 			const { ETag: eTag } = await uploadPart(
 				{
 					...s3Config,
@@ -66,14 +68,18 @@ export const uploadPartExecutor = async ({
 					UploadId: uploadId,
 					Body: data,
 					PartNumber: partNumber,
-					ContentMD5: isObjectLockEnabled
-						? await calculateContentMd5(data)
-						: undefined,
+					ChecksumCRC32: crc32.checksum,
+
+					// of checksum is undefined in react native
+					ContentMD5:
+						crc32 === undefined && isObjectLockEnabled
+							? await calculateContentMd5(data)
+							: undefined,
 				},
 			);
 			transferredBytes += size;
 			// eTag will always be set even the S3 model interface marks it as optional.
-			onPartUploadCompletion(partNumber, eTag!);
+			onPartUploadCompletion(partNumber, eTag!, crc32.checksum);
 		}
 	}
 };
