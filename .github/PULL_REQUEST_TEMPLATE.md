@@ -26,5 +26,6 @@ the requirements below.
 - [ ] `yarn test` passes
 - [ ] Tests are [changed or added](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md#steps-towards-contributions)
 - [ ] Relevant documentation is changed or added (and PR referenced)
-
+- [ ] New source file paths included in this PR have been added to CODEOWNERS, if appropriate
+      
 By submitting this pull request, I confirm that my contribution is made under the terms of the Apache 2.0 license.
