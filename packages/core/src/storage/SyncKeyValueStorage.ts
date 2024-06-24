@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { PlatformNotSupportedError } from '../errors';
-import { SyncSessionStorageInterface } from '../types';
+import { SyncStorage } from '../types';
 
 /**
  * @internal
  */
-export class SyncKeyValueStorage implements SyncSessionStorageInterface {
+export class SyncKeyValueStorage implements SyncStorage {
 	storage?: Storage;
 
 	constructor(storage?: Storage) {

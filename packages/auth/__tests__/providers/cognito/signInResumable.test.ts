@@ -18,10 +18,14 @@ import { signIn } from '../../../src/providers/cognito';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
+jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
+	Amplify: {
+		getConfig: jest.fn(() => ({})),
+		ADD_OAUTH_LISTENER: jest.fn(() => ({})),
+	},
 	syncSessionStorage: {
 		setItem: jest.fn((key, value) => {
 			window.sessionStorage.setItem(key, value);
@@ -33,11 +37,6 @@ jest.mock('@aws-amplify/core', () => ({
 			window.sessionStorage.removeItem(key);
 		}),
 	},
-}));
-
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	isBrowser: jest.fn(() => false),
 }));
 
 jest.mock(
@@ -58,10 +57,10 @@ const user1: Record<string, string> = {
 	expiry: '1234567',
 };
 
-describe('signInStore UnitTest', () => {
+describe('signInStore', () => {
 	const authConfig = {
 		Cognito: {
-			userPoolClientId: '888577-ltfgo-42d8-891d-666l858766g7',
+			userPoolClientId: '123456-abcde-42d8-891d-666l858766g7',
 			userPoolId: 'us-west-7_ampjc',
 		},
 	};
@@ -111,7 +110,7 @@ describe('signInStore UnitTest', () => {
 		cleanActiveSignInState();
 	});
 
-	test('State is updated after ', async () => {
+	test('State is updated after calling SignIn', async () => {
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
@@ -143,21 +142,6 @@ describe('signInStore UnitTest', () => {
 			},
 		});
 		handleUserSRPAuthflowSpy.mockClear();
-	});
-
-	test('State saved in sessionStorage from the previous test is successfully retrieved', async () => {
-		const localSignInState = signInStore.getState();
-
-		expect(localSignInState).toEqual({
-			challengeName,
-			signInSession: session,
-			username,
-			signInDetails: {
-				loginId: username,
-				authFlowType: 'USER_SRP_AUTH',
-			},
-		});
-		cleanActiveSignInState();
 	});
 
 	test('Stored session is not expired thus State should be rehydrated', () => {

@@ -35,7 +35,7 @@ const logger = new ConsoleLogger('Auth signInStore');
 // Minutes until stored session invalidates
 const EXPIRATION_MINUTES = 3;
 const MS_TO_EXPIRY = 1000 * 60 * EXPIRATION_MINUTES;
-const signInStateKeys: Record<string, string> = {
+const signInStateKeys = {
 	username: 'CognitoSignInState.username',
 	challengeName: 'CognitoSignInState.challengeName',
 	signInSession: 'CognitoSignInState.signInSession',
@@ -67,6 +67,8 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 			return initializeState();
 		case 'RESET_STATE':
 			return getDefaultState();
+
+		// this state is never reachable
 		default:
 			return state;
 	}
@@ -150,20 +152,20 @@ export function setActiveSignInState(state: SignInState): void {
 	});
 
 	// Save the local state into Synced Session Storage
-	persistSignInState(syncSessionStorage, state);
+	persistSignInState(state);
 }
 
 // Save local state into Session Storage
-const persistSignInState = (
-	storage = syncSessionStorage,
-	{
-		challengeName = '' as ChallengeName,
-		signInSession = '',
-		username = '',
-	}: SignInState,
-) => {
-	storage.setItem(signInStateKeys.username, username);
-	storage.setItem(signInStateKeys.challengeName, challengeName);
-	storage.setItem(signInStateKeys.signInSession, signInSession);
-	storage.setItem(signInStateKeys.expiry, String(Date.now() + MS_TO_EXPIRY));
+const persistSignInState = ({
+	challengeName = '' as ChallengeName,
+	signInSession = '',
+	username = '',
+}: SignInState) => {
+	syncSessionStorage.setItem(signInStateKeys.username, username);
+	syncSessionStorage.setItem(signInStateKeys.challengeName, challengeName);
+	syncSessionStorage.setItem(signInStateKeys.signInSession, signInSession);
+	syncSessionStorage.setItem(
+		signInStateKeys.expiry,
+		String(Date.now() + MS_TO_EXPIRY),
+	);
 };

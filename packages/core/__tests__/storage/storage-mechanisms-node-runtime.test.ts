@@ -2,7 +2,11 @@
  * @jest-environment node
  */
 
-import { AmplifyError, AmplifyErrorCode } from '../../src/libraryUtils';
+import {
+	AmplifyError,
+	AmplifyErrorCode,
+	PlatformNotSupportedError,
+} from '../../src/libraryUtils';
 import {
 	defaultStorage,
 	sessionStorage,
@@ -32,11 +36,8 @@ describe('test mechanisms', () => {
 	});
 
 	test('test syncSessionStorage operations in node environment', () => {
-		try {
+		expect(() => {
 			syncSessionStorage.setItem(key, value);
-		} catch (error: any) {
-			expect(error).toBeInstanceOf(AmplifyError);
-			expect(error.name).toBe(AmplifyErrorCode.PlatformNotSupported);
-		}
+		}).not.toThrow(PlatformNotSupportedError);
 	});
 });

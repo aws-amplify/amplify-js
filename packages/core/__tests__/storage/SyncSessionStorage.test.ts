@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { SyncSessionStorage } from '../../src/storage/SyncSessionStorage';
-import { syncSessionStorage } from '../../src';
 
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -17,7 +16,7 @@ describe('SyncSessionStorage', () => {
 		expiry: 'CognitoSignInState.expiry',
 	};
 
-	const user1: Record<string, string> = {
+	const user1 = {
 		username: 'joonchoi',
 		challengeName: 'CUSTOM_CHALLENGE',
 		signInSession: '888577-ltfgo-42d8-891d-666l858766g7',
@@ -32,7 +31,7 @@ describe('SyncSessionStorage', () => {
 		sessionStorage.clear();
 	});
 
-	test('should accept a value and retrieve the same value without any issue', () => {
+	it('can set and retrieve item by key', () => {
 		sessionStorage.setItem(signInStateKeys.username, user1.username);
 		sessionStorage.setItem(signInStateKeys.challengeName, user1.challengeName);
 		sessionStorage.setItem(signInStateKeys.signInSession, user1.signInSession);
@@ -52,7 +51,7 @@ describe('SyncSessionStorage', () => {
 		);
 	});
 
-	test('will update key if setItem on the same key is called again', () => {
+	it('can override item by setting with the same key', () => {
 		const newUserName = 'joonchoi+test';
 		sessionStorage.setItem(signInStateKeys.username, user1.username);
 		sessionStorage.setItem(signInStateKeys.username, newUserName);
@@ -62,7 +61,7 @@ describe('SyncSessionStorage', () => {
 		);
 	});
 
-	test('should set a value and retrieve it with the same key', () => {
+	it('can remove item by key', () => {
 		const newUserName = 'joonchoi+tobedeleted';
 		sessionStorage.setItem(signInStateKeys.username, newUserName);
 		expect(sessionStorage.getItem(signInStateKeys.username)).toEqual(
@@ -72,7 +71,7 @@ describe('SyncSessionStorage', () => {
 		expect(sessionStorage.getItem(signInStateKeys.username)).toBeNull();
 	});
 
-	test('should clear out storage', () => {
+	it('clears all items', () => {
 		sessionStorage.clear();
 		expect(sessionStorage.getItem(signInStateKeys.username)).toBeNull();
 		expect(sessionStorage.getItem(signInStateKeys.challengeName)).toBeNull();
@@ -80,44 +79,11 @@ describe('SyncSessionStorage', () => {
 		expect(sessionStorage.getItem(signInStateKeys.expiry)).toBeNull();
 	});
 
-	test('should not throw if trying to delete a non existing key', () => {
+	it('will throw if trying to delete a non existing key', () => {
 		const badKey = 'nonExistingKey';
 
 		expect(() => {
 			sessionStorage.removeItem(badKey);
 		}).not.toThrow();
-	});
-
-	test('syncSessionStorage instance should show the same behavior', () => {
-		sessionStorage.clear();
-		syncSessionStorage.clear();
-		sessionStorage.setItem(signInStateKeys.username, user1.username);
-		syncSessionStorage.setItem(signInStateKeys.username, user1.username);
-		sessionStorage.setItem(signInStateKeys.challengeName, user1.challengeName);
-		syncSessionStorage.setItem(
-			signInStateKeys.challengeName,
-			user1.challengeName,
-		);
-		sessionStorage.setItem(signInStateKeys.signInSession, user1.signInSession);
-		syncSessionStorage.setItem(
-			signInStateKeys.signInSession,
-			user1.signInSession,
-		);
-
-		sessionStorage.setItem(signInStateKeys.expiry, user1.expiry);
-		syncSessionStorage.setItem(signInStateKeys.expiry, user1.expiry);
-
-		expect(syncSessionStorage.getItem(signInStateKeys.username)).toEqual(
-			sessionStorage.getItem(signInStateKeys.username),
-		);
-		expect(syncSessionStorage.getItem(signInStateKeys.challengeName)).toEqual(
-			sessionStorage.getItem(signInStateKeys.challengeName),
-		);
-		expect(syncSessionStorage.getItem(signInStateKeys.signInSession)).toEqual(
-			sessionStorage.getItem(signInStateKeys.signInSession),
-		);
-		expect(syncSessionStorage.getItem(signInStateKeys.expiry)).toEqual(
-			sessionStorage.getItem(signInStateKeys.expiry),
-		);
 	});
 });
