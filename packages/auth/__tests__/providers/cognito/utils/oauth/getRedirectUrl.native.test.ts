@@ -1,4 +1,4 @@
-import { invalidRedirectException } from '../../../../../src/errors/constants';
+import { invalidAppSchemeException } from '../../../../../src/errors/constants';
 import { getRedirectUrl } from '../../../../../src/providers/cognito/utils/oauth/getRedirectUrl.native';
 
 describe('getRedirectUrl (native)', () => {
@@ -12,19 +12,24 @@ describe('getRedirectUrl (native)', () => {
 		expect(getRedirectUrl(mockRedirectUrls)).toStrictEqual(mockRedirectUrls[0]);
 	});
 
-	it('should return preferredRedirectUrl if it matches atleast one of the redirect urls from config', () => {
-		expect(getRedirectUrl(mockRedirectUrls, mockRedirectUrls[2])).toStrictEqual(
-			mockRedirectUrls[2],
+	it('should return preferredRedirectUrl if it matches at least one of the redirect urls from config', () => {
+		const configRedirectUrl = mockRedirectUrls[2];
+
+		expect(getRedirectUrl(mockRedirectUrls, configRedirectUrl)).toStrictEqual(
+			configRedirectUrl,
 		);
 	});
 
 	it('should throw an exception when there is no url with no http or https as prefix irrespective if a preferredSignOutUrl is given or not', () => {
-		const mockRedirectUrls = ['https://intermidiateSite.com'];
-		expect(() => getRedirectUrl(mockRedirectUrls, mockRedirectUrls[0])).toThrow(
-			invalidRedirectException,
-		);
-		expect(() => getRedirectUrl(mockRedirectUrls)).toThrow(
-			invalidRedirectException,
+		const mockRedirectUrlsWithNoAppScheme = ['https://intermidiateSite.com'];
+		expect(() =>
+			getRedirectUrl(
+				mockRedirectUrlsWithNoAppScheme,
+				mockRedirectUrlsWithNoAppScheme[0],
+			),
+		).toThrow(invalidAppSchemeException);
+		expect(() => getRedirectUrl(mockRedirectUrlsWithNoAppScheme)).toThrow(
+			invalidAppSchemeException,
 		);
 	});
 });

@@ -2,20 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 import {
 	invalidOriginException,
+	invalidPreferredRedirectUrlException,
 	invalidRedirectException,
 } from '../../../../errors/constants';
 
 /** @internal */
 export function getRedirectUrl(
 	redirects: string[],
-	_preferredSignOutUrl?: string,
+	preferredSignOutUrl?: string,
 ): string {
-	if (_preferredSignOutUrl) {
+	if (preferredSignOutUrl) {
 		const redirectUrl = redirects?.find(
-			redirect => redirect === _preferredSignOutUrl,
+			redirect => redirect === preferredSignOutUrl,
 		);
 		if (!redirectUrl) {
-			throw invalidRedirectException;
+			throw invalidPreferredRedirectUrlException;
 		}
 
 		return redirectUrl;

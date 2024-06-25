@@ -1,6 +1,7 @@
 import { getRedirectUrl } from '../../../../../src/providers/cognito/utils/oauth';
 import {
 	invalidOriginException,
+	invalidPreferredRedirectUrlException,
 	invalidRedirectException,
 } from '../../../../../src/errors/constants';
 
@@ -39,14 +40,14 @@ describe('getRedirectUrl', () => {
 	});
 
 	it('should throw an invalid redirect exception if there is no url that is the same origin/pathname and is also not http or https', () => {
-		const mockRedirectUrls = ['test-non-http-string'];
+		const mockNonHttpRedirectUrls = ['test-non-http-string'];
 		windowSpy.mockImplementation(() => ({
 			location: {
 				origin: 'https://differentOrigin.com/',
 				pathname: 'differentApp',
 			},
 		}));
-		expect(() => getRedirectUrl(mockRedirectUrls)).toThrow(
+		expect(() => getRedirectUrl(mockNonHttpRedirectUrls)).toThrow(
 			invalidRedirectException,
 		);
 	});
@@ -60,6 +61,6 @@ describe('getRedirectUrl', () => {
 	it('should throw an exception if preferredRedirectUrl is given but does not match any of the redirectUrls from config', () => {
 		expect(() =>
 			getRedirectUrl(mockRedirectUrls, 'https://unknownOrigin.com'),
-		).toThrow(invalidRedirectException);
+		).toThrow(invalidPreferredRedirectUrlException);
 	});
 });
