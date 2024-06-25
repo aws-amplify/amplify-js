@@ -50,7 +50,7 @@ See [the sync class](packages/datastore/src/sync/index.ts)
 - Where retry happens
 
 ### Mutation Processor (Local changes)
-- Online or offline changes that were optimistically made to the Storage Engine (processed in mutation queue **one by one**).
+- Online or offline changes that were optimistically made to the Storage Engine (processed in mutation queue / outbox **one by one**).
 - Observes Storage Engine for new changes.
 
 ### Subscription Processor (Remote changes)
