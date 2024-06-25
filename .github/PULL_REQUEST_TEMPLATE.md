@@ -25,7 +25,7 @@ the requirements below.
 - [ ] PR description included
 - [ ] `yarn test` passes
 - [ ] Unit Tests are [changed or added](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md#steps-towards-contributions)
-- [ ] E2E Tests are changed or added for related user flows
+- [ ] E2E Tests are changed or added for verifying existing workflows and newly added workflows are working as expected
 - [ ] Relevant documentation is changed or added (and PR referenced)
 - [ ] New source file paths included in this PR have been added to CODEOWNERS, if appropriate
       
