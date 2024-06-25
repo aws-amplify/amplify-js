@@ -48,6 +48,7 @@ describe('handleOAuthSignOut (native)', () => {
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 				cognitoConfig,
 				false,
+				undefined,
 			);
 			expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 		});
@@ -59,6 +60,7 @@ describe('handleOAuthSignOut (native)', () => {
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 				cognitoConfig,
 				false,
+				undefined,
 			);
 			expect(mockCompleteOAuthSignOut).not.toHaveBeenCalled();
 		});
@@ -70,6 +72,7 @@ describe('handleOAuthSignOut (native)', () => {
 			expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
 				cognitoConfig,
 				false,
+				undefined,
 			);
 			expect(mockCompleteOAuthSignOut).not.toHaveBeenCalled();
 		});
@@ -81,9 +84,13 @@ describe('handleOAuthSignOut (native)', () => {
 			preferPrivateSession: true,
 		});
 		mockOAuthSignOutRedirect.mockResolvedValue({ type: 'error' });
-		await handleOAuthSignOut(cognitoConfig, mockStore);
+		await handleOAuthSignOut(cognitoConfig, mockStore, undefined);
 
-		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(cognitoConfig, true);
+		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
+			cognitoConfig,
+			true,
+			undefined,
+		);
 		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 	});
 

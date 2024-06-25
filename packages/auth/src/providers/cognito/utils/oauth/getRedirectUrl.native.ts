@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { invalidRedirectException } from '../../../../errors/constants';
+import {
+	invalidAppSchemeException,
+	invalidPreferredRedirectUrlException,
+} from '../../../../errors/constants';
 
 /** @internal */
 export function getRedirectUrl(
@@ -15,16 +18,18 @@ export function getRedirectUrl(
 			!redirect.startsWith('http://') && !redirect.startsWith('https://'),
 	);
 	if (!appSchemeRedirectUrl) {
-		throw invalidRedirectException;
+		throw invalidAppSchemeException;
 	}
 	if (preferredSignOutUrl) {
 		preferredRedirectUrl = redirects?.find(
 			redirect => redirect === preferredSignOutUrl,
 		);
 		if (!preferredRedirectUrl) {
-			throw invalidRedirectException;
+			throw invalidPreferredRedirectUrlException;
 		}
+
+		return preferredRedirectUrl;
 	}
 
-	return preferredRedirectUrl ?? appSchemeRedirectUrl;
+	return appSchemeRedirectUrl;
 }
