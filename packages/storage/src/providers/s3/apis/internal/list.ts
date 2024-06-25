@@ -28,7 +28,7 @@ import {
 } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
-import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
+import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/types';
 import { StorageSubpathStrategy } from '../../../../types';
 
@@ -202,7 +202,7 @@ const _listAllWithPath = async ({
 
 	return {
 		items: listResult,
-		...parseExcludedSubpaths(excludedSubpaths),
+		excludedSubpaths,
 	};
 };
 
@@ -233,7 +233,7 @@ const _listWithPath = async ({
 	if (!contents) {
 		return {
 			items: [],
-			...parseExcludedSubpaths(excludedSubpaths),
+			excludedSubpaths,
 		};
 	}
 
@@ -245,32 +245,24 @@ const _listWithPath = async ({
 			size: item.Size,
 		})),
 		nextToken: nextContinuationToken,
-		...parseExcludedSubpaths(excludedSubpaths),
+		excludedSubpaths,
 	};
 };
 
-function mapCommonPrefixesToExcludedSubpaths(
+const mapCommonPrefixesToExcludedSubpaths = (
 	commonPrefixes?: CommonPrefix[],
-): string[] | undefined {
+): string[] | undefined => {
 	const mappedSubpaths = commonPrefixes?.map(({ Prefix }) => Prefix);
 
 	return mappedSubpaths?.filter(
 		(excludedSubpath): excludedSubpath is string => !!excludedSubpath,
 	);
-}
+};
 
-function parseExcludedSubpaths(excludedSubpaths?: string[]) {
-	return excludedSubpaths && excludedSubpaths.length > 0
-		? { excludedSubpaths }
-		: {};
-}
-
-function getDelimiter(
+const getDelimiter = (
 	subpathStrategy?: StorageSubpathStrategy,
-): string | undefined {
+): string | undefined => {
 	if (subpathStrategy?.strategy === 'exclude') {
-		const delimiter = subpathStrategy?.delimiter ?? '/';
-
-		return delimiter;
+		return subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
 	}
-}
+};
