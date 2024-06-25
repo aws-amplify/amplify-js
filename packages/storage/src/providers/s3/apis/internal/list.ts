@@ -228,7 +228,8 @@ const _listWithPath = async ({
 		listParamsClone,
 	);
 
-	const excludedSubpaths = mapCommonPrefixesToExcludedSubpaths(commonPrefixes);
+	const excludedSubpaths =
+		commonPrefixes && mapCommonPrefixesToExcludedSubpaths(commonPrefixes);
 
 	if (!contents) {
 		return {
@@ -250,13 +251,15 @@ const _listWithPath = async ({
 };
 
 const mapCommonPrefixesToExcludedSubpaths = (
-	commonPrefixes?: CommonPrefix[],
-): string[] | undefined => {
-	const mappedSubpaths = commonPrefixes?.map(({ Prefix }) => Prefix);
+	commonPrefixes: CommonPrefix[],
+): string[] => {
+	return commonPrefixes.reduce((mappedSubpaths, { Prefix }) => {
+		if (Prefix) {
+			mappedSubpaths.push(Prefix);
+		}
 
-	return mappedSubpaths?.filter(
-		(excludedSubpath): excludedSubpath is string => !!excludedSubpath,
-	);
+		return mappedSubpaths;
+	}, [] as string[]);
 };
 
 const getDelimiter = (
