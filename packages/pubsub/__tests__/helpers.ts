@@ -1,8 +1,9 @@
 import { Hub } from '@aws-amplify/core';
-import { Observable } from 'rxjs';
-import { ConnectionState as CS, CONNECTION_STATE_CHANGE } from '../src';
+import { Observable, Observer as RxObserver } from 'rxjs';
+
+import { CONNECTION_STATE_CHANGE, ConnectionState as CS } from '../src';
 import * as constants from '../src/Providers/constants';
-import { Observer as RxObserver } from 'rxjs';
+
 export function delay(timeout) {
 	return new Promise(resolve => {
 		setTimeout(() => {
@@ -182,7 +183,10 @@ export class FakeWebSocketInterface {
 	 * @returns A websocket
 	 */
 	newWebSocket() {
-		setTimeout(() => this.readyResolve(Promise.resolve()), 10);
+		setTimeout(() => {
+			this.readyResolve(Promise.resolve());
+		}, 10);
+
 		return this.webSocket;
 	}
 
@@ -194,7 +198,7 @@ export class FakeWebSocketInterface {
 			new MessageEvent(constants.MESSAGE_TYPES.GQL_CONNECTION_ACK, {
 				data: JSON.stringify({
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
-					payload: payload,
+					payload,
 				}),
 			}),
 		);
@@ -208,7 +212,7 @@ export class FakeWebSocketInterface {
 			new MessageEvent(constants.MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE, {
 				data: JSON.stringify({
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
-					payload: payload,
+					payload,
 				}),
 			}),
 		);
@@ -219,7 +223,7 @@ export class FakeWebSocketInterface {
 			new MessageEvent(constants.MESSAGE_TYPES.GQL_START_ACK, {
 				data: JSON.stringify({
 					type: constants.MESSAGE_TYPES.GQL_START_ACK,
-					payload: payload,
+					payload,
 					id: this.webSocket.subscriptionId,
 				}),
 			}),
@@ -306,10 +310,12 @@ class FakeWebSocket implements WebSocket {
 		const closeResolver = this.closeResolverFcn();
 		if (closeResolver) closeResolver(Promise.resolve(undefined));
 	}
+
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
 		const parsedInput = JSON.parse(String(data));
 		this.subscriptionId = parsedInput.id;
 	}
+
 	CONNECTING: 0 = 0;
 	OPEN: 1 = 1;
 	CLOSING: 2 = 2;
@@ -319,24 +325,29 @@ class FakeWebSocket implements WebSocket {
 		listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
 		options?: boolean | AddEventListenerOptions,
 	): void;
+
 	addEventListener(
 		type: string,
 		listener: EventListenerOrEventListenerObject,
 		options?: boolean | AddEventListenerOptions,
 	): void;
+
 	addEventListener(type: unknown, listener: unknown, options?: unknown): void {
 		throw new Error('Method not implemented addEventListener.');
 	}
+
 	removeEventListener<K extends keyof WebSocketEventMap>(
 		type: K,
 		listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
 		options?: boolean | EventListenerOptions,
 	): void;
+
 	removeEventListener(
 		type: string,
 		listener: EventListenerOrEventListenerObject,
 		options?: boolean | EventListenerOptions,
 	): void;
+
 	removeEventListener(
 		type: unknown,
 		listener: unknown,
@@ -344,6 +355,7 @@ class FakeWebSocket implements WebSocket {
 	): void {
 		throw new Error('Method not implemented removeEventListener.');
 	}
+
 	dispatchEvent(event: Event): boolean {
 		throw new Error('Method not implemented dispatchEvent.');
 	}

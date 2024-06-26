@@ -1,3 +1,13 @@
+import { Reachability } from '@aws-amplify/core/internals/utils';
+import { Observable, Observer } from 'rxjs';
+
+import * as Paho from '../src/vendor/paho-mqtt';
+import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
+import { PubSub as MqttPubSub } from '../src/clients/mqtt';
+import * as constants from '../src/Providers/constants';
+
+import { HubConnectionListener } from './helpers';
+
 jest.mock('@aws-amplify/core', () => ({
 	__esModule: true,
 	...jest.requireActual('@aws-amplify/core'),
@@ -20,14 +30,6 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-import { Reachability } from '@aws-amplify/core/internals/utils';
-import * as Paho from '../src/vendor/paho-mqtt';
-import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
-import { PubSub as MqttPubSub } from '../src/clients/mqtt';
-import { HubConnectionListener } from './helpers';
-import { Observable, Observer } from 'rxjs';
-import * as constants from '../src/Providers/constants';
-
 const pahoClientMockCache = {};
 
 const mockConnect = jest.fn(options => {
@@ -39,7 +41,7 @@ const pahoClientMock = jest.fn().mockImplementation((host, clientId) => {
 		return pahoClientMockCache[clientId];
 	}
 
-	var client = {} as any;
+	const client = {} as any;
 
 	client.connect = mockConnect;
 	client.send = jest.fn((topic, message) => {
@@ -83,13 +85,15 @@ const testPubSubAsync = (
 				obs.unsubscribe();
 				resolve(Promise.resolve());
 			},
-			close: () => console.log('close'),
+			close: () => {
+				console.log('close');
+			},
 			error: reject,
 		});
 		await hubConnectionListener.waitUntilConnectionStateIn([
 			ConnectionState.Connected,
 		]);
-		pubsub.publish({ topics: topic, message: message, options });
+		pubsub.publish({ topics: topic, message, options });
 	});
 
 beforeEach(() => {
@@ -145,7 +149,7 @@ describe('PubSub', () => {
 		test('subscribe and publish to the same topic using AWSIoTProvider', async () => {
 			expect.assertions(1);
 
-			let hubConnectionListener = new HubConnectionListener('pubsub');
+			const hubConnectionListener = new HubConnectionListener('pubsub');
 
 			const config = {
 				PubSub: {
@@ -163,8 +167,12 @@ describe('PubSub', () => {
 				next: data => {
 					expect(data).toMatchObject(expectedData);
 				},
-				complete: () => console.log('done'),
-				error: error => console.log('error', error),
+				complete: () => {
+					console.log('done');
+				},
+				error: error => {
+					console.log('error', error);
+				},
 			});
 
 			await hubConnectionListener.waitUntilConnectionStateIn([
@@ -231,7 +239,7 @@ describe('PubSub', () => {
 		});
 
 		test('trigger reconnection when disconnected', async () => {
-			let hubConnectionListener = new HubConnectionListener('pubsub');
+			const hubConnectionListener = new HubConnectionListener('pubsub');
 			const pubsub = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
@@ -426,7 +434,7 @@ describe('PubSub', () => {
 				provider: 'MqttOverWSProvider',
 			});
 
-			expect(pubsub['isSSLEnabled']).toBe(false);
+			expect(pubsub.isSSLEnabled).toBe(false);
 			expect(mockConnect).toHaveBeenCalledWith({
 				useSSL: false,
 				mqttVersion: 3,
@@ -448,7 +456,7 @@ describe('PubSub', () => {
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
-			let hubConnectionListener = new HubConnectionListener('pubsub');
+			const hubConnectionListener = new HubConnectionListener('pubsub');
 			await testPubSubAsync(
 				iotClient,
 				'topicA',
@@ -507,8 +515,12 @@ describe('PubSub', () => {
 					next: _data => {
 						console.log({ _data });
 					},
-					complete: () => console.log('done'),
-					error: error => console.log('error', error),
+					complete: () => {
+						console.log('done');
+					},
+					error: error => {
+						console.log('error', error);
+					},
 				});
 
 			await hubConnectionListener.waitUntilConnectionStateIn([
@@ -542,8 +554,12 @@ describe('PubSub', () => {
 						next: _data => {
 							console.log({ _data });
 						},
-						complete: () => console.log('done'),
-						error: error => console.log('error', error),
+						complete: () => {
+							console.log('done');
+						},
+						error: error => {
+							console.log('error', error);
+						},
 					});
 
 				const subscription2 = pubsub
@@ -552,8 +568,12 @@ describe('PubSub', () => {
 						next: _data => {
 							console.log({ _data });
 						},
-						complete: () => console.log('done'),
-						error: error => console.log('error', error),
+						complete: () => {
+							console.log('done');
+						},
+						error: error => {
+							console.log('error', error);
+						},
 					});
 
 				// TODO: we should now when the connection is established to wait for that first
