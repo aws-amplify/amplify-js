@@ -57,24 +57,21 @@ function parseStorage(
 		return undefined;
 	}
 
-	const { bucket_name, aws_region, all_buckets } =
-		amplifyOutputsStorageProperties;
+	const { bucket_name, aws_region, buckets } = amplifyOutputsStorageProperties;
 
-	const buckets: Record<string, BucketInfo> = {};
-	all_buckets?.forEach(
-		({ name, bucket_name: bucketName, aws_region: region }) => {
-			buckets[name] = {
-				bucketName,
-				region,
-			};
-		},
-	);
+	const mappedBuckets: Record<string, BucketInfo> = {};
+	buckets?.forEach(({ name, bucket_name: bucketName, aws_region: region }) => {
+		mappedBuckets[name] = {
+			bucketName,
+			region,
+		};
+	});
 
 	return {
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
-			buckets,
+			buckets: mappedBuckets,
 		},
 	};
 }

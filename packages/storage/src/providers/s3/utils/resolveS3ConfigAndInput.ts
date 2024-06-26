@@ -6,7 +6,7 @@ import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
-import { BucketInfo, ResolvedS3Config } from '../types/options';
+import { Bucket, BucketInfo, ResolvedS3Config } from '../types/options';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 
@@ -14,7 +14,7 @@ interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
-	bucket?: string | { bucketName: string; region: string };
+	bucket?: Bucket;
 }
 
 interface ResolvedS3ConfigAndInput {

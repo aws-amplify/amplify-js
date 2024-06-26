@@ -15,6 +15,8 @@ export interface BucketInfo {
 	region: string;
 }
 
+export type Bucket = string | BucketInfo;
+
 interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.
@@ -22,7 +24,7 @@ interface CommonOptions {
 	 */
 	useAccelerateEndpoint?: boolean;
 	/** Bucket information */
-	bucket?: string | BucketInfo;
+	bucket?: Bucket;
 }
 
 /** @deprecated This may be removed in the next major version. */
@@ -188,11 +190,4 @@ export interface ResolvedS3Config
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
-}
-
-/** Bucket to store files/objects */
-export interface Bucket {
-	name: string;
-	alias: string;
-	region: string;
 }
