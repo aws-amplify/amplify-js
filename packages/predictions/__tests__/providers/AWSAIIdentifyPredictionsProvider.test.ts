@@ -25,6 +25,7 @@ import {
 	DetectDocumentTextCommand,
 	TextractClient,
 } from '@aws-sdk/client-textract';
+
 import {
 	PredictionsValidationErrorCode,
 	validationErrorMap,
@@ -72,6 +73,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 			],
 			$metadata: {},
 		};
+
 		return Promise.resolve(detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
 		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput =
@@ -79,12 +81,14 @@ RekognitionClient.prototype.send = jest.fn(command => {
 				ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
 				$metadata: {},
 			};
+
 		return Promise.resolve(detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesCommandOutput = {
 			FaceDetails: [{ AgeRange: { High: 0, Low: 0 } }],
 			$metadata: {},
 		};
+
 		return Promise.resolve(detectFacesResponse);
 	} else if (command instanceof SearchFacesByImageCommand) {
 		const searchFacesByImageResponse: SearchFacesByImageCommandOutput = {
@@ -99,6 +103,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 			],
 			$metadata: {},
 		};
+
 		return Promise.resolve(searchFacesByImageResponse);
 	} else if (command instanceof RecognizeCelebritiesCommand) {
 		const recognizeCelebritiesResponse: RecognizeCelebritiesCommandOutput = {
@@ -123,6 +128,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 			],
 			$metadata: {},
 		};
+
 		return Promise.resolve(recognizeCelebritiesResponse);
 	} else if (command instanceof DetectTextCommand) {
 		const plainBlocks: DetectTextCommandOutput = {
@@ -133,6 +139,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 			],
 			$metadata: {},
 		};
+
 		return Promise.resolve(plainBlocks);
 	}
 }) as any;
@@ -295,6 +302,7 @@ mockGetUrl.mockImplementation(({ key, options }) => {
 			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityId}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	}
+
 	return Promise.resolve({ url });
 });
 
@@ -352,6 +360,7 @@ describe('Predictions identify provider test', () => {
 								DetectedText: '',
 							});
 						}
+
 						return Promise.resolve(plainBlocks);
 					});
 				// confirm that textract service has been called
@@ -623,6 +632,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('public/key');
+
 					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
@@ -638,6 +648,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('private/identityId/key');
+
 					return {};
 				});
 			await predictionsProvider.identify(detectLabelInput);
@@ -660,6 +671,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('protected/identityId/key');
+
 					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
@@ -675,6 +687,7 @@ describe('Predictions identify provider test', () => {
 					expect((command as DetectLabelsCommand).input.Image?.Bytes).toMatch(
 						'bytes',
 					);
+
 					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
@@ -691,6 +704,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.Bytes,
 					).toStrictEqual(fileInput);
+
 					return {};
 				});
 			await predictionsProvider.identify(detectLabelInput);
@@ -708,6 +722,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.Bytes,
 					).toMatchObject(fileInput);
+
 					return {};
 				});
 			await predictionsProvider.identify(detectLabelInput);

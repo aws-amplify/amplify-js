@@ -13,6 +13,9 @@ import {
 	DetectSyntaxCommand,
 } from '@aws-sdk/client-comprehend';
 
+// Mocks before importing provider to avoid race condition with provider instantiation
+import { AmazonAIInterpretPredictionsProvider } from '../../src/providers';
+
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
@@ -39,11 +42,13 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 				},
 			],
 		};
+
 		return Promise.resolve(resultDetectEntities);
 	} else if (command instanceof DetectDominantLanguageCommand) {
 		const resultDominantLanguage = {
 			Languages: [{ LanguageCode: 'en-US' }],
 		};
+
 		return Promise.resolve(resultDominantLanguage);
 	} else if (command instanceof DetectSentimentCommand) {
 		const resultDetectSentiment = {
@@ -55,6 +60,7 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 				Positive: 0.1282072812318802,
 			},
 		};
+
 		return Promise.resolve(resultDetectSentiment);
 	} else if (command instanceof DetectSyntaxCommand) {
 		const resultSyntax = {
@@ -166,6 +172,7 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 				},
 			],
 		};
+
 		return Promise.resolve(resultSyntax);
 	} else if (command instanceof DetectKeyPhrasesCommand) {
 		const resultKeyPhrases = {
@@ -190,6 +197,7 @@ ComprehendClient.prototype.send = jest.fn((command, callback) => {
 				},
 			],
 		};
+
 		return Promise.resolve(resultKeyPhrases);
 	}
 }) as any;
@@ -204,9 +212,6 @@ const happyConfig = {
 		},
 	},
 };
-
-// Mocks before importing provider to avoid race condition with provider instantiation
-import { AmazonAIInterpretPredictionsProvider } from '../../src/providers';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',

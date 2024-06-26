@@ -9,6 +9,7 @@ import {
 	TranslateClient,
 	TranslateTextCommand,
 } from '@aws-sdk/client-translate';
+
 import {
 	PredictionsValidationErrorCode,
 	validationErrorMap,
@@ -51,6 +52,7 @@ const resetPollyMock = () => {
 					buffer: 'dummyStream',
 				},
 			};
+
 			return Promise.resolve(result);
 		}
 	}) as any;
@@ -62,6 +64,7 @@ const resetPollyMock = () => {
 			return 'dummyStream';
 		},
 	};
+
 	return response;
 });
 
@@ -69,7 +72,7 @@ const resetPollyMock = () => {
 	let onCloseCallback;
 	let onErrorCallback;
 	let onMsgCallback;
-	let connection = {
+	const connection = {
 		set onmessage(callback) {
 			onMsgCallback = callback;
 		},
