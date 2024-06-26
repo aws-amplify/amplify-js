@@ -288,18 +288,18 @@ mockGetConfig.mockReturnValue({
 		identify: options,
 	},
 });
-mockGetUrl.mockImplementation(({ key, options }) => {
-	console.log(key, options);
-	const level = options?.accessLevel || 'guest';
+mockGetUrl.mockImplementation(({ key, options: optionsParam }) => {
+	console.log(key, optionsParam);
+	const level = optionsParam?.accessLevel || 'guest';
 	let url: URL;
 	if (level === 'guest') {
 		url = new URL(
 			`https://bucket-name.s3.us-west-2.amazonaws.com/public/${key}?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	} else {
-		const identityId = options?.targetIdentityId || 'identityId';
+		const identityIdFromParam = optionsParam?.targetIdentityId || 'identityId';
 		url = new URL(
-			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityId}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
+			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityIdFromParam}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	}
 
@@ -307,7 +307,7 @@ mockGetUrl.mockImplementation(({ key, options }) => {
 });
 
 describe('Predictions identify provider test', () => {
-	let predictionsProvider;
+	let predictionsProvider: AmazonAIIdentifyPredictionsProvider;
 
 	beforeAll(() => {
 		predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
@@ -346,14 +346,14 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						const plainBlocks: DetectTextCommandOutput = {
+						const mockPlainBlocks: DetectTextCommandOutput = {
 							TextDetections: [
 								{ Type: 'LINE', Id: 1, DetectedText: 'Hello world' },
 							],
 							$metadata: {},
 						};
 						for (let i = 0; i < 50; ++i) {
-							plainBlocks.TextDetections!.push({
+							mockPlainBlocks.TextDetections!.push({
 								Type: 'WORD',
 								Id: i + 2,
 								ParentId: 1,
@@ -361,7 +361,7 @@ describe('Predictions identify provider test', () => {
 							});
 						}
 
-						return Promise.resolve(plainBlocks);
+						return Promise.resolve(mockPlainBlocks);
 					});
 				// confirm that textract service has been called
 				const spy = jest.spyOn(TextractClient.prototype, 'send');
@@ -732,6 +732,7 @@ describe('Predictions identify provider test', () => {
 			const detectLabelInput = {
 				labels: { source: null, type: 'LABELS' },
 			};
+			// @ts-expect-error for testing
 			expect(predictionsProvider.identify(detectLabelInput)).rejects.toThrow(
 				'not configured correctly',
 			);
@@ -750,7 +751,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectLabelInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient?.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -773,7 +774,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectFacesInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient?.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -791,7 +792,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectTextInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -799,7 +800,9 @@ describe('Predictions identify provider test', () => {
 				}),
 			);
 
-			expect(predictionsProvider.textractClient.config.customUserAgent).toEqual(
+			expect(
+				(predictionsProvider as any).textractClient.config.customUserAgent,
+			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,

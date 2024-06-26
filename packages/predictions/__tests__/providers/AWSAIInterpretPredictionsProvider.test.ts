@@ -29,7 +29,7 @@ jest.mock('@aws-amplify/core', () => ({
 	})),
 }));
 
-ComprehendClient.prototype.send = jest.fn((command, callback) => {
+ComprehendClient.prototype.send = jest.fn(command => {
 	if (command instanceof DetectEntitiesCommand) {
 		const resultDetectEntities = {
 			Entities: [
