@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 as uuid } from 'uuid';
+
 import { lexProvider } from '../../../src/lex-v2/AWSLexV2Provider';
 import { onComplete } from '../../../src/lex-v2/apis';
 import { generateRandomLexV2Config } from '../../testUtils/randomConfigGeneration';
@@ -36,8 +37,8 @@ describe('Interactions LexV2 API: onComplete', () => {
 
 	it('rejects when bot config does not exist', async () => {
 		mockResolveBotConfig.mockReturnValue(undefined);
-		expect(() =>
-			onComplete({ botName: v2BotConfig.name, callback: jest.fn }),
-		).toThrow(InteractionsError);
+		expect(() => {
+			onComplete({ botName: v2BotConfig.name, callback: jest.fn });
+		}).toThrow(InteractionsError);
 	});
 });

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { fetchAuthSession } from '@aws-amplify/core';
 import {
-	IntentState,
 	LexRuntimeV2Client,
 	RecognizeTextCommand,
 	RecognizeTextCommandOutput,
@@ -11,6 +10,7 @@ import {
 import { gzip, strToU8 } from 'fflate';
 import { encode } from 'base-64';
 import { v4 as uuid } from 'uuid';
+
 import { lexProvider } from '../../src/lex-v2/AWSLexV2Provider';
 
 jest.mock('@aws-amplify/core');
@@ -49,12 +49,13 @@ const credentials = {
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
 const arrayBufferToBase64 = (buffer: Uint8Array) => {
-	var binary = '';
-	var bytes = new Uint8Array(buffer);
-	var len = bytes.byteLength;
-	for (var i = 0; i < len; i++) {
+	let binary = '';
+	const bytes = new Uint8Array(buffer);
+	const len = bytes.byteLength;
+	for (let i = 0; i < len; i++) {
 		binary += String.fromCharCode(bytes[i]);
 	}
+
 	return encode(binary);
 };
 
@@ -92,6 +93,7 @@ const handleRecognizeTextCommand = command => {
 			},
 			messages: [{ content: 'echo:' + command.input.text }],
 		};
+
 		return Promise.resolve(result);
 	} else if (command.input.text === 'error') {
 		const result = {
@@ -100,6 +102,7 @@ const handleRecognizeTextCommand = command => {
 			},
 			messages: [{ content: 'echo:' + command.input.text }],
 		};
+
 		return Promise.resolve(result);
 	} else {
 		const result = {
@@ -132,6 +135,7 @@ const handleRecognizeUtteranceCommandAudio = async command => {
 			]),
 			audioStream: createBlob(),
 		};
+
 		return Promise.resolve(result);
 	} else if (status === 'error') {
 		const result = {
@@ -143,6 +147,7 @@ const handleRecognizeUtteranceCommandAudio = async command => {
 			]),
 			audioStream: createBlob(),
 		};
+
 		return Promise.resolve(result);
 	} else {
 		const result = {
@@ -154,6 +159,7 @@ const handleRecognizeUtteranceCommandAudio = async command => {
 			]),
 			audioStream: createBlob(),
 		};
+
 		return Promise.resolve(result);
 	}
 };
@@ -172,6 +178,7 @@ const handleRecognizeUtteranceCommandText = async command => {
 			]),
 			audioStream: createBlob(),
 		};
+
 		return Promise.resolve(result);
 	} else if (command.input.inputStream === 'error') {
 		const result = {
@@ -183,6 +190,7 @@ const handleRecognizeUtteranceCommandText = async command => {
 			]),
 			audioStream: createBlob(),
 		};
+
 		return Promise.resolve(result);
 	} else {
 		const result = {
@@ -194,6 +202,7 @@ const handleRecognizeUtteranceCommandText = async command => {
 			]),
 			audioStream: createBlob(),
 		};
+
 		return Promise.resolve(result);
 	}
 };
@@ -212,6 +221,7 @@ LexRuntimeV2Client.prototype.send = jest.fn(async (command, callback) => {
 			response = await handleRecognizeUtteranceCommandText(command);
 		}
 	}
+
 	return response;
 }) as any;
 
@@ -393,7 +403,7 @@ describe('Interactions', () => {
 	// Test 'reportBotStatus' API
 	describe('reportBotStatus API', () => {
 		jest.useFakeTimers();
-		let provider = lexProvider;
+		const provider = lexProvider;
 		// enum, action types callback function can handle
 		const ACTION_TYPE = Object.freeze({
 			IN_PROGRESS: 'inProgress',
@@ -427,9 +437,9 @@ describe('Interactions', () => {
 							});
 						});
 					case ACTION_TYPE.ERROR:
-						return jest.fn((err, confirmation) =>
-							expect(err).toEqual(new Error('Bot conversation failed')),
-						);
+						return jest.fn((err, confirmation) => {
+							expect(err).toEqual(new Error('Bot conversation failed'));
+						});
 				}
 			};
 
@@ -467,7 +477,7 @@ describe('Interactions', () => {
 		describe('onComplete callback from `Interactions.onComplete`', () => {
 			test(`In progress, callback shouldn't be called`, async () => {
 				// callback is only called once conversation is completed
-				let config = { ...botConfig.BookTrip, name: uuid() };
+				const config = { ...botConfig.BookTrip, name: uuid() };
 				const inProgressCallback = mockCallbackProvider(
 					ACTION_TYPE.IN_PROGRESS,
 				);
@@ -484,7 +494,7 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with success resp`, async () => {
-				let config = { ...botConfig.BookTrip, name: uuid() };
+				const config = { ...botConfig.BookTrip, name: uuid() };
 				const completeSuccessCallback = mockCallbackProvider(
 					ACTION_TYPE.COMPLETE,
 				);
@@ -502,7 +512,7 @@ describe('Interactions', () => {
 			});
 
 			test(`task complete; callback with error resp`, async () => {
-				let config = { ...botConfig.BookTrip, name: uuid() };
+				const config = { ...botConfig.BookTrip, name: uuid() };
 				const completeFailCallback = mockCallbackProvider(ACTION_TYPE.ERROR);
 				provider.onComplete(config, completeFailCallback);
 

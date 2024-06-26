@@ -6,8 +6,9 @@ import {
 	PostTextCommand,
 	PostTextCommandOutput,
 } from '@aws-sdk/client-lex-runtime-service';
-import { lexProvider } from '../../src/lex-v1/AWSLexProvider';
 import { fetchAuthSession } from '@aws-amplify/core';
+
+import { lexProvider } from '../../src/lex-v1/AWSLexProvider';
 
 jest.mock('@aws-amplify/core');
 
@@ -58,18 +59,21 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 					m2: 'done',
 				},
 			};
+
 			return Promise.resolve(result);
 		} else if (command.input.inputText === 'error') {
 			const result = {
 				message: 'echo:' + command.input.inputText,
 				dialogState: 'Failed',
 			};
+
 			return Promise.resolve(result);
 		} else {
 			const result = {
 				message: 'echo:' + command.input.inputText,
 				dialogState: 'ElicitSlot',
 			};
+
 			return Promise.resolve(result);
 		}
 	} else if (command instanceof PostContentCommand) {
@@ -92,6 +96,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 					},
 					audioStream: createBlob(),
 				};
+
 				return Promise.resolve(result);
 			} else if (status === 'error') {
 				const result = {
@@ -99,6 +104,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 					dialogState: 'Failed',
 					audioStream: createBlob(),
 				};
+
 				return Promise.resolve(result);
 			} else {
 				const result = {
@@ -106,6 +112,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 					dialogState: 'ElicitSlot',
 					audioStream: createBlob(),
 				};
+
 				return Promise.resolve(result);
 			}
 		} else {
@@ -119,6 +126,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 					},
 					audioStream: createBlob(),
 				};
+
 				return Promise.resolve(result);
 			} else if (command.input.inputStream === 'error') {
 				const result = {
@@ -126,6 +134,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 					dialogState: 'Failed',
 					audioStream: createBlob(),
 				};
+
 				return Promise.resolve(result);
 			} else {
 				const result = {
@@ -133,6 +142,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 					dialogState: 'ElicitSlot',
 					audioStream: createBlob(),
 				};
+
 				return Promise.resolve(result);
 			}
 		}
@@ -339,9 +349,9 @@ describe('Interactions', () => {
 				});
 			});
 
-			completeFailCallback = jest.fn((err, confirmation) =>
-				expect(err).toEqual(new Error('Bot conversation failed')),
-			);
+			completeFailCallback = jest.fn((err, confirmation) => {
+				expect(err).toEqual(new Error('Bot conversation failed'));
+			});
 
 			// mock responses
 			inProgressResp = (await provider.sendMessage(
