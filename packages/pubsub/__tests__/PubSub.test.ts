@@ -1,3 +1,13 @@
+import { Reachability } from '@aws-amplify/core/internals/utils';
+import { Observable, Observer } from 'rxjs';
+
+import * as Paho from '../src/vendor/paho-mqtt';
+import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
+import { PubSub as MqttPubSub } from '../src/clients/mqtt';
+import * as constants from '../src/Providers/constants';
+
+import { HubConnectionListener } from './helpers';
+
 jest.mock('@aws-amplify/core', () => ({
 	__esModule: true,
 	...jest.requireActual('@aws-amplify/core'),
@@ -20,37 +30,29 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-import { Reachability } from '@aws-amplify/core/internals/utils';
-import * as Paho from '../src/vendor/paho-mqtt';
-import { ConnectionState, PubSub as IotPubSub, mqttTopicMatch } from '../src';
-import { PubSub as MqttPubSub } from '../src/clients/mqtt';
-import { HubConnectionListener } from './helpers';
-import { Observable, Observer } from 'rxjs';
-import * as constants from '../src/Providers/constants';
-
-const pahoClientMockCache = {};
+const pahoClientMockCache: Record<string, object> = {};
 
 const mockConnect = jest.fn(options => {
 	options.onSuccess();
 });
 
-const pahoClientMock = jest.fn().mockImplementation((host, clientId) => {
+const pahoClientMock = jest.fn().mockImplementation((_host, clientId) => {
 	if (pahoClientMockCache[clientId]) {
 		return pahoClientMockCache[clientId];
 	}
 
-	var client = {} as any;
+	const client = {} as any;
 
 	client.connect = mockConnect;
 	client.send = jest.fn((topic, message) => {
 		client.onMessageArrived({ destinationName: topic, payloadString: message });
 	});
-	client.subscribe = jest.fn((topics, options) => {});
-	client.unsubscribe = jest.fn(() => {});
-	client.onMessageArrived = jest.fn(() => {});
+	client.subscribe = jest.fn();
+	client.unsubscribe = jest.fn();
+	client.onMessageArrived = jest.fn();
 
 	client.isConnected = jest.fn(() => true);
-	client.disconnect = jest.fn(() => {});
+	client.disconnect = jest.fn();
 
 	pahoClientMockCache[clientId] = client;
 
@@ -63,8 +65,7 @@ jest.mock('../src/vendor/paho-mqtt', () => ({
 	Client: {},
 }));
 
-// @ts-ignore
-Paho.Client = pahoClientMock;
+(Paho as any).Client = pahoClientMock;
 
 const testPubSubAsync = (
 	pubsub,
@@ -73,23 +74,26 @@ const testPubSubAsync = (
 	options?,
 	hubConnectionListener?,
 ) =>
+	// eslint-disable-next-line no-async-promise-executor
 	new Promise(async (resolve, reject) => {
-		if (hubConnectionListener === undefined) {
-			hubConnectionListener = new HubConnectionListener('pubsub');
-		}
+		const resolvedHubConnectionListener =
+			hubConnectionListener ?? new HubConnectionListener('pubsub');
+
 		const obs = pubsub.subscribe({ topics: topic, options }).subscribe({
 			next: data => {
 				expect(data).toEqual(message);
 				obs.unsubscribe();
 				resolve(Promise.resolve());
 			},
-			close: () => console.log('close'),
+			close: () => {
+				console.log('close');
+			},
 			error: reject,
 		});
-		await hubConnectionListener.waitUntilConnectionStateIn([
+		await resolvedHubConnectionListener.waitUntilConnectionStateIn([
 			ConnectionState.Connected,
 		]);
-		pubsub.publish({ topics: topic, message: message, options });
+		pubsub.publish({ topics: topic, message, options });
 	});
 
 beforeEach(() => {
@@ -111,7 +115,9 @@ describe('PubSub', () => {
 
 	describe('constructor test', () => {
 		test('happy case', () => {
-			const pubsub = new IotPubSub();
+			expect(() => {
+				const _ = new IotPubSub();
+			}).not.toThrow();
 		});
 	});
 
@@ -145,7 +151,7 @@ describe('PubSub', () => {
 		test('subscribe and publish to the same topic using AWSIoTProvider', async () => {
 			expect.assertions(1);
 
-			let hubConnectionListener = new HubConnectionListener('pubsub');
+			const hubConnectionListener = new HubConnectionListener('pubsub');
 
 			const config = {
 				PubSub: {
@@ -163,8 +169,12 @@ describe('PubSub', () => {
 				next: data => {
 					expect(data).toMatchObject(expectedData);
 				},
-				complete: () => console.log('done'),
-				error: error => console.log('error', error),
+				complete: () => {
+					console.log('done');
+				},
+				error: error => {
+					console.log('error', error);
+				},
 			});
 
 			await hubConnectionListener.waitUntilConnectionStateIn([
@@ -231,7 +241,7 @@ describe('PubSub', () => {
 		});
 
 		test('trigger reconnection when disconnected', async () => {
-			let hubConnectionListener = new HubConnectionListener('pubsub');
+			const hubConnectionListener = new HubConnectionListener('pubsub');
 			const pubsub = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
@@ -293,11 +303,10 @@ describe('PubSub', () => {
 				hubConnectionListener = new HubConnectionListener('pubsub');
 
 				// Setup a mock of the reachability monitor where the initial value is online.
-				const spyon = jest
+				jest
 					.spyOn(Reachability.prototype, 'networkMonitor')
 					.mockImplementationOnce(
 						() =>
-							// @ts-ignore
 							new Observable(observer => {
 								reachabilityObserver = observer;
 							}),
@@ -305,7 +314,6 @@ describe('PubSub', () => {
 					// Twice because we subscribe to get the initial state then again to monitor reachability
 					.mockImplementationOnce(
 						() =>
-							// @ts-ignore
 							new Observable(observer => {
 								reachabilityObserver = observer;
 							}),
@@ -322,7 +330,7 @@ describe('PubSub', () => {
 				const sub = pubsub
 					.subscribe({ topics: 'topic', options: { clientId: '123' } })
 					.subscribe({
-						error: () => {},
+						error: jest.fn(),
 					});
 
 				await hubConnectionListener.waitUntilConnectionStateIn([
@@ -348,10 +356,10 @@ describe('PubSub', () => {
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
 
-				const sub = pubsub
+				pubsub
 					.subscribe({ topics: 'topic', options: { clientId: '123' } })
 					.subscribe({
-						error: () => {},
+						error: jest.fn(),
 					});
 
 				await hubConnectionListener.waitUntilConnectionStateIn([
@@ -383,10 +391,10 @@ describe('PubSub', () => {
 					endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 				});
 
-				const sub = pubsub
+				pubsub
 					.subscribe({ topics: 'topic', options: { clientId: '123' } })
 					.subscribe({
-						error: () => {},
+						error: jest.fn(),
 					});
 
 				await hubConnectionListener.waitUntilConnectionStateIn([
@@ -426,7 +434,7 @@ describe('PubSub', () => {
 				provider: 'MqttOverWSProvider',
 			});
 
-			expect(pubsub['isSSLEnabled']).toBe(false);
+			expect((pubsub as any).isSSLEnabled).toBe(false);
 			expect(mockConnect).toHaveBeenCalledWith({
 				useSSL: false,
 				mqttVersion: 3,
@@ -448,7 +456,7 @@ describe('PubSub', () => {
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
-			let hubConnectionListener = new HubConnectionListener('pubsub');
+			const hubConnectionListener = new HubConnectionListener('pubsub');
 			await testPubSubAsync(
 				iotClient,
 				'topicA',
@@ -476,13 +484,13 @@ describe('PubSub', () => {
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
-			const mqttClient = new MqttPubSubTest({
+			const _ = new MqttPubSubTest({
 				region: 'region',
 				endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
 			});
 
 			jest.spyOn(iotClient, 'publish').mockImplementationOnce(() => {
-				return Promise.reject('Failed to publish');
+				return Promise.reject(new Error('Failed to publish'));
 			});
 
 			expect(
@@ -490,7 +498,7 @@ describe('PubSub', () => {
 					topics: 'topicA',
 					message: { msg: 'my message AWSIoTProvider' },
 				}),
-			).rejects.toMatch('Failed to publish');
+			).rejects.toThrow('Failed to publish');
 		});
 
 		test('On unsubscribe when is the last observer it should disconnect the websocket', async () => {
@@ -507,8 +515,12 @@ describe('PubSub', () => {
 					next: _data => {
 						console.log({ _data });
 					},
-					complete: () => console.log('done'),
-					error: error => console.log('error', error),
+					complete: () => {
+						console.log('done');
+					},
+					error: error => {
+						console.log('error', error);
+					},
 				});
 
 			await hubConnectionListener.waitUntilConnectionStateIn([
@@ -536,15 +548,17 @@ describe('PubSub', () => {
 
 				const spyDisconnect = jest.spyOn(pubsub, 'disconnect');
 
-				const subscription1 = pubsub
-					.subscribe({ topics: ['topic1', 'topic2'] })
-					.subscribe({
-						next: _data => {
-							console.log({ _data });
-						},
-						complete: () => console.log('done'),
-						error: error => console.log('error', error),
-					});
+				pubsub.subscribe({ topics: ['topic1', 'topic2'] }).subscribe({
+					next: _data => {
+						console.log({ _data });
+					},
+					complete: () => {
+						console.log('done');
+					},
+					error: error => {
+						console.log('error', error);
+					},
+				});
 
 				const subscription2 = pubsub
 					.subscribe({ topics: ['topic3', 'topic4'] })
@@ -552,14 +566,18 @@ describe('PubSub', () => {
 						next: _data => {
 							console.log({ _data });
 						},
-						complete: () => console.log('done'),
-						error: error => console.log('error', error),
+						complete: () => {
+							console.log('done');
+						},
+						error: error => {
+							console.log('error', error);
+						},
 					});
 
 				// TODO: we should now when the connection is established to wait for that first
 				await (() => {
-					return new Promise(res => {
-						setTimeout(res, 100);
+					return new Promise((resolve, _reject) => {
+						setTimeout(resolve, 100);
 					});
 				})();
 

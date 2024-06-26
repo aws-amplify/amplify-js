@@ -25,6 +25,7 @@ import {
 	DetectDocumentTextCommand,
 	TextractClient,
 } from '@aws-sdk/client-textract';
+
 import {
 	PredictionsValidationErrorCode,
 	validationErrorMap,
@@ -72,6 +73,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 			],
 			$metadata: {},
 		};
+
 		return Promise.resolve(detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
 		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput =
@@ -79,12 +81,14 @@ RekognitionClient.prototype.send = jest.fn(command => {
 				ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
 				$metadata: {},
 			};
+
 		return Promise.resolve(detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesCommandOutput = {
 			FaceDetails: [{ AgeRange: { High: 0, Low: 0 } }],
 			$metadata: {},
 		};
+
 		return Promise.resolve(detectFacesResponse);
 	} else if (command instanceof SearchFacesByImageCommand) {
 		const searchFacesByImageResponse: SearchFacesByImageCommandOutput = {
@@ -99,6 +103,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 			],
 			$metadata: {},
 		};
+
 		return Promise.resolve(searchFacesByImageResponse);
 	} else if (command instanceof RecognizeCelebritiesCommand) {
 		const recognizeCelebritiesResponse: RecognizeCelebritiesCommandOutput = {
@@ -123,6 +128,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 			],
 			$metadata: {},
 		};
+
 		return Promise.resolve(recognizeCelebritiesResponse);
 	} else if (command instanceof DetectTextCommand) {
 		const plainBlocks: DetectTextCommandOutput = {
@@ -133,6 +139,7 @@ RekognitionClient.prototype.send = jest.fn(command => {
 			],
 			$metadata: {},
 		};
+
 		return Promise.resolve(plainBlocks);
 	}
 }) as any;
@@ -281,25 +288,26 @@ mockGetConfig.mockReturnValue({
 		identify: options,
 	},
 });
-mockGetUrl.mockImplementation(({ key, options }) => {
-	console.log(key, options);
-	const level = options?.accessLevel || 'guest';
+mockGetUrl.mockImplementation(({ key, options: optionsParam }) => {
+	console.log(key, optionsParam);
+	const level = optionsParam?.accessLevel || 'guest';
 	let url: URL;
 	if (level === 'guest') {
 		url = new URL(
 			`https://bucket-name.s3.us-west-2.amazonaws.com/public/${key}?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	} else {
-		const identityId = options?.targetIdentityId || 'identityId';
+		const identityIdFromParam = optionsParam?.targetIdentityId || 'identityId';
 		url = new URL(
-			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityId}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
+			`https://bucket-name.s3.us-west-2.amazonaws.com/${level}/${identityIdFromParam}/key.png?X-Amz-Algorithm=AWS4-HMAC-SHA256`,
 		);
 	}
+
 	return Promise.resolve({ url });
 });
 
 describe('Predictions identify provider test', () => {
-	let predictionsProvider;
+	let predictionsProvider: AmazonAIIdentifyPredictionsProvider;
 
 	beforeAll(() => {
 		predictionsProvider = new AmazonAIIdentifyPredictionsProvider();
@@ -338,21 +346,22 @@ describe('Predictions identify provider test', () => {
 				jest
 					.spyOn(RekognitionClient.prototype, 'send')
 					.mockImplementationOnce(() => {
-						const plainBlocks: DetectTextCommandOutput = {
+						const mockPlainBlocks: DetectTextCommandOutput = {
 							TextDetections: [
 								{ Type: 'LINE', Id: 1, DetectedText: 'Hello world' },
 							],
 							$metadata: {},
 						};
 						for (let i = 0; i < 50; ++i) {
-							plainBlocks.TextDetections!.push({
+							mockPlainBlocks.TextDetections!.push({
 								Type: 'WORD',
 								Id: i + 2,
 								ParentId: 1,
 								DetectedText: '',
 							});
 						}
-						return Promise.resolve(plainBlocks);
+
+						return Promise.resolve(mockPlainBlocks);
 					});
 				// confirm that textract service has been called
 				const spy = jest.spyOn(TextractClient.prototype, 'send');
@@ -623,6 +632,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('public/key');
+
 					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
@@ -638,6 +648,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('private/identityId/key');
+
 					return {};
 				});
 			await predictionsProvider.identify(detectLabelInput);
@@ -660,6 +671,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.S3Object?.Name,
 					).toMatch('protected/identityId/key');
+
 					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
@@ -675,6 +687,7 @@ describe('Predictions identify provider test', () => {
 					expect((command as DetectLabelsCommand).input.Image?.Bytes).toMatch(
 						'bytes',
 					);
+
 					return Promise.resolve(detectlabelsResponse);
 				});
 			predictionsProvider.identify(detectLabelInput);
@@ -691,6 +704,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.Bytes,
 					).toStrictEqual(fileInput);
+
 					return {};
 				});
 			await predictionsProvider.identify(detectLabelInput);
@@ -708,6 +722,7 @@ describe('Predictions identify provider test', () => {
 					expect(
 						(command as DetectLabelsCommand).input.Image?.Bytes,
 					).toMatchObject(fileInput);
+
 					return {};
 				});
 			await predictionsProvider.identify(detectLabelInput);
@@ -717,6 +732,7 @@ describe('Predictions identify provider test', () => {
 			const detectLabelInput = {
 				labels: { source: null, type: 'LABELS' },
 			};
+			// @ts-expect-error for testing
 			expect(predictionsProvider.identify(detectLabelInput)).rejects.toThrow(
 				'not configured correctly',
 			);
@@ -735,7 +751,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectLabelInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient?.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -758,7 +774,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectFacesInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient?.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -776,7 +792,7 @@ describe('Predictions identify provider test', () => {
 			await predictionsProvider.identify(detectTextInput);
 
 			expect(
-				predictionsProvider.rekognitionClient.config.customUserAgent,
+				(predictionsProvider as any).rekognitionClient.config.customUserAgent,
 			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
@@ -784,7 +800,9 @@ describe('Predictions identify provider test', () => {
 				}),
 			);
 
-			expect(predictionsProvider.textractClient.config.customUserAgent).toEqual(
+			expect(
+				(predictionsProvider as any).textractClient.config.customUserAgent,
+			).toEqual(
 				getAmplifyUserAgentObject({
 					category: Category.Predictions,
 					action: PredictionsAction.Identify,
