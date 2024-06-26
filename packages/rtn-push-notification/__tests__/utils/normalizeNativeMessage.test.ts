@@ -6,8 +6,8 @@ import {
 	apnsMessage,
 	apnsMessagePayload,
 	fcmMessage,
-	fcmMessagePayload,
 	fcmMessageOptions,
+	fcmMessagePayload,
 	imageUrl,
 	pushNotificationAdhocData,
 	pushNotificationDeeplinkUrl,
@@ -23,7 +23,7 @@ describe('normalizeNativeMessage', () => {
 			expect(normalizeNativeMessage(apnsMessage)).toStrictEqual({
 				title,
 				body,
-				imageUrl: imageUrl,
+				imageUrl,
 				data: {
 					...pushNotificationAdhocData,
 					'media-url': imageUrl,

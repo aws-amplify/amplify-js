@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AppRegistry } from 'react-native';
+
 import { getConstants } from '../../src/apis/getConstants';
 import { registerHeadlessTask } from '../../src/apis/registerHeadlessTask';
 import { normalizeNativeMessage } from '../../src/utils';
