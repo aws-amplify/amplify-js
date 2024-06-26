@@ -4,13 +4,6 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { CONNECTION_STATE_CHANGE, generateClient } from '@aws-amplify/api';
 // import { runWithAmplifyServerContext } from 'aws-amplify/internals/adapter-core';
 
-const serverManagedFields = {
-	id: 'some-id',
-	owner: 'wirejobviously',
-	createdAt: new Date().toISOString(),
-	updatedAt: new Date().toISOString(),
-};
-
 describe('API generateClient', () => {
 	afterEach(() => {
 		jest.clearAllMocks();
