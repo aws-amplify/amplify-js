@@ -1,7 +1,7 @@
-import { ResourcesConfig } from 'aws-amplify';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { generateClient, CONNECTION_STATE_CHANGE } from '@aws-amplify/api';
 import { AmplifyClassV6 } from '@aws-amplify/core';
+
+import { CONNECTION_STATE_CHANGE, generateClient } from '@aws-amplify/api';
 // import { runWithAmplifyServerContext } from 'aws-amplify/internals/adapter-core';
 
 const serverManagedFields = {
