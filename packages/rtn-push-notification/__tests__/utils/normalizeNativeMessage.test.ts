@@ -72,12 +72,17 @@ describe('normalizeNativeMessage', () => {
 
 	describe('fcm messages', () => {
 		it('normalizes typical messages', () => {
-			const { body, rawData, imageUrl, title } = fcmMessagePayload;
+			const {
+				body,
+				rawData,
+				imageUrl: imageUrlFromPayload,
+				title,
+			} = fcmMessagePayload;
 
 			expect(normalizeNativeMessage(fcmMessage)).toStrictEqual({
 				body,
 				data: rawData,
-				imageUrl,
+				imageUrl: imageUrlFromPayload,
 				title,
 				fcmOptions: {
 					...fcmMessageOptions,
