@@ -28,7 +28,7 @@ describe('ConnectionStateMonitor', () => {
 	let reachabilityObserver: Observer<{ online: boolean }>;
 
 	beforeEach(() => {
-		const spyon = jest
+		jest
 			.spyOn(Reachability.prototype, 'networkMonitor')
 			.mockImplementationOnce(() => {
 				return new Observable(observer => {
