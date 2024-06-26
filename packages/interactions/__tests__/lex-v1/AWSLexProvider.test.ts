@@ -9,14 +9,17 @@ import {
 import { fetchAuthSession } from '@aws-amplify/core';
 
 import { lexProvider } from '../../src/lex-v1/AWSLexProvider';
+import { InteractionsOnCompleteCallback } from '../../src/types/Interactions';
 
 jest.mock('@aws-amplify/core');
 
 (global as any).Response = class Response {
-	arrayBuffer(blob: Blob) {
+	arrayBuffer() {
 		return Promise.resolve(new ArrayBuffer(0));
 	}
 };
+
+type AWSLexProvider = typeof lexProvider;
 
 // mock stream response
 const createBlob = () => {
@@ -48,7 +51,7 @@ const credentials = {
 
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 
-LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
+LexRuntimeServiceClient.prototype.send = jest.fn(command => {
 	if (command instanceof PostTextCommand) {
 		if (command.input.inputText === 'done') {
 			const result = {
@@ -82,7 +85,7 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 			'audio/x-l16; sample-rate=16000; channel-count=1'
 		) {
 			const bot = command.input.botName as string;
-			const [botName, status] = bot.split(':');
+			const [_botName, status] = bot.split(':');
 
 			if (status === 'done') {
 				// we add the status to the botName
@@ -156,7 +159,7 @@ afterEach(() => {
 describe('Interactions', () => {
 	// send text and audio message to bot
 	describe('send API', () => {
-		let provider;
+		let provider: AWSLexProvider;
 
 		beforeEach(() => {
 			mockFetchAuthSession.mockReturnValue(credentials);
@@ -276,6 +279,7 @@ describe('Interactions', () => {
 				provider.sendMessage(botConfig.BookTrip, {
 					content: createBlob(),
 					options: {
+						// @ts-expect-error for testing messageType mismatches content type
 						messageType: 'text',
 					},
 				}),
@@ -284,6 +288,7 @@ describe('Interactions', () => {
 			// obj voice in wrong format
 			await expect(
 				provider.sendMessage(botConfig.BookTrip, {
+					// @ts-expect-error for testing messageType mismatches content type
 					content: 'Hi',
 					options: {
 						messageType: 'voice',
@@ -295,8 +300,8 @@ describe('Interactions', () => {
 
 	// attach 'onComplete' callback to bot
 	describe('onComplete API', () => {
-		const callback = (err, confirmation) => {};
-		let provider;
+		const callback = jest.fn();
+		let provider: AWSLexProvider;
 
 		beforeEach(() => {
 			mockFetchAuthSession.mockReturnValue(credentials);
@@ -308,9 +313,9 @@ describe('Interactions', () => {
 		});
 
 		test('Configure onComplete callback for a configured bot successfully', () => {
-			expect(() =>
-				provider.onComplete(botConfig.BookTrip, callback),
-			).not.toThrow();
+			expect(() => {
+				provider.onComplete(botConfig.BookTrip, callback);
+			}).not.toThrow();
 			expect.assertions(1);
 		});
 	});
@@ -318,24 +323,22 @@ describe('Interactions', () => {
 	// test if 'onComplete' callback is fired for different actions
 	describe('reportBotStatus API', () => {
 		jest.useFakeTimers();
-		let provider;
+		let provider: AWSLexProvider;
 
-		let inProgressResp;
-		let completeSuccessResp;
-		let completeFailResp;
+		let inProgressResp: PostTextCommandOutput;
+		let completeSuccessResp: PostTextCommandOutput;
+		let completeFailResp: PostTextCommandOutput;
 
-		let inProgressCallback;
-		let completeSuccessCallback;
-		let completeFailCallback;
+		let inProgressCallback: InteractionsOnCompleteCallback;
+		let completeSuccessCallback: InteractionsOnCompleteCallback;
+		let completeFailCallback: InteractionsOnCompleteCallback;
 
 		beforeEach(async () => {
 			mockFetchAuthSession.mockReturnValue(credentials);
 			provider = lexProvider;
 
 			// mock callbacks
-			inProgressCallback = jest.fn((err, confirmation) =>
-				fail(`callback shouldn't be called`),
-			);
+			inProgressCallback = jest.fn(() => fail(`callback shouldn't be called`));
 
 			completeSuccessCallback = jest.fn((err, confirmation) => {
 				expect(err).toEqual(undefined);
@@ -349,7 +352,7 @@ describe('Interactions', () => {
 				});
 			});
 
-			completeFailCallback = jest.fn((err, confirmation) => {
+			completeFailCallback = jest.fn(err => {
 				expect(err).toEqual(new Error('Bot conversation failed'));
 			});
 
