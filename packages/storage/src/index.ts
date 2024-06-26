@@ -9,7 +9,6 @@ export {
 	getProperties,
 	copy,
 	getUrl,
-	getBucket,
 } from './providers/s3';
 
 export {
