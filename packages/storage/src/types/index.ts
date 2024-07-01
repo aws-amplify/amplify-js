@@ -29,6 +29,7 @@ export {
 	StorageRemoveOptions,
 	StorageListAllOptions,
 	StorageListPaginateOptions,
+	StorageSubpathStrategy,
 } from './options';
 export {
 	StorageItem,
