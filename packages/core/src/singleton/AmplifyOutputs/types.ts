@@ -46,6 +46,11 @@ export interface AmplifyOutputsAuthProperties {
 export interface AmplifyOutputsStorageProperties {
 	aws_region: string;
 	bucket_name: string;
+	buckets?: {
+		name: string;
+		bucket_name: string;
+		aws_region: string;
+	}[];
 }
 
 export interface AmplifyOutputsGeoProperties {
