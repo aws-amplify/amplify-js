@@ -534,6 +534,10 @@ describe('list API', () => {
 			{ Prefix: 'photos/2025/' },
 		];
 
+		const expectedExcludedSubpaths = mockedCommonPrefixes.map(
+			({ Prefix }) => Prefix,
+		);
+
 		const mockedPath = 'photos/';
 
 		beforeEach(() => {
@@ -555,11 +559,7 @@ describe('list API', () => {
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(excludedSubpaths).toEqual([
-				'photos/2023/',
-				'photos/2024/',
-				'photos/2025/',
-			]);
+			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -581,11 +581,7 @@ describe('list API', () => {
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(excludedSubpaths).toEqual([
-				'photos/2023/',
-				'photos/2024/',
-				'photos/2025/',
-			]);
+			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -607,11 +603,7 @@ describe('list API', () => {
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(excludedSubpaths).toEqual([
-				'photos/2023/',
-				'photos/2024/',
-				'photos/2025/',
-			]);
+			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -654,6 +646,22 @@ describe('list API', () => {
 						strategy: 'include',
 					},
 				},
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: undefined,
+				},
+			);
+		});
+
+		it('should listObjectsV2 contain an undefined Delimiter when no options are passed', async () => {
+			await list({
+				path: mockedPath,
 			});
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
