@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
+import { Amplify } from '../../singleton';
 import {
 	Endpoint,
 	EndpointResolverOptions,
@@ -29,11 +29,17 @@ const SERVICE_NAME = 'cognito-identity';
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region.
  */
-const endpointResolver = ({ region }: EndpointResolverOptions) => ({
-	url: new AmplifyUrl(
-		`https://cognito-identity.${region}.${getDnsSuffix(region)}`,
-	),
-});
+const endpointResolver = ({ region }: EndpointResolverOptions) => {
+	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const customURL = authConfig?.cognitoIdentityEndpoint;
+	const defaultURL = new AmplifyUrl(
+		`https://${SERVICE_NAME}.${region}.${getDnsSuffix(region)}`
+	);
+
+	return {
+		url: customURL ? new AmplifyUrl(customURL) : defaultURL,
+	};
+};
 
 /**
  * A Cognito Identity-specific middleware that disables caching for all requests.
