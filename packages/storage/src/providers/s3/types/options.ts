@@ -19,9 +19,23 @@ export type Permission = 'READ' | 'READWRITE' | 'WRITE';
 /**
  * @internal
  */
+export type LocationType = 'PREFIX' | 'OBJECT' | 'BUCKET';
+
+/**
+ * @internal
+ */
+export interface BucketLocation {
+	bucket: string;
+	path: string;
+	type: LocationType;
+}
+
+/**
+ * @internal
+ */
 export type LocationCredentialsProvider = (options: {
 	forceRefresh?: boolean;
-	locations: { bucket: string; path: string }[];
+	locations: BucketLocation[];
 	permission: Permission;
 }) => Promise<{ credentials: AWSCredentials }>;
 

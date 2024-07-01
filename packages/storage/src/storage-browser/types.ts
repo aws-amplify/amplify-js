@@ -5,6 +5,7 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 import {
 	LocationCredentialsProvider,
+	LocationType,
 	Permission,
 } from '../providers/s3/types/options';
 
@@ -14,8 +15,6 @@ import {
 export type CredentialsProvider = (options?: {
 	forceRefresh?: boolean;
 }) => Promise<{ credentials: AWSCredentials }>;
-
-type LocationAccessType = 'BUCKET' | 'PREFIX' | 'OBJECT';
 
 /**
  * @internal
@@ -35,11 +34,11 @@ export interface LocationAccess {
 	readonly permission: Permission;
 	/**
 	 * parse location type parsed from scope format:
-	 * * bucket: `'s3://<bucket>/*'`
-	 * * prefix: `'s3://<bucket>/<prefix-with-path>*'`
-	 * * object: `'s3://<bucket>/<prefix-with-path>/<object>'`
+	 * * BUCKET: `'s3://<bucket>/*'`
+	 * * PREFIX: `'s3://<bucket>/<prefix-with-path>*'`
+	 * * OBJECT: `'s3://<bucket>/<prefix-with-path>/<object>'`
 	 */
-	readonly type: LocationAccessType;
+	readonly type: LocationType;
 }
 
 export interface AccessGrant extends LocationAccess {
@@ -49,7 +48,7 @@ export interface AccessGrant extends LocationAccess {
 	 * application ARN, the grantee can only access the S3 data through this
 	 * application.
 	 */
-	readonly applicationArn: string | undefined;
+	readonly applicationArn?: string;
 }
 
 /**
@@ -74,14 +73,8 @@ export interface LocationCredentialsStore {
 	 * Get location-specific credentials. It uses a cache internally to optimize performance when
 	 * getting credentials for the same location. It will refresh credentials if they expire or
 	 * when forced to.
-	 *
-	 * If specific credentials scope `option` is omitted, the store will attempt to resolve
-	 * locations-specific credentials from the input bucket and full path.
 	 */
-	getProvider(option?: {
-		scope: string;
-		permission: Permission;
-	}): LocationCredentialsProvider;
+	getProvider(option: LocationAccess): LocationCredentialsProvider;
 	/**
 	 * Invalidate cached credentials and force subsequent calls to get location-specific
 	 * credentials to throw. It also makes subsequent calls to `getCredentialsProviderForLocation`
