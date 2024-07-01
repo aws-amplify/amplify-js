@@ -4,7 +4,7 @@
 /* This is because JSON schema contains keys with snake_case */
 /* eslint-disable camelcase */
 
-/* Does not like exahaustive checks */
+/* Does not like exhaustive checks */
 /* eslint-disable no-case-declarations */
 
 import {
@@ -30,6 +30,7 @@ import {
 import {
 	AnalyticsConfig,
 	AuthConfig,
+	BucketInfo,
 	GeoConfig,
 	LegacyConfig,
 	ResourcesConfig,
@@ -56,12 +57,13 @@ function parseStorage(
 		return undefined;
 	}
 
-	const { bucket_name, aws_region } = amplifyOutputsStorageProperties;
+	const { bucket_name, aws_region, buckets } = amplifyOutputsStorageProperties;
 
 	return {
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
+			buckets: buckets && mapNameToBucketInfo(buckets),
 		},
 	};
 }
@@ -332,4 +334,22 @@ function getMfaStatus(
 	if (mfaConfiguration === 'REQUIRED') return 'on';
 
 	return 'off';
+}
+
+function mapNameToBucketInfo(
+	buckets: {
+		name: string;
+		bucket_name: string;
+		aws_region: string;
+	}[],
+) {
+	const mappedBuckets: Record<string, BucketInfo> = {};
+	buckets.forEach(({ name, bucket_name: bucketName, aws_region: region }) => {
+		mappedBuckets[name] = {
+			bucketName,
+			region,
+		};
+	});
+
+	return mappedBuckets;
 }
