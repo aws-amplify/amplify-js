@@ -147,6 +147,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 			sameSite: 'strict' as any,
 			httpOnly: true,
 			secure: true,
+			path: '/a-path',
 		};
 
 		const result = createCookieStorageAdapterFromNextServerContext(mockContext);
@@ -176,7 +177,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 					mockSerializeOptions.domain
 				};Expires=${mockSerializeOptions.expires.toUTCString()};HttpOnly;SameSite=${
 					mockSerializeOptions.sameSite
-				};Secure`,
+				};Secure;Path=${mockSerializeOptions.path}`,
 			);
 		});
 
@@ -188,7 +189,7 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 					mockSerializeOptions.domain
 				};Expires=${mockSerializeOptions.expires.toUTCString()};HttpOnly;SameSite=${
 					mockSerializeOptions.sameSite
-				};Secure`,
+				};Secure;Path=${mockSerializeOptions.path}`,
 			);
 		});
 

@@ -7,7 +7,13 @@ export declare namespace CookieStorage {
 	export type SetCookieOptions = Partial<
 		Pick<
 			CookieSerializeOptions,
-			'domain' | 'expires' | 'httpOnly' | 'maxAge' | 'sameSite' | 'secure'
+			| 'domain'
+			| 'expires'
+			| 'httpOnly'
+			| 'maxAge'
+			| 'sameSite'
+			| 'secure'
+			| 'path'
 		>
 	>;
 
