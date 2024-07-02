@@ -13,6 +13,7 @@ import {
 	GetPropertiesWithPathOutput,
 } from '../../../../src/providers/s3/types';
 import './testUtils';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -275,6 +276,34 @@ describe('Happy cases: With path', () => {
 				);
 			},
 		);
+		it('should override bucket in headObject call when bucket is passed in option', async () => {
+			const bucketInfo: BucketInfo = {
+				bucketName: 'bucket-1',
+				region: 'region-1',
+			};
+			const headObjectOptions = {
+				Bucket: bucketInfo.bucketName,
+				Key: inputPath,
+			};
+
+			await getPropertiesWrapper({
+				path: inputPath,
+				options: {
+					bucket: bucketInfo,
+					useAccelerateEndpoint: true,
+				},
+			});
+			expect(headObject).toHaveBeenCalledTimes(1);
+			await expect(headObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region: bucketInfo.region,
+					useAccelerateEndpoint: true,
+					userAgentValue: expect.any(String),
+				},
+				headObjectOptions,
+			);
+		});
 	});
 
 	describe('Error cases :  With path', () => {

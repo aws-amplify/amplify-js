@@ -16,6 +16,7 @@ import {
 	GetUrlWithPathOutput,
 } from '../../../../src/providers/s3/types';
 import './testUtils';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -235,7 +236,34 @@ describe('getUrl test with path', () => {
 				});
 			},
 		);
+
+		it('should override bucket in getPresignedGetObjectUrl call when bucket is passed in option', async () => {
+			const inputPath = 'path/';
+			const bucketInfo: BucketInfo = {
+				bucketName: 'bucket-1',
+				region: 'region-1',
+			};
+			await getUrlWrapper({
+				path: inputPath,
+				options: {
+					bucket: bucketInfo,
+				},
+			});
+			expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+			await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region: bucketInfo.region,
+					expiration: expect.any(Number),
+				},
+				{
+					Bucket: bucketInfo.bucketName,
+					Key: inputPath,
+				},
+			);
+		});
 	});
+
 	describe('Error cases :  With path', () => {
 		afterAll(() => {
 			jest.clearAllMocks();

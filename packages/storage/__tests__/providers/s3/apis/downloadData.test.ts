@@ -368,7 +368,7 @@ describe('downloadData with path', () => {
 		);
 	});
 
-	it('should override bucket in putObject call when bucket is passed in option', async () => {
+	it('should override bucket in getObject call when bucket is passed in option', async () => {
 		(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
 		const abortController = new AbortController();
 		const bucketInfo: BucketInfo = {
