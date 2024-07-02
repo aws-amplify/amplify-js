@@ -19,6 +19,8 @@ export enum StorageValidationErrorCode {
 	InvalidUploadSource = 'InvalidUploadSource',
 	ObjectIsTooLarge = 'ObjectIsTooLarge',
 	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
+	InvalidLocationCredentialsCacheSize = 'InvalidLocationCredentialsCacheSize',
+	LocationCredentialsStoreDestroyed = 'LocationCredentialsStoreDestroyed',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -69,5 +71,11 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
 		message: 'Input `path` does not allow a leading slash (/).',
+	},
+	[StorageValidationErrorCode.InvalidLocationCredentialsCacheSize]: {
+		message: 'locationCredentialsCacheSize must be a positive integer.',
+	},
+	[StorageValidationErrorCode.LocationCredentialsStoreDestroyed]: {
+		message: 'The location-specific credentials store has been destroyed',
 	},
 };
