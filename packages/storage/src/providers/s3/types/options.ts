@@ -10,12 +10,12 @@ import {
 	StorageListPaginateOptions,
 } from '../../../types/options';
 
-interface BucketInfo {
+export interface BucketInfo {
 	bucketName: string;
 	region: string;
 }
 
-type StorageBucket = string | BucketInfo;
+export type StorageBucket = string | BucketInfo;
 interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.

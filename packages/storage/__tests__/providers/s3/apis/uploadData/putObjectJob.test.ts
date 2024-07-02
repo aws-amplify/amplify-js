@@ -260,15 +260,13 @@ describe('putObjectJob with path', () => {
 				credentials,
 				region,
 				abortSignal: abortController.signal,
-				onUploadProgress: expect.any(Function),
-				useAccelerateEndpoint: true,
 				userAgentValue: expect.any(String),
 			},
 			{
 				Bucket: bucketName,
 				Key: 'path/',
 				Body: data,
-				ContentMD5: undefined,
+				ContentType: 'application/octet-stream',
 			},
 		);
 	});

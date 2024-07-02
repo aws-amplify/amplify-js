@@ -6,7 +6,7 @@ import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
-import { ResolvedS3Config } from '../types/options';
+import { ResolvedS3Config, StorageBucket } from '../types/options';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 
@@ -14,6 +14,7 @@ interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
+	bucket?: StorageBucket;
 }
 
 interface ResolvedS3ConfigAndInput {
@@ -62,8 +63,30 @@ export const resolveS3ConfigAndInput = async (
 		return credentials;
 	};
 
-	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
+	let { bucket, region, dangerouslyConnectToHttpEndpointForTesting, buckets } =
 		amplify.getConfig()?.Storage?.S3 ?? {};
+
+	if (apiOptions?.bucket) {
+		if (typeof apiOptions.bucket === 'string') {
+			const name = apiOptions.bucket;
+			if (buckets && buckets[name]) {
+				bucket = buckets[name].bucketName;
+				// eslint-disable-next-line @typescript-eslint/prefer-destructuring
+				region = buckets[name].region;
+			} else {
+				assertValidationError(
+					!!(buckets && buckets[name]),
+					StorageValidationErrorCode.InvalidStorageBucket,
+				);
+			}
+		}
+		if (typeof apiOptions.bucket === 'object') {
+			bucket = apiOptions.bucket.bucketName;
+			// eslint-disable-next-line @typescript-eslint/prefer-destructuring
+			region = apiOptions.bucket.region;
+		}
+	}
+
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 

@@ -24,6 +24,7 @@ import {
 	ItemWithPath,
 } from '../../../../src/providers/s3/types/outputs';
 import './testUtils';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
@@ -364,6 +365,39 @@ describe('downloadData with path', () => {
 			expect.objectContaining({
 				Range: `bytes=${start}-${end}`,
 			}),
+		);
+	});
+
+	it('should override bucket in putObject call when bucket is passed in option', async () => {
+		(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+		const abortController = new AbortController();
+		const bucketInfo: BucketInfo = {
+			bucketName: 'bucket-1',
+			region: 'region-1',
+		};
+
+		downloadData({
+			path: inputPath,
+			options: {
+				bucket: bucketInfo,
+			},
+		});
+
+		const { job } = mockCreateDownloadTask.mock.calls[0][0];
+		await job();
+
+		expect(getObject).toHaveBeenCalledTimes(1);
+		await expect(getObject).toBeLastCalledWithConfigAndInput(
+			{
+				credentials,
+				region: bucketInfo.region,
+				abortSignal: abortController.signal,
+				userAgentValue: expect.any(String),
+			},
+			{
+				Bucket: bucketInfo.bucketName,
+				Key: inputPath,
+			},
 		);
 	});
 });
