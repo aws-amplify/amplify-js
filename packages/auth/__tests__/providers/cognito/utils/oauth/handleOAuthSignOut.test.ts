@@ -42,7 +42,11 @@ describe('handleOAuthSignOut', () => {
 		await handleOAuthSignOut(cognitoConfig, mockStore);
 
 		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
-		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(cognitoConfig);
+		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
+			cognitoConfig,
+			false,
+			undefined,
+		);
 	});
 
 	it('should complete OAuth sign out but not redirect', async () => {

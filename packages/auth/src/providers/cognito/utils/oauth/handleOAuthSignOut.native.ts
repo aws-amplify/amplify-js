@@ -12,13 +12,14 @@ import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
+	preferredSignOutUrl?: string,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn, preferPrivateSession } = await store.loadOAuthSignIn();
-
 	if (isOAuthSignIn) {
 		const result = await oAuthSignOutRedirect(
 			cognitoConfig,
 			preferPrivateSession,
+			preferredSignOutUrl,
 		);
 		// If this was a private session, clear data and tokens regardless of what happened with logout
 		// endpoint. Otherwise, only do so if the logout endpoint was succesfully visited.
