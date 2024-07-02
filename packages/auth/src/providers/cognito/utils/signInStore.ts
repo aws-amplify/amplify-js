@@ -49,16 +49,23 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 				...state,
 				signInSession: action.value,
 			};
+
 		case 'SET_SIGN_IN_STATE':
+			persistSignInState(state);
+
 			return {
 				...action.value,
 			};
 		case 'SET_CHALLENGE_NAME':
+			persistSignInState(state);
+
 			return {
 				...state,
 				challengeName: action.value,
 			};
 		case 'SET_USERNAME':
+			persistSignInState(state);
+
 			return {
 				...state,
 				username: action.value,
@@ -150,9 +157,6 @@ export function setActiveSignInState(state: SignInState): void {
 		type: 'SET_SIGN_IN_STATE',
 		value: state,
 	});
-
-	// Save the local state into Synced Session Storage
-	persistSignInState(state);
 }
 
 // Save local state into Session Storage
