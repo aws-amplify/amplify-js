@@ -25,6 +25,7 @@ import {
 	AmplifyOutputsDataProperties,
 	AmplifyOutputsGeoProperties,
 	AmplifyOutputsNotificationsProperties,
+	AmplifyOutputsStorageBucketProperties,
 	AmplifyOutputsStorageProperties,
 } from './singleton/AmplifyOutputs/types';
 import {
@@ -63,7 +64,7 @@ function parseStorage(
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
-			buckets: buckets && mapNameToBucketInfo(buckets),
+			buckets: buckets && createBucketInfoMap(buckets),
 		},
 	};
 }
@@ -336,15 +337,18 @@ function getMfaStatus(
 	return 'off';
 }
 
-function mapNameToBucketInfo(
-	buckets: {
-		name: string;
-		bucket_name: string;
-		aws_region: string;
-	}[],
-) {
+function createBucketInfoMap(
+	buckets: AmplifyOutputsStorageBucketProperties[],
+): Record<string, BucketInfo> {
 	const mappedBuckets: Record<string, BucketInfo> = {};
+
 	buckets.forEach(({ name, bucket_name: bucketName, aws_region: region }) => {
+		if (name in mappedBuckets) {
+			throw new Error(
+				`Duplicate friendly name found: ${name}. Name must be unique.`,
+			);
+		}
+
 		mappedBuckets[name] = {
 			bucketName,
 			region,
