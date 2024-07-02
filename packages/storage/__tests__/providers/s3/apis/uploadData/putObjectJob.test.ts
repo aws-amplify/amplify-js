@@ -233,4 +233,43 @@ describe('putObjectJob with path', () => {
 		await job();
 		expect(calculateContentMd5).toHaveBeenCalledWith('data');
 	});
+
+	it('should override bucket in putObject call when bucket is passed in option', async () => {
+		const abortController = new AbortController();
+		const data = 'data';
+		const bucketName = 'bucket-1';
+		const region = 'region-1';
+
+		const job = putObjectJob(
+			{
+				path: 'path/',
+				data,
+				options: {
+					bucket: {
+						bucketName,
+						region,
+					},
+				},
+			},
+			new AbortController().signal,
+		);
+		await job();
+
+		await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+			{
+				credentials,
+				region,
+				abortSignal: abortController.signal,
+				onUploadProgress: expect.any(Function),
+				useAccelerateEndpoint: true,
+				userAgentValue: expect.any(String),
+			},
+			{
+				Bucket: bucketName,
+				Key: 'path/',
+				Body: data,
+				ContentMD5: undefined,
+			},
+		);
+	});
 });
