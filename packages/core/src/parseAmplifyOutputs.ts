@@ -63,7 +63,7 @@ function parseStorage(
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
-			buckets: buckets && mapNameToBucketInfo(buckets),
+			buckets: buckets && mapBucketInfoToName(buckets),
 		},
 	};
 }
@@ -336,13 +336,13 @@ function getMfaStatus(
 	return 'off';
 }
 
-function mapNameToBucketInfo(
+function mapBucketInfoToName(
 	buckets: {
 		name: string;
 		bucket_name: string;
 		aws_region: string;
 	}[],
-) {
+): Record<string, BucketInfo> {
 	const mappedBuckets: Record<string, BucketInfo> = {};
 	buckets.forEach(({ name, bucket_name: bucketName, aws_region: region }) => {
 		mappedBuckets[name] = {
