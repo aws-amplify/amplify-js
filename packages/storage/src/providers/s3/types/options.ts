@@ -19,15 +19,9 @@ export type Permission = 'READ' | 'READWRITE' | 'WRITE';
 /**
  * @internal
  */
-export type LocationType = 'PREFIX' | 'OBJECT' | 'BUCKET';
-
-/**
- * @internal
- */
 export interface BucketLocation {
 	bucket: string;
 	path: string;
-	type: LocationType;
 }
 
 /**

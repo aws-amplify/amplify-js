@@ -5,7 +5,6 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 import {
 	LocationCredentialsProvider,
-	LocationType,
 	Permission,
 } from '../providers/s3/types/options';
 
@@ -19,12 +18,16 @@ export type CredentialsProvider = (options?: {
 /**
  * @internal
  */
-export interface LocationAccess {
+export type LocationType = 'BUCKET' | 'PREFIX' | 'OBJECT';
+
+export interface CredentialsLocation {
 	/**
 	 * Scope of storage location. For S3 service, it's the S3 path of the data to
-	 * which the access is granted.
+	 * which the access is granted. It can be in following formats:
 	 *
-	 * @example 's3://MY-BUCKET-NAME/prefix/*'
+	 * @example Bucket 's3://<bucket>/*'
+	 * @example Prefix 's3://<bucket>/<prefix-with-path>*'
+	 * @example Object 's3://<bucket>/<prefix-with-path>/<object>'
 	 */
 	readonly scope: string;
 	/**
@@ -32,8 +35,14 @@ export interface LocationAccess {
 	 * WRITE or READWRITE
 	 */
 	readonly permission: Permission;
+}
+
+/**
+ * @internal
+ */
+export interface LocationAccess extends CredentialsLocation {
 	/**
-	 * parse location type parsed from scope format:
+	 * Parse location type parsed from scope format:
 	 * * BUCKET: `'s3://<bucket>/*'`
 	 * * PREFIX: `'s3://<bucket>/<prefix-with-path>*'`
 	 * * OBJECT: `'s3://<bucket>/<prefix-with-path>/<object>'`
@@ -48,7 +57,7 @@ export interface AccessGrant extends LocationAccess {
 	 * application ARN, the grantee can only access the S3 data through this
 	 * application.
 	 */
-	readonly applicationArn?: string;
+	readonly applicationArn: string | undefined;
 }
 
 /**
@@ -63,10 +72,9 @@ export interface ListLocationsOutput<T extends LocationAccess> {
 export type ListLocations = () => Promise<ListLocationsOutput<LocationAccess>>;
 
 // Interface for getLocationCredentials() handler.
-export type LocationCredentialsHandler = (input: {
-	scope: string;
-	permission: Permission;
-}) => Promise<{ credentials: AWSCredentials; scope?: string }>;
+export type LocationCredentialsHandler = (
+	input: CredentialsLocation,
+) => Promise<{ credentials: AWSCredentials }>;
 
 export interface LocationCredentialsStore {
 	/**
@@ -74,7 +82,7 @@ export interface LocationCredentialsStore {
 	 * getting credentials for the same location. It will refresh credentials if they expire or
 	 * when forced to.
 	 */
-	getProvider(option: LocationAccess): LocationCredentialsProvider;
+	getProvider(option: CredentialsLocation): LocationCredentialsProvider;
 	/**
 	 * Invalidate cached credentials and force subsequent calls to get location-specific
 	 * credentials to throw. It also makes subsequent calls to `getCredentialsProviderForLocation`
