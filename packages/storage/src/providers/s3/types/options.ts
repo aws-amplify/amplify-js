@@ -17,22 +17,17 @@ import {
 export type Permission = 'READ' | 'READWRITE' | 'WRITE';
 
 /**
- * Whether the bucket path points to a prefix or an object
- * If it's 'PREFIX', it points a prefix or folder. For example the list() API's 
- * bucket path points to prefix or folder
- * If it's 'OBJECT', the bucket path points to an object.
- */
-type SubLocationType = 'PREFIX' | 'OBJECT';
-
-/**
- * Refer to either prefix a object resources that locates under a given bucket.
- * 
  * @internal
  */
-export interface SubLocation {
+export type LocationType = 'PREFIX' | 'OBJECT' | 'BUCKET';
+
+/**
+ * @internal
+ */
+export interface BucketLocation {
 	bucket: string;
 	path: string;
-	type: SubLocationType;
+	type: LocationType;
 }
 
 /**
@@ -40,7 +35,7 @@ export interface SubLocation {
  */
 export type LocationCredentialsProvider = (options: {
 	forceRefresh?: boolean;
-	locations: SubLocation[];
+	locations: BucketLocation[];
 	permission: Permission;
 }) => Promise<{ credentials: AWSCredentials }>;
 
