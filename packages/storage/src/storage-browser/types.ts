@@ -15,17 +15,19 @@ export type CredentialsProvider = (options?: {
 	forceRefresh?: boolean;
 }) => Promise<{ credentials: AWSCredentials }>;
 
-type LocationAccessType = 'BUCKET' | 'PREFIX' | 'OBJECT';
-
 /**
  * @internal
  */
-export interface LocationAccess {
+export type LocationType = 'BUCKET' | 'PREFIX' | 'OBJECT';
+
+export interface CredentialsLocation {
 	/**
 	 * Scope of storage location. For S3 service, it's the S3 path of the data to
-	 * which the access is granted.
+	 * which the access is granted. It can be in following formats:
 	 *
-	 * @example 's3://MY-BUCKET-NAME/prefix/*'
+	 * @example Bucket 's3://<bucket>/*'
+	 * @example Prefix 's3://<bucket>/<prefix-with-path>*'
+	 * @example Object 's3://<bucket>/<prefix-with-path>/<object>'
 	 */
 	readonly scope: string;
 	/**
@@ -33,13 +35,19 @@ export interface LocationAccess {
 	 * WRITE or READWRITE
 	 */
 	readonly permission: Permission;
+}
+
+/**
+ * @internal
+ */
+export interface LocationAccess extends CredentialsLocation {
 	/**
-	 * parse location type parsed from scope format:
-	 * * bucket: `'s3://<bucket>/*'`
-	 * * prefix: `'s3://<bucket>/<prefix-with-path>*'`
-	 * * object: `'s3://<bucket>/<prefix-with-path>/<object>'`
+	 * Parse location type parsed from scope format:
+	 * * BUCKET: `'s3://<bucket>/*'`
+	 * * PREFIX: `'s3://<bucket>/<prefix-with-path>*'`
+	 * * OBJECT: `'s3://<bucket>/<prefix-with-path>/<object>'`
 	 */
-	readonly type: LocationAccessType;
+	readonly type: LocationType;
 }
 
 export interface AccessGrant extends LocationAccess {
@@ -64,24 +72,17 @@ export interface ListLocationsOutput<T extends LocationAccess> {
 export type ListLocations = () => Promise<ListLocationsOutput<LocationAccess>>;
 
 // Interface for getLocationCredentials() handler.
-export type LocationCredentialsHandler = (input: {
-	scope: string;
-	permission: Permission;
-}) => Promise<{ credentials: AWSCredentials; scope?: string }>;
+export type LocationCredentialsHandler = (
+	input: CredentialsLocation,
+) => Promise<{ credentials: AWSCredentials }>;
 
 export interface LocationCredentialsStore {
 	/**
 	 * Get location-specific credentials. It uses a cache internally to optimize performance when
 	 * getting credentials for the same location. It will refresh credentials if they expire or
 	 * when forced to.
-	 *
-	 * If specific credentials scope `option` is omitted, the store will attempt to resolve
-	 * locations-specific credentials from the input bucket and full path.
 	 */
-	getProvider(option?: {
-		scope: string;
-		permission: Permission;
-	}): LocationCredentialsProvider;
+	getProvider(option: CredentialsLocation): LocationCredentialsProvider;
 	/**
 	 * Invalidate cached credentials and force subsequent calls to get location-specific
 	 * credentials to throw. It also makes subsequent calls to `getCredentialsProviderForLocation`

@@ -7,4 +7,8 @@ export {
 	ListCallerAccessGrantsOutput,
 } from './listCallerAccessGrants';
 export { createLocationCredentialsHandler } from './createLocationCredentialsHandler';
-export { createLocationCredentialsStore } from './locationCredentialsStore/createLocationCredentialsStore';
+export { createLocationCredentialsStore } from './locationCredentialsStore/create';
+export {
+	managedAuthAdapter,
+	ManagedAuthAdapterInput,
+} from './managedAuthAdapter';
