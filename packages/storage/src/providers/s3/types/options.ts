@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageAccessLevel } from '@aws-amplify/core';
+import {
+	LibraryOptions,
+	StorageAccessLevel,
+	StorageConfig,
+} from '@aws-amplify/core';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { SigningOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
@@ -211,5 +215,30 @@ export interface ResolvedS3Config
 	extends Pick<SigningOptions, 'credentials' | 'region'> {
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
+	useAccelerateEndpoint?: boolean;
+}
+
+/**
+ * Internal S3 service options.
+ *
+ * @internal
+ */
+export type S3ServiceOptions = StorageConfig['S3'];
+
+/**
+ * Internal S3 library options.
+ *
+ * @internal
+ */
+export type S3LibraryOptions = NonNullable<LibraryOptions['Storage']>['S3'];
+
+/**
+ * Internal S3 API options.
+ *
+ * @internal
+ */
+export interface S3ApiOptions {
+	accessLevel?: StorageAccessLevel;
+	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
 }
