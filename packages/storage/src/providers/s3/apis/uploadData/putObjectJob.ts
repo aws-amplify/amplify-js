@@ -1,8 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
-import { StorageAction } from '@aws-amplify/core/internals/utils';
+import {
+	AWSCredentials,
+	StorageAction,
+} from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput, UploadDataWithPathInput } from '../../types';
 import {
@@ -14,6 +16,17 @@ import { ItemWithKey, ItemWithPath } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
+import { S3LibraryOptions, S3ServiceOptions } from '../../types/options';
+
+interface PutObjectJobProps {
+	uploadDataInput: UploadDataInput | UploadDataWithPathInput;
+	abortSignal: AbortSignal;
+	credentialsProvider(): Promise<AWSCredentials>;
+	identityIdProvider(): Promise<string>;
+	serviceOptions: S3ServiceOptions;
+	libraryOptions: S3LibraryOptions;
+	totalLength?: number;
+}
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -21,15 +34,26 @@ import { STORAGE_INPUT_KEY } from '../../utils/constants';
  * @internal
  */
 export const putObjectJob =
-	(
-		uploadDataInput: UploadDataInput | UploadDataWithPathInput,
-		abortSignal: AbortSignal,
-		totalLength?: number,
-	) =>
+	({
+		uploadDataInput,
+		abortSignal,
+		credentialsProvider,
+		identityIdProvider,
+		serviceOptions,
+		libraryOptions,
+		totalLength,
+	}: PutObjectJobProps) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
+
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
-			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
+			await resolveS3ConfigAndInput({
+				credentialsProvider,
+				identityIdProvider,
+				serviceOptions,
+				libraryOptions,
+				apiOptions: uploadDataOptions,
+			});
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
 			identityId,

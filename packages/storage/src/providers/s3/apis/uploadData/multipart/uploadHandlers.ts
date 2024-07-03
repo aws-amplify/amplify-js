@@ -29,6 +29,7 @@ import {
 } from '../../../utils/client';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
+import { StorageConfiguration } from '../../internal/types';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -43,6 +44,7 @@ import { getDataChunker } from './getDataChunker';
  * @internal
  */
 export const getMultipartUploadHandlers = (
+	config: StorageConfiguration,
 	uploadDataInput: UploadDataInput | UploadDataWithPathInput,
 	size?: number,
 ) => {
@@ -68,13 +70,21 @@ export const getMultipartUploadHandlers = (
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
 	let isAbortSignalFromPause = false;
-
+	const {
+		serviceOptions,
+		libraryOptions,
+		credentialsProvider,
+		identityIdProvider,
+	} = config;
 	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
-		const resolvedS3Options = await resolveS3ConfigAndInput(
-			Amplify,
-			uploadDataOptions,
-		);
+		const resolvedS3Options = await resolveS3ConfigAndInput({
+			serviceOptions,
+			libraryOptions,
+			apiOptions: uploadDataOptions,
+			credentialsProvider,
+			identityIdProvider,
+		});
 
 		abortController = new AbortController();
 		isAbortSignalFromPause = false;
