@@ -25,12 +25,14 @@ describe('initStore', () => {
 			values: expect.any(Map),
 		});
 	});
+
 	it('should create a store with default capacity if not provided', () => {
 		const store = initStore(jest.fn());
 		expect(store).toMatchObject({
 			capacity: 10,
 		});
 	});
+
 	it('should throw if capacity is not > 0', () => {
 		expect(() => initStore(jest.fn(), 0)).toThrow(
 			validationErrorMap[
@@ -204,7 +206,11 @@ describe('fetchNewValue', () => {
 		const store = initStore(refreshHandler);
 		const cacheKey = createCacheKey({ scope: 'abc', permission: 'READ' });
 		try {
-			await fetchNewValue(store, cacheKey);
+			await Promise.all([
+				fetchNewValue(store, cacheKey),
+				fetchNewValue(store, cacheKey),
+				fetchNewValue(store, cacheKey),
+			]);
 		} catch (e) {
 			expect(e).toEqual(new Error('Network error'));
 			expect(store.values.size).toBe(0);

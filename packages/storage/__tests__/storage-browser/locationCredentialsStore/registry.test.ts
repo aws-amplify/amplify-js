@@ -1,5 +1,3 @@
-/* eslint-disable unused-imports/no-unused-vars */
-
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -60,11 +58,12 @@ describe('getValue', () => {
 		removeStore(storeReference);
 		jest.clearAllMocks();
 	});
+
 	it('should throw if a store instance cannot be found from registry', async () => {
 		expect.assertions(1);
 		await expect(
 			getValue({
-				storeReference: Symbol('invalid'),
+				storeSymbol: Symbol('invalid'),
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),
@@ -74,12 +73,13 @@ describe('getValue', () => {
 			].message,
 		);
 	});
+
 	it('should look up a cache value for given location and permission', async () => {
 		expect.assertions(2);
 		jest.mocked(getCacheValue).mockReturnValueOnce(mockCachedValue);
 		expect(
 			await getValue({
-				storeReference,
+				storeSymbol: storeReference,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),
@@ -97,7 +97,7 @@ describe('getValue', () => {
 		jest.mocked(getCacheValue).mockReturnValueOnce(mockCachedValue);
 		expect(
 			await getValue({
-				storeReference,
+				storeSymbol: storeReference,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),
@@ -119,7 +119,7 @@ describe('getValue', () => {
 		jest.mocked(fetchNewValue).mockResolvedValue('NEW_VALUE' as any);
 		expect(
 			await getValue({
-				storeReference,
+				storeSymbol: storeReference,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),
@@ -137,7 +137,7 @@ describe('getValue', () => {
 		jest.mocked(fetchNewValue).mockResolvedValue('NEW_VALUE' as any);
 		expect(
 			await getValue({
-				storeReference,
+				storeSymbol: storeReference,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: true,
 			}),
@@ -148,6 +148,7 @@ describe('getValue', () => {
 			permission: 'READ',
 		});
 	});
+
 	it('should throw if refresh handler throws', async () => {
 		expect.assertions(1);
 		jest
@@ -155,7 +156,7 @@ describe('getValue', () => {
 			.mockRejectedValueOnce(new Error('Network error'));
 		await expect(
 			getValue({
-				storeReference,
+				storeSymbol: storeReference,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: true,
 			}),
@@ -170,7 +171,7 @@ describe('removeStore', () => {
 		removeStore(storeReference);
 		await expect(
 			getValue({
-				storeReference,
+				storeSymbol: storeReference,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),

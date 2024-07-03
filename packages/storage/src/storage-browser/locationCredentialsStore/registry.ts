@@ -24,6 +24,9 @@ import {
  */
 const storeRegistry = new Map<symbol, StoreInstance>();
 
+/**
+ * @internal
+ */
 export const createStore = (
 	refreshHandler: LocationCredentialsHandler,
 	size?: number,
@@ -53,12 +56,15 @@ const getCredentialsStore = (reference: symbol) => {
 	return storeRegistry.get(reference)!;
 };
 
+/**
+ * @internal
+ */
 export const getValue = async (input: {
-	storeReference: symbol;
+	storeSymbol: symbol;
 	location: CredentialsLocation;
 	forceRefresh: boolean;
 }): Promise<{ credentials: AWSCredentials }> => {
-	const { storeReference, location, forceRefresh } = input;
+	const { storeSymbol: storeReference, location, forceRefresh } = input;
 	const store = getCredentialsStore(storeReference);
 	const equivalentCacheKeys = getEquivalentCacheKeys(location);
 	if (!forceRefresh) {

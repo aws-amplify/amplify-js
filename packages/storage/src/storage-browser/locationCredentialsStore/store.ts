@@ -79,6 +79,8 @@ export const getCacheValue = (
 	// Delete and re-insert to key to map to indicate a latest reference in LRU.
 	store.values.delete(key.hash);
 	if (!pastTTL(cachedCredentials)) {
+		// TODO(@AllanZhengYP): If the credential is still valid but will expire
+		// soon, we should return credentials AND dispatch a refresh.
 		store.values.set(key.hash, cachedValue);
 
 		return cachedCredentials;
@@ -114,41 +116,39 @@ export const fetchNewValue = async (
 		setCacheRecord(store, key, newStoreValue);
 	}
 	const storeValue = storeValues.get(key.hash)!;
-	let refreshResult: { credentials: AWSCredentials };
-	try {
-		refreshResult = await dispatchRefresh(store.refreshHandler, storeValue);
-	} catch (e) {
-		store.values.delete(key.hash);
-		throw e;
-	}
 
-	return refreshResult;
+	return dispatchRefresh(store.refreshHandler, storeValue, () => {
+		store.values.delete(key.hash);
+	});
 };
 
 const dispatchRefresh = (
 	refreshHandler: LocationCredentialsHandler,
 	value: StoreValue,
+	onRefreshFailure: () => void,
 ) => {
 	if (value.inflightCredentials) {
 		return value.inflightCredentials;
 	}
 
-	const refreshPromise = refreshHandler({
-		scope: value.scope,
-		permission: value.permission,
-	});
-
-	value.inflightCredentials = refreshPromise;
-
-	return refreshPromise
-		.then(({ credentials }) => {
+	value.inflightCredentials = (async () => {
+		try {
+			const { credentials } = await refreshHandler({
+				scope: value.scope,
+				permission: value.permission,
+			});
 			value.credentials = credentials;
 
 			return { credentials };
-		})
-		.finally(() => {
+		} catch (e) {
+			onRefreshFailure();
+			throw e;
+		} finally {
 			value.inflightCredentials = undefined;
-		});
+		}
+	})();
+
+	return value.inflightCredentials;
 };
 
 const setCacheRecord = (
