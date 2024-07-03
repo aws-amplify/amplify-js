@@ -13,12 +13,6 @@ export function internalUploadData(
 	config: StorageConfiguration,
 	input: UploadDataInput | UploadDataWithPathInput,
 ) {
-	const {
-		serviceOptions,
-		libraryOptions,
-		credentialsProvider,
-		identityIdProvider,
-	} = config;
 	const { data } = input;
 
 	const dataByteLength = byteLength(data);
@@ -34,10 +28,7 @@ export function internalUploadData(
 		return createUploadTask({
 			isMultipartUpload: false,
 			job: putObjectJob({
-				libraryOptions,
-				serviceOptions,
-				credentialsProvider,
-				identityIdProvider,
+				...config,
 				uploadDataInput: input,
 				abortSignal: abortController.signal,
 				totalLength: dataByteLength,

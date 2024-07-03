@@ -70,20 +70,12 @@ export const getMultipartUploadHandlers = (
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
 	let isAbortSignalFromPause = false;
-	const {
-		serviceOptions,
-		libraryOptions,
-		credentialsProvider,
-		identityIdProvider,
-	} = config;
+
 	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const resolvedS3Options = await resolveS3ConfigAndInput({
-			serviceOptions,
-			libraryOptions,
+			...config,
 			apiOptions: uploadDataOptions,
-			credentialsProvider,
-			identityIdProvider,
 		});
 
 		abortController = new AbortController();
