@@ -1,5 +1,3 @@
-/* eslint-disable unused-imports/no-unused-vars */
-
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -11,6 +9,13 @@ import {
 import { LocationCredentialsProvider } from '../../providers/s3/types/options';
 
 import { createStore, getValue, removeStore } from './registry';
+import {
+	parseS3Url,
+	resolveCommonPrefix,
+	validateScopeBucket,
+	validateScopePath,
+	validateScopePermission,
+} from './validators';
 
 export const createLocationCredentialsStore = (input: {
 	handler: LocationCredentialsHandler;
@@ -24,7 +29,17 @@ export const createLocationCredentialsStore = (input: {
 				locations,
 				forceRefresh = false,
 			}: Parameters<LocationCredentialsProvider>[0]) => {
-				// TODO(@AllanZhengYP) validate input
+				const { bucket: actionBucket, path: actionPath } =
+					resolveCommonPrefix(locations);
+				const { bucket: providerBucket, path: providerPath } = parseS3Url(
+					providerLocation.scope,
+				);
+				validateScopeBucket({ actionBucket, providerBucket });
+				validateScopePath({ actionPath, providerPath });
+				validateScopePermission({
+					actionPermission: permission,
+					providerPermission: providerLocation.permission,
+				});
 
 				return getValue({
 					storeSymbol,
