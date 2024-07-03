@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
+
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
@@ -51,8 +53,7 @@ describe('createCacheKey', () => {
 describe('getCacheValue', () => {
 	it('should return a cache value for given location and permission', () => {
 		const cachedValue: StoreValue = {
-			// @ts-expect-error: mock credentials value
-			credentials: 'MOCK_CREDS',
+			credentials: 'MOCK_CREDS' as any as AWSCredentials,
 			scope: 'abc',
 			permission: 'READ',
 		};
@@ -83,10 +84,9 @@ describe('getCacheValue', () => {
 
 	it('should return null if cache value is expired', () => {
 		const expiredValue: StoreValue = {
-			// @ts-expect-error: mock credentials value
 			credentials: {
 				expiration: new Date(),
-			},
+			} as any as AWSCredentials,
 			scope: 'abc',
 			permission: 'READ',
 		};
@@ -106,10 +106,9 @@ describe('getCacheValue', () => {
 
 	it('should return null if cache value is expiring soon', () => {
 		const expiringValue: StoreValue = {
-			// @ts-expect-error: mock credentials value
 			credentials: {
 				expiration: new Date(Date.now() + 1000 * 20), // 20 seconds
-			},
+			} as any as AWSCredentials,
 			scope: 'abc',
 			permission: 'READ',
 		};
