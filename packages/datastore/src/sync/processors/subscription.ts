@@ -205,7 +205,7 @@ class SubscriptionProcessor {
 				: [];
 
 		oidcOwnerAuthRules.forEach(ownerAuthRule => {
-			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
+			const ownerValue = oidcTokenPayload?.[ownerAuthRule.identityClaim];
 			const singleOwner =
 				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
 			const isOwnerArgRequired =
