@@ -126,6 +126,34 @@ describe('sync engine subscription module', () => {
 			),
 		).toEqual(authInfo);
 	});
+	test('owner authorization with no token(expired)', () => {
+		const authRules = [
+			{
+				provider: 'userPools',
+				ownerField: 'owner',
+				allow: 'owner',
+				identityClaim: 'cognito:username',
+				operations: ['create', 'update', 'delete'],
+			},
+		];
+		const model = generateModelWithAuth(authRules);
+
+		const authInfo = {
+			authMode: 'userPool',
+			isOwner: false,
+		};
+
+		expect(
+			// @ts-ignore
+			SubscriptionProcessor.prototype.getAuthorizationInfo(
+				model,
+				USER_CREDENTIALS.auth,
+				'userPool',
+				undefined,
+				'userPool',
+			),
+		).toEqual(authInfo);
+	});
 	test('owner authorization with public subscription', () => {
 		const authRules = [
 			{

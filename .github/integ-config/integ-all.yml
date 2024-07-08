@@ -822,7 +822,14 @@ tests:
     sample_name: [storage-gen2]
     spec: storage-gen2
     browser: *minimal_browser_list
-
+  - test_name: storage-guest-access
+    desc: 'Next Storage guest access'
+    framework: next
+    category: storage
+    sample_name: [guest-access]
+    spec: storage-client-server
+    browser: *minimal_browser_list
+  
   # INAPPMESSAGING
   - test_name: integ_in_app_messaging
     desc: 'React InApp Messaging'

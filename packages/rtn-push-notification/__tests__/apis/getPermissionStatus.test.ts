@@ -23,7 +23,7 @@ describe('getPermissionStatus', () => {
 	beforeAll(() => {
 		mockGetPermissionStatusNative.mockResolvedValue(status);
 		mockNormalizeNativePermissionStatus.mockImplementation(
-			status => `normalized-${status}`,
+			statusParam => `normalized-${statusParam}`,
 		);
 	});
 
