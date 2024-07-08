@@ -482,6 +482,39 @@ describe('list API', () => {
 				);
 			},
 		);
+
+		it('should override bucket in listObject call when bucket is passed in option', async () => {
+			mockListObject.mockImplementationOnce(() => {
+				return {
+					Contents: [
+						{
+							...listObjectClientBaseResultItem,
+							Key: 'path/',
+						},
+					],
+					NextContinuationToken: nextToken,
+				};
+			});
+			const mockBucketName = 'bucket-1';
+			const mockRegion = 'region-1';
+			await listPaginatedWrapper({
+				path: 'path/',
+				options: { bucket: { bucketName: mockBucketName, region: mockRegion } },
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region: mockRegion,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: mockBucketName,
+					MaxKeys: 1000,
+					Prefix: 'path/',
+				},
+			);
+		});
 	});
 
 	describe('Error Cases:', () => {

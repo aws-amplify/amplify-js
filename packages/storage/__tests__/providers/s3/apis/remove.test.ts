@@ -157,6 +157,29 @@ describe('remove API', () => {
 					);
 				});
 			});
+
+			it('should override bucket in deleteObject call when bucket is passed in option', async () => {
+				const mockBucketName = 'bucket-1';
+				const mockRegion = 'region-1';
+				await removeWrapper({
+					path: 'path/',
+					options: {
+						bucket: { bucketName: mockBucketName, region: mockRegion },
+					},
+				});
+				expect(deleteObject).toHaveBeenCalledTimes(1);
+				await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: mockRegion,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: mockBucketName,
+						Key: 'path/',
+					},
+				);
+			});
 		});
 	});
 
