@@ -18,9 +18,9 @@ interface StoreValue extends CredentialsLocation {
 	inflightCredentials?: Promise<{ credentials: AWSCredentials }>;
 }
 
-type S3Url = string;
+type S3Uri = string;
 
-type CacheKey = `${S3Url}_${Permission}`;
+type CacheKey = `${S3Uri}_${Permission}`;
 
 const createCacheKey = (location: CredentialsLocation): CacheKey =>
 	`${location.scope}_${location.permission}`;

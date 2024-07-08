@@ -21,6 +21,11 @@ export enum StorageValidationErrorCode {
 	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
 	InvalidLocationCredentialsCacheSize = 'InvalidLocationCredentialsCacheSize',
 	LocationCredentialsStoreDestroyed = 'LocationCredentialsStoreDestroyed',
+	LocationCredentialsBucketMismatch = 'LocationCredentialsBucketMismatch',
+	LocationCredentialsCrossBucket = 'LocationCredentialsCrossBucket',
+	LocationCredentialsPathMismatch = 'LocationCredentialsPathMismatch',
+	LocationCredentialsPermissionMismatch = 'LocationCredentialsPermissionMismatch',
+	InvalidS3Uri = 'InvalidS3Uri',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -76,6 +81,24 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 		message: 'locationCredentialsCacheSize must be a positive integer.',
 	},
 	[StorageValidationErrorCode.LocationCredentialsStoreDestroyed]: {
-		message: 'The location-specific credentials store has been destroyed',
+		message: 'The location-specific credentials store has been destroyed.',
+	},
+	[StorageValidationErrorCode.InvalidS3Uri]: {
+		message: 'Invalid S3 URI.',
+	},
+	[StorageValidationErrorCode.LocationCredentialsCrossBucket]: {
+		message: 'Location-specific credentials cannot be cross-bucket.',
+	},
+	[StorageValidationErrorCode.LocationCredentialsBucketMismatch]: {
+		message:
+			'Location-specific credentials bucket does not match the bucket of the API call.',
+	},
+	[StorageValidationErrorCode.LocationCredentialsPathMismatch]: {
+		message:
+			'Location-specific credentials path does not match the path of the API call.',
+	},
+	[StorageValidationErrorCode.LocationCredentialsPermissionMismatch]: {
+		message:
+			'Location-specific credentials permission does not match the permission required for the API call.',
 	},
 };
