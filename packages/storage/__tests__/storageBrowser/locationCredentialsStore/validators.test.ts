@@ -3,9 +3,9 @@
 
 import { validateCredentialsProviderLocation } from '../../../src/storageBrowser/locationCredentialsStore/validators';
 import {
-	StorageValidationErrorCode,
+	StorageBrowserValidationErrorCode,
 	validationErrorMap,
-} from '../../../src/errors/types/validation';
+} from '../../../src/storage-browser/errors/validation';
 
 jest.mock('../../../src/storageBrowser/locationCredentialsStore/registry');
 
@@ -45,7 +45,7 @@ describe('validateCredentialsProviderLocation', () => {
 			);
 		}).toThrow(
 			validationErrorMap[
-				StorageValidationErrorCode.LocationCredentialsPathMismatch
+				StorageBrowserValidationErrorCode.LocationCredentialsPathMismatch
 			].message,
 		);
 	});
@@ -83,7 +83,7 @@ describe('validateCredentialsProviderLocation', () => {
 			);
 		}).toThrow(
 			validationErrorMap[
-				StorageValidationErrorCode.LocationCredentialsPathMismatch
+				StorageBrowserValidationErrorCode.LocationCredentialsPathMismatch
 			].message,
 		);
 	});
@@ -104,7 +104,7 @@ describe('validateCredentialsProviderLocation', () => {
 			);
 		}).toThrow(
 			validationErrorMap[
-				StorageValidationErrorCode.LocationCredentialsBucketMismatch
+				StorageBrowserValidationErrorCode.LocationCredentialsBucketMismatch
 			].message,
 		);
 	});
@@ -159,7 +159,7 @@ describe('validateCredentialsProviderLocation', () => {
 			);
 		}).toThrow(
 			validationErrorMap[
-				StorageValidationErrorCode.LocationCredentialsPermissionMismatch
+				StorageBrowserValidationErrorCode.LocationCredentialsPermissionMismatch
 			].message,
 		);
 	});
@@ -180,7 +180,7 @@ describe('validateCredentialsProviderLocation', () => {
 			);
 		}).toThrow(
 			validationErrorMap[
-				StorageValidationErrorCode.LocationCredentialsPermissionMismatch
+				StorageBrowserValidationErrorCode.LocationCredentialsPermissionMismatch
 			].message,
 		);
 	});
@@ -201,7 +201,7 @@ describe('validateCredentialsProviderLocation', () => {
 			);
 		}).toThrow(
 			validationErrorMap[
-				StorageValidationErrorCode.LocationCredentialsPermissionMismatch
+				StorageBrowserValidationErrorCode.LocationCredentialsPermissionMismatch
 			].message,
 		);
 	});

@@ -11,9 +11,9 @@ import {
 import { validateCredentialsProviderLocation } from '../../../src/storageBrowser/locationCredentialsStore/validators';
 import { LocationCredentialsStore } from '../../../src/storageBrowser/types';
 import {
-	StorageValidationErrorCode,
+	StorageBrowserValidationErrorCode,
 	validationErrorMap,
-} from '../../../src/errors/types/validation';
+} from '../../../src/storage-browser/errors/validation';
 
 jest.mock('../../../src/storageBrowser/locationCredentialsStore/registry');
 jest.mock('../../../src/storageBrowser/locationCredentialsStore/validators');
@@ -112,7 +112,7 @@ describe('createLocationCredentialsStore', () => {
 				} catch (e: any) {
 					expect(e.message).toEqual(
 						validationErrorMap[
-							StorageValidationErrorCode.LocationCredentialsCrossBucket
+							StorageBrowserValidationErrorCode.LocationCredentialsCrossBucket
 						].message,
 					);
 				}
@@ -136,7 +136,7 @@ describe('createLocationCredentialsStore', () => {
 						});
 					} catch (e: any) {
 						expect(e.message).toEqual(
-							validationErrorMap[StorageValidationErrorCode.InvalidS3Uri]
+							validationErrorMap[StorageBrowserValidationErrorCode.InvalidS3Uri]
 								.message,
 						);
 					}
