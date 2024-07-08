@@ -28,7 +28,9 @@ import {
 } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
-import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
+import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
+import { CommonPrefix } from '../../utils/client/types';
+import { StorageSubpathStrategy } from '../../../../types';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -79,6 +81,7 @@ export const list = async (
 		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
+		Delimiter: getDelimiter(options.subpathStrategy),
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -86,6 +89,7 @@ export const list = async (
 		s3Config,
 		listParams,
 	};
+
 	if (options.listAll) {
 		if (isInputWithPrefix) {
 			return _listAllWithPrefix({
@@ -176,23 +180,29 @@ const _listAllWithPath = async ({
 	listParams,
 }: ListInputArgs): Promise<ListAllWithPathOutput> => {
 	const listResult: ListOutputItemWithPath[] = [];
+	const excludedSubpaths: string[] = [];
 	let continuationToken = listParams.ContinuationToken;
 	do {
-		const { items: pageResults, nextToken: pageNextToken } =
-			await _listWithPath({
-				s3Config,
-				listParams: {
-					...listParams,
-					ContinuationToken: continuationToken,
-					MaxKeys: MAX_PAGE_SIZE,
-				},
-			});
+		const {
+			items: pageResults,
+			excludedSubpaths: pageExcludedSubpaths,
+			nextToken: pageNextToken,
+		} = await _listWithPath({
+			s3Config,
+			listParams: {
+				...listParams,
+				ContinuationToken: continuationToken,
+				MaxKeys: MAX_PAGE_SIZE,
+			},
+		});
 		listResult.push(...pageResults);
+		excludedSubpaths.push(...(pageExcludedSubpaths ?? []));
 		continuationToken = pageNextToken;
 	} while (continuationToken);
 
 	return {
 		items: listResult,
+		excludedSubpaths,
 	};
 };
 
@@ -206,7 +216,11 @@ const _listWithPath = async ({
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
 	}
 
-	const response: ListObjectsV2Output = await listObjectsV2(
+	const {
+		Contents: contents,
+		NextContinuationToken: nextContinuationToken,
+		CommonPrefixes: commonPrefixes,
+	}: ListObjectsV2Output = await listObjectsV2(
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
@@ -214,19 +228,44 @@ const _listWithPath = async ({
 		listParamsClone,
 	);
 
-	if (!response?.Contents) {
+	const excludedSubpaths =
+		commonPrefixes && mapCommonPrefixesToExcludedSubpaths(commonPrefixes);
+
+	if (!contents) {
 		return {
 			items: [],
+			excludedSubpaths,
 		};
 	}
 
 	return {
-		items: response.Contents.map(item => ({
+		items: contents.map(item => ({
 			path: item.Key!,
 			eTag: item.ETag,
 			lastModified: item.LastModified,
 			size: item.Size,
 		})),
-		nextToken: response.NextContinuationToken,
+		nextToken: nextContinuationToken,
+		excludedSubpaths,
 	};
+};
+
+const mapCommonPrefixesToExcludedSubpaths = (
+	commonPrefixes: CommonPrefix[],
+): string[] => {
+	return commonPrefixes.reduce((mappedSubpaths, { Prefix }) => {
+		if (Prefix) {
+			mappedSubpaths.push(Prefix);
+		}
+
+		return mappedSubpaths;
+	}, [] as string[]);
+};
+
+const getDelimiter = (
+	subpathStrategy?: StorageSubpathStrategy,
+): string | undefined => {
+	if (subpathStrategy?.strategy === 'exclude') {
+		return subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
+	}
 };
