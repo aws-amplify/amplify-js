@@ -6,8 +6,8 @@ import {
 	LocationCredentialsHandler,
 	LocationCredentialsStore,
 } from '../types';
-import { StorageBrowserValidationErrorCode } from '../errors/validation';
-import { assertValidationError } from '../errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '../../errors/types/validation';
+import { assertValidationError } from '../../errors/utils/assertValidationError';
 import {
 	BucketLocation,
 	LocationCredentialsProvider,
@@ -66,13 +66,10 @@ const parseS3Uri = (url: S3Uri): BucketLocation => {
 	// TODO(@AllanZhengYP): Provide more info to error message: url
 	assertValidationError(
 		s3UrlSchemaRegex.test(url),
-		StorageBrowserValidationErrorCode.InvalidS3Uri,
+		StorageValidationErrorCode.InvalidS3Uri,
 	);
 	const [bucket, ...pathParts] = url.replace(s3UrlSchemaRegex, '').split('/');
-	assertValidationError(
-		!!bucket,
-		StorageBrowserValidationErrorCode.InvalidS3Uri,
-	);
+	assertValidationError(!!bucket, StorageValidationErrorCode.InvalidS3Uri);
 	const path = pathParts.join('/');
 
 	return {
@@ -94,7 +91,7 @@ const resolveCommonBucketLocation = (
 		const { bucket, path } = location;
 		assertValidationError(
 			bucket === commonBucket,
-			StorageBrowserValidationErrorCode.LocationCredentialsCrossBucket,
+			StorageValidationErrorCode.LocationCredentialsCrossBucket,
 		);
 		while (commonPath !== '' && !path.startsWith(commonPath)) {
 			commonPath = commonPath.slice(0, -1);

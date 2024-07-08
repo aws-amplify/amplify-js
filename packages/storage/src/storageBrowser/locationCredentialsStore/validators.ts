@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageBrowserValidationErrorCode } from '../errors/validation';
-import { assertValidationError } from '../errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '../../errors/types/validation';
+import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { BucketLocation, Permission } from '../../providers/s3/types/options';
 
 interface CredentialsBucketLocation extends BucketLocation {
@@ -40,7 +40,7 @@ const validateLocationBucket = (input: {
 	}
 	assertValidationError(
 		actionBucket === providerBucket,
-		StorageBrowserValidationErrorCode.LocationCredentialsBucketMismatch,
+		StorageValidationErrorCode.LocationCredentialsBucketMismatch,
 	);
 };
 
@@ -57,14 +57,14 @@ const validateLocationPath = (input: {
 		const providerPathPrefix = providerPath.replace(/\*$/, '');
 		assertValidationError(
 			actionPath.startsWith(providerPathPrefix),
-			StorageBrowserValidationErrorCode.LocationCredentialsPathMismatch,
+			StorageValidationErrorCode.LocationCredentialsPathMismatch,
 		);
 	} else {
 		// If provider path is scoped to an object, verify if the action path points to the same object.
 		// TODO(@AllanZhengYP) Provider more info in error message: actionPath, providerPath.
 		assertValidationError(
 			actionPath === providerPath,
-			StorageBrowserValidationErrorCode.LocationCredentialsPathMismatch,
+			StorageValidationErrorCode.LocationCredentialsPathMismatch,
 		);
 	}
 };
@@ -81,6 +81,6 @@ const validateLocationPermission = (input: {
 	// location credentials provider with permission ${providerPermission}.`
 	assertValidationError(
 		providerPermission.includes(actionPermission),
-		StorageBrowserValidationErrorCode.LocationCredentialsPermissionMismatch,
+		StorageValidationErrorCode.LocationCredentialsPermissionMismatch,
 	);
 };
