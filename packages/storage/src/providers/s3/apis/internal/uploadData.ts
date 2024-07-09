@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { UploadDataInput, UploadDataWithPathInput } from '../../types';
 import { createUploadTask } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';

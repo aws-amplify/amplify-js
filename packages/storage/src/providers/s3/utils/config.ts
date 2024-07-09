@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
 import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
