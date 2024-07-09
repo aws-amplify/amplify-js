@@ -40,7 +40,7 @@ describe('createStore', () => {
 
 	it('should return a symbol to refer the store instance', () => {
 		const storeReference = createStore(jest.fn(), 20);
-		expect(Object.prototype.toString.call(storeReference)).toBe(
+		expect(Object.prototype.toString.call(storeReference.value)).toBe(
 			'[object Symbol]',
 		);
 	});
@@ -48,12 +48,12 @@ describe('createStore', () => {
 
 describe('getValue', () => {
 	const mockCachedValue = 'CACHED_VALUE' as any as AWSCredentials;
-	let storeReference: symbol;
+	let storeSymbol: { value: symbol };
 	beforeEach(() => {
-		storeReference = createStore(jest.fn(), 20);
+		storeSymbol = createStore(jest.fn(), 20);
 	});
 	afterEach(() => {
-		removeStore(storeReference);
+		removeStore(storeSymbol);
 		jest.clearAllMocks();
 	});
 
@@ -61,7 +61,7 @@ describe('getValue', () => {
 		expect.assertions(1);
 		await expect(
 			getValue({
-				storeSymbol: Symbol('invalid'),
+				storeSymbol: { value: Symbol('invalid') },
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),
@@ -77,7 +77,7 @@ describe('getValue', () => {
 		jest.mocked(getCacheValue).mockReturnValueOnce(mockCachedValue);
 		expect(
 			await getValue({
-				storeSymbol: storeReference,
+				storeSymbol,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),
@@ -95,7 +95,7 @@ describe('getValue', () => {
 		jest.mocked(getCacheValue).mockReturnValueOnce(mockCachedValue);
 		expect(
 			await getValue({
-				storeSymbol: storeReference,
+				storeSymbol,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),
@@ -117,7 +117,7 @@ describe('getValue', () => {
 		jest.mocked(fetchNewValue).mockResolvedValue('NEW_VALUE' as any);
 		expect(
 			await getValue({
-				storeSymbol: storeReference,
+				storeSymbol,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: false,
 			}),
@@ -135,7 +135,7 @@ describe('getValue', () => {
 		jest.mocked(fetchNewValue).mockResolvedValue('NEW_VALUE' as any);
 		expect(
 			await getValue({
-				storeSymbol: storeReference,
+				storeSymbol,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: true,
 			}),
@@ -154,7 +154,7 @@ describe('getValue', () => {
 			.mockRejectedValueOnce(new Error('Network error'));
 		await expect(
 			getValue({
-				storeSymbol: storeReference,
+				storeSymbol,
 				location: { scope: 'abc', permission: 'READ' },
 				forceRefresh: true,
 			}),
@@ -182,7 +182,7 @@ describe('removeStore', () => {
 
 	it('should not throw if store with given symbol does not exist', () => {
 		expect(() => {
-			removeStore(Symbol('invalid'));
+			removeStore({ value: Symbol('invalid') });
 		}).not.toThrow();
 	});
 });
