@@ -9,9 +9,7 @@ import { assertValidationError } from '../../errors/utils/assertValidationError'
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 
 import {
-	CacheKey,
-	StoreInstance,
-	createCacheKey,
+	LruLocationCredentialsStore,
 	fetchNewValue,
 	getCacheValue,
 	initStore,
@@ -22,7 +20,7 @@ import {
  * so we can reliably de-reference from the memory when we destroy a store
  * instance.
  */
-const storeRegistry = new Map<symbol, StoreInstance>();
+const storeRegistry = new Map<symbol, LruLocationCredentialsStore>();
 
 /**
  * @internal
@@ -37,23 +35,23 @@ export const createStore = (
 	return storeInstanceSymbol;
 };
 
-const getEquivalentCacheKeys = (key: CredentialsLocation): CacheKey[] => {
-	const { scope, permission } = key;
-	const cacheKeys = [createCacheKey(key)];
-	if (permission !== 'READWRITE') {
-		cacheKeys.push(createCacheKey({ scope, permission: 'READWRITE' }));
+const getLookUpLocations = (location: CredentialsLocation) => {
+	const { scope, permission } = location;
+	const locations = [{ scope, permission }];
+	if (permission === 'READ' || permission === 'WRITE') {
+		locations.push({ scope, permission: 'READWRITE' });
 	}
 
-	return cacheKeys;
+	return locations;
 };
 
-const getCredentialsStore = (reference: symbol) => {
+const getCredentialsStore = (storeSymbol: symbol) => {
 	assertValidationError(
-		storeRegistry.has(reference),
+		storeRegistry.has(storeSymbol),
 		StorageValidationErrorCode.LocationCredentialsStoreDestroyed,
 	);
 
-	return storeRegistry.get(reference)!;
+	return storeRegistry.get(storeSymbol)!;
 };
 
 /**
@@ -66,19 +64,19 @@ export const getValue = async (input: {
 }): Promise<{ credentials: AWSCredentials }> => {
 	const { storeSymbol: storeReference, location, forceRefresh } = input;
 	const store = getCredentialsStore(storeReference);
-	const equivalentCacheKeys = getEquivalentCacheKeys(location);
 	if (!forceRefresh) {
-		for (const cacheKey of equivalentCacheKeys) {
-			const credentials = getCacheValue(store, cacheKey);
+		const lookupLocations = getLookUpLocations(location);
+		for (const lookupLocation of lookupLocations) {
+			const credentials = getCacheValue(store, lookupLocation);
 			if (credentials !== null) {
 				return { credentials };
 			}
 		}
 	}
 
-	return fetchNewValue(store, createCacheKey(location));
+	return fetchNewValue(store, location);
 };
 
-export const removeStore = (storeReference: symbol) => {
-	storeRegistry.delete(storeReference);
+export const removeStore = (storeSymbol: symbol) => {
+	storeRegistry.delete(storeSymbol);
 };

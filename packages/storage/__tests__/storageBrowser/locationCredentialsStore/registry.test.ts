@@ -11,18 +11,17 @@ import {
 	createStore,
 	getValue,
 	removeStore,
-} from '../../../src/storage-browser/locationCredentialsStore/registry';
+} from '../../../src/storageBrowser/locationCredentialsStore/registry';
 import {
-	StoreInstance,
-	createCacheKey,
+	LruLocationCredentialsStore,
 	fetchNewValue,
 	getCacheValue,
 	initStore,
-} from '../../../src/storage-browser/locationCredentialsStore/store';
+} from '../../../src/storageBrowser/locationCredentialsStore/store';
 
-jest.mock('../../../src/storage-browser/locationCredentialsStore/store');
+jest.mock('../../../src/storageBrowser/locationCredentialsStore/store');
 
-const mockedStore = 'MOCKED_STORE' as any as StoreInstance;
+const mockedStore = 'MOCKED_STORE' as any as LruLocationCredentialsStore;
 
 afterEach(() => {
 	jest.clearAllMocks();
@@ -30,7 +29,6 @@ afterEach(() => {
 
 beforeEach(() => {
 	jest.mocked(initStore).mockReturnValue(mockedStore);
-	jest.mocked(createCacheKey).mockImplementation(args => args as any);
 });
 
 describe('createStore', () => {

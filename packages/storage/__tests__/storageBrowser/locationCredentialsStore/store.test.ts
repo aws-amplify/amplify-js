@@ -1,19 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../src/errors/types/validation';
 import {
-	StoreValue,
-	createCacheKey,
 	fetchNewValue,
 	getCacheValue,
 	initStore,
-} from '../../../src/storage-browser/locationCredentialsStore/store';
+} from '../../../src/storageBrowser/locationCredentialsStore/store';
+import { CredentialsLocation } from '../../../src/storageBrowser/types';
 
 describe('initStore', () => {
 	it('should create a store with given capacity, refresh Handler and values', () => {
@@ -42,94 +39,79 @@ describe('initStore', () => {
 	});
 });
 
-describe('createCacheKey', () => {
-	it('should return a cache key for given location and permission', () => {
-		expect(createCacheKey({ scope: 'abc', permission: 'READ' })).toEqual({
-			scope: 'abc',
-			permission: 'READ',
-			hash: 'abc_READ',
-		});
-	});
-});
-
 describe('getCacheValue', () => {
 	it('should return a cache value for given location and permission', () => {
-		const cachedValue: StoreValue = {
-			credentials: 'MOCK_CREDS' as any as AWSCredentials,
+		const cachedValue = {
+			credentials: 'MOCK_CREDS',
 			scope: 'abc',
 			permission: 'READ',
-		};
+		} as any;
 		const store = initStore(jest.fn());
 		store.values.set('abc_READ', cachedValue);
 		expect(
-			getCacheValue(
-				store,
-				createCacheKey({
-					scope: 'abc',
-					permission: 'READ',
-				}),
-			),
+			getCacheValue(store, {
+				scope: 'abc',
+				permission: 'READ',
+			}),
 		).toEqual(cachedValue.credentials);
 	});
 
 	it('should return null if cache value is not found', () => {
 		expect(
-			getCacheValue(
-				initStore(jest.fn()),
-				createCacheKey({
-					scope: 'abc',
-					permission: 'READ',
-				}),
-			),
+			getCacheValue(initStore(jest.fn()), {
+				scope: 'abc',
+				permission: 'READ',
+			}),
 		).toBeNull();
 	});
 
 	it('should return null if cache value is expired', () => {
-		const expiredValue: StoreValue = {
+		const expiredValue = {
 			credentials: {
 				expiration: new Date(),
-			} as any as AWSCredentials,
+			},
 			scope: 'abc',
 			permission: 'READ',
-		};
+		} as any;
 		const store = initStore(jest.fn());
 		store.values.set('abc_READ', expiredValue);
 		expect(
-			getCacheValue(
-				store,
-				createCacheKey({
-					scope: 'abc',
-					permission: 'READ',
-				}),
-			),
+			getCacheValue(store, {
+				scope: 'abc',
+				permission: 'READ',
+			}),
 		).toBeNull();
 		expect(store.values.size).toBe(0);
 	});
 
 	it('should return null if cache value is expiring soon', () => {
-		const expiringValue: StoreValue = {
+		const expiringValue = {
 			credentials: {
 				expiration: new Date(Date.now() + 1000 * 20), // 20 seconds
-			} as any as AWSCredentials,
+			},
 			scope: 'abc',
 			permission: 'READ',
-		};
+		} as any;
 		const store = initStore(jest.fn());
 		store.values.set('abc_READ', expiringValue);
 		expect(
-			getCacheValue(
-				store,
-				createCacheKey({
-					scope: 'abc',
-					permission: 'READ',
-				}),
-			),
+			getCacheValue(store, {
+				scope: 'abc',
+				permission: 'READ',
+			}),
 		).toBeNull();
 		expect(store.values.size).toBe(0);
 	});
 });
 
 describe('fetchNewValue', () => {
+	const mockCacheLocation = {
+		scope: 'abc',
+		permission: 'READ',
+	} as CredentialsLocation;
+	const createCacheKey = (location: CredentialsLocation) =>
+		`${location.scope}_${location.permission}` as const;
+
 	it('should fetch new value from remote source', async () => {
 		expect.assertions(2);
 		const mockCredentials = 'MOCK_CREDS';
@@ -137,8 +119,7 @@ describe('fetchNewValue', () => {
 			credentials: mockCredentials,
 		});
 		const store = initStore(refreshHandler);
-		const cacheKey = createCacheKey({ scope: 'abc', permission: 'READ' });
-		const newCredentials = await fetchNewValue(store, cacheKey);
+		const newCredentials = await fetchNewValue(store, mockCacheLocation);
 		expect(refreshHandler).toHaveBeenCalledWith({
 			scope: 'abc',
 			permission: 'READ',
@@ -154,8 +135,7 @@ describe('fetchNewValue', () => {
 			.fn()
 			.mockRejectedValue(new Error('Network error'));
 		const store = initStore(refreshHandler);
-		const cacheKey = createCacheKey({ scope: 'abc', permission: 'READ' });
-		await expect(fetchNewValue(store, cacheKey)).rejects.toThrow(
+		await expect(fetchNewValue(store, mockCacheLocation)).rejects.toThrow(
 			'Network error',
 		);
 		expect(store.values.size).toBe(0);
@@ -168,9 +148,8 @@ describe('fetchNewValue', () => {
 			credentials: mockCredentials,
 		});
 		const store = initStore(refreshHandler);
-		const cacheKey = createCacheKey({ scope: 'abc', permission: 'READ' });
-		await fetchNewValue(store, cacheKey);
-		expect(store.values.get(cacheKey.hash)).toEqual({
+		await fetchNewValue(store, mockCacheLocation);
+		expect(store.values.get(createCacheKey(mockCacheLocation))).toEqual({
 			credentials: mockCredentials,
 			inflightCredentials: undefined,
 			scope: 'abc',
@@ -185,11 +164,10 @@ describe('fetchNewValue', () => {
 			credentials: mockCredentials,
 		});
 		const store = initStore(refreshHandler);
-		const cacheKey = createCacheKey({ scope: 'abc', permission: 'READ' });
 		await Promise.all([
-			fetchNewValue(store, cacheKey),
-			fetchNewValue(store, cacheKey),
-			fetchNewValue(store, cacheKey),
+			fetchNewValue(store, mockCacheLocation),
+			fetchNewValue(store, mockCacheLocation),
+			fetchNewValue(store, mockCacheLocation),
 		]);
 		expect(refreshHandler).toHaveBeenCalledTimes(1);
 	});
@@ -204,18 +182,17 @@ describe('fetchNewValue', () => {
 				credentials: mockCredentials,
 			});
 		const store = initStore(refreshHandler);
-		const cacheKey = createCacheKey({ scope: 'abc', permission: 'READ' });
 		try {
 			await Promise.all([
-				fetchNewValue(store, cacheKey),
-				fetchNewValue(store, cacheKey),
-				fetchNewValue(store, cacheKey),
+				fetchNewValue(store, mockCacheLocation),
+				fetchNewValue(store, mockCacheLocation),
+				fetchNewValue(store, mockCacheLocation),
 			]);
 		} catch (e) {
 			expect(e).toEqual(new Error('Network error'));
 			expect(store.values.size).toBe(0);
 		}
-		const { credentials } = await fetchNewValue(store, cacheKey);
+		const { credentials } = await fetchNewValue(store, mockCacheLocation);
 		expect(credentials).toEqual(mockCredentials);
 		expect(store.values.size).toBe(1);
 	});
@@ -227,19 +204,19 @@ describe('fetchNewValue', () => {
 			credentials: mockCredentials,
 		});
 		const store = initStore(refreshHandler, 1);
-		const cacheKey1 = createCacheKey({
+		const cacheLocation1 = {
 			scope: 'abc',
-			permission: 'READ',
-		});
-		const cacheKey2 = createCacheKey({
+			permission: 'READ' as const,
+		};
+		const cacheLocation2 = {
 			scope: 'def',
-			permission: 'READ',
-		});
-		await fetchNewValue(store, cacheKey1);
-		await fetchNewValue(store, cacheKey2);
+			permission: 'READ' as const,
+		};
+		await fetchNewValue(store, cacheLocation1);
+		await fetchNewValue(store, cacheLocation2);
 		expect(refreshHandler).toHaveBeenCalledTimes(2);
 		expect(store.values.size).toBe(1);
-		expect(store.values.get(cacheKey2.hash)).toBeDefined();
-		expect(store.values.get(cacheKey1.hash)).toBeUndefined();
+		expect(store.values.get(createCacheKey(cacheLocation2))).toBeDefined();
+		expect(store.values.get(createCacheKey(cacheLocation1))).toBeUndefined();
 	});
 });

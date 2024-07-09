@@ -13,27 +13,17 @@ import { StorageValidationErrorCode } from '../../errors/types/validation';
 const CREDENTIALS_STORE_DEFAULT_SIZE = 10;
 const CREDENTIALS_REFRESH_WINDOW_MS = 30_000;
 
-export interface StoreValue extends CredentialsLocation {
+interface StoreValue extends CredentialsLocation {
 	credentials?: AWSCredentials;
 	inflightCredentials?: Promise<{ credentials: AWSCredentials }>;
 }
 
 type S3Url = string;
 
-/**
- * @internal
- */
-export interface CacheKey extends CredentialsLocation {
-	hash: `${S3Url}_${Permission}`;
-}
+type CacheKey = `${S3Url}_${Permission}`;
 
-/**
- * @internal
- */
-export const createCacheKey = (location: CredentialsLocation): CacheKey => ({
-	...location,
-	hash: `${location.scope}_${location.permission}`,
-});
+const createCacheKey = (location: CredentialsLocation): CacheKey =>
+	`${location.scope}_${location.permission}`;
 
 /**
  * LRU implementation for Location Credentials Store
@@ -41,10 +31,10 @@ export const createCacheKey = (location: CredentialsLocation): CacheKey => ({
  *
  * @internal
  */
-export interface StoreInstance {
+export interface LruLocationCredentialsStore {
 	capacity: number;
 	refreshHandler: LocationCredentialsHandler;
-	values: Map<CacheKey['hash'], StoreValue>;
+	values: Map<CacheKey, StoreValue>;
 }
 
 /**
@@ -53,7 +43,7 @@ export interface StoreInstance {
 export const initStore = (
 	refreshHandler: LocationCredentialsHandler,
 	size = CREDENTIALS_STORE_DEFAULT_SIZE,
-): StoreInstance => {
+): LruLocationCredentialsStore => {
 	assertValidationError(
 		size > 0,
 		StorageValidationErrorCode.InvalidLocationCredentialsCacheSize,
@@ -62,26 +52,27 @@ export const initStore = (
 	return {
 		capacity: size,
 		refreshHandler,
-		values: new Map<CacheKey['hash'], StoreValue>(),
+		values: new Map<CacheKey, StoreValue>(),
 	};
 };
 
 export const getCacheValue = (
-	store: StoreInstance,
-	key: CacheKey,
+	store: LruLocationCredentialsStore,
+	location: CredentialsLocation,
 ): AWSCredentials | null => {
-	const cachedValue = store.values.get(key.hash);
+	const cacheKey = createCacheKey(location);
+	const cachedValue = store.values.get(cacheKey);
 	const cachedCredentials = cachedValue?.credentials;
 	if (!cachedCredentials) {
 		return null;
 	}
 
 	// Delete and re-insert to key to map to indicate a latest reference in LRU.
-	store.values.delete(key.hash);
+	store.values.delete(cacheKey);
 	if (!pastTTL(cachedCredentials)) {
 		// TODO(@AllanZhengYP): If the credential is still valid but will expire
 		// soon, we should return credentials AND dispatch a refresh.
-		store.values.set(key.hash, cachedValue);
+		store.values.set(cacheKey, cachedValue);
 
 		return cachedCredentials;
 	}
@@ -104,21 +95,22 @@ const pastTTL = (credentials: AWSCredentials) => {
  * @internal
  */
 export const fetchNewValue = async (
-	store: StoreInstance,
-	key: CacheKey,
+	store: LruLocationCredentialsStore,
+	location: CredentialsLocation,
 ): Promise<{ credentials: AWSCredentials }> => {
 	const storeValues = store.values;
-	if (!storeValues.has(key.hash)) {
+	const key = createCacheKey(location);
+	if (!storeValues.has(key)) {
 		const newStoreValue: StoreValue = {
-			scope: key.scope,
-			permission: key.permission,
+			scope: location.scope,
+			permission: location.permission,
 		};
 		setCacheRecord(store, key, newStoreValue);
 	}
-	const storeValue = storeValues.get(key.hash)!;
+	const storeValue = storeValues.get(key)!;
 
 	return dispatchRefresh(store.refreshHandler, storeValue, () => {
-		store.values.delete(key.hash);
+		store.values.delete(key);
 	});
 };
 
@@ -152,7 +144,7 @@ const dispatchRefresh = (
 };
 
 const setCacheRecord = (
-	store: StoreInstance,
+	store: LruLocationCredentialsStore,
 	key: CacheKey,
 	value: StoreValue,
 ): void => {
@@ -163,5 +155,5 @@ const setCacheRecord = (
 		store.values.delete(oldestKey);
 	}
 	// Add latest used value to the cache.
-	store.values.set(key.hash, value);
+	store.values.set(key, value);
 };
