@@ -2,9 +2,9 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { StorageConfiguration } from '../apis/internal/types';
+import { S3Configuration } from '../apis/internal/types';
 
-const constructDefaultCredentialsProvider = (amplify: AmplifyClassV6) => {
+const createDefaultCredentialsProvider = (amplify: AmplifyClassV6) => {
 	/**
 	 * A credentials provider function instead of a static credentials object is
 	 * used because the long-running tasks like multipart upload may span over the
@@ -22,7 +22,7 @@ const constructDefaultCredentialsProvider = (amplify: AmplifyClassV6) => {
 	};
 };
 
-const constructDefaultIdentityIdProvider = (amplify: AmplifyClassV6) => {
+const createDefaultIdentityIdProvider = (amplify: AmplifyClassV6) => {
 	return async () => {
 		const { identityId } = await amplify.Auth.fetchAuthSession();
 		assertValidationError(
@@ -35,18 +35,19 @@ const constructDefaultIdentityIdProvider = (amplify: AmplifyClassV6) => {
 };
 
 /**
- * This constructor will return a storage configuration
+ * This createor will return a storage configuration
  * that is independent from the Amplify singleton.
  *
  * @internal
  */
-export const constructStorageConfiguration = (
+export const createStorageConfiguration = (
 	amplify: AmplifyClassV6,
-): StorageConfiguration => {
-	const libraryOptions = amplify.libraryOptions.Storage?.S3 ?? {};
+): S3Configuration => {
+	const libraryOptions = amplify.libraryOptions?.Storage?.S3 ?? {};
 	const serviceOptions = amplify.getConfig()?.Storage?.S3 ?? {};
-	const credentialsProvider = constructDefaultCredentialsProvider(amplify);
-	const identityIdProvider = constructDefaultIdentityIdProvider(amplify);
+	console.log(serviceOptions);
+	const credentialsProvider = createDefaultCredentialsProvider(amplify);
+	const identityIdProvider = createDefaultIdentityIdProvider(amplify);
 
 	return {
 		libraryOptions,

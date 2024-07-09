@@ -11,11 +11,8 @@ import {
 	DownloadDataWithPathOutput,
 } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
-import {
-	constructStorageConfiguration,
-	createDownloadTask,
-	validateStorageOperationInput,
-} from '../utils';
+import { createDownloadTask, validateStorageOperationInput } from '../utils';
+import { createStorageConfiguration } from '../utils/config';
 import { getObject } from '../utils/client';
 import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
@@ -118,7 +115,8 @@ const downloadDataJob =
 		StorageDownloadDataOutput<StorageItemWithKey | StorageItemWithPath>
 	> => {
 		const { options: downloadDataOptions } = downloadDataInput;
-		const configuration = constructStorageConfiguration(Amplify);
+		const configuration = createStorageConfiguration(Amplify);
+
 		const { bucket, keyPrefix, s3Config, identityId } =
 			await resolveS3ConfigAndInput({
 				...configuration,

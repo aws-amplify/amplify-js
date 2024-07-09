@@ -1,10 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AWSCredentials,
-	StorageAction,
-} from '@aws-amplify/core/internals/utils';
+import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput, UploadDataWithPathInput } from '../../types';
 import {
@@ -16,15 +13,12 @@ import { ItemWithKey, ItemWithPath } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
-import { S3LibraryOptions, S3ServiceOptions } from '../../types/options';
+import { S3Configuration } from '../internal/types';
 
 interface PutObjectJobProps {
-	uploadDataInput: UploadDataInput | UploadDataWithPathInput;
+	config: S3Configuration;
+	input: UploadDataInput | UploadDataWithPathInput;
 	abortSignal: AbortSignal;
-	credentialsProvider(): Promise<AWSCredentials>;
-	identityIdProvider(): Promise<string>;
-	serviceOptions: S3ServiceOptions;
-	libraryOptions: S3LibraryOptions;
 	totalLength?: number;
 }
 
@@ -34,18 +28,15 @@ interface PutObjectJobProps {
  * @internal
  */
 export const putObjectJob =
-	({
-		uploadDataInput,
-		abortSignal,
-		credentialsProvider,
-		identityIdProvider,
-		serviceOptions,
-		libraryOptions,
-		totalLength,
-	}: PutObjectJobProps) =>
+	({ config, input, abortSignal, totalLength }: PutObjectJobProps) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
-		const { options: uploadDataOptions, data } = uploadDataInput;
-
+		const { options: uploadDataOptions, data } = input;
+		const {
+			credentialsProvider,
+			identityIdProvider,
+			serviceOptions,
+			libraryOptions,
+		} = config;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
 			await resolveS3ConfigAndInput({
 				credentialsProvider,
@@ -55,7 +46,7 @@ export const putObjectJob =
 				apiOptions: uploadDataOptions,
 			});
 		const { inputType, objectKey } = validateStorageOperationInput(
-			uploadDataInput,
+			input,
 			identityId,
 		);
 

@@ -12,7 +12,7 @@ import {
 } from '../../types';
 import { ResolvedS3Config } from '../../types/options';
 import {
-	constructStorageConfiguration,
+	createStorageConfiguration,
 	isInputWithPath,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
@@ -41,7 +41,7 @@ const copyWithPath = async (
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	const configuration = constructStorageConfiguration(amplify);
+	const configuration = createStorageConfiguration(amplify);
 	const { s3Config, bucket, identityId } = await resolveS3ConfigAndInput({
 		...configuration,
 	});
@@ -90,7 +90,7 @@ export const copyWithKey = async (
 		!!destinationKey,
 		StorageValidationErrorCode.NoDestinationKey,
 	);
-	const configuration = constructStorageConfiguration(amplify);
+	const configuration = createStorageConfiguration(amplify);
 	const {
 		s3Config,
 		bucket,

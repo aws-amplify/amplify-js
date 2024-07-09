@@ -3,11 +3,11 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { S3LibraryOptions, S3ServiceOptions } from '../../../types/options';
 
 /**
- * Storage config input
+ * S3 storage config input
  *
  * @internal
  */
-export interface StorageConfiguration {
+export interface S3Configuration {
 	serviceOptions: S3ServiceOptions;
 	libraryOptions: S3LibraryOptions;
 	credentialsProvider(): Promise<AWSCredentials>;

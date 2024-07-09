@@ -7,4 +7,4 @@ export { createDownloadTask, createUploadTask } from './transferTask';
 export { validateStorageOperationInput } from './validateStorageOperationInput';
 export { validateStorageOperationInputWithPrefix } from './validateStorageOperationInputWithPrefix';
 export { isInputWithPath } from './isInputWithPath';
-export { constructStorageConfiguration } from './constructors';
+export { createStorageConfiguration } from './config';

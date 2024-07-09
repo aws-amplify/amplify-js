@@ -13,7 +13,7 @@ import {
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client';
 import {
-	constructStorageConfiguration,
+	createStorageConfiguration,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
@@ -31,7 +31,7 @@ export const getUrl = async (
 	input: GetUrlInput | GetUrlWithPathInput,
 ): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
 	const { options: getUrlOptions } = input;
-	const configuration = constructStorageConfiguration(amplify);
+	const configuration = createStorageConfiguration(amplify);
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput({
 			...configuration,

@@ -83,5 +83,6 @@ export const resolveS3ConfigAndInput = async ({
 		bucket,
 		keyPrefix,
 		isObjectLockEnabled,
+		identityId,
 	};
 };

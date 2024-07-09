@@ -7,10 +7,10 @@ import { byteLength } from '../uploadData/byteLength';
 import { putObjectJob } from '../uploadData/putObjectJob';
 import { getMultipartUploadHandlers } from '../uploadData/multipart';
 
-import { StorageConfiguration } from './types';
+import { S3Configuration } from './types';
 
 export function internalUploadData(
-	config: StorageConfiguration,
+	config: S3Configuration,
 	input: UploadDataInput | UploadDataWithPathInput,
 ) {
 	const { data } = input;
@@ -28,8 +28,8 @@ export function internalUploadData(
 		return createUploadTask({
 			isMultipartUpload: false,
 			job: putObjectJob({
-				...config,
-				uploadDataInput: input,
+				config,
+				input,
 				abortSignal: abortController.signal,
 				totalLength: dataByteLength,
 			}),
@@ -40,7 +40,7 @@ export function internalUploadData(
 	} else {
 		// Multipart upload
 		const { multipartUploadJob, onPause, onResume, onCancel } =
-			getMultipartUploadHandlers(config, input, dataByteLength);
+			getMultipartUploadHandlers({ config, input, size: dataByteLength });
 
 		return createUploadTask({
 			isMultipartUpload: true,

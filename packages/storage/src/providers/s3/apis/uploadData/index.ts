@@ -10,7 +10,7 @@ import {
 	UploadDataWithPathOutput,
 } from '../../types';
 import { internalUploadData } from '../internal/uploadData';
-import { constructStorageConfiguration } from '../../utils/constructors';
+import { createStorageConfiguration } from '../../utils/config';
 
 /**
  * Upload data to the specified S3 object path. By default uses single PUT operation to upload if the payload is less than 5MB.
@@ -123,7 +123,7 @@ export function uploadData(
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	const config = constructStorageConfiguration(Amplify);
+	const config = createStorageConfiguration(Amplify);
 
 	return internalUploadData(config, input);
 }
