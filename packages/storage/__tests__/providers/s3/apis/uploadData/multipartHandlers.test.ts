@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify, defaultStorage } from '@aws-amplify/core';
+import { defaultStorage } from '@aws-amplify/core';
 
 import {
 	abortMultipartUpload,
@@ -22,7 +22,6 @@ import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byte
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
 import '../testUtils';
-import { createStorageConfiguration } from '../../../../../src/providers/s3/utils';
 import { S3Configuration } from '../../../../../src/providers/s3/apis/internal/types';
 
 jest.mock('@aws-amplify/core');
@@ -34,7 +33,6 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const defaultIdentityId = 'defaultIdentityId';
-const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const bucket = 'bucket';
 const region = 'region';
 const defaultKey = 'key';
@@ -133,24 +131,22 @@ const resetS3Mocks = () => {
 	mockListParts.mockReset();
 };
 
+const mockCredentialsProvider = jest.fn();
+const mockIdentityIdProvider = jest.fn();
+const mockServiceOptions = { bucket, region };
+const mockLibraryOptions = {};
+
 /* TODO Remove suite when `key` parameter is removed */
 describe('getMultipartUploadHandlers with key', () => {
-	let mockS3Config: S3Configuration;
+	const mockS3Config: S3Configuration = {
+		credentialsProvider: mockCredentialsProvider,
+		identityIdProvider: mockIdentityIdProvider,
+		serviceOptions: mockServiceOptions,
+		libraryOptions: mockLibraryOptions,
+	};
 	beforeAll(() => {
-		mockFetchAuthSession.mockResolvedValue({
-			credentials,
-			identityId: defaultIdentityId,
-		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
-			Storage: {
-				S3: {
-					bucket,
-					region,
-				},
-			},
-		});
-
-		mockS3Config = createStorageConfiguration(Amplify);
+		mockCredentialsProvider.mockImplementation(async () => credentials);
+		mockIdentityIdProvider.mockImplementation(async () => defaultIdentityId);
 	});
 
 	afterEach(() => {
@@ -693,22 +689,15 @@ describe('getMultipartUploadHandlers with key', () => {
 });
 
 describe('getMultipartUploadHandlers with path', () => {
-	let mockS3Config: S3Configuration;
+	const mockS3Config: S3Configuration = {
+		credentialsProvider: mockCredentialsProvider,
+		identityIdProvider: mockIdentityIdProvider,
+		serviceOptions: mockServiceOptions,
+		libraryOptions: mockLibraryOptions,
+	};
 	beforeAll(() => {
-		mockFetchAuthSession.mockResolvedValue({
-			credentials,
-			identityId: defaultIdentityId,
-		});
-		(Amplify.getConfig as jest.Mock).mockReturnValue({
-			Storage: {
-				S3: {
-					bucket,
-					region,
-				},
-			},
-		});
-
-		mockS3Config = createStorageConfiguration(Amplify);
+		mockCredentialsProvider.mockImplementation(async () => credentials);
+		mockIdentityIdProvider.mockImplementation(async () => defaultIdentityId);
 	});
 
 	afterEach(() => {
