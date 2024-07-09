@@ -15,7 +15,7 @@ import { createStore, getValue, removeStore } from './registry';
 export const createLocationCredentialsStore = (input: {
 	handler: LocationCredentialsHandler;
 }): LocationCredentialsStore => {
-	const storeReference = createStore(input.handler);
+	const storeSymbol = createStore(input.handler);
 
 	const store = {
 		getProvider(providerLocation: CredentialsLocation) {
@@ -27,7 +27,7 @@ export const createLocationCredentialsStore = (input: {
 				// TODO(@AllanZhengYP) validate input
 
 				return getValue({
-					storeReference,
+					storeSymbol,
 					location: { ...providerLocation },
 					forceRefresh,
 				});
@@ -37,7 +37,7 @@ export const createLocationCredentialsStore = (input: {
 		},
 
 		destroy() {
-			removeStore(storeReference);
+			removeStore(storeSymbol);
 		},
 	};
 
