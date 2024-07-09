@@ -10,8 +10,10 @@ import { CredentialsLocation, LocationCredentialsHandler } from '../types';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 
-const CREDENTIALS_STORE_DEFAULT_SIZE = 10;
-const CREDENTIALS_REFRESH_WINDOW_MS = 30_000;
+import {
+	CREDENTIALS_REFRESH_WINDOW_MS,
+	CREDENTIALS_STORE_DEFAULT_SIZE,
+} from './constants';
 
 interface StoreValue extends CredentialsLocation {
 	credentials?: AWSCredentials;
