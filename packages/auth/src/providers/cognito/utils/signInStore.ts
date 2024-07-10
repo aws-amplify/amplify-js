@@ -57,14 +57,14 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 				...action.value,
 			};
 		case 'SET_CHALLENGE_NAME':
-			persistSignInState(state);
+			persistSignInState({ challengeName: action.value });
 
 			return {
 				...state,
 				challengeName: action.value,
 			};
 		case 'SET_USERNAME':
-			persistSignInState(state);
+			persistSignInState({ username: action.value });
 
 			return {
 				...state,
