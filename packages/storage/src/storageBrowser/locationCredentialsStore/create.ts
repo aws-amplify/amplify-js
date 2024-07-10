@@ -3,7 +3,7 @@
 
 import {
 	CredentialsLocation,
-	LocationCredentialsHandler,
+	GetLocationCredentials,
 	LocationCredentialsStore,
 } from '../types';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
@@ -17,7 +17,7 @@ import { createStore, getValue, removeStore } from './registry';
 import { validateCredentialsProviderLocation } from './validators';
 
 export const createLocationCredentialsStore = (input: {
-	handler: LocationCredentialsHandler;
+	handler: GetLocationCredentials;
 }): LocationCredentialsStore => {
 	const storeSymbol = createStore(input.handler);
 

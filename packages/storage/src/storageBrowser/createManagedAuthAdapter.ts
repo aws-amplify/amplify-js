@@ -1,11 +1,10 @@
-/* eslint-disable unused-imports/no-unused-vars */
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
 	CredentialsProvider,
-	ListLocationsHandler,
-	LocationCredentialsHandler,
-} from '../types';
+	GetLocationCredentials,
+	ListLocations,
+} from './types';
 
 import { createListLocationsHandler } from './createListLocationsHandler';
 import { createLocationCredentialsHandler } from './createLocationCredentialsHandler';
@@ -19,16 +18,17 @@ export interface CreateManagedAuthAdapterInput {
 
 export interface ManagedAuthAdaptor {
 	getHandlers(): {
-		listLocations: ListLocationsHandler;
-		getLocationCredentials: LocationCredentialsHandler;
+		listLocations: ListLocations;
+		getLocationCredentials: GetLocationCredentials;
 	};
 	region: string;
 }
 
-export const createManagedAuthAdapter = (
-	// eslint-disable-next-line unused-imports/no-unused-vars
-	{ credentialsProvider, region, accountId }: CreateManagedAuthAdapterInput,
-): ManagedAuthAdaptor => {
+export const createManagedAuthAdapter = ({
+	credentialsProvider,
+	region,
+	accountId,
+}: CreateManagedAuthAdapterInput): ManagedAuthAdaptor => {
 	return {
 		getHandlers: () => {
 			const credentialsProviderCaching =

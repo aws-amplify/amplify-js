@@ -7,14 +7,6 @@
  * @aws-amplify/ui-react-storage
  */
 
-export {
-	listCallerAccessGrants,
-	ListCallerAccessGrantsInput,
-	ListCallerAccessGrantsOutput,
-} from './listCallerAccessGrants';
-export { createLocationCredentialsHandler } from './createLocationCredentialsHandler';
 export { createLocationCredentialsStore } from './locationCredentialsStore';
-export {
-	createManagedAuthAdapter as managedAuthAdapter,
-	ManagedAuthAdapterInput,
-} from './managedAuthAdapter';
+export { createManagedAuthAdapter } from './createManagedAuthAdapter';
+export { GetLocationCredentials, ListLocations } from './types';

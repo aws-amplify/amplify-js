@@ -6,7 +6,7 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 import { Permission } from '../../providers/s3/types/options';
-import { CredentialsLocation, LocationCredentialsHandler } from '../types';
+import { CredentialsLocation, GetLocationCredentials } from '../types';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 
@@ -35,7 +35,7 @@ const createCacheKey = (location: CredentialsLocation): CacheKey =>
  */
 export interface LruLocationCredentialsStore {
 	capacity: number;
-	refreshHandler: LocationCredentialsHandler;
+	refreshHandler: GetLocationCredentials;
 	values: Map<CacheKey, StoreValue>;
 }
 
@@ -43,7 +43,7 @@ export interface LruLocationCredentialsStore {
  * @internal
  */
 export const initStore = (
-	refreshHandler: LocationCredentialsHandler,
+	refreshHandler: GetLocationCredentials,
 	size = CREDENTIALS_STORE_DEFAULT_SIZE,
 ): LruLocationCredentialsStore => {
 	assertValidationError(
@@ -117,7 +117,7 @@ export const fetchNewValue = async (
 };
 
 const dispatchRefresh = (
-	refreshHandler: LocationCredentialsHandler,
+	refreshHandler: GetLocationCredentials,
 	value: StoreValue,
 	onRefreshFailure: () => void,
 ) => {
