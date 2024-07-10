@@ -61,14 +61,14 @@ export const createLocationCredentialsStore = (input: {
 
 type S3Uri = string;
 
-const parseS3Uri = (url: S3Uri): BucketLocation => {
+const parseS3Uri = (uri: S3Uri): BucketLocation => {
 	const s3UrlSchemaRegex = /^s3:\/\//;
 	// TODO(@AllanZhengYP): Provide more info to error message: url
 	assertValidationError(
-		s3UrlSchemaRegex.test(url),
+		s3UrlSchemaRegex.test(uri),
 		StorageValidationErrorCode.InvalidS3Uri,
 	);
-	const [bucket, ...pathParts] = url.replace(s3UrlSchemaRegex, '').split('/');
+	const [bucket, ...pathParts] = uri.replace(s3UrlSchemaRegex, '').split('/');
 	assertValidationError(!!bucket, StorageValidationErrorCode.InvalidS3Uri);
 	const path = pathParts.join('/');
 

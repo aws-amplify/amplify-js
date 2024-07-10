@@ -28,6 +28,10 @@ export enum StorageValidationErrorCode {
 	InvalidS3Uri = 'InvalidS3Uri',
 }
 
+// Common error message strings to save some bytes
+const LOCATION_SPECIFIC_CREDENTIALS = 'Location-specific credentials';
+const DOES_NOT_MATCH = 'does not match that required for the API call';
+
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.NoCredentials]: {
 		message: 'Credentials should not be empty.',
@@ -81,24 +85,21 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 		message: 'locationCredentialsCacheSize must be a positive integer.',
 	},
 	[StorageValidationErrorCode.LocationCredentialsStoreDestroyed]: {
-		message: 'The location-specific credentials store has been destroyed.',
+		message: `${LOCATION_SPECIFIC_CREDENTIALS} store has been destroyed.`,
 	},
 	[StorageValidationErrorCode.InvalidS3Uri]: {
 		message: 'Invalid S3 URI.',
 	},
 	[StorageValidationErrorCode.LocationCredentialsCrossBucket]: {
-		message: 'Location-specific credentials cannot be cross-bucket.',
+		message: `${LOCATION_SPECIFIC_CREDENTIALS} cannot be used across buckets.`,
 	},
 	[StorageValidationErrorCode.LocationCredentialsBucketMismatch]: {
-		message:
-			'Location-specific credentials bucket does not match the bucket of the API call.',
+		message: `${LOCATION_SPECIFIC_CREDENTIALS} bucket ${DOES_NOT_MATCH}.`,
 	},
 	[StorageValidationErrorCode.LocationCredentialsPathMismatch]: {
-		message:
-			'Location-specific credentials path does not match the path of the API call.',
+		message: `${LOCATION_SPECIFIC_CREDENTIALS} path ${DOES_NOT_MATCH}.`,
 	},
 	[StorageValidationErrorCode.LocationCredentialsPermissionMismatch]: {
-		message:
-			'Location-specific credentials permission does not match the permission required for the API call.',
+		message: `${LOCATION_SPECIFIC_CREDENTIALS} permission ${DOES_NOT_MATCH}.`,
 	},
 };
