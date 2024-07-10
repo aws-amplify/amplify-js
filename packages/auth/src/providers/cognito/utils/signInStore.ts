@@ -82,9 +82,6 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 };
 
 const isExpired = (expiryDate: string | null): boolean => {
-	if (!expiryDate) {
-		return true;
-	}
 	const expiryTimestamp = Number(expiryDate);
 	const currentTimestamp = Date.now();
 
@@ -92,8 +89,8 @@ const isExpired = (expiryDate: string | null): boolean => {
 };
 
 const clearPersistedSignInState = () => {
-	for (const key in signInStateKeys) {
-		syncSessionStorage.removeItem(key);
+	for (const storedKey of Object.values(signInStateKeys)) {
+		syncSessionStorage.removeItem(storedKey);
 	}
 };
 
@@ -112,27 +109,31 @@ const getDefaultState = (): SignInState => ({
 // Hydrate signInStore from Synced Session Storage
 const initializeState = (): SignInState => {
 	const expiry = syncSessionStorage.getItem(signInStateKeys.expiry);
-	if (isExpired(expiry)) {
-		logger.warn('Sign-in session expired');
-		clearPersistedSignInState();
+	if (expiry) {
+		if (isExpired(expiry)) {
+			logger.warn('Sign-in session expired');
+			clearPersistedSignInState();
 
+			return getDefaultState();
+		}
+
+		const username =
+			syncSessionStorage.getItem(signInStateKeys.username) ?? undefined;
+
+		const challengeName = (syncSessionStorage.getItem(
+			signInStateKeys.challengeName,
+		) ?? undefined) as ChallengeName;
+		const signInSession =
+			syncSessionStorage.getItem(signInStateKeys.signInSession) ?? undefined;
+
+		return {
+			username,
+			challengeName,
+			signInSession,
+		};
+	} else {
 		return getDefaultState();
 	}
-
-	const username =
-		syncSessionStorage.getItem(signInStateKeys.username) ?? undefined;
-
-	const challengeName = (syncSessionStorage.getItem(
-		signInStateKeys.challengeName,
-	) ?? undefined) as ChallengeName;
-	const signInSession =
-		syncSessionStorage.getItem(signInStateKeys.signInSession) ?? undefined;
-
-	return {
-		username,
-		challengeName,
-		signInSession,
-	};
 };
 
 const createStore: Store<SignInState, SignInAction> = reducer => {
