@@ -51,7 +51,7 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 			};
 
 		case 'SET_SIGN_IN_STATE':
-			persistSignInState(state);
+			persistSignInState(action.value);
 
 			return {
 				...action.value,
@@ -161,13 +161,19 @@ export function setActiveSignInState(state: SignInState): void {
 
 // Save local state into Session Storage
 const persistSignInState = ({
-	challengeName = '' as ChallengeName,
-	signInSession = '',
-	username = '',
+	challengeName,
+	signInSession,
+	username,
 }: SignInState) => {
-	syncSessionStorage.setItem(signInStateKeys.username, username);
-	syncSessionStorage.setItem(signInStateKeys.challengeName, challengeName);
-	syncSessionStorage.setItem(signInStateKeys.signInSession, signInSession);
+	if (username) {
+		syncSessionStorage.setItem(signInStateKeys.username, username);
+	}
+	if (signInSession) {
+		syncSessionStorage.setItem(signInStateKeys.signInSession, signInSession);
+	}
+	if (challengeName) {
+		syncSessionStorage.setItem(signInStateKeys.challengeName, challengeName);
+	}
 	syncSessionStorage.setItem(
 		signInStateKeys.expiry,
 		String(Date.now() + MS_TO_EXPIRY),
