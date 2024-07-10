@@ -1,34 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import {
-	CredentialsProvider,
-	GetLocationCredentials,
-	ListLocations,
-} from './types';
+import { CredentialsProvider, StorageBrowserConfigAdapter } from './types';
 
 import { createListLocationsHandler } from './createListLocationsHandler';
 import { createLocationCredentialsHandler } from './createLocationCredentialsHandler';
 import { credentialsCachingDecorator } from './credentialsCachingDecorator';
 
-export interface CreateManagedAuthAdapterInput {
+interface CreateManagedAuthAdapterInput {
 	accountId: string;
 	region: string;
 	credentialsProvider: CredentialsProvider;
-}
-
-export interface ManagedAuthAdaptor {
-	getHandlers(): {
-		listLocations: ListLocations;
-		getLocationCredentials: GetLocationCredentials;
-	};
-	region: string;
 }
 
 export const createManagedAuthAdapter = ({
 	credentialsProvider,
 	region,
 	accountId,
-}: CreateManagedAuthAdapterInput): ManagedAuthAdaptor => {
+}: CreateManagedAuthAdapterInput): StorageBrowserConfigAdapter => {
 	return {
 		getHandlers: () => {
 			const credentialsProviderCaching =

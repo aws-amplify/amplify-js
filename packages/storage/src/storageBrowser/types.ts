@@ -98,3 +98,11 @@ export interface LocationCredentialsStore {
 	 */
 	destroy(): void;
 }
+
+export interface StorageBrowserConfigAdapter {
+	getHandlers(): {
+		listLocations: ListLocations;
+		getLocationCredentials: GetLocationCredentials;
+	};
+	region: string;
+}

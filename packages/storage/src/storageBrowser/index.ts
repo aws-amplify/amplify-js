@@ -9,4 +9,8 @@
 
 export { createLocationCredentialsStore } from './locationCredentialsStore';
 export { createManagedAuthAdapter } from './createManagedAuthAdapter';
-export { GetLocationCredentials, ListLocations } from './types';
+export {
+	GetLocationCredentials,
+	ListLocations,
+	StorageBrowserConfigAdapter,
+} from './types';
