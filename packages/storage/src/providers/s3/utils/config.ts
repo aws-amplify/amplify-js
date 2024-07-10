@@ -38,8 +38,7 @@ const createDefaultIdentityIdProvider = (amplify: AmplifyClassV6) => {
 };
 
 /**
- * This createor will return a storage configuration
- * that is independent from the Amplify singleton.
+ * It will return a Storage configuration used by lower level utils and APIs.
  *
  * @internal
  */
@@ -48,7 +47,6 @@ export const createStorageConfiguration = (
 ): S3Configuration => {
 	const libraryOptions = amplify.libraryOptions?.Storage?.S3 ?? {};
 	const serviceOptions = amplify.getConfig()?.Storage?.S3 ?? {};
-	console.log(serviceOptions);
 	const credentialsProvider = createDefaultCredentialsProvider(amplify);
 	const identityIdProvider = createDefaultIdentityIdProvider(amplify);
 
