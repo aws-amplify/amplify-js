@@ -155,6 +155,7 @@ const setCacheRecord = (
 		// So first key is the last recently inserted.
 		const [oldestKey] = store.values.keys();
 		store.values.delete(oldestKey);
+		// TODO(@AllanZhengYP): Add log info when record is evicted.
 	}
 	// Add latest used value to the cache.
 	store.values.set(key, value);
