@@ -111,10 +111,6 @@ const getDefaultState = (): SignInState => ({
 
 // Hydrate signInStore from Synced Session Storage
 const initializeState = (): SignInState => {
-	if (!syncSessionStorage) {
-		return getDefaultState();
-	}
-
 	const expiry = syncSessionStorage.getItem(signInStateKeys.expiry);
 	if (isExpired(expiry)) {
 		logger.warn('Sign-in session expired');
