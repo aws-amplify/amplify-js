@@ -15,6 +15,6 @@ export {
 export { createLocationCredentialsHandler } from './createLocationCredentialsHandler';
 export { createLocationCredentialsStore } from './locationCredentialsStore';
 export {
-	managedAuthAdapter,
+	createManagedAuthAdapter as managedAuthAdapter,
 	ManagedAuthAdapterInput,
 } from './managedAuthAdapter';
