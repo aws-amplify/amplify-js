@@ -467,7 +467,7 @@
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "15.30 kB"
+			"limit": "15.31 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
@@ -485,13 +485,13 @@
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "15.16 kB"
+			"limit": "15.18 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "14.43 kB"
+			"limit": "14.45 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
