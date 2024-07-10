@@ -5,7 +5,7 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { S3Configuration } from '../apis/internal/types';
+import { S3InternalConfig } from '../apis/internal/types';
 
 const createDefaultCredentialsProvider = (amplify: AmplifyClassV6) => {
 	/**
@@ -44,7 +44,7 @@ const createDefaultIdentityIdProvider = (amplify: AmplifyClassV6) => {
  */
 export const createStorageConfiguration = (
 	amplify: AmplifyClassV6,
-): S3Configuration => {
+): S3InternalConfig => {
 	const libraryOptions = amplify.libraryOptions?.Storage?.S3 ?? {};
 	const serviceOptions = amplify.getConfig()?.Storage?.S3 ?? {};
 	const credentialsProvider = createDefaultCredentialsProvider(amplify);

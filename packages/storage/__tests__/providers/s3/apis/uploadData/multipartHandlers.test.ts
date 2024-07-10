@@ -22,7 +22,7 @@ import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byte
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
 import '../testUtils';
-import { S3Configuration } from '../../../../../src/providers/s3/apis/internal/types';
+import { S3InternalConfig } from '../../../../../src/providers/s3/apis/internal/types';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client');
@@ -138,7 +138,7 @@ const mockLibraryOptions = {};
 
 /* TODO Remove suite when `key` parameter is removed */
 describe('getMultipartUploadHandlers with key', () => {
-	const mockS3Config: S3Configuration = {
+	const mockS3Config: S3InternalConfig = {
 		credentialsProvider: mockCredentialsProvider,
 		identityIdProvider: mockIdentityIdProvider,
 		serviceOptions: mockServiceOptions,
@@ -689,7 +689,7 @@ describe('getMultipartUploadHandlers with key', () => {
 });
 
 describe('getMultipartUploadHandlers with path', () => {
-	const mockS3Config: S3Configuration = {
+	const mockS3Config: S3InternalConfig = {
 		credentialsProvider: mockCredentialsProvider,
 		identityIdProvider: mockIdentityIdProvider,
 		serviceOptions: mockServiceOptions,

@@ -7,7 +7,7 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
-import { S3Configuration } from '../../../../../src/providers/s3/apis/internal/types';
+import { S3InternalConfig } from '../../../../../src/providers/s3/apis/internal/types';
 import { assertValidationError } from '../../../../../src/errors/utils/assertValidationError';
 
 jest.mock('../../../../../src/utils/resolvePrefix');
@@ -29,7 +29,7 @@ const mockServiceOptions = { bucket, region };
 const mockLibraryOptions = {};
 
 describe('resolveS3ConfigAndInput', () => {
-	const config: S3Configuration = {
+	const config: S3InternalConfig = {
 		credentialsProvider: mockCredentialsProvider,
 		identityIdProvider: mockIdentityIdProvider,
 		serviceOptions: mockServiceOptions,
@@ -43,7 +43,7 @@ describe('resolveS3ConfigAndInput', () => {
 
 	it('should call fetchAuthSession for credentials and identityId', async () => {
 		expect.assertions(1);
-		await resolveS3ConfigAndInput({ ...config });
+		await resolveS3ConfigAndInput({ config });
 		expect(mockIdentityIdProvider).toHaveBeenCalled();
 	});
 
@@ -57,7 +57,7 @@ describe('resolveS3ConfigAndInput', () => {
 		});
 		const {
 			s3Config: { credentials: credentialsProvider },
-		} = await resolveS3ConfigAndInput({ ...config });
+		} = await resolveS3ConfigAndInput({ config });
 		if (typeof credentialsProvider === 'function') {
 			await expect(credentialsProvider()).rejects.toMatchObject(
 				validationErrorMap[StorageValidationErrorCode.NoCredentials],
@@ -71,14 +71,14 @@ describe('resolveS3ConfigAndInput', () => {
 		mockIdentityIdProvider.mockImplementation(async () => {
 			assertValidationError(!!'', StorageValidationErrorCode.NoIdentityId);
 		});
-		await expect(resolveS3ConfigAndInput({ ...config })).rejects.toMatchObject(
+		await expect(resolveS3ConfigAndInput({ config })).rejects.toMatchObject(
 			validationErrorMap[StorageValidationErrorCode.NoIdentityId],
 		);
 	});
 
 	it('should resolve bucket from S3 config', async () => {
 		const { bucket: resolvedBucket } = await resolveS3ConfigAndInput({
-			...config,
+			config,
 		});
 		expect(resolvedBucket).toEqual(bucket);
 	});
@@ -86,9 +86,11 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should throw if bucket is not available', async () => {
 		await expect(
 			resolveS3ConfigAndInput({
-				...config,
-				serviceOptions: {
-					bucket: undefined,
+				config: {
+					...config,
+					serviceOptions: {
+						bucket: undefined,
+					},
 				},
 			}),
 		).rejects.toMatchObject(
@@ -97,16 +99,18 @@ describe('resolveS3ConfigAndInput', () => {
 	});
 
 	it('should resolve region from S3 config', async () => {
-		const { s3Config } = await resolveS3ConfigAndInput({ ...config });
+		const { s3Config } = await resolveS3ConfigAndInput({ config });
 		expect(s3Config.region).toEqual(region);
 	});
 
 	it('should throw if region is not available', async () => {
 		await expect(
 			resolveS3ConfigAndInput({
-				...config,
-				serviceOptions: {
-					bucket,
+				config: {
+					...config,
+					serviceOptions: {
+						bucket,
+					},
 				},
 			}),
 		).rejects.toMatchObject(
@@ -122,8 +126,7 @@ describe('resolveS3ConfigAndInput', () => {
 		};
 
 		const { s3Config } = await resolveS3ConfigAndInput({
-			...config,
-			serviceOptions,
+			config: { ...config, serviceOptions },
 		});
 		expect(s3Config.customEndpoint).toEqual('http://localhost:20005');
 		expect(s3Config.forcePathStyle).toEqual(true);
@@ -131,15 +134,17 @@ describe('resolveS3ConfigAndInput', () => {
 
 	it('should resolve isObjectLockEnabled from S3 library options', async () => {
 		const { isObjectLockEnabled } = await resolveS3ConfigAndInput({
-			...config,
-			libraryOptions: { isObjectLockEnabled: true },
+			config: {
+				...config,
+				libraryOptions: { isObjectLockEnabled: true },
+			},
 		});
 		expect(isObjectLockEnabled).toEqual(true);
 	});
 
 	it('should use default prefix resolver', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
-		const { keyPrefix } = await resolveS3ConfigAndInput({ ...config });
+		const { keyPrefix } = await resolveS3ConfigAndInput({ config });
 		expect(mockDefaultResolvePrefix).toHaveBeenCalled();
 		expect(keyPrefix).toEqual('prefix');
 	});
@@ -147,9 +152,11 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should use prefix resolver from S3 library options if supplied', async () => {
 		const customResolvePrefix = jest.fn().mockResolvedValueOnce('prefix');
 		const { keyPrefix } = await resolveS3ConfigAndInput({
-			...config,
-			libraryOptions: {
-				prefixResolver: customResolvePrefix,
+			config: {
+				...config,
+				libraryOptions: {
+					prefixResolver: customResolvePrefix,
+				},
 			},
 		});
 		expect(customResolvePrefix).toHaveBeenCalled();
@@ -160,7 +167,7 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should resolve prefix with given access level', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
 		const { keyPrefix } = await resolveS3ConfigAndInput({
-			...config,
+			config,
 			apiOptions: {
 				accessLevel: 'someLevel' as any,
 			},
@@ -175,9 +182,11 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should resolve prefix with default access level from S3 library options', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
 		const { keyPrefix } = await resolveS3ConfigAndInput({
-			...config,
-			libraryOptions: {
-				defaultAccessLevel: 'someLevel' as any,
+			config: {
+				...config,
+				libraryOptions: {
+					defaultAccessLevel: 'someLevel' as any,
+				},
 			},
 		});
 		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
@@ -189,7 +198,7 @@ describe('resolveS3ConfigAndInput', () => {
 
 	it('should resolve prefix with `guest` access level if no access level is given', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
-		const { keyPrefix } = await resolveS3ConfigAndInput({ ...config });
+		const { keyPrefix } = await resolveS3ConfigAndInput({ config });
 		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
 			accessLevel: 'guest', // default access level
 			targetIdentityId,

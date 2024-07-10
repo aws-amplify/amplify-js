@@ -10,10 +10,10 @@ import { byteLength } from '../uploadData/byteLength';
 import { putObjectJob } from '../uploadData/putObjectJob';
 import { getMultipartUploadHandlers } from '../uploadData/multipart';
 
-import { S3Configuration } from './types';
+import { S3InternalConfig } from './types';
 
 export function internalUploadData(
-	config: S3Configuration,
+	config: S3InternalConfig,
 	input: UploadDataInput | UploadDataWithPathInput,
 ) {
 	const { data } = input;

@@ -115,11 +115,11 @@ const downloadDataJob =
 		StorageDownloadDataOutput<StorageItemWithKey | StorageItemWithPath>
 	> => {
 		const { options: downloadDataOptions } = downloadDataInput;
-		const configuration = createStorageConfiguration(Amplify);
+		const config = createStorageConfiguration(Amplify);
 
 		const { bucket, keyPrefix, s3Config, identityId } =
 			await resolveS3ConfigAndInput({
-				...configuration,
+				config,
 				apiOptions: downloadDataOptions,
 			});
 		const { inputType, objectKey } = validateStorageOperationInput(

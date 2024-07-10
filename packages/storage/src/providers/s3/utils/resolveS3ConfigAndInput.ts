@@ -1,17 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
-import {
-	ResolvedS3Config,
-	S3ApiOptions,
-	S3LibraryOptions,
-	S3ServiceOptions,
-} from '../types/options';
+import { ResolvedS3Config, S3ApiOptions } from '../types/options';
+import { S3InternalConfig } from '../apis/internal/types';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 
@@ -24,10 +18,7 @@ interface ResolvedS3ConfigAndInput {
 }
 
 interface ResolveS3ConfigAndInputParams {
-	credentialsProvider(): Promise<AWSCredentials>;
-	identityIdProvider(): Promise<string>;
-	serviceOptions?: S3ServiceOptions;
-	libraryOptions?: S3LibraryOptions;
+	config: S3InternalConfig;
 	apiOptions?: S3ApiOptions;
 }
 /**
@@ -42,12 +33,15 @@ interface ResolveS3ConfigAndInputParams {
  * @internal
  */
 export const resolveS3ConfigAndInput = async ({
-	credentialsProvider,
-	identityIdProvider,
-	serviceOptions,
-	libraryOptions,
+	config,
 	apiOptions,
 }: ResolveS3ConfigAndInputParams): Promise<ResolvedS3ConfigAndInput> => {
+	const {
+		credentialsProvider,
+		serviceOptions,
+		libraryOptions,
+		identityIdProvider,
+	} = config;
 	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
 		serviceOptions ?? {};
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);

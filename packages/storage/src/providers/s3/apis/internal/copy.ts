@@ -41,9 +41,9 @@ const copyWithPath = async (
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	const configuration = createStorageConfiguration(amplify);
+	const config = createStorageConfiguration(amplify);
 	const { s3Config, bucket, identityId } = await resolveS3ConfigAndInput({
-		...configuration,
+		config,
 	});
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
@@ -90,17 +90,17 @@ export const copyWithKey = async (
 		!!destinationKey,
 		StorageValidationErrorCode.NoDestinationKey,
 	);
-	const configuration = createStorageConfiguration(amplify);
+	const config = createStorageConfiguration(amplify);
 	const {
 		s3Config,
 		bucket,
 		keyPrefix: sourceKeyPrefix,
 	} = await resolveS3ConfigAndInput({
-		...configuration,
+		config,
 		apiOptions: input.source,
 	});
 	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput({
-		...configuration,
+		config,
 		apiOptions: input.destination,
 	}); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 

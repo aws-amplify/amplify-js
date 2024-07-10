@@ -13,10 +13,10 @@ import { ItemWithKey, ItemWithPath } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
-import { S3Configuration } from '../internal/types';
+import { S3InternalConfig } from '../internal/types';
 
 interface PutObjectJobProps {
-	config: S3Configuration;
+	config: S3InternalConfig;
 	input: UploadDataInput | UploadDataWithPathInput;
 	abortSignal: AbortSignal;
 	totalLength?: number;
@@ -31,18 +31,10 @@ export const putObjectJob =
 	({ config, input, abortSignal, totalLength }: PutObjectJobProps) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = input;
-		const {
-			credentialsProvider,
-			identityIdProvider,
-			serviceOptions,
-			libraryOptions,
-		} = config;
+
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
 			await resolveS3ConfigAndInput({
-				credentialsProvider,
-				identityIdProvider,
-				serviceOptions,
-				libraryOptions,
+				config,
 				apiOptions: uploadDataOptions,
 			});
 		const { inputType, objectKey } = validateStorageOperationInput(

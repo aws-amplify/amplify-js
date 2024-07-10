@@ -25,10 +25,10 @@ export const remove = async (
 	input: RemoveInput | RemoveWithPathInput,
 ): Promise<RemoveOutput | RemoveWithPathOutput> => {
 	const { options = {} } = input ?? {};
-	const configuration = createStorageConfiguration(amplify);
+	const config = createStorageConfiguration(amplify);
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput({
-			...configuration,
+			config,
 			apiOptions: options,
 		});
 

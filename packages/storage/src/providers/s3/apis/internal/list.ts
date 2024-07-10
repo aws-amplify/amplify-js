@@ -55,14 +55,14 @@ export const list = async (
 > => {
 	const { options = {} } = input;
 
-	const configuration = createStorageConfiguration(amplify);
+	const config = createStorageConfiguration(amplify);
 	const {
 		s3Config,
 		bucket,
 		keyPrefix: generatedPrefix,
 		identityId,
 	} = await resolveS3ConfigAndInput({
-		...configuration,
+		config,
 		apiOptions: options,
 	});
 

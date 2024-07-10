@@ -7,7 +7,7 @@ import { putObject } from '../../../../../src/providers/s3/utils/client';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
-import { S3Configuration } from '../../../../../src/providers/s3/apis/internal/types';
+import { S3InternalConfig } from '../../../../../src/providers/s3/apis/internal/types';
 
 jest.mock('../../../../../src/providers/s3/utils/client');
 jest.mock('../../../../../src/providers/s3/utils', () => {
@@ -44,7 +44,7 @@ mockPutObject.mockResolvedValue({
 	$metadata: {},
 });
 
-const config: S3Configuration = {
+const config: S3InternalConfig = {
 	credentialsProvider: mockCredentialsProvider,
 	identityIdProvider: mockIdentityIdProvider,
 	serviceOptions: mockServiceOptions,

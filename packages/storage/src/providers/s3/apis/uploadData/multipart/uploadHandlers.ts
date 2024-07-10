@@ -29,7 +29,7 @@ import {
 } from '../../../utils/client';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
-import { S3Configuration } from '../../internal/types';
+import { S3InternalConfig } from '../../internal/types';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -45,7 +45,7 @@ import { getDataChunker } from './getDataChunker';
  */
 
 interface GetMultipartUploadHandlersProps {
-	config: S3Configuration;
+	config: S3InternalConfig;
 	input: UploadDataInput | UploadDataWithPathInput;
 	size?: number;
 }
@@ -80,7 +80,7 @@ export const getMultipartUploadHandlers = ({
 	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = input;
 		const resolvedS3Options = await resolveS3ConfigAndInput({
-			...config,
+			config,
 			apiOptions: uploadDataOptions,
 		});
 
