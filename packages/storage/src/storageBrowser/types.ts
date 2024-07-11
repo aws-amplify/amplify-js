@@ -98,14 +98,3 @@ export interface LocationCredentialsStore {
 	 */
 	destroy(): void;
 }
-
-/**
- * Common interface for handlers to configure StorageBrowser behaviors
- *
- * @internal
- */
-export interface StorageBrowserConfigAdapter {
-	listLocations: ListLocations;
-	getLocationCredentials: GetLocationCredentials;
-	region: string;
-}
