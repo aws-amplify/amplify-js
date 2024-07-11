@@ -271,6 +271,29 @@ describe('parseAmplifyOutputs tests', () => {
 				},
 			});
 		});
+		it('should throw for storage multi bucket parsing with same friendly name', () => {
+			const amplifyOutputs: AmplifyOutputs = {
+				version: '1',
+				storage: {
+					aws_region: 'us-west-2',
+					bucket_name: 'storage-bucket-test',
+					buckets: [
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test',
+							aws_region: 'us-west-2',
+						},
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test-2',
+							aws_region: 'us-west-2',
+						},
+					],
+				},
+			};
+
+			expect(() => parseAmplifyOutputs(amplifyOutputs)).toThrow();
+		});
 	});
 
 	describe('analytics tests', () => {
