@@ -27,6 +27,11 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 ): KeyValueStorageInterface => {
 	return {
 		setItem(key, value) {
+			// Delete the cookie item first then set it. This results:
+			// SetCookie: key=;expires=1970-01-01;(path='current-path') <- remove path'ed cookies
+			// SetCookie: key=value;expires=Date.now() + 365 days;path=/;secure=true
+			cookieStorageAdapter.delete(key);
+
 			// TODO(HuiSF): follow up the default CookieSerializeOptions values
 			cookieStorageAdapter.set(key, value, {
 				...defaultSetCookieOptions,
