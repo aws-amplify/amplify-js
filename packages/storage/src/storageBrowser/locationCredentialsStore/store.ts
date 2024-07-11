@@ -10,17 +10,19 @@ import { CredentialsLocation, LocationCredentialsHandler } from '../types';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 
-const CREDENTIALS_STORE_DEFAULT_SIZE = 10;
-const CREDENTIALS_REFRESH_WINDOW_MS = 30_000;
+import {
+	CREDENTIALS_REFRESH_WINDOW_MS,
+	CREDENTIALS_STORE_DEFAULT_SIZE,
+} from './constants';
 
 interface StoreValue extends CredentialsLocation {
 	credentials?: AWSCredentials;
 	inflightCredentials?: Promise<{ credentials: AWSCredentials }>;
 }
 
-type S3Url = string;
+type S3Uri = string;
 
-type CacheKey = `${S3Url}_${Permission}`;
+type CacheKey = `${S3Uri}_${Permission}`;
 
 const createCacheKey = (location: CredentialsLocation): CacheKey =>
 	`${location.scope}_${location.permission}`;
@@ -153,6 +155,7 @@ const setCacheRecord = (
 		// So first key is the last recently inserted.
 		const [oldestKey] = store.values.keys();
 		store.values.delete(oldestKey);
+		// TODO(@AllanZhengYP): Add log info when record is evicted.
 	}
 	// Add latest used value to the cache.
 	store.values.set(key, value);
