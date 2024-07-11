@@ -7,6 +7,7 @@ import {
 	HttpResponse,
 	MiddlewareHandler,
 } from '../../types';
+import { MiddlewareContext } from '../../types/core';
 
 import { signRequest } from './signer/signatureV4';
 import { getSkewCorrectedDate } from './utils/getSkewCorrectedDate';
@@ -16,7 +17,9 @@ import { getUpdatedSystemClockOffset } from './utils/getUpdatedSystemClockOffset
  * Configuration of the signing middleware
  */
 export interface SigningOptions {
-	credentials: Credentials | (() => Promise<Credentials>);
+	credentials:
+		| Credentials
+		| ((options?: { forceRefresh?: boolean }) => Promise<Credentials>);
 	region: string;
 	service: string;
 
@@ -41,12 +44,20 @@ export const signingMiddlewareFactory = ({
 }: SigningOptions) => {
 	let currentSystemClockOffset: number;
 
-	return (next: MiddlewareHandler<HttpRequest, HttpResponse>) =>
+	return (
+		next: MiddlewareHandler<HttpRequest, HttpResponse>,
+		context: MiddlewareContext,
+	) =>
 		async function signingMiddleware(request: HttpRequest) {
 			currentSystemClockOffset = currentSystemClockOffset ?? 0;
+			const shouldForceRefreshCredentials = context?.isCredentialsInvalid
+				? true
+				: false;
 			const signRequestOptions = {
 				credentials:
-					typeof credentials === 'function' ? await credentials() : credentials,
+					typeof credentials === 'function'
+						? await credentials({ forceRefresh: shouldForceRefreshCredentials })
+						: credentials,
 				signingDate: getSkewCorrectedDate(currentSystemClockOffset),
 				signingRegion: region,
 				signingService: service,

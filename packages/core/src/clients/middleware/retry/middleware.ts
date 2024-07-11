@@ -1,12 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ErrorParser } from '../../types';
 import {
 	MiddlewareContext,
 	MiddlewareHandler,
 	Request,
 	Response,
 } from '../../types/core';
+import { RetryDeciderOutput } from './types';
 
 const DEFAULT_RETRY_ATTEMPTS = 3;
 
@@ -21,7 +23,7 @@ export interface RetryOptions<TResponse = Response> {
 	 * @param error Optional error thrown from previous attempts.
 	 * @returns True if the request should be retried.
 	 */
-	retryDecider(response?: TResponse, error?: unknown): Promise<boolean>;
+	retryDecider(response?: TResponse, error?: unknown): Promise<RetryDeciderOutput>;
 	/**
 	 * Function to compute the delay in milliseconds before the next retry based
 	 * on the number of attempts.
@@ -87,7 +89,8 @@ export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
 						? context.attemptsCount ?? 0
 						: attemptsCount + 1;
 				context.attemptsCount = attemptsCount;
-				if (await retryDecider(response, error)) {
+				const { isInvalidCredentialsError, retryable } = await retryDecider(response, error);
+				if (retryable) {
 					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 						// prevent sleep for last attempt or cancelled request;
 						const delay = computeDelay(attemptsCount);

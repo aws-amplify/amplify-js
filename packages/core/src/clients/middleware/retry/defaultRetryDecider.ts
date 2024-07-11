@@ -4,6 +4,12 @@
 import { ErrorParser, HttpResponse } from '../../types';
 
 import { isClockSkewError } from './isClockSkewError';
+import { isInvalidCredentialsError } from './isInvalidCredentialsError';
+
+interface RetryDeciderOutput {
+	retryable: boolean;
+	isInvalidCredentialsError: boolean;
+}
 
 /**
  * Get retry decider function
@@ -11,20 +17,26 @@ import { isClockSkewError } from './isClockSkewError';
  */
 export const getRetryDecider =
 	(errorParser: ErrorParser) =>
-	async (response?: HttpResponse, error?: unknown): Promise<boolean> => {
+	async (response?: HttpResponse, error?: unknown): Promise<RetryDeciderOutput> => {
 		const parsedError =
 			(error as Error & { code: string }) ??
 			(await errorParser(response)) ??
 			undefined;
 		const errorCode = parsedError?.code || parsedError?.name;
+		const errorMessage = parsedError?.message;
 		const statusCode = response?.statusCode;
 
-		return (
-			isConnectionError(error) ||
+		const isInvalidCredentials = isInvalidCredentialsError(errorCode, errorMessage);
+		const isRetryable = isConnectionError(error) ||
 			isThrottlingError(statusCode, errorCode) ||
 			isClockSkewError(errorCode) ||
-			isServerSideError(statusCode, errorCode)
-		);
+			isServerSideError(statusCode, errorCode) ||
+			isInvalidCredentials;
+
+		return {
+			retryable: isRetryable,
+			isInvalidCredentialsError: isInvalidCredentials,
+		};
 	};
 
 // reference: https://github.com/aws/aws-sdk-js-v3/blob/ab0e7be36e7e7f8a0c04834357aaad643c7912c3/packages/service-error-classification/src/constants.ts#L22-L37

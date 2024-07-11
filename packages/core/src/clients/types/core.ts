@@ -30,6 +30,7 @@ export type MiddlewareHandler<Input, Output> = (
  * The context object to store states across the middleware chain.
  */
 export interface MiddlewareContext {
+	isCredentialsInvalid?: boolean;
 	/**
 	 * The number of times the request has been attempted. This is set by retry middleware
 	 */
