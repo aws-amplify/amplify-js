@@ -4,7 +4,6 @@ import { CredentialsProvider, StorageBrowserConfigAdapter } from './types';
 
 import { createListLocationsHandler } from './createListLocationsHandler';
 import { createLocationCredentialsHandler } from './createLocationCredentialsHandler';
-import { credentialsCachingDecorator } from './credentialsCachingDecorator';
 
 interface CreateManagedAuthAdapterInput {
 	accountId: string;
@@ -17,26 +16,20 @@ export const createManagedAuthAdapter = ({
 	region,
 	accountId,
 }: CreateManagedAuthAdapterInput): StorageBrowserConfigAdapter => {
-	return {
-		getHandlers: () => {
-			const credentialsProviderCaching =
-				credentialsCachingDecorator(credentialsProvider);
-			const listLocations = createListLocationsHandler({
-				credentialsProvider: credentialsProviderCaching,
-				accountId,
-				region,
-			});
-			const getLocationCredentials = createLocationCredentialsHandler({
-				credentialsProvider: credentialsProviderCaching,
-				accountId,
-				region,
-			});
+	const listLocations = createListLocationsHandler({
+		credentialsProvider,
+		accountId,
+		region,
+	});
+	const getLocationCredentials = createLocationCredentialsHandler({
+		credentialsProvider,
+		accountId,
+		region,
+	});
 
-			return {
-				listLocations,
-				getLocationCredentials,
-			};
-		},
+	return {
+		listLocations,
+		getLocationCredentials,
 		region,
 	};
 };
