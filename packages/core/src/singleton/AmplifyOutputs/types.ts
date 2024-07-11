@@ -44,13 +44,19 @@ export interface AmplifyOutputsAuthProperties {
 }
 
 export interface AmplifyOutputsStorageBucketProperties {
+	/** Friendly bucket name provided in Amplify Outputs */
 	name: string;
+	/** Actual s3 bucket name given */
 	bucket_name: string;
+	/** Region for the bucket */
 	aws_region: string;
 }
 export interface AmplifyOutputsStorageProperties {
+	/** Default region for Storage */
 	aws_region: string;
+	/** Default bucket for Storage */
 	bucket_name: string;
+	/** List of buckets for Storage */
 	buckets?: AmplifyOutputsStorageBucketProperties[];
 }
 
