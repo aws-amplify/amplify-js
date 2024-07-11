@@ -162,17 +162,17 @@ const persistSignInState = ({
 	signInSession,
 	username,
 }: SignInState) => {
-	if (username) {
-		syncSessionStorage.setItem(signInStateKeys.username, username);
-	}
+	username && syncSessionStorage.setItem(signInStateKeys.username, username);
+	challengeName &&
+		syncSessionStorage.setItem(signInStateKeys.challengeName, challengeName);
+
 	if (signInSession) {
 		syncSessionStorage.setItem(signInStateKeys.signInSession, signInSession);
+
+		// Updates expiry when session is passed
+		syncSessionStorage.setItem(
+			signInStateKeys.expiry,
+			String(Date.now() + MS_TO_EXPIRY),
+		);
 	}
-	if (challengeName) {
-		syncSessionStorage.setItem(signInStateKeys.challengeName, challengeName);
-	}
-	syncSessionStorage.setItem(
-		signInStateKeys.expiry,
-		String(Date.now() + MS_TO_EXPIRY),
-	);
 };
