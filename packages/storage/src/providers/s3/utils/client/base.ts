@@ -53,7 +53,7 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
  */
 const endpointResolver = (
 	options: S3EndpointResolverOptions,
-	apiInput?: { Bucket?: string },
+	apiInput?: { Bucket?: string; AccountId?: string },
 ) => {
 	const { region, useAccelerateEndpoint, customEndpoint, forcePathStyle } =
 		options;
@@ -61,6 +61,11 @@ const endpointResolver = (
 	// 1. get base endpoint
 	if (customEndpoint) {
 		endpoint = new AmplifyUrl(customEndpoint);
+	} else if (apiInput?.AccountId) {
+		// Control plane operations
+		endpoint = new AmplifyUrl(
+			`https://${apiInput.AccountId}.s3-control.${region}.${getDnsSuffix(region)}`,
+		);
 	} else if (useAccelerateEndpoint) {
 		if (forcePathStyle) {
 			throw new Error(
@@ -72,7 +77,7 @@ const endpointResolver = (
 		endpoint = new AmplifyUrl(`https://s3.${region}.${getDnsSuffix(region)}`);
 	}
 	// 2. inject bucket name
-	if (apiInput?.Bucket) {
+	if (apiInput?.Bucket && !apiInput.AccountId) {
 		if (!isDnsCompatibleBucketName(apiInput.Bucket)) {
 			throw new Error(`Invalid bucket name: "${apiInput.Bucket}".`);
 		}
