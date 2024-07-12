@@ -86,7 +86,7 @@ const deserializeAccessGrantsList = (output: any[]) =>
 	output.map(deserializeCallerAccessGrant);
 
 const deserializeCallerAccessGrant = (output: any) =>
-	map(output.AccessGrant, {
+	map(output.AccessGrantsInstance, {
 		ApplicationArn: 'ApplicationArn',
 		GrantScope: 'GrantScope',
 		Permission: 'Permission',
