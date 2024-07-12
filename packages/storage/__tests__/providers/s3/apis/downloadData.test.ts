@@ -25,8 +25,16 @@ import {
 } from '../../../../src/providers/s3/types/outputs';
 import './testUtils';
 
-jest.mock('../../../../src/providers/s3/utils/client/s3data');
-jest.mock('../../../../src/providers/s3/utils');
+jest.mock('../../../../src/providers/s3/utils/client');
+jest.mock('../../../../src/providers/s3/utils', () => {
+	const utils = jest.requireActual('../../../../src/providers/s3/utils');
+
+	return {
+		...utils,
+		createDownloadTask: jest.fn(),
+		validateStorageOperationInput: jest.fn(),
+	};
+});
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };

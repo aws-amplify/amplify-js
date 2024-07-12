@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+
 import { uploadData } from '../../../../../src/providers/s3/apis';
 import { MAX_OBJECT_SIZE } from '../../../../../src/providers/s3/utils/constants';
 import { createUploadTask } from '../../../../../src/providers/s3/utils';
@@ -12,7 +14,25 @@ import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/pu
 import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
 import { UploadDataInput, UploadDataWithPathInput } from '../../../../../src';
 
-jest.mock('../../../../../src/providers/s3/utils/');
+jest.mock('@aws-amplify/core', () => ({
+	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
+		return { debug: jest.fn() };
+	}),
+	Amplify: {
+		getConfig: jest.fn(),
+		Auth: {
+			fetchAuthSession: jest.fn(),
+		},
+	},
+}));
+jest.mock('../../../../../src/providers/s3/utils', () => {
+	const utils = jest.requireActual('../../../../../src/providers/s3/utils');
+
+	return {
+		...utils,
+		createUploadTask: jest.fn(),
+	};
+});
 jest.mock('../../../../../src/providers/s3/apis/uploadData/putObjectJob');
 jest.mock('../../../../../src/providers/s3/apis/uploadData/multipart');
 
@@ -27,9 +47,22 @@ const mockGetMultipartUploadHandlers = (
 	onResume: jest.fn(),
 	onCancel: jest.fn(),
 });
-
+const mockGetConfig = Amplify.getConfig as jest.Mock;
+const bucket = 'bucket';
+const region = 'region';
+// const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 /* TODO Remove suite when `key` parameter is removed */
 describe('uploadData with key', () => {
+	beforeAll(() => {
+		mockGetConfig.mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+				},
+			},
+		});
+	});
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
