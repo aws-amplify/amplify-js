@@ -7,4 +7,8 @@ export { createDownloadTask, createUploadTask } from './transferTask';
 export { validateStorageOperationInput } from './validateStorageOperationInput';
 export { validateStorageOperationInputWithPrefix } from './validateStorageOperationInputWithPrefix';
 export { isInputWithPath } from './isInputWithPath';
-export { createStorageConfiguration } from './config';
+export {
+	createStorageConfiguration,
+	createServerStorageConfiguration,
+	createInternalStorageAPIConfig,
+} from './config';
