@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput, UploadDataWithPathInput } from '../../types';
@@ -14,6 +13,14 @@ import { ItemWithKey, ItemWithPath } from '../../types/outputs';
 import { putObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
+import { S3InternalConfig } from '../internal/types';
+
+interface PutObjectJobProps {
+	config: S3InternalConfig;
+	input: UploadDataInput | UploadDataWithPathInput;
+	abortSignal: AbortSignal;
+	totalLength?: number;
+}
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -21,17 +28,17 @@ import { STORAGE_INPUT_KEY } from '../../utils/constants';
  * @internal
  */
 export const putObjectJob =
-	(
-		uploadDataInput: UploadDataInput | UploadDataWithPathInput,
-		abortSignal: AbortSignal,
-		totalLength?: number,
-	) =>
+	({ config, input, abortSignal, totalLength }: PutObjectJobProps) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
-		const { options: uploadDataOptions, data } = uploadDataInput;
+		const { options: uploadDataOptions, data } = input;
+
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
-			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
+			await resolveS3ConfigAndInput({
+				config,
+				apiOptions: uploadDataOptions,
+			});
 		const { inputType, objectKey } = validateStorageOperationInput(
-			uploadDataInput,
+			input,
 			identityId,
 		);
 

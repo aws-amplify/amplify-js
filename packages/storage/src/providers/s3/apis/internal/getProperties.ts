@@ -11,6 +11,7 @@ import {
 	GetPropertiesWithPathOutput,
 } from '../../types';
 import {
+	createStorageConfiguration,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
@@ -25,8 +26,12 @@ export const getProperties = async (
 	action?: StorageAction,
 ): Promise<GetPropertiesOutput | GetPropertiesWithPathOutput> => {
 	const { options: getPropertiesOptions } = input;
+	const config = createStorageConfiguration(amplify);
 	const { s3Config, bucket, keyPrefix, identityId } =
-		await resolveS3ConfigAndInput(amplify, getPropertiesOptions);
+		await resolveS3ConfigAndInput({
+			config,
+			apiOptions: getPropertiesOptions,
+		});
 	const { inputType, objectKey } = validateStorageOperationInput(
 		input,
 		identityId,

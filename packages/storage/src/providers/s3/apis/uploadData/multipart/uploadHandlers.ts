@@ -29,6 +29,7 @@ import {
 } from '../../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
+import { S3InternalConfig } from '../../internal/types';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -42,10 +43,17 @@ import { getDataChunker } from './getDataChunker';
  *
  * @internal
  */
-export const getMultipartUploadHandlers = (
-	uploadDataInput: UploadDataInput | UploadDataWithPathInput,
-	size?: number,
-) => {
+
+interface GetMultipartUploadHandlersProps {
+	config: S3InternalConfig;
+	input: UploadDataInput | UploadDataWithPathInput;
+	size?: number;
+}
+export const getMultipartUploadHandlers = ({
+	config,
+	input,
+	size,
+}: GetMultipartUploadHandlersProps) => {
 	let resolveCallback:
 		| ((value: ItemWithKey | ItemWithPath) => void)
 		| undefined;
@@ -70,11 +78,11 @@ export const getMultipartUploadHandlers = (
 	let isAbortSignalFromPause = false;
 
 	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
-		const { options: uploadDataOptions, data } = uploadDataInput;
-		const resolvedS3Options = await resolveS3ConfigAndInput(
-			Amplify,
-			uploadDataOptions,
-		);
+		const { options: uploadDataOptions, data } = input;
+		const resolvedS3Options = await resolveS3ConfigAndInput({
+			config,
+			apiOptions: uploadDataOptions,
+		});
 
 		abortController = new AbortController();
 		isAbortSignalFromPause = false;
@@ -83,7 +91,7 @@ export const getMultipartUploadHandlers = (
 		resolvedIdentityId = resolvedS3Options.identityId;
 
 		const { inputType, objectKey } = validateStorageOperationInput(
-			uploadDataInput,
+			input,
 			resolvedIdentityId,
 		);
 

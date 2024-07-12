@@ -17,6 +17,7 @@ import {
 	ListPaginateWithPathOutput,
 } from '../../types';
 import {
+	createStorageConfiguration,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
@@ -53,12 +54,17 @@ export const list = async (
 	| ListPaginateWithPathOutput
 > => {
 	const { options = {} } = input;
+
+	const config = createStorageConfiguration(amplify);
 	const {
 		s3Config,
 		bucket,
 		keyPrefix: generatedPrefix,
 		identityId,
-	} = await resolveS3ConfigAndInput(amplify, options);
+	} = await resolveS3ConfigAndInput({
+		config,
+		apiOptions: options,
+	});
 
 	const { inputType, objectKey } = validateStorageOperationInputWithPrefix(
 		input,

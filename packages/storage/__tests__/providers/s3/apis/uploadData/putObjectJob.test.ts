@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
 
 import { putObject } from '../../../../../src/providers/s3/utils/client/s3data';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
+import { S3InternalConfig } from '../../../../../src/providers/s3/apis/internal/types';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../src/providers/s3/utils', () => {
@@ -20,13 +20,6 @@ jest.mock('../../../../../src/providers/s3/utils', () => {
 });
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn(),
-	fetchAuthSession: jest.fn(),
-	Amplify: {
-		getConfig: jest.fn(),
-		Auth: {
-			fetchAuthSession: jest.fn(),
-		},
-	},
 }));
 
 const testPath = 'testPath/object';
@@ -36,31 +29,35 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const identityId = 'identityId';
-const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
+const bucket = 'bucket';
+const region = 'region';
+
+const mockCredentialsProvider = jest.fn();
+const mockIdentityIdProvider = jest.fn();
+const mockServiceOptions = { bucket, region };
+const mockLibraryOptions = {};
 const mockPutObject = jest.mocked(putObject);
 
-mockFetchAuthSession.mockResolvedValue({
-	credentials,
-	identityId,
-});
-jest.mocked(Amplify.getConfig).mockReturnValue({
-	Storage: {
-		S3: {
-			bucket: 'bucket',
-			region: 'region',
-		},
-	},
-});
 mockPutObject.mockResolvedValue({
 	ETag: 'eTag',
 	VersionId: 'versionId',
 	$metadata: {},
 });
 
+const config: S3InternalConfig = {
+	credentialsProvider: mockCredentialsProvider,
+	identityIdProvider: mockIdentityIdProvider,
+	serviceOptions: mockServiceOptions,
+	libraryOptions: mockLibraryOptions,
+};
+
 /* TODO Remove suite when `key` parameter is removed */
 describe('putObjectJob with key', () => {
 	beforeEach(() => {
+		mockCredentialsProvider.mockImplementation(async () => credentials);
+		mockIdentityIdProvider.mockImplementation(async () => identityId);
 		mockPutObject.mockClear();
+		jest.clearAllMocks();
 	});
 
 	it('should supply the correct parameters to putObject API handler', async () => {
@@ -74,8 +71,9 @@ describe('putObjectJob with key', () => {
 		const onProgress = jest.fn();
 		const useAccelerateEndpoint = true;
 
-		const job = putObjectJob(
-			{
+		const job = putObjectJob({
+			config,
+			input: {
 				key: inputKey,
 				data,
 				options: {
@@ -87,8 +85,8 @@ describe('putObjectJob with key', () => {
 					useAccelerateEndpoint,
 				},
 			},
-			abortController.signal,
-		);
+			abortSignal: abortController.signal,
+		});
 		const result = await job();
 		expect(result).toEqual({
 			key: inputKey,
@@ -99,6 +97,7 @@ describe('putObjectJob with key', () => {
 			size: undefined,
 		});
 		expect(mockPutObject).toHaveBeenCalledTimes(1);
+
 		await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
 			{
 				credentials,
@@ -122,20 +121,19 @@ describe('putObjectJob with key', () => {
 	});
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
-		Amplify.libraryOptions = {
-			Storage: {
-				S3: {
+		const job = putObjectJob({
+			config: {
+				...config,
+				libraryOptions: {
 					isObjectLockEnabled: true,
 				},
 			},
-		};
-		const job = putObjectJob(
-			{
+			input: {
 				key: 'key',
 				data: 'data',
 			},
-			new AbortController().signal,
-		);
+			abortSignal: new AbortController().signal,
+		});
 		await job();
 		expect(calculateContentMd5).toHaveBeenCalledWith('data');
 	});
@@ -143,6 +141,8 @@ describe('putObjectJob with key', () => {
 
 describe('putObjectJob with path', () => {
 	beforeEach(() => {
+		mockCredentialsProvider.mockImplementation(async () => credentials);
+		mockIdentityIdProvider.mockImplementation(async () => identityId);
 		mockPutObject.mockClear();
 	});
 
@@ -167,8 +167,9 @@ describe('putObjectJob with path', () => {
 			const onProgress = jest.fn();
 			const useAccelerateEndpoint = true;
 
-			const job = putObjectJob(
-				{
+			const job = putObjectJob({
+				config,
+				input: {
 					path: inputPath,
 					data,
 					options: {
@@ -180,8 +181,8 @@ describe('putObjectJob with path', () => {
 						useAccelerateEndpoint,
 					},
 				},
-				abortController.signal,
-			);
+				abortSignal: abortController.signal,
+			});
 			const result = await job();
 			expect(result).toEqual({
 				path: expectedKey,
@@ -216,20 +217,19 @@ describe('putObjectJob with path', () => {
 	);
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
-		Amplify.libraryOptions = {
-			Storage: {
-				S3: {
+		const job = putObjectJob({
+			config: {
+				...config,
+				libraryOptions: {
 					isObjectLockEnabled: true,
 				},
 			},
-		};
-		const job = putObjectJob(
-			{
+			input: {
 				path: testPath,
 				data: 'data',
 			},
-			new AbortController().signal,
-		);
+			abortSignal: new AbortController().signal,
+		});
 		await job();
 		expect(calculateContentMd5).toHaveBeenCalledWith('data');
 	});
