@@ -10,5 +10,4 @@ export { isInputWithPath } from './isInputWithPath';
 export {
 	createStorageConfiguration,
 	createServerStorageConfiguration,
-	createInternalStorageAPIConfig,
 } from './config';
