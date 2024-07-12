@@ -94,24 +94,34 @@ export class DefaultTokenStore implements AuthTokenStore {
 
 	async storeTokens(tokens: CognitoAuthTokens): Promise<void> {
 		assert(tokens !== undefined, TokenProviderErrorCode.InvalidAuthTokens);
-		await this.clearTokens();
 
 		const lastAuthUser = tokens.username;
-		await this.getKeyValueStorage().setItem(
-			this.getLastAuthUserKey(),
-			lastAuthUser,
-		);
+		if (lastAuthUser) {
+			await this.getKeyValueStorage().setItem(
+				this.getLastAuthUserKey(),
+				lastAuthUser,
+			);
+		} else {
+			await this.getKeyValueStorage().removeItem(this.getLastAuthUserKey());
+		}
+
 		const authKeys = await this.getAuthKeys();
-		await this.getKeyValueStorage().setItem(
-			authKeys.accessToken,
-			tokens.accessToken.toString(),
-		);
+		if (authKeys.accessToken) {
+			await this.getKeyValueStorage().setItem(
+				authKeys.accessToken,
+				tokens.accessToken.toString(),
+			);
+		} else {
+			await this.getKeyValueStorage().removeItem(authKeys.accessToken);
+		}
 
 		if (tokens.idToken) {
 			await this.getKeyValueStorage().setItem(
 				authKeys.idToken,
 				tokens.idToken.toString(),
 			);
+		} else {
+			await this.getKeyValueStorage().removeItem(authKeys.idToken);
 		}
 
 		if (tokens.refreshToken) {
@@ -119,6 +129,8 @@ export class DefaultTokenStore implements AuthTokenStore {
 				authKeys.refreshToken,
 				tokens.refreshToken,
 			);
+		} else {
+			await this.getKeyValueStorage().removeItem(authKeys.refreshToken);
 		}
 
 		if (tokens.deviceMetadata) {
@@ -145,12 +157,18 @@ export class DefaultTokenStore implements AuthTokenStore {
 				authKeys.signInDetails,
 				JSON.stringify(tokens.signInDetails),
 			);
+		} else {
+			await this.getKeyValueStorage().removeItem(authKeys.signInDetails);
 		}
 
-		await this.getKeyValueStorage().setItem(
-			authKeys.clockDrift,
-			`${tokens.clockDrift}`,
-		);
+		if (authKeys.clockDrift) {
+			await this.getKeyValueStorage().setItem(
+				authKeys.clockDrift,
+				`${tokens.clockDrift}`,
+			);
+		} else {
+			await this.getKeyValueStorage().removeItem(authKeys.clockDrift);
+		}
 	}
 
 	async clearTokens(): Promise<void> {
