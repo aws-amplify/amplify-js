@@ -36,7 +36,7 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
  */
 const endpointResolver = (
 	options: S3EndpointResolverOptions,
-	apiInput?: { Bucket?: string; AccountId?: string },
+	apiInput?: { AccountId?: string },
 ) => {
 	const { region, customEndpoint } = options;
 	const { AccountId: accountId } = apiInput || {};
@@ -50,7 +50,9 @@ const endpointResolver = (
 			`https://${accountId}.s3-control.${region}.${getDnsSuffix(region)}`,
 		);
 	} else {
-		endpoint = new AmplifyUrl(`https://s3.${region}.${getDnsSuffix(region)}`);
+		endpoint = new AmplifyUrl(
+			`https://s3-control.${region}.${getDnsSuffix(region)}`,
+		);
 	}
 
 	return { url: endpoint };
