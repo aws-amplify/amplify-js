@@ -9,7 +9,7 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
  *
  * @internal
  */
-type S3ServiceOptions = StorageConfig['S3'];
+export type S3ServiceOptions = StorageConfig['S3'];
 
 /**
  * Internal S3 library options.

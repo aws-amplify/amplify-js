@@ -13,6 +13,7 @@ import {
 	RemoveWithPathOutput,
 } from '../../types';
 import { remove as removeInternal } from '../internal/remove';
+import { createServerStorageConfiguration } from '../../utils';
 
 /**
  * Remove a file from your S3 bucket.
@@ -48,5 +49,9 @@ export function remove(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: RemoveInput | RemoveWithPathInput,
 ) {
-	return removeInternal(getAmplifyServerContext(contextSpec).amplify, input);
+	const config = createServerStorageConfiguration(
+		getAmplifyServerContext(contextSpec).amplify,
+	);
+
+	return removeInternal(config, input);
 }

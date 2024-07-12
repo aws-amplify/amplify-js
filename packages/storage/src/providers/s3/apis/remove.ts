@@ -9,6 +9,7 @@ import {
 	RemoveWithPathInput,
 	RemoveWithPathOutput,
 } from '../types';
+import { createStorageConfiguration } from '../utils';
 
 import { remove as removeInternal } from './internal/remove';
 
@@ -37,5 +38,7 @@ export function remove(
 export function remove(input: RemoveInput): Promise<RemoveOutput>;
 
 export function remove(input: RemoveInput | RemoveWithPathInput) {
-	return removeInternal(Amplify, input);
+	const config = createStorageConfiguration(Amplify, input, 'WRITE');
+
+	return removeInternal(config, input);
 }

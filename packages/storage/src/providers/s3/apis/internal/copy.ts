@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -12,7 +11,6 @@ import {
 } from '../../types';
 import { ResolvedS3Config } from '../../types/options';
 import {
-	createStorageConfiguration,
 	isInputWithPath,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
@@ -23,25 +21,27 @@ import { copyObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 
+import { S3InternalConfig } from './types';
+
 const isCopyInputWithPath = (
 	input: CopyInput | CopyWithPathInput,
 ): input is CopyWithPathInput => isInputWithPath(input.source);
 
 export const copy = async (
-	amplify: AmplifyClassV6,
+	config: S3InternalConfig,
 	input: CopyInput | CopyWithPathInput,
 ): Promise<CopyOutput | CopyWithPathOutput> => {
 	return isCopyInputWithPath(input)
-		? copyWithPath(amplify, input)
-		: copyWithKey(amplify, input);
+		? copyWithPath(config, input)
+		: copyWithKey(config, input);
 };
 
 const copyWithPath = async (
-	amplify: AmplifyClassV6,
+	config: S3InternalConfig,
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	const config = createStorageConfiguration(amplify);
+
 	const { s3Config, bucket, identityId } = await resolveS3ConfigAndInput({
 		config,
 	});
@@ -77,7 +77,7 @@ const copyWithPath = async (
 
 /** @deprecated Use {@link copyWithPath} instead. */
 export const copyWithKey = async (
-	amplify: AmplifyClassV6,
+	config: S3InternalConfig,
 	input: CopyInput,
 ): Promise<CopyOutput> => {
 	const {
@@ -90,7 +90,6 @@ export const copyWithKey = async (
 		!!destinationKey,
 		StorageValidationErrorCode.NoDestinationKey,
 	);
-	const config = createStorageConfiguration(amplify);
 	const {
 		s3Config,
 		bucket,

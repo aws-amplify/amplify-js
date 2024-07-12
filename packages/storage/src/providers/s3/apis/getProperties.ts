@@ -9,6 +9,7 @@ import {
 	GetPropertiesWithPathInput,
 	GetPropertiesWithPathOutput,
 } from '../types';
+import { createStorageConfiguration } from '../utils';
 
 import { getProperties as getPropertiesInternal } from './internal/getProperties';
 
@@ -43,5 +44,7 @@ export function getProperties(
 export function getProperties(
 	input: GetPropertiesInput | GetPropertiesWithPathInput,
 ) {
-	return getPropertiesInternal(Amplify, input);
+	const config = createStorageConfiguration(Amplify, input, 'READ');
+
+	return getPropertiesInternal(config, input);
 }

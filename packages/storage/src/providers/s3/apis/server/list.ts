@@ -16,6 +16,7 @@ import {
 	ListPaginateWithPathOutput,
 } from '../../types';
 import { list as listInternal } from '../internal/list';
+import { createServerStorageConfiguration } from '../../utils';
 
 /**
  * List files in pages with the given `path`.
@@ -78,8 +79,9 @@ export function list(
 		| ListAllWithPathInput
 		| ListPaginateWithPathInput,
 ) {
-	return listInternal(
+	const config = createServerStorageConfiguration(
 		getAmplifyServerContext(contextSpec).amplify,
-		input ?? {},
 	);
+
+	return listInternal(config, input ?? {});
 }

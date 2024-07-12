@@ -12,6 +12,7 @@ import {
 	CopyWithPathOutput,
 } from '../../types';
 import { copy as copyInternal } from '../internal/copy';
+import { createServerStorageConfiguration } from '../../utils/config';
 
 /**
  * Copy an object from a source to a destination object within the same bucket.
@@ -50,5 +51,9 @@ export function copy(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: CopyInput | CopyWithPathInput,
 ) {
-	return copyInternal(getAmplifyServerContext(contextSpec).amplify, input);
+	const config = createServerStorageConfiguration(
+		getAmplifyServerContext(contextSpec).amplify,
+	);
+
+	return copyInternal(config, input);
 }

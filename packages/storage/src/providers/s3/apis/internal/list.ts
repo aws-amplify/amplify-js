@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -17,7 +16,6 @@ import {
 	ListPaginateWithPathOutput,
 } from '../../types';
 import {
-	createStorageConfiguration,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
@@ -32,6 +30,8 @@ import { logger } from '../../../../utils';
 import { STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/s3data/types';
 
+import { S3InternalConfig } from './types';
+
 const MAX_PAGE_SIZE = 1000;
 
 interface ListInputArgs {
@@ -41,7 +41,7 @@ interface ListInputArgs {
 }
 
 export const list = async (
-	amplify: AmplifyClassV6,
+	config: S3InternalConfig,
 	input:
 		| ListAllInput
 		| ListPaginateInput
@@ -55,7 +55,6 @@ export const list = async (
 > => {
 	const { options = {} } = input;
 
-	const config = createStorageConfiguration(amplify);
 	const {
 		s3Config,
 		bucket,

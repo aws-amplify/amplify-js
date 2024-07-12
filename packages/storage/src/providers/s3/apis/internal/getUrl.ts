@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -13,7 +12,6 @@ import {
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client/s3data';
 import {
-	createStorageConfiguration,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
@@ -25,13 +23,13 @@ import {
 } from '../../utils/constants';
 
 import { getProperties } from './getProperties';
+import { S3InternalConfig } from './types';
 
 export const getUrl = async (
-	amplify: AmplifyClassV6,
+	config: S3InternalConfig,
 	input: GetUrlInput | GetUrlWithPathInput,
 ): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
 	const { options: getUrlOptions } = input;
-	const config = createStorageConfiguration(amplify);
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput({
 			config,
@@ -46,7 +44,7 @@ export const getUrl = async (
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
 	if (getUrlOptions?.validateObjectExistence) {
-		await getProperties(amplify, input, StorageAction.GetUrl);
+		await getProperties(config, input, StorageAction.GetUrl);
 	}
 
 	let urlExpirationInSec =

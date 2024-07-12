@@ -123,7 +123,7 @@ export function uploadData(
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	const config = createStorageConfiguration(Amplify);
+	const config = createStorageConfiguration(Amplify, input, 'WRITE');
 
 	return internalUploadData(config, input);
 }

@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -11,7 +10,6 @@ import {
 	GetPropertiesWithPathOutput,
 } from '../../types';
 import {
-	createStorageConfiguration,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
@@ -20,13 +18,14 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
 
+import { S3InternalConfig } from './types';
+
 export const getProperties = async (
-	amplify: AmplifyClassV6,
+	config: S3InternalConfig,
 	input: GetPropertiesInput | GetPropertiesWithPathInput,
 	action?: StorageAction,
 ): Promise<GetPropertiesOutput | GetPropertiesWithPathOutput> => {
 	const { options: getPropertiesOptions } = input;
-	const config = createStorageConfiguration(amplify);
 	const { s3Config, bucket, keyPrefix, identityId } =
 		await resolveS3ConfigAndInput({
 			config,

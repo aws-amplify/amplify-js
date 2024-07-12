@@ -13,6 +13,7 @@ import {
 	GetPropertiesWithPathOutput,
 } from '../../types';
 import { getProperties as getPropertiesInternal } from '../internal/getProperties';
+import { createServerStorageConfiguration } from '../../utils';
 
 /**
  * Gets the properties of a file. The properties include S3 system metadata and
@@ -50,8 +51,9 @@ export function getProperties(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: GetPropertiesInput | GetPropertiesWithPathInput,
 ) {
-	return getPropertiesInternal(
+	const config = createServerStorageConfiguration(
 		getAmplifyServerContext(contextSpec).amplify,
-		input,
 	);
+
+	return getPropertiesInternal(config, input);
 }

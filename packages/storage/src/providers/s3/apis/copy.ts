@@ -9,6 +9,7 @@ import {
 	CopyWithPathInput,
 	CopyWithPathOutput,
 } from '../types';
+import { createStorageConfiguration } from '../utils';
 
 import { copy as copyInternal } from './internal/copy';
 
@@ -38,5 +39,7 @@ export function copy(input: CopyWithPathInput): Promise<CopyWithPathOutput>;
 export function copy(input: CopyInput): Promise<CopyOutput>;
 
 export function copy(input: CopyInput | CopyWithPathInput) {
-	return copyInternal(Amplify, input);
+	const config = createStorageConfiguration(Amplify, input, 'READWRITE');
+
+	return copyInternal(config, input);
 }
