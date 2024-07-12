@@ -22,11 +22,11 @@ interface AuthConfigAdapter {
 }
 
 /**
- * Create configuration including handlers for StorageBrowser to call S3 Access Grants
- * APIs to list and get credentials for different locations.
+ * Create configuration including handlers to call S3 Access Grant APIs to list and get
+ * credentials for different locations.
  *
  * @param options - Configuration options for the adapter.
- * @returns - An object containing the handlers for StorageBrowser to call S3 Access Grants APIs and region
+ * @returns - An object containing the handlers to call S3 Access Grant APIs and region
  */
 export const createManagedAuthConfigAdapter = ({
 	credentialsProvider,
