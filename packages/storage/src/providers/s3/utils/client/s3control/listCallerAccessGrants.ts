@@ -48,8 +48,8 @@ const listCallerAccessGrantsSerializer = (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
 
-	// Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_ListAccessGrants.html
-	url.pathname = '/v20180820/accessgrantsinstance/grants';
+	// Ref: NA
+	url.pathname = '/v20180820/accessgrantsinstance/caller/grants';
 
 	return {
 		method: 'GET',
