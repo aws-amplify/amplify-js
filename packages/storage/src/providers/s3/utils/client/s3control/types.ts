@@ -7,6 +7,8 @@ script. Once these APIs have been released to the AWS SDK, this file can be remo
 types.
 
 These types were harvested from Trebuchet.
+
+@TODO(jimblanc) Unify types & integrate with `dts-bundler`
 */
 
 import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
