@@ -42,7 +42,6 @@ export const resolveS3ConfigAndInput = async ({
 		libraryOptions,
 		identityIdProvider,
 	} = config;
-	console.log(serviceOptions);
 	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
 		serviceOptions ?? {};
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
