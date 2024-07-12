@@ -12,14 +12,7 @@ import {
 
 const MOCK_ACCOUNT_ID = 'accountId';
 const MOCK_NEXT_TOKEN = 'nextToken';
-const MOCK_ACCESS_GRANT_ARN = 'accessGrantARN';
-const MOCK_ACCESS_GRANT_ID = 'accessGrantId';
-const MOCK_PREFIX = 's3://my-bucket/path/to/';
-const MOCK_LOCATION_ID = 'locationId';
 const MOCK_APP_ARN = 'appArn';
-const MOCK_TIMESTAMP = '2013-09-17T18:07:53.000Z';
-const MOCK_GRANTEE_ID = 'granteeId';
-const MOCK_GRANTEE_TYPE = 'IAM';
 const MOCK_GRANT_SCOPE = 's3://my-bucket/path/to/object.md';
 const MOCK_PERMISSION = 'READWRITE';
 
@@ -39,7 +32,7 @@ const listCallerAccessGrantsHappyCase: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&maxResults=50&nextToken=mockToken',
+			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/caller/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&maxResults=50&nextToken=mockToken',
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({
@@ -53,27 +46,16 @@ const listCallerAccessGrantsHappyCase: ApiFunctionalTestCase<
 		},
 		body: `
 		<?xml version="1.0" encoding="UTF-8"?>
-		<ListAccessGrantsResult>
+		<ListCallerAccessGrantsResult>
 			<NextToken>${MOCK_NEXT_TOKEN}</NextToken>
-			<AccessGrantsList>
-				<AccessGrant>
-						<AccessGrantArn>${MOCK_ACCESS_GRANT_ARN}</AccessGrantArn>
-						<AccessGrantId>${MOCK_ACCESS_GRANT_ID}</AccessGrantId>
-						<AccessGrantsLocationConfiguration>
-							<S3SubPrefix>${MOCK_PREFIX}</S3SubPrefix>
-						</AccessGrantsLocationConfiguration>
-						<AccessGrantsLocationId>${MOCK_LOCATION_ID}</AccessGrantsLocationId>
+			<CallerAccessGrantsList>
+				<AccessGrantsInstance>
 						<ApplicationArn>${MOCK_APP_ARN}</ApplicationArn>
-						<CreatedAt>${MOCK_TIMESTAMP}</CreatedAt>
-						<Grantee>
-							<GranteeIdentifier>${MOCK_GRANTEE_ID}</GranteeIdentifier>
-							<GranteeType>${MOCK_GRANTEE_TYPE}</GranteeType>
-						</Grantee>
 						<GrantScope>${MOCK_GRANT_SCOPE}</GrantScope>
 						<Permission>${MOCK_PERMISSION}</Permission>
-				</AccessGrant>
-			</AccessGrantsList>
-		</ListAccessGrantsResult>
+				</AccessGrantsInstance>
+			</CallerAccessGrantsList>
+		</ListCallerAccessGrantsResult>
 	`,
 	},
 	{
