@@ -3,5 +3,5 @@
 
 export interface RetryDeciderOutput {
 	retryable: boolean;
-	isInvalidCredentialsError: boolean;
+	isInvalidCredentialsError?: boolean;
 }

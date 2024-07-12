@@ -28,5 +28,6 @@ export const isInvalidCredentialsError = (
 		!!errorMessage &&
 		errorCode.includes('Signature') &&
 		errorMessage.includes('expired');
+
 	return isExpiredTokenError || isExpiredSignatureError;
 };

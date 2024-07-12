@@ -6,7 +6,7 @@ import { ErrorParser, HttpResponse } from '../../types';
 import { isClockSkewError } from './isClockSkewError';
 import { isInvalidCredentialsError } from './isInvalidCredentialsError';
 
-interface RetryDeciderOutput {
+export interface RetryDeciderOutput {
 	retryable: boolean;
 	isInvalidCredentialsError: boolean;
 }
@@ -17,7 +17,10 @@ interface RetryDeciderOutput {
  */
 export const getRetryDecider =
 	(errorParser: ErrorParser) =>
-	async (response?: HttpResponse, error?: unknown): Promise<RetryDeciderOutput> => {
+	async (
+		response?: HttpResponse,
+		error?: unknown,
+	): Promise<RetryDeciderOutput> => {
 		const parsedError =
 			(error as Error & { code: string }) ??
 			(await errorParser(response)) ??
@@ -26,8 +29,12 @@ export const getRetryDecider =
 		const errorMessage = parsedError?.message;
 		const statusCode = response?.statusCode;
 
-		const isInvalidCredentials = isInvalidCredentialsError(errorCode, errorMessage);
-		const isRetryable = isConnectionError(error) ||
+		const isInvalidCredentials = isInvalidCredentialsError(
+			errorCode,
+			errorMessage,
+		);
+		const isRetryable =
+			isConnectionError(error) ||
 			isThrottlingError(statusCode, errorCode) ||
 			isClockSkewError(errorCode) ||
 			isServerSideError(statusCode, errorCode) ||

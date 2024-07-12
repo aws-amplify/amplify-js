@@ -50,9 +50,8 @@ export const signingMiddlewareFactory = ({
 	) =>
 		async function signingMiddleware(request: HttpRequest) {
 			currentSystemClockOffset = currentSystemClockOffset ?? 0;
-			const shouldForceRefreshCredentials = context?.isCredentialsInvalid
-				? true
-				: false;
+			const shouldForceRefreshCredentials =
+				context?.isCredentialsInvalid ?? false;
 			const signRequestOptions = {
 				credentials:
 					typeof credentials === 'function'
