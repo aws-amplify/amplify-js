@@ -18,7 +18,7 @@ const MOCK_EXPIRATION = '2013-09-17T18:07:53.000Z';
 const MOCK_EXPIRATION_DATE = new Date(MOCK_EXPIRATION);
 const MOCK_GRANT_TARGET = 'matchedGrantTarget';
 
-// API Reference: NA
+// API Reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_GetDataAccess.html
 const getDataAccessHappyCase: ApiFunctionalTestCase<typeof getDataAccess> = [
 	'happy case',
 	'getDataAccess',
