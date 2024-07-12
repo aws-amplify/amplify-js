@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/storage/storage-browser",
+	"main": "../dist/cjs/storageBrowser/index.js",
+	"browser": "../dist/esm/storageBrowser/index.mjs",
+	"module": "../dist/esm/storageBrowser/index.mjs",
+	"typings": "../dist/esm/storageBrowser/index.d.ts"
+}
