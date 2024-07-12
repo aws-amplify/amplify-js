@@ -61,70 +61,6 @@ const createDefaultIdentityIdProvider = (
 	};
 };
 
-const isInputWithOptions = (
-	input: unknown,
-): input is { options: InternalStorageAPIConfig['options'] } => {
-	return !!input && (input as any).options;
-};
-const isInputWithPath = (
-	input: unknown,
-): input is StorageOperationInputWithPath => {
-	return !!input && (input as any).path;
-};
-
-const isInputWithSourceAndDestination = (
-	input: unknown,
-): input is {
-	source: StorageOperationInputWithPath;
-	destination: StorageOperationInputWithPath;
-} => {
-	return !!input && (input as any).destination && (input as any).source;
-};
-
-interface InternalStorageAPIConfig
-	extends StorageOperationOptionsInput<
-		CommonOptions & {
-			bucket?: string;
-			region?: string;
-		}
-	> {
-	paths: StorageOperationInput['path'][];
-}
-
-/**
- * This function is independent from the different input permutations and is used mainly to resolve the
- * the main storage options.
- *
- * @internal
- */
-export const createInternalStorageAPIConfig = (
-	input: unknown,
-): InternalStorageAPIConfig => {
-	let options: NonNullable<InternalStorageAPIConfig['options']> = {};
-	let paths: InternalStorageAPIConfig['paths'] = [];
-
-	if (isInputWithPath(input)) {
-		const { path } = input;
-		paths = [path];
-	} else if (isInputWithSourceAndDestination(input)) {
-		const {
-			destination: { path: destinationPath },
-			source: { path: sourcePath },
-		} = input;
-		paths = [destinationPath, sourcePath];
-	}
-
-	if (isInputWithOptions(input)) {
-		const { options: apiOptions } = input;
-		options = { ...apiOptions };
-	}
-
-	return {
-		paths,
-		options,
-	};
-};
-
 /**
  * It will return a Storage configuration used by lower level utils and APIs.
  *
@@ -135,8 +71,9 @@ export const createStorageConfiguration = (
 	apiInput: unknown,
 	permission: Permission,
 ): S3InternalConfig => {
-	const { paths, options } = createInternalStorageAPIConfig(apiInput);
-	const { locationCredentialsProvider } = options ?? {};
+	const { paths } = getPathsFromAPIInput(apiInput);
+	const options = getOptionsFromAPIInput(apiInput) ?? {};
+	const { locationCredentialsProvider } = options;
 
 	const libraryOptions = amplify.libraryOptions?.Storage?.S3 ?? {};
 	const serviceOptions = getServiceOptions(amplify, options);
@@ -160,6 +97,11 @@ export const createStorageConfiguration = (
 	};
 };
 
+/**
+ * This util will get the main storage service options used by the storage APIs
+ *
+ * @internal
+ */
 const getServiceOptions = (
 	amplify: AmplifyClassV6,
 	options: InternalStorageAPIConfig['options'],
@@ -200,6 +142,76 @@ export const createServerStorageConfiguration = (
 		serviceOptions,
 		credentialsProvider,
 		identityIdProvider,
+	};
+};
+
+const isInputWithOptions = (
+	input: unknown,
+): input is { options: InternalStorageAPIConfig['options'] } => {
+	return !!input && (input as any).options;
+};
+const isInputWithPath = (
+	input: unknown,
+): input is StorageOperationInputWithPath => {
+	return !!input && (input as any).path;
+};
+
+const isInputWithSourceAndDestination = (
+	input: unknown,
+): input is {
+	source: StorageOperationInputWithPath;
+	destination: StorageOperationInputWithPath;
+} => {
+	return !!input && (input as any).destination && (input as any).source;
+};
+
+/**
+ * This interface is used to resolve the main options for the locationCredentialsProvider
+ *
+ * @internal
+ */
+interface InternalStorageAPIConfig
+	extends StorageOperationOptionsInput<
+		CommonOptions & {
+			bucket?: string;
+			region?: string;
+		}
+	> {
+	paths: StorageOperationInput['path'][];
+}
+
+/**
+ * This function is independent from the different input permutations and is used to get the common Storage options.
+ *
+ * @internal
+ */
+const getOptionsFromAPIInput = (
+	input: unknown,
+): InternalStorageAPIConfig['options'] => {
+	return isInputWithOptions(input) ? input.options : undefined;
+};
+/**
+ * This function is independent from the different input permutations and is used mainly to resolve the
+ * the main options for the locationCredentialsProvider.
+ *
+ * @internal
+ */
+const getPathsFromAPIInput = (input: unknown): InternalStorageAPIConfig => {
+	let paths: InternalStorageAPIConfig['paths'] = [];
+
+	if (isInputWithPath(input)) {
+		const { path } = input;
+		paths = [path];
+	} else if (isInputWithSourceAndDestination(input)) {
+		const {
+			destination: { path: destinationPath },
+			source: { path: sourcePath },
+		} = input;
+		paths = [destinationPath, sourcePath];
+	}
+
+	return {
+		paths,
 	};
 };
 
