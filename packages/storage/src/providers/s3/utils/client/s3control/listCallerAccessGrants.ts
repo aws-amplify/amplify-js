@@ -69,7 +69,7 @@ const listCallerAccessGrantsDeserializer = async (
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {
 			CallerAccessGrantsList: [
-				'AccessGrantsList',
+				'CallerAccessGrantsList',
 				value => emptyArrayGuard(value, deserializeAccessGrantsList),
 			],
 			NextToken: 'NextToken',
