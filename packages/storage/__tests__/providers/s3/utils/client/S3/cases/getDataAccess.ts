@@ -34,7 +34,7 @@ const getDataAccessHappyCase: ApiFunctionalTestCase<typeof getDataAccess> = [
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://s3.us-east-1.amazonaws.com/?durationSeconds=100&permission=READWRITE&privilege=Default&target=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2Fobject.md&targetType=Object"',
+			href: 'https://s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/dataaccess?durationSeconds=100&permission=READWRITE&privilege=Default&target=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2Fobject.md&targetType=Object',
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({
@@ -71,4 +71,30 @@ const getDataAccessHappyCase: ApiFunctionalTestCase<typeof getDataAccess> = [
 	},
 ];
 
-export default [getDataAccessHappyCase];
+const getDataAccessErrorCase: ApiFunctionalTestCase<typeof getDataAccess> = [
+	'error case',
+	'getDataAccess',
+	getDataAccess,
+	defaultConfig,
+	getDataAccessHappyCase[4],
+	getDataAccessHappyCase[5],
+	{
+		status: 403,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: `
+		<?xml version="1.0" encoding="UTF-8"?>
+		<Error>
+			<Code>AccessDenied</Code>
+			<Message>Access Denied</Message>
+			<RequestId>656c76696e6727732072657175657374</RequestId>
+			<HostId>Uuag1LuByRx9e6j5Onimru9pO4ZVKnJ2Qz7/C1NPcfTWAtRPfTaOFg==</HostId>
+		</Error>
+		`,
+	},
+	{
+		message: 'Access Denied',
+		name: 'AccessDenied',
+	},
+];
+
+export default [getDataAccessHappyCase, getDataAccessErrorCase];

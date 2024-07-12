@@ -64,7 +64,7 @@ const endpointResolver = (
 	} else if (apiInput?.AccountId) {
 		// Control plane operations
 		endpoint = new AmplifyUrl(
-			`https://${apiInput.AccountId}.s3-control.${region}.${getDnsSuffix(region)}`,
+			`https://s3-control.${region}.${getDnsSuffix(region)}`,
 		);
 	} else if (useAccelerateEndpoint) {
 		if (forcePathStyle) {

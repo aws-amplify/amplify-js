@@ -47,6 +47,9 @@ const listCallerAccessGrantsSerializer = (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
 
+	// Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_ListAccessGrants.html
+	url.pathname = '/v20180820/accessgrantsinstance/grants';
+
 	return {
 		method: 'GET',
 		headers,
@@ -65,8 +68,8 @@ const listCallerAccessGrantsDeserializer = async (
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {
 			CallerAccessGrantsList: [
-				'CallerAccessGrantsList',
-				value => emptyArrayGuard(value, deserializeCallerAccessGrantsList),
+				'AccessGrantsList',
+				value => emptyArrayGuard(value, deserializeAccessGrantsList),
 			],
 			NextToken: 'NextToken',
 		});
@@ -78,11 +81,11 @@ const listCallerAccessGrantsDeserializer = async (
 	}
 };
 
-const deserializeCallerAccessGrantsList = (output: any[]) =>
+const deserializeAccessGrantsList = (output: any[]) =>
 	output.map(deserializeCallerAccessGrant);
 
 const deserializeCallerAccessGrant = (output: any) =>
-	map(output, {
+	map(output.AccessGrant, {
 		ApplicationArn: 'ApplicationArn',
 		GrantScope: 'GrantScope',
 		Permission: 'Permission',

@@ -49,6 +49,9 @@ const getDataAccessSerializer = (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
 
+	// Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_GetDataAccess.html
+	url.pathname = '/v20180820/accessgrantsinstance/dataaccess';
+
 	return {
 		method: 'GET',
 		headers,
