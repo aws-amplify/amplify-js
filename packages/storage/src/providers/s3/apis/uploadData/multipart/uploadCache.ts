@@ -9,7 +9,7 @@ import {
 
 import { UPLOADS_STORAGE_KEY } from '../../../utils/constants';
 import { ResolvedS3Config } from '../../../types/options';
-import { Part, listParts } from '../../../utils/client';
+import { Part, listParts } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
 
 const ONE_HOUR = 1000 * 60 * 60;

@@ -13,44 +13,43 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type {
-	GetDataAccessCommandInput,
-	GetDataAccessCommandOutput,
-} from './typesAccessGrants';
-import { defaultConfig } from './base';
 import {
 	assignStringVariables,
 	buildStorageServiceError,
-	deserializeTimestamp,
+	emptyArrayGuard,
 	map,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
-} from './utils';
+} from '../utils';
 
-export type GetDataAccessInput = GetDataAccessCommandInput;
+import type {
+	ListCallerAccessGrantsCommandInput,
+	ListCallerAccessGrantsCommandOutput,
+} from './types';
+import { defaultConfig } from './base';
 
-export type GetDataAccessOutput = GetDataAccessCommandOutput;
+export type ListCallerAccessGrantsInput = ListCallerAccessGrantsCommandInput;
 
-const getDataAccessSerializer = (
-	input: GetDataAccessInput,
+export type ListCallerAccessGrantsOutput = ListCallerAccessGrantsCommandOutput;
+
+const listCallerAccessGrantsSerializer = (
+	input: ListCallerAccessGrantsInput,
 	endpoint: Endpoint,
 ): HttpRequest => {
 	const headers = assignStringVariables({
 		'x-amz-account-id': input.AccountId,
 	});
 	const query = assignStringVariables({
-		durationSeconds: input.DurationSeconds,
-		permission: input.Permission,
-		privilege: input.Privilege,
-		target: input.Target,
-		targetType: input.TargetType,
+		grantscope: input.GrantScope,
+		maxResults: input.MaxResults,
+		nextToken: input.NextToken,
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
 
-	// Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_GetDataAccess.html
-	url.pathname = '/v20180820/accessgrantsinstance/dataaccess';
+	// Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_ListAccessGrants.html
+	url.pathname = '/v20180820/accessgrantsinstance/grants';
 
 	return {
 		method: 'GET',
@@ -59,9 +58,9 @@ const getDataAccessSerializer = (
 	};
 };
 
-const getDataAccessDeserializer = async (
+const listCallerAccessGrantsDeserializer = async (
 	response: HttpResponse,
-): Promise<GetDataAccessCommandOutput> => {
+): Promise<ListCallerAccessGrantsOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
@@ -69,8 +68,11 @@ const getDataAccessDeserializer = async (
 	} else {
 		const parsed = await parseXmlBody(response);
 		const contents = map(parsed, {
-			Credentials: ['Credentials', deserializeCredentials],
-			MatchedGrantTarget: 'MatchedGrantTarget',
+			CallerAccessGrantsList: [
+				'AccessGrantsList',
+				value => emptyArrayGuard(value, deserializeAccessGrantsList),
+			],
+			NextToken: 'NextToken',
 		});
 
 		return {
@@ -80,17 +82,19 @@ const getDataAccessDeserializer = async (
 	}
 };
 
-const deserializeCredentials = (output: any) =>
-	map(output, {
-		AccessKeyId: 'AccessKeyId',
-		Expiration: ['Expiration', deserializeTimestamp],
-		SecretAccessKey: 'SecretAccessKey',
-		SessionToken: 'SessionToken',
+const deserializeAccessGrantsList = (output: any[]) =>
+	output.map(deserializeCallerAccessGrant);
+
+const deserializeCallerAccessGrant = (output: any) =>
+	map(output.AccessGrant, {
+		ApplicationArn: 'ApplicationArn',
+		GrantScope: 'GrantScope',
+		Permission: 'Permission',
 	});
 
-export const getDataAccess = composeServiceApi(
+export const listCallerAccessGrants = composeServiceApi(
 	s3TransferHandler,
-	getDataAccessSerializer,
-	getDataAccessDeserializer,
+	listCallerAccessGrantsSerializer,
+	listCallerAccessGrantsDeserializer,
 	{ ...defaultConfig, responseType: 'text' },
 );

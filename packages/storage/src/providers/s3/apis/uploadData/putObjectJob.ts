@@ -11,7 +11,7 @@ import {
 	validateStorageOperationInput,
 } from '../../utils';
 import { ItemWithKey, ItemWithPath } from '../../types/outputs';
-import { putObject } from '../../utils/client';
+import { putObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
 

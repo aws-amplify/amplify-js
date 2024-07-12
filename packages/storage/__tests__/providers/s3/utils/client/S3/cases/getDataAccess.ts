@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getDataAccess } from '../../../../../../../src/providers/s3/utils/client';
+import { getDataAccess } from '../../../../../../../src/providers/s3/utils/client/s3control';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -34,7 +34,7 @@ const getDataAccessHappyCase: ApiFunctionalTestCase<typeof getDataAccess> = [
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/dataaccess?durationSeconds=100&permission=READWRITE&privilege=Default&target=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2Fobject.md&targetType=Object',
+			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/dataaccess?durationSeconds=100&permission=READWRITE&privilege=Default&target=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2Fobject.md&targetType=Object',
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({

@@ -11,7 +11,7 @@ import {
 	headObject,
 	listParts,
 	uploadPart,
-} from '../../../../../src/providers/s3/utils/client';
+} from '../../../../../src/providers/s3/utils/client/s3data';
 import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
 import {
 	StorageValidationErrorCode,
@@ -24,7 +24,7 @@ import { StorageOptions } from '../../../../../src/types';
 import '../testUtils';
 
 jest.mock('@aws-amplify/core');
-jest.mock('../../../../../src/providers/s3/utils/client');
+jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',

@@ -4,7 +4,7 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { listObjectsV2 } from '../../../../src/providers/s3/utils/client';
+import { listObjectsV2 } from '../../../../src/providers/s3/utils/client/s3data';
 import { list } from '../../../../src/providers/s3';
 import {
 	ListAllInput,
@@ -18,7 +18,7 @@ import {
 } from '../../../../src/providers/s3/types';
 import './testUtils';
 
-jest.mock('../../../../src/providers/s3/utils/client');
+jest.mock('../../../../src/providers/s3/utils/client/s3data');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };

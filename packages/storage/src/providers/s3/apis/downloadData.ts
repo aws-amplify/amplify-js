@@ -12,7 +12,7 @@ import {
 } from '../types';
 import { resolveS3ConfigAndInput } from '../utils/resolveS3ConfigAndInput';
 import { createDownloadTask, validateStorageOperationInput } from '../utils';
-import { getObject } from '../utils/client';
+import { getObject } from '../utils/client/s3data';
 import { getStorageUserAgentValue } from '../utils/userAgent';
 import { logger } from '../../../utils';
 import {

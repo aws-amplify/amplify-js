@@ -13,13 +13,6 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type {
-	CompleteMultipartUploadCommandInput,
-	CompleteMultipartUploadCommandOutput,
-	CompletedMultipartUpload,
-	CompletedPart,
-} from './types';
-import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
 	map,
@@ -28,7 +21,15 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import type {
+	CompleteMultipartUploadCommandInput,
+	CompleteMultipartUploadCommandOutput,
+	CompletedMultipartUpload,
+	CompletedPart,
+} from './types';
+import { defaultConfig } from './base';
 
 const INVALID_PARAMETER_ERROR_MSG =
 	'Invalid parameter for ComplteMultipartUpload API';

@@ -18,7 +18,7 @@ import {
 } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
-import { copyObject } from '../../utils/client';
+import { copyObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 

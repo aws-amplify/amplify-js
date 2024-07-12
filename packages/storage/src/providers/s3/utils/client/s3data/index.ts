@@ -38,14 +38,4 @@ export {
 	DeleteObjectInput,
 	DeleteObjectOutput,
 } from './deleteObject';
-export {
-	getDataAccess,
-	GetDataAccessInput,
-	GetDataAccessOutput,
-} from './getDataAccess';
-export {
-	listCallerAccessGrants,
-	ListCallerAccessGrantsInput,
-	ListCallerAccessGrantsOutput,
-} from './listCallerAccessGrants';
 export { CompletedPart, Part, _Object } from './types';

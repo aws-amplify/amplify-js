@@ -4,7 +4,7 @@
 import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
 import { calculateContentMd5 } from '../../../utils';
-import { uploadPart } from '../../../utils/client';
+import { uploadPart } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
 
 import { PartToUpload } from './getDataChunker';

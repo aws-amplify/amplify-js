@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { listCallerAccessGrants } from '../../../../../../../src/providers/s3/utils/client';
+import { listCallerAccessGrants } from '../../../../../../../src/providers/s3/utils/client/s3control';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -39,7 +39,7 @@ const listCallerAccessGrantsHappyCase: ApiFunctionalTestCase<
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&maxResults=50&nextToken=mockToken',
+			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&maxResults=50&nextToken=mockToken',
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({
