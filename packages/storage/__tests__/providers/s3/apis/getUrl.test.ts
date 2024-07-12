@@ -57,6 +57,7 @@ describe('getUrl test with key', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -136,6 +137,52 @@ describe('getUrl test with key', () => {
 				expect({ url, expiresAt }).toEqual(expectedResult);
 			},
 		);
+		describe('bucket passed in options', () => {
+			it('should override bucket in getPresignedGetObjectUrl call when bucket is object', async () => {
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-1',
+					region: 'region-1',
+				};
+				await getUrlWrapper({
+					key: 'key',
+					options: {
+						bucket: bucketInfo,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucketInfo.bucketName,
+						Key: 'public/key',
+					},
+				);
+			});
+			it('should override bucket in getPresignedGetObjectUrl call when bucket is string', async () => {
+				await getUrlWrapper({
+					key: 'key',
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucket,
+						Key: 'public/key',
+					},
+				);
+			});
+		});
 	});
 	describe('Error cases :  With key', () => {
 		afterAll(() => {
@@ -176,6 +223,7 @@ describe('getUrl test with path', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -237,30 +285,53 @@ describe('getUrl test with path', () => {
 			},
 		);
 
-		it('should override bucket in getPresignedGetObjectUrl call when bucket is passed in option', async () => {
-			const inputPath = 'path/';
-			const bucketInfo: BucketInfo = {
-				bucketName: 'bucket-1',
-				region: 'region-1',
-			};
-			await getUrlWrapper({
-				path: inputPath,
-				options: {
-					bucket: bucketInfo,
-				},
+		describe('bucket passed in options', () => {
+			it('should override bucket in getPresignedGetObjectUrl call when bucket is object', async () => {
+				const inputPath = 'path/';
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-1',
+					region: 'region-1',
+				};
+				await getUrlWrapper({
+					path: inputPath,
+					options: {
+						bucket: bucketInfo,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucketInfo.bucketName,
+						Key: inputPath,
+					},
+				);
 			});
-			expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
-			await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
-				{
-					credentials,
-					region: bucketInfo.region,
-					expiration: expect.any(Number),
-				},
-				{
-					Bucket: bucketInfo.bucketName,
-					Key: inputPath,
-				},
-			);
+			it('should override bucket in getPresignedGetObjectUrl call when bucket is string', async () => {
+				const inputPath = 'path/';
+				await getUrlWrapper({
+					path: inputPath,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucket,
+						Key: inputPath,
+					},
+				);
+			});
 		});
 	});
 
