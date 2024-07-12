@@ -229,7 +229,7 @@ const createCustomCredentialsProvider = ({
 	locationCredentialsProvider,
 }: CreateCustomCredentialsProviderParams): StorageCredentialsProvider => {
 	return async () => {
-		const locations = await getLocations({ bucket, paths });
+		const locations = getLocations({ bucket, paths });
 		const { credentials } = await locationCredentialsProvider({
 			locations,
 			permission,
@@ -257,9 +257,10 @@ type GetLocationsParams = Pick<
 	CreateCustomCredentialsProviderParams,
 	'paths' | 'bucket'
 >;
-const getLocations: (
-	params: GetLocationsParams,
-) => Promise<BucketLocation[]> = async ({ paths, bucket }) => {
+const getLocations: (params: GetLocationsParams) => BucketLocation[] = ({
+	paths,
+	bucket,
+}) => {
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 
 	return paths.map(path => ({ bucket, path: resolvePath({ path }) }));
