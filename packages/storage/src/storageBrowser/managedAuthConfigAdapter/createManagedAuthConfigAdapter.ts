@@ -15,7 +15,7 @@ interface CreateManagedAuthConfigAdapterInput {
 	credentialsProvider: CredentialsProvider;
 }
 
-interface StorageBrowserAuthConfigAdapter {
+interface AuthConfigAdapter {
 	listLocations: ListLocations;
 	getLocationCredentials: GetLocationCredentials;
 	region: string;
@@ -32,7 +32,7 @@ export const createManagedAuthConfigAdapter = ({
 	credentialsProvider,
 	region,
 	accountId,
-}: CreateManagedAuthConfigAdapterInput): StorageBrowserAuthConfigAdapter => {
+}: CreateManagedAuthConfigAdapterInput): AuthConfigAdapter => {
 	const listLocations = createListLocationsHandler({
 		credentialsProvider,
 		accountId,
