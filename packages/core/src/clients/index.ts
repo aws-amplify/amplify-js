@@ -18,6 +18,7 @@ export { extendedEncodeURIComponent } from './middleware/signing/utils/extendedE
 export { signingMiddlewareFactory, SigningOptions } from './middleware/signing';
 export {
 	getRetryDecider,
+	RetryDeciderOutput,
 	jitteredBackoff,
 	retryMiddlewareFactory,
 	RetryOptions,

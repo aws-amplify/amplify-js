@@ -5,6 +5,7 @@ import {
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
+	RetryDeciderOutput,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import {
@@ -136,20 +137,20 @@ const completeMultipartUploadDeserializer = async (
 const retryWhenErrorWith200StatusCode = async (
 	response?: HttpResponse,
 	error?: unknown,
-): Promise<boolean> => {
+): Promise<RetryDeciderOutput> => {
 	if (!response) {
-		return false;
+		return { retryable: false };
 	}
 	if (response.statusCode === 200) {
 		if (!response.body) {
-			return true;
+			return { retryable: true };
 		}
 		const parsed = await parseXmlBody(response);
 		if (parsed.Code !== undefined && parsed.Message !== undefined) {
-			return true;
+			return { retryable: true };
 		}
 
-		return false;
+		return { retryable: false };
 	}
 
 	const defaultRetryDecider = defaultConfig.retryDecider;
