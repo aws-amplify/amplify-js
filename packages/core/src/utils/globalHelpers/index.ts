@@ -13,6 +13,16 @@ export const getCrypto = () => {
 		return crypto;
 	}
 
+	try {
+		const crypto = require('node:crypto').webcrypto;
+
+		if (typeof crypto === 'object') {
+			return crypto;
+		}
+	} catch (_) {
+		// no-op
+	}
+
 	throw new AmplifyError({
 		name: 'MissingPolyfill',
 		message: 'Cannot resolve the `crypto` function from the environment.',
