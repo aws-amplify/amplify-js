@@ -15,7 +15,7 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
-import { getObject } from '../../utils/client';
+import { getObject } from '../../utils/client/s3data';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 

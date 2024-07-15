@@ -25,7 +25,7 @@ import {
 } from '../../../../src/providers/s3/types/outputs';
 import './testUtils';
 
-jest.mock('../../../../src/providers/s3/utils/client');
+jest.mock('../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../src/providers/s3/utils', () => {
 	const utils = jest.requireActual('../../../../src/providers/s3/utils');
 
