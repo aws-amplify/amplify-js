@@ -11,7 +11,6 @@ import {
 	RemoveWithPathOutput,
 } from '../../types';
 import {
-	createStorageConfiguration,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
@@ -25,12 +24,8 @@ export const remove = async (
 	input: RemoveInput | RemoveWithPathInput,
 ): Promise<RemoveOutput | RemoveWithPathOutput> => {
 	const { options = {} } = input ?? {};
-	const config = createStorageConfiguration(amplify);
 	const { s3Config, keyPrefix, bucket, identityId } =
-		await resolveS3ConfigAndInput({
-			config,
-			apiOptions: options,
-		});
+		await resolveS3ConfigAndInput(amplify, options);
 
 	const { inputType, objectKey } = validateStorageOperationInput(
 		input,
