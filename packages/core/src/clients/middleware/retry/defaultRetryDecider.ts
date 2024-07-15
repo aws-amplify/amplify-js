@@ -5,11 +5,7 @@ import { ErrorParser, HttpResponse } from '../../types';
 
 import { isClockSkewError } from './isClockSkewError';
 import { isInvalidCredentialsError } from './isInvalidCredentialsError';
-
-export interface RetryDeciderOutput {
-	retryable: boolean;
-	isInvalidCredentialsError: boolean;
-}
+import { RetryDeciderOutput } from './types';
 
 /**
  * Get retry decider function
