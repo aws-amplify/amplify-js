@@ -15,12 +15,19 @@ import {
 	initStore,
 } from './store';
 
+interface StoreRegistrySymbol {
+	readonly value: symbol;
+}
+
 /**
  * Keep all cache records for all instances of credentials store in a singleton
  * so we can reliably de-reference from the memory when we destroy a store
  * instance.
  */
-const storeRegistry = new Map<symbol, LruLocationCredentialsStore>();
+const storeRegistry = new WeakMap<
+	StoreRegistrySymbol,
+	LruLocationCredentialsStore
+>();
 
 /**
  * @internal
@@ -29,10 +36,10 @@ export const createStore = (
 	refreshHandler: GetLocationCredentials,
 	size?: number,
 ) => {
-	const storeInstanceSymbol = Symbol('LocationCredentialsStore');
-	storeRegistry.set(storeInstanceSymbol, initStore(refreshHandler, size));
+	const storeSymbol = { value: Symbol('LocationCredentialsStore') };
+	storeRegistry.set(storeSymbol, initStore(refreshHandler, size));
 
-	return storeInstanceSymbol;
+	return storeSymbol;
 };
 
 const getLookUpLocations = (location: CredentialsLocation) => {
@@ -45,7 +52,7 @@ const getLookUpLocations = (location: CredentialsLocation) => {
 	return locations;
 };
 
-const getCredentialsStore = (storeSymbol: symbol) => {
+const getCredentialsStore = (storeSymbol: StoreRegistrySymbol) => {
 	assertValidationError(
 		storeRegistry.has(storeSymbol),
 		StorageValidationErrorCode.LocationCredentialsStoreDestroyed,
@@ -58,7 +65,7 @@ const getCredentialsStore = (storeSymbol: symbol) => {
  * @internal
  */
 export const getValue = async (input: {
-	storeSymbol: symbol;
+	storeSymbol: StoreRegistrySymbol;
 	location: CredentialsLocation;
 	forceRefresh: boolean;
 }): Promise<{ credentials: AWSCredentials }> => {
@@ -77,6 +84,6 @@ export const getValue = async (input: {
 	return fetchNewValue(store, location);
 };
 
-export const removeStore = (storeSymbol: symbol) => {
+export const removeStore = (storeSymbol: StoreRegistrySymbol) => {
 	storeRegistry.delete(storeSymbol);
 };
