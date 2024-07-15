@@ -2,30 +2,30 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6 } from '@aws-amplify/core';
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { S3InternalConfig, S3ServiceOptions } from '../apis/internal/types';
+import {
+	InternalStorageAPIConfig,
+	S3InternalConfig,
+	S3ServiceOptions,
+	StorageCredentialsProvider,
+	StorageIdentityIdProvider,
+} from '../apis/internal/types';
 import {
 	BucketLocation,
-	CommonOptions,
 	LocationCredentialsProvider,
 	Permission,
 } from '../types/options';
 import {
 	StorageOperationInput,
 	StorageOperationInputWithPath,
-	StorageOperationOptionsInput,
 } from '../../../types/inputs';
 import { StorageError } from '../../../errors/StorageError';
 import {
 	INVALID_STORAGE_PATH,
 	NO_STORAGE_CONFIG,
 } from '../../../errors/constants';
-
-type StorageCredentialsProvider = () => Promise<AWSCredentials>;
-type StorageIdentityIdProvider = () => Promise<string>;
 
 const createDefaultCredentialsProvider = (
 	amplify: AmplifyClassV6,
@@ -71,10 +71,8 @@ export const createStorageConfiguration = (
 	apiInput: unknown,
 	permission: Permission,
 ): S3InternalConfig => {
-	const { paths } = getPathsFromAPIInput(apiInput);
 	const options = getOptionsFromAPIInput(apiInput) ?? {};
 	const { locationCredentialsProvider } = options;
-
 	const libraryOptions = amplify.libraryOptions?.Storage?.S3 ?? {};
 	const serviceOptions = getServiceOptions(amplify, options);
 	const identityIdProvider = createDefaultIdentityIdProvider(amplify);
@@ -83,15 +81,15 @@ export const createStorageConfiguration = (
 	const credentialsProvider = locationCredentialsProvider
 		? createCustomCredentialsProvider({
 				bucket,
-				paths,
+				paths: getPathsFromAPIInput(apiInput),
 				locationCredentialsProvider,
 				permission,
 			})
 		: createDefaultCredentialsProvider(amplify);
 
 	return {
-		libraryOptions,
-		serviceOptions,
+		...libraryOptions,
+		...serviceOptions,
 		credentialsProvider,
 		identityIdProvider,
 	};
@@ -138,8 +136,8 @@ export const createServerStorageConfiguration = (
 	const identityIdProvider = createDefaultIdentityIdProvider(amplify);
 
 	return {
-		libraryOptions,
-		serviceOptions,
+		...libraryOptions,
+		...serviceOptions,
 		credentialsProvider,
 		identityIdProvider,
 	};
@@ -166,21 +164,6 @@ const isInputWithSourceAndDestination = (
 };
 
 /**
- * This interface is used to resolve the main options for the locationCredentialsProvider
- *
- * @internal
- */
-interface InternalStorageAPIConfig
-	extends StorageOperationOptionsInput<
-		CommonOptions & {
-			bucket?: string;
-			region?: string;
-		}
-	> {
-	paths: StorageOperationInput['path'][];
-}
-
-/**
  * This function is independent from the different input permutations and is used to get the common Storage options.
  *
  * @internal
@@ -196,7 +179,9 @@ const getOptionsFromAPIInput = (
  *
  * @internal
  */
-const getPathsFromAPIInput = (input: unknown): InternalStorageAPIConfig => {
+const getPathsFromAPIInput = (
+	input: unknown,
+): InternalStorageAPIConfig['paths'] => {
 	let paths: InternalStorageAPIConfig['paths'] = [];
 
 	if (isInputWithPath(input)) {
@@ -210,9 +195,7 @@ const getPathsFromAPIInput = (input: unknown): InternalStorageAPIConfig => {
 		paths = [destinationPath, sourcePath];
 	}
 
-	return {
-		paths,
-	};
+	return paths;
 };
 
 interface CreateCustomCredentialsProviderParams {
@@ -221,7 +204,6 @@ interface CreateCustomCredentialsProviderParams {
 	locationCredentialsProvider: LocationCredentialsProvider;
 	permission: Permission;
 }
-
 const createCustomCredentialsProvider = ({
 	bucket,
 	paths,

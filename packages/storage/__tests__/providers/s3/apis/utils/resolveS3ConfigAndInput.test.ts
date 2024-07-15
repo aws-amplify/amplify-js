@@ -32,8 +32,8 @@ describe('resolveS3ConfigAndInput', () => {
 	const config: S3InternalConfig = {
 		credentialsProvider: mockCredentialsProvider,
 		identityIdProvider: mockIdentityIdProvider,
-		serviceOptions: mockServiceOptions,
-		libraryOptions: mockLibraryOptions,
+		...mockServiceOptions,
+		...mockLibraryOptions,
 	};
 	beforeEach(() => {
 		mockCredentialsProvider.mockImplementation(async () => credentials);
@@ -88,9 +88,7 @@ describe('resolveS3ConfigAndInput', () => {
 			resolveS3ConfigAndInput({
 				config: {
 					...config,
-					serviceOptions: {
-						bucket: undefined,
-					},
+					bucket: undefined,
 				},
 			}),
 		).rejects.toMatchObject(
@@ -108,9 +106,7 @@ describe('resolveS3ConfigAndInput', () => {
 			resolveS3ConfigAndInput({
 				config: {
 					...config,
-					serviceOptions: {
-						bucket,
-					},
+					region: undefined,
 				},
 			}),
 		).rejects.toMatchObject(
@@ -126,7 +122,7 @@ describe('resolveS3ConfigAndInput', () => {
 		};
 
 		const { s3Config } = await resolveS3ConfigAndInput({
-			config: { ...config, serviceOptions },
+			config: { ...config, ...serviceOptions },
 		});
 		expect(s3Config.customEndpoint).toEqual('http://localhost:20005');
 		expect(s3Config.forcePathStyle).toEqual(true);
@@ -136,7 +132,7 @@ describe('resolveS3ConfigAndInput', () => {
 		const { isObjectLockEnabled } = await resolveS3ConfigAndInput({
 			config: {
 				...config,
-				libraryOptions: { isObjectLockEnabled: true },
+				isObjectLockEnabled: true,
 			},
 		});
 		expect(isObjectLockEnabled).toEqual(true);
@@ -154,9 +150,7 @@ describe('resolveS3ConfigAndInput', () => {
 		const { keyPrefix } = await resolveS3ConfigAndInput({
 			config: {
 				...config,
-				libraryOptions: {
-					prefixResolver: customResolvePrefix,
-				},
+				prefixResolver: customResolvePrefix,
 			},
 		});
 		expect(customResolvePrefix).toHaveBeenCalled();
@@ -184,9 +178,7 @@ describe('resolveS3ConfigAndInput', () => {
 		const { keyPrefix } = await resolveS3ConfigAndInput({
 			config: {
 				...config,
-				libraryOptions: {
-					defaultAccessLevel: 'someLevel' as any,
-				},
+				defaultAccessLevel: 'someLevel' as any,
 			},
 		});
 		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
