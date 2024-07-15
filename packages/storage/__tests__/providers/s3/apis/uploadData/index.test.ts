@@ -50,7 +50,6 @@ const mockGetMultipartUploadHandlers = (
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 const bucket = 'bucket';
 const region = 'region';
-// const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 /* TODO Remove suite when `key` parameter is removed */
 describe('uploadData with key', () => {
 	beforeAll(() => {
