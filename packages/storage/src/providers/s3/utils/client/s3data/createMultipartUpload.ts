@@ -10,12 +10,6 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type {
-	CreateMultipartUploadCommandInput,
-	CreateMultipartUploadCommandOutput,
-} from './types';
-import type { PutObjectInput } from './putObject';
-import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
 	map,
@@ -25,7 +19,14 @@ import {
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import type {
+	CreateMultipartUploadCommandInput,
+	CreateMultipartUploadCommandOutput,
+} from './types';
+import type { PutObjectInput } from './putObject';
+import { defaultConfig } from './base';
 
 export type CreateMultipartUploadInput = Extract<
 	CreateMultipartUploadCommandInput,

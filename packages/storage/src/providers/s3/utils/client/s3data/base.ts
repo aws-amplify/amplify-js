@@ -12,7 +12,7 @@ import {
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { parseXmlError } from './utils';
+import { parseXmlError } from '../utils';
 
 const DOMAIN_PATTERN = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
 const IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;

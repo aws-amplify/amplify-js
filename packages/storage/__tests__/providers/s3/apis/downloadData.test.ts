@@ -4,7 +4,7 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { getObject } from '../../../../src/providers/s3/utils/client';
+import { getObject } from '../../../../src/providers/s3/utils/client/s3data';
 import { downloadData } from '../../../../src/providers/s3';
 import {
 	createDownloadTask,
@@ -25,7 +25,7 @@ import {
 } from '../../../../src/providers/s3/types/outputs';
 import './testUtils';
 
-jest.mock('../../../../src/providers/s3/utils/client');
+jest.mock('../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../src/providers/s3/utils');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {

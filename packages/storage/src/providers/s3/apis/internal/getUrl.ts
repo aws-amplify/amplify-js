@@ -11,7 +11,7 @@ import {
 	GetUrlWithPathOutput,
 } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
-import { getPresignedGetObjectUrl } from '../../utils/client';
+import { getPresignedGetObjectUrl } from '../../utils/client/s3data';
 import {
 	createStorageConfiguration,
 	resolveS3ConfigAndInput,

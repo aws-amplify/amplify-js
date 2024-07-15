@@ -13,75 +13,90 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { defaultConfig } from './base';
-import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
 import {
-	assignStringVariables,
 	buildStorageServiceError,
+	deserializeNumber,
+	emptyArrayGuard,
 	map,
+	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
 
-// Content-length is ignored here because it's forbidden header
-// and will be set by browser or fetch polyfill.
-export type UploadPartInput = Pick<
-	UploadPartCommandInput,
-	'PartNumber' | 'Body' | 'UploadId' | 'Bucket' | 'Key' | 'ContentMD5'
+import type {
+	CompletedPart,
+	ListPartsCommandInput,
+	ListPartsCommandOutput,
+} from './types';
+import { defaultConfig } from './base';
+
+export type ListPartsInput = Pick<
+	ListPartsCommandInput,
+	'Bucket' | 'Key' | 'UploadId'
 >;
 
-export type UploadPartOutput = Pick<
-	UploadPartCommandOutput,
-	'$metadata' | 'ETag'
+export type ListPartsOutput = Pick<
+	ListPartsCommandOutput,
+	'Parts' | 'UploadId' | '$metadata'
 >;
 
-const uploadPartSerializer = async (
-	input: UploadPartInput,
+const listPartsSerializer = async (
+	input: ListPartsInput,
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
-	const headers = {
-		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
-	};
-	headers['content-type'] = 'application/octet-stream';
+	const headers = {};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
-	validateS3RequiredParameter(!!input.PartNumber, 'PartNumber');
 	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
 	url.search = new AmplifyUrlSearchParams({
-		partNumber: input.PartNumber + '',
 		uploadId: input.UploadId,
 	}).toString();
 
 	return {
-		method: 'PUT',
+		method: 'GET',
 		headers,
 		url,
-		body: input.Body,
 	};
 };
 
-const uploadPartDeserializer = async (
+const listPartsDeserializer = async (
 	response: HttpResponse,
-): Promise<UploadPartOutput> => {
+): Promise<ListPartsOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
 		throw buildStorageServiceError(error, response.statusCode);
 	} else {
+		const parsed = await parseXmlBody(response);
+		const contents = map(parsed, {
+			UploadId: 'UploadId',
+			Parts: [
+				'Part',
+				value => emptyArrayGuard(value, deserializeCompletedPartList),
+			],
+		});
+
 		return {
-			...map(response.headers, {
-				ETag: 'etag',
-			}),
 			$metadata: parseMetadata(response),
+			...contents,
 		};
 	}
 };
 
-export const uploadPart = composeServiceApi(
+const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
+	input.map(item =>
+		map(item, {
+			PartNumber: ['PartNumber', deserializeNumber],
+			ETag: 'ETag',
+			Size: ['Size', deserializeNumber],
+		}),
+	);
+
+export const listParts = composeServiceApi(
 	s3TransferHandler,
-	uploadPartSerializer,
-	uploadPartDeserializer,
+	listPartsSerializer,
+	listPartsDeserializer,
 	{ ...defaultConfig, responseType: 'text' },
 );

@@ -15,7 +15,7 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
-import { deleteObject } from '../../utils/client';
+import { deleteObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';

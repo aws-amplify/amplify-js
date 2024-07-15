@@ -10,67 +10,78 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type {
-	DeleteObjectCommandInput,
-	DeleteObjectCommandOutput,
-} from './types';
-import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
-	deserializeBoolean,
+	deserializeMetadata,
+	deserializeNumber,
+	deserializeTimestamp,
 	map,
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
 
-export type DeleteObjectInput = Pick<
-	DeleteObjectCommandInput,
-	'Bucket' | 'Key'
+import { defaultConfig } from './base';
+import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
+
+export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
+
+export type HeadObjectOutput = Pick<
+	HeadObjectCommandOutput,
+	| 'ContentLength'
+	| 'ContentType'
+	| 'ETag'
+	| 'LastModified'
+	| 'Metadata'
+	| 'VersionId'
+	| '$metadata'
 >;
 
-export type DeleteObjectOutput = DeleteObjectCommandOutput;
-
-const deleteObjectSerializer = (
-	input: DeleteObjectInput,
+const headObjectSerializer = async (
+	input: HeadObjectInput,
 	endpoint: Endpoint,
-): HttpRequest => {
+): Promise<HttpRequest> => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 
 	return {
-		method: 'DELETE',
+		method: 'HEAD',
 		headers: {},
 		url,
 	};
 };
 
-const deleteObjectDeserializer = async (
+const headObjectDeserializer = async (
 	response: HttpResponse,
-): Promise<DeleteObjectOutput> => {
+): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
 		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
 		throw buildStorageServiceError(error, response.statusCode);
 	} else {
-		const content = map(response.headers, {
-			DeleteMarker: ['x-amz-delete-marker', deserializeBoolean],
-			VersionId: 'x-amz-version-id',
-			RequestCharged: 'x-amz-request-charged',
-		});
+		const contents = {
+			...map(response.headers, {
+				ContentLength: ['content-length', deserializeNumber],
+				ContentType: 'content-type',
+				ETag: 'etag',
+				LastModified: ['last-modified', deserializeTimestamp],
+				VersionId: 'x-amz-version-id',
+			}),
+			Metadata: deserializeMetadata(response.headers),
+		};
 
 		return {
-			...content,
 			$metadata: parseMetadata(response),
+			...contents,
 		};
 	}
 };
 
-export const deleteObject = composeServiceApi(
+export const headObject = composeServiceApi(
 	s3TransferHandler,
-	deleteObjectSerializer,
-	deleteObjectDeserializer,
+	headObjectSerializer,
+	headObjectDeserializer,
 	{ ...defaultConfig, responseType: 'text' },
 );

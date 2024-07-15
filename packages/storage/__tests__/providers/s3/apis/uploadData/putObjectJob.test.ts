@@ -3,13 +3,13 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
-import { putObject } from '../../../../../src/providers/s3/utils/client';
+import { putObject } from '../../../../../src/providers/s3/utils/client/s3data';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
 import { S3InternalConfig } from '../../../../../src/providers/s3/apis/internal/types';
 
-jest.mock('../../../../../src/providers/s3/utils/client');
+jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../src/providers/s3/utils', () => {
 	const utils = jest.requireActual('../../../../../src/providers/s3/utils');
 

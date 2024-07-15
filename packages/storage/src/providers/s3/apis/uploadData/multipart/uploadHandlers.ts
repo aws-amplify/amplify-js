@@ -26,7 +26,7 @@ import {
 	abortMultipartUpload,
 	completeMultipartUpload,
 	headObject,
-} from '../../../utils/client';
+} from '../../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
 import { S3InternalConfig } from '../../internal/types';
