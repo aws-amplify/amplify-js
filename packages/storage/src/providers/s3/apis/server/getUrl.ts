@@ -13,6 +13,7 @@ import {
 	GetUrlWithPathOutput,
 } from '../../types';
 import { getUrl as getUrlInternal } from '../internal/getUrl';
+import { createServerStorageConfiguration } from '../../utils';
 
 /**
  * Get a temporary presigned URL to download the specified S3 object.
@@ -64,5 +65,9 @@ export function getUrl(
 	contextSpec: AmplifyServer.ContextSpec,
 	input: GetUrlInput | GetUrlWithPathInput,
 ) {
-	return getUrlInternal(getAmplifyServerContext(contextSpec).amplify, input);
+	const config = createServerStorageConfiguration(
+		getAmplifyServerContext(contextSpec).amplify,
+	);
+
+	return getUrlInternal(config, input);
 }

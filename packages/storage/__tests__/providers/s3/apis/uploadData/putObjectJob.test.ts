@@ -47,8 +47,8 @@ mockPutObject.mockResolvedValue({
 const config: S3InternalConfig = {
 	credentialsProvider: mockCredentialsProvider,
 	identityIdProvider: mockIdentityIdProvider,
-	serviceOptions: mockServiceOptions,
-	libraryOptions: mockLibraryOptions,
+	...mockServiceOptions,
+	...mockLibraryOptions,
 };
 
 /* TODO Remove suite when `key` parameter is removed */
@@ -124,9 +124,7 @@ describe('putObjectJob with key', () => {
 		const job = putObjectJob({
 			config: {
 				...config,
-				libraryOptions: {
-					isObjectLockEnabled: true,
-				},
+				isObjectLockEnabled: true,
 			},
 			input: {
 				key: 'key',
@@ -220,9 +218,7 @@ describe('putObjectJob with path', () => {
 		const job = putObjectJob({
 			config: {
 				...config,
-				libraryOptions: {
-					isObjectLockEnabled: true,
-				},
+				isObjectLockEnabled: true,
 			},
 			input: {
 				path: testPath,

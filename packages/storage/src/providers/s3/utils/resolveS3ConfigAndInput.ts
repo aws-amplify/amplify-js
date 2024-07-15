@@ -38,20 +38,19 @@ export const resolveS3ConfigAndInput = async ({
 }: ResolveS3ConfigAndInputParams): Promise<ResolvedS3ConfigAndInput> => {
 	const {
 		credentialsProvider,
-		serviceOptions,
-		libraryOptions,
-		identityIdProvider,
-	} = config;
-	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
-		serviceOptions ?? {};
-	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
-	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
-	const identityId = await identityIdProvider();
-	const {
+		bucket,
+		region,
+		dangerouslyConnectToHttpEndpointForTesting,
 		defaultAccessLevel,
 		prefixResolver = defaultPrefixResolver,
 		isObjectLockEnabled,
-	} = libraryOptions ?? {};
+		identityIdProvider,
+	} = config;
+
+	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
+	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
+	const identityId = await identityIdProvider();
+
 	const keyPrefix = await prefixResolver({
 		accessLevel:
 			apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL,

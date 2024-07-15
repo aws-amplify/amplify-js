@@ -141,8 +141,8 @@ describe('getMultipartUploadHandlers with key', () => {
 	const mockS3Config: S3InternalConfig = {
 		credentialsProvider: mockCredentialsProvider,
 		identityIdProvider: mockIdentityIdProvider,
-		serviceOptions: mockServiceOptions,
-		libraryOptions: mockLibraryOptions,
+		...mockServiceOptions,
+		...mockLibraryOptions,
 	};
 	beforeAll(() => {
 		mockCredentialsProvider.mockImplementation(async () => credentials);
@@ -692,8 +692,8 @@ describe('getMultipartUploadHandlers with path', () => {
 	const mockS3Config: S3InternalConfig = {
 		credentialsProvider: mockCredentialsProvider,
 		identityIdProvider: mockIdentityIdProvider,
-		serviceOptions: mockServiceOptions,
-		libraryOptions: mockLibraryOptions,
+		...mockServiceOptions,
+		...mockLibraryOptions,
 	};
 	beforeAll(() => {
 		mockCredentialsProvider.mockImplementation(async () => credentials);

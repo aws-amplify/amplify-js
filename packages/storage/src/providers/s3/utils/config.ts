@@ -5,9 +5,31 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { S3InternalConfig } from '../apis/internal/types';
+import {
+	InternalStorageAPIConfig,
+	S3InternalConfig,
+	S3ServiceOptions,
+	StorageCredentialsProvider,
+	StorageIdentityIdProvider,
+} from '../apis/internal/types';
+import {
+	BucketLocation,
+	LocationCredentialsProvider,
+	Permission,
+} from '../types/options';
+import {
+	StorageOperationInput,
+	StorageOperationInputWithPath,
+} from '../../../types/inputs';
+import { StorageError } from '../../../errors/StorageError';
+import {
+	INVALID_STORAGE_PATH,
+	NO_STORAGE_CONFIG,
+} from '../../../errors/constants';
 
-const createDefaultCredentialsProvider = (amplify: AmplifyClassV6) => {
+const createDefaultCredentialsProvider = (
+	amplify: AmplifyClassV6,
+): StorageCredentialsProvider => {
 	/**
 	 * A credentials provider function instead of a static credentials object is
 	 * used because the long-running tasks like multipart upload may span over the
@@ -25,7 +47,9 @@ const createDefaultCredentialsProvider = (amplify: AmplifyClassV6) => {
 	};
 };
 
-const createDefaultIdentityIdProvider = (amplify: AmplifyClassV6) => {
+const createDefaultIdentityIdProvider = (
+	amplify: AmplifyClassV6,
+): StorageIdentityIdProvider => {
 	return async () => {
 		const { identityId } = await amplify.Auth.fetchAuthSession();
 		assertValidationError(
@@ -44,6 +68,67 @@ const createDefaultIdentityIdProvider = (amplify: AmplifyClassV6) => {
  */
 export const createStorageConfiguration = (
 	amplify: AmplifyClassV6,
+	apiInput: unknown,
+	permission: Permission,
+): S3InternalConfig => {
+	const options = getOptionsFromAPIInput(apiInput) ?? {};
+	const { locationCredentialsProvider } = options;
+	const libraryOptions = amplify.libraryOptions?.Storage?.S3 ?? {};
+	const serviceOptions = getServiceOptions(amplify, options);
+	const identityIdProvider = createDefaultIdentityIdProvider(amplify);
+	const { bucket } = serviceOptions;
+
+	const credentialsProvider = locationCredentialsProvider
+		? createCustomCredentialsProvider({
+				bucket: resolveBucket(bucket),
+				paths: resolvePathsFromAPIInput(apiInput),
+				locationCredentialsProvider,
+				permission,
+			})
+		: createDefaultCredentialsProvider(amplify);
+
+	return {
+		...libraryOptions,
+		...serviceOptions,
+		credentialsProvider,
+		identityIdProvider,
+	};
+};
+
+/**
+ * This util will get the main storage service options used by the storage APIs
+ *
+ * @internal
+ */
+const getServiceOptions = (
+	amplify: AmplifyClassV6,
+	options: InternalStorageAPIConfig['options'],
+): S3ServiceOptions => {
+	const { Storage } = amplify.getConfig() ?? {};
+	const { dangerouslyConnectToHttpEndpointForTesting } = Storage?.S3 ?? {};
+
+	if (isConfigFromApiInput(options)) {
+		return {
+			bucket: options?.bucket,
+			region: options?.region,
+			dangerouslyConnectToHttpEndpointForTesting,
+		};
+	} else if (isConfigFromAmplifySingleton(Storage?.S3)) {
+		return {
+			bucket: Storage?.S3.bucket,
+			region: Storage?.S3.region,
+			dangerouslyConnectToHttpEndpointForTesting,
+		};
+	}
+
+	throw new StorageError({
+		name: NO_STORAGE_CONFIG,
+		message: 'Storage configuration is required.',
+	});
+};
+
+export const createServerStorageConfiguration = (
+	amplify: AmplifyClassV6,
 ): S3InternalConfig => {
 	const libraryOptions = amplify.libraryOptions?.Storage?.S3 ?? {};
 	const serviceOptions = amplify.getConfig()?.Storage?.S3 ?? {};
@@ -51,9 +136,130 @@ export const createStorageConfiguration = (
 	const identityIdProvider = createDefaultIdentityIdProvider(amplify);
 
 	return {
-		libraryOptions,
-		serviceOptions,
+		...libraryOptions,
+		...serviceOptions,
 		credentialsProvider,
 		identityIdProvider,
 	};
+};
+
+const isInputWithOptions = (
+	input: unknown,
+): input is { options: InternalStorageAPIConfig['options'] } => {
+	return !!input && (input as any).options;
+};
+const isInputWithPath = (
+	input: unknown,
+): input is StorageOperationInputWithPath => {
+	return !!input && (input as any).path;
+};
+
+const isInputWithSourceAndDestination = (
+	input: unknown,
+): input is {
+	source: StorageOperationInputWithPath;
+	destination: StorageOperationInputWithPath;
+} => {
+	return !!input && (input as any).destination && (input as any).source;
+};
+
+/**
+ * This function is independent from the different input permutations and is used to get the common Storage options.
+ *
+ * @internal
+ */
+const getOptionsFromAPIInput = (
+	input: unknown,
+): InternalStorageAPIConfig['options'] => {
+	return isInputWithOptions(input) ? input.options : undefined;
+};
+/**
+ * This function is independent from the different input permutations and is used mainly to resolve the
+ * the main options for the locationCredentialsProvider.
+ *
+ * @internal
+ */
+const resolvePathsFromAPIInput = (input: unknown): string[] => {
+	if (isInputWithPath(input)) {
+		const { path } = input;
+
+		return [resolvePath({ path })];
+	} else if (isInputWithSourceAndDestination(input)) {
+		const {
+			destination: { path: destinationPath },
+			source: { path: sourcePath },
+		} = input;
+
+		return [
+			resolvePath({ path: destinationPath }),
+			resolvePath({ path: sourcePath }),
+		];
+	}
+
+	throw new StorageError({
+		name: INVALID_STORAGE_PATH,
+		message: 'path option needs to be a string',
+	});
+};
+
+const resolveBucket = (bucket?: string): string => {
+	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
+
+	return bucket;
+};
+
+interface CreateCustomCredentialsProviderParams {
+	paths: string[];
+	bucket: string;
+	locationCredentialsProvider: LocationCredentialsProvider;
+	permission: Permission;
+}
+const createCustomCredentialsProvider = ({
+	bucket,
+	paths,
+	permission,
+	locationCredentialsProvider,
+}: CreateCustomCredentialsProviderParams): StorageCredentialsProvider => {
+	return async () => {
+		const locations = getLocations(paths, bucket);
+		const { credentials } = await locationCredentialsProvider({
+			locations,
+			permission,
+		});
+
+		return credentials;
+	};
+};
+
+interface ResolvePathProps {
+	path: StorageOperationInput['path'];
+}
+const resolvePath = ({ path }: ResolvePathProps): string => {
+	if (!path || typeof path === 'function') {
+		throw new StorageError({
+			name: INVALID_STORAGE_PATH,
+			message: 'path option needs to be a string',
+		});
+	}
+
+	return path;
+};
+
+const getLocations: (paths: string[], bucket: string) => BucketLocation[] = (
+	paths,
+	bucket,
+) => {
+	return paths.map(path => ({ bucket, path }));
+};
+
+const isConfigFromApiInput = (
+	options: InternalStorageAPIConfig['options'],
+): boolean => {
+	return !!(options?.bucket && options?.region);
+};
+
+const isConfigFromAmplifySingleton = (
+	s3Options?: S3ServiceOptions,
+): s3Options is S3ServiceOptions => {
+	return !!(s3Options && s3Options.bucket && s3Options.region);
 };

@@ -12,6 +12,7 @@ import {
 	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
 } from '../types';
+import { createStorageConfiguration } from '../utils';
 
 import { list as listInternal } from './internal/list';
 
@@ -65,5 +66,7 @@ export function list(
 		| ListAllWithPathInput
 		| ListPaginateWithPathInput,
 ) {
-	return listInternal(Amplify, input ?? {});
+	const config = createStorageConfiguration(Amplify, input, 'READ');
+
+	return listInternal(config, input ?? {});
 }

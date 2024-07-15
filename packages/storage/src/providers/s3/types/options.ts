@@ -33,7 +33,7 @@ export type LocationCredentialsProvider = (options: {
 	permission: Permission;
 }) => Promise<{ credentials: AWSCredentials }>;
 
-interface CommonOptions {
+export interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false

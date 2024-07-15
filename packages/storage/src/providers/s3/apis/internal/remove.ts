@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
@@ -11,7 +10,6 @@ import {
 	RemoveWithPathOutput,
 } from '../../types';
 import {
-	createStorageConfiguration,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
@@ -20,12 +18,13 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
 
+import { S3InternalConfig } from './types';
+
 export const remove = async (
-	amplify: AmplifyClassV6,
+	config: S3InternalConfig,
 	input: RemoveInput | RemoveWithPathInput,
 ): Promise<RemoveOutput | RemoveWithPathOutput> => {
 	const { options = {} } = input ?? {};
-	const config = createStorageConfiguration(amplify);
 	const { s3Config, keyPrefix, bucket, identityId } =
 		await resolveS3ConfigAndInput({
 			config,

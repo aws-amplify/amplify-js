@@ -9,6 +9,7 @@ import {
 	GetUrlWithPathInput,
 	GetUrlWithPathOutput,
 } from '../types';
+import { createStorageConfiguration } from '../utils';
 
 import { getUrl as getUrlInternal } from './internal/getUrl';
 
@@ -53,5 +54,7 @@ export function getUrl(
 export function getUrl(input: GetUrlInput): Promise<GetUrlOutput>;
 
 export function getUrl(input: GetUrlInput | GetUrlWithPathInput) {
-	return getUrlInternal(Amplify, input);
+	const config = createStorageConfiguration(Amplify, input, 'READ');
+
+	return getUrlInternal(config, input);
 }
