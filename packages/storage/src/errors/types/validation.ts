@@ -72,6 +72,7 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 		message: 'Input `path` does not allow a leading slash (/).',
 	},
 	[StorageValidationErrorCode.InvalidStorageBucket]: {
-		message: 'Unable to find bucket from name in Amplify Configure',
+		message:
+			'Unable to lookup bucket from provided name in Amplify configuration',
 	},
 };
