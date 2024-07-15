@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
-import { CredentialsLocation, LocationCredentialsHandler } from '../types';
+import { CredentialsLocation, GetLocationCredentials } from '../types';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 
@@ -33,7 +33,7 @@ const storeRegistry = new WeakMap<
  * @internal
  */
 export const createStore = (
-	refreshHandler: LocationCredentialsHandler,
+	refreshHandler: GetLocationCredentials,
 	size?: number,
 ) => {
 	const storeSymbol = { value: Symbol('LocationCredentialsStore') };

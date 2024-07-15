@@ -7,11 +7,6 @@ export interface ListCallerAccessGrantsInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
 	region: string;
-	options?: {
-		nextToken?: string;
-		// Default to 100; If > 1000, API will make multiple API calls.
-		pageSize?: number;
-	};
 }
 
 export type ListCallerAccessGrantsOutput = ListLocationsOutput<AccessGrant>;

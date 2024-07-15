@@ -68,11 +68,19 @@ export interface ListLocationsOutput<T extends LocationAccess> {
 	nextToken?: string;
 }
 
-// Interface for listLocations() handler
-export type ListLocations = () => Promise<ListLocationsOutput<LocationAccess>>;
+/**
+ * @internal
+ */
+export interface ListLocationsInput {
+	pageSize?: number;
+	nextToken?: string;
+}
 
-// Interface for getLocationCredentials() handler.
-export type LocationCredentialsHandler = (
+export type ListLocations = (
+	input?: ListLocationsInput,
+) => Promise<ListLocationsOutput<LocationAccess>>;
+
+export type GetLocationCredentials = (
 	input: CredentialsLocation,
 ) => Promise<{ credentials: AWSCredentials }>;
 
