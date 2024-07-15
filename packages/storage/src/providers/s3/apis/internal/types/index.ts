@@ -4,10 +4,7 @@
 import { LibraryOptions, StorageConfig } from '@aws-amplify/core';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
-import {
-	StorageOperationInput,
-	StorageOperationOptionsInput,
-} from '../../../../../types/inputs';
+import { StorageOperationOptionsInput } from '../../../../../types/inputs';
 import { CommonOptions } from '../../../types/options';
 
 /**
@@ -49,5 +46,5 @@ export interface InternalStorageAPIConfig
 			region?: string;
 		}
 	> {
-	paths: StorageOperationInput['path'][];
+	paths?: string[];
 }

@@ -80,8 +80,8 @@ export const createStorageConfiguration = (
 
 	const credentialsProvider = locationCredentialsProvider
 		? createCustomCredentialsProvider({
-				bucket,
-				paths: getPathsFromAPIInput(apiInput),
+				bucket: resolveBucket(bucket),
+				paths: resolvePathsFromAPIInput(apiInput),
 				locationCredentialsProvider,
 				permission,
 			})
@@ -179,28 +179,38 @@ const getOptionsFromAPIInput = (
  *
  * @internal
  */
-const getPathsFromAPIInput = (
-	input: unknown,
-): InternalStorageAPIConfig['paths'] => {
-	let paths: InternalStorageAPIConfig['paths'] = [];
-
+const resolvePathsFromAPIInput = (input: unknown): string[] => {
 	if (isInputWithPath(input)) {
 		const { path } = input;
-		paths = [path];
+
+		return [resolvePath({ path })];
 	} else if (isInputWithSourceAndDestination(input)) {
 		const {
 			destination: { path: destinationPath },
 			source: { path: sourcePath },
 		} = input;
-		paths = [destinationPath, sourcePath];
+
+		return [
+			resolvePath({ path: destinationPath }),
+			resolvePath({ path: sourcePath }),
+		];
 	}
 
-	return paths;
+	throw new StorageError({
+		name: INVALID_STORAGE_PATH,
+		message: 'path option needs to be a string',
+	});
+};
+
+const resolveBucket = (bucket?: string): string => {
+	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
+
+	return bucket;
 };
 
 interface CreateCustomCredentialsProviderParams {
-	paths: InternalStorageAPIConfig['paths'];
-	bucket?: string;
+	paths: string[];
+	bucket: string;
 	locationCredentialsProvider: LocationCredentialsProvider;
 	permission: Permission;
 }
@@ -211,7 +221,7 @@ const createCustomCredentialsProvider = ({
 	locationCredentialsProvider,
 }: CreateCustomCredentialsProviderParams): StorageCredentialsProvider => {
 	return async () => {
-		const locations = getLocations({ bucket, paths });
+		const locations = getLocations(paths, bucket);
 		const { credentials } = await locationCredentialsProvider({
 			locations,
 			permission,
@@ -235,17 +245,11 @@ const resolvePath = ({ path }: ResolvePathProps): string => {
 	return path;
 };
 
-type GetLocationsParams = Pick<
-	CreateCustomCredentialsProviderParams,
-	'paths' | 'bucket'
->;
-const getLocations: (params: GetLocationsParams) => BucketLocation[] = ({
+const getLocations: (paths: string[], bucket: string) => BucketLocation[] = (
 	paths,
 	bucket,
-}) => {
-	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
-
-	return paths.map(path => ({ bucket, path: resolvePath({ path }) }));
+) => {
+	return paths.map(path => ({ bucket, path }));
 };
 
 const isConfigFromApiInput = (
