@@ -36,15 +36,6 @@ export const copy = async (
 		: copyWithKey(config, input);
 };
 
-export const copyV2 = async (
-	config: S3InternalConfig,
-	input: CopyInput | CopyWithPathInput,
-): Promise<CopyOutput | CopyWithPathOutput> => {
-	return isCopyInputWithPath(input)
-		? copyWithPath(config, input)
-		: copyWithKey(config, input);
-};
-
 const copyWithPath = async (
 	config: S3InternalConfig,
 	input: CopyWithPathInput,
