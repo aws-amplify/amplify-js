@@ -1,13 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
+
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
-import { ResolvedS3Config, S3ApiOptions } from '../types/options';
-import { S3InternalConfig } from '../apis/internal/types';
+import { ResolvedS3Config } from '../types/options';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
+
+interface S3ApiOptions {
+	accessLevel?: StorageAccessLevel;
+	targetIdentityId?: string;
+	useAccelerateEndpoint?: boolean;
+}
 
 interface ResolvedS3ConfigAndInput {
 	s3Config: ResolvedS3Config;
@@ -17,10 +24,6 @@ interface ResolvedS3ConfigAndInput {
 	identityId?: string;
 }
 
-interface ResolveS3ConfigAndInputParams {
-	config: S3InternalConfig;
-	apiOptions?: S3ApiOptions;
-}
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.
  *
@@ -32,26 +35,44 @@ interface ResolveS3ConfigAndInputParams {
  *
  * @internal
  */
-export const resolveS3ConfigAndInput = async ({
-	config,
-	apiOptions,
-}: ResolveS3ConfigAndInputParams): Promise<ResolvedS3ConfigAndInput> => {
-	const {
-		credentialsProvider,
-		serviceOptions,
-		libraryOptions,
-		identityIdProvider,
-	} = config;
+export const resolveS3ConfigAndInput = async (
+	amplify: AmplifyClassV6,
+	apiOptions?: S3ApiOptions,
+): Promise<ResolvedS3ConfigAndInput> => {
+	/**
+	 * IdentityId is always cached in memory so we can safely make calls here. It
+	 * should be stable even for unauthenticated users, regardless of credentials.
+	 */
+	const { identityId } = await amplify.Auth.fetchAuthSession();
+	assertValidationError(!!identityId, StorageValidationErrorCode.NoIdentityId);
+
+	/**
+	 * A credentials provider function instead of a static credentials object is
+	 * used because the long-running tasks like multipart upload may span over the
+	 * credentials expiry. Auth.fetchAuthSession() automatically refreshes the
+	 * credentials if they are expired.
+	 */
+	const credentialsProvider = async () => {
+		const { credentials } = await amplify.Auth.fetchAuthSession();
+		assertValidationError(
+			!!credentials,
+			StorageValidationErrorCode.NoCredentials,
+		);
+
+		return credentials;
+	};
+
 	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
-		serviceOptions ?? {};
+		amplify.getConfig()?.Storage?.S3 ?? {};
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
-	const identityId = await identityIdProvider();
+
 	const {
 		defaultAccessLevel,
 		prefixResolver = defaultPrefixResolver,
 		isObjectLockEnabled,
-	} = libraryOptions ?? {};
+	} = amplify.libraryOptions?.Storage?.S3 ?? {};
+
 	const keyPrefix = await prefixResolver({
 		accessLevel:
 			apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL,
@@ -76,7 +97,7 @@ export const resolveS3ConfigAndInput = async ({
 		},
 		bucket,
 		keyPrefix,
-		isObjectLockEnabled,
 		identityId,
+		isObjectLockEnabled,
 	};
 };

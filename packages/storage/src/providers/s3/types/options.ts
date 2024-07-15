@@ -213,14 +213,3 @@ export interface ResolvedS3Config
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
 }
-
-/**
- * Internal S3 API options.
- *
- * @internal
- */
-export interface S3ApiOptions {
-	accessLevel?: StorageAccessLevel;
-	targetIdentityId?: string;
-	useAccelerateEndpoint?: boolean;
-}
