@@ -1,8 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
+import {
+	AmplifyErrorCode,
+	StorageAction,
+} from '@aws-amplify/core/internals/utils';
 
+import { getStorageUserAgentValue } from '../../providers/s3/utils/userAgent';
 import { getDataAccess as getDataAccessClient } from '../../providers/s3/utils/client/s3control';
 import { StorageError } from '../../errors/StorageError';
 
@@ -19,6 +23,7 @@ export const getDataAccess = async (
 		{
 			credentials,
 			region: input.region,
+			userAgentValue: getStorageUserAgentValue(StorageAction.GetDataAccess),
 		},
 		{
 			AccountId: input.accountId,
