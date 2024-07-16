@@ -61,34 +61,49 @@ const openAuthSessionAndroid = async (url: string, redirectUrls: string[]) => {
 
 		return redirectUrl;
 	} finally {
-		appStateListener?.remove();
-		redirectListener?.remove();
-		appStateListener = undefined;
-		redirectListener = undefined;
+		removeAppStateListener();
+		removeRedirectListener();
 	}
 };
 
 const getAppStatePromise = (): Promise<null> =>
 	new Promise(resolve => {
+		// remove any stray listeners before creating new ones
+		removeAppStateListener();
+
+		let previousState = AppState.currentState;
 		appStateListener = AppState.addEventListener('change', nextAppState => {
 			// if current state is null, the change is from initialization
 			if (AppState.currentState === null) {
 				return;
 			}
 
-			if (nextAppState === 'active') {
-				appStateListener?.remove();
-				appStateListener = undefined;
+			if (previousState !== 'active' && nextAppState === 'active') {
+				removeAppStateListener();
 				resolve(null);
 			}
+			previousState = nextAppState;
 		});
 	});
 
 const getRedirectPromise = (redirectUrls: string[]): Promise<string> =>
 	new Promise(resolve => {
+		// remove any stray listeners before creating new ones
+		removeRedirectListener();
+
 		redirectListener = Linking.addEventListener('url', event => {
 			if (redirectUrls.some(url => event.url.startsWith(url))) {
 				resolve(event.url);
 			}
 		});
 	});
+
+const removeAppStateListener = () => {
+	appStateListener?.remove();
+	appStateListener = undefined;
+};
+
+const removeRedirectListener = () => {
+	redirectListener?.remove();
+	redirectListener = undefined;
+};
