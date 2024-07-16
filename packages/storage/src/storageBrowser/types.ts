@@ -50,6 +50,23 @@ export interface LocationAccess extends CredentialsLocation {
 	readonly type: LocationType;
 }
 
+export interface LocationCredentials {
+	/**
+	 * AWS credentials which can be used to access the specified location.
+	 */
+	readonly credentials: AWSCredentials;
+
+	/**
+	 * Scope of storage location. For S3 service, it's the S3 path of the data to
+	 * which the access is granted. It can be in following formats:
+	 *
+	 * @example Bucket 's3://<bucket>/*'
+	 * @example Prefix 's3://<bucket>/<prefix-with-path>*'
+	 * @example Object 's3://<bucket>/<prefix-with-path>/<object>'
+	 */
+	readonly scope?: string;
+}
+
 export interface AccessGrant extends LocationAccess {
 	/**
 	 * The Amazon Resource Name (ARN) of an AWS IAM Identity Center application
@@ -80,9 +97,12 @@ export type ListLocations = (
 	input?: ListLocationsInput,
 ) => Promise<ListLocationsOutput<LocationAccess>>;
 
+export type GetLocationCredentialsInput = CredentialsLocation;
+export type GetLocationCredentialsOutput = LocationCredentials;
+
 export type GetLocationCredentials = (
-	input: CredentialsLocation,
-) => Promise<{ credentials: AWSCredentials }>;
+	input: GetLocationCredentialsInput,
+) => Promise<GetLocationCredentialsOutput>;
 
 export interface LocationCredentialsStore {
 	/**
