@@ -20,6 +20,16 @@ export type CredentialsProvider = (options?: {
  */
 export type LocationType = 'BUCKET' | 'PREFIX' | 'OBJECT';
 
+/**
+ * @internal
+ */
+export type Privilege = 'Default' | 'Minimal';
+
+/**
+ * @internal
+ */
+export type PrefixType = 'Object';
+
 export interface LocationScope {
 	/**
 	 * Scope of storage location. For S3 service, it's the S3 path of the data to

@@ -1,16 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	Permission,
-	PrefixType,
-	Privilege,
-} from '../../providers/s3/types/options';
+import { Permission } from '../../providers/s3/types/options';
 import {
 	AccessGrant,
 	CredentialsProvider,
 	ListLocationsOutput,
 	LocationCredentials,
+	PrefixType,
+	Privilege,
 } from '../types';
 
 export interface ListCallerAccessGrantsInput {
