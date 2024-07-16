@@ -8,7 +8,6 @@ import {
 	getValue,
 	removeStore,
 } from '../../../src/storageBrowser/locationCredentialsStore/registry';
-import { validateCredentialsProviderLocation } from '../../../src/storageBrowser/locationCredentialsStore/validators';
 import { LocationCredentialsStore } from '../../../src/storageBrowser/types';
 import {
 	StorageValidationErrorCode,
@@ -16,7 +15,6 @@ import {
 } from '../../../src/errors/types/validation';
 
 jest.mock('../../../src/storageBrowser/locationCredentialsStore/registry');
-jest.mock('../../../src/storageBrowser/locationCredentialsStore/validators');
 
 const mockedCredentials = 'MOCK_CREDS' as any as AWSCredentials;
 
@@ -53,10 +51,7 @@ describe('createLocationCredentialsStore', () => {
 					scope: 's3://bucket/path/*',
 					permission: 'READ',
 				});
-				const { credentials } = await locationCredentialsProvider({
-					locations: [{ bucket: 'bucket', path: 'path/to/object' }],
-					permission: 'READ',
-				});
+				const { credentials } = await locationCredentialsProvider();
 				expect(credentials).toEqual(mockedCredentials);
 				expect(getValue).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -67,55 +62,6 @@ describe('createLocationCredentialsStore', () => {
 						forceRefresh: false,
 					}),
 				);
-			});
-
-			it('should validate credentials location with resolved common scope', async () => {
-				expect.assertions(1);
-				jest
-					.mocked(getValue)
-					.mockResolvedValue({ credentials: mockedCredentials });
-				const locationCredentialsProvider = store.getProvider({
-					scope: 's3://bucket/path/*',
-					permission: 'READWRITE',
-				});
-				await locationCredentialsProvider({
-					locations: [
-						{ bucket: 'bucket', path: 'path/to/object' },
-						{ bucket: 'bucket', path: 'path/to/object2' },
-						{ bucket: 'bucket', path: 'path/folder' },
-					],
-					permission: 'READ',
-				});
-				expect(validateCredentialsProviderLocation).toHaveBeenCalledWith(
-					{ bucket: 'bucket', path: 'path/', permission: 'READ' },
-					{ bucket: 'bucket', path: 'path/*', permission: 'READWRITE' },
-				);
-			});
-
-			it('should throw if action requires cross-bucket permission', async () => {
-				expect.assertions(1);
-				jest
-					.mocked(getValue)
-					.mockResolvedValue({ credentials: mockedCredentials });
-				const locationCredentialsProvider = store.getProvider({
-					scope: 's3://bucket/path/*',
-					permission: 'READWRITE',
-				});
-				try {
-					await locationCredentialsProvider({
-						locations: [
-							{ bucket: 'bucket-1', path: 'path/to/object' },
-							{ bucket: 'bucket-2', path: 'path/to/object2' },
-						],
-						permission: 'READ',
-					});
-				} catch (e: any) {
-					expect(e.message).toEqual(
-						validationErrorMap[
-							StorageValidationErrorCode.LocationCredentialsCrossBucket
-						].message,
-					);
-				}
 			});
 
 			it.each(['invalid-s3-uri', 's3://', 's3:///'])(
@@ -130,10 +76,7 @@ describe('createLocationCredentialsStore', () => {
 						permission: 'READWRITE',
 					});
 					try {
-						await locationCredentialsProvider({
-							locations: [{ bucket: 'XXXXXXXX', path: 'path/to/object' }],
-							permission: 'READ',
-						});
+						await locationCredentialsProvider();
 					} catch (e: any) {
 						expect(e.message).toEqual(
 							validationErrorMap[StorageValidationErrorCode.InvalidS3Uri]
