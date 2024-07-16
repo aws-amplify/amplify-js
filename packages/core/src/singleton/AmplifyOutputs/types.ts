@@ -46,7 +46,7 @@ export interface AmplifyOutputsAuthProperties {
 export interface AmplifyOutputsStorageBucketProperties {
 	/** Friendly bucket name provided in Amplify Outputs */
 	name: string;
-	/** Actual s3 bucket name given */
+	/** Actual S3 bucket name given */
 	bucket_name: string;
 	/** Region for the bucket */
 	aws_region: string;

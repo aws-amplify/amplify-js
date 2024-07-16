@@ -63,15 +63,15 @@ export const resolveS3ConfigAndInput = async (
 		return credentials;
 	};
 
-	let { bucket, region, dangerouslyConnectToHttpEndpointForTesting, buckets } =
-		amplify.getConfig()?.Storage?.S3 ?? {};
+	const {
+		bucket: defaultBucket,
+		region: defaultRegion,
+		dangerouslyConnectToHttpEndpointForTesting,
+		buckets,
+	} = amplify.getConfig()?.Storage?.S3 ?? {};
 
-	const resolvedBucketConfig =
-		apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets);
-
-	if (resolvedBucketConfig) {
-		({ bucket, region } = resolvedBucketConfig);
-	}
+	const { bucket = defaultBucket, region = defaultRegion } =
+		(apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
 
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);

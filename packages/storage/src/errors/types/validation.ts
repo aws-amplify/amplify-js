@@ -73,6 +73,6 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.InvalidStorageBucket]: {
 		message:
-			'Unable to lookup bucket from provided name in Amplify configuration',
+			'Unable to lookup bucket from provided name in Amplify configuration.',
 	},
 };
