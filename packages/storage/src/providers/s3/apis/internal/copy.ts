@@ -40,7 +40,15 @@ const copyWithPath = async (
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	const { bucket, identityId } = await resolveS3ConfigAndInput(
+
+	// Throw assertion error when either one of bucket options is empty
+	assertValidationError(
+		!!(source.options?.bucket && destination.options?.bucket) ||
+			!!(!destination.options?.bucket && !source.options?.bucket),
+		StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
+	);
+
+	const { bucket: sourceBucket, identityId } = await resolveS3ConfigAndInput(
 		amplify,
 		input.source.options,
 	);
@@ -48,18 +56,6 @@ const copyWithPath = async (
 	const { s3Config, bucket: destBucket } = await resolveS3ConfigAndInput(
 		amplify,
 		input.destination.options,
-	);
-
-	const assertion =
-		!!(source.options?.bucket && destination.options?.bucket) ||
-		!!(!destination.options?.bucket && !source.options?.bucket);
-
-	console.log(assertion);
-
-	// Throw assertion error when either one of bucket options is empty
-	assertValidationError(
-		assertion,
-		StorageValidationErrorCode.InvalidStorageBucket,
 	);
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
@@ -77,7 +73,7 @@ const copyWithPath = async (
 		identityId,
 	);
 
-	const finalCopySource = `${bucket}/${sourcePath}`;
+	const finalCopySource = `${sourceBucket}/${sourcePath}`;
 	const finalCopyDestination = destinationPath;
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
 
@@ -96,41 +92,44 @@ export const copyWithKey = async (
 	amplify: AmplifyClassV6,
 	input: CopyInput,
 ): Promise<CopyOutput> => {
-	const {
-		source: { key: sourceKey },
-		destination: { key: destinationKey },
-	} = input;
+	const { source, destination } = input;
 
-	assertValidationError(!!sourceKey, StorageValidationErrorCode.NoSourceKey);
+	// Throw assertion error when either one of bucket options is empty
 	assertValidationError(
-		!!destinationKey,
+		!!(source.bucket && destination.bucket) ||
+			!!(!destination.bucket && !source.bucket),
+		StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
+	);
+
+	assertValidationError(!!source.key, StorageValidationErrorCode.NoSourceKey);
+	assertValidationError(
+		!!destination.key,
 		StorageValidationErrorCode.NoDestinationKey,
 	);
 
+	const { bucket: sourceBucket, keyPrefix: sourceKeyPrefix } =
+		await resolveS3ConfigAndInput(amplify, input.source);
+
 	const {
 		s3Config,
-		bucket,
-		keyPrefix: sourceKeyPrefix,
-	} = await resolveS3ConfigAndInput(amplify, input.source);
-	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput(
-		amplify,
-		input.destination,
-	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
+		bucket: destBucket,
+		keyPrefix: destinationKeyPrefix,
+	} = await resolveS3ConfigAndInput(amplify, input.destination); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
-	const finalCopySource = `${bucket}/${sourceKeyPrefix}${sourceKey}`;
-	const finalCopyDestination = `${destinationKeyPrefix}${destinationKey}`;
+	const finalCopySource = `${sourceBucket}/${sourceKeyPrefix}${source.key}`;
+	const finalCopyDestination = `${destinationKeyPrefix}${destination.key}`;
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
 
 	await serviceCopy({
 		source: finalCopySource,
 		destination: finalCopyDestination,
-		bucket,
+		bucket: destBucket,
 		s3Config,
 	});
 
 	return {
-		key: destinationKey,
+		key: destination.key,
 	};
 };
 

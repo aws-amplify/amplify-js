@@ -200,6 +200,34 @@ describe('copy API', () => {
 					});
 				},
 			);
+
+			it('should override bucket in copyObject call when bucket option is passed', async () => {
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-2',
+					region: 'region-2',
+				};
+				await copyWrapper({
+					source: { key: 'sourceKey', bucket: 'bucket-1' },
+					destination: {
+						key: 'destinationKey',
+						bucket: bucketInfo,
+					},
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucketInfo.bucketName,
+						MetadataDirective: 'COPY',
+						CopySource: `${bucket}/public/sourceKey`,
+						Key: 'public/destinationKey',
+					},
+				);
+			});
 		});
 
 		describe('With path', () => {
@@ -255,7 +283,7 @@ describe('copy API', () => {
 					);
 				},
 			);
-			it('multi-bucket', async () => {
+			it('should override bucket in copyObject call when bucket option is passed', async () => {
 				const bucketInfo: BucketInfo = {
 					bucketName: 'bucket-2',
 					region: 'region-2',
@@ -346,8 +374,8 @@ describe('copy API', () => {
 			}
 		});
 
-		it('should throw an error when only one of source or destination have bucket option', async () => {
-			expect.assertions(4);
+		it('should throw an error when only source has bucket option', async () => {
+			expect.assertions(2);
 			try {
 				await copy({
 					source: { path: 'source', options: { bucket: 'bucket-1' } },
@@ -359,23 +387,26 @@ describe('copy API', () => {
 				console.log(error);
 				expect(error).toBeInstanceOf(StorageError);
 				expect(error.name).toBe(
-					StorageValidationErrorCode.InvalidStorageBucket,
+					StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
 				);
 			}
+		});
 
+		it('should throw an error when only one destination has bucket option', async () => {
+			expect.assertions(2);
 			try {
 				await copy({
-					source: { path: 'source' },
+					source: { key: 'source' },
 					destination: {
-						path: 'destination',
-						options: { bucket: 'bucket-1' },
+						key: 'destination',
+						bucket: 'bucket-1',
 					},
 				});
 			} catch (error: any) {
 				console.log(error);
 				expect(error).toBeInstanceOf(StorageError);
 				expect(error.name).toBe(
-					StorageValidationErrorCode.InvalidStorageBucket,
+					StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
 				);
 			}
 		});
