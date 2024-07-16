@@ -15,6 +15,7 @@ import {
 	CopyWithPathOutput,
 } from '../../../../src/providers/s3/types';
 import './testUtils';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -64,6 +65,7 @@ describe('copy API', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'bucket-1': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -253,6 +255,33 @@ describe('copy API', () => {
 					);
 				},
 			);
+			it('multi-bucket', async () => {
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-2',
+					region: 'region-2',
+				};
+				await copyWrapper({
+					source: { path: 'sourcePath', options: { bucket: 'bucket-1' } },
+					destination: {
+						path: 'destinationPath',
+						options: { bucket: bucketInfo },
+					},
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucketInfo.bucketName,
+						MetadataDirective: 'COPY',
+						CopySource: `${bucket}/sourcePath`,
+						Key: 'destinationPath',
+					},
+				);
+			});
 		});
 	});
 
@@ -314,6 +343,40 @@ describe('copy API', () => {
 			} catch (error: any) {
 				expect(error).toBeInstanceOf(StorageError);
 				expect(error.name).toBe(StorageValidationErrorCode.NoDestinationKey);
+			}
+		});
+
+		it('should throw an error when only one of source or destination have bucket option', async () => {
+			expect.assertions(4);
+			try {
+				await copy({
+					source: { path: 'source', options: { bucket: 'bucket-1' } },
+					destination: {
+						path: 'destination',
+					},
+				});
+			} catch (error: any) {
+				console.log(error);
+				expect(error).toBeInstanceOf(StorageError);
+				expect(error.name).toBe(
+					StorageValidationErrorCode.InvalidStorageBucket,
+				);
+			}
+
+			try {
+				await copy({
+					source: { path: 'source' },
+					destination: {
+						path: 'destination',
+						options: { bucket: 'bucket-1' },
+					},
+				});
+			} catch (error: any) {
+				console.log(error);
+				expect(error).toBeInstanceOf(StorageError);
+				expect(error.name).toBe(
+					StorageValidationErrorCode.InvalidStorageBucket,
+				);
 			}
 		});
 	});

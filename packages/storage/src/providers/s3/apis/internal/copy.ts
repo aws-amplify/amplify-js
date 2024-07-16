@@ -40,8 +40,27 @@ const copyWithPath = async (
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	const { s3Config, bucket, identityId } =
-		await resolveS3ConfigAndInput(amplify);
+	const { bucket, identityId } = await resolveS3ConfigAndInput(
+		amplify,
+		input.source.options,
+	);
+
+	const { s3Config, bucket: destBucket } = await resolveS3ConfigAndInput(
+		amplify,
+		input.destination.options,
+	);
+
+	const assertion =
+		!!(source.options?.bucket && destination.options?.bucket) ||
+		!!(!destination.options?.bucket && !source.options?.bucket);
+
+	console.log(assertion);
+
+	// Throw assertion error when either one of bucket options is empty
+	assertValidationError(
+		assertion,
+		StorageValidationErrorCode.InvalidStorageBucket,
+	);
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
 	assertValidationError(
@@ -65,7 +84,7 @@ const copyWithPath = async (
 	await serviceCopy({
 		source: finalCopySource,
 		destination: finalCopyDestination,
-		bucket,
+		bucket: destBucket,
 		s3Config,
 	});
 

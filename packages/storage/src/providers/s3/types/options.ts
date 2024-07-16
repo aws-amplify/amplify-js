@@ -178,6 +178,13 @@ export type CopyDestinationOptionsWithKey = WriteOptions & {
 	key: string;
 };
 
+export interface CopyWithPathSourceOptions {
+	bucket?: StorageBucket;
+}
+export interface CopyWithPathDestinationOptions {
+	bucket?: StorageBucket;
+}
+
 /**
  * Internal only type for S3 API handlers' config parameter.
  *
