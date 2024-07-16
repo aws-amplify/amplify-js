@@ -12,7 +12,6 @@ import {
 } from '../../types';
 import { ResolvedS3Config } from '../../types/options';
 import {
-	createStorageConfiguration,
 	isInputWithPath,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
@@ -41,10 +40,8 @@ const copyWithPath = async (
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	const config = createStorageConfiguration(amplify);
-	const { s3Config, bucket, identityId } = await resolveS3ConfigAndInput({
-		config,
-	});
+	const { s3Config, bucket, identityId } =
+		await resolveS3ConfigAndInput(amplify);
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
 	assertValidationError(
@@ -90,19 +87,16 @@ export const copyWithKey = async (
 		!!destinationKey,
 		StorageValidationErrorCode.NoDestinationKey,
 	);
-	const config = createStorageConfiguration(amplify);
+
 	const {
 		s3Config,
 		bucket,
 		keyPrefix: sourceKeyPrefix,
-	} = await resolveS3ConfigAndInput({
-		config,
-		apiOptions: input.source,
-	});
-	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput({
-		config,
-		apiOptions: input.destination,
-	}); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
+	} = await resolveS3ConfigAndInput(amplify, input.source);
+	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput(
+		amplify,
+		input.destination,
+	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
 	const finalCopySource = `${bucket}/${sourceKeyPrefix}${sourceKey}`;

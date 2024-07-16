@@ -3,10 +3,12 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
-import {
-	LocationCredentialsProvider,
-	Permission,
-} from '../providers/s3/types/options';
+import { LocationCredentialsProvider } from '../providers/s3/types/options';
+
+/**
+ * @internal
+ */
+export type Permission = 'READ' | 'READWRITE' | 'WRITE';
 
 /**
  * @internal

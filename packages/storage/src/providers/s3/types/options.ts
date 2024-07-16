@@ -14,23 +14,8 @@ import {
 /**
  * @internal
  */
-export type Permission = 'READ' | 'READWRITE' | 'WRITE';
-
-/**
- * @internal
- */
-export interface BucketLocation {
-	bucket: string;
-	path: string;
-}
-
-/**
- * @internal
- */
-export type LocationCredentialsProvider = (options: {
+export type LocationCredentialsProvider = (options?: {
 	forceRefresh?: boolean;
-	locations: BucketLocation[];
-	permission: Permission;
 }) => Promise<{ credentials: AWSCredentials }>;
 
 interface CommonOptions {
@@ -211,16 +196,5 @@ export interface ResolvedS3Config
 	extends Pick<SigningOptions, 'credentials' | 'region'> {
 	customEndpoint?: string;
 	forcePathStyle?: boolean;
-	useAccelerateEndpoint?: boolean;
-}
-
-/**
- * Internal S3 API options.
- *
- * @internal
- */
-export interface S3ApiOptions {
-	accessLevel?: StorageAccessLevel;
-	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
 }

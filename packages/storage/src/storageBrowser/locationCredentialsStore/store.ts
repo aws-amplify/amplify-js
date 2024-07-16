@@ -5,8 +5,11 @@
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
-import { Permission } from '../../providers/s3/types/options';
-import { CredentialsLocation, GetLocationCredentials } from '../types';
+import {
+	CredentialsLocation,
+	GetLocationCredentials,
+	Permission,
+} from '../types';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 

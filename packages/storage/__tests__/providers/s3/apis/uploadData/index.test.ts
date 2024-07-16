@@ -172,12 +172,9 @@ describe('uploadData with path', () => {
 				uploadData(testInput);
 
 				expect(mockPutObjectJob).toHaveBeenCalledWith(
-					expect.objectContaining({
-						input: testInput,
-						totalLength: expect.any(Number),
-						abortSignal: expect.any(AbortSignal),
-						config: expect.any(Object),
-					}),
+					testInput,
+					expect.any(AbortSignal),
+					expect.any(Number),
 				);
 				expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
 			},
@@ -215,11 +212,8 @@ describe('uploadData with path', () => {
 
 			expect(mockPutObjectJob).not.toHaveBeenCalled();
 			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(
-				expect.objectContaining({
-					config: expect.any(Object),
-					input: testInput,
-					size: expect.any(Number),
-				}),
+				testInput,
+				expect.any(Number),
 			);
 		});
 
