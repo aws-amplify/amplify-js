@@ -20,7 +20,7 @@ export type CredentialsProvider = (options?: {
  */
 export type LocationType = 'BUCKET' | 'PREFIX' | 'OBJECT';
 
-export interface CredentialsLocation {
+export interface LocationScope {
 	/**
 	 * Scope of storage location. For S3 service, it's the S3 path of the data to
 	 * which the access is granted. It can be in following formats:
@@ -30,6 +30,9 @@ export interface CredentialsLocation {
 	 * @example Object 's3://<bucket>/<prefix-with-path>/<object>'
 	 */
 	readonly scope: string;
+}
+
+export interface CredentialsLocation extends LocationScope {
 	/**
 	 * The type of access granted to your Storage data. Can be either of READ,
 	 * WRITE or READWRITE
@@ -50,21 +53,11 @@ export interface LocationAccess extends CredentialsLocation {
 	readonly type: LocationType;
 }
 
-export interface LocationCredentials {
+export interface LocationCredentials extends Partial<LocationScope> {
 	/**
 	 * AWS credentials which can be used to access the specified location.
 	 */
 	readonly credentials: AWSCredentials;
-
-	/**
-	 * Scope of storage location. For S3 service, it's the S3 path of the data to
-	 * which the access is granted. It can be in following formats:
-	 *
-	 * @example Bucket 's3://<bucket>/*'
-	 * @example Prefix 's3://<bucket>/<prefix-with-path>*'
-	 * @example Object 's3://<bucket>/<prefix-with-path>/<object>'
-	 */
-	readonly scope?: string;
 }
 
 export interface AccessGrant extends LocationAccess {

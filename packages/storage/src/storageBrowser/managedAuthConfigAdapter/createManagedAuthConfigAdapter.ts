@@ -49,5 +49,5 @@ export const createManagedAuthConfigAdapter = ({
 		listLocations,
 		getLocationCredentials,
 		region,
-	} as AuthConfigAdapter;
+	};
 };
