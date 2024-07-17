@@ -50,9 +50,9 @@ export const listCallerAccessGrants = async (
 
 	const accessGrants: AccessGrant[] =
 		CallerAccessGrantsList?.map(grant => {
-			// These value correct from servers mostly but we add assertions to make TSC happy.
+			// These values are correct from service mostly, but we add assertions to make TSC happy.
 			assertPermission(grant.Permission);
-			assertString(grant.GrantScope);
+			assertGrantScope(grant.GrantScope);
 
 			return {
 				scope: grant.GrantScope,
@@ -69,8 +69,8 @@ export const listCallerAccessGrants = async (
 };
 
 const parseGrantType = (grantScope: string): LocationType => {
-	const BucketScopeReg = /^s3:\/\/(.*)\/\*$/;
-	const possibleBucketName = grantScope.match(BucketScopeReg)?.[1];
+	const bucketScopeReg = /^s3:\/\/(.*)\/\*$/;
+	const possibleBucketName = grantScope.match(bucketScopeReg)?.[1];
 	if (!grantScope.endsWith('*')) {
 		return 'OBJECT';
 	} else if (
@@ -95,11 +95,11 @@ function assertPermission(
 	}
 }
 
-function assertString(value: unknown): asserts value is string {
-	if (typeof value !== 'string') {
+function assertGrantScope(value: unknown): asserts value is string {
+	if (typeof value !== 'string' || !value.startsWith('s3://')) {
 		throw new StorageError({
-			name: 'InvalidString',
-			message: `Expected string, got ${value}`,
+			name: 'InvalidGrantScope',
+			message: `Expected a valid grant scope, got ${value}`,
 		});
 	}
 }

@@ -11,15 +11,15 @@ interface CreateListLocationsHandlerInput {
 }
 
 export const createListLocationsHandler = (
-	input: CreateListLocationsHandlerInput,
+	handlerInput: CreateListLocationsHandlerInput,
 ): ListLocations => {
-	return async (handlerInput = {}) => {
-		const { nextToken, pageSize } = handlerInput;
+	return async (input = {}) => {
+		const { nextToken, pageSize } = input;
 		const { locations, nextToken: newNextToken } = await listCallerAccessGrants(
 			{
-				accountId: input.accountId,
-				credentialsProvider: input.credentialsProvider,
-				region: input.region,
+				accountId: handlerInput.accountId,
+				credentialsProvider: handlerInput.credentialsProvider,
+				region: handlerInput.region,
 				pageSize,
 				nextToken,
 			},
