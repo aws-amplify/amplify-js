@@ -148,16 +148,14 @@ const isInputWithCallbackPath = (input?: CallbackPathStorageInput) => {
 			typeof (input as StorageCopyInputWithPath).source?.path === 'function')
 	);
 };
+
 const isDeprecatedInput = (
 	input?: DeprecatedStorageInput | CallbackPathStorageInput,
 ): input is DeprecatedStorageInput => {
-	return !!(
-		(input as StorageOperationInputWithKey)?.key ||
-		(input as StorageOperationInputWithPrefix)?.prefix ||
-		(input as CopyInput)?.destination?.key ||
-		(input as CopyInput)?.source?.key ||
-		(input as CopyInput)?.destination?.accessLevel ||
-		(input as CopyInput)?.source?.accessLevel
+	return (
+		isInputWithKey(input) ||
+		isInputWithPrefix(input) ||
+		isInputWithCopySourceOrDestination(input)
 	);
 };
 const assertStorageInput = (
@@ -169,4 +167,31 @@ const assertStorageInput = (
 			message: 'The storage input needs to pass a string path.',
 		});
 	}
+};
+
+const isInputWithKey = (
+	input?: DeprecatedStorageInput | CallbackPathStorageInput,
+): input is StorageOperationInputWithKey => {
+	return !!(
+		(input as StorageOperationInputWithKey)?.key &&
+		typeof (input as StorageOperationInputWithKey).key === 'string'
+	);
+};
+const isInputWithPrefix = (
+	input?: DeprecatedStorageInput | CallbackPathStorageInput,
+): input is StorageOperationInputWithPrefix => {
+	return !!(
+		(input as StorageOperationInputWithPrefix)?.prefix &&
+		typeof (input as StorageOperationInputWithPrefix).prefix === 'string'
+	);
+};
+const isInputWithCopySourceOrDestination = (
+	input?: CopyInput | CallbackPathStorageInput,
+): input is CopyInput => {
+	return !!(
+		((input as CopyInput)?.source?.key &&
+			typeof (input as CopyInput).source?.key === 'string') ||
+		((input as CopyInput)?.destination?.key &&
+			typeof (input as CopyInput).destination?.key === 'string')
+	);
 };
