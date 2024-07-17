@@ -81,7 +81,9 @@ export const list = async (
 		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
-		Delimiter: getDelimiter(options.subpathStrategy),
+		Delimiter: getDelimiter(
+			(options as ListAllWithPathInput['options'])?.subpathStrategy,
+		),
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
