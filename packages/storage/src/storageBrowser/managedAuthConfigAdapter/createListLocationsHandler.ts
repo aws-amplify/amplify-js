@@ -2,17 +2,32 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CredentialsProvider, ListLocations } from '../types';
+import { listCallerAccessGrants } from '../apis/listCallerAccessGrants';
 
-export interface CreateListLocationsHandlerInput {
+interface CreateListLocationsHandlerInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
 	region: string;
 }
 
 export const createListLocationsHandler = (
-	// eslint-disable-next-line unused-imports/no-unused-vars
-	input: CreateListLocationsHandlerInput,
+	handlerInput: CreateListLocationsHandlerInput,
 ): ListLocations => {
-	// TODO(@AllanZhengYP)
-	throw new Error('Not Implemented');
+	return async (input = {}) => {
+		const { nextToken, pageSize } = input;
+		const { locations, nextToken: newNextToken } = await listCallerAccessGrants(
+			{
+				accountId: handlerInput.accountId,
+				credentialsProvider: handlerInput.credentialsProvider,
+				region: handlerInput.region,
+				pageSize,
+				nextToken,
+			},
+		);
+
+		return {
+			locations,
+			nextToken: newNextToken || undefined,
+		};
+	};
 };

@@ -4,6 +4,7 @@
 import {
 	AccessGrant,
 	CredentialsProvider,
+	ListLocationsInput,
 	ListLocationsOutput,
 	LocationCredentials,
 	Permission,
@@ -11,7 +12,7 @@ import {
 	Privilege,
 } from '../types';
 
-export interface ListCallerAccessGrantsInput {
+export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
 	region: string;
