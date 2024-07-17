@@ -73,11 +73,6 @@ const getAppStatePromise = (): Promise<null> =>
 
 		let previousState = AppState.currentState;
 		appStateListener = AppState.addEventListener('change', nextAppState => {
-			// if current state is null, the change is from initialization
-			if (AppState.currentState === null) {
-				return;
-			}
-
 			if (previousState !== 'active' && nextAppState === 'active') {
 				removeAppStateListener();
 				resolve(null);
