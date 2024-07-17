@@ -43,19 +43,19 @@ const copyWithPath = async (
 
 	// Throw assertion error when either one of bucket options is empty
 	assertValidationError(
-		!!(source.options?.bucket && destination.options?.bucket) ||
-			!!(!destination.options?.bucket && !source.options?.bucket),
+		!!(source.bucket && destination.bucket) ||
+			!!(!destination.bucket && !source.bucket),
 		StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
 	);
 
 	const { bucket: sourceBucket, identityId } = await resolveS3ConfigAndInput(
 		amplify,
-		input.source.options,
+		input.source,
 	);
 
 	const { s3Config, bucket: destBucket } = await resolveS3ConfigAndInput(
 		amplify,
-		input.destination.options,
+		input.destination,
 	);
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);

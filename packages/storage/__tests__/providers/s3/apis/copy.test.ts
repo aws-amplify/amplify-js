@@ -289,10 +289,10 @@ describe('copy API', () => {
 					region: 'region-2',
 				};
 				await copyWrapper({
-					source: { path: 'sourcePath', options: { bucket: 'bucket-1' } },
+					source: { path: 'sourcePath', bucket: 'bucket-1' },
 					destination: {
 						path: 'destinationPath',
-						options: { bucket: bucketInfo },
+						bucket: bucketInfo,
 					},
 				});
 				expect(copyObject).toHaveBeenCalledTimes(1);
@@ -378,7 +378,7 @@ describe('copy API', () => {
 			expect.assertions(2);
 			try {
 				await copy({
-					source: { path: 'source', options: { bucket: 'bucket-1' } },
+					source: { path: 'source', bucket: 'bucket-1' },
 					destination: {
 						path: 'destination',
 					},
