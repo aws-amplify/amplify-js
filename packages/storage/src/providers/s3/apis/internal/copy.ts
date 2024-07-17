@@ -10,7 +10,7 @@ import {
 	CopyWithPathInput,
 	CopyWithPathOutput,
 } from '../../types';
-import { ResolvedS3Config } from '../../types/options';
+import { ResolvedS3Config, StorageBucket } from '../../types/options';
 import {
 	isInputWithPath,
 	resolveS3ConfigAndInput,
@@ -25,6 +25,18 @@ import { logger } from '../../../../utils';
 const isCopyInputWithPath = (
 	input: CopyInput | CopyWithPathInput,
 ): input is CopyWithPathInput => isInputWithPath(input.source);
+
+const storageBucketAssertion = (
+	sourceBucket?: StorageBucket,
+	destBucket?: StorageBucket,
+) =>
+	// Throw assertion error when either one of bucket options is empty
+	{
+		assertValidationError(
+			!!(sourceBucket && destBucket) || !!(!destBucket && !sourceBucket),
+			StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
+		);
+	};
 
 export const copy = async (
 	amplify: AmplifyClassV6,
@@ -41,12 +53,7 @@ const copyWithPath = async (
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
 
-	// Throw assertion error when either one of bucket options is empty
-	assertValidationError(
-		!!(source.bucket && destination.bucket) ||
-			!!(!destination.bucket && !source.bucket),
-		StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
-	);
+	storageBucketAssertion(source.bucket, destination.bucket);
 
 	const { bucket: sourceBucket, identityId } = await resolveS3ConfigAndInput(
 		amplify,
@@ -94,12 +101,7 @@ export const copyWithKey = async (
 ): Promise<CopyOutput> => {
 	const { source, destination } = input;
 
-	// Throw assertion error when either one of bucket options is empty
-	assertValidationError(
-		!!(source.bucket && destination.bucket) ||
-			!!(!destination.bucket && !source.bucket),
-		StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
-	);
+	storageBucketAssertion(source.bucket, destination.bucket);
 
 	assertValidationError(!!source.key, StorageValidationErrorCode.NoSourceKey);
 	assertValidationError(

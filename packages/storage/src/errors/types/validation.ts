@@ -78,7 +78,5 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.InvalidCopyOperationStorageBucket]: {
 		message: 'Missing bucket option in either source or destination.',
-		recoverySuggestion:
-			'Provide bucket option on both source and destination input.',
 	},
 };
