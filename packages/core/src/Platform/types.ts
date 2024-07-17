@@ -121,6 +121,7 @@ export enum StorageAction {
 	GetProperties = '6',
 	GetUrl = '7',
 	GetDataAccess = '8',
+	ListCallerAccessGrants = '9',
 }
 
 interface ActionMap {
