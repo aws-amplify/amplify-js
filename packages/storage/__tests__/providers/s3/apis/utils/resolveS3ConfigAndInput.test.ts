@@ -9,6 +9,11 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
+import {
+	CallbackPathStorageInput,
+	DeprecatedStorageInput,
+} from '../../../../../src/providers/s3/utils/resolveS3ConfigAndInput';
+import { INVALID_STORAGE_INPUT } from '../../../../../src/errors/constants';
 
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn(),
@@ -76,13 +81,11 @@ describe('resolveS3ConfigAndInput', () => {
 		}
 	});
 
-	it('should throw if identityId is not available', async () => {
+	it('should not throw if identityId is not available', async () => {
 		mockFetchAuthSession.mockResolvedValueOnce({
 			credentials,
 		});
-		await expect(resolveS3ConfigAndInput(Amplify, {})).rejects.toMatchObject(
-			validationErrorMap[StorageValidationErrorCode.NoIdentityId],
-		);
+		expect(async () => resolveS3ConfigAndInput(Amplify, {})).not.toThrow();
 	});
 
 	it('should resolve bucket from S3 config', async () => {
@@ -213,5 +216,73 @@ describe('resolveS3ConfigAndInput', () => {
 			targetIdentityId,
 		});
 		expect(keyPrefix).toEqual('prefix');
+	});
+
+	describe('with locationCredentialsProvider', () => {
+		const mockLocationCredentialsProvider = jest
+			.fn()
+			.mockReturnValue({ credentials });
+		it('should resolve credentials without Amplify singleton', async () => {
+			mockGetConfig.mockReturnValue({
+				Storage: {
+					S3: {
+						bucket,
+						region,
+					},
+				},
+			});
+			const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+				locationCredentialsProvider: mockLocationCredentialsProvider,
+			});
+
+			if (typeof s3Config.credentials === 'function') {
+				const result = await s3Config.credentials();
+				expect(mockLocationCredentialsProvider).toHaveBeenCalled();
+				expect(result).toEqual(credentials);
+			} else {
+				throw new Error('Expect credentials to be a function');
+			}
+		});
+
+		describe('with deprecated or callback paths as inputs', () => {
+			const key = 'mock-value';
+			const prefix = 'mock-value';
+			const path = () => 'path';
+			const deprecatedInputs: DeprecatedStorageInput[] = [
+				{ prefix },
+				{ key },
+				{
+					source: { key },
+					destination: { key },
+				},
+			];
+			const callbackPathInputs: CallbackPathStorageInput[] = [
+				{ path },
+				{
+					destination: { path },
+					source: { path },
+				},
+			];
+
+			const testCases = [...deprecatedInputs, ...callbackPathInputs];
+
+			it.each(testCases)('should throw when input is %s', async input => {
+				const { s3Config } = await resolveS3ConfigAndInput(
+					Amplify,
+					{ locationCredentialsProvider: mockLocationCredentialsProvider },
+					input,
+				);
+				if (typeof s3Config.credentials === 'function') {
+					await expect(s3Config.credentials()).rejects.toThrow(
+						expect.objectContaining({
+							name: INVALID_STORAGE_INPUT,
+							message: 'The storage input needs to pass a string path.',
+						}),
+					);
+				} else {
+					throw new Error('Expect credentials to be a function');
+				}
+			});
+		});
 	});
 });

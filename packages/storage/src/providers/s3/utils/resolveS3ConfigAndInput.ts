@@ -36,10 +36,15 @@ interface ResolvedS3ConfigAndInput {
 	isObjectLockEnabled?: boolean;
 	identityId?: string;
 }
-type DeprecatedStorageInput =
+export type DeprecatedStorageInput =
 	| StorageOperationInputWithKey
 	| StorageOperationInputWithPrefix
 	| CopyInput;
+
+export type CallbackPathStorageInput =
+	| StorageOperationInputWithPath
+	| StorageCopyInputWithPath;
+
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.
  *
@@ -54,7 +59,7 @@ type DeprecatedStorageInput =
 export const resolveS3ConfigAndInput = async (
 	amplify: AmplifyClassV6,
 	apiOptions?: S3ApiOptions,
-	input?: DeprecatedStorageInput | StorageOperationInputWithPath,
+	input?: DeprecatedStorageInput | CallbackPathStorageInput,
 ): Promise<ResolvedS3ConfigAndInput> => {
 	/**
 	 * IdentityId is always cached in memory so we can safely make calls here. It
@@ -74,10 +79,7 @@ export const resolveS3ConfigAndInput = async (
 		}
 
 		const { credentials } = isLocationCredentialsProvider(apiOptions)
-			? await apiOptions.locationCredentialsProvider({
-					locations: [],
-					permission: 'READ',
-				})
+			? await apiOptions.locationCredentialsProvider()
 			: await amplify.Auth.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
@@ -135,39 +137,31 @@ const isLocationCredentialsProvider = (
 	return !!options?.locationCredentialsProvider;
 };
 
-const isInputWithCallbackPath = (
-	input?: StorageOperationInputWithPath | StorageCopyInputWithPath,
-) => {
+const isInputWithCallbackPath = (input?: CallbackPathStorageInput) => {
 	return (
 		((input as StorageOperationInputWithPath)?.path &&
 			typeof (input as StorageOperationInputWithPath).path === 'function') ||
 		((input as StorageCopyInputWithPath)?.destination?.path &&
-			typeof (input as StorageCopyInputWithPath).destination.path ===
+			typeof (input as StorageCopyInputWithPath).destination?.path ===
 				'function') ||
 		((input as StorageCopyInputWithPath)?.source?.path &&
-			typeof (input as StorageCopyInputWithPath).source.path === 'function')
+			typeof (input as StorageCopyInputWithPath).source?.path === 'function')
 	);
 };
 const isDeprecatedInput = (
-	input?:
-		| DeprecatedStorageInput
-		| StorageOperationInputWithPath
-		| StorageCopyInputWithPath,
+	input?: DeprecatedStorageInput | CallbackPathStorageInput,
 ): input is DeprecatedStorageInput => {
 	return !!(
 		(input as StorageOperationInputWithKey)?.key ||
 		(input as StorageOperationInputWithPrefix)?.prefix ||
-		(input as CopyInput)?.destination.accessLevel ||
-		(input as CopyInput)?.source.accessLevel ||
-		(input as CopyInput)?.destination.key ||
-		(input as CopyInput)?.source.key
+		(input as CopyInput)?.destination?.key ||
+		(input as CopyInput)?.source?.key ||
+		(input as CopyInput)?.destination?.accessLevel ||
+		(input as CopyInput)?.source?.accessLevel
 	);
 };
 const assertStorageInput = (
-	input?:
-		| DeprecatedStorageInput
-		| StorageOperationInputWithPath
-		| StorageCopyInputWithPath,
+	input?: DeprecatedStorageInput | CallbackPathStorageInput,
 ) => {
 	if (isDeprecatedInput(input) || isInputWithCallbackPath(input)) {
 		throw new StorageError({
