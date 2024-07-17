@@ -32,7 +32,7 @@ export const putObjectJob =
 			await resolveS3ConfigAndInput(
 				Amplify,
 				uploadDataOptions,
-				uploadDataInput as UploadDataInput,
+				uploadDataInput,
 			);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,

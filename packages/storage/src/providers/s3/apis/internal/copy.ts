@@ -40,8 +40,11 @@ const copyWithPath = async (
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	const { s3Config, bucket, identityId } =
-		await resolveS3ConfigAndInput(amplify);
+	const { s3Config, bucket, identityId } = await resolveS3ConfigAndInput(
+		amplify,
+		{},
+		input,
+	);
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
 	assertValidationError(

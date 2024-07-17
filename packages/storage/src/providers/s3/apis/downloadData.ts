@@ -118,7 +118,7 @@ const downloadDataJob =
 			await resolveS3ConfigAndInput(
 				Amplify,
 				downloadDataOptions,
-				downloadDataInput as DownloadDataInput,
+				downloadDataInput,
 			);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			downloadDataInput,
