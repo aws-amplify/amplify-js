@@ -31,7 +31,7 @@ export const getUrl = async (
 ): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
 	const { options: getUrlOptions } = input;
 	const { s3Config, keyPrefix, bucket, identityId } =
-		await resolveS3ConfigAndInput(amplify, getUrlOptions);
+		await resolveS3ConfigAndInput(amplify, getUrlOptions, input as GetUrlInput);
 	const { inputType, objectKey } = validateStorageOperationInput(
 		input,
 		identityId,

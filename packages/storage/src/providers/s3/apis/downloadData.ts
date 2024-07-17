@@ -115,7 +115,11 @@ const downloadDataJob =
 	> => {
 		const { options: downloadDataOptions } = downloadDataInput;
 		const { bucket, keyPrefix, s3Config, identityId } =
-			await resolveS3ConfigAndInput(Amplify, downloadDataOptions);
+			await resolveS3ConfigAndInput(
+				Amplify,
+				downloadDataOptions,
+				downloadDataInput as DownloadDataInput,
+			);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			downloadDataInput,
 			identityId,

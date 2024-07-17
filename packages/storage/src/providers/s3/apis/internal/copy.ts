@@ -92,10 +92,11 @@ export const copyWithKey = async (
 		s3Config,
 		bucket,
 		keyPrefix: sourceKeyPrefix,
-	} = await resolveS3ConfigAndInput(amplify, input.source);
+	} = await resolveS3ConfigAndInput(amplify, input.source, input);
 	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput(
 		amplify,
 		input.destination,
+		input,
 	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`

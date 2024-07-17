@@ -29,7 +29,11 @@ export const putObjectJob =
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
-			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
+			await resolveS3ConfigAndInput(
+				Amplify,
+				uploadDataOptions,
+				uploadDataInput as UploadDataInput,
+			);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
 			identityId,

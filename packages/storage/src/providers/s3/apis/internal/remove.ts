@@ -25,7 +25,7 @@ export const remove = async (
 ): Promise<RemoveOutput | RemoveWithPathOutput> => {
 	const { options = {} } = input ?? {};
 	const { s3Config, keyPrefix, bucket, identityId } =
-		await resolveS3ConfigAndInput(amplify, options);
+		await resolveS3ConfigAndInput(amplify, options, input as RemoveInput);
 
 	const { inputType, objectKey } = validateStorageOperationInput(
 		input,

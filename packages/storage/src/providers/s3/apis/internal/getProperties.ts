@@ -26,7 +26,11 @@ export const getProperties = async (
 ): Promise<GetPropertiesOutput | GetPropertiesWithPathOutput> => {
 	const { options: getPropertiesOptions } = input;
 	const { s3Config, bucket, keyPrefix, identityId } =
-		await resolveS3ConfigAndInput(amplify, getPropertiesOptions);
+		await resolveS3ConfigAndInput(
+			amplify,
+			getPropertiesOptions,
+			input as GetPropertiesInput,
+		);
 	const { inputType, objectKey } = validateStorageOperationInput(
 		input,
 		identityId,

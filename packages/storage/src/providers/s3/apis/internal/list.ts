@@ -58,7 +58,7 @@ export const list = async (
 		bucket,
 		keyPrefix: generatedPrefix,
 		identityId,
-	} = await resolveS3ConfigAndInput(amplify, options);
+	} = await resolveS3ConfigAndInput(amplify, options, input as ListAllInput);
 
 	const { inputType, objectKey } = validateStorageOperationInputWithPrefix(
 		input,
