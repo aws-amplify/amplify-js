@@ -18,7 +18,7 @@ export type LocationCredentialsProvider = (options?: {
 	forceRefresh?: boolean;
 }) => Promise<{ credentials: AWSCredentials }>;
 
-interface CommonOptions {
+export interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
