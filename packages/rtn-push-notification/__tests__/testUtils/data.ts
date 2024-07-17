@@ -33,7 +33,7 @@ export const fcmMessageOptions = {
 export const fcmMessagePayload = {
 	title: 'fcm-title',
 	body: 'fcm-body',
-	imageUrl: imageUrl,
+	imageUrl,
 	action: {},
 	rawData: pushNotificationAdhocData,
 };
