@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.09 kB"
+			"limit": "17.11 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.59 kB"
+			"limit": "15.60 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -383,7 +383,7 @@
 			"name": "[Auth] confirmSignIn (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmSignIn }",
-			"limit": "28.27 kB"
+			"limit": "28.28 kB"
 		},
 		{
 			"name": "[Auth] updateMFAPreference (Cognito)",
@@ -401,7 +401,7 @@
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "12.6 kB"
+			"limit": "12.7 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
@@ -449,13 +449,13 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.06 kB"
+			"limit": "30.07 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect, signOut, fetchAuthSession }",
-			"limit": "21.47 kB"
+			"limit": "21.49 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",

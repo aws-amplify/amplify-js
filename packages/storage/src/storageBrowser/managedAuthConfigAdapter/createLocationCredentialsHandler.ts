@@ -1,7 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CredentialsProvider, GetLocationCredentials } from '../types';
+import { getDataAccess } from '../apis/getDataAccess';
+import {
+	CredentialsProvider,
+	GetLocationCredentials,
+	GetLocationCredentialsInput,
+} from '../types';
 
 interface CreateLocationCredentialsHandlerInput {
 	accountId: string;
@@ -10,9 +15,26 @@ interface CreateLocationCredentialsHandlerInput {
 }
 
 export const createLocationCredentialsHandler = (
-	// eslint-disable-next-line unused-imports/no-unused-vars
-	input: CreateLocationCredentialsHandlerInput,
+	handlerInput: CreateLocationCredentialsHandlerInput,
 ): GetLocationCredentials => {
-	// TODO(@AllanZhengYP)
-	throw new Error('Not Implemented');
+	const { accountId, region, credentialsProvider } = handlerInput;
+
+	/**
+	 * Retrieves credentials for the specified scope & permission.
+	 *
+	 * @param input - An object specifying the requested scope & permission.
+	 *
+	 * @returns A promise which will resolve with the requested credentials.
+	 */
+	return (input: GetLocationCredentialsInput) => {
+		const { scope, permission } = input;
+
+		return getDataAccess({
+			accountId,
+			credentialsProvider,
+			permission,
+			region,
+			scope,
+		});
+	};
 };
