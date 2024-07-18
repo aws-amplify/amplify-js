@@ -6,13 +6,16 @@ import {
 	invalidPreferredRedirectUrlException,
 } from '../../../../errors/constants';
 
-/** @internal */
+/**
+ * An appScheme (non http/s url) is always required to proceed further.
+ * If a preferredSignOutUrl is given, then we use that after validating the existence of appScheme.
+@internal */
 export function getRedirectUrl(
 	redirects: string[],
 	preferredSignOutUrl?: string,
 ): string {
 	let preferredRedirectUrl;
-	// Always check for a non http/s url (appScheme)
+	// iOS always requires a non http/s url (appScheme) to be registered so we validate it's existence here.
 	const appSchemeRedirectUrl = redirects?.find(
 		redirect =>
 			!redirect.startsWith('http://') && !redirect.startsWith('https://'),
