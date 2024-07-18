@@ -20,7 +20,11 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
-import { ResolvedS3Config } from '../../types/options';
+import {
+	ListAllOptionsWithPath,
+	ListPaginateOptionsWithPath,
+	ResolvedS3Config,
+} from '../../types/options';
 import {
 	ListObjectsV2Input,
 	ListObjectsV2Output,
@@ -30,7 +34,6 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/types';
-import { StorageSubpathStrategy } from '../../../../types';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -76,14 +79,13 @@ export const list = async (
 			} ${anyOptions?.nextToken ? `nextToken: ${anyOptions?.nextToken}` : ''}.`,
 		);
 	}
+
 	const listParams = {
 		Bucket: bucket,
 		Prefix: isInputWithPrefix ? `${generatedPrefix}${objectKey}` : objectKey,
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
-		Delimiter: getDelimiter(
-			(options as ListAllWithPathInput['options'])?.subpathStrategy,
-		),
+		Delimiter: getDelimiter(options),
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -265,9 +267,9 @@ const mapCommonPrefixesToExcludedSubpaths = (
 };
 
 const getDelimiter = (
-	subpathStrategy?: StorageSubpathStrategy,
+	options?: ListAllOptionsWithPath | ListPaginateOptionsWithPath,
 ): string | undefined => {
-	if (subpathStrategy?.strategy === 'exclude') {
-		return subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
+	if (options?.subpathStrategy?.strategy === 'exclude') {
+		return options?.subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
 	}
 };
