@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export {
-	GetUrlOptionsWithKey,
-	GetUrlOptionsWithPath,
-	UploadDataOptionsWithPath,
-	UploadDataOptionsWithKey,
-	GetPropertiesOptionsWithKey,
-	GetPropertiesOptionsWithPath,
-	ListAllOptionsWithPrefix,
-	ListPaginateOptionsWithPrefix,
-	ListAllOptionsWithPath,
-	ListPaginateOptionsWithPath,
+	GetUrlWithKeyOptions,
+	GetUrlWithPathOptions,
+	UploadDataWithPathOptions,
+	UploadDataWithKeyOptions,
+	GetPropertiesWithKeyOptions,
+	GetPropertiesWithPathOptions,
+	ListAllWithPrefixOptions,
+	ListPaginateWithPrefixOptions,
+	ListAllWithPathOptions,
+	ListPaginateWithPathOptions,
 	RemoveOptions,
-	DownloadDataOptionsWithPath,
-	DownloadDataOptionsWithKey,
-	CopyDestinationOptionsWithKey,
-	CopySourceOptionsWithKey,
+	DownloadDataWithPathOptions,
+	DownloadDataWithKeyOptions,
+	CopyDestinationWithKeyOptions,
+	CopySourceWithKeyOptions,
 } from './options';
 export {
 	UploadDataOutput,
@@ -56,4 +56,3 @@ export {
 	ListAllWithPathInput,
 	ListPaginateWithPathInput,
 } from './inputs';
-export { S3Exception } from './errors';

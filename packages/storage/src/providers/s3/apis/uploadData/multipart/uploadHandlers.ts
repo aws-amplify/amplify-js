@@ -17,7 +17,7 @@ import {
 } from '../../../utils/constants';
 import {
 	ResolvedS3Config,
-	UploadDataOptionsWithKey,
+	UploadDataWithKeyOptions,
 } from '../../../types/options';
 import { StorageError } from '../../../../../errors/StorageError';
 import { CanceledError } from '../../../../../errors/CanceledError';
@@ -99,7 +99,7 @@ export const getMultipartUploadHandlers = (
 
 		// Resolve "key" specific options
 		if (inputType === STORAGE_INPUT_KEY) {
-			const accessLevel = (uploadDataOptions as UploadDataOptionsWithKey)
+			const accessLevel = (uploadDataOptions as UploadDataWithKeyOptions)
 				?.accessLevel;
 
 			resolvedKeyPrefix = resolvedS3Options.keyPrefix;
