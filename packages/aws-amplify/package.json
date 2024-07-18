@@ -419,7 +419,7 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "11.96 kB"
+			"limit": "11.97 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
@@ -431,19 +431,19 @@
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmUserAttribute }",
-			"limit": "12.7 kB"
+			"limit": "12.71 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signInWithRedirect }",
-			"limit": "21.18 kB"
+			"limit": "21.19 kB"
 		},
 		{
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "11.78 kB"
+			"limit": "11.79 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
