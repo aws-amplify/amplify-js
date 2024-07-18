@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.39](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.38...@aws-amplify/datastore@5.0.39) (2024-07-08)
+
+### Bug Fixes
+
+- **datastore:** handle case when getting auth info for expired token users ([#13536](https://github.com/aws-amplify/amplify-js/issues/13536)) ([0f5f4cb](https://github.com/aws-amplify/amplify-js/commit/0f5f4cba1ca639ee2d03e71f52f4e16d7fc34002))
+
 ## [5.0.38](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.37...@aws-amplify/datastore@5.0.38) (2024-06-24)
 
 **Note:** Version bump only for package @aws-amplify/datastore

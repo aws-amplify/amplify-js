@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.3.8...aws-amplify@6.4.0) (2024-07-08)
+
+### Features
+
+- **storage:** add delimiter support to list API ([#13517](https://github.com/aws-amplify/amplify-js/issues/13517)) ([95ba49c](https://github.com/aws-amplify/amplify-js/commit/95ba49cae994876b15d1062ca1d9923fef909e03))
+
 ## [6.3.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.3.7...aws-amplify@6.3.8) (2024-06-24)
 
 **Note:** Version bump only for package aws-amplify
