@@ -35,7 +35,7 @@ import {
 	UploadDataOptionsWithPath,
 } from '../types';
 
-import { CommonOptions } from './options';
+import { LocationCredentialsProvider } from './options';
 
 // TODO: support use accelerate endpoint option
 /**
@@ -45,14 +45,14 @@ import { CommonOptions } from './options';
 export type CopyInput = StorageCopyInputWithKey<
 	CopySourceOptionsWithKey,
 	CopyDestinationOptionsWithKey,
-	Pick<CommonOptions, 'locationCredentialsProvider'>
+	{ locationCredentialsProvider?: LocationCredentialsProvider }
 >;
 /**
  * Input type with path for S3 copy API.
  */
-export type CopyWithPathInput = StorageCopyInputWithPath<
-	Pick<CommonOptions, 'locationCredentialsProvider'>
->;
+export type CopyWithPathInput = StorageCopyInputWithPath<{
+	locationCredentialsProvider?: LocationCredentialsProvider;
+}>;
 
 /**
  * @deprecated Use {@link GetPropertiesWithPathInput} instead.
