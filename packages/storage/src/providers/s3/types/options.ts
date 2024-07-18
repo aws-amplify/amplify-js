@@ -114,6 +114,16 @@ export type GetUrlOptions = CommonOptions & {
 	 * @default 900 (15 minutes)
 	 */
 	expiresIn?: number;
+	/**
+	 * The content-disposition header value of the file when downloading it.
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+	 */
+	contentDisposition?: string;
+	/**
+	 * The content-type header value of the file when downloading it.
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+	 */
+	contentType?: string;
 };
 
 /** @deprecated Use {@link GetUrlOptionsWithPath} instead. */

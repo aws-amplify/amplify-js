@@ -74,6 +74,12 @@ export const getUrl = async (
 			{
 				Bucket: bucket,
 				Key: finalKey,
+				...(getUrlOptions?.contentDisposition && {
+					ResponseContentDisposition: getUrlOptions.contentDisposition,
+				}),
+				...(getUrlOptions?.contentType && {
+					ResponseContentEncoding: getUrlOptions.contentType,
+				}),
 			},
 		),
 		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),

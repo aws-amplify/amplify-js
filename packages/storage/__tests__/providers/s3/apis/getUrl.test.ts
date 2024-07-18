@@ -236,6 +236,68 @@ describe('getUrl test with path', () => {
 			},
 		);
 	});
+	describe('Happy cases: With path and Content Disposition, Content Type', () => {
+		const config = {
+			credentials,
+			region,
+			userAgentValue: expect.any(String),
+		};
+		beforeEach(() => {
+			jest.mocked(headObject).mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { meta: 'value' },
+				$metadata: {} as any,
+			});
+			jest.mocked(getPresignedGetObjectUrl).mockResolvedValue(mockURL);
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test.each([
+			{
+				path: 'path',
+				expectedKey: 'path',
+				contentDisposition: 'inline; filename="example.txt"',
+				contentType: 'text/plain',
+			},
+			{
+				path: () => 'path',
+				expectedKey: 'path',
+				contentDisposition: 'attachment; filename="download.pdf"',
+				contentType: 'application/pdf',
+			},
+		])(
+			'should getUrl with path $path and expectedKey $expectedKey and content disposition and content type',
+			async ({ path, expectedKey, contentDisposition, contentType }) => {
+				const headObjectOptions = {
+					Bucket: bucket,
+					Key: expectedKey,
+				};
+				const { url, expiresAt } = await getUrlWrapper({
+					path,
+					options: {
+						validateObjectExistence: true,
+						contentDisposition,
+						contentType,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledTimes(1);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					config,
+					headObjectOptions,
+				);
+				expect({ url, expiresAt }).toEqual({
+					url: mockURL,
+					expiresAt: expect.any(Date),
+				});
+			},
+		);
+	});
 	describe('Error cases :  With path', () => {
 		afterAll(() => {
 			jest.clearAllMocks();

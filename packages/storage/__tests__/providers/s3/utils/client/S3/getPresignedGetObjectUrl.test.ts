@@ -70,4 +70,38 @@ describe('serializeGetObjectRequest', () => {
 			}),
 		);
 	});
+
+	it('should return get object API request with disposition and content type', async () => {
+		const actual = await getPresignedGetObjectUrl(
+			{
+				...defaultConfigWithStaticCredentials,
+				signingRegion: defaultConfigWithStaticCredentials.region,
+				signingService: 's3',
+				expiration: 900,
+				userAgentValue: 'UA',
+			},
+			{
+				Bucket: 'bucket',
+				Key: 'key',
+				ResponseContentDisposition: 'attachment; filename="filename.jpg"',
+				ResponseContentType: 'application/pdf',
+			},
+		);
+		const actualUrl = actual;
+		expect(actualUrl.hostname).toEqual(
+			`bucket.s3.${defaultConfigWithStaticCredentials.region}.amazonaws.com`,
+		);
+		expect(actualUrl.pathname).toEqual('/key');
+		expect(actualUrl.searchParams.get('X-Amz-Expires')).toEqual('900');
+		expect(actualUrl.searchParams.get('x-amz-content-sha256')).toEqual(
+			expect.any(String),
+		);
+		expect(actualUrl.searchParams.get('response-content-disposition')).toEqual(
+			'attachment; filename="filename.jpg"',
+		);
+		expect(actualUrl.searchParams.get('response-content-type')).toEqual(
+			'application/pdf',
+		);
+		expect(actualUrl.searchParams.get('x-amz-user-agent')).toEqual('UA');
+	});
 });
