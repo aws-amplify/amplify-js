@@ -70,19 +70,17 @@ export type RemoveOptions = WriteOptions & CommonOptions;
  * @deprecated Use {@link ListAllOptionsWithPath} instead.
  * Input options type with prefix for S3 list all API.
  */
-export type ListAllOptionsWithPrefix = Omit<
-	StorageListAllOptions & ReadOptions & CommonOptions,
-	'subpathStrategy'
->;
+export type ListAllOptionsWithPrefix = StorageListAllOptions &
+	ReadOptions &
+	CommonOptions;
 
 /**
  * @deprecated Use {@link ListPaginateOptionsWithPath} instead.
  * Input options type with prefix for S3 list API to paginate items.
  */
-export type ListPaginateOptionsWithPrefix = Omit<
-	StorageListPaginateOptions & ReadOptions & CommonOptions,
-	'subpathStrategy'
->;
+export type ListPaginateOptionsWithPrefix = StorageListPaginateOptions &
+	ReadOptions &
+	CommonOptions;
 
 /**
  * Input options type with path for S3 list all API.
