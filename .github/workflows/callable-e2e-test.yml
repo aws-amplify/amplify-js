@@ -34,6 +34,9 @@ on:
       retry_count:
         required: true
         type: number
+      yarn_script:
+        required: false
+        type: string
 
 env:
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
@@ -80,19 +83,24 @@ jobs:
           E2E_AMPLIFY_JS_DIR: ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
+          E2E_YARN_SCRIPT: ${{ inputs.yarn_script }}
         run: |
-          ../amplify-js/scripts/retry-yarn-script.sh -s \
-          "ci:test \
-          $E2E_FRAMEWORK \
-          $E2E_CATEGORY \
-          $E2E_SAMPLE_NAME \
-          $E2E_SPEC \
-          $E2E_BROWSER \
-          dev \
-          $E2E_BACKEND \
-          $E2E_AMPLIFY_JS_DIR" \
-          -n $E2E_RETRY_COUNT
-
+          if [ -z "$E2E_YARN_SCRIPT" ]; then
+            ../amplify-js/scripts/retry-yarn-script.sh -s \
+            "ci:test \
+            $E2E_FRAMEWORK \
+            $E2E_CATEGORY \
+            $E2E_SAMPLE_NAME \
+            $E2E_SPEC \
+            $E2E_BROWSER \
+            dev \
+            $E2E_BACKEND \
+            $E2E_AMPLIFY_JS_DIR" \
+            $E2E_YARN_SCRIPT \
+            -n $E2E_RETRY_COUNT
+          else
+            echo "Skipping specialized yarn script execution in the dev environment."
+          fi
       - name: Run cypress tests for ${{ inputs.test_name }} prod
         shell: bash
         working-directory: amplify-js-samples-staging
@@ -106,18 +114,24 @@ jobs:
           E2E_AMPLIFY_JS_DIR: ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
+          E2E_YARN_SCRIPT: ${{ inputs.yarn_script }}
         run: |
-          ../amplify-js/scripts/retry-yarn-script.sh -s \
-          "ci:test \
-          $E2E_FRAMEWORK \
-          $E2E_CATEGORY \
-          $E2E_SAMPLE_NAME \
-          $E2E_SPEC \
-          $E2E_BROWSER \
-          prod \
-          $E2E_BACKEND \
-          $E2E_AMPLIFY_JS_DIR" \
-          -n $E2E_RETRY_COUNT
+          if [ -z "$E2E_YARN_SCRIPT" ]; then
+            ../amplify-js/scripts/retry-yarn-script.sh -s \
+            "ci:test \
+            $E2E_FRAMEWORK \
+            $E2E_CATEGORY \
+            $E2E_SAMPLE_NAME \
+            $E2E_SPEC \
+            $E2E_BROWSER \
+            prod \
+            $E2E_BACKEND \
+            $E2E_AMPLIFY_JS_DIR" \
+            $E2E_YARN_SCRIPT \
+            -n $E2E_RETRY_COUNT
+          else
+            yarn "$E2E_YARN_SCRIPT"
+          fi
       - name: Upload artifact
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
         if: failure()

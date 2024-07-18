@@ -59,7 +59,7 @@ jobs:
         run: |
           yarn run docs
           git add ./docs/api/
-          git commit -m "chore(release): update API docs [skip release]"
+          git commit -m "chore(release): Update API docs [skip release]"
 
       - name: Push post release changes to the release branch
         working-directory: ./amplify-js

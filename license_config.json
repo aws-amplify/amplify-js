@@ -39,7 +39,8 @@
 		"**/.rollup.cache",
 		"**/rollup.config.mjs",
 		"rollup",
-		".husky"
+		".husky",
+		"packages/core/metadata"
 	],
 	"ignoreFile": ".gitignore",
 	"license": "license_header.txt",
