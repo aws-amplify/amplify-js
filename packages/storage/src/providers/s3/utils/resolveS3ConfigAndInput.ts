@@ -164,7 +164,7 @@ const assertStorageInput = (
 	if (isDeprecatedInput(input) || isInputWithCallbackPath(input)) {
 		throw new StorageError({
 			name: INVALID_STORAGE_INPUT,
-			message: 'The input needs to have a path as a string value',
+			message: 'The input needs to have a path as a string value.',
 			recoverySuggestion:
 				'Please provide a valid path as a string value for the input.',
 		});

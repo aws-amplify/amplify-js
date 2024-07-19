@@ -276,7 +276,9 @@ describe('resolveS3ConfigAndInput', () => {
 					await expect(s3Config.credentials()).rejects.toThrow(
 						expect.objectContaining({
 							name: INVALID_STORAGE_INPUT,
-							message: 'The storage input needs to pass a string path.',
+							message: 'The input needs to have a path as a string value.',
+							recoverySuggestion:
+								'Please provide a valid path as a string value for the input.',
 						}),
 					);
 				} else {
