@@ -14,6 +14,7 @@ export enum StorageValidationErrorCode {
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
 	InvalidStorageBucket = 'InvalidStorageBucket',
+	InvalidCopyOperationStorageBucket = 'InvalidCopyOperationStorageBucket',
 	InvalidStorageOperationPrefixInput = 'InvalidStorageOperationPrefixInput',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
 	InvalidStoragePathInput = 'InvalidStoragePathInput',
@@ -74,5 +75,8 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.InvalidStorageBucket]: {
 		message:
 			'Unable to lookup bucket from provided name in Amplify configuration.',
+	},
+	[StorageValidationErrorCode.InvalidCopyOperationStorageBucket]: {
+		message: 'Missing bucket option in either source or destination.',
 	},
 };

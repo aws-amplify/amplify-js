@@ -170,13 +170,22 @@ export type UploadDataOptionsWithPath = UploadDataOptions;
 export type CopySourceOptionsWithKey = ReadOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
+	bucket?: StorageBucket;
 };
 
 /** @deprecated This may be removed in the next major version. */
 export type CopyDestinationOptionsWithKey = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
+	bucket?: StorageBucket;
 };
+
+export interface CopyWithPathSourceOptions {
+	bucket?: StorageBucket;
+}
+export interface CopyWithPathDestinationOptions {
+	bucket?: StorageBucket;
+}
 
 /**
  * Internal only type for S3 API handlers' config parameter.
