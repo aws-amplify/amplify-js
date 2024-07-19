@@ -18,7 +18,7 @@ import {
 } from '../../../../src/providers/s3/types';
 import { StorageSubpathStrategy } from '../../../../src/types';
 
-import { Expect } from './utils';
+import { Equal, Expect } from './utils';
 
 declare const targetIdentityId: undefined | string;
 declare const accessLevel: StorageAccessLevel;
@@ -75,12 +75,13 @@ describe('List API input types', () => {
 		},
 	};
 
-	type tests = [
-		Expect<typeof listPaginateInput, ListPaginateInput>,
-		Expect<typeof listAllInput, ListAllInput>,
-		Expect<typeof listPaginateWithPathInput, ListPaginateWithPathInput>,
-		Expect<typeof listAllWithPathInput, ListAllWithPathInput>,
+	type Tests = [
+		Expect<Equal<typeof listPaginateInput, ListPaginateInput>>,
+		Expect<Equal<typeof listAllInput, ListAllInput>>,
+		Expect<Equal<typeof listPaginateWithPathInput, ListPaginateWithPathInput>>,
+		Expect<Equal<typeof listAllWithPathInput, ListAllWithPathInput>>,
 	];
+	type Result = Expect<Equal<Tests, [true, true, true, true]>>;
 });
 
 describe('List API ou types', () => {
@@ -108,10 +109,14 @@ describe('List API ou types', () => {
 		excludedSubpaths,
 	};
 
-	type tests = [
-		Expect<typeof listPaginateOutput, ListPaginateOutput>,
-		Expect<typeof listAllOutput, ListAllOutput>,
-		Expect<typeof listPaginateWithPathOutput, ListPaginateWithPathOutput>,
-		Expect<typeof listAllWithPathOutput, ListAllWithPathOutput>,
+	type Tests = [
+		Expect<Equal<typeof listPaginateOutput, ListPaginateOutput>>,
+		Expect<Equal<typeof listAllOutput, ListAllOutput>>,
+		Expect<
+			Equal<typeof listPaginateWithPathOutput, ListPaginateWithPathOutput>
+		>,
+		Expect<Equal<typeof listAllWithPathOutput, ListAllWithPathOutput>>,
 	];
+
+	type Result = Expect<Equal<Tests, [true, true, true, true]>>;
 });
