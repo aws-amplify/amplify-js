@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /* eslint-disable unused-imports/no-unused-vars */
-import { StorageAccessLevel } from '@aws-amplify/core';
 
 import {
 	ListAllInput,
@@ -20,103 +19,131 @@ import { StorageSubpathStrategy } from '../../../../src/types';
 
 import { Equal, Expect } from './utils';
 
-declare const targetIdentityId: undefined | string;
-declare const accessLevel: StorageAccessLevel;
-declare const prefix: string;
-declare const path: string;
-declare const subpathStrategy: StorageSubpathStrategy;
-declare const nextToken: string;
-declare const pageSize: number;
-declare const useAccelerateEndpoint: boolean;
-declare const listOutputItems: ListOutputItem[];
-declare const listOutputItemsWithPath: ListOutputItemWithPath[];
-declare const excludedSubpaths: string[];
+interface Input {
+	targetIdentityId: undefined | string;
+	prefix: string;
+	path: string;
+	subpathStrategy: StorageSubpathStrategy;
+	nextToken: string;
+	pageSize: number;
+	useAccelerateEndpoint: boolean;
+}
+
+interface Output {
+	listOutputItems: ListOutputItem[];
+	listOutputItemsWithPath: ListOutputItemWithPath[];
+	excludedSubpaths: string[];
+	nextToken: string;
+}
 
 describe('List API input types', () => {
-	const listPaginateInput: ListPaginateInput = {
-		prefix,
-		options: {
-			accessLevel,
+	test('should compile', () => {
+		function handleTest({
 			targetIdentityId,
-			// @ts-expect-error subpathStrategy is not part of this input
+			prefix,
+			path,
 			subpathStrategy,
-		},
-	};
-
-	const listAllInput: ListAllInput = {
-		prefix,
-		options: {
-			listAll: true,
-			accessLevel,
-			targetIdentityId,
-			// @ts-expect-error subpathStrategy is not part of this input
-			subpathStrategy,
-		},
-	};
-
-	const listPaginateWithPathInput: ListPaginateWithPathInput = {
-		path,
-		options: {
-			subpathStrategy,
-			useAccelerateEndpoint,
-			pageSize,
 			nextToken,
-		},
-	};
-
-	const listAllWithPathInput: ListAllWithPathInput = {
-		path,
-		options: {
-			listAll: true,
-			subpathStrategy,
-			useAccelerateEndpoint,
-			// @ts-expect-error subpathStrategy is not part of this input
 			pageSize,
-		},
-	};
+			useAccelerateEndpoint,
+		}: Input) {
+			const listPaginateInput: ListPaginateInput = {
+				prefix,
+				options: {
+					accessLevel: 'protected',
+					targetIdentityId,
+					// @ts-expect-error subpathStrategy is not part of this input
+					subpathStrategy,
+				},
+			};
 
-	type Tests = [
-		Expect<Equal<typeof listPaginateInput, ListPaginateInput>>,
-		Expect<Equal<typeof listAllInput, ListAllInput>>,
-		Expect<Equal<typeof listPaginateWithPathInput, ListPaginateWithPathInput>>,
-		Expect<Equal<typeof listAllWithPathInput, ListAllWithPathInput>>,
-	];
-	type Result = Expect<Equal<Tests, [true, true, true, true]>>;
+			const listAllInput: ListAllInput = {
+				prefix,
+				options: {
+					listAll: true,
+					accessLevel: 'protected',
+					targetIdentityId,
+					// @ts-expect-error subpathStrategy is not part of this input
+					subpathStrategy,
+				},
+			};
+
+			const listPaginateWithPathInput: ListPaginateWithPathInput = {
+				path,
+				options: {
+					subpathStrategy,
+					useAccelerateEndpoint,
+					pageSize,
+					nextToken,
+				},
+			};
+
+			const listAllWithPathInput: ListAllWithPathInput = {
+				path,
+				options: {
+					listAll: true,
+					subpathStrategy,
+					useAccelerateEndpoint,
+					// @ts-expect-error subpathStrategy is not part of this input
+					pageSize,
+				},
+			};
+
+			type Tests = [
+				Expect<Equal<typeof listPaginateInput, ListPaginateInput>>,
+				Expect<Equal<typeof listAllInput, ListAllInput>>,
+				Expect<
+					Equal<typeof listPaginateWithPathInput, ListPaginateWithPathInput>
+				>,
+				Expect<Equal<typeof listAllWithPathInput, ListAllWithPathInput>>,
+			];
+			type Result = Expect<Equal<Tests, [true, true, true, true]>>;
+		}
+	});
 });
 
 describe('List API ou types', () => {
-	const listPaginateOutput: ListPaginateOutput = {
-		items: listOutputItems,
-		nextToken,
-		// @ts-expect-error excludeSubpaths is not part of this output
-		excludedSubpaths,
-	};
+	test('should compile', () => {
+		function handleTest({
+			listOutputItems,
+			nextToken,
+			excludedSubpaths,
+			listOutputItemsWithPath,
+		}: Output) {
+			const listPaginateOutput: ListPaginateOutput = {
+				items: listOutputItems,
+				nextToken,
+				// @ts-expect-error excludeSubpaths is not part of this output
+				excludedSubpaths,
+			};
 
-	const listAllOutput: ListAllOutput = {
-		items: listOutputItems,
-		// @ts-expect-error excludeSubpaths is not part of this output
-		excludedSubpaths,
-	};
+			const listAllOutput: ListAllOutput = {
+				items: listOutputItems,
+				// @ts-expect-error excludeSubpaths is not part of this output
+				excludedSubpaths,
+			};
 
-	const listPaginateWithPathOutput: ListPaginateWithPathOutput = {
-		items: listOutputItemsWithPath,
-		nextToken,
-		excludedSubpaths,
-	};
+			const listPaginateWithPathOutput: ListPaginateWithPathOutput = {
+				items: listOutputItemsWithPath,
+				nextToken,
+				excludedSubpaths,
+			};
 
-	const listAllWithPathOutput: ListAllWithPathOutput = {
-		items: listOutputItemsWithPath,
-		excludedSubpaths,
-	};
+			const listAllWithPathOutput: ListAllWithPathOutput = {
+				items: listOutputItemsWithPath,
+				excludedSubpaths,
+			};
 
-	type Tests = [
-		Expect<Equal<typeof listPaginateOutput, ListPaginateOutput>>,
-		Expect<Equal<typeof listAllOutput, ListAllOutput>>,
-		Expect<
-			Equal<typeof listPaginateWithPathOutput, ListPaginateWithPathOutput>
-		>,
-		Expect<Equal<typeof listAllWithPathOutput, ListAllWithPathOutput>>,
-	];
+			type Tests = [
+				Expect<Equal<typeof listPaginateOutput, ListPaginateOutput>>,
+				Expect<Equal<typeof listAllOutput, ListAllOutput>>,
+				Expect<
+					Equal<typeof listPaginateWithPathOutput, ListPaginateWithPathOutput>
+				>,
+				Expect<Equal<typeof listAllWithPathOutput, ListAllWithPathOutput>>,
+			];
 
-	type Result = Expect<Equal<Tests, [true, true, true, true]>>;
+			type Result = Expect<Equal<Tests, [true, true, true, true]>>;
+		}
+	});
 });
