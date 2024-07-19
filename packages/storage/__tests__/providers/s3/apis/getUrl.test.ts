@@ -267,7 +267,10 @@ describe('getUrl test with path', () => {
 			{
 				path: () => 'path',
 				expectedKey: 'path',
-				contentDisposition: 'attachment; filename="download.pdf"',
+				contentDisposition: {
+					type: 'attachment' as const,
+					filename: 'example.pdf',
+				},
 				contentType: 'application/pdf',
 			},
 		])(

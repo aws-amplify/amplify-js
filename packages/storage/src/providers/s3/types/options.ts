@@ -118,7 +118,12 @@ export type GetUrlOptions = CommonOptions & {
 	 * The content-disposition header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
 	 */
-	contentDisposition?: string;
+	contentDisposition?:
+		| {
+				type: 'attachment' | 'inline';
+				filename?: string;
+		  }
+		| string;
 	/**
 	 * The content-type header value of the file when downloading it.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
@@ -147,7 +152,12 @@ export type UploadDataOptions = CommonOptions &
 		 * The default content-disposition header value of the file when downloading it.
 		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
 		 */
-		contentDisposition?: string;
+		contentDisposition?:
+			| {
+					type: 'attachment' | 'inline';
+					filename?: string;
+			  }
+			| string;
 		/**
 		 * The default content-encoding header value of the file when downloading it.
 		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding

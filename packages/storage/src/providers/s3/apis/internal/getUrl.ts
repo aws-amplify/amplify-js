@@ -22,8 +22,23 @@ import {
 	MAX_URL_EXPIRATION,
 	STORAGE_INPUT_KEY,
 } from '../../utils/constants';
+import { GetUrlOptions } from '../../types/options';
 
 import { getProperties } from './getProperties';
+
+export const constructContentDisposition = (
+	cd?: GetUrlOptions['contentDisposition'],
+): string | undefined => {
+	if (typeof cd === 'string') return cd;
+
+	if (typeof cd === 'object') {
+		const { type, filename } = cd;
+
+		return filename ? `${type}; filename="${filename}"` : type;
+	}
+
+	return undefined;
+};
 
 export const getUrl = async (
 	amplify: AmplifyClassV6,
@@ -75,10 +90,12 @@ export const getUrl = async (
 				Bucket: bucket,
 				Key: finalKey,
 				...(getUrlOptions?.contentDisposition && {
-					ResponseContentDisposition: getUrlOptions.contentDisposition,
+					ResponseContentDisposition: constructContentDisposition(
+						getUrlOptions.contentDisposition,
+					),
 				}),
 				...(getUrlOptions?.contentType && {
-					ResponseContentEncoding: getUrlOptions.contentType,
+					ResponseContentType: getUrlOptions.contentType,
 				}),
 			},
 		),

@@ -7,6 +7,7 @@ import { ResolvedS3Config } from '../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../types';
 import { Part, createMultipartUpload } from '../../../utils/client';
 import { logger } from '../../../../../utils';
+import { constructContentDisposition } from '../../internal/getUrl';
 
 import {
 	cacheMultipartUpload,
@@ -22,7 +23,9 @@ interface LoadOrCreateMultipartUploadOptions {
 	keyPrefix?: string;
 	key: string;
 	contentType?: string;
-	contentDisposition?: string;
+	contentDisposition?:
+		| string
+		| { type: 'attachment' | 'inline'; filename?: string };
 	contentEncoding?: string;
 	metadata?: Record<string, string>;
 	size?: number;
@@ -102,7 +105,7 @@ export const loadOrCreateMultipartUpload = async ({
 				Bucket: bucket,
 				Key: finalKey,
 				ContentType: contentType,
-				ContentDisposition: contentDisposition,
+				ContentDisposition: constructContentDisposition(contentDisposition),
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
 			},
