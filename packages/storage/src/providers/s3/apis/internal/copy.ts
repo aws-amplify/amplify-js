@@ -29,15 +29,18 @@ const isCopyInputWithPath = (
 const storageBucketAssertion = (
 	sourceBucket?: StorageBucket,
 	destBucket?: StorageBucket,
-) =>
-	// Throw assertion error when either one of bucket options is empty
-	{
-		assertValidationError(
-			(sourceBucket !== undefined && destBucket !== undefined) ||
-				(!destBucket && !sourceBucket),
-			StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
-		);
-	};
+) => {
+	/**  For multi-bucket, both source and destination bucket needs to be passed in
+	 *   or both can be undefined and we fallback to singleton's default value
+	 */
+	assertValidationError(
+		// Both src & dest bucket option is present is acceptable
+		(sourceBucket !== undefined && destBucket !== undefined) ||
+			// or both are undefined is also acceptable
+			(!destBucket && !sourceBucket),
+		StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
+	);
+};
 
 export const copy = async (
 	amplify: AmplifyClassV6,
