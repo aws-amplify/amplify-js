@@ -85,8 +85,7 @@ export type StorageUploadDataInputWithPath<Options> =
 export interface StorageCopyInputWithKey<
 	SourceOptions extends StorageOptions,
 	DestinationOptions extends StorageOptions,
-	Options,
-> extends StorageOperationOptionsInput<Options> {
+> {
 	source: SourceOptions;
 	destination: DestinationOptions;
 }

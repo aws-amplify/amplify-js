@@ -44,8 +44,7 @@ import { LocationCredentialsProvider } from './options';
  */
 export type CopyInput = StorageCopyInputWithKey<
 	CopySourceOptionsWithKey,
-	CopyDestinationOptionsWithKey,
-	{ locationCredentialsProvider?: LocationCredentialsProvider }
+	CopyDestinationOptionsWithKey
 >;
 /**
  * Input type with path for S3 copy API.
