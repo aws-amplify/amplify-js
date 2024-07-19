@@ -33,7 +33,8 @@ const storageBucketAssertion = (
 	// Throw assertion error when either one of bucket options is empty
 	{
 		assertValidationError(
-			!!(sourceBucket && destBucket) || !!(!destBucket && !sourceBucket),
+			(sourceBucket !== undefined && destBucket !== undefined) ||
+				(!destBucket && !sourceBucket),
 			StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
 		);
 	};
@@ -63,7 +64,7 @@ const copyWithPath = async (
 	const { s3Config, bucket: destBucket } = await resolveS3ConfigAndInput(
 		amplify,
 		input.destination,
-	);
+	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
 	assertValidationError(
@@ -110,13 +111,13 @@ export const copyWithKey = async (
 	);
 
 	const { bucket: sourceBucket, keyPrefix: sourceKeyPrefix } =
-		await resolveS3ConfigAndInput(amplify, input.source);
+		await resolveS3ConfigAndInput(amplify, source);
 
 	const {
 		s3Config,
 		bucket: destBucket,
 		keyPrefix: destinationKeyPrefix,
-	} = await resolveS3ConfigAndInput(amplify, input.destination); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
+	} = await resolveS3ConfigAndInput(amplify, destination); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
 	const finalCopySource = `${sourceBucket}/${sourceKeyPrefix}${source.key}`;
