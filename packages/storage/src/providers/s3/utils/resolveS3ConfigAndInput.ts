@@ -11,27 +11,12 @@ import {
 	ResolvedS3Config,
 } from '../types/options';
 import {
-	StorageCopyInputWithPath,
 	StorageOperationInputWithKey,
 	StorageOperationInputWithPath,
 	StorageOperationInputWithPrefix,
 } from '../../../types/inputs';
 import { StorageError } from '../../../errors/StorageError';
-import {
-	CopyInput,
-	CopyWithPathInput,
-	DownloadDataInput,
-	DownloadDataWithPathInput,
-	GetPropertiesInput,
-	GetPropertiesWithPathInput,
-	GetUrlInput,
-	GetUrlWithPathInput,
-	ListAllInput,
-	ListAllWithPathInput,
-	ListPaginateInput,
-	ListPaginateWithPathInput,
-	RemoveWithPathInput,
-} from '../types';
+import { CopyInput, CopyWithPathInput } from '../types';
 import { INVALID_STORAGE_INPUT } from '../../../errors/constants';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
@@ -51,29 +36,15 @@ interface ResolvedS3ConfigAndInput {
 	identityId?: string;
 }
 export type DeprecatedStorageInput =
-	| DownloadDataInput
-	| GetUrlInput
 	| StorageOperationInputWithKey
 	| StorageOperationInputWithPrefix
-	| CopyInput
-	| ListAllInput
-	| ListPaginateInput
-	| GetPropertiesInput
 	| CopyInput;
 
 export type CallbackPathStorageInput =
 	| StorageOperationInputWithPath
-	| StorageCopyInputWithPath;
-
-type StorageInput =
-	| DeprecatedStorageInput
-	| DownloadDataWithPathInput
-	| RemoveWithPathInput
-	| ListAllWithPathInput
-	| ListPaginateWithPathInput
-	| GetPropertiesWithPathInput
-	| GetUrlWithPathInput
 	| CopyWithPathInput;
+
+type StorageInput = DeprecatedStorageInput | CallbackPathStorageInput;
 
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.
@@ -105,9 +76,7 @@ export const resolveS3ConfigAndInput = async (
 	 */
 	const credentialsProvider = async () => {
 		if (isLocationCredentialsProvider(apiOptions)) {
-			assertStorageInput(
-				apiInput as DeprecatedStorageInput | CallbackPathStorageInput,
-			);
+			assertStorageInput(apiInput);
 		}
 
 		const { credentials } = isLocationCredentialsProvider(apiOptions)
@@ -173,16 +142,15 @@ const isInputWithCallbackPath = (input?: CallbackPathStorageInput) => {
 	return (
 		((input as StorageOperationInputWithPath)?.path &&
 			typeof (input as StorageOperationInputWithPath).path === 'function') ||
-		((input as StorageCopyInputWithPath)?.destination?.path &&
-			typeof (input as StorageCopyInputWithPath).destination?.path ===
-				'function') ||
-		((input as StorageCopyInputWithPath)?.source?.path &&
-			typeof (input as StorageCopyInputWithPath).source?.path === 'function')
+		((input as CopyWithPathInput)?.destination?.path &&
+			typeof (input as CopyWithPathInput).destination?.path === 'function') ||
+		((input as CopyWithPathInput)?.source?.path &&
+			typeof (input as CopyWithPathInput).source?.path === 'function')
 	);
 };
 
 const isDeprecatedInput = (
-	input?: DeprecatedStorageInput | CallbackPathStorageInput,
+	input?: StorageInput,
 ): input is DeprecatedStorageInput => {
 	return (
 		isInputWithKey(input) ||
@@ -190,9 +158,7 @@ const isDeprecatedInput = (
 		isInputWithCopySourceOrDestination(input)
 	);
 };
-const assertStorageInput = (
-	input?: DeprecatedStorageInput | CallbackPathStorageInput,
-) => {
+const assertStorageInput = (input?: StorageInput) => {
 	if (isDeprecatedInput(input) || isInputWithCallbackPath(input)) {
 		throw new StorageError({
 			name: INVALID_STORAGE_INPUT,
@@ -204,28 +170,22 @@ const assertStorageInput = (
 };
 
 const isInputWithKey = (
-	input?: DeprecatedStorageInput | CallbackPathStorageInput,
+	input?: StorageInput,
 ): input is StorageOperationInputWithKey => {
-	return !!(
-		(input as StorageOperationInputWithKey)?.key &&
-		typeof (input as StorageOperationInputWithKey).key === 'string'
-	);
+	return !!(typeof (input as StorageOperationInputWithKey).key === 'string');
 };
 const isInputWithPrefix = (
-	input?: DeprecatedStorageInput | CallbackPathStorageInput,
+	input?: StorageInput,
 ): input is StorageOperationInputWithPrefix => {
 	return !!(
-		(input as StorageOperationInputWithPrefix)?.prefix &&
 		typeof (input as StorageOperationInputWithPrefix).prefix === 'string'
 	);
 };
 const isInputWithCopySourceOrDestination = (
-	input?: CopyInput | CallbackPathStorageInput,
+	input?: StorageInput,
 ): input is CopyInput => {
 	return !!(
-		((input as CopyInput)?.source?.key &&
-			typeof (input as CopyInput).source?.key === 'string') ||
-		((input as CopyInput)?.destination?.key &&
-			typeof (input as CopyInput).destination?.key === 'string')
+		typeof (input as CopyInput).source?.key === 'string' ||
+		typeof (input as CopyInput).destination?.key === 'string'
 	);
 };
