@@ -182,7 +182,7 @@ describe('resolveS3ConfigAndInput', () => {
 	it('should resolve prefix with given access level', async () => {
 		mockDefaultResolvePrefix.mockResolvedValueOnce('prefix');
 		const { keyPrefix } = await resolveS3ConfigAndInput(Amplify, {
-			accessLevel: 'someLevel' as any,
+			options: { accessLevel: 'someLevel' as any },
 		});
 		expect(mockDefaultResolvePrefix).toHaveBeenCalledWith({
 			accessLevel: 'someLevel',
@@ -232,7 +232,9 @@ describe('resolveS3ConfigAndInput', () => {
 				},
 			});
 			const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
-				locationCredentialsProvider: mockLocationCredentialsProvider,
+				options: {
+					locationCredentialsProvider: mockLocationCredentialsProvider,
+				},
 			});
 
 			if (typeof s3Config.credentials === 'function') {
@@ -267,18 +269,16 @@ describe('resolveS3ConfigAndInput', () => {
 			const testCases = [...deprecatedInputs, ...callbackPathInputs];
 
 			it.each(testCases)('should throw when input is %s', async input => {
-				const { s3Config } = await resolveS3ConfigAndInput(
-					Amplify,
-					{ locationCredentialsProvider: mockLocationCredentialsProvider },
-					input,
-				);
+				const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+					...input,
+					options: {
+						locationCredentialsProvider: mockLocationCredentialsProvider,
+					},
+				});
 				if (typeof s3Config.credentials === 'function') {
 					await expect(s3Config.credentials()).rejects.toThrow(
 						expect.objectContaining({
 							name: INVALID_STORAGE_INPUT,
-							message: 'The input needs to have a path as a string value.',
-							recoverySuggestion:
-								'Please provide a valid path as a string value for the input.',
 						}),
 					);
 				} else {

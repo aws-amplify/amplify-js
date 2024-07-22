@@ -17,7 +17,21 @@ import {
 	StorageOperationInputWithPrefix,
 } from '../../../types/inputs';
 import { StorageError } from '../../../errors/StorageError';
-import { CopyInput } from '../types';
+import {
+	CopyInput,
+	CopyWithPathInput,
+	DownloadDataInput,
+	DownloadDataWithPathInput,
+	GetPropertiesInput,
+	GetPropertiesWithPathInput,
+	GetUrlInput,
+	GetUrlWithPathInput,
+	ListAllInput,
+	ListAllWithPathInput,
+	ListPaginateInput,
+	ListPaginateWithPathInput,
+	RemoveWithPathInput,
+} from '../types';
 import { INVALID_STORAGE_INPUT } from '../../../errors/constants';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
@@ -37,13 +51,29 @@ interface ResolvedS3ConfigAndInput {
 	identityId?: string;
 }
 export type DeprecatedStorageInput =
+	| DownloadDataInput
+	| GetUrlInput
 	| StorageOperationInputWithKey
 	| StorageOperationInputWithPrefix
+	| CopyInput
+	| ListAllInput
+	| ListPaginateInput
+	| GetPropertiesInput
 	| CopyInput;
 
 export type CallbackPathStorageInput =
 	| StorageOperationInputWithPath
 	| StorageCopyInputWithPath;
+
+type StorageInput =
+	| DeprecatedStorageInput
+	| DownloadDataWithPathInput
+	| RemoveWithPathInput
+	| ListAllWithPathInput
+	| ListPaginateWithPathInput
+	| GetPropertiesWithPathInput
+	| GetUrlWithPathInput
+	| CopyWithPathInput;
 
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.
@@ -58,9 +88,9 @@ export type CallbackPathStorageInput =
  */
 export const resolveS3ConfigAndInput = async (
 	amplify: AmplifyClassV6,
-	apiOptions?: S3ApiOptions,
-	input?: DeprecatedStorageInput | CallbackPathStorageInput,
+	apiInput?: StorageInput & { options?: S3ApiOptions },
 ): Promise<ResolvedS3ConfigAndInput> => {
+	const { options: apiOptions } = apiInput ?? {};
 	/**
 	 * IdentityId is always cached in memory so we can safely make calls here. It
 	 * should be stable even for unauthenticated users, regardless of credentials.
@@ -75,7 +105,9 @@ export const resolveS3ConfigAndInput = async (
 	 */
 	const credentialsProvider = async () => {
 		if (isLocationCredentialsProvider(apiOptions)) {
-			assertStorageInput(input);
+			assertStorageInput(
+				apiInput as DeprecatedStorageInput | CallbackPathStorageInput,
+			);
 		}
 
 		const { credentials } = isLocationCredentialsProvider(apiOptions)
