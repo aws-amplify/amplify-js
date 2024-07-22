@@ -22,14 +22,15 @@ import { StorageSubpathStrategy } from '../../../../src/types';
 import { Equal, Expect } from './utils';
 
 interface Input {
-	targetIdentityId: undefined | string;
-	prefix: string;
+	targetIdentityId?: string;
+	prefix?: string;
 	path: string;
-	subpathStrategy: StorageSubpathStrategy;
+	subpathStrategy?: StorageSubpathStrategy;
 	nextToken: string;
 	pageSize: number;
 	useAccelerateEndpoint: boolean;
 	accessLevel: StorageAccessLevel;
+	listAll: boolean;
 }
 
 interface Output {
@@ -54,7 +55,7 @@ describe('List API input types', () => {
 			const listPaginateInput: ListPaginateInput = {
 				prefix,
 				options: {
-					accessLevel,
+					accessLevel: 'protected',
 					targetIdentityId,
 					// @ts-expect-error subpathStrategy is not part of this input
 					subpathStrategy,
@@ -65,7 +66,7 @@ describe('List API input types', () => {
 				prefix,
 				options: {
 					listAll: true,
-					accessLevel,
+					accessLevel: 'protected',
 					targetIdentityId,
 					// @ts-expect-error subpathStrategy is not part of this input
 					subpathStrategy,
@@ -88,7 +89,7 @@ describe('List API input types', () => {
 					listAll: true,
 					subpathStrategy,
 					useAccelerateEndpoint,
-					// @ts-expect-error subpathStrategy is not part of this input
+					// @ts-expect-error pageSize is not part of this input
 					pageSize,
 				},
 			};
