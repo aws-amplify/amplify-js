@@ -3,6 +3,8 @@
 
 /* eslint-disable unused-imports/no-unused-vars */
 
+import { StorageAccessLevel } from '@aws-amplify/core';
+
 import {
 	ListAllInput,
 	ListAllOutput,
@@ -27,6 +29,7 @@ interface Input {
 	nextToken: string;
 	pageSize: number;
 	useAccelerateEndpoint: boolean;
+	accessLevel: StorageAccessLevel;
 }
 
 interface Output {
@@ -46,11 +49,12 @@ describe('List API input types', () => {
 			nextToken,
 			pageSize,
 			useAccelerateEndpoint,
+			accessLevel,
 		}: Input) {
 			const listPaginateInput: ListPaginateInput = {
 				prefix,
 				options: {
-					accessLevel: 'protected',
+					accessLevel,
 					targetIdentityId,
 					// @ts-expect-error subpathStrategy is not part of this input
 					subpathStrategy,
@@ -61,7 +65,7 @@ describe('List API input types', () => {
 				prefix,
 				options: {
 					listAll: true,
-					accessLevel: 'protected',
+					accessLevel,
 					targetIdentityId,
 					// @ts-expect-error subpathStrategy is not part of this input
 					subpathStrategy,
