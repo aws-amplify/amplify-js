@@ -107,7 +107,7 @@ describe('List API input types', () => {
 	});
 });
 
-describe('List API ou types', () => {
+describe('List API ouput types', () => {
 	test('should compile', () => {
 		function handleTest({
 			listOutputItems,
