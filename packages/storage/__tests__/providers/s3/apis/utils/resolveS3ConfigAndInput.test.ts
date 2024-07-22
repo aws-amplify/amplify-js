@@ -246,6 +246,23 @@ describe('resolveS3ConfigAndInput', () => {
 			}
 		});
 
+		it('should not throw when path is pass as a string', async () => {
+			const { s3Config } = await resolveS3ConfigAndInput(Amplify, {
+				path: 'my-path',
+				options: {
+					locationCredentialsProvider: mockLocationCredentialsProvider,
+				},
+			});
+
+			if (typeof s3Config.credentials === 'function') {
+				const result = await s3Config.credentials();
+				expect(mockLocationCredentialsProvider).toHaveBeenCalled();
+				expect(result).toEqual(credentials);
+			} else {
+				throw new Error('Expect credentials to be a function');
+			}
+		});
+
 		describe('with deprecated or callback paths as inputs', () => {
 			const key = 'mock-value';
 			const prefix = 'mock-value';
