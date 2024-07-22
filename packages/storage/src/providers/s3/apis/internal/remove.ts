@@ -23,9 +23,8 @@ export const remove = async (
 	amplify: AmplifyClassV6,
 	input: RemoveInput | RemoveWithPathInput,
 ): Promise<RemoveOutput | RemoveWithPathOutput> => {
-	const { options = {} } = input ?? {};
 	const { s3Config, keyPrefix, bucket, identityId } =
-		await resolveS3ConfigAndInput(amplify, options);
+		await resolveS3ConfigAndInput(amplify, input);
 
 	const { inputType, objectKey } = validateStorageOperationInput(
 		input,
