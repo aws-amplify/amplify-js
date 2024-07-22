@@ -37,12 +37,7 @@ jest.mock('../../../../../src/providers/s3/utils/client');
 
 jest.mock('../../../../../src/providers/s3/utils/crc32', () => ({
 	...jest.requireActual('../../../../../src/providers/s3/utils/crc32'),
-	calculateContentCRC32: jest
-		.fn()
-		.mockImplementation(
-			jest.requireActual('../../../../../src/providers/s3/utils/crc32')
-				.calculateContentCRC32,
-		),
+	calculateContentCRC32: jest.fn(),
 }));
 
 const credentials: AWSCredentials = {
@@ -72,13 +67,27 @@ const disableAssertionFlag = true;
 
 const MB = 1024 * 1024;
 
-const mockCalculateContentCRC32Mocked = () => {
+const getZeroDelayTimeout = () =>
+	new Promise<void>(resolve => {
+		setTimeout(() => {
+			resolve();
+		}, 0);
+	});
+
+const mockCalculateContentCRC32Mock = () => {
 	mockCalculateContentCRC32.mockReset();
 	mockCalculateContentCRC32.mockResolvedValue({
 		checksumArrayBuffer: new ArrayBuffer(0),
 		checksum: 'mockChecksum',
 		seed: 0,
 	});
+};
+const mockCalculateContentCRC32Reset = () => {
+	mockCalculateContentCRC32.mockReset();
+	mockCalculateContentCRC32.mockImplementation(
+		jest.requireActual('../../../../../src/providers/s3/utils/crc32')
+			.calculateContentCRC32,
+	);
 };
 
 const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
@@ -177,9 +186,10 @@ describe('getMultipartUploadHandlers with key', () => {
 		});
 	});
 
-	afterEach(() => {
+	beforeEach(() => {
 		jest.clearAllMocks();
 		resetS3Mocks();
+		mockCalculateContentCRC32Reset();
 	});
 
 	it('should return multipart upload handlers', async () => {
@@ -258,6 +268,40 @@ describe('getMultipartUploadHandlers with key', () => {
 			);
 		});
 
+		it.each([
+			[
+				'file',
+				new File([getBlob(8 * MB)], 'someName'),
+				['JCnBsQ==', 'HELzGQ=='],
+			],
+			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ==']],
+			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g==']],
+			['arrayBuffer', new ArrayBuffer(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
+			['arrayBufferView', new Uint8Array(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
+		])(
+			`should create crc32 for %s type body`,
+			async (_, twoPartsPayload, expectedCrc32) => {
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					key: defaultKey,
+					data: twoPartsPayload,
+				});
+				await multipartUploadJob();
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(5); // (final crc32 calculation = 3 (2 part calculation + combine the 2 checksums)) + (2 part calculation)
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockUploadPart).toHaveBeenNthCalledWith(
+					1,
+					expect.anything(),
+					expect.objectContaining({ ChecksumCRC32: expectedCrc32[0] }),
+				);
+				expect(mockUploadPart).toHaveBeenNthCalledWith(
+					2,
+					expect.anything(),
+					expect.objectContaining({ ChecksumCRC32: expectedCrc32[1] }),
+				);
+			},
+		);
+
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
 			const { multipartUploadJob } = getMultipartUploadHandlers({
@@ -272,7 +316,7 @@ describe('getMultipartUploadHandlers with key', () => {
 		});
 
 		it('should upload a body that exceeds the size of default part size and parts count', async () => {
-			mockCalculateContentCRC32Mocked();
+			mockCalculateContentCRC32Mock();
 			let buffer: ArrayBuffer;
 			const file = {
 				__proto__: File.prototype,
@@ -587,24 +631,31 @@ describe('getMultipartUploadHandlers with key', () => {
 
 	describe('pause() & resume()', () => {
 		it('should abort in-flight uploadPart requests if upload is paused', async () => {
+			let pausedOnce = false;
+
 			const { multipartUploadJob, onPause, onResume } =
 				getMultipartUploadHandlers({
-					key: defaultKey,
+					path: defaultKey,
 					data: new ArrayBuffer(8 * MB),
 				});
 			let partCount = 0;
 			mockMultipartUploadCancellation(() => {
 				partCount++;
-				if (partCount === 2) {
+				if (partCount === 2 && !pausedOnce) {
 					onPause(); // Pause upload at the the last uploadPart call
+					pausedOnce = true;
 				}
 			});
 			const uploadPromise = multipartUploadJob();
+			const before = Date.now();
+			await getZeroDelayTimeout();
 			onResume();
+			console.log('after resume', Date.now() - before);
 			await uploadPromise;
-			expect(mockUploadPart).toHaveBeenCalledTimes(2);
+			expect(mockUploadPart).toHaveBeenCalledTimes(3);
 			expect(mockUploadPart.mock.calls[0][0].abortSignal?.aborted).toBe(true);
 			expect(mockUploadPart.mock.calls[1][0].abortSignal?.aborted).toBe(true);
+			expect(mockUploadPart.mock.calls[2][0].abortSignal?.aborted).toBe(false);
 		});
 	});
 
@@ -700,9 +751,10 @@ describe('getMultipartUploadHandlers with path', () => {
 		});
 	});
 
-	afterEach(() => {
+	beforeEach(() => {
 		jest.clearAllMocks();
 		resetS3Mocks();
+		mockCalculateContentCRC32Reset();
 	});
 
 	it('should return multipart upload handlers', async () => {
@@ -773,6 +825,40 @@ describe('getMultipartUploadHandlers with path', () => {
 			);
 		});
 
+		it.each([
+			[
+				'file',
+				new File([getBlob(8 * MB)], 'someName'),
+				['JCnBsQ==', 'HELzGQ=='],
+			],
+			['blob', getBlob(8 * MB), ['JCnBsQ==', 'HELzGQ==']],
+			['string', 'Ü'.repeat(4 * MB), ['DL735w==', 'Akga7g==']],
+			['arrayBuffer', new ArrayBuffer(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
+			['arrayBufferView', new Uint8Array(8 * MB), ['yTuzdQ==', 'eXJPxg==']],
+		])(
+			`should create crc32 for %s type body`,
+			async (_, twoPartsPayload, expectedCrc32) => {
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					path: testPath,
+					data: twoPartsPayload,
+				});
+				await multipartUploadJob();
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(5); // (final crc32 calculation = 3 (2 part calculation + combine the 2 checksums)) + (2 part calculation)
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockUploadPart).toHaveBeenNthCalledWith(
+					1,
+					expect.anything(),
+					expect.objectContaining({ ChecksumCRC32: expectedCrc32[0] }),
+				);
+				expect(mockUploadPart).toHaveBeenNthCalledWith(
+					2,
+					expect.anything(),
+					expect.objectContaining({ ChecksumCRC32: expectedCrc32[1] }),
+				);
+			},
+		);
+
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
 			const { multipartUploadJob } = getMultipartUploadHandlers({
@@ -787,7 +873,7 @@ describe('getMultipartUploadHandlers with path', () => {
 		});
 
 		it('should upload a body that exceeds the size of default part size and parts count', async () => {
-			mockCalculateContentCRC32Mocked();
+			mockCalculateContentCRC32Mock();
 			let buffer: ArrayBuffer;
 			const file = {
 				__proto__: File.prototype,
@@ -1103,6 +1189,8 @@ describe('getMultipartUploadHandlers with path', () => {
 
 	describe('pause() & resume()', () => {
 		it('should abort in-flight uploadPart requests if upload is paused', async () => {
+			let pausedOnce = false;
+
 			const { multipartUploadJob, onPause, onResume } =
 				getMultipartUploadHandlers({
 					path: testPath,
@@ -1111,16 +1199,22 @@ describe('getMultipartUploadHandlers with path', () => {
 			let partCount = 0;
 			mockMultipartUploadCancellation(() => {
 				partCount++;
-				if (partCount === 2) {
+				if (partCount === 2 && !pausedOnce) {
 					onPause(); // Pause upload at the the last uploadPart call
+					pausedOnce = true;
 				}
 			});
 			const uploadPromise = multipartUploadJob();
+			const before = Date.now();
+			await getZeroDelayTimeout();
+
 			onResume();
+			console.log('after resume', Date.now() - before);
 			await uploadPromise;
-			expect(mockUploadPart).toHaveBeenCalledTimes(2);
+			expect(mockUploadPart).toHaveBeenCalledTimes(3);
 			expect(mockUploadPart.mock.calls[0][0].abortSignal?.aborted).toBe(true);
 			expect(mockUploadPart.mock.calls[1][0].abortSignal?.aborted).toBe(true);
+			expect(mockUploadPart.mock.calls[2][0].abortSignal?.aborted).toBe(false);
 		});
 	});
 

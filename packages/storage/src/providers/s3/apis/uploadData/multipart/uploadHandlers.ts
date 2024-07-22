@@ -30,6 +30,7 @@ import {
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
 import { calculateContentCRC32 } from '../../../utils/crc32';
+import { StorageUploadDataPayload } from '../../../../../types';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -140,14 +141,7 @@ export const getMultipartUploadHandlers = (
 				})
 			: undefined;
 
-		const crc32List: ArrayBuffer[] = [];
-		const dataChunkerCrc32 = getDataChunker(data, size);
-		for (const { data: checkData } of dataChunkerCrc32) {
-			crc32List.push(
-				(await calculateContentCRC32(checkData)).checksumArrayBuffer,
-			);
-		}
-		const finalCRC32 = `${(await calculateContentCRC32(new Blob(crc32List))).checksum}-${crc32List.length}`;
+		const finalCRC32 = await getCombinedCrc32(data, size);
 
 		const dataChunker = getDataChunker(data, size);
 		const completedPartNumberSet = new Set<number>(
@@ -305,3 +299,18 @@ const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
 	accessLevel ??
 	Amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;
+
+const getCombinedCrc32 = async (
+	data: StorageUploadDataPayload,
+	size: number | undefined,
+) => {
+	const crc32List: ArrayBuffer[] = [];
+	const dataChunker = getDataChunker(data, size);
+	for (const { data: checkData } of dataChunker) {
+		crc32List.push(
+			(await calculateContentCRC32(checkData)).checksumArrayBuffer,
+		);
+	}
+
+	return `${(await calculateContentCRC32(new Blob(crc32List))).checksum}-${crc32List.length}`;
+};
