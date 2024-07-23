@@ -95,6 +95,11 @@
 			"import": "./dist/esm/providers/s3/server.mjs",
 			"require": "./dist/cjs/providers/s3/server.js"
 		},
+		"./storage-browser": {
+			"types": "./dist/esm/storageBrowser/index.d.ts",
+			"import": "./dist/esm/storageBrowser/index.mjs",
+			"require": "./dist/cjs/storageBrowser/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"peerDependencies": {

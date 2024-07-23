@@ -40,8 +40,10 @@ const copyWithPath = async (
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	const { s3Config, bucket, identityId } =
-		await resolveS3ConfigAndInput(amplify);
+	const { s3Config, bucket, identityId } = await resolveS3ConfigAndInput(
+		amplify,
+		input,
+	);
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
 	assertValidationError(
@@ -92,10 +94,13 @@ export const copyWithKey = async (
 		s3Config,
 		bucket,
 		keyPrefix: sourceKeyPrefix,
-	} = await resolveS3ConfigAndInput(amplify, input.source);
+	} = await resolveS3ConfigAndInput(amplify, {
+		...input,
+		options: input.source,
+	});
 	const { keyPrefix: destinationKeyPrefix } = await resolveS3ConfigAndInput(
 		amplify,
-		input.destination,
+		{ ...input, options: input.destination },
 	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
