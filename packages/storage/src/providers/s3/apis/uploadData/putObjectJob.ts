@@ -14,7 +14,7 @@ import { ItemWithKey, ItemWithPath } from '../../types/outputs';
 import { putObject } from '../../utils/client';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
-import { constructContentDisposition } from '../internal/getUrl';
+import { constructContentDisposition } from '../../utils/constructContentDisposition';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.

@@ -87,21 +87,27 @@ describe('serializeGetObjectRequest', () => {
 				ResponseContentType: 'application/pdf',
 			},
 		);
-		const actualUrl = actual;
-		expect(actualUrl.hostname).toEqual(
-			`bucket.s3.${defaultConfigWithStaticCredentials.region}.amazonaws.com`,
+
+		expect(actual).toEqual(
+			expect.objectContaining({
+				hostname: `bucket.s3.${defaultConfigWithStaticCredentials.region}.amazonaws.com`,
+				pathname: '/key',
+				searchParams: expect.objectContaining({
+					get: expect.any(Function),
+				}),
+			}),
 		);
-		expect(actualUrl.pathname).toEqual('/key');
-		expect(actualUrl.searchParams.get('X-Amz-Expires')).toEqual('900');
-		expect(actualUrl.searchParams.get('x-amz-content-sha256')).toEqual(
+
+		expect(actual.searchParams.get('X-Amz-Expires')).toBe('900');
+		expect(actual.searchParams.get('x-amz-content-sha256')).toEqual(
 			expect.any(String),
 		);
-		expect(actualUrl.searchParams.get('response-content-disposition')).toEqual(
+		expect(actual.searchParams.get('response-content-disposition')).toBe(
 			'attachment; filename="filename.jpg"',
 		);
-		expect(actualUrl.searchParams.get('response-content-type')).toEqual(
+		expect(actual.searchParams.get('response-content-type')).toBe(
 			'application/pdf',
 		);
-		expect(actualUrl.searchParams.get('x-amz-user-agent')).toEqual('UA');
+		expect(actual.searchParams.get('x-amz-user-agent')).toBe('UA');
 	});
 });

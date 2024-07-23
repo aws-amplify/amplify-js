@@ -22,23 +22,9 @@ import {
 	MAX_URL_EXPIRATION,
 	STORAGE_INPUT_KEY,
 } from '../../utils/constants';
-import { GetUrlOptions } from '../../types/options';
+import { constructContentDisposition } from '../../utils/constructContentDisposition';
 
 import { getProperties } from './getProperties';
-
-export const constructContentDisposition = (
-	cd?: GetUrlOptions['contentDisposition'],
-): string | undefined => {
-	if (typeof cd === 'string') return cd;
-
-	if (typeof cd === 'object') {
-		const { type, filename } = cd;
-
-		return filename ? `${type}; filename="${filename}"` : type;
-	}
-
-	return undefined;
-};
 
 export const getUrl = async (
 	amplify: AmplifyClassV6,

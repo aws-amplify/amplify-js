@@ -7,7 +7,7 @@ import { ResolvedS3Config } from '../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../types';
 import { Part, createMultipartUpload } from '../../../utils/client';
 import { logger } from '../../../../../utils';
-import { constructContentDisposition } from '../../internal/getUrl';
+import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 
 import {
 	cacheMultipartUpload,

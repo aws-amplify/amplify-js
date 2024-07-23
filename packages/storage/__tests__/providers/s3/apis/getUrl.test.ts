@@ -301,6 +301,70 @@ describe('getUrl test with path', () => {
 			},
 		);
 	});
+	describe('Error cases: With invalid Content Disposition', () => {
+		const config = {
+			credentials,
+			region,
+			userAgentValue: expect.any(String),
+		};
+		beforeEach(() => {
+			jest.mocked(headObject).mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { meta: 'value' },
+				$metadata: {} as any,
+			});
+			jest.mocked(getPresignedGetObjectUrl).mockResolvedValue(mockURL);
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test.each([
+			{
+				path: 'path',
+				expectedKey: 'path',
+				contentDisposition: {
+					type: 'invalid' as const,
+					filename: '"example.txt',
+				},
+			},
+			{
+				path: 'path',
+				expectedKey: 'path',
+				contentDisposition: {
+					type: 'invalid' as const,
+				},
+			},
+		])(
+			'should ignore for invalid content disposition: $contentDisposition',
+			async ({ path, expectedKey }) => {
+				const headObjectOptions = {
+					Bucket: bucket,
+					Key: expectedKey,
+				};
+				const { url, expiresAt } = await getUrlWrapper({
+					path,
+					options: {
+						validateObjectExistence: true,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledTimes(1);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					config,
+					headObjectOptions,
+				);
+				expect({ url, expiresAt }).toEqual({
+					url: mockURL,
+					expiresAt: expect.any(Date),
+				});
+			},
+		);
+	});
 	describe('Error cases :  With path', () => {
 		afterAll(() => {
 			jest.clearAllMocks();
