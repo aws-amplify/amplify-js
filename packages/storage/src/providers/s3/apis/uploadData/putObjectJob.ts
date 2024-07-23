@@ -15,6 +15,8 @@ import { putObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
 
+import { validateObjectNotExists } from './validateObjectNotExists';
+
 /**
  * Get a function the returns a promise to call putObject API to S3.
  *
@@ -41,9 +43,17 @@ export const putObjectJob =
 			contentDisposition,
 			contentEncoding,
 			contentType = 'application/octet-stream',
+			preventOverwrite,
 			metadata,
 			onProgress,
 		} = uploadDataOptions ?? {};
+
+		if (preventOverwrite) {
+			await validateObjectNotExists(s3Config, {
+				Bucket: bucket,
+				Key: finalKey,
+			});
+		}
 
 		const { ETag: eTag, VersionId: versionId } = await putObject(
 			{
