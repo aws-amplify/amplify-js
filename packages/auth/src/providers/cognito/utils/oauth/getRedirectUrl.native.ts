@@ -7,14 +7,14 @@ import {
 } from '../../../../errors/constants';
 
 /**
- * An appScheme (non http/s url) is always required to proceed further.
- * If a preferredSignOutUrl is given, then we use that after validating the existence of appScheme.
+* - Validate there is always an appScheme (required), if not throw invalidAppSchemeException.
+* - If a preferredRedirectUrl is given, validate it's in the configured list, if not throw invalidPreferredRedirectUrlException.
+* - If preferredRedirectUrl is not given, use the appScheme which is present in the configured list.
 @internal */
 export function getRedirectUrl(
 	redirects: string[],
-	preferredSignOutUrl?: string,
+	preferredRedirectUrl?: string,
 ): string {
-	let preferredRedirectUrl;
 	// iOS always requires a non http/s url (appScheme) to be registered so we validate it's existence here.
 	const appSchemeRedirectUrl = redirects?.find(
 		redirect =>
@@ -23,15 +23,11 @@ export function getRedirectUrl(
 	if (!appSchemeRedirectUrl) {
 		throw invalidAppSchemeException;
 	}
-	if (preferredSignOutUrl) {
-		preferredRedirectUrl = redirects?.find(
-			redirect => redirect === preferredSignOutUrl,
-		);
-		if (!preferredRedirectUrl) {
-			throw invalidPreferredRedirectUrlException;
+	if (preferredRedirectUrl) {
+		if (redirects?.includes(preferredRedirectUrl)) {
+			return preferredRedirectUrl;
 		}
-
-		return preferredRedirectUrl;
+		throw invalidPreferredRedirectUrlException;
 	}
 
 	return appSchemeRedirectUrl;

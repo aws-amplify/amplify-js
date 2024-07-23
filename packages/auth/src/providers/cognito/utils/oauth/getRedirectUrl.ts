@@ -9,11 +9,11 @@ import {
 /** @internal */
 export function getRedirectUrl(
 	redirects: string[],
-	preferredSignOutUrl?: string,
+	preferredRedirectUrl?: string,
 ): string {
-	if (preferredSignOutUrl) {
+	if (preferredRedirectUrl) {
 		const redirectUrl = redirects?.find(
-			redirect => redirect === preferredSignOutUrl,
+			redirect => redirect === preferredRedirectUrl,
 		);
 		if (!redirectUrl) {
 			throw invalidPreferredRedirectUrlException;
