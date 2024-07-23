@@ -3,9 +3,10 @@
 
 import { Hub } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+
 import {
-	dispatchSignedInHubEvent,
 	ERROR_MESSAGE,
+	dispatchSignedInHubEvent,
 } from '../../../../src/providers/cognito/utils/dispatchSignedInHubEvent';
 import { getCurrentUser } from '../../../../src/providers/cognito/apis/getCurrentUser';
 import { assertAuthTokens } from '../../../../src/providers/cognito/utils/types';

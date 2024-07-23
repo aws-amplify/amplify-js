@@ -1,12 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify } from '@aws-amplify/core';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { resetPassword } from '../../../src/providers/cognito';
 import { ForgotPasswordException } from '../../../src/providers/cognito/types/errors';
-import { authAPITestParams } from './testUtils/authApiTestParams';
 import { forgotPassword } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
@@ -90,7 +92,7 @@ describe('resetPassword', () => {
 	});
 
 	it('should send UserContextData', async () => {
-		window['AmazonCognitoAdvancedSecurityData'] = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -110,6 +112,6 @@ describe('resetPassword', () => {
 				UserContextData: { EncodedData: 'abcd' },
 			}),
 		);
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 });

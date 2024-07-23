@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	validateState,
 	flowCancelledMessage,
+	validateState,
 	validationFailedMessage,
 	validationRecoverySuggestion,
 } from '../../../../../src/providers/cognito/utils/oauth/validateState';

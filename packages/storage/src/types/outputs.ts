@@ -71,8 +71,7 @@ export interface StorageListOutput<Item extends StorageItem> {
 	 */
 	items: Item[];
 	/**
-	 * List of subpaths returned by the list API when a delimiter option is passed
-	 * in the request of the list API.
+	 * List of excluded subpaths when `exclude` is passed as part of the `subpathStrategy` of the input options.
 	 */
-	subpaths?: string[];
+	excludedSubpaths?: string[];
 }

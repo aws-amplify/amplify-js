@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Amplify } from '@aws-amplify/core';
+
 import { resendSignUpCode } from '../../../src/providers/cognito';
-import { authAPITestParams } from './testUtils/authApiTestParams';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ResendConfirmationException } from '../../../src/providers/cognito/types/errors';
 import { resendConfirmationCode } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 
@@ -87,7 +89,7 @@ describe('resendSignUpCode', () => {
 	});
 
 	it('should send UserContextData', async () => {
-		window['AmazonCognitoAdvancedSecurityData'] = {
+		(window as any).AmazonCognitoAdvancedSecurityData = {
 			getData() {
 				return 'abcd';
 			},
@@ -109,6 +111,6 @@ describe('resendSignUpCode', () => {
 			},
 		);
 		expect(mockResendConfirmationCode).toHaveBeenCalledTimes(1);
-		window['AmazonCognitoAdvancedSecurityData'] = undefined;
+		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
 });

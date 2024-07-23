@@ -12,13 +12,12 @@ import { IdentityIdStore } from './types';
 import { formLoginsMap } from './utils';
 
 const logger = new ConsoleLogger('CognitoIdentityIdProvider');
-
 /**
  * Provides a Cognito identityId
  *
  * @param tokens - The AuthTokens received after SignIn
  * @returns string
- * @throws configuration exceptions: {@link InvalidIdentityPoolIdException }
+ * @throws configuration exceptions: `InvalidIdentityPoolIdException`
  *  - Auth errors that may arise from misconfiguration.
  * @throws service exceptions: {@link GetIdException }
  */

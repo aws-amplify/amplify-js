@@ -82,7 +82,6 @@ describe('AuthenticationHelper', () => {
 	describe('generateHashDevice', () => {
 		const deviceGroupKey = 'device-group-key';
 		const username = 'user-name';
-		const randomString = 'random-string';
 		// create spies
 		const modPowSpy = jest.spyOn(BigInteger.prototype, 'modPow');
 
