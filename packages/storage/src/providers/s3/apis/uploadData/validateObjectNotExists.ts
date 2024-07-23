@@ -1,4 +1,5 @@
-import { ServiceError } from '@aws-amplify/core/internals/utils';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 import { StorageError } from '../../../../errors/StorageError';
 import { ResolvedS3Config } from '../../types/options';
@@ -16,7 +17,7 @@ export const validateObjectNotExists = async (
 			message: 'At least one of the pre-conditions you specified did not hold',
 		});
 	} catch (error) {
-		const serviceError = error as ServiceError;
+		const serviceError = error as StorageError;
 		if (serviceError.name !== 'NotFound') {
 			throw error;
 		}
