@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { GetUrlOptions } from '@aws-amplify/storage/src/providers/s3/types/options';
+import { ContentDisposition } from '@aws-amplify/storage/src/providers/s3/types/options';
 
 export const constructContentDisposition = (
-	contentDisposition?: GetUrlOptions['contentDisposition'],
+	contentDisposition?: string | ContentDisposition,
 ): string | undefined => {
 	if (typeof contentDisposition === 'string') return contentDisposition;
 

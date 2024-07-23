@@ -22,7 +22,7 @@ interface CommonOptions {
  * Represents the content disposition of a file.
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
  */
-interface ContentDisposition {
+export interface ContentDisposition {
 	type: 'attachment' | 'inline';
 	filename?: string;
 }
