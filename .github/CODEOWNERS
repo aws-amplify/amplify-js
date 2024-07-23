@@ -27,6 +27,7 @@
 /packages/core/src/clients/internal @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
 /packages/core/src/Hub @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
 /packages/adapter-nextjs @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
+/packages/rtn-web-browser @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
 /packages/storage/src/providers/s3/apis/internal @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
 /packages/storage/src/providers/s3/apis/server @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
 /packages/api-rest/src/apis/server.ts @ukhan-amazon @haverchuck @cshfang @jimblanc @HuiSF
