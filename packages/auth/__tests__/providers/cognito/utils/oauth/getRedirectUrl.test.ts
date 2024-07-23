@@ -18,22 +18,22 @@ describe('getRedirectUrl', () => {
 	});
 
 	it('should return the redirect url that has the same origin and same pathName', () => {
-		windowSpy.mockImplementation(() => ({
+		windowSpy.mockReturnValue({
 			location: {
 				origin: 'https://example.com/',
 				pathname: 'app',
 			},
-		}));
+		});
 		expect(getRedirectUrl(mockRedirectUrls)).toStrictEqual(mockRedirectUrls[0]);
 	});
 
 	it('should throw an invalid origin exception if there is no url that is the same origin and pathname', () => {
-		windowSpy.mockImplementation(() => ({
+		windowSpy.mockReturnValue({
 			location: {
 				origin: 'https://differentOrigin.com/',
 				pathname: 'differentApp',
 			},
-		}));
+		});
 		expect(() => getRedirectUrl(mockRedirectUrls)).toThrow(
 			invalidOriginException,
 		);
@@ -41,12 +41,12 @@ describe('getRedirectUrl', () => {
 
 	it('should throw an invalid redirect exception if there is no url that is the same origin/pathname and is also not http or https', () => {
 		const mockNonHttpRedirectUrls = ['test-non-http-string'];
-		windowSpy.mockImplementation(() => ({
+		windowSpy.mockReturnValue({
 			location: {
 				origin: 'https://differentOrigin.com/',
 				pathname: 'differentApp',
 			},
-		}));
+		});
 		expect(() => getRedirectUrl(mockNonHttpRedirectUrls)).toThrow(
 			invalidRedirectException,
 		);
