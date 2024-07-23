@@ -22,7 +22,17 @@ export type CredentialsProvider = (options?: {
  */
 export type LocationType = 'BUCKET' | 'PREFIX' | 'OBJECT';
 
-export interface CredentialsLocation {
+/**
+ * @internal
+ */
+export type Privilege = 'Default' | 'Minimal';
+
+/**
+ * @internal
+ */
+export type PrefixType = 'Object';
+
+export interface LocationScope {
 	/**
 	 * Scope of storage location. For S3 service, it's the S3 path of the data to
 	 * which the access is granted. It can be in following formats:
@@ -32,6 +42,9 @@ export interface CredentialsLocation {
 	 * @example Object 's3://<bucket>/<prefix-with-path>/<object>'
 	 */
 	readonly scope: string;
+}
+
+export interface CredentialsLocation extends LocationScope {
 	/**
 	 * The type of access granted to your Storage data. Can be either of READ,
 	 * WRITE or READWRITE
@@ -50,6 +63,13 @@ export interface LocationAccess extends CredentialsLocation {
 	 * * OBJECT: `'s3://<bucket>/<prefix-with-path>/<object>'`
 	 */
 	readonly type: LocationType;
+}
+
+export interface LocationCredentials extends Partial<LocationScope> {
+	/**
+	 * AWS credentials which can be used to access the specified location.
+	 */
+	readonly credentials: AWSCredentials;
 }
 
 export interface AccessGrant extends LocationAccess {
@@ -82,9 +102,12 @@ export type ListLocations = (
 	input?: ListLocationsInput,
 ) => Promise<ListLocationsOutput<LocationAccess>>;
 
+export type GetLocationCredentialsInput = CredentialsLocation;
+export type GetLocationCredentialsOutput = LocationCredentials;
+
 export type GetLocationCredentials = (
-	input: CredentialsLocation,
-) => Promise<{ credentials: AWSCredentials }>;
+	input: GetLocationCredentialsInput,
+) => Promise<GetLocationCredentialsOutput>;
 
 export interface LocationCredentialsStore {
 	/**

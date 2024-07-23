@@ -90,7 +90,8 @@ export interface StorageCopyInputWithKey<
 	destination: DestinationOptions;
 }
 
-export interface StorageCopyInputWithPath {
+export interface StorageCopyInputWithPath<Options = unknown>
+	extends StorageOperationOptionsInput<Options> {
 	source: StorageOperationInputWithPath;
 	destination: StorageOperationInputWithPath;
 }

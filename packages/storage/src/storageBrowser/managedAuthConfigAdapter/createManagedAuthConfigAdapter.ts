@@ -38,6 +38,7 @@ export const createManagedAuthConfigAdapter = ({
 		accountId,
 		region,
 	});
+
 	const getLocationCredentials = createLocationCredentialsHandler({
 		credentialsProvider,
 		accountId,

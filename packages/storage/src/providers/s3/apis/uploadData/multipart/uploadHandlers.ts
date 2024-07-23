@@ -73,7 +73,7 @@ export const getMultipartUploadHandlers = (
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const resolvedS3Options = await resolveS3ConfigAndInput(
 			Amplify,
-			uploadDataOptions,
+			uploadDataInput,
 		);
 
 		abortController = new AbortController();
