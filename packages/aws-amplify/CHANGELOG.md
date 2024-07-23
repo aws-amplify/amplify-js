@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.4.1...aws-amplify@6.4.2) (2024-07-22)
+
+### Bug Fixes
+
+- **aws-amplify:** createKeyValueStorageFromCookieStorageAdapter misses default path and secure values ([#13508](https://github.com/aws-amplify/amplify-js/issues/13508)) ([60a559f](https://github.com/aws-amplify/amplify-js/commit/60a559f612e092c76e1499f93547248312db46f2))
+
 ## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.4.0...aws-amplify@6.4.1) (2024-07-19)
 
 **Note:** Version bump only for package aws-amplify
