@@ -1,20 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from 'aws-amplify';
+
 import {
 	cognitoUserPoolsTokenProvider,
 	signUp,
 } from '../../../src/providers/cognito';
 import { autoSignIn } from '../../../src/providers/cognito/apis/autoSignIn';
 import * as signUpClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { authAPITestParams } from './testUtils/authApiTestParams';
 import {
 	RespondToAuthChallengeCommandOutput,
 	SignUpCommandOutput,
 } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { Amplify } from 'aws-amplify';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { AuthError } from '../../../src/errors/AuthError';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('../../../src/providers/cognito/utils/dispatchSignedInHubEvent');
 jest.mock('@aws-amplify/core/internals/utils', () => ({

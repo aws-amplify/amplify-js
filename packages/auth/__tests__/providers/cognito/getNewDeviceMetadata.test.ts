@@ -1,11 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Amplify } from '@aws-amplify/core';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmDeviceException } from '../../../src/providers/cognito/types/errors';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { ConfirmDeviceCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { Amplify } from '@aws-amplify/core';
 import { getNewDeviceMetatada } from '../../../src/providers/cognito/utils/signInHelpers';
 
 const userPoolId = 'us-west-2_zzzzz';
