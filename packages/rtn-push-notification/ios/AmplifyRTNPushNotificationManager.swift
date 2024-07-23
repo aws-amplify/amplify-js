@@ -172,7 +172,7 @@ class AmplifyRTNPushNotificationManager  {
                 let completionHandlerId = UUID().uuidString
                 var userInfoCopy = userInfo
 
-                remoteNotificationCompletionHandlers[completionHandlerIdKey] = completionHandler
+                remoteNotificationCompletionHandlers[completionHandlerId] = completionHandler
                 userInfoCopy[completionHandlerIdKey] = completionHandlerId
 
                 sharedEventManager.sendEventToJS(
