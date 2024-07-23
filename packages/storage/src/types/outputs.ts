@@ -70,4 +70,8 @@ export interface StorageListOutput<Item extends StorageItem> {
 	 * List of items returned by the list API.
 	 */
 	items: Item[];
+	/**
+	 * List of excluded subpaths when `exclude` is passed as part of the `subpathStrategy` of the input options.
+	 */
+	excludedSubpaths?: string[];
 }
