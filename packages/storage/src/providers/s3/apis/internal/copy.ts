@@ -56,20 +56,27 @@ const copyWithPath = async (
 	input: CopyWithPathInput,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
-	// TODO(@AllanZhengYP)
-	await resolveS3ConfigAndInput(amplify, input);
 
 	storageBucketAssertion(source.bucket, destination.bucket);
 
-	const { bucket: sourceBucket, identityId } = await resolveS3ConfigAndInput(
-		amplify,
-		input.source,
-	);
+	const { bucket: sourceBucket } = await resolveS3ConfigAndInput(amplify, {
+		path: input.source.path,
+		options: { ...input.source },
+	});
 
-	const { s3Config, bucket: destBucket } = await resolveS3ConfigAndInput(
-		amplify,
-		input.destination,
-	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
+	// The bucket, region, credentials of s3 client are resolved from destination.
+	// Whereas the source bucket and path are a input parameter of S3 copy operation.
+	const {
+		s3Config,
+		bucket: destBucket,
+		identityId,
+	} = await resolveS3ConfigAndInput(amplify, {
+		path: input.destination.path,
+		options: {
+			locationCredentialsProvider: input.options?.locationCredentialsProvider,
+			...input.destination,
+		},
+	}); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
 	assertValidationError(
@@ -121,6 +128,8 @@ export const copyWithKey = async (
 			options: input.source,
 		});
 
+	// The bucket, region, credentials of s3 client are resolved from destination.
+	// Whereas the source bucket and path are a input parameter of S3 copy operation.
 	const {
 		s3Config,
 		bucket: destBucket,
