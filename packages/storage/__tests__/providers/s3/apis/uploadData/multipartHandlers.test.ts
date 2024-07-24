@@ -647,10 +647,8 @@ describe('getMultipartUploadHandlers with key', () => {
 				}
 			});
 			const uploadPromise = multipartUploadJob();
-			const before = Date.now();
 			await getZeroDelayTimeout();
 			onResume();
-			console.log('after resume', Date.now() - before);
 			await uploadPromise;
 			expect(mockUploadPart).toHaveBeenCalledTimes(3);
 			expect(mockUploadPart.mock.calls[0][0].abortSignal?.aborted).toBe(true);
@@ -1205,11 +1203,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				}
 			});
 			const uploadPromise = multipartUploadJob();
-			const before = Date.now();
 			await getZeroDelayTimeout();
 
 			onResume();
-			console.log('after resume', Date.now() - before);
 			await uploadPromise;
 			expect(mockUploadPart).toHaveBeenCalledTimes(3);
 			expect(mockUploadPart.mock.calls[0][0].abortSignal?.aborted).toBe(true);
