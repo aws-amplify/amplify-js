@@ -289,13 +289,11 @@ describe('getMultipartUploadHandlers with key', () => {
 				await multipartUploadJob();
 				expect(calculateContentCRC32).toHaveBeenCalledTimes(5); // (final crc32 calculation = 3 (2 part calculation + combine the 2 checksums)) + (2 part calculation)
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockUploadPart).toHaveBeenNthCalledWith(
-					1,
+				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
 					expect.objectContaining({ ChecksumCRC32: expectedCrc32[0] }),
 				);
-				expect(mockUploadPart).toHaveBeenNthCalledWith(
-					2,
+				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
 					expect.objectContaining({ ChecksumCRC32: expectedCrc32[1] }),
 				);
@@ -844,13 +842,11 @@ describe('getMultipartUploadHandlers with path', () => {
 				await multipartUploadJob();
 				expect(calculateContentCRC32).toHaveBeenCalledTimes(5); // (final crc32 calculation = 3 (2 part calculation + combine the 2 checksums)) + (2 part calculation)
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockUploadPart).toHaveBeenNthCalledWith(
-					1,
+				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
 					expect.objectContaining({ ChecksumCRC32: expectedCrc32[0] }),
 				);
-				expect(mockUploadPart).toHaveBeenNthCalledWith(
-					2,
+				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
 					expect.objectContaining({ ChecksumCRC32: expectedCrc32[1] }),
 				);

@@ -49,6 +49,7 @@ const uploadPartSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = {
 		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
+		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
 		'content-type': 'application/octet-stream',
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());

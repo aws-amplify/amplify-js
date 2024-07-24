@@ -9,7 +9,7 @@ export interface CRC32Checksum {
 export const calculateContentCRC32 = async (
 	content: Blob | string | ArrayBuffer | ArrayBufferView,
 	seed = 0,
-): Promise<CRC32Checksum> => {
+): Promise<CRC32Checksum | undefined> => {
 	let internalSeed = seed;
 
 	if (typeof content === 'string') {

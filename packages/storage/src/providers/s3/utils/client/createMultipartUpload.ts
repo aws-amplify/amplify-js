@@ -17,6 +17,7 @@ import type {
 import type { PutObjectInput } from './putObject';
 import { defaultConfig } from './base';
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	map,
 	parseXmlBody,
@@ -43,7 +44,9 @@ const createMultipartUploadSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = {
 		...(await serializeObjectConfigsToHeaders(input)),
-		'x-amz-checksum-algorithm': 'CRC32',
+		...assignStringVariables({
+			'x-amz-checksum-algorithm': input.ChecksumAlgorithm,
+		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');

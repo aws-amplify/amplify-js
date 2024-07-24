@@ -19,7 +19,11 @@ interface UploadPartExecutorOptions {
 	finalKey: string;
 	uploadId: string;
 	isObjectLockEnabled?: boolean;
-	onPartUploadCompletion(partNumber: number, eTag: string, crc32: string): void;
+	onPartUploadCompletion(
+		partNumber: number,
+		eTag: string,
+		crc32: string | undefined,
+	): void;
 	onProgress?(event: TransferProgressEvent): void;
 }
 
@@ -68,7 +72,7 @@ export const uploadPartExecutor = async ({
 					UploadId: uploadId,
 					Body: data,
 					PartNumber: partNumber,
-					ChecksumCRC32: crc32.checksum,
+					ChecksumCRC32: crc32?.checksum,
 
 					// of checksum is undefined in react native
 					ContentMD5:
@@ -79,7 +83,7 @@ export const uploadPartExecutor = async ({
 			);
 			transferredBytes += size;
 			// eTag will always be set even the S3 model interface marks it as optional.
-			onPartUploadCompletion(partNumber, eTag!, crc32.checksum);
+			onPartUploadCompletion(partNumber, eTag!, crc32?.checksum);
 		}
 	}
 };
