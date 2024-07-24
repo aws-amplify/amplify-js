@@ -4,8 +4,12 @@ import { Amplify } from '../../src/singleton';
 import { AMPLIFY_SYMBOL, Hub } from '../../src/Hub';
 import { AuthClass as Auth } from '../../src/singleton/Auth';
 import { decodeJWT } from '../../src/singleton/Auth/utils';
-import { CredentialsAndIdentityId } from '../../src/singleton/Auth/types';
+import {
+	CognitoUserPoolConfig,
+	CredentialsAndIdentityId,
+} from '../../src/singleton/Auth/types';
 import { ResourcesConfig, fetchAuthSession } from '../../src';
+import { ADD_OAUTH_LISTENER } from '../../src/libraryUtils';
 
 Object.assign(global, { TextDecoder, TextEncoder });
 
@@ -254,6 +258,64 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		});
 		expect(config3).not.toBe(config);
 		expect(config3).not.toBe(config2);
+	});
+
+	describe.only('with oAuthListener', () => {
+		const mockCognitoConfig: CognitoUserPoolConfig = {
+			userPoolId: 'xxxxxxxx',
+			userPoolClientId: 'xxxxxxx',
+		};
+		const mockOAuthConfig: CognitoUserPoolConfig = {
+			...mockCognitoConfig,
+			loginWith: {
+				oauth: {
+					domain: 'domain',
+					redirectSignIn: ['localhost:3000'],
+					redirectSignOut: ['localhost:3000'],
+					scopes: ['profile'],
+					responseType: 'code',
+				},
+			},
+		};
+		const mockInvalidOAuthConfig: CognitoUserPoolConfig = {
+			...mockCognitoConfig,
+			loginWith: {
+				oauth: {
+					domain: 'invalidDomain',
+					redirectSignIn: ['localhost:3000'],
+					redirectSignOut: ['localhost:3000'],
+					scopes: ['profile'],
+					responseType: 'code',
+				},
+			},
+		};
+		const mockOAuthlistener = jest.fn();
+
+		beforeEach(() => {
+			Amplify[ADD_OAUTH_LISTENER](mockOAuthlistener);
+			jest.useFakeTimers();
+		});
+
+		afterAll(() => {
+			jest.useRealTimers();
+		});
+		it('should not call oAuthListener when OAuth config is not defined', async () => {
+			Amplify.configure({ Auth: { Cognito: mockCognitoConfig } });
+			expect(mockOAuthlistener).not.toHaveBeenCalled();
+		});
+
+		it('should call oAuthListener when OAuth config and oAuthListener are defined', async () => {
+			Amplify.configure({ Auth: { Cognito: mockOAuthConfig } });
+			jest.runAllTimers();
+			expect(mockOAuthlistener).toHaveBeenCalledWith(mockOAuthConfig);
+		});
+
+		it('should call oAuthListener with the latest config', async () => {
+			Amplify.configure({ Auth: { Cognito: mockInvalidOAuthConfig } });
+			Amplify.configure({ Auth: { Cognito: mockOAuthConfig } });
+			jest.runAllTimers();
+			expect(mockOAuthlistener).toHaveBeenCalledWith(mockOAuthConfig);
+		});
 	});
 });
 
