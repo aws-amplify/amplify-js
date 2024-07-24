@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Platform } from 'react-native';
 import { Amplify, OAuthConfig } from '@aws-amplify/core';
 import {
 	AuthAction,
@@ -87,7 +88,11 @@ const oauthSignIn = async ({
 		: randomState;
 
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
-	const redirectUri = getRedirectUrl(oauthConfig.redirectSignIn);
+
+	const redirectUri =
+		Platform.OS === 'android'
+			? oauthConfig.redirectSignIn[0]
+			: getRedirectUrl(oauthConfig.redirectSignIn);
 
 	if (isBrowser()) oAuthStore.storeOAuthInFlight(true);
 	oAuthStore.storeOAuthState(state);
