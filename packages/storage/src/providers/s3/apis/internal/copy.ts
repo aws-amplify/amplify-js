@@ -61,7 +61,10 @@ const copyWithPath = async (
 
 	const { bucket: sourceBucket } = await resolveS3ConfigAndInput(amplify, {
 		path: input.source.path,
-		options: { ...input.source },
+		options: {
+			locationCredentialsProvider: input.options?.locationCredentialsProvider,
+			...input.source,
+		},
 	});
 
 	// The bucket, region, credentials of s3 client are resolved from destination.
@@ -125,7 +128,12 @@ export const copyWithKey = async (
 	const { bucket: sourceBucket, keyPrefix: sourceKeyPrefix } =
 		await resolveS3ConfigAndInput(amplify, {
 			...input,
-			options: input.source,
+			options: {
+				// @ts-expect-error: 'options' does not exist on type 'CopyInput'. In case of JS users set the location
+				// credentials provider option, resolveS3ConfigAndInput will throw validation error.
+				locationCredentialsProvider: input.options?.locationCredentialsProvider,
+				...input.source,
+			},
 		});
 
 	// The bucket, region, credentials of s3 client are resolved from destination.
@@ -136,7 +144,12 @@ export const copyWithKey = async (
 		keyPrefix: destinationKeyPrefix,
 	} = await resolveS3ConfigAndInput(amplify, {
 		...input,
-		options: input.destination,
+		options: {
+			// @ts-expect-error: 'options' does not exist on type 'CopyInput'. In case of JS users set the location
+			// credentials provider option, resolveS3ConfigAndInput will throw validation error.
+			locationCredentialsProvider: input.options?.locationCredentialsProvider,
+			...input.destination,
+		},
 	}); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
