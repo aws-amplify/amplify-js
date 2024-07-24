@@ -6,6 +6,7 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { UploadDataInput, UploadDataWithPathInput } from '../../types';
 import {
+	calculateContentMd5,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
@@ -28,7 +29,7 @@ export const putObjectJob =
 	) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
-		const { bucket, keyPrefix, s3Config, identityId } =
+		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
@@ -61,7 +62,11 @@ export const putObjectJob =
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
-				ChecksumCRC32: ChecksumCRC32.checksum,
+				ContentMD5:
+					isObjectLockEnabled && !ChecksumCRC32
+						? await calculateContentMd5(data)
+						: undefined,
+				ChecksumCRC32: ChecksumCRC32?.checksum,
 			},
 		);
 

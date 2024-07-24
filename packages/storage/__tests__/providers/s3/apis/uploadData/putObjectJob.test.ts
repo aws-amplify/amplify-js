@@ -5,6 +5,8 @@ import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
 import { putObject } from '../../../../../src/providers/s3/utils/client';
+import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
+import * as CRC32 from '../../../../../src/providers/s3/utils/crc32';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
 
@@ -59,7 +61,7 @@ mockPutObject.mockResolvedValue({
 /* TODO Remove suite when `key` parameter is removed */
 describe('putObjectJob with key', () => {
 	beforeEach(() => {
-		mockPutObject.mockClear();
+		jest.spyOn(CRC32, 'calculateContentCRC32').mockRestore();
 	});
 
 	it('should supply the correct parameters to putObject API handler', async () => {
@@ -119,11 +121,35 @@ describe('putObjectJob with key', () => {
 			},
 		);
 	});
+
+	it('should set ContentMD5 if object lock is enabled', async () => {
+		jest
+			.spyOn(CRC32, 'calculateContentCRC32')
+			.mockResolvedValue(undefined as any);
+
+		Amplify.libraryOptions = {
+			Storage: {
+				S3: {
+					isObjectLockEnabled: true,
+				},
+			},
+		};
+		const job = putObjectJob(
+			{
+				key: 'key',
+				data: 'data',
+			},
+			new AbortController().signal,
+		);
+		await job();
+		expect(calculateContentMd5).toHaveBeenCalledWith('data');
+	});
 });
 
 describe('putObjectJob with path', () => {
 	beforeEach(() => {
 		mockPutObject.mockClear();
+		jest.spyOn(CRC32, 'calculateContentCRC32').mockRestore();
 	});
 
 	test.each([
@@ -194,4 +220,27 @@ describe('putObjectJob with path', () => {
 			);
 		},
 	);
+
+	it('should set ContentMD5 if object lock is enabled', async () => {
+		jest
+			.spyOn(CRC32, 'calculateContentCRC32')
+			.mockResolvedValue(undefined as any);
+
+		Amplify.libraryOptions = {
+			Storage: {
+				S3: {
+					isObjectLockEnabled: true,
+				},
+			},
+		};
+		const job = putObjectJob(
+			{
+				path: testPath,
+				data: 'data',
+			},
+			new AbortController().signal,
+		);
+		await job();
+		expect(calculateContentMd5).toHaveBeenCalledWith('data');
+	});
 });
