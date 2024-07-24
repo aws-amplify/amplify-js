@@ -17,6 +17,8 @@ export {
 	DownloadDataOptionsWithKey,
 	CopyDestinationOptionsWithKey,
 	CopySourceOptionsWithKey,
+	CopyWithPathSourceOptions,
+	CopyWithPathDestinationOptions,
 } from './options';
 export {
 	UploadDataOutput,
