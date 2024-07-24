@@ -260,7 +260,7 @@ describe('Amplify.configure() and Amplify.getConfig()', () => {
 		expect(config3).not.toBe(config2);
 	});
 
-	describe.only('with oAuthListener', () => {
+	describe('with oAuthListener', () => {
 		const mockCognitoConfig: CognitoUserPoolConfig = {
 			userPoolId: 'xxxxxxxx',
 			userPoolClientId: 'xxxxxxx',
