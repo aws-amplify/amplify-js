@@ -29,6 +29,7 @@ import {
 } from '../../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
 import { logger } from '../../../../../utils';
+import { validateObjectNotExists } from '../validateObjectNotExists';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -92,6 +93,7 @@ export const getMultipartUploadHandlers = (
 			contentEncoding,
 			contentType = 'application/octet-stream',
 			metadata,
+			preventOverwrite,
 			onProgress,
 		} = uploadDataOptions ?? {};
 
@@ -174,6 +176,13 @@ export const getMultipartUploadHandlers = (
 		}
 
 		await Promise.all(concurrentUploadPartExecutors);
+
+		if (preventOverwrite) {
+			await validateObjectNotExists(resolvedS3Config, {
+				Bucket: resolvedBucket,
+				Key: finalKey,
+			});
+		}
 
 		const { ETag: eTag } = await completeMultipartUpload(
 			{

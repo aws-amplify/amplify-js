@@ -169,6 +169,11 @@ export type UploadDataOptions = CommonOptions &
 		 * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html#UserMetadata
 		 */
 		metadata?: Record<string, string>;
+		/**
+		 * Enforces target key does not already exist in S3 before committing upload.
+		 * @default false
+		 */
+		preventOverwrite?: boolean;
 	};
 
 /** @deprecated Use {@link UploadDataOptionsWithPath} instead. */
