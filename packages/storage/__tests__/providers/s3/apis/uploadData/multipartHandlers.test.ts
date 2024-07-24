@@ -26,6 +26,7 @@ import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
 import '../testUtils';
 import { calculateContentCRC32 } from '../../../../../src/providers/s3/utils/crc32';
+import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 
 // this can be removed if we are mocking all of crc32
 global.Blob = BlobPolyfill as any;
@@ -67,6 +68,11 @@ const disableAssertionFlag = true;
 
 const MB = 1024 * 1024;
 
+jest.mock('../../../../../src/providers/s3/utils', () => ({
+	...jest.requireActual('../../../../../src/providers/s3/utils'),
+	calculateContentMd5: jest.fn(),
+}));
+
 const getZeroDelayTimeout = () =>
 	new Promise<void>(resolve => {
 		setTimeout(() => {
@@ -81,6 +87,10 @@ const mockCalculateContentCRC32Mock = () => {
 		checksum: 'mockChecksum',
 		seed: 0,
 	});
+};
+const mockCalculateContentCRC32Undefined = () => {
+	mockCalculateContentCRC32.mockReset();
+	mockCalculateContentCRC32.mockResolvedValue(undefined);
 };
 const mockCalculateContentCRC32Reset = () => {
 	mockCalculateContentCRC32.mockReset();
@@ -288,6 +298,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				});
 				await multipartUploadJob();
 				expect(calculateContentCRC32).toHaveBeenCalledTimes(5); // (final crc32 calculation = 3 (2 part calculation + combine the 2 checksums)) + (2 part calculation)
+				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
@@ -299,6 +310,26 @@ describe('getMultipartUploadHandlers with key', () => {
 				);
 			},
 		);
+
+		it('should use md5 if crc32 is returning undefined', async () => {
+			mockCalculateContentCRC32Undefined();
+			mockMultipartUploadSuccess();
+			Amplify.libraryOptions = {
+				Storage: {
+					S3: {
+						isObjectLockEnabled: true,
+					},
+				},
+			};
+			const { multipartUploadJob } = getMultipartUploadHandlers({
+				key: defaultKey,
+				data: new Uint8Array(8 * MB),
+			});
+			await multipartUploadJob();
+			expect(calculateContentCRC32).toHaveBeenCalledTimes(3); // (final crc32 calculation = 1 undefined) + (2 part undefined)
+			expect(calculateContentMd5).toHaveBeenCalledTimes(2);
+			expect(mockUploadPart).toHaveBeenCalledTimes(2);
+		});
 
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
@@ -841,6 +872,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				});
 				await multipartUploadJob();
 				expect(calculateContentCRC32).toHaveBeenCalledTimes(5); // (final crc32 calculation = 3 (2 part calculation + combine the 2 checksums)) + (2 part calculation)
+				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
 					expect.anything(),
@@ -852,6 +884,26 @@ describe('getMultipartUploadHandlers with path', () => {
 				);
 			},
 		);
+
+		it('should use md5 if crc32 is returning undefined', async () => {
+			mockCalculateContentCRC32Undefined();
+			mockMultipartUploadSuccess();
+			Amplify.libraryOptions = {
+				Storage: {
+					S3: {
+						isObjectLockEnabled: true,
+					},
+				},
+			};
+			const { multipartUploadJob } = getMultipartUploadHandlers({
+				path: testPath,
+				data: new Uint8Array(8 * MB),
+			});
+			await multipartUploadJob();
+			expect(calculateContentCRC32).toHaveBeenCalledTimes(3); // (final crc32 calculation = 1 undefined) + (2 part undefined)
+			expect(calculateContentMd5).toHaveBeenCalledTimes(2);
+			expect(mockUploadPart).toHaveBeenCalledTimes(2);
+		});
 
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
