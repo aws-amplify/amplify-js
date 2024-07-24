@@ -13,14 +13,14 @@ import {
 } from './types';
 import { AuthClass } from './Auth';
 import { ADD_OAUTH_LISTENER } from './constants';
+import { OAuthListener } from './Auth/types';
 
 export class AmplifyClass {
-	private oAuthListener:
-		| ((authConfig: AuthConfig['Cognito']) => void)
-		| undefined = undefined;
+	private oAuthListener: OAuthListener | undefined = undefined;
 
 	resourcesConfig: ResourcesConfig;
 	libraryOptions: LibraryOptions;
+	private listenerTimeout?: ReturnType<typeof setTimeout>;
 
 	/**
 	 * Cross-category Auth utilities.
@@ -53,7 +53,6 @@ export class AmplifyClass {
 		libraryOptions?: LibraryOptions,
 	): void {
 		const resolvedResourceConfig = parseAmplifyConfig(resourcesConfig);
-
 		this.resourcesConfig = resolvedResourceConfig;
 
 		if (libraryOptions) {
@@ -75,7 +74,10 @@ export class AmplifyClass {
 			AMPLIFY_SYMBOL,
 		);
 
-		this.notifyOAuthListener();
+		const config = this.resourcesConfig.Auth?.Cognito;
+		if (config?.loginWith?.oauth && this.oAuthListener) {
+			this.notifyOAuthListener(this, config, this.oAuthListener);
+		}
 	}
 
 	/**
@@ -98,17 +100,27 @@ export class AmplifyClass {
 		}
 	}
 
-	private notifyOAuthListener() {
-		if (
-			!this.resourcesConfig.Auth?.Cognito.loginWith?.oauth ||
-			!this.oAuthListener
-		) {
-			return;
+	private notifyOAuthListener(
+		amplify: AmplifyClass,
+		config: AuthConfig['Cognito'],
+		oAuthListener: OAuthListener,
+	) {
+		if (amplify.listenerTimeout) {
+			amplify.clearListenerTimeout();
 		}
+		// The setTimeout will only be called as long as an oAuthLister and oauth config
+		// are defined. The code executed by the time out will be only fired once.
+		amplify.listenerTimeout = setTimeout(() => {
+			oAuthListener(config);
+			// the listener should only be notified once with a valid oauth config
+			amplify.oAuthListener = undefined;
+			amplify.clearListenerTimeout();
+		});
+	}
 
-		this.oAuthListener(this.resourcesConfig.Auth?.Cognito);
-		// the listener should only be notified once with a valid oauth config
-		this.oAuthListener = undefined;
+	private clearListenerTimeout() {
+		clearTimeout(this.listenerTimeout);
+		this.listenerTimeout = undefined;
 	}
 }
 
