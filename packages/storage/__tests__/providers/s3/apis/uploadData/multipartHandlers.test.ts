@@ -882,6 +882,8 @@ describe('getMultipartUploadHandlers with path', () => {
 				});
 				await multipartUploadJob();
 
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockHeadObject).toHaveBeenCalledTimes(1);
 				await expect(mockHeadObject).toBeLastCalledWithConfigAndInput(
 					expect.objectContaining({
@@ -893,40 +895,48 @@ describe('getMultipartUploadHandlers with path', () => {
 						Key: testPath,
 					}),
 				);
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
 			});
 
 			it('should not upload if target key already exists', async () => {
-				expect.assertions(2);
+				expect.assertions(6);
 				mockHeadObject.mockResolvedValueOnce({
 					ContentLength: 0,
 					$metadata: {},
 				});
+				mockMultipartUploadSuccess();
+
 				const { multipartUploadJob } = getMultipartUploadHandlers({
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),
 					options: { preventOverwrite: true },
 				});
+
 				await expect(multipartUploadJob()).rejects.toThrow(
 					'At least one of the pre-conditions you specified did not hold',
 				);
-				expect(mockCreateMultipartUpload).not.toHaveBeenCalled();
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
 			});
 
 			it('should not upload if HeadObject fails with other error', async () => {
-				expect.assertions(2);
+				expect.assertions(6);
 				const accessDeniedError = new Error('mock error');
 				accessDeniedError.name = 'AccessDenied';
 				mockHeadObject.mockRejectedValueOnce(accessDeniedError);
+				mockMultipartUploadSuccess();
+
 				const { multipartUploadJob } = getMultipartUploadHandlers({
 					path: testPath,
 					data: new ArrayBuffer(8 * MB),
 					options: { preventOverwrite: true },
 				});
+
 				await expect(multipartUploadJob()).rejects.toThrow('mock error');
-				expect(mockCreateMultipartUpload).not.toHaveBeenCalled();
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
 			});
 		});
 	});

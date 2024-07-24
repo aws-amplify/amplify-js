@@ -109,13 +109,6 @@ export const getMultipartUploadHandlers = (
 			resolvedAccessLevel = resolveAccessLevel(accessLevel);
 		}
 
-		if (preventOverwrite) {
-			await validateObjectNotExists(resolvedS3Config, {
-				Bucket: resolvedBucket,
-				Key: finalKey,
-			});
-		}
-
 		if (!inProgressUpload) {
 			const { uploadId, cachedParts } = await loadOrCreateMultipartUpload({
 				s3Config: resolvedS3Config,
@@ -183,6 +176,13 @@ export const getMultipartUploadHandlers = (
 		}
 
 		await Promise.all(concurrentUploadPartExecutors);
+
+		if (preventOverwrite) {
+			await validateObjectNotExists(resolvedS3Config, {
+				Bucket: resolvedBucket,
+				Key: finalKey,
+			});
+		}
 
 		const { ETag: eTag } = await completeMultipartUpload(
 			{
