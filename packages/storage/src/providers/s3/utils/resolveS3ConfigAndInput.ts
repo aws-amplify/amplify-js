@@ -7,10 +7,6 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
 import {
-	LocationCredentialsProvider,
-	ResolvedS3Config,
-} from '../types/options';
-import {
 	StorageOperationInputWithKey,
 	StorageOperationInputWithPath,
 	StorageOperationInputWithPrefix,
@@ -18,6 +14,12 @@ import {
 import { StorageError } from '../../../errors/StorageError';
 import { CopyInput, CopyWithPathInput } from '../types';
 import { INVALID_STORAGE_INPUT } from '../../../errors/constants';
+import {
+	BucketInfo,
+	LocationCredentialsProvider,
+	ResolvedS3Config,
+	StorageBucket,
+} from '../types/options';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 
@@ -26,6 +28,7 @@ interface S3ApiOptions {
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
 	locationCredentialsProvider?: LocationCredentialsProvider;
+	bucket?: StorageBucket;
 }
 
 interface ResolvedS3ConfigAndInput {
@@ -90,8 +93,16 @@ export const resolveS3ConfigAndInput = async (
 		return credentials;
 	};
 
-	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
-		amplify.getConfig()?.Storage?.S3 ?? {};
+	const {
+		bucket: defaultBucket,
+		region: defaultRegion,
+		dangerouslyConnectToHttpEndpointForTesting,
+		buckets,
+	} = amplify.getConfig()?.Storage?.S3 ?? {};
+
+	const { bucket = defaultBucket, region = defaultRegion } =
+		(apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
+
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 
@@ -101,15 +112,14 @@ export const resolveS3ConfigAndInput = async (
 		isObjectLockEnabled,
 	} = amplify.libraryOptions?.Storage?.S3 ?? {};
 
-	const keyPrefix = await prefixResolver({
-		accessLevel:
-			apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL,
-		// use conditional assign to make tsc happy because StorageOptions is a union type that may not have targetIdentityId
-		targetIdentityId:
-			apiOptions?.accessLevel === 'protected'
-				? apiOptions?.targetIdentityId ?? identityId
-				: identityId,
-	});
+	const accessLevel =
+		apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL;
+	const targetIdentityId =
+		accessLevel === 'protected'
+			? apiOptions?.targetIdentityId ?? identityId
+			: identityId;
+
+	const keyPrefix = await prefixResolver({ accessLevel, targetIdentityId });
 
 	return {
 		s3Config: {
@@ -188,4 +198,25 @@ const isInputWithCopySourceOrDestination = (
 		typeof (input as CopyInput).source?.key === 'string' ||
 		typeof (input as CopyInput).destination?.key === 'string'
 	);
+};
+const resolveBucketConfig = (
+	apiOptions: S3ApiOptions,
+	buckets: Record<string, BucketInfo> | undefined,
+): { bucket: string; region: string } | undefined => {
+	if (typeof apiOptions.bucket === 'string') {
+		const bucketConfig = buckets?.[apiOptions.bucket];
+		assertValidationError(
+			!!bucketConfig,
+			StorageValidationErrorCode.InvalidStorageBucket,
+		);
+
+		return { bucket: bucketConfig.bucketName, region: bucketConfig.region };
+	}
+
+	if (typeof apiOptions.bucket === 'object') {
+		return {
+			bucket: apiOptions.bucket.bucketName,
+			region: apiOptions.bucket.region,
+		};
+	}
 };

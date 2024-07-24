@@ -31,7 +31,7 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
+const mockGetConfig = jest.mocked(Amplify.getConfig);
 const mockListObject = listObjectsV2 as jest.Mock;
 const inputKey = 'path/itemsKey';
 const bucket = 'bucket';
@@ -93,6 +93,7 @@ describe('list API', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -304,6 +305,76 @@ describe('list API', () => {
 				});
 			},
 		);
+
+		describe('bucket passed in options', () => {
+			it('should override bucket in listObject call when bucket is object', async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: inputKey,
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				const mockBucketName = 'bucket-1';
+				const mockRegion = 'region-1';
+				await listPaginatedWrapper({
+					prefix: inputKey,
+					options: {
+						bucket: { bucketName: mockBucketName, region: mockRegion },
+					},
+				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: mockRegion,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: mockBucketName,
+						MaxKeys: 1000,
+						Prefix: `public/${inputKey}`,
+					},
+				);
+			});
+
+			it('should override bucket in listObject call when bucket is string', async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: inputKey,
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				await listPaginatedWrapper({
+					prefix: inputKey,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: `public/${inputKey}`,
+					},
+				);
+			});
+		});
 	});
 
 	describe('Path: Happy Cases:', () => {
@@ -482,6 +553,76 @@ describe('list API', () => {
 				);
 			},
 		);
+
+		describe('bucket passed in options', () => {
+			it('should override bucket in listObject call when bucket is object', async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: 'path/',
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				const mockBucketName = 'bucket-1';
+				const mockRegion = 'region-1';
+				await listPaginatedWrapper({
+					path: 'path/',
+					options: {
+						bucket: { bucketName: mockBucketName, region: mockRegion },
+					},
+				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: mockRegion,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: mockBucketName,
+						MaxKeys: 1000,
+						Prefix: 'path/',
+					},
+				);
+			});
+
+			it('should override bucket in listObject call when bucket is string', async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: 'path/',
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				await listPaginatedWrapper({
+					path: 'path/',
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: 'path/',
+					},
+				);
+			});
+		});
 	});
 
 	describe('Error Cases:', () => {
@@ -534,6 +675,10 @@ describe('list API', () => {
 			{ Prefix: 'photos/2025/' },
 		];
 
+		const expectedExcludedSubpaths = mockedCommonPrefixes.map(
+			({ Prefix }) => Prefix,
+		);
+
 		const mockedPath = 'photos/';
 
 		beforeEach(() => {
@@ -547,19 +692,15 @@ describe('list API', () => {
 			mockListObject.mockClear();
 		});
 
-		it('should return subpaths when delimiter is passed in the request', async () => {
-			const { items, subpaths } = await list({
+		it('should return excludedSubpaths when "exclude" strategy is passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
 				path: mockedPath,
 				options: {
-					delimiter: '/',
+					subpathStrategy: { strategy: 'exclude' },
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toEqual([
-				'photos/2023/',
-				'photos/2024/',
-				'photos/2025/',
-			]);
+			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -572,20 +713,16 @@ describe('list API', () => {
 			);
 		});
 
-		it('should return subpaths when delimiter and listAll are passed in the request', async () => {
-			const { items, subpaths } = await list({
+		it('should return excludedSubpaths when "exclude" strategy and listAll are passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
 				path: mockedPath,
 				options: {
-					delimiter: '/',
+					subpathStrategy: { strategy: 'exclude' },
 					listAll: true,
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toEqual([
-				'photos/2023/',
-				'photos/2024/',
-				'photos/2025/',
-			]);
+			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -598,20 +735,16 @@ describe('list API', () => {
 			);
 		});
 
-		it('should return subpaths when delimiter is pageSize are passed in the request', async () => {
-			const { items, subpaths } = await list({
+		it('should return excludedSubpaths when "exclude" strategy and pageSize are passed in the request', async () => {
+			const { items, excludedSubpaths } = await list({
 				path: mockedPath,
 				options: {
-					delimiter: '/',
+					subpathStrategy: { strategy: 'exclude' },
 					pageSize: 3,
 				},
 			});
 			expect(items).toHaveLength(3);
-			expect(subpaths).toEqual([
-				'photos/2023/',
-				'photos/2024/',
-				'photos/2025/',
-			]);
+			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -620,6 +753,65 @@ describe('list API', () => {
 					MaxKeys: 3,
 					Prefix: mockedPath,
 					Delimiter: '/',
+				},
+			);
+		});
+
+		it('should listObjectsV2 contain a custom Delimiter when "exclude" with delimiter is passed', async () => {
+			await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: {
+						strategy: 'exclude',
+						delimiter: '-',
+					},
+				},
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: '-',
+				},
+			);
+		});
+
+		it('should listObjectsV2 contain an undefined Delimiter when "include" strategy is passed', async () => {
+			await list({
+				path: mockedPath,
+				options: {
+					subpathStrategy: {
+						strategy: 'include',
+					},
+				},
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: undefined,
+				},
+			);
+		});
+
+		it('should listObjectsV2 contain an undefined Delimiter when no options are passed', async () => {
+			await list({
+				path: mockedPath,
+			});
+			expect(listObjectsV2).toHaveBeenCalledTimes(1);
+			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				listObjectClientConfig,
+				{
+					Bucket: bucket,
+					MaxKeys: 1000,
+					Prefix: mockedPath,
+					Delimiter: undefined,
 				},
 			);
 		});

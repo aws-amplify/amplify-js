@@ -9,6 +9,7 @@ import { TransferProgressEvent } from '../../../types';
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
+	StorageSubpathStrategy,
 } from '../../../types/options';
 
 /**
@@ -18,6 +19,12 @@ export type LocationCredentialsProvider = (options?: {
 	forceRefresh?: boolean;
 }) => Promise<{ credentials: AWSCredentials }>;
 
+export interface BucketInfo {
+	bucketName: string;
+	region: string;
+}
+
+export type StorageBucket = string | BucketInfo;
 interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.
@@ -32,6 +39,7 @@ interface CommonOptions {
 	 * would be used.
 	 */
 	locationCredentialsProvider?: LocationCredentialsProvider;
+	bucket?: StorageBucket;
 }
 
 /** @deprecated This may be removed in the next major version. */
@@ -105,7 +113,9 @@ export type ListAllOptionsWithPath = Omit<
 	StorageListAllOptions,
 	'accessLevel'
 > &
-	CommonOptions;
+	CommonOptions & {
+		subpathStrategy?: StorageSubpathStrategy;
+	};
 
 /**
  * Input options type with path for S3 list API to paginate items.
@@ -114,7 +124,9 @@ export type ListPaginateOptionsWithPath = Omit<
 	StorageListPaginateOptions,
 	'accessLevel'
 > &
-	CommonOptions;
+	CommonOptions & {
+		subpathStrategy?: StorageSubpathStrategy;
+	};
 
 /**
  * Input options type for S3 getUrl API.
@@ -184,13 +196,22 @@ export type UploadDataOptionsWithPath = UploadDataOptions;
 export type CopySourceOptionsWithKey = ReadOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
+	bucket?: StorageBucket;
 };
 
 /** @deprecated This may be removed in the next major version. */
 export type CopyDestinationOptionsWithKey = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
+	bucket?: StorageBucket;
 };
+
+export interface CopyWithPathSourceOptions {
+	bucket?: StorageBucket;
+}
+export interface CopyWithPathDestinationOptions {
+	bucket?: StorageBucket;
+}
 
 /**
  * Internal only type for S3 API handlers' config parameter.

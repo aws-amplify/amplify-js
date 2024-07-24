@@ -3,11 +3,12 @@
 
 import {
 	Amplify,
-	clearCredentials,
 	ConsoleLogger,
 	Hub,
+	clearCredentials,
 } from '@aws-amplify/core';
 import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
+
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
 import {
@@ -32,6 +33,7 @@ jest.mock('../../../src/providers/cognito/utils/signInWithRedirectStore');
 jest.mock('../../../src/utils');
 
 describe('signOut', () => {
+	// eslint-disable-next-line camelcase
 	const accessToken = { payload: { origin_jti: 'revocation-id' } };
 	const region = 'us-west-2';
 	const cognitoConfig = {
@@ -190,7 +192,7 @@ describe('signOut', () => {
 					domain: 'hosted-ui.test',
 					redirectSignIn: ['https://myapp.test/completeSignIn/'],
 					redirectSignOut: ['https://myapp.test/completeSignOut/'],
-					responseType: 'code' as 'code', // assert string union instead of string type
+					responseType: 'code' as const, // assert string union instead of string type
 					scopes: [],
 				},
 			},

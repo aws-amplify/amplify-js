@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.30...@aws-amplify/rtn-push-notification@1.2.31) (2024-07-19)
+
+### Bug Fixes
+
+- **rtn-push-notification:** wrong completion handler key ([#13604](https://github.com/aws-amplify/amplify-js/issues/13604)) ([af46e39](https://github.com/aws-amplify/amplify-js/commit/af46e3929ffc0dab4c88848fcc2dfc3ecbb5046f))
+
+## [1.2.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.29...@aws-amplify/rtn-push-notification@1.2.30) (2024-07-08)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
 ## [1.2.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.28...@aws-amplify/rtn-push-notification@1.2.29) (2024-05-07)
 
 **Note:** Version bump only for package @aws-amplify/rtn-push-notification

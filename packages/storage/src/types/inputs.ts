@@ -90,10 +90,13 @@ export interface StorageCopyInputWithKey<
 	destination: DestinationOptions;
 }
 
-export interface StorageCopyInputWithPath<Options = unknown>
-	extends StorageOperationOptionsInput<Options> {
-	source: StorageOperationInputWithPath;
-	destination: StorageOperationInputWithPath;
+export interface StorageCopyInputWithPath<
+	SourceOptions,
+	DestinationOptions,
+	Options = unknown,
+> extends StorageOperationOptionsInput<Options> {
+	source: StorageOperationInputWithPath & SourceOptions;
+	destination: StorageOperationInputWithPath & DestinationOptions;
 }
 
 /**

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HttpResponse } from '@aws-amplify/core/src/clients/types';
+
 import { AuthError } from '../../../../src/errors/AuthError';
 
 // Common
@@ -26,6 +27,7 @@ export const mockJsonResponse = ({
 		blob: async () => fail('blob() should not be called'),
 		text: async () => fail('text() should not be called'),
 	} as HttpResponse['body'];
+
 	return {
 		statusCode: status,
 		headers,
