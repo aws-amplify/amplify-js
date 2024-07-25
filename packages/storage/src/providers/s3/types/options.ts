@@ -124,12 +124,11 @@ export type GetUrlOptions = CommonOptions & {
 	 */
 	expiresIn?: number;
 	/**
-	 * The content-disposition header value of the file when downloading it.
+	 * The default content-disposition header value of the file when downloading it.
+	 *   If a string is provided, it will be used as-is.
+	 *   If an object is provided, it will be used to construct the header value
+	 *   based on the ContentDisposition type definition.
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
-	 * @description  If a string is provided, it will be used as-is.
-	 *   If an object is provided, the contentDisposition string value
-	 * 	 will be constructed from the object fields as the object shape
-	 *   info is available on the type itself already
 	 */
 	contentDisposition?: ContentDisposition | string;
 	/**
@@ -158,11 +157,10 @@ export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
 		 * The default content-disposition header value of the file when downloading it.
+		 *   If a string is provided, it will be used as-is.
+		 *   If an object is provided, it will be used to construct the header value
+		 *   based on the ContentDisposition type definition.
 		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
-		 * @description  If a string is provided, it will be used as-is.
-		 *   If an object is provided, the contentDisposition string value
-		 * 	 will be constructed from the object fields as the object shape
-		 *   info is available on the type itself already
 		 */
 		contentDisposition?: ContentDisposition | string;
 		/**
