@@ -4,7 +4,10 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
-import { putObject } from '../../../../../src/providers/s3/utils/client/s3data';
+import {
+	headObject,
+	putObject,
+} from '../../../../../src/providers/s3/utils/client/s3data';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
@@ -38,6 +41,7 @@ const credentials: AWSCredentials = {
 const identityId = 'identityId';
 const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
 const mockPutObject = jest.mocked(putObject);
+const mockHeadObject = jest.mocked(headObject);
 const bucket = 'bucket';
 const region = 'region';
 
@@ -305,6 +309,81 @@ describe('putObjectJob with path', () => {
 		);
 		await job();
 		expect(calculateContentMd5).toHaveBeenCalledWith('data');
+	});
+
+	describe('overwrite prevention', () => {
+		beforeEach(() => {
+			mockHeadObject.mockClear();
+		});
+
+		it('should upload if target key is not found', async () => {
+			expect.assertions(3);
+			const notFoundError = new Error('mock message');
+			notFoundError.name = 'NotFound';
+			mockHeadObject.mockRejectedValueOnce(notFoundError);
+
+			const job = putObjectJob(
+				{
+					path: testPath,
+					data: 'data',
+					options: { preventOverwrite: true },
+				},
+				new AbortController().signal,
+			);
+			await job();
+
+			await expect(mockHeadObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region: 'region',
+				},
+				{
+					Bucket: 'bucket',
+					Key: testPath,
+				},
+			);
+			expect(mockHeadObject).toHaveBeenCalledTimes(1);
+			expect(mockPutObject).toHaveBeenCalledTimes(1);
+		});
+
+		it('should not upload if target key already exists', async () => {
+			expect.assertions(3);
+			mockHeadObject.mockResolvedValueOnce({
+				ContentLength: 0,
+				$metadata: {},
+			});
+			const job = putObjectJob(
+				{
+					path: testPath,
+					data: 'data',
+					options: { preventOverwrite: true },
+				},
+				new AbortController().signal,
+			);
+			await expect(job()).rejects.toThrow(
+				'At least one of the pre-conditions you specified did not hold',
+			);
+			expect(mockHeadObject).toHaveBeenCalledTimes(1);
+			expect(mockPutObject).not.toHaveBeenCalled();
+		});
+
+		it('should not upload if HeadObject fails with other error', async () => {
+			expect.assertions(3);
+			const accessDeniedError = new Error('mock error');
+			accessDeniedError.name = 'AccessDenied';
+			mockHeadObject.mockRejectedValueOnce(accessDeniedError);
+			const job = putObjectJob(
+				{
+					path: testPath,
+					data: 'data',
+					options: { preventOverwrite: true },
+				},
+				new AbortController().signal,
+			);
+			await expect(job()).rejects.toThrow('mock error');
+			expect(mockHeadObject).toHaveBeenCalledTimes(1);
+			expect(mockPutObject).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('bucket passed in options', () => {

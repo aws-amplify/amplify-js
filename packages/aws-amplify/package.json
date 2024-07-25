@@ -497,7 +497,7 @@
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "20.18 kB"
+			"limit": "20.30 kB"
 		}
 	]
 }
