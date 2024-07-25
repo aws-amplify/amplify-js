@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Sha256 } from '@aws-crypto/sha256-js';
+
 import { getHashFromHex } from '../../../../../src/providers/cognito/utils/srp/getHashFromHex';
 
 describe('getHashFromHex', () => {

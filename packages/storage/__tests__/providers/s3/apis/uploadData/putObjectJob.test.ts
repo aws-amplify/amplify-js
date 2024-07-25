@@ -42,6 +42,8 @@ const identityId = 'identityId';
 const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
 const mockPutObject = jest.mocked(putObject);
 const mockHeadObject = jest.mocked(headObject);
+const bucket = 'bucket';
+const region = 'region';
 
 mockFetchAuthSession.mockResolvedValue({
 	credentials,
@@ -50,8 +52,9 @@ mockFetchAuthSession.mockResolvedValue({
 jest.mocked(Amplify.getConfig).mockReturnValue({
 	Storage: {
 		S3: {
-			bucket: 'bucket',
-			region: 'region',
+			bucket,
+			region,
+			buckets: { 'default-bucket': { bucketName: bucket, region } },
 		},
 	},
 });
@@ -106,14 +109,14 @@ describe('putObjectJob with key', () => {
 		await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
 			{
 				credentials,
-				region: 'region',
+				region,
 				abortSignal: abortController.signal,
 				onUploadProgress: expect.any(Function),
 				useAccelerateEndpoint: true,
 				userAgentValue: expect.any(String),
 			},
 			{
-				Bucket: 'bucket',
+				Bucket: bucket,
 				Key: `public/${inputKey}`,
 				Body: data,
 				ContentType: mockContentType,
@@ -142,6 +145,76 @@ describe('putObjectJob with key', () => {
 		);
 		await job();
 		expect(calculateContentMd5).toHaveBeenCalledWith('data');
+	});
+
+	describe('bucket passed in options', () => {
+		it('should override bucket in putObject call when bucket as object', async () => {
+			const abortController = new AbortController();
+			const data = 'data';
+			const bucketName = 'bucket-1';
+			const mockRegion = 'region-1';
+
+			const job = putObjectJob(
+				{
+					key: 'key',
+					data,
+					options: {
+						bucket: {
+							bucketName,
+							region: mockRegion,
+						},
+					},
+				},
+				new AbortController().signal,
+			);
+			await job();
+
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region: mockRegion,
+					abortSignal: abortController.signal,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucketName,
+					Key: 'public/key',
+					Body: data,
+					ContentType: 'application/octet-stream',
+				},
+			);
+		});
+
+		it('should override bucket in putObject call when bucket as string', async () => {
+			const abortController = new AbortController();
+			const data = 'data';
+			const job = putObjectJob(
+				{
+					key: 'key',
+					data,
+					options: {
+						bucket: 'default-bucket',
+					},
+				},
+				new AbortController().signal,
+			);
+			await job();
+
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region,
+					abortSignal: abortController.signal,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucket,
+					Key: 'public/key',
+					Body: data,
+					ContentType: 'application/octet-stream',
+				},
+			);
+		});
 	});
 });
 
@@ -199,14 +272,14 @@ describe('putObjectJob with path', () => {
 			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
 				{
 					credentials,
-					region: 'region',
+					region,
 					abortSignal: abortController.signal,
 					onUploadProgress: expect.any(Function),
 					useAccelerateEndpoint: true,
 					userAgentValue: expect.any(String),
 				},
 				{
-					Bucket: 'bucket',
+					Bucket: bucket,
 					Key: expectedKey,
 					Body: data,
 					ContentType: mockContentType,
@@ -310,6 +383,76 @@ describe('putObjectJob with path', () => {
 			await expect(job()).rejects.toThrow('mock error');
 			expect(mockHeadObject).toHaveBeenCalledTimes(1);
 			expect(mockPutObject).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('bucket passed in options', () => {
+		it('should override bucket in putObject call when bucket as object', async () => {
+			const abortController = new AbortController();
+			const data = 'data';
+			const bucketName = 'bucket-1';
+			const mockRegion = 'region-1';
+
+			const job = putObjectJob(
+				{
+					path: 'path/',
+					data,
+					options: {
+						bucket: {
+							bucketName,
+							region: mockRegion,
+						},
+					},
+				},
+				new AbortController().signal,
+			);
+			await job();
+
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region: mockRegion,
+					abortSignal: abortController.signal,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucketName,
+					Key: 'path/',
+					Body: data,
+					ContentType: 'application/octet-stream',
+				},
+			);
+		});
+
+		it('should override bucket in putObject call when bucket as string', async () => {
+			const abortController = new AbortController();
+			const data = 'data';
+			const job = putObjectJob(
+				{
+					path: 'path/',
+					data,
+					options: {
+						bucket: 'default-bucket',
+					},
+				},
+				new AbortController().signal,
+			);
+			await job();
+
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region,
+					abortSignal: abortController.signal,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucket,
+					Key: 'path/',
+					Body: data,
+					ContentType: 'application/octet-stream',
+				},
+			);
 		});
 	});
 });

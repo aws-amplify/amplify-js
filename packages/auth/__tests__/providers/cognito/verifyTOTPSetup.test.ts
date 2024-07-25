@@ -3,11 +3,13 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
+
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { VerifySoftwareTokenException } from '../../../src/providers/cognito/types/errors';
 import { verifyTOTPSetup } from '../../../src/providers/cognito';
 import { verifySoftwareToken } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 

@@ -4,7 +4,7 @@
 /* This is because JSON schema contains keys with snake_case */
 /* eslint-disable camelcase */
 
-/* Does not like exahaustive checks */
+/* Does not like exhaustive checks */
 /* eslint-disable no-case-declarations */
 
 import {
@@ -25,11 +25,13 @@ import {
 	AmplifyOutputsDataProperties,
 	AmplifyOutputsGeoProperties,
 	AmplifyOutputsNotificationsProperties,
+	AmplifyOutputsStorageBucketProperties,
 	AmplifyOutputsStorageProperties,
 } from './singleton/AmplifyOutputs/types';
 import {
 	AnalyticsConfig,
 	AuthConfig,
+	BucketInfo,
 	GeoConfig,
 	LegacyConfig,
 	ResourcesConfig,
@@ -56,12 +58,13 @@ function parseStorage(
 		return undefined;
 	}
 
-	const { bucket_name, aws_region } = amplifyOutputsStorageProperties;
+	const { bucket_name, aws_region, buckets } = amplifyOutputsStorageProperties;
 
 	return {
 		S3: {
 			bucket: bucket_name,
 			region: aws_region,
+			buckets: buckets && createBucketInfoMap(buckets),
 		},
 	};
 }
@@ -332,4 +335,25 @@ function getMfaStatus(
 	if (mfaConfiguration === 'REQUIRED') return 'on';
 
 	return 'off';
+}
+
+function createBucketInfoMap(
+	buckets: AmplifyOutputsStorageBucketProperties[],
+): Record<string, BucketInfo> {
+	const mappedBuckets: Record<string, BucketInfo> = {};
+
+	buckets.forEach(({ name, bucket_name: bucketName, aws_region: region }) => {
+		if (name in mappedBuckets) {
+			throw new Error(
+				`Duplicate friendly name found: ${name}. Name must be unique.`,
+			);
+		}
+
+		mappedBuckets[name] = {
+			bucketName,
+			region,
+		};
+	});
+
+	return mappedBuckets;
 }

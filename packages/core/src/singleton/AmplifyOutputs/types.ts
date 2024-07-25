@@ -43,9 +43,21 @@ export interface AmplifyOutputsAuthProperties {
 	mfa_methods?: string[];
 }
 
-export interface AmplifyOutputsStorageProperties {
-	aws_region: string;
+export interface AmplifyOutputsStorageBucketProperties {
+	/** Friendly bucket name provided in Amplify Outputs */
+	name: string;
+	/** Actual S3 bucket name given */
 	bucket_name: string;
+	/** Region for the bucket */
+	aws_region: string;
+}
+export interface AmplifyOutputsStorageProperties {
+	/** Default region for Storage */
+	aws_region: string;
+	/** Default bucket for Storage */
+	bucket_name: string;
+	/** List of buckets for Storage */
+	buckets?: AmplifyOutputsStorageBucketProperties[];
 }
 
 export interface AmplifyOutputsGeoProperties {

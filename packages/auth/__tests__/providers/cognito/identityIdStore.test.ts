@@ -1,8 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { DefaultIdentityIdStore } from '../../../src/providers/cognito';
 import { Identity, ResourcesConfig } from '@aws-amplify/core';
+
+import { DefaultIdentityIdStore } from '../../../src/providers/cognito';
 
 const mockKeyValueStorage = {
 	setItem: jest.fn(),

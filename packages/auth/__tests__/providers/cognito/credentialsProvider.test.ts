@@ -2,18 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	CognitoAWSCredentialsAndIdentityIdProvider,
-	DefaultIdentityIdStore,
-} from '../../../src/providers/cognito';
-import { authAPITestParams } from './testUtils/authApiTestParams';
-import { AuthError } from '../../../src/errors/AuthError';
-import {
-	GetCredentialsForIdentityInput,
 	GetCredentialsForIdentityOutput,
 	ResourcesConfig,
 	getCredentialsForIdentity,
 	sharedInMemoryStorage,
 } from '@aws-amplify/core';
+
+import {
+	CognitoAWSCredentialsAndIdentityIdProvider,
+	DefaultIdentityIdStore,
+} from '../../../src/providers/cognito';
+import { AuthError } from '../../../src/errors/AuthError';
+
+import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
@@ -73,11 +74,9 @@ describe('Guest Credentials', () => {
 				new CognitoAWSCredentialsAndIdentityIdProvider(
 					new DefaultIdentityIdStore(sharedInMemoryStorage),
 				);
-			credentialsForIdentityIdSpy.mockImplementationOnce(
-				async ({}, params: GetCredentialsForIdentityInput) => {
-					return authAPITestParams.CredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
-				},
-			);
+			credentialsForIdentityIdSpy.mockImplementationOnce(async () => {
+				return authAPITestParams.CredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
+			});
 		});
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
@@ -99,9 +98,10 @@ describe('Guest Credentials', () => {
 				{ IdentityId: 'identity-id-test' },
 			);
 			expect(
-				cognitoCredentialsProvider['_nextCredentialsRefresh'],
+				(cognitoCredentialsProvider as any)._nextCredentialsRefresh,
 			).toBeGreaterThan(0);
 		});
+
 		test('in-memory guest creds are returned if not expired and not past TTL', async () => {
 			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: false,
@@ -120,19 +120,18 @@ describe('Guest Credentials', () => {
 			expect(credentialsForIdentityIdSpy).toHaveBeenCalledTimes(1);
 		});
 	});
+
 	describe('Error Path Cases:', () => {
-		let cognitoCredentialsProvider;
 		beforeEach(() => {
 			cognitoCredentialsProvider =
 				new CognitoAWSCredentialsAndIdentityIdProvider(
 					new DefaultIdentityIdStore(sharedInMemoryStorage),
 				);
-			credentialsForIdentityIdSpy.mockImplementationOnce(
-				async ({}, params: GetCredentialsForIdentityInput) => {
-					return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
-				},
-			);
+			credentialsForIdentityIdSpy.mockImplementationOnce(async () => {
+				return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
+			});
 		});
+
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
 		});
@@ -159,18 +158,16 @@ describe('Guest Credentials', () => {
 });
 
 describe('Primary Credentials', () => {
-	let cognitoCredentialsProvider;
+	let cognitoCredentialsProvider: CognitoAWSCredentialsAndIdentityIdProvider;
 	describe('Happy Path Cases:', () => {
 		beforeEach(() => {
 			cognitoCredentialsProvider =
 				new CognitoAWSCredentialsAndIdentityIdProvider(
 					new DefaultIdentityIdStore(sharedInMemoryStorage),
 				);
-			credentialsForIdentityIdSpy.mockImplementation(
-				async ({}, params: GetCredentialsForIdentityInput) => {
-					return authAPITestParams.CredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
-				},
-			);
+			credentialsForIdentityIdSpy.mockImplementation(async () => {
+				return authAPITestParams.CredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
+			});
 		});
 		afterEach(() => {
 			cognitoCredentialsProvider.clearCredentials();
@@ -182,7 +179,7 @@ describe('Primary Credentials', () => {
 				authConfig: validAuthConfig.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			});
-			expect(res.credentials.accessKeyId).toEqual(
+			expect(res?.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials
 					.AccessKeyId,
 			);
@@ -208,7 +205,7 @@ describe('Primary Credentials', () => {
 				authConfig: validAuthConfig.Auth!,
 				tokens: authAPITestParams.ValidAuthTokens,
 			});
-			expect(res.credentials.accessKeyId).toEqual(
+			expect(res?.credentials.accessKeyId).toEqual(
 				authAPITestParams.CredentialsForIdentityIdResult.Credentials
 					.AccessKeyId,
 			);
@@ -229,7 +226,7 @@ describe('Primary Credentials', () => {
 			);
 			expect(credentialsForIdentityIdSpy).toHaveBeenCalledTimes(1);
 
-			const res = await cognitoCredentialsProvider.getCredentialsAndIdentityId({
+			await cognitoCredentialsProvider.getCredentialsAndIdentityId({
 				authenticated: true,
 				authConfig: validAuthConfig.Auth!,
 				tokens: authAPITestParams.NewValidAuthTokens,
@@ -257,11 +254,9 @@ describe('Primary Credentials', () => {
 			credentialsForIdentityIdSpy?.mockReset();
 		});
 		test('Should throw AuthError if either Credentials, accessKeyId or secretKey is absent in the response', async () => {
-			credentialsForIdentityIdSpy.mockImplementationOnce(
-				async ({}, params: GetCredentialsForIdentityInput) => {
-					return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
-				},
-			);
+			credentialsForIdentityIdSpy.mockImplementationOnce(async () => {
+				return authAPITestParams.NoAccessKeyCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
+			});
 			expect(
 				cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: true,
@@ -270,11 +265,9 @@ describe('Primary Credentials', () => {
 				}),
 			).rejects.toThrow(AuthError);
 			credentialsForIdentityIdSpy.mockClear();
-			credentialsForIdentityIdSpy.mockImplementationOnce(
-				async ({}, params: GetCredentialsForIdentityInput) => {
-					return authAPITestParams.NoCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
-				},
-			);
+			credentialsForIdentityIdSpy.mockImplementationOnce(async () => {
+				return authAPITestParams.NoCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
+			});
 			expect(
 				cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: true,
@@ -283,11 +276,9 @@ describe('Primary Credentials', () => {
 				}),
 			).rejects.toThrow(AuthError);
 			credentialsForIdentityIdSpy.mockClear();
-			credentialsForIdentityIdSpy.mockImplementationOnce(
-				async ({}, params: GetCredentialsForIdentityInput) => {
-					return authAPITestParams.NoSecretKeyInCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
-				},
-			);
+			credentialsForIdentityIdSpy.mockImplementationOnce(async () => {
+				return authAPITestParams.NoSecretKeyInCredentialsForIdentityIdResult as GetCredentialsForIdentityOutput;
+			});
 			expect(
 				cognitoCredentialsProvider.getCredentialsAndIdentityId({
 					authenticated: true,

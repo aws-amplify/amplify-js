@@ -15,7 +15,7 @@ import { CognitoAWSCredentialsAndIdentityIdProvider } from './credentialsProvide
  * Cognito specific implmentation of the CredentialsProvider interface
  * that manages setting and getting of AWS Credentials.
  *
- * @throws configuration expections: {@link InvalidIdentityPoolIdException }
+ * @throws configuration expections: `InvalidIdentityPoolIdException`
  *  - Auth errors that may arise from misconfiguration.
  * @throws service expections: {@link GetCredentialsForIdentityException}, {@link GetIdException}
  *

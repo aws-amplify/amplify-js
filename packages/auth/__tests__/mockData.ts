@@ -1,6 +1,3 @@
-// keeping this so that jest does not complain
-test('should do nothing', () => {});
-
 // device tracking mock device data
 export const mockDeviceArray = [
 	{
