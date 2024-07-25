@@ -3,7 +3,7 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-import { ResolvedS3Config } from '../../../types/options';
+import { ContentDisposition, ResolvedS3Config } from '../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../types';
 import { Part, createMultipartUpload } from '../../../utils/client';
 import { logger } from '../../../../../utils';
@@ -23,9 +23,7 @@ interface LoadOrCreateMultipartUploadOptions {
 	keyPrefix?: string;
 	key: string;
 	contentType?: string;
-	contentDisposition?:
-		| string
-		| { type: 'attachment' | 'inline'; filename?: string };
+	contentDisposition?: string | ContentDisposition;
 	contentEncoding?: string;
 	metadata?: Record<string, string>;
 	size?: number;
