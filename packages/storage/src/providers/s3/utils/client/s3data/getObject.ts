@@ -14,12 +14,6 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { S3EndpointResolverOptions, defaultConfig } from './base';
-import type {
-	CompatibleHttpResponse,
-	GetObjectCommandInput,
-	GetObjectCommandOutput,
-} from './types';
 import {
 	CONTENT_SHA256_HEADER,
 	buildStorageServiceError,
@@ -32,7 +26,14 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import { S3EndpointResolverOptions, defaultConfig } from './base';
+import type {
+	CompatibleHttpResponse,
+	GetObjectCommandInput,
+	GetObjectCommandOutput,
+} from './types';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 

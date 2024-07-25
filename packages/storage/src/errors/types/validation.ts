@@ -13,12 +13,17 @@ export enum StorageValidationErrorCode {
 	NoDestinationPath = 'NoDestinationPath',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
+	InvalidStorageBucket = 'InvalidStorageBucket',
+	InvalidCopyOperationStorageBucket = 'InvalidCopyOperationStorageBucket',
 	InvalidStorageOperationPrefixInput = 'InvalidStorageOperationPrefixInput',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
 	InvalidStoragePathInput = 'InvalidStoragePathInput',
 	InvalidUploadSource = 'InvalidUploadSource',
 	ObjectIsTooLarge = 'ObjectIsTooLarge',
 	UrlExpirationMaxLimitExceed = 'UrlExpirationMaxLimitExceed',
+	InvalidLocationCredentialsCacheSize = 'InvalidLocationCredentialsCacheSize',
+	LocationCredentialsStoreDestroyed = 'LocationCredentialsStoreDestroyed',
+	InvalidS3Uri = 'InvalidS3Uri',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -69,5 +74,21 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.InvalidStoragePathInput]: {
 		message: 'Input `path` does not allow a leading slash (/).',
+	},
+	[StorageValidationErrorCode.InvalidLocationCredentialsCacheSize]: {
+		message: 'locationCredentialsCacheSize must be a positive integer.',
+	},
+	[StorageValidationErrorCode.LocationCredentialsStoreDestroyed]: {
+		message: `Location-specific credentials store has been destroyed.`,
+	},
+	[StorageValidationErrorCode.InvalidS3Uri]: {
+		message: 'Invalid S3 URI.',
+	},
+	[StorageValidationErrorCode.InvalidStorageBucket]: {
+		message:
+			'Unable to lookup bucket from provided name in Amplify configuration.',
+	},
+	[StorageValidationErrorCode.InvalidCopyOperationStorageBucket]: {
+		message: 'Missing bucket option in either source or destination.',
 	},
 };

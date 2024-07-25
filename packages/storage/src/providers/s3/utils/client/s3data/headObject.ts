@@ -10,8 +10,6 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { defaultConfig } from './base';
-import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 import {
 	buildStorageServiceError,
 	deserializeMetadata,
@@ -22,7 +20,10 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import { defaultConfig } from './base';
+import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 
 export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
 

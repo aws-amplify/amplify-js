@@ -14,7 +14,7 @@ import {
 	headObject,
 	listParts,
 	uploadPart,
-} from '../../../../../src/providers/s3/utils/client';
+} from '../../../../../src/providers/s3/utils/client/s3data';
 import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
 import {
 	StorageValidationErrorCode,
@@ -34,7 +34,7 @@ global.File = FilePolyfill as any;
 global.WritableStream = WritableStreamPolyfill as any;
 
 jest.mock('@aws-amplify/core');
-jest.mock('../../../../../src/providers/s3/utils/client');
+jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 
 jest.mock('../../../../../src/providers/s3/utils/crc32', () => ({
 	...jest.requireActual('../../../../../src/providers/s3/utils/crc32'),
@@ -191,6 +191,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -449,6 +450,69 @@ describe('getMultipartUploadHandlers with key', () => {
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 			expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
+		});
+
+		describe('bucket passed in options', () => {
+			const mockData = 'Ü'.repeat(4 * MB);
+			it('should override bucket in putObject call when bucket as object', async () => {
+				const mockBucket = 'bucket-1';
+				const mockRegion = 'region-1';
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					key: 'key',
+					data: mockData,
+					options: {
+						bucket: { bucketName: mockBucket, region: mockRegion },
+					},
+				});
+				await multipartUploadJob();
+				await expect(
+					mockCreateMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region: mockRegion,
+						abortSignal: expect.any(AbortSignal),
+					}),
+					expect.objectContaining({
+						Bucket: mockBucket,
+						Key: 'public/key',
+						ContentType: defaultContentType,
+					}),
+				);
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
+			});
+
+			it('should override bucket in putObject call when bucket as string', async () => {
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					key: 'key',
+					data: mockData,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				await multipartUploadJob();
+				await expect(
+					mockCreateMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region,
+						abortSignal: expect.any(AbortSignal),
+					}),
+					expect.objectContaining({
+						Bucket: bucket,
+						Key: 'public/key',
+						ContentType: defaultContentType,
+					}),
+				);
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
 
@@ -773,6 +837,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -1023,6 +1088,146 @@ describe('getMultipartUploadHandlers with path', () => {
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 			expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
+		});
+
+		describe('overwrite prevention', () => {
+			beforeEach(() => {
+				mockHeadObject.mockReset();
+				mockUploadPart.mockReset();
+			});
+
+			it('should upload if target key is not found', async () => {
+				expect.assertions(7);
+				const notFoundError = new Error('mock message');
+				notFoundError.name = 'NotFound';
+				mockHeadObject.mockRejectedValueOnce(notFoundError);
+				mockMultipartUploadSuccess();
+
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					path: testPath,
+					data: new ArrayBuffer(8 * MB),
+					options: { preventOverwrite: true },
+				});
+				await multipartUploadJob();
+
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockHeadObject).toHaveBeenCalledTimes(1);
+				await expect(mockHeadObject).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region,
+					}),
+					expect.objectContaining({
+						Bucket: bucket,
+						Key: testPath,
+					}),
+				);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
+			});
+
+			it('should not upload if target key already exists', async () => {
+				expect.assertions(6);
+				mockHeadObject.mockResolvedValueOnce({
+					ContentLength: 0,
+					$metadata: {},
+				});
+				mockMultipartUploadSuccess();
+
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					path: testPath,
+					data: new ArrayBuffer(8 * MB),
+					options: { preventOverwrite: true },
+				});
+
+				await expect(multipartUploadJob()).rejects.toThrow(
+					'At least one of the pre-conditions you specified did not hold',
+				);
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
+			});
+
+			it('should not upload if HeadObject fails with other error', async () => {
+				expect.assertions(6);
+				const accessDeniedError = new Error('mock error');
+				accessDeniedError.name = 'AccessDenied';
+				mockHeadObject.mockRejectedValueOnce(accessDeniedError);
+				mockMultipartUploadSuccess();
+
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					path: testPath,
+					data: new ArrayBuffer(8 * MB),
+					options: { preventOverwrite: true },
+				});
+
+				await expect(multipartUploadJob()).rejects.toThrow('mock error');
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('bucket passed in options', () => {
+			const mockData = 'Ü'.repeat(4 * MB);
+			it('should override bucket in putObject call when bucket as object', async () => {
+				const mockBucket = 'bucket-1';
+				const mockRegion = 'region-1';
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					path: 'path/',
+					data: mockData,
+					options: {
+						bucket: { bucketName: mockBucket, region: mockRegion },
+					},
+				});
+				await multipartUploadJob();
+				await expect(
+					mockCreateMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region: mockRegion,
+						abortSignal: expect.any(AbortSignal),
+					}),
+					expect.objectContaining({
+						Bucket: mockBucket,
+						Key: 'path/',
+						ContentType: defaultContentType,
+					}),
+				);
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
+			});
+			it('should override bucket in putObject call when bucket as string', async () => {
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					path: 'path/',
+					data: mockData,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				await multipartUploadJob();
+				await expect(
+					mockCreateMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region,
+						abortSignal: expect.any(AbortSignal),
+					}),
+					expect.objectContaining({
+						Bucket: bucket,
+						Key: 'path/',
+						ContentType: defaultContentType,
+					}),
+				);
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
 

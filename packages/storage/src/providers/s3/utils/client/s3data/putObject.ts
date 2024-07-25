@@ -7,60 +7,62 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import {
-	AmplifyUrl,
-	AmplifyUrlSearchParams,
-} from '@aws-amplify/core/internals/utils';
+import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { defaultConfig } from './base';
-import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
 import {
 	assignStringVariables,
 	buildStorageServiceError,
 	map,
 	parseXmlError,
 	s3TransferHandler,
+	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
 
-// Content-length is ignored here because it's forbidden header
-// and will be set by browser or fetch polyfill.
-export type UploadPartInput = Pick<
-	UploadPartCommandInput,
-	| 'PartNumber'
-	| 'Body'
-	| 'UploadId'
+import { defaultConfig } from './base';
+import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
+
+export type PutObjectInput = Pick<
+	PutObjectCommandInput,
 	| 'Bucket'
 	| 'Key'
+	| 'Body'
+	| 'ACL'
+	| 'CacheControl'
+	| 'ContentDisposition'
+	| 'ContentEncoding'
+	| 'ContentType'
 	| 'ContentMD5'
+	| 'Expires'
+	| 'Metadata'
+	| 'Tagging'
 	| 'ChecksumCRC32'
 >;
 
-export type UploadPartOutput = Pick<
-	UploadPartCommandOutput,
-	'$metadata' | 'ETag'
+export type PutObjectOutput = Pick<
+	PutObjectCommandOutput,
+	// PutObject output is not exposed in public API, but only logged in the debug mode
+	// so we only expose $metadata, ETag and VersionId for debug purpose.
+	'$metadata' | 'ETag' | 'VersionId'
 >;
 
-const uploadPartSerializer = async (
-	input: UploadPartInput,
+const putObjectSerializer = async (
+	input: PutObjectInput,
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
-		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
+		...(await serializeObjectConfigsToHeaders({
+			...input,
+			ContentType: input.ContentType ?? 'application/octet-stream',
+		})),
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
-		'content-type': 'application/octet-stream',
+		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
-	validateS3RequiredParameter(!!input.PartNumber, 'PartNumber');
-	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
-	url.search = new AmplifyUrlSearchParams({
-		partNumber: input.PartNumber + '',
-		uploadId: input.UploadId,
-	}).toString();
 
 	return {
 		method: 'PUT',
@@ -70,9 +72,9 @@ const uploadPartSerializer = async (
 	};
 };
 
-const uploadPartDeserializer = async (
+const putObjectDeserializer = async (
 	response: HttpResponse,
-): Promise<UploadPartOutput> => {
+): Promise<PutObjectOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
 		throw buildStorageServiceError(error, response.statusCode);
@@ -80,15 +82,16 @@ const uploadPartDeserializer = async (
 		return {
 			...map(response.headers, {
 				ETag: 'etag',
+				VersionId: 'x-amz-version-id',
 			}),
 			$metadata: parseMetadata(response),
 		};
 	}
 };
 
-export const uploadPart = composeServiceApi(
+export const putObject = composeServiceApi(
 	s3TransferHandler,
-	uploadPartSerializer,
-	uploadPartDeserializer,
+	putObjectSerializer,
+	putObjectDeserializer,
 	{ ...defaultConfig, responseType: 'text' },
 );

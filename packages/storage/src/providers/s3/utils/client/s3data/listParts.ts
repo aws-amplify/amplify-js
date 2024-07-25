@@ -13,12 +13,6 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type {
-	CompletedPart,
-	ListPartsCommandInput,
-	ListPartsCommandOutput,
-} from './types';
-import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
 	deserializeNumber,
@@ -29,7 +23,14 @@ import {
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import type {
+	CompletedPart,
+	ListPartsCommandInput,
+	ListPartsCommandOutput,
+} from './types';
+import { defaultConfig } from './base';
 
 export type ListPartsInput = Pick<
 	ListPartsCommandInput,

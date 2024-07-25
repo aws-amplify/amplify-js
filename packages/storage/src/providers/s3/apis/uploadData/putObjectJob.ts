@@ -11,10 +11,12 @@ import {
 	validateStorageOperationInput,
 } from '../../utils';
 import { ItemWithKey, ItemWithPath } from '../../types/outputs';
-import { putObject } from '../../utils/client';
+import { putObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
 import { calculateContentCRC32 } from '../../utils/crc32';
+
+import { validateObjectNotExists } from './validateObjectNotExists';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -30,7 +32,7 @@ export const putObjectJob =
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
-			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
+			await resolveS3ConfigAndInput(Amplify, uploadDataInput);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
 			identityId,
@@ -42,11 +44,19 @@ export const putObjectJob =
 			contentDisposition,
 			contentEncoding,
 			contentType = 'application/octet-stream',
+			preventOverwrite,
 			metadata,
 			onProgress,
 		} = uploadDataOptions ?? {};
 
 		const ChecksumCRC32 = await calculateContentCRC32(data);
+		if (preventOverwrite) {
+			await validateObjectNotExists(s3Config, {
+				Bucket: bucket,
+				Key: finalKey,
+			});
+		}
+
 		const { ETag: eTag, VersionId: versionId } = await putObject(
 			{
 				...s3Config,

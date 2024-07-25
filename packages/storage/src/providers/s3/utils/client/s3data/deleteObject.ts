@@ -7,41 +7,39 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
-import {
-	AmplifyUrl,
-	AmplifyUrlSearchParams,
-} from '@aws-amplify/core/internals/utils';
-import { MetadataBearer } from '@aws-sdk/types';
 
-import type { AbortMultipartUploadCommandInput } from './types';
-import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
+	deserializeBoolean,
+	map,
 	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
 
-export type AbortMultipartUploadInput = Pick<
-	AbortMultipartUploadCommandInput,
-	'Bucket' | 'Key' | 'UploadId'
+import type {
+	DeleteObjectCommandInput,
+	DeleteObjectCommandOutput,
+} from './types';
+import { defaultConfig } from './base';
+
+export type DeleteObjectInput = Pick<
+	DeleteObjectCommandInput,
+	'Bucket' | 'Key'
 >;
 
-export type AbortMultipartUploadOutput = MetadataBearer;
+export type DeleteObjectOutput = DeleteObjectCommandOutput;
 
-const abortMultipartUploadSerializer = (
-	input: AbortMultipartUploadInput,
+const deleteObjectSerializer = (
+	input: DeleteObjectInput,
 	endpoint: Endpoint,
 ): HttpRequest => {
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
-	validateS3RequiredParameter(!!input.UploadId, 'UploadId');
-	url.search = new AmplifyUrlSearchParams({
-		uploadId: input.UploadId,
-	}).toString();
 
 	return {
 		method: 'DELETE',
@@ -50,22 +48,30 @@ const abortMultipartUploadSerializer = (
 	};
 };
 
-const abortMultipartUploadDeserializer = async (
+const deleteObjectDeserializer = async (
 	response: HttpResponse,
-): Promise<AbortMultipartUploadOutput> => {
+): Promise<DeleteObjectOutput> => {
 	if (response.statusCode >= 300) {
+		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
 		throw buildStorageServiceError(error, response.statusCode);
 	} else {
+		const content = map(response.headers, {
+			DeleteMarker: ['x-amz-delete-marker', deserializeBoolean],
+			VersionId: 'x-amz-version-id',
+			RequestCharged: 'x-amz-request-charged',
+		});
+
 		return {
+			...content,
 			$metadata: parseMetadata(response),
 		};
 	}
 };
 
-export const abortMultipartUpload = composeServiceApi(
+export const deleteObject = composeServiceApi(
 	s3TransferHandler,
-	abortMultipartUploadSerializer,
-	abortMultipartUploadDeserializer,
+	deleteObjectSerializer,
+	deleteObjectDeserializer,
 	{ ...defaultConfig, responseType: 'text' },
 );

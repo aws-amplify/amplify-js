@@ -3,7 +3,7 @@
 
 import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
-import { uploadPart } from '../../../utils/client';
+import { uploadPart } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
 import { calculateContentCRC32 } from '../../../utils/crc32';
 import { calculateContentMd5 } from '../../../utils';

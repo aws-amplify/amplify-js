@@ -10,77 +10,79 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
-import { defaultConfig } from './base';
 import {
 	assignStringVariables,
 	buildStorageServiceError,
+	map,
 	parseXmlBody,
 	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
 
-export type CopyObjectInput = Pick<
-	CopyObjectCommandInput,
-	| 'Bucket'
-	| 'CopySource'
-	| 'Key'
-	| 'MetadataDirective'
-	| 'CacheControl'
-	| 'ContentType'
-	| 'ContentDisposition'
-	| 'ContentLanguage'
-	| 'Expires'
-	| 'ACL'
-	| 'Tagging'
-	| 'Metadata'
+import type {
+	CreateMultipartUploadCommandInput,
+	CreateMultipartUploadCommandOutput,
+} from './types';
+import type { PutObjectInput } from './putObject';
+import { defaultConfig } from './base';
+
+export type CreateMultipartUploadInput = Extract<
+	CreateMultipartUploadCommandInput,
+	PutObjectInput
 >;
 
-export type CopyObjectOutput = CopyObjectCommandOutput;
+export type CreateMultipartUploadOutput = Pick<
+	CreateMultipartUploadCommandOutput,
+	'UploadId' | '$metadata'
+>;
 
-const copyObjectSerializer = async (
-	input: CopyObjectInput,
+const createMultipartUploadSerializer = async (
+	input: CreateMultipartUploadInput,
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
 		...(await serializeObjectConfigsToHeaders(input)),
 		...assignStringVariables({
-			'x-amz-copy-source': input.CopySource,
-			'x-amz-metadata-directive': input.MetadataDirective,
+			'x-amz-checksum-algorithm': input.ChecksumAlgorithm,
 		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	url.search = 'uploads';
 
 	return {
-		method: 'PUT',
+		method: 'POST',
 		headers,
 		url,
 	};
 };
 
-const copyObjectDeserializer = async (
+const createMultipartUploadDeserializer = async (
 	response: HttpResponse,
-): Promise<CopyObjectOutput> => {
+): Promise<CreateMultipartUploadOutput> => {
 	if (response.statusCode >= 300) {
 		const error = (await parseXmlError(response)) as Error;
 		throw buildStorageServiceError(error, response.statusCode);
 	} else {
-		await parseXmlBody(response);
+		const parsed = await parseXmlBody(response);
+		const contents = map(parsed, {
+			UploadId: 'UploadId',
+		});
 
 		return {
 			$metadata: parseMetadata(response),
+			...contents,
 		};
 	}
 };
 
-export const copyObject = composeServiceApi(
+export const createMultipartUpload = composeServiceApi(
 	s3TransferHandler,
-	copyObjectSerializer,
-	copyObjectDeserializer,
+	createMultipartUploadSerializer,
+	createMultipartUploadDeserializer,
 	{ ...defaultConfig, responseType: 'text' },
 );

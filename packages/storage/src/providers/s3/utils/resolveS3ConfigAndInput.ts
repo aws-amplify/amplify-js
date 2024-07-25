@@ -6,7 +6,20 @@ import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
-import { ResolvedS3Config } from '../types/options';
+import {
+	StorageOperationInputWithKey,
+	StorageOperationInputWithPath,
+	StorageOperationInputWithPrefix,
+} from '../../../types/inputs';
+import { StorageError } from '../../../errors/StorageError';
+import { CopyInput, CopyWithPathInput } from '../types';
+import { INVALID_STORAGE_INPUT } from '../../../errors/constants';
+import {
+	BucketInfo,
+	LocationCredentialsProvider,
+	ResolvedS3Config,
+	StorageBucket,
+} from '../types/options';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 
@@ -14,6 +27,8 @@ interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
+	locationCredentialsProvider?: LocationCredentialsProvider;
+	bucket?: StorageBucket;
 }
 
 interface ResolvedS3ConfigAndInput {
@@ -23,6 +38,16 @@ interface ResolvedS3ConfigAndInput {
 	isObjectLockEnabled?: boolean;
 	identityId?: string;
 }
+export type DeprecatedStorageInput =
+	| StorageOperationInputWithKey
+	| StorageOperationInputWithPrefix
+	| CopyInput;
+
+export type CallbackPathStorageInput =
+	| StorageOperationInputWithPath
+	| CopyWithPathInput;
+
+type StorageInput = DeprecatedStorageInput | CallbackPathStorageInput;
 
 /**
  * resolve the common input options for S3 API handlers from Amplify configuration and library options.
@@ -37,14 +62,14 @@ interface ResolvedS3ConfigAndInput {
  */
 export const resolveS3ConfigAndInput = async (
 	amplify: AmplifyClassV6,
-	apiOptions?: S3ApiOptions,
+	apiInput?: StorageInput & { options?: S3ApiOptions },
 ): Promise<ResolvedS3ConfigAndInput> => {
+	const { options: apiOptions } = apiInput ?? {};
 	/**
 	 * IdentityId is always cached in memory so we can safely make calls here. It
 	 * should be stable even for unauthenticated users, regardless of credentials.
 	 */
 	const { identityId } = await amplify.Auth.fetchAuthSession();
-	assertValidationError(!!identityId, StorageValidationErrorCode.NoIdentityId);
 
 	/**
 	 * A credentials provider function instead of a static credentials object is
@@ -53,7 +78,13 @@ export const resolveS3ConfigAndInput = async (
 	 * credentials if they are expired.
 	 */
 	const credentialsProvider = async () => {
-		const { credentials } = await amplify.Auth.fetchAuthSession();
+		if (isLocationCredentialsProvider(apiOptions)) {
+			assertStorageInput(apiInput);
+		}
+
+		const { credentials } = isLocationCredentialsProvider(apiOptions)
+			? await apiOptions.locationCredentialsProvider()
+			: await amplify.Auth.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			StorageValidationErrorCode.NoCredentials,
@@ -62,8 +93,16 @@ export const resolveS3ConfigAndInput = async (
 		return credentials;
 	};
 
-	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
-		amplify.getConfig()?.Storage?.S3 ?? {};
+	const {
+		bucket: defaultBucket,
+		region: defaultRegion,
+		dangerouslyConnectToHttpEndpointForTesting,
+		buckets,
+	} = amplify.getConfig()?.Storage?.S3 ?? {};
+
+	const { bucket = defaultBucket, region = defaultRegion } =
+		(apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
+
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 
@@ -73,15 +112,14 @@ export const resolveS3ConfigAndInput = async (
 		isObjectLockEnabled,
 	} = amplify.libraryOptions?.Storage?.S3 ?? {};
 
-	const keyPrefix = await prefixResolver({
-		accessLevel:
-			apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL,
-		// use conditional assign to make tsc happy because StorageOptions is a union type that may not have targetIdentityId
-		targetIdentityId:
-			apiOptions?.accessLevel === 'protected'
-				? apiOptions?.targetIdentityId ?? identityId
-				: identityId,
-	});
+	const accessLevel =
+		apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL;
+	const targetIdentityId =
+		accessLevel === 'protected'
+			? apiOptions?.targetIdentityId ?? identityId
+			: identityId;
+
+	const keyPrefix = await prefixResolver({ accessLevel, targetIdentityId });
 
 	return {
 		s3Config: {
@@ -100,4 +138,85 @@ export const resolveS3ConfigAndInput = async (
 		identityId,
 		isObjectLockEnabled,
 	};
+};
+
+const isLocationCredentialsProvider = (
+	options?: S3ApiOptions,
+): options is S3ApiOptions & {
+	locationCredentialsProvider: LocationCredentialsProvider;
+} => {
+	return !!options?.locationCredentialsProvider;
+};
+
+const isInputWithCallbackPath = (input?: CallbackPathStorageInput) => {
+	return (
+		((input as StorageOperationInputWithPath)?.path &&
+			typeof (input as StorageOperationInputWithPath).path === 'function') ||
+		((input as CopyWithPathInput)?.destination?.path &&
+			typeof (input as CopyWithPathInput).destination?.path === 'function') ||
+		((input as CopyWithPathInput)?.source?.path &&
+			typeof (input as CopyWithPathInput).source?.path === 'function')
+	);
+};
+
+const isDeprecatedInput = (
+	input?: StorageInput,
+): input is DeprecatedStorageInput => {
+	return (
+		isInputWithKey(input) ||
+		isInputWithPrefix(input) ||
+		isInputWithCopySourceOrDestination(input)
+	);
+};
+const assertStorageInput = (input?: StorageInput) => {
+	if (isDeprecatedInput(input) || isInputWithCallbackPath(input)) {
+		throw new StorageError({
+			name: INVALID_STORAGE_INPUT,
+			message: 'The input needs to have a path as a string value.',
+			recoverySuggestion:
+				'Please provide a valid path as a string value for the input.',
+		});
+	}
+};
+
+const isInputWithKey = (
+	input?: StorageInput,
+): input is StorageOperationInputWithKey => {
+	return !!(typeof (input as StorageOperationInputWithKey).key === 'string');
+};
+const isInputWithPrefix = (
+	input?: StorageInput,
+): input is StorageOperationInputWithPrefix => {
+	return !!(
+		typeof (input as StorageOperationInputWithPrefix).prefix === 'string'
+	);
+};
+const isInputWithCopySourceOrDestination = (
+	input?: StorageInput,
+): input is CopyInput => {
+	return !!(
+		typeof (input as CopyInput).source?.key === 'string' ||
+		typeof (input as CopyInput).destination?.key === 'string'
+	);
+};
+const resolveBucketConfig = (
+	apiOptions: S3ApiOptions,
+	buckets: Record<string, BucketInfo> | undefined,
+): { bucket: string; region: string } | undefined => {
+	if (typeof apiOptions.bucket === 'string') {
+		const bucketConfig = buckets?.[apiOptions.bucket];
+		assertValidationError(
+			!!bucketConfig,
+			StorageValidationErrorCode.InvalidStorageBucket,
+		);
+
+		return { bucket: bucketConfig.bucketName, region: bucketConfig.region };
+	}
+
+	if (typeof apiOptions.bucket === 'object') {
+		return {
+			bucket: apiOptions.bucket.bucketName,
+			region: apiOptions.bucket.region,
+		};
+	}
 };
