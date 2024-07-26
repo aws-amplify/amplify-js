@@ -5,7 +5,7 @@ import { TransferProgressEvent } from '../../../../../types';
 import { ResolvedS3Config } from '../../../types/options';
 import { uploadPart } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
-import { calculateContentCRC32 } from '../../../utils/crc32';
+import { CRC32Checksum, calculateContentCRC32 } from '../../../utils/crc32';
 import { calculateContentMd5 } from '../../../utils';
 
 import { PartToUpload } from './getDataChunker';
@@ -19,6 +19,7 @@ interface UploadPartExecutorOptions {
 	finalKey: string;
 	uploadId: string;
 	isObjectLockEnabled?: boolean;
+	useCRC32Checksum?: boolean;
 	onPartUploadCompletion(
 		partNumber: number,
 		eTag: string,
@@ -38,6 +39,7 @@ export const uploadPartExecutor = async ({
 	onPartUploadCompletion,
 	onProgress,
 	isObjectLockEnabled,
+	useCRC32Checksum,
 }: UploadPartExecutorOptions) => {
 	let transferredBytes = 0;
 	for (const { data, partNumber, size } of dataChunkerGenerator) {
@@ -54,7 +56,10 @@ export const uploadPartExecutor = async ({
 			});
 		} else {
 			// handle cancel error
-			const crc32 = await calculateContentCRC32(data);
+			let crc32: CRC32Checksum | undefined;
+			if (useCRC32Checksum) {
+				crc32 = await calculateContentCRC32(data);
+			}
 			const { ETag: eTag } = await uploadPart(
 				{
 					...s3Config,
@@ -73,8 +78,7 @@ export const uploadPartExecutor = async ({
 					Body: data,
 					PartNumber: partNumber,
 					ChecksumCRC32: crc32?.checksum,
-
-					// of checksum is undefined in react native
+					// if checksum is undefined in react native
 					ContentMD5:
 						crc32 === undefined && isObjectLockEnabled
 							? await calculateContentMd5(data)

@@ -327,7 +327,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				data: new Uint8Array(8 * MB),
 			});
 			await multipartUploadJob();
-			expect(calculateContentCRC32).toHaveBeenCalledTimes(3); // (final crc32 calculation = 1 undefined) + (2 part undefined)
+			expect(calculateContentCRC32).toHaveBeenCalledTimes(1); // (final crc32 calculation = 1 undefined)
 			expect(calculateContentMd5).toHaveBeenCalledTimes(2);
 			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 		});
@@ -965,7 +965,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				data: new Uint8Array(8 * MB),
 			});
 			await multipartUploadJob();
-			expect(calculateContentCRC32).toHaveBeenCalledTimes(3); // (final crc32 calculation = 1 undefined) + (2 part undefined)
+			expect(calculateContentCRC32).toHaveBeenCalledTimes(1); // (final crc32 calculation = 1 undefined)
 			expect(calculateContentMd5).toHaveBeenCalledTimes(2);
 			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 		});

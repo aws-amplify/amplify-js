@@ -179,6 +179,7 @@ export const getMultipartUploadHandlers = (
 					onPartUploadCompletion,
 					onProgress: concurrentUploadsProgressTracker.getOnProgressListener(),
 					isObjectLockEnabled: resolvedS3Options.isObjectLockEnabled,
+					useCRC32Checksum: Boolean(inProgressUpload.finalCrc32),
 				}),
 			);
 		}
