@@ -186,6 +186,7 @@ describe('putObjectJob with key', () => {
 					Key: 'public/key',
 					Body: data,
 					ContentType: 'application/octet-stream',
+					ChecksumCRC32: 'UgwMnQ==',
 				},
 			);
 		});
@@ -217,6 +218,7 @@ describe('putObjectJob with key', () => {
 					Key: 'public/key',
 					Body: data,
 					ContentType: 'application/octet-stream',
+					ChecksumCRC32: 'UgwMnQ==',
 				},
 			);
 		});
@@ -430,6 +432,7 @@ describe('putObjectJob with path', () => {
 					Key: 'path/',
 					Body: data,
 					ContentType: 'application/octet-stream',
+					ChecksumCRC32: 'UgwMnQ==',
 				},
 			);
 		});
@@ -461,6 +464,7 @@ describe('putObjectJob with path', () => {
 					Key: 'path/',
 					Body: data,
 					ContentType: 'application/octet-stream',
+					ChecksumCRC32: 'UgwMnQ==',
 				},
 			);
 		});
