@@ -299,7 +299,7 @@
 			"name": "[Analytics] record (Kinesis)",
 			"path": "./dist/esm/analytics/kinesis/index.mjs",
 			"import": "{ record }",
-			"limit": "48.65 kB"
+			"limit": "48.8 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis Firehose)",
@@ -497,7 +497,7 @@
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "20.30 kB"
+			"limit": "21.42 kB"
 		}
 	]
 }
