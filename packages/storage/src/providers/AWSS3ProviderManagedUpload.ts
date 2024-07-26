@@ -224,7 +224,10 @@ export class AWSS3ProviderManagedUpload {
 			MultipartUpload: { Parts: this.completedParts },
 		};
 		try {
-			const { Key } = await completeMultipartUpload(this.s3Config, input);
+			const { Key } = await completeMultipartUpload(
+				{ ...this.s3Config, emitter: undefined },
+				input
+			);
 			return Key;
 		} catch (error) {
 			logger.error('Error happened while finishing the upload.');
