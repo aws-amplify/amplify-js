@@ -288,9 +288,6 @@
 	"devDependencies": {
 		"typescript": "5.0.2"
 	},
-	"engines": {
-		"node": ">=18"
-	},
 	"size-limit": [
 		{
 			"name": "[Analytics] record (Pinpoint)",
