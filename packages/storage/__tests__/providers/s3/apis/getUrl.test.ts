@@ -328,7 +328,7 @@ describe('getUrl test with path', () => {
 				path: 'path',
 				expectedKey: 'path',
 				contentDisposition: {
-					type: 'invalid' as const,
+					type: 'invalid' as 'attachment' | 'inline',
 					filename: '"example.txt',
 				},
 			},
@@ -336,12 +336,12 @@ describe('getUrl test with path', () => {
 				path: 'path',
 				expectedKey: 'path',
 				contentDisposition: {
-					type: 'invalid' as const,
+					type: 'invalid' as 'attachment' | 'inline',
 				},
 			},
 		])(
 			'should ignore for invalid content disposition: $contentDisposition',
-			async ({ path, expectedKey }) => {
+			async ({ path, expectedKey, contentDisposition }) => {
 				const headObjectOptions = {
 					Bucket: bucket,
 					Key: expectedKey,
@@ -350,6 +350,7 @@ describe('getUrl test with path', () => {
 					path,
 					options: {
 						validateObjectExistence: true,
+						contentDisposition,
 					},
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);

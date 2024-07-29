@@ -6,11 +6,11 @@ import { ContentDisposition } from '../types/options';
 export const constructContentDisposition = (
 	contentDisposition?: string | ContentDisposition,
 ): string | undefined => {
-	if (typeof contentDisposition === 'object') {
-		const { type, filename } = contentDisposition;
+	if (!contentDisposition) return undefined;
 
-		return filename ? `${type}; filename="${filename}"` : type;
-	}
+	if (typeof contentDisposition === 'string') return contentDisposition;
 
-	return contentDisposition;
+	const { type, filename } = contentDisposition;
+
+	return filename !== undefined ? `${type}; filename="${filename}"` : type;
 };
