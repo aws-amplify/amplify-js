@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ErrorParser, HttpResponse } from '../../types';
+import { MiddlewareContext } from '../../types/core';
 
 import { isClockSkewError } from './isClockSkewError';
 import { isInvalidCredentialsError } from './isInvalidCredentialsError';
@@ -16,6 +17,7 @@ export const getRetryDecider =
 	async (
 		response?: HttpResponse,
 		error?: unknown,
+		middlewareContext?: MiddlewareContext,
 	): Promise<RetryDeciderOutput> => {
 		const parsedError =
 			(error as Error & { code: string }) ??
@@ -34,7 +36,10 @@ export const getRetryDecider =
 			isThrottlingError(statusCode, errorCode) ||
 			isClockSkewError(errorCode) ||
 			isServerSideError(statusCode, errorCode) ||
-			isInvalidCredentials;
+			// When error is caused by expired signature, we only want to retry once.
+			// If we know the previous retry attempt sets isCredentialsInvalid in the
+			// middleware context, we don't want to retry anymore.
+			(isInvalidCredentials && !middlewareContext?.isCredentialsInvalid);
 
 		return {
 			retryable: isRetryable,

@@ -101,7 +101,11 @@ describe(`retry middleware`, () => {
 			expect(e.message).toBe('UnretryableError');
 			expect(nextHandler).toHaveBeenCalledTimes(1);
 			expect(retryDecider).toHaveBeenCalledTimes(1);
-			expect(retryDecider).toHaveBeenCalledWith(undefined, expect.any(Error));
+			expect(retryDecider).toHaveBeenCalledWith(
+				undefined,
+				expect.any(Error),
+				expect.anything(),
+			);
 		}
 		expect.assertions(4);
 	});

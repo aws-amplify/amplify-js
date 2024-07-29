@@ -21,11 +21,13 @@ export interface RetryOptions<TResponse = Response> {
 	 *
 	 * @param response Optional response of the request.
 	 * @param error Optional error thrown from previous attempts.
+	 * @param middlewareContext Optional context object to store data between retries.
 	 * @returns True if the request should be retried.
 	 */
 	retryDecider(
 		response?: TResponse,
 		error?: unknown,
+		middlewareContext?: MiddlewareContext,
 	): Promise<RetryDeciderOutput>;
 	/**
 	 * Function to compute the delay in milliseconds before the next retry based
@@ -95,9 +97,7 @@ export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
 				const { isInvalidCredentialsError, retryable } = await retryDecider(
 					response,
 					error,
-				);
-				console.log(
-					`Attempt ${attemptsCount}/${maxAttempts}; retryable: ${retryable}; isInvalidCred: ${isInvalidCredentialsError}`,
+					context,
 				);
 				if (retryable) {
 					// Setting isCredentialsInvalid flag to notify signing middleware to forceRefresh credentials provider.
