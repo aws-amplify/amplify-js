@@ -518,7 +518,7 @@ tests:
     desc: 'Sign-out of OIDC provider'
     framework: vue
     category: auth
-    sample_name: [sign-out-oidc-provider]
+    sample_name: [sign-in-with-oauth]
     spec: sign-out-oidc-provider
     browser: [chrome]
 
