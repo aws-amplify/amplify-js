@@ -9,11 +9,11 @@ const INVALID_TOKEN_ERROR_CODES = [
 ];
 
 /**
- * Given an error code, returns true if it is related to a invalid credentials.
+ * Given an error code, returns true if it is related to invalid credentials.
  *
  * @param errorCode String representation of some error.
  * @returns True if given error indicates the credentials used to authorize request
- * is invalid.
+ * are invalid.
  *
  * @internal
  */
@@ -23,6 +23,7 @@ export const isInvalidCredentialsError = (
 ) => {
 	const isExpiredTokenError =
 		!!errorCode && INVALID_TOKEN_ERROR_CODES.includes(errorCode);
+	// Ref: https://github.com/aws/aws-sdk-js/blob/54829e341181b41573c419bd870dd0e0f8f10632/lib/event_listeners.js#L536-L539
 	const isExpiredSignatureError =
 		!!errorCode &&
 		!!errorMessage &&

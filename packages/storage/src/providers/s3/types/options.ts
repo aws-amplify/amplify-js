@@ -3,7 +3,10 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { SigningOptions } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	CredentialsProviderOptions,
+	SigningOptions,
+} from '@aws-amplify/core/internals/aws-client-utils';
 
 import { TransferProgressEvent } from '../../../types';
 import {
@@ -15,9 +18,9 @@ import {
 /**
  * @internal
  */
-export type LocationCredentialsProvider = (options?: {
-	forceRefresh?: boolean;
-}) => Promise<{ credentials: AWSCredentials }>;
+export type LocationCredentialsProvider = (
+	input?: CredentialsProviderOptions,
+) => Promise<{ credentials: AWSCredentials }>;
 
 export interface BucketInfo {
 	bucketName: string;

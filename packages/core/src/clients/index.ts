@@ -15,7 +15,11 @@ export {
 } from './middleware/signing/signer/signatureV4';
 export { EMPTY_HASH as EMPTY_SHA256_HASH } from './middleware/signing/signer/signatureV4/constants';
 export { extendedEncodeURIComponent } from './middleware/signing/utils/extendedEncodeURIComponent';
-export { signingMiddlewareFactory, SigningOptions } from './middleware/signing';
+export {
+	signingMiddlewareFactory,
+	SigningOptions,
+	CredentialsProviderOptions,
+} from './middleware/signing';
 export {
 	getRetryDecider,
 	RetryDeciderOutput,

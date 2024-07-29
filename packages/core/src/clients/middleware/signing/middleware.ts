@@ -14,12 +14,20 @@ import { getSkewCorrectedDate } from './utils/getSkewCorrectedDate';
 import { getUpdatedSystemClockOffset } from './utils/getUpdatedSystemClockOffset';
 
 /**
+ * Options type for the async callback function returning aws credentials. This
+ * function is used by SigV4 signer to resolve the aws credentials
+ */
+export interface CredentialsProviderOptions {
+	forceRefresh?: boolean;
+}
+
+/**
  * Configuration of the signing middleware
  */
 export interface SigningOptions {
 	credentials:
 		| Credentials
-		| ((options?: { forceRefresh?: boolean }) => Promise<Credentials>);
+		| ((options?: CredentialsProviderOptions) => Promise<Credentials>);
 	region: string;
 	service: string;
 
@@ -50,12 +58,12 @@ export const signingMiddlewareFactory = ({
 	) =>
 		async function signingMiddleware(request: HttpRequest) {
 			currentSystemClockOffset = currentSystemClockOffset ?? 0;
-			const shouldForceRefreshCredentials =
-				context?.isCredentialsInvalid ?? false;
 			const signRequestOptions = {
 				credentials:
 					typeof credentials === 'function'
-						? await credentials({ forceRefresh: shouldForceRefreshCredentials })
+						? await credentials({
+								forceRefresh: !!context?.isCredentialsInvalid,
+							})
 						: credentials,
 				signingDate: getSkewCorrectedDate(currentSystemClockOffset),
 				signingRegion: region,
