@@ -496,4 +496,83 @@ describe(AWSS3ProviderManagedUpload.name, () => {
 			);
 		});
 	});
+
+	describe('completeMultipartUpload tests', () => {
+		test('should call completeMultipartUpload with emitter set to undefined', async () => {
+			const mockInput = {
+				Bucket: 'testBucket',
+				Key: 'public/testKey',
+				UploadId: 'testUploadId',
+				MultipartUpload: { Parts: [] },
+			};
+
+			(completeMultipartUpload as jest.Mock).mockResolvedValue({
+				Key: 'returnedKey',
+			});
+
+			const uploader = new AWSS3ProviderManagedUpload(
+				{ ...baseParams, Body: 'test' },
+				testOpts,
+				new events.EventEmitter()
+			);
+
+			await uploader['finishMultiPartUpload']('testUploadId');
+
+			expect(completeMultipartUpload).toHaveBeenCalledWith(
+				expect.objectContaining({ emitter: undefined }),
+				expect.objectContaining(mockInput)
+			);
+		});
+	});
+
+	test('should not emit progress events during finishMultiPartUpload', async () => {
+		(completeMultipartUpload as jest.Mock).mockResolvedValue({
+			Key: 'returnedKey',
+		});
+
+		const emitter = new events.EventEmitter();
+		const progressSpy = jest.spyOn(emitter, 'emit');
+
+		const uploader = new AWSS3ProviderManagedUpload(
+			{ ...baseParams, Body: 'test' },
+			testOpts,
+			emitter
+		);
+
+		await uploader['finishMultiPartUpload']('testUploadId');
+
+		expect(progressSpy).not.toHaveBeenCalled();
+	});
+
+	test('should return the Key from completeMultipartUpload response', async () => {
+		(completeMultipartUpload as jest.Mock).mockResolvedValue({
+			Key: 'returnedKey',
+		});
+
+		const uploader = new AWSS3ProviderManagedUpload(
+			{ ...baseParams, Body: 'test' },
+			testOpts,
+			new events.EventEmitter()
+		);
+
+		const result = await uploader['finishMultiPartUpload']('testUploadId');
+
+		expect(result).toBe('returnedKey');
+	});
+
+	test('should throw an error if completeMultipartUpload fails', async () => {
+		(completeMultipartUpload as jest.Mock).mockRejectedValue(
+			new Error('Upload failed')
+		);
+
+		const uploader = new AWSS3ProviderManagedUpload(
+			{ ...baseParams, Body: 'test' },
+			testOpts,
+			new events.EventEmitter()
+		);
+
+		await expect(
+			uploader['finishMultiPartUpload']('testUploadId')
+		).rejects.toThrow('Upload failed');
+	});
 });
