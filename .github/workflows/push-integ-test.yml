@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - fix-v6/fast-xml-parser
 
 jobs:
   e2e:
