@@ -18,9 +18,19 @@ import {
 /**
  * @internal
  */
+export type AWSTemporaryCredentials = Required<
+	Pick<
+		AWSCredentials,
+		'accessKeyId' | 'secretAccessKey' | 'sessionToken' | 'expiration'
+	>
+>;
+
+/**
+ * @internal
+ */
 export type LocationCredentialsProvider = (
-	input?: CredentialsProviderOptions,
-) => Promise<{ credentials: AWSCredentials }>;
+	options?: CredentialsProviderOptions,
+) => Promise<{ credentials: AWSTemporaryCredentials }>;
 
 export interface BucketInfo {
 	bucketName: string;

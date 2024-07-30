@@ -12,6 +12,10 @@ import {
 } from '../../../src/storageBrowser/locationCredentialsStore/store';
 import { CredentialsLocation } from '../../../src/storageBrowser/types';
 
+const mockCredentials = {
+	expiration: new Date(Date.now() + 60 * 60_1000),
+};
+
 describe('initStore', () => {
 	it('should create a store with given capacity, refresh Handler and values', () => {
 		const refreshHandler = jest.fn();
@@ -42,7 +46,7 @@ describe('initStore', () => {
 describe('getCacheValue', () => {
 	it('should return a cache value for given location and permission', () => {
 		const cachedValue = {
-			credentials: 'MOCK_CREDS',
+			credentials: mockCredentials,
 			scope: 'abc',
 			permission: 'READ',
 		} as any;
@@ -114,7 +118,6 @@ describe('fetchNewValue', () => {
 
 	it('should fetch new value from remote source', async () => {
 		expect.assertions(2);
-		const mockCredentials = 'MOCK_CREDS';
 		const refreshHandler = jest.fn().mockResolvedValue({
 			credentials: mockCredentials,
 		});
@@ -143,7 +146,6 @@ describe('fetchNewValue', () => {
 
 	it('should update cache with new value', async () => {
 		expect.assertions(1);
-		const mockCredentials = 'MOCK_CREDS';
 		const refreshHandler = jest.fn().mockResolvedValue({
 			credentials: mockCredentials,
 		});
@@ -159,7 +161,6 @@ describe('fetchNewValue', () => {
 
 	it('should invoke refresh handler only once if multiple fetches for same location is called', async () => {
 		expect.assertions(1);
-		const mockCredentials = 'MOCK_CREDS';
 		const refreshHandler = jest.fn().mockResolvedValue({
 			credentials: mockCredentials,
 		});
@@ -174,7 +175,6 @@ describe('fetchNewValue', () => {
 
 	it('should invoke the refresh handler if the refresh handler previously fails', async () => {
 		expect.assertions(4);
-		const mockCredentials = 'MOCK_CREDS';
 		const refreshHandler = jest
 			.fn()
 			.mockRejectedValueOnce(new Error('Network error'))
@@ -199,7 +199,6 @@ describe('fetchNewValue', () => {
 
 	it('should call refresh handler for new cache entry if the cache is full', async () => {
 		expect.assertions(4);
-		const mockCredentials = 'MOCK_CREDS';
 		const refreshHandler = jest.fn().mockResolvedValue({
 			credentials: mockCredentials,
 		});

@@ -45,10 +45,16 @@ export const getDataAccess = async (
 	const grantCredentials = result.Credentials;
 
 	// Ensure that S3 returned credentials (this shouldn't happen)
-	if (!grantCredentials) {
+	if (
+		!grantCredentials ||
+		!grantCredentials.AccessKeyId ||
+		!grantCredentials.SecretAccessKey ||
+		!grantCredentials.SessionToken ||
+		!grantCredentials.Expiration
+	) {
 		throw new StorageError({
 			name: AmplifyErrorCode.Unknown,
-			message: 'Service did not return credentials.',
+			message: 'Service did not return valid temporary credentials.',
 		});
 	} else {
 		logger.debug(`Retrieved credentials for: ${result.MatchedGrantTarget}`);
@@ -63,8 +69,8 @@ export const getDataAccess = async (
 
 	return {
 		credentials: {
-			accessKeyId: accessKeyId!,
-			secretAccessKey: secretAccessKey!,
+			accessKeyId,
+			secretAccessKey,
 			sessionToken,
 			expiration,
 		},

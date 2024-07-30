@@ -97,7 +97,7 @@ describe('getDataAccess', () => {
 		});
 
 		expect(getDataAccess(sharedGetDataAccessParams)).rejects.toThrow(
-			'Service did not return credentials.',
+			'Service did not return valid temporary credentials.',
 		);
 	});
 
