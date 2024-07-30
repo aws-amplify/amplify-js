@@ -14,39 +14,28 @@ export const calculateContentCRC32 = async (
 	seed = 0,
 ): Promise<CRC32Checksum | undefined> => {
 	let internalSeed = seed;
+	let blob: Blob;
 
-	if (typeof content === 'string') {
-		internalSeed = crc32.str(content, internalSeed);
-	} else if (ArrayBuffer.isView(content)) {
-		internalSeed =
-			crc32.buf(new Uint8Array(content.buffer), internalSeed) >>> 0;
-	} else if (content instanceof ArrayBuffer) {
-		internalSeed = crc32.buf(new Uint8Array(content), internalSeed) >>> 0;
+	if (content instanceof Blob) {
+		blob = content;
 	} else {
-		await content.stream().pipeTo(
-			new WritableStream<Uint8Array>({
-				write(chunk) {
-					internalSeed = crc32.buf(chunk, internalSeed) >>> 0;
-				},
-			}),
-		);
+		blob = new Blob([content]);
 	}
-	const hex = padZeros(internalSeed.toString(16));
+
+	await blob.stream().pipeTo(
+		new WritableStream<Uint8Array>({
+			write(chunk) {
+				internalSeed = crc32.buf(chunk, internalSeed) >>> 0;
+			},
+		}),
+	);
+	const hex = internalSeed.toString(16).padStart(8, '0');
 
 	return {
 		checksumArrayBuffer: hexToArrayBuffer(hex),
 		checksum: hexToBase64(hex),
 		seed: internalSeed,
 	};
-};
-
-const padZeros = (input: string) => {
-	let output = input;
-	while (output.length < 8) {
-		output = `0${output}`;
-	}
-
-	return output;
 };
 
 const hexToArrayBuffer = (hexString: string) =>
