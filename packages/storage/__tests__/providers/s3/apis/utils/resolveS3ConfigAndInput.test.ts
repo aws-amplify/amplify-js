@@ -241,8 +241,10 @@ describe('resolveS3ConfigAndInput', () => {
 			});
 
 			if (typeof s3Config.credentials === 'function') {
-				const result = await s3Config.credentials();
-				expect(mockLocationCredentialsProvider).toHaveBeenCalled();
+				const result = await s3Config.credentials({ forceRefresh: true });
+				expect(mockLocationCredentialsProvider).toHaveBeenCalledWith({
+					forceRefresh: true,
+				});
 				expect(result).toEqual(credentials);
 			} else {
 				throw new Error('Expect credentials to be a function');

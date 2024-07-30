@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
+import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
@@ -76,14 +77,20 @@ export const resolveS3ConfigAndInput = async (
 	 * used because the long-running tasks like multipart upload may span over the
 	 * credentials expiry. Auth.fetchAuthSession() automatically refreshes the
 	 * credentials if they are expired.
+	 *
+	 * The optional forceRefresh option is set when the S3 service returns expired
+	 * tokens error in the previous API call attempt.
 	 */
-	const credentialsProvider = async () => {
+	const credentialsProvider = async (options?: CredentialsProviderOptions) => {
 		if (isLocationCredentialsProvider(apiOptions)) {
 			assertStorageInput(apiInput);
 		}
 
+		// TODO: forceRefresh option of fetchAuthSession would refresh both tokens and
+		// AWS credentials. So we do not support forceRefreshing from the Auth until
+		// we support refreshing only the credentials.
 		const { credentials } = isLocationCredentialsProvider(apiOptions)
-			? await apiOptions.locationCredentialsProvider()
+			? await apiOptions.locationCredentialsProvider(options)
 			: await amplify.Auth.fetchAuthSession();
 		assertValidationError(
 			!!credentials,

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
+import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { listCallerAccessGrants } from '../../../src/storageBrowser/apis/listCallerAccessGrants';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../../src/providers/s3/utils/client/s3control';
 
@@ -8,7 +10,15 @@ jest.mock('../../../src/providers/s3/utils/client/s3control');
 
 const mockAccountId = '1234567890';
 const mockRegion = 'us-foo-2';
-const mockCredentialsProvider = jest.fn();
+const mockCredentials = {
+	accessKeyId: 'key',
+	secretAccessKey: 'secret',
+	sessionToken: 'session',
+	expiration: new Date(),
+};
+const mockCredentialsProvider = jest
+	.fn()
+	.mockResolvedValue({ credentials: mockCredentials });
 const mockNextToken = '123';
 const mockPageSize = 123;
 
@@ -18,7 +28,7 @@ describe('listCallerAccessGrants', () => {
 	});
 
 	it('should invoke the listCallerAccessGrants client with expected parameters', async () => {
-		expect.assertions(1);
+		expect.assertions(4);
 		jest.mocked(listCallerAccessGrantsClient).mockResolvedValue({
 			NextToken: undefined,
 			CallerAccessGrantsList: [],
@@ -42,6 +52,17 @@ describe('listCallerAccessGrants', () => {
 				MaxResults: mockPageSize,
 			}),
 		);
+		const inputCredentialsProvider = jest.mocked(listCallerAccessGrantsClient)
+			.mock.calls[0][0].credentials as (
+			input: CredentialsProviderOptions,
+		) => any;
+		expect(inputCredentialsProvider).toBeInstanceOf(Function);
+		await expect(
+			inputCredentialsProvider({ forceRefresh: true }),
+		).resolves.toEqual(mockCredentials);
+		expect(mockCredentialsProvider).toHaveBeenCalledWith({
+			forceRefresh: true,
+		});
 	});
 
 	it('should set a default page size', async () => {

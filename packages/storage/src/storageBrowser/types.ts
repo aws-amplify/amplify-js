@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
+import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { LocationCredentialsProvider } from '../providers/s3/types/options';
 
@@ -13,9 +14,9 @@ export type Permission = 'READ' | 'READWRITE' | 'WRITE';
 /**
  * @internal
  */
-export type CredentialsProvider = (options?: {
-	forceRefresh?: boolean;
-}) => Promise<{ credentials: AWSCredentials }>;
+export type CredentialsProvider = (
+	options?: CredentialsProviderOptions,
+) => Promise<{ credentials: AWSCredentials }>;
 
 /**
  * @internal
