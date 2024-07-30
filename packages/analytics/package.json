@@ -93,9 +93,9 @@
 		"personalize"
 	],
 	"dependencies": {
-		"@aws-sdk/client-firehose": "3.398.0",
-		"@aws-sdk/client-kinesis": "3.398.0",
-		"@aws-sdk/client-personalize-events": "3.398.0",
+		"@aws-sdk/client-firehose": "3.620.0",
+		"@aws-sdk/client-kinesis": "3.620.0",
+		"@aws-sdk/client-personalize-events": "3.620.0",
 		"@smithy/util-utf8": "2.0.0",
 		"tslib": "^2.5.0"
 	},
