@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export { LocationCredentialsProvider } from '../providers/s3/types/options';
+export { StorageSubpathStrategy } from '../types/options';
 
 export { createLocationCredentialsStore } from './locationCredentialsStore';
 export {
