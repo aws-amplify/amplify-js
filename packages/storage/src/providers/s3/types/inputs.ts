@@ -35,6 +35,8 @@ import {
 	UploadDataOptionsWithPath,
 } from '../types';
 
+import { Bucket } from './options';
+
 // TODO: support use accelerate endpoint option
 /**
  * @deprecated Use {@link CopyWithPathInput} instead.
@@ -47,7 +49,14 @@ export type CopyInput = StorageCopyInputWithKey<
 /**
  * Input type with path for S3 copy API.
  */
-export type CopyWithPathInput = StorageCopyInputWithPath;
+export type CopyWithPathInput = StorageCopyInputWithPath<
+	{
+		bucket?: Bucket;
+	},
+	{
+		bucket?: Bucket;
+	}
+>;
 
 /**
  * @deprecated Use {@link GetPropertiesWithPathInput} instead.

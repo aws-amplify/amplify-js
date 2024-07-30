@@ -11,12 +11,21 @@ import {
 	StorageSubpathStrategy,
 } from '../../../types/options';
 
+export interface BucketInfo {
+	bucketName: string;
+	region: string;
+}
+
+export type Bucket = string | BucketInfo;
+
 interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
 	 */
 	useAccelerateEndpoint?: boolean;
+	/** Bucket information */
+	bucket?: Bucket;
 }
 
 /** @deprecated This may be removed in the next major version. */

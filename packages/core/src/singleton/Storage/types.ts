@@ -6,6 +6,14 @@ import { AtLeastOne } from '../types';
 /** @deprecated This may be removed in the next major version. */
 export type StorageAccessLevel = 'guest' | 'protected' | 'private';
 
+/** Bucket to store files/objects */
+export interface BucketInfo {
+	/** actual bucket name */
+	bucketName: string;
+	/** Region of the bucket */
+	region: string;
+}
+
 export interface S3ProviderConfig {
 	S3: {
 		bucket?: string;
@@ -16,6 +24,7 @@ export interface S3ProviderConfig {
 		 * @internal
 		 */
 		dangerouslyConnectToHttpEndpointForTesting?: string;
+		buckets?: Record<string, BucketInfo>;
 	};
 }
 

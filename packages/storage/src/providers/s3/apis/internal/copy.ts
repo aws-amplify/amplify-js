@@ -60,12 +60,16 @@ const copyWithPath = async (
 
 	const finalCopySource = `${bucket}/${sourcePath}`;
 	const finalCopyDestination = destinationPath;
+	const destinationBucket = destination.bucket?.name;
+	if (destination.bucket) {
+		s3Config.region = destination.bucket.region;
+	}
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
 
 	await serviceCopy({
 		source: finalCopySource,
 		destination: finalCopyDestination,
-		bucket,
+		bucket: destinationBucket ?? bucket,
 		s3Config,
 	});
 
