@@ -18,25 +18,14 @@
     graphql "15.8.0"
     rxjs "^7.8.1"
 
-"@aws-amplify/data-schema@^1.0.0":
-  version "1.3.10"
-  resolved "https://registry.npmjs.org/@aws-amplify/data-schema/-/data-schema-1.3.10.tgz#e83ef1d8d11efb821b282e499c373f64f3bf60ae"
-  integrity sha512-rUo6wb+DO6aGCSeSiB8wb92O4cEuN4sZBXn7TgqaYc8Bv4HutrLaIlptgXCYJMkaAp/h9rxyi6wIFJ7bEyD/6g==
+"@aws-amplify/data-schema@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@aws-amplify/data-schema/-/data-schema-1.0.0.tgz#435f7320bdde034e130a12d0c3613e18d5089b08"
+  integrity sha512-pvXko9gDnBqyNshXwrkAer3CbFGkwtlMI35wJk48+N1rxLXKLYElADZj6kWwZXmBbI67uD4ZJ3s62Qzsb6lZZA==
   dependencies:
     "@aws-amplify/data-schema-types" "*"
     "@types/aws-lambda" "^8.10.134"
     rxjs "^7.8.1"
-
-"@aws-amplify/storage@6.5.2":
-  version "6.5.2"
-  resolved "https://registry.npmjs.org/@aws-amplify/storage/-/storage-6.5.2.tgz#45c5c55b3ea5bd67e6b7466ce6f7b82116e24d97"
-  integrity sha512-6wxBE81qMw7vwdGvIhwTLXM/ZQ4nlgFb8p2QjhXqC4cm5mS0kUxGXhJJ7NdNjFMrax9qxULSi3LJePhzbConLw==
-  dependencies:
-    "@aws-sdk/types" "3.398.0"
-    "@smithy/md5-js" "2.0.7"
-    buffer "4.9.2"
-    fast-xml-parser "^4.2.5"
-    tslib "^2.5.0"
 
 "@aws-crypto/crc32@3.0.0":
   version "3.0.0"

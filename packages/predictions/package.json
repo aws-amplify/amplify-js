@@ -43,7 +43,7 @@
 		"src"
 	],
 	"dependencies": {
-		"@aws-amplify/storage": "6.5.2",
+		"@aws-amplify/storage": "6.5.3",
 		"@aws-sdk/client-comprehend": "3.428.0",
 		"@aws-sdk/client-polly": "3.428.0",
 		"@aws-sdk/client-rekognition": "3.428.0",
