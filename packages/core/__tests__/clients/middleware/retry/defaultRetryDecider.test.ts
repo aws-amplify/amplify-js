@@ -4,14 +4,14 @@
 import { HttpResponse } from '../../../../src/clients';
 import { getRetryDecider } from '../../../../src/clients/middleware/retry';
 import { isClockSkewError } from '../../../../src/clients/middleware/retry/isClockSkewError';
-import { isInvalidCredentialsError as isInvalidCredentialsValidator } from '../../../../src/clients/middleware/retry/isInvalidCredentialsError';
+import { isCredentialsExpiredError as isCredentialsExpiredErrorValidator } from '../../../../src/clients/middleware/retry/isCredentialsExpiredError';
 
 jest.mock('../../../../src/clients/middleware/retry/isClockSkewError');
-jest.mock('../../../../src/clients/middleware/retry/isInvalidCredentialsError');
+jest.mock('../../../../src/clients/middleware/retry/isCredentialsExpiredError');
 
 const mockIsClockSkewError = jest.mocked(isClockSkewError);
-const mockIsInvalidCredentialsError = jest.mocked(
-	isInvalidCredentialsValidator,
+const mockIsCredentialsExpiredError = jest.mocked(
+	isCredentialsExpiredErrorValidator,
 );
 
 describe('getRetryDecider', () => {
@@ -32,13 +32,13 @@ describe('getRetryDecider', () => {
 		const connectionError = Object.assign(new Error(), {
 			name: 'Network error',
 		});
-		const { retryable, isInvalidCredentialsError } = await retryDecider(
+		const { retryable, isCredentialsExpiredError } = await retryDecider(
 			mockHttpResponse,
 			connectionError,
 			{},
 		);
 		expect(retryable).toBe(true);
-		expect(isInvalidCredentialsError).toBeFalsy();
+		expect(isCredentialsExpiredError).toBeFalsy();
 	});
 
 	describe('handling throttling errors', () => {
@@ -62,19 +62,22 @@ describe('getRetryDecider', () => {
 				code: errorCode,
 			});
 			const retryDecider = getRetryDecider(mockErrorParser);
-			const { retryable, isInvalidCredentialsError } = await retryDecider(
+			const { retryable, isCredentialsExpiredError } = await retryDecider(
 				mockHttpResponse,
 				undefined,
 				{},
 			);
 			expect(retryable).toBe(true);
-			expect(isInvalidCredentialsError).toBeFalsy();
+			expect(isCredentialsExpiredError).toBeFalsy();
 		});
 
 		it('should set retryable for 402 error', async () => {
 			expect.assertions(2);
 			const retryDecider = getRetryDecider(mockErrorParser);
-			const { retryable, isInvalidCredentialsError } = await retryDecider(
+			const {
+				retryable,
+				isCredentialsExpiredError: isInvalidCredentialsError,
+			} = await retryDecider(
 				{
 					...mockHttpResponse,
 					statusCode: 429,
@@ -95,13 +98,13 @@ describe('getRetryDecider', () => {
 				mockErrorParser.mockResolvedValue(parsedError);
 				mockIsClockSkewError.mockReturnValue(true);
 				const retryDecider = getRetryDecider(mockErrorParser);
-				const { retryable, isInvalidCredentialsError } = await retryDecider(
+				const { retryable, isCredentialsExpiredError } = await retryDecider(
 					mockHttpResponse,
 					undefined,
 					{},
 				);
 				expect(retryable).toBe(true);
-				expect(isInvalidCredentialsError).toBeFalsy();
+				expect(isCredentialsExpiredError).toBeFalsy();
 				expect(mockIsClockSkewError).toHaveBeenCalledWith(
 					Object.values(parsedError)[0],
 				);
@@ -113,7 +116,7 @@ describe('getRetryDecider', () => {
 		'should handle server-side status code %s',
 		async statusCode => {
 			const retryDecider = getRetryDecider(mockErrorParser);
-			const { retryable, isInvalidCredentialsError } = await retryDecider(
+			const { retryable, isCredentialsExpiredError } = await retryDecider(
 				{
 					...mockHttpResponse,
 					statusCode,
@@ -122,7 +125,7 @@ describe('getRetryDecider', () => {
 				{},
 			);
 			expect(retryable).toBe(true);
-			expect(isInvalidCredentialsError).toBeFalsy();
+			expect(isCredentialsExpiredError).toBeFalsy();
 		},
 	);
 
@@ -132,13 +135,13 @@ describe('getRetryDecider', () => {
 			expect.assertions(2);
 			mockErrorParser.mockResolvedValue({ code: errorCode });
 			const retryDecider = getRetryDecider(mockErrorParser);
-			const { retryable, isInvalidCredentialsError } = await retryDecider(
+			const { retryable, isCredentialsExpiredError } = await retryDecider(
 				mockHttpResponse,
 				undefined,
 				{},
 			);
 			expect(retryable).toBe(true);
-			expect(isInvalidCredentialsError).toBeFalsy();
+			expect(isCredentialsExpiredError).toBeFalsy();
 		},
 	);
 
@@ -157,16 +160,16 @@ describe('getRetryDecider', () => {
 		])('should retry if expired credentials error %o', async parsedError => {
 			expect.assertions(3);
 			mockErrorParser.mockResolvedValue(parsedError);
-			mockIsInvalidCredentialsError.mockReturnValue(true);
+			mockIsCredentialsExpiredError.mockReturnValue(true);
 			const retryDecider = getRetryDecider(mockErrorParser);
-			const { retryable, isInvalidCredentialsError } = await retryDecider(
+			const { retryable, isCredentialsExpiredError } = await retryDecider(
 				mockHttpResponse,
 				undefined,
 				{},
 			);
 			expect(retryable).toBe(true);
-			expect(isInvalidCredentialsError).toBe(true);
-			expect(mockIsInvalidCredentialsError).toHaveBeenCalledWith(
+			expect(isCredentialsExpiredError).toBe(true);
+			expect(mockIsCredentialsExpiredError).toHaveBeenCalledWith(
 				mockErrorName,
 				mockErrorMessage,
 			);
@@ -174,15 +177,15 @@ describe('getRetryDecider', () => {
 
 		it('should not retry if invalid credentials error has been retried previously', async () => {
 			expect.assertions(2);
-			mockIsInvalidCredentialsError.mockReturnValue(true);
+			mockIsCredentialsExpiredError.mockReturnValue(true);
 			const retryDecider = getRetryDecider(mockErrorParser);
-			const { retryable, isInvalidCredentialsError } = await retryDecider(
+			const { retryable, isCredentialsExpiredError } = await retryDecider(
 				mockHttpResponse,
 				undefined,
-				{ isCredentialsInvalid: true },
+				{ isCredentialsExpired: true },
 			);
 			expect(retryable).toBe(false);
-			expect(isInvalidCredentialsError).toBe(true);
+			expect(isCredentialsExpiredError).toBe(true);
 		});
 	});
 });

@@ -94,14 +94,14 @@ export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
 						? context.attemptsCount ?? 0
 						: attemptsCount + 1;
 				context.attemptsCount = attemptsCount;
-				const { isInvalidCredentialsError, retryable } = await retryDecider(
+				const { isCredentialsExpiredError, retryable } = await retryDecider(
 					response,
 					error,
 					context,
 				);
 				if (retryable) {
 					// Setting isCredentialsInvalid flag to notify signing middleware to forceRefresh credentials provider.
-					context.isCredentialsInvalid = !!isInvalidCredentialsError;
+					context.isCredentialsExpired = !!isCredentialsExpiredError;
 					if (!abortSignal?.aborted && attemptsCount < maxAttempts) {
 						// prevent sleep for last attempt or cancelled request;
 						const delay = computeDelay(attemptsCount);

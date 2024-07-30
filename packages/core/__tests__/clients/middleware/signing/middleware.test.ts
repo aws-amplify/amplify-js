@@ -120,7 +120,7 @@ describe('Signing middleware', () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
 		const setInvalidCredsMiddleware: Middleware<any, any, any> =
 			() => (next, context) => request => {
-				context.isCredentialsInvalid = true;
+				context.isCredentialsExpired = true;
 
 				return next(request);
 			};

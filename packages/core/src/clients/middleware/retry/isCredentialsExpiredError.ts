@@ -17,7 +17,7 @@ const INVALID_TOKEN_ERROR_CODES = [
  *
  * @internal
  */
-export const isInvalidCredentialsError = (
+export const isCredentialsExpiredError = (
 	errorCode?: string,
 	errorMessage?: string,
 ) => {

@@ -62,7 +62,7 @@ export const signingMiddlewareFactory = ({
 				credentials:
 					typeof credentials === 'function'
 						? await credentials({
-								forceRefresh: !!context?.isCredentialsInvalid,
+								forceRefresh: !!context?.isCredentialsExpired,
 							})
 						: credentials,
 				signingDate: getSkewCorrectedDate(currentSystemClockOffset),

@@ -5,7 +5,7 @@ import { ErrorParser, HttpResponse } from '../../types';
 import { MiddlewareContext } from '../../types/core';
 
 import { isClockSkewError } from './isClockSkewError';
-import { isInvalidCredentialsError } from './isInvalidCredentialsError';
+import { isCredentialsExpiredError } from './isCredentialsExpiredError';
 import { RetryDeciderOutput } from './types';
 
 /**
@@ -27,7 +27,7 @@ export const getRetryDecider =
 		const errorMessage = parsedError?.message;
 		const statusCode = response?.statusCode;
 
-		const isInvalidCredentials = isInvalidCredentialsError(
+		const isCredentialsExpired = isCredentialsExpiredError(
 			errorCode,
 			errorMessage,
 		);
@@ -36,14 +36,13 @@ export const getRetryDecider =
 			isThrottlingError(statusCode, errorCode) ||
 			isClockSkewError(errorCode) ||
 			isServerSideError(statusCode, errorCode) ||
-			// When error is caused by expired signature, we only want to retry once.
 			// If we know the previous retry attempt sets isCredentialsInvalid in the
 			// middleware context, we don't want to retry anymore.
-			(isInvalidCredentials && !middlewareContext?.isCredentialsInvalid);
+			(isCredentialsExpired && !middlewareContext?.isCredentialsExpired);
 
 		return {
 			retryable: isRetryable,
-			isInvalidCredentialsError: isInvalidCredentials,
+			isCredentialsExpiredError: isCredentialsExpired,
 		};
 	};
 

@@ -110,7 +110,7 @@ describe(`retry middleware`, () => {
 		expect.assertions(4);
 	});
 
-	test('should set isCredentialsInvalid in middleware context if retry decider returns the flag', async () => {
+	test('should set isCredentialsExpired in middleware context if retry decider returns the flag', async () => {
 		expect.assertions(4);
 		const coreHandler = jest
 			.fn()
@@ -126,7 +126,7 @@ describe(`retry middleware`, () => {
 		);
 		const retryDecider = jest.fn().mockImplementation((resp, error) => ({
 			retryable: error?.message === 'InvalidSignature',
-			isInvalidCredentialsError: error?.message === 'InvalidSignature',
+			isCredentialsExpiredError: error?.message === 'InvalidSignature',
 		}));
 		const response = await retryableHandler(defaultRequest, {
 			...defaultRetryOptions,
@@ -137,7 +137,7 @@ describe(`retry middleware`, () => {
 		expect(retryDecider).toHaveBeenCalledTimes(2);
 		expect(nextMiddleware).toHaveBeenCalledWith(
 			expect.anything(),
-			expect.objectContaining({ isCredentialsInvalid: true }),
+			expect.objectContaining({ isCredentialsExpired: true }),
 		);
 	});
 
