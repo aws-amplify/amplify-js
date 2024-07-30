@@ -5,6 +5,7 @@ import {
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
+	MiddlewareContext,
 	RetryDeciderOutput,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
@@ -19,6 +20,7 @@ import {
 	map,
 	parseXmlBody,
 	parseXmlError,
+	retryDecider,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
@@ -137,6 +139,7 @@ const completeMultipartUploadDeserializer = async (
 const retryWhenErrorWith200StatusCode = async (
 	response?: HttpResponse,
 	error?: unknown,
+	middlewareContext?: MiddlewareContext,
 ): Promise<RetryDeciderOutput> => {
 	if (!response) {
 		return { retryable: false };
@@ -153,9 +156,7 @@ const retryWhenErrorWith200StatusCode = async (
 		return { retryable: false };
 	}
 
-	const defaultRetryDecider = defaultConfig.retryDecider;
-
-	return defaultRetryDecider(response, error);
+	return retryDecider(response, error, middlewareContext);
 };
 
 export const completeMultipartUpload = composeServiceApi(

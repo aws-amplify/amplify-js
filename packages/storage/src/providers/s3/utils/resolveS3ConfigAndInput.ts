@@ -86,11 +86,12 @@ export const resolveS3ConfigAndInput = async (
 			assertStorageInput(apiInput);
 		}
 
+		// TODO: forceRefresh option of fetchAuthSession would refresh both tokens and
+		// AWS credentials. So we do not support forceRefreshing from the Auth until
+		// we support refreshing only the credentials.
 		const { credentials } = isLocationCredentialsProvider(apiOptions)
 			? await apiOptions.locationCredentialsProvider(options)
-			: // forceRefresh option of fetchAuthSession would refresh both tokens and
-				// AWS credentials. So we do not support forceRefreshing from the Auth.
-				await amplify.Auth.fetchAuthSession();
+			: await amplify.Auth.fetchAuthSession();
 		assertValidationError(
 			!!credentials,
 			StorageValidationErrorCode.NoCredentials,

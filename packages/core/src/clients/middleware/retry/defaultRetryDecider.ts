@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ErrorParser, HttpResponse } from '../../types';
-import { MiddlewareContext } from '../../types/core';
 
 import { isClockSkewError } from './isClockSkewError';
-import { isCredentialsExpiredError } from './isCredentialsExpiredError';
 import { RetryDeciderOutput } from './types';
 
 /**
@@ -17,32 +15,22 @@ export const getRetryDecider =
 	async (
 		response?: HttpResponse,
 		error?: unknown,
-		middlewareContext?: MiddlewareContext,
 	): Promise<RetryDeciderOutput> => {
 		const parsedError =
 			(error as Error & { code: string }) ??
 			(await errorParser(response)) ??
 			undefined;
 		const errorCode = parsedError?.code || parsedError?.name;
-		const errorMessage = parsedError?.message;
 		const statusCode = response?.statusCode;
 
-		const isCredentialsExpired = isCredentialsExpiredError(
-			errorCode,
-			errorMessage,
-		);
 		const isRetryable =
 			isConnectionError(error) ||
 			isThrottlingError(statusCode, errorCode) ||
 			isClockSkewError(errorCode) ||
-			isServerSideError(statusCode, errorCode) ||
-			// If we know the previous retry attempt sets isCredentialsInvalid in the
-			// middleware context, we don't want to retry anymore.
-			(isCredentialsExpired && !middlewareContext?.isCredentialsExpired);
+			isServerSideError(statusCode, errorCode);
 
 		return {
 			retryable: isRetryable,
-			isCredentialsExpiredError: isCredentialsExpired,
 		};
 	};
 
