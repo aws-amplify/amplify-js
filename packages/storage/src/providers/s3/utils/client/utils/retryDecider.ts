@@ -43,7 +43,7 @@ export const retryDecider = async (
 	return {
 		retryable:
 			defaultRetryDecision.retryable ||
-			// If we know the previous retry attempt sets isCredentialsInvalid in the
+			// If we know the previous retry attempt sets isCredentialsExpired in the
 			// middleware context, we don't want to retry anymore.
 			!!(isCredentialsExpired && !middlewareContext?.isCredentialsExpired),
 		isCredentialsExpiredError: isCredentialsExpired,
