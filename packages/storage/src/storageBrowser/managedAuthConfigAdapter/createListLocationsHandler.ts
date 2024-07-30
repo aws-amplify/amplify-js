@@ -13,21 +13,9 @@ interface CreateListLocationsHandlerInput {
 export const createListLocationsHandler = (
 	handlerInput: CreateListLocationsHandlerInput,
 ): ListLocations => {
-	return async (input = {}) => {
-		const { nextToken, pageSize } = input;
-		const { locations, nextToken: newNextToken } = await listCallerAccessGrants(
-			{
-				accountId: handlerInput.accountId,
-				credentialsProvider: handlerInput.credentialsProvider,
-				region: handlerInput.region,
-				pageSize,
-				nextToken,
-			},
-		);
+	return async function listLocations(input = {}) {
+		const result = await listCallerAccessGrants({ ...input, ...handlerInput });
 
-		return {
-			locations,
-			nextToken: newNextToken || undefined,
-		};
+		return result;
 	};
 };

@@ -9,13 +9,13 @@ import {
 import { createListLocationsHandler } from './createListLocationsHandler';
 import { createLocationCredentialsHandler } from './createLocationCredentialsHandler';
 
-interface CreateManagedAuthConfigAdapterInput {
+export interface CreateManagedAuthConfigAdapterInput {
 	accountId: string;
 	region: string;
 	credentialsProvider: CredentialsProvider;
 }
 
-interface AuthConfigAdapter {
+export interface AuthConfigAdapter {
 	listLocations: ListLocations;
 	getLocationCredentials: GetLocationCredentials;
 	region: string;
