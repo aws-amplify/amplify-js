@@ -28,18 +28,13 @@ import '../testUtils';
 import { calculateContentCRC32 } from '../../../../../src/providers/s3/utils/crc32';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 
-// this can be removed if we are mocking all of crc32
 global.Blob = BlobPolyfill as any;
 global.File = FilePolyfill as any;
 global.WritableStream = WritableStreamPolyfill as any;
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-
-jest.mock('../../../../../src/providers/s3/utils/crc32', () => ({
-	...jest.requireActual('../../../../../src/providers/s3/utils/crc32'),
-	calculateContentCRC32: jest.fn(),
-}));
+jest.mock('../../../../../src/providers/s3/utils/crc32');
 
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
@@ -298,7 +293,17 @@ describe('getMultipartUploadHandlers with key', () => {
 					data: twoPartsPayload,
 				});
 				await multipartUploadJob();
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(5); // (final crc32 calculation = 3 (2 part calculation + combine the 2 checksums)) + (2 part calculation)
+
+				/**
+				 * final crc32 calculation calls calculateContentCRC32 3 times
+				 * 1 time for each of the 2 parts
+				 * 1 time to combine the resulting hash for each of the two parts
+				 *
+				 * uploading each part calls calculateContentCRC32 1 time each
+				 *
+				 * these steps results in 5 calls in total
+				 */
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(5);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -726,9 +731,16 @@ describe('getMultipartUploadHandlers with key', () => {
 		it('should abort in-flight uploadPart requests if upload is paused', async () => {
 			let pausedOnce = false;
 
+			let resumeTest: () => void;
+			const waitForPause = new Promise<void>(resolve => {
+				resumeTest = () => {
+					resolve();
+				};
+			});
+
 			const { multipartUploadJob, onPause, onResume } =
 				getMultipartUploadHandlers({
-					path: defaultKey,
+					key: defaultKey,
 					data: new ArrayBuffer(8 * MB),
 				});
 			let partCount = 0;
@@ -736,10 +748,12 @@ describe('getMultipartUploadHandlers with key', () => {
 				partCount++;
 				if (partCount === 2 && !pausedOnce) {
 					onPause(); // Pause upload at the the last uploadPart call
+					resumeTest();
 					pausedOnce = true;
 				}
 			});
 			const uploadPromise = multipartUploadJob();
+			await waitForPause;
 			await getZeroDelayTimeout();
 			onResume();
 			await uploadPromise;
@@ -936,7 +950,17 @@ describe('getMultipartUploadHandlers with path', () => {
 					data: twoPartsPayload,
 				});
 				await multipartUploadJob();
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(5); // (final crc32 calculation = 3 (2 part calculation + combine the 2 checksums)) + (2 part calculation)
+
+				/**
+				 * final crc32 calculation calls calculateContentCRC32 3 times
+				 * 1 time for each of the 2 parts
+				 * 1 time to combine the resulting hash for each of the two parts
+				 *
+				 * uploading each part calls calculateContentCRC32 1 time each
+				 *
+				 * these steps results in 5 calls in total
+				 */
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(5);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -1441,6 +1465,12 @@ describe('getMultipartUploadHandlers with path', () => {
 	describe('pause() & resume()', () => {
 		it('should abort in-flight uploadPart requests if upload is paused', async () => {
 			let pausedOnce = false;
+			let resumeTest: () => void;
+			const waitForPause = new Promise<void>(resolve => {
+				resumeTest = () => {
+					resolve();
+				};
+			});
 
 			const { multipartUploadJob, onPause, onResume } =
 				getMultipartUploadHandlers({
@@ -1452,10 +1482,12 @@ describe('getMultipartUploadHandlers with path', () => {
 				partCount++;
 				if (partCount === 2 && !pausedOnce) {
 					onPause(); // Pause upload at the the last uploadPart call
+					resumeTest();
 					pausedOnce = true;
 				}
 			});
 			const uploadPromise = multipartUploadJob();
+			await waitForPause;
 			await getZeroDelayTimeout();
 
 			onResume();
