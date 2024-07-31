@@ -72,8 +72,8 @@
 		"lex-v2"
 	],
 	"dependencies": {
-		"@aws-sdk/client-lex-runtime-service": "3.620.0",
-		"@aws-sdk/client-lex-runtime-v2": "3.620.0",
+		"@aws-sdk/client-lex-runtime-service": "3.621.0",
+		"@aws-sdk/client-lex-runtime-v2": "3.621.0",
 		"base-64": "1.0.0",
 		"fflate": "0.7.3",
 		"pako": "2.0.4",
