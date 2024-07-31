@@ -49,7 +49,13 @@ export const putObjectJob =
 			onProgress,
 		} = uploadDataOptions ?? {};
 
-		const ChecksumCRC32 = await calculateContentCRC32(data);
+		const checksumCRC32 = await calculateContentCRC32(data);
+		const contentMD5 =
+			// check if checksum exists. ex: should not exist in react native
+			!checksumCRC32 && isObjectLockEnabled
+				? await calculateContentMd5(data)
+				: undefined;
+
 		if (preventOverwrite) {
 			await validateObjectNotExists(s3Config, {
 				Bucket: bucket,
@@ -72,11 +78,8 @@ export const putObjectJob =
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
-				ContentMD5:
-					isObjectLockEnabled && !ChecksumCRC32
-						? await calculateContentMd5(data)
-						: undefined,
-				ChecksumCRC32: ChecksumCRC32?.checksum,
+				ContentMD5: contentMD5,
+				ChecksumCRC32: checksumCRC32?.checksum,
 			},
 		);
 

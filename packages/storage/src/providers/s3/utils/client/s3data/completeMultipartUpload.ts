@@ -89,7 +89,13 @@ const serializeCompletedPartList = (input: CompletedPart): string => {
 		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
 	}
 
-	return `<Part><ETag>${input.ETag}</ETag><PartNumber>${input.PartNumber}</PartNumber>${input.ChecksumCRC32 ? `<ChecksumCRC32>${input.ChecksumCRC32}</ChecksumCRC32>` : ''}</Part>`;
+	const eTag = `<ETag>${input.ETag}</ETag>`;
+	const partNumber = `<PartNumber>${input.PartNumber}</PartNumber>`;
+	const ChecksumCRC32 = input.ChecksumCRC32
+		? `<ChecksumCRC32>${input.ChecksumCRC32}</ChecksumCRC32>`
+		: '';
+
+	return `<Part>${eTag}${partNumber}${ChecksumCRC32}</Part>`;
 };
 
 /**

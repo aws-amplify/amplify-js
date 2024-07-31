@@ -56,10 +56,16 @@ export const uploadPartExecutor = async ({
 			});
 		} else {
 			// handle cancel error
-			let crc32: CRC32Checksum | undefined;
+			let checksumCRC32: CRC32Checksum | undefined;
 			if (useCRC32Checksum) {
-				crc32 = await calculateContentCRC32(data);
+				checksumCRC32 = await calculateContentCRC32(data);
 			}
+			const contentMD5 =
+				// check if checksum exists. ex: should not exist in react native
+				!checksumCRC32 && isObjectLockEnabled
+					? await calculateContentMd5(data)
+					: undefined;
+
 			const { ETag: eTag } = await uploadPart(
 				{
 					...s3Config,
@@ -77,17 +83,13 @@ export const uploadPartExecutor = async ({
 					UploadId: uploadId,
 					Body: data,
 					PartNumber: partNumber,
-					ChecksumCRC32: crc32?.checksum,
-					// if checksum is undefined in react native
-					ContentMD5:
-						crc32 === undefined && isObjectLockEnabled
-							? await calculateContentMd5(data)
-							: undefined,
+					ChecksumCRC32: checksumCRC32?.checksum,
+					ContentMD5: contentMD5,
 				},
 			);
 			transferredBytes += size;
 			// eTag will always be set even the S3 model interface marks it as optional.
-			onPartUploadCompletion(partNumber, eTag!, crc32?.checksum);
+			onPartUploadCompletion(partNumber, eTag!, checksumCRC32?.checksum);
 		}
 	}
 };
