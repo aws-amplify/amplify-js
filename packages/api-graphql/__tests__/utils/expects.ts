@@ -194,31 +194,25 @@ export function expectSubWithHeadersFn(
  * @param spy The jest spy to check.
  * @param opName The name of the graphql operation. E.g., `onCreateTodo`.
  * @param item The item we expect to have been in the `variables`
- * @param libraryConfigHeaders TODO
+ * @param headers client/request and config-level headers
+ * @param configHeaders resolved config-level headers
  */
-export function expectSubWithlibraryConfigHeaders(
+export async function expectSubWithlibraryConfigHeaders(
 	spy: jest.SpyInstance<any, any>,
 	opName: string,
 	item: Record<string, any>,
-	headers?: CustomHeaders,
+	expectedHeaders?: CustomHeaders,
+	expectedConfigHeaders?: CustomHeaders,
 ) {
-	expect(spy).toHaveBeenCalledWith(
-		expect.objectContaining({
-			authenticationType: 'apiKey',
-			apiKey: 'FAKE-KEY',
-			appSyncGraphqlEndpoint: 'https://localhost/graphql',
-			// Code-gen'd queries have an owner param; TypeBeast queries don't:
-			query: expect.stringContaining(`${opName}(filter: $filter`),
-			variables: expect.objectContaining(item),
-			additionalHeaders: expect.objectContaining(headers),
-			// `headers` that are included in `Amplify.configure` options
-			libraryConfigHeaders: expect.any(Function),
-		}),
-		{
-			action: '1',
-			category: 'api',
-		},
-	);
+	const [[{ query, variables, additionalHeaders, libraryConfigHeaders }]] =
+		spy.mock.calls;
+
+	const configHeaders = await libraryConfigHeaders();
+
+	expect(query).toEqual(expect.stringContaining(`${opName}(filter: $filter`));
+	expect(variables).toEqual(expect.objectContaining(item));
+	expect(additionalHeaders).toEqual(expect.objectContaining(expectedHeaders));
+	expect(configHeaders).toEqual(expect.objectContaining(expectedConfigHeaders));
 }
 
 /**
