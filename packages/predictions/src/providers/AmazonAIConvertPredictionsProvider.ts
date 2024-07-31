@@ -10,7 +10,11 @@ import {
 	Signer,
 	getAmplifyUserAgentObject,
 } from '@aws-amplify/core/internals/utils';
-import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
+import {
+	PollyClient,
+	SynthesizeSpeechCommand,
+	SynthesizeSpeechInput,
+} from '@aws-sdk/client-polly';
 import {
 	TranslateClient,
 	TranslateTextCommand,
@@ -164,7 +168,7 @@ export class AmazonAIConvertPredictionsProvider {
 		const synthesizeSpeechCommand = new SynthesizeSpeechCommand({
 			OutputFormat: 'mp3',
 			Text: input.textToSpeech?.source?.text,
-			VoiceId: voiceId,
+			VoiceId: voiceId as SynthesizeSpeechInput['VoiceId'],
 			TextType: 'text',
 			SampleRate: '24000',
 		});
