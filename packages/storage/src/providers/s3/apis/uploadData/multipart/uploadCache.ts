@@ -33,7 +33,7 @@ export const findCachedUploadParts = async ({
 }: FindCachedUploadPartsOptions): Promise<{
 	parts: Part[];
 	uploadId: string;
-	finalCrc32: string | undefined;
+	finalCrc32?: string;
 } | null> => {
 	const cachedUploads = await listCachedUploadTasks(defaultStorage);
 	if (
@@ -76,7 +76,7 @@ interface FileMetadata {
 	fileName: string;
 	key: string;
 	uploadId: string;
-	finalCrc32: string | undefined;
+	finalCrc32?: string;
 	// Unix timestamp in ms
 	lastTouched: number;
 }

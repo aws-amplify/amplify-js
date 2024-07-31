@@ -91,11 +91,11 @@ const serializeCompletedPartList = (input: CompletedPart): string => {
 
 	const eTag = `<ETag>${input.ETag}</ETag>`;
 	const partNumber = `<PartNumber>${input.PartNumber}</PartNumber>`;
-	const ChecksumCRC32 = input.ChecksumCRC32
+	const checksumCRC32 = input.ChecksumCRC32
 		? `<ChecksumCRC32>${input.ChecksumCRC32}</ChecksumCRC32>`
 		: '';
 
-	return `<Part>${eTag}${partNumber}${ChecksumCRC32}</Part>`;
+	return `<Part>${eTag}${partNumber}${checksumCRC32}</Part>`;
 };
 
 /**

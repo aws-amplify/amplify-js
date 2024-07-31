@@ -55,7 +55,7 @@ export const getMultipartUploadHandlers = (
 		| {
 				uploadId: string;
 				completedParts: Part[];
-				finalCrc32: string | undefined;
+				finalCrc32?: string;
 		  }
 		| undefined;
 	let resolvedS3Config: ResolvedS3Config | undefined;

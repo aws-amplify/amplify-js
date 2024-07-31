@@ -34,7 +34,7 @@ interface LoadOrCreateMultipartUploadOptions {
 interface LoadOrCreateMultipartUploadResult {
 	uploadId: string;
 	cachedParts: Part[];
-	finalCrc32: string | undefined;
+	finalCrc32?: string;
 }
 
 /**
@@ -64,7 +64,7 @@ export const loadOrCreateMultipartUpload = async ({
 				parts: Part[];
 				uploadId: string;
 				uploadCacheKey: string;
-				finalCrc32: string | undefined;
+				finalCrc32?: string;
 		  }
 		| undefined;
 	if (size === undefined) {
@@ -156,11 +156,11 @@ const getCombinedCrc32 = async (
 	const crc32List: ArrayBuffer[] = [];
 	const dataChunker = getDataChunker(data, size);
 	for (const { data: checkData } of dataChunker) {
-		const arrayBuffer = (await calculateContentCRC32(checkData))
+		const checksumArrayBuffer = (await calculateContentCRC32(checkData))
 			?.checksumArrayBuffer;
-		if (arrayBuffer === undefined) return undefined;
+		if (checksumArrayBuffer === undefined) return undefined;
 
-		crc32List.push(arrayBuffer);
+		crc32List.push(checksumArrayBuffer);
 	}
 
 	return `${(await calculateContentCRC32(new Blob(crc32List)))?.checksum}-${crc32List.length}`;
