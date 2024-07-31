@@ -8,11 +8,10 @@ import {
 import {
 	EndpointResolverOptions,
 	getDnsSuffix,
-	getRetryDecider,
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { parseXmlError } from '../utils';
+import { retryDecider } from '../utils';
 
 const DOMAIN_PATTERN = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
 const IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
@@ -106,7 +105,7 @@ export const isDnsCompatibleBucketName = (bucketName: string): boolean =>
 export const defaultConfig = {
 	service: SERVICE_NAME,
 	endpointResolver,
-	retryDecider: getRetryDecider(parseXmlError),
+	retryDecider,
 	computeDelay: jitteredBackoff,
 	userAgentValue: getAmplifyUserAgent(),
 	useAccelerateEndpoint: false,

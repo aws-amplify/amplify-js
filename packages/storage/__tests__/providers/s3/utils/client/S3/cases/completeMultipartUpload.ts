@@ -113,7 +113,12 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 	'error case',
 	'completeMultipartUpload with 200 status',
 	completeMultipartUpload,
-	{ ...defaultConfig, retryDecider: async () => false }, // disable retry
+	{
+		...defaultConfig,
+		retryDecider: async () => ({
+			retryable: false,
+		}),
+	}, // disable retry
 	completeMultipartUploadHappyCase[4],
 	completeMultipartUploadHappyCase[5],
 	{

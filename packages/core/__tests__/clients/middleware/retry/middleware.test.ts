@@ -11,13 +11,13 @@ import {
 jest.spyOn(global, 'setTimeout');
 jest.spyOn(global, 'clearTimeout');
 
-describe(`${retryMiddlewareFactory.name} middleware`, () => {
+describe(`retry middleware`, () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
 	const defaultRetryOptions = {
-		retryDecider: async () => true,
+		retryDecider: async () => ({ retryable: true }),
 		computeDelay: () => 1,
 	};
 	const defaultRequest = { url: new URL('https://a.b') };
@@ -72,7 +72,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const retryableHandler = getRetryableHandler(nextHandler);
 		const retryDecider = jest
 			.fn()
-			.mockImplementation(response => response.body !== 'foo'); // retry if response is not foo
+			.mockImplementation(response => ({ retryable: response.body !== 'foo' })); // retry if response is not foo
 		const resp = await retryableHandler(defaultRequest, {
 			...defaultRetryOptions,
 			retryDecider,
@@ -88,11 +88,9 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 			.fn()
 			.mockRejectedValue(new Error('UnretryableError'));
 		const retryableHandler = getRetryableHandler(nextHandler);
-		const retryDecider = jest
-			.fn()
-			.mockImplementation(
-				(resp, error) => error.message !== 'UnretryableError',
-			);
+		const retryDecider = jest.fn().mockImplementation((resp, error) => ({
+			retryable: error.message !== 'UnretryableError',
+		}));
 		try {
 			await retryableHandler(defaultRequest, {
 				...defaultRetryOptions,
@@ -103,9 +101,44 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 			expect(e.message).toBe('UnretryableError');
 			expect(nextHandler).toHaveBeenCalledTimes(1);
 			expect(retryDecider).toHaveBeenCalledTimes(1);
-			expect(retryDecider).toHaveBeenCalledWith(undefined, expect.any(Error));
+			expect(retryDecider).toHaveBeenCalledWith(
+				undefined,
+				expect.any(Error),
+				expect.anything(),
+			);
 		}
 		expect.assertions(4);
+	});
+
+	test('should set isCredentialsExpired in middleware context if retry decider returns the flag', async () => {
+		expect.assertions(4);
+		const coreHandler = jest
+			.fn()
+			.mockRejectedValueOnce(new Error('InvalidSignature'))
+			.mockResolvedValueOnce(defaultResponse);
+
+		const nextMiddleware = jest.fn(
+			(next: MiddlewareHandler<any, any>) => (request: any) => next(request),
+		);
+		const retryableHandler = composeTransferHandler<[RetryOptions, any]>(
+			coreHandler,
+			[retryMiddlewareFactory, () => nextMiddleware],
+		);
+		const retryDecider = jest.fn().mockImplementation((resp, error) => ({
+			retryable: error?.message === 'InvalidSignature',
+			isCredentialsExpiredError: error?.message === 'InvalidSignature',
+		}));
+		const response = await retryableHandler(defaultRequest, {
+			...defaultRetryOptions,
+			retryDecider,
+		});
+		expect(response).toEqual(expect.objectContaining(defaultResponse));
+		expect(coreHandler).toHaveBeenCalledTimes(2);
+		expect(retryDecider).toHaveBeenCalledTimes(2);
+		expect(nextMiddleware).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({ isCredentialsExpired: true }),
+		);
 	});
 
 	test('should call computeDelay for intervals', async () => {
@@ -152,7 +185,7 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const nextHandler = jest.fn().mockResolvedValue(defaultResponse);
 		const retryableHandler = getRetryableHandler(nextHandler);
 		const controller = new AbortController();
-		const retryDecider = async () => true;
+		const retryDecider = async () => ({ retryable: true });
 		const computeDelay = jest.fn().mockImplementation(attempt => {
 			if (attempt === 1) {
 				setTimeout(() => {
@@ -204,9 +237,10 @@ describe(`${retryMiddlewareFactory.name} middleware`, () => {
 		const retryDecider = jest
 			.fn()
 			.mockImplementation((response, error: Error) => {
-				if (error && error.message.endsWith('RetryableError')) return true;
+				if (error && error.message.endsWith('RetryableError'))
+					return { retryable: true };
 
-				return false;
+				return { retryable: false };
 			});
 		const computeDelay = jest.fn().mockReturnValue(0);
 		const response = await doubleRetryableHandler(defaultRequest, {

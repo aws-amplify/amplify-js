@@ -25,3 +25,4 @@ export {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from './serializeHelpers';
+export { retryDecider } from './retryDecider';

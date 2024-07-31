@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAction } from '@aws-amplify/core/internals/utils';
+import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { logger } from '../../utils';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../providers/s3/utils/client/s3control';
@@ -26,8 +27,10 @@ export const listCallerAccessGrants = async (
 		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
 	}
 
-	const clientCredentialsProvider = async () => {
-		const { credentials } = await credentialsProvider();
+	const clientCredentialsProvider = async (
+		options?: CredentialsProviderOptions,
+	) => {
+		const { credentials } = await credentialsProvider(options);
 
 		return credentials;
 	};

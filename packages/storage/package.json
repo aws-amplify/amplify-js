@@ -45,7 +45,10 @@
 			],
 			"s3/server": [
 				"./dist/esm/providers/s3/server.d.ts"
-			]
+			],
+			"storage-browser": [
+        "./dist/esm/storageBrowser/index.d.ts"
+      ]
 		}
 	},
 	"repository": {

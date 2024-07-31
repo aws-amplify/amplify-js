@@ -8,11 +8,10 @@ import {
 import {
 	EndpointResolverOptions,
 	getDnsSuffix,
-	getRetryDecider,
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { parseXmlError } from '../utils';
+import { retryDecider } from '../utils';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -64,7 +63,7 @@ const endpointResolver = (
 export const defaultConfig = {
 	service: SERVICE_NAME,
 	endpointResolver,
-	retryDecider: getRetryDecider(parseXmlError),
+	retryDecider,
 	computeDelay: jitteredBackoff,
 	userAgentValue: getAmplifyUserAgent(),
 	uriEscapePath: false, // Required by S3. See https://github.com/aws/aws-sdk-js-v3/blob/9ba012dfa3a3429aa2db0f90b3b0b3a7a31f9bc3/packages/signature-v4/src/SignatureV4.ts#L76-L83

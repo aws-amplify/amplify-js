@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
+
 import { getDataAccess } from '../../../src/storageBrowser/apis/getDataAccess';
 import { getDataAccess as getDataAccessClient } from '../../../src/providers/s3/utils/client/s3control';
 import { GetDataAccessInput } from '../../../src/storageBrowser/apis/types';
@@ -29,7 +31,7 @@ const MOCK_ACCESS_CREDENTIALS = {
 	SessionToken: MOCK_SESSION_TOKEN,
 	Expiration: MOCK_EXPIRATION_DATE,
 };
-const MOCK_CREDENTIAL_PROVIDER = async () => MOCK_CREDENTIALS;
+const MOCK_CREDENTIAL_PROVIDER = jest.fn().mockResolvedValue(MOCK_CREDENTIALS);
 
 const sharedGetDataAccessParams: GetDataAccessInput = {
 	accountId: MOCK_ACCOUNT_ID,
@@ -41,7 +43,7 @@ const sharedGetDataAccessParams: GetDataAccessInput = {
 };
 
 describe('getDataAccess', () => {
-	const getDataAccessClientMock = getDataAccessClient as jest.Mock;
+	const getDataAccessClientMock = jest.mocked(getDataAccessClient);
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -49,15 +51,17 @@ describe('getDataAccess', () => {
 		getDataAccessClientMock.mockResolvedValue({
 			Credentials: MOCK_ACCESS_CREDENTIALS,
 			MatchedGrantTarget: MOCK_SCOPE,
+			$metadata: {},
 		});
 	});
 
 	it('should invoke the getDataAccess client correctly', async () => {
+		expect.assertions(6);
 		const result = await getDataAccess(sharedGetDataAccessParams);
 
 		expect(getDataAccessClientMock).toHaveBeenCalledWith(
 			expect.objectContaining({
-				credentials: MOCK_CREDENTIALS.credentials,
+				credentials: expect.any(Function),
 				region: MOCK_REGION,
 				userAgentValue: expect.stringContaining('storage/8'),
 			}),
@@ -69,6 +73,15 @@ describe('getDataAccess', () => {
 				DurationSeconds: 900,
 			}),
 		);
+		const inputCredentialsProvider = getDataAccessClientMock.mock.calls[0][0]
+			.credentials as (input: CredentialsProviderOptions) => any;
+		expect(inputCredentialsProvider).toBeInstanceOf(Function);
+		await expect(
+			inputCredentialsProvider({ forceRefresh: true }),
+		).resolves.toEqual(MOCK_CREDENTIALS.credentials);
+		expect(MOCK_CREDENTIAL_PROVIDER).toHaveBeenCalledWith({
+			forceRefresh: true,
+		});
 
 		expect(result.credentials).toEqual(MOCK_CREDENTIALS.credentials);
 		expect(result.scope).toEqual(MOCK_SCOPE);
@@ -80,6 +93,7 @@ describe('getDataAccess', () => {
 		getDataAccessClientMock.mockResolvedValue({
 			Credentials: undefined,
 			MatchedGrantTarget: MOCK_SCOPE,
+			$metadata: {},
 		});
 
 		expect(getDataAccess(sharedGetDataAccessParams)).rejects.toThrow(
@@ -93,6 +107,7 @@ describe('getDataAccess', () => {
 		getDataAccessClientMock.mockResolvedValue({
 			Credentials: MOCK_ACCESS_CREDENTIALS,
 			MatchedGrantTarget: MOCK_OBJECT_SCOPE,
+			$metadata: {},
 		});
 
 		const result = await getDataAccess({
