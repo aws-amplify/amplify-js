@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
+import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
+
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
@@ -12,6 +15,10 @@ import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import * as CRC32 from '../../../../../src/providers/s3/utils/crc32';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
+
+global.Blob = BlobPolyfill as any;
+global.File = FilePolyfill as any;
+global.WritableStream = WritableStreamPolyfill as any;
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../src/providers/s3/utils', () => {
@@ -124,7 +131,7 @@ describe('putObjectJob with key', () => {
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: mockMetadata,
-				ChecksumCRC32: 'UgwMnQ==',
+				ChecksumCRC32: 'rfPzYw==',
 			},
 		);
 	});
@@ -186,7 +193,7 @@ describe('putObjectJob with key', () => {
 					Key: 'public/key',
 					Body: data,
 					ContentType: 'application/octet-stream',
-					ChecksumCRC32: 'UgwMnQ==',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -218,7 +225,7 @@ describe('putObjectJob with key', () => {
 					Key: 'public/key',
 					Body: data,
 					ContentType: 'application/octet-stream',
-					ChecksumCRC32: 'UgwMnQ==',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -294,7 +301,7 @@ describe('putObjectJob with path', () => {
 					ContentDisposition: contentDisposition,
 					ContentEncoding: contentEncoding,
 					Metadata: mockMetadata,
-					ChecksumCRC32: 'UgwMnQ==',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		},
@@ -432,7 +439,7 @@ describe('putObjectJob with path', () => {
 					Key: 'path/',
 					Body: data,
 					ContentType: 'application/octet-stream',
-					ChecksumCRC32: 'UgwMnQ==',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -464,7 +471,7 @@ describe('putObjectJob with path', () => {
 					Key: 'path/',
 					Body: data,
 					ContentType: 'application/octet-stream',
-					ChecksumCRC32: 'UgwMnQ==',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
