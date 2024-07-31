@@ -259,3 +259,5 @@ type AuthFlowType =
 	| 'CUSTOM_WITH_SRP'
 	| 'CUSTOM_WITHOUT_SRP'
 	| 'USER_PASSWORD_AUTH';
+
+export type OAuthListener = (authConfig: AuthConfig['Cognito']) => void;
