@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/react-native",
-	"version": "1.1.1",
+	"version": "1.1.4",
 	"description": "React Native core module for aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -30,11 +30,11 @@
 	},
 	"peerDependencies": {
 		"react-native": ">=0.70",
-		"react-native-get-random-values": ">=1.9.0"
+		"react-native-get-random-values": ">=1.8.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/rtn-push-notification": "1.2.29",
-		"@aws-amplify/rtn-web-browser": "1.0.30",
+		"@aws-amplify/rtn-push-notification": "1.2.31",
+		"@aws-amplify/rtn-web-browser": "1.0.31",
 		"@react-native-async-storage/async-storage": "^1.17.12",
 		"@react-native-community/netinfo": "4.7.0",
 		"@types/base-64": "1.0.0",

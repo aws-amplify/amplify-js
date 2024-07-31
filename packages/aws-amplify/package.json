@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.3.8",
+	"version": "6.4.3",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.36",
-		"@aws-amplify/api": "6.0.38",
-		"@aws-amplify/auth": "6.3.7",
-		"@aws-amplify/core": "6.3.3",
-		"@aws-amplify/datastore": "5.0.38",
-		"@aws-amplify/notifications": "2.0.36",
-		"@aws-amplify/storage": "6.4.7",
+		"@aws-amplify/analytics": "7.0.40",
+		"@aws-amplify/api": "6.0.42",
+		"@aws-amplify/auth": "6.3.11",
+		"@aws-amplify/core": "6.3.7",
+		"@aws-amplify/datastore": "5.0.42",
+		"@aws-amplify/notifications": "2.0.40",
+		"@aws-amplify/storage": "6.5.3",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -485,7 +485,7 @@
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "14.94 kB"
+			"limit": "15.04 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
