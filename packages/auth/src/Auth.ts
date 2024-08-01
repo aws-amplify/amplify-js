@@ -226,6 +226,10 @@ export class AuthClass {
 				: (<any>oauth).awsCognito
 			: undefined;
 
+		const isIdpInitiatedOAuthEnabled =
+			cognitoHostedUIConfig?.idpEnabled ?? true; // default true, avoid breaking change
+		const isSpInitiatedOAuthInFlight =
+			this._storage.getItem('amplify-sp-initiated-oauth-inFlight') === 'true';
 		if (cognitoHostedUIConfig) {
 			const cognitoAuthParams = Object.assign(
 				{
@@ -249,18 +253,20 @@ export class AuthClass {
 				cognitoClientId: cognitoAuthParams.cognitoClientId,
 			});
 
-			// **NOTE** - Remove this in a future major release as it is a breaking change
-			// Prevents _handleAuthResponse from being called multiple times in Expo
-			// See https://github.com/aws-amplify/amplify-js/issues/4388
-			const usedResponseUrls = {};
-			urlListener(({ url }) => {
-				if (usedResponseUrls[url]) {
-					return;
-				}
+			if (isIdpInitiatedOAuthEnabled || isSpInitiatedOAuthInFlight) {
+				// **NOTE** - Remove this in a future major release as it is a breaking change
+				// Prevents _handleAuthResponse from being called multiple times in Expo
+				// See https://github.com/aws-amplify/amplify-js/issues/4388
+				const usedResponseUrls = {};
+				urlListener(({ url }) => {
+					if (usedResponseUrls[url]) {
+						return;
+					}
 
-				usedResponseUrls[url] = true;
-				this._handleAuthResponse(url);
-			});
+					usedResponseUrls[url] = true;
+					this._handleAuthResponse(url);
+				});
+			}
 		}
 
 		dispatchAuthEvent(
@@ -2437,6 +2443,7 @@ export class AuthClass {
 					? this._config.oauth.redirectSignIn
 					: this._config.oauth.redirectUri;
 
+				this._storage.setItem('amplify-sp-initiated-oauth-inFlight', 'true');
 				this._oAuthHandler.oauthSignIn(
 					this._config.oauth.responseType,
 					this._config.oauth.domain,
@@ -2517,6 +2524,11 @@ export class AuthClass {
 
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
+				// clear temp value
+				if (this._storage.getItem('amplify-sp-initiated-oauth-inFlight')) {
+					this._storage.removeItem('amplify-sp-initiated-oauth-inFlight');
+				}
+
 				try {
 					const { accessToken, idToken, refreshToken, state } =
 						await this._oAuthHandler.handleAuthResponse(currentUrl);
