@@ -54,6 +54,11 @@ const listCallerAccessGrantsHappyCase: ApiFunctionalTestCase<
 						<GrantScope>${MOCK_GRANT_SCOPE}</GrantScope>
 						<Permission>${MOCK_PERMISSION}</Permission>
 				</AccessGrantsInstance>
+				<AccessGrantsInstance>
+						<ApplicationArn>${MOCK_APP_ARN}</ApplicationArn>
+						<GrantScope>${MOCK_GRANT_SCOPE}</GrantScope>
+						<Permission>${MOCK_PERMISSION}</Permission>
+				</AccessGrantsInstance>
 			</CallerAccessGrantsList>
 		</ListCallerAccessGrantsResult>
 	`,
@@ -61,6 +66,11 @@ const listCallerAccessGrantsHappyCase: ApiFunctionalTestCase<
 	{
 		$metadata: expect.objectContaining(expectedMetadata),
 		CallerAccessGrantsList: [
+			{
+				ApplicationArn: MOCK_APP_ARN,
+				GrantScope: MOCK_GRANT_SCOPE,
+				Permission: MOCK_PERMISSION,
+			},
 			{
 				ApplicationArn: MOCK_APP_ARN,
 				GrantScope: MOCK_GRANT_SCOPE,

@@ -70,7 +70,11 @@ const listCallerAccessGrantsDeserializer = async (
 		const contents = map(parsed, {
 			CallerAccessGrantsList: [
 				'CallerAccessGrantsList',
-				value => emptyArrayGuard(value, deserializeAccessGrantsList),
+				value =>
+					emptyArrayGuard(
+						value.AccessGrantsInstance,
+						deserializeAccessGrantsList,
+					),
 			],
 			NextToken: 'NextToken',
 		});
@@ -86,7 +90,7 @@ const deserializeAccessGrantsList = (output: any[]) =>
 	output.map(deserializeCallerAccessGrant);
 
 const deserializeCallerAccessGrant = (output: any) =>
-	map(output.AccessGrantsInstance, {
+	map(output, {
 		ApplicationArn: 'ApplicationArn',
 		GrantScope: 'GrantScope',
 		Permission: 'Permission',
