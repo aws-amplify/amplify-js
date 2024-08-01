@@ -25,5 +25,20 @@ describe('type validity', () => {
 
 			expect(a).toEqual([1, 2, 'hi', { key: 'value' }]);
 		});
+
+		it('can contain property that has a value as array of JsonArray', () => {
+			const value: JWT = {
+				payload: {
+					otherProperty: [[2, 'hi', { key: 'value' }], 1],
+				},
+				toString: () => 'mock',
+			};
+			const a = value.payload.otherProperty as (
+				| ({ key: string } | number | string)[]
+				| number
+			)[];
+
+			expect(a).toEqual([[2, 'hi', { key: 'value' }], 1]);
+		});
 	});
 });
