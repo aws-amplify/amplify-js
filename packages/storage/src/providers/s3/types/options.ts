@@ -8,6 +8,7 @@ import { TransferProgressEvent } from '../../../types';
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
+	StorageSubpathStrategy,
 } from '../../../types/options';
 
 interface CommonOptions {
@@ -98,7 +99,9 @@ export type ListAllOptionsWithPath = Omit<
 	StorageListAllOptions,
 	'accessLevel'
 > &
-	CommonOptions;
+	CommonOptions & {
+		subpathStrategy?: StorageSubpathStrategy;
+	};
 
 /**
  * Input options type with path for S3 list API to paginate items.
@@ -107,7 +110,9 @@ export type ListPaginateOptionsWithPath = Omit<
 	StorageListPaginateOptions,
 	'accessLevel'
 > &
-	CommonOptions;
+	CommonOptions & {
+		subpathStrategy?: StorageSubpathStrategy;
+	};
 
 /**
  * Input options type for S3 getUrl API.
