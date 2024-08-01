@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "40.09 kB"
+			"limit": "40.11 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -479,7 +479,7 @@
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "15.51 kB"
+			"limit": "15.54 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
