@@ -10,14 +10,12 @@ export interface StorageOptions {
 
 export type StorageListAllOptions = StorageOptions & {
 	listAll: true;
-	subpathStrategy?: StorageSubpathStrategy;
 };
 
 export type StorageListPaginateOptions = StorageOptions & {
 	listAll?: false;
 	pageSize?: number;
 	nextToken?: string;
-	subpathStrategy?: StorageSubpathStrategy;
 };
 
 export type StorageRemoveOptions = StorageOptions;

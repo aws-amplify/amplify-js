@@ -218,7 +218,7 @@ const createMutableCookieStoreFromHeaders = (
 const serializeSetCookieOptions = (
 	options: CookieStorage.SetCookieOptions,
 ): string => {
-	const { expires, domain, httpOnly, sameSite, secure } = options;
+	const { expires, domain, httpOnly, sameSite, secure, path } = options;
 	const serializedOptions: string[] = [];
 	if (domain) {
 		serializedOptions.push(`Domain=${domain}`);
@@ -234,6 +234,9 @@ const serializeSetCookieOptions = (
 	}
 	if (secure) {
 		serializedOptions.push(`Secure`);
+	}
+	if (path) {
+		serializedOptions.push(`Path=${path}`);
 	}
 
 	return serializedOptions.join(';');

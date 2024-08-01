@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.9...@aws-amplify/adapter-nextjs@1.2.10) (2024-07-23)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.8...@aws-amplify/adapter-nextjs@1.2.9) (2024-07-22)
+
+### Bug Fixes
+
+- **aws-amplify:** createKeyValueStorageFromCookieStorageAdapter misses default path and secure values ([#13508](https://github.com/aws-amplify/amplify-js/issues/13508)) ([60a559f](https://github.com/aws-amplify/amplify-js/commit/60a559f612e092c76e1499f93547248312db46f2))
+
+## [1.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.7...@aws-amplify/adapter-nextjs@1.2.8) (2024-07-19)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.6...@aws-amplify/adapter-nextjs@1.2.7) (2024-07-08)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
 ## [1.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.5...@aws-amplify/adapter-nextjs@1.2.6) (2024-06-24)
 
 **Note:** Version bump only for package @aws-amplify/adapter-nextjs

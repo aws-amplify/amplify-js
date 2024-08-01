@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.2...@aws-amplify/storage@6.5.3) (2024-07-23)
+
+### Bug Fixes
+
+- **storage:** omit subPathStrategy when prefix is defined ([#13618](https://github.com/aws-amplify/amplify-js/issues/13618)) ([3d70792](https://github.com/aws-amplify/amplify-js/commit/3d70792afc120ac38aed145b1c87797890262184)), closes [#13606](https://github.com/aws-amplify/amplify-js/issues/13606)
+
+## [6.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.1...@aws-amplify/storage@6.5.2) (2024-07-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.0...@aws-amplify/storage@6.5.1) (2024-07-19)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [6.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.4.7...@aws-amplify/storage@6.5.0) (2024-07-08)
+
+### Features
+
+- **storage:** add delimiter support to list API ([#13517](https://github.com/aws-amplify/amplify-js/issues/13517)) ([95ba49c](https://github.com/aws-amplify/amplify-js/commit/95ba49cae994876b15d1062ca1d9923fef909e03))
+
 ## [6.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.4.6...@aws-amplify/storage@6.4.7) (2024-06-24)
 
 **Note:** Version bump only for package @aws-amplify/storage

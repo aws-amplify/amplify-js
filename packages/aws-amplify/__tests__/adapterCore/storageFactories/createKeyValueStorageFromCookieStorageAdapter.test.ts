@@ -40,6 +40,21 @@ describe('keyValueStorage', () => {
 				);
 			});
 
+			it('should remove item before setting item', async () => {
+				const testKey = 'testKey';
+				const testValue = 'testValue';
+				keyValueStorage.setItem(testKey, testValue);
+				expect(mockCookiesStorageAdapter.delete).toHaveBeenCalledWith(testKey);
+				expect(mockCookiesStorageAdapter.set).toHaveBeenCalledWith(
+					testKey,
+					testValue,
+					{
+						...defaultSetCookieOptions,
+						expires: expect.any(Date),
+					},
+				);
+			});
+
 			it('should set item with options', async () => {
 				const testKey = 'testKey';
 				const testValue = 'testValue';
