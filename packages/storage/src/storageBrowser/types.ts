@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
-
-import { LocationCredentialsProvider } from '../providers/s3/types/options';
+import {
+	AWSTemporaryCredentials,
+	LocationCredentialsProvider,
+} from '../providers/s3/types/options';
 
 /**
  * @internal
@@ -14,9 +14,7 @@ export type Permission = 'READ' | 'READWRITE' | 'WRITE';
 /**
  * @internal
  */
-export type CredentialsProvider = (
-	options?: CredentialsProviderOptions,
-) => Promise<{ credentials: AWSCredentials }>;
+export type CredentialsProvider = LocationCredentialsProvider;
 
 /**
  * @internal
@@ -70,7 +68,7 @@ export interface LocationCredentials extends Partial<LocationScope> {
 	/**
 	 * AWS credentials which can be used to access the specified location.
 	 */
-	readonly credentials: AWSCredentials;
+	readonly credentials: AWSTemporaryCredentials;
 }
 
 export interface AccessGrant extends LocationAccess {
