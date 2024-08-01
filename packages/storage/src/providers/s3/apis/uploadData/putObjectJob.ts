@@ -14,6 +14,7 @@ import { ItemWithKey, ItemWithPath } from '../../types/outputs';
 import { putObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
+import { calculateContentCRC32 } from '../../utils/crc32';
 
 import { validateObjectNotExists } from './validateObjectNotExists';
 
@@ -48,6 +49,13 @@ export const putObjectJob =
 			onProgress,
 		} = uploadDataOptions ?? {};
 
+		const checksumCRC32 = await calculateContentCRC32(data);
+		const contentMD5 =
+			// check if checksum exists. ex: should not exist in react native
+			!checksumCRC32 && isObjectLockEnabled
+				? await calculateContentMd5(data)
+				: undefined;
+
 		if (preventOverwrite) {
 			await validateObjectNotExists(s3Config, {
 				Bucket: bucket,
@@ -70,9 +78,8 @@ export const putObjectJob =
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
-				ContentMD5: isObjectLockEnabled
-					? await calculateContentMd5(data)
-					: undefined,
+				ContentMD5: contentMD5,
+				ChecksumCRC32: checksumCRC32?.checksum,
 			},
 		);
 

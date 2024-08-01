@@ -16,6 +16,7 @@ import {
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	map,
 	parseXmlBody,
@@ -39,7 +40,7 @@ const INVALID_PARAMETER_ERROR_MSG =
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
-	'Bucket' | 'Key' | 'UploadId' | 'MultipartUpload'
+	'Bucket' | 'Key' | 'UploadId' | 'MultipartUpload' | 'ChecksumCRC32'
 >;
 
 export type CompleteMultipartUploadOutput = Pick<
@@ -53,6 +54,7 @@ const completeMultipartUploadSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = {
 		'content-type': 'application/xml',
+		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
@@ -90,7 +92,13 @@ const serializeCompletedPartList = (input: CompletedPart): string => {
 		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
 	}
 
-	return `<Part><ETag>${input.ETag}</ETag><PartNumber>${input.PartNumber}</PartNumber></Part>`;
+	const eTag = `<ETag>${input.ETag}</ETag>`;
+	const partNumber = `<PartNumber>${input.PartNumber}</PartNumber>`;
+	const checksumCRC32 = input.ChecksumCRC32
+		? `<ChecksumCRC32>${input.ChecksumCRC32}</ChecksumCRC32>`
+		: '';
+
+	return `<Part>${eTag}${partNumber}${checksumCRC32}</Part>`;
 };
 
 /**

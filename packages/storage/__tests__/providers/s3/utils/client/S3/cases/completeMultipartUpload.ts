@@ -26,10 +26,12 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 				{
 					ETag: 'etag1',
 					PartNumber: 1,
+					ChecksumCRC32: 'test-checksum-1',
 				},
 				{
 					ETag: 'etag2',
 					PartNumber: 2,
+					ChecksumCRC32: 'test-checksum-2',
 				},
 			],
 		},
@@ -49,10 +51,12 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 			'<Part>' +
 			'<ETag>etag1</ETag>' +
 			'<PartNumber>1</PartNumber>' +
+			'<ChecksumCRC32>test-checksum-1</ChecksumCRC32>' +
 			'</Part>' +
 			'<Part>' +
 			'<ETag>etag2</ETag>' +
 			'<PartNumber>2</PartNumber>' +
+			'<ChecksumCRC32>test-checksum-2</ChecksumCRC32>' +
 			'</Part>' +
 			'</CompleteMultipartUpload>',
 	}),
