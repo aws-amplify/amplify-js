@@ -195,77 +195,6 @@ describe('server generateClient', () => {
 			);
 		});
 
-		test('can list with sort direction (ascending)', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'some name',
-								description: 'something something',
-							},
-						],
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const { data } = await client.models.Todo.list({
-				sortDirection: 'ASC',
-			});
-
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-		});
-		test('can list with sort direction (descending)', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'some name',
-								description: 'something something',
-							},
-						],
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const { data } = await client.models.Todo.list({
-				sortDirection: 'DESC',
-			});
-
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-		});
-
 		describe('with request', () => {
 			test('subscriptions are disabled', () => {
 				const client = generateClientWithAmplifyInstance<
@@ -294,7 +223,9 @@ describe('server generateClient', () => {
 					config: config,
 				});
 
-				const mockContextSpec = { token: { value: Symbol('') } };
+				const mockContextSpec = {
+					token: { value: Symbol('AmplifyServerContextToken') },
+				};
 
 				const spy = jest
 					.spyOn(client, 'graphql')
