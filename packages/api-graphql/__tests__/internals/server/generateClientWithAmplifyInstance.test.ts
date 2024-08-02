@@ -223,7 +223,6 @@ describe('server generateClient', () => {
 			});
 
 			const { data } = await client.models.Todo.list({
-				id: 'some-id',
 				sortDirection: 'ASC',
 			});
 
@@ -259,7 +258,6 @@ describe('server generateClient', () => {
 			});
 
 			const { data } = await client.models.Todo.list({
-				id: 'some-id',
 				sortDirection: 'DESC',
 			});
 
@@ -325,7 +323,7 @@ describe('server generateClient', () => {
 					config: config,
 				});
 
-				const mockContextSpec = {};
+				const mockContextSpec = { token: { value: Symbol('') } };
 
 				const spy = jest
 					.spyOn(client, 'graphql')
