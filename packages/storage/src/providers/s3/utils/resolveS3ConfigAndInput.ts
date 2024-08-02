@@ -79,7 +79,7 @@ export const resolveS3ConfigAndInput = async (
 		// use conditional assign to make tsc happy because StorageOptions is a union type that may not have targetIdentityId
 		targetIdentityId:
 			apiOptions?.accessLevel === 'protected'
-				? apiOptions?.targetIdentityId ?? identityId
+				? (apiOptions?.targetIdentityId ?? identityId)
 				: identityId,
 	});
 
