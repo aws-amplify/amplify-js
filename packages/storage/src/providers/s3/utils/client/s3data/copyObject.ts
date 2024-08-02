@@ -38,6 +38,8 @@ export type CopyObjectInput = Pick<
 	| 'ACL'
 	| 'Tagging'
 	| 'Metadata'
+	| 'CopySourceIfUnmodifiedSince'
+	| 'CopySourceIfMatch'
 >;
 
 export type CopyObjectOutput = CopyObjectCommandOutput;
@@ -51,6 +53,9 @@ const copyObjectSerializer = async (
 		...assignStringVariables({
 			'x-amz-copy-source': input.CopySource,
 			'x-amz-metadata-directive': input.MetadataDirective,
+			'x-amz-copy-source-if-match': input.CopySourceIfMatch,
+			'x-amz-copy-source-if-unmodified-since':
+				input.CopySourceIfUnmodifiedSince?.toISOString(),
 		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
