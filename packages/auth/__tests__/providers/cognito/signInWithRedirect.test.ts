@@ -42,7 +42,20 @@ jest.mock('@aws-amplify/core', () => {
 			getConfig: jest.fn(() => mockAuthConfigWithOAuth),
 			[ACTUAL_ADD_OAUTH_LISTENER]: jest.fn(),
 		},
-		ConsoleLogger: jest.fn(),
+		ConsoleLogger: jest.fn().mockImplementation(() => {
+			return { warn: jest.fn() };
+		}),
+		syncSessionStorage: {
+			setItem: jest.fn((key, value) => {
+				window.sessionStorage.setItem(key, value);
+			}),
+			getItem: jest.fn((key: string) => {
+				return window.sessionStorage.getItem(key);
+			}),
+			removeItem: jest.fn((key: string) => {
+				window.sessionStorage.removeItem(key);
+			}),
+		},
 	};
 });
 
