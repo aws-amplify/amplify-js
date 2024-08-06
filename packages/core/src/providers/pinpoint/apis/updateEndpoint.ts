@@ -51,7 +51,7 @@ export const updateEndpoint = async ({
 	// only automatically populate the endpoint with client info and identity id upon endpoint creation to
 	// avoid overwriting the endpoint with these values every time the endpoint is updated
 	const demographicsFromClientInfo: UserProfile['demographic'] = {};
-	const resolvedUserId = createdEndpointId ? userId ?? identityId : userId;
+	const resolvedUserId = createdEndpointId ? (userId ?? identityId) : userId;
 	if (createdEndpointId) {
 		const clientInfo = getClientInfo();
 		demographicsFromClientInfo.appVersion = clientInfo.appVersion;
