@@ -5,7 +5,7 @@ import {
 	AccessGrant,
 	CredentialsProvider,
 	ListLocationsInput,
-	ListLocationsOutput,
+	ListLocationsOutputS3,
 	LocationCredentials,
 	Permission,
 	PrefixType,
@@ -18,7 +18,7 @@ export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	region: string;
 }
 
-export type ListCallerAccessGrantsOutput = ListLocationsOutput<AccessGrant>;
+export type ListCallerAccessGrantsOutput = ListLocationsOutputS3<AccessGrant>;
 
 export interface GetDataAccessInput {
 	accountId: string;

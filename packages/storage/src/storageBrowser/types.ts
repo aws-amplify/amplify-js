@@ -84,10 +84,12 @@ export interface AccessGrant extends LocationAccess {
 /**
  * @internal
  */
-export interface ListLocationsOutput<T extends LocationAccess> {
+
+export interface ListLocationsOutputS3<T extends LocationAccess> {
 	locations: T[];
 	nextToken?: string;
 }
+export type ListLocationsOutput = ListLocationsOutputS3<LocationAccess>;
 
 /**
  * @internal
@@ -99,7 +101,7 @@ export interface ListLocationsInput {
 
 export type ListLocations = (
 	input?: ListLocationsInput,
-) => Promise<ListLocationsOutput<LocationAccess>>;
+) => Promise<ListLocationsOutput>;
 
 export type GetLocationCredentialsInput = CredentialsLocation;
 export type GetLocationCredentialsOutput = LocationCredentials;
@@ -107,6 +109,10 @@ export type GetLocationCredentialsOutput = LocationCredentials;
 export type GetLocationCredentials = (
 	input: GetLocationCredentialsInput,
 ) => Promise<GetLocationCredentialsOutput>;
+
+export interface CreateLocationCredentialsStoreInput {
+	handler: GetLocationCredentials;
+}
 
 export interface LocationCredentialsStore {
 	/**

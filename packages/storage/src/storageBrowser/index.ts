@@ -14,4 +14,12 @@ export {
 	GetLocationCredentials,
 	ListLocations,
 	LocationCredentialsStore,
+	CreateLocationCredentialsStoreInput,
+	LocationCredentials,
+	ListLocationsInput,
+	ListLocationsOutput,
+	GetLocationCredentialsInput,
+	GetLocationCredentialsOutput,
+	Permission as AccessGrantPermission,
 } from './types';
+export { AWSTemporaryCredentials } from '../providers/s3/types/options';
