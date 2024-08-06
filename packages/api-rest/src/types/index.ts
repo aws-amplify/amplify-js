@@ -112,3 +112,12 @@ export interface InternalPostInput {
 	 */
 	abortController?: AbortController;
 }
+
+/**
+ * Type for signingServiceInfo which enable IAM auth as well as overwrite the IAM signing info.
+ * @internal
+ */
+export interface SigningServiceInfo {
+	service?: string;
+	region?: string;
+}

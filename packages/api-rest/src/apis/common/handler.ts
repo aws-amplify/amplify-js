@@ -20,18 +20,14 @@ import {
 	parseSigningInfo,
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
-import { RestApiResponse } from '../../types';
+import { RestApiResponse, SigningServiceInfo } from '../../types';
+import { iamAuthApplicableForGraphQL } from '../../utils/iamAuthApplicable';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
 	headers?: Headers;
 	withCredentials?: boolean;
 };
-
-interface SigningServiceInfo {
-	service?: string;
-	region?: string;
-}
 
 /**
  * Make REST API call with best-effort IAM auth.
@@ -47,6 +43,10 @@ export const transferHandler = async (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions & { abortSignal: AbortSignal },
 	signingServiceInfo?: SigningServiceInfo,
+	iamAuthApplicable: (
+		{ headers }: HttpRequest,
+		signingServiceInfo?: SigningServiceInfo,
+	) => boolean = iamAuthApplicableForGraphQL,
 ): Promise<RestApiResponse> => {
 	const { url, method, headers, body, withCredentials, abortSignal } = options;
 	const resolvedBody = body
@@ -69,6 +69,7 @@ export const transferHandler = async (
 	};
 
 	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+
 	let response: RestApiResponse;
 	const credentials = await resolveCredentials(amplify);
 	if (isIamAuthApplicable && credentials) {
@@ -96,11 +97,6 @@ export const transferHandler = async (
 		body: response.body,
 	};
 };
-
-const iamAuthApplicable = (
-	{ headers }: HttpRequest,
-	signingServiceInfo?: SigningServiceInfo,
-) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;
 
 const resolveCredentials = async (
 	amplify: AmplifyClassV6,
