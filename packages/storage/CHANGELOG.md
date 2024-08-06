@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.12...@aws-amplify/storage@5.9.13) (2024-08-01)
+
+### Bug Fixes
+
+- **storage:** fixed stray line of Progress Event when multipart upload is complete ([#13652](https://github.com/aws-amplify/amplify-js/issues/13652)) ([716049f](https://github.com/aws-amplify/amplify-js/commit/716049fbb778fef72249426d7d4a8d9787522a44))
+
 ## 5.9.12 (2024-03-21)
 
 ### Bug Fixes
