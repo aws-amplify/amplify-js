@@ -6,7 +6,7 @@ import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-clie
 
 import { logger } from '../../utils';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../providers/s3/utils/client/s3control';
-import { AccessGrant, LocationType, Permission } from '../types';
+import { LocationAccess, LocationType, Permission } from '../types';
 import { StorageError } from '../../errors/StorageError';
 import { getStorageUserAgentValue } from '../../providers/s3/utils/userAgent';
 
@@ -51,7 +51,7 @@ export const listCallerAccessGrants = async (
 			},
 		);
 
-	const accessGrants: AccessGrant[] =
+	const accessGrants: LocationAccess[] =
 		CallerAccessGrantsList?.map(grant => {
 			// These values are correct from service mostly, but we add assertions to make TSC happy.
 			assertPermission(grant.Permission);
@@ -60,7 +60,6 @@ export const listCallerAccessGrants = async (
 			return {
 				scope: grant.GrantScope,
 				permission: grant.Permission,
-				applicationArn: grant.ApplicationArn,
 				type: parseGrantType(grant.GrantScope!),
 			};
 		}) ?? [];

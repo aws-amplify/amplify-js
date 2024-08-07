@@ -71,24 +71,6 @@ export interface LocationCredentials extends Partial<LocationScope> {
 	readonly credentials: AWSTemporaryCredentials;
 }
 
-export interface AccessGrant extends LocationAccess {
-	/**
-	 * The Amazon Resource Name (ARN) of an AWS IAM Identity Center application
-	 * associated with your Identity Center instance. If the grant includes an
-	 * application ARN, the grantee can only access the S3 data through this
-	 * application.
-	 */
-	readonly applicationArn: string | undefined;
-}
-
-/**
- * @internal
- */
-export interface ListLocationsOutput<T extends LocationAccess> {
-	locations: T[];
-	nextToken?: string;
-}
-
 /**
  * @internal
  */
@@ -96,10 +78,17 @@ export interface ListLocationsInput {
 	pageSize?: number;
 	nextToken?: string;
 }
+/**
+ * @internal
+ */
+export interface ListLocationsOutput {
+	locations: LocationAccess[];
+	nextToken?: string;
+}
 
 export type ListLocations = (
 	input?: ListLocationsInput,
-) => Promise<ListLocationsOutput<LocationAccess>>;
+) => Promise<ListLocationsOutput>;
 
 export type GetLocationCredentialsInput = CredentialsLocation;
 export type GetLocationCredentialsOutput = LocationCredentials;
@@ -107,6 +96,10 @@ export type GetLocationCredentialsOutput = LocationCredentials;
 export type GetLocationCredentials = (
 	input: GetLocationCredentialsInput,
 ) => Promise<GetLocationCredentialsOutput>;
+
+export interface CreateLocationCredentialsStoreInput {
+	handler: GetLocationCredentials;
+}
 
 export interface LocationCredentialsStore {
 	/**
