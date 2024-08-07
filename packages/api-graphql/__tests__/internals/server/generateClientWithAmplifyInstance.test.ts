@@ -25,6 +25,8 @@ const config: ResourcesConfig = {
 	},
 };
 
+// sanity check for CRUD model ops using server clients
+// exhaustive tests live in https://github.com/aws-amplify/amplify-api-next
 describe('server generateClient', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -193,110 +195,6 @@ describe('server generateClient', () => {
 			);
 		});
 
-		test('can list with sort direction (ascending)', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'some name',
-								description: 'something something',
-							},
-						],
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const { data } = await client.models.Todo.list({
-				id: 'some-id',
-				sortDirection: 'ASC',
-			});
-
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-		});
-		test('can list with sort direction (descending)', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					listTodos: {
-						items: [
-							{
-								__typename: 'Todo',
-								...serverManagedFields,
-								name: 'some name',
-								description: 'something something',
-							},
-						],
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const { data } = await client.models.Todo.list({
-				id: 'some-id',
-				sortDirection: 'DESC',
-			});
-
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-		});
-
-		test('can custom query', async () => {
-			Amplify.configure(configFixture as any);
-			const config = Amplify.getConfig();
-
-			const spy = mockApiResponse({
-				data: {
-					echo: {
-						resultContent: 'echo result content',
-					},
-				},
-			});
-
-			const getAmplify = async (fn: any) => await fn(Amplify);
-
-			const client = generateClientWithAmplifyInstance<
-				Schema,
-				V6ClientSSRCookies<Schema>
-			>({
-				amplify: getAmplify,
-				config: config,
-			});
-
-			const result = await client.queries.echo({
-				argumentContent: 'echo argumentContent value',
-			});
-
-			expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
-			expect(result?.data).toEqual({
-				resultContent: 'echo result content',
-			});
-		});
 		describe('with request', () => {
 			test('subscriptions are disabled', () => {
 				const client = generateClientWithAmplifyInstance<
@@ -325,7 +223,9 @@ describe('server generateClient', () => {
 					config: config,
 				});
 
-				const mockContextSpec = {};
+				const mockContextSpec = {
+					token: { value: Symbol('AmplifyServerContextToken') },
+				};
 
 				const spy = jest
 					.spyOn(client, 'graphql')
@@ -343,34 +243,6 @@ describe('server generateClient', () => {
 					}),
 					{},
 				);
-			});
-
-			test('can custom query', async () => {
-				Amplify.configure(configFixture as any);
-				const config = Amplify.getConfig();
-
-				const client = generateClientWithAmplifyInstance<
-					Schema,
-					V6ClientSSRRequest<Schema>
-				>({
-					amplify: null,
-					config: config,
-				});
-
-				const spy = jest
-					.spyOn(client, 'graphql')
-					.mockImplementation(async () => {
-						const result: any = {};
-						return result;
-					});
-
-				const mockContextSpec = { token: { value: Symbol('test') } };
-
-				const result = await client.queries.echo(mockContextSpec, {
-					argumentContent: 'echo argumentContent value',
-				});
-
-				expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 			});
 		});
 	});

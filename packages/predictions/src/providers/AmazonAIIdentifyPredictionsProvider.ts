@@ -9,6 +9,7 @@ import {
 import { getUrl } from '@aws-amplify/storage';
 import {
 	DetectFacesCommand,
+	DetectFacesCommandInput,
 	DetectLabelsCommand,
 	DetectLabelsCommandInput,
 	DetectModerationLabelsCommand,
@@ -238,7 +239,8 @@ export class AmazonAIIdentifyPredictionsProvider {
 		} else {
 			const param: AnalyzeDocumentCommandInput = {
 				Document: inputDocument,
-				FeatureTypes: featureTypes,
+				FeatureTypes:
+					featureTypes as AnalyzeDocumentCommandInput['FeatureTypes'],
 			};
 
 			const analyzeDocumentCommand = new AnalyzeDocumentCommand(param);
@@ -448,7 +450,9 @@ export class AmazonAIIdentifyPredictionsProvider {
 
 			return { entities: faces };
 		} else {
-			const detectFacesCommand = new DetectFacesCommand(param);
+			const detectFacesCommand = new DetectFacesCommand(
+				param as DetectFacesCommandInput,
+			);
 			const data = await this.rekognitionClient.send(detectFacesCommand);
 			const faces =
 				data.FaceDetails?.map(detail => {

@@ -82,14 +82,15 @@ export const resolveS3ConfigAndInput = async (
 		isObjectLockEnabled,
 	} = amplify.libraryOptions?.Storage?.S3 ?? {};
 
-	const accessLevel =
-		apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL;
-	const targetIdentityId =
-		accessLevel === 'protected'
-			? apiOptions?.targetIdentityId ?? identityId
-			: identityId;
-
-	const keyPrefix = await prefixResolver({ accessLevel, targetIdentityId });
+	const keyPrefix = await prefixResolver({
+		accessLevel:
+			apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL,
+		// use conditional assign to make tsc happy because StorageOptions is a union type that may not have targetIdentityId
+		targetIdentityId:
+			apiOptions?.accessLevel === 'protected'
+				? (apiOptions?.targetIdentityId ?? identityId)
+				: identityId,
+	});
 
 	return {
 		s3Config: {
