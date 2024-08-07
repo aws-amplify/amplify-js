@@ -20,6 +20,6 @@ export {
 	ListLocationsOutput,
 	GetLocationCredentialsInput,
 	GetLocationCredentialsOutput,
-	Permission as AccessGrantPermission,
+	Permission,
 } from './types';
 export { AWSTemporaryCredentials } from '../providers/s3/types/options';
