@@ -479,7 +479,7 @@
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "15.79 kB"
+			"limit": "15.90 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
@@ -497,7 +497,7 @@
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "19.85 kB"
+			"limit": "19.90 kB"
 		}
 	]
 }
