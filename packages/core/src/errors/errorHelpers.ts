@@ -15,6 +15,9 @@ const amplifyErrorMap: AmplifyErrorMap<AmplifyErrorCode> = {
 	[AmplifyErrorCode.Unknown]: {
 		message: 'An unknown error occurred.',
 	},
+	[AmplifyErrorCode.NetworkError]: {
+		message: 'A network error has occurred.',
+	},
 };
 
 export const assert: AssertionFunction<AmplifyErrorCode> =

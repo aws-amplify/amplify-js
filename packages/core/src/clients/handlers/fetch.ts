@@ -3,8 +3,9 @@
 
 import { HttpRequest, HttpResponse, HttpTransferOptions } from '../types/http';
 import { TransferHandler } from '../types/core';
-import { ApiError } from '../../errors';
+import { AmplifyError } from '../../errors';
 import { withMemoization } from '../utils/memoization';
+import { AmplifyErrorCode } from '../../types';
 
 const shouldSendBody = (method: string) =>
 	!['HEAD', 'GET', 'DELETE'].includes(method.toUpperCase());
@@ -30,9 +31,9 @@ export const fetchTransferHandler: TransferHandler<
 		});
 	} catch (e) {
 		if (e instanceof TypeError) {
-			throw new ApiError({
+			throw new AmplifyError({
+				name: AmplifyErrorCode.NetworkError,
 				message: 'Network Error',
-				name: 'NETWORK_ERROR',
 				underlyingError: e,
 			});
 		}
