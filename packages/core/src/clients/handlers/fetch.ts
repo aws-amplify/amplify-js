@@ -3,6 +3,7 @@
 
 import { HttpRequest, HttpResponse, HttpTransferOptions } from '../types/http';
 import { TransferHandler } from '../types/core';
+import { ApiError } from '../../errors';
 import { withMemoization } from '../utils/memoization';
 
 const shouldSendBody = (method: string) =>
@@ -28,11 +29,12 @@ export const fetchTransferHandler: TransferHandler<
 			credentials: withCrossDomainCredentials ? 'include' : 'same-origin',
 		});
 	} catch (e) {
-		// TODO: needs to revise error handling in v6
-		// For now this is a thin wrapper over original fetch error similar to cognito-identity-js package.
-		// Ref: https://github.com/aws-amplify/amplify-js/blob/4fbc8c0a2be7526aab723579b4c95b552195a80b/packages/amazon-cognito-identity-js/src/Client.js#L103-L108
 		if (e instanceof TypeError) {
-			throw new Error('Network error');
+			throw new ApiError({
+				message: 'Network Error',
+				name: 'NETWORK_ERROR',
+				underlyingError: e,
+			});
 		}
 		throw e;
 	}
