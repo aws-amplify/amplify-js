@@ -44,6 +44,12 @@ describe('getGlobal', () => {
 
 			expect(getCrypto()).toEqual(mockCrypto);
 		});
+
+		it('should throw error if crypto is unavailable globally', () => {
+			mockWindow.mockImplementation(() => undefined);
+
+			expect(() => getCrypto()).toThrow(AmplifyError);
+		});
 	});
 
 	describe('getBtoa()', () => {
