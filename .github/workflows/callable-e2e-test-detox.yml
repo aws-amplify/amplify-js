@@ -77,7 +77,7 @@ jobs:
       - name: Start the http-server and host the oidc signout page locally (background)
         if: ${{ inputs.host_signout_page }}
         run: |
-          cd oidc-signout-hosted-page & python3 -m http.server &
+          cd oidc-signout-hosted-page && python3 -m http.server &
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox run
