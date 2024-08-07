@@ -33,7 +33,7 @@ export const fetchTransferHandler: TransferHandler<
 		if (e instanceof TypeError) {
 			throw new AmplifyError({
 				name: AmplifyErrorCode.NetworkError,
-				message: 'Network Error',
+				message: 'A network error has occurred.',
 				underlyingError: e,
 			});
 		}
