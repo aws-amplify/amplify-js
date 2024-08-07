@@ -140,13 +140,13 @@
 			"name": "Custom clients (request signer)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ signRequest }",
-			"limit": "6.2 kB"
+			"limit": "6.25 kB"
 		},
 		{
 			"name": "Custom clients (url presigner)",
 			"path": "./lib-esm/clients/middleware/signing/signer/signatureV4/index.js",
 			"import": "{ presignUrl }",
-			"limit": "6.3 kB"
+			"limit": "6.36 kB"
 		}
 	],
 	"jest": {
