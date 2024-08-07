@@ -51,7 +51,6 @@ export const listCallerAccessGrants = async (
 			},
 		);
 
-	// TODO: return `applicationArn` if required
 	const accessGrants: LocationAccess[] =
 		CallerAccessGrantsList?.map(grant => {
 			// These values are correct from service mostly, but we add assertions to make TSC happy.
