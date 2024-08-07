@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - fix/redirect-rn
+      - test/react-native-oidc-signout
 
 jobs:
   e2e:
