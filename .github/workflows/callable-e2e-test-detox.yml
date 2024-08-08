@@ -66,14 +66,14 @@ jobs:
           yarn global add detox-cli
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      # - name: Detox Build
-      #   run: |
-      #     detox build -c ios.sim.debug
-      #   env:
-      #     JEST_JUNIT_OUTPUT_DIR: reports/junit
-      #     JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
-      #   working-directory: ${{ inputs.working_directory }}
-      #   shell: bash
+      - name: Detox Build
+        run: |
+          detox build -c ios.sim.debug
+        env:
+          JEST_JUNIT_OUTPUT_DIR: reports/junit
+          JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
       - name: Start the http-server and host the oidc signout page locally (background)
         if: ${{ inputs.host_signout_page }}
         run: |
