@@ -16,6 +16,7 @@ const logger = new ConsoleLogger('Analytics');
  * @note
  * This API will make a best-effort attempt to flush events from the buffer. Events recorded immediately after invoking
  * this API may not be included in the flush.
+ * @note Does not throw an exception on failure.
  */
 export const flushEvents = () => {
 	const { appId, region, bufferSize, flushSize, flushInterval, resendLimit } =
