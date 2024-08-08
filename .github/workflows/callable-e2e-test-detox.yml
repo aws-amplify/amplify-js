@@ -88,7 +88,7 @@ jobs:
           npx http-server -p 8000 &
           sleep 60 &&
           echo "result: '$(curl -s 'http://localhost:8000')'" &&
-          cd ${{ inputs.working_directory }} &&
+          cd .. &&
           pwd &&
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
