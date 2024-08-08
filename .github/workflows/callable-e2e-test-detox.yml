@@ -77,8 +77,8 @@ jobs:
       - name: Start the http-server and host the oidc signout page locally (background)
         if: ${{ inputs.host_signout_page }}
         run: |
-          cd oidc-signout-hosted-page/
-          npx http-server -p 8000
+          cd oidc-signout-hosted-page/ &&
+          npx http-server -p 8000 &
           sleep 60
         working-directory: ${{ inputs.working_directory }}
         shell: bash
