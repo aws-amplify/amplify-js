@@ -1,15 +1,8 @@
-import { ResourcesConfig } from 'aws-amplify';
 import { InternalGraphQLAPIClass } from '@aws-amplify/api-graphql/internals';
-import { generateClient, CONNECTION_STATE_CHANGE } from '@aws-amplify/api';
 import { AmplifyClassV6 } from '@aws-amplify/core';
-// import { runWithAmplifyServerContext } from 'aws-amplify/internals/adapter-core';
 
-const serverManagedFields = {
-	id: 'some-id',
-	owner: 'wirejobviously',
-	createdAt: new Date().toISOString(),
-	updatedAt: new Date().toISOString(),
-};
+import { CONNECTION_STATE_CHANGE, generateClient } from '@aws-amplify/api';
+// import { runWithAmplifyServerContext } from 'aws-amplify/internals/adapter-core';
 
 describe('API generateClient', () => {
 	afterEach(() => {

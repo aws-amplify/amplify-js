@@ -1,8 +1,9 @@
 import { Hub } from '@aws-amplify/core';
-import { Observable } from 'rxjs';
-import { ConnectionState as CS, CONNECTION_STATE_CHANGE } from '../src';
+import { Observable, Observer as RxObserver } from 'rxjs';
+
+import { CONNECTION_STATE_CHANGE, ConnectionState as CS } from '../src';
 import * as constants from '../src/Providers/constants';
-import { Observer as RxObserver } from 'rxjs';
+
 export function delay(timeout) {
 	return new Promise(resolve => {
 		setTimeout(() => {
@@ -33,7 +34,7 @@ export class HubConnectionListener {
 	}
 
 	/**
-	 * @returns {Observable<ConnectionState>} - The observable that emits all ConnectionState updates (past and future)
+	 * @returns `Observable<ConnectionState>` - The observable that emits all ConnectionState updates (past and future)
 	 */
 	allConnectionStateObserver() {
 		return new Observable(observer => {
@@ -45,7 +46,7 @@ export class HubConnectionListener {
 	}
 
 	/**
-	 * @returns {Observable<ConnectionState>} - The observable that emits ConnectionState updates (past and future)
+	 * @returns `Observable<ConnectionState>` - The observable that emits ConnectionState updates (past and future)
 	 */
 	connectionStateObserver() {
 		return new Observable(observer => {
@@ -64,21 +65,21 @@ export class HubConnectionListener {
 	}
 
 	async waitForConnectionState(connectionStates: CS[]) {
-		return new Promise<void>((res, rej) => {
+		return new Promise<void>((resolve, _reject) => {
 			this.connectionStateObserver().subscribe(value => {
 				if (connectionStates.includes(String(value) as CS)) {
-					res(undefined);
+					resolve(undefined);
 				}
 			});
 		});
 	}
 
 	async waitUntilConnectionStateIn(connectionStates: CS[]) {
-		return new Promise<void>((res, rej) => {
+		return new Promise<void>((resolve, _reject) => {
 			if (connectionStates.includes(this.currentConnectionState)) {
-				res(undefined);
+				resolve(undefined);
 			}
-			res(this.waitForConnectionState(connectionStates));
+			resolve(this.waitForConnectionState(connectionStates));
 		});
 	}
 }
@@ -97,12 +98,12 @@ export class FakeWebSocketInterface {
 	}
 
 	resetWebsocket() {
-		this.readyForUse = new Promise((res, rej) => {
-			this.readyResolve = res;
+		this.readyForUse = new Promise((resolve, _reject) => {
+			this.readyResolve = resolve;
 		});
 		let closeResolver: (value: PromiseLike<any>) => void;
-		this.hasClosed = new Promise((res, rej) => {
-			closeResolver = res;
+		this.hasClosed = new Promise((resolve, _reject) => {
+			closeResolver = resolve;
 		});
 		this.webSocket = new FakeWebSocket(() => closeResolver);
 	}
@@ -182,7 +183,10 @@ export class FakeWebSocketInterface {
 	 * @returns A websocket
 	 */
 	newWebSocket() {
-		setTimeout(() => this.readyResolve(Promise.resolve()), 10);
+		setTimeout(() => {
+			this.readyResolve(Promise.resolve());
+		}, 10);
+
 		return this.webSocket;
 	}
 
@@ -194,7 +198,7 @@ export class FakeWebSocketInterface {
 			new MessageEvent(constants.MESSAGE_TYPES.GQL_CONNECTION_ACK, {
 				data: JSON.stringify({
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
-					payload: payload,
+					payload,
 				}),
 			}),
 		);
@@ -208,7 +212,7 @@ export class FakeWebSocketInterface {
 			new MessageEvent(constants.MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE, {
 				data: JSON.stringify({
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
-					payload: payload,
+					payload,
 				}),
 			}),
 		);
@@ -219,7 +223,7 @@ export class FakeWebSocketInterface {
 			new MessageEvent(constants.MESSAGE_TYPES.GQL_START_ACK, {
 				data: JSON.stringify({
 					type: constants.MESSAGE_TYPES.GQL_START_ACK,
-					payload: payload,
+					payload,
 					id: this.webSocket.subscriptionId,
 				}),
 			}),
@@ -229,7 +233,7 @@ export class FakeWebSocketInterface {
 	/**
 	 * Send a data message
 	 */
-	async sendDataMessage(data: {}) {
+	async sendDataMessage(data: object) {
 		await this.sendMessage(
 			new MessageEvent('data', {
 				data: JSON.stringify({
@@ -253,7 +257,7 @@ export class FakeWebSocketInterface {
 	/**
 	 * Run a command and resolve to allow internal behavior to execute
 	 */
-	async runAndResolve(fn) {
+	async runAndResolve(fn: () => Promise<unknown> | void) {
 		await fn();
 		await Promise.resolve();
 	}
@@ -262,10 +266,10 @@ export class FakeWebSocketInterface {
 	 * DELETE THIS?
 	 */
 	async observesConnectionState(connectionState: CS) {
-		return new Promise<void>((res, rej) => {
+		return new Promise<void>((resolve, _reject) => {
 			this.allConnectionStateObserver().subscribe(value => {
 				if (value === connectionState) {
-					res(undefined);
+					resolve(undefined);
 				}
 			});
 		});
@@ -302,49 +306,53 @@ class FakeWebSocket implements WebSocket {
 	protocol!: string;
 	readyState!: number;
 	url!: string;
-	close(code?: number, reason?: string): void {
+	close(): void {
 		const closeResolver = this.closeResolverFcn();
 		if (closeResolver) closeResolver(Promise.resolve(undefined));
 	}
+
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
 		const parsedInput = JSON.parse(String(data));
 		this.subscriptionId = parsedInput.id;
 	}
-	CONNECTING: 0 = 0;
-	OPEN: 1 = 1;
-	CLOSING: 2 = 2;
-	CLOSED: 3 = 3;
+
+	CONNECTING: 0 = 0 as const;
+	OPEN: 1 = 1 as const;
+	CLOSING: 2 = 2 as const;
+	CLOSED: 3 = 3 as const;
 	addEventListener<K extends keyof WebSocketEventMap>(
 		type: K,
 		listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
 		options?: boolean | AddEventListenerOptions,
 	): void;
+
 	addEventListener(
 		type: string,
 		listener: EventListenerOrEventListenerObject,
 		options?: boolean | AddEventListenerOptions,
 	): void;
-	addEventListener(type: unknown, listener: unknown, options?: unknown): void {
+
+	addEventListener(): void {
 		throw new Error('Method not implemented addEventListener.');
 	}
+
 	removeEventListener<K extends keyof WebSocketEventMap>(
 		type: K,
 		listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
 		options?: boolean | EventListenerOptions,
 	): void;
+
 	removeEventListener(
 		type: string,
 		listener: EventListenerOrEventListenerObject,
 		options?: boolean | EventListenerOptions,
 	): void;
-	removeEventListener(
-		type: unknown,
-		listener: unknown,
-		options?: unknown,
-	): void {
+
+	removeEventListener(): void {
 		throw new Error('Method not implemented removeEventListener.');
 	}
-	dispatchEvent(event: Event): boolean {
+
+	dispatchEvent(): boolean {
 		throw new Error('Method not implemented dispatchEvent.');
 	}
 
@@ -358,7 +366,7 @@ export async function replaceConstant(
 	replacementValue: any,
 	testFn: () => Promise<void>,
 ) {
-	const initialValue = constants[name];
+	const initialValue = (constants as any)[name];
 	Object.defineProperty(constants, name, {
 		value: replacementValue,
 	});

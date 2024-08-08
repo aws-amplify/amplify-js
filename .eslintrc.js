@@ -35,13 +35,9 @@ module.exports = {
 		'setupTests.ts',
 		'jest.setup.*',
 		'jest.config.*',
-		'packages/api/__tests__',
 		'packages/api-graphql/__tests__',
 		'packages/datastore/__tests__',
 		'packages/datastore-storage-adapter/__tests__',
-		'packages/interactions/__tests__',
-		'packages/predictions/__tests__',
-		'packages/pubsub/__tests__',
 	],
 	rules: {
 		camelcase: [

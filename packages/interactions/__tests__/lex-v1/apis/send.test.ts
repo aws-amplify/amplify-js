@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { v4 as uuid } from 'uuid';
+
 import { lexProvider } from '../../../src/lex-v1/AWSLexProvider';
 import { send } from '../../../src/lex-v1/apis';
 import { generateRandomLexV1Config } from '../../testUtils/randomConfigGeneration';
