@@ -74,17 +74,21 @@ jobs:
           JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      - name: Start the http-server and host the oidc signout page locally (background)
-        if: ${{ inputs.host_signout_page }}
+      # - name: Start the http-server and host the oidc signout page locally (background)
+      #   if: ${{ inputs.host_signout_page }}
+      #   run: |
+      #     cd oidc-signout-hosted-page/ &&
+      #     npx http-server -p 8000 &
+      #     sleep 60
+      #   working-directory: ${{ inputs.working_directory }}
+      #   shell: bash
+      - name: Detox run
         run: |
           cd oidc-signout-hosted-page/ &&
           npx http-server -p 8000 &
-          sleep 60
-        working-directory: ${{ inputs.working_directory }}
-        shell: bash
-      - name: Detox run
-        run: |
+          sleep 60 &&
           echo "result: '$(curl -s 'http://localhost:8000')'" &&
+          cd .. &&
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
