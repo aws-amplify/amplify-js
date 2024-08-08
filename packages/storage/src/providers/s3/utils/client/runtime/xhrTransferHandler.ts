@@ -81,13 +81,9 @@ export const xhrTransferHandler: TransferHandler<
 		}
 
 		xhr.addEventListener('error', () => {
-			const errorStatus = xhr?.status;
-			const errorStatusText = xhr?.statusText;
-
 			const networkError = new StorageError({
 				message: NETWORK_ERROR_MESSAGE,
 				name: NETWORK_ERROR_CODE,
-				underlyingError: `XMLHttpRequest status ${errorStatus} ${errorStatusText}`,
 			});
 			logger.error(NETWORK_ERROR_MESSAGE);
 			reject(networkError);
