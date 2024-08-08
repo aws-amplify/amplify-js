@@ -23,7 +23,7 @@ jobs:
     name: E2E-Detox ${{ inputs.test_name }}
     runs-on: macos-latest
     timeout-minutes: ${{ inputs.timeout_minutes }}
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -88,7 +88,8 @@ jobs:
           npx http-server -p 8000 &
           sleep 60 &&
           echo "result: '$(curl -s 'http://localhost:8000')'" &&
-          cd .. &&
+          cd ${{ inputs.working_directory }} &&
+          pwd &&
           $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
