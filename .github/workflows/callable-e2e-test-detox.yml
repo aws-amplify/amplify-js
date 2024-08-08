@@ -79,6 +79,7 @@ jobs:
         run: |
           cd oidc-signout-hosted-page/
           npx http-server -p 8000
+          sleep 60
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox run
