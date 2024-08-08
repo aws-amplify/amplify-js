@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/interactions",
-	"version": "6.0.38",
+	"version": "6.0.41",
 	"description": "Interactions category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -72,8 +72,8 @@
 		"lex-v2"
 	],
 	"dependencies": {
-		"@aws-sdk/client-lex-runtime-service": "3.398.0",
-		"@aws-sdk/client-lex-runtime-v2": "3.398.0",
+		"@aws-sdk/client-lex-runtime-service": "3.621.0",
+		"@aws-sdk/client-lex-runtime-v2": "3.621.0",
 		"base-64": "1.0.0",
 		"fflate": "0.7.3",
 		"pako": "2.0.4",
@@ -81,7 +81,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.3.6",
+		"@aws-amplify/core": "6.3.9",
 		"typescript": "^5.0.2"
 	},
 	"size-limit": [

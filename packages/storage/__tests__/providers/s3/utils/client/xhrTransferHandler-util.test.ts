@@ -197,7 +197,7 @@ describe('xhrTransferHandler', () => {
 		await expect(requestPromise).rejects.toThrow(
 			expect.objectContaining({
 				message: 'Network Error',
-				name: 'ECONNABORTED',
+				name: 'ERR_NETWORK',
 			}),
 		);
 	});
@@ -211,7 +211,7 @@ describe('xhrTransferHandler', () => {
 		await expect(requestPromise).rejects.toThrow(
 			expect.objectContaining({
 				message: 'Network Error',
-				name: 'ECONNABORTED',
+				name: 'ERR_NETWORK',
 			}),
 		);
 		// Should be no-op if the xhr is already cleared
