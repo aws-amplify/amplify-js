@@ -6,6 +6,15 @@ import { AuthSession, FetchAuthSessionOptions } from '../Auth/types';
 
 import { fetchAuthSession as fetchAuthSessionInternal } from './internal/fetchAuthSession';
 
+/**
+ * Fetch the auth tokens, and the temporary AWS credentials and identity if they are configured. By default it
+ * does not refresh the auth tokens or credentials if they are loaded in storage already. You can force a refresh
+ * with `{ forceRefresh: true }` input.
+ *
+ * @param options - Options configuring the fetch behavior.
+ * @throws {@link AuthError} - Throws error when session information cannot be refreshed.
+ * @returns Promise<AuthSession>
+ */
 export const fetchAuthSession = (
 	options?: FetchAuthSessionOptions,
 ): Promise<AuthSession> => {

@@ -66,6 +66,12 @@ export function assertIdentityPoolIdConfig(
 	);
 }
 
+/**
+ * Decodes payload of JWT token
+ *
+ * @param {String} token A string representing a token to be decoded
+ * @throws {@link Error} - Throws error when token is invalid or payload malformed.
+ */
 export function decodeJWT(token: string): JWT {
 	const tokenParts = token.split('.');
 
