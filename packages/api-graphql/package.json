@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-graphql",
-  "version": "3.4.18",
+  "version": "3.4.19",
   "description": "Api-graphql category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -51,11 +51,11 @@
     "internals"
   ],
   "dependencies": {
-    "@aws-amplify/api-rest": "3.5.12",
-    "@aws-amplify/auth": "5.6.12",
-    "@aws-amplify/cache": "5.1.18",
-    "@aws-amplify/core": "5.8.12",
-    "@aws-amplify/pubsub": "5.5.12",
+    "@aws-amplify/api-rest": "3.5.13",
+    "@aws-amplify/auth": "5.6.13",
+    "@aws-amplify/cache": "5.1.19",
+    "@aws-amplify/core": "5.8.13",
+    "@aws-amplify/pubsub": "5.5.13",
     "graphql": "15.8.0",
     "tslib": "^1.8.0",
     "uuid": "^3.2.1",

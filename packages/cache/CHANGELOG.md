@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@5.1.18...@aws-amplify/cache@5.1.19) (2024-08-08)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
 ## 5.1.18 (2024-03-21)
 
 ### Bug Fixes
