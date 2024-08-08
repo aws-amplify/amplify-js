@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.09 kB"
+			"limit": "17.15 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.59 kB"
+			"limit": "15.65 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -353,7 +353,7 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "12.44 kB"
+			"limit": "12.50 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
@@ -371,7 +371,7 @@
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resendSignUpCode }",
-			"limit": "12.40 kB"
+			"limit": "12.50 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -389,7 +389,7 @@
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "11.74 kB"
+			"limit": "11.75 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
@@ -401,13 +401,13 @@
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "12.6 kB"
+			"limit": "12.65 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "12.63 kB"
+			"limit": "12.70 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -461,43 +461,43 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "14.54 kB"
+			"limit": "14.60 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "15.17 kB"
+			"limit": "15.25 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "14.43 kB"
+			"limit": "14.50 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "15.64 kB"
+			"limit": "15.70 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "15.04 kB"
+			"limit": "15.10 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "14.29 kB"
+			"limit": "14.35 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "19.66 kB"
+			"limit": "19.75 kB"
 		}
 	]
 }

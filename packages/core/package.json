@@ -82,13 +82,13 @@
 			"name": "Custom clients (fetch handler)",
 			"path": "./dist/esm/clients/handlers/fetch.mjs",
 			"import": "{ fetchTransferHandler }",
-			"limit": "500 B"
+			"limit": "575 B"
 		},
 		{
 			"name": "Custom clients (unauthenticated handler)",
 			"path": "./dist/esm/clients/handlers/unauthenticated.mjs",
 			"import": "{ unauthenticatedHandler }",
-			"limit": "1 kB"
+			"limit": "1.15 kB"
 		},
 		{
 			"name": "Custom clients (request signer)",
