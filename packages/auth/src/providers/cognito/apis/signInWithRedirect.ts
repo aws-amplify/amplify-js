@@ -33,9 +33,11 @@ import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
  *
  * @throws AuthTokenConfigException - Thrown when the user pool config is invalid.
  * @throws OAuthNotConfigureException - Thrown when the oauth config is invalid.
+ * @param skipRedirectUrlValidation - Skip the redirect URL validation. Default is false.
  */
 export async function signInWithRedirect(
 	input?: SignInWithRedirectInput,
+	skipRedirectUrlValidation = false,
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
@@ -57,6 +59,7 @@ export async function signInWithRedirect(
 		provider,
 		customState: input?.customState,
 		preferPrivateSession: input?.options?.preferPrivateSession,
+		skipRedirectUrlValidation,
 	});
 }
 
@@ -66,12 +69,14 @@ const oauthSignIn = async ({
 	clientId,
 	customState,
 	preferPrivateSession,
+	skipRedirectUrlValidation,
 }: {
 	oauthConfig: OAuthConfig;
 	provider: string;
 	clientId: string;
 	customState?: string;
 	preferPrivateSession?: boolean;
+	skipRedirectUrlValidation?: boolean;
 }) => {
 	const { domain, redirectSignIn, responseType, scopes } = oauthConfig;
 	const randomState = generateState();
@@ -87,7 +92,10 @@ const oauthSignIn = async ({
 		: randomState;
 
 	const { value, method, toCodeChallenge } = generateCodeVerifier(128);
-	const redirectUri = getRedirectUrl(oauthConfig.redirectSignIn);
+
+	const redirectUri = skipRedirectUrlValidation
+		? oauthConfig.redirectSignIn[0]
+		: getRedirectUrl(oauthConfig.redirectSignIn);
 
 	if (isBrowser()) oAuthStore.storeOAuthInFlight(true);
 	oAuthStore.storeOAuthState(state);
