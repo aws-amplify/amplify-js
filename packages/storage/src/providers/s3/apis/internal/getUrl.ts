@@ -22,6 +22,7 @@ import {
 	MAX_URL_EXPIRATION,
 	STORAGE_INPUT_KEY,
 } from '../../utils/constants';
+import { constructContentDisposition } from '../../utils/constructContentDisposition';
 
 import { getProperties } from './getProperties';
 
@@ -74,6 +75,14 @@ export const getUrl = async (
 			{
 				Bucket: bucket,
 				Key: finalKey,
+				...(getUrlOptions?.contentDisposition && {
+					ResponseContentDisposition: constructContentDisposition(
+						getUrlOptions.contentDisposition,
+					),
+				}),
+				...(getUrlOptions?.contentType && {
+					ResponseContentType: getUrlOptions.contentType,
+				}),
 			},
 		),
 		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),
