@@ -813,6 +813,13 @@ tests:
     sample_name: [multi-part-copy]
     spec: multi-part-copy
     browser: *minimal_browser_list
+  - test_name: integ_react_storage_browser
+    desc: 'React Storage Browser'
+    framework: vite
+    category: storage
+    sample_name: [storage-browser]
+    spec: storage-browser
+    browser: *minimal_browser_list
 
   # GEN2 STORAGE
   - test_name: integ_react_storage
