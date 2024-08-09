@@ -23,12 +23,7 @@ jobs:
     name: E2E-Detox ${{ inputs.test_name }}
     runs-on: macos-latest
     timeout-minutes: ${{ inputs.timeout_minutes }}
-    services:
-      nginx:
-        image: nginx
-        # Map port 8080 on the Docker host to port 80 on the nginx container
-        ports:
-          - 8000:80
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
