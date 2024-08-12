@@ -55,4 +55,13 @@ describe('handleOAuthSignOut', () => {
 		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 		expect(mockOAuthSignOutRedirect).not.toHaveBeenCalled();
 	});
+
+	it('should complete OAuth sign out and redirect when signInDetails is defined.', async () => {
+		mockStore.loadOAuthSignIn.mockResolvedValue({
+			isOAuthSignIn: false,
+			preferPrivateSession: false,
+		});
+		await handleOAuthSignOut(cognitoConfig, mockStore, { provider: 'Cognito' });
+		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(cognitoConfig);
+	});
 });

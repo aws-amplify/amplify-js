@@ -40,6 +40,8 @@ jest.mock(
 			loadPKCE: jest.fn(),
 			clearOAuthData: jest.fn(),
 			clearOAuthInflightData: jest.fn(),
+			storeAuthProvider: jest.fn(),
+			loadAuthProvider: jest.fn(),
 		} as OAuthStore,
 	}),
 );
@@ -107,6 +109,7 @@ describe('completeOAuthFlow', () => {
 			redirectUri: 'http://localhost:3000/',
 			responseType: 'code',
 			domain: 'oauth.domain.com',
+			authProvider: 'Cognito',
 		};
 
 		it('throws when `code` is not presented in the redirect url', () => {
@@ -178,6 +181,9 @@ describe('completeOAuthFlow', () => {
 				RefreshToken: expectedTokens.refresh_token,
 				TokenType: expectedTokens.token_type,
 				ExpiresIn: expectedTokens.expires_in,
+				signInDetails: {
+					provider: 'Cognito',
+				},
 			});
 			expect(mockReplaceState).toHaveBeenCalledWith(
 				'http://localhost:3000/?code=aaaa-111-222&state=aaaaa',
@@ -216,6 +222,7 @@ describe('completeOAuthFlow', () => {
 			redirectUri: 'http://localhost:3000/',
 			responseType: 'non-code',
 			domain: 'oauth.domain.com',
+			authProvider: 'Cognito',
 		};
 
 		it('throws when error and error_description are presented in the redirect url', () => {
@@ -274,6 +281,9 @@ describe('completeOAuthFlow', () => {
 				IdToken: expectedIdToken,
 				TokenType: expectedTokenType,
 				ExpiresIn: expectedExpiresIn,
+				signInDetails: {
+					provider: 'Cognito',
+				},
 			});
 
 			expect(oAuthStore.clearOAuthData).toHaveBeenCalledTimes(1);

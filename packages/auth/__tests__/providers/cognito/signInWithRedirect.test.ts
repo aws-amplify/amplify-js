@@ -67,6 +67,8 @@ jest.mock('../../../src/providers/cognito/utils/oauth/oAuthStore', () => ({
 		loadPKCE: jest.fn(),
 		clearOAuthData: jest.fn(),
 		clearOAuthInflightData: jest.fn(),
+		storeAuthProvider: jest.fn(),
+		loadAuthProvider: jest.fn(),
 	} as OAuthStore,
 }));
 jest.mock('../../../src/providers/cognito/utils/oauth/handleFailure');

@@ -19,6 +19,12 @@ import { getRegion } from '../../../src/providers/cognito/utils/clients/CognitoI
 import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
 import { handleOAuthSignOut } from '../../../src/providers/cognito/utils/oauth';
 import { AuthTokenStore } from '../../../src/providers/cognito/tokenProvider/types';
+import { getCurrentUser } from '../../../src/providers/cognito/apis/getCurrentUser';
+import { CognitoAuthSignInDetails } from '../../../src/providers/cognito/types';
+
+jest.mock('../../../src/providers/cognito/apis/getCurrentUser', () => ({
+	getCurrentUser: jest.fn(),
+}));
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../src/providers/cognito/tokenProvider');
@@ -185,6 +191,7 @@ describe('signOut', () => {
 	});
 
 	describe('With OAuth configured', () => {
+		const mockGetCurrentUser = getCurrentUser as jest.Mock;
 		const cognitoConfigWithOauth = {
 			...cognitoConfig,
 			loginWith: {
@@ -203,14 +210,19 @@ describe('signOut', () => {
 				Auth: { Cognito: cognitoConfigWithOauth },
 			});
 			mockHandleOAuthSignOut.mockResolvedValue({ type: 'success' });
+			mockGetCurrentUser.mockReturnValue({
+				username: 'username',
+			});
 		});
 
 		afterEach(() => {
 			mockAmplify.getConfig.mockReset();
 			mockHandleOAuthSignOut.mockReset();
+			mockGetCurrentUser.mockReset();
+			MockDefaultOAuthStore.mockClear();
 		});
 
-		it('should perform OAuth sign out', async () => {
+		it('should perform OAuth sign out without signInDetails', async () => {
 			await signOut();
 
 			expect(MockDefaultOAuthStore).toHaveBeenCalledTimes(1);
@@ -220,6 +232,30 @@ describe('signOut', () => {
 			expect(mockHandleOAuthSignOut).toHaveBeenCalledWith(
 				cognitoConfigWithOauth,
 				mockDefaultOAuthStoreInstance,
+				undefined,
+			);
+			// In cases of OAuth, token removal and Hub dispatch should be performed by the OAuth handling since
+			// these actions can be deferred or canceled out of altogether.
+			expectSignOut().not.toComplete();
+		});
+
+		it('should perform OAuth sign out with signInDetails', async () => {
+			const mockSignInDetails: CognitoAuthSignInDetails = {
+				provider: 'Cognito',
+			};
+			mockGetCurrentUser.mockReturnValue({
+				signInDetails: mockSignInDetails,
+			});
+			await signOut();
+
+			expect(MockDefaultOAuthStore).toHaveBeenCalledTimes(1);
+			expect(mockDefaultOAuthStoreInstance.setAuthConfig).toHaveBeenCalledWith(
+				cognitoConfigWithOauth,
+			);
+			expect(mockHandleOAuthSignOut).toHaveBeenCalledWith(
+				cognitoConfigWithOauth,
+				mockDefaultOAuthStoreInstance,
+				mockSignInDetails,
 			);
 			// In cases of OAuth, token removal and Hub dispatch should be performed by the OAuth handling since
 			// these actions can be deferred or canceled out of altogether.
