@@ -13,6 +13,7 @@ import {
 	GetPropertiesWithPathOutput,
 } from '../../../../src/providers/s3/types';
 import './testUtils';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -28,7 +29,7 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 const mockHeadObject = headObject as jest.MockedFunction<typeof headObject>;
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
+const mockGetConfig = jest.mocked(Amplify.getConfig);
 
 const bucket = 'bucket';
 const region = 'region';
@@ -65,14 +66,16 @@ describe('getProperties with key', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
 	});
+
 	describe('Happy cases: With key', () => {
 		const config = {
 			credentials,
-			region: 'region',
+			region,
 			userAgentValue: expect.any(String),
 		};
 		beforeEach(() => {
@@ -152,6 +155,56 @@ describe('getProperties with key', () => {
 				);
 			},
 		);
+
+		describe('bucket passed in options', () => {
+			it('should override bucket in headObject call when bucket is object', async () => {
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-1',
+					region: 'region-1',
+				};
+				const headObjectOptions = {
+					Bucket: bucketInfo.bucketName,
+					Key: `public/${inputKey}`,
+				};
+
+				await getPropertiesWrapper({
+					key: inputKey,
+					options: {
+						bucket: bucketInfo,
+					},
+				});
+				expect(headObject).toHaveBeenCalledTimes(1);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+
+						userAgentValue: expect.any(String),
+					},
+					headObjectOptions,
+				);
+			});
+			it('should override bucket in headObject call when bucket is string', async () => {
+				await getPropertiesWrapper({
+					key: inputKey,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(headObject).toHaveBeenCalledTimes(1);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucket,
+						Key: `public/${inputKey}`,
+					},
+				);
+			});
+		});
 	});
 
 	describe('Error cases :  With key', () => {
@@ -201,6 +254,7 @@ describe('Happy cases: With path', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -275,6 +329,55 @@ describe('Happy cases: With path', () => {
 				);
 			},
 		);
+		describe('bucket passed in options', () => {
+			it('should override bucket in headObject call when bucket is object', async () => {
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-1',
+					region: 'region-1',
+				};
+				const headObjectOptions = {
+					Bucket: bucketInfo.bucketName,
+					Key: inputPath,
+				};
+
+				await getPropertiesWrapper({
+					path: inputPath,
+					options: {
+						bucket: bucketInfo,
+					},
+				});
+				expect(headObject).toHaveBeenCalledTimes(1);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+
+						userAgentValue: expect.any(String),
+					},
+					headObjectOptions,
+				);
+			});
+			it('should override bucket in headObject call when bucket is string', async () => {
+				await getPropertiesWrapper({
+					path: inputPath,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(headObject).toHaveBeenCalledTimes(1);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucket,
+						Key: inputPath,
+					},
+				);
+			});
+		});
 	});
 
 	describe('Error cases :  With path', () => {
