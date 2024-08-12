@@ -87,8 +87,8 @@ const listCallerAccessGrantsDeserializer = async (
 const deserializeAccessGrantsList = (output: any[]) =>
 	output.map(deserializeCallerAccessGrant);
 
-const deserializeCallerAccessGrant = (output: any) => {
-	const res = map(output, {
+const deserializeCallerAccessGrant = (output: any) =>
+	map(output, {
 		ApplicationArn: 'ApplicationArn',
 		GrantScope: 'GrantScope',
 		Permission: [
@@ -99,9 +99,6 @@ const deserializeCallerAccessGrant = (output: any) => {
 			),
 		],
 	});
-
-	return res;
-};
 
 export const listCallerAccessGrants = composeServiceApi(
 	s3TransferHandler,
