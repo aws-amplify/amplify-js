@@ -39,6 +39,7 @@ export const attemptCompleteOAuthFlow = async (
 		const { loginWith, userPoolClientId } = authConfig;
 		const { domain, redirectSignIn, responseType } = loginWith.oauth;
 		const redirectUri = getRedirectUrl(redirectSignIn);
+		const authProvider = (await oAuthStore.loadAuthProvider()) ?? undefined;
 
 		await completeOAuthFlow({
 			currentUrl,
@@ -47,6 +48,7 @@ export const attemptCompleteOAuthFlow = async (
 			redirectUri,
 			responseType,
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignInWithRedirect),
+			authProvider,
 		});
 	} catch (err) {
 		await handleFailure(err);

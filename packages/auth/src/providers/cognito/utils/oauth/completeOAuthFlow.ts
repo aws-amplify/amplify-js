@@ -25,6 +25,7 @@ export const completeOAuthFlow = async ({
 	responseType,
 	domain,
 	preferPrivateSession,
+	authProvider,
 }: {
 	currentUrl: string;
 	userAgentValue: string;
@@ -33,6 +34,7 @@ export const completeOAuthFlow = async ({
 	responseType: string;
 	domain: string;
 	preferPrivateSession?: boolean;
+	authProvider?: string;
 }): Promise<void> => {
 	const urlParams = new AmplifyUrl(currentUrl);
 	const error = urlParams.searchParams.get('error');
@@ -50,6 +52,7 @@ export const completeOAuthFlow = async ({
 			redirectUri,
 			domain,
 			preferPrivateSession,
+			authProvider,
 		});
 	}
 
@@ -57,6 +60,7 @@ export const completeOAuthFlow = async ({
 		currentUrl,
 		redirectUri,
 		preferPrivateSession,
+		authProvider,
 	});
 };
 
@@ -67,6 +71,7 @@ const handleCodeFlow = async ({
 	redirectUri,
 	domain,
 	preferPrivateSession,
+	authProvider,
 }: {
 	currentUrl: string;
 	userAgentValue: string;
@@ -74,6 +79,7 @@ const handleCodeFlow = async ({
 	redirectUri: string;
 	domain: string;
 	preferPrivateSession?: boolean;
+	authProvider?: string;
 }) => {
 	/* Convert URL into an object with parameters as keys
 { redirect_uri: 'http://localhost:3000/', response_type: 'code', ...} */
@@ -147,6 +153,9 @@ const handleCodeFlow = async ({
 		RefreshToken: refreshToken,
 		TokenType: token_type,
 		ExpiresIn: expires_in,
+		signInDetails: {
+			provider: authProvider,
+		},
 	});
 
 	return completeFlow({
@@ -160,10 +169,12 @@ const handleImplicitFlow = async ({
 	currentUrl,
 	redirectUri,
 	preferPrivateSession,
+	authProvider,
 }: {
 	currentUrl: string;
 	redirectUri: string;
 	preferPrivateSession?: boolean;
+	authProvider?: string;
 }) => {
 	// hash is `null` if `#` doesn't exist on URL
 	const url = new AmplifyUrl(currentUrl);
@@ -209,6 +220,9 @@ const handleImplicitFlow = async ({
 		IdToken: id_token,
 		TokenType: token_type,
 		ExpiresIn: expires_in,
+		signInDetails: {
+			provider: authProvider,
+		},
 	});
 
 	return completeFlow({

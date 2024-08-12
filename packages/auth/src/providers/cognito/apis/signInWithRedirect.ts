@@ -25,6 +25,7 @@ import {
 } from '../utils/oauth';
 import { createOAuthError } from '../utils/oauth/createOAuthError';
 import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
+import { getCognitoAuthProvider } from '../utils/oauth/getAuthProvider';
 
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
@@ -41,6 +42,7 @@ export async function signInWithRedirect(
 	assertTokenProviderConfig(authConfig);
 	assertOAuthConfig(authConfig);
 	oAuthStore.setAuthConfig(authConfig);
+	oAuthStore.storeAuthProvider(getCognitoAuthProvider(input?.provider));
 	await assertUserNotAuthenticated();
 
 	let provider = 'COGNITO'; // Default

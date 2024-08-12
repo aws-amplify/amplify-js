@@ -22,6 +22,26 @@ export class DefaultOAuthStore implements OAuthStore {
 		this.keyValueStorage = keyValueStorage;
 	}
 
+	storeAuthProvider(authProvider: string): Promise<void> {
+		assertTokenProviderConfig(this.cognitoConfig);
+		const authKeys = createKeysForAuthStorage(
+			name,
+			this.cognitoConfig.userPoolClientId,
+		);
+
+		return this.keyValueStorage.setItem(authKeys.authProvider, authProvider);
+	}
+
+	async loadAuthProvider(): Promise<string | null> {
+		assertTokenProviderConfig(this.cognitoConfig);
+		const { authProvider: authProviderKey } = createKeysForAuthStorage(
+			name,
+			this.cognitoConfig.userPoolClientId,
+		);
+
+		return this.keyValueStorage.getItem(authProviderKey);
+	}
+
 	async clearOAuthInflightData(): Promise<void> {
 		assertTokenProviderConfig(this.cognitoConfig);
 
@@ -33,6 +53,7 @@ export class DefaultOAuthStore implements OAuthStore {
 			this.keyValueStorage.removeItem(authKeys.inflightOAuth),
 			this.keyValueStorage.removeItem(authKeys.oauthPKCE),
 			this.keyValueStorage.removeItem(authKeys.oauthState),
+			this.keyValueStorage.removeItem(authKeys.authProvider),
 		]);
 	}
 
@@ -44,6 +65,7 @@ export class DefaultOAuthStore implements OAuthStore {
 		);
 		await this.clearOAuthInflightData();
 		await this.keyValueStorage.removeItem(V5_HOSTED_UI_KEY); // remove in case a customer migrated an App from v5 to v6
+		await this.keyValueStorage.removeItem(authKeys.authProvider);
 
 		return this.keyValueStorage.removeItem(authKeys.oauthSignIn);
 	}

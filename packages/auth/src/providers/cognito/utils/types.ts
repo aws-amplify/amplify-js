@@ -106,6 +106,7 @@ export const OAuthStorageKeys = {
 	oauthSignIn: 'oauthSignIn',
 	oauthPKCE: 'oauthPKCE',
 	oauthState: 'oauthState',
+	authProvider: 'authProvider',
 };
 
 export interface OAuthStore {
@@ -126,6 +127,8 @@ export interface OAuthStore {
 	storePKCE(pkce: string): Promise<void>;
 	clearOAuthInflightData(): Promise<void>;
 	clearOAuthData(): Promise<void>;
+	storeAuthProvider(authProvider: string): Promise<void>;
+	loadAuthProvider(): Promise<string | null>;
 }
 function isAuthenticated(tokens?: CognitoAuthTokens | null) {
 	return tokens?.accessToken || tokens?.idToken;

@@ -12,6 +12,7 @@ export {
 	AuthUser,
 	CognitoAuthSignInDetails,
 	CodeDeliveryDetails,
+	CognitoAuthProvider,
 } from './models';
 
 export {
