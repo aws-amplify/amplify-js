@@ -86,14 +86,18 @@ export type AWSAuthDevice = AuthDevice & {
 	lastModifiedDate?: Date;
 };
 
+type CustomAuthProvider = string;
+
+export type CognitoAuthProvider = AuthProvider | 'Cognito' | CustomAuthProvider;
+
 /**
  * Holds the sign in details of the user.
  */
 export interface CognitoAuthSignInDetails {
 	loginId?: string;
 	authFlowType?: AuthFlowType;
+	provider?: CognitoAuthProvider;
 }
-
 /**
  * Holds the user information along with the sign in details.
  */
