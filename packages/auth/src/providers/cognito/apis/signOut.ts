@@ -34,6 +34,8 @@ import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { AuthError } from '../../../errors/AuthError';
 import { OAUTH_SIGNOUT_EXCEPTION } from '../../../errors/constants';
 
+import { getCurrentUser } from './getCurrentUser';
+
 const logger = new ConsoleLogger('Auth');
 
 /**
@@ -64,8 +66,10 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 	if (hasOAuthConfig) {
 		const oAuthStore = new DefaultOAuthStore(defaultStorage);
 		oAuthStore.setAuthConfig(cognitoConfig);
+		const { signInDetails } = await getCurrentUser();
 		const { type } =
-			(await handleOAuthSignOut(cognitoConfig, oAuthStore)) ?? {};
+			(await handleOAuthSignOut(cognitoConfig, oAuthStore, signInDetails)) ??
+			{};
 		if (type === 'error') {
 			throw new AuthError({
 				name: OAUTH_SIGNOUT_EXCEPTION,

@@ -5,6 +5,7 @@ import { CognitoUserPoolConfig } from '@aws-amplify/core';
 
 import { OpenAuthSessionResult } from '../../../../utils/types';
 import { DefaultOAuthStore } from '../../utils/signInWithRedirectStore';
+import { CognitoAuthSignInDetails } from '../../types';
 
 import { completeOAuthSignOut } from './completeOAuthSignOut';
 import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
@@ -12,6 +13,7 @@ import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
+	signInDetails?: CognitoAuthSignInDetails,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn } = await store.loadOAuthSignIn();
 
@@ -19,7 +21,7 @@ export const handleOAuthSignOut = async (
 	// state could be wiped away on redirect
 	await completeOAuthSignOut(store);
 
-	if (isOAuthSignIn) {
+	if (isOAuthSignIn || signInDetails?.provider) {
 		// On web, this will always end up being a void action
 		return oAuthSignOutRedirect(cognitoConfig);
 	}
