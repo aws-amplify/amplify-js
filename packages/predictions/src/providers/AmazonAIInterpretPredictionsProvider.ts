@@ -10,9 +10,13 @@ import {
 	ComprehendClient,
 	DetectDominantLanguageCommand,
 	DetectEntitiesCommand,
+	DetectEntitiesCommandInput,
 	DetectKeyPhrasesCommand,
+	DetectKeyPhrasesCommandInput,
 	DetectSentimentCommand,
+	DetectSentimentCommandInput,
 	DetectSyntaxCommand,
+	DetectSyntaxCommandInput,
 	Entity,
 	SyntaxToken,
 } from '@aws-sdk/client-comprehend';
@@ -159,7 +163,9 @@ export class AmazonAIInterpretPredictionsProvider {
 
 	private async detectKeyPhrases(params: DetectParams): Promise<KeyPhrases> {
 		try {
-			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(params);
+			const detectKeyPhrasesCommand = new DetectKeyPhrasesCommand(
+				params as DetectKeyPhrasesCommandInput,
+			);
 			const data = await this.comprehendClient!.send(detectKeyPhrasesCommand);
 			const { KeyPhrases: keyPhrases = [] } = data || {};
 
@@ -180,7 +186,9 @@ export class AmazonAIInterpretPredictionsProvider {
 
 	private async detectSyntax(params: DetectParams): Promise<TextSyntax[]> {
 		try {
-			const detectSyntaxCommand = new DetectSyntaxCommand(params);
+			const detectSyntaxCommand = new DetectSyntaxCommand(
+				params as DetectSyntaxCommandInput,
+			);
 			const data = await this.comprehendClient!.send(detectSyntaxCommand);
 			const { SyntaxTokens = [] } = data || {};
 
@@ -212,7 +220,9 @@ export class AmazonAIInterpretPredictionsProvider {
 
 	private async detectSentiment(params: DetectParams): Promise<TextSentiment> {
 		try {
-			const detectSentimentCommand = new DetectSentimentCommand(params);
+			const detectSentimentCommand = new DetectSentimentCommand(
+				params as DetectSentimentCommandInput,
+			);
 			const data = await this.comprehendClient!.send(detectSentimentCommand);
 			const {
 				Sentiment: predominant = '',
@@ -239,7 +249,9 @@ export class AmazonAIInterpretPredictionsProvider {
 
 	private async detectEntities(params: DetectParams): Promise<TextEntities[]> {
 		try {
-			const detectEntitiesCommand = new DetectEntitiesCommand(params);
+			const detectEntitiesCommand = new DetectEntitiesCommand(
+				params as DetectEntitiesCommandInput,
+			);
 			const data = await this.comprehendClient!.send(detectEntitiesCommand);
 			const { Entities = [] } = data || {};
 

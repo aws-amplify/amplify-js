@@ -38,7 +38,11 @@ const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 export type GetObjectInput = Pick<
 	GetObjectCommandInput,
-	'Bucket' | 'Key' | 'Range'
+	| 'Bucket'
+	| 'Key'
+	| 'Range'
+	| 'ResponseContentDisposition'
+	| 'ResponseContentType'
 >;
 
 export type GetObjectOutput = GetObjectCommandOutput;
@@ -154,6 +158,15 @@ export const getPresignedGetObjectUrl = async (
 		url.searchParams.append(
 			config.userAgentHeader ?? USER_AGENT_HEADER,
 			config.userAgentValue,
+		);
+	}
+	if (input.ResponseContentType) {
+		url.searchParams.append('response-content-type', input.ResponseContentType);
+	}
+	if (input.ResponseContentDisposition) {
+		url.searchParams.append(
+			'response-content-disposition',
+			input.ResponseContentDisposition,
 		);
 	}
 
