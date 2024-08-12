@@ -18,7 +18,6 @@ import { dispatchEvent } from './dispatchEvent';
  *
  * @remarks
  * Make sure to call this early in your app at the root entry point after configuring Amplify.
- * @note Does not throw an exception.
  * @example
  * ```ts
  * Amplify.configure(config);
