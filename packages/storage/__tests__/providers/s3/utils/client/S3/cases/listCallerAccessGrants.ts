@@ -49,11 +49,11 @@ const listCallerAccessGrantsHappyCaseSingleGrant: ApiFunctionalTestCase<
 		<ListCallerAccessGrantsResult>
 			<NextToken>${MOCK_NEXT_TOKEN}</NextToken>
 			<CallerAccessGrantsList>
-				<AccessGrantsInstance>
+				<AccessGrant>
 						<ApplicationArn>${MOCK_APP_ARN}</ApplicationArn>
 						<GrantScope>${MOCK_GRANT_SCOPE}</GrantScope>
 						<Permission>${MOCK_PERMISSION}</Permission>
-				</AccessGrantsInstance>
+				</AccessGrant>
 			</CallerAccessGrantsList>
 		</ListCallerAccessGrantsResult>
 	`,
@@ -103,16 +103,16 @@ const listCallerAccessGrantsHappyCaseMultipleGrants: ApiFunctionalTestCase<
 		<ListCallerAccessGrantsResult>
 			<NextToken>${MOCK_NEXT_TOKEN}</NextToken>
 			<CallerAccessGrantsList>
-				<AccessGrantsInstance>
+				<AccessGrant>
 						<ApplicationArn>${MOCK_APP_ARN}</ApplicationArn>
 						<GrantScope>${MOCK_GRANT_SCOPE}</GrantScope>
 						<Permission>${MOCK_PERMISSION}</Permission>
-				</AccessGrantsInstance>
-				<AccessGrantsInstance>
+				</AccessGrant>
+				<AccessGrant>
 						<ApplicationArn>${MOCK_APP_ARN}</ApplicationArn>
 						<GrantScope>${MOCK_GRANT_SCOPE}</GrantScope>
 						<Permission>${MOCK_PERMISSION}</Permission>
-				</AccessGrantsInstance>
+				</AccessGrant>
 			</CallerAccessGrantsList>
 		</ListCallerAccessGrantsResult>
 	`,
