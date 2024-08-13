@@ -384,7 +384,6 @@ describe('copy API', () => {
 					},
 				});
 			} catch (error: any) {
-				console.log(error);
 				expect(error).toBeInstanceOf(StorageError);
 				expect(error.name).toBe(
 					StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
@@ -403,7 +402,6 @@ describe('copy API', () => {
 					},
 				});
 			} catch (error: any) {
-				console.log(error);
 				expect(error).toBeInstanceOf(StorageError);
 				expect(error.name).toBe(
 					StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
