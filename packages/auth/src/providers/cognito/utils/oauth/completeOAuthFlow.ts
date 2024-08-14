@@ -11,6 +11,7 @@ import { Hub, decodeJWT } from '@aws-amplify/core';
 
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
+import { tokenOrchestrator } from '../../tokenProvider';
 
 import { createOAuthError } from './createOAuthError';
 import { resolveAndClearInflightPromises } from './inflightPromise';
@@ -148,6 +149,9 @@ const handleCodeFlow = async ({
 		TokenType: token_type,
 		ExpiresIn: expires_in,
 	});
+	await tokenOrchestrator.setOAuthMetadata({
+		oauthSignIn: true,
+	});
 
 	return completeFlow({
 		redirectUri,
@@ -209,6 +213,9 @@ const handleImplicitFlow = async ({
 		IdToken: id_token,
 		TokenType: token_type,
 		ExpiresIn: expires_in,
+	});
+	await tokenOrchestrator.setOAuthMetadata({
+		oauthSignIn: true,
 	});
 
 	return completeFlow({
