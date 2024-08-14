@@ -419,7 +419,7 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "11.95 kB"
+			"limit": "12.00 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
