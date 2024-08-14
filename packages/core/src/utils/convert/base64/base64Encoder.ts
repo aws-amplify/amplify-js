@@ -7,13 +7,29 @@ import { Base64Encoder } from '../types';
 import { bytesToString } from './bytesToString';
 
 export const base64Encoder: Base64Encoder = {
-	convert(input, { urlSafe } = { urlSafe: false }) {
+	/**
+	 * Convert input to base64-encoded string
+	 * @param input - string to convert to base64
+	 * @param param1 -
+	 * @returns
+	 */
+	convert(
+		input,
+		{ urlSafe, skipPadding } = { urlSafe: false, skipPadding: false },
+	) {
 		const inputStr = typeof input === 'string' ? input : bytesToString(input);
-		const encodedStr = getBtoa()(inputStr);
+		let encodedStr = getBtoa()(inputStr);
 
-		// see details about the char replacing at https://datatracker.ietf.org/doc/html/rfc4648#section-5
-		return urlSafe
-			? encodedStr.replace(/\+/g, '-').replace(/\//g, '_')
-			: encodedStr;
+		// urlSafe char replacement and skipPadding options conform to the base64url spec
+		// https://datatracker.ietf.org/doc/html/rfc4648#section-5
+		if (urlSafe) {
+			encodedStr = encodedStr.replace(/\+/g, '-').replace(/\//g, '_');
+		}
+
+		if (skipPadding) {
+			encodedStr = encodedStr.replace(/=/g, '');
+		}
+
+		return encodedStr;
 	},
 };

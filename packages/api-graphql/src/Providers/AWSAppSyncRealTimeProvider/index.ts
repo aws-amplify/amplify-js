@@ -181,7 +181,7 @@ export class AWSAppSyncRealTimeProvider {
 		this.reconnectionMonitor.close();
 	}
 
-	getNewWebSocket(url: string, protocol: string) {
+	getNewWebSocket(url: string, protocol: string[]) {
 		return new WebSocket(url, protocol);
 	}
 
@@ -783,9 +783,10 @@ export class AWSAppSyncRealTimeProvider {
 					});
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
-					const headerQs = base64Encoder.convert(headerString);
-
-					const payloadQs = base64Encoder.convert(payloadString);
+					const headerQs = base64Encoder.convert(headerString, {
+						urlSafe: true,
+						skipPadding: true,
+					});
 
 					const queryString = this._queryStringFromCustomHeaders(
 						additionalCustomHeaders,
@@ -804,17 +805,23 @@ export class AWSAppSyncRealTimeProvider {
 
 					// Creating websocket url with required query strings
 					const protocol = 'wss://';
+
 					discoverableEndpoint = discoverableEndpoint
 						.replace('https://', protocol)
 						.replace('http://', protocol);
 
-					let awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
+					let awsRealTimeUrl = `${discoverableEndpoint}`;
 
 					if (queryString !== '') {
-						awsRealTimeUrl += `&${queryString}`;
+						// TODO - need a more reliable way to do this
+						awsRealTimeUrl += `?${queryString}`;
 					}
+					const authTokenSubprotocol = `header-${headerQs}`;
 
-					await this._initializeRetryableHandshake(awsRealTimeUrl);
+					await this._initializeRetryableHandshake(
+						awsRealTimeUrl,
+						authTokenSubprotocol,
+					);
 
 					this.promiseArray.forEach(({ res }) => {
 						logger.debug('Notifying connection successful');
@@ -841,23 +848,37 @@ export class AWSAppSyncRealTimeProvider {
 		});
 	}
 
-	private async _initializeRetryableHandshake(awsRealTimeUrl: string) {
+	private async _initializeRetryableHandshake(
+		awsRealTimeUrl: string,
+		subprotocol: string,
+	) {
 		logger.debug(`Initializaling retryable Handshake`);
 		await jitteredExponentialRetry(
 			this._initializeHandshake.bind(this),
-			[awsRealTimeUrl],
+			[awsRealTimeUrl, subprotocol],
 			MAX_DELAY_MS,
 		);
 	}
 
-	private async _initializeHandshake(awsRealTimeUrl: string) {
+	/**
+	 *
+	 * @param subprotocol -
+	 */
+	private async _initializeHandshake(
+		awsRealTimeUrl: string,
+		subprotocol: string,
+	) {
 		logger.debug(`Initializing handshake ${awsRealTimeUrl}`);
 		// Because connecting the socket is async, is waiting until connection is open
 		// Step 1: connect websocket
 		try {
 			await (() => {
 				return new Promise<void>((resolve, reject) => {
-					const newSocket = this.getNewWebSocket(awsRealTimeUrl, 'graphql-ws');
+					const newSocket = this.getNewWebSocket(awsRealTimeUrl, [
+						'graphql-ws',
+						subprotocol,
+					]);
+
 					newSocket.onerror = () => {
 						logger.debug(`WebSocket connection error`);
 					};
