@@ -988,6 +988,7 @@ export function mapMfaType(mfa: string): CognitoMFAType {
 export function getMFAType(type?: string): AuthMFAType | undefined {
 	if (type === 'SMS_MFA') return 'SMS';
 	if (type === 'SOFTWARE_TOKEN_MFA') return 'TOTP';
+	if (type === 'EMAIL_OTP') return 'EMAIL';
 	// TODO: log warning for unknown MFA type
 }
 
