@@ -17,11 +17,10 @@ import {
 	StorageUploadDataInputWithKey,
 	StorageUploadDataInputWithPath,
 } from '../../../types';
+import { StorageOperationOptionsInput } from '../../../types/inputs';
 import {
 	CopyDestinationOptionsWithKey,
 	CopySourceOptionsWithKey,
-	CopyWithPathDestinationOptions,
-	CopyWithPathSourceOptions,
 	DownloadDataOptionsWithKey,
 	DownloadDataOptionsWithPath,
 	GetPropertiesOptionsWithKey,
@@ -51,13 +50,10 @@ export type CopyInput = StorageCopyInputWithKey<
 /**
  * Input type with path for S3 copy API.
  */
-export type CopyWithPathInput = StorageCopyInputWithPath<
-	CopyWithPathSourceOptions,
-	CopyWithPathDestinationOptions,
-	{
+export type CopyWithPathInput = StorageCopyInputWithPath &
+	StorageOperationOptionsInput<{
 		locationCredentialsProvider?: LocationCredentialsProvider;
-	}
->;
+	}>;
 
 /**
  * @deprecated Use {@link GetPropertiesWithPathInput} instead.
