@@ -43,6 +43,7 @@ import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { getConcurrentUploadsProgressTracker } from './progressTracker';
 import { loadOrCreateMultipartUpload } from './initialUpload';
 import { getDataChunker } from './getDataChunker';
+import { calculatePartSize } from './calculatePartSize';
 
 type WithResumableCacheConfig<Input extends StorageOperationOptionsInput<any>> =
 	Input & {
@@ -236,6 +237,19 @@ export const getMultipartUploadHandlers = (
 
 		await Promise.all(concurrentUploadPartExecutors);
 
+		if (
+			!isValidCompletedParts(
+				inProgressUpload.completedParts,
+				size,
+				Boolean(inProgressUpload.finalCrc32),
+			)
+		) {
+			throw new StorageError({
+				name: 'Error',
+				message: `Upload failed. Parts cache validation failed`,
+			});
+		}
+
 		const { ETag: eTag } = await completeMultipartUpload(
 			{
 				...resolvedS3Config,
@@ -249,9 +263,7 @@ export const getMultipartUploadHandlers = (
 				ChecksumCRC32: inProgressUpload.finalCrc32,
 				IfNoneMatch: preventOverwrite ? '*' : undefined,
 				MultipartUpload: {
-					Parts: inProgressUpload.completedParts.sort(
-						(partA, partB) => partA.PartNumber! - partB.PartNumber!,
-					),
+					Parts: sortUploadParts(inProgressUpload.completedParts),
 				},
 				ExpectedBucketOwner: expectedBucketOwner,
 			},
@@ -355,3 +367,36 @@ const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
 	accessLevel ??
 	Amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;
+
+const isValidCompletedParts = (
+	completedParts: Part[],
+	size: number | undefined,
+	useCRC32Checksum: boolean,
+) => {
+	let validPartCount = true;
+	if (size) {
+		const partsExpected = Math.ceil(size / calculatePartSize(size));
+		validPartCount = completedParts.length === partsExpected;
+	}
+
+	let validPartsContent = true;
+	const sorted = sortUploadParts(completedParts);
+	for (const [i, value] of sorted.entries()) {
+		const validPartNumber = i + 1 === value.PartNumber!;
+		const crc32Exists = !useCRC32Checksum || Boolean(value.ChecksumCRC32);
+		const etagExists = Boolean(value.ETag);
+
+		if (!(validPartNumber && crc32Exists && etagExists)) {
+			validPartsContent = false;
+			break;
+		}
+	}
+
+	return validPartCount && validPartsContent;
+};
+
+const sortUploadParts = (parts: Part[]) => {
+	return [...parts].sort(
+		(partA, partB) => partA.PartNumber! - partB.PartNumber!,
+	);
+};

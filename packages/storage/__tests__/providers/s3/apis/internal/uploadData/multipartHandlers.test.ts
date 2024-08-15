@@ -115,7 +115,7 @@ const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 		totalSize += byteLength(input.Body)!;
 
 		return {
-			Etag: `etag-${input.PartNumber}`,
+			ETag: `etag-${input.PartNumber}`,
 			PartNumber: input.PartNumber,
 		};
 	});
@@ -514,6 +514,109 @@ describe('getMultipartUploadHandlers with key', () => {
 				);
 			});
 		});
+
+		describe('cache validation', () => {
+			it.each([
+				{
+					name: 'wrong part count',
+					parts: [
+						{
+							PartNumber: 1,
+							ETag: 'mock-etag',
+							ChecksumCRC32: 'mock-checksum',
+						},
+						{
+							PartNumber: 2,
+							ETag: 'mock-etag',
+							ChecksumCRC32: 'mock-checksum',
+						},
+						{
+							PartNumber: 3,
+							ETag: 'mock-etag',
+							ChecksumCRC32: 'mock-checksum',
+						},
+					],
+				},
+				{
+					name: 'wrong part number',
+					parts: [
+						{
+							PartNumber: 1,
+							ETag: 'mock-etag',
+							ChecksumCRC32: 'mock-checksum',
+						},
+						{
+							PartNumber: 1,
+							ETag: 'mock-etag',
+							ChecksumCRC32: 'mock-checksum',
+						},
+					],
+				},
+				{
+					name: 'missing etag',
+					parts: [
+						{
+							PartNumber: 1,
+							ChecksumCRC32: 'mock-checksum',
+						},
+						{
+							PartNumber: 2,
+							ETag: 'mock-etag',
+							ChecksumCRC32: 'mock-checksum',
+						},
+					],
+				},
+				{
+					name: 'missing crc32',
+					parts: [
+						{
+							PartNumber: 1,
+							ETag: 'mock-etag',
+						},
+						{
+							PartNumber: 2,
+							ETag: 'mock-etag',
+							ChecksumCRC32: 'mock-checksum',
+						},
+					],
+				},
+			])('should throw with $name', async ({ parts }) => {
+				mockMultipartUploadSuccess();
+
+				const mockDefaultStorage = defaultStorage as jest.Mocked<
+					typeof defaultStorage
+				>;
+				mockDefaultStorage.getItem.mockResolvedValue(
+					JSON.stringify({
+						[defaultCacheKey]: {
+							uploadId: 'uploadId',
+							bucket,
+							key: defaultKey,
+							finalCrc32: 'mock-crc32',
+						},
+					}),
+				);
+				mockListParts.mockResolvedValue({
+					Parts: parts,
+					$metadata: {},
+				});
+
+				const onProgress = jest.fn();
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						key: defaultKey,
+						data: new ArrayBuffer(8 * MB),
+						options: {
+							onProgress,
+						},
+					},
+					8 * MB,
+				);
+				await expect(multipartUploadJob()).rejects.toThrow(
+					/Upload failed. Parts cache validation failed/,
+				);
+			});
+		});
 	});
 
 	describe('upload caching', () => {
@@ -845,7 +948,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				}),
 			);
 			mockListParts.mockResolvedValue({
-				Parts: [{ PartNumber: 1 }],
+				Parts: [
+					{ PartNumber: 1, ETag: 'mock-etag', ChecksumCRC32: 'mock-checksum' },
+				],
 				$metadata: {},
 			});
 
@@ -1568,7 +1673,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				}),
 			);
 			mockListParts.mockResolvedValue({
-				Parts: [{ PartNumber: 1 }],
+				Parts: [
+					{ PartNumber: 1, ETag: 'mock-etag', ChecksumCRC32: 'mock-checksum' },
+				],
 				$metadata: {},
 			});
 
