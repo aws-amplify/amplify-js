@@ -1,0 +1,1 @@
+export { getRegion } from './getRegion';
