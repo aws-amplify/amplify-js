@@ -149,9 +149,6 @@ const handleCodeFlow = async ({
 		TokenType: token_type,
 		ExpiresIn: expires_in,
 	});
-	await tokenOrchestrator.setOAuthMetadata({
-		oauthSignIn: true,
-	});
 
 	return completeFlow({
 		redirectUri,
@@ -214,9 +211,6 @@ const handleImplicitFlow = async ({
 		TokenType: token_type,
 		ExpiresIn: expires_in,
 	});
-	await tokenOrchestrator.setOAuthMetadata({
-		oauthSignIn: true,
-	});
 
 	return completeFlow({
 		redirectUri,
@@ -234,6 +228,9 @@ const completeFlow = async ({
 	redirectUri: string;
 	state: string;
 }) => {
+	await tokenOrchestrator.setOAuthMetadata({
+		oauthSignIn: true,
+	});
 	await oAuthStore.clearOAuthData();
 	await oAuthStore.storeOAuthSignIn(true, preferPrivateSession);
 

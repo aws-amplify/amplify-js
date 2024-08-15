@@ -22,6 +22,12 @@ export const handleOAuthSignOut = async (
 	// state could be wiped away on redirect
 	await completeOAuthSignOut(store);
 
+	// The isOAuthSignIn flag is propagated by the oAuthToken store which manages oauth keys in local storage only.
+	// These keys are used to determine if a user is in an inflight or signedIn oauth states.
+	// However, this behavior represents an issue when 2 apps share the same set of tokens in Cookie storage because the app that didn't
+	// start the OAuth will not have access to the oauth keys.
+	// A heuristic solution is to add oauth metadata to the tokenOrchestrator which will have access to the underlying
+	// storage mechanism that is used by Amplify.
 	if (isOAuthSignIn || oauthMetadata?.oauthSignIn) {
 		// On web, this will always end up being a void action
 		return oAuthSignOutRedirect(cognitoConfig);
