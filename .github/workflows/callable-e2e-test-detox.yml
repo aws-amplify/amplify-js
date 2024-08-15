@@ -84,6 +84,14 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          detox test -c ios.sim.debug -u --loglevel trace
+          detox test -c ios.sim.debug -u --record-videos all
         working-directory: ${{ inputs.working_directory }}
         shell: bash
+      - name: Upload artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        with:
+          name: oauth-signout-artifact
+          if-no-files-found: ignore
+          path: |
+            amplify-js-samples-staging/samples/react-native/auth/HosteduiApp/artifacts
+          retention-days: 14
