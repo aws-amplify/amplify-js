@@ -84,7 +84,7 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          detox test -c ios.sim.debug -u --record-videos all
+          detox test -c ios.sim.debug -u --record-videos all --loglevel trace
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Upload artifact
