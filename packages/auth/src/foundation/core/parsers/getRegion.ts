@@ -1,6 +1,6 @@
 import { AuthError } from '../../../errors/AuthError';
 
-export function getRegion(userPoolId?: string): string {
+export function getRegionFromUserPoolId(userPoolId?: string): string {
 	const region = userPoolId?.split('_')[0];
 	if (
 		!userPoolId ||
@@ -14,4 +14,17 @@ export function getRegion(userPoolId?: string): string {
 		});
 
 	return region;
+}
+
+export function getRegionFromIdentityPoolId(identityPoolId?: string): string {
+	if (!identityPoolId || !identityPoolId.includes(':')) {
+		throw new AuthError({
+			name: 'InvalidIdentityPoolIdException',
+			message: 'Invalid identity pool id provided.',
+			recoverySuggestion:
+				'Make sure a valid identityPoolId is given in the config.',
+		});
+	}
+
+	return identityPoolId.split(':')[0];
 }

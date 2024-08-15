@@ -1,0 +1,1 @@
+export { createCognitoUserPoolEndpointResolver } from './createCognitoUserPoolEndpointResolver';

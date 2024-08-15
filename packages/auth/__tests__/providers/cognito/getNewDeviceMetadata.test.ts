@@ -7,7 +7,7 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmDeviceException } from '../../../src/providers/cognito/types/errors';
 import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { ConfirmDeviceCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
-import { getNewDeviceMetatada } from '../../../src/providers/cognito/utils/signInHelpers';
+import { getNewDeviceMetadata } from '../../../src/providers/cognito/utils/signInHelpers';
 
 const userPoolId = 'us-west-2_zzzzz';
 Amplify.configure({
@@ -31,7 +31,7 @@ describe('test getNewDeviceMetadata API', () => {
 			});
 		const mockedDeviceKey = 'mockedDeviceKey';
 		const mockedGroupDeviceKey = 'mockedGroupDeviceKey';
-		const deviceMetadata = await getNewDeviceMetatada(
+		const deviceMetadata = await getNewDeviceMetadata(
 			userPoolId,
 			{
 				DeviceKey: mockedDeviceKey,
@@ -64,7 +64,7 @@ describe('test getNewDeviceMetadata API', () => {
 			});
 		const mockedDeviceKey = 'mockedDeviceKey';
 		const mockedGroupDeviceKey = 'mockedGroupDeviceKey';
-		const deviceMetadata = await getNewDeviceMetatada(
+		const deviceMetadata = await getNewDeviceMetadata(
 			userPoolId,
 			{
 				DeviceKey: mockedDeviceKey,

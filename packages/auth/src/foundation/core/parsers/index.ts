@@ -1,1 +1,4 @@
-export { getRegion } from './getRegion';
+export {
+	getRegionFromUserPoolId,
+	getRegionFromIdentityPoolId,
+} from './getRegion';
