@@ -87,11 +87,6 @@ describe('signInStore', () => {
 	});
 
 	test('LocalSignInState is empty after initialization', async () => {
-		syncSessionStorage.setItem(signInStateKeys.username, 'pikapi');
-		syncSessionStorage.setItem(
-			signInStateKeys.expiry,
-			(new Date().getTime() + 9999999).toString(),
-		);
 		const localSignInState = signInStore.getState();
 
 		expect(localSignInState).toEqual({

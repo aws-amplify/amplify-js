@@ -109,14 +109,14 @@ const getDefaultState = (): SignInState => ({
 // Hydrate signInStore from Synced Session Storage
 const initializeState = (): SignInState => {
 	const expiry = syncSessionStorage.getItem(signInStateKeys.expiry);
-	if (expiry) {
-		if (isExpired(expiry)) {
-			logger.warn('Sign-in session expired');
-			clearPersistedSignInState();
 
-			return getDefaultState();
-		}
+	if (!expiry || (expiry && isExpired(expiry))) {
+		logger.warn('Session Expired');
 
+		clearPersistedSignInState();
+
+		return getDefaultState();
+	} else {
 		const username =
 			syncSessionStorage.getItem(signInStateKeys.username) ?? undefined;
 
@@ -131,8 +131,6 @@ const initializeState = (): SignInState => {
 			challengeName,
 			signInSession,
 		};
-	} else {
-		return getDefaultState();
 	}
 };
 

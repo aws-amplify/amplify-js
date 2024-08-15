@@ -5,7 +5,10 @@ import { Amplify } from '@aws-amplify/core';
 
 import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
-import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
+import {
+	cleanActiveSignInState,
+	signInStore,
+} from '../../../src/providers/cognito/utils/signInStore';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/tokenProvider';
 
@@ -30,6 +33,7 @@ describe('local sign-in state management tests', () => {
 
 	beforeEach(() => {
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
+		cleanActiveSignInState();
 	});
 
 	test('local state management should return state after signIn returns a ChallengeName', async () => {
