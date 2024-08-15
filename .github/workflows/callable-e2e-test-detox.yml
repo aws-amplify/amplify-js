@@ -78,7 +78,7 @@ jobs:
         if: ${{ inputs.host_signout_page }}
         run: |
           cd oidc-signout-hosted-page/ &&
-          npx http-server -p 8000 &
+          npx http-server --cors -p 8000 &
           sleep 60
         working-directory: ${{ inputs.working_directory }}
         shell: bash
@@ -89,7 +89,7 @@ jobs:
         shell: bash
       - name: Upload artifact
         if: always()
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        uses: actions/upload-artifact@4
         with:
           name: oauth-signout-artifact
           if-no-files-found: ignore
