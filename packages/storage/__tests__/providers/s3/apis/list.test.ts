@@ -17,6 +17,7 @@ import {
 	ListPaginateWithPathOutput,
 } from '../../../../src/providers/s3/types';
 import './testUtils';
+import { ListObjectsV2CommandInput } from '../../../../src/providers/s3/utils/client/s3data/types';
 
 jest.mock('../../../../src/providers/s3/utils/client/s3data');
 jest.mock('@aws-amplify/core', () => ({
@@ -76,11 +77,25 @@ const mockListObjectsV2ApiWithPages = (pages: number) => {
 		}
 
 		return {
+			...mockListResponse(input, Boolean(token)),
 			Contents: [{ ...listObjectClientBaseResultItem, Key: input.Prefix }],
 			NextContinuationToken: token,
 		};
 	});
 };
+const mockListResponse = (
+	listParams: ListObjectsV2CommandInput,
+	isTruncated = true,
+) => ({
+	Delimiter: listParams.Delimiter,
+	EncodingType: listParams.EncodingType,
+	MaxKeys: listParams.MaxKeys,
+	Prefix: listParams.Prefix,
+	ContinuationToken: listParams.ContinuationToken,
+	StartAfter: listParams.StartAfter,
+	IsTruncated: isTruncated,
+	KeyCount: 1,
+});
 
 describe('list API', () => {
 	beforeAll(() => {
@@ -156,8 +171,9 @@ describe('list API', () => {
 				? `with targetIdentityId`
 				: '';
 			it(`should list objects with pagination, default pageSize, ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
-				mockListObject.mockImplementationOnce(() => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
 					return {
+						...mockListResponse(listParams),
 						Contents: [{ ...listObjectClientBaseResultItem, Key: expectedKey }],
 						NextContinuationToken: nextToken,
 					};
@@ -192,8 +208,9 @@ describe('list API', () => {
 				? `with targetIdentityId`
 				: '';
 			it(`should list objects with pagination using pageSize, nextToken, ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
-				mockListObject.mockImplementationOnce(() => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
 					return {
+						...mockListResponse(listParams),
 						Contents: [{ ...listObjectClientBaseResultItem, Key: expectedKey }],
 						NextContinuationToken: nextToken,
 					};
@@ -234,8 +251,12 @@ describe('list API', () => {
 				? `with targetIdentityId`
 				: '';
 			it(`should list objects with zero results with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
-				mockListObject.mockImplementationOnce(() => {
-					return {};
+				mockListObject.mockImplementationOnce((_, listParams) => {
+					return {
+						...mockListResponse(listParams),
+						IsTruncated: false,
+						KeyCount: 0,
+					};
 				});
 				const response = await listPaginatedWrapper({
 					prefix,
@@ -308,12 +329,13 @@ describe('list API', () => {
 
 		describe('bucket passed in options', () => {
 			it('should override bucket in listObject call when bucket is object', async () => {
-				mockListObject.mockImplementationOnce(() => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
 					return {
+						...mockListResponse(listParams),
 						Contents: [
 							{
 								...listObjectClientBaseResultItem,
-								Key: inputKey,
+								Key: listParams.Prefix,
 							},
 						],
 						NextContinuationToken: nextToken,
@@ -343,12 +365,13 @@ describe('list API', () => {
 			});
 
 			it('should override bucket in listObject call when bucket is string', async () => {
-				mockListObject.mockImplementationOnce(() => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
 					return {
+						...mockListResponse(listParams),
 						Contents: [
 							{
 								...listObjectClientBaseResultItem,
-								Key: inputKey,
+								Key: listParams.Prefix,
 							},
 						],
 						NextContinuationToken: nextToken,
@@ -406,8 +429,9 @@ describe('list API', () => {
 			'should list objects with pagination, default pageSize, custom path',
 			async ({ path: inputPath }) => {
 				const resolvedPath = resolvePath(inputPath);
-				mockListObject.mockImplementationOnce(() => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
 					return {
+						...mockListResponse(listParams),
 						Contents: [
 							{
 								...listObjectClientBaseResultItem,
@@ -443,8 +467,9 @@ describe('list API', () => {
 			'should list objects with pagination using custom pageSize, nextToken and custom path: $path',
 			async ({ path: inputPath }) => {
 				const resolvedPath = resolvePath(inputPath);
-				mockListObject.mockImplementationOnce(() => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
 					return {
+						...mockListResponse(listParams),
 						Contents: [
 							{
 								...listObjectClientBaseResultItem,
@@ -485,8 +510,12 @@ describe('list API', () => {
 		it.each(pathTestCases)(
 			'should list objects with zero results with custom path: $path',
 			async ({ path }) => {
-				mockListObject.mockImplementationOnce(() => {
-					return {};
+				mockListObject.mockImplementationOnce((_, listParams) => {
+					return {
+						...mockListResponse(listParams),
+						IsTruncated: false,
+						KeyCount: 0,
+					};
 				});
 				const response = await listPaginatedWrapper({
 					path: resolvePath(path),
@@ -556,8 +585,9 @@ describe('list API', () => {
 
 		describe('bucket passed in options', () => {
 			it('should override bucket in listObject call when bucket is object', async () => {
-				mockListObject.mockImplementationOnce(() => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
 					return {
+						...mockListResponse(listParams),
 						Contents: [
 							{
 								...listObjectClientBaseResultItem,
@@ -591,8 +621,9 @@ describe('list API', () => {
 			});
 
 			it('should override bucket in listObject call when bucket is string', async () => {
-				mockListObject.mockImplementationOnce(() => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
 					return {
+						...mockListResponse(listParams),
 						Contents: [
 							{
 								...listObjectClientBaseResultItem,
@@ -652,6 +683,89 @@ describe('list API', () => {
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});
+		describe.each([
+			{
+				type: 'Prefix',
+				mockListFunction: () => list({ prefix: 'test/' }),
+				expectedContent: [
+					{ Key: 'public/test/item', ...listObjectClientBaseResultItem },
+				],
+			},
+			{
+				type: 'Path',
+				mockListFunction: () => list({ path: 'test/' }),
+				expectedContent: [
+					{ Key: 'test/item', ...listObjectClientBaseResultItem },
+				],
+			},
+		])(
+			'$type response validation check',
+			({ mockListFunction, expectedContent }) => {
+				it.each([
+					{
+						name: 'missing Delimiter echo',
+						override: { Delimiter: 'mock-invalid-value' },
+					},
+					{
+						name: 'missing EncodingType echo',
+						override: { EncodingType: 'mock-invalid-value' },
+					},
+					{
+						name: 'missing MaxKeys echo',
+						override: { MaxKeys: 'mock-invalid-value' },
+					},
+					{
+						name: 'missing Prefix echo',
+						override: { Prefix: 'mock-invalid-value' },
+					},
+					{
+						name: 'missing ContinuationToken echo',
+						override: { ContinuationToken: 'mock-invalid-value' },
+					},
+					{
+						name: 'missing StartAfter echo',
+						override: { StartAfter: 'mock-invalid-value' },
+					},
+					{
+						name: 'wrong key count',
+						override: { KeyCount: 2 },
+					},
+					{
+						name: 'wrong isTruncated and nextContinuationToken match: true',
+						override: { IsTruncated: true, NextContinuationToken: undefined },
+					},
+					{
+						name: 'wrong isTruncated and nextContinuationToken match: false',
+						override: { IsTruncated: false, NextContinuationToken: nextToken },
+					},
+					{
+						name: 'wrong prefix',
+						override: {
+							Contents: [
+								{
+									Key: 'mock-invalid-value',
+									...listObjectClientBaseResultItem,
+								},
+							],
+						},
+					},
+				])('should throw with $name', async ({ override }) => {
+					mockListObject.mockImplementationOnce((_, listParams) => {
+						return {
+							...mockListResponse(listParams),
+							Contents: expectedContent,
+							KeyCount: 1,
+							NextContinuationToken: nextToken,
+							...override,
+						};
+					});
+
+					await expect(mockListFunction()).rejects.toThrow(
+						/List failed. Response is invalid./,
+					);
+				});
+			},
+		);
 	});
 
 	describe('with delimiter', () => {
@@ -682,9 +796,14 @@ describe('list API', () => {
 		const mockedPath = 'photos/';
 
 		beforeEach(() => {
-			mockListObject.mockResolvedValueOnce({
-				Contents: mockedContents,
-				CommonPrefixes: mockedCommonPrefixes,
+			mockListObject.mockImplementationOnce((_, listParams) => {
+				return {
+					...mockListResponse(listParams),
+					CommonPrefixes: mockedCommonPrefixes,
+					Contents: mockedContents,
+					NextContinuationToken: nextToken,
+					KeyCount: 3,
+				};
 			});
 		});
 		afterEach(() => {
@@ -714,6 +833,18 @@ describe('list API', () => {
 		});
 
 		it('should return excludedSubpaths when "exclude" strategy and listAll are passed in the request', async () => {
+			mockListObject.mockReset();
+			mockListObject.mockImplementationOnce((_, listParams) => {
+				return {
+					...mockListResponse(listParams),
+					CommonPrefixes: mockedCommonPrefixes,
+					Contents: mockedContents,
+					KeyCount: 3,
+					NextContinuationToken: undefined,
+					IsTruncated: false,
+				};
+			});
+
 			const { items, excludedSubpaths } = await list({
 				path: mockedPath,
 				options: {

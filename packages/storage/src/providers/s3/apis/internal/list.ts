@@ -34,6 +34,7 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/s3data/types';
+import { StorageError } from '../../../../errors/StorageError';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -160,6 +161,13 @@ const _listWithPrefix = async ({
 		listParamsClone,
 	);
 
+	if (!isValidResponse(response, listParamsClone)) {
+		throw new StorageError({
+			name: 'Error',
+			message: `List failed. Response is invalid.`,
+		});
+	}
+
 	if (!response?.Contents) {
 		return {
 			items: [],
@@ -220,17 +228,26 @@ const _listWithPath = async ({
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
 	}
 
-	const {
-		Contents: contents,
-		NextContinuationToken: nextContinuationToken,
-		CommonPrefixes: commonPrefixes,
-	}: ListObjectsV2Output = await listObjectsV2(
+	const listOutput = await listObjectsV2(
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
 		},
 		listParamsClone,
 	);
+
+	if (!isValidResponse(listOutput, listParamsClone)) {
+		throw new StorageError({
+			name: 'Error',
+			message: `List failed. Response is invalid.`,
+		});
+	}
+
+	const {
+		Contents: contents,
+		NextContinuationToken: nextContinuationToken,
+		CommonPrefixes: commonPrefixes,
+	}: ListObjectsV2Output = listOutput;
 
 	const excludedSubpaths =
 		commonPrefixes && mapCommonPrefixesToExcludedSubpaths(commonPrefixes);
@@ -272,4 +289,46 @@ const getDelimiter = (
 	if (options?.subpathStrategy?.strategy === 'exclude') {
 		return options?.subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
 	}
+};
+
+const isValidResponse = (
+	listOutput: ListObjectsV2Output,
+	listParams: ListInputArgs['listParams'],
+) => {
+	const {
+		IsTruncated: isTruncated,
+		KeyCount: keyCount,
+		Contents: contents = [],
+		NextContinuationToken: nextContinuationToken,
+	} = listOutput;
+
+	const validTokenAndTruncated =
+		(isTruncated && nextContinuationToken !== undefined) ||
+		(!isTruncated && nextContinuationToken === undefined);
+
+	let validKeysWithPrefix = true;
+	for (const item of contents) {
+		if (!item.Key?.startsWith(listParams.Prefix ?? '')) {
+			console.log([item.Key, listParams.Prefix]);
+			validKeysWithPrefix = false;
+			break;
+		}
+	}
+
+	const validNumberOfKeysReturned = keyCount === contents.length;
+
+	const validEchoedParameters =
+		listParams.Delimiter === listOutput.Delimiter &&
+		listParams.EncodingType === listOutput.EncodingType &&
+		listParams.MaxKeys === listOutput.MaxKeys &&
+		listParams.Prefix === listOutput.Prefix &&
+		listParams.ContinuationToken === listOutput.ContinuationToken &&
+		listParams.StartAfter === listOutput.StartAfter;
+
+	return (
+		validTokenAndTruncated &&
+		validKeysWithPrefix &&
+		validNumberOfKeysReturned &&
+		validEchoedParameters
+	);
 };
