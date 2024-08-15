@@ -335,7 +335,7 @@ describe('list API', () => {
 						Contents: [
 							{
 								...listObjectClientBaseResultItem,
-								Key: listParams.Prefix,
+								Key: listParams.Prefix + inputKey,
 							},
 						],
 						NextContinuationToken: nextToken,
@@ -371,7 +371,7 @@ describe('list API', () => {
 						Contents: [
 							{
 								...listObjectClientBaseResultItem,
-								Key: listParams.Prefix,
+								Key: listParams.Prefix + inputKey,
 							},
 						],
 						NextContinuationToken: nextToken,
