@@ -74,14 +74,14 @@ jobs:
           JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      # - name: Start the http-server and host the oidc signout page locally (background)
-      #   if: ${{ inputs.host_signout_page }}
-      #   run: |
-      #     cd oidc-signout-hosted-page/ &&
-      #     npx http-server --cors -p 8000 &
-      #     sleep 60
-      #   working-directory: ${{ inputs.working_directory }}
-      #   shell: bash
+      - name: Start the http-server and host the oidc signout page locally (background)
+        if: ${{ inputs.host_signout_page }}
+        run: |
+          cd oidc-signout-hosted-page/ &&
+          npx http-server --cors -p 8000 &
+          sleep 60
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
       - name: Detox run
         run: |
           curl -v -L "https://hosteduiapp0d331750-0d331750-dev.auth.us-west-2.amazoncognito.com/logout?client_id=us-west-2_ZTQZa0svN&logout_uri=https%3A%2F%2Ftesting.dnqrjidepid4m.amplifyapp.com%2F%3Ffinal_redirect%3Dhosteduiapp%3A%2F%2F" &&
