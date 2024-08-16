@@ -13,6 +13,7 @@ import { AuthErrorTypes } from '../../../../../src/types/Auth';
 import { OAuthStore } from '../../../../../src/providers/cognito/utils/types';
 import { completeOAuthFlow } from '../../../../../src/providers/cognito/utils/oauth/completeOAuthFlow';
 
+jest.mock('../../../../../src/providers/cognito/tokenProvider');
 jest.mock('@aws-amplify/core', () => ({
 	Hub: {
 		dispatch: jest.fn(),
