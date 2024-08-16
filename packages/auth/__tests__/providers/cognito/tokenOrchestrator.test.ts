@@ -25,6 +25,8 @@ const mockAuthTokenStore = {
 	setKeyValueStorage: jest.fn(),
 	getDeviceMetadata: jest.fn(),
 	clearDeviceMetadata: jest.fn(),
+	setOAuthMetadata: jest.fn(),
+	getOAuthMetadata: jest.fn(),
 };
 const mockTokenRefresher = jest.fn();
 const validAuthConfig: ResourcesConfig = {
