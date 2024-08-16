@@ -24,6 +24,7 @@ import {
 	ItemWithPath,
 } from '../../../../src/providers/s3/types/outputs';
 import './testUtils';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('../../../../src/providers/s3/utils');
@@ -62,7 +63,7 @@ const mockDownloadResultBase = {
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockCreateDownloadTask = createDownloadTask as jest.Mock;
 const mockValidateStorageInput = validateStorageOperationInput as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
+const mockGetConfig = jest.mocked(Amplify.getConfig);
 
 describe('downloadData with key', () => {
 	beforeAll(() => {
@@ -75,6 +76,7 @@ describe('downloadData with key', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -220,6 +222,70 @@ describe('downloadData with key', () => {
 			}),
 		);
 	});
+
+	describe('bucket passed in options', () => {
+		it('should override bucket in getObject call when bucket is object', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			const abortController = new AbortController();
+			const bucketInfo: BucketInfo = {
+				bucketName: 'bucket-1',
+				region: 'region-1',
+			};
+
+			downloadData({
+				key: inputKey,
+				options: {
+					bucket: bucketInfo,
+				},
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region: bucketInfo.region,
+					abortSignal: abortController.signal,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucketInfo.bucketName,
+					Key: `public/${inputKey}`,
+				},
+			);
+		});
+
+		it('should override bucket in getObject call when bucket is string', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			const abortController = new AbortController();
+
+			downloadData({
+				key: inputKey,
+				options: {
+					bucket: 'default-bucket',
+				},
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region,
+					abortSignal: abortController.signal,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucket,
+					Key: `public/${inputKey}`,
+				},
+			);
+		});
+	});
 });
 
 describe('downloadData with path', () => {
@@ -233,6 +299,7 @@ describe('downloadData with path', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -365,5 +432,69 @@ describe('downloadData with path', () => {
 				Range: `bytes=${start}-${end}`,
 			}),
 		);
+	});
+
+	describe('bucket passed in options', () => {
+		it('should override bucket in getObject call when bucket is object', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			const abortController = new AbortController();
+			const bucketInfo: BucketInfo = {
+				bucketName: 'bucket-1',
+				region: 'region-1',
+			};
+
+			downloadData({
+				path: inputPath,
+				options: {
+					bucket: bucketInfo,
+				},
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region: bucketInfo.region,
+					abortSignal: abortController.signal,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucketInfo.bucketName,
+					Key: inputPath,
+				},
+			);
+		});
+
+		it('should override bucket in getObject call when bucket is string', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			const abortController = new AbortController();
+
+			downloadData({
+				path: inputPath,
+				options: {
+					bucket: 'default-bucket',
+				},
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region,
+					abortSignal: abortController.signal,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucket,
+					Key: inputPath,
+				},
+			);
+		});
 	});
 });

@@ -229,6 +229,71 @@ describe('parseAmplifyOutputs tests', () => {
 				},
 			});
 		});
+		it('should parse storage multi bucket', () => {
+			const amplifyOutputs: AmplifyOutputs = {
+				version: '1',
+				storage: {
+					aws_region: 'us-west-2',
+					bucket_name: 'storage-bucket-test',
+					buckets: [
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test',
+							aws_region: 'us-west-2',
+						},
+						{
+							name: 'bucket-2',
+							bucket_name: 'storage-bucket-test-2',
+							aws_region: 'us-west-2',
+						},
+					],
+				},
+			};
+
+			const result = parseAmplifyOutputs(amplifyOutputs);
+
+			expect(result).toEqual({
+				Storage: {
+					S3: {
+						bucket: 'storage-bucket-test',
+						region: 'us-west-2',
+						buckets: {
+							'bucket-2': {
+								bucketName: 'storage-bucket-test-2',
+								region: 'us-west-2',
+							},
+							'default-bucket': {
+								bucketName: 'storage-bucket-test',
+								region: 'us-west-2',
+							},
+						},
+					},
+				},
+			});
+		});
+		it('should throw for storage multi bucket parsing with same friendly name', () => {
+			const amplifyOutputs: AmplifyOutputs = {
+				version: '1',
+				storage: {
+					aws_region: 'us-west-2',
+					bucket_name: 'storage-bucket-test',
+					buckets: [
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test',
+							aws_region: 'us-west-2',
+						},
+						{
+							name: 'default-bucket',
+							bucket_name: 'storage-bucket-test-2',
+							aws_region: 'us-west-2',
+						},
+					],
+				},
+			};
+
+			expect(() => parseAmplifyOutputs(amplifyOutputs)).toThrow();
+		});
 	});
 
 	describe('analytics tests', () => {
