@@ -31,7 +31,6 @@ jest.mock(
 	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
 );
 
-// TODO: open to hardcoding these options or nesting a few for loops for simplicity
 // generates all preference permutations
 const generateUpdateMFAPreferenceOptions = () => {
 	const mfaPreferenceTypes: MfaPreferenceValue[] = [
