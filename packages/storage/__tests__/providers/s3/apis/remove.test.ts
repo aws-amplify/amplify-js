@@ -29,7 +29,7 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 const mockDeleteObject = deleteObject as jest.Mock;
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
+const mockGetConfig = jest.mocked(Amplify.getConfig);
 const inputKey = 'key';
 const bucket = 'bucket';
 const region = 'region';
@@ -56,6 +56,7 @@ describe('remove API', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -115,6 +116,51 @@ describe('remove API', () => {
 					);
 				});
 			});
+
+			describe('bucket passed in options', () => {
+				it('should override bucket in deleteObject call when bucket is object', async () => {
+					const mockBucketName = 'bucket-1';
+					const mockRegion = 'region-1';
+					await removeWrapper({
+						key: inputKey,
+						options: {
+							bucket: { bucketName: mockBucketName, region: mockRegion },
+						},
+					});
+					expect(deleteObject).toHaveBeenCalledTimes(1);
+					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+						{
+							credentials,
+							region: mockRegion,
+							userAgentValue: expect.any(String),
+						},
+						{
+							Bucket: mockBucketName,
+							Key: `public/${inputKey}`,
+						},
+					);
+				});
+				it('should override bucket in deleteObject call when bucket is string', async () => {
+					await removeWrapper({
+						key: inputKey,
+						options: {
+							bucket: 'default-bucket',
+						},
+					});
+					expect(deleteObject).toHaveBeenCalledTimes(1);
+					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+						{
+							credentials,
+							region,
+							userAgentValue: expect.any(String),
+						},
+						{
+							Bucket: bucket,
+							Key: `public/${inputKey}`,
+						},
+					);
+				});
+			});
 		});
 		describe('With Path', () => {
 			const removeWrapper = (
@@ -153,6 +199,51 @@ describe('remove API', () => {
 						{
 							Bucket: bucket,
 							Key: resolvedPath,
+						},
+					);
+				});
+			});
+
+			describe('bucket passed in options', () => {
+				it('should override bucket in deleteObject call when bucket is object', async () => {
+					const mockBucketName = 'bucket-1';
+					const mockRegion = 'region-1';
+					await removeWrapper({
+						path: 'path/',
+						options: {
+							bucket: { bucketName: mockBucketName, region: mockRegion },
+						},
+					});
+					expect(deleteObject).toHaveBeenCalledTimes(1);
+					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+						{
+							credentials,
+							region: mockRegion,
+							userAgentValue: expect.any(String),
+						},
+						{
+							Bucket: mockBucketName,
+							Key: 'path/',
+						},
+					);
+				});
+				it('should override bucket in deleteObject call when bucket is string', async () => {
+					await removeWrapper({
+						path: 'path/',
+						options: {
+							bucket: 'default-bucket',
+						},
+					});
+					expect(deleteObject).toHaveBeenCalledTimes(1);
+					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+						{
+							credentials,
+							region,
+							userAgentValue: expect.any(String),
+						},
+						{
+							Bucket: bucket,
+							Key: 'path/',
 						},
 					);
 				});

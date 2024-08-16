@@ -143,6 +143,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -346,6 +347,63 @@ describe('getMultipartUploadHandlers with key', () => {
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 			expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
+		});
+
+		describe('bucket passed in options', () => {
+			const mockData = 'Ü'.repeat(4 * MB);
+			it('should override bucket in putObject call when bucket as object', async () => {
+				const mockBucket = 'bucket-1';
+				const mockRegion = 'region-1';
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					key: 'key',
+					data: mockData,
+					options: {
+						bucket: { bucketName: mockBucket, region: mockRegion },
+					},
+				});
+				await multipartUploadJob();
+				await expect(
+					mockCreateMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region: mockRegion,
+						abortSignal: expect.any(AbortSignal),
+					}),
+					expect.objectContaining({
+						Bucket: mockBucket,
+						Key: 'public/key',
+						ContentType: defaultContentType,
+					}),
+				);
+			});
+
+			it('should override bucket in putObject call when bucket as string', async () => {
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					key: 'key',
+					data: mockData,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				await multipartUploadJob();
+				await expect(
+					mockCreateMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region,
+						abortSignal: expect.any(AbortSignal),
+					}),
+					expect.objectContaining({
+						Bucket: bucket,
+						Key: 'public/key',
+						ContentType: defaultContentType,
+					}),
+				);
+			});
 		});
 	});
 
@@ -665,6 +723,7 @@ describe('getMultipartUploadHandlers with path', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -860,6 +919,68 @@ describe('getMultipartUploadHandlers with path', () => {
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 			expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
+		});
+
+		describe('bucket passed in options', () => {
+			const mockData = 'Ü'.repeat(4 * MB);
+			it('should override bucket in putObject call when bucket as object', async () => {
+				const mockBucket = 'bucket-1';
+				const mockRegion = 'region-1';
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					path: 'path/',
+					data: mockData,
+					options: {
+						bucket: { bucketName: mockBucket, region: mockRegion },
+					},
+				});
+				await multipartUploadJob();
+				await expect(
+					mockCreateMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region: mockRegion,
+						abortSignal: expect.any(AbortSignal),
+					}),
+					expect.objectContaining({
+						Bucket: mockBucket,
+						Key: 'path/',
+						ContentType: defaultContentType,
+					}),
+				);
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
+			});
+			it('should override bucket in putObject call when bucket as string', async () => {
+				mockMultipartUploadSuccess();
+				const { multipartUploadJob } = getMultipartUploadHandlers({
+					path: 'path/',
+					data: mockData,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				await multipartUploadJob();
+				await expect(
+					mockCreateMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
+					expect.objectContaining({
+						credentials,
+						region,
+						abortSignal: expect.any(AbortSignal),
+					}),
+					expect.objectContaining({
+						Bucket: bucket,
+						Key: 'path/',
+						ContentType: defaultContentType,
+					}),
+				);
+				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+				expect(mockUploadPart).toHaveBeenCalledTimes(2);
+				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
 
