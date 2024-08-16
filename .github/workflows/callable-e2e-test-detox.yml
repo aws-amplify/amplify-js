@@ -84,16 +84,15 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          curl -v -L "https://hosteduiapp0d331750-0d331750-dev.auth.us-west-2.amazoncognito.com/logout?client_id=3qdf4epnqs4tkm1d3or8i05g1j&logout_uri=https%3A%2F%2Ftesting.dnqrjidepid4m.amplifyapp.com%2F%3Ffinal_redirect%3Dhosteduiapp%3A%2F%2F" &&
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --record-videos all' -n 2
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      - name: Upload artifact
-        if: always()
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
-        with:
-          name: oauth-signout-artifact
-          if-no-files-found: ignore
-          path: |
-            amplify-js-samples-staging/samples/react-native/auth/HosteduiApp/artifacts
-          retention-days: 14
+      # - name: Upload artifact
+      #   if: always()
+      #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+      #   with:
+      #     name: oauth-signout-artifact
+      #     if-no-files-found: ignore
+      #     path: |
+      #       amplify-js-samples-staging/samples/react-native/auth/HosteduiApp/artifacts
+      #     retention-days: 14
