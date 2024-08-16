@@ -84,7 +84,8 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --debug-synchronization 500' -n 1 &&
+          xcrun simctl spawn booted log stream --level debug --style compact --predicate "category=='SyncManager'"
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       # - name: Upload artifact
