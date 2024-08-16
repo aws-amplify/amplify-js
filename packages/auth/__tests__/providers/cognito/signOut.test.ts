@@ -220,6 +220,7 @@ describe('signOut', () => {
 			expect(mockHandleOAuthSignOut).toHaveBeenCalledWith(
 				cognitoConfigWithOauth,
 				mockDefaultOAuthStoreInstance,
+				mockTokenOrchestrator,
 				undefined,
 			);
 			// In cases of OAuth, token removal and Hub dispatch should be performed by the OAuth handling since
