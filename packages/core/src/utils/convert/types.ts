@@ -3,7 +3,7 @@
 
 export interface Base64EncoderConvertOptions {
 	urlSafe: boolean;
-	skipPadding: boolean;
+	skipPadding?: boolean;
 }
 
 export interface Base64Encoder {

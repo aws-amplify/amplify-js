@@ -245,8 +245,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
-						'ws://localhost:8080/realtime?header=&payload=e30=',
-						'graphql-ws',
+						'ws://localhost:8080/realtime',
+						['graphql-ws', 'header-'],
 					);
 				});
 
@@ -271,8 +271,8 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
-						'wss://localhost:8080/realtime?header=&payload=e30=',
-						'graphql-ws',
+						'wss://localhost:8080/realtime',
+						['graphql-ws', 'header-'],
 					);
 				});
 
@@ -298,8 +298,50 @@ describe('AWSAppSyncRealTimeProvider', () => {
 
 					expect(newSocketSpy).toHaveBeenNthCalledWith(
 						1,
-						'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql?header=&payload=e30=',
-						'graphql-ws',
+						'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql',
+						['graphql-ws', 'header-'],
+					);
+				});
+
+				test('subscription generates expected auth token', async () => {
+					expect.assertions(1);
+
+					const newSocketSpy = jest
+						.spyOn(provider, 'getNewWebSocket')
+						.mockImplementation(() => {
+							fakeWebSocketInterface.newWebSocket();
+							return fakeWebSocketInterface.webSocket;
+						});
+
+					provider
+						.subscribe({
+							appSyncGraphqlEndpoint:
+								'https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql',
+							// using custom auth instead of apiKey, because the latter inserts a timestamp header => expected value changes
+							authenticationType: 'lambda',
+							additionalHeaders: {
+								Authorization: 'my-custom-auth-token',
+							},
+						})
+						.subscribe({ error: () => {} });
+
+					// Wait for the socket to be initialize
+					await fakeWebSocketInterface.readyForUse;
+
+					/* 
+					Regular base64 encoding of auth header {"Authorization":"my-custom-auth-token","host":"testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com"}
+					Is: `eyJBdXRob3JpemF0aW9uIjoibXktY3VzdG9tLWF1dGgtdG9rZW4iLCJob3N0IjoidGVzdGFjY291bnR1cmwxMjM0NTY3ODkxMjMuYXBwc3luYy1hcGkudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20ifQ==`
+					(note `==` at the end of the string) 
+					base64url encoding is expected to drop padding chars `=`
+					*/
+
+					expect(newSocketSpy).toHaveBeenNthCalledWith(
+						1,
+						'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql',
+						[
+							'graphql-ws',
+							'header-eyJBdXRob3JpemF0aW9uIjoibXktY3VzdG9tLWF1dGgtdG9rZW4iLCJob3N0IjoidGVzdGFjY291bnR1cmwxMjM0NTY3ODkxMjMuYXBwc3luYy1hcGkudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20ifQ',
+						],
 					);
 				});
 
