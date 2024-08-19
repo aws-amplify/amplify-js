@@ -12,6 +12,7 @@ import { ConsoleLogger } from '@aws-amplify/core';
 
 import { TransferProgressEvent } from '../../../../../types/common';
 import { CanceledError } from '../../../../../errors/CanceledError';
+import { StorageError } from '../../../../../errors/StorageError';
 
 import {
 	ABORT_ERROR_CODE,
@@ -80,10 +81,10 @@ export const xhrTransferHandler: TransferHandler<
 		}
 
 		xhr.addEventListener('error', () => {
-			const networkError = buildHandlerError(
-				NETWORK_ERROR_MESSAGE,
-				NETWORK_ERROR_CODE,
-			);
+			const networkError = new StorageError({
+				message: NETWORK_ERROR_MESSAGE,
+				name: NETWORK_ERROR_CODE,
+			});
 			logger.error(NETWORK_ERROR_MESSAGE);
 			reject(networkError);
 			xhr = null; // clean up request
