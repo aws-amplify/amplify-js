@@ -84,16 +84,15 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --debug-synchronization 500 --detectOpenHandles' -n 2 &&
-          xcrun simctl spawn booted log stream --level debug --style compact --predicate "category=='SyncManager'"
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --debug-synchronization 500 --detectOpenHandles' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
-      # - name: Upload artifact
-      #   if: always()
-      #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
-      #   with:
-      #     name: oauth-signout-artifact
-      #     if-no-files-found: ignore
-      #     path: |
-      #       amplify-js-samples-staging/samples/react-native/auth/HosteduiApp/artifacts
-      #     retention-days: 14
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        with:
+          name: oauth-signout-artifact
+          if-no-files-found: ignore
+          path: |
+            amplify-js-samples-staging/samples/react-native/auth/HosteduiApp/artifacts
+          retention-days: 14
