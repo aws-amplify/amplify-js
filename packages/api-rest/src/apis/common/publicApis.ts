@@ -25,7 +25,7 @@ import {
 	parseSigningInfo,
 	resolveApiUrl,
 } from '../../utils';
-import { isIamAuthApplicableForRest } from '../../utils/iamAuthApplicable';
+import { isIamAuthApplicableForRest } from '../../utils/isIamAuthApplicable';
 
 import { transferHandler } from './handler';
 
@@ -72,8 +72,8 @@ const publicHandler = (
 				headers,
 				abortSignal,
 			},
-			signingServiceInfo,
 			isIamAuthApplicableForRest,
+			signingServiceInfo,
 		);
 	});
 

@@ -6,7 +6,7 @@ import { HttpRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	isIamAuthApplicableForGraphQL,
 	isIamAuthApplicableForRest,
-} from '../../src/utils/iamAuthApplicable';
+} from '../../src/utils/isIamAuthApplicable';
 
 describe('iamAuthApplicable', () => {
 	const url = new URL('https://url');
