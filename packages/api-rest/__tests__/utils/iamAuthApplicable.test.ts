@@ -19,9 +19,9 @@ describe('iamAuthApplicable', () => {
 	describe('iamAuthApplicableForGraphQL', () => {
 		it('should return true if there is no authorization header, no x-api-key header, and signingServiceInfo is provided', () => {
 			const signingServiceInfo = {};
-			expect(isIamAuthApplicableForGraphQL(baseRequest, signingServiceInfo)).toBe(
-				true,
-			);
+			expect(
+				isIamAuthApplicableForGraphQL(baseRequest, signingServiceInfo),
+			).toBe(true);
 		});
 
 		it('should return false if there is an authorization header', () => {

@@ -21,7 +21,6 @@ import {
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
 import { RestApiResponse, SigningServiceInfo } from '../../types';
-import { isIamAuthApplicableForGraphQL } from '../../utils/iamAuthApplicable';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
@@ -43,10 +42,10 @@ export const transferHandler = async (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions & { abortSignal: AbortSignal },
 	signingServiceInfo?: SigningServiceInfo,
-	iamAuthApplicable: (
+	iamAuthApplicable?: (
 		{ headers }: HttpRequest,
 		signingServiceInfo?: SigningServiceInfo,
-	) => boolean = isIamAuthApplicableForGraphQL,
+	) => boolean,
 ): Promise<RestApiResponse> => {
 	const { url, method, headers, body, withCredentials, abortSignal } = options;
 	const resolvedBody = body
@@ -68,7 +67,8 @@ export const transferHandler = async (
 		abortSignal,
 	};
 
-	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+	const isIamAuthApplicable =
+		iamAuthApplicable && iamAuthApplicable(request, signingServiceInfo);
 
 	let response: RestApiResponse;
 	const credentials = await resolveCredentials(amplify);
