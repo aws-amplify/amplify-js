@@ -5,12 +5,12 @@ import { HttpRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { SigningServiceInfo } from '../types';
 
-export const iamAuthApplicableForGraphQL = (
+export const isIamAuthApplicableForGraphQL = (
 	{ headers }: HttpRequest,
 	signingServiceInfo?: SigningServiceInfo,
 ) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;
 
-export const iamAuthApplicableForPublic = (
+export const isIamAuthApplicableForRest = (
 	{ headers }: HttpRequest,
 	signingServiceInfo?: SigningServiceInfo,
 ) => !headers.authorization && !!signingServiceInfo;
