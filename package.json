@@ -28,9 +28,10 @@
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
 		"publish:preid": "./scripts/preid-env-vars-exist.sh && lerna publish --canary --force-publish --dist-tag=${PREID_PREFIX} --preid=${PREID_PREFIX}${PREID_HASH_SUFFIX} --yes",
 		"publish:main": "lerna publish --canary --force-publish --dist-tag=unstable --preid=unstable${PREID_HASH_SUFFIX} --yes",
-		"publish:release": "lerna publish --conventional-commits --message 'chore(release): Publish [skip release]' --yes",
+		"publish:release": "yarn generate-metadata && lerna publish --conventional-commits --message 'chore(release): Publish [skip release]' --yes",
 		"publish:v5-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-5 --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
+		"generate-metadata": "git rev-parse --short HEAD > packages/core/metadata && git commit -am 'chore(release): Set core metadata [skip release]'",
 		"ts-coverage": "lerna run ts-coverage",
 		"prepare": "husky && ./scripts/set-preid-versions.sh"
 	},
@@ -103,7 +104,7 @@
 		"eslint-plugin-promise": "^6.1.1",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"expect": "^29.7.0",
-		"glob": "^10.3.10",
+		"glob": "10.3.10",
 		"husky": "^9.0.11",
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
@@ -135,6 +136,7 @@
 		"**/glob/minipass": "6.0.2",
 		"nx": "16.7.0",
 		"xml2js": "0.5.0",
-		"tar": "6.2.1"
+		"tar": "6.2.1",
+		"glob@^10.0.0": "10.3.10"
 	}
 }

@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.5.0...aws-amplify@6.5.1) (2024-08-15)
+
+**Note:** Version bump only for package aws-amplify
+
+# [6.5.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.4.4...aws-amplify@6.5.0) (2024-08-07)
+
+### Features
+
+- **storage:** add support for content disposition and content type in getUrl ([#13615](https://github.com/aws-amplify/amplify-js/issues/13615)) ([28434a6](https://github.com/aws-amplify/amplify-js/commit/28434a69d6956369ebd7b2ac4b67e0ec1bb14748))
+
+## [6.4.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.4.3...aws-amplify@6.4.4) (2024-08-05)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.4.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.4.2...aws-amplify@6.4.3) (2024-07-23)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.4.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.4.1...aws-amplify@6.4.2) (2024-07-22)
+
+### Bug Fixes
+
+- **aws-amplify:** createKeyValueStorageFromCookieStorageAdapter misses default path and secure values ([#13508](https://github.com/aws-amplify/amplify-js/issues/13508)) ([60a559f](https://github.com/aws-amplify/amplify-js/commit/60a559f612e092c76e1499f93547248312db46f2))
+
+## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.4.0...aws-amplify@6.4.1) (2024-07-19)
+
+**Note:** Version bump only for package aws-amplify
+
+# [6.4.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.3.8...aws-amplify@6.4.0) (2024-07-08)
+
+### Features
+
+- **storage:** add delimiter support to list API ([#13517](https://github.com/aws-amplify/amplify-js/issues/13517)) ([95ba49c](https://github.com/aws-amplify/amplify-js/commit/95ba49cae994876b15d1062ca1d9923fef909e03))
+
+## [6.3.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.3.7...aws-amplify@6.3.8) (2024-06-24)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.3.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.3.6...aws-amplify@6.3.7) (2024-06-18)
+
+**Note:** Version bump only for package aws-amplify
+
 ## [6.3.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.3.5...aws-amplify@6.3.6) (2024-06-07)
 
 **Note:** Version bump only for package aws-amplify
