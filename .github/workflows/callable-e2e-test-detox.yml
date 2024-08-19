@@ -84,7 +84,7 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --record-videos all' -n 4
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --record-videos all' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Upload artifact
