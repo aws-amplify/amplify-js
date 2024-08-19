@@ -1119,7 +1119,27 @@ type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
 
 /**
  * Build an expression that can be used to filter which items of a given Model
- * are synchronized down from the GraphQL service.
+ * are synchronized down from the GraphQL service. E.g.,
+ *
+ * ```ts
+ * import { DataStore, syncExpression } from 'aws-amplify/datastore';
+ * import { Post, Comment } from './models';
+ *
+ *
+ * DataStore.configure({
+ * 	syncExpressions: [
+ * 		syncExpression(Post, () => {
+ * 			return (post) => post.rating.gt(5);
+ * 		}),
+ * 		syncExpression(Comment, () => {
+ * 			return (comment) => comment.status.eq('active');
+ * 		})
+ * 	]
+ * });
+ * ```
+ *
+ * When DataStore starts syncing, only Posts with `rating > 5` and Comments with
+ * `status === 'active'` will be synced down to the user's local store.
  *
  * @param modelConstructor The Model from the schema.
  * @param conditionProducer A function that builds a condition object that can describe how to filter the model.
