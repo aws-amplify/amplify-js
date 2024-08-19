@@ -3,6 +3,8 @@
 
 import { StrictUnion } from '@aws-amplify/core/internals/utils';
 
+import { StorageBucket } from '../providers/s3/types/options';
+
 import {
 	StorageListAllOptions,
 	StorageListPaginateOptions,
@@ -90,13 +92,9 @@ export interface StorageCopyInputWithKey<
 	destination: DestinationOptions;
 }
 
-export interface StorageCopyInputWithPath<
-	SourceOptions,
-	DestinationOptions,
-	Options = unknown,
-> extends StorageOperationOptionsInput<Options> {
-	source: StorageOperationInputWithPath & SourceOptions;
-	destination: StorageOperationInputWithPath & DestinationOptions;
+export interface StorageCopyInputWithPath {
+	source: StorageOperationInputWithPath & { bucket?: StorageBucket };
+	destination: StorageOperationInputWithPath & { bucket?: StorageBucket };
 }
 
 /**

@@ -334,7 +334,6 @@ describe('getUrl test with path', () => {
 			});
 		});
 	});
-
 	describe('Happy cases: With path and Content Disposition, Content Type', () => {
 		const config = {
 			credentials,
