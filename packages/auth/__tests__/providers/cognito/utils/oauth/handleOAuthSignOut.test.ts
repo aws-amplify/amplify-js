@@ -48,7 +48,11 @@ describe('handleOAuthSignOut', () => {
 		await handleOAuthSignOut(cognitoConfig, mockStore, mockTokenOrchestrator);
 
 		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
-		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(cognitoConfig);
+		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
+			cognitoConfig,
+			false,
+			undefined,
+		);
 	});
 
 	it('should complete OAuth sign out and redirect when there oauth metadata in tokenOrchestrator', async () => {
