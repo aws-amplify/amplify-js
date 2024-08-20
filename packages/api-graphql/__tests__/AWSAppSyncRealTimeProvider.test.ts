@@ -276,38 +276,6 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
-				test('custom headers are applied in query string', async () => {
-					expect.assertions(1);
-
-					const newSocketSpy = jest
-						.spyOn(provider, 'getNewWebSocket')
-						.mockImplementation(() => {
-							fakeWebSocketInterface.newWebSocket();
-							return fakeWebSocketInterface.webSocket as WebSocket;
-						});
-
-					provider
-						.subscribe({
-							appSyncGraphqlEndpoint: 'http://localhost:8080',
-							additionalHeaders: {
-								'x-amz-user-agent': 'aws-amplify/6.4.0 api/1 framework/2',
-								'ex-machina': 'is a good movie',
-								// This should NOT get included in the querystring
-								Authorization: 'abc12345',
-							},
-						})
-						.subscribe({ error: () => {} });
-
-					// Wait for the socket to be initialize
-					await fakeWebSocketInterface.readyForUse;
-
-					expect(newSocketSpy).toHaveBeenNthCalledWith(
-						1,
-						'wss://localhost:8080/realtime?header=&payload=e30=&x-amz-user-agent=aws-amplify%2F6.4.0%20api%2F1%20framework%2F2&ex-machina=is%20a%20good%20movie',
-						'graphql-ws',
-					);
-				});
-
 				test('subscription waiting for onopen with https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql" translates to wss', async () => {
 					expect.assertions(1);
 

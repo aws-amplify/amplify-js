@@ -739,8 +739,6 @@ export class AWSAppSyncRealTimeProvider {
 	private _queryStringFromCustomHeaders(
 		headers?: AWSAppSyncRealTimeProviderOptions['additionalCustomHeaders'],
 	): string {
-		console.log('_queryStringFromCustomHeaders', headers);
-
 		const nonAuthHeaders = this._extractNonAuthHeaders(headers);
 
 		const queryParams: string[] = Object.entries(nonAuthHeaders).map(
