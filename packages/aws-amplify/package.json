@@ -389,13 +389,13 @@
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "11.95 kB"
+			"limit": "11.96 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchMFAPreference }",
-			"limit": "11.98 kB"
+			"limit": "11.99 kB"
 		},
 		{
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
@@ -407,7 +407,7 @@
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "12.84 kB"
+			"limit": "12.85 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -419,13 +419,13 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "12.07 kB"
+			"limit": "12.08 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "7.94 kB"
+			"limit": "7.95 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
