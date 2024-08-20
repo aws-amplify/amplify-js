@@ -20,6 +20,8 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { isPresignedURLDurable } from '../../isPresignedUrlDurable';
+import { IntegrityError } from '../../../../../errors/IntegrityError';
 
 import { defaultConfig } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
@@ -63,6 +65,9 @@ const putObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	if (!isPresignedURLDurable(input.Bucket, input.Key, url)) {
+		throw new IntegrityError();
+	}
 
 	return {
 		method: 'PUT',
