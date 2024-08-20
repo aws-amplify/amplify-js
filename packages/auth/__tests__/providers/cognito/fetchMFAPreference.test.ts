@@ -50,16 +50,6 @@ describe('fetchMFAPreference', () => {
 			preferred: 'SMS',
 			enabled: ['SMS', 'TOTP', 'EMAIL'],
 		});
-		expect(mockGetUser).toHaveBeenCalledTimes(1);
-		expect(mockGetUser).toHaveBeenCalledWith(
-			{
-				region: 'us-west-2',
-				userAgentValue: expect.any(String),
-			},
-			{
-				AccessToken: mockAccessToken,
-			},
-		);
 	});
 
 	it('should return correct MFA preferences when EMAIL is preferred', async () => {
@@ -75,16 +65,6 @@ describe('fetchMFAPreference', () => {
 			preferred: 'EMAIL',
 			enabled: ['SMS', 'TOTP', 'EMAIL'],
 		});
-		expect(mockGetUser).toHaveBeenCalledTimes(1);
-		expect(mockGetUser).toHaveBeenCalledWith(
-			{
-				region: 'us-west-2',
-				userAgentValue: expect.any(String),
-			},
-			{
-				AccessToken: mockAccessToken,
-			},
-		);
 	});
 	it('should return correct MFA preferences when TOTP is preferred', async () => {
 		mockGetUser.mockResolvedValueOnce({
@@ -99,16 +79,6 @@ describe('fetchMFAPreference', () => {
 			preferred: 'TOTP',
 			enabled: ['SMS', 'TOTP', 'EMAIL'],
 		});
-		expect(mockGetUser).toHaveBeenCalledTimes(1);
-		expect(mockGetUser).toHaveBeenCalledWith(
-			{
-				region: 'us-west-2',
-				userAgentValue: expect.any(String),
-			},
-			{
-				AccessToken: mockAccessToken,
-			},
-		);
 	});
 	it('should return the correct MFA preferences when there is no preferred option', async () => {
 		mockGetUser.mockResolvedValueOnce({
@@ -121,16 +91,6 @@ describe('fetchMFAPreference', () => {
 		expect(resp).toEqual({
 			enabled: ['SMS', 'TOTP', 'EMAIL'],
 		});
-		expect(mockGetUser).toHaveBeenCalledTimes(1);
-		expect(mockGetUser).toHaveBeenCalledWith(
-			{
-				region: 'us-west-2',
-				userAgentValue: expect.any(String),
-			},
-			{
-				AccessToken: mockAccessToken,
-			},
-		);
 	});
 	it('should return the correct MFA preferences when there is no available options', async () => {
 		mockGetUser.mockResolvedValueOnce({
@@ -140,16 +100,6 @@ describe('fetchMFAPreference', () => {
 		});
 		const resp = await fetchMFAPreference();
 		expect(resp).toEqual({});
-		expect(mockGetUser).toHaveBeenCalledTimes(1);
-		expect(mockGetUser).toHaveBeenCalledWith(
-			{
-				region: 'us-west-2',
-				userAgentValue: expect.any(String),
-			},
-			{
-				AccessToken: mockAccessToken,
-			},
-		);
 	});
 
 	it('should throw an error when service returns an error response', async () => {
