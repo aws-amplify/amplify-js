@@ -10,7 +10,7 @@ permissions:
 jobs:
   cleanup-labels:
     runs-on: ubuntu-latest
-    if: ${{ (contains(github.event.issue.labels.*.name, 'pending-community-response') || (contains(github.event.issue.labels.*.name, 'pending-maintainer-response') || contains(github.event.issue.labels.*.name, 'pending-triage')) }}
+    if: ${{ (contains(github.event.issue.labels.*.name, 'pending-community-response') || contains(github.event.issue.labels.*.name, 'pending-maintainer-response') || contains(github.event.issue.labels.*.name, 'pending-triage')) }}
     steps:
       - name: Remove unnecessary labels after closing
         shell: bash
