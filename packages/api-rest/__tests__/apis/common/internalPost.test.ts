@@ -92,7 +92,7 @@ describe('internal post', () => {
 		);
 	});
 
-	it('should call authenticatedHandler for appsync-api service', async () => {
+	it('should call authenticatedHandler for appsync-api service with default signing name', async () => {
 		const appsyncApiEndpoint = new URL(
 			'https://123.appsync-api.us-west-2.amazonaws.com/graphql',
 		);
@@ -100,6 +100,26 @@ describe('internal post', () => {
 			url: appsyncApiEndpoint,
 			options: {
 				signingServiceInfo: { region: 'us-east-1' },
+			},
+		});
+		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
+			{
+				url: appsyncApiEndpoint,
+				method: 'POST',
+				headers: {},
+			},
+			expect.objectContaining({ region: 'us-east-1', service: 'appsync' }),
+		);
+	});
+
+	it('should call authenticatedHandler for appsync-api with specified service from signingServiceInfo', async () => {
+		const appsyncApiEndpoint = new URL(
+			'https://123.appsync-api.us-west-2.amazonaws.com/graphql',
+		);
+		await post(mockAmplifyInstance, {
+			url: appsyncApiEndpoint,
+			options: {
+				signingServiceInfo: { service: 'appsync', region: 'us-east-1' },
 			},
 		});
 		expect(mockAuthenticatedHandler).toHaveBeenCalledWith(
