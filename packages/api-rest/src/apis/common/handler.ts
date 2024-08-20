@@ -35,6 +35,7 @@ type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
  * @param options Options accepted from public API options when calling the handlers.
  * @param signingServiceInfo Internal-only options enable IAM auth as well as to to overwrite the IAM signing service
  *   and region. If specified, and NONE of API Key header or Auth header is present, IAM auth will be used.
+ * @param iamAuthApplicable Callback function that is used to determine if IAM Auth should be used or not.
  *
  * @internal
  */
