@@ -46,7 +46,7 @@ const cancelTokenMap = new WeakMap<Promise<any>, AbortController>();
  * @param postInput.abortController The abort controller used to cancel the POST request
  * @returns a {@link RestApiResponse}
  *
- * @throws an {@link Error} with `Network error` as the `message` when the external resource is unreachable due to one
+ * @throws an {@link AmplifyError} with `Network Error` as the `message` when the external resource is unreachable due to one
  * of the following reasons:
  *   1. no network connection
  *   2. CORS error
