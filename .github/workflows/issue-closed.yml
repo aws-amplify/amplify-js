@@ -1,0 +1,22 @@
+name: Issue Closed
+
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  issues: write
+
+jobs:
+  cleanup-labels:
+    runs-on: ubuntu-latest
+    if: ${{ (contains(github.event.issue.labels.*.name, 'pending-community-response') || (contains(github.event.issue.labels.*.name, 'pending-maintainer-response') || contains(github.event.issue.labels.*.name, 'pending-triage')) }}
+    steps:
+      - name: Remove unnecessary labels after closing
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPOSITORY_NAME: ${{ github.event.repository.full_name }}
+        run: |
+          gh issue edit $ISSUE_NUMBER --repo $REPOSITORY_NAME --remove-label "pending-community-response" --remove-label "pending-maintainer-response" --remove-label "pending-triage"
