@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.0...@aws-amplify/storage@6.6.1) (2024-08-15)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [6.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.4...@aws-amplify/storage@6.6.0) (2024-08-07)
+
+### Features
+
+- **storage:** add support for content disposition and content type in getUrl ([#13615](https://github.com/aws-amplify/amplify-js/issues/13615)) ([28434a6](https://github.com/aws-amplify/amplify-js/commit/28434a69d6956369ebd7b2ac4b67e0ec1bb14748))
+
+## [6.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.3...@aws-amplify/storage@6.5.4) (2024-08-05)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 ## [6.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.5.2...@aws-amplify/storage@6.5.3) (2024-07-23)
 
 ### Bug Fixes

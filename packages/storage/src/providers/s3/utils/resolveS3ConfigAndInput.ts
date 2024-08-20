@@ -6,7 +6,7 @@ import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 import { resolvePrefix as defaultPrefixResolver } from '../../../utils/resolvePrefix';
-import { ResolvedS3Config } from '../types/options';
+import { BucketInfo, ResolvedS3Config, StorageBucket } from '../types/options';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 
@@ -14,6 +14,7 @@ interface S3ApiOptions {
 	accessLevel?: StorageAccessLevel;
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
+	bucket?: StorageBucket;
 }
 
 interface ResolvedS3ConfigAndInput {
@@ -62,8 +63,16 @@ export const resolveS3ConfigAndInput = async (
 		return credentials;
 	};
 
-	const { bucket, region, dangerouslyConnectToHttpEndpointForTesting } =
-		amplify.getConfig()?.Storage?.S3 ?? {};
+	const {
+		bucket: defaultBucket,
+		region: defaultRegion,
+		dangerouslyConnectToHttpEndpointForTesting,
+		buckets,
+	} = amplify.getConfig()?.Storage?.S3 ?? {};
+
+	const { bucket = defaultBucket, region = defaultRegion } =
+		(apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
+
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
 
@@ -100,4 +109,26 @@ export const resolveS3ConfigAndInput = async (
 		identityId,
 		isObjectLockEnabled,
 	};
+};
+
+const resolveBucketConfig = (
+	apiOptions: S3ApiOptions,
+	buckets: Record<string, BucketInfo> | undefined,
+): { bucket: string; region: string } | undefined => {
+	if (typeof apiOptions.bucket === 'string') {
+		const bucketConfig = buckets?.[apiOptions.bucket];
+		assertValidationError(
+			!!bucketConfig,
+			StorageValidationErrorCode.InvalidStorageBucket,
+		);
+
+		return { bucket: bucketConfig.bucketName, region: bucketConfig.region };
+	}
+
+	if (typeof apiOptions.bucket === 'object') {
+		return {
+			bucket: apiOptions.bucket.bucketName,
+			region: apiOptions.bucket.region,
+		};
+	}
 };

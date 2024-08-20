@@ -28,6 +28,8 @@ export class CanceledError extends StorageError {
 /**
  * Check if an error is caused by user calling `cancel()` on a upload/download task. If an overwriting error is
  * supplied to `task.cancel(errorOverwrite)`, this function will return `false`.
+ * @param {unknown} error The unknown exception to be checked.
+ * @returns - A boolean indicating if the error was from an upload cancellation
  */
 export const isCancelError = (error: unknown): error is CanceledError =>
 	!!error && error instanceof CanceledError;

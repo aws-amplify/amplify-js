@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "7.0.40",
+	"version": "7.0.43",
 	"description": "Analytics category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -93,9 +93,9 @@
 		"personalize"
 	],
 	"dependencies": {
-		"@aws-sdk/client-firehose": "3.398.0",
-		"@aws-sdk/client-kinesis": "3.398.0",
-		"@aws-sdk/client-personalize-events": "3.398.0",
+		"@aws-sdk/client-firehose": "3.621.0",
+		"@aws-sdk/client-kinesis": "3.621.0",
+		"@aws-sdk/client-personalize-events": "3.621.0",
 		"@smithy/util-utf8": "2.0.0",
 		"tslib": "^2.5.0"
 	},
@@ -103,7 +103,7 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.3.7",
+		"@aws-amplify/core": "6.3.10",
 		"@aws-amplify/react-native": "1.1.4",
 		"@aws-sdk/types": "3.398.0",
 		"typescript": "5.0.2"
