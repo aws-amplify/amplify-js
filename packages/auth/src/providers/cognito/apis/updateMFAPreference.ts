@@ -26,7 +26,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 export async function updateMFAPreference(
 	input: UpdateMFAPreferenceInput,
 ): Promise<void> {
-	const { sms, totp } = input;
+	const { sms, totp, email } = input;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
@@ -40,6 +40,7 @@ export async function updateMFAPreference(
 			AccessToken: tokens.accessToken.toString(),
 			SMSMfaSettings: getMFASettings(sms),
 			SoftwareTokenMfaSettings: getMFASettings(totp),
+			EmailMfaSettings: getMFASettings(email),
 		},
 	);
 }

@@ -44,7 +44,7 @@ export interface AuthTOTPSetupDetails {
 	getSetupUri(appName: string, accountName?: string): URL;
 }
 
-export type AuthMFAType = 'SMS' | 'TOTP';
+export type AuthMFAType = 'SMS' | 'TOTP' | 'EMAIL';
 
 export type AuthAllowedMFATypes = AuthMFAType[];
 
