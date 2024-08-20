@@ -45,7 +45,7 @@ jobs:
         shell: bash
       - name: Install CocoaPods
         run: |
-          cd ios && pod install
+          cd ios && RCT_NEW_ARCH_ENABLED=0 pod install
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Start iOS simulator (background)
