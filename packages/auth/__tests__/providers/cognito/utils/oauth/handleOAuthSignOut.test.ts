@@ -68,7 +68,12 @@ describe('handleOAuthSignOut', () => {
 			isOAuthSignIn: false,
 			preferPrivateSession: false,
 		});
-		await handleOAuthSignOut(cognitoConfig, mockStore, mockTokenOrchestrator);
+		await handleOAuthSignOut(
+			cognitoConfig,
+			mockStore,
+			mockTokenOrchestrator,
+			undefined,
+		);
 
 		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
@@ -83,7 +88,12 @@ describe('handleOAuthSignOut', () => {
 			isOAuthSignIn: false,
 			preferPrivateSession: false,
 		});
-		await handleOAuthSignOut(cognitoConfig, mockStore, mockTokenOrchestrator);
+		await handleOAuthSignOut(
+			cognitoConfig,
+			mockStore,
+			mockTokenOrchestrator,
+			undefined,
+		);
 
 		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
 		expect(mockOAuthSignOutRedirect).not.toHaveBeenCalled();

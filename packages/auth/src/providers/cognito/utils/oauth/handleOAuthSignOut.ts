@@ -14,7 +14,7 @@ export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
 	tokenOrchestrator: TokenOrchestrator,
-	preferredSignOutUrl?: string,
+	preferredSignOutUrl: string | undefined,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn } = await store.loadOAuthSignIn();
 	const oauthMetadata = await tokenOrchestrator.getOAuthMetadata();
