@@ -32,6 +32,7 @@ interface ObjectConfigs {
 	Expires?: Date;
 	Tagging?: string;
 	Metadata?: Record<string, string>;
+	ExpectedBucketOwner?: string;
 }
 
 /**
@@ -52,6 +53,7 @@ export const serializeObjectConfigsToHeaders = async (
 		'content-type': input.ContentType,
 		expires: input.Expires?.toUTCString(),
 		'x-amz-tagging': input.Tagging,
+		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		...serializeMetadata(input.Metadata),
 	}),
 });

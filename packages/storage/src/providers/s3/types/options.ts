@@ -14,6 +14,7 @@ import {
 export interface BucketInfo {
 	bucketName: string;
 	region: string;
+	expectedBucketOwner?: string;
 }
 
 export type StorageBucket = string | BucketInfo;

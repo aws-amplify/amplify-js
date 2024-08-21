@@ -37,6 +37,7 @@ export type PutObjectInput = Pick<
 	| 'Expires'
 	| 'Metadata'
 	| 'Tagging'
+	| 'ExpectedBucketOwner'
 >;
 
 export type PutObjectOutput = Pick<

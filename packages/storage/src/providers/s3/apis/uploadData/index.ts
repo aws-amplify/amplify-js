@@ -162,3 +162,9 @@ export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
 		});
 	}
 }
+
+uploadData({
+	path: '',
+	data: '',
+	options: { bucket: { bucketName: '', region: '', expectedBucketOwner: '' } },
+});

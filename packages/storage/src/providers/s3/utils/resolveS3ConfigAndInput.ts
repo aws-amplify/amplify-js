@@ -23,6 +23,7 @@ interface ResolvedS3ConfigAndInput {
 	keyPrefix: string;
 	isObjectLockEnabled?: boolean;
 	identityId?: string;
+	expectedBucketOwner?: string;
 }
 
 /**
@@ -70,8 +71,11 @@ export const resolveS3ConfigAndInput = async (
 		buckets,
 	} = amplify.getConfig()?.Storage?.S3 ?? {};
 
-	const { bucket = defaultBucket, region = defaultRegion } =
-		(apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
+	const {
+		bucket = defaultBucket,
+		region = defaultRegion,
+		expectedBucketOwner,
+	} = (apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
 
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);
 	assertValidationError(!!region, StorageValidationErrorCode.NoRegion);
@@ -105,6 +109,7 @@ export const resolveS3ConfigAndInput = async (
 				: {}),
 		},
 		bucket,
+		expectedBucketOwner,
 		keyPrefix,
 		identityId,
 		isObjectLockEnabled,
@@ -114,7 +119,9 @@ export const resolveS3ConfigAndInput = async (
 const resolveBucketConfig = (
 	apiOptions: S3ApiOptions,
 	buckets: Record<string, BucketInfo> | undefined,
-): { bucket: string; region: string } | undefined => {
+):
+	| { bucket: string; region: string; expectedBucketOwner?: string }
+	| undefined => {
 	if (typeof apiOptions.bucket === 'string') {
 		const bucketConfig = buckets?.[apiOptions.bucket];
 		assertValidationError(
@@ -129,6 +136,7 @@ const resolveBucketConfig = (
 		return {
 			bucket: apiOptions.bucket.bucketName,
 			region: apiOptions.bucket.region,
+			expectedBucketOwner: apiOptions.bucket.expectedBucketOwner,
 		};
 	}
 };
