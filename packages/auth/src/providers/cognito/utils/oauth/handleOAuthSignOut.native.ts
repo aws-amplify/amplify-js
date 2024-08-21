@@ -13,7 +13,7 @@ import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
-	// To match the web counter part of the function.
+	// No-op in here as it's only used in the non-native implementation
 	tokenOrchestrator: TokenOrchestrator,
 	preferredSignOutUrl?: string,
 ): Promise<void | OpenAuthSessionResult> => {
