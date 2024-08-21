@@ -141,8 +141,5 @@
 	},
 	"overrides": {
 		"tar": "6.2.1"
-	},
-	"overrides": {
-		"tar": "6.2.1"
 	}
 }
