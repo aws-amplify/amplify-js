@@ -45,10 +45,19 @@ describe('handleOAuthSignOut', () => {
 			isOAuthSignIn: true,
 			preferPrivateSession: false,
 		});
-		await handleOAuthSignOut(cognitoConfig, mockStore, mockTokenOrchestrator);
+		await handleOAuthSignOut(
+			cognitoConfig,
+			mockStore,
+			mockTokenOrchestrator,
+			undefined,
+		);
 
 		expect(mockCompleteOAuthSignOut).toHaveBeenCalledWith(mockStore);
-		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(cognitoConfig);
+		expect(mockOAuthSignOutRedirect).toHaveBeenCalledWith(
+			cognitoConfig,
+			false,
+			undefined,
+		);
 	});
 
 	it('should complete OAuth sign out and redirect when there oauth metadata in tokenOrchestrator', async () => {
