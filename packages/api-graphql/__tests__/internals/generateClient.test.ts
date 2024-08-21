@@ -333,6 +333,30 @@ describe('generateClient', () => {
 				expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 			});
 
+			test('with custom client headers - graphql', async () => {
+				const headers = {
+					'client-header': 'should exist',
+				};
+
+				const client = generateClient<Schema>({
+					amplify: Amplify,
+					headers,
+				});
+
+				await client.graphql({
+					query: /* GraphQL */ `
+						query listPosts {
+							id
+						}
+					`,
+				});
+
+				const receivedArgs = normalizePostGraphqlCalls(spy)[0][1];
+				const receivedHeaders = receivedArgs.options.headers;
+
+				expect(receivedHeaders).toEqual(expect.objectContaining(headers));
+			});
+
 			test('with custom client header functions', async () => {
 				const client = generateClient<Schema>({
 					amplify: Amplify,
