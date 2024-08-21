@@ -93,5 +93,5 @@ jobs:
         with:
           name: oidc-signout-artifact
           path: |
-            amplify-js-samples-staging/samples/react-native/auth/HosteduiApp
+            amplify-js-samples-staging/samples/react-native/auth/HosteduiApp/artifacts
           retention-days: 14
