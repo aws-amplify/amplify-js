@@ -79,7 +79,7 @@ describe('SyncSessionStorage', () => {
 		expect(sessionStorage.getItem(signInStateKeys.expiry)).toBeNull();
 	});
 
-	it('will throw if trying to delete a non existing key', () => {
+	it('will not throw if trying to delete a non existing key', () => {
 		const badKey = 'nonExistingKey';
 
 		expect(() => {

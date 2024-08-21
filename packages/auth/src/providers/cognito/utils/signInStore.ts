@@ -45,6 +45,8 @@ const signInStateKeys = {
 const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 	switch (action.type) {
 		case 'SET_SIGN_IN_SESSION':
+			persistSignInState({ signInSession: action.value });
+
 			return {
 				...state,
 				signInSession: action.value,
@@ -56,6 +58,7 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 			return {
 				...action.value,
 			};
+
 		case 'SET_CHALLENGE_NAME':
 			persistSignInState({ challengeName: action.value });
 
@@ -63,6 +66,7 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 				...state,
 				challengeName: action.value,
 			};
+
 		case 'SET_USERNAME':
 			persistSignInState({ username: action.value });
 
@@ -70,8 +74,10 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 				...state,
 				username: action.value,
 			};
+
 		case 'SET_INITIAL_STATE':
 			return initializeState();
+
 		case 'RESET_STATE':
 			return getDefaultState();
 
