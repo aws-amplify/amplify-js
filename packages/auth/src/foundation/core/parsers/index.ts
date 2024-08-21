@@ -3,4 +3,4 @@
 export {
 	getRegionFromUserPoolId,
 	getRegionFromIdentityPoolId,
-} from './getRegion';
+} from './regionParsers';

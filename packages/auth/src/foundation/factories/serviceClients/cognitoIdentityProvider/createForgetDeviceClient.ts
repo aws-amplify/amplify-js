@@ -4,21 +4,21 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
-	buildEmptyResponseDeserializer,
-	buildUserPoolSerializer,
+	createEmptyResponseDeserializer,
+	createUserPoolSerializer,
 } from './shared/serialization';
-import { ServiceClientAPIConfig } from './types/ServiceClient';
 import {
 	ForgetDeviceCommandInput,
 	ForgetDeviceCommandOutput,
-} from './types/Sdk';
+	ServiceClientFactoryInput,
+} from './types';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
-export const createForgetDeviceClient = (config: ServiceClientAPIConfig) =>
+export const createForgetDeviceClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<ForgetDeviceCommandInput>('ForgetDevice'),
-		buildEmptyResponseDeserializer<ForgetDeviceCommandOutput>(),
+		createUserPoolSerializer<ForgetDeviceCommandInput>('ForgetDevice'),
+		createEmptyResponseDeserializer<ForgetDeviceCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

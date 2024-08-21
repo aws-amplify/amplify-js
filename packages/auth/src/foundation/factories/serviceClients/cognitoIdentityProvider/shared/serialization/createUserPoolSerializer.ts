@@ -32,7 +32,7 @@ type ClientOperation =
 	| 'ListDevices'
 	| 'RevokeToken';
 
-export const buildUserPoolSerializer =
+export const createUserPoolSerializer =
 	<Input>(operation: ClientOperation) =>
 	(input: Input, endpoint: Endpoint): HttpRequest => {
 		const headers = getSharedHeaders(operation);

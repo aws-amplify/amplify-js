@@ -2,20 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { ServiceClientAPIConfig } from './types/ServiceClient';
+import {
+	ServiceClientFactoryInput,
+	SignUpCommandInput,
+	SignUpCommandOutput,
+} from './types';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
-	buildUserPoolDeserializer,
-	buildUserPoolSerializer,
+	createUserPoolDeserializer,
+	createUserPoolSerializer,
 } from './shared/serialization';
-import { SignUpCommandInput, SignUpCommandOutput } from './types/Sdk';
 
-export const createSignUpClient = (config: ServiceClientAPIConfig) =>
+export const createSignUpClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<SignUpCommandInput>('SignUp'),
-		buildUserPoolDeserializer<SignUpCommandOutput>(),
+		createUserPoolSerializer<SignUpCommandInput>('SignUp'),
+		createUserPoolDeserializer<SignUpCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

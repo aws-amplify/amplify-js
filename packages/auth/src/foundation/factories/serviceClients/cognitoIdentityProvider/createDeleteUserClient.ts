@@ -2,20 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { ServiceClientAPIConfig } from './types/ServiceClient';
+import {
+	DeleteUserCommandInput,
+	DeleteUserCommandOutput,
+	ServiceClientFactoryInput,
+} from './types';
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
-	buildEmptyResponseDeserializer,
-	buildUserPoolSerializer,
+	createEmptyResponseDeserializer,
+	createUserPoolSerializer,
 } from './shared/serialization';
-import { DeleteUserCommandInput, DeleteUserCommandOutput } from './types/Sdk';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
-export const createDeleteUserClient = (config: ServiceClientAPIConfig) =>
+export const createDeleteUserClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<DeleteUserCommandInput>('DeleteUser'),
-		buildEmptyResponseDeserializer<DeleteUserCommandOutput>(),
+		createUserPoolSerializer<DeleteUserCommandInput>('DeleteUser'),
+		createEmptyResponseDeserializer<DeleteUserCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

@@ -3,7 +3,7 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { buildEmptyResponseDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/buildEmptyResponseDeserializer';
+import { createEmptyResponseDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/createEmptyResponseDeserializer';
 import { AuthError } from '../../../../../../../src/errors/AuthError';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
@@ -11,7 +11,7 @@ jest.mock('@aws-amplify/core/internals/aws-client-utils');
 const mockParseJsonError = jest.mocked(parseJsonError);
 
 describe('buildEmptyResponseDeserializer created response deserializer', () => {
-	const deserializer = buildEmptyResponseDeserializer();
+	const deserializer = createEmptyResponseDeserializer();
 
 	it('returns undefined for 2xx status code', async () => {
 		const response: HttpResponse = {

@@ -1,7 +1,7 @@
-import { ServiceClientAPIConfig } from '../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types/ServiceClient';
+import { ServiceClientFactoryInput } from '../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
-export const mockServiceClientAPIConfig: ServiceClientAPIConfig = {
+export const mockServiceClientAPIConfig: ServiceClientFactoryInput = {
 	endpointResolver: jest.fn() as jest.MockedFunction<
-		ServiceClientAPIConfig['endpointResolver']
+		ServiceClientFactoryInput['endpointResolver']
 	>,
 };

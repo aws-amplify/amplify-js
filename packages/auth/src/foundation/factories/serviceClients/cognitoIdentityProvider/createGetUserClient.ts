@@ -2,20 +2,23 @@
 // SPDX-License-Identifier: Apache-2.0
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { ServiceClientAPIConfig } from './types/ServiceClient';
+import {
+	GetUserCommandInput,
+	GetUserCommandOutput,
+	ServiceClientFactoryInput,
+} from './types';
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
-	buildUserPoolDeserializer,
-	buildUserPoolSerializer,
+	createUserPoolDeserializer,
+	createUserPoolSerializer,
 } from './shared/serialization';
-import { GetUserCommandInput, GetUserCommandOutput } from './types/Sdk';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
-export const createGetUserClient = (config: ServiceClientAPIConfig) =>
+export const createGetUserClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<GetUserCommandInput>('GetUser'),
-		buildUserPoolDeserializer<GetUserCommandOutput>(),
+		createUserPoolSerializer<GetUserCommandInput>('GetUser'),
+		createUserPoolDeserializer<GetUserCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

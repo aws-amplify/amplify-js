@@ -5,20 +5,20 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
-	buildUserPoolDeserializer,
-	buildUserPoolSerializer,
+	createUserPoolDeserializer,
+	createUserPoolSerializer,
 } from './shared/serialization';
 import {
 	ConfirmSignUpCommandInput,
 	ConfirmSignUpCommandOutput,
-} from './types/Sdk';
-import { ServiceClientAPIConfig } from './types/ServiceClient';
+	ServiceClientFactoryInput,
+} from './types';
 
-export const createConfirmSignUpClient = (config: ServiceClientAPIConfig) =>
+export const createConfirmSignUpClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<ConfirmSignUpCommandInput>('ConfirmSignUp'),
-		buildUserPoolDeserializer<ConfirmSignUpCommandOutput>(),
+		createUserPoolSerializer<ConfirmSignUpCommandInput>('ConfirmSignUp'),
+		createUserPoolDeserializer<ConfirmSignUpCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

@@ -4,21 +4,21 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
-	buildUserPoolDeserializer,
-	buildUserPoolSerializer,
+	createUserPoolDeserializer,
+	createUserPoolSerializer,
 } from './shared/serialization';
 import {
 	ChangePasswordCommandInput,
 	ChangePasswordCommandOutput,
-} from './types/Sdk';
-import { ServiceClientAPIConfig } from './types/ServiceClient';
+	ServiceClientFactoryInput,
+} from './types';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
-export const createChangePasswordClient = (config: ServiceClientAPIConfig) =>
+export const createChangePasswordClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<ChangePasswordCommandInput>('ChangePassword'),
-		buildUserPoolDeserializer<ChangePasswordCommandOutput>(),
+		createUserPoolSerializer<ChangePasswordCommandInput>('ChangePassword'),
+		createUserPoolDeserializer<ChangePasswordCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

@@ -2,27 +2,27 @@
 // SPDX-License-Identifier: Apache-2.0
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { ServiceClientAPIConfig } from './types/ServiceClient';
-import { cognitoUserPoolTransferHandler } from './shared/handler';
-import {
-	buildUserPoolDeserializer,
-	buildUserPoolSerializer,
-} from './shared/serialization';
 import {
 	ResendConfirmationCodeCommandInput,
 	ResendConfirmationCodeCommandOutput,
-} from './types/Sdk';
+	ServiceClientFactoryInput,
+} from './types';
+import { cognitoUserPoolTransferHandler } from './shared/handler';
+import {
+	createUserPoolDeserializer,
+	createUserPoolSerializer,
+} from './shared/serialization';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
 export const createResendConfirmationCodeClient = (
-	config: ServiceClientAPIConfig,
+	config: ServiceClientFactoryInput,
 ) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<ResendConfirmationCodeCommandInput>(
+		createUserPoolSerializer<ResendConfirmationCodeCommandInput>(
 			'ResendConfirmationCode',
 		),
-		buildUserPoolDeserializer<ResendConfirmationCodeCommandOutput>(),
+		createUserPoolDeserializer<ResendConfirmationCodeCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

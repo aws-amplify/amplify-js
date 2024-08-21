@@ -3,6 +3,6 @@
 
 import { EndpointResolverOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
-export interface ServiceClientAPIConfig {
+export interface ServiceClientFactoryInput {
 	endpointResolver(options: EndpointResolverOptions): { url: URL };
 }

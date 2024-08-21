@@ -1,6 +1,6 @@
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
-import { buildUserPoolSerializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/buildUserPoolSerializer';
+import { createUserPoolSerializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/createUserPoolSerializer';
 
 describe('buildUserPoolSerializer created request serializer', () => {
 	test.each(['SignUp', 'InitiateAuth', 'RevokeToken'] as const)(
@@ -10,7 +10,7 @@ describe('buildUserPoolSerializer created request serializer', () => {
 			const testEndpoint = {
 				url: new AmplifyUrl('http://test.com'),
 			};
-			const serializer = buildUserPoolSerializer(operation);
+			const serializer = createUserPoolSerializer(operation);
 			const result = serializer(testInput, testEndpoint);
 
 			expect(result).toEqual({

@@ -4,7 +4,7 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { buildUserPoolDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/buildUserPoolDeserializer';
+import { createUserPoolDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/createUserPoolDeserializer';
 import { AuthError } from '../../../../../../../src/errors/AuthError';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
@@ -13,7 +13,7 @@ const mockParseJsonBody = jest.mocked(parseJsonBody);
 const mockParseJsonError = jest.mocked(parseJsonError);
 
 describe('buildUserPoolDeserializer created response deserializer', () => {
-	const deserializer = buildUserPoolDeserializer();
+	const deserializer = createUserPoolDeserializer();
 
 	it('returns body for 2xx status code', async () => {
 		const expectedBody = { test: 'test' };

@@ -8,16 +8,16 @@ import {
 import { assertServiceError } from '../../../../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../../../../errors/AuthError';
 
-export const buildEmptyResponseDeserializer = <Output>(): ((
+export const createEmptyResponseDeserializer = <Output>(): ((
 	response: HttpResponse,
-) => Promise<Output>) => {
-	return async (response: HttpResponse): Promise<Output> => {
+) => Promise<Output | undefined>) => {
+	return async (response: HttpResponse): Promise<Output | undefined> => {
 		if (response.statusCode >= 300) {
 			const error = await parseJsonError(response);
 			assertServiceError(error);
 			throw new AuthError({ name: error.name, message: error.message });
 		} else {
-			return undefined as any;
+			return undefined;
 		}
 	};
 };

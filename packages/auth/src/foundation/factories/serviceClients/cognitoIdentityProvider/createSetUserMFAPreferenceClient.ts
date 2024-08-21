@@ -2,27 +2,27 @@
 // SPDX-License-Identifier: Apache-2.0
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { ServiceClientAPIConfig } from './types/ServiceClient';
-import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
+	ServiceClientFactoryInput,
 	SetUserMFAPreferenceCommandInput,
 	SetUserMFAPreferenceCommandOutput,
-} from './types/Sdk';
+} from './types';
+import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
-	buildUserPoolDeserializer,
-	buildUserPoolSerializer,
+	createUserPoolDeserializer,
+	createUserPoolSerializer,
 } from './shared/serialization';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
 export const createSetUserMFAPreferenceClient = (
-	config: ServiceClientAPIConfig,
+	config: ServiceClientFactoryInput,
 ) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<SetUserMFAPreferenceCommandInput>(
+		createUserPoolSerializer<SetUserMFAPreferenceCommandInput>(
 			'SetUserMFAPreference',
 		),
-		buildUserPoolDeserializer<SetUserMFAPreferenceCommandOutput>(),
+		createUserPoolDeserializer<SetUserMFAPreferenceCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

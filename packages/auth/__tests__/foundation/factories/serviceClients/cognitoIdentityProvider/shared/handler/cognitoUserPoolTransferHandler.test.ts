@@ -17,7 +17,6 @@ describe('cognitoUserPoolTransferHandler', () => {
 	});
 
 	it('adds the disableCacheMiddlewareFactory at module loading', () => {
-		console.log(mockComposeTransferHandler);
 		expect(mockComposeTransferHandler).toHaveBeenCalledTimes(1);
 
 		const [core, middleware] = mockComposeTransferHandler.mock.calls[0];

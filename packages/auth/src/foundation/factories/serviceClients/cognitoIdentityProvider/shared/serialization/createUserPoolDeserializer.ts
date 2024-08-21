@@ -10,7 +10,7 @@ import {
 import { assertServiceError } from '../../../../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../../../../errors/AuthError';
 
-export const buildUserPoolDeserializer = <Output>(): ((
+export const createUserPoolDeserializer = <Output>(): ((
 	response: HttpResponse,
 ) => Promise<Output>) => {
 	return async (response: HttpResponse): Promise<Output> => {
@@ -18,10 +18,8 @@ export const buildUserPoolDeserializer = <Output>(): ((
 			const error = await parseJsonError(response);
 			assertServiceError(error);
 			throw new AuthError({ name: error.name, message: error.message });
-		} else {
-			const body = await parseJsonBody(response);
-
-			return body;
 		}
+
+		return parseJsonBody(response);
 	};
 };

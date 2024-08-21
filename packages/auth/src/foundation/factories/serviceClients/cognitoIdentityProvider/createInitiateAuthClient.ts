@@ -3,23 +3,23 @@
 
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { ServiceClientAPIConfig } from './types/ServiceClient';
-import {
-	buildUserPoolDeserializer,
-	buildUserPoolSerializer,
-} from './shared/serialization';
 import {
 	InitiateAuthCommandInput,
 	InitiateAuthCommandOutput,
-} from './types/Sdk';
+	ServiceClientFactoryInput,
+} from './types';
+import {
+	createUserPoolDeserializer,
+	createUserPoolSerializer,
+} from './shared/serialization';
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
-export const createInitiateAuthClient = (config: ServiceClientAPIConfig) =>
+export const createInitiateAuthClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<InitiateAuthCommandInput>('InitiateAuth'),
-		buildUserPoolDeserializer<InitiateAuthCommandOutput>(),
+		createUserPoolSerializer<InitiateAuthCommandInput>('InitiateAuth'),
+		createUserPoolDeserializer<InitiateAuthCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

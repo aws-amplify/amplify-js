@@ -4,21 +4,21 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
-	buildUserPoolDeserializer,
-	buildUserPoolSerializer,
+	createUserPoolDeserializer,
+	createUserPoolSerializer,
 } from './shared/serialization';
 import {
 	ConfirmDeviceCommandInput,
 	ConfirmDeviceCommandOutput,
-} from './types/Sdk';
-import { ServiceClientAPIConfig } from './types/ServiceClient';
+	ServiceClientFactoryInput,
+} from './types';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
-export const createConfirmDeviceClient = (config: ServiceClientAPIConfig) =>
+export const createConfirmDeviceClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		buildUserPoolSerializer<ConfirmDeviceCommandInput>('ConfirmDevice'),
-		buildUserPoolDeserializer<ConfirmDeviceCommandOutput>(),
+		createUserPoolSerializer<ConfirmDeviceCommandInput>('ConfirmDevice'),
+		createUserPoolDeserializer<ConfirmDeviceCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,
