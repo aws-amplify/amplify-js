@@ -67,6 +67,7 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 			(await handleOAuthSignOut(
 				cognitoConfig,
 				oAuthStore,
+				tokenOrchestrator,
 				input?.oauth?.preferredSignOutUrl,
 			)) ?? {};
 		if (type === 'error') {
