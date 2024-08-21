@@ -84,6 +84,14 @@ jobs:
         shell: bash
       - name: Detox run
         run: |
-          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+          $GITHUB_WORKSPACE/amplify-js/scripts/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u --record-videos all' -n 3
         working-directory: ${{ inputs.working_directory }}
         shell: bash
+      - name: Upload artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        if: always()
+        with:
+          name: oidc-signout-artifact
+          path: |
+            amplify-js-samples-staging/samples/react-native/auth/HosteduiApp
+          retention-days: 14
