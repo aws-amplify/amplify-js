@@ -5,6 +5,7 @@ import { CognitoUserPoolConfig } from '@aws-amplify/core';
 
 import { OpenAuthSessionResult } from '../../../../utils/types';
 import { DefaultOAuthStore } from '../../utils/signInWithRedirectStore';
+import { TokenOrchestrator } from '../../tokenProvider';
 
 import { completeOAuthSignOut } from './completeOAuthSignOut';
 import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
@@ -12,6 +13,8 @@ import { oAuthSignOutRedirect } from './oAuthSignOutRedirect';
 export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
+	// No-op in here as it's only used in the non-native implementation
+	tokenOrchestrator: TokenOrchestrator,
 	preferredSignOutUrl?: string,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn, preferPrivateSession } = await store.loadOAuthSignIn();
