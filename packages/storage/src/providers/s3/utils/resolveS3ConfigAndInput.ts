@@ -67,6 +67,7 @@ export const resolveS3ConfigAndInput = async (
 	const {
 		bucket: defaultBucket,
 		region: defaultRegion,
+		expectedBucketOwner: defaultBucketOwner,
 		dangerouslyConnectToHttpEndpointForTesting,
 		buckets,
 	} = amplify.getConfig()?.Storage?.S3 ?? {};
@@ -74,7 +75,7 @@ export const resolveS3ConfigAndInput = async (
 	const {
 		bucket = defaultBucket,
 		region = defaultRegion,
-		expectedBucketOwner,
+		expectedBucketOwner = defaultBucketOwner,
 	} = (apiOptions?.bucket && resolveBucketConfig(apiOptions, buckets)) || {};
 
 	assertValidationError(!!bucket, StorageValidationErrorCode.NoBucket);

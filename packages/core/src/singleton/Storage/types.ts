@@ -12,11 +12,14 @@ export interface BucketInfo {
 	bucketName: string;
 	/** Region of the bucket */
 	region: string;
+	/** Expected owner of the bucket */
+	expectedBucketOwner?: string;
 }
 export interface S3ProviderConfig {
 	S3: {
 		bucket?: string;
 		region?: string;
+		expectedBucketOwner?: string;
 		/**
 		 * Internal-only configuration for testing purpose. You should not use this.
 		 *
