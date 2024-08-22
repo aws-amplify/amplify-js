@@ -15,7 +15,7 @@ export const handleOAuthSignOut = async (
 	store: DefaultOAuthStore,
 	// No-op in here as it's only used in the non-native implementation
 	tokenOrchestrator: TokenOrchestrator,
-	preferredSignOutUrl?: string,
+	preferredSignOutUrl: string | undefined,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn, preferPrivateSession } = await store.loadOAuthSignIn();
 	if (isOAuthSignIn) {
