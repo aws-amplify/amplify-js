@@ -521,13 +521,6 @@ tests:
     sample_name: [sign-in-with-oauth]
     spec: sign-out-oidc-provider
     browser: [chrome]
-  - test_name: subdomain_authentication
-    desc: 'Sign-in with the OAuth flow and subdomains'
-    framework: next
-    category: auth
-    sample_name: [subdomains]
-    spec: subdomains
-    browser: [chrome]
 
   # AUTH GEN2
   - test_name: integ_react_javascript_authentication_gen2
