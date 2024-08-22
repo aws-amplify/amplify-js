@@ -12,7 +12,7 @@ import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
 	createUserPoolDeserializer,
 	createUserPoolSerializer,
-} from './shared/serialization';
+} from './shared/serde';
 
 export const createSignUpClient = (config: ServiceClientFactoryInput) =>
 	composeServiceApi(

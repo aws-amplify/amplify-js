@@ -6,7 +6,7 @@ import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
 	createEmptyResponseDeserializer,
 	createUserPoolSerializer,
-} from './shared/serialization';
+} from './shared/serde';
 import {
 	ForgetDeviceCommandInput,
 	ForgetDeviceCommandOutput,

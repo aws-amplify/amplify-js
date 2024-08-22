@@ -3,7 +3,7 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { createEmptyResponseDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/createEmptyResponseDeserializer';
+import { createEmptyResponseDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serde/createEmptyResponseDeserializer';
 import { AuthError } from '../../../../../../../src/errors/AuthError';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');

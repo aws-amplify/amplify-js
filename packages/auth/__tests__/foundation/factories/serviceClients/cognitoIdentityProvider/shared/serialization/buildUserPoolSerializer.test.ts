@@ -1,6 +1,6 @@
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
-import { createUserPoolSerializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/createUserPoolSerializer';
+import { createUserPoolSerializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serde/createUserPoolSerializer';
 
 describe('buildUserPoolSerializer created request serializer', () => {
 	test.each(['SignUp', 'InitiateAuth', 'RevokeToken'] as const)(

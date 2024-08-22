@@ -6,7 +6,7 @@ import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
 	createUserPoolDeserializer,
 	createUserPoolSerializer,
-} from './shared/serialization';
+} from './shared/serde';
 import { ServiceClientFactoryInput } from './types';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 

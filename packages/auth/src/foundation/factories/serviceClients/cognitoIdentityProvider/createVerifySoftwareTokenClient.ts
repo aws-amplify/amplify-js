@@ -11,7 +11,7 @@ import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
 	createUserPoolDeserializer,
 	createUserPoolSerializer,
-} from './shared/serialization';
+} from './shared/serde';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
 export const createVerifySoftwareTokenClient = (

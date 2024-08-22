@@ -11,7 +11,7 @@ import {
 import {
 	createUserPoolDeserializer,
 	createUserPoolSerializer,
-} from './shared/serialization';
+} from './shared/serde';
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 

@@ -4,7 +4,7 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { createUserPoolDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serialization/createUserPoolDeserializer';
+import { createUserPoolDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/shared/serde/createUserPoolDeserializer';
 import { AuthError } from '../../../../../../../src/errors/AuthError';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
