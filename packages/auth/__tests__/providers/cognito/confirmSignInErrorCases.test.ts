@@ -51,7 +51,7 @@ describe('confirmSignIn API error path cases:', () => {
 		}
 	});
 
-	it('should throw an error when sign-in step is CONTINUE_SIGN_IN_WITH_MFA_SELECTION and challengeResponse is not "SMS" or "TOTP"', async () => {
+	it('should throw an error when sign-in step is CONTINUE_SIGN_IN_WITH_MFA_SELECTION and challengeResponse is not "SMS", "TOTP", or "EMAIL"', async () => {
 		expect.assertions(2);
 		try {
 			await confirmSignIn({ challengeResponse: 'NO_SMS' });
