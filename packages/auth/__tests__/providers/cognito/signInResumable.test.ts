@@ -18,6 +18,8 @@ import { signIn } from '../../../src/providers/cognito';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
+const signInStoreImplementation = require('../../../src/providers/cognito/utils/signInStore');
+
 jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock('@aws-amplify/core', () => ({
@@ -55,6 +57,46 @@ const user1: Record<string, string> = {
 	challengeName: 'CUSTOM_CHALLENGE',
 	signInSession: '888577-ltfgo-42d8-891d-666l858766g7',
 	expiry: '1234567',
+};
+
+const populateValidTestSyncStorage = () => {
+	syncSessionStorage.setItem(signInStateKeys.username, user1.username);
+	syncSessionStorage.setItem(
+		signInStateKeys.signInSession,
+		user1.signInSession,
+	);
+	syncSessionStorage.setItem(
+		signInStateKeys.challengeName,
+		user1.challengeName,
+	);
+	syncSessionStorage.setItem(
+		signInStateKeys.expiry,
+		(new Date().getTime() + 9999999).toString(),
+	);
+
+	signInStore.dispatch({
+		type: 'SET_INITIAL_STATE',
+	});
+};
+
+const populateInvalidTestSyncStorage = () => {
+	syncSessionStorage.setItem(signInStateKeys.username, user1.username);
+	syncSessionStorage.setItem(
+		signInStateKeys.signInSession,
+		user1.signInSession,
+	);
+	syncSessionStorage.setItem(
+		signInStateKeys.challengeName,
+		user1.challengeName,
+	);
+	syncSessionStorage.setItem(
+		signInStateKeys.expiry,
+		(new Date().getTime() - 99999).toString(),
+	);
+
+	signInStore.dispatch({
+		type: 'SET_INITIAL_STATE',
+	});
 };
 
 describe('signInStore', () => {
@@ -98,10 +140,16 @@ describe('signInStore', () => {
 	});
 
 	test('State is set after calling setActiveSignInState', async () => {
+		const persistSignInStateSpy = jest.spyOn(
+			signInStoreImplementation,
+			'persistSignInState',
+		);
 		setActiveSignInState(user1);
 		const localSignInState = signInStore.getState();
 
 		expect(localSignInState).toEqual(user1);
+		expect(persistSignInStateSpy).toHaveBeenCalledTimes(1);
+		expect(persistSignInStateSpy).toHaveBeenCalledWith(user1);
 		cleanActiveSignInState();
 	});
 
@@ -139,24 +187,8 @@ describe('signInStore', () => {
 		handleUserSRPAuthflowSpy.mockClear();
 	});
 
-	test('Stored session is not expired thus State should be rehydrated', () => {
-		syncSessionStorage.setItem(signInStateKeys.username, user1.username);
-		syncSessionStorage.setItem(
-			signInStateKeys.signInSession,
-			user1.signInSession,
-		);
-		syncSessionStorage.setItem(
-			signInStateKeys.challengeName,
-			user1.challengeName,
-		);
-		syncSessionStorage.setItem(
-			signInStateKeys.expiry,
-			(new Date().getTime() + 9999999).toString(),
-		);
-
-		signInStore.dispatch({
-			type: 'SET_INITIAL_STATE',
-		});
+	test('The stored sign-in state should be rehydrated if the sign-in session is still valid.', () => {
+		populateValidTestSyncStorage();
 
 		const localSignInState = signInStore.getState();
 
@@ -168,23 +200,8 @@ describe('signInStore', () => {
 		cleanActiveSignInState();
 	});
 
-	test('Stored session is expired thus State should default to undefined', async () => {
-		syncSessionStorage.setItem(signInStateKeys.username, user1.username);
-		syncSessionStorage.setItem(
-			signInStateKeys.signInSession,
-			user1.signInSession,
-		);
-		syncSessionStorage.setItem(
-			signInStateKeys.challengeName,
-			user1.challengeName,
-		);
-		syncSessionStorage.setItem(
-			signInStateKeys.expiry,
-			(new Date().getTime() - 500000).toString(),
-		);
-		signInStore.dispatch({
-			type: 'SET_INITIAL_STATE',
-		});
+	test('sign-in store should return undefined state when the sign-in session is expired', async () => {
+		populateInvalidTestSyncStorage();
 
 		const localSignInState = signInStore.getState();
 
@@ -197,24 +214,13 @@ describe('signInStore', () => {
 	});
 
 	test('State SignInSession is updated after dispatching custom session value', () => {
+		const persistSignInStateSpy = jest.spyOn(
+			signInStoreImplementation,
+			'persistSignInState',
+		);
 		const newSignInSessionID = '135790-dodge-2468-9aaa-kersh23lad00';
-		syncSessionStorage.setItem(signInStateKeys.username, user1.username);
-		syncSessionStorage.setItem(
-			signInStateKeys.signInSession,
-			user1.signInSession,
-		);
-		syncSessionStorage.setItem(
-			signInStateKeys.challengeName,
-			user1.challengeName,
-		);
-		syncSessionStorage.setItem(
-			signInStateKeys.expiry,
-			(new Date().getTime() + 5000).toString(),
-		);
 
-		signInStore.dispatch({
-			type: 'SET_INITIAL_STATE',
-		});
+		populateValidTestSyncStorage();
 
 		const localSignInState = signInStore.getState();
 		expect(localSignInState).toEqual({
@@ -228,6 +234,10 @@ describe('signInStore', () => {
 			value: newSignInSessionID,
 		});
 
+		expect(persistSignInStateSpy).toHaveBeenCalledTimes(1);
+		expect(persistSignInStateSpy).toHaveBeenCalledWith({
+			signInSession: newSignInSessionID,
+		});
 		const newLocalSignInState = signInStore.getState();
 		expect(newLocalSignInState).toEqual({
 			username: user1.username,
@@ -238,23 +248,8 @@ describe('signInStore', () => {
 
 	test('State Challenge Name is updated after dispatching custom challenge name', () => {
 		const newChallengeName = 'RANDOM_CHALLENGE' as ChallengeName;
-		syncSessionStorage.setItem(signInStateKeys.username, user1.username);
-		syncSessionStorage.setItem(
-			signInStateKeys.signInSession,
-			user1.signInSession,
-		);
-		syncSessionStorage.setItem(
-			signInStateKeys.challengeName,
-			user1.challengeName,
-		);
-		syncSessionStorage.setItem(
-			signInStateKeys.expiry,
-			(new Date().getTime() + 5000).toString(),
-		);
 
-		signInStore.dispatch({
-			type: 'SET_INITIAL_STATE',
-		});
+		populateValidTestSyncStorage();
 
 		const localSignInState = signInStore.getState();
 		expect(localSignInState).toEqual({

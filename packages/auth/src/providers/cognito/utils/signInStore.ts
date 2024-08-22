@@ -161,7 +161,7 @@ export function setActiveSignInState(state: SignInState): void {
 }
 
 // Save local state into Session Storage
-const persistSignInState = ({
+export const persistSignInState = ({
 	challengeName,
 	signInSession,
 	username,
