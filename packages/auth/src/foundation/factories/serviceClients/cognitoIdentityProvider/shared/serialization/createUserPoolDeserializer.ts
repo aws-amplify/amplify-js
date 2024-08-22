@@ -10,10 +10,9 @@ import {
 import { assertServiceError } from '../../../../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../../../../errors/AuthError';
 
-export const createUserPoolDeserializer = <Output>(): ((
-	response: HttpResponse,
-) => Promise<Output>) => {
-	return async (response: HttpResponse): Promise<Output> => {
+export const createUserPoolDeserializer =
+	<Output>(): ((response: HttpResponse) => Promise<Output>) =>
+	async (response: HttpResponse): Promise<Output> => {
 		if (response.statusCode >= 300) {
 			const error = await parseJsonError(response);
 			assertServiceError(error);
@@ -22,4 +21,3 @@ export const createUserPoolDeserializer = <Output>(): ((
 
 		return parseJsonBody(response);
 	};
-};

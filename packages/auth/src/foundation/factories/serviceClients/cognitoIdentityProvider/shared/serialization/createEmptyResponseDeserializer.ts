@@ -8,10 +8,9 @@ import {
 import { assertServiceError } from '../../../../../../errors/utils/assertServiceError';
 import { AuthError } from '../../../../../../errors/AuthError';
 
-export const createEmptyResponseDeserializer = <Output>(): ((
-	response: HttpResponse,
-) => Promise<Output | undefined>) => {
-	return async (response: HttpResponse): Promise<Output | undefined> => {
+export const createEmptyResponseDeserializer =
+	<Output>(): ((response: HttpResponse) => Promise<Output | undefined>) =>
+	async (response: HttpResponse): Promise<Output | undefined> => {
 		if (response.statusCode >= 300) {
 			const error = await parseJsonError(response);
 			assertServiceError(error);
@@ -20,4 +19,3 @@ export const createEmptyResponseDeserializer = <Output>(): ((
 			return undefined;
 		}
 	};
-};
