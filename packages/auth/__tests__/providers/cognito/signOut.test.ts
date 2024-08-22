@@ -18,7 +18,7 @@ import {
 	createGlobalSignOutClient,
 	createRevokeTokenClient,
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
-import { getRegionFromUserPoolId } from '../../../src/foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../src/foundation/parsers';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 jest.mock('@aws-amplify/core');
@@ -29,7 +29,7 @@ jest.mock('../../../src/utils');
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
-jest.mock('../../../src/foundation/core/parsers');
+jest.mock('../../../src/foundation/parsers');
 jest.mock('../../../src/providers/cognito/factories');
 
 describe('signOut', () => {

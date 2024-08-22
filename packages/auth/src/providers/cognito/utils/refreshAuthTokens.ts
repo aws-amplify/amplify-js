@@ -9,7 +9,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
 import { createInitiateAuthClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';

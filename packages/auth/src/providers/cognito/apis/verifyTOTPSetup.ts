@@ -11,7 +11,7 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { VerifyTOTPSetupInput } from '../types';
 import { VerifySoftwareTokenException } from '../types/errors';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createVerifySoftwareTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';

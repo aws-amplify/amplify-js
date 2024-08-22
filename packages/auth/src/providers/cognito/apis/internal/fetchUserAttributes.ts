@@ -8,7 +8,7 @@ import {
 	fetchAuthSession,
 } from '@aws-amplify/core/internals/utils';
 
-import { getRegionFromUserPoolId } from '../../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../../foundation/parsers';
 import { assertAuthTokens } from '../../utils/types';
 import { FetchUserAttributesOutput } from '../../types';
 import { toAuthUserAttribute } from '../../utils/apiHelpers';

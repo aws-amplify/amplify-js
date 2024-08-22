@@ -3,7 +3,7 @@
 import { EndpointResolverOptions } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
-import { cognitoUserPoolEndpointResolver } from '../../../foundation/core/cognitoUserPoolEndpointResolver';
+import { cognitoUserPoolEndpointResolver } from '../../../foundation/cognitoUserPoolEndpointResolver';
 
 export const createCognitoUserPoolEndpointResolver =
 	({ endpointOverride }: { endpointOverride: string | undefined }) =>

@@ -49,7 +49,7 @@ import {
 	RespondToAuthChallengeCommandInput,
 	RespondToAuthChallengeCommandOutput,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 
 import { signInStore } from './signInStore';
 import { assertDeviceMetadata } from './types';

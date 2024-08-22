@@ -1,9 +1,9 @@
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
-import { cognitoUserPoolEndpointResolver } from '../../../../src/foundation/core/cognitoUserPoolEndpointResolver';
+import { cognitoUserPoolEndpointResolver } from '../../../../src/foundation/cognitoUserPoolEndpointResolver';
 import { createCognitoUserPoolEndpointResolver } from '../../../../src/providers/cognito/factories/createCognitoUserPoolEndpointResolver';
 
-jest.mock('../../../../src/foundation/core/cognitoUserPoolEndpointResolver');
+jest.mock('../../../../src/foundation/cognitoUserPoolEndpointResolver');
 
 const mockCognitoUserPoolEndpointResolver = jest.mocked(
 	cognitoUserPoolEndpointResolver,

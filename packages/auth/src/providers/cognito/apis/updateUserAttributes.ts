@@ -17,7 +17,7 @@ import {
 	UpdateUserAttributesOutput,
 } from '../types';
 import { assertAuthTokens } from '../utils/types';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { toAttributeType } from '../utils/apiHelpers';
 import { CodeDeliveryDetailsType } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { UpdateUserAttributesException } from '../types/errors';

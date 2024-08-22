@@ -13,7 +13,7 @@ import { SignInInput, SignUpInput, SignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { toAttributeType } from '../utils/apiHelpers';
 import {
 	autoSignInUserConfirmed,

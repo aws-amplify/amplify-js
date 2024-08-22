@@ -10,7 +10,7 @@ import {
 import { FetchMFAPreferenceOutput } from '../types';
 import { getMFAType, getMFATypes } from '../utils/signInHelpers';
 import { GetUserException } from '../types/errors';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createGetUserClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';

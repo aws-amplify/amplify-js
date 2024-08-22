@@ -1,7 +1,7 @@
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
-import { cognitoUserPoolEndpointResolver } from '../../../src/foundation/core/cognitoUserPoolEndpointResolver';
-import { COGNITO_IDP_SERVICE_NAME } from '../../../src/foundation/core/constants';
+import { cognitoUserPoolEndpointResolver } from '../../../src/foundation/cognitoUserPoolEndpointResolver';
+import { COGNITO_IDP_SERVICE_NAME } from '../../../src/foundation/constants';
 
 describe('cognitoUserPoolEndpointResolver', () => {
 	it('should return the Cognito User Pool endpoint', () => {

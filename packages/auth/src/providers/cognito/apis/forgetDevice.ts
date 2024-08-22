@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { tokenOrchestrator } from '../tokenProvider';
 import { ForgetDeviceInput } from '../types';
 import { ForgetDeviceException } from '../../cognito/types/errors';

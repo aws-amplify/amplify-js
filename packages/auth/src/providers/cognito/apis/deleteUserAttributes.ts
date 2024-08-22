@@ -7,7 +7,7 @@ import {
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { DeleteUserAttributesInput } from '../types';
 import { DeleteUserAttributesException } from '../types/errors';

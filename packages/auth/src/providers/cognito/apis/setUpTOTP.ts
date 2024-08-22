@@ -14,7 +14,7 @@ import {
 } from '../types/errors';
 import { SetUpTOTPOutput } from '../types';
 import { getTOTPSetupDetails } from '../utils/signInHelpers';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createAssociateSoftwareTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';

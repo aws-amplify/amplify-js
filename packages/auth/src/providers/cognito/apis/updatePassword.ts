@@ -11,7 +11,7 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { UpdatePasswordInput } from '../types';
 import { ChangePasswordException } from '../../cognito/types/errors';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createChangePasswordClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';

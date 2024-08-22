@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { getAmplifyUserAgent } from '@aws-amplify/core/internals/utils';
 
-import { COGNITO_IDP_SERVICE_NAME } from '../../../core/constants';
+import { COGNITO_IDP_SERVICE_NAME } from '../../../constants';
 
 export const DEFAULT_SERVICE_CLIENT_API_CONFIG = {
 	service: COGNITO_IDP_SERVICE_NAME,

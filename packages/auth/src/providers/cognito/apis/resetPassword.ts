@@ -12,7 +12,7 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthDeliveryMedium } from '../../../types';
 import { ResetPasswordInput, ResetPasswordOutput } from '../types';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { ForgotPasswordException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from '../utils/userContextData';

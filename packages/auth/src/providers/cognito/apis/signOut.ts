@@ -20,7 +20,7 @@ import {
 import { getAuthUserAgentValue } from '../../../utils';
 import { SignOutInput } from '../types';
 import { tokenOrchestrator } from '../tokenProvider';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import {
 	assertAuthTokens,
 	assertAuthTokensWithRefreshToken,

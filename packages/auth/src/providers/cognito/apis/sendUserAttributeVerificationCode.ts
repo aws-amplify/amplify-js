@@ -14,7 +14,7 @@ import {
 	SendUserAttributeVerificationCodeOutput,
 } from '../types';
 import { assertAuthTokens } from '../utils/types';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { GetUserAttributeVerificationException } from '../types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createGetUserAttributeVerificationCodeClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';

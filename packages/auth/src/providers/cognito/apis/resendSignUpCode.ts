@@ -12,7 +12,7 @@ import { AuthDeliveryMedium } from '../../../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ResendSignUpCodeInput, ResendSignUpCodeOutput } from '../types';
-import { getRegionFromUserPoolId } from '../../../foundation/core/parsers';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from '../utils/userContextData';
 import { ResendConfirmationException } from '../types/errors';
