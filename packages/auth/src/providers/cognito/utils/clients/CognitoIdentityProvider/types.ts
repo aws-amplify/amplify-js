@@ -8,6 +8,7 @@ import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 export type ChallengeName =
 	| 'SMS_MFA'
 	| 'SOFTWARE_TOKEN_MFA'
+	| 'EMAIL_OTP'
 	| 'SELECT_MFA_TYPE'
 	| 'MFA_SETUP'
 	| 'PASSWORD_VERIFIER'
@@ -28,7 +29,7 @@ export type ChallengeParameters = {
 	MFAS_CAN_SETUP?: string;
 } & Record<string, unknown>;
 
-export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
+export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | 'EMAIL_OTP';
 
 export interface CognitoMFASettings {
 	Enabled?: boolean;
@@ -55,6 +56,7 @@ declare enum ChallengeNameType {
 	SELECT_MFA_TYPE = 'SELECT_MFA_TYPE',
 	SMS_MFA = 'SMS_MFA',
 	SOFTWARE_TOKEN_MFA = 'SOFTWARE_TOKEN_MFA',
+	EMAIL_OTP = 'EMAIL_OTP',
 }
 declare enum DeliveryMediumType {
 	EMAIL = 'EMAIL',

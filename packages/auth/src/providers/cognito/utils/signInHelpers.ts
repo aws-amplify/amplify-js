@@ -189,7 +189,9 @@ export async function handleSelectMFATypeChallenge({
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
 	assertValidationError(
-		challengeResponse === 'TOTP' || challengeResponse === 'SMS',
+		challengeResponse === 'TOTP' ||
+			challengeResponse === 'SMS' ||
+			challengeResponse === 'EMAIL',
 		AuthValidationErrorCode.IncorrectMFAMethod,
 	);
 
@@ -222,76 +224,6 @@ export async function handleSelectMFATypeChallenge({
 	);
 }
 
-export async function handleSMSMFAChallenge({
-	challengeResponse,
-	clientMetadata,
-	session,
-	username,
-	config,
-}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
-	const challengeResponses = {
-		USERNAME: username,
-		SMS_MFA_CODE: challengeResponse,
-	};
-	const UserContextData = getUserContextData({
-		username,
-		userPoolId,
-		userPoolClientId,
-	});
-	const jsonReq: RespondToAuthChallengeCommandInput = {
-		ChallengeName: 'SMS_MFA',
-		ChallengeResponses: challengeResponses,
-		Session: session,
-		ClientMetadata: clientMetadata,
-		ClientId: userPoolClientId,
-		UserContextData,
-	};
-
-	return respondToAuthChallenge(
-		{
-			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
-		},
-		jsonReq,
-	);
-}
-export async function handleSoftwareTokenMFAChallenge({
-	challengeResponse,
-	clientMetadata,
-	session,
-	username,
-	config,
-}: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
-	const challengeResponses = {
-		USERNAME: username,
-		SOFTWARE_TOKEN_MFA_CODE: challengeResponse,
-	};
-
-	const UserContextData = getUserContextData({
-		username,
-		userPoolId,
-		userPoolClientId,
-	});
-
-	const jsonReq: RespondToAuthChallengeCommandInput = {
-		ChallengeName: 'SOFTWARE_TOKEN_MFA',
-		ChallengeResponses: challengeResponses,
-		Session: session,
-		ClientMetadata: clientMetadata,
-		ClientId: userPoolClientId,
-		UserContextData,
-	};
-
-	return respondToAuthChallenge(
-		{
-			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
-		},
-		jsonReq,
-	);
-}
 export async function handleCompleteNewPasswordChallenge({
 	challengeResponse,
 	clientMetadata,
@@ -824,6 +756,18 @@ export async function getSignInResult(params: {
 					signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
 				},
 			};
+		case 'EMAIL_OTP':
+			return {
+				isSignedIn: false,
+				nextStep: {
+					signInStep: 'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
+					codeDeliveryDetails: {
+						deliveryMedium:
+							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as AuthDeliveryMedium,
+						destination: challengeParameters.CODE_DELIVERY_DESTINATION,
+					},
+				},
+			};
 		case 'ADMIN_NO_SRP_AUTH':
 			break;
 		case 'DEVICE_PASSWORD_VERIFIER':
@@ -911,14 +855,6 @@ export async function handleChallengeName(
 	const deviceName = options?.friendlyDeviceName;
 
 	switch (challengeName) {
-		case 'SMS_MFA':
-			return handleSMSMFAChallenge({
-				challengeResponse,
-				clientMetadata,
-				session,
-				username,
-				config,
-			});
 		case 'SELECT_MFA_TYPE':
 			return handleSelectMFATypeChallenge({
 				challengeResponse,
@@ -961,8 +897,11 @@ export async function handleChallengeName(
 				username,
 				tokenOrchestrator,
 			);
+		case 'SMS_MFA':
 		case 'SOFTWARE_TOKEN_MFA':
-			return handleSoftwareTokenMFAChallenge({
+		case 'EMAIL_OTP':
+			return handleMFAChallenge({
+				challengeName,
 				challengeResponse,
 				clientMetadata,
 				session,
@@ -981,6 +920,7 @@ export async function handleChallengeName(
 export function mapMfaType(mfa: string): CognitoMFAType {
 	let mfaType: CognitoMFAType = 'SMS_MFA';
 	if (mfa === 'TOTP') mfaType = 'SOFTWARE_TOKEN_MFA';
+	if (mfa === 'EMAIL') mfaType = 'EMAIL_OTP';
 
 	return mfaType;
 }
@@ -1130,4 +1070,59 @@ export function getActiveSignInUsername(username: string): string {
 	const state = signInStore.getState();
 
 	return state.username ?? username;
+}
+
+export async function handleMFAChallenge({
+	challengeName,
+	challengeResponse,
+	clientMetadata,
+	session,
+	username,
+	config,
+}: HandleAuthChallengeRequest & {
+	challengeName: Extract<
+		ChallengeName,
+		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
+	>;
+}) {
+	const { userPoolId, userPoolClientId } = config;
+
+	const challengeResponses: Record<string, string> = {
+		USERNAME: username,
+	};
+
+	if (challengeName === 'EMAIL_OTP') {
+		challengeResponses.EMAIL_OTP_CODE = challengeResponse;
+	}
+
+	if (challengeName === 'SMS_MFA') {
+		challengeResponses.SMS_MFA_CODE = challengeResponse;
+	}
+
+	if (challengeName === 'SOFTWARE_TOKEN_MFA') {
+		challengeResponses.SOFTWARE_TOKEN_MFA_CODE = challengeResponse;
+	}
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
+	const jsonReq: RespondToAuthChallengeCommandInput = {
+		ChallengeName: challengeName,
+		ChallengeResponses: challengeResponses,
+		Session: session,
+		ClientMetadata: clientMetadata,
+		ClientId: userPoolClientId,
+		UserContextData,
+	};
+
+	return respondToAuthChallenge(
+		{
+			region: getRegion(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+		},
+		jsonReq,
+	);
 }
