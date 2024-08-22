@@ -10,7 +10,7 @@ jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
 const mockParseJsonError = jest.mocked(parseJsonError);
 
-describe('buildEmptyResponseDeserializer created response deserializer', () => {
+describe('createEmptyResponseDeserializer created response deserializer', () => {
 	const deserializer = createEmptyResponseDeserializer();
 
 	it('returns undefined for 2xx status code', async () => {

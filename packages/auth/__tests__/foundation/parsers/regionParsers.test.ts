@@ -1,8 +1,8 @@
-import { AuthError } from '../../../../src/errors/AuthError';
+import { AuthError } from '../../../src/errors/AuthError';
 import {
 	getRegionFromIdentityPoolId,
 	getRegionFromUserPoolId,
-} from '../../../../src/foundation/parsers/regionParsers';
+} from '../../../src/foundation/parsers/regionParsers';
 
 describe('getRegionFromIdentityPoolId()', () => {
 	it('returns the region from the identity pool id', () => {
