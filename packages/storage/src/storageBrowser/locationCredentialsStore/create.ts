@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	CreateLocationCredentialsStoreInput,
 	CredentialsLocation,
-	GetLocationCredentials,
 	LocationCredentialsStore,
 } from '../types';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
@@ -12,9 +12,9 @@ import { LocationCredentialsProvider } from '../../providers/s3/types/options';
 
 import { createStore, getValue, removeStore } from './registry';
 
-export const createLocationCredentialsStore = (input: {
-	handler: GetLocationCredentials;
-}): LocationCredentialsStore => {
+export const createLocationCredentialsStore = (
+	input: CreateLocationCredentialsStoreInput,
+): LocationCredentialsStore => {
 	const storeSymbol = createStore(input.handler);
 
 	const store = {

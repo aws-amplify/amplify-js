@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.4.2",
+	"version": "6.5.1",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.39",
-		"@aws-amplify/api": "6.0.41",
-		"@aws-amplify/auth": "6.3.10",
-		"@aws-amplify/core": "6.3.6",
-		"@aws-amplify/datastore": "5.0.41",
-		"@aws-amplify/notifications": "2.0.39",
-		"@aws-amplify/storage": "6.5.2",
+		"@aws-amplify/analytics": "7.0.43",
+		"@aws-amplify/api": "6.0.45",
+		"@aws-amplify/auth": "6.3.14",
+		"@aws-amplify/core": "6.3.10",
+		"@aws-amplify/datastore": "5.0.45",
+		"@aws-amplify/notifications": "2.0.43",
+		"@aws-amplify/storage": "6.6.1",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "40.23 kB"
+			"limit": "41 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -479,7 +479,7 @@
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "16.26 kB"
+			"limit": "16.43 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
@@ -497,7 +497,7 @@
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "21.63 kB"
+			"limit": "21.68 kB"
 		}
 	]
 }

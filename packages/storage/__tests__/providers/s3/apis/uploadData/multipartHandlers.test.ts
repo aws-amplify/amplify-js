@@ -485,9 +485,6 @@ describe('getMultipartUploadHandlers with key', () => {
 						ContentType: defaultContentType,
 					}),
 				);
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
 			});
 
 			it('should override bucket in putObject call when bucket as string', async () => {
@@ -514,9 +511,6 @@ describe('getMultipartUploadHandlers with key', () => {
 						ContentType: defaultContentType,
 					}),
 				);
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

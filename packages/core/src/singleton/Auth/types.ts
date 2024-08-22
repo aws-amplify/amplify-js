@@ -20,7 +20,7 @@ interface JwtPayloadStandardFields {
 type JsonPrimitive = null | string | number | boolean;
 
 /** JSON array type */
-type JsonArray = JsonPrimitive[];
+type JsonArray = (JsonPrimitive | JsonObject | JsonArray)[];
 
 /** JSON Object type */
 interface JsonObject {
