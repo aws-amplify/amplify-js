@@ -3,7 +3,7 @@ import { Amplify, AmplifyClassV6 } from '@aws-amplify/core';
 import { generateClient } from '../../src/internals';
 import configFixture from '../fixtures/modeled/amplifyconfiguration';
 import { Schema } from '../fixtures/modeled/schema';
-import { from } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import {
 	normalizePostGraphqlCalls,
 	expectSubWithHeaders,
@@ -11,6 +11,7 @@ import {
 	expectSubWithlibraryConfigHeaders,
 	mockApiResponse,
 } from '../utils/index';
+import { AWSAppSyncRealTimeProvider } from '../../src/Providers/AWSAppSyncRealTimeProvider';
 
 const serverManagedFields = {
 	id: 'some-id',
@@ -332,6 +333,30 @@ describe('generateClient', () => {
 				expect(normalizePostGraphqlCalls(spy)).toMatchSnapshot();
 			});
 
+			test('with custom client headers - graphql', async () => {
+				const headers = {
+					'client-header': 'should exist',
+				};
+
+				const client = generateClient<Schema>({
+					amplify: Amplify,
+					headers,
+				});
+
+				await client.graphql({
+					query: /* GraphQL */ `
+						query listPosts {
+							id
+						}
+					`,
+				});
+
+				const receivedArgs = normalizePostGraphqlCalls(spy)[0][1];
+				const receivedHeaders = receivedArgs.options.headers;
+
+				expect(receivedHeaders).toEqual(expect.objectContaining(headers));
+			});
+
 			test('with custom client header functions', async () => {
 				const client = generateClient<Schema>({
 					amplify: Amplify,
@@ -477,6 +502,39 @@ describe('generateClient', () => {
 				client.models.Note.onCreate({
 					filter: graphqlVariables.filter,
 					headers: customHeaders,
+				}).subscribe({
+					next(value) {
+						expectSubWithHeaders(
+							spy,
+							'onCreateNote',
+							graphqlVariables,
+							customHeaders,
+						);
+						expect(value).toEqual(expect.objectContaining(noteToSend));
+						done();
+					},
+					error(error) {
+						expect(error).toBeUndefined();
+						done('bad news!');
+					},
+				});
+			});
+
+			test('with client-level custom headers', done => {
+				const customHeaders = {
+					'subscription-header': 'should-exist',
+				};
+
+				const client = generateClient<Schema>({
+					amplify: Amplify,
+					headers: customHeaders,
+				});
+
+				const spy = jest.fn(() => from([graphqlMessage]));
+				(raw.GraphQLAPI as any).appSyncRealTime = { subscribe: spy };
+
+				client.models.Note.onCreate({
+					filter: graphqlVariables.filter,
 				}).subscribe({
 					next(value) {
 						expectSubWithHeaders(
