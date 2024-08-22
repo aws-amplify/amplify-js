@@ -712,6 +712,44 @@ export class AWSAppSyncRealTimeProvider {
 		}
 	}
 
+	/**
+	 * Strips out `Authorization` header if present
+	 */
+	private _extractNonAuthHeaders(
+		headers?: AWSAppSyncRealTimeProviderOptions['additionalCustomHeaders'],
+	): Record<string, string> {
+		if (!headers) {
+			return {};
+		}
+
+		if ('Authorization' in headers) {
+			const { Authorization: _, ...nonAuthHeaders } = headers;
+
+			return nonAuthHeaders;
+		}
+
+		return headers;
+	}
+
+	/**
+	 *
+	 * @param headers - http headers
+	 * @returns query string of uri-encoded parameters derived from custom headers
+	 */
+	private _queryStringFromCustomHeaders(
+		headers?: AWSAppSyncRealTimeProviderOptions['additionalCustomHeaders'],
+	): string {
+		const nonAuthHeaders = this._extractNonAuthHeaders(headers);
+
+		const queryParams: string[] = Object.entries(nonAuthHeaders).map(
+			([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`,
+		);
+
+		const queryString = queryParams.join('&');
+
+		return queryString;
+	}
+
 	private _initializeWebSocketConnection({
 		appSyncGraphqlEndpoint,
 		authenticationType,
@@ -749,6 +787,10 @@ export class AWSAppSyncRealTimeProvider {
 
 					const payloadQs = base64Encoder.convert(payloadString);
 
+					const queryString = this._queryStringFromCustomHeaders(
+						additionalCustomHeaders,
+					);
+
 					let discoverableEndpoint = appSyncGraphqlEndpoint ?? '';
 
 					if (this.isCustomDomain(discoverableEndpoint)) {
@@ -766,7 +808,11 @@ export class AWSAppSyncRealTimeProvider {
 						.replace('https://', protocol)
 						.replace('http://', protocol);
 
-					const awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
+					let awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
+
+					if (queryString !== '') {
+						awsRealTimeUrl += `&${queryString}`;
+					}
 
 					await this._initializeRetryableHandshake(awsRealTimeUrl);
 
