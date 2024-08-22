@@ -1558,4 +1558,60 @@ describe('API test', () => {
 			);
 		});
 	});
+
+	test('request level custom headers are applied to query string', async () => {
+		Amplify.configure({
+			API: {
+				GraphQL: {
+					defaultAuthMode: 'lambda',
+					endpoint:
+						'https://testaccounturl123456789123.appsync-api.us-east-1.amazonaws.com/graphql',
+					region: 'local-host-h4x',
+				},
+			},
+		});
+
+		let done: Function;
+		const mockedFnHasBeenCalled = new Promise(res => (done = res));
+
+		const spyon_appsync_realtime = jest
+			.spyOn(
+				AWSAppSyncRealTimeProvider.prototype as any,
+				'_initializeRetryableHandshake',
+			)
+			.mockImplementation(
+				jest.fn(() => {
+					done(); // resolve promise when called
+				}) as any,
+			);
+
+		const query = /* GraphQL */ `
+			subscription SubscribeToEventComments {
+				subscribeToEventComments {
+					eventId
+				}
+			}
+		`;
+
+		const resolvedUrl =
+			'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql?header=eyJBdXRob3JpemF0aW9uIjoiYWJjMTIzNDUiLCJob3N0IjoidGVzdGFjY291bnR1cmwxMjM0NTY3ODkxMjMuYXBwc3luYy1hcGkudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20ifQ==&payload=e30=&x-amz-user-agent=aws-amplify%2F6.4.0%20api%2F1%20framework%2F2&ex-machina=is%20a%20good%20movie';
+
+		(
+			client.graphql(
+				{ query },
+				{
+					'x-amz-user-agent': 'aws-amplify/6.4.0 api/1 framework/2',
+					'ex-machina': 'is a good movie',
+					// This should NOT get included in the querystring
+					Authorization: 'abc12345',
+				},
+			) as unknown as Observable<object>
+		).subscribe();
+
+		await mockedFnHasBeenCalled;
+
+		expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
+		const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
+		expect(subscribeOptions).toBe(resolvedUrl);
+	});
 });
