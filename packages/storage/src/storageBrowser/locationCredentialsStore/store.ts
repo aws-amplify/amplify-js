@@ -3,13 +3,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-
 import {
 	CredentialsLocation,
 	GetLocationCredentials,
 	Permission,
 } from '../types';
+import { AWSTemporaryCredentials } from '../../providers/s3/types/options';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 
@@ -19,8 +18,8 @@ import {
 } from './constants';
 
 interface StoreValue extends CredentialsLocation {
-	credentials?: AWSCredentials;
-	inflightCredentials?: Promise<{ credentials: AWSCredentials }>;
+	credentials?: AWSTemporaryCredentials;
+	inflightCredentials?: Promise<{ credentials: AWSTemporaryCredentials }>;
 }
 
 type S3Uri = string;
@@ -64,7 +63,7 @@ export const initStore = (
 export const getCacheValue = (
 	store: LruLocationCredentialsStore,
 	location: CredentialsLocation,
-): AWSCredentials | null => {
+): AWSTemporaryCredentials | null => {
 	const cacheKey = createCacheKey(location);
 	const cachedValue = store.values.get(cacheKey);
 	const cachedCredentials = cachedValue?.credentials;
@@ -85,13 +84,10 @@ export const getCacheValue = (
 	return null;
 };
 
-const pastTTL = (credentials: AWSCredentials) => {
+const pastTTL = (credentials: AWSTemporaryCredentials) => {
 	const { expiration } = credentials;
 
-	return (
-		expiration &&
-		expiration.getTime() - CREDENTIALS_REFRESH_WINDOW_MS <= Date.now()
-	);
+	return expiration.getTime() - CREDENTIALS_REFRESH_WINDOW_MS <= Date.now();
 };
 
 /**
@@ -102,7 +98,7 @@ const pastTTL = (credentials: AWSCredentials) => {
 export const fetchNewValue = async (
 	store: LruLocationCredentialsStore,
 	location: CredentialsLocation,
-): Promise<{ credentials: AWSCredentials }> => {
+): Promise<{ credentials: AWSTemporaryCredentials }> => {
 	const storeValues = store.values;
 	const key = createCacheKey(location);
 	if (!storeValues.has(key)) {

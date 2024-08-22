@@ -3,7 +3,10 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { SigningOptions } from '@aws-amplify/core/internals/aws-client-utils';
+import {
+	CredentialsProviderOptions,
+	SigningOptions,
+} from '@aws-amplify/core/internals/aws-client-utils';
 
 import { TransferProgressEvent } from '../../../types';
 import {
@@ -15,9 +18,19 @@ import {
 /**
  * @internal
  */
-export type LocationCredentialsProvider = (options?: {
-	forceRefresh?: boolean;
-}) => Promise<{ credentials: AWSCredentials }>;
+export type AWSTemporaryCredentials = Required<
+	Pick<
+		AWSCredentials,
+		'accessKeyId' | 'secretAccessKey' | 'sessionToken' | 'expiration'
+	>
+>;
+
+/**
+ * @internal
+ */
+export type LocationCredentialsProvider = (
+	options?: CredentialsProviderOptions,
+) => Promise<{ credentials: AWSTemporaryCredentials }>;
 
 export interface BucketInfo {
 	bucketName: string;
@@ -40,6 +53,15 @@ interface CommonOptions {
 	 */
 	locationCredentialsProvider?: LocationCredentialsProvider;
 	bucket?: StorageBucket;
+}
+
+/**
+ * Represents the content disposition of a file.
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+ */
+export interface ContentDisposition {
+	type: 'attachment' | 'inline';
+	filename?: string;
 }
 
 /** @deprecated This may be removed in the next major version. */
@@ -142,6 +164,19 @@ export type GetUrlOptions = CommonOptions & {
 	 * @default 900 (15 minutes)
 	 */
 	expiresIn?: number;
+	/**
+	 * The default content-disposition header value of the file when downloading it.
+	 *   If a string is provided, it will be used as-is.
+	 *   If an object is provided, it will be used to construct the header value
+	 *   based on the ContentDisposition type definition.
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+	 */
+	contentDisposition?: ContentDisposition | string;
+	/**
+	 * The content-type header value of the file when downloading it.
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+	 */
+	contentType?: string;
 };
 
 /** @deprecated Use {@link GetUrlOptionsWithPath} instead. */
@@ -163,9 +198,12 @@ export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
 		 * The default content-disposition header value of the file when downloading it.
+		 *   If a string is provided, it will be used as-is.
+		 *   If an object is provided, it will be used to construct the header value
+		 *   based on the ContentDisposition type definition.
 		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
 		 */
-		contentDisposition?: string;
+		contentDisposition?: ContentDisposition | string;
 		/**
 		 * The default content-encoding header value of the file when downloading it.
 		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding

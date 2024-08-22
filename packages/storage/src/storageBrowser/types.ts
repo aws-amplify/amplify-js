@@ -1,9 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-
-import { LocationCredentialsProvider } from '../providers/s3/types/options';
+import {
+	AWSTemporaryCredentials,
+	LocationCredentialsProvider,
+} from '../providers/s3/types/options';
 
 /**
  * @internal
@@ -13,9 +14,7 @@ export type Permission = 'READ' | 'READWRITE' | 'WRITE';
 /**
  * @internal
  */
-export type CredentialsProvider = (options?: {
-	forceRefresh?: boolean;
-}) => Promise<{ credentials: AWSCredentials }>;
+export type CredentialsProvider = LocationCredentialsProvider;
 
 /**
  * @internal
@@ -69,25 +68,7 @@ export interface LocationCredentials extends Partial<LocationScope> {
 	/**
 	 * AWS credentials which can be used to access the specified location.
 	 */
-	readonly credentials: AWSCredentials;
-}
-
-export interface AccessGrant extends LocationAccess {
-	/**
-	 * The Amazon Resource Name (ARN) of an AWS IAM Identity Center application
-	 * associated with your Identity Center instance. If the grant includes an
-	 * application ARN, the grantee can only access the S3 data through this
-	 * application.
-	 */
-	readonly applicationArn: string | undefined;
-}
-
-/**
- * @internal
- */
-export interface ListLocationsOutput<T extends LocationAccess> {
-	locations: T[];
-	nextToken?: string;
+	readonly credentials: AWSTemporaryCredentials;
 }
 
 /**
@@ -97,10 +78,17 @@ export interface ListLocationsInput {
 	pageSize?: number;
 	nextToken?: string;
 }
+/**
+ * @internal
+ */
+export interface ListLocationsOutput {
+	locations: LocationAccess[];
+	nextToken?: string;
+}
 
 export type ListLocations = (
 	input?: ListLocationsInput,
-) => Promise<ListLocationsOutput<LocationAccess>>;
+) => Promise<ListLocationsOutput>;
 
 export type GetLocationCredentialsInput = CredentialsLocation;
 export type GetLocationCredentialsOutput = LocationCredentials;
@@ -108,6 +96,10 @@ export type GetLocationCredentialsOutput = LocationCredentials;
 export type GetLocationCredentials = (
 	input: GetLocationCredentialsInput,
 ) => Promise<GetLocationCredentialsOutput>;
+
+export interface CreateLocationCredentialsStoreInput {
+	handler: GetLocationCredentials;
+}
 
 export interface LocationCredentialsStore {
 	/**

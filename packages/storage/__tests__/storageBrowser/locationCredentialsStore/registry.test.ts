@@ -1,12 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../src/errors/types/validation';
+import { AWSTemporaryCredentials } from '../../../src/providers/s3/types/options';
 import {
 	createStore,
 	getValue,
@@ -47,7 +46,7 @@ describe('createStore', () => {
 });
 
 describe('getValue', () => {
-	const mockCachedValue = 'CACHED_VALUE' as any as AWSCredentials;
+	const mockCachedValue = 'CACHED_VALUE' as any as AWSTemporaryCredentials;
 	let storeSymbol: { value: symbol };
 	beforeEach(() => {
 		storeSymbol = createStore(jest.fn(), 20);

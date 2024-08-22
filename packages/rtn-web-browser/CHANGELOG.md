@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.0.30...@aws-amplify/rtn-web-browser@1.0.31) (2024-07-23)
+
+### Bug Fixes
+
+- **rtn-web-browser:** signInWithRedirect needs to be called twice on Android ([b473ce3](https://github.com/aws-amplify/amplify-js/commit/b473ce34bac46c4bec6226e4a62f078dbd75fb94))
+
 ## [1.0.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.0.29...@aws-amplify/rtn-web-browser@1.0.30) (2024-05-13)
 
 **Note:** Version bump only for package @aws-amplify/rtn-web-browser

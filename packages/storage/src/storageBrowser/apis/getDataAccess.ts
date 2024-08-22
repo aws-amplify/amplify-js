@@ -5,6 +5,7 @@ import {
 	AmplifyErrorCode,
 	StorageAction,
 } from '@aws-amplify/core/internals/utils';
+import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { getStorageUserAgentValue } from '../../providers/s3/utils/userAgent';
 import { getDataAccess as getDataAccessClient } from '../../providers/s3/utils/client/s3control';
@@ -18,11 +19,17 @@ export const getDataAccess = async (
 	input: GetDataAccessInput,
 ): Promise<GetDataAccessOutput> => {
 	const targetType = input.scope.endsWith('*') ? undefined : 'Object';
-	const { credentials } = await input.credentialsProvider();
+	const clientCredentialsProvider = async (
+		options?: CredentialsProviderOptions,
+	) => {
+		const { credentials } = await input.credentialsProvider(options);
+
+		return credentials;
+	};
 
 	const result = await getDataAccessClient(
 		{
-			credentials,
+			credentials: clientCredentialsProvider,
 			region: input.region,
 			userAgentValue: getStorageUserAgentValue(StorageAction.GetDataAccess),
 		},
@@ -38,10 +45,16 @@ export const getDataAccess = async (
 	const grantCredentials = result.Credentials;
 
 	// Ensure that S3 returned credentials (this shouldn't happen)
-	if (!grantCredentials) {
+	if (
+		!grantCredentials ||
+		!grantCredentials.AccessKeyId ||
+		!grantCredentials.SecretAccessKey ||
+		!grantCredentials.SessionToken ||
+		!grantCredentials.Expiration
+	) {
 		throw new StorageError({
 			name: AmplifyErrorCode.Unknown,
-			message: 'Service did not return credentials.',
+			message: 'Service did not return valid temporary credentials.',
 		});
 	} else {
 		logger.debug(`Retrieved credentials for: ${result.MatchedGrantTarget}`);
@@ -56,8 +69,8 @@ export const getDataAccess = async (
 
 	return {
 		credentials: {
-			accessKeyId: accessKeyId!,
-			secretAccessKey: secretAccessKey!,
+			accessKeyId,
+			secretAccessKey,
 			sessionToken,
 			expiration,
 		},

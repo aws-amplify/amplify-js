@@ -38,6 +38,7 @@ export type PutObjectInput = Pick<
 	| 'Expires'
 	| 'Metadata'
 	| 'Tagging'
+	| 'ChecksumCRC32'
 >;
 
 export type PutObjectOutput = Pick<
@@ -57,6 +58,7 @@ const putObjectSerializer = async (
 			ContentType: input.ContentType ?? 'application/octet-stream',
 		})),
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
+		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');

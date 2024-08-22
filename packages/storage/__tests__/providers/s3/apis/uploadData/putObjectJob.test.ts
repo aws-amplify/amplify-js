@@ -1,6 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
+import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
+
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
@@ -9,8 +12,13 @@ import {
 	putObject,
 } from '../../../../../src/providers/s3/utils/client/s3data';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
+import * as CRC32 from '../../../../../src/providers/s3/utils/crc32';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
+
+global.Blob = BlobPolyfill as any;
+global.File = FilePolyfill as any;
+global.WritableStream = WritableStreamPolyfill as any;
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../src/providers/s3/utils', () => {
@@ -67,7 +75,7 @@ mockPutObject.mockResolvedValue({
 /* TODO Remove suite when `key` parameter is removed */
 describe('putObjectJob with key', () => {
 	beforeEach(() => {
-		mockPutObject.mockClear();
+		jest.spyOn(CRC32, 'calculateContentCRC32').mockRestore();
 	});
 
 	it('should supply the correct parameters to putObject API handler', async () => {
@@ -123,12 +131,16 @@ describe('putObjectJob with key', () => {
 				ContentDisposition: contentDisposition,
 				ContentEncoding: contentEncoding,
 				Metadata: mockMetadata,
-				ContentMD5: undefined,
+				ChecksumCRC32: 'rfPzYw==',
 			},
 		);
 	});
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
+		jest
+			.spyOn(CRC32, 'calculateContentCRC32')
+			.mockResolvedValue(undefined as any);
+
 		Amplify.libraryOptions = {
 			Storage: {
 				S3: {
@@ -181,6 +193,7 @@ describe('putObjectJob with key', () => {
 					Key: 'public/key',
 					Body: data,
 					ContentType: 'application/octet-stream',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -212,6 +225,7 @@ describe('putObjectJob with key', () => {
 					Key: 'public/key',
 					Body: data,
 					ContentType: 'application/octet-stream',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -221,6 +235,7 @@ describe('putObjectJob with key', () => {
 describe('putObjectJob with path', () => {
 	beforeEach(() => {
 		mockPutObject.mockClear();
+		jest.spyOn(CRC32, 'calculateContentCRC32').mockRestore();
 	});
 
 	test.each([
@@ -286,13 +301,17 @@ describe('putObjectJob with path', () => {
 					ContentDisposition: contentDisposition,
 					ContentEncoding: contentEncoding,
 					Metadata: mockMetadata,
-					ContentMD5: undefined,
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		},
 	);
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
+		jest
+			.spyOn(CRC32, 'calculateContentCRC32')
+			.mockResolvedValue(undefined as any);
+
 		Amplify.libraryOptions = {
 			Storage: {
 				S3: {
@@ -420,6 +439,7 @@ describe('putObjectJob with path', () => {
 					Key: 'path/',
 					Body: data,
 					ContentType: 'application/octet-stream',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -451,6 +471,7 @@ describe('putObjectJob with path', () => {
 					Key: 'path/',
 					Body: data,
 					ContentType: 'application/octet-stream',
+					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});

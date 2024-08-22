@@ -2,10 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAction } from '@aws-amplify/core/internals/utils';
+import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { logger } from '../../utils';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../providers/s3/utils/client/s3control';
-import { AccessGrant, LocationType, Permission } from '../types';
+import { LocationAccess, LocationType } from '../types';
 import { StorageError } from '../../errors/StorageError';
 import { getStorageUserAgentValue } from '../../providers/s3/utils/userAgent';
 
@@ -26,8 +27,10 @@ export const listCallerAccessGrants = async (
 		logger.debug(`defaulting pageSize to ${MAX_PAGE_SIZE}.`);
 	}
 
-	const clientCredentialsProvider = async () => {
-		const { credentials } = await credentialsProvider();
+	const clientCredentialsProvider = async (
+		options?: CredentialsProviderOptions,
+	) => {
+		const { credentials } = await credentialsProvider(options);
 
 		return credentials;
 	};
@@ -48,16 +51,13 @@ export const listCallerAccessGrants = async (
 			},
 		);
 
-	const accessGrants: AccessGrant[] =
+	const accessGrants: LocationAccess[] =
 		CallerAccessGrantsList?.map(grant => {
-			// These values are correct from service mostly, but we add assertions to make TSC happy.
-			assertPermission(grant.Permission);
 			assertGrantScope(grant.GrantScope);
 
 			return {
 				scope: grant.GrantScope,
-				permission: grant.Permission,
-				applicationArn: grant.ApplicationArn,
+				permission: grant.Permission!,
 				type: parseGrantType(grant.GrantScope!),
 			};
 		}) ?? [];
@@ -83,17 +83,6 @@ const parseGrantType = (grantScope: string): LocationType => {
 		return 'PREFIX';
 	}
 };
-
-function assertPermission(
-	permissionValue: string | undefined,
-): asserts permissionValue is Permission {
-	if (!['READ', 'READWRITE', 'WRITE'].includes(permissionValue ?? '')) {
-		throw new StorageError({
-			name: 'InvalidPermission',
-			message: `Invalid permission: ${permissionValue}`,
-		});
-	}
-}
 
 function assertGrantScope(value: unknown): asserts value is string {
 	if (typeof value !== 'string' || !value.startsWith('s3://')) {

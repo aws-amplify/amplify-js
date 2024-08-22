@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 import { createLocationCredentialsStore } from '../../../src/storageBrowser/locationCredentialsStore/create';
 import {
@@ -13,10 +12,11 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../src/errors/types/validation';
+import { AWSTemporaryCredentials } from '../../../src/providers/s3/types/options';
 
 jest.mock('../../../src/storageBrowser/locationCredentialsStore/registry');
 
-const mockedCredentials = 'MOCK_CREDS' as any as AWSCredentials;
+const mockedCredentials = 'MOCK_CREDS' as any as AWSTemporaryCredentials;
 
 describe('createLocationCredentialsStore', () => {
 	it('should create a store', () => {

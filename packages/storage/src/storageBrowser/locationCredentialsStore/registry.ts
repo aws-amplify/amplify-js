@@ -2,8 +2,7 @@
 
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-
+import { AWSTemporaryCredentials } from '../../providers/s3/types/options';
 import { CredentialsLocation, GetLocationCredentials } from '../types';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
@@ -68,7 +67,7 @@ export const getValue = async (input: {
 	storeSymbol: StoreRegistrySymbol;
 	location: CredentialsLocation;
 	forceRefresh: boolean;
-}): Promise<{ credentials: AWSCredentials }> => {
+}): Promise<{ credentials: AWSTemporaryCredentials }> => {
 	const { storeSymbol: storeReference, location, forceRefresh } = input;
 	const store = getCredentialsStore(storeReference);
 	if (!forceRefresh) {

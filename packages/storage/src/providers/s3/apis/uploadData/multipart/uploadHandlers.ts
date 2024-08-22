@@ -55,6 +55,7 @@ export const getMultipartUploadHandlers = (
 		| {
 				uploadId: string;
 				completedParts: Part[];
+				finalCrc32?: string;
 		  }
 		| undefined;
 	let resolvedS3Config: ResolvedS3Config | undefined;
@@ -110,23 +111,25 @@ export const getMultipartUploadHandlers = (
 		}
 
 		if (!inProgressUpload) {
-			const { uploadId, cachedParts } = await loadOrCreateMultipartUpload({
-				s3Config: resolvedS3Config,
-				accessLevel: resolvedAccessLevel,
-				bucket: resolvedBucket,
-				keyPrefix: resolvedKeyPrefix,
-				key: objectKey,
-				contentType,
-				contentDisposition,
-				contentEncoding,
-				metadata,
-				data,
-				size,
-				abortSignal: abortController.signal,
-			});
+			const { uploadId, cachedParts, finalCrc32 } =
+				await loadOrCreateMultipartUpload({
+					s3Config: resolvedS3Config,
+					accessLevel: resolvedAccessLevel,
+					bucket: resolvedBucket,
+					keyPrefix: resolvedKeyPrefix,
+					key: objectKey,
+					contentType,
+					contentDisposition,
+					contentEncoding,
+					metadata,
+					data,
+					size,
+					abortSignal: abortController.signal,
+				});
 			inProgressUpload = {
 				uploadId,
 				completedParts: cachedParts,
+				finalCrc32,
 			};
 		}
 
@@ -145,10 +148,15 @@ export const getMultipartUploadHandlers = (
 		const completedPartNumberSet = new Set<number>(
 			inProgressUpload.completedParts.map(({ PartNumber }) => PartNumber!),
 		);
-		const onPartUploadCompletion = (partNumber: number, eTag: string) => {
+		const onPartUploadCompletion = (
+			partNumber: number,
+			eTag: string,
+			crc32: string | undefined,
+		) => {
 			inProgressUpload?.completedParts.push({
 				PartNumber: partNumber,
 				ETag: eTag,
+				ChecksumCRC32: crc32,
 			});
 		};
 		const concurrentUploadsProgressTracker =
@@ -171,6 +179,7 @@ export const getMultipartUploadHandlers = (
 					onPartUploadCompletion,
 					onProgress: concurrentUploadsProgressTracker.getOnProgressListener(),
 					isObjectLockEnabled: resolvedS3Options.isObjectLockEnabled,
+					useCRC32Checksum: Boolean(inProgressUpload.finalCrc32),
 				}),
 			);
 		}
@@ -194,6 +203,7 @@ export const getMultipartUploadHandlers = (
 				Bucket: resolvedBucket,
 				Key: finalKey,
 				UploadId: inProgressUpload.uploadId,
+				ChecksumCRC32: inProgressUpload.finalCrc32,
 				MultipartUpload: {
 					Parts: inProgressUpload.completedParts.sort(
 						(partA, partB) => partA.PartNumber! - partB.PartNumber!,
