@@ -595,6 +595,14 @@ tests:
     sample_name: [sign-in-with-oauth]
     spec: sign-in-with-oauth
     browser: [chrome]
+  - test_name: integ_next_custom_auth
+    desc: 'Sign-in with Custom Auth flow'
+    framework: next
+    category: auth
+    sample_name: [custom-auth]
+    spec: custom-auth
+    browser: *minimal_browser_list
+    backend: gen2
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
