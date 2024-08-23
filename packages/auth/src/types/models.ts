@@ -152,7 +152,7 @@ export interface ConfirmSignInWithEmailCode {
 	 *
 	 * @example
 	 * ```typescript
-	 * // Code retrieved from cellphone
+	 * // Code retrieved from email
 	 * const emailCode = '112233'
 	 * await confirmSignIn({challengeResponse: emailCode})
 	 * ```
