@@ -29,6 +29,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	/**
 	 * Executes a GraphQL operation
 	 *
+	 * Create, Update, Delete {@link https://docs.amplify.aws/gen1/react/build-a-backend/graphqlapi/mutate-data/#run-mutations-to-create-update-and-delete-application-data}
 	 * @param options - GraphQL Options
 	 * @param [additionalHeaders] - headers to merge in after any `libraryConfigHeaders` set in the config
 	 * @returns An Observable if the query is a subscription query, else a promise of the graphql result.
@@ -45,6 +46,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 	}
 
 	/**
+	 * {@link https://docs.amplify.aws/gen1/react/build-a-backend/graphqlapi/mutate-data/#cancel-mutation-requests}
 	 * Checks to see if an error thrown is from an api request cancellation
 	 * @param error - Any error
 	 * @returns A boolean indicating if the error was from an api request cancellation
