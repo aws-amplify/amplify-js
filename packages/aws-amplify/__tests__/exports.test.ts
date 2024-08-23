@@ -41,7 +41,6 @@ describe('aws-amplify Exports', () => {
 					'defaultStorage',
 					'parseAmplifyConfig',
 					'sessionStorage',
-					'syncSessionStorage',
 					'sharedInMemoryStorage',
 				].sort(),
 			);

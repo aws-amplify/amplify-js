@@ -14,7 +14,6 @@ export {
 	CookieStorage,
 	defaultStorage,
 	sessionStorage,
-	syncSessionStorage,
 	sharedInMemoryStorage,
 	KeyValueStorageInterface,
 } from '@aws-amplify/core';
