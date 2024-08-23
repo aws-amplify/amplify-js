@@ -77,24 +77,18 @@ const mockListObjectsV2ApiWithPages = (pages: number) => {
 		}
 
 		return {
-			...mockListResponse(input, Boolean(token)),
+			...mockListResponse(input),
 			Contents: [{ ...listObjectClientBaseResultItem, Key: input.Prefix }],
 			NextContinuationToken: token,
 		};
 	});
 };
-const mockListResponse = (
-	listParams: ListObjectsV2CommandInput,
-	isTruncated = true,
-) => ({
+const mockListResponse = (listParams: ListObjectsV2CommandInput) => ({
+	Name: listParams.Bucket,
 	Delimiter: listParams.Delimiter,
-	EncodingType: listParams.EncodingType,
 	MaxKeys: listParams.MaxKeys,
 	Prefix: listParams.Prefix,
 	ContinuationToken: listParams.ContinuationToken,
-	StartAfter: listParams.StartAfter,
-	IsTruncated: isTruncated,
-	KeyCount: 1,
 });
 
 describe('list API', () => {
@@ -687,85 +681,42 @@ describe('list API', () => {
 			{
 				type: 'Prefix',
 				mockListFunction: () => list({ prefix: 'test/' }),
-				expectedContent: [
-					{ Key: 'public/test/item', ...listObjectClientBaseResultItem },
-				],
 			},
 			{
 				type: 'Path',
 				mockListFunction: () => list({ path: 'test/' }),
-				expectedContent: [
-					{ Key: 'test/item', ...listObjectClientBaseResultItem },
-				],
 			},
-		])(
-			'$type response validation check',
-			({ mockListFunction, expectedContent }) => {
-				it.each([
-					{
-						name: 'missing Delimiter echo',
-						override: { Delimiter: 'mock-invalid-value' },
-					},
-					{
-						name: 'missing EncodingType echo',
-						override: { EncodingType: 'mock-invalid-value' },
-					},
-					{
-						name: 'missing MaxKeys echo',
-						override: { MaxKeys: 'mock-invalid-value' },
-					},
-					{
-						name: 'missing Prefix echo',
-						override: { Prefix: 'mock-invalid-value' },
-					},
-					{
-						name: 'missing ContinuationToken echo',
-						override: { ContinuationToken: 'mock-invalid-value' },
-					},
-					{
-						name: 'missing StartAfter echo',
-						override: { StartAfter: 'mock-invalid-value' },
-					},
-					{
-						name: 'wrong key count',
-						override: { KeyCount: 2 },
-					},
-					{
-						name: 'wrong isTruncated and nextContinuationToken match: true',
-						override: { IsTruncated: true, NextContinuationToken: undefined },
-					},
-					{
-						name: 'wrong isTruncated and nextContinuationToken match: false',
-						override: { IsTruncated: false, NextContinuationToken: nextToken },
-					},
-					{
-						name: 'wrong prefix',
-						override: {
-							Contents: [
-								{
-									Key: 'mock-invalid-value',
-									...listObjectClientBaseResultItem,
-								},
-							],
-						},
-					},
-				])('should throw with $name', async ({ override }) => {
-					mockListObject.mockImplementationOnce((_, listParams) => {
-						return {
-							...mockListResponse(listParams),
-							Contents: expectedContent,
-							KeyCount: 1,
-							NextContinuationToken: nextToken,
-							...override,
-						};
-					});
-
-					await expect(mockListFunction()).rejects.toThrow(
-						/List failed. Response is invalid./,
-					);
+		])('$type response validation check', ({ mockListFunction }) => {
+			it.each([
+				{
+					name: 'missing Delimiter echo',
+					override: { Delimiter: 'mock-invalid-value' },
+				},
+				{
+					name: 'missing MaxKeys echo',
+					override: { MaxKeys: 'mock-invalid-value' },
+				},
+				{
+					name: 'missing Prefix echo',
+					override: { Prefix: 'mock-invalid-value' },
+				},
+				{
+					name: 'missing ContinuationToken echo',
+					override: { ContinuationToken: 'mock-invalid-value' },
+				},
+			])('should throw with $name', async ({ override }) => {
+				mockListObject.mockImplementationOnce((_, listParams) => {
+					return {
+						...mockListResponse(listParams),
+						...override,
+					};
 				});
-			},
-		);
+
+				await expect(mockListFunction()).rejects.toThrow(
+					'An unknown error has occurred.',
+				);
+			});
+		});
 	});
 
 	describe('with delimiter', () => {

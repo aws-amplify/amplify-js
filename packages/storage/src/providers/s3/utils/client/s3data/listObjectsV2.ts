@@ -25,6 +25,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 } from '../utils';
+import { IntegrityError } from '../../../../../errors/IntegrityError';
 
 import type {
 	ListObjectsV2CommandInput,
@@ -94,10 +95,13 @@ const listObjectsV2Deserializer = async (
 			StartAfter: 'StartAfter',
 		});
 
-		return {
+		const output = {
 			$metadata: parseMetadata(response),
 			...contents,
 		};
+		validateCorroboratingElements(output);
+
+		return output;
 	}
 };
 
@@ -130,6 +134,27 @@ const deserializeChecksumAlgorithmList = (output: any[]) =>
 
 const deserializeOwner = (output: any) =>
 	map(output, { DisplayName: 'DisplayName', ID: 'ID' });
+
+const validateCorroboratingElements = (response: ListObjectsV2Output) => {
+	const {
+		IsTruncated,
+		KeyCount,
+		Contents = [],
+		CommonPrefixes = [],
+		NextContinuationToken,
+	} = response;
+
+	const validTruncation =
+		(IsTruncated && !!NextContinuationToken) ||
+		(!IsTruncated && !NextContinuationToken);
+
+	const validNumberOfKeysReturned =
+		KeyCount === Contents.length + CommonPrefixes.length;
+
+	if (!validTruncation || !validNumberOfKeysReturned) {
+		throw new IntegrityError();
+	}
+};
 
 export const listObjectsV2 = composeServiceApi(
 	s3TransferHandler,

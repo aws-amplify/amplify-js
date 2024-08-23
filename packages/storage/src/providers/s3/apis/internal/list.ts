@@ -34,7 +34,7 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/s3data/types';
-import { StorageError } from '../../../../errors/StorageError';
+import { IntegrityError } from '../../../../errors/IntegrityError';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -161,12 +161,7 @@ const _listWithPrefix = async ({
 		listParamsClone,
 	);
 
-	if (!isValidResponse(response, listParamsClone)) {
-		throw new StorageError({
-			name: 'Error',
-			message: `List failed. Response is invalid.`,
-		});
-	}
+	validateEchoedElements(listParamsClone, response);
 
 	if (!response?.Contents) {
 		return {
@@ -236,12 +231,7 @@ const _listWithPath = async ({
 		listParamsClone,
 	);
 
-	if (!isValidResponse(listOutput, listParamsClone)) {
-		throw new StorageError({
-			name: 'Error',
-			message: `List failed. Response is invalid.`,
-		});
-	}
+	validateEchoedElements(listParamsClone, listOutput);
 
 	const {
 		Contents: contents,
@@ -291,44 +281,18 @@ const getDelimiter = (
 	}
 };
 
-const isValidResponse = (
+const validateEchoedElements = (
+	listInput: ListObjectsV2Input,
 	listOutput: ListObjectsV2Output,
-	listParams: ListInputArgs['listParams'],
 ) => {
-	const {
-		IsTruncated: isTruncated,
-		KeyCount: keyCount,
-		Contents: contents = [],
-		NextContinuationToken: nextContinuationToken,
-	} = listOutput;
-
-	const validTokenAndTruncated =
-		(isTruncated && nextContinuationToken !== undefined) ||
-		(!isTruncated && nextContinuationToken === undefined);
-
-	let validKeysWithPrefix = true;
-	for (const item of contents) {
-		if (!item.Key?.startsWith(listParams.Prefix ?? '')) {
-			console.log([item.Key, listParams.Prefix]);
-			validKeysWithPrefix = false;
-			break;
-		}
-	}
-
-	const validNumberOfKeysReturned = keyCount === contents.length;
-
 	const validEchoedParameters =
-		listParams.Delimiter === listOutput.Delimiter &&
-		listParams.EncodingType === listOutput.EncodingType &&
-		listParams.MaxKeys === listOutput.MaxKeys &&
-		listParams.Prefix === listOutput.Prefix &&
-		listParams.ContinuationToken === listOutput.ContinuationToken &&
-		listParams.StartAfter === listOutput.StartAfter;
+		listInput.Bucket === listOutput.Name &&
+		listInput.Delimiter === listOutput.Delimiter &&
+		listInput.MaxKeys === listOutput.MaxKeys &&
+		listInput.Prefix === listOutput.Prefix &&
+		listInput.ContinuationToken === listOutput.ContinuationToken;
 
-	return (
-		validTokenAndTruncated &&
-		validKeysWithPrefix &&
-		validNumberOfKeysReturned &&
-		validEchoedParameters
-	);
+	if (!validEchoedParameters) {
+		throw new IntegrityError();
+	}
 };
