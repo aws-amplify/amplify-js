@@ -24,6 +24,8 @@ describe('tokenOrchestrator', () => {
 		setKeyValueStorage: jest.fn(),
 		getDeviceMetadata: jest.fn(),
 		clearDeviceMetadata: jest.fn(),
+		getOAuthMetadata: jest.fn(),
+		setOAuthMetadata: jest.fn(),
 	};
 
 	beforeAll(() => {
