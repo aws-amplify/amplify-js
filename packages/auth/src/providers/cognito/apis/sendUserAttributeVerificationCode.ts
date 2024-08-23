@@ -22,6 +22,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 /**
  * Resends user's confirmation code when updating attributes while authenticated.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-user-profile/#send-user-attribute-verification-code}
  * @param input - The SendUserAttributeVerificationCodeInput object
  * @returns SendUserAttributeVerificationCodeOutput
  * @throws - {@link GetUserAttributeVerificationException}

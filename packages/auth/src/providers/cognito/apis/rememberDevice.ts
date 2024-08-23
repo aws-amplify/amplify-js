@@ -17,6 +17,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 /**
  * Marks device as remembered while authenticated.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/remember-device/#remember-device}
  * @throws - {@link UpdateDeviceStatusException} - Cognito service errors thrown when
  * setting device status to remembered using an invalid device key.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.

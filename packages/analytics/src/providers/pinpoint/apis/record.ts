@@ -24,6 +24,7 @@ const logger = new ConsoleLogger('Analytics');
 /**
  * Records an Analytic event to Pinpoint. Events will be buffered and periodically sent to Pinpoint.
  *
+ * Record Event {@link https://docs.amplify.aws/gen1/react/build-a-backend/more-features/analytics/record-events/}
  * @param params The input object used to construct the request.
  *
  * @throws validation: {@link AnalyticsValidationErrorCode} - Thrown when the provided parameters or library

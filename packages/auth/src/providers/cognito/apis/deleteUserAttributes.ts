@@ -17,6 +17,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 /**
  * Deletes user attributes.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-user-profile/#delete-user-attributes}
  * @param input -  The DeleteUserAttributesInput object
  * @throws  -{@link DeleteUserAttributesException } - Thrown due to invalid attribute.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.

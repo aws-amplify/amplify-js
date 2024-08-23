@@ -19,6 +19,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 /**
  * Updates the MFA preference of the user.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-mfa/#update-the-current-users-mfa-preferences}
  * @param input - The UpdateMFAPreferenceInput object.
  * @throws -{@link SetUserMFAPreferenceException } - Service error thrown when the MFA preference cannot be updated.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.

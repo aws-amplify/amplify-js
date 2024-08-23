@@ -19,6 +19,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 /**
  * Confirms a user attribute with the confirmation code.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-user-profile/#verify-user-attribute}
  * @param input -  The ConfirmUserAttributeInput object
  * @throws  -{@link AuthValidationErrorCode } -
  * Thrown when `confirmationCode` is not defined.

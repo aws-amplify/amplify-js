@@ -17,6 +17,9 @@ import { signInWithUserPassword } from './signInWithUserPassword';
 /**
  * Signs a user in
  *
+ * For signIn{@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/enable-sign-up/#sign-in}
+ * For Manage SMS MFA during sign-in {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-mfa/#manage-sms-mfa-during-sign-in}
+ * Pre Aithentication and Pre Sign-up Lambda triggers {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/advanced-workflows/#pre-authentication-and-pre-sign-up-lambda-triggers}
  * @param input -  The SignInInput object
  * @returns SignInOutput
  * @throws service: {@link InitiateAuthException }, {@link RespondToAuthChallengeException }

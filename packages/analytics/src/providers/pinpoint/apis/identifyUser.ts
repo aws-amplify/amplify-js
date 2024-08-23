@@ -17,6 +17,7 @@ import { resolveConfig, resolveCredentials } from '../utils';
  * profile and activities or actions in your application. Activity can be tracked across devices & platforms by using
  * the same `userId`.
  *
+ * Identify User {@link https://docs.amplify.aws/gen1/react/build-a-backend/more-features/analytics/identify-user/}
  * @param {IdentifyUserInput} params The input object used to construct requests sent to Pinpoint's UpdateEndpoint
  *  API.
  *

@@ -13,6 +13,7 @@ const logger = new ConsoleLogger('Analytics');
 /**
  * Flushes all buffered Pinpoint events to the service.
  *
+ * Flush Event {@link https://docs.amplify.aws/gen1/react/build-a-backend/more-features/analytics/record-events/#flush-events}
  * @note
  * This API will make a best-effort attempt to flush events from the buffer. Events recorded immediately after invoking
  * this API may not be included in the flush.

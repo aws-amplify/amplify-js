@@ -26,6 +26,7 @@ import { getUserContextData } from '../utils/userContextData';
 /**
  * Confirms a new user account.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/enable-sign-up/#confirm-sign-up}
  * @param input -  The ConfirmSignUpInput object.
  * @returns ConfirmSignUpOutput
  * @throws -{@link ConfirmSignUpException }

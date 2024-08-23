@@ -33,6 +33,9 @@ import { setAutoSignIn } from './autoSignIn';
 /**
  * Creates a user
  *
+ * For signUp {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/enable-sign-up/#sign-up}
+ * For signUp with User Attributes {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-user-profile/#pass-user-attributes-during-sign-up}
+ * For enable SMS MFA {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-mfa/#enable-sms-mfa-during-sign-up}
  * @param input - The SignUpInput object
  * @returns SignUpOutput
  * @throws service: {@link SignUpException } - Cognito service errors thrown during the sign-up process.

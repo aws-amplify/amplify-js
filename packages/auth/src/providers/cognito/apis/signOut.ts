@@ -39,6 +39,7 @@ const logger = new ConsoleLogger('Auth');
 /**
  * Signs a user out
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/enable-sign-up/#sign-out}
  * @param input - The SignOutInput object
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */

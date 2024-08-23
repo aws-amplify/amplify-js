@@ -19,6 +19,7 @@ import { signOut } from './signOut';
 /**
  * Deletes a user from the user pool while authenticated.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/delete-user-account/#allow-my-users-to-delete-their-account}
  * @throws - {@link DeleteUserException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */

@@ -23,6 +23,7 @@ const MAX_DEVICES = 60;
  * Fetches devices that have been remembered using {@link rememberDevice}
  * for the currently authenticated user.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/remember-device/#fetch-devices}
  * @returns FetchDevicesOutput
  * @throws {@link ListDevicesException}
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
