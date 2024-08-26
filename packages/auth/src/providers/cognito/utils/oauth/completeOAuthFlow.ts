@@ -11,6 +11,7 @@ import { Hub, decodeJWT } from '@aws-amplify/core';
 
 import { cacheCognitoTokens } from '../../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../dispatchSignedInHubEvent';
+import { tokenOrchestrator } from '../../tokenProvider';
 
 import { createOAuthError } from './createOAuthError';
 import { resolveAndClearInflightPromises } from './inflightPromise';
@@ -227,6 +228,9 @@ const completeFlow = async ({
 	redirectUri: string;
 	state: string;
 }) => {
+	await tokenOrchestrator.setOAuthMetadata({
+		oauthSignIn: true,
+	});
 	await oAuthStore.clearOAuthData();
 	await oAuthStore.storeOAuthSignIn(true, preferPrivateSession);
 

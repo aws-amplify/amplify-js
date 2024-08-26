@@ -71,10 +71,20 @@ export interface SchemaModel {
 	syncable?: boolean;
 }
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given object likely represents a model in a schema.
+ */
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (obj as SchemaModel).pluralName !== undefined;
 }
 
+/**
+ * @private
+ * @param m
+ * @returns `true` if the given schema entry defines Schema Model attributes.
+ */
 export function isSchemaModelWithAttributes(
 	m: SchemaModel | SchemaNonModel,
 ): m is SchemaModel {
@@ -104,6 +114,11 @@ interface AssociatedWith {
 	targetNames?: string[];
 }
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the object is an `AssociatedWith` definition.
+ */
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
 }
@@ -114,6 +129,11 @@ interface TargetNameAssociation {
 	targetNames?: string[];
 }
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given object specifies either `targetName` or `targetNames`.
+ */
 export function isTargetNameAssociation(
 	obj: any,
 ): obj is TargetNameAssociation {
@@ -123,6 +143,13 @@ export function isTargetNameAssociation(
 interface FieldAssociation {
 	connectionType: 'HAS_ONE' | 'BELONGS_TO' | 'HAS_MANY';
 }
+
+/**
+ * @private
+ * @param obj
+ * @param fieldName
+ * @returns Truthy if the object has a `FieldAssociation` for the given `fieldName`.
+ */
 export function isFieldAssociation(
 	obj: any,
 	fieldName: string,
@@ -154,6 +181,11 @@ export interface ModelAttributeAuth {
 	};
 }
 
+/**
+ * @private
+ * @param attr
+ * @returns `true` if the given attribute is an auth attribute with rules.
+ */
 export function isModelAttributeAuth(
 	attr: ModelAttribute,
 ): attr is ModelAttributeAuth {
@@ -189,6 +221,11 @@ interface ModelAttributeCompositeKey {
 	};
 }
 
+/**
+ * @private
+ * @param attr
+ * @returns `true` if the given attribute is a key field.
+ */
 export function isModelAttributeKey(
 	attr: ModelAttribute,
 ): attr is ModelAttributeKey {
@@ -200,12 +237,22 @@ export function isModelAttributeKey(
 	);
 }
 
+/**
+ * @private
+ * @param attr
+ * @returns `true` if the given attribute is a primary key, indicated by the key being unnamed.
+ */
 export function isModelAttributePrimaryKey(
 	attr: ModelAttribute,
 ): attr is ModelAttributePrimaryKey {
 	return isModelAttributeKey(attr) && attr.properties.name === undefined;
 }
 
+/**
+ * @private
+ * @param attr
+ * @returns `true` if the given attribute represents a composite key with multiple fields.
+ */
 export function isModelAttributeCompositeKey(
 	attr: ModelAttribute,
 ): attr is ModelAttributeCompositeKey {
@@ -334,6 +381,10 @@ export interface AuthorizationRule {
 	areSubscriptionsPublic: boolean;
 }
 
+/**
+ * @private
+ * @returns `true` if the given field specifies a scalar type.
+ */
 export function isGraphQLScalarType(
 	obj: any,
 ): obj is keyof Omit<
@@ -347,6 +398,12 @@ export interface ModelFieldType {
 	model: string;
 	modelConstructor?: ModelMeta<PersistentModel>;
 }
+
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given field specifies a Model.
+ */
 export function isModelFieldType<_ extends PersistentModel>(
 	obj: any,
 ): obj is ModelFieldType {
@@ -359,6 +416,12 @@ export function isModelFieldType<_ extends PersistentModel>(
 export interface NonModelFieldType {
 	nonModel: string;
 }
+
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given field specifies a custom non-model type.
+ */
 export function isNonModelFieldType(obj: any): obj is NonModelFieldType {
 	const typeField: keyof NonModelFieldType = 'nonModel';
 	if (obj && obj[typeField]) return true;
@@ -369,6 +432,12 @@ export function isNonModelFieldType(obj: any): obj is NonModelFieldType {
 interface EnumFieldType {
 	enum: string;
 }
+
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the object is an `EnumFieldType`.
+ */
 export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	const modelField: keyof EnumFieldType = 'enum';
 	if (obj && obj[modelField]) return true;
@@ -648,6 +717,12 @@ export type IdentifierFieldOrIdentifierObject<
 	M extends PersistentModelMetaData<T>,
 > = Pick<T, IdentifierFields<T, M>> | IdentifierFieldValue<T, M>;
 
+/**
+ * @private
+ * @param obj
+ * @param modelDefinition
+ * @returns `true` if the given item is an object that has all identifier fields populated.
+ */
 export function isIdentifierObject<T extends PersistentModel>(
 	obj: any,
 	modelDefinition: SchemaModel,
@@ -772,12 +847,22 @@ export interface PredicatesGroup<T extends PersistentModel> {
 	predicates: (PredicateObject<T> | PredicatesGroup<T>)[];
 }
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given predicate field object, specifying an [in-]equality test against a field.
+ */
 export function isPredicateObj<T extends PersistentModel>(
 	obj: any,
 ): obj is PredicateObject<T> {
 	return obj && (obj as PredicateObject<T>).field !== undefined;
 }
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given predicate object is a "group" like "and", "or", or "not".
+ */
 export function isPredicateGroup<T extends PersistentModel>(
 	obj: any,
 ): obj is PredicatesGroup<T> {
@@ -1032,6 +1117,34 @@ type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
 	...args: A
 ) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
 
+/**
+ * Build an expression that can be used to filter which items of a given Model
+ * are synchronized down from the GraphQL service. E.g.,
+ *
+ * ```ts
+ * import { DataStore, syncExpression } from 'aws-amplify/datastore';
+ * import { Post, Comment } from './models';
+ *
+ *
+ * DataStore.configure({
+ * 	syncExpressions: [
+ * 		syncExpression(Post, () => {
+ * 			return (post) => post.rating.gt(5);
+ * 		}),
+ * 		syncExpression(Comment, () => {
+ * 			return (comment) => comment.status.eq('active');
+ * 		})
+ * 	]
+ * });
+ * ```
+ *
+ * When DataStore starts syncing, only Posts with `rating > 5` and Comments with
+ * `status === 'active'` will be synced down to the user's local store.
+ *
+ * @param modelConstructor The Model from the schema.
+ * @param conditionProducer A function that builds a condition object that can describe how to filter the model.
+ * @returns An sync expression object that can be attached to the DataStore `syncExpressions` configuration property.
+ */
 export async function syncExpression<
 	T extends PersistentModel,
 	A extends Option<T>,

@@ -595,6 +595,13 @@ tests:
     sample_name: [sign-in-with-oauth]
     spec: sign-in-with-oauth
     browser: [chrome]
+  - test_name: subdomain_authentication
+    desc: 'Sign-in with the OAuth flow and subdomains'
+    framework: next
+    category: auth
+    sample_name: [subdomains]
+    spec: subdomains
+    browser: [chrome]
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
