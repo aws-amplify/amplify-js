@@ -37,6 +37,7 @@ import { getStorageUserAgentValue } from '../../../../utils/userAgent';
 import { logger } from '../../../../../../utils';
 import { calculateContentCRC32 } from '../../../../utils/crc32';
 import { StorageOperationOptionsInput } from '../../../../../../types/inputs';
+import { IntegrityError } from '../../../../../../errors/IntegrityError';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -237,18 +238,7 @@ export const getMultipartUploadHandlers = (
 
 		await Promise.all(concurrentUploadPartExecutors);
 
-		if (
-			!isValidCompletedParts(
-				inProgressUpload.completedParts,
-				size,
-				Boolean(inProgressUpload.finalCrc32),
-			)
-		) {
-			throw new StorageError({
-				name: 'Error',
-				message: `Upload failed. Parts cache validation failed`,
-			});
-		}
+		validateCompletedParts(inProgressUpload.completedParts, size!);
 
 		const { ETag: eTag } = await completeMultipartUpload(
 			{
@@ -368,31 +358,18 @@ const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
 	Amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;
 
-const isValidCompletedParts = (
-	completedParts: Part[],
-	size: number | undefined,
-	useCRC32Checksum: boolean,
-) => {
-	let validPartCount = true;
-	if (size) {
-		const partsExpected = Math.ceil(size / calculatePartSize(size));
-		validPartCount = completedParts.length === partsExpected;
-	}
+const validateCompletedParts = (completedParts: Part[], size: number) => {
+	const partsExpected = Math.ceil(size / calculatePartSize(size));
+	const validPartCount = completedParts.length === partsExpected;
 
-	let validPartsContent = true;
 	const sorted = sortUploadParts(completedParts);
-	for (const [i, value] of sorted.entries()) {
-		const validPartNumber = i + 1 === value.PartNumber!;
-		const crc32Exists = !useCRC32Checksum || Boolean(value.ChecksumCRC32);
-		const etagExists = Boolean(value.ETag);
+	const validPartNumbers = sorted.every(
+		(part, index) => part.PartNumber === index + 1,
+	);
 
-		if (!(validPartNumber && crc32Exists && etagExists)) {
-			validPartsContent = false;
-			break;
-		}
+	if (!validPartCount || !validPartNumbers) {
+		throw new IntegrityError();
 	}
-
-	return validPartCount && validPartsContent;
 };
 
 const sortUploadParts = (parts: Part[]) => {

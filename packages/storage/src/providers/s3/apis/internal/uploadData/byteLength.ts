@@ -8,16 +8,9 @@
 export const byteLength = (input?: any): number | undefined => {
 	if (input === null || input === undefined) return 0;
 	if (typeof input === 'string') {
-		let len = input.length;
+		const blob = new Blob([input]);
 
-		for (let i = len - 1; i >= 0; i--) {
-			const code = input.charCodeAt(i);
-			if (code > 0x7f && code <= 0x7ff) len++;
-			else if (code > 0x7ff && code <= 0xffff) len += 2;
-			if (code >= 0xdc00 && code <= 0xdfff) i--; // trail surrogate
-		}
-
-		return len;
+		return blob.size;
 	} else if (typeof input.byteLength === 'number') {
 		// handles Uint8Array, ArrayBuffer, Buffer, and ArrayBufferView
 		return input.byteLength;
