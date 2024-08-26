@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { URLSearchParams } from 'url';
+
 import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
 import {
@@ -11,6 +13,7 @@ import {
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	AmplifyUrl,
+	AmplifyUrlSearchParams,
 	CustomUserAgentDetails,
 	DocumentType,
 	GraphQLAuthMode,
@@ -734,20 +737,63 @@ export class AWSAppSyncRealTimeProvider {
 	/**
 	 *
 	 * @param headers - http headers
-	 * @returns query string of uri-encoded parameters derived from custom headers
+	 * @returns uri-encoded query parameters derived from custom headers
 	 */
-	private _queryStringFromCustomHeaders(
+	private _queryParamsFromCustomHeaders(
 		headers?: AWSAppSyncRealTimeProviderOptions['additionalCustomHeaders'],
-	): string {
+	): URLSearchParams {
 		const nonAuthHeaders = this._extractNonAuthHeaders(headers);
 
-		const queryParams: string[] = Object.entries(nonAuthHeaders).map(
-			([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`,
+		const params = new AmplifyUrlSearchParams();
+
+		Object.entries(nonAuthHeaders).forEach(([k, v]) => {
+			params.append(k, v);
+		});
+
+		return params;
+	}
+
+	/**
+	 * Normalizes AppSync realtime endpoint URL
+	 *
+	 * @param appSyncGraphqlEndpoint - AppSync endpointUri from config
+	 * @param urlParams - URLSearchParams
+	 * @returns fully resolved string realtime endpoint URL
+	 */
+	private _realtimeUrlWithQueryString(
+		appSyncGraphqlEndpoint: string | undefined,
+		urlParams: URLSearchParams,
+	): string {
+		const protocol = 'wss://';
+
+		let realtimeEndpoint = appSyncGraphqlEndpoint ?? '';
+
+		if (this.isCustomDomain(realtimeEndpoint)) {
+			realtimeEndpoint = realtimeEndpoint.concat(customDomainPath);
+		} else {
+			realtimeEndpoint = realtimeEndpoint
+				.replace('appsync-api', 'appsync-realtime-api')
+				.replace('gogi-beta', 'grt-beta');
+		}
+
+		realtimeEndpoint = realtimeEndpoint
+			.replace('https://', protocol)
+			.replace('http://', protocol);
+
+		const realtimeEndpointUrl = new AmplifyUrl(realtimeEndpoint);
+
+		// preserves any query params a customer might manually set in the configuration
+		const existingParams = new AmplifyUrlSearchParams(
+			realtimeEndpointUrl.search,
 		);
 
-		const queryString = queryParams.join('&');
+		for (const [k, v] of urlParams.entries()) {
+			existingParams.append(k, v);
+		}
 
-		return queryString;
+		realtimeEndpointUrl.search = existingParams.toString();
+
+		return realtimeEndpointUrl.toString();
 	}
 
 	private _initializeWebSocketConnection({
@@ -783,40 +829,22 @@ export class AWSAppSyncRealTimeProvider {
 					});
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
-					const headerQs = base64Encoder.convert(headerString, {
+					// base64url-encoded string
+					const encodedHeader = base64Encoder.convert(headerString, {
 						urlSafe: true,
 						skipPadding: true,
 					});
 
-					const queryString = this._queryStringFromCustomHeaders(
+					const authTokenSubprotocol = `header-${encodedHeader}`;
+
+					const queryParams = this._queryParamsFromCustomHeaders(
 						additionalCustomHeaders,
 					);
 
-					let discoverableEndpoint = appSyncGraphqlEndpoint ?? '';
-
-					if (this.isCustomDomain(discoverableEndpoint)) {
-						discoverableEndpoint =
-							discoverableEndpoint.concat(customDomainPath);
-					} else {
-						discoverableEndpoint = discoverableEndpoint
-							.replace('appsync-api', 'appsync-realtime-api')
-							.replace('gogi-beta', 'grt-beta');
-					}
-
-					// Creating websocket url with required query strings
-					const protocol = 'wss://';
-
-					discoverableEndpoint = discoverableEndpoint
-						.replace('https://', protocol)
-						.replace('http://', protocol);
-
-					let awsRealTimeUrl = `${discoverableEndpoint}`;
-
-					if (queryString !== '') {
-						// TODO - need a more reliable way to do this
-						awsRealTimeUrl += `?${queryString}`;
-					}
-					const authTokenSubprotocol = `header-${headerQs}`;
+					const awsRealTimeUrl = this._realtimeUrlWithQueryString(
+						appSyncGraphqlEndpoint,
+						queryParams,
+					);
 
 					await this._initializeRetryableHandshake(
 						awsRealTimeUrl,
