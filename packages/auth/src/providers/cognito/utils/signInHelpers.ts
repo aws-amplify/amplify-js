@@ -1103,7 +1103,7 @@ export async function handleMFAChallenge({
 		challengeResponses.SOFTWARE_TOKEN_MFA_CODE = challengeResponse;
 	}
 
-	const UserContextData = getUserContextData({
+	const userContextData = getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
@@ -1115,7 +1115,7 @@ export async function handleMFAChallenge({
 		Session: session,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
-		UserContextData,
+		UserContextData: userContextData,
 	};
 
 	return respondToAuthChallenge(
