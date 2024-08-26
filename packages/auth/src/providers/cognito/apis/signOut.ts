@@ -66,7 +66,11 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 		const oAuthStore = new DefaultOAuthStore(defaultStorage);
 		oAuthStore.setAuthConfig(cognitoConfig);
 		const { type } =
-			(await handleOAuthSignOut(cognitoConfig, oAuthStore)) ?? {};
+			(await handleOAuthSignOut(
+				cognitoConfig,
+				oAuthStore,
+				tokenOrchestrator,
+			)) ?? {};
 		if (type === 'error') {
 			throw new AuthError({
 				name: OAUTH_SIGNOUT_EXCEPTION,

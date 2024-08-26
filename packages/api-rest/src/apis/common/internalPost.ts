@@ -6,6 +6,7 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { InternalPostInput, RestApiResponse } from '../../types';
 import { createCancellableOperation } from '../../utils';
 import { CanceledError } from '../../errors';
+import { isIamAuthApplicableForGraphQL } from '../../utils/isIamAuthApplicable';
 
 import { transferHandler } from './handler';
 
@@ -66,6 +67,7 @@ export const post = (
 				...options,
 				abortSignal: controller.signal,
 			},
+			isIamAuthApplicableForGraphQL,
 			options?.signingServiceInfo,
 		);
 

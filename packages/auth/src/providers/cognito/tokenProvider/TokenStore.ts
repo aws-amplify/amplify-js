@@ -14,6 +14,7 @@ import {
 	AuthTokenStore,
 	CognitoAuthTokens,
 	DeviceMetadata,
+	OAuthMetadata,
 } from './types';
 import { TokenProviderErrorCode, assert } from './errorHelpers';
 
@@ -163,6 +164,7 @@ export class DefaultTokenStore implements AuthTokenStore {
 			this.getKeyValueStorage().removeItem(authKeys.refreshToken),
 			this.getKeyValueStorage().removeItem(authKeys.signInDetails),
 			this.getKeyValueStorage().removeItem(this.getLastAuthUserKey()),
+			this.getKeyValueStorage().removeItem(authKeys.oauthMetadata),
 		]);
 	}
 
@@ -221,6 +223,22 @@ export class DefaultTokenStore implements AuthTokenStore {
 			'username';
 
 		return lastAuthUser;
+	}
+
+	async setOAuthMetadata(metadata: OAuthMetadata): Promise<void> {
+		const { oauthMetadata: oauthMetadataKey } = await this.getAuthKeys();
+		await this.getKeyValueStorage().setItem(
+			oauthMetadataKey,
+			JSON.stringify(metadata),
+		);
+	}
+
+	async getOAuthMetadata(): Promise<OAuthMetadata | null> {
+		const { oauthMetadata: oauthMetadataKey } = await this.getAuthKeys();
+		const oauthMetadata =
+			await this.getKeyValueStorage().getItem(oauthMetadataKey);
+
+		return oauthMetadata && JSON.parse(oauthMetadata);
 	}
 }
 
