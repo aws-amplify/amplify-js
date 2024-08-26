@@ -5,6 +5,7 @@ export enum AmplifyErrorCode {
 	NoEndpointId = 'NoEndpointId',
 	PlatformNotSupported = 'PlatformNotSupported',
 	Unknown = 'Unknown',
+	NetworkError = 'NetworkError',
 }
 
 export interface AmplifyErrorParams<ErrorCode extends string = string> {
