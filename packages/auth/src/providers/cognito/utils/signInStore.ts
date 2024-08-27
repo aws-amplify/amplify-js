@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { ConsoleLogger, syncSessionStorage } from '@aws-amplify/core';
+import { syncSessionStorage } from '@aws-amplify/core';
 
 import { CognitoAuthSignInDetails } from '../types';
 
@@ -30,16 +30,14 @@ type Store<State, Action> = (reducer: Reducer<State, Action>) => {
 
 type Reducer<State, Action> = (state: State, action: Action) => State;
 
-const logger = new ConsoleLogger('Auth signInStore');
-
 // Minutes until stored session invalidates
-const EXPIRATION_MINUTES = 3;
-const MS_TO_EXPIRY = 1000 * 60 * EXPIRATION_MINUTES;
+const MS_TO_EXPIRY = 3 * 60 * 1000; // 3 mins
+const tgtState = 'CognitoSignInState';
 const signInStateKeys = {
-	username: 'CognitoSignInState.username',
-	challengeName: 'CognitoSignInState.challengeName',
-	signInSession: 'CognitoSignInState.signInSession',
-	expiry: 'CognitoSignInState.expiry',
+	username: `${tgtState}.username`,
+	challengeName: `${tgtState}.challengeName`,
+	signInSession: `${tgtState}.signInSession`,
+	expiry: `${tgtState}.expiry`,
 };
 
 const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
@@ -79,6 +77,8 @@ const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 			return initializeState();
 
 		case 'RESET_STATE':
+			clearPersistedSignInState();
+
 			return getDefaultState();
 
 		// this state is never reachable
@@ -117,8 +117,6 @@ const initializeState = (): SignInState => {
 	const expiry = syncSessionStorage.getItem(signInStateKeys.expiry);
 
 	if (!expiry || (expiry && isExpired(expiry))) {
-		logger.warn('Session Expired');
-
 		clearPersistedSignInState();
 
 		return getDefaultState();

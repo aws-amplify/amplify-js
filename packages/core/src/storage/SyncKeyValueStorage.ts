@@ -8,10 +8,16 @@ import { SyncStorage } from '../types';
  * @internal
  */
 export class SyncKeyValueStorage implements SyncStorage {
-	storage?: Storage;
+	_storage?: Storage;
 
 	constructor(storage?: Storage) {
-		this.storage = storage;
+		this._storage = storage;
+	}
+
+	get storage() {
+		if (!this._storage) throw new PlatformNotSupportedError();
+
+		return this._storage;
 	}
 
 	/**
@@ -21,8 +27,7 @@ export class SyncKeyValueStorage implements SyncStorage {
 	 * @returns {string} value that was set
 	 */
 	setItem(key: string, value: string) {
-		if (!this.storage) throw new PlatformNotSupportedError();
-		this.storage.setItem(key, value);
+		this._storage!.setItem(key, value);
 	}
 
 	/**
@@ -32,9 +37,7 @@ export class SyncKeyValueStorage implements SyncStorage {
 	 * @returns {string} the data item
 	 */
 	getItem(key: string) {
-		if (!this.storage) throw new PlatformNotSupportedError();
-
-		return this.storage.getItem(key);
+		return this._storage!.getItem(key);
 	}
 
 	/**
@@ -43,8 +46,7 @@ export class SyncKeyValueStorage implements SyncStorage {
 	 * @returns {string} value - value that was deleted
 	 */
 	removeItem(key: string) {
-		if (!this.storage) throw new PlatformNotSupportedError();
-		this.storage.removeItem(key);
+		this._storage!.removeItem(key);
 	}
 
 	/**
@@ -52,7 +54,6 @@ export class SyncKeyValueStorage implements SyncStorage {
 	 * @returns {string} nothing
 	 */
 	clear() {
-		if (!this.storage) throw new PlatformNotSupportedError();
-		this.storage.clear();
+		this._storage!.clear();
 	}
 }

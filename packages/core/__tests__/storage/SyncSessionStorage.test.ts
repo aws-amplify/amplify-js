@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { SyncSessionStorage } from '../../src/storage/SyncSessionStorage';
 
-jest.mock('@aws-amplify/core/internals/utils', () => ({
-	...jest.requireActual('@aws-amplify/core/internals/utils'),
-	isBrowser: jest.fn(() => false),
-}));
-
 describe('SyncSessionStorage', () => {
 	let sessionStorage: SyncSessionStorage;
 	const signInStateKeys: Record<string, string> = {
@@ -27,28 +22,22 @@ describe('SyncSessionStorage', () => {
 		sessionStorage = new SyncSessionStorage();
 	});
 
-	afterEach(() => {
-		sessionStorage.clear();
-	});
-
 	it('can set and retrieve item by key', () => {
 		sessionStorage.setItem(signInStateKeys.username, user1.username);
 		sessionStorage.setItem(signInStateKeys.challengeName, user1.challengeName);
 		sessionStorage.setItem(signInStateKeys.signInSession, user1.signInSession);
 		sessionStorage.setItem(signInStateKeys.expiry, user1.expiry);
 
-		expect(sessionStorage.getItem(signInStateKeys.username)).toEqual(
+		expect(sessionStorage.getItem(signInStateKeys.username)).toBe(
 			user1.username,
 		);
-		expect(sessionStorage.getItem(signInStateKeys.challengeName)).toEqual(
+		expect(sessionStorage.getItem(signInStateKeys.challengeName)).toBe(
 			user1.challengeName,
 		);
-		expect(sessionStorage.getItem(signInStateKeys.signInSession)).toEqual(
+		expect(sessionStorage.getItem(signInStateKeys.signInSession)).toBe(
 			user1.signInSession,
 		);
-		expect(sessionStorage.getItem(signInStateKeys.expiry)).toEqual(
-			user1.expiry,
-		);
+		expect(sessionStorage.getItem(signInStateKeys.expiry)).toBe(user1.expiry);
 	});
 
 	it('can override item by setting with the same key', () => {
@@ -56,23 +45,25 @@ describe('SyncSessionStorage', () => {
 		sessionStorage.setItem(signInStateKeys.username, user1.username);
 		sessionStorage.setItem(signInStateKeys.username, newUserName);
 
-		expect(sessionStorage.getItem(signInStateKeys.username)).toEqual(
-			newUserName,
-		);
+		expect(sessionStorage.getItem(signInStateKeys.username)).toBe(newUserName);
 	});
 
 	it('can remove item by key', () => {
 		const newUserName = 'joonchoi+tobedeleted';
 		sessionStorage.setItem(signInStateKeys.username, newUserName);
-		expect(sessionStorage.getItem(signInStateKeys.username)).toEqual(
-			newUserName,
-		);
+		expect(sessionStorage.getItem(signInStateKeys.username)).toBe(newUserName);
 		sessionStorage.removeItem(signInStateKeys.username);
 		expect(sessionStorage.getItem(signInStateKeys.username)).toBeNull();
 	});
 
 	it('clears all items', () => {
+		sessionStorage.setItem(signInStateKeys.username, user1.username);
+		sessionStorage.setItem(signInStateKeys.challengeName, user1.challengeName);
+		sessionStorage.setItem(signInStateKeys.signInSession, user1.signInSession);
+		sessionStorage.setItem(signInStateKeys.expiry, user1.expiry);
+
 		sessionStorage.clear();
+
 		expect(sessionStorage.getItem(signInStateKeys.username)).toBeNull();
 		expect(sessionStorage.getItem(signInStateKeys.challengeName)).toBeNull();
 		expect(sessionStorage.getItem(signInStateKeys.signInSession)).toBeNull();
