@@ -63,6 +63,20 @@ const dispatchApiEvent = (
 	Hub.dispatch('api', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
 };
 
+/**
+ * @returns base64url-encoded string - https://datatracker.ietf.org/doc/html/rfc4648#section-5
+ */
+const base64urlEncode = (str: string): string => {
+	const base64Str = Buffer.from(str).toString('base64');
+
+	const base64UrlStr = base64Str
+		.replace(/\+/g, '-')
+		.replace(/\//g, '_')
+		.replace(/=/g, '');
+
+	return base64UrlStr;
+};
+
 export type ObserverQuery = {
 	observer: PubSubContentObserver;
 	query: string;
@@ -182,7 +196,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		this.reconnectionMonitor.close();
 	}
 
-	getNewWebSocket(url: string, protocol: string) {
+	getNewWebSocket(url: string, protocol: string[]) {
 		return new WebSocket(url, protocol);
 	}
 
@@ -716,9 +730,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 					});
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
-					const headerQs = Buffer.from(headerString).toString('base64');
-
-					const payloadQs = Buffer.from(payloadString).toString('base64');
+					const headerQs = base64urlEncode(headerString);
 
 					let discoverableEndpoint = appSyncGraphqlEndpoint ?? '';
 
@@ -737,9 +749,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 						.replace('https://', protocol)
 						.replace('http://', protocol);
 
-					const awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
+					const awsRealTimeUrl = discoverableEndpoint;
+					const authTokenSubprotocol = `header-${headerQs}`;
 
-					await this._initializeRetryableHandshake(awsRealTimeUrl);
+					await this._initializeRetryableHandshake(
+						awsRealTimeUrl,
+						authTokenSubprotocol
+					);
 
 					this.promiseArray.forEach(({ res }) => {
 						logger.debug('Notifying connection successful');
@@ -764,23 +780,32 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider<AWSAppSyn
 		});
 	}
 
-	private async _initializeRetryableHandshake(awsRealTimeUrl: string) {
+	private async _initializeRetryableHandshake(
+		awsRealTimeUrl: string,
+		subprotocol: string
+	) {
 		logger.debug(`Initializaling retryable Handshake`);
 		await jitteredExponentialRetry(
 			this._initializeHandshake.bind(this),
-			[awsRealTimeUrl],
+			[awsRealTimeUrl, subprotocol],
 			MAX_DELAY_MS
 		);
 	}
 
-	private async _initializeHandshake(awsRealTimeUrl: string) {
+	private async _initializeHandshake(
+		awsRealTimeUrl: string,
+		subprotocol: string
+	) {
 		logger.debug(`Initializing handshake ${awsRealTimeUrl}`);
 		// Because connecting the socket is async, is waiting until connection is open
 		// Step 1: connect websocket
 		try {
 			await (() => {
 				return new Promise<void>((res, rej) => {
-					const newSocket = this.getNewWebSocket(awsRealTimeUrl, 'graphql-ws');
+					const newSocket = this.getNewWebSocket(awsRealTimeUrl, [
+						'graphql-ws',
+						subprotocol,
+					]);
 					newSocket.onerror = () => {
 						logger.debug(`WebSocket connection error`);
 					};
