@@ -345,6 +345,40 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					);
 				});
 
+				test('subscription generates expected auth token - custom domain', async () => {
+					expect.assertions(1);
+
+					const newSocketSpy = jest
+						.spyOn(provider, 'getNewWebSocket')
+						.mockImplementation(() => {
+							fakeWebSocketInterface.newWebSocket();
+							return fakeWebSocketInterface.webSocket;
+						});
+
+					provider
+						.subscribe({
+							appSyncGraphqlEndpoint: 'https://unit-test.testurl.com',
+							// using custom auth instead of apiKey, because the latter inserts a timestamp header => expected value changes
+							authenticationType: 'lambda',
+							additionalHeaders: {
+								Authorization: 'my-custom-auth-token',
+							},
+						})
+						.subscribe({ error: () => {} });
+
+					// Wait for the socket to be initialize
+					await fakeWebSocketInterface.readyForUse;
+
+					expect(newSocketSpy).toHaveBeenNthCalledWith(
+						1,
+						'wss://unit-test.testurl.com/realtime',
+						[
+							'graphql-ws',
+							'header-eyJBdXRob3JpemF0aW9uIjoibXktY3VzdG9tLWF1dGgtdG9rZW4iLCJob3N0IjoidW5pdC10ZXN0LnRlc3R1cmwuY29tIn0',
+						],
+					);
+				});
+
 				test('subscription fails when onerror triggered while waiting for onopen', async () => {
 					expect.assertions(1);
 					provider
