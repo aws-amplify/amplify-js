@@ -146,6 +146,21 @@ export interface ConfirmSignInWithSMSCode {
 	codeDeliveryDetails?: AuthCodeDeliveryDetails;
 }
 
+export interface ConfirmSignInWithEmailCode {
+	/**
+	 * Auth step requires user to use EMAIL as multifactor authentication by retrieving a code sent to inbox.
+	 *
+	 * @example
+	 * ```typescript
+	 * // Code retrieved from email
+	 * const emailCode = '112233'
+	 * await confirmSignIn({challengeResponse: emailCode})
+	 * ```
+	 */
+	signInStep: 'CONFIRM_SIGN_IN_WITH_EMAIL_CODE';
+	codeDeliveryDetails?: AuthCodeDeliveryDetails;
+}
+
 export interface ConfirmSignUpStep {
 	/**
 	 * Auth step requires to confirm user's sign-up.
@@ -181,6 +196,7 @@ export type AuthNextSignInStep<
 	| ConfirmSignInWithNewPasswordRequired<UserAttributeKey>
 	| ConfirmSignInWithSMSCode
 	| ConfirmSignInWithTOTPCode
+	| ConfirmSignInWithEmailCode
 	| ContinueSignInWithTOTPSetup
 	| ConfirmSignUpStep
 	| ResetPasswordStep
