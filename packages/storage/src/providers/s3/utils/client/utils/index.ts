@@ -26,3 +26,4 @@ export {
 	validateS3RequiredParameter,
 } from './serializeHelpers';
 export { retryDecider } from './retryDecider';
+export { bothNilOrEqual } from './integrityHelpers';

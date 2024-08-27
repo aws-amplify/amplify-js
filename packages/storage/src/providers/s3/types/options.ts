@@ -246,12 +246,13 @@ export type CopyDestinationOptionsWithKey = WriteOptions & {
 	bucket?: StorageBucket;
 };
 
-export interface CopyWithPathSourceOptions {
+export interface CopySourceOptionsWithPath {
 	bucket?: StorageBucket;
 	notModifiedSince?: Date;
 	eTag?: string;
 }
-export interface CopyWithPathDestinationOptions {
+
+export interface CopyDestinationOptionsWithPath {
 	bucket?: StorageBucket;
 }
 

@@ -12,6 +12,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 
 import {
 	assignStringVariables,
+	bothNilOrEqual,
 	buildStorageServiceError,
 	parseXmlBody,
 	parseXmlError,
@@ -20,6 +21,7 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { IntegrityError } from '../../../../../errors/IntegrityError';
 
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
@@ -58,6 +60,7 @@ const copyObjectSerializer = async (
 				input.CopySourceIfUnmodifiedSince?.toISOString(),
 		}),
 	};
+	validateCopyObjectHeaders(input, headers);
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
@@ -67,6 +70,38 @@ const copyObjectSerializer = async (
 		headers,
 		url,
 	};
+};
+
+export const validateCopyObjectHeaders = (
+	input: CopyObjectInput,
+	headers: Record<string, string>,
+) => {
+	const validations: boolean[] = [];
+
+	validations.push(headers['x-amz-copy-source'] === input.CopySource);
+
+	validations.push(
+		bothNilOrEqual(
+			input.MetadataDirective,
+			headers['x-amz-metadata-directive'],
+		),
+	);
+	validations.push(
+		bothNilOrEqual(
+			input.CopySourceIfMatch,
+			headers['x-amz-copy-source-if-match'],
+		),
+	);
+	validations.push(
+		bothNilOrEqual(
+			input.CopySourceIfUnmodifiedSince?.toISOString(),
+			headers['x-amz-copy-source-if-unmodified-since'],
+		),
+	);
+
+	if (validations.some(validation => !validation)) {
+		throw new IntegrityError();
+	}
 };
 
 const copyObjectDeserializer = async (
