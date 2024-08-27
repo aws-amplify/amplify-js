@@ -1,7 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { URLSearchParams } from 'url';
-
 import { Observable, SubscriptionLike } from 'rxjs';
 import { GraphQLError } from 'graphql';
 import {
