@@ -117,19 +117,16 @@ describe('listCallerAccessGrants', () => {
 				scope: 's3://bucket/*',
 				type: 'BUCKET',
 				permission: 'READ',
-				applicationArn: undefined,
 			},
 			{
 				scope: 's3://bucket/path/*',
 				type: 'PREFIX',
 				permission: 'READWRITE',
-				applicationArn: undefined,
 			},
 			{
 				scope: 's3://bucket/path/to/object',
 				type: 'OBJECT',
 				permission: 'READ',
-				applicationArn: 'arn:123',
 			},
 		]);
 		expect(nextToken).toBeUndefined();

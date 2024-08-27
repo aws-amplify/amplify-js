@@ -91,7 +91,7 @@ export const retryMiddlewareFactory = <TInput = Request, TOutput = Response>({
 				// context.attemptsCount may be updated after calling next handler which may retry the request by itself.
 				attemptsCount =
 					(context.attemptsCount ?? 0) > attemptsCount
-						? context.attemptsCount ?? 0
+						? (context.attemptsCount ?? 0)
 						: attemptsCount + 1;
 				context.attemptsCount = attemptsCount;
 				const { isCredentialsExpiredError, retryable } = await retryDecider(

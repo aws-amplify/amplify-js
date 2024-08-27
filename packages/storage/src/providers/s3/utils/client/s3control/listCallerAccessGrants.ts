@@ -22,6 +22,7 @@ import {
 	parseXmlError,
 	s3TransferHandler,
 } from '../utils';
+import { createStringEnumDeserializer } from '../utils/deserializeHelpers';
 
 import type {
 	ListCallerAccessGrantsCommandInput,
@@ -70,7 +71,8 @@ const listCallerAccessGrantsDeserializer = async (
 		const contents = map(parsed, {
 			CallerAccessGrantsList: [
 				'CallerAccessGrantsList',
-				value => emptyArrayGuard(value, deserializeAccessGrantsList),
+				value =>
+					emptyArrayGuard(value.AccessGrant, deserializeAccessGrantsList),
 			],
 			NextToken: 'NextToken',
 		});
@@ -86,10 +88,16 @@ const deserializeAccessGrantsList = (output: any[]) =>
 	output.map(deserializeCallerAccessGrant);
 
 const deserializeCallerAccessGrant = (output: any) =>
-	map(output.AccessGrantsInstance, {
+	map(output, {
 		ApplicationArn: 'ApplicationArn',
 		GrantScope: 'GrantScope',
-		Permission: 'Permission',
+		Permission: [
+			'Permission',
+			createStringEnumDeserializer(
+				['READ', 'READWRITE', 'WRITE'] as const,
+				'Permission',
+			),
+		],
 	});
 
 export const listCallerAccessGrants = composeServiceApi(

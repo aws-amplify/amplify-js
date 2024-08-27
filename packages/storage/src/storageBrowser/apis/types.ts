@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	AccessGrant,
 	CredentialsProvider,
 	ListLocationsInput,
 	ListLocationsOutput,
@@ -18,7 +17,7 @@ export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	region: string;
 }
 
-export type ListCallerAccessGrantsOutput = ListLocationsOutput<AccessGrant>;
+export type ListCallerAccessGrantsOutput = ListLocationsOutput;
 
 export interface GetDataAccessInput {
 	accountId: string;

@@ -27,80 +27,6 @@ declare const S3PrefixType: {
 };
 
 /**
- * @public
- */
-export type Permission = (typeof Permission)[keyof typeof Permission];
-
-/**
- * @public
- */
-export type Privilege = (typeof Privilege)[keyof typeof Privilege];
-
-/**
- * @public
- */
-export type S3PrefixType = (typeof S3PrefixType)[keyof typeof S3PrefixType];
-
-/**
- * @public
- *
- * The input for {@link ListCallerAccessGrantsCommand}.
- */
-export type ListCallerAccessGrantsCommandInput = ListCallerAccessGrantsRequest;
-
-/**
- * @public
- *
- * The output of {@link ListCallerAccessGrantsCommand}.
- */
-export interface ListCallerAccessGrantsCommandOutput
-	extends ListCallerAccessGrantsResult,
-		__MetadataBearer {}
-
-/**
- * @public
- */
-export interface ListCallerAccessGrantsRequest {
-	AccountId?: string;
-	GrantScope?: string;
-	NextToken?: string;
-	MaxResults?: number;
-}
-
-/**
- * @public
- */
-export interface ListCallerAccessGrantsEntry {
-	Permission?: Permission | string;
-	GrantScope?: string;
-	ApplicationArn?: string;
-}
-
-/**
- * @public
- */
-export interface ListCallerAccessGrantsResult {
-	NextToken?: string;
-	CallerAccessGrantsList?: ListCallerAccessGrantsEntry[];
-}
-
-/**
- * @public
- *
- * The input for {@link GetDataAccessCommand}.
- */
-export type GetDataAccessCommandInput = GetDataAccessRequest;
-
-/**
- * @public
- *
- * The output of {@link GetDataAccessCommand}.
- */
-export interface GetDataAccessCommandOutput
-	extends GetDataAccessResult,
-		__MetadataBearer {}
-
-/**
  * <p>The Amazon Web Services Security Token Service temporary credential that S3 Access Grants vends to grantees and client applications. </p>
  * @public
  */
@@ -110,25 +36,49 @@ export interface Credentials {
 	 * @public
 	 */
 	AccessKeyId?: string;
-
 	/**
 	 * <p>The secret access key of the Amazon Web Services STS temporary credential that S3 Access Grants vends to grantees and client applications. </p>
 	 * @public
 	 */
 	SecretAccessKey?: string;
-
 	/**
 	 * <p>The Amazon Web Services STS temporary credential that S3 Access Grants vends to grantees and client applications. </p>
 	 * @public
+	 * @public
+	 *
+	 * The input for {@link ListCallerAccessGrantsCommand}.
+	 * @public
+	 *
+	 * The input for {@link ListCallerAccessGrantsCommand}.
 	 */
 	SessionToken?: string;
-
 	/**
 	 * <p>The expiration date and time of the temporary credential that S3 Access Grants vends to grantees and client applications. </p>
 	 * @public
+	 * @public
+	 *
+	 * The output of {@link ListCallerAccessGrantsCommand}.
+	 * @public
+	 *
+	 * The output of {@link ListCallerAccessGrantsCommand}.
 	 */
 	Expiration?: Date;
 }
+
+/**
+ * @public
+ *
+ * The input for {@link GetDataAccessCommand}.
+ */
+export type GetDataAccessCommandInput = GetDataAccessRequest;
+/**
+ * @public
+ *
+ * The output of {@link GetDataAccessCommand}.
+ */
+export interface GetDataAccessCommandOutput
+	extends GetDataAccessResult,
+		__MetadataBearer {}
 
 /**
  * @public
@@ -211,3 +161,56 @@ export interface GetDataAccessResult {
 	 */
 	MatchedGrantTarget?: string;
 }
+
+/**
+ * @public
+ *
+ * The input for {@link ListCallerAccessGrantsCommand}.
+ */
+export type ListCallerAccessGrantsCommandInput = ListCallerAccessGrantsRequest;
+/**
+ * @public
+ *
+ * The output of {@link ListCallerAccessGrantsCommand}.
+ */
+export interface ListCallerAccessGrantsCommandOutput
+	extends ListCallerAccessGrantsResult,
+		__MetadataBearer {}
+/**
+ * @public
+ */
+export interface ListCallerAccessGrantsEntry {
+	Permission?: Permission;
+	GrantScope?: string;
+	ApplicationArn?: string;
+}
+/**
+ * @public
+ */
+export interface ListCallerAccessGrantsRequest {
+	AccountId?: string;
+	GrantScope?: string;
+	NextToken?: string;
+	MaxResults?: number;
+}
+/**
+ * @public
+ */
+export interface ListCallerAccessGrantsResult {
+	NextToken?: string;
+	CallerAccessGrantsList?: ListCallerAccessGrantsEntry[];
+}
+/**
+ * @public
+ */
+export type Permission = (typeof Permission)[keyof typeof Permission];
+/**
+ * @public
+ */
+export type Privilege = (typeof Privilege)[keyof typeof Privilege];
+/**
+ * @public
+ */
+export type S3PrefixType = (typeof S3PrefixType)[keyof typeof S3PrefixType];
+
+export {};
