@@ -32,6 +32,7 @@ import {
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { resetMfaSetupState } from '../utils/mfaSetupStore';
 
 /**
  * Signs a user in using USER_PASSWORD_AUTH AuthFlowType
@@ -64,6 +65,7 @@ export async function signInWithUserPassword(
 	);
 
 	try {
+		resetMfaSetupState();
 		const {
 			ChallengeName: retiredChallengeName,
 			ChallengeParameters: retriedChallengeParameters,

@@ -61,6 +61,7 @@ import {
 import { BigInteger } from './srp/BigInteger';
 import { AuthenticationHelper } from './srp/AuthenticationHelper';
 import { getUserContextData } from './userContextData';
+import { mfaSetupStore } from './mfaSetupStore';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -148,36 +149,77 @@ export async function handleMFASetupChallenge({
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
-	const challengeResponses = {
-		USERNAME: username,
-	};
 
-	const { Session } = await verifySoftwareToken(
-		{
-			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
-		},
-		{
-			UserCode: challengeResponse,
-			Session: session,
-			FriendlyDeviceName: deviceName,
-		},
-	);
+	const mfaSetupState = mfaSetupStore.getState();
 
-	signInStore.dispatch({
-		type: 'SET_SIGN_IN_SESSION',
-		value: Session,
+	if (mfaSetupState?.status === 'IN_PROGRESS') {
+		if (
+			(challengeResponse === 'EMAIL' || challengeResponse === 'TOTP') &&
+			mfaSetupState.options.includes(challengeResponse)
+		) {
+			mfaSetupStore.dispatch({ type: 'COMPLETE', value: challengeResponse });
+
+			return {
+				ChallengeName: 'MFA_SETUP',
+				Session: session,
+				$metadata: {},
+			};
+		}
+	}
+
+	if (mfaSetupState?.status === 'COMPLETE') {
+		const challengeResponses: Record<string, string> = {
+			USERNAME: username,
+		};
+
+		if (mfaSetupState.value === 'EMAIL') {
+			challengeResponses.EMAIL = challengeResponse;
+
+			const jsonReq: RespondToAuthChallengeCommandInput = {
+				ChallengeName: 'MFA_SETUP',
+				ChallengeResponses: challengeResponses,
+				Session: session,
+				ClientMetadata: clientMetadata,
+				ClientId: userPoolClientId,
+			};
+
+			return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+		}
+
+		if (mfaSetupState.value === 'TOTP') {
+			const { Session } = await verifySoftwareToken(
+				{
+					region: getRegion(userPoolId),
+					userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+				},
+				{
+					UserCode: challengeResponse,
+					Session: session,
+					FriendlyDeviceName: deviceName,
+				},
+			);
+
+			signInStore.dispatch({
+				type: 'SET_SIGN_IN_SESSION',
+				value: Session,
+			});
+
+			const jsonReq: RespondToAuthChallengeCommandInput = {
+				ChallengeName: 'MFA_SETUP',
+				ChallengeResponses: challengeResponses,
+				Session,
+				ClientMetadata: clientMetadata,
+				ClientId: userPoolClientId,
+			};
+
+			return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+		}
+	}
+
+	throw new AuthError({
+		name: AuthErrorCodes.SignInException,
+		message: `Cannot initiate MFA setup from available types: ${mfaSetupState?.options}`,
 	});
-
-	const jsonReq: RespondToAuthChallengeCommandInput = {
-		ChallengeName: 'MFA_SETUP',
-		ChallengeResponses: challengeResponses,
-		Session,
-		ClientMetadata: clientMetadata,
-		ClientId: userPoolClientId,
-	};
-
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleSelectMFATypeChallenge({
@@ -690,32 +732,118 @@ export async function getSignInResult(params: {
 			};
 		case 'MFA_SETUP': {
 			const { signInSession, username } = signInStore.getState();
+			const mfaSetupState = mfaSetupStore.getState();
 
-			if (!isMFATypeEnabled(challengeParameters, 'TOTP'))
+			if (mfaSetupState?.status === 'COMPLETE') {
+				if (mfaSetupState.value === 'EMAIL') {
+					return {
+						isSignedIn: false,
+						nextStep: {
+							signInStep: 'CONTINUE_SIGN_IN_WITH_EMAIL_SETUP',
+						},
+					};
+				}
+				if (mfaSetupState.value === 'TOTP') {
+					const { Session, SecretCode: secretCode } =
+						await associateSoftwareToken(
+							{ region: getRegion(authConfig.userPoolId) },
+							{
+								Session: signInSession,
+							},
+						);
+					signInStore.dispatch({
+						type: 'SET_SIGN_IN_SESSION',
+						value: Session,
+					});
+
+					return {
+						isSignedIn: false,
+						nextStep: {
+							signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
+							totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
+						},
+					};
+				}
 				throw new AuthError({
 					name: AuthErrorCodes.SignInException,
-					message: `Cannot initiate MFA setup from available types: ${getMFATypes(
-						parseMFATypes(challengeParameters.MFAS_CAN_SETUP),
-					)}`,
+					message: `Cannot initiate MFA setup from available types: ${mfaSetupState.options}`,
 				});
-			const { Session, SecretCode: secretCode } = await associateSoftwareToken(
-				{ region: getRegion(authConfig.userPoolId) },
-				{
-					Session: signInSession,
-				},
-			);
-			signInStore.dispatch({
-				type: 'SET_SIGN_IN_SESSION',
-				value: Session,
-			});
+			}
 
-			return {
-				isSignedIn: false,
-				nextStep: {
-					signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
-					totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
-				},
-			};
+			const allowedMfaSetupTypes = getAllowedMfaSetupTypes(
+				challengeParameters.MFAS_CAN_SETUP,
+			);
+
+			const isTotpMfaSetupAvailable = allowedMfaSetupTypes.includes('TOTP');
+			const isEmailMfaSetupAvailable = allowedMfaSetupTypes.includes('EMAIL');
+
+			if (isTotpMfaSetupAvailable && isEmailMfaSetupAvailable) {
+				mfaSetupStore.dispatch({
+					type: 'IN_PROGRESS',
+					value: allowedMfaSetupTypes,
+				});
+
+				return {
+					isSignedIn: false,
+					nextStep: {
+						signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SETUP_SELECTION',
+						allowedMFATypes: allowedMfaSetupTypes,
+					},
+				};
+			}
+
+			if (isEmailMfaSetupAvailable) {
+				mfaSetupStore.dispatch({
+					type: 'AUTO',
+					value: {
+						value: 'EMAIL',
+						options: allowedMfaSetupTypes,
+					},
+				});
+
+				return {
+					isSignedIn: false,
+					nextStep: {
+						signInStep: 'CONTINUE_SIGN_IN_WITH_EMAIL_SETUP',
+					},
+				};
+			}
+
+			if (isTotpMfaSetupAvailable) {
+				mfaSetupStore.dispatch({
+					type: 'AUTO',
+					value: {
+						value: 'TOTP',
+						options: allowedMfaSetupTypes,
+					},
+				});
+
+				const { Session, SecretCode: secretCode } =
+					await associateSoftwareToken(
+						{ region: getRegion(authConfig.userPoolId) },
+						{
+							Session: signInSession,
+						},
+					);
+
+				signInStore.dispatch({
+					type: 'SET_SIGN_IN_SESSION',
+					value: Session,
+				});
+
+				return {
+					isSignedIn: false,
+					nextStep: {
+						signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
+						totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
+					},
+				};
+			}
+
+			throw new AuthError({
+				name: AuthErrorCodes.SignInException,
+				message: `Cannot initiate MFA setup from available types: ${allowedMfaSetupTypes}`,
+			});
 		}
 		case 'NEW_PASSWORD_REQUIRED':
 			return {
@@ -912,7 +1040,7 @@ export async function handleChallengeName(
 	// TODO: remove this error message for production apps
 	throw new AuthError({
 		name: AuthErrorCodes.SignInException,
-		message: `An error occurred during the sign in process. 
+		message: `An error occurred during the sign in process.
 		${challengeName} challengeName returned by the underlying service was not addressed.`,
 	});
 }
@@ -943,17 +1071,6 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	return JSON.parse(mfa) as CognitoMFAType[];
 }
 
-export function isMFATypeEnabled(
-	challengeParams: ChallengeParameters,
-	mfaType: AuthMFAType,
-): boolean {
-	const { MFAS_CAN_SETUP } = challengeParams;
-	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
-	if (!mfaTypes) return false;
-
-	return mfaTypes.includes(mfaType);
-}
-
 export async function assertUserNotAuthenticated() {
 	let authUser: AWSAuthUser | undefined;
 	try {
@@ -967,6 +1084,12 @@ export async function assertUserNotAuthenticated() {
 			recoverySuggestion: 'Call signOut before calling signIn again.',
 		});
 	}
+}
+
+function getAllowedMfaSetupTypes(mfasCanSetup?: string) {
+	return (getMFATypes(parseMFATypes(mfasCanSetup)) || []).filter(
+		authMfaType => authMfaType === 'EMAIL' || authMfaType === 'TOTP',
+	);
 }
 
 /**

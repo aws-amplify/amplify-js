@@ -33,6 +33,7 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
+import { resetMfaSetupState } from '../utils/mfaSetupStore';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -71,8 +72,8 @@ export async function confirmSignIn(
 		throw new AuthError({
 			name: AuthErrorCodes.SignInException,
 			message: `
-			An error occurred during the sign in process. 
-			
+			An error occurred during the sign in process.
+
 			This most likely occurred due to:
 			1. signIn was not called before confirmSignIn.
 			2. signIn threw an exception.
@@ -110,6 +111,7 @@ export async function confirmSignIn(
 
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
+			resetMfaSetupState();
 			await cacheCognitoTokens({
 				username,
 				...AuthenticationResult,
