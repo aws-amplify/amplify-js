@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.5.1",
+	"version": "6.5.3",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.43",
-		"@aws-amplify/api": "6.0.45",
-		"@aws-amplify/auth": "6.3.14",
-		"@aws-amplify/core": "6.3.10",
-		"@aws-amplify/datastore": "5.0.45",
-		"@aws-amplify/notifications": "2.0.43",
-		"@aws-amplify/storage": "6.6.1",
+		"@aws-amplify/analytics": "7.0.45",
+		"@aws-amplify/api": "6.0.47",
+		"@aws-amplify/auth": "6.3.16",
+		"@aws-amplify/core": "6.3.12",
+		"@aws-amplify/datastore": "5.0.47",
+		"@aws-amplify/notifications": "2.0.45",
+		"@aws-amplify/storage": "6.6.3",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "41 kB"
+			"limit": "41.5 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -353,13 +353,13 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "12.55 kB"
+			"limit": "12.57 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmResetPassword }",
-			"limit": "12.50 kB"
+			"limit": "12.51 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
@@ -371,7 +371,7 @@
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resendSignUpCode }",
-			"limit": "12.50 kB"
+			"limit": "12.53 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -389,7 +389,7 @@
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "11.85 kB"
+			"limit": "11.87 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
@@ -407,7 +407,7 @@
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "12.73 kB"
+			"limit": "12.76 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -443,7 +443,7 @@
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "11.80 kB"
+			"limit": "11.81 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
@@ -473,7 +473,7 @@
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "14.70 kB"
+			"limit": "14.71 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
@@ -485,13 +485,13 @@
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "15.30 kB"
+			"limit": "15.31 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "14.56 kB"
+			"limit": "14.57 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
