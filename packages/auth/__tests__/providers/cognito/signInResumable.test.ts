@@ -3,7 +3,6 @@
 import { Amplify, syncSessionStorage } from '@aws-amplify/core';
 
 import {
-	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
 } from '../../../src/providers/cognito/utils/signInStore';
@@ -136,7 +135,7 @@ describe('signInStore', () => {
 			signInSession: undefined,
 			username: undefined,
 		});
-		cleanActiveSignInState();
+		signInStore.dispatch({ type: 'RESET_STATE' });
 	});
 
 	test('State is set after calling setActiveSignInState', async () => {
@@ -150,7 +149,7 @@ describe('signInStore', () => {
 		expect(localSignInState).toEqual(user1);
 		expect(persistSignInStateSpy).toHaveBeenCalledTimes(1);
 		expect(persistSignInStateSpy).toHaveBeenCalledWith(user1);
-		cleanActiveSignInState();
+		signInStore.dispatch({ type: 'RESET_STATE' });
 	});
 
 	test('State is updated after calling SignIn', async () => {
@@ -197,7 +196,7 @@ describe('signInStore', () => {
 			challengeName: user1.challengeName,
 			signInSession: user1.signInSession,
 		});
-		cleanActiveSignInState();
+		signInStore.dispatch({ type: 'RESET_STATE' });
 	});
 
 	test('sign-in store should return undefined state when the sign-in session is expired', async () => {
@@ -210,7 +209,7 @@ describe('signInStore', () => {
 			challengeName: undefined,
 			signInSession: undefined,
 		});
-		cleanActiveSignInState();
+		signInStore.dispatch({ type: 'RESET_STATE' });
 	});
 
 	test('State SignInSession is updated after dispatching custom session value', () => {
