@@ -27,7 +27,7 @@ export class SyncKeyValueStorage implements SyncStorage {
 	 * @returns {string} value that was set
 	 */
 	setItem(key: string, value: string) {
-		this._storage!.setItem(key, value);
+		this.storage.setItem(key, value);
 	}
 
 	/**
@@ -37,7 +37,7 @@ export class SyncKeyValueStorage implements SyncStorage {
 	 * @returns {string} the data item
 	 */
 	getItem(key: string) {
-		return this._storage!.getItem(key);
+		return this.storage.getItem(key);
 	}
 
 	/**
@@ -46,7 +46,7 @@ export class SyncKeyValueStorage implements SyncStorage {
 	 * @returns {string} value - value that was deleted
 	 */
 	removeItem(key: string) {
-		this._storage!.removeItem(key);
+		this.storage.removeItem(key);
 	}
 
 	/**
@@ -54,6 +54,6 @@ export class SyncKeyValueStorage implements SyncStorage {
 	 * @returns {string} nothing
 	 */
 	clear() {
-		this._storage!.clear();
+		this.storage.clear();
 	}
 }

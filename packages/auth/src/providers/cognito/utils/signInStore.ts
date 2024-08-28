@@ -103,7 +103,6 @@ const clearPersistedSignInState = () => {
 // Clear saved sign in states from both memory and Synced Session Storage
 export function cleanActiveSignInState(): void {
 	signInStore.dispatch({ type: 'RESET_STATE' });
-	clearPersistedSignInState();
 }
 
 const getDefaultState = (): SignInState => ({
