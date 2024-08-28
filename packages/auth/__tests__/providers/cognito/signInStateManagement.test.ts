@@ -42,6 +42,10 @@ describe('local sign-in state management tests', () => {
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
 	});
 
+	afterAll(() => {
+		mockedGetCurrentUser.mockRestore();
+	});
+
 	test('local state management should return state after signIn returns a ChallengeName', async () => {
 		const handleUserSRPAuthflowSpy = jest
 			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
