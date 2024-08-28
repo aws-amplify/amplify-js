@@ -171,20 +171,45 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 			return allCookies;
 		},
 		set(name, value, options) {
-			response.appendHeader(
-				'Set-Cookie',
-				`${ensureEncodedForJSCookie(name)}=${value};${
-					options ? serializeSetCookieOptions(options) : ''
-				}`,
-			);
+			const encodedName = ensureEncodedForJSCookie(name);
+
+			const existingSetCookieValues = response.getHeader('Set-Cookie');
+
+			// if the cookies have already been set, we don't need to set them again.
+			if (
+				Array.isArray(existingSetCookieValues) &&
+				existingSetCookieValues.findIndex(
+					cookieValue =>
+						cookieValue.startsWith(`${encodedName}=`) &&
+						!cookieValue.startsWith(`${encodedName}=;`),
+				) > -1
+			) {
+				return;
+			}
+
+			const setCookieValue = `${encodedName}=${value};${
+				options ? serializeSetCookieOptions(options) : ''
+			}`;
+
+			response.appendHeader('Set-Cookie', setCookieValue);
 		},
 		delete(name) {
-			response.appendHeader(
-				'Set-Cookie',
-				`${ensureEncodedForJSCookie(
-					name,
-				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
-			);
+			const encodedName = ensureEncodedForJSCookie(name);
+			const setCookieValue = `${encodedName}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`;
+			const existingSetCookieValues = response.getHeader('Set-Cookie');
+
+			// if the value for cookie deletion is already in the Set-Cookie header, we
+			// don't need to add the deletion value again.
+			if (
+				(typeof existingSetCookieValues === 'string' &&
+					existingSetCookieValues === setCookieValue) ||
+				(Array.isArray(existingSetCookieValues) &&
+					existingSetCookieValues.includes(setCookieValue))
+			) {
+				return;
+			}
+
+			response.appendHeader('Set-Cookie', setCookieValue);
 		},
 	};
 };
