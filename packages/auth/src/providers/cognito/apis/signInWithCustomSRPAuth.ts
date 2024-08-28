@@ -34,7 +34,6 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
-import { resetMfaSetupState } from '../utils/mfaSetupStore';
 
 /**
  * Signs a user in using a custom authentication flow with SRP
@@ -68,7 +67,6 @@ export async function signInWithCustomSRPAuth(
 	);
 
 	try {
-		resetMfaSetupState();
 		const {
 			ChallengeName: handledChallengeName,
 			ChallengeParameters: handledChallengeParameters,

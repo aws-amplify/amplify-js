@@ -61,7 +61,6 @@ import {
 import { BigInteger } from './srp/BigInteger';
 import { AuthenticationHelper } from './srp/AuthenticationHelper';
 import { getUserContextData } from './userContextData';
-import { mfaSetupStore } from './mfaSetupStore';
 
 const USER_ATTRIBUTES = 'userAttributes.';
 
@@ -150,76 +149,74 @@ export async function handleMFASetupChallenge({
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
 
-	const mfaSetupState = mfaSetupStore.getState();
-
-	if (mfaSetupState?.status === 'IN_PROGRESS') {
-		if (
-			(challengeResponse === 'EMAIL' || challengeResponse === 'TOTP') &&
-			mfaSetupState.options.includes(challengeResponse)
-		) {
-			mfaSetupStore.dispatch({ type: 'COMPLETE', value: challengeResponse });
-
-			return {
-				ChallengeName: 'MFA_SETUP',
-				Session: session,
-				$metadata: {},
-			};
-		}
+	if (challengeResponse === 'EMAIL') {
+		return {
+			ChallengeName: 'MFA_SETUP',
+			Session: session,
+			ChallengeParameters: {
+				MFAS_CAN_SETUP: '["EMAIL_MFA"]',
+			},
+			$metadata: {},
+		};
 	}
 
-	if (mfaSetupState?.status === 'COMPLETE') {
-		const challengeResponses: Record<string, string> = {
-			USERNAME: username,
+	if (challengeResponse === 'TOTP') {
+		return {
+			ChallengeName: 'MFA_SETUP',
+			Session: session,
+			ChallengeParameters: {
+				MFAS_CAN_SETUP: '["SOFTWARE_TOKEN_MFA"]',
+			},
+			$metadata: {},
+		};
+	}
+
+	const isTOTPCode = /^\d+$/.test(challengeResponse.trim());
+
+	const challengeResponses: Record<string, string> = {
+		USERNAME: username,
+	};
+
+	if (isTOTPCode) {
+		const { Session } = await verifySoftwareToken(
+			{
+				region: getRegion(userPoolId),
+				userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+			},
+			{
+				UserCode: challengeResponse,
+				Session: session,
+				FriendlyDeviceName: deviceName,
+			},
+		);
+
+		signInStore.dispatch({
+			type: 'SET_SIGN_IN_SESSION',
+			value: Session,
+		});
+
+		const jsonReq: RespondToAuthChallengeCommandInput = {
+			ChallengeName: 'MFA_SETUP',
+			ChallengeResponses: challengeResponses,
+			Session,
+			ClientMetadata: clientMetadata,
+			ClientId: userPoolClientId,
 		};
 
-		if (mfaSetupState.value === 'EMAIL') {
-			challengeResponses.EMAIL = challengeResponse;
-
-			const jsonReq: RespondToAuthChallengeCommandInput = {
-				ChallengeName: 'MFA_SETUP',
-				ChallengeResponses: challengeResponses,
-				Session: session,
-				ClientMetadata: clientMetadata,
-				ClientId: userPoolClientId,
-			};
-
-			return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
-		}
-
-		if (mfaSetupState.value === 'TOTP') {
-			const { Session } = await verifySoftwareToken(
-				{
-					region: getRegion(userPoolId),
-					userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
-				},
-				{
-					UserCode: challengeResponse,
-					Session: session,
-					FriendlyDeviceName: deviceName,
-				},
-			);
-
-			signInStore.dispatch({
-				type: 'SET_SIGN_IN_SESSION',
-				value: Session,
-			});
-
-			const jsonReq: RespondToAuthChallengeCommandInput = {
-				ChallengeName: 'MFA_SETUP',
-				ChallengeResponses: challengeResponses,
-				Session,
-				ClientMetadata: clientMetadata,
-				ClientId: userPoolClientId,
-			};
-
-			return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
-		}
+		return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 	}
 
-	throw new AuthError({
-		name: AuthErrorCodes.SignInException,
-		message: `Cannot initiate MFA setup from available types: ${mfaSetupState?.options}`,
-	});
+	challengeResponses.EMAIL = challengeResponse;
+
+	const jsonReq: RespondToAuthChallengeCommandInput = {
+		ChallengeName: 'MFA_SETUP',
+		ChallengeResponses: challengeResponses,
+		Session: session,
+		ClientMetadata: clientMetadata,
+		ClientId: userPoolClientId,
+	};
+
+	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleSelectMFATypeChallenge({
@@ -732,43 +729,6 @@ export async function getSignInResult(params: {
 			};
 		case 'MFA_SETUP': {
 			const { signInSession, username } = signInStore.getState();
-			const mfaSetupState = mfaSetupStore.getState();
-
-			if (mfaSetupState?.status === 'COMPLETE') {
-				if (mfaSetupState.value === 'EMAIL') {
-					return {
-						isSignedIn: false,
-						nextStep: {
-							signInStep: 'CONTINUE_SIGN_IN_WITH_EMAIL_SETUP',
-						},
-					};
-				}
-				if (mfaSetupState.value === 'TOTP') {
-					const { Session, SecretCode: secretCode } =
-						await associateSoftwareToken(
-							{ region: getRegion(authConfig.userPoolId) },
-							{
-								Session: signInSession,
-							},
-						);
-					signInStore.dispatch({
-						type: 'SET_SIGN_IN_SESSION',
-						value: Session,
-					});
-
-					return {
-						isSignedIn: false,
-						nextStep: {
-							signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
-							totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
-						},
-					};
-				}
-				throw new AuthError({
-					name: AuthErrorCodes.SignInException,
-					message: `Cannot initiate MFA setup from available types: ${mfaSetupState.options}`,
-				});
-			}
 
 			const allowedMfaSetupTypes = getAllowedMfaSetupTypes(
 				challengeParameters.MFAS_CAN_SETUP,
@@ -778,11 +738,6 @@ export async function getSignInResult(params: {
 			const isEmailMfaSetupAvailable = allowedMfaSetupTypes.includes('EMAIL');
 
 			if (isTotpMfaSetupAvailable && isEmailMfaSetupAvailable) {
-				mfaSetupStore.dispatch({
-					type: 'IN_PROGRESS',
-					value: allowedMfaSetupTypes,
-				});
-
 				return {
 					isSignedIn: false,
 					nextStep: {
@@ -793,14 +748,6 @@ export async function getSignInResult(params: {
 			}
 
 			if (isEmailMfaSetupAvailable) {
-				mfaSetupStore.dispatch({
-					type: 'AUTO',
-					value: {
-						value: 'EMAIL',
-						options: allowedMfaSetupTypes,
-					},
-				});
-
 				return {
 					isSignedIn: false,
 					nextStep: {
@@ -810,14 +757,6 @@ export async function getSignInResult(params: {
 			}
 
 			if (isTotpMfaSetupAvailable) {
-				mfaSetupStore.dispatch({
-					type: 'AUTO',
-					value: {
-						value: 'TOTP',
-						options: allowedMfaSetupTypes,
-					},
-				});
-
 				const { Session, SecretCode: secretCode } =
 					await associateSoftwareToken(
 						{ region: getRegion(authConfig.userPoolId) },

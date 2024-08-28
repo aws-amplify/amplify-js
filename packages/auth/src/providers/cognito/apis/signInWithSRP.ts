@@ -34,7 +34,6 @@ import {
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
-import { resetMfaSetupState } from '../utils/mfaSetupStore';
 
 /**
  * Signs a user in
@@ -68,7 +67,6 @@ export async function signInWithSRP(
 	);
 
 	try {
-		resetMfaSetupState();
 		const {
 			ChallengeName: handledChallengeName,
 			ChallengeParameters: handledChallengeParameters,

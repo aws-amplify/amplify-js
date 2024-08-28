@@ -33,7 +33,6 @@ import {
 } from '../utils/clients/CognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
-import { resetMfaSetupState } from '../utils/mfaSetupStore';
 
 /**
  * Continues or completes the sign in process when required by the initial call to `signIn`.
@@ -111,7 +110,6 @@ export async function confirmSignIn(
 
 		if (AuthenticationResult) {
 			cleanActiveSignInState();
-			resetMfaSetupState();
 			await cacheCognitoTokens({
 				username,
 				...AuthenticationResult,

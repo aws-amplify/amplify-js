@@ -3,7 +3,6 @@
 
 import { CognitoAuthSignInDetails } from '../types';
 
-import { Reducer, Store } from './types';
 import { ChallengeName } from './clients/CognitoIdentityProvider/types';
 
 // TODO: replace all of this implementation with state machines
@@ -20,6 +19,13 @@ type SignInAction =
 	| { type: 'SET_USERNAME'; value?: string }
 	| { type: 'SET_CHALLENGE_NAME'; value?: ChallengeName }
 	| { type: 'SET_SIGN_IN_SESSION'; value?: string };
+
+export type Store<State, Action> = (reducer: Reducer<State, Action>) => {
+	getState(): ReturnType<Reducer<State, Action>>;
+	dispatch(action: Action): void;
+};
+
+export type Reducer<State, Action> = (state: State, action: Action) => State;
 
 const signInReducer: Reducer<SignInState, SignInAction> = (state, action) => {
 	switch (action.type) {
