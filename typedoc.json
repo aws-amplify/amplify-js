@@ -11,6 +11,7 @@
 		"packages/datastore-storage-adapter",
 	],
     "out": "docs/api",
+	"json": "docs/reference.json",
 	"readme": "docs/README.md",
 	"sortEntryPoints": false,
 	"includeVersion": false,

@@ -14,7 +14,7 @@
 		"test:license": "license-check-and-add check -f license_config.json",
 		"test:github-actions": "node ./scripts/test-github-actions.js",
 		"test:tsc-compliance": "yarn workspace tsc-compliance-test test:compliance",
-		"docs": "typedoc",
+		"docs": "typedoc && node scripts/process-typedoc.mjs",
 		"build": "lerna run build --stream && yarn test:duplicates",
 		"build:watch": "concurrently 'lerna run build:watch --parallel' --raw",
 		"build:client-types": "cd scripts/dts-bundler && yarn && yarn run build",
