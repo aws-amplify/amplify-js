@@ -173,12 +173,13 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 		set(name, value, options) {
 			const encodedName = ensureEncodedForJSCookie(name);
 
-			const existingSetCookieValues = response.getHeader('Set-Cookie');
+			const existingValues = getExistingSetCookieValues(
+				response.getHeader('Set-Cookie'),
+			);
 
 			// if the cookies have already been set, we don't need to set them again.
 			if (
-				Array.isArray(existingSetCookieValues) &&
-				existingSetCookieValues.findIndex(
+				existingValues.findIndex(
 					cookieValue =>
 						cookieValue.startsWith(`${encodedName}=`) &&
 						!cookieValue.startsWith(`${encodedName}=;`),
@@ -187,25 +188,23 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 				return;
 			}
 
-			const setCookieValue = `${encodedName}=${value};${
-				options ? serializeSetCookieOptions(options) : ''
-			}`;
-
-			response.appendHeader('Set-Cookie', setCookieValue);
+			response.appendHeader(
+				'Set-Cookie',
+				`${encodedName}=${value};${
+					options ? serializeSetCookieOptions(options) : ''
+				}`,
+			);
 		},
 		delete(name) {
 			const encodedName = ensureEncodedForJSCookie(name);
 			const setCookieValue = `${encodedName}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`;
-			const existingSetCookieValues = response.getHeader('Set-Cookie');
+			const existingValues = getExistingSetCookieValues(
+				response.getHeader('Set-Cookie'),
+			);
 
 			// if the value for cookie deletion is already in the Set-Cookie header, we
 			// don't need to add the deletion value again.
-			if (
-				(typeof existingSetCookieValues === 'string' &&
-					existingSetCookieValues === setCookieValue) ||
-				(Array.isArray(existingSetCookieValues) &&
-					existingSetCookieValues.includes(setCookieValue))
-			) {
+			if (existingValues.includes(setCookieValue)) {
 				return;
 			}
 
@@ -275,3 +274,8 @@ const serializeSetCookieOptions = (
 // we are not using those chars in the auth keys.
 const ensureEncodedForJSCookie = (name: string): string =>
 	encodeURIComponent(name).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent);
+
+const getExistingSetCookieValues = (
+	values: number | string | string[] | undefined,
+): string[] =>
+	values === undefined ? [] : Array.isArray(values) ? values : [String(values)];
