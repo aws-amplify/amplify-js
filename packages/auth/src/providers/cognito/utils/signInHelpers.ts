@@ -154,7 +154,7 @@ export async function handleMFASetupChallenge({
 			ChallengeName: 'MFA_SETUP',
 			Session: session,
 			ChallengeParameters: {
-				MFAS_CAN_SETUP: '["EMAIL_MFA"]',
+				MFAS_CAN_SETUP: '["EMAIL_OTP"]',
 			},
 			$metadata: {},
 		};
@@ -171,11 +171,11 @@ export async function handleMFASetupChallenge({
 		};
 	}
 
-	const isTOTPCode = /^\d+$/.test(challengeResponse.trim());
-
 	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
 	};
+
+	const isTOTPCode = /^\d+$/.test(challengeResponse.trim());
 
 	if (isTOTPCode) {
 		const { Session } = await verifySoftwareToken(
@@ -206,17 +206,28 @@ export async function handleMFASetupChallenge({
 		return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 	}
 
-	challengeResponses.EMAIL = challengeResponse;
+	const isEmail = /^\S+@\S+\.\S+$/.test(challengeResponse.trim());
 
-	const jsonReq: RespondToAuthChallengeCommandInput = {
-		ChallengeName: 'MFA_SETUP',
-		ChallengeResponses: challengeResponses,
-		Session: session,
-		ClientMetadata: clientMetadata,
-		ClientId: userPoolClientId,
-	};
+	if (isEmail) {
+		challengeResponses.EMAIL = challengeResponse;
 
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+		const jsonReq: RespondToAuthChallengeCommandInput = {
+			ChallengeName: 'MFA_SETUP',
+			ChallengeResponses: challengeResponses,
+			Session: session,
+			ClientMetadata: clientMetadata,
+			ClientId: userPoolClientId,
+		};
+
+		return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	}
+
+	throw new AuthError({
+		name: AuthErrorCodes.SignInException,
+		message: `Cannot proceed with MFA setup using challengeResponse: ${challengeResponse}`,
+		recoverySuggestion:
+			'Try passing "EMAIL", "TOTP", a valid email, or OTP code as the challengeResponse.',
+	});
 }
 
 export async function handleSelectMFATypeChallenge({
