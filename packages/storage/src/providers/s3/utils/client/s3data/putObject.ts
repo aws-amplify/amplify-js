@@ -20,6 +20,7 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import { defaultConfig } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
@@ -63,6 +64,11 @@ const putObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
 
 	return {
 		method: 'PUT',
