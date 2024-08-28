@@ -741,9 +741,10 @@ export async function getSignInResult(params: {
 		case 'MFA_SETUP': {
 			const { signInSession, username } = signInStore.getState();
 
-			const allowedMfaSetupTypes = getAllowedMfaSetupTypes(
-				challengeParameters.MFAS_CAN_SETUP,
-			);
+			const mfaSetupTypes =
+				getMFATypes(parseMFATypes(challengeParameters.MFAS_CAN_SETUP)) || [];
+
+			const allowedMfaSetupTypes = getAllowedMfaSetupTypes(mfaSetupTypes);
 
 			const isTotpMfaSetupAvailable = allowedMfaSetupTypes.includes('TOTP');
 			const isEmailMfaSetupAvailable = allowedMfaSetupTypes.includes('EMAIL');
@@ -792,7 +793,7 @@ export async function getSignInResult(params: {
 
 			throw new AuthError({
 				name: AuthErrorCodes.SignInException,
-				message: `Cannot initiate MFA setup from available types: ${allowedMfaSetupTypes}`,
+				message: `Cannot initiate MFA setup from available types: ${mfaSetupTypes}`,
 			});
 		}
 		case 'NEW_PASSWORD_REQUIRED':
@@ -1021,6 +1022,12 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	return JSON.parse(mfa) as CognitoMFAType[];
 }
 
+export function getAllowedMfaSetupTypes(availableMfaSetupTypes: AuthMFAType[]) {
+	return availableMfaSetupTypes.filter(
+		authMfaType => authMfaType === 'EMAIL' || authMfaType === 'TOTP',
+	);
+}
+
 export async function assertUserNotAuthenticated() {
 	let authUser: AWSAuthUser | undefined;
 	try {
@@ -1034,12 +1041,6 @@ export async function assertUserNotAuthenticated() {
 			recoverySuggestion: 'Call signOut before calling signIn again.',
 		});
 	}
-}
-
-function getAllowedMfaSetupTypes(mfasCanSetup?: string) {
-	return (getMFATypes(parseMFATypes(mfasCanSetup)) || []).filter(
-		authMfaType => authMfaType === 'EMAIL' || authMfaType === 'TOTP',
-	);
 }
 
 /**
