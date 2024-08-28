@@ -43,4 +43,12 @@ describe('base64Encoder (non-native)', () => {
 			'test-test_test',
 		);
 	});
+
+	it('makes the result a base64url string with no padding chars', () => {
+		const mockResult = 'test+test/test=='; // = is the base64 padding char
+		mockBtoa.mockReturnValue(mockResult);
+		expect(
+			base64Encoder.convert('test', { urlSafe: true, skipPadding: true }),
+		).toBe('test-test_test');
+	});
 });
