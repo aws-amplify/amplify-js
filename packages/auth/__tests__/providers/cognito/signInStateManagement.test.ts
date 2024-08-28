@@ -15,26 +15,21 @@ jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
 // before returning an `AuthSignInResult`
-const mockedGetCurrentUser = jest.mocked(getCurrentUser);
-const { username } = authAPITestParams.user1;
-const { password } = authAPITestParams.user1;
-const session = '1234234232';
-const authConfig = {
-	Cognito: {
-		userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
-		userPoolId: 'us-west-2_zzzzz',
-	},
-};
-
+const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 describe('local sign-in state management tests', () => {
+	const session = '1234234232';
 	const challengeName = 'SMS_MFA';
+	const { username } = authAPITestParams.user1;
+	const { password } = authAPITestParams.user1;
+	const authConfig = {
+		Cognito: {
+			userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+			userPoolId: 'us-west-2_zzzzz',
+		},
+	};
 
 	beforeEach(() => {
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-	});
-
-	afterAll(() => {
-		mockedGetCurrentUser.mockRestore();
 	});
 
 	test('local state management should return state after signIn returns a ChallengeName', async () => {

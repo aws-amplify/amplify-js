@@ -6,6 +6,7 @@ import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn
 import { RespondToAuthChallengeException } from '../../../src/providers/cognito/types/errors';
 import { respondToAuthChallenge } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
+import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
 
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
@@ -25,8 +26,8 @@ describe('confirmSignIn API error path cases:', () => {
 	const signInSession = '1234234232';
 	const { username } = authAPITestParams.user1;
 	// assert mocks
-	const mockStoreGetState = signInStore.getState as jest.Mock;
-	const mockRespondToAuthChallenge = respondToAuthChallenge as jest.Mock;
+	const mockStoreGetState = jest.mocked(signInStore.getState);
+	const mockRespondToAuthChallenge = jest.mocked(respondToAuthChallenge);
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -75,6 +76,25 @@ describe('confirmSignIn API error path cases:', () => {
 			expect(error.name).toBe(
 				RespondToAuthChallengeException.InvalidParameterException,
 			);
+		}
+	});
+	it('should throw an error when sign-in step is MFA_SETUP and challengeResponse is not valid', async () => {
+		expect.assertions(3);
+
+		mockStoreGetState.mockReturnValue({
+			username,
+			challengeName: 'MFA_SETUP',
+			signInSession,
+		});
+
+		try {
+			await confirmSignIn({
+				challengeResponse: 'SMS',
+			});
+		} catch (err: any) {
+			expect(err).toBeInstanceOf(AuthError);
+			expect(err.name).toBe(AuthErrorCodes.SignInException);
+			expect(err.message).toContain('SMS');
 		}
 	});
 });

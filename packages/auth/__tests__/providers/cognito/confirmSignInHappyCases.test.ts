@@ -825,7 +825,7 @@ describe('confirmSignIn MFA_SETUP challenge happy path cases', () => {
 		);
 
 		jest
-			.spyOn(signInHelpers, 'handleChallengeName')
+			.spyOn(clients, 'respondToAuthChallenge')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
 					authAPITestParams.RespondToAuthChallengeCommandOutput,
