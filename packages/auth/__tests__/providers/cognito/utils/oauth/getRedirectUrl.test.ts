@@ -52,13 +52,13 @@ describe('getRedirectUrl', () => {
 		);
 	});
 
-	it('should return the preferredRedirectUrl if it is provided and matches one of the redirectUrls from config', () => {
+	it('should return the redirectUrl if it is provided and matches one of the redirectUrls from config', () => {
 		expect(getRedirectUrl(mockRedirectUrls, mockRedirectUrls[0])).toStrictEqual(
 			mockRedirectUrls[0],
 		);
 	});
 
-	it('should throw an exception if preferredRedirectUrl is given but does not match any of the redirectUrls from config', () => {
+	it('should throw an exception if redirectUrl is given but does not match any of the redirectUrls from config', () => {
 		expect(() =>
 			getRedirectUrl(mockRedirectUrls, 'https://unknownOrigin.com'),
 		).toThrow(invalidPreferredRedirectUrlException);

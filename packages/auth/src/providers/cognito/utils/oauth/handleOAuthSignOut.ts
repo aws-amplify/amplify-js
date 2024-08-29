@@ -14,7 +14,7 @@ export const handleOAuthSignOut = async (
 	cognitoConfig: CognitoUserPoolConfig,
 	store: DefaultOAuthStore,
 	tokenOrchestrator: TokenOrchestrator,
-	preferredSignOutUrl: string | undefined,
+	redirectUrl: string | undefined,
 ): Promise<void | OpenAuthSessionResult> => {
 	const { isOAuthSignIn } = await store.loadOAuthSignIn();
 	const oauthMetadata = await tokenOrchestrator.getOAuthMetadata();
@@ -31,6 +31,6 @@ export const handleOAuthSignOut = async (
 	// storage mechanism that is used by Amplify.
 	if (isOAuthSignIn || oauthMetadata?.oauthSignIn) {
 		// On web, this will always end up being a void action
-		return oAuthSignOutRedirect(cognitoConfig, false, preferredSignOutUrl);
+		return oAuthSignOutRedirect(cognitoConfig, false, redirectUrl);
 	}
 };

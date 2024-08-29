@@ -8,11 +8,11 @@ describe('getRedirectUrl (native)', () => {
 		'https://intermidiateSite.com',
 	];
 
-	it('should return the first non http/s url from the array when preferredRedirectUrl is not provided', () => {
+	it('should return the first non http/s url from the array when redirectUrl is not provided', () => {
 		expect(getRedirectUrl(mockRedirectUrls)).toStrictEqual(mockRedirectUrls[0]);
 	});
 
-	it('should return preferredRedirectUrl if it matches at least one of the redirect urls from config', () => {
+	it('should return redirectUrl if it matches at least one of the redirect urls from config', () => {
 		const configRedirectUrl = mockRedirectUrls[2];
 
 		expect(getRedirectUrl(mockRedirectUrls, configRedirectUrl)).toStrictEqual(
@@ -20,7 +20,7 @@ describe('getRedirectUrl (native)', () => {
 		);
 	});
 
-	it('should throw an exception when there is no url with no http or https as prefix irrespective if a preferredSignOutUrl is given or not', () => {
+	it('should throw an exception when there is no url with no http nor https as prefix irrespective of a redirectUrl is given or not', () => {
 		const mockRedirectUrlsWithNoAppScheme = ['https://intermidiateSite.com'];
 		expect(() =>
 			getRedirectUrl(

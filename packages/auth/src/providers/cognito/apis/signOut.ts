@@ -68,7 +68,7 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 				cognitoConfig,
 				oAuthStore,
 				tokenOrchestrator,
-				input?.oauth?.preferredSignOutUrl,
+				input?.oauth?.redirectUrl,
 			)) ?? {};
 		if (type === 'error') {
 			throw new AuthError({
