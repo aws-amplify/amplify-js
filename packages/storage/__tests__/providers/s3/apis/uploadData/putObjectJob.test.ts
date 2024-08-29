@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import { Amplify } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { putObject } from '../../../../../src/providers/s3/utils/client';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
-import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
+import { putObjectJob } from '../../../../../src/providers/s3/apis/internal/uploadData/putObjectJob';
 import '../testUtils';
 
 jest.mock('../../../../../src/providers/s3/utils/client');
@@ -19,14 +19,20 @@ jest.mock('../../../../../src/providers/s3/utils', () => {
 	};
 });
 jest.mock('@aws-amplify/core', () => ({
-	ConsoleLogger: jest.fn(),
-	fetchAuthSession: jest.fn(),
-	Amplify: {
+	ConsoleLogger: jest.fn(() => ({
+		debug: jest.fn(),
+	})),
+	defaultStorage: {
+		getItem: jest.fn(),
+		setItem: jest.fn(),
+	},
+	AmplifyClassV6: jest.fn(() => ({
+		libraryOptions: {},
 		getConfig: jest.fn(),
 		Auth: {
 			fetchAuthSession: jest.fn(),
 		},
-	},
+	})),
 }));
 
 const testPath = 'testPath/object';
@@ -36,24 +42,10 @@ const credentials: AWSCredentials = {
 	secretAccessKey: 'secretAccessKey',
 };
 const identityId = 'identityId';
-const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
 const mockPutObject = jest.mocked(putObject);
 const bucket = 'bucket';
 const region = 'region';
 
-mockFetchAuthSession.mockResolvedValue({
-	credentials,
-	identityId,
-});
-jest.mocked(Amplify.getConfig).mockReturnValue({
-	Storage: {
-		S3: {
-			bucket,
-			region,
-			buckets: { 'default-bucket': { bucketName: bucket, region } },
-		},
-	},
-});
 mockPutObject.mockResolvedValue({
 	ETag: 'eTag',
 	VersionId: 'versionId',
@@ -62,8 +54,26 @@ mockPutObject.mockResolvedValue({
 
 /* TODO Remove suite when `key` parameter is removed */
 describe('putObjectJob with key', () => {
+	let amplify: AmplifyClassV6;
+	let mockFetchAuthSession: jest.Mock;
+
 	beforeEach(() => {
 		mockPutObject.mockClear();
+		amplify = new AmplifyClassV6();
+		mockFetchAuthSession = amplify.Auth.fetchAuthSession as jest.Mock;
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId,
+		});
+		(amplify.getConfig as jest.Mock).mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
+				},
+			},
+		});
 	});
 
 	it('should supply the correct parameters to putObject API handler', async () => {
@@ -78,6 +88,7 @@ describe('putObjectJob with key', () => {
 		const useAccelerateEndpoint = true;
 
 		const job = putObjectJob(
+			amplify,
 			{
 				key: inputKey,
 				data,
@@ -125,7 +136,7 @@ describe('putObjectJob with key', () => {
 	});
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
-		Amplify.libraryOptions = {
+		amplify.libraryOptions = {
 			Storage: {
 				S3: {
 					isObjectLockEnabled: true,
@@ -133,6 +144,7 @@ describe('putObjectJob with key', () => {
 			},
 		};
 		const job = putObjectJob(
+			amplify,
 			{
 				key: 'key',
 				data: 'data',
@@ -151,6 +163,7 @@ describe('putObjectJob with key', () => {
 			const mockRegion = 'region-1';
 
 			const job = putObjectJob(
+				amplify,
 				{
 					key: 'key',
 					data,
@@ -185,6 +198,7 @@ describe('putObjectJob with key', () => {
 			const abortController = new AbortController();
 			const data = 'data';
 			const job = putObjectJob(
+				amplify,
 				{
 					key: 'key',
 					data,
@@ -215,8 +229,26 @@ describe('putObjectJob with key', () => {
 });
 
 describe('putObjectJob with path', () => {
+	let amplify: AmplifyClassV6;
+	let mockFetchAuthSession: jest.Mock;
+
 	beforeEach(() => {
 		mockPutObject.mockClear();
+		amplify = new AmplifyClassV6();
+		mockFetchAuthSession = amplify.Auth.fetchAuthSession as jest.Mock;
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId,
+		});
+		(amplify.getConfig as jest.Mock).mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
+				},
+			},
+		});
 	});
 
 	test.each([
@@ -241,6 +273,7 @@ describe('putObjectJob with path', () => {
 			const useAccelerateEndpoint = true;
 
 			const job = putObjectJob(
+				amplify,
 				{
 					path: inputPath,
 					data,
@@ -289,7 +322,7 @@ describe('putObjectJob with path', () => {
 	);
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
-		Amplify.libraryOptions = {
+		amplify.libraryOptions = {
 			Storage: {
 				S3: {
 					isObjectLockEnabled: true,
@@ -297,6 +330,7 @@ describe('putObjectJob with path', () => {
 			},
 		};
 		const job = putObjectJob(
+			amplify,
 			{
 				path: testPath,
 				data: 'data',
@@ -315,6 +349,7 @@ describe('putObjectJob with path', () => {
 			const mockRegion = 'region-1';
 
 			const job = putObjectJob(
+				amplify,
 				{
 					path: 'path/',
 					data,
@@ -349,6 +384,7 @@ describe('putObjectJob with path', () => {
 			const abortController = new AbortController();
 			const data = 'data';
 			const job = putObjectJob(
+				amplify,
 				{
 					path: 'path/',
 					data,
