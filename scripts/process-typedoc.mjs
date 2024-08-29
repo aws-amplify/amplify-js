@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import references from '../docs/reference.json' assert { type: 'json' };
 import { writeFileSync } from 'fs';
 
