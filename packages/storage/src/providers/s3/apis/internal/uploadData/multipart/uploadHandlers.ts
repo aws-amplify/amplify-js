@@ -1,34 +1,34 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import { AmplifyClassV6, StorageAccessLevel } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
+import { UploadDataInput, UploadDataWithPathInput } from '../../../../types';
 import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
-} from '../../../utils';
-import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
+} from '../../../../utils';
+import { ItemWithKey, ItemWithPath } from '../../../../types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
 	STORAGE_INPUT_KEY,
-} from '../../../utils/constants';
+} from '../../../../utils/constants';
 import {
 	ResolvedS3Config,
 	UploadDataOptionsWithKey,
-} from '../../../types/options';
-import { StorageError } from '../../../../../errors/StorageError';
-import { CanceledError } from '../../../../../errors/CanceledError';
+} from '../../../../types/options';
+import { StorageError } from '../../../../../../errors/StorageError';
+import { CanceledError } from '../../../../../../errors/CanceledError';
 import {
 	Part,
 	abortMultipartUpload,
 	completeMultipartUpload,
 	headObject,
-} from '../../../utils/client';
-import { getStorageUserAgentValue } from '../../../utils/userAgent';
-import { logger } from '../../../../../utils';
+} from '../../../../utils/client';
+import { getStorageUserAgentValue } from '../../../../utils/userAgent';
+import { logger } from '../../../../../../utils';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -43,6 +43,7 @@ import { getDataChunker } from './getDataChunker';
  * @internal
  */
 export const getMultipartUploadHandlers = (
+	amplify: AmplifyClassV6,
 	uploadDataInput: UploadDataInput | UploadDataWithPathInput,
 	size?: number,
 ) => {
@@ -72,7 +73,7 @@ export const getMultipartUploadHandlers = (
 	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const resolvedS3Options = await resolveS3ConfigAndInput(
-			Amplify,
+			amplify,
 			uploadDataOptions,
 		);
 
@@ -104,7 +105,7 @@ export const getMultipartUploadHandlers = (
 
 			resolvedKeyPrefix = resolvedS3Options.keyPrefix;
 			finalKey = resolvedKeyPrefix + objectKey;
-			resolvedAccessLevel = resolveAccessLevel(accessLevel);
+			resolvedAccessLevel = resolveAccessLevel(amplify, accessLevel);
 		}
 
 		if (!inProgressUpload) {
@@ -285,7 +286,10 @@ export const getMultipartUploadHandlers = (
 	};
 };
 
-const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
+const resolveAccessLevel = (
+	amplify: AmplifyClassV6,
+	accessLevel?: StorageAccessLevel,
+) =>
 	accessLevel ??
-	Amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
+	amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;

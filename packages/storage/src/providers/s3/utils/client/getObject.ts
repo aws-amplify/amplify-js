@@ -48,7 +48,7 @@ export type GetObjectInput = Pick<
 export type GetObjectOutput = GetObjectCommandOutput;
 
 const getObjectSerializer = async (
-	input: GetObjectInput,
+	input: GetObjectInput & { method?: 'GET' | 'PUT' },
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const url = new AmplifyUrl(endpoint.url.toString());
@@ -56,7 +56,7 @@ const getObjectSerializer = async (
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 
 	return {
-		method: 'GET',
+		method: input.method ?? 'GET',
 		headers: {
 			...(input.Range && { Range: input.Range }),
 		},
@@ -145,7 +145,7 @@ type S3GetObjectPresignedUrlConfig = Omit<
  */
 export const getPresignedGetObjectUrl = async (
 	config: S3GetObjectPresignedUrlConfig,
-	input: GetObjectInput,
+	input: GetObjectInput & { method?: 'GET' | 'PUT' },
 ): Promise<URL> => {
 	const endpoint = defaultConfig.endpointResolver(config, input);
 	const { url, headers, method } = await getObjectSerializer(input, endpoint);

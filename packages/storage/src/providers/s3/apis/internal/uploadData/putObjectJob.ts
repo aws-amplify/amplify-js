@@ -1,20 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 
-import { UploadDataInput, UploadDataWithPathInput } from '../../types';
+import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
 import {
 	calculateContentMd5,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
-} from '../../utils';
-import { ItemWithKey, ItemWithPath } from '../../types/outputs';
-import { putObject } from '../../utils/client';
-import { getStorageUserAgentValue } from '../../utils/userAgent';
-import { STORAGE_INPUT_KEY } from '../../utils/constants';
-import { constructContentDisposition } from '../../utils/constructContentDisposition';
+} from '../../../utils';
+import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
+import { putObject } from '../../../utils/client';
+import { getStorageUserAgentValue } from '../../../utils/userAgent';
+import { STORAGE_INPUT_KEY } from '../../../utils/constants';
+import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 
 /**
  * Get a function the returns a promise to call putObject API to S3.
@@ -23,6 +23,7 @@ import { constructContentDisposition } from '../../utils/constructContentDisposi
  */
 export const putObjectJob =
 	(
+		amplify: AmplifyClassV6,
 		uploadDataInput: UploadDataInput | UploadDataWithPathInput,
 		abortSignal: AbortSignal,
 		totalLength?: number,
@@ -30,7 +31,7 @@ export const putObjectJob =
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
 		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
-			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
+			await resolveS3ConfigAndInput(amplify, uploadDataOptions);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
 			identityId,

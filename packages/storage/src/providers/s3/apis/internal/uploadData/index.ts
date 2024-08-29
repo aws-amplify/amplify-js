@@ -1,16 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	UploadDataInput,
-	UploadDataOutput,
-	UploadDataWithPathInput,
-	UploadDataWithPathOutput,
-} from '../../types';
-import { createUploadTask } from '../../utils';
-import { assertValidationError } from '../../../../errors/utils/assertValidationError';
-import { StorageValidationErrorCode } from '../../../../errors/types/validation';
-import { DEFAULT_PART_SIZE, MAX_OBJECT_SIZE } from '../../utils/constants';
+import { AmplifyClassV6 } from '@aws-amplify/core';
+
+import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
+import { createUploadTask } from '../../../utils';
+import { assertValidationError } from '../../../../../errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '../../../../../errors/types/validation';
+import { DEFAULT_PART_SIZE, MAX_OBJECT_SIZE } from '../../../utils/constants';
 
 import { byteLength } from './byteLength';
 import { putObjectJob } from './putObjectJob';
@@ -66,10 +63,11 @@ import { getMultipartUploadHandlers } from './multipart';
  * //...
  * await uploadTask.result;
  * ```
- */
-export function uploadData(
-	input: UploadDataWithPathInput,
-): UploadDataWithPathOutput;
+//  */
+// export function uploadData(
+// 	amplify: AmplifyClassV6,
+// 	input: UploadDataWithPathInput,
+// ): UploadDataWithPathOutput;
 
 /**
  * Upload data to the specified S3 object key. By default uses single PUT operation to upload if the payload is less than 5MB.
@@ -124,9 +122,15 @@ export function uploadData(
  * await uploadTask.result;
  * ```
  */
-export function uploadData(input: UploadDataInput): UploadDataOutput;
+// export function uploadData(
+// 	amplify: AmplifyClassV6,
+// 	input: UploadDataInput,
+// ): UploadDataOutput;
 
-export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
+export function uploadData(
+	amplify: AmplifyClassV6,
+	input: UploadDataInput | UploadDataWithPathInput,
+) {
 	const { data } = input;
 
 	const dataByteLength = byteLength(data);
@@ -141,7 +145,7 @@ export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
 
 		return createUploadTask({
 			isMultipartUpload: false,
-			job: putObjectJob(input, abortController.signal, dataByteLength),
+			job: putObjectJob(amplify, input, abortController.signal, dataByteLength),
 			onCancel: (message?: string) => {
 				abortController.abort(message);
 			},
@@ -149,7 +153,7 @@ export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
 	} else {
 		// Multipart upload
 		const { multipartUploadJob, onPause, onResume, onCancel } =
-			getMultipartUploadHandlers(input, dataByteLength);
+			getMultipartUploadHandlers(amplify, input, dataByteLength);
 
 		return createUploadTask({
 			isMultipartUpload: true,

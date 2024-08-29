@@ -148,6 +148,8 @@ export type GetUrlOptions = CommonOptions & {
 	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
 	 */
 	contentType?: string;
+
+	method?: 'GET' | 'PUT';
 };
 
 /** @deprecated Use {@link GetUrlOptionsWithPath} instead. */

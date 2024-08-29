@@ -3,11 +3,14 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-import { ContentDisposition, ResolvedS3Config } from '../../../types/options';
-import { StorageUploadDataPayload } from '../../../../../types';
-import { Part, createMultipartUpload } from '../../../utils/client';
-import { logger } from '../../../../../utils';
-import { constructContentDisposition } from '../../../utils/constructContentDisposition';
+import {
+	ContentDisposition,
+	ResolvedS3Config,
+} from '../../../../types/options';
+import { StorageUploadDataPayload } from '../../../../../../types';
+import { Part, createMultipartUpload } from '../../../../utils/client';
+import { logger } from '../../../../../../utils';
+import { constructContentDisposition } from '../../../../utils/constructContentDisposition';
 
 import {
 	cacheMultipartUpload,

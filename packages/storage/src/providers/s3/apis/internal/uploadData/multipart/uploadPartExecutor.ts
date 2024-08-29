@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TransferProgressEvent } from '../../../../../types';
-import { ResolvedS3Config } from '../../../types/options';
-import { calculateContentMd5 } from '../../../utils';
-import { uploadPart } from '../../../utils/client';
-import { logger } from '../../../../../utils';
+import { TransferProgressEvent } from '../../../../../../types';
+import { ResolvedS3Config } from '../../../../types/options';
+import { calculateContentMd5 } from '../../../../utils';
+import { uploadPart } from '../../../../utils/client';
+import { logger } from '../../../../../../utils';
 
 import { PartToUpload } from './getDataChunker';
 

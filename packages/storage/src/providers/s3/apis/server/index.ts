@@ -6,3 +6,4 @@ export { getUrl } from './getUrl';
 export { list } from './list';
 export { remove } from './remove';
 export { copy } from './copy';
+export { uploadData } from './uploadData';
