@@ -22,6 +22,7 @@ import {
 	validateS3RequiredParameter,
 } from '../utils';
 import { IntegrityError } from '../../../../../errors/IntegrityError';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
@@ -64,6 +65,11 @@ const copyObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
 
 	return {
 		method: 'PUT',
