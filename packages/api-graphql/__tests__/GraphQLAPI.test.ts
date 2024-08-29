@@ -1594,7 +1594,7 @@ describe('API test', () => {
 		`;
 
 		const resolvedUrl =
-			'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql?header=eyJBdXRob3JpemF0aW9uIjoiYWJjMTIzNDUiLCJob3N0IjoidGVzdGFjY291bnR1cmwxMjM0NTY3ODkxMjMuYXBwc3luYy1hcGkudXMtZWFzdC0xLmFtYXpvbmF3cy5jb20ifQ==&payload=e30=&x-amz-user-agent=aws-amplify%2F6.4.0%20api%2F1%20framework%2F2&ex-machina=is%20a%20good%20movie';
+			'wss://testaccounturl123456789123.appsync-realtime-api.us-east-1.amazonaws.com/graphql?x-amz-user-agent=aws-amplify%2F6.4.0+api%2F1+framework%2F2&ex-machina=is+a+good+movie';
 
 		(
 			client.graphql(

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.1.15...@aws-amplify/api-graphql@4.2.0) (2024-08-26)
+
+### Features
+
+- **api-graphql:** AppSync realtime - include custom headers as query string params ([#13735](https://github.com/aws-amplify/amplify-js/issues/13735)) ([5647497](https://github.com/aws-amplify/amplify-js/commit/56474971f45821d5049f9e8bc7ecbfc7810ea093))
+
+## [4.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.1.14...@aws-amplify/api-graphql@4.1.15) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
 ## [4.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.1.13...@aws-amplify/api-graphql@4.1.14) (2024-08-15)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql
