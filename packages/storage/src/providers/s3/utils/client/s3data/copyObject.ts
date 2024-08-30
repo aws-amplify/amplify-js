@@ -82,28 +82,21 @@ export const validateCopyObjectHeaders = (
 	input: CopyObjectInput,
 	headers: Record<string, string>,
 ) => {
-	const validations: boolean[] = [];
-
-	validations.push(headers['x-amz-copy-source'] === input.CopySource);
-
-	validations.push(
+	const validations: boolean[] = [
+		headers['x-amz-copy-source'] === input.CopySource,
 		bothNilOrEqual(
 			input.MetadataDirective,
 			headers['x-amz-metadata-directive'],
 		),
-	);
-	validations.push(
 		bothNilOrEqual(
 			input.CopySourceIfMatch,
 			headers['x-amz-copy-source-if-match'],
 		),
-	);
-	validations.push(
 		bothNilOrEqual(
 			input.CopySourceIfUnmodifiedSince?.toISOString(),
 			headers['x-amz-copy-source-if-unmodified-since'],
 		),
-	);
+	];
 
 	if (validations.some(validation => !validation)) {
 		throw new IntegrityError();
