@@ -17,7 +17,7 @@
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
-		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"build": "npm run clean && npm run build:esm-cjs",
 		"clean": "npm run clean:size && rimraf dist lib lib-esm",
 		"clean:size": "rimraf dual-publish-tmp tmp*",
 		"format": "echo \"Not implemented\"",

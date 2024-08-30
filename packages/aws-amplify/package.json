@@ -241,7 +241,7 @@
 		"build:umd": "webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm-cjs": "rollup --forceExit -c rollup.config.mjs",
 		"build:watch": "npm run build:esm-cjs -- --watch",
-		"build": "npm run clean && npm run build:esm-cjs && npm run build:umd",
+		"build": "npm run clean && npm run build:esm-cjs",
 		"clean": "rimraf lib-esm lib dist",
 		"format": "echo \"Not implemented\"",
 		"lint": "eslint '**/*.{ts,tsx}' && npm run ts-coverage",
