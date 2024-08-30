@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
-	EMPTY_SHA256_HASH,
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
@@ -13,6 +12,10 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
+import { Hash } from '@smithy/hash-node';
+import { formatUrl } from '@aws-sdk/util-format-url';
+import { parseUrl } from '@smithy/url-parser';
 
 import { S3EndpointResolverOptions, defaultConfig } from './base';
 import type {
@@ -150,10 +153,25 @@ export const getPresignedGetObjectUrl = async (
 	const endpoint = defaultConfig.endpointResolver(config, input);
 	const { url, headers, method } = await getObjectSerializer(input, endpoint);
 
+	if (input.method === 'PUT') {
+		const presigner = new S3RequestPresigner({
+			credentials: config.credentials,
+			region: config.region,
+			sha256: Hash.bind(null, 'sha256'),
+		});
+		const signedUrlObject = await presigner.presign({
+			...parseUrl(url.toString()),
+			headers,
+			method,
+		});
+
+		return new AmplifyUrl(formatUrl(signedUrlObject));
+	}
+
 	// TODO: set content sha256 query parameter with value of UNSIGNED-PAYLOAD instead of empty hash.
 	// It requires changes in presignUrl. Without this change, the generated url still works,
 	// but not the same as other tools like AWS SDK and CLI.
-	url.searchParams.append(CONTENT_SHA256_HEADER, EMPTY_SHA256_HASH);
+	url.searchParams.append(CONTENT_SHA256_HEADER, 'UNSIGNED-PAYLOAD');
 	if (config.userAgentValue) {
 		url.searchParams.append(
 			config.userAgentHeader ?? USER_AGENT_HEADER,

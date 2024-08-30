@@ -83,6 +83,7 @@ export const getUrl = async (
 				...(getUrlOptions?.contentType && {
 					ResponseContentType: getUrlOptions.contentType,
 				}),
+				method: input.options?.method,
 			},
 		),
 		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),

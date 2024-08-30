@@ -66,8 +66,12 @@
 		"s3"
 	],
 	"dependencies": {
+		"@aws-sdk/s3-request-presigner": "3.637.0",
 		"@aws-sdk/types": "3.398.0",
+		"@aws-sdk/util-format-url": "3.609.0",
+		"@smithy/hash-node": "3.0.3",
 		"@smithy/md5-js": "2.0.7",
+		"@smithy/url-parser": "3.0.3",
 		"buffer": "4.9.2",
 		"fast-xml-parser": "^4.4.1",
 		"tslib": "^2.5.0"

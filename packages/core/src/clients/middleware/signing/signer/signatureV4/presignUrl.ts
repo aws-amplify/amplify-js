@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AmplifyUrl } from '../../../../../utils/amplifyUrl';
+import { HttpRequest } from '../../../../types';
 
 import { PresignUrlOptions, Presignable } from './types';
 import {
@@ -45,12 +46,15 @@ export const presignUrl = (
 	}).forEach(([key, value]) => {
 		presignedUrl.searchParams.append(key, value);
 	});
-	const requestToSign = {
-		body,
+	const requestToSign: HttpRequest = {
 		headers: { [HOST_HEADER]: url.host },
 		method,
 		url: presignedUrl,
 	};
+
+	if (body) {
+		requestToSign.body = body;
+	}
 
 	// calculate and add the signature to the url
 	const signature = getSignature(requestToSign, signingValues);
