@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.16...@aws-amplify/auth@6.3.17) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 ## [6.3.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.15...@aws-amplify/auth@6.3.16) (2024-08-26)
 
 **Note:** Version bump only for package @aws-amplify/auth
