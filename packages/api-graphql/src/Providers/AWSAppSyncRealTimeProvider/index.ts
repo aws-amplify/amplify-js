@@ -11,6 +11,7 @@ import {
 import { signRequest } from '@aws-amplify/core/internals/aws-client-utils';
 import {
 	AmplifyUrl,
+	AmplifyUrlSearchParams,
 	CustomUserAgentDetails,
 	DocumentType,
 	GraphQLAuthMode,
@@ -181,7 +182,7 @@ export class AWSAppSyncRealTimeProvider {
 		this.reconnectionMonitor.close();
 	}
 
-	getNewWebSocket(url: string, protocol: string) {
+	getNewWebSocket(url: string, protocol: string[]) {
 		return new WebSocket(url, protocol);
 	}
 
@@ -734,20 +735,63 @@ export class AWSAppSyncRealTimeProvider {
 	/**
 	 *
 	 * @param headers - http headers
-	 * @returns query string of uri-encoded parameters derived from custom headers
+	 * @returns uri-encoded query parameters derived from custom headers
 	 */
-	private _queryStringFromCustomHeaders(
+	private _queryParamsFromCustomHeaders(
 		headers?: AWSAppSyncRealTimeProviderOptions['additionalCustomHeaders'],
-	): string {
+	): URLSearchParams {
 		const nonAuthHeaders = this._extractNonAuthHeaders(headers);
 
-		const queryParams: string[] = Object.entries(nonAuthHeaders).map(
-			([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`,
+		const params = new AmplifyUrlSearchParams();
+
+		Object.entries(nonAuthHeaders).forEach(([k, v]) => {
+			params.append(k, v);
+		});
+
+		return params;
+	}
+
+	/**
+	 * Normalizes AppSync realtime endpoint URL
+	 *
+	 * @param appSyncGraphqlEndpoint - AppSync endpointUri from config
+	 * @param urlParams - URLSearchParams
+	 * @returns fully resolved string realtime endpoint URL
+	 */
+	private _realtimeUrlWithQueryString(
+		appSyncGraphqlEndpoint: string | undefined,
+		urlParams: URLSearchParams,
+	): string {
+		const protocol = 'wss://';
+
+		let realtimeEndpoint = appSyncGraphqlEndpoint ?? '';
+
+		if (this.isCustomDomain(realtimeEndpoint)) {
+			realtimeEndpoint = realtimeEndpoint.concat(customDomainPath);
+		} else {
+			realtimeEndpoint = realtimeEndpoint
+				.replace('appsync-api', 'appsync-realtime-api')
+				.replace('gogi-beta', 'grt-beta');
+		}
+
+		realtimeEndpoint = realtimeEndpoint
+			.replace('https://', protocol)
+			.replace('http://', protocol);
+
+		const realtimeEndpointUrl = new AmplifyUrl(realtimeEndpoint);
+
+		// preserves any query params a customer might manually set in the configuration
+		const existingParams = new AmplifyUrlSearchParams(
+			realtimeEndpointUrl.search,
 		);
 
-		const queryString = queryParams.join('&');
+		for (const [k, v] of urlParams.entries()) {
+			existingParams.append(k, v);
+		}
 
-		return queryString;
+		realtimeEndpointUrl.search = existingParams.toString();
+
+		return realtimeEndpointUrl.toString();
 	}
 
 	private _initializeWebSocketConnection({
@@ -783,38 +827,27 @@ export class AWSAppSyncRealTimeProvider {
 					});
 
 					const headerString = authHeader ? JSON.stringify(authHeader) : '';
-					const headerQs = base64Encoder.convert(headerString);
+					// base64url-encoded string
+					const encodedHeader = base64Encoder.convert(headerString, {
+						urlSafe: true,
+						skipPadding: true,
+					});
 
-					const payloadQs = base64Encoder.convert(payloadString);
+					const authTokenSubprotocol = `header-${encodedHeader}`;
 
-					const queryString = this._queryStringFromCustomHeaders(
+					const queryParams = this._queryParamsFromCustomHeaders(
 						additionalCustomHeaders,
 					);
 
-					let discoverableEndpoint = appSyncGraphqlEndpoint ?? '';
+					const awsRealTimeUrl = this._realtimeUrlWithQueryString(
+						appSyncGraphqlEndpoint,
+						queryParams,
+					);
 
-					if (this.isCustomDomain(discoverableEndpoint)) {
-						discoverableEndpoint =
-							discoverableEndpoint.concat(customDomainPath);
-					} else {
-						discoverableEndpoint = discoverableEndpoint
-							.replace('appsync-api', 'appsync-realtime-api')
-							.replace('gogi-beta', 'grt-beta');
-					}
-
-					// Creating websocket url with required query strings
-					const protocol = 'wss://';
-					discoverableEndpoint = discoverableEndpoint
-						.replace('https://', protocol)
-						.replace('http://', protocol);
-
-					let awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
-
-					if (queryString !== '') {
-						awsRealTimeUrl += `&${queryString}`;
-					}
-
-					await this._initializeRetryableHandshake(awsRealTimeUrl);
+					await this._initializeRetryableHandshake(
+						awsRealTimeUrl,
+						authTokenSubprotocol,
+					);
 
 					this.promiseArray.forEach(({ res }) => {
 						logger.debug('Notifying connection successful');
@@ -841,23 +874,37 @@ export class AWSAppSyncRealTimeProvider {
 		});
 	}
 
-	private async _initializeRetryableHandshake(awsRealTimeUrl: string) {
+	private async _initializeRetryableHandshake(
+		awsRealTimeUrl: string,
+		subprotocol: string,
+	) {
 		logger.debug(`Initializaling retryable Handshake`);
 		await jitteredExponentialRetry(
 			this._initializeHandshake.bind(this),
-			[awsRealTimeUrl],
+			[awsRealTimeUrl, subprotocol],
 			MAX_DELAY_MS,
 		);
 	}
 
-	private async _initializeHandshake(awsRealTimeUrl: string) {
+	/**
+	 *
+	 * @param subprotocol -
+	 */
+	private async _initializeHandshake(
+		awsRealTimeUrl: string,
+		subprotocol: string,
+	) {
 		logger.debug(`Initializing handshake ${awsRealTimeUrl}`);
 		// Because connecting the socket is async, is waiting until connection is open
 		// Step 1: connect websocket
 		try {
 			await (() => {
 				return new Promise<void>((resolve, reject) => {
-					const newSocket = this.getNewWebSocket(awsRealTimeUrl, 'graphql-ws');
+					const newSocket = this.getNewWebSocket(awsRealTimeUrl, [
+						'graphql-ws',
+						subprotocol,
+					]);
+
 					newSocket.onerror = () => {
 						logger.debug(`WebSocket connection error`);
 					};
