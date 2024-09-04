@@ -279,6 +279,7 @@ describe('signOut', () => {
 				cognitoConfigWithOauth,
 				mockDefaultOAuthStoreInstance,
 				mockTokenOrchestrator,
+				undefined,
 			);
 			// In cases of OAuth, token removal and Hub dispatch should be performed by the OAuth handling since
 			// these actions can be deferred or canceled out of altogether.
