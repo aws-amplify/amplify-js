@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.0.31...@aws-amplify/rtn-web-browser@1.1.0) (2024-09-04)
+
+### Features
+
+- **auth:** HostedUI oidc signout ([#13512](https://github.com/aws-amplify/amplify-js/issues/13512)) ([e8fb997](https://github.com/aws-amplify/amplify-js/commit/e8fb9973f8e3e3490619416a778ec1460cafaf9a)), closes [#13712](https://github.com/aws-amplify/amplify-js/issues/13712) [#13736](https://github.com/aws-amplify/amplify-js/issues/13736)
+
 ## [1.0.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.0.30...@aws-amplify/rtn-web-browser@1.0.31) (2024-07-23)
 
 ### Bug Fixes

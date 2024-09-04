@@ -47,6 +47,9 @@ export interface AuthSignInInput<
 }
 export interface AuthSignOutInput {
 	global: boolean;
+	oauth?: {
+		redirectUrl?: string;
+	};
 }
 
 export type AuthProvider = 'Amazon' | 'Apple' | 'Facebook' | 'Google';

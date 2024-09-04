@@ -75,3 +75,4 @@ jobs:
       test_name: ${{ matrix.integ-config.test_name }}
       working_directory: ${{ matrix.integ-config.working_directory }}
       timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 45 }}
+      host_signout_page: ${{ matrix.integ-config.host_signout_page || false }}
