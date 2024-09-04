@@ -14,14 +14,13 @@ import {
 	assignStringVariables,
 	buildStorageServiceError,
 	map,
-	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
 
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 
 export type PutObjectInput = Pick<

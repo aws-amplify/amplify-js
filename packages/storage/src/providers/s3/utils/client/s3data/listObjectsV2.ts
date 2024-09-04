@@ -22,7 +22,6 @@ import {
 	emptyArrayGuard,
 	map,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
 } from '../utils';
 
@@ -30,7 +29,7 @@ import type {
 	ListObjectsV2CommandInput,
 	ListObjectsV2CommandOutput,
 } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type ListObjectsV2Input = ListObjectsV2CommandInput;
 

@@ -11,7 +11,7 @@ import {
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { retryDecider } from '../utils';
+import { createRetryDecider, createXmlErrorParser } from '../utils';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -56,6 +56,33 @@ const endpointResolver = (
 
 	return { url: endpoint };
 };
+
+/**
+ * Error parser for the XML payload of S3 control plane error response. The
+ * error's `Code` and `Message` locates at the nested `Error` element instead of
+ * the XML root element.
+ *
+ * @example
+ * ```
+ * 	<?xml version="1.0" encoding="UTF-8"?>
+ * 	<ErrorResponse>
+ * 	  <Error>
+ * 		  <Code>AccessDenied</Code>
+ * 		  <Message>Access Denied</Message>
+ * 		</Error>
+ * 		<RequestId>656c76696e6727732072657175657374</RequestId>
+ * 		<HostId>Uuag1LuByRx9e6j5Onimru9pO4ZVKnJ2Qz7/C1NPcfTWAtRPfTaOFg==</HostId>
+ * 	</ErrorResponse>
+ * 	```
+ *
+ * @internal
+ */
+export const parseXmlError = createXmlErrorParser();
+
+/**
+ * @internal
+ */
+export const retryDecider = createRetryDecider(parseXmlError);
 
 /**
  * @internal

@@ -11,7 +11,7 @@ import {
 	jitteredBackoff,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { retryDecider } from '../utils';
+import { createRetryDecider, createXmlErrorParser } from '../utils';
 
 const DOMAIN_PATTERN = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
 const IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
@@ -98,6 +98,31 @@ export const isDnsCompatibleBucketName = (bucketName: string): boolean =>
 	DOMAIN_PATTERN.test(bucketName) &&
 	!IP_ADDRESS_PATTERN.test(bucketName) &&
 	!DOTS_PATTERN.test(bucketName);
+
+const isNoErrorWrapping = true;
+/**
+ * Error parser for the XML payload of S3 data plane error response. The error's
+ * `Code` and `Message` locates directly at the XML root element.
+ *
+ * @example
+ * ```
+ * <?xml version="1.0" encoding="UTF-8"?>
+ * 	<Error>
+ * 		<Code>NoSuchKey</Code>
+ * 		<Message>The resource you requested does not exist</Message>
+ * 		<Resource>/mybucket/myfoto.jpg</Resource>
+ * 		<RequestId>4442587FB7D0A2F9</RequestId>
+ * 	</Error>
+ * 	```
+ *
+ * @internal
+ */
+export const parseXmlError = createXmlErrorParser(isNoErrorWrapping);
+
+/**
+ * @internal
+ */
+export const retryDecider = createRetryDecider(parseXmlError);
 
 /**
  * @internal
