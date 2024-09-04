@@ -13,6 +13,10 @@ on:
       timeout_minutes:
         required: true
         type: number
+      host_signout_page:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   e2e-test:
@@ -68,6 +72,11 @@ jobs:
         env:
           JEST_JUNIT_OUTPUT_DIR: reports/junit
           JEST_JUNIT_OUTPUT_NAME: detox-test-results.xml
+        working-directory: ${{ inputs.working_directory }}
+        shell: bash
+      - name: Start the http-server and host the oidc signout page locally (background).
+        if: ${{ inputs.host_signout_page }}
+        run: yarn host:signout
         working-directory: ${{ inputs.working_directory }}
         shell: bash
       - name: Detox run
