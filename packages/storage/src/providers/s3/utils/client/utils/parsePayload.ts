@@ -13,16 +13,19 @@ import { parser } from '../runtime';
  * Factory creating a parser that parses the JS Error object from the XML
  * response payload.
  *
- * @param noErrorWrapping Whether the error code and message are located
- * 	directly in the root XML element, or in a nested `<Error>` element.
- * 	See: https://smithy.io/2.0/aws/protocols/aws-restxml-protocol.html#restxml-errors
+ * @param input Input object
+ * @param input.noErrorWrapping Whether the error code and message are located
+ *   directly in the root XML element, or in a nested `<Error>` element.
+ *   See: https://smithy.io/2.0/aws/protocols/aws-restxml-protocol.html#restxml-errors
  *
- * 	Default to false.
+ *   Default to false.
  *
  * @internal
  */
 export const createXmlErrorParser =
-	(noErrorWrapping = false): ErrorParser =>
+	({
+		noErrorWrapping = false,
+	}: { noErrorWrapping?: boolean } = {}): ErrorParser =>
 	async (response?: HttpResponse) => {
 		if (!response || response.statusCode < 300) {
 			return;

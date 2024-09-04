@@ -491,13 +491,13 @@
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "15.10 kB"
+			"limit": "15.13 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "21.71 kB"
+			"limit": "21.73 kB"
 		}
 	]
 }
