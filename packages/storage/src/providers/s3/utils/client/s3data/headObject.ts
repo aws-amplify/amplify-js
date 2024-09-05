@@ -16,13 +16,12 @@ import {
 	deserializeNumber,
 	deserializeTimestamp,
 	map,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
 
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 
 export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;

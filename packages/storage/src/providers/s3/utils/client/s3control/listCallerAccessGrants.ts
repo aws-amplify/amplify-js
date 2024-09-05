@@ -19,7 +19,6 @@ import {
 	emptyArrayGuard,
 	map,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
 } from '../utils';
 import { createStringEnumDeserializer } from '../utils/deserializeHelpers';
@@ -28,7 +27,7 @@ import type {
 	ListCallerAccessGrantsCommandInput,
 	ListCallerAccessGrantsCommandOutput,
 } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type ListCallerAccessGrantsInput = ListCallerAccessGrantsCommandInput;
 

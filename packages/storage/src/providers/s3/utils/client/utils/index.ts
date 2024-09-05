@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { parseXmlBody, parseXmlError } from './parsePayload';
+export { parseXmlBody, createXmlErrorParser } from './parsePayload';
 export {
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
@@ -25,4 +25,4 @@ export {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from './serializeHelpers';
-export { retryDecider } from './retryDecider';
+export { createRetryDecider } from './createRetryDecider';

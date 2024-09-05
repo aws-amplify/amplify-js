@@ -14,7 +14,6 @@ import {
 	assignStringVariables,
 	buildStorageServiceError,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
@@ -22,7 +21,7 @@ import {
 } from '../utils';
 
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type CopyObjectInput = Pick<
 	CopyObjectCommandInput,

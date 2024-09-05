@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import {
+	ErrorParser,
 	HttpResponse,
 	MiddlewareContext,
 	RetryDeciderOutput,
@@ -8,8 +9,6 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { LocationCredentialsProvider } from '../../../types/options';
-
-import { parseXmlError } from './parsePayload';
 
 /**
  * Function to decide if the S3 request should be retried. For S3 APIs, we support forceRefresh option
@@ -22,33 +21,49 @@ import { parseXmlError } from './parsePayload';
  * @param middlewareContext Optional context object to store data between retries.
  * @returns True if the request should be retried.
  */
-export const retryDecider = async (
+export type RetryDecider = (
 	response?: HttpResponse,
 	error?: unknown,
 	middlewareContext?: MiddlewareContext,
-): Promise<RetryDeciderOutput> => {
-	const defaultRetryDecider = getRetryDecider(parseXmlError);
-	const defaultRetryDecision = await defaultRetryDecider(response, error);
-	if (!response || response.statusCode < 300) {
-		return { retryable: false };
-	}
-	const parsedError = await parseXmlError(response);
-	const errorCode = parsedError?.name;
-	const errorMessage = parsedError?.message;
-	const isCredentialsExpired = isCredentialsExpiredError(
-		errorCode,
-		errorMessage,
-	);
+) => Promise<RetryDeciderOutput>;
 
-	return {
-		retryable:
-			defaultRetryDecision.retryable ||
-			// If we know the previous retry attempt sets isCredentialsExpired in the
-			// middleware context, we don't want to retry anymore.
-			!!(isCredentialsExpired && !middlewareContext?.isCredentialsExpired),
-		isCredentialsExpiredError: isCredentialsExpired,
+/**
+ * Factory of a {@link RetryDecider} function.
+ *
+ * @param errorParser function to parse HTTP response wth XML payload to JS
+ * 	Error instance.
+ * @returns A structure indicating if the response is retryable; And if it is a
+ * 	CredentialsExpiredError
+ */
+export const createRetryDecider =
+	(errorParser: ErrorParser): RetryDecider =>
+	async (
+		response?: HttpResponse,
+		error?: unknown,
+		middlewareContext?: MiddlewareContext,
+	): Promise<RetryDeciderOutput> => {
+		const defaultRetryDecider = getRetryDecider(errorParser);
+		const defaultRetryDecision = await defaultRetryDecider(response, error);
+		if (!response || response.statusCode < 300) {
+			return { retryable: false };
+		}
+		const parsedError = await errorParser(response);
+		const errorCode = parsedError?.name;
+		const errorMessage = parsedError?.message;
+		const isCredentialsExpired = isCredentialsExpiredError(
+			errorCode,
+			errorMessage,
+		);
+
+		return {
+			retryable:
+				defaultRetryDecision.retryable ||
+				// If we know the previous retry attempt sets isCredentialsExpired in the
+				// middleware context, we don't want to retry anymore.
+				!!(isCredentialsExpired && !middlewareContext?.isCredentialsExpired),
+			isCredentialsExpiredError: isCredentialsExpired,
+		};
 	};
-};
 
 // Ref: https://github.com/aws/aws-sdk-js/blob/54829e341181b41573c419bd870dd0e0f8f10632/lib/event_listeners.js#L522-L541
 const INVALID_TOKEN_ERROR_CODES = [
