@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.2.1...@aws-amplify/api-graphql@4.3.0) (2024-09-04)
+
+### Features
+
+- **api-graphql:** pass authToken via subprotocol ([#13727](https://github.com/aws-amplify/amplify-js/issues/13727)) ([ced891c](https://github.com/aws-amplify/amplify-js/commit/ced891c2e4f6b0f1fdeaf44ab80cae9d585b6d15))
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.2.0...@aws-amplify/api-graphql@4.2.1) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.1.15...@aws-amplify/api-graphql@4.2.0) (2024-08-26)
+
+### Features
+
+- **api-graphql:** AppSync realtime - include custom headers as query string params ([#13735](https://github.com/aws-amplify/amplify-js/issues/13735)) ([5647497](https://github.com/aws-amplify/amplify-js/commit/56474971f45821d5049f9e8bc7ecbfc7810ea093))
+
 ## [4.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.1.14...@aws-amplify/api-graphql@4.1.15) (2024-08-21)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

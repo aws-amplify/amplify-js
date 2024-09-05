@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.16...@aws-amplify/adapter-nextjs@1.2.17) (2024-09-04)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
+## [1.2.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.15...@aws-amplify/adapter-nextjs@1.2.16) (2024-09-03)
+
+### Bug Fixes
+
+- **adapter-nextjs:** duplicate response Set-Cookie headers in pages router ([#13765](https://github.com/aws-amplify/amplify-js/issues/13765)) ([3fedf63](https://github.com/aws-amplify/amplify-js/commit/3fedf6347823611ef5e28554911cf65c1419fce5))
+
+## [1.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.14...@aws-amplify/adapter-nextjs@1.2.15) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/adapter-nextjs
+
 ## [1.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/adapter-nextjs@1.2.13...@aws-amplify/adapter-nextjs@1.2.14) (2024-08-21)
 
 **Note:** Version bump only for package @aws-amplify/adapter-nextjs
