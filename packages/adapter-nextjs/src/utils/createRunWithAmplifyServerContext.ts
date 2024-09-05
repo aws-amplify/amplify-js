@@ -16,9 +16,14 @@ import { createCookieStorageAdapterFromNextServerContext } from './createCookieS
 
 export const createRunWithAmplifyServerContext = ({
 	config: resourcesConfig,
+	runtimeOptions = { cookies: {} },
 }: {
 	config: ResourcesConfig;
+	runtimeOptions?: NextServer.CreateServerRunnerRuntimeOptions;
 }) => {
+	const setCookieOptions = {
+		...runtimeOptions.cookies,
+	};
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		async ({ nextServerContext, operation }) => {
 			// When the Auth config is presented, attempt to create a Amplify server
@@ -40,6 +45,7 @@ export const createRunWithAmplifyServerContext = ({
 									userPoolClientId:
 										resourcesConfig?.Auth.Cognito?.userPoolClientId,
 								}),
+								setCookieOptions,
 							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,

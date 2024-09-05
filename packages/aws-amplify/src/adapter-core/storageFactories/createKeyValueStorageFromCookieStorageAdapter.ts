@@ -24,7 +24,12 @@ const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
 export const createKeyValueStorageFromCookieStorageAdapter = (
 	cookieStorageAdapter: CookieStorage.Adapter,
 	validatorMap?: KeyValueStorageMethodValidator,
+	setCookieOptions: CookieStorage.SetCookieOptions = {},
 ): KeyValueStorageInterface => {
+	const overrideCookieAttributes = {
+		...setCookieOptions,
+	};
+
 	return {
 		setItem(key, value) {
 			// Delete the cookie item first then set it. This results:
@@ -36,6 +41,7 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 			cookieStorageAdapter.set(key, value, {
 				...defaultSetCookieOptions,
 				expires: new Date(Date.now() + ONE_YEAR_IN_MS),
+				...overrideCookieAttributes,
 			});
 
 			return Promise.resolve();
