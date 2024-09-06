@@ -9,6 +9,8 @@ import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import { initiateAuth } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
+import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
+import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
@@ -95,6 +97,30 @@ describe('signIn API error path cases:', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(AuthError);
 			expect(error.name).toBe(InitiateAuthException.InvalidParameterException);
+		}
+	});
+	it('should throw an error when sign in step is MFA_SETUP and there are no valid setup options', async () => {
+		expect.assertions(3);
+
+		jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(async () => ({
+				ChallengeName: 'MFA_SETUP',
+				ChallengeParameters: {
+					MFAS_CAN_SETUP: '["SMS_MFA"]',
+				},
+				$metadata: {},
+			}));
+
+		try {
+			await signIn({
+				username: authAPITestParams.user1.username,
+				password: authAPITestParams.user1.password,
+			});
+		} catch (error: any) {
+			expect(error).toBeInstanceOf(AuthError);
+			expect(error.name).toBe(AuthErrorCodes.SignInException);
+			expect(error.message).toContain('SMS');
 		}
 	});
 });

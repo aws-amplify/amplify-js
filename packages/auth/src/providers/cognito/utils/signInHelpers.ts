@@ -148,36 +148,86 @@ export async function handleMFASetupChallenge({
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId } = config;
-	const challengeResponses = {
+
+	if (challengeResponse === 'EMAIL') {
+		return {
+			ChallengeName: 'MFA_SETUP',
+			Session: session,
+			ChallengeParameters: {
+				MFAS_CAN_SETUP: '["EMAIL_OTP"]',
+			},
+			$metadata: {},
+		};
+	}
+
+	if (challengeResponse === 'TOTP') {
+		return {
+			ChallengeName: 'MFA_SETUP',
+			Session: session,
+			ChallengeParameters: {
+				MFAS_CAN_SETUP: '["SOFTWARE_TOKEN_MFA"]',
+			},
+			$metadata: {},
+		};
+	}
+
+	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
 	};
 
-	const { Session } = await verifySoftwareToken(
-		{
-			region: getRegion(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
-		},
-		{
-			UserCode: challengeResponse,
+	const isTOTPCode = /^\d+$/.test(challengeResponse.trim());
+
+	if (isTOTPCode) {
+		const { Session } = await verifySoftwareToken(
+			{
+				region: getRegion(userPoolId),
+				userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+			},
+			{
+				UserCode: challengeResponse,
+				Session: session,
+				FriendlyDeviceName: deviceName,
+			},
+		);
+
+		signInStore.dispatch({
+			type: 'SET_SIGN_IN_SESSION',
+			value: Session,
+		});
+
+		const jsonReq: RespondToAuthChallengeCommandInput = {
+			ChallengeName: 'MFA_SETUP',
+			ChallengeResponses: challengeResponses,
+			Session,
+			ClientMetadata: clientMetadata,
+			ClientId: userPoolClientId,
+		};
+
+		return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	}
+
+	const isEmail = /^\S+@\S+\.\S+$/.test(challengeResponse.trim());
+
+	if (isEmail) {
+		challengeResponses.EMAIL = challengeResponse;
+
+		const jsonReq: RespondToAuthChallengeCommandInput = {
+			ChallengeName: 'MFA_SETUP',
+			ChallengeResponses: challengeResponses,
 			Session: session,
-			FriendlyDeviceName: deviceName,
-		},
-	);
+			ClientMetadata: clientMetadata,
+			ClientId: userPoolClientId,
+		};
 
-	signInStore.dispatch({
-		type: 'SET_SIGN_IN_SESSION',
-		value: Session,
+		return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+	}
+
+	throw new AuthError({
+		name: AuthErrorCodes.SignInException,
+		message: `Cannot proceed with MFA setup using challengeResponse: ${challengeResponse}`,
+		recoverySuggestion:
+			'Try passing "EMAIL", "TOTP", a valid email, or OTP code as the challengeResponse.',
 	});
-
-	const jsonReq: RespondToAuthChallengeCommandInput = {
-		ChallengeName: 'MFA_SETUP',
-		ChallengeResponses: challengeResponses,
-		Session,
-		ClientMetadata: clientMetadata,
-		ClientId: userPoolClientId,
-	};
-
-	return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
 }
 
 export async function handleSelectMFATypeChallenge({
@@ -691,31 +741,60 @@ export async function getSignInResult(params: {
 		case 'MFA_SETUP': {
 			const { signInSession, username } = signInStore.getState();
 
-			if (!isMFATypeEnabled(challengeParameters, 'TOTP'))
-				throw new AuthError({
-					name: AuthErrorCodes.SignInException,
-					message: `Cannot initiate MFA setup from available types: ${getMFATypes(
-						parseMFATypes(challengeParameters.MFAS_CAN_SETUP),
-					)}`,
-				});
-			const { Session, SecretCode: secretCode } = await associateSoftwareToken(
-				{ region: getRegion(authConfig.userPoolId) },
-				{
-					Session: signInSession,
-				},
-			);
-			signInStore.dispatch({
-				type: 'SET_SIGN_IN_SESSION',
-				value: Session,
-			});
+			const mfaSetupTypes =
+				getMFATypes(parseMFATypes(challengeParameters.MFAS_CAN_SETUP)) || [];
 
-			return {
-				isSignedIn: false,
-				nextStep: {
-					signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
-					totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
-				},
-			};
+			const allowedMfaSetupTypes = getAllowedMfaSetupTypes(mfaSetupTypes);
+
+			const isTotpMfaSetupAvailable = allowedMfaSetupTypes.includes('TOTP');
+			const isEmailMfaSetupAvailable = allowedMfaSetupTypes.includes('EMAIL');
+
+			if (isTotpMfaSetupAvailable && isEmailMfaSetupAvailable) {
+				return {
+					isSignedIn: false,
+					nextStep: {
+						signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SETUP_SELECTION',
+						allowedMFATypes: allowedMfaSetupTypes,
+					},
+				};
+			}
+
+			if (isEmailMfaSetupAvailable) {
+				return {
+					isSignedIn: false,
+					nextStep: {
+						signInStep: 'CONTINUE_SIGN_IN_WITH_EMAIL_SETUP',
+					},
+				};
+			}
+
+			if (isTotpMfaSetupAvailable) {
+				const { Session, SecretCode: secretCode } =
+					await associateSoftwareToken(
+						{ region: getRegion(authConfig.userPoolId) },
+						{
+							Session: signInSession,
+						},
+					);
+
+				signInStore.dispatch({
+					type: 'SET_SIGN_IN_SESSION',
+					value: Session,
+				});
+
+				return {
+					isSignedIn: false,
+					nextStep: {
+						signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
+						totpSetupDetails: getTOTPSetupDetails(secretCode!, username),
+					},
+				};
+			}
+
+			throw new AuthError({
+				name: AuthErrorCodes.SignInException,
+				message: `Cannot initiate MFA setup from available types: ${mfaSetupTypes}`,
+			});
 		}
 		case 'NEW_PASSWORD_REQUIRED':
 			return {
@@ -912,7 +991,7 @@ export async function handleChallengeName(
 	// TODO: remove this error message for production apps
 	throw new AuthError({
 		name: AuthErrorCodes.SignInException,
-		message: `An error occurred during the sign in process. 
+		message: `An error occurred during the sign in process.
 		${challengeName} challengeName returned by the underlying service was not addressed.`,
 	});
 }
@@ -943,15 +1022,10 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 	return JSON.parse(mfa) as CognitoMFAType[];
 }
 
-export function isMFATypeEnabled(
-	challengeParams: ChallengeParameters,
-	mfaType: AuthMFAType,
-): boolean {
-	const { MFAS_CAN_SETUP } = challengeParams;
-	const mfaTypes = getMFATypes(parseMFATypes(MFAS_CAN_SETUP));
-	if (!mfaTypes) return false;
-
-	return mfaTypes.includes(mfaType);
+export function getAllowedMfaSetupTypes(availableMfaSetupTypes: AuthMFAType[]) {
+	return availableMfaSetupTypes.filter(
+		authMfaType => authMfaType === 'EMAIL' || authMfaType === 'TOTP',
+	);
 }
 
 export async function assertUserNotAuthenticated() {
