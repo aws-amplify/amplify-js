@@ -66,6 +66,7 @@ jobs:
 
       # Check if the API Docs have been updated
       - name: Check for updated api docs
+        working-directory: ./amplify-js
         id: api_docs_updated
         run: |
           if git diff --cached --quiet -- ${{ env.API_FILE }}; then
@@ -78,6 +79,7 @@ jobs:
 
       # Commit docs changes
       - name: Commit docs changes
+        working-directory: ./amplify-js
         run: |
           git commit -m "chore(release): update API docs [skip release]"
 
