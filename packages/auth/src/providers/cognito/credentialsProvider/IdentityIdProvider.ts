@@ -5,7 +5,7 @@ import { AuthTokens, ConsoleLogger, Identity, getId } from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
-import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { GetIdException } from '../types/errors';
 
 import { IdentityIdStore } from './types';

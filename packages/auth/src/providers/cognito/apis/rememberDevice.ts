@@ -7,12 +7,13 @@ import {
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 
-import { updateDeviceStatus } from '../utils/clients/CognitoIdentityProvider';
 import { assertAuthTokens, assertDeviceMetadata } from '../utils/types';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { tokenOrchestrator } from '../tokenProvider';
 import { UpdateDeviceStatusException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
+import { createUpdateDeviceStatusClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 /**
  * Marks device as remembered while authenticated.
@@ -24,16 +25,20 @@ import { getAuthUserAgentValue } from '../../../utils';
 export async function rememberDevice(): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-
+	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { tokens } = await fetchAuthSession();
 	assertAuthTokens(tokens);
 
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata();
 	assertDeviceMetadata(deviceMetadata);
-
+	const updateDeviceStatus = createUpdateDeviceStatusClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	await updateDeviceStatus(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.RememberDevice),
 		},
 		{
