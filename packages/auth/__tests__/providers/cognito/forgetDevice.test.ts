@@ -8,8 +8,9 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { DEVICE_METADATA_NOT_FOUND_EXCEPTION } from '../../../src/errors/constants';
 import { forgetDevice } from '../../../src/providers/cognito';
 import { ForgetDeviceException } from '../../../src/providers/cognito/types/errors';
-import { forgetDevice as providerForgetDevice } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
+import { createForgetDeviceClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
@@ -22,10 +23,11 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
 }));
-jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
-);
 jest.mock('../../../src/providers/cognito/tokenProvider');
+jest.mock(
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
+);
+jest.mock('../../../src/providers/cognito/factories');
 
 describe('fetchMFAPreference', () => {
 	const mockDeviceMetadata = {
@@ -35,11 +37,15 @@ describe('fetchMFAPreference', () => {
 	};
 	// assert mocks
 	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-	const mockForgetDevice = providerForgetDevice as jest.Mock;
+	const mockForgetDevice = jest.fn();
+	const mockCreateForgetDeviceClient = jest.mocked(createForgetDeviceClient);
 	const mockClearDeviceMetadata =
 		tokenOrchestrator.clearDeviceMetadata as jest.Mock;
 	const mockGetDeviceMetadata =
 		tokenOrchestrator.getDeviceMetadata as jest.Mock;
+	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
+		createCognitoUserPoolEndpointResolver,
+	);
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -51,6 +57,7 @@ describe('fetchMFAPreference', () => {
 	beforeEach(() => {
 		mockForgetDevice.mockResolvedValue({ $metadata: {} });
 		mockGetDeviceMetadata.mockResolvedValue(mockDeviceMetadata);
+		mockCreateForgetDeviceClient.mockReturnValueOnce(mockForgetDevice);
 	});
 
 	afterEach(() => {
@@ -58,6 +65,7 @@ describe('fetchMFAPreference', () => {
 		mockGetDeviceMetadata.mockReset();
 		mockFetchAuthSession.mockClear();
 		mockClearDeviceMetadata.mockClear();
+		mockCreateForgetDeviceClient.mockClear();
 	});
 
 	it(`should forget 'external device' 'with' inputParams when tokenStore deviceMetadata 'present'`, async () => {
@@ -72,6 +80,25 @@ describe('fetchMFAPreference', () => {
 		);
 		expect(mockForgetDevice).toHaveBeenCalledTimes(1);
 		expect(mockClearDeviceMetadata).not.toHaveBeenCalled();
+	});
+
+	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
+		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					userPoolEndpoint: expectedUserPoolEndpoint,
+				},
+			},
+		});
+		await forgetDevice({ device: { id: 'externalDeviceKey' } });
+
+		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
+			endpointOverride: expectedUserPoolEndpoint,
+		});
 	});
 
 	it(`should forget 'current device' 'with' inputParams when tokenStore deviceMetadata 'present'`, async () => {
