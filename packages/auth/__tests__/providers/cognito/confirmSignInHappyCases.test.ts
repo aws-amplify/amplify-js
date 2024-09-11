@@ -9,16 +9,22 @@ import {
 	signIn,
 } from '../../../src/providers/cognito/';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
-import { RespondToAuthChallengeCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import {
 	cognitoUserPoolsTokenProvider,
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
-import * as clients from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import {
+	createInitiateAuthClient,
+	createRespondToAuthChallengeClient,
+} from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
+jest.mock(
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
+);
 
 const authConfig = {
 	Cognito: {
@@ -34,6 +40,9 @@ const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy: jest.SpyInstance;
 	const { username, password } = authAPITestParams.user1;
+
+	const mockInitiateAuth = jest.fn();
+	const mockCreateInitiateAuthClient = jest.mocked(createInitiateAuthClient);
 
 	beforeEach(async () => {
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
@@ -56,10 +65,14 @@ describe('confirmSignIn API happy path cases', () => {
 					$metadata: {},
 				}),
 			);
+
+		mockCreateInitiateAuthClient.mockReturnValueOnce(mockInitiateAuth);
 	});
 
 	afterEach(() => {
 		handleChallengeNameSpy.mockClear();
+		mockInitiateAuth.mockClear();
+		mockCreateInitiateAuthClient.mockClear();
 	});
 
 	afterAll(() => {
@@ -234,20 +247,16 @@ describe('confirmSignIn API happy path cases', () => {
 		const mockedUserSub = '1111-2222-3333-4444';
 		const activeSignInSession = '1234234232';
 		const activeChallengeName = 'SMS_MFA';
-		const initiateAuthSpy = jest
-			.spyOn(clients, 'initiateAuth')
-			.mockImplementationOnce(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
-					ChallengeName: activeChallengeName,
-					Session: activeSignInSession,
-					$metadata: {},
-					ChallengeParameters: {
-						USER_ID_FOR_SRP: mockedUserSub,
-						CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
-						CODE_DELIVERY_DESTINATION: '*******9878',
-					},
-				}),
-			);
+		mockInitiateAuth.mockResolvedValueOnce({
+			ChallengeName: activeChallengeName,
+			Session: activeSignInSession,
+			$metadata: {},
+			ChallengeParameters: {
+				USER_ID_FOR_SRP: mockedUserSub,
+				CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
+				CODE_DELIVERY_DESTINATION: '*******9878',
+			},
+		});
 		await signIn({
 			username,
 			password,
@@ -260,6 +269,7 @@ describe('confirmSignIn API happy path cases', () => {
 			options: authAPITestParams.configWithClientMetadata,
 		});
 		const options = authAPITestParams.configWithClientMetadata;
+
 		expect(handleChallengeNameSpy).toHaveBeenCalledWith(
 			mockedUserSub,
 			activeChallengeName,
@@ -270,13 +280,16 @@ describe('confirmSignIn API happy path cases', () => {
 			authAPITestParams.configWithClientMetadata.clientMetadata,
 			options,
 		);
-		initiateAuthSpy.mockClear();
 	});
 });
 
 describe('Cognito ASF', () => {
-	let respondToAuthChallengeSpy: jest.SpyInstance;
 	let handleUserSRPAuthFlowSpy: jest.SpyInstance;
+
+	const mockRespondToAuthChallenge = jest.fn();
+	const mockCreateRespondToAuthChallengeClient = jest.mocked(
+		createRespondToAuthChallengeClient,
+	);
 
 	const { username } = authAPITestParams.user1;
 	const { password } = authAPITestParams.user1;
@@ -292,30 +305,28 @@ describe('Cognito ASF', () => {
 			},
 		};
 
-		respondToAuthChallengeSpy = jest
-			.spyOn(clients, 'respondToAuthChallenge')
-			.mockImplementation(
-				async (): Promise<RespondToAuthChallengeCommandOutput> => {
-					return {
-						Session: '1234234232',
-						$metadata: {},
-						ChallengeName: undefined,
-						ChallengeParameters: {},
-						AuthenticationResult: {
-							AccessToken:
-								'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
-							ExpiresIn: 1000,
-							IdToken:
-								'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
-							RefreshToken: 'qwersfsafsfssfasf',
-						},
-					};
-				},
-			);
+		mockRespondToAuthChallenge.mockResolvedValueOnce({
+			Session: '1234234232',
+			$metadata: {},
+			ChallengeName: undefined,
+			ChallengeParameters: {},
+			AuthenticationResult: {
+				AccessToken:
+					'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
+				ExpiresIn: 1000,
+				IdToken:
+					'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE3MTAyOTMxMzB9.YzDpgJsrB3z-ZU1XxMcXSQsMbgCzwH_e-_76rnfehh0',
+				RefreshToken: 'qwersfsafsfssfasf',
+			},
+		});
+		mockCreateRespondToAuthChallengeClient.mockReturnValueOnce(
+			mockRespondToAuthChallenge,
+		);
 	});
 
 	afterEach(() => {
-		respondToAuthChallengeSpy.mockClear();
+		mockRespondToAuthChallenge.mockClear();
+		mockCreateRespondToAuthChallengeClient.mockClear();
 		handleUserSRPAuthFlowSpy.mockClear();
 		(window as any).AmazonCognitoAdvancedSecurityData = undefined;
 	});
@@ -342,15 +353,11 @@ describe('Cognito ASF', () => {
 
 		expect(result.isSignedIn).toBe(false);
 		expect(result.nextStep.signInStep).toBe('CONFIRM_SIGN_IN_WITH_SMS_CODE');
-		try {
-			await confirmSignIn({
-				challengeResponse: '777',
-			});
-		} catch (err) {
-			console.log(err);
-		}
+		await confirmSignIn({
+			challengeResponse: '777',
+		});
 
-		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+		expect(mockRespondToAuthChallenge).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: 'us-west-2',
 			}),
@@ -384,15 +391,11 @@ describe('Cognito ASF', () => {
 		expect(result.nextStep.signInStep).toBe(
 			'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
 		);
-		try {
-			await confirmSignIn({
-				challengeResponse: 'SMS',
-			});
-		} catch (err) {
-			console.log(err);
-		}
+		await confirmSignIn({
+			challengeResponse: 'SMS',
+		});
 
-		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+		expect(mockRespondToAuthChallenge).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: 'us-west-2',
 			}),
@@ -427,15 +430,11 @@ describe('Cognito ASF', () => {
 
 		expect(result.isSignedIn).toBe(false);
 		expect(result.nextStep.signInStep).toBe('CONFIRM_SIGN_IN_WITH_TOTP_CODE');
-		try {
-			await confirmSignIn({
-				challengeResponse: '123456',
-			});
-		} catch (err) {
-			console.log(err);
-		}
+		await confirmSignIn({
+			challengeResponse: '123456',
+		});
 
-		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+		expect(mockRespondToAuthChallenge).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: 'us-west-2',
 			}),
@@ -472,15 +471,11 @@ describe('Cognito ASF', () => {
 		expect(result.nextStep.signInStep).toBe(
 			'CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED',
 		);
-		try {
-			await confirmSignIn({
-				challengeResponse: 'password',
-			});
-		} catch (err) {
-			console.log(err);
-		}
+		await confirmSignIn({
+			challengeResponse: 'password',
+		});
 
-		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+		expect(mockRespondToAuthChallenge).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: 'us-west-2',
 			}),
@@ -516,15 +511,11 @@ describe('Cognito ASF', () => {
 		expect(result.nextStep.signInStep).toBe(
 			'CONFIRM_SIGN_IN_WITH_CUSTOM_CHALLENGE',
 		);
-		try {
-			await confirmSignIn({
-				challengeResponse: 'secret-answer',
-			});
-		} catch (err) {
-			console.log(err);
-		}
+		await confirmSignIn({
+			challengeResponse: 'secret-answer',
+		});
 
-		expect(respondToAuthChallengeSpy).toHaveBeenCalledWith(
+		expect(mockRespondToAuthChallenge).toHaveBeenCalledWith(
 			expect.objectContaining({
 				region: 'us-west-2',
 			}),

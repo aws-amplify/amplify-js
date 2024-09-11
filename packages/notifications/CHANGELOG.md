@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.47](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.46...@aws-amplify/notifications@2.0.47) (2024-09-04)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.46](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.45...@aws-amplify/notifications@2.0.46) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.45](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.44...@aws-amplify/notifications@2.0.45) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.44](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.43...@aws-amplify/notifications@2.0.44) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.43](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.42...@aws-amplify/notifications@2.0.43) (2024-08-15)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.42](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.41...@aws-amplify/notifications@2.0.42) (2024-08-07)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.41](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.40...@aws-amplify/notifications@2.0.41) (2024-08-05)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.40](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.39...@aws-amplify/notifications@2.0.40) (2024-07-23)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.39](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.38...@aws-amplify/notifications@2.0.39) (2024-07-22)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
+## [2.0.38](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.37...@aws-amplify/notifications@2.0.38) (2024-07-19)
+
+**Note:** Version bump only for package @aws-amplify/notifications
+
 ## [2.0.37](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/notifications@2.0.36...@aws-amplify/notifications@2.0.37) (2024-07-08)
 
 **Note:** Version bump only for package @aws-amplify/notifications

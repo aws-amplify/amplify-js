@@ -34,6 +34,7 @@ export const AuthTokenStorageKeys = {
 	randomPasswordKey: 'randomPasswordKey',
 	deviceGroupKey: 'deviceGroupKey',
 	signInDetails: 'signInDetails',
+	oauthMetadata: 'oauthMetadata',
 };
 
 export interface AuthTokenStore {
@@ -44,6 +45,8 @@ export interface AuthTokenStore {
 	setKeyValueStorage(keyValueStorage: KeyValueStorageInterface): void;
 	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null>;
 	clearDeviceMetadata(username?: string): Promise<void>;
+	setOAuthMetadata(metadata: OAuthMetadata): Promise<void>;
+	getOAuthMetadata(): Promise<OAuthMetadata | null>;
 }
 
 export interface AuthTokenOrchestrator {
@@ -58,6 +61,8 @@ export interface AuthTokenOrchestrator {
 	clearTokens(): Promise<void>;
 	getDeviceMetadata(username?: string): Promise<DeviceMetadata | null>;
 	clearDeviceMetadata(username?: string): Promise<void>;
+	setOAuthMetadata(metadata: OAuthMetadata): Promise<void>;
+	getOAuthMetadata(): Promise<OAuthMetadata | null>;
 }
 
 export interface CognitoUserPoolTokenProviderType extends TokenProvider {
@@ -77,4 +82,8 @@ export interface DeviceMetadata {
 	deviceKey?: string;
 	deviceGroupKey?: string;
 	randomPassword: string;
+}
+
+export interface OAuthMetadata {
+	oauthSignIn: boolean;
 }

@@ -7,8 +7,9 @@ import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { updateUserAttributes } from '../../../src/providers/cognito';
 import { UpdateUserAttributesException } from '../../../src/providers/cognito/types/errors';
-import { updateUserAttributes as providerUpdateUserAttributes } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { toAttributeType } from '../../../src/providers/cognito/utils/apiHelpers';
+import { createUpdateUserAttributesClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
@@ -22,13 +23,20 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
+jest.mock('../../../src/providers/cognito/factories');
 
 describe('updateUserAttributes', () => {
 	// assert mocks
 	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-	const mockUpdateUserAttributes = providerUpdateUserAttributes as jest.Mock;
+	const mockUpdateUserAttributes = jest.fn();
+	const mockCreateUpdateUserAttributesClient = jest.mocked(
+		createUpdateUserAttributesClient,
+	);
+	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
+		createCognitoUserPoolEndpointResolver,
+	);
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -52,11 +60,15 @@ describe('updateUserAttributes', () => {
 				},
 			],
 		});
+		mockCreateUpdateUserAttributesClient.mockReturnValueOnce(
+			mockUpdateUserAttributes,
+		);
 	});
 
 	afterEach(() => {
 		mockUpdateUserAttributes.mockReset();
 		mockFetchAuthSession.mockClear();
+		mockCreateUpdateUserAttributesClient.mockClear();
 	});
 
 	it('should return a map with updated and not updated attributes', async () => {
@@ -119,6 +131,30 @@ describe('updateUserAttributes', () => {
 				ClientMetadata: { foo: 'bar' },
 			}),
 		);
+	});
+
+	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
+		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					userPoolEndpoint: expectedUserPoolEndpoint,
+				},
+			},
+		});
+		await updateUserAttributes({
+			userAttributes: {},
+			options: {
+				clientMetadata: { foo: 'bar' },
+			},
+		});
+
+		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
+			endpointOverride: expectedUserPoolEndpoint,
+		});
 	});
 
 	it('updateUserAttributes API should return a map with updated attributes only', async () => {

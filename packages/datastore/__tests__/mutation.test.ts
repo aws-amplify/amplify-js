@@ -464,5 +464,5 @@ const timeoutError = {
 			region: 'us-west-2',
 		},
 	},
-	code: 'ECONNABORTED',
+	code: 'ERR_NETWORK',
 };

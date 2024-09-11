@@ -106,6 +106,7 @@ export function graphql<
 	const internals = getInternals(this as any);
 	options.authMode = options.authMode || internals.authMode;
 	options.authToken = options.authToken || internals.authToken;
+	const headers = additionalHeaders || internals.headers;
 
 	/**
 	 * The correctness of these typings depends on correct string branding or overrides.
@@ -116,7 +117,7 @@ export function graphql<
 		// TODO: move V6Client back into this package?
 		internals.amplify as any,
 		options,
-		additionalHeaders,
+		headers,
 	);
 
 	return result as any;

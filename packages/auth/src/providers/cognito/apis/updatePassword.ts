@@ -10,11 +10,12 @@ import {
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { UpdatePasswordInput } from '../types';
-import { changePassword } from '../utils/clients/CognitoIdentityProvider';
 import { ChangePasswordException } from '../../cognito/types/errors';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
+import { createChangePasswordClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 /**
  * Updates user's password while authenticated.
@@ -29,6 +30,7 @@ export async function updatePassword(
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { oldPassword, newPassword } = input;
 	assertValidationError(
 		!!oldPassword,
@@ -41,9 +43,14 @@ export async function updatePassword(
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
+	const changePassword = createChangePasswordClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	await changePassword(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.UpdatePassword),
 		},
 		{
