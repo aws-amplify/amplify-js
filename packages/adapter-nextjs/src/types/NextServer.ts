@@ -11,6 +11,8 @@ import {
 } from '@aws-amplify/core/internals/adapter-core';
 import { ResourcesConfig } from '@aws-amplify/core';
 
+import { CreateAuthRouteHandlers } from '../auth/types';
+
 export declare namespace NextServer {
 	/**
 	 * This context is normally available in the following:
@@ -90,6 +92,7 @@ export declare namespace NextServer {
 
 	export interface CreateServerRunnerOutput {
 		runWithAmplifyServerContext: RunOperationWithContext;
+		createAuthRouteHandlers: CreateAuthRouteHandlers;
 	}
 
 	export type CreateServerRunner = (
