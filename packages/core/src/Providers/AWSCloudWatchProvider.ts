@@ -55,6 +55,8 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	private _currentLogBatch: InputLogEvent[];
 	private _timer;
 	private _nextSequenceToken: string | undefined;
+	private _maxRetries = 5;
+	private _retryCount;
 
 	constructor(config?: AWSCloudWatchProviderOptions) {
 		this.configure(config);
@@ -494,11 +496,22 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			try {
 				if (this._getDocUploadPermissibility()) {
 					await this._safeUploadLogEvents();
+					this._retryCount = 0;
 				}
 			} catch (err) {
-				logger.error(
-					`error when calling _safeUploadLogEvents in the timer interval - ${err}`
-				);
+				this._retryCount++;
+				if (this._retryCount < this._maxRetries) {
+					logger.error(
+						`error when calling _safeUploadLogEvents in the timer interval - ${err}`
+					);
+					logger.error(
+						`Max retries (${this._maxRetries}) reached. Stopping log uploads.`
+					);
+				} else if (this._retryCount == this._maxRetries) {
+					logger.error(
+						`Max retries (${this._maxRetries}) reached. Stopping log uploads.`
+					);
+				}
 			}
 		}, 2000);
 	}
