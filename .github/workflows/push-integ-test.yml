@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - james/feat/min-device-versions
 
 jobs:
   e2e:
