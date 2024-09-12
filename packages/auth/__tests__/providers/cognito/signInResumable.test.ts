@@ -10,7 +10,7 @@ import { cognitoUserPoolsTokenProvider } from '../../../src/providers/cognito/to
 import {
 	ChallengeName,
 	RespondToAuthChallengeCommandOutput,
-} from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+} from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { signIn } from '../../../src/providers/cognito';
 
@@ -39,10 +39,6 @@ jest.mock('@aws-amplify/core', () => ({
 		}),
 	},
 }));
-
-jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
-);
 
 const signInStateKeys: Record<string, string> = {
 	username: 'CognitoSignInState.username',
