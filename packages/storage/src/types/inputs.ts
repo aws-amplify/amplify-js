@@ -4,8 +4,8 @@
 import { StrictUnion } from '@aws-amplify/core/internals/utils';
 
 import {
-	CopyDestinationOptionsWithPath,
-	CopySourceOptionsWithPath,
+	CopyWithPathDestinationOptions,
+	CopyWithPathSourceOptions,
 } from '../providers/s3/types/options';
 
 import {
@@ -96,8 +96,8 @@ export interface StorageCopyInputWithKey<
 }
 
 export interface StorageCopyInputWithPath {
-	source: StorageOperationInputWithPath & CopySourceOptionsWithPath;
-	destination: StorageOperationInputWithPath & CopyDestinationOptionsWithPath;
+	source: StorageOperationInputWithPath & CopyWithPathSourceOptions;
+	destination: StorageOperationInputWithPath & CopyWithPathDestinationOptions;
 }
 
 /**
