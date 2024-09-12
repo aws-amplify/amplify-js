@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - fix/dependabot
+      - Samaritan1011001:fix/dependabot
 
 jobs:
   e2e:
