@@ -4,8 +4,7 @@
 import { syncSessionStorage } from '@aws-amplify/core';
 
 import { CognitoAuthSignInDetails } from '../types';
-
-import { ChallengeName } from './clients/CognitoIdentityProvider/types';
+import { ChallengeName } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 // TODO: replace all of this implementation with state machines
 interface SignInState {
