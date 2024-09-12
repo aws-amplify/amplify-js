@@ -228,6 +228,42 @@ describe('copy API', () => {
 					},
 				);
 			});
+
+			it('should pass notModifiedSince to copyObject', async () => {
+				const mockDate = 'mock-date' as any;
+				await copyWrapper({
+					source: {
+						key: 'sourceKey',
+						notModifiedSince: mockDate,
+					},
+					destination: { key: 'destinationKey' },
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						CopySourceIfUnmodifiedSince: mockDate,
+					}),
+				);
+			});
+
+			it('should pass eTag to copyObject', async () => {
+				const mockEtag = 'mock-etag';
+				await copyWrapper({
+					source: {
+						key: 'sourceKey',
+						eTag: mockEtag,
+					},
+					destination: { key: 'destinationKey' },
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						CopySourceIfMatch: mockEtag,
+					}),
+				);
+			});
 		});
 
 		describe('With path', () => {
@@ -308,6 +344,42 @@ describe('copy API', () => {
 						CopySource: `${bucket}/sourcePath`,
 						Key: 'destinationPath',
 					},
+				);
+			});
+
+			it('should pass notModifiedSince to copyObject', async () => {
+				const mockDate = 'mock-date' as any;
+				await copyWrapper({
+					source: {
+						path: 'sourcePath',
+						notModifiedSince: mockDate,
+					},
+					destination: { path: 'destinationPath' },
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						CopySourceIfUnmodifiedSince: mockDate,
+					}),
+				);
+			});
+
+			it('should pass eTag to copyObject', async () => {
+				const mockEtag = 'mock-etag';
+				await copyWrapper({
+					source: {
+						path: 'sourcePath',
+						eTag: mockEtag,
+					},
+					destination: { path: 'destinationPath' },
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						CopySourceIfMatch: mockEtag,
+					}),
 				);
 			});
 		});

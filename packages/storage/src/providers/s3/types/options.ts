@@ -235,6 +235,8 @@ export type CopySourceOptionsWithKey = ReadOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 	bucket?: StorageBucket;
+	notModifiedSince?: Date;
+	eTag?: string;
 };
 
 /** @deprecated This may be removed in the next major version. */
@@ -246,7 +248,10 @@ export type CopyDestinationOptionsWithKey = WriteOptions & {
 
 export interface CopyWithPathSourceOptions {
 	bucket?: StorageBucket;
+	notModifiedSince?: Date;
+	eTag?: string;
 }
+
 export interface CopyWithPathDestinationOptions {
 	bucket?: StorageBucket;
 }
