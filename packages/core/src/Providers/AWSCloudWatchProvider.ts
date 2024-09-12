@@ -504,7 +504,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 					logger.error(
 						`error when calling _safeUploadLogEvents in the timer interval - ${err}`
 					);
-				} else if (this._retryCount == this._maxRetries) {
+				} else if (this._retryCount === this._maxRetries) {
 					logger.error(
 						`CloudWatch log upload failed after ${this._maxRetries} attempts. Suppressing further error logs. Upload attempts will continue in the background.`
 					);
