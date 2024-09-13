@@ -620,9 +620,9 @@ tests:
     desc: 'Resumable sign in with SMS MFA flow'
     framework: next
     category: auth
-    sample_name: [auth-mfa]
-    spec: auth-mfa
-    browser: *minimal_browser_list
+    sample_name: [mfa]
+    spec: sign-in-resumable-mfa
+    browser: [chrome]
 
   # DISABLED Angular/Vue tests:
   # TODO: delete tests or add custom ui logic to support them.
