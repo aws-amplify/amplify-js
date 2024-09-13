@@ -1,7 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AmplifyClassV6 } from '@aws-amplify/core';
-import { ApiAction, Category } from '@aws-amplify/core/internals/utils';
+import {
+	ApiAction,
+	Category,
+	CustomUserAgentDetails,
+} from '@aws-amplify/core/internals/utils';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 import { Observable } from 'rxjs';
 
@@ -37,10 +41,12 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 		amplify: AmplifyClassV6 | (() => Promise<AmplifyClassV6>),
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
+		customUserAgentDetails?: CustomUserAgentDetails,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		return super.graphql(amplify, options, additionalHeaders, {
 			category: Category.API,
 			action: ApiAction.GraphQl,
+			...customUserAgentDetails,
 		});
 	}
 
