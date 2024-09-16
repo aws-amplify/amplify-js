@@ -4,10 +4,11 @@
 import { Amplify } from '@aws-amplify/core';
 import { decodeJWT, fetchAuthSession } from '@aws-amplify/core/internals/utils';
 
-import { getUser } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { AuthError } from '../../../src/errors/AuthError';
 import { GetUserException } from '../../../src/providers/cognito/types/errors';
 import { fetchUserAttributes } from '../../../src/providers/cognito/apis/fetchUserAttributes';
+import { createGetUserClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
@@ -21,13 +22,18 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	fetchAuthSession: jest.fn(),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
+jest.mock('../../../src/providers/cognito/factories');
 
 describe('fetchUserAttributes', () => {
 	// assert mocks
 	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-	const mockGetUser = getUser as jest.Mock;
+	const mockGetUser = jest.fn();
+	const mockCreateGetUserClient = jest.mocked(createGetUserClient);
+	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
+		createCognitoUserPoolEndpointResolver,
+	);
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -47,11 +53,13 @@ describe('fetchUserAttributes', () => {
 			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA'],
 			$metadata: {},
 		});
+		mockCreateGetUserClient.mockReturnValueOnce(mockGetUser);
 	});
 
 	afterEach(() => {
 		mockGetUser.mockReset();
 		mockFetchAuthSession.mockClear();
+		mockCreateGetUserClient.mockClear();
 	});
 
 	it('should return the current user attributes into a map format', async () => {
@@ -69,6 +77,25 @@ describe('fetchUserAttributes', () => {
 				AccessToken: mockAccessToken,
 			},
 		);
+	});
+
+	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
+		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					userPoolEndpoint: expectedUserPoolEndpoint,
+				},
+			},
+		});
+		await fetchUserAttributes();
+
+		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
+			endpointOverride: expectedUserPoolEndpoint,
+		});
 	});
 
 	it('should throw an error when service returns an error response', async () => {
