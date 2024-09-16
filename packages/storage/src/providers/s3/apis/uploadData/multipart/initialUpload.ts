@@ -3,7 +3,11 @@
 
 import { StorageAccessLevel } from '@aws-amplify/core';
 
-import { ContentDisposition, ResolvedS3Config } from '../../../types/options';
+import {
+	ContentDisposition,
+	ResolvedS3Config,
+	UploadDataChecksumAlgorithm,
+} from '../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../types';
 import { Part, createMultipartUpload } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
@@ -30,6 +34,8 @@ interface LoadOrCreateMultipartUploadOptions {
 	metadata?: Record<string, string>;
 	size?: number;
 	abortSignal?: AbortSignal;
+	checksumAlgorithm?: UploadDataChecksumAlgorithm;
+	optionsHash: string;
 }
 
 interface LoadOrCreateMultipartUploadResult {
@@ -57,6 +63,8 @@ export const loadOrCreateMultipartUpload = async ({
 	contentEncoding,
 	metadata,
 	abortSignal,
+	checksumAlgorithm,
+	optionsHash,
 }: LoadOrCreateMultipartUploadOptions): Promise<LoadOrCreateMultipartUploadResult> => {
 	const finalKey = keyPrefix !== undefined ? keyPrefix + key : key;
 
@@ -79,6 +87,7 @@ export const loadOrCreateMultipartUpload = async ({
 			bucket,
 			accessLevel,
 			key,
+			optionsHash,
 		});
 
 		const cachedUploadParts = await findCachedUploadParts({
@@ -99,7 +108,10 @@ export const loadOrCreateMultipartUpload = async ({
 			finalCrc32: cachedUpload.finalCrc32,
 		};
 	} else {
-		const finalCrc32 = await getCombinedCrc32(data, size);
+		const finalCrc32 =
+			checksumAlgorithm === 'crc-32'
+				? await getCombinedCrc32(data, size)
+				: undefined;
 
 		const { UploadId } = await createMultipartUpload(
 			{
@@ -133,6 +145,7 @@ export const loadOrCreateMultipartUpload = async ({
 			bucket,
 			accessLevel,
 			key,
+			optionsHash,
 		});
 		await cacheMultipartUpload(uploadCacheKey, {
 			uploadId: UploadId!,
@@ -157,12 +170,10 @@ const getCombinedCrc32 = async (
 	const crc32List: ArrayBuffer[] = [];
 	const dataChunker = getDataChunker(data, size);
 	for (const { data: checkData } of dataChunker) {
-		const checksumArrayBuffer = (await calculateContentCRC32(checkData))
-			?.checksumArrayBuffer;
-		if (checksumArrayBuffer === undefined) return undefined;
+		const { checksumArrayBuffer } = await calculateContentCRC32(checkData);
 
 		crc32List.push(checksumArrayBuffer);
 	}
 
-	return `${(await calculateContentCRC32(new Blob(crc32List)))?.checksum}-${crc32List.length}`;
+	return `${(await calculateContentCRC32(new Blob(crc32List))).checksum}-${crc32List.length}`;
 };

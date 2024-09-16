@@ -47,10 +47,15 @@ export const putObjectJob =
 			contentType = 'application/octet-stream',
 			preventOverwrite,
 			metadata,
+			checksumAlgorithm,
 			onProgress,
 		} = uploadDataOptions ?? {};
 
-		const checksumCRC32 = await calculateContentCRC32(data);
+		const checksumCRC32 =
+			checksumAlgorithm === 'crc-32'
+				? await calculateContentCRC32(data)
+				: undefined;
+
 		const contentMD5 =
 			// check if checksum exists. ex: should not exist in react native
 			!checksumCRC32 && isObjectLockEnabled

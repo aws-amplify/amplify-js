@@ -194,6 +194,8 @@ export type DownloadDataOptions = CommonOptions &
 export type DownloadDataOptionsWithKey = ReadOptions & DownloadDataOptions;
 export type DownloadDataOptionsWithPath = DownloadDataOptions;
 
+export type UploadDataChecksumAlgorithm = 'crc-32';
+
 export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
@@ -224,6 +226,8 @@ export type UploadDataOptions = CommonOptions &
 		 * @default false
 		 */
 		preventOverwrite?: boolean;
+
+		checksumAlgorithm?: UploadDataChecksumAlgorithm;
 	};
 
 /** @deprecated Use {@link UploadDataOptionsWithPath} instead. */

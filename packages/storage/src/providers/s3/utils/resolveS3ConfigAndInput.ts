@@ -123,7 +123,7 @@ export const resolveS3ConfigAndInput = async (
 		apiOptions?.accessLevel ?? defaultAccessLevel ?? DEFAULT_ACCESS_LEVEL;
 	const targetIdentityId =
 		accessLevel === 'protected'
-			? (apiOptions?.targetIdentityId ?? identityId)
+			? apiOptions?.targetIdentityId ?? identityId
 			: identityId;
 
 	const keyPrefix = await prefixResolver({ accessLevel, targetIdentityId });
