@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.5.13...@aws-amplify/pubsub@5.6.0) (2024-09-13)
+
+### Features
+
+- **pubsub:** v5 - AppSync realtime - pass authToken via subprotocol ([#13726](https://github.com/aws-amplify/amplify-js/issues/13726)) ([774c242](https://github.com/aws-amplify/amplify-js/commit/774c2429eb5b14b2840a96f6d04be360762abc90))
+
 ## [5.5.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.5.12...@aws-amplify/pubsub@5.5.13) (2024-08-08)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
