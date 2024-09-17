@@ -14,7 +14,6 @@ import {
 	DescribeLogStreamsCommand,
 	PutLogEventsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
-import { loggers } from 'winston';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
