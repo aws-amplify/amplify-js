@@ -81,7 +81,7 @@ jobs:
       - name: Commit docs changes
         working-directory: ./amplify-js
         run: |
-          git commit -m "chore(release): update API docs [skip release]"
+          git commit -m "chore(release): Update API docs [skip release]"
 
       # configure aws credentials
       - name: Configure AWS Credentials
