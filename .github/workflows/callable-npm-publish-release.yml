@@ -3,7 +3,7 @@ name: Release to npm and update repository
 on: workflow_call
 
 env:
-  API_FILE: 'docs/references.json'
+  API_FILE: 'docs/parsedJson.json'
 
 jobs:
   deploy-prep:
