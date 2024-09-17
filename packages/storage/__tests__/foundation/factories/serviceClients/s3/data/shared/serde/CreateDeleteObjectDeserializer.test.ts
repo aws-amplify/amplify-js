@@ -6,7 +6,7 @@ import {
 	parseJsonError,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { createDeleteObjectDeserializer } from '../../../../../../../../src/foundation/factories/serviceClients/s3/data/shared/serde';
+import { createDeleteObjectDeserializer } from '../../../../../../../../src/foundation/factories/serviceClients/s3/s3data/shared/serde';
 import { StorageError } from '../../../../../../../../src/errors/StorageError';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');

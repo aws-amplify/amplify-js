@@ -11,8 +11,8 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 import { ConsoleLogger } from '@aws-amplify/core';
 
-import { TransferProgressEvent } from '../../../../../../types';
-import { CanceledError } from '../../../../../../errors/CanceledError';
+import { TransferProgressEvent } from '../../../../../types';
+import { CanceledError } from '../../../../../errors/CanceledError';
 
 import {
 	ABORT_ERROR_CODE,

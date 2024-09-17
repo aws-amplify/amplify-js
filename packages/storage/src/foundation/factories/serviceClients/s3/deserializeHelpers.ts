@@ -5,7 +5,7 @@
 import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 import { ServiceError } from '@aws-amplify/core/internals/utils';
 
-import { StorageError } from '../../../../../errors/StorageError';
+import { StorageError } from '../../../../errors/StorageError';
 
 type PropertyNameWithStringValue = string;
 type PropertyNameWithSubsequentDeserializer<T> = [string, (arg: any) => T];

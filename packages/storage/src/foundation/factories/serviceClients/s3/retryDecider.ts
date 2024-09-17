@@ -11,7 +11,7 @@ import {
 
 // replicated existing import pattern
 // TODO(ashwinkumar6): low lvl should not import type from higher lvl
-import { LocationCredentialsProvider } from '../../../../../providers/s3/types/options';
+import { LocationCredentialsProvider } from '../../../../providers/s3/types/options';
 
 import { parseXmlError } from './parsePayload';
 

@@ -3,7 +3,7 @@
 
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
-import { createDeleteObjectSerializer } from '../../../../../../../../src/foundation/factories/serviceClients/s3/data/shared/serde';
+import { createDeleteObjectSerializer } from '../../../../../../../../src/foundation/factories/serviceClients/s3/s3data/shared/serde';
 
 describe('createDeleteObjectSerializer', () => {
 	it('should serialize deleteObject request', async () => {

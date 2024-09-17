@@ -4,7 +4,7 @@
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { getDnsSuffix } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { S3EndpointResolverOptions } from './factories/serviceClients/s3/data/types';
+import { S3EndpointResolverOptions } from './factories/serviceClients/s3/s3data/types';
 import { isDnsCompatibleBucketName } from './isDnsCompatibleBucketName';
 
 // TODO(ashwinkumar6): remove duplicate storage/src/providers/s3/utils/client/s3data/base.ts

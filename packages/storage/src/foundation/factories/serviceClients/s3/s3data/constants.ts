@@ -5,7 +5,7 @@
 import { getAmplifyUserAgent } from '@aws-amplify/core/internals/utils';
 import { jitteredBackoff } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { retryDecider } from '../utils';
+import { retryDecider } from '../retryDecider';
 import { endpointResolver } from '../../../../endpointResolver';
 import { SERVICE_NAME } from '../../../../constants';
 

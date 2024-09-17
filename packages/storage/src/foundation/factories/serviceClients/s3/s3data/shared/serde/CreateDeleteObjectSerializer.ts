@@ -10,7 +10,7 @@ import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from '../../../utils';
+} from '../../../serializeHelpers';
 import type { DeleteObjectCommandInput } from '../../types';
 
 type DeleteObjectInput = Pick<DeleteObjectCommandInput, 'Bucket' | 'Key'>;

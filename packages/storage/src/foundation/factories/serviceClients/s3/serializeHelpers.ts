@@ -5,7 +5,7 @@
 import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-client-utils';
 import { AmplifyErrorCode } from '@aws-amplify/core/internals/utils';
 
-import { StorageError } from '../../../../../errors/StorageError';
+import { StorageError } from '../../../../errors/StorageError';
 
 /**
  * @internal
