@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.19...@aws-amplify/interactions@5.2.20) (2024-09-17)
+
+### Bug Fixes
+
+- dependabot alert for send and server-static versions ([#13806](https://github.com/aws-amplify/amplify-js/issues/13806)) ([d51c11b](https://github.com/aws-amplify/amplify-js/commit/d51c11b09d3518a56cd8b282276179e7846e792e))
+
 ## [5.2.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@5.2.18...@aws-amplify/interactions@5.2.19) (2024-08-08)
 
 **Note:** Version bump only for package @aws-amplify/interactions
