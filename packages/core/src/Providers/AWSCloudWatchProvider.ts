@@ -56,7 +56,8 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	private _timer;
 	private _nextSequenceToken: string | undefined;
 	private _maxRetries = 5;
-	private _retryCount;
+	private _retryCount = 0;
+	private _maxRetriesReached: boolean = false;
 
 	constructor(config?: AWSCloudWatchProviderOptions) {
 		this.configure(config);
@@ -211,6 +212,12 @@ class AWSCloudWatchProvider implements LoggingProvider {
 	public pushLogs(logs: InputLogEvent[]): void {
 		logger.debug('pushing log events to Cloudwatch...');
 		this._dataTracker.logEvents = [...this._dataTracker.logEvents, ...logs];
+
+		if (this._maxRetriesReached) {
+			this._retryCount = 0;
+			this._maxRetriesReached = false;
+			this._initiateLogPushInterval();
+		}
 	}
 
 	private async _validateLogGroupExistsAndCreate(
@@ -493,6 +500,10 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 
 		this._timer = setInterval(async () => {
+			if (this._maxRetriesReached) {
+				return;
+			}
+
 			try {
 				if (this._getDocUploadPermissibility()) {
 					await this._safeUploadLogEvents();
@@ -500,15 +511,16 @@ class AWSCloudWatchProvider implements LoggingProvider {
 				}
 			} catch (err) {
 				this._retryCount++;
-				if (this._retryCount < this._maxRetries) {
+				if (this._retryCount > this._maxRetries) {
 					logger.error(
-						`error when calling _safeUploadLogEvents in the timer interval - ${err}`
+						`Max retries (${this._maxRetries}) reached. Stopping log uploads.`
 					);
-				} else if (this._retryCount === this._maxRetries) {
-					logger.error(
-						`CloudWatch log upload failed after ${this._maxRetries} attempts. Suppressing further error logs. Upload attempts will continue in the background.`
-					);
+					this._maxRetriesReached = true;
+					return;
 				}
+				logger.error(
+					`error when calling _safeUploadLogEvents in the timer interval - ${err}`
+				);
 			}
 		}, 2000);
 	}

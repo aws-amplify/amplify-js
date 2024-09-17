@@ -14,6 +14,7 @@ import {
 	DescribeLogStreamsCommand,
 	PutLogEventsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
+import { loggers } from 'winston';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -178,32 +179,51 @@ describe('AWSCloudWatchProvider', () => {
 		});
 
 		describe('pushLogs test', () => {
+			let provider;
+			let mockInitiateLogPushInterval;
+			beforeEach(() => {
+				provider = new AWSCloudWatchProvider(testConfig);
+				mockInitiateLogPushInterval = jest
+					.spyOn(provider as any, '_initiateLogPushInterval')
+					.mockImplementation();
+			});
+			afterEach(() => {
+				jest.clearAllMocks();
+			});
 			it('should add the provided logs to the log queue', () => {
-				const provider = new AWSCloudWatchProvider(testConfig);
 				provider.pushLogs([{ message: 'hello', timestamp: 1111 }]);
 
 				let logQueue = provider.getLogQueue();
-
 				expect(logQueue).toHaveLength(1);
 
 				provider.pushLogs([
-					{
-						message: 'goodbye',
-						timestamp: 1112,
-					},
-					{
-						message: 'ohayou',
-						timestamp: 1113,
-					},
-					{
-						message: 'konbanwa',
-						timestamp: 1114,
-					},
+					{ message: 'goodbye', timestamp: 1112 },
+					{ message: 'ohayou', timestamp: 1113 },
+					{ message: 'konbanwa', timestamp: 1114 },
 				]);
 
 				logQueue = provider.getLogQueue();
-
 				expect(logQueue).toHaveLength(4);
+			});
+			it('should reset retry mechanism when _maxRetriesReached is true', () => {
+				provider['_maxRetriesReached'] = true;
+				provider['_retryCount'] = 6;
+
+				provider.pushLogs([{ message: 'test', timestamp: Date.now() }]);
+
+				expect(provider['_retryCount']).toBe(0);
+				expect(provider['_maxRetriesReached']).toBe(false);
+				expect(mockInitiateLogPushInterval).toHaveBeenCalledTimes(2);
+			});
+			it('should not reset retry mechanism when _maxRetriesReached is false', () => {
+				provider['_maxRetriesReached'] = false;
+				provider['_retryCount'] = 3;
+
+				provider.pushLogs([{ message: 'test', timestamp: Date.now() }]);
+
+				expect(provider['_retryCount']).toBe(3);
+				expect(provider['_maxRetriesReached']).toBe(false);
+				expect(mockInitiateLogPushInterval).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -395,6 +415,90 @@ describe('AWSCloudWatchProvider', () => {
 
 				clientSpy.mockRestore();
 			});
+		});
+	});
+	describe('_initiateLogPushInterval', () => {
+		let provider: AWSCloudWatchProvider;
+		let safeUploadLogEventsSpy: jest.SpyInstance;
+		let getDocUploadPermissibilitySpy: jest.SpyInstance;
+		let setIntervalSpy: jest.SpyInstance;
+
+		beforeEach(() => {
+			jest.useFakeTimers();
+			provider = new AWSCloudWatchProvider(testConfig);
+			safeUploadLogEventsSpy = jest.spyOn(
+				provider as any,
+				'_safeUploadLogEvents'
+			);
+			getDocUploadPermissibilitySpy = jest.spyOn(
+				provider as any,
+				'_getDocUploadPermissibility'
+			);
+			setIntervalSpy = jest.spyOn(global, 'setInterval');
+		});
+
+		afterEach(() => {
+			jest.useRealTimers();
+			jest.restoreAllMocks();
+		});
+
+		it('should clear existing timer and set a new one', () => {
+			(provider as any)._timer = setInterval(() => {}, 1000);
+			(provider as any)._initiateLogPushInterval();
+
+			expect(setIntervalSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('should not upload logs if max retries are reached', async () => {
+			(provider as any)._maxRetriesReached = true;
+			(provider as any)._initiateLogPushInterval();
+
+			jest.advanceTimersByTime(2000);
+			await Promise.resolve();
+
+			expect(safeUploadLogEventsSpy).not.toHaveBeenCalled();
+		});
+
+		it('should upload logs if conditions are met', async () => {
+			getDocUploadPermissibilitySpy.mockReturnValue(true);
+			safeUploadLogEventsSpy.mockResolvedValue(undefined);
+
+			(provider as any)._initiateLogPushInterval();
+
+			jest.advanceTimersByTime(2000);
+			await Promise.resolve();
+
+			expect(safeUploadLogEventsSpy).toHaveBeenCalledTimes(1);
+			expect((provider as any)._retryCount).toBe(0);
+		});
+
+		it('should increment retry count on error', async () => {
+			getDocUploadPermissibilitySpy.mockReturnValue(true);
+			safeUploadLogEventsSpy.mockRejectedValue(new Error('Test error'));
+
+			(provider as any)._initiateLogPushInterval();
+
+			jest.advanceTimersByTime(2000);
+			await Promise.resolve();
+
+			expect((provider as any)._retryCount).toBe(0);
+		});
+
+		it('should stop retrying after max retries', async () => {
+			getDocUploadPermissibilitySpy.mockReturnValue(true);
+			safeUploadLogEventsSpy.mockRejectedValue(new Error('Test error'));
+			(provider as any)._maxRetries = 3;
+
+			(provider as any)._initiateLogPushInterval();
+
+			for (let i = 0; i < 4; i++) {
+				jest.advanceTimersByTime(2000);
+				await Promise.resolve(); // Allow any pending promise to resolve
+			}
+
+			expect((provider as any)._retryCount).toBe(2);
+
+			expect(safeUploadLogEventsSpy).toHaveBeenCalledTimes(4);
 		});
 	});
 });
