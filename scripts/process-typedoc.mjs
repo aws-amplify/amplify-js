@@ -1,3 +1,7 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+'use strict';
+
 /**
  * This script takes in the typedoc json output ../docs/reference.json and
  * generates an updated object to be fed into the api template pages in the
@@ -49,6 +53,11 @@ const recursivelyPopulateFlatObject = referenceObject => {
 
 // Traverse an object replacing nested objects with their ids
 const recursivelyStripObject = referenceObject => {
+	// remove the packageVersion key so that we can detect if any actual docs changes have happened
+	if (referenceObject['packageVersion']) {
+		delete referenceObject['packageVersion'];
+	}
+
 	for (let key in referenceObject) {
 		if (referenceObject.hasOwnProperty(key)) {
 			if (Array.isArray(referenceObject[key])) {
