@@ -1,0 +1,97 @@
+name: testing the api docs release portion of the release workflow
+
+on:
+  workflow_dispatch:
+
+env:
+  API_FILE: 'docs/parsedJson.json'
+
+jobs:
+  deploy:
+    name: Publish to Amplify Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+          ref: feat/inline-api-docs
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Set github commit user
+        env:
+          GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+          GITHUB_USER: ${{ vars.GH_USER }}
+        run: |
+          git config --global user.email $GITHUB_EMAIL
+          git config --global user.name $GITHUB_USER
+
+      # Generate API docs JSON file
+      - name: Update API documentation
+        working-directory: ./amplify-js
+        run: |
+          yarn run docs
+          git add ./docs
+
+      # Check if the API Docs have been updated
+      - name: Check for updated api docs
+        working-directory: ./amplify-js
+        id: api_docs_updated
+        run: |
+          if git diff --cached --quiet -- ${{ env.API_FILE }}; then
+            echo "API docs have not changed"
+            echo "updated=false" >> $GITHUB_OUTPUT
+          else
+            echo "updated=true" >> $GITHUB_OUTPUT
+            echo "API docs have been updated"
+          fi
+
+      # Commit docs changes
+      - name: Commit docs changes
+        working-directory: ./amplify-js
+        run: |
+          git commit -m "chore(release): Update API docs [skip release]"
+
+      # configure aws credentials
+      - name: Configure AWS Credentials
+        if: steps.api_docs_updated.outputs.updated == 'true'
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
+        with:
+          role-to-assume: ${{ vars.DOCS_ROLE }}
+          aws-region: ${{ vars.DOCS_REGION }}
+
+      # Read secrets from secrets manager
+      - name: Read secrets from AWS Secrets Manager into environment variables
+        if: steps.api_docs_updated.outputs.updated == 'true'
+        uses: aws-actions/aws-secretsmanager-get-secrets@ff26a0aa6bd4dd5e51326b5afb3f5f6874c958c7 # v2.0.3
+        with:
+          secret-ids: |
+            DOCS_API_KEY
+          parse-json-secrets: true
+
+      # Post dispatch action with docs repo
+      - name: Fire event
+        if: steps.api_docs_updated.outputs.updated == 'true'
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ env.DOCS_API_KEY_DOCS_API_KEY }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/aws-amplify/docs/dispatches \
+            -d '{"event_type":"update-references"}'
+
+      # Fail this step if api docs have not been updated but continue running the workflow
+      - name: API Docs not updated
+        if: steps.api_docs_updated.outputs.updated == 'false'
+        run: |
+          echo "API Docs Have not been updated if API changes have been made please verify they are in the release"
+          exit 1
+        continue-on-error: true
+
+      - name: Push post release changes to the release branch
+        working-directory: ./amplify-js
+        run: |
+          git push origin feat/inline-api-docs
