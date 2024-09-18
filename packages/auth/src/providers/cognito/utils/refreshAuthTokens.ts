@@ -9,10 +9,11 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { CognitoAuthTokens, TokenRefresher } from '../tokenProvider/types';
-import { initiateAuth } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokensWithRefreshToken } from '../utils/types';
 import { AuthError } from '../../../errors/AuthError';
+import { createInitiateAuthClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 import { getUserContextData } from './userContextData';
 
@@ -26,7 +27,8 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 	username: string;
 }): Promise<CognitoAuthTokens> => {
 	assertTokenProviderConfig(authConfig?.Cognito);
-	const region = getRegion(authConfig.Cognito.userPoolId);
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig.Cognito;
+	const region = getRegionFromUserPoolId(userPoolId);
 	assertAuthTokensWithRefreshToken(tokens);
 	const refreshTokenString = tokens.refreshToken;
 
@@ -39,14 +41,20 @@ const refreshAuthTokensFunction: TokenRefresher = async ({
 
 	const UserContextData = getUserContextData({
 		username,
-		userPoolId: authConfig.Cognito.userPoolId,
-		userPoolClientId: authConfig.Cognito.userPoolClientId,
+		userPoolId,
+		userPoolClientId,
+	});
+
+	const initiateAuth = createInitiateAuthClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
 	});
 
 	const { AuthenticationResult } = await initiateAuth(
 		{ region },
 		{
-			ClientId: authConfig?.Cognito?.userPoolClientId,
+			ClientId: userPoolClientId,
 			AuthFlow: 'REFRESH_TOKEN_AUTH',
 			AuthParameters,
 			UserContextData,

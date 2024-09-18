@@ -16,6 +16,7 @@ import {
 	GetUrlWithPathOutput,
 } from '../../../../src/providers/s3/types';
 import './testUtils';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -56,6 +57,7 @@ describe('getUrl test with key', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -135,6 +137,52 @@ describe('getUrl test with key', () => {
 				expect({ url, expiresAt }).toEqual(expectedResult);
 			},
 		);
+		describe('bucket passed in options', () => {
+			it('should override bucket in getPresignedGetObjectUrl call when bucket is object', async () => {
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-1',
+					region: 'region-1',
+				};
+				await getUrlWrapper({
+					key: 'key',
+					options: {
+						bucket: bucketInfo,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucketInfo.bucketName,
+						Key: 'public/key',
+					},
+				);
+			});
+			it('should override bucket in getPresignedGetObjectUrl call when bucket is string', async () => {
+				await getUrlWrapper({
+					key: 'key',
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucket,
+						Key: 'public/key',
+					},
+				);
+			});
+		});
 	});
 	describe('Error cases :  With key', () => {
 		afterAll(() => {
@@ -175,6 +223,7 @@ describe('getUrl test with path', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -221,6 +270,185 @@ describe('getUrl test with path', () => {
 					path,
 					options: {
 						validateObjectExistence: true,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledTimes(1);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					config,
+					headObjectOptions,
+				);
+				expect({ url, expiresAt }).toEqual({
+					url: mockURL,
+					expiresAt: expect.any(Date),
+				});
+			},
+		);
+
+		describe('bucket passed in options', () => {
+			it('should override bucket in getPresignedGetObjectUrl call when bucket is object', async () => {
+				const inputPath = 'path/';
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-1',
+					region: 'region-1',
+				};
+				await getUrlWrapper({
+					path: inputPath,
+					options: {
+						bucket: bucketInfo,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucketInfo.bucketName,
+						Key: inputPath,
+					},
+				);
+			});
+			it('should override bucket in getPresignedGetObjectUrl call when bucket is string', async () => {
+				const inputPath = 'path/';
+				await getUrlWrapper({
+					path: inputPath,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						expiration: expect.any(Number),
+					},
+					{
+						Bucket: bucket,
+						Key: inputPath,
+					},
+				);
+			});
+		});
+	});
+	describe('Happy cases: With path and Content Disposition, Content Type', () => {
+		const config = {
+			credentials,
+			region,
+			userAgentValue: expect.any(String),
+		};
+		beforeEach(() => {
+			jest.mocked(headObject).mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { meta: 'value' },
+				$metadata: {} as any,
+			});
+			jest.mocked(getPresignedGetObjectUrl).mockResolvedValue(mockURL);
+		});
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test.each([
+			{
+				path: 'path',
+				expectedKey: 'path',
+				contentDisposition: 'inline; filename="example.txt"',
+				contentType: 'text/plain',
+			},
+			{
+				path: () => 'path',
+				expectedKey: 'path',
+				contentDisposition: {
+					type: 'attachment' as const,
+					filename: 'example.pdf',
+				},
+				contentType: 'application/pdf',
+			},
+		])(
+			'should getUrl with path $path and expectedKey $expectedKey and content disposition and content type',
+			async ({ path, expectedKey, contentDisposition, contentType }) => {
+				const headObjectOptions = {
+					Bucket: bucket,
+					Key: expectedKey,
+				};
+				const { url, expiresAt } = await getUrlWrapper({
+					path,
+					options: {
+						validateObjectExistence: true,
+						contentDisposition,
+						contentType,
+					},
+				});
+				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+				expect(headObject).toHaveBeenCalledTimes(1);
+				await expect(headObject).toBeLastCalledWithConfigAndInput(
+					config,
+					headObjectOptions,
+				);
+				expect({ url, expiresAt }).toEqual({
+					url: mockURL,
+					expiresAt: expect.any(Date),
+				});
+			},
+		);
+	});
+	describe('Error cases: With invalid Content Disposition', () => {
+		const config = {
+			credentials,
+			region,
+			userAgentValue: expect.any(String),
+		};
+		beforeEach(() => {
+			jest.mocked(headObject).mockResolvedValue({
+				ContentLength: 100,
+				ContentType: 'text/plain',
+				ETag: 'etag',
+				LastModified: new Date('01-01-1980'),
+				Metadata: { meta: 'value' },
+				$metadata: {} as any,
+			});
+			jest.mocked(getPresignedGetObjectUrl).mockResolvedValue(mockURL);
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test.each([
+			{
+				path: 'path',
+				expectedKey: 'path',
+				contentDisposition: {
+					type: 'invalid' as 'attachment' | 'inline',
+					filename: '"example.txt',
+				},
+			},
+			{
+				path: 'path',
+				expectedKey: 'path',
+				contentDisposition: {
+					type: 'invalid' as 'attachment' | 'inline',
+				},
+			},
+		])(
+			'should ignore for invalid content disposition: $contentDisposition',
+			async ({ path, expectedKey, contentDisposition }) => {
+				const headObjectOptions = {
+					Bucket: bucket,
+					Key: expectedKey,
+				};
+				const { url, expiresAt } = await getUrlWrapper({
+					path,
+					options: {
+						validateObjectExistence: true,
+						contentDisposition,
 					},
 				});
 				expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);

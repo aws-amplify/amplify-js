@@ -11,12 +11,28 @@ import {
 	StorageSubpathStrategy,
 } from '../../../types/options';
 
+export interface BucketInfo {
+	bucketName: string;
+	region: string;
+}
+
+export type StorageBucket = string | BucketInfo;
 interface CommonOptions {
 	/**
 	 * Whether to use accelerate endpoint.
 	 * @default false
 	 */
 	useAccelerateEndpoint?: boolean;
+	bucket?: StorageBucket;
+}
+
+/**
+ * Represents the content disposition of a file.
+ * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+ */
+export interface ContentDisposition {
+	type: 'attachment' | 'inline';
+	filename?: string;
 }
 
 /** @deprecated This may be removed in the next major version. */
@@ -119,6 +135,19 @@ export type GetUrlOptions = CommonOptions & {
 	 * @default 900 (15 minutes)
 	 */
 	expiresIn?: number;
+	/**
+	 * The default content-disposition header value of the file when downloading it.
+	 *   If a string is provided, it will be used as-is.
+	 *   If an object is provided, it will be used to construct the header value
+	 *   based on the ContentDisposition type definition.
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+	 */
+	contentDisposition?: ContentDisposition | string;
+	/**
+	 * The content-type header value of the file when downloading it.
+	 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type
+	 */
+	contentType?: string;
 };
 
 /** @deprecated Use {@link GetUrlOptionsWithPath} instead. */
@@ -140,9 +169,12 @@ export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
 		 * The default content-disposition header value of the file when downloading it.
+		 *   If a string is provided, it will be used as-is.
+		 *   If an object is provided, it will be used to construct the header value
+		 *   based on the ContentDisposition type definition.
 		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
 		 */
-		contentDisposition?: string;
+		contentDisposition?: ContentDisposition | string;
 		/**
 		 * The default content-encoding header value of the file when downloading it.
 		 * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
@@ -168,13 +200,22 @@ export type UploadDataOptionsWithPath = UploadDataOptions;
 export type CopySourceOptionsWithKey = ReadOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
+	bucket?: StorageBucket;
 };
 
 /** @deprecated This may be removed in the next major version. */
 export type CopyDestinationOptionsWithKey = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
+	bucket?: StorageBucket;
 };
+
+export interface CopyWithPathSourceOptions {
+	bucket?: StorageBucket;
+}
+export interface CopyWithPathDestinationOptions {
+	bucket?: StorageBucket;
+}
 
 /**
  * Internal only type for S3 API handlers' config parameter.

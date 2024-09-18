@@ -7,12 +7,13 @@ import {
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
-import { deleteUser as serviceDeleteUser } from '../utils/clients/CognitoIdentityProvider';
 import { DeleteUserException } from '../types/errors';
 import { tokenOrchestrator } from '../tokenProvider';
 import { getAuthUserAgentValue } from '../../../utils';
+import { createDeleteUserClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 import { signOut } from './signOut';
 
@@ -25,13 +26,17 @@ import { signOut } from './signOut';
 export async function deleteUser(): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-
+	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { tokens } = await fetchAuthSession();
 	assertAuthTokens(tokens);
-
+	const serviceDeleteUser = createDeleteUserClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	await serviceDeleteUser(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.DeleteUser),
 		},
 		{
