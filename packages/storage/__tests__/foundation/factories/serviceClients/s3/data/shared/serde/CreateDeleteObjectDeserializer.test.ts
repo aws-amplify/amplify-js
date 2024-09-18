@@ -1,17 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	HttpResponse,
-	parseJsonError,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
+import * as clientUtils from '@aws-amplify/core/internals/aws-client-utils';
 
 import { createDeleteObjectDeserializer } from '../../../../../../../../src/foundation/factories/serviceClients/s3/s3data/shared/serde';
 import { StorageError } from '../../../../../../../../src/errors/StorageError';
-
-jest.mock('@aws-amplify/core/internals/aws-client-utils');
-
-const mockParseJsonError = jest.mocked(parseJsonError);
 
 describe('createDeleteObjectDeserializer', () => {
 	const deserializer = createDeleteObjectDeserializer();
@@ -31,9 +25,15 @@ describe('createDeleteObjectDeserializer', () => {
 		};
 		const output = await deserializer(response);
 
-		expect(output).toStrictEqual({
-			$metadata: undefined,
-		});
+		expect(output).toEqual(
+			expect.objectContaining({
+				$metadata: {
+					requestId: response.headers['x-amz-request-id'],
+					extendedRequestId: response.headers['x-amz-id-2'],
+					httpStatusCode: 200,
+				},
+			}),
+		);
 	});
 
 	it('throws StorageError for 4xx status code', async () => {
@@ -42,7 +42,10 @@ describe('createDeleteObjectDeserializer', () => {
 		const expectedError = new Error(expectedErrorMessage);
 		expectedError.name = expectedErrorName;
 
-		mockParseJsonError.mockReturnValueOnce(expectedError as any);
+		jest
+			.spyOn(clientUtils, 'parseJsonError')
+			.mockReturnValueOnce(expectedError as any);
+
 		const response: HttpResponse = {
 			statusCode: 400,
 			body: {
