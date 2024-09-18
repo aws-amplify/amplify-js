@@ -7,13 +7,14 @@ import {
 	KeyValueStorageMethodValidator,
 } from '@aws-amplify/core/internals/adapter-core';
 
+import { DEFAULT_COOKIE_EXPIRY } from '../constants';
+
 export const defaultSetCookieOptions: CookieStorage.SetCookieOptions = {
 	// TODO: allow configure with a public interface
 	sameSite: 'lax',
 	secure: true,
 	path: '/',
 };
-const ONE_YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
 
 /**
  * Creates a Key Value storage interface using the `cookieStorageAdapter` as the
@@ -40,7 +41,7 @@ export const createKeyValueStorageFromCookieStorageAdapter = (
 			// TODO(HuiSF): follow up the default CookieSerializeOptions values
 			cookieStorageAdapter.set(key, value, {
 				...defaultSetCookieOptions,
-				expires: new Date(Date.now() + ONE_YEAR_IN_MS),
+				expires: new Date(Date.now() + DEFAULT_COOKIE_EXPIRY),
 				...overrideCookieAttributes,
 			});
 
