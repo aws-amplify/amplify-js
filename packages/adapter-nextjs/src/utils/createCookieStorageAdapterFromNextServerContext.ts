@@ -9,6 +9,8 @@ import {
 
 import { NextServer } from '../types';
 
+import { ensureEncodedForJSCookie, serializeCookie } from './cookie';
+
 export const DATE_IN_THE_PAST = new Date(0);
 
 export const createCookieStorageAdapterFromNextServerContext = (
@@ -190,9 +192,7 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 
 			response.appendHeader(
 				'Set-Cookie',
-				`${encodedName}=${value};${
-					options ? serializeSetCookieOptions(options) : ''
-				}`,
+				serializeCookie(encodedName, value, options),
 			);
 		},
 		delete(name) {
@@ -219,9 +219,7 @@ const createMutableCookieStoreFromHeaders = (
 	const setFunc: CookieStorage.Adapter['set'] = (name, value, options) => {
 		headers.append(
 			'Set-Cookie',
-			`${ensureEncodedForJSCookie(name)}=${value};${
-				options ? serializeSetCookieOptions(options) : ''
-			}`,
+			serializeCookie(ensureEncodedForJSCookie(name), value, options),
 		);
 	};
 	const deleteFunc: CookieStorage.Adapter['delete'] = name => {
@@ -238,42 +236,6 @@ const createMutableCookieStoreFromHeaders = (
 		delete: deleteFunc,
 	};
 };
-
-const serializeSetCookieOptions = (
-	options: CookieStorage.SetCookieOptions,
-): string => {
-	const { expires, domain, httpOnly, sameSite, secure, path } = options;
-	const serializedOptions: string[] = [];
-	if (domain) {
-		serializedOptions.push(`Domain=${domain}`);
-	}
-	if (expires) {
-		serializedOptions.push(`Expires=${expires.toUTCString()}`);
-	}
-	if (httpOnly) {
-		serializedOptions.push(`HttpOnly`);
-	}
-	if (sameSite) {
-		serializedOptions.push(`SameSite=${sameSite}`);
-	}
-	if (secure) {
-		serializedOptions.push(`Secure`);
-	}
-	if (path) {
-		serializedOptions.push(`Path=${path}`);
-	}
-
-	return serializedOptions.join(';');
-};
-
-// Ensures the cookie names are encoded in order to look up the cookie store
-// that is manipulated by js-cookie on the client side.
-// Details of the js-cookie encoding behavior see:
-// https://github.com/js-cookie/js-cookie#encoding
-// The implementation is borrowed from js-cookie without escaping `[()]` as
-// we are not using those chars in the auth keys.
-const ensureEncodedForJSCookie = (name: string): string =>
-	encodeURIComponent(name).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent);
 
 const getExistingSetCookieValues = (
 	values: number | string | string[] | undefined,

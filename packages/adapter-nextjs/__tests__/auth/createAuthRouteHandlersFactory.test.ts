@@ -150,6 +150,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				oAuthConfig: mockAmplifyConfig.Auth!.Cognito!.loginWith!.oauth,
 				setCookieOptions: mockRuntimeOptions.cookies,
 				origin: 'https://example.com',
+				userPoolClientId: 'def',
 			});
 		});
 
@@ -170,6 +171,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				oAuthConfig: mockAmplifyConfig.Auth!.Cognito!.loginWith!.oauth,
 				setCookieOptions: mockRuntimeOptions.cookies,
 				origin: 'https://example.com',
+				userPoolClientId: 'def',
 			});
 		});
 
@@ -211,6 +213,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				oAuthConfig: mockAmplifyConfig.Auth!.Cognito!.loginWith!.oauth,
 				setCookieOptions: {},
 				origin: 'https://example.com',
+				userPoolClientId: 'def',
 			});
 		});
 	});
