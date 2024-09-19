@@ -6,7 +6,7 @@ import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
 import { StorageError } from '../../../../src/errors/StorageError';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
-import { copyObject } from '../../../../src/providers/s3/utils/client/s3data';
+import { createCopyObjectClient } from '../../../../src/foundation/factories/serviceClients/s3';
 import { copy } from '../../../../src/providers/s3/apis';
 import {
 	CopyInput,
@@ -17,7 +17,7 @@ import {
 import './testUtils';
 import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
-jest.mock('../../../../src/providers/s3/utils/client/s3data');
+jest.mock('../../../../src/foundation/factories/serviceClients/s3');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };
@@ -29,7 +29,10 @@ jest.mock('@aws-amplify/core', () => ({
 		},
 	},
 }));
-const mockCopyObject = copyObject as jest.Mock;
+
+const mockCopyObject = jest.fn();
+const mockCreateCopyObjectClient = jest.mocked(createCopyObjectClient);
+
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = Amplify.getConfig as jest.Mock;
 
@@ -81,6 +84,7 @@ describe('copy API', () => {
 						Metadata: { key: 'value' },
 					};
 				});
+				mockCreateCopyObjectClient.mockReturnValueOnce(mockCopyObject);
 			});
 			afterEach(() => {
 				jest.clearAllMocks();
@@ -188,8 +192,8 @@ describe('copy API', () => {
 							},
 						});
 						expect(key).toEqual(destinationKey);
-						expect(copyObject).toHaveBeenCalledTimes(1);
-						await expect(copyObject).toBeLastCalledWithConfigAndInput(
+						expect(mockCopyObject).toHaveBeenCalledTimes(1);
+						await expect(mockCopyObject).toBeLastCalledWithConfigAndInput(
 							copyObjectClientConfig,
 							{
 								...copyObjectClientBaseParams,
@@ -213,8 +217,8 @@ describe('copy API', () => {
 						bucket: bucketInfo,
 					},
 				});
-				expect(copyObject).toHaveBeenCalledTimes(1);
-				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+				expect(mockCopyObject).toHaveBeenCalledTimes(1);
+				await expect(mockCopyObject).toBeLastCalledWithConfigAndInput(
 					{
 						credentials,
 						region: bucketInfo.region,
@@ -241,6 +245,7 @@ describe('copy API', () => {
 						Metadata: { key: 'value' },
 					};
 				});
+				mockCreateCopyObjectClient.mockReturnValueOnce(mockCopyObject);
 			});
 			afterEach(() => {
 				jest.clearAllMocks();
@@ -272,8 +277,8 @@ describe('copy API', () => {
 						destination: { path: destinationPath },
 					});
 					expect(path).toEqual(expectedDestinationPath);
-					expect(copyObject).toHaveBeenCalledTimes(1);
-					await expect(copyObject).toBeLastCalledWithConfigAndInput(
+					expect(mockCopyObject).toHaveBeenCalledTimes(1);
+					await expect(mockCopyObject).toBeLastCalledWithConfigAndInput(
 						copyObjectClientConfig,
 						{
 							...copyObjectClientBaseParams,
@@ -295,8 +300,8 @@ describe('copy API', () => {
 						bucket: bucketInfo,
 					},
 				});
-				expect(copyObject).toHaveBeenCalledTimes(1);
-				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+				expect(mockCopyObject).toHaveBeenCalledTimes(1);
+				await expect(mockCopyObject).toBeLastCalledWithConfigAndInput(
 					{
 						credentials,
 						region: bucketInfo.region,
@@ -324,6 +329,7 @@ describe('copy API', () => {
 					name: 'NotFound',
 				}),
 			);
+			mockCreateCopyObjectClient.mockReturnValueOnce(mockCopyObject);
 			expect.assertions(3);
 			const missingSourceKey = 'SourceKeyNotFound';
 			try {
@@ -332,8 +338,8 @@ describe('copy API', () => {
 					destination: { key: destinationKey },
 				});
 			} catch (error: any) {
-				expect(copyObject).toHaveBeenCalledTimes(1);
-				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+				expect(mockCopyObject).toHaveBeenCalledTimes(1);
+				await expect(mockCopyObject).toBeLastCalledWithConfigAndInput(
 					copyObjectClientConfig,
 					{
 						...copyObjectClientBaseParams,

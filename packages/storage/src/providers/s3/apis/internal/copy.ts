@@ -18,7 +18,7 @@ import {
 } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
-import { copyObject } from '../../utils/client/s3data';
+import { createCopyObjectClient } from '../../../../foundation/factories/serviceClients/s3';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 
@@ -180,6 +180,7 @@ const serviceCopy = async ({
 	bucket: string;
 	s3Config: ResolvedS3Config;
 }) => {
+	const copyObject = createCopyObjectClient();
 	await copyObject(
 		{
 			...s3Config,

@@ -3,3 +3,5 @@
 
 export { createDeleteObjectSerializer } from './CreateDeleteObjectSerializer';
 export { createDeleteObjectDeserializer } from './CreateDeleteObjectDeserializer';
+export { createCopyObjectDeserializer } from './CreateCopyObjectDeserializer';
+export { createCopyObjectSerializer } from './CreateCopyObjectSerializer';
