@@ -126,7 +126,7 @@ In your sample project, you can now link specific packages
 yarn link @aws-amplify/auth
 ```
 
-If you are testing with a Vite sample project, such as from the quickstart guide, and your changes to the library are not showing up in your local app when running `npm run dev`, Vite caching may be the culprit. Try editing this line in your sample project's `package.json`.
+If you are testing with a Vite sample project, such as from the quickstart guide, and your changes to the library are not showing up in your local app when running `yarn run dev`, Vite caching may be the culprit. Try editing this line in your sample project's `package.json`.
 
 ```diff
 "scripts": {
