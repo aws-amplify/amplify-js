@@ -31,7 +31,7 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
-const mockGetConfig = Amplify.getConfig as jest.Mock;
+const mockGetConfig = jest.mocked(Amplify.getConfig);
 const mockListObject = listObjectsV2 as jest.Mock;
 const inputKey = 'path/itemsKey';
 const bucket = 'bucket';
@@ -93,6 +93,7 @@ describe('list API', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -304,6 +305,76 @@ describe('list API', () => {
 				});
 			},
 		);
+
+		describe('bucket passed in options', () => {
+			it('should override bucket in listObject call when bucket is object', async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: inputKey,
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				const mockBucketName = 'bucket-1';
+				const mockRegion = 'region-1';
+				await listPaginatedWrapper({
+					prefix: inputKey,
+					options: {
+						bucket: { bucketName: mockBucketName, region: mockRegion },
+					},
+				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: mockRegion,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: mockBucketName,
+						MaxKeys: 1000,
+						Prefix: `public/${inputKey}`,
+					},
+				);
+			});
+
+			it('should override bucket in listObject call when bucket is string', async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: inputKey,
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				await listPaginatedWrapper({
+					prefix: inputKey,
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: `public/${inputKey}`,
+					},
+				);
+			});
+		});
 	});
 
 	describe('Path: Happy Cases:', () => {
@@ -482,6 +553,76 @@ describe('list API', () => {
 				);
 			},
 		);
+
+		describe('bucket passed in options', () => {
+			it('should override bucket in listObject call when bucket is object', async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: 'path/',
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				const mockBucketName = 'bucket-1';
+				const mockRegion = 'region-1';
+				await listPaginatedWrapper({
+					path: 'path/',
+					options: {
+						bucket: { bucketName: mockBucketName, region: mockRegion },
+					},
+				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: mockRegion,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: mockBucketName,
+						MaxKeys: 1000,
+						Prefix: 'path/',
+					},
+				);
+			});
+
+			it('should override bucket in listObject call when bucket is string', async () => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						Contents: [
+							{
+								...listObjectClientBaseResultItem,
+								Key: 'path/',
+							},
+						],
+						NextContinuationToken: nextToken,
+					};
+				});
+				await listPaginatedWrapper({
+					path: 'path/',
+					options: {
+						bucket: 'default-bucket',
+					},
+				});
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: 'path/',
+					},
+				);
+			});
+		});
 	});
 
 	describe('Error Cases:', () => {

@@ -19,6 +19,7 @@ import {
 import { GeoConfig } from './Geo/types';
 import { PredictionsConfig } from './Predictions/types';
 import {
+	BucketInfo,
 	LibraryStorageOptions,
 	StorageAccessLevel,
 	StorageConfig,
@@ -77,6 +78,7 @@ export {
 	PredictionsConfig,
 	StorageAccessLevel,
 	StorageConfig,
+	BucketInfo,
 	AnalyticsConfig,
 	CognitoIdentityPoolConfig,
 	GeoConfig,

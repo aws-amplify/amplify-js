@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.23...@aws-amplify/predictions@6.1.24) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.22...@aws-amplify/predictions@6.1.23) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.21...@aws-amplify/predictions@6.1.22) (2024-09-04)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.20...@aws-amplify/predictions@6.1.21) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.19...@aws-amplify/predictions@6.1.20) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.18...@aws-amplify/predictions@6.1.19) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.17...@aws-amplify/predictions@6.1.18) (2024-08-15)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+## [6.1.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.16...@aws-amplify/predictions@6.1.17) (2024-08-07)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
 ## [6.1.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@6.1.15...@aws-amplify/predictions@6.1.16) (2024-08-05)
 
 **Note:** Version bump only for package @aws-amplify/predictions

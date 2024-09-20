@@ -2,18 +2,37 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getBtoa } from '../../globalHelpers';
-import { Base64Encoder } from '../types';
+import type { Base64Encoder, Base64EncoderConvertOptions } from '../types';
 
 import { bytesToString } from './bytesToString';
 
 export const base64Encoder: Base64Encoder = {
-	convert(input, { urlSafe } = { urlSafe: false }) {
+	/**
+	 * Convert input to base64-encoded string
+	 * @param input - string to convert to base64
+	 * @param options - encoding options that can optionally produce a base64url string
+	 * @returns base64-encoded string
+	 */
+	convert(
+		input,
+		options: Base64EncoderConvertOptions = {
+			urlSafe: false,
+			skipPadding: false,
+		},
+	) {
 		const inputStr = typeof input === 'string' ? input : bytesToString(input);
-		const encodedStr = getBtoa()(inputStr);
+		let encodedStr = getBtoa()(inputStr);
 
-		// see details about the char replacing at https://datatracker.ietf.org/doc/html/rfc4648#section-5
-		return urlSafe
-			? encodedStr.replace(/\+/g, '-').replace(/\//g, '_')
-			: encodedStr;
+		// urlSafe char replacement and skipPadding options conform to the base64url spec
+		// https://datatracker.ietf.org/doc/html/rfc4648#section-5
+		if (options.urlSafe) {
+			encodedStr = encodedStr.replace(/\+/g, '-').replace(/\//g, '_');
+		}
+
+		if (options.skipPadding) {
+			encodedStr = encodedStr.replace(/=/g, '');
+		}
+
+		return encodedStr;
 	},
 };

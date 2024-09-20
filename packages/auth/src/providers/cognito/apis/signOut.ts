@@ -20,11 +20,7 @@ import {
 import { getAuthUserAgentValue } from '../../../utils';
 import { SignOutInput } from '../types';
 import { tokenOrchestrator } from '../tokenProvider';
-import {
-	globalSignOut as globalSignOutClient,
-	revokeToken,
-} from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import {
 	assertAuthTokens,
 	assertAuthTokensWithRefreshToken,
@@ -33,6 +29,11 @@ import { handleOAuthSignOut } from '../utils/oauth';
 import { DefaultOAuthStore } from '../utils/signInWithRedirectStore';
 import { AuthError } from '../../../errors/AuthError';
 import { OAUTH_SIGNOUT_EXCEPTION } from '../../../errors/constants';
+import {
+	createGlobalSignOutClient,
+	createRevokeTokenClient,
+} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 const logger = new ConsoleLogger('Auth');
 
@@ -60,17 +61,20 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 	} catch (err) {
 		hasOAuthConfig = false;
 	}
-
 	if (hasOAuthConfig) {
 		const oAuthStore = new DefaultOAuthStore(defaultStorage);
 		oAuthStore.setAuthConfig(cognitoConfig);
 		const { type } =
-			(await handleOAuthSignOut(cognitoConfig, oAuthStore)) ?? {};
+			(await handleOAuthSignOut(
+				cognitoConfig,
+				oAuthStore,
+				tokenOrchestrator,
+				input?.oauth?.redirectUrl,
+			)) ?? {};
 		if (type === 'error') {
 			throw new AuthError({
 				name: OAUTH_SIGNOUT_EXCEPTION,
-				message:
-					'An error occurred when attempting to log out from OAuth provider.',
+				message: `An error occurred when attempting to log out from OAuth provider.`,
 			});
 		}
 	} else {
@@ -83,16 +87,23 @@ export async function signOut(input?: SignOutInput): Promise<void> {
 
 async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	try {
+		const { userPoolEndpoint, userPoolId, userPoolClientId } = cognitoConfig;
 		const authTokens = await tokenOrchestrator.getTokenStore().loadTokens();
 		assertAuthTokensWithRefreshToken(authTokens);
 		if (isSessionRevocable(authTokens.accessToken)) {
+			const revokeToken = createRevokeTokenClient({
+				endpointResolver: createCognitoUserPoolEndpointResolver({
+					endpointOverride: userPoolEndpoint,
+				}),
+			});
+
 			await revokeToken(
 				{
-					region: getRegion(cognitoConfig.userPoolId),
+					region: getRegionFromUserPoolId(userPoolId),
 					userAgentValue: getAuthUserAgentValue(AuthAction.SignOut),
 				},
 				{
-					ClientId: cognitoConfig.userPoolClientId,
+					ClientId: userPoolClientId,
 					Token: authTokens.refreshToken,
 				},
 			);
@@ -107,11 +118,17 @@ async function clientSignOut(cognitoConfig: CognitoUserPoolConfig) {
 
 async function globalSignOut(cognitoConfig: CognitoUserPoolConfig) {
 	try {
+		const { userPoolEndpoint, userPoolId } = cognitoConfig;
 		const authTokens = await tokenOrchestrator.getTokenStore().loadTokens();
 		assertAuthTokens(authTokens);
+		const globalSignOutClient = createGlobalSignOutClient({
+			endpointResolver: createCognitoUserPoolEndpointResolver({
+				endpointOverride: userPoolEndpoint,
+			}),
+		});
 		await globalSignOutClient(
 			{
-				region: getRegion(cognitoConfig.userPoolId),
+				region: getRegionFromUserPoolId(userPoolId),
 				userAgentValue: getAuthUserAgentValue(AuthAction.SignOut),
 			},
 			{

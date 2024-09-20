@@ -4,15 +4,13 @@ inputs:
   is-prebuild:
     required: false
     default: false
-  node_version:
-    required: false
 runs:
   using: 'composite'
   steps:
-    - name: Setup Node.js
+    - name: Setup Node.js 18
       uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
       with:
-        node-version: ${{ inputs.node_version || '18.x' }}
+        node-version: 18.20.2
       env:
         SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
     - uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0

@@ -9,6 +9,8 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
+import { BucketInfo } from '../../../../../src/providers/s3/types/options';
+import { StorageError } from '../../../../../src/errors/StorageError';
 
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn(),
@@ -21,7 +23,7 @@ jest.mock('@aws-amplify/core', () => ({
 }));
 jest.mock('../../../../../src/utils/resolvePrefix');
 
-const mockGetConfig = Amplify.getConfig as jest.Mock;
+const mockGetConfig = jest.mocked(Amplify.getConfig);
 const mockDefaultResolvePrefix = resolvePrefix as jest.Mock;
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 
@@ -49,6 +51,7 @@ describe('resolveS3ConfigAndInput', () => {
 			S3: {
 				bucket,
 				region,
+				buckets: { 'bucket-1': { bucketName: bucket, region } },
 			},
 		},
 	});
@@ -132,7 +135,7 @@ describe('resolveS3ConfigAndInput', () => {
 				S3: {
 					bucket,
 					region,
-					dangerouslyConnectToHttpEndpointForTesting: true,
+					dangerouslyConnectToHttpEndpointForTesting: 'true',
 				},
 			},
 		});
@@ -213,5 +216,34 @@ describe('resolveS3ConfigAndInput', () => {
 			targetIdentityId,
 		});
 		expect(keyPrefix).toEqual('prefix');
+	});
+
+	it('should resolve bucket and region with overrides when bucket API option is passed', async () => {
+		const bucketInfo: BucketInfo = {
+			bucketName: 'bucket-2',
+			region: 'region-2',
+		};
+
+		const {
+			bucket: resolvedBucket,
+			s3Config: { region: resolvedRegion },
+		} = await resolveS3ConfigAndInput(Amplify, {
+			bucket: bucketInfo,
+		});
+
+		expect(mockGetConfig).toHaveBeenCalled();
+		expect(resolvedBucket).toEqual(bucketInfo.bucketName);
+		expect(resolvedRegion).toEqual(bucketInfo.region);
+	});
+
+	it('should throw when unable to lookup bucket from the config when bucket API option is passed', async () => {
+		try {
+			await resolveS3ConfigAndInput(Amplify, {
+				bucket: 'error-bucket',
+			});
+		} catch (error: any) {
+			expect(error).toBeInstanceOf(StorageError);
+			expect(error.name).toBe(StorageValidationErrorCode.InvalidStorageBucket);
+		}
 	});
 });
