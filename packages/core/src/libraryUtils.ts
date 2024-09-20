@@ -73,6 +73,7 @@ export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
 
 // Platform & user-agent utilities
 export {
+	INTERNAL_USER_AGENT_OVERRIDE,
 	Platform,
 	getAmplifyUserAgentObject,
 	getAmplifyUserAgent,
@@ -122,7 +123,7 @@ export {
 export { BackgroundProcessManager } from './BackgroundProcessManager';
 export { Mutex } from './Mutex';
 export { Reachability } from './Reachability';
-export { INTERNAL_USER_AGENT_OVERRIDE, USER_AGENT_HEADER } from './constants';
+export { USER_AGENT_HEADER } from './constants';
 export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
 export { StrictUnion } from './types';

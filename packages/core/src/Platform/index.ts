@@ -28,6 +28,11 @@ class PlatformBuilder {
 	}
 }
 
+// User Agents Override Symbol
+export const INTERNAL_USER_AGENT_OVERRIDE = Symbol(
+	'INTERNAL_USER_AGENT_OVERRIDE',
+);
+
 export const Platform = new PlatformBuilder();
 
 export const getAmplifyUserAgentObject = ({
