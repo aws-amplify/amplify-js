@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
-import { CustomUserAgentDetails } from '@aws-amplify/core/internals/utils';
 
 import { GraphQLAPI } from '../GraphQLAPI';
 import {
@@ -102,7 +101,6 @@ export function graphql<
 	this: V6Client,
 	options: GraphQLOptionsV6<FALLBACK_TYPES, TYPED_GQL_STRING>,
 	additionalHeaders?: CustomHeaders,
-	customUserAgentDetails?: CustomUserAgentDetails,
 ): GraphQLResponseV6<FALLBACK_TYPES, TYPED_GQL_STRING> {
 	// inject client-level auth
 	const internals = getInternals(this as any);
@@ -120,7 +118,6 @@ export function graphql<
 		internals.amplify as any,
 		options,
 		headers,
-		customUserAgentDetails,
 	);
 
 	return result as any;

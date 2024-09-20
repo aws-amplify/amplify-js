@@ -99,6 +99,7 @@ export {
 	GeoUserAgentInput,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
+export { INTERNAL_USER_AGENT_OVERRIDE } from './utils/user-agent-symbol';
 
 // Error handling
 export {

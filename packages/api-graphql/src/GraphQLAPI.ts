@@ -4,7 +4,7 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
-	CustomUserAgentDetails,
+	INTERNAL_USER_AGENT_OVERRIDE,
 } from '@aws-amplify/core/internals/utils';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 import { Observable } from 'rxjs';
@@ -41,12 +41,17 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 		amplify: AmplifyClassV6 | (() => Promise<AmplifyClassV6>),
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
-		customUserAgentDetails?: CustomUserAgentDetails,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		return super.graphql(amplify, options, additionalHeaders, {
+		const internalUserAgentOverride = (options as any)[
+			INTERNAL_USER_AGENT_OVERRIDE
+		];
+		const { [INTERNAL_USER_AGENT_OVERRIDE]: _, ...cleanOptions } =
+			options as any;
+
+		return super.graphql(amplify, cleanOptions, additionalHeaders, {
 			category: Category.API,
 			action: ApiAction.GraphQl,
-			...customUserAgentDetails,
+			...(internalUserAgentOverride || {}),
 		});
 	}
 
