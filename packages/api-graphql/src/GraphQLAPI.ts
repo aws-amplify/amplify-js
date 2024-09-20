@@ -42,16 +42,16 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		const internalUserAgentOverride = (options as any)[
-			INTERNAL_USER_AGENT_OVERRIDE
-		];
-		const { [INTERNAL_USER_AGENT_OVERRIDE]: _, ...cleanOptions } =
-			options as any;
+		const {
+			[INTERNAL_USER_AGENT_OVERRIDE]: internalUserAgentOverride,
+			...cleanOptions
+		} = options as any;
+		options as any;
 
 		return super.graphql(amplify, cleanOptions, additionalHeaders, {
 			category: Category.API,
 			action: ApiAction.GraphQl,
-			...(internalUserAgentOverride || {}),
+			...internalUserAgentOverride,
 		});
 	}
 

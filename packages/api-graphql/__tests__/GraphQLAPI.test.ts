@@ -6,6 +6,10 @@ import * as typedQueries from './fixtures/with-types/queries';
 import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import { expectGet } from './utils/expects';
 import { InternalGraphQLAPIClass } from '../src/internals/InternalGraphQLAPI';
+import {
+	INTERNAL_USER_AGENT_OVERRIDE,
+	GraphQLAuthMode,
+} from '@aws-amplify/core/internals/utils';
 
 import {
 	__amplify,
@@ -1613,5 +1617,84 @@ describe('API test', () => {
 		expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
 		const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
 		expect(subscribeOptions).toBe(resolvedUrl);
+	});
+	test('graphql method handles INTERNAL_USER_AGENT_OVERRIDE correctly', async () => {
+		Amplify.configure({
+			API: {
+				GraphQL: {
+					defaultAuthMode: 'apiKey',
+					apiKey: 'FAKE-KEY',
+					endpoint: 'https://localhost/graphql',
+					region: 'local-host-h4x',
+				},
+			},
+		});
+		const threadToGet = {
+			id: 'some-id',
+			topic: 'something reasonably interesting',
+		};
+		const graphqlVariables = { id: 'some-id' };
+		const graphqlResponse = {
+			data: {
+				getThread: {
+					__typename: 'Thread',
+					...serverManagedFields,
+					...threadToGet,
+				},
+			},
+		};
+		const spy = jest
+			.spyOn((raw.GraphQLAPI as any)._api, 'post')
+			.mockReturnValue({
+				body: {
+					json: () => graphqlResponse,
+				},
+			});
+		const graphqlOptions: raw.GraphQLOptionsV6<
+			GetThreadQuery,
+			typeof typedQueries.getThread
+		> = {
+			query: typedQueries.getThread,
+			variables: graphqlVariables,
+			authMode: 'apiKey' as GraphQLAuthMode,
+		};
+		// Add the INTERNAL_USER_AGENT_OVERRIDE to the options object
+		(graphqlOptions as any)[INTERNAL_USER_AGENT_OVERRIDE] = {
+			category: 'CustomCategory',
+			action: 'CustomAction',
+		};
+
+		const result: GraphQLResult<GetThreadQuery> =
+			await client.graphql(graphqlOptions);
+
+		const thread: GetThreadQuery['getThread'] = result.data?.getThread;
+		const errors = result.errors;
+
+		expectGet(spy, 'getThread', graphqlVariables);
+		expect(errors).toBe(undefined);
+		expect(thread).toEqual(graphqlResponse.data.getThread);
+
+		// Check if the INTERNAL_USER_AGENT_OVERRIDE was properly handled
+		expect(spy).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				options: expect.objectContaining({
+					headers: expect.objectContaining({
+						'x-amz-user-agent': expect.stringContaining(
+							'CustomCategory/CustomAction',
+						),
+					}),
+				}),
+			}),
+		);
+		// Ensure the INTERNAL_USER_AGENT_OVERRIDE was not passed along in the options
+		expect(spy).not.toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				options: expect.objectContaining({
+					[INTERNAL_USER_AGENT_OVERRIDE]: expect.anything(),
+				}),
+			}),
+		);
 	});
 });

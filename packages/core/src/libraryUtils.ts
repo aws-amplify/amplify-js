@@ -100,7 +100,6 @@ export {
 	GeoUserAgentInput,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
-export { INTERNAL_USER_AGENT_OVERRIDE } from './constants';
 
 // Error handling
 export {
@@ -123,7 +122,7 @@ export {
 export { BackgroundProcessManager } from './BackgroundProcessManager';
 export { Mutex } from './Mutex';
 export { Reachability } from './Reachability';
-export { USER_AGENT_HEADER } from './constants';
+export { INTERNAL_USER_AGENT_OVERRIDE, USER_AGENT_HEADER } from './constants';
 export { fetchAuthSession } from './singleton/apis/internal/fetchAuthSession';
 export { AMPLIFY_SYMBOL } from './Hub';
 export { StrictUnion } from './types';
