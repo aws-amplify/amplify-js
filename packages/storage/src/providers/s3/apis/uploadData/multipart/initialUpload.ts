@@ -11,15 +11,14 @@ import {
 import { StorageUploadDataPayload } from '../../../../../types';
 import { Part, createMultipartUpload } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
-import { calculateContentCRC32 } from '../../../utils/crc32';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
+import { getCombinedCrc32 } from '../../../utils/getCombinedCrc32';
 
 import {
 	cacheMultipartUpload,
 	findCachedUploadParts,
 	getUploadsCacheKey,
 } from './uploadCache';
-import { getDataChunker } from './getDataChunker';
 
 interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
@@ -161,19 +160,4 @@ export const loadOrCreateMultipartUpload = async ({
 			finalCrc32,
 		};
 	}
-};
-
-const getCombinedCrc32 = async (
-	data: StorageUploadDataPayload,
-	size: number | undefined,
-) => {
-	const crc32List: ArrayBuffer[] = [];
-	const dataChunker = getDataChunker(data, size);
-	for (const { data: checkData } of dataChunker) {
-		const { checksumArrayBuffer } = await calculateContentCRC32(checkData);
-
-		crc32List.push(checksumArrayBuffer);
-	}
-
-	return `${(await calculateContentCRC32(new Blob(crc32List))).checksum}-${crc32List.length}`;
 };

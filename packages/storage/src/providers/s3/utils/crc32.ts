@@ -38,11 +38,11 @@ export const calculateContentCRC32 = async (
 	};
 };
 
-const hexToArrayBuffer = (hexString: string) =>
+export const hexToArrayBuffer = (hexString: string) =>
 	new Uint8Array((hexString.match(/\w{2}/g)! ?? []).map(h => parseInt(h, 16)))
 		.buffer;
 
-const hexToBase64 = (hexString: string) =>
+export const hexToBase64 = (hexString: string) =>
 	btoa(
 		hexString
 			.match(/\w{2}/g)!
