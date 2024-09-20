@@ -36,9 +36,9 @@ export enum MESSAGE_TYPES {
 	GQL_START_ACK = 'start_ack',
 	/**
 	 * Server -> Client message.
-	 * This message type is for subscription message from AWS AppSync RealTime
+	 * This message type is for subscription message from AWS AppSync RealTime or Events
 	 */
-	GQL_DATA = 'data',
+	DATA = 'data',
 	/**
 	 * Server -> Client message.
 	 * This message type helps the client to know is still receiving messages from AWS AppSync RealTime
@@ -59,6 +59,26 @@ export enum MESSAGE_TYPES {
 	 * This message type is for sending error messages from AWS AppSync RealTime to the client
 	 */
 	GQL_ERROR = 'error', // Server -> Client
+	/**
+	 * Client -> Server message.
+	 * This message type is for registering subscriptions with Events
+	 */
+	EVENT_SUBSCRIBE = 'subscribe',
+	/**
+	 * Client -> Server message.
+	 * This message type is for publishing a message with Events
+	 */
+	EVENT_PUBLISH = 'publish',
+	/**
+	 * Server -> Client message.
+	 * Server acknowledges successful subscription
+	 */
+	EVENT_SUBSCRIBE_ACK = 'subscribe_success',
+	/**
+	 * Server -> Client message.
+	 * Server acknowledges successful publish
+	 */
+	EVENT_PUBLISH_ACK = 'publish_success',
 }
 
 export enum SUBSCRIPTION_STATUS {

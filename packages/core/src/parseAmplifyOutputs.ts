@@ -208,6 +208,7 @@ function parseData(
 		url,
 		api_key,
 		model_introspection,
+		events,
 	} = amplifyOutputsDataProperties;
 
 	const GraphQL: APIGraphQLConfig = {
@@ -216,6 +217,18 @@ function parseData(
 		region: aws_region,
 		apiKey: api_key,
 		modelIntrospection: model_introspection as ModelIntrospectionSchema,
+		// TODO: clean up
+		events:
+			events === undefined
+				? undefined
+				: {
+						url: events.url,
+						region: events.aws_region,
+						apiKey: events.api_key,
+						defaultAuthMode: getGraphQLAuthMode(
+							events.default_authorization_type,
+						),
+					},
 	};
 
 	return {

@@ -13,7 +13,7 @@ export type {
 	GraphQLReturnType,
 } from '@aws-amplify/api-graphql';
 
-export { CONNECTION_STATE_CHANGE } from '@aws-amplify/api-graphql';
+export { CONNECTION_STATE_CHANGE, events } from '@aws-amplify/api-graphql';
 
 // explicitly defaulting to `never` here resolves
 // TS2589: Type instantiation is excessively deep and possibly infinite.

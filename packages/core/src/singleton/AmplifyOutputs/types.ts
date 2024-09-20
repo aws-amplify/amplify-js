@@ -92,6 +92,13 @@ export interface AmplifyOutputsDataProperties {
 	model_introspection?: object;
 	api_key?: string;
 	conflict_resolution_mode?: string;
+	// @experimental
+	events?: {
+		url: string;
+		aws_region: string;
+		default_authorization_type: string;
+		api_key?: string;
+	};
 }
 
 export interface AmplifyOutputsNotificationsProperties {

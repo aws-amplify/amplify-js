@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
 import {
 	CustomUserAgentDetails,
 	DocumentType,
@@ -13,11 +12,10 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 import { MESSAGE_TYPES } from '../constants';
 import { AWSWebSocketProvider } from '../AWSWebSocketProvider';
 import { awsRealTimeHeaderBasedAuth } from '../AWSWebSocketProvider/authHeaders';
-
 // resolved/actual AuthMode values. identityPool gets resolves to IAM upstream in InternalGraphQLAPI._graphqlSubscribe
 type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
 
-export interface AWSAppSyncRealTimeProviderOptions {
+interface AWSAppSyncEventProviderOptions {
 	appSyncGraphqlEndpoint?: string;
 	authenticationType?: ResolvedGraphQLAuthModes;
 	query?: string;
@@ -30,33 +28,41 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	authToken?: string;
 }
 
-interface DataObject extends Record<string, unknown> {
-	data: Record<string, unknown>;
-}
-
 interface DataPayload {
 	id: string;
-	payload: DataObject;
+	event: string;
 	type: string;
 }
 
-const PROVIDER_NAME = 'AWSAppSyncRealTimeProvider';
+interface DataResponse {
+	id: string;
+	payload: string;
+	type: string;
+}
 
-// get rid of generic. Just map the options from Gogi-specific to general
-export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
+const PROVIDER_NAME = 'AWSAppSyncEventsProvider';
+
+export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	constructor() {
 		super(PROVIDER_NAME);
 	}
 
-	public subscribe(
-		options?: AWSAppSyncRealTimeProviderOptions,
-		customUserAgentDetails?: CustomUserAgentDetails,
-	) {
-		return super.subscribe(options, customUserAgentDetails);
+	public async connect(options: AWSAppSyncEventProviderOptions) {
+		super.connect(options);
 	}
 
-	getProviderName() {
-		return PROVIDER_NAME;
+	public subscribe(
+		options?: AWSAppSyncEventProviderOptions,
+		customUserAgentDetails?: CustomUserAgentDetails,
+	) {
+		return super.subscribe(options, customUserAgentDetails).pipe();
+	}
+
+	public async publish(
+		options: AWSAppSyncEventProviderOptions,
+		customUserAgentDetails?: CustomUserAgentDetails,
+	) {
+		super.publish(options, customUserAgentDetails);
 	}
 
 	protected async _prepareSubscriptionPayload({
@@ -65,12 +71,14 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 		customUserAgentDetails,
 		additionalCustomHeaders,
 		libraryConfigHeaders,
+		publish,
 	}: {
-		options: AWSAppSyncRealTimeProviderOptions;
+		options: AWSAppSyncEventProviderOptions;
 		subscriptionId: string;
 		customUserAgentDetails: CustomUserAgentDetails | undefined;
 		additionalCustomHeaders: Record<string, string>;
 		libraryConfigHeaders: Record<string, string>;
+		publish?: boolean;
 	}): Promise<string> {
 		const {
 			appSyncGraphqlEndpoint,
@@ -80,11 +88,13 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 			apiKey,
 			region,
 		} = options;
-		const data = {
-			query,
-			variables,
-		};
-		const serializedData = JSON.stringify(data);
+
+		// This will be needed for WS publish
+		// const data = {
+		// 	events: [variables],
+		// };
+
+		const serializedData = JSON.stringify([variables]);
 
 		const headers = {
 			...(await awsRealTimeHeaderBasedAuth({
@@ -101,17 +111,25 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
 
+		// Commented out code will be needed for WS publish
 		const subscriptionMessage = {
 			id: subscriptionId,
-			payload: {
-				data: serializedData,
-				extensions: {
-					authorization: {
-						...headers,
-					},
-				},
+			channel: query,
+			// events: [JSON.stringify(variables)],
+			authorization: {
+				...headers,
 			},
-			type: MESSAGE_TYPES.GQL_START,
+			// payload: {
+			// 	events: serializedData,
+			// 	extensions: {
+			// 		authorization: {
+			// 			...headers,
+			// 		},
+			// 	},
+			// },
+			type: publish
+				? MESSAGE_TYPES.EVENT_PUBLISH
+				: MESSAGE_TYPES.EVENT_SUBSCRIBE,
 		};
 
 		const serializedSubscriptionMessage = JSON.stringify(subscriptionMessage);
@@ -121,12 +139,16 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 
 	protected _handleSubscriptionData(
 		message: MessageEvent,
-	): [boolean, DataPayload] {
+	): [boolean, DataResponse] {
 		this.logger.debug(
-			`subscription message from AWS AppSync RealTime: ${message.data}`,
+			`subscription message from AWS AppSync Events: ${message.data}`,
 		);
 
-		const { id = '', payload, type } = JSON.parse(String(message.data));
+		const {
+			id = '',
+			event: payload,
+			type,
+		}: DataPayload = JSON.parse(String(message.data));
 
 		const {
 			observer = null,
@@ -136,14 +158,15 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 
 		this.logger.debug({ id, observer, query, variables });
 
-		if (type === MESSAGE_TYPES.DATA && payload && payload.data) {
+		if (type === MESSAGE_TYPES.DATA && payload) {
+			const deserializedEvent = JSON.parse(payload);
 			if (observer) {
-				observer.next(payload);
+				observer.next(deserializedEvent);
 			} else {
 				this.logger.debug(`observer not found for id: ${id}`);
 			}
 
-			return [true, { id, type, payload }];
+			return [true, { id, type, payload: deserializedEvent }];
 		}
 
 		return [false, { id, type, payload }];

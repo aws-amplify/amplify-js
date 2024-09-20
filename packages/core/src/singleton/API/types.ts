@@ -45,6 +45,13 @@ export interface APIGraphQLConfig {
 	 */
 	defaultAuthMode: GraphQLAuthMode;
 	modelIntrospection?: ModelIntrospectionSchema;
+	// @experimental
+	events?: {
+		url: string;
+		region: string;
+		defaultAuthMode: GraphQLAuthMode;
+		apiKey?: string;
+	};
 }
 
 export interface APIRestConfig {

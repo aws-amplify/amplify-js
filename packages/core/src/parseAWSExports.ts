@@ -77,6 +77,8 @@ export const parseAWSExports = (
 		aws_cloud_logic_custom,
 		Notifications,
 		modelIntrospection,
+		data,
+		events,
 	} = config;
 	const amplifyConfig: ResourcesConfig = {};
 
@@ -144,6 +146,28 @@ export const parseAWSExports = (
 		if (modelIntrospection) {
 			amplifyConfig.API.GraphQL!.modelIntrospection = modelIntrospection;
 		}
+	}
+
+	// Events
+	if ((data && data.events) || events) {
+		const eventsConfig = data.events ?? events;
+
+		// @ts-expect-error temp
+		amplifyConfig.API = amplifyConfig.API ?? {};
+		// @ts-expect-error temp
+		amplifyConfig.API.GraphQL = amplifyConfig.API.GraphQL ?? {};
+
+		// @ts-expect-error temp
+		amplifyConfig.API.GraphQL = {
+			// @ts-expect-error temp
+			...amplifyConfig.API.GraphQL,
+			events: {
+				url: eventsConfig.url,
+				region: eventsConfig.aws_region,
+				defaultAuthMode: eventsConfig.default_authorization_type,
+				apiKey: eventsConfig.aws_region,
+			},
+		};
 	}
 
 	// Auth
