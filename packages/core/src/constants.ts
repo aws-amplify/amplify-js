@@ -9,3 +9,8 @@ export const USER_AGENT_HEADER = 'x-amz-user-agent';
 // Error exception code constants
 export const NO_HUBCALLBACK_PROVIDED_EXCEPTION =
 	'NoHubcallbackProvidedException';
+
+// User Agents Override Symbol
+export const INTERNAL_USER_AGENT_OVERRIDE = Symbol(
+	'INTERNAL_USER_AGENT_OVERRIDE',
+);
