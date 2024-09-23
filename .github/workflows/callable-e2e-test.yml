@@ -43,6 +43,9 @@ on:
       env:
         required: false
         type: string
+      env:
+        required: false
+        type: string
 
 env:
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
