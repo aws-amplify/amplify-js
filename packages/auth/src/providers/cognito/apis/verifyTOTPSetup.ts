@@ -10,11 +10,12 @@ import {
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { VerifyTOTPSetupInput } from '../types';
-import { verifySoftwareToken } from '../utils/clients/CognitoIdentityProvider';
 import { VerifySoftwareTokenException } from '../types/errors';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { getAuthUserAgentValue } from '../../../utils';
+import { createVerifySoftwareTokenClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 /**
  * Verifies an OTP code retrieved from an associated authentication app.
@@ -31,6 +32,7 @@ export async function verifyTOTPSetup(
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { code, options } = input;
 	assertValidationError(
 		!!code,
@@ -38,9 +40,14 @@ export async function verifyTOTPSetup(
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
+	const verifySoftwareToken = createVerifySoftwareTokenClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	await verifySoftwareToken(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.VerifyTOTPSetup),
 		},
 		{

@@ -7,8 +7,9 @@ import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { confirmUserAttribute } from '../../../src/providers/cognito';
 import { VerifyUserAttributeException } from '../../../src/providers/cognito/types/errors';
-import { verifyUserAttribute } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
+import { createVerifyUserAttributeClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
@@ -22,14 +23,21 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
+jest.mock('../../../src/providers/cognito/factories');
 
 describe('confirmUserAttribute', () => {
 	const confirmationCode = '123456';
 	// assert mocks
 	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-	const mockVerifyUserAttribute = verifyUserAttribute as jest.Mock;
+	const mockVerifyUserAttribute = jest.fn();
+	const mockCreateVerifyUserAttributeClient = jest.mocked(
+		createVerifyUserAttributeClient,
+	);
+	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
+		createCognitoUserPoolEndpointResolver,
+	);
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -40,11 +48,15 @@ describe('confirmUserAttribute', () => {
 
 	beforeEach(() => {
 		mockVerifyUserAttribute.mockResolvedValue({ $metadata: {} });
+		mockCreateVerifyUserAttributeClient.mockReturnValueOnce(
+			mockVerifyUserAttribute,
+		);
 	});
 
 	afterEach(() => {
 		mockVerifyUserAttribute.mockReset();
 		mockFetchAuthSession.mockClear();
+		mockCreateVerifyUserAttributeClient.mockClear();
 	});
 
 	it('should call the service', async () => {
@@ -61,6 +73,28 @@ describe('confirmUserAttribute', () => {
 				Code: confirmationCode,
 			}),
 		);
+	});
+
+	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
+		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					userPoolEndpoint: expectedUserPoolEndpoint,
+				},
+			},
+		});
+		await confirmUserAttribute({
+			userAttributeKey: 'email',
+			confirmationCode,
+		});
+
+		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
+			endpointOverride: expectedUserPoolEndpoint,
+		});
 	});
 
 	it('should throw an error when confirmationCode is not defined', async () => {
