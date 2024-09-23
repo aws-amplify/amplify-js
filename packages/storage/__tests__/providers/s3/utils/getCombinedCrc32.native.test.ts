@@ -8,7 +8,7 @@ import {
 	TextEncoder as TextEncoderPolyfill,
 } from 'node:util';
 
-import { getCombinedCrc32 } from '../../../../src/providers/s3/utils/getCombinedCrc32.native.';
+import { getCombinedCrc32 } from '../../../../src/providers/s3/utils/getCombinedCrc32.native';
 import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
 
 global.Blob = BlobPolyfill as any;
