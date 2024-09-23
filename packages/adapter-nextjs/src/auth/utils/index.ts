@@ -29,6 +29,10 @@ export {
 	isNextApiResponse,
 	isNextRequest,
 } from './handlerParametersTypeAssertions';
+export {
+	hasUserSignedInWithAppRouter,
+	hasUserSignedInWithPagesRouter,
+} from './hasUserSignedIn';
 export { isSupportedAuthApiRoutePath } from './isSupportedAuthApiRoutePath';
 export { resolveCodeAndStateFromUrl } from './resolveCodeAndStateFromUrl';
 export { resolveIdentityProviderFromUrl } from './resolveIdentityProviderFromUrl';

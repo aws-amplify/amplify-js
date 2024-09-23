@@ -98,6 +98,7 @@ describe('createServerRunner', () => {
 		expect(mockCreateAuthRouteHandlersFactory).toHaveBeenCalledWith({
 			config: mockAmplifyConfig,
 			runtimeOptions: undefined,
+			runWithAmplifyServerContext: expect.any(Function),
 		});
 		expect(result).toMatchObject({
 			createAuthRouteHandlers: expect.any(Function),

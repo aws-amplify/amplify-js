@@ -27,6 +27,7 @@ import { handleAuthApiRouteRequestForPagesRouter } from './handleAuthApiRouteReq
 export const createAuthRouteHandlersFactory = ({
 	config: resourcesConfig,
 	runtimeOptions = {},
+	runWithAmplifyServerContext,
 }: CreateAuthRouteHandlersFactoryInput): CreateAuthRouteHandlers => {
 	const origin = process.env.AMPLIFY_APP_ORIGIN;
 	if (!origin)
@@ -65,6 +66,7 @@ export const createAuthRouteHandlersFactory = ({
 				oAuthConfig,
 				setCookieOptions,
 				origin,
+				runWithAmplifyServerContext,
 			});
 
 			// In the Pages Router, the final response is handled by contextOrResponse
@@ -84,6 +86,7 @@ export const createAuthRouteHandlersFactory = ({
 				oAuthConfig,
 				setCookieOptions,
 				origin,
+				runWithAmplifyServerContext,
 			});
 		}
 
