@@ -120,6 +120,27 @@ describe('createTokenCookiesSetOptions', () => {
 
 		dateNowSpy.mockRestore();
 	});
+
+	it('returns an object with the correct cookie options with overridden secure attribute', () => {
+		const mockSetCookieOptions: CookieStorage.SetCookieOptions = {
+			domain: '.example.com',
+			sameSite: 'strict',
+			expires: new Date('2024-09-17'),
+		};
+
+		const result = createTokenCookiesSetOptions(mockSetCookieOptions, {
+			secure: false,
+		});
+
+		expect(result).toEqual({
+			domain: mockSetCookieOptions.domain,
+			path: '/',
+			httpOnly: true,
+			secure: false,
+			sameSite: 'strict',
+			expires: mockSetCookieOptions.expires,
+		});
+	});
 });
 
 describe('createTokenCookiesRemoveOptions', () => {
