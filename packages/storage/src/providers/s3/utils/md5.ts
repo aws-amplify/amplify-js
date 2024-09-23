@@ -9,16 +9,8 @@ export const calculateContentMd5 = async (
 	content: Blob | string | ArrayBuffer | ArrayBufferView,
 ): Promise<string> => {
 	const hasher = new Md5();
-	if (
-		typeof content === 'string' ||
-		ArrayBuffer.isView(content) ||
-		content instanceof ArrayBuffer
-	) {
-		hasher.update(content);
-	} else {
-		const buffer = await readFile(content);
-		hasher.update(buffer);
-	}
+	const buffer = content instanceof Blob ? await readFile(content) : content;
+	hasher.update(buffer);
 	const digest = await hasher.digest();
 
 	return toBase64(digest);
