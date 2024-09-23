@@ -74,6 +74,7 @@ export interface CreateAuthRouteHandlersFactoryInput {
 	config: ResourcesConfig;
 	runtimeOptions: NextServer.CreateServerRunnerRuntimeOptions | undefined;
 	amplifyAppOrigin?: string;
+	runWithAmplifyServerContext: NextServer.RunOperationWithContext;
 }
 
 export type CreateOAuthRouteHandlersFactory = (
@@ -92,12 +93,14 @@ interface HandleAuthApiRouteRequestForAppRouterInput
 	extends HandleAuthApiRouteRequestInputBase {
 	request: NextRequest;
 	handlerContext: AuthRoutesHandlerContext;
+	runWithAmplifyServerContext: NextServer.RunOperationWithContext;
 }
 
 interface HandleAuthApiRouteRequestForPagesRouterInput
 	extends HandleAuthApiRouteRequestInputBase {
 	request: NextApiRequest;
 	response: NextApiResponse;
+	runWithAmplifyServerContext: NextServer.RunOperationWithContext;
 }
 
 export type HandleAuthApiRouteRequestForAppRouter = (

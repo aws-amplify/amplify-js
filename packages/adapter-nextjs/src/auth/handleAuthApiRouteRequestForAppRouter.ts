@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { HandleAuthApiRouteRequestForAppRouter } from './types';
-import { isSupportedAuthApiRoutePath } from './utils';
+import {
+	hasUserSignedInWithAppRouter,
+	isSupportedAuthApiRoutePath,
+} from './utils';
 import {
 	handleSignInCallbackRequest,
 	handleSignInSignUpRequest,
@@ -19,6 +22,7 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 		oAuthConfig,
 		origin,
 		setCookieOptions,
+		runWithAmplifyServerContext,
 	}) => {
 		if (request.method !== 'GET') {
 			return new Response(null, { status: 405 });
@@ -35,7 +39,21 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 		}
 
 		switch (slug) {
-			case 'sign-up':
+			case 'sign-up': {
+				const hasUserSignedIn = await hasUserSignedInWithAppRouter({
+					request,
+					runWithAmplifyServerContext,
+				});
+
+				if (hasUserSignedIn) {
+					return new Response(null, {
+						status: 302,
+						headers: new Headers({
+							Location: handlerInput.redirectOnSignInComplete ?? '/',
+						}),
+					});
+				}
+
 				return handleSignInSignUpRequest({
 					request,
 					userPoolClientId,
@@ -45,7 +63,22 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 					setCookieOptions,
 					type: 'signUp',
 				});
-			case 'sign-in':
+			}
+			case 'sign-in': {
+				const hasUserSignedIn = await hasUserSignedInWithAppRouter({
+					request,
+					runWithAmplifyServerContext,
+				});
+
+				if (hasUserSignedIn) {
+					return new Response(null, {
+						status: 302,
+						headers: new Headers({
+							Location: handlerInput.redirectOnSignInComplete ?? '/',
+						}),
+					});
+				}
+
 				return handleSignInSignUpRequest({
 					request,
 					userPoolClientId,
@@ -55,6 +88,7 @@ export const handleAuthApiRouteRequestForAppRouter: HandleAuthApiRouteRequestFor
 					setCookieOptions,
 					type: 'signIn',
 				});
+			}
 			case 'sign-out':
 				return handleSignOutRequest({
 					userPoolClientId,

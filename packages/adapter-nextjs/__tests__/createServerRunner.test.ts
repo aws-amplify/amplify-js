@@ -110,6 +110,7 @@ describe('createServerRunner', () => {
 			config: mockAmplifyConfig,
 			runtimeOptions: undefined,
 			amplifyAppOrigin: AMPLIFY_APP_ORIGIN,
+			runWithAmplifyServerContext: expect.any(Function),
 		});
 		expect(result).toMatchObject({
 			createAuthRouteHandlers: expect.any(Function),
