@@ -6,6 +6,7 @@ import {
 	createAuthFlowProofCookiesSetOptions,
 	createLogoutEndpoint,
 	createSignOutFlowProofCookies,
+	isNonSSLOrigin,
 	resolveRedirectSignOutUrl,
 } from '../utils';
 
@@ -30,7 +31,9 @@ export const handleSignOutRequest: HandleSignOutRequest = ({
 	appendSetCookieHeaders(
 		headers,
 		createSignOutFlowProofCookies(),
-		createAuthFlowProofCookiesSetOptions(setCookieOptions),
+		createAuthFlowProofCookiesSetOptions(setCookieOptions, {
+			secure: isNonSSLOrigin(origin),
+		}),
 	);
 
 	return new Response(null, {
