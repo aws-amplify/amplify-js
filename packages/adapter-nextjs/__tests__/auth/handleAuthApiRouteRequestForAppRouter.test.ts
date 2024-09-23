@@ -12,8 +12,14 @@ import {
 	handleSignOutCallbackRequest,
 	handleSignOutRequest,
 } from '../../src/auth/handlers';
+import { NextServer } from '../../src';
+import {
+	hasUserSignedInWithAppRouter,
+	isSupportedAuthApiRoutePath,
+} from '../../src/auth/utils';
 
 jest.mock('../../src/auth/handlers');
+jest.mock('../../src/auth/utils');
 
 const mockHandleSignInSignUpRequest = jest.mocked(handleSignInSignUpRequest);
 const mockHandleSignOutRequest = jest.mocked(handleSignOutRequest);
@@ -23,6 +29,14 @@ const mockHandleSignInCallbackRequest = jest.mocked(
 const mockHandleSignOutCallbackRequest = jest.mocked(
 	handleSignOutCallbackRequest,
 );
+const mockHasUserSignedInWithAppRouter = jest.mocked(
+	hasUserSignedInWithAppRouter,
+);
+const mockIsSupportedAuthApiRoutePath = jest.mocked(
+	isSupportedAuthApiRoutePath,
+);
+const mockRunWithAmplifyServerContext =
+	jest.fn() as jest.MockedFunction<NextServer.RunOperationWithContext>;
 
 describe('handleAuthApiRouteRequestForAppRouter', () => {
 	const testOrigin = 'https://example.com';
@@ -40,6 +54,11 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 	};
 	const _ = handleAuthApiRouteRequestForAppRouter;
 
+	beforeAll(() => {
+		mockHasUserSignedInWithAppRouter.mockResolvedValue(false);
+		mockIsSupportedAuthApiRoutePath.mockReturnValue(true);
+	});
+
 	it('returns a 405 response when input.request has an unsupported method', async () => {
 		const request = new NextRequest(
 			new URL('https://example.com/api/auth/sign-in'),
@@ -55,6 +74,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(response.status).toBe(405);
@@ -75,6 +95,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(response.status).toBe(400);
@@ -87,6 +108,9 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 				method: 'GET',
 			},
 		);
+
+		mockIsSupportedAuthApiRoutePath.mockReturnValueOnce(false);
+
 		const response = await handleAuthApiRouteRequestForAppRouter({
 			request,
 			handlerContext: { params: { slug: 'exchange-token' } },
@@ -95,6 +119,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(response.status).toBe(404);
@@ -124,6 +149,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 				oAuthConfig: testOAuthConfig,
 				setCookieOptions: {},
 				origin: testOrigin,
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
 
 			expect(response).toBe(mockResponse);
@@ -136,6 +162,36 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 				setCookieOptions: {},
 				type: expectedType,
 			});
+		},
+	);
+
+	test.each([['sign-in'], ['sign-up']])(
+		`calls hasUserSignedInWithAppRouter with correct params when handlerContext.params.slug is %s, and when it returns true, the handler returns a 302 response`,
+		async slug => {
+			mockHasUserSignedInWithAppRouter.mockResolvedValueOnce(true);
+			const mockRequest = new NextRequest(
+				new URL('https://example.com/api/auth/sign-in'),
+				{
+					method: 'GET',
+				},
+			);
+
+			const response = await handleAuthApiRouteRequestForAppRouter({
+				request: mockRequest,
+				handlerContext: { params: { slug } },
+				handlerInput: {
+					...testHandlerInput,
+					redirectOnSignInComplete: undefined,
+				},
+				userPoolClientId: 'userPoolClientId',
+				oAuthConfig: testOAuthConfig,
+				setCookieOptions: {},
+				origin: testOrigin,
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+			});
+
+			expect(response.status).toBe(302);
+			expect(response.headers.get('Location')).toBe('/');
 		},
 	);
 
@@ -158,6 +214,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(response).toBe(mockResponse);
@@ -188,6 +245,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(response).toBe(mockResponse);
@@ -220,6 +278,7 @@ describe('handleAuthApiRouteRequestForAppRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(response).toBe(mockResponse);
