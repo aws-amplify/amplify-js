@@ -48,6 +48,7 @@ export enum AiAction {
 	ListMessages = '5',
 	OnMessage = '6',
 	Generation = '7',
+	Delete = '8',
 }
 
 export enum AnalyticsAction {
