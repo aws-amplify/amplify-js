@@ -226,7 +226,11 @@ export type UploadDataOptions = CommonOptions &
 		 * @default false
 		 */
 		preventOverwrite?: boolean;
-
+		/**
+		 * Indicates the algorithm used to create the checksum for the object.
+		 * This checksum can be used as a data integrity check to verify that the data received is the same data that was originally sent.
+		 * @default undefined
+		 */
 		checksumAlgorithm?: UploadDataChecksumAlgorithm;
 	};
 
