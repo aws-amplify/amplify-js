@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { isDnsCompatibleBucketName } from '../../src/foundation/isDnsCompatibleBucketName';
+import { isDnsCompatibleBucketName } from '../../../../../../src/foundation/factories/serviceClients/s3data/validators/isDnsCompatibleBucketName';
 
 describe('isDnsCompatibleBucketName', () => {
 	it.each([

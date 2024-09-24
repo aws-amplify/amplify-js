@@ -4,7 +4,7 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { createDeleteObjectClient } from '../../../../src/foundation/factories/serviceClients/s3';
+import { createDeleteObjectClient } from '../../../../src/foundation/factories/serviceClients';
 import { remove } from '../../../../src/providers/s3/apis';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 import {
@@ -15,7 +15,7 @@ import {
 } from '../../../../src/providers/s3/types';
 import './testUtils';
 
-jest.mock('../../../../src/foundation/factories/serviceClients/s3');
+jest.mock('../../../../src/foundation/factories/serviceClients');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };

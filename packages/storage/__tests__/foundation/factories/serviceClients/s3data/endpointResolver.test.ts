@@ -3,8 +3,9 @@
 
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
-import { endpointResolver } from '../../src/foundation/endpointResolver';
-import { SERVICE_NAME } from '../../src/foundation/constants';
+// ../../src/foundation/factories/serviceClients/s3data/endpointResolver
+import { endpointResolver } from '../../../../../src/foundation/factories/serviceClients/s3data/endpointResolver';
+import { SERVICE_NAME } from '../../../../../src/foundation/constants';
 
 const region = 'us-west-2';
 

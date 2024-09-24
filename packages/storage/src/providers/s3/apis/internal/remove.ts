@@ -14,7 +14,7 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
-import { createDeleteObjectClient } from '../../../../foundation/factories/serviceClients/s3';
+import { createDeleteObjectClient } from '../../../../foundation/factories/serviceClients';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';

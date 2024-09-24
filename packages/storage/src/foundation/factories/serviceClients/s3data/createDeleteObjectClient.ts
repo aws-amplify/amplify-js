@@ -3,7 +3,7 @@
 
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { s3TransferHandler } from '../../../../dI';
+import { s3TransferHandler } from '../../../dI';
 
 import {
 	createDeleteObjectDeserializer,

@@ -10,8 +10,8 @@ import {
 	buildStorageServiceError,
 	deserializeBoolean,
 	map,
-} from '../../../deserialization';
-import { parseXmlError } from '../../../parsePayload';
+	parseXmlError,
+} from '../../../shared/serde';
 import type { DeleteObjectCommandOutput } from '../../types';
 
 type DeleteObjectOutput = DeleteObjectCommandOutput;

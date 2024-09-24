@@ -3,8 +3,8 @@
 
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import * as serviceClients from '../../../../../../src/foundation/factories/serviceClients/s3';
-import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from '../../../../../../src/foundation/factories/serviceClients/s3/s3data/constants';
+import * as serviceClients from '../../../../../src/foundation/factories/serviceClients';
+import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from '../../../../../src/foundation/factories/serviceClients/s3data/constants';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils/composers', () => ({
 	...jest.requireActual(

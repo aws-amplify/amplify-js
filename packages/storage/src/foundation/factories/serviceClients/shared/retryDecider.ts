@@ -13,7 +13,7 @@ import {
 // TODO(ashwinkumar6): low lvl should not import type from higher lvl
 import { LocationCredentialsProvider } from '../../../../providers/s3/types/options';
 
-import { parseXmlError } from './parsePayload';
+import { parseXmlError } from './serde';
 
 /**
  * Function to decide if the S3 request should be retried. For S3 APIs, we support forceRefresh option

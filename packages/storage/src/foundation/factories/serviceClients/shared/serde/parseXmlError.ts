@@ -8,7 +8,7 @@ import {
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { parser } from '../../../dI';
+import { parseXmlBody } from './parseXmlBody';
 
 export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 	if (!response || response.statusCode < 300) {
@@ -28,21 +28,4 @@ export const parseXmlError: ErrorParser = async (response?: HttpResponse) => {
 		name: code,
 		$metadata: parseMetadata(response),
 	});
-};
-
-export const parseXmlBody = async (response: HttpResponse): Promise<any> => {
-	if (!response.body) {
-		// S3 can return 200 without a body indicating failure.
-		throw new Error('S3 aborted request.');
-	}
-	const data = await response.body.text();
-	if (data?.length > 0) {
-		try {
-			return parser.parse(data);
-		} catch (error) {
-			throw new Error(`Failed to parse XML response: ${error}`);
-		}
-	}
-
-	return {};
 };
