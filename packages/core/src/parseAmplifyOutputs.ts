@@ -65,6 +65,11 @@ function parseStorage(
 			bucket: bucket_name,
 			region: aws_region,
 			buckets: buckets && createBucketInfoMap(buckets),
+			paths:
+				buckets &&
+				buckets.map(bucket => ({
+					[bucket.name]: parseAccessRules(bucket.paths),
+				})),
 		},
 	};
 }
@@ -342,18 +347,44 @@ function createBucketInfoMap(
 ): Record<string, BucketInfo> {
 	const mappedBuckets: Record<string, BucketInfo> = {};
 
-	buckets.forEach(({ name, bucket_name: bucketName, aws_region: region }) => {
-		if (name in mappedBuckets) {
-			throw new Error(
-				`Duplicate friendly name found: ${name}. Name must be unique.`,
-			);
-		}
+	buckets.forEach(
+		({ name, bucket_name: bucketName, aws_region: region, paths }) => {
+			if (name in mappedBuckets) {
+				throw new Error(
+					`Duplicate friendly name found: ${name}. Name must be unique.`,
+				);
+			}
 
-		mappedBuckets[name] = {
-			bucketName,
-			region,
-		};
-	});
+			mappedBuckets[name] = {
+				bucketName,
+				region,
+				paths,
+			};
+		},
+	);
 
 	return mappedBuckets;
 }
+
+const parseAccessRules = (
+	paths: AmplifyOutputsStorageBucketProperties['paths'],
+): Record<string, any> => {
+	const output: Record<string, any> = {};
+
+	for (const [path, roles] of Object.entries(paths)) {
+		for (const [role, permissions] of Object.entries(roles)) {
+			if (!output[role]) {
+				output[role] = [];
+			}
+			if (role === 'authenticated' || role === 'guest') {
+				output[role].push({ [path]: permissions });
+			} else if (role.startsWith('groups') || role.startsWith('entity')) {
+				if (!path.includes('cognito-identity.amazonaws.com')) {
+					output[role].push({ [path]: permissions });
+				}
+			}
+		}
+	}
+
+	return output;
+};

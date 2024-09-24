@@ -12,6 +12,8 @@ export interface BucketInfo {
 	bucketName: string;
 	/** Region of the bucket */
 	region: string;
+	/** Path to object provisioned */
+	paths: Record<string, Record<string, string[]>>;
 }
 export interface S3ProviderConfig {
 	S3: {
@@ -25,6 +27,7 @@ export interface S3ProviderConfig {
 		dangerouslyConnectToHttpEndpointForTesting?: string;
 		/** Map of friendly name for bucket to its information  */
 		buckets?: Record<string, BucketInfo>;
+		paths?: any;
 	};
 }
 
