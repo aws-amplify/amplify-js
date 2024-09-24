@@ -5,6 +5,7 @@ import { Headers } from '@aws-amplify/core/internals/aws-client-utils';
 import { ServiceError } from '@aws-amplify/core/internals/utils';
 
 import { StorageError } from '../../../../../errors/StorageError';
+import { CompletedPart } from '../s3data';
 
 type PropertyNameWithStringValue = string;
 type PropertyNameWithSubsequentDeserializer<T> = [string, (arg: any) => T];
@@ -202,3 +203,18 @@ export const buildStorageServiceError = (
 
 	return storageError;
 };
+
+/**
+ * Internal-only method used for deserializing the parts of a multipart upload.
+ *
+ * @internal
+ */
+export const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
+	input.map(item =>
+		map(item, {
+			PartNumber: ['PartNumber', deserializeNumber],
+			ETag: 'ETag',
+			Size: ['Size', deserializeNumber],
+			ChecksumCRC32: 'ChecksumCRC32',
+		}),
+	);

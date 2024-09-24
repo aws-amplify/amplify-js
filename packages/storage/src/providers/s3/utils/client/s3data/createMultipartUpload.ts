@@ -21,6 +21,7 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import type {
 	CreateMultipartUploadCommandInput,
@@ -53,6 +54,11 @@ const createMultipartUploadSerializer = async (
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = 'uploads';
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
 
 	return {
 		method: 'POST',
