@@ -12,6 +12,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 
 import {
 	assignStringVariables,
+	bothNilOrEqual,
 	buildStorageServiceError,
 	parseXmlBody,
 	parseXmlError,
@@ -20,6 +21,8 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { IntegrityError } from '../../../../../errors/IntegrityError';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig } from './base';
@@ -38,6 +41,8 @@ export type CopyObjectInput = Pick<
 	| 'ACL'
 	| 'Tagging'
 	| 'Metadata'
+	| 'CopySourceIfUnmodifiedSince'
+	| 'CopySourceIfMatch'
 >;
 
 export type CopyObjectOutput = CopyObjectCommandOutput;
@@ -51,17 +56,51 @@ const copyObjectSerializer = async (
 		...assignStringVariables({
 			'x-amz-copy-source': input.CopySource,
 			'x-amz-metadata-directive': input.MetadataDirective,
+			'x-amz-copy-source-if-match': input.CopySourceIfMatch,
+			'x-amz-copy-source-if-unmodified-since':
+				input.CopySourceIfUnmodifiedSince?.toISOString(),
 		}),
 	};
+	validateCopyObjectHeaders(input, headers);
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
 
 	return {
 		method: 'PUT',
 		headers,
 		url,
 	};
+};
+
+export const validateCopyObjectHeaders = (
+	input: CopyObjectInput,
+	headers: Record<string, string>,
+) => {
+	const validations: boolean[] = [
+		headers['x-amz-copy-source'] === input.CopySource,
+		bothNilOrEqual(
+			input.MetadataDirective,
+			headers['x-amz-metadata-directive'],
+		),
+		bothNilOrEqual(
+			input.CopySourceIfMatch,
+			headers['x-amz-copy-source-if-match'],
+		),
+		bothNilOrEqual(
+			input.CopySourceIfUnmodifiedSince?.toISOString(),
+			headers['x-amz-copy-source-if-unmodified-since'],
+		),
+	];
+
+	if (validations.some(validation => !validation)) {
+		throw new IntegrityError();
+	}
 };
 
 const copyObjectDeserializer = async (
