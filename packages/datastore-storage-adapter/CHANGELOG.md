@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.51](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.50...@aws-amplify/datastore-storage-adapter@2.1.51) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+## [2.1.50](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.49...@aws-amplify/datastore-storage-adapter@2.1.50) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
 ## [2.1.49](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@2.1.48...@aws-amplify/datastore-storage-adapter@2.1.49) (2024-09-04)
 
 **Note:** Version bump only for package @aws-amplify/datastore-storage-adapter

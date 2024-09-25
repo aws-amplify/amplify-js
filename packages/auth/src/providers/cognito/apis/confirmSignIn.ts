@@ -10,11 +10,7 @@ import {
 	VerifySoftwareTokenException,
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
-import {
-	cleanActiveSignInState,
-	setActiveSignInState,
-	signInStore,
-} from '../utils/signInStore';
+import { setActiveSignInState, signInStore } from '../utils/signInStore';
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,
@@ -109,7 +105,8 @@ export async function confirmSignIn(
 		});
 
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
+			signInStore.dispatch({ type: 'RESET_STATE' });
+
 			await cacheCognitoTokens({
 				username,
 				...AuthenticationResult,
