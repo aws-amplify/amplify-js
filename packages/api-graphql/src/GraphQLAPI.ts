@@ -4,6 +4,7 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	ApiAction,
 	Category,
+	CustomUserAgentDetails,
 	INTERNAL_USER_AGENT_OVERRIDE,
 } from '@aws-amplify/core/internals/utils';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
@@ -11,6 +12,10 @@ import { Observable } from 'rxjs';
 
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
+
+interface GraphQLOptionsWithOverride extends GraphQLOptions {
+	[INTERNAL_USER_AGENT_OVERRIDE]?: CustomUserAgentDetails;
+}
 
 export const graphqlOperation = (
 	query: any,
@@ -45,8 +50,7 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 		const {
 			[INTERNAL_USER_AGENT_OVERRIDE]: internalUserAgentOverride,
 			...cleanOptions
-		} = options as any;
-		options as any;
+		} = options as GraphQLOptionsWithOverride;
 
 		return super.graphql(amplify, cleanOptions, additionalHeaders, {
 			category: Category.API,
