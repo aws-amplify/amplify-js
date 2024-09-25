@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.1...@aws-amplify/core@6.4.2) (2024-09-17)
+
+### Reverts
+
+- Revert "Reapply "feat(core): resolve webcrypto from node:crypto for Node18 (#13599)" (#13775)" ([953d578](https://github.com/aws-amplify/amplify-js/commit/953d578fabd69ab8eb7bf494a50c5a15ebf0b74c)), closes [#13599](https://github.com/aws-amplify/amplify-js/issues/13599) [#13775](https://github.com/aws-amplify/amplify-js/issues/13775)
+
+## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.0...@aws-amplify/core@6.4.1) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+# [6.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.13...@aws-amplify/core@6.4.0) (2024-09-04)
+
+### Features
+
+- **api-graphql:** pass authToken via subprotocol ([#13727](https://github.com/aws-amplify/amplify-js/issues/13727)) ([ced891c](https://github.com/aws-amplify/amplify-js/commit/ced891c2e4f6b0f1fdeaf44ab80cae9d585b6d15))
+
+## [6.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.12...@aws-amplify/core@6.3.13) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.11...@aws-amplify/core@6.3.12) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.10...@aws-amplify/core@6.3.11) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.9...@aws-amplify/core@6.3.10) (2024-08-15)
+
+**Note:** Version bump only for package @aws-amplify/core
+
 ## [6.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.8...@aws-amplify/core@6.3.9) (2024-08-07)
 
 **Note:** Version bump only for package @aws-amplify/core

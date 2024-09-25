@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.4.1...@aws-amplify/auth@6.4.2) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.4.0...@aws-amplify/auth@6.4.1) (2024-09-16)
+
+### Bug Fixes
+
+- **auth:** custom `userPoolEndpoint` cannot be applied on the server-side ([#13739](https://github.com/aws-amplify/amplify-js/issues/13739)) ([a76b594](https://github.com/aws-amplify/amplify-js/commit/a76b594562430a85fd37f00bb2788959f7a69d6a))
+
+# [6.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.17...@aws-amplify/auth@6.4.0) (2024-09-04)
+
+### Features
+
+- **auth:** HostedUI oidc signout ([#13512](https://github.com/aws-amplify/amplify-js/issues/13512)) ([e8fb997](https://github.com/aws-amplify/amplify-js/commit/e8fb9973f8e3e3490619416a778ec1460cafaf9a)), closes [#13712](https://github.com/aws-amplify/amplify-js/issues/13712) [#13736](https://github.com/aws-amplify/amplify-js/issues/13736)
+
+## [6.3.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.16...@aws-amplify/auth@6.3.17) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.3.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.15...@aws-amplify/auth@6.3.16) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.3.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.14...@aws-amplify/auth@6.3.15) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.13...@aws-amplify/auth@6.3.14) (2024-08-15)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 ## [6.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.3.12...@aws-amplify/auth@6.3.13) (2024-08-07)
 
 **Note:** Version bump only for package @aws-amplify/auth

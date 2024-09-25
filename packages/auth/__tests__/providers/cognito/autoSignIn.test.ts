@@ -8,13 +8,10 @@ import {
 	signUp,
 } from '../../../src/providers/cognito';
 import { autoSignIn } from '../../../src/providers/cognito/apis/autoSignIn';
-import * as signUpClient from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import {
-	RespondToAuthChallengeCommandOutput,
-	SignUpCommandOutput,
-} from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
 import * as initiateAuthHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { AuthError } from '../../../src/errors/AuthError';
+import { createSignUpClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 
@@ -23,6 +20,9 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
 }));
+jest.mock(
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
+);
 
 const authConfig = {
 	Cognito: {
@@ -35,27 +35,30 @@ Amplify.configure({
 	Auth: authConfig,
 });
 describe('Auto sign-in API Happy Path Cases:', () => {
-	let signUpSpy;
-	let handleUserSRPAuthflowSpy;
+	let handleUserSRPAuthFlowSpy: jest.SpyInstance;
+
+	const mockSignUp = jest.fn();
+	const mockCreateSignUpClient = jest.mocked(createSignUpClient);
+
 	const { user1 } = authAPITestParams;
 	beforeEach(async () => {
-		signUpSpy = jest
-			.spyOn(signUpClient, 'signUp')
-			.mockImplementationOnce(
-				async () => ({ UserConfirmed: true }) as SignUpCommandOutput,
-			);
+		mockSignUp.mockResolvedValueOnce({ UserConfirmed: true });
+		mockCreateSignUpClient.mockReturnValueOnce(mockSignUp);
 
-		handleUserSRPAuthflowSpy = jest
+		handleUserSRPAuthFlowSpy = jest
 			.spyOn(initiateAuthHelpers, 'handleUserSRPAuthFlow')
 			.mockImplementationOnce(
 				async (): Promise<RespondToAuthChallengeCommandOutput> =>
 					authAPITestParams.RespondToAuthChallengeCommandOutput,
 			);
 	});
+
 	afterEach(() => {
-		signUpSpy.mockClear();
-		handleUserSRPAuthflowSpy.mockClear();
+		mockSignUp.mockClear();
+		mockCreateSignUpClient.mockClear();
+		handleUserSRPAuthFlowSpy.mockClear();
 	});
+
 	test('signUp should enable autoSignIn and return COMPLETE_AUTO_SIGN_IN step', async () => {
 		const resp = await signUp({
 			username: user1.username,
@@ -71,13 +74,13 @@ describe('Auto sign-in API Happy Path Cases:', () => {
 				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
 			},
 		});
-		expect(signUpSpy).toHaveBeenCalledTimes(1);
+		expect(mockSignUp).toHaveBeenCalledTimes(1);
 	});
 
 	test('Auto sign-in should resolve to a signIn output', async () => {
 		const signInOutput = await autoSignIn();
 		expect(signInOutput).toEqual(authAPITestParams.signInResult());
-		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
+		expect(handleUserSRPAuthFlowSpy).toHaveBeenCalledTimes(1);
 	});
 });
 

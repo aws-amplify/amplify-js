@@ -20,18 +20,13 @@ import {
 	parseSigningInfo,
 } from '../../utils';
 import { resolveHeaders } from '../../utils/resolveHeaders';
-import { RestApiResponse } from '../../types';
+import { RestApiResponse, SigningServiceInfo } from '../../types';
 
 type HandlerOptions = Omit<HttpRequest, 'body' | 'headers'> & {
 	body?: DocumentType | FormData;
 	headers?: Headers;
 	withCredentials?: boolean;
 };
-
-interface SigningServiceInfo {
-	service?: string;
-	region?: string;
-}
 
 /**
  * Make REST API call with best-effort IAM auth.
@@ -40,12 +35,17 @@ interface SigningServiceInfo {
  * @param options Options accepted from public API options when calling the handlers.
  * @param signingServiceInfo Internal-only options enable IAM auth as well as to to overwrite the IAM signing service
  *   and region. If specified, and NONE of API Key header or Auth header is present, IAM auth will be used.
+ * @param iamAuthApplicable Callback function that is used to determine if IAM Auth should be used or not.
  *
  * @internal
  */
 export const transferHandler = async (
 	amplify: AmplifyClassV6,
 	options: HandlerOptions & { abortSignal: AbortSignal },
+	iamAuthApplicable: (
+		{ headers }: HttpRequest,
+		signingServiceInfo?: SigningServiceInfo,
+	) => boolean,
 	signingServiceInfo?: SigningServiceInfo,
 ): Promise<RestApiResponse> => {
 	const { url, method, headers, body, withCredentials, abortSignal } = options;
@@ -69,6 +69,7 @@ export const transferHandler = async (
 	};
 
 	const isIamAuthApplicable = iamAuthApplicable(request, signingServiceInfo);
+
 	let response: RestApiResponse;
 	const credentials = await resolveCredentials(amplify);
 	if (isIamAuthApplicable && credentials) {
@@ -96,11 +97,6 @@ export const transferHandler = async (
 		body: response.body,
 	};
 };
-
-const iamAuthApplicable = (
-	{ headers }: HttpRequest,
-	signingServiceInfo?: SigningServiceInfo,
-) => !headers.authorization && !headers['x-api-key'] && !!signingServiceInfo;
 
 const resolveCredentials = async (
 	amplify: AmplifyClassV6,

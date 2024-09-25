@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.6.1...aws-amplify@6.6.2) (2024-09-17)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.6.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.6.0...aws-amplify@6.6.1) (2024-09-16)
+
+**Note:** Version bump only for package aws-amplify
+
+# [6.6.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.5.4...aws-amplify@6.6.0) (2024-09-04)
+
+### Features
+
+- **api-graphql:** pass authToken via subprotocol ([#13727](https://github.com/aws-amplify/amplify-js/issues/13727)) ([ced891c](https://github.com/aws-amplify/amplify-js/commit/ced891c2e4f6b0f1fdeaf44ab80cae9d585b6d15))
+- **auth:** HostedUI oidc signout ([#13512](https://github.com/aws-amplify/amplify-js/issues/13512)) ([e8fb997](https://github.com/aws-amplify/amplify-js/commit/e8fb9973f8e3e3490619416a778ec1460cafaf9a)), closes [#13712](https://github.com/aws-amplify/amplify-js/issues/13712) [#13736](https://github.com/aws-amplify/amplify-js/issues/13736)
+
+## [6.5.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.5.3...aws-amplify@6.5.4) (2024-09-03)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.5.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.5.2...aws-amplify@6.5.3) (2024-08-26)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.5.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.5.1...aws-amplify@6.5.2) (2024-08-21)
+
+**Note:** Version bump only for package aws-amplify
+
+## [6.5.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.5.0...aws-amplify@6.5.1) (2024-08-15)
+
+**Note:** Version bump only for package aws-amplify
+
 # [6.5.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.4.4...aws-amplify@6.5.0) (2024-08-07)
 
 ### Features

@@ -15,6 +15,7 @@ import {
 	CopyWithPathOutput,
 } from '../../../../src/providers/s3/types';
 import './testUtils';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 jest.mock('../../../../src/providers/s3/utils/client');
 jest.mock('@aws-amplify/core', () => ({
@@ -64,6 +65,7 @@ describe('copy API', () => {
 				S3: {
 					bucket,
 					region,
+					buckets: { 'bucket-1': { bucketName: bucket, region } },
 				},
 			},
 		});
@@ -198,6 +200,34 @@ describe('copy API', () => {
 					});
 				},
 			);
+
+			it('should override bucket in copyObject call when bucket option is passed', async () => {
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-2',
+					region: 'region-2',
+				};
+				await copyWrapper({
+					source: { key: 'sourceKey', bucket: 'bucket-1' },
+					destination: {
+						key: 'destinationKey',
+						bucket: bucketInfo,
+					},
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucketInfo.bucketName,
+						MetadataDirective: 'COPY',
+						CopySource: `${bucket}/public/sourceKey`,
+						Key: 'public/destinationKey',
+					},
+				);
+			});
 		});
 
 		describe('With path', () => {
@@ -253,6 +283,33 @@ describe('copy API', () => {
 					);
 				},
 			);
+			it('should override bucket in copyObject call when bucket option is passed', async () => {
+				const bucketInfo: BucketInfo = {
+					bucketName: 'bucket-2',
+					region: 'region-2',
+				};
+				await copyWrapper({
+					source: { path: 'sourcePath', bucket: 'bucket-1' },
+					destination: {
+						path: 'destinationPath',
+						bucket: bucketInfo,
+					},
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				await expect(copyObject).toBeLastCalledWithConfigAndInput(
+					{
+						credentials,
+						region: bucketInfo.region,
+						userAgentValue: expect.any(String),
+					},
+					{
+						Bucket: bucketInfo.bucketName,
+						MetadataDirective: 'COPY',
+						CopySource: `${bucket}/sourcePath`,
+						Key: 'destinationPath',
+					},
+				);
+			});
 		});
 	});
 
@@ -314,6 +371,41 @@ describe('copy API', () => {
 			} catch (error: any) {
 				expect(error).toBeInstanceOf(StorageError);
 				expect(error.name).toBe(StorageValidationErrorCode.NoDestinationKey);
+			}
+		});
+
+		it('should throw an error when only source has bucket option', async () => {
+			expect.assertions(2);
+			try {
+				await copy({
+					source: { path: 'source', bucket: 'bucket-1' },
+					destination: {
+						path: 'destination',
+					},
+				});
+			} catch (error: any) {
+				expect(error).toBeInstanceOf(StorageError);
+				expect(error.name).toBe(
+					StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
+				);
+			}
+		});
+
+		it('should throw an error when only one destination has bucket option', async () => {
+			expect.assertions(2);
+			try {
+				await copy({
+					source: { key: 'source' },
+					destination: {
+						key: 'destination',
+						bucket: 'bucket-1',
+					},
+				});
+			} catch (error: any) {
+				expect(error).toBeInstanceOf(StorageError);
+				expect(error.name).toBe(
+					StorageValidationErrorCode.InvalidCopyOperationStorageBucket,
+				);
 			}
 		});
 	});

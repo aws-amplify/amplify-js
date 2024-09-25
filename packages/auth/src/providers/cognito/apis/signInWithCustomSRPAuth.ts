@@ -9,7 +9,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetatada,
+	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleCustomSRPAuthFlow,
@@ -23,15 +23,12 @@ import {
 	SignInWithCustomSRPAuthInput,
 	SignInWithCustomSRPAuthOutput,
 } from '../types';
-import {
-	cleanActiveSignInState,
-	setActiveSignInState,
-} from '../utils/signInStore';
+import { setActiveSignInState, signInStore } from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
+} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 
@@ -89,17 +86,18 @@ export async function signInWithCustomSRPAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
+			signInStore.dispatch({ type: 'RESET_STATE' });
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetatada(
-					authConfig.userPoolId,
-					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken,
-				),
+				NewDeviceMetadata: await getNewDeviceMetadata({
+					userPoolId: authConfig.userPoolId,
+					userPoolEndpoint: authConfig.userPoolEndpoint,
+					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+					accessToken: AuthenticationResult.AccessToken,
+				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
 
 			await dispatchSignedInHubEvent();
 
@@ -114,7 +112,7 @@ export async function signInWithCustomSRPAuth(
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		cleanActiveSignInState();
+		signInStore.dispatch({ type: 'RESET_STATE' });
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;
