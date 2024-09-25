@@ -49,7 +49,7 @@ export interface TransferTask<Result> {
 	result: Promise<Result>;
 
 	/**
-	 * Boolean indicator showing if the transfer task is single or multi-part.
+	 * Boolean indicator showing if the transfer task is resumable.
 	 */
 	isResumable: boolean;
 }
