@@ -13,8 +13,12 @@ import { Observable } from 'rxjs';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { InternalGraphQLAPIClass } from './internals/InternalGraphQLAPI';
 
-interface GraphQLOptionsWithOverride extends GraphQLOptions {
-	[INTERNAL_USER_AGENT_OVERRIDE]?: CustomUserAgentDetails;
+function isGraphQLOptionsWithOverride(
+	options: GraphQLOptions,
+): options is GraphQLOptions & {
+	[INTERNAL_USER_AGENT_OVERRIDE]: CustomUserAgentDetails;
+} {
+	return INTERNAL_USER_AGENT_OVERRIDE in options;
 }
 
 export const graphqlOperation = (
@@ -47,16 +51,33 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		const {
-			[INTERNAL_USER_AGENT_OVERRIDE]: internalUserAgentOverride,
-			...cleanOptions
-		} = options as GraphQLOptionsWithOverride;
+		let cleanOptions = options;
+		let userAgentDetails: CustomUserAgentDetails;
 
-		return super.graphql(amplify, cleanOptions, additionalHeaders, {
-			category: Category.API,
-			action: ApiAction.GraphQl,
-			...internalUserAgentOverride,
-		});
+		if (isGraphQLOptionsWithOverride(options)) {
+			const {
+				[INTERNAL_USER_AGENT_OVERRIDE]: internalUserAgentOverride,
+				...rest
+			} = options;
+			userAgentDetails = {
+				category: Category.API,
+				action: ApiAction.GraphQl,
+				...internalUserAgentOverride,
+			};
+			cleanOptions = rest;
+		} else {
+			userAgentDetails = {
+				category: Category.API,
+				action: ApiAction.GraphQl,
+			};
+		}
+
+		return super.graphql(
+			amplify,
+			cleanOptions,
+			additionalHeaders,
+			userAgentDetails,
+		);
 	}
 
 	/**
