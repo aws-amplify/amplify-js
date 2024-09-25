@@ -69,7 +69,7 @@ interface CreateUploadTaskOptions<Result> {
 	onCancel(message?: string): void;
 	onResume?(): void;
 	onPause?(): void;
-	isMultipartUpload: boolean;
+	isMultipartUpload?: boolean;
 }
 
 export const createUploadTask = <Result>({
@@ -77,7 +77,7 @@ export const createUploadTask = <Result>({
 	onCancel,
 	onResume,
 	onPause,
-	isMultipartUpload,
+	isMultipartUpload = false,
 }: CreateUploadTaskOptions<Result>): UploadTask<Result> => {
 	const cancellableTask = createCancellableTask<Result>({
 		job,
