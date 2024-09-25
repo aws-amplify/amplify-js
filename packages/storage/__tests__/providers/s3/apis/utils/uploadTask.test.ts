@@ -81,7 +81,7 @@ describe('createUploadTask', () => {
 			job: jest.fn(),
 			onCancel: jest.fn(),
 			onPause,
-			isMultipartUpload: true,
+			isMultipart: true,
 		});
 		expect(task.state).toBe('IN_PROGRESS');
 		task.pause();
@@ -97,7 +97,7 @@ describe('createUploadTask', () => {
 				job: jest.fn(),
 				onCancel: jest.fn(),
 				onPause,
-				isMultipartUpload: true,
+				isMultipart: true,
 			});
 			// @ts-expect-error assign to read-only
 			task.state = state;
@@ -113,7 +113,7 @@ describe('createUploadTask', () => {
 			job: jest.fn(),
 			onCancel: jest.fn(),
 			onResume,
-			isMultipartUpload: true,
+			isMultipart: true,
 		});
 		task.pause();
 		expect(task.state).toBe('PAUSED');
@@ -130,7 +130,7 @@ describe('createUploadTask', () => {
 				job: jest.fn(),
 				onCancel: jest.fn(),
 				onResume,
-				isMultipartUpload: true,
+				isMultipart: true,
 			});
 			// @ts-expect-error assign to read-only
 			task.state = state;

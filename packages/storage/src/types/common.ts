@@ -47,11 +47,16 @@ export interface TransferTask<Result> {
 	 * Promise that resolves when the transfer task is completed. The promise will be rejected if the task is canceled.
 	 */
 	result: Promise<Result>;
+
+	/**
+	 * Boolean indicator showing if the transfer task is single or multi-part.
+	 */
+	isResumable: boolean;
 }
 
 export type DownloadTask<Result> = Omit<
 	TransferTask<Result>,
-	'pause' | 'resume'
+	'pause' | 'resume' | 'isResumable'
 >;
 
 export type UploadTask<Result> = TransferTask<Result>;

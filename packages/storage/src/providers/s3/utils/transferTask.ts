@@ -69,7 +69,7 @@ interface CreateUploadTaskOptions<Result> {
 	onCancel(message?: string): void;
 	onResume?(): void;
 	onPause?(): void;
-	isMultipartUpload?: boolean;
+	isMultipart: boolean;
 }
 
 export const createUploadTask = <Result>({
@@ -77,8 +77,9 @@ export const createUploadTask = <Result>({
 	onCancel,
 	onResume,
 	onPause,
-	isMultipartUpload,
+	isMultipart,
 }: CreateUploadTaskOptions<Result>): UploadTask<Result> => {
+	console.log('isMultipart: ', isMultipart);
 	const cancellableTask = createCancellableTask<Result>({
 		job,
 		onCancel,
@@ -87,7 +88,7 @@ export const createUploadTask = <Result>({
 	const uploadTask = Object.assign(cancellableTask, {
 		pause: () => {
 			const { state } = uploadTask;
-			if (!isMultipartUpload || state !== 'IN_PROGRESS') {
+			if (!isMultipart || state !== 'IN_PROGRESS') {
 				logger.debug(`This task cannot be paused. State: ${state}`);
 
 				return;
@@ -100,7 +101,7 @@ export const createUploadTask = <Result>({
 		},
 		resume: () => {
 			const { state } = uploadTask;
-			if (!isMultipartUpload || state !== 'PAUSED') {
+			if (!isMultipart || state !== 'PAUSED') {
 				logger.debug(`This task cannot be resumed. State: ${state}`);
 
 				return;
@@ -111,6 +112,7 @@ export const createUploadTask = <Result>({
 			uploadTask.state = 'IN_PROGRESS';
 			onResume?.();
 		},
+		isResumable: isMultipart,
 	});
 
 	return uploadTask;
