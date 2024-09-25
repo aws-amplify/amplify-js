@@ -2,7 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify } from '@aws-amplify/core';
 
-import { GetLocationCredentials, ListLocations } from '../types';
+import {
+	GetLocationCredentials,
+	ListLocations,
+	ListLocationsInput,
+	ListLocationsOutput,
+} from '../types';
 
 export interface AuthConfigAdapter {
 	/** outputs Scope(path), permission (read/write/readwrite), type(prefix/bucket/object) */
@@ -18,13 +23,59 @@ export const createAmplifyAuthConfigAdapter = (): AuthConfigAdapter => {
 };
 
 const createAmplifyListLocationsHandler = (): ListLocations => {
-	// eslint-disable-next-line unused-imports/no-unused-vars
 	return async function listLocations(input = {}) {
 		const { Storage } = Amplify.getConfig();
 		const { paths } = Storage!.S3!;
 
-		// Parse Amplify storage buckets to get location
+		const { pageSize, nextToken } = input;
 
-		return { locations: paths ?? [] };
+		if (pageSize) {
+			if (nextToken) {
+				const start = -nextToken;
+				const end = start > pageSize ? start + pageSize : undefined;
+
+				return {
+					locations: paths.slice(start, end),
+					nextToken: end ? `${end}` : undefined,
+				};
+			}
+
+			return {
+				locations: paths.slice(0, pageSize),
+				nextToken: `${pageSize}`,
+			};
+		}
+
+		return {
+			locations: paths,
+		};
+	};
+};
+
+// eslint-disable-next-line unused-imports/no-unused-vars
+const listPathsForUser = (input: ListLocationsInput): ListLocationsOutput => {
+	const { Storage } = Amplify.getConfig();
+	const { paths } = Storage!.S3!;
+	const { pageSize, nextToken } = input;
+
+	if (pageSize) {
+		if (nextToken) {
+			const start = -nextToken;
+			const end = start > pageSize ? start + pageSize : undefined;
+
+			return {
+				locations: paths.slice(start, end),
+				nextToken: end ? `${end}` : undefined,
+			};
+		}
+
+		return {
+			locations: paths.slice(0, pageSize),
+			nextToken: `${pageSize}`,
+		};
+	}
+
+	return {
+		locations: paths,
 	};
 };
