@@ -8,7 +8,7 @@ import { s3TransferHandler } from '../../../dI';
 import {
 	createDeleteObjectDeserializer,
 	createDeleteObjectSerializer,
-} from './shared/serde';
+} from './serde';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
 export const createDeleteObjectClient = () => {

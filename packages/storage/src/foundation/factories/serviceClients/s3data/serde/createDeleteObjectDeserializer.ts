@@ -11,8 +11,8 @@ import {
 	deserializeBoolean,
 	map,
 	parseXmlError,
-} from '../../../shared/serde';
-import type { DeleteObjectCommandOutput } from '../../types';
+} from '../../shared/serde';
+import type { DeleteObjectCommandOutput } from '../types';
 
 type DeleteObjectOutput = DeleteObjectCommandOutput;
 

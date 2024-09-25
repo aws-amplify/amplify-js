@@ -4,8 +4,8 @@
 import { HttpResponse } from '@aws-amplify/core/internals/aws-client-utils';
 import * as clientUtils from '@aws-amplify/core/internals/aws-client-utils';
 
-import { createDeleteObjectDeserializer } from '../../../../../../../src/foundation/factories/serviceClients/s3data/shared/serde';
-import { StorageError } from '../../../../../../../src/errors/StorageError';
+import { createDeleteObjectDeserializer } from '../../../../../../src/foundation/factories/serviceClients/s3data/serde';
+import { StorageError } from '../../../../../../src/errors/StorageError';
 
 describe('createDeleteObjectDeserializer', () => {
 	const deserializer = createDeleteObjectDeserializer();
