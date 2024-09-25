@@ -140,7 +140,7 @@ export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
 		const abortController = new AbortController();
 
 		return createUploadTask({
-			isMultipart: false,
+			isMultipartUpload: false,
 			job: putObjectJob(input, abortController.signal, dataByteLength),
 			onCancel: (message?: string) => {
 				abortController.abort(message);
@@ -152,7 +152,7 @@ export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
 			getMultipartUploadHandlers(input, dataByteLength);
 
 		return createUploadTask({
-			isMultipart: true,
+			isMultipartUpload: true,
 			job: multipartUploadJob,
 			onCancel: (message?: string) => {
 				onCancel(message);
