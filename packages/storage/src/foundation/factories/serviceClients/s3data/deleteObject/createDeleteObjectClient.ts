@@ -3,13 +3,11 @@
 
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { s3TransferHandler } from '../../../dI';
+import { s3TransferHandler } from '../../../../dI';
+import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from '../constants';
 
-import {
-	createDeleteObjectDeserializer,
-	createDeleteObjectSerializer,
-} from './serde';
-import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
+import { createDeleteObjectSerializer } from './createDeleteObjectSerializer';
+import { createDeleteObjectDeserializer } from './createDeleteObjectDeserializer';
 
 export const createDeleteObjectClient = () => {
 	return composeServiceApi(

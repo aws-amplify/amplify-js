@@ -7,6 +7,5 @@
  *
  * @internal
  */
-export const deserializeBoolean = (value?: string): boolean | undefined => {
-	return value ? value === 'true' : undefined;
-};
+export const deserializeBoolean = (value?: string): boolean | undefined =>
+	value ? value === 'true' : undefined;

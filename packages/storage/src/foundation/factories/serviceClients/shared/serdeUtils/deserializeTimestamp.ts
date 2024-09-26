@@ -14,6 +14,5 @@
  *
  * @internal
  */
-export const deserializeTimestamp = (value: string): Date | undefined => {
-	return value ? new Date(value) : undefined;
-};
+export const deserializeTimestamp = (value: string): Date | undefined =>
+	value ? new Date(value) : undefined;

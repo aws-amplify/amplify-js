@@ -19,13 +19,9 @@ import { StorageError } from '../../../../../errors/StorageError';
  *
  * @internal
  */
-export const createStringEnumDeserializer = <T extends readonly string[]>(
-	enumValues: T,
-	fieldName: string,
-) => {
-	const deserializeStringEnum = (
-		value: any,
-	): T extends (infer E)[] ? E : never => {
+export const createStringEnumDeserializer =
+	<T extends readonly string[]>(enumValues: T, fieldName: string) =>
+	(value: any): T extends (infer E)[] ? E : never => {
 		const parsedEnumValue = value
 			? (enumValues.find(enumValue => enumValue === value) as any)
 			: undefined;
@@ -40,6 +36,3 @@ export const createStringEnumDeserializer = <T extends readonly string[]>(
 
 		return parsedEnumValue;
 	};
-
-	return deserializeStringEnum;
-};

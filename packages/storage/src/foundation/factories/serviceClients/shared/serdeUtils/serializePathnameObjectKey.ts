@@ -9,9 +9,6 @@ import { extendedEncodeURIComponent } from '@aws-amplify/core/internals/aws-clie
  *
  * @internal
  */
-export const serializePathnameObjectKey = (url: URL, key: string) => {
-	return (
-		url.pathname.replace(/\/$/, '') +
-		`/${key.split('/').map(extendedEncodeURIComponent).join('/')}`
-	);
-};
+export const serializePathnameObjectKey = (url: URL, key: string) =>
+	url.pathname.replace(/\/$/, '') +
+	`/${key.split('/').map(extendedEncodeURIComponent).join('/')}`;

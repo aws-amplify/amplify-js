@@ -10,5 +10,5 @@ export {
 	CONTENT_SHA256_HEADER,
 } from './constants';
 export { s3TransferHandler } from './s3TransferHandler/xhr';
-export { parser } from './xmlParser/pureJs';
+export { parser } from './xmlParser/xmlParser';
 export { toBase64 } from './base64/index.native';

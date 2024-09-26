@@ -11,7 +11,7 @@ export const emptyArrayGuard = <T extends any[]>(
 	deserializer: (value: any[]) => T,
 ): T => {
 	if (value === '') {
-		return [] as any as T;
+		return [] as unknown as T;
 	}
 	const valueArray = (Array.isArray(value) ? value : [value]).filter(
 		e => e != null,

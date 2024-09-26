@@ -3,7 +3,6 @@
 
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
-// ../../src/foundation/factories/serviceClients/s3data/endpointResolver
 import { endpointResolver } from '../../../../../src/foundation/factories/serviceClients/s3data/endpointResolver';
 import { SERVICE_NAME } from '../../../../../src/foundation/constants';
 
