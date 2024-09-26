@@ -73,7 +73,6 @@ export { haveCredentialsChanged } from './utils/haveCredentialsChanged';
 
 // Platform & user-agent utilities
 export {
-	INTERNAL_USER_AGENT_OVERRIDE,
 	Platform,
 	getAmplifyUserAgentObject,
 	getAmplifyUserAgent,

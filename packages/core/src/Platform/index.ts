@@ -28,18 +28,6 @@ class PlatformBuilder {
 	}
 }
 
-/**
- * Symbol used for internal user agent overrides.
- *
- * @internal
- * This symbol is intended for internal use within the Amplify library.
- * It may change or be removed in future versions without notice.
- * External usage of this symbol is discouraged and may lead to unexpected behavior.
- */
-export const INTERNAL_USER_AGENT_OVERRIDE = Symbol(
-	'INTERNAL_USER_AGENT_OVERRIDE',
-);
-
 export const Platform = new PlatformBuilder();
 
 export const getAmplifyUserAgentObject = ({

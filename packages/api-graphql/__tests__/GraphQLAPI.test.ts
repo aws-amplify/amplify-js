@@ -6,10 +6,8 @@ import * as typedQueries from './fixtures/with-types/queries';
 import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import { expectGet } from './utils/expects';
 import { InternalGraphQLAPIClass } from '../src/internals/InternalGraphQLAPI';
-import {
-	INTERNAL_USER_AGENT_OVERRIDE,
-	GraphQLAuthMode,
-} from '@aws-amplify/core/internals/utils';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { INTERNAL_USER_AGENT_OVERRIDE } from '@aws-amplify/data-schema/runtime';
 
 import {
 	__amplify,

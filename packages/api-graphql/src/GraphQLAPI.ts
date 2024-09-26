@@ -5,9 +5,11 @@ import {
 	ApiAction,
 	Category,
 	CustomUserAgentDetails,
-	INTERNAL_USER_AGENT_OVERRIDE,
 } from '@aws-amplify/core/internals/utils';
-import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
+import {
+	CustomHeaders,
+	INTERNAL_USER_AGENT_OVERRIDE,
+} from '@aws-amplify/data-schema/runtime';
 import { Observable } from 'rxjs';
 
 import { GraphQLOptions, GraphQLResult } from './types';
