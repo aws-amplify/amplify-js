@@ -5,6 +5,7 @@
 
 import { Buffer } from 'buffer';
 
+// TODO(ashwinkumar6): @aws-amplify/react-native already exposes
 export function toBase64(input: string | ArrayBufferView): string {
 	if (typeof input === 'string') {
 		return Buffer.from(input, 'utf-8').toString('base64');
