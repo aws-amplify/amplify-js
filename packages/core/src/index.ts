@@ -59,7 +59,6 @@ export {
 	CookieStorage,
 	defaultStorage,
 	sessionStorage,
-	syncSessionStorage,
 	sharedInMemoryStorage,
 } from './storage';
 export { KeyValueStorageInterface } from './types';
