@@ -35,8 +35,7 @@ const storagePackageSrcClientsPath = join(
 	'foundation',
 	'factories',
 	'serviceClients',
-	's3',
-	'data',
+	's3data',
 	'types',
 );
 const authPackageSrcClientsPath = join(
