@@ -21,7 +21,10 @@ import {
 	SignInWithCustomAuthInput,
 	SignInWithCustomAuthOutput,
 } from '../types';
-import { setActiveSignInState, signInStore } from '../utils/signInStore';
+import {
+	cleanActiveSignInState,
+	setActiveSignInState,
+} from '../utils/signInStore';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import {
 	ChallengeName,
@@ -81,7 +84,7 @@ export async function signInWithCustomAuth(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			signInStore.dispatch({ type: 'RESET_STATE' });
+			cleanActiveSignInState();
 
 			await cacheCognitoTokens({
 				username: activeUsername,
@@ -108,7 +111,7 @@ export async function signInWithCustomAuth(
 			challengeParameters: retiredChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
-		signInStore.dispatch({ type: 'RESET_STATE' });
+		cleanActiveSignInState();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;
