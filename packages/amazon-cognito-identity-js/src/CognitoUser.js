@@ -1130,7 +1130,7 @@ export default class CognitoUser {
 				UserAttributes: attributes,
 				ClientMetadata: clientMetadata,
 			},
-			(err,result) => {
+			(err, result) => {
 				if (err) {
 					return callback(err, null);
 				}
@@ -1478,7 +1478,7 @@ export default class CognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
-		this.client.request('InitiateAuth', jsonReq, (err, authResult) => {
+		this.client.requestWithRetry('InitiateAuth', jsonReq, (err, authResult) => {
 			if (err) {
 				if (err.code === 'NotAuthorizedException') {
 					this.clearCachedUser();
