@@ -13,6 +13,7 @@ export {
 export {
 	buildStorageServiceError,
 	deserializeBoolean,
+	deserializeCompletedPartList,
 	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,

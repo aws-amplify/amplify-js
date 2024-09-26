@@ -15,7 +15,7 @@ import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/
 
 import {
 	buildStorageServiceError,
-	deserializeNumber,
+	deserializeCompletedPartList,
 	emptyArrayGuard,
 	map,
 	parseXmlBody,
@@ -25,11 +25,7 @@ import {
 	validateS3RequiredParameter,
 } from '../utils';
 
-import type {
-	CompletedPart,
-	ListPartsCommandInput,
-	ListPartsCommandOutput,
-} from './types';
+import type { ListPartsCommandInput, ListPartsCommandOutput } from './types';
 import { defaultConfig } from './base';
 
 export type ListPartsInput = Pick<
@@ -84,16 +80,6 @@ const listPartsDeserializer = async (
 		};
 	}
 };
-
-const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
-	input.map(item =>
-		map(item, {
-			PartNumber: ['PartNumber', deserializeNumber],
-			ETag: 'ETag',
-			Size: ['Size', deserializeNumber],
-			ChecksumCRC32: 'ChecksumCRC32',
-		}),
-	);
 
 export const listParts = composeServiceApi(
 	s3TransferHandler,

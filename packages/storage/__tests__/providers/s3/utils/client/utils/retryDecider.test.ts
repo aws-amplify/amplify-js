@@ -5,12 +5,10 @@ import {
 	getRetryDecider as getDefaultRetryDecider,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { retryDecider } from '../../../../../../../src/providers/s3/utils/client/utils';
-import { parseXmlError } from '../../../../../../../src/providers/s3/utils/client/utils/parsePayload';
+import { retryDecider } from '../../../../../../src/providers/s3/utils/client/utils';
+import { parseXmlError } from '../../../../../../src/providers/s3/utils/client/utils/parsePayload';
 
-jest.mock(
-	'../../../../../../../src/providers/s3/utils/client/utils/parsePayload',
-);
+jest.mock('../../../../../../src/providers/s3/utils/client/utils/parsePayload');
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
 const mockErrorParser = jest.mocked(parseXmlError);
