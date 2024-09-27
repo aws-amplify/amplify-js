@@ -37,9 +37,6 @@ on:
       yarn_script:
         required: false
         type: string
-      node_versions:
-        required: false
-        type: string
       env:
         required: false
         type: string
@@ -60,8 +57,6 @@ jobs:
           - ${{ fromJson(inputs.browser) }}
         sample_name:
           - ${{ fromJson(inputs.sample_name) }}
-        node_version:
-          - ${{ fromJson(inputs.node_versions) }}
       fail-fast: false
     timeout-minutes: ${{ inputs.timeout_minutes }}
 
@@ -72,8 +67,6 @@ jobs:
           path: amplify-js
       - name: Setup node and build the repository
         uses: ./amplify-js/.github/actions/node-and-build
-        with:
-          node_version: ${{ matrix.node_version }}
       - name: Setup samples staging repository
         uses: ./amplify-js/.github/actions/setup-samples-staging
         with:

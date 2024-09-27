@@ -4,9 +4,9 @@ import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { confirmSignIn } from '../../../src/providers/cognito/apis/confirmSignIn';
 import { RespondToAuthChallengeException } from '../../../src/providers/cognito/types/errors';
-import { respondToAuthChallenge } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { signInStore } from '../../../src/providers/cognito/utils/signInStore';
 import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
+import { createRespondToAuthChallengeClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
@@ -16,10 +16,11 @@ jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
 	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
-jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
-);
 jest.mock('../../../src/providers/cognito/utils/signInStore');
+jest.mock(
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
+);
+jest.mock('../../../src/providers/cognito/factories');
 
 describe('confirmSignIn API error path cases:', () => {
 	const challengeName = 'SELECT_MFA_TYPE';
@@ -27,7 +28,10 @@ describe('confirmSignIn API error path cases:', () => {
 	const { username } = authAPITestParams.user1;
 	// assert mocks
 	const mockStoreGetState = jest.mocked(signInStore.getState);
-	const mockRespondToAuthChallenge = jest.mocked(respondToAuthChallenge);
+	const mockRespondToAuthChallenge = jest.fn();
+	const mockCreateRespondToAuthChallengeClient = jest.mocked(
+		createRespondToAuthChallengeClient,
+	);
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -38,8 +42,15 @@ describe('confirmSignIn API error path cases:', () => {
 		});
 	});
 
+	beforeEach(() => {
+		mockCreateRespondToAuthChallengeClient.mockReturnValueOnce(
+			mockRespondToAuthChallenge,
+		);
+	});
+
 	afterEach(() => {
 		mockRespondToAuthChallenge.mockReset();
+		mockCreateRespondToAuthChallengeClient.mockClear();
 	});
 
 	it('confirmSignIn API should throw an error when challengeResponse is empty', async () => {

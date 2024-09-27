@@ -870,13 +870,6 @@ tests:
     spec: ssr-context-isolation
     yarn_script: ci:ssr-context-isolation
     browser: [chrome]
-  - test_name: integ_node_envs
-    desc: 'Node.js environment tests'
-    framework: node
-    category: integration
-    sample_name: auth-gql-storage
-    yarn_script: ci:node-env-test
-    node_versions: ['18.x', '20.x', '22.x']
   - test_name: integ_next_mfa_req_email
     desc: 'mfa required with email sign in attribute'
     framework: next

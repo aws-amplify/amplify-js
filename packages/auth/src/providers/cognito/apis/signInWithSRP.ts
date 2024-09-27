@@ -10,14 +10,14 @@ import { assertServiceError } from '../../../errors/utils/assertServiceError';
 import {
 	ChallengeName,
 	ChallengeParameters,
-} from '../utils/clients/CognitoIdentityProvider/types';
+} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import {
 	InitiateAuthException,
 	RespondToAuthChallengeException,
 } from '../types/errors';
 import {
 	getActiveSignInUsername,
-	getNewDeviceMetatada,
+	getNewDeviceMetadata,
 	getSignInResult,
 	getSignInResultFromError,
 	handleUserSRPAuthFlow,
@@ -93,11 +93,12 @@ export async function signInWithSRP(
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
-				NewDeviceMetadata: await getNewDeviceMetatada(
-					authConfig.userPoolId,
-					AuthenticationResult.NewDeviceMetadata,
-					AuthenticationResult.AccessToken,
-				),
+				NewDeviceMetadata: await getNewDeviceMetadata({
+					userPoolId: authConfig.userPoolId,
+					userPoolEndpoint: authConfig.userPoolEndpoint,
+					newDeviceMetadata: AuthenticationResult.NewDeviceMetadata,
+					accessToken: AuthenticationResult.AccessToken,
+				}),
 				signInDetails,
 			});
 

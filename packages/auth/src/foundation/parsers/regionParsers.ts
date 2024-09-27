@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { AuthError } from '../../errors/AuthError';
 
-import { AuthError } from '../../../../../errors/AuthError';
-
-export function getRegion(userPoolId?: string): string {
+export function getRegionFromUserPoolId(userPoolId?: string): string {
 	const region = userPoolId?.split('_')[0];
 	if (
 		!userPoolId ||

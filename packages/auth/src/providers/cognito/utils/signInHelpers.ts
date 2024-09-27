@@ -31,15 +31,14 @@ import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../errors/constants'
 import { getCurrentUser } from '../apis/getCurrentUser';
 import { AuthTokenOrchestrator, DeviceMetadata } from '../tokenProvider/types';
 import { getAuthUserAgentValue } from '../../../utils';
-
-import { signInStore } from './signInStore';
 import {
-	associateSoftwareToken,
-	confirmDevice,
-	initiateAuth,
-	respondToAuthChallenge,
-	verifySoftwareToken,
-} from './clients/CognitoIdentityProvider';
+	createAssociateSoftwareTokenClient,
+	createConfirmDeviceClient,
+	createInitiateAuthClient,
+	createRespondToAuthChallengeClient,
+	createVerifySoftwareTokenClient,
+} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 import {
 	ChallengeName,
 	ChallengeParameters,
@@ -49,8 +48,10 @@ import {
 	NewDeviceMetadataType,
 	RespondToAuthChallengeCommandInput,
 	RespondToAuthChallengeCommandOutput,
-} from './clients/CognitoIdentityProvider/types';
-import { getRegion } from './clients/CognitoIdentityProvider/utils';
+} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
+
+import { signInStore } from './signInStore';
 import { assertDeviceMetadata } from './types';
 import {
 	getAuthenticationHelper,
@@ -92,7 +93,7 @@ export async function handleCustomChallenge({
 }: HandleAuthChallengeRequest & {
 	tokenOrchestrator: AuthTokenOrchestrator;
 }): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
 		ANSWER: challengeResponse,
@@ -118,9 +119,14 @@ export async function handleCustomChallenge({
 		UserContextData,
 	};
 
+	const respondToAuthChallenge = createRespondToAuthChallengeClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	const response = await respondToAuthChallenge(
 		{
-			region: getRegion(userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
 		jsonReq,
@@ -147,7 +153,7 @@ export async function handleMFASetupChallenge({
 	deviceName,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 
 	if (challengeResponse === 'EMAIL') {
 		return {
@@ -178,9 +184,15 @@ export async function handleMFASetupChallenge({
 	const isTOTPCode = /^\d+$/.test(challengeResponse.trim());
 
 	if (isTOTPCode) {
+		const verifySoftwareToken = createVerifySoftwareTokenClient({
+			endpointResolver: createCognitoUserPoolEndpointResolver({
+				endpointOverride: userPoolEndpoint,
+			}),
+		});
+
 		const { Session } = await verifySoftwareToken(
 			{
-				region: getRegion(userPoolId),
+				region: getRegionFromUserPoolId(userPoolId),
 				userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 			},
 			{
@@ -203,7 +215,16 @@ export async function handleMFASetupChallenge({
 			ClientId: userPoolClientId,
 		};
 
-		return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+		const respondToAuthChallenge = createRespondToAuthChallengeClient({
+			endpointResolver: createCognitoUserPoolEndpointResolver({
+				endpointOverride: userPoolEndpoint,
+			}),
+		});
+
+		return respondToAuthChallenge(
+			{ region: getRegionFromUserPoolId(userPoolId) },
+			jsonReq,
+		);
 	}
 
 	const isEmail = /^\S+@\S+\.\S+$/.test(challengeResponse.trim());
@@ -219,7 +240,16 @@ export async function handleMFASetupChallenge({
 			ClientId: userPoolClientId,
 		};
 
-		return respondToAuthChallenge({ region: getRegion(userPoolId) }, jsonReq);
+		const respondToAuthChallenge = createRespondToAuthChallengeClient({
+			endpointResolver: createCognitoUserPoolEndpointResolver({
+				endpointOverride: userPoolEndpoint,
+			}),
+		});
+
+		return respondToAuthChallenge(
+			{ region: getRegionFromUserPoolId(userPoolId) },
+			jsonReq,
+		);
 	}
 
 	throw new AuthError({
@@ -237,7 +267,7 @@ export async function handleSelectMFATypeChallenge({
 	session,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 	assertValidationError(
 		challengeResponse === 'TOTP' ||
 			challengeResponse === 'SMS' ||
@@ -265,9 +295,15 @@ export async function handleSelectMFATypeChallenge({
 		UserContextData,
 	};
 
+	const respondToAuthChallenge = createRespondToAuthChallengeClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	return respondToAuthChallenge(
 		{
-			region: getRegion(userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
 		jsonReq,
@@ -282,7 +318,7 @@ export async function handleCompleteNewPasswordChallenge({
 	requiredAttributes,
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 	const challengeResponses = {
 		...createAttributes(requiredAttributes),
 		NEW_PASSWORD: challengeResponse,
@@ -304,9 +340,15 @@ export async function handleCompleteNewPasswordChallenge({
 		UserContextData,
 	};
 
+	const respondToAuthChallenge = createRespondToAuthChallengeClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	return respondToAuthChallenge(
 		{
-			region: getRegion(userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
 		jsonReq,
@@ -320,7 +362,7 @@ export async function handleUserPasswordAuthFlow(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<InitiateAuthCommandOutput> {
-	const { userPoolClientId, userPoolId } = config;
+	const { userPoolClientId, userPoolId, userPoolEndpoint } = config;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 		PASSWORD: password,
@@ -345,9 +387,15 @@ export async function handleUserPasswordAuthFlow(
 		UserContextData,
 	};
 
+	const initiateAuth = createInitiateAuthClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	const response = await initiateAuth(
 		{
-			region: getRegion(userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
 		jsonReq,
@@ -379,7 +427,7 @@ export async function handleUserSRPAuthFlow(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = await getAuthenticationHelper(userPoolName);
 
@@ -402,9 +450,15 @@ export async function handleUserSRPAuthFlow(
 		UserContextData,
 	};
 
+	const initiateAuth = createInitiateAuthClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	const resp = await initiateAuth(
 		{
-			region: getRegion(userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
 		jsonReq,
@@ -435,7 +489,7 @@ export async function handleCustomAuthFlowWithoutSRP(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<InitiateAuthCommandOutput> {
-	const { userPoolClientId, userPoolId } = config;
+	const { userPoolClientId, userPoolId, userPoolEndpoint } = config;
 	const authParameters: Record<string, string> = {
 		USERNAME: username,
 	};
@@ -459,9 +513,15 @@ export async function handleCustomAuthFlowWithoutSRP(
 		UserContextData,
 	};
 
+	const initiateAuth = createInitiateAuthClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	const response = await initiateAuth(
 		{
-			region: getRegion(userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
 		jsonReq,
@@ -488,7 +548,7 @@ export async function handleCustomSRPAuthFlow(
 	tokenOrchestrator: AuthTokenOrchestrator,
 ) {
 	assertTokenProviderConfig(config);
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const authenticationHelper = await getAuthenticationHelper(userPoolName);
@@ -513,10 +573,16 @@ export async function handleCustomSRPAuthFlow(
 		UserContextData,
 	};
 
+	const initiateAuth = createInitiateAuthClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	const { ChallengeParameters: challengeParameters, Session: session } =
 		await initiateAuth(
 			{
-				region: getRegion(userPoolId),
+				region: getRegionFromUserPoolId(userPoolId),
 				userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 			},
 			jsonReq,
@@ -547,7 +613,7 @@ async function handleDeviceSRPAuth({
 	session,
 	tokenOrchestrator,
 }: HandleDeviceSRPInput): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId } = config;
+	const { userPoolId, userPoolEndpoint } = config;
 	const clientId = config.userPoolClientId;
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
 	assertDeviceMetadata(deviceMetadata);
@@ -567,9 +633,14 @@ async function handleDeviceSRPAuth({
 		ClientMetadata: clientMetadata,
 		Session: session,
 	};
+	const respondToAuthChallenge = createRespondToAuthChallengeClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	const { ChallengeParameters: respondedChallengeParameters, Session } =
 		await respondToAuthChallenge(
-			{ region: getRegion(userPoolId) },
+			{ region: getRegionFromUserPoolId(userPoolId) },
 			jsonReqResponseChallenge,
 		);
 
@@ -590,7 +661,7 @@ async function handleDevicePasswordVerifier(
 	clientMetadata: ClientMetadata | undefined,
 	session: string | undefined,
 	authenticationHelper: AuthenticationHelper,
-	{ userPoolId, userPoolClientId }: CognitoUserPoolConfig,
+	{ userPoolId, userPoolClientId, userPoolEndpoint }: CognitoUserPoolConfig,
 	tokenOrchestrator?: AuthTokenOrchestrator,
 ): Promise<RespondToAuthChallengeCommandOutput> {
 	const deviceMetadata = await tokenOrchestrator?.getDeviceMetadata(username);
@@ -636,9 +707,14 @@ async function handleDevicePasswordVerifier(
 		ClientMetadata: clientMetadata,
 		UserContextData,
 	};
+	const respondToAuthChallenge = createRespondToAuthChallengeClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 
 	return respondToAuthChallenge(
-		{ region: getRegion(userPoolId) },
+		{ region: getRegionFromUserPoolId(userPoolId) },
 		jsonReqResponseChallenge,
 	);
 }
@@ -652,7 +728,7 @@ export async function handlePasswordVerifierChallenge(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 	const userPoolName = userPoolId?.split('_')[1] || '';
 	const serverBValue = new (BigInteger as any)(challengeParameters?.SRP_B, 16);
 	const salt = new (BigInteger as any)(challengeParameters?.SALT, 16);
@@ -704,8 +780,14 @@ export async function handlePasswordVerifierChallenge(
 		UserContextData,
 	};
 
+	const respondToAuthChallenge = createRespondToAuthChallengeClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	const response = await respondToAuthChallenge(
-		{ region: getRegion(userPoolId) },
+		{ region: getRegionFromUserPoolId(userPoolId) },
 		jsonReqResponseChallenge,
 	);
 
@@ -769,9 +851,14 @@ export async function getSignInResult(params: {
 			}
 
 			if (isTotpMfaSetupAvailable) {
+				const associateSoftwareToken = createAssociateSoftwareTokenClient({
+					endpointResolver: createCognitoUserPoolEndpointResolver({
+						endpointOverride: authConfig.userPoolEndpoint,
+					}),
+				});
 				const { Session, SecretCode: secretCode } =
 					await associateSoftwareToken(
-						{ region: getRegion(authConfig.userPoolId) },
+						{ region: getRegionFromUserPoolId(authConfig.userPoolId) },
 						{
 							Session: signInSession,
 						},
@@ -1052,11 +1139,17 @@ export async function assertUserNotAuthenticated() {
  *
  * @returns DeviceMetadata | undefined
  */
-export async function getNewDeviceMetatada(
-	userPoolId: string,
-	newDeviceMetadata?: NewDeviceMetadataType,
-	accessToken?: string,
-): Promise<DeviceMetadata | undefined> {
+export async function getNewDeviceMetadata({
+	userPoolId,
+	userPoolEndpoint,
+	newDeviceMetadata,
+	accessToken,
+}: {
+	userPoolId: string;
+	userPoolEndpoint: string | undefined;
+	newDeviceMetadata?: NewDeviceMetadataType;
+	accessToken?: string;
+}): Promise<DeviceMetadata | undefined> {
 	if (!newDeviceMetadata) return undefined;
 	const userPoolName = userPoolId.split('_')[1] || '';
 	const authenticationHelper = await getAuthenticationHelper(userPoolName);
@@ -1084,8 +1177,13 @@ export async function getNewDeviceMetatada(
 	const randomPassword = authenticationHelper.getRandomPassword();
 
 	try {
+		const confirmDevice = createConfirmDeviceClient({
+			endpointResolver: createCognitoUserPoolEndpointResolver({
+				endpointOverride: userPoolEndpoint,
+			}),
+		});
 		await confirmDevice(
-			{ region: getRegion(userPoolId) },
+			{ region: getRegionFromUserPoolId(userPoolId) },
 			{
 				AccessToken: accessToken,
 				DeviceName: await getDeviceName(),
@@ -1159,7 +1257,7 @@ export async function handleMFAChallenge({
 		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
 	>;
 }) {
-	const { userPoolId, userPoolClientId } = config;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 
 	const challengeResponses: Record<string, string> = {
 		USERNAME: username,
@@ -1192,9 +1290,15 @@ export async function handleMFAChallenge({
 		UserContextData: userContextData,
 	};
 
+	const respondToAuthChallenge = createRespondToAuthChallengeClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	return respondToAuthChallenge(
 		{
-			region: getRegion(userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 		},
 		jsonReq,
