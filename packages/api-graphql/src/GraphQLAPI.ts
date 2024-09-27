@@ -53,33 +53,26 @@ export class GraphQLAPIClass extends InternalGraphQLAPIClass {
 		options: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
-		let cleanOptions = options;
-		let userAgentDetails: CustomUserAgentDetails;
+		const userAgentDetails: CustomUserAgentDetails = {
+			category: Category.API,
+			action: ApiAction.GraphQl,
+		};
 
 		if (isGraphQLOptionsWithOverride(options)) {
 			const {
 				[INTERNAL_USER_AGENT_OVERRIDE]: internalUserAgentOverride,
-				...rest
+				...cleanOptions
 			} = options;
-			userAgentDetails = {
-				category: Category.API,
-				action: ApiAction.GraphQl,
+
+			return super.graphql(amplify, cleanOptions, additionalHeaders, {
+				...userAgentDetails,
 				...internalUserAgentOverride,
-			};
-			cleanOptions = rest;
-		} else {
-			userAgentDetails = {
-				category: Category.API,
-				action: ApiAction.GraphQl,
-			};
+			});
 		}
 
-		return super.graphql(
-			amplify,
-			cleanOptions,
-			additionalHeaders,
-			userAgentDetails,
-		);
+		return super.graphql(amplify, options, additionalHeaders, {
+			...userAgentDetails,
+		});
 	}
 
 	/**

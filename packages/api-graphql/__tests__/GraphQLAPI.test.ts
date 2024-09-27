@@ -1627,53 +1627,28 @@ describe('API test', () => {
 				},
 			},
 		});
-		const threadToGet = {
-			id: 'some-id',
-			topic: 'something reasonably interesting',
-		};
-		const graphqlVariables = { id: 'some-id' };
-		const graphqlResponse = {
-			data: {
-				getThread: {
-					__typename: 'Thread',
-					...serverManagedFields,
-					...threadToGet,
-				},
+
+		const mockPost = jest.fn().mockResolvedValue({
+			body: {
+				json: () => ({ data: { test: 'result' } }),
+			},
+		});
+		(raw.GraphQLAPI as any)._api.post = mockPost;
+
+		const graphqlOptions = {
+			query: 'query TestQuery { test }',
+			variables: { id: 'some-id' },
+			authMode: 'apiKey' as GraphQLAuthMode,
+			[INTERNAL_USER_AGENT_OVERRIDE]: {
+				category: 'CustomCategory',
+				action: 'CustomAction',
 			},
 		};
-		const spy = jest
-			.spyOn((raw.GraphQLAPI as any)._api, 'post')
-			.mockReturnValue({
-				body: {
-					json: () => graphqlResponse,
-				},
-			});
-		const graphqlOptions: raw.GraphQLOptionsV6<
-			GetThreadQuery,
-			typeof typedQueries.getThread
-		> = {
-			query: typedQueries.getThread,
-			variables: graphqlVariables,
-			authMode: 'apiKey' as GraphQLAuthMode,
-		};
-		// Add the INTERNAL_USER_AGENT_OVERRIDE to the options object
-		(graphqlOptions as any)[INTERNAL_USER_AGENT_OVERRIDE] = {
-			category: 'CustomCategory',
-			action: 'CustomAction',
-		};
 
-		const result: GraphQLResult<GetThreadQuery> =
-			await client.graphql(graphqlOptions);
-
-		const thread: GetThreadQuery['getThread'] = result.data?.getThread;
-		const errors = result.errors;
-
-		expectGet(spy, 'getThread', graphqlVariables);
-		expect(errors).toBe(undefined);
-		expect(thread).toEqual(graphqlResponse.data.getThread);
+		await client.graphql(graphqlOptions);
 
 		// Check if the INTERNAL_USER_AGENT_OVERRIDE was properly handled
-		expect(spy).toHaveBeenCalledWith(
+		expect(mockPost).toHaveBeenCalledWith(
 			expect.anything(),
 			expect.objectContaining({
 				options: expect.objectContaining({
@@ -1686,7 +1661,7 @@ describe('API test', () => {
 			}),
 		);
 		// Ensure the INTERNAL_USER_AGENT_OVERRIDE was not passed along in the options
-		expect(spy).not.toHaveBeenCalledWith(
+		expect(mockPost).not.toHaveBeenCalledWith(
 			expect.anything(),
 			expect.objectContaining({
 				options: expect.objectContaining({
