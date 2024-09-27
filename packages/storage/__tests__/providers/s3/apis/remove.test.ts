@@ -4,7 +4,7 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { deleteObject } from '../../../../src/providers/s3/utils/client/s3data';
+import { createDeleteObjectClient } from '../../../../src/foundation/factories/serviceClients';
 import { remove } from '../../../../src/providers/s3/apis';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
 import {
@@ -15,7 +15,7 @@ import {
 } from '../../../../src/providers/s3/types';
 import './testUtils';
 
-jest.mock('../../../../src/providers/s3/utils/client/s3data');
+jest.mock('../../../../src/foundation/factories/serviceClients');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };
@@ -27,7 +27,8 @@ jest.mock('@aws-amplify/core', () => ({
 		},
 	},
 }));
-const mockDeleteObject = deleteObject as jest.Mock;
+const mockDeleteObject = jest.fn();
+const mockCreateDeleteObjectClient = jest.mocked(createDeleteObjectClient);
 const mockFetchAuthSession = Amplify.Auth.fetchAuthSession as jest.Mock;
 const mockGetConfig = jest.mocked(Amplify.getConfig);
 const inputKey = 'key';
@@ -72,6 +73,7 @@ describe('remove API', () => {
 						Metadata: { key: 'value' },
 					};
 				});
+				mockCreateDeleteObjectClient.mockReturnValueOnce(mockDeleteObject);
 			});
 			afterEach(() => {
 				jest.clearAllMocks();
@@ -106,8 +108,8 @@ describe('remove API', () => {
 						options,
 					});
 					expect(key).toEqual(inputKey);
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+					expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+					await expect(mockDeleteObject).toBeLastCalledWithConfigAndInput(
 						deleteObjectClientConfig,
 						{
 							Bucket: bucket,
@@ -127,8 +129,8 @@ describe('remove API', () => {
 							bucket: { bucketName: mockBucketName, region: mockRegion },
 						},
 					});
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+					expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+					await expect(mockDeleteObject).toBeLastCalledWithConfigAndInput(
 						{
 							credentials,
 							region: mockRegion,
@@ -147,8 +149,8 @@ describe('remove API', () => {
 							bucket: 'default-bucket',
 						},
 					});
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+					expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+					await expect(mockDeleteObject).toBeLastCalledWithConfigAndInput(
 						{
 							credentials,
 							region,
@@ -172,6 +174,7 @@ describe('remove API', () => {
 						Metadata: { key: 'value' },
 					};
 				});
+				mockCreateDeleteObjectClient.mockReturnValueOnce(mockDeleteObject);
 			});
 			afterEach(() => {
 				jest.clearAllMocks();
@@ -193,8 +196,8 @@ describe('remove API', () => {
 				it(`should remove object for the given path`, async () => {
 					const { path } = await removeWrapper({ path: inputPath });
 					expect(path).toEqual(resolvedPath);
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+					expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+					await expect(mockDeleteObject).toBeLastCalledWithConfigAndInput(
 						deleteObjectClientConfig,
 						{
 							Bucket: bucket,
@@ -214,8 +217,8 @@ describe('remove API', () => {
 							bucket: { bucketName: mockBucketName, region: mockRegion },
 						},
 					});
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+					expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+					await expect(mockDeleteObject).toBeLastCalledWithConfigAndInput(
 						{
 							credentials,
 							region: mockRegion,
@@ -234,8 +237,8 @@ describe('remove API', () => {
 							bucket: 'default-bucket',
 						},
 					});
-					expect(deleteObject).toHaveBeenCalledTimes(1);
-					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+					expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+					await expect(mockDeleteObject).toBeLastCalledWithConfigAndInput(
 						{
 							credentials,
 							region,
@@ -262,13 +265,15 @@ describe('remove API', () => {
 					name: 'NotFound',
 				}),
 			);
+			mockCreateDeleteObjectClient.mockReturnValueOnce(mockDeleteObject);
+
 			expect.assertions(3);
 			const key = 'wrongKey';
 			try {
 				await remove({ key });
 			} catch (error: any) {
-				expect(deleteObject).toHaveBeenCalledTimes(1);
-				await expect(deleteObject).toBeLastCalledWithConfigAndInput(
+				expect(mockDeleteObject).toHaveBeenCalledTimes(1);
+				await expect(mockDeleteObject).toBeLastCalledWithConfigAndInput(
 					deleteObjectClientConfig,
 					{
 						Bucket: bucket,

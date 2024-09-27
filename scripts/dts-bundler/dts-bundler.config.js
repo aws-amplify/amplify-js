@@ -25,7 +25,6 @@ const corePackageSrcClientsPath = join(
 	'src',
 	'awsClients',
 );
-
 const storagePackageSrcClientsPath = join(
 	__dirname,
 	'..',
@@ -33,9 +32,11 @@ const storagePackageSrcClientsPath = join(
 	'packages',
 	'storage',
 	'src',
-	'providers',
-	's3',
-	'utils',
+	'foundation',
+	'factories',
+	'serviceClients',
+	's3data',
+	'types',
 );
 const authPackageSrcClientsPath = join(
 	__dirname,
@@ -74,7 +75,7 @@ const config = {
 		},
 		{
 			filePath: './s3.d.ts',
-			outFile: join(storagePackageSrcClientsPath, 'client', 's3data', 'types.ts'),
+			outFile: join(storagePackageSrcClientsPath, 'sdk.ts'),
 			libraries: {
 				inlinedLibraries: ['@aws-sdk/client-s3'],
 			},
