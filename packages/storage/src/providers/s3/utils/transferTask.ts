@@ -77,7 +77,7 @@ export const createUploadTask = <Result>({
 	onCancel,
 	onResume,
 	onPause,
-	isMultipartUpload = false,
+	isMultipartUpload,
 }: CreateUploadTaskOptions<Result>): UploadTask<Result> => {
 	const cancellableTask = createCancellableTask<Result>({
 		job,
@@ -111,7 +111,6 @@ export const createUploadTask = <Result>({
 			uploadTask.state = 'IN_PROGRESS';
 			onResume?.();
 		},
-		isResumable: isMultipartUpload,
 	});
 
 	return uploadTask;
