@@ -40,6 +40,9 @@
 			"s3": [
 				"./dist/esm/providers/s3/index.d.ts"
 			],
+			"internals": [
+				"./dist/esm/internals/index.d.ts"
+			],
 			"server": [
 				"./dist/esm/server.d.ts"
 			],
@@ -64,6 +67,7 @@
 	"files": [
 		"dist/cjs",
 		"dist/esm",
+		"internals",
 		"src",
 		"server",
 		"s3"
@@ -82,6 +86,11 @@
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
 			"react-native": "./src/index.ts"
+		},
+		"./internals": {
+			"types": "./dist/esm/internals/index.d.ts",
+			"import": "./dist/esm/internals/index.mjs",
+			"require": "./dist/cjs/internals/index.js"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
