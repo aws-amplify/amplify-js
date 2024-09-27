@@ -126,7 +126,7 @@ body:
       multiple: false
       options:
         - Amplify CLI
-        - Amplify Gen 2 (Preview)
+        - Amplify Gen 2
         - CDK
         - Other
   - type: textarea
