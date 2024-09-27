@@ -44,11 +44,11 @@ export enum AiAction {
 	CreateConversation = '1',
 	GetConversation = '2',
 	ListConversations = '3',
-	SendMessage = '4',
-	ListMessages = '5',
-	OnMessage = '6',
-	Generation = '7',
-	Delete = '8',
+	DeleteConversation = '4',
+	SendMessage = '5',
+	ListMessages = '6',
+	OnMessage = '7',
+	Generation = '8',
 }
 
 export enum AnalyticsAction {
