@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { getDataAccess } from '../apis/getDataAccess';
+import { _getDataAccess } from '../apis/_getDataAccess';
 import {
 	CredentialsProvider,
 	GetLocationCredentials,
 	GetLocationCredentialsInput,
-} from '../types';
+} from '../types/credentials';
 
 interface CreateLocationCredentialsHandlerInput {
 	accountId: string;
@@ -29,7 +29,7 @@ export const createLocationCredentialsHandler = (
 	return (input: GetLocationCredentialsInput) => {
 		const { scope, permission } = input;
 
-		return getDataAccess({
+		return _getDataAccess({
 			accountId,
 			credentialsProvider,
 			permission,

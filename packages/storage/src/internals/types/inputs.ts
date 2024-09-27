@@ -1,24 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	CredentialsProvider,
-	ListLocationsInput,
-	ListLocationsOutput,
-	LocationCredentials,
-	Permission,
-	PrefixType,
-	Privilege,
-} from '../types';
+import { CredentialsProvider, ListLocationsInput } from './credentials';
+import { Permission, PrefixType, Privilege } from './common';
 
+/**
+ * @internal
+ */
 export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
 	region: string;
 }
 
-export type ListCallerAccessGrantsOutput = ListLocationsOutput;
-
+/**
+ * @internal
+ */
 export interface GetDataAccessInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
@@ -29,5 +26,3 @@ export interface GetDataAccessInput {
 	region: string;
 	scope: string;
 }
-
-export type GetDataAccessOutput = LocationCredentials;

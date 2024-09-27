@@ -6,17 +6,18 @@ import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-clie
 
 import { logger } from '../../utils';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../providers/s3/utils/client/s3control';
-import { LocationAccess, LocationType } from '../types';
 import { StorageError } from '../../errors/StorageError';
 import { getStorageUserAgentValue } from '../../providers/s3/utils/userAgent';
+import { LocationType } from '../types/common';
+import { LocationAccess } from '../types/credentials';
+import { ListCallerAccessGrantsInput } from '../types/inputs';
+import { ListCallerAccessGrantsOutput } from '../types/outputs';
+import { MAX_PAGE_SIZE } from '../utils/constants';
 
-import {
-	ListCallerAccessGrantsInput,
-	ListCallerAccessGrantsOutput,
-} from './types';
-import { MAX_PAGE_SIZE } from './constants';
-
-export const listCallerAccessGrants = async (
+/**
+ * @internal
+ */
+export const _listCallerAccessGrants = async (
 	input: ListCallerAccessGrantsInput,
 ): Promise<ListCallerAccessGrantsOutput> => {
 	const { credentialsProvider, accountId, region, nextToken, pageSize } = input;

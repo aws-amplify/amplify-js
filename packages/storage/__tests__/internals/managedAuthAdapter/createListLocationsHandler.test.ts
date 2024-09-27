@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createListLocationsHandler } from '../../../src/storageBrowser/managedAuthConfigAdapter/createListLocationsHandler';
-import { listCallerAccessGrants } from '../../../src/storageBrowser/apis/listCallerAccessGrants';
+import { createListLocationsHandler } from '../../../src/internals/managedAuthConfigAdapter/createListLocationsHandler';
+import { _listCallerAccessGrants } from '../../../src/internals/apis/_listCallerAccessGrants';
 
-jest.mock('../../../src/storageBrowser/apis/listCallerAccessGrants');
+jest.mock('../../../src/internals/apis/_listCallerAccessGrants');
 
-jest.mocked(listCallerAccessGrants).mockResolvedValue({
+jest.mocked(_listCallerAccessGrants).mockResolvedValue({
 	locations: [],
 });
 
@@ -23,7 +23,7 @@ describe('createListLocationsHandler', () => {
 			credentialsProvider: mockCredentialsProvider,
 		});
 		await handler({ nextToken: mockNextToken, pageSize: mockPageSize });
-		expect(listCallerAccessGrants).toHaveBeenCalledWith({
+		expect(_listCallerAccessGrants).toHaveBeenCalledWith({
 			accountId: mockAccountId,
 			region: mockRegion,
 			credentialsProvider: mockCredentialsProvider,

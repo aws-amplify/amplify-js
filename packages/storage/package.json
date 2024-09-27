@@ -48,10 +48,7 @@
 			],
 			"s3/server": [
 				"./dist/esm/providers/s3/server.d.ts"
-			],
-			"storage-browser": [
-        "./dist/esm/storageBrowser/index.d.ts"
-      ]
+			]
 		}
 	},
 	"repository": {
@@ -107,11 +104,6 @@
 			"types": "./dist/esm/providers/s3/server.d.ts",
 			"import": "./dist/esm/providers/s3/server.mjs",
 			"require": "./dist/cjs/providers/s3/server.js"
-		},
-		"./storage-browser": {
-			"types": "./dist/esm/storageBrowser/index.d.ts",
-			"import": "./dist/esm/storageBrowser/index.mjs",
-			"require": "./dist/cjs/storageBrowser/index.js"
 		},
 		"./package.json": "./package.json"
 	},

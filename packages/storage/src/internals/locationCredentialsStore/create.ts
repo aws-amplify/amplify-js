@@ -5,7 +5,7 @@ import {
 	CreateLocationCredentialsStoreInput,
 	CredentialsLocation,
 	LocationCredentialsStore,
-} from '../types';
+} from '../types/credentials';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { LocationCredentialsProvider } from '../../providers/s3/types/options';
