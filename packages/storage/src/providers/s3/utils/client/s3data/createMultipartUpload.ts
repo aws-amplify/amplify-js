@@ -15,7 +15,6 @@ import {
 	buildStorageServiceError,
 	map,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
@@ -27,7 +26,7 @@ import type {
 	CreateMultipartUploadCommandOutput,
 } from './types';
 import type { PutObjectInput } from './putObject';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type CreateMultipartUploadInput = Extract<
 	CreateMultipartUploadCommandInput,

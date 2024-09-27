@@ -5,17 +5,13 @@ import {
 	getRetryDecider as getDefaultRetryDecider,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { retryDecider } from '../../../../../../../src/providers/s3/utils/client/utils';
-import { parseXmlError } from '../../../../../../../src/providers/s3/utils/client/utils/parsePayload';
+import { createRetryDecider } from '../../../../../../../src/providers/s3/utils/client/utils';
 
-jest.mock(
-	'../../../../../../../src/providers/s3/utils/client/utils/parsePayload',
-);
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 
-const mockErrorParser = jest.mocked(parseXmlError);
+const mockErrorParser = jest.fn();
 
-describe('retryDecider', () => {
+describe('createRetryDecider', () => {
 	const mockHttpResponse: HttpResponse = {
 		statusCode: 200,
 		headers: {},
@@ -34,6 +30,7 @@ describe('retryDecider', () => {
 
 	it('should invoke the default retry decider', async () => {
 		expect.assertions(3);
+		const retryDecider = createRetryDecider(mockErrorParser);
 		const { retryable, isCredentialsExpiredError } = await retryDecider(
 			mockHttpResponse,
 			undefined,
@@ -56,6 +53,7 @@ describe('retryDecider', () => {
 					$metadata: {},
 				};
 				mockErrorParser.mockResolvedValue(parsedError);
+				const retryDecider = createRetryDecider(mockErrorParser);
 				const { retryable, isCredentialsExpiredError } = await retryDecider(
 					{ ...mockHttpResponse, statusCode: 400 },
 					undefined,
@@ -74,6 +72,7 @@ describe('retryDecider', () => {
 				$metadata: {},
 			};
 			mockErrorParser.mockResolvedValue(parsedError);
+			const retryDecider = createRetryDecider(mockErrorParser);
 			const { retryable, isCredentialsExpiredError } = await retryDecider(
 				{ ...mockHttpResponse, statusCode: 400 },
 				undefined,
@@ -91,6 +90,7 @@ describe('retryDecider', () => {
 				$metadata: {},
 			};
 			mockErrorParser.mockResolvedValue(parsedError);
+			const retryDecider = createRetryDecider(mockErrorParser);
 			const { retryable, isCredentialsExpiredError } = await retryDecider(
 				{ ...mockHttpResponse, statusCode: 400 },
 				undefined,

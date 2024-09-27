@@ -20,8 +20,6 @@ import {
 	buildStorageServiceError,
 	map,
 	parseXmlBody,
-	parseXmlError,
-	retryDecider,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
@@ -33,7 +31,7 @@ import type {
 	CompletedMultipartUpload,
 	CompletedPart,
 } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError, retryDecider } from './base';
 
 const INVALID_PARAMETER_ERROR_MSG =
 	'Invalid parameter for ComplteMultipartUpload API';
