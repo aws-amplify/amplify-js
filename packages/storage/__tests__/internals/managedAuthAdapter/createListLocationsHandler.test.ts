@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createListLocationsHandler } from '../../../src/internals/managedAuthConfigAdapter/createListLocationsHandler';
-import { _listCallerAccessGrants } from '../../../src/internals/apis/_listCallerAccessGrants';
+import { listCallerAccessGrants } from '../../../src/internals/apis/listCallerAccessGrants';
 
-jest.mock('../../../src/internals/apis/_listCallerAccessGrants');
+jest.mock('../../../src/internals/apis/listCallerAccessGrants');
 
-jest.mocked(_listCallerAccessGrants).mockResolvedValue({
+jest.mocked(listCallerAccessGrants).mockResolvedValue({
 	locations: [],
 });
 
@@ -23,7 +23,7 @@ describe('createListLocationsHandler', () => {
 			credentialsProvider: mockCredentialsProvider,
 		});
 		await handler({ nextToken: mockNextToken, pageSize: mockPageSize });
-		expect(_listCallerAccessGrants).toHaveBeenCalledWith({
+		expect(listCallerAccessGrants).toHaveBeenCalledWith({
 			accountId: mockAccountId,
 			region: mockRegion,
 			credentialsProvider: mockCredentialsProvider,

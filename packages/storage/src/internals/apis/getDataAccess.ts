@@ -18,7 +18,7 @@ import { DEFAULT_CRED_TTL } from '../utils/constants';
 /**
  * @internal
  */
-export const _getDataAccess = async (
+export const getDataAccess = async (
 	input: GetDataAccessInput,
 ): Promise<GetDataAccessOutput> => {
 	const targetType = input.scope.endsWith('*') ? undefined : 'Object';

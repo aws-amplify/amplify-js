@@ -3,7 +3,7 @@
 
 import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { _getDataAccess } from '../../../src/internals/apis/_getDataAccess';
+import { getDataAccess } from '../../../src/internals/apis/getDataAccess';
 import { getDataAccess as getDataAccessClient } from '../../../src/providers/s3/utils/client/s3control';
 import { GetDataAccessInput } from '../../../src/internals/types/inputs';
 
@@ -57,7 +57,7 @@ describe('getDataAccess', () => {
 
 	it('should invoke the getDataAccess client correctly', async () => {
 		expect.assertions(6);
-		const result = await _getDataAccess(sharedGetDataAccessParams);
+		const result = await getDataAccess(sharedGetDataAccessParams);
 
 		expect(getDataAccessClientMock).toHaveBeenCalledWith(
 			expect.objectContaining({
@@ -96,7 +96,7 @@ describe('getDataAccess', () => {
 			$metadata: {},
 		});
 
-		expect(_getDataAccess(sharedGetDataAccessParams)).rejects.toThrow(
+		expect(getDataAccess(sharedGetDataAccessParams)).rejects.toThrow(
 			'Service did not return valid temporary credentials.',
 		);
 	});
@@ -110,7 +110,7 @@ describe('getDataAccess', () => {
 			$metadata: {},
 		});
 
-		const result = await _getDataAccess({
+		const result = await getDataAccess({
 			...sharedGetDataAccessParams,
 			scope: MOCK_OBJECT_SCOPE,
 		});

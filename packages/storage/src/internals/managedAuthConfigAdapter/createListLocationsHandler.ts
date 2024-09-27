@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { CredentialsProvider, ListLocations } from '../types/credentials';
-import { _listCallerAccessGrants } from '../apis/_listCallerAccessGrants';
+import { listCallerAccessGrants } from '../apis/listCallerAccessGrants';
 
 interface CreateListLocationsHandlerInput {
 	accountId: string;
@@ -14,7 +14,7 @@ export const createListLocationsHandler = (
 	handlerInput: CreateListLocationsHandlerInput,
 ): ListLocations => {
 	return async function listLocations(input = {}) {
-		const result = await _listCallerAccessGrants({ ...input, ...handlerInput });
+		const result = await listCallerAccessGrants({ ...input, ...handlerInput });
 
 		return result;
 	};

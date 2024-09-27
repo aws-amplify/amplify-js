@@ -3,7 +3,7 @@
 
 import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { _listCallerAccessGrants } from '../../../src/internals/apis/_listCallerAccessGrants';
+import { listCallerAccessGrants } from '../../../src/internals/apis/listCallerAccessGrants';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../../src/providers/s3/utils/client/s3control';
 
 jest.mock('../../../src/providers/s3/utils/client/s3control');
@@ -34,7 +34,7 @@ describe('listCallerAccessGrants', () => {
 			CallerAccessGrantsList: [],
 			$metadata: {} as any,
 		});
-		await _listCallerAccessGrants({
+		await listCallerAccessGrants({
 			accountId: mockAccountId,
 			region: mockRegion,
 			credentialsProvider: mockCredentialsProvider,
@@ -72,7 +72,7 @@ describe('listCallerAccessGrants', () => {
 			CallerAccessGrantsList: [],
 			$metadata: {} as any,
 		});
-		await _listCallerAccessGrants({
+		await listCallerAccessGrants({
 			accountId: mockAccountId,
 			region: mockRegion,
 			credentialsProvider: mockCredentialsProvider,
@@ -106,7 +106,7 @@ describe('listCallerAccessGrants', () => {
 			],
 			$metadata: {} as any,
 		});
-		const { locations, nextToken } = await _listCallerAccessGrants({
+		const { locations, nextToken } = await listCallerAccessGrants({
 			accountId: mockAccountId,
 			region: mockRegion,
 			credentialsProvider: mockCredentialsProvider,

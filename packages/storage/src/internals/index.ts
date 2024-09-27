@@ -18,8 +18,8 @@ export {
 	ListCallerAccessGrantsOutput,
 } from './types/outputs';
 
-export { _getDataAccess } from './apis/_getDataAccess';
-export { _listCallerAccessGrants } from './apis/_listCallerAccessGrants';
+export { getDataAccess } from './apis/getDataAccess';
+export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
 
 /*
 CredentialsStore exports

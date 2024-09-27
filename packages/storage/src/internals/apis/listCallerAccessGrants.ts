@@ -17,7 +17,7 @@ import { MAX_PAGE_SIZE } from '../utils/constants';
 /**
  * @internal
  */
-export const _listCallerAccessGrants = async (
+export const listCallerAccessGrants = async (
 	input: ListCallerAccessGrantsInput,
 ): Promise<ListCallerAccessGrantsOutput> => {
 	const { credentialsProvider, accountId, region, nextToken, pageSize } = input;
