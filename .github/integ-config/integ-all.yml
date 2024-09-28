@@ -843,13 +843,13 @@ tests:
     sample_name: [storage-auth]
     spec: storage-client-server
     browser: [chrome] # firefox issues with secure cookies in cypress, manual testing works fine
-  - test_name: integ_react_storage_upload_objectlock_md5
+  - test_name: integ_react_storage_upload_objectlock_md5_gen2
     desc: 'Additional Storage test to supplement 4 datatype uploads with Object lock'
-    framework: react
+    framework: next
     category: storage
-    sample_name: [storageApp]
-    spec: storage-upload-objectlock-web
-    browser: [chrome]
+    sample_name: [storage-auth]
+    spec: storage-upload-objectlock-web-gen2
+    browser: *minimal_browser_list
 
   # INAPPMESSAGING
   - test_name: integ_in_app_messaging
