@@ -37,11 +37,6 @@ export type LocationCredentialsProvider = (
 	options?: CredentialsProviderOptions,
 ) => Promise<{ credentials: AWSTemporaryCredentials }>;
 
-/**
- * @internal
- */
-export type TemporaryCredentialsProvider = LocationCredentialsProvider;
-
 export interface BucketInfo {
 	bucketName: string;
 	region: string;
