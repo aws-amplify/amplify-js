@@ -105,6 +105,8 @@ const copyWithPath = async (
 		destination: finalCopyDestination,
 		bucket: destBucket,
 		s3Config,
+		notModifiedSince: input.source.notModifiedSince,
+		eTag: input.source.eTag,
 	});
 
 	return { path: finalCopyDestination };
@@ -162,6 +164,8 @@ export const copyWithKey = async (
 		destination: finalCopyDestination,
 		bucket: destBucket,
 		s3Config,
+		notModifiedSince: input.source.notModifiedSince,
+		eTag: input.source.eTag,
 	});
 
 	return {
@@ -174,11 +178,15 @@ const serviceCopy = async ({
 	destination,
 	bucket,
 	s3Config,
+	notModifiedSince,
+	eTag,
 }: {
 	source: string;
 	destination: string;
 	bucket: string;
 	s3Config: ResolvedS3Config;
+	notModifiedSince?: Date;
+	eTag?: string;
 }) => {
 	await copyObject(
 		{
@@ -190,6 +198,8 @@ const serviceCopy = async ({
 			CopySource: source,
 			Key: destination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
+			CopySourceIfMatch: eTag,
+			CopySourceIfUnmodifiedSince: notModifiedSince,
 		},
 	);
 };

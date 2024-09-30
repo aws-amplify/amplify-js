@@ -23,6 +23,8 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 		CacheControl: 'cacheControl',
 		ContentType: 'contentType',
 		ACL: 'acl',
+		CopySourceIfMatch: 'eTag',
+		CopySourceIfUnmodifiedSince: new Date(0),
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
@@ -34,6 +36,8 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 			'cache-control': 'cacheControl',
 			'content-type': 'contentType',
 			'x-amz-acl': 'acl',
+			'x-amz-copy-source-if-match': 'eTag',
+			'x-amz-copy-source-if-unmodified-since': '1970-01-01T00:00:00.000Z',
 		}),
 	}),
 	{
