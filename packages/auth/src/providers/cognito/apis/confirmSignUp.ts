@@ -12,8 +12,7 @@ import { ConfirmSignUpInput, ConfirmSignUpOutput } from '../types';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { ConfirmSignUpException } from '../types/errors';
-import { confirmSignUp as confirmSignUpClient } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { AutoSignInEventData } from '../types/models';
 import {
 	isAutoSignInStarted,
@@ -22,6 +21,8 @@ import {
 } from '../utils/signUpHelpers';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from '../utils/userContextData';
+import { createConfirmSignUpClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 /**
  * Confirms a new user account.
@@ -41,7 +42,7 @@ export async function confirmSignUp(
 
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { userPoolId, userPoolClientId } = authConfig;
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig;
 	const clientMetadata = options?.clientMetadata;
 	assertValidationError(
 		!!username,
@@ -58,9 +59,15 @@ export async function confirmSignUp(
 		userPoolClientId,
 	});
 
+	const confirmSignUpClient = createConfirmSignUpClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
 	await confirmSignUpClient(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(authConfig.userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignUp),
 		},
 		{

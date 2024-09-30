@@ -15,7 +15,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
-import { getRegionFromIdentityPoolId } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { assertIdTokenInAuthTokens } from '../utils/types';
 
 import { IdentityIdStore } from './types';

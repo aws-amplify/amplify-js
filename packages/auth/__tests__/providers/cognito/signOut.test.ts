@@ -11,26 +11,26 @@ import { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 
 import { signOut } from '../../../src/providers/cognito/apis/signOut';
 import { tokenOrchestrator } from '../../../src/providers/cognito/tokenProvider';
-import {
-	globalSignOut,
-	revokeToken,
-} from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/utils';
 import { DefaultOAuthStore } from '../../../src/providers/cognito/utils/signInWithRedirectStore';
 import { handleOAuthSignOut } from '../../../src/providers/cognito/utils/oauth';
 import { AuthTokenStore } from '../../../src/providers/cognito/tokenProvider/types';
+import {
+	createGlobalSignOutClient,
+	createRevokeTokenClient,
+} from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { getRegionFromUserPoolId } from '../../../src/foundation/parsers';
+import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../src/providers/cognito/tokenProvider');
-jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
-);
-jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/utils',
-);
 jest.mock('../../../src/providers/cognito/utils/oauth');
 jest.mock('../../../src/providers/cognito/utils/signInWithRedirectStore');
 jest.mock('../../../src/utils');
+jest.mock(
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
+);
+jest.mock('../../../src/foundation/parsers');
+jest.mock('../../../src/providers/cognito/factories');
 
 describe('signOut', () => {
 	// eslint-disable-next-line camelcase
@@ -54,15 +54,20 @@ describe('signOut', () => {
 	// assert mocks
 	const mockAmplify = Amplify as jest.Mocked<typeof Amplify>;
 	const mockClearCredentials = clearCredentials as jest.Mock;
-	const mockGetRegion = getRegion as jest.Mock;
-	const mockGlobalSignOut = globalSignOut as jest.Mock;
+	const mockGetRegionFromUserPoolId = jest.mocked(getRegionFromUserPoolId);
+	const mockGlobalSignOut = jest.fn();
+	const mockCreateGlobalSignOutClient = jest.mocked(createGlobalSignOutClient);
 	const mockHandleOAuthSignOut = handleOAuthSignOut as jest.Mock;
 	const mockHub = Hub as jest.Mocked<typeof Hub>;
-	const mockRevokeToken = revokeToken as jest.Mock;
+	const mockRevokeToken = jest.fn();
+	const mockedRevokeTokenClient = jest.mocked(createRevokeTokenClient);
 	const mockTokenOrchestrator = tokenOrchestrator as jest.Mocked<
 		typeof tokenOrchestrator
 	>;
 	const MockDefaultOAuthStore = DefaultOAuthStore as jest.Mock;
+	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
+		createCognitoUserPoolEndpointResolver,
+	);
 	// create mocks
 	const mockLoadTokens = jest.fn();
 	const mockAuthTokenStore = {
@@ -95,7 +100,7 @@ describe('signOut', () => {
 	});
 
 	beforeAll(() => {
-		mockGetRegion.mockReturnValue(region);
+		mockGetRegionFromUserPoolId.mockReturnValue(region);
 		MockDefaultOAuthStore.mockImplementation(
 			() => mockDefaultOAuthStoreInstance,
 		);
@@ -104,7 +109,9 @@ describe('signOut', () => {
 	beforeEach(() => {
 		mockAmplify.getConfig.mockReturnValue({ Auth: { Cognito: cognitoConfig } });
 		mockGlobalSignOut.mockResolvedValue({ $metadata: {} });
+		mockCreateGlobalSignOutClient.mockReturnValueOnce(mockGlobalSignOut);
 		mockRevokeToken.mockResolvedValue({});
+		mockedRevokeTokenClient.mockReturnValueOnce(mockRevokeToken);
 		mockTokenOrchestrator.getTokenStore.mockReturnValue(mockAuthTokenStore);
 		mockLoadTokens.mockResolvedValue(cognitoAuthTokens);
 	});
@@ -114,10 +121,11 @@ describe('signOut', () => {
 		mockGlobalSignOut.mockReset();
 		mockRevokeToken.mockReset();
 		mockClearCredentials.mockClear();
-		mockGetRegion.mockClear();
+		mockGetRegionFromUserPoolId.mockClear();
 		mockHub.dispatch.mockClear();
 		mockTokenOrchestrator.clearTokens.mockClear();
 		loggerDebugSpy.mockClear();
+		mockCreateCognitoUserPoolEndpointResolver.mockClear();
 	});
 
 	describe('Without OAuth configured', () => {
@@ -128,9 +136,34 @@ describe('signOut', () => {
 				{ region },
 				{ ClientId: cognitoConfig.userPoolClientId, Token: refreshToken },
 			);
-			expect(mockGetRegion).toHaveBeenCalledTimes(1);
+			expect(mockGetRegionFromUserPoolId).toHaveBeenCalledTimes(1);
 			expect(mockGlobalSignOut).not.toHaveBeenCalled();
 			expectSignOut().toComplete();
+		});
+
+		it('invokes createCognitoUserPoolEndpointResolver with the userPoolEndpoint for creating the revokeToken client', async () => {
+			const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+			const expectedEndpointResolver = jest.fn();
+			mockAmplify.getConfig.mockReturnValueOnce({
+				Auth: {
+					Cognito: {
+						...cognitoConfig,
+						userPoolEndpoint: expectedUserPoolEndpoint,
+					},
+				},
+			});
+			mockCreateCognitoUserPoolEndpointResolver.mockReturnValueOnce(
+				expectedEndpointResolver,
+			);
+
+			await signOut();
+
+			expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
+				endpointOverride: expectedUserPoolEndpoint,
+			});
+			expect(mockedRevokeTokenClient).toHaveBeenCalledWith({
+				endpointResolver: expectedEndpointResolver,
+			});
 		});
 
 		it('should perform client sign out on an irrevocable session', async () => {
@@ -143,7 +176,7 @@ describe('signOut', () => {
 
 			expect(mockRevokeToken).not.toHaveBeenCalled();
 			expect(mockGlobalSignOut).not.toHaveBeenCalled();
-			expect(mockGetRegion).not.toHaveBeenCalled();
+			expect(mockGetRegionFromUserPoolId).not.toHaveBeenCalled();
 			expectSignOut().toComplete();
 		});
 
@@ -154,9 +187,34 @@ describe('signOut', () => {
 				{ region: 'us-west-2' },
 				{ AccessToken: accessToken.toString() },
 			);
-			expect(mockGetRegion).toHaveBeenCalledTimes(1);
+			expect(mockGetRegionFromUserPoolId).toHaveBeenCalledTimes(1);
 			expect(mockRevokeToken).not.toHaveBeenCalled();
 			expectSignOut().toComplete();
+		});
+
+		it('invokes createCognitoUserPoolEndpointResolver with the userPoolEndpoint for creating the globalSignOut client', async () => {
+			const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+			const expectedEndpointResolver = jest.fn();
+			mockAmplify.getConfig.mockReturnValueOnce({
+				Auth: {
+					Cognito: {
+						...cognitoConfig,
+						userPoolEndpoint: expectedUserPoolEndpoint,
+					},
+				},
+			});
+			mockCreateCognitoUserPoolEndpointResolver.mockReturnValueOnce(
+				expectedEndpointResolver,
+			);
+
+			await signOut({ global: true });
+
+			expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
+				endpointOverride: expectedUserPoolEndpoint,
+			});
+			expect(mockCreateGlobalSignOutClient).toHaveBeenCalledWith({
+				endpointResolver: expectedEndpointResolver,
+			});
 		});
 
 		it('should still perform client sign out if token revoke fails', async () => {
@@ -167,7 +225,7 @@ describe('signOut', () => {
 			expect(loggerDebugSpy).toHaveBeenCalledWith(
 				expect.stringContaining('Client signOut error caught'),
 			);
-			expect(mockGetRegion).toHaveBeenCalledTimes(1);
+			expect(mockGetRegionFromUserPoolId).toHaveBeenCalledTimes(1);
 			expectSignOut().toComplete();
 		});
 
@@ -179,7 +237,7 @@ describe('signOut', () => {
 			expect(loggerDebugSpy).toHaveBeenCalledWith(
 				expect.stringContaining('Global signOut error caught'),
 			);
-			expect(mockGetRegion).toHaveBeenCalledTimes(1);
+			expect(mockGetRegionFromUserPoolId).toHaveBeenCalledTimes(1);
 			expectSignOut().toComplete();
 		});
 	});

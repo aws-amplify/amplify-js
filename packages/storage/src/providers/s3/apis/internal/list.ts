@@ -21,8 +21,8 @@ import {
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
 import {
-	ListAllOptionsWithPath,
-	ListPaginateOptionsWithPath,
+	ListAllWithPathOptions,
+	ListPaginateWithPathOptions,
 	ResolvedS3Config,
 } from '../../types/options';
 import {
@@ -267,7 +267,7 @@ const mapCommonPrefixesToExcludedSubpaths = (
 };
 
 const getDelimiter = (
-	options?: ListAllOptionsWithPath | ListPaginateOptionsWithPath,
+	options?: ListAllWithPathOptions | ListPaginateWithPathOptions,
 ): string | undefined => {
 	if (options?.subpathStrategy?.strategy === 'exclude') {
 		return options?.subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
