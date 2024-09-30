@@ -31,6 +31,7 @@
 		"publish:release": "yarn generate-metadata && lerna publish --conventional-commits --message 'chore(release): Publish [skip release]' --yes",
 		"publish:v5-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-5 --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:verdaccio": "lerna publish --canary --force-publish --no-push --dist-tag=unstable --preid=unstable --yes",
+		"publish:storage-browser/main": "lerna publish --canary --force-publish --dist-tag=storage-browser --preid=storage-browser --yes",
 		"generate-metadata": "git rev-parse --short HEAD > packages/core/metadata && git commit -am 'chore(release): Set core metadata [skip release]'",
 		"ts-coverage": "lerna run ts-coverage",
 		"prepare": "husky && ./scripts/set-preid-versions.sh"

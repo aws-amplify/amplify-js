@@ -5,8 +5,9 @@ import { StorageAccessLevel } from '@aws-amplify/core';
 
 import { ContentDisposition, ResolvedS3Config } from '../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../types';
-import { Part, createMultipartUpload } from '../../../utils/client';
+import { Part, createMultipartUpload } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
+import { calculateContentCRC32 } from '../../../utils/crc32';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 
 import {
@@ -14,6 +15,7 @@ import {
 	findCachedUploadParts,
 	getUploadsCacheKey,
 } from './uploadCache';
+import { getDataChunker } from './getDataChunker';
 
 interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
@@ -33,6 +35,7 @@ interface LoadOrCreateMultipartUploadOptions {
 interface LoadOrCreateMultipartUploadResult {
 	uploadId: string;
 	cachedParts: Part[];
+	finalCrc32?: string;
 }
 
 /**
@@ -62,6 +65,7 @@ export const loadOrCreateMultipartUpload = async ({
 				parts: Part[];
 				uploadId: string;
 				uploadCacheKey: string;
+				finalCrc32?: string;
 		  }
 		| undefined;
 	if (size === undefined) {
@@ -92,8 +96,11 @@ export const loadOrCreateMultipartUpload = async ({
 		return {
 			uploadId: cachedUpload.uploadId,
 			cachedParts: cachedUpload.parts,
+			finalCrc32: cachedUpload.finalCrc32,
 		};
 	} else {
+		const finalCrc32 = await getCombinedCrc32(data, size);
+
 		const { UploadId } = await createMultipartUpload(
 			{
 				...s3Config,
@@ -106,14 +113,17 @@ export const loadOrCreateMultipartUpload = async ({
 				ContentDisposition: constructContentDisposition(contentDisposition),
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
+				ChecksumAlgorithm: finalCrc32 ? 'CRC32' : undefined,
 			},
 		);
+
 		if (size === undefined) {
 			logger.debug('uploaded data size cannot be determined, skipping cache.');
 
 			return {
 				uploadId: UploadId!,
 				cachedParts: [],
+				finalCrc32,
 			};
 		}
 		const uploadCacheKey = getUploadsCacheKey({
@@ -128,12 +138,31 @@ export const loadOrCreateMultipartUpload = async ({
 			uploadId: UploadId!,
 			bucket,
 			key,
+			finalCrc32,
 			fileName: data instanceof File ? data.name : '',
 		});
 
 		return {
 			uploadId: UploadId!,
 			cachedParts: [],
+			finalCrc32,
 		};
 	}
+};
+
+const getCombinedCrc32 = async (
+	data: StorageUploadDataPayload,
+	size: number | undefined,
+) => {
+	const crc32List: ArrayBuffer[] = [];
+	const dataChunker = getDataChunker(data, size);
+	for (const { data: checkData } of dataChunker) {
+		const checksumArrayBuffer = (await calculateContentCRC32(checkData))
+			?.checksumArrayBuffer;
+		if (checksumArrayBuffer === undefined) return undefined;
+
+		crc32List.push(checksumArrayBuffer);
+	}
+
+	return `${(await calculateContentCRC32(new Blob(crc32List)))?.checksum}-${crc32List.length}`;
 };

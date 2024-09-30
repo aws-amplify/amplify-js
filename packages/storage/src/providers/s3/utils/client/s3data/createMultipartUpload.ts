@@ -10,22 +10,23 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
+import {
+	assignStringVariables,
+	buildStorageServiceError,
+	map,
+	parseXmlBody,
+	s3TransferHandler,
+	serializeObjectConfigsToHeaders,
+	serializePathnameObjectKey,
+	validateS3RequiredParameter,
+} from '../utils';
+
 import type {
 	CreateMultipartUploadCommandInput,
 	CreateMultipartUploadCommandOutput,
 } from './types';
 import type { PutObjectInput } from './putObject';
-import { defaultConfig } from './base';
-import {
-	buildStorageServiceError,
-	map,
-	parseXmlBody,
-	parseXmlError,
-	s3TransferHandler,
-	serializeObjectConfigsToHeaders,
-	serializePathnameObjectKey,
-	validateS3RequiredParameter,
-} from './utils';
+import { defaultConfig, parseXmlError } from './base';
 
 export type CreateMultipartUploadInput = Extract<
 	CreateMultipartUploadCommandInput,
@@ -41,7 +42,12 @@ const createMultipartUploadSerializer = async (
 	input: CreateMultipartUploadInput,
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
-	const headers = await serializeObjectConfigsToHeaders(input);
+	const headers = {
+		...(await serializeObjectConfigsToHeaders(input)),
+		...assignStringVariables({
+			'x-amz-checksum-algorithm': input.ChecksumAlgorithm,
+		}),
+	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);

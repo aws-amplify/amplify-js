@@ -6,7 +6,7 @@ import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
 import { StorageError } from '../../../../src/errors/StorageError';
 import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
-import { copyObject } from '../../../../src/providers/s3/utils/client';
+import { copyObject } from '../../../../src/providers/s3/utils/client/s3data';
 import { copy } from '../../../../src/providers/s3/apis';
 import {
 	CopyInput,
@@ -17,7 +17,7 @@ import {
 import './testUtils';
 import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
-jest.mock('../../../../src/providers/s3/utils/client');
+jest.mock('../../../../src/providers/s3/utils/client/s3data');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };

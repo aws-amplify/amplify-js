@@ -18,7 +18,7 @@ import {
 } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
-import { copyObject } from '../../utils/client';
+import { copyObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 
@@ -59,15 +59,27 @@ const copyWithPath = async (
 
 	storageBucketAssertion(source.bucket, destination.bucket);
 
-	const { bucket: sourceBucket, identityId } = await resolveS3ConfigAndInput(
-		amplify,
-		input.source,
-	);
+	const { bucket: sourceBucket } = await resolveS3ConfigAndInput(amplify, {
+		path: input.source.path,
+		options: {
+			locationCredentialsProvider: input.options?.locationCredentialsProvider,
+			...input.source,
+		},
+	});
 
-	const { s3Config, bucket: destBucket } = await resolveS3ConfigAndInput(
-		amplify,
-		input.destination,
-	); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
+	// The bucket, region, credentials of s3 client are resolved from destination.
+	// Whereas the source bucket and path are a input parameter of S3 copy operation.
+	const {
+		s3Config,
+		bucket: destBucket,
+		identityId,
+	} = await resolveS3ConfigAndInput(amplify, {
+		path: input.destination.path,
+		options: {
+			locationCredentialsProvider: input.options?.locationCredentialsProvider,
+			...input.destination,
+		},
+	}); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	assertValidationError(!!source.path, StorageValidationErrorCode.NoSourcePath);
 	assertValidationError(
@@ -114,13 +126,31 @@ export const copyWithKey = async (
 	);
 
 	const { bucket: sourceBucket, keyPrefix: sourceKeyPrefix } =
-		await resolveS3ConfigAndInput(amplify, source);
+		await resolveS3ConfigAndInput(amplify, {
+			...input,
+			options: {
+				// @ts-expect-error: 'options' does not exist on type 'CopyInput'. In case of JS users set the location
+				// credentials provider option, resolveS3ConfigAndInput will throw validation error.
+				locationCredentialsProvider: input.options?.locationCredentialsProvider,
+				...input.source,
+			},
+		});
 
+	// The bucket, region, credentials of s3 client are resolved from destination.
+	// Whereas the source bucket and path are a input parameter of S3 copy operation.
 	const {
 		s3Config,
 		bucket: destBucket,
 		keyPrefix: destinationKeyPrefix,
-	} = await resolveS3ConfigAndInput(amplify, destination); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
+	} = await resolveS3ConfigAndInput(amplify, {
+		...input,
+		options: {
+			// @ts-expect-error: 'options' does not exist on type 'CopyInput'. In case of JS users set the location
+			// credentials provider option, resolveS3ConfigAndInput will throw validation error.
+			locationCredentialsProvider: input.options?.locationCredentialsProvider,
+			...input.destination,
+		},
+	}); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
 
 	// TODO(ashwinkumar6) V6-logger: warn `You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
 	const finalCopySource = `${sourceBucket}/${sourceKeyPrefix}${source.key}`;

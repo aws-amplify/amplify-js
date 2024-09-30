@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { completeMultipartUpload } from '../../../../../../../src/providers/s3/utils/client';
+import { completeMultipartUpload } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -26,10 +26,12 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 				{
 					ETag: 'etag1',
 					PartNumber: 1,
+					ChecksumCRC32: 'test-checksum-1',
 				},
 				{
 					ETag: 'etag2',
 					PartNumber: 2,
+					ChecksumCRC32: 'test-checksum-2',
 				},
 			],
 		},
@@ -49,10 +51,12 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 			'<Part>' +
 			'<ETag>etag1</ETag>' +
 			'<PartNumber>1</PartNumber>' +
+			'<ChecksumCRC32>test-checksum-1</ChecksumCRC32>' +
 			'</Part>' +
 			'<Part>' +
 			'<ETag>etag2</ETag>' +
 			'<PartNumber>2</PartNumber>' +
+			'<ChecksumCRC32>test-checksum-2</ChecksumCRC32>' +
 			'</Part>' +
 			'</CompleteMultipartUpload>',
 	}),
@@ -109,7 +113,12 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 	'error case',
 	'completeMultipartUpload with 200 status',
 	completeMultipartUpload,
-	{ ...defaultConfig, retryDecider: async () => false }, // disable retry
+	{
+		...defaultConfig,
+		retryDecider: async () => ({
+			retryable: false,
+		}),
+	}, // disable retry
 	completeMultipartUploadHappyCase[4],
 	completeMultipartUploadHappyCase[5],
 	{

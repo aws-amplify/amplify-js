@@ -10,77 +10,77 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
-import { defaultConfig } from './base';
 import {
-	assignStringVariables,
 	buildStorageServiceError,
-	parseXmlBody,
-	parseXmlError,
+	deserializeMetadata,
+	deserializeNumber,
+	deserializeTimestamp,
+	map,
 	s3TransferHandler,
-	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
 
-export type CopyObjectInput = Pick<
-	CopyObjectCommandInput,
-	| 'Bucket'
-	| 'CopySource'
-	| 'Key'
-	| 'MetadataDirective'
-	| 'CacheControl'
+import { defaultConfig, parseXmlError } from './base';
+import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
+
+export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
+
+export type HeadObjectOutput = Pick<
+	HeadObjectCommandOutput,
+	| 'ContentLength'
 	| 'ContentType'
-	| 'ContentDisposition'
-	| 'ContentLanguage'
-	| 'Expires'
-	| 'ACL'
-	| 'Tagging'
+	| 'ETag'
+	| 'LastModified'
 	| 'Metadata'
+	| 'VersionId'
+	| '$metadata'
 >;
 
-export type CopyObjectOutput = CopyObjectCommandOutput;
-
-const copyObjectSerializer = async (
-	input: CopyObjectInput,
+const headObjectSerializer = async (
+	input: HeadObjectInput,
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
-	const headers = {
-		...(await serializeObjectConfigsToHeaders(input)),
-		...assignStringVariables({
-			'x-amz-copy-source': input.CopySource,
-			'x-amz-metadata-directive': input.MetadataDirective,
-		}),
-	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 
 	return {
-		method: 'PUT',
-		headers,
+		method: 'HEAD',
+		headers: {},
 		url,
 	};
 };
 
-const copyObjectDeserializer = async (
+const headObjectDeserializer = async (
 	response: HttpResponse,
-): Promise<CopyObjectOutput> => {
+): Promise<HeadObjectOutput> => {
 	if (response.statusCode >= 300) {
+		// error is always set when statusCode >= 300
 		const error = (await parseXmlError(response)) as Error;
 		throw buildStorageServiceError(error, response.statusCode);
 	} else {
-		await parseXmlBody(response);
+		const contents = {
+			...map(response.headers, {
+				ContentLength: ['content-length', deserializeNumber],
+				ContentType: 'content-type',
+				ETag: 'etag',
+				LastModified: ['last-modified', deserializeTimestamp],
+				VersionId: 'x-amz-version-id',
+			}),
+			Metadata: deserializeMetadata(response.headers),
+		};
 
 		return {
 			$metadata: parseMetadata(response),
+			...contents,
 		};
 	}
 };
 
-export const copyObject = composeServiceApi(
+export const headObject = composeServiceApi(
 	s3TransferHandler,
-	copyObjectSerializer,
-	copyObjectDeserializer,
+	headObjectSerializer,
+	headObjectDeserializer,
 	{ ...defaultConfig, responseType: 'text' },
 );

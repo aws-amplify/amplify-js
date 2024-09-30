@@ -9,7 +9,7 @@ import {
 
 import { UPLOADS_STORAGE_KEY } from '../../../utils/constants';
 import { ResolvedS3Config } from '../../../types/options';
-import { Part, listParts } from '../../../utils/client';
+import { Part, listParts } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
 
 const ONE_HOUR = 1000 * 60 * 60;
@@ -33,6 +33,7 @@ export const findCachedUploadParts = async ({
 }: FindCachedUploadPartsOptions): Promise<{
 	parts: Part[];
 	uploadId: string;
+	finalCrc32?: string;
 } | null> => {
 	const cachedUploads = await listCachedUploadTasks(defaultStorage);
 	if (
@@ -60,6 +61,7 @@ export const findCachedUploadParts = async ({
 		return {
 			parts: Parts,
 			uploadId: cachedUpload.uploadId,
+			finalCrc32: cachedUpload.finalCrc32,
 		};
 	} catch (e) {
 		logger.debug('failed to list cached parts, removing cached upload.');
@@ -74,6 +76,7 @@ interface FileMetadata {
 	fileName: string;
 	key: string;
 	uploadId: string;
+	finalCrc32?: string;
 	// Unix timestamp in ms
 	lastTouched: number;
 }

@@ -45,7 +45,10 @@
 			],
 			"s3/server": [
 				"./dist/esm/providers/s3/server.d.ts"
-			]
+			],
+			"storage-browser": [
+        "./dist/esm/storageBrowser/index.d.ts"
+      ]
 		}
 	},
 	"repository": {
@@ -69,6 +72,7 @@
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/md5-js": "2.0.7",
 		"buffer": "4.9.2",
+		"crc-32": "1.2.2",
 		"fast-xml-parser": "^4.4.1",
 		"tslib": "^2.5.0"
 	},
@@ -95,6 +99,11 @@
 			"import": "./dist/esm/providers/s3/server.mjs",
 			"require": "./dist/cjs/providers/s3/server.js"
 		},
+		"./storage-browser": {
+			"types": "./dist/esm/storageBrowser/index.d.ts",
+			"import": "./dist/esm/storageBrowser/index.mjs",
+			"require": "./dist/cjs/storageBrowser/index.js"
+		},
 		"./package.json": "./package.json"
 	},
 	"peerDependencies": {
@@ -102,7 +111,8 @@
 	},
 	"devDependencies": {
 		"@aws-amplify/core": "6.4.2",
-		"@aws-amplify/react-native": "1.1.5",
+    "@types/node": "20.14.12",
+    "@aws-amplify/react-native": "1.1.5",
 		"typescript": "5.0.2"
 	}
 }

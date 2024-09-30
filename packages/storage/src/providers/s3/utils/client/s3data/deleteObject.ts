@@ -10,20 +10,20 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type {
-	DeleteObjectCommandInput,
-	DeleteObjectCommandOutput,
-} from './types';
-import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
 	deserializeBoolean,
 	map,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import type {
+	DeleteObjectCommandInput,
+	DeleteObjectCommandOutput,
+} from './types';
+import { defaultConfig, parseXmlError } from './base';
 
 export type DeleteObjectInput = Pick<
 	DeleteObjectCommandInput,
