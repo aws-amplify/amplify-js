@@ -6,8 +6,8 @@
 import {
 	CredentialsLocation,
 	GetLocationCredentials,
-	Permission,
-} from '../types';
+} from '../types/credentials';
+import { Permission } from '../types/common';
 import { AWSTemporaryCredentials } from '../../providers/s3/types/options';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';

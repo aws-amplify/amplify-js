@@ -1,20 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createLocationCredentialsStore } from '../../../src/storageBrowser/locationCredentialsStore/create';
+import { createLocationCredentialsStore } from '../../../src/internals/locationCredentialsStore/create';
 import {
 	createStore,
 	getValue,
 	removeStore,
-} from '../../../src/storageBrowser/locationCredentialsStore/registry';
-import { LocationCredentialsStore } from '../../../src/storageBrowser/types';
+} from '../../../src/internals/locationCredentialsStore/registry';
+import { LocationCredentialsStore } from '../../../src/internals/types/credentials';
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../src/errors/types/validation';
 import { AWSTemporaryCredentials } from '../../../src/providers/s3/types/options';
 
-jest.mock('../../../src/storageBrowser/locationCredentialsStore/registry');
+jest.mock('../../../src/internals/locationCredentialsStore/registry');
 
 const mockedCredentials = 'MOCK_CREDS' as any as AWSTemporaryCredentials;
 

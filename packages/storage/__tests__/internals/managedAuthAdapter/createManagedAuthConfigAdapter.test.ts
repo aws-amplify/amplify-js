@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createManagedAuthConfigAdapter } from '../../../src/storageBrowser/managedAuthConfigAdapter';
-import { createListLocationsHandler } from '../../../src/storageBrowser/managedAuthConfigAdapter/createListLocationsHandler';
-import { createLocationCredentialsHandler } from '../../../src/storageBrowser/managedAuthConfigAdapter/createLocationCredentialsHandler';
+import { createManagedAuthConfigAdapter } from '../../../src/internals/managedAuthConfigAdapter';
+import { createListLocationsHandler } from '../../../src/internals/managedAuthConfigAdapter/createListLocationsHandler';
+import { createLocationCredentialsHandler } from '../../../src/internals/managedAuthConfigAdapter/createLocationCredentialsHandler';
 
 jest.mock(
-	'../../../src/storageBrowser/managedAuthConfigAdapter/createListLocationsHandler',
+	'../../../src/internals/managedAuthConfigAdapter/createListLocationsHandler',
 );
 jest.mock(
-	'../../../src/storageBrowser/managedAuthConfigAdapter/createLocationCredentialsHandler',
+	'../../../src/internals/managedAuthConfigAdapter/createLocationCredentialsHandler',
 );
 
 describe('createManagedAuthConfigAdapter', () => {

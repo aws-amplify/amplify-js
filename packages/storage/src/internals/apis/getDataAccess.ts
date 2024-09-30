@@ -10,11 +10,14 @@ import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-clie
 import { getStorageUserAgentValue } from '../../providers/s3/utils/userAgent';
 import { getDataAccess as getDataAccessClient } from '../../providers/s3/utils/client/s3control';
 import { StorageError } from '../../errors/StorageError';
+import { GetDataAccessInput } from '../types/inputs';
+import { GetDataAccessOutput } from '../types/outputs';
 import { logger } from '../../utils';
+import { DEFAULT_CRED_TTL } from '../utils/constants';
 
-import { GetDataAccessInput, GetDataAccessOutput } from './types';
-import { DEFAULT_CRED_TTL } from './constants';
-
+/**
+ * @internal
+ */
 export const getDataAccess = async (
 	input: GetDataAccessInput,
 ): Promise<GetDataAccessOutput> => {

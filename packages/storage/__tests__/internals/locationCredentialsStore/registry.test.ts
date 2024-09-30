@@ -10,15 +10,15 @@ import {
 	createStore,
 	getValue,
 	removeStore,
-} from '../../../src/storageBrowser/locationCredentialsStore/registry';
+} from '../../../src/internals/locationCredentialsStore/registry';
 import {
 	LruLocationCredentialsStore,
 	fetchNewValue,
 	getCacheValue,
 	initStore,
-} from '../../../src/storageBrowser/locationCredentialsStore/store';
+} from '../../../src/internals/locationCredentialsStore/store';
 
-jest.mock('../../../src/storageBrowser/locationCredentialsStore/store');
+jest.mock('../../../src/internals/locationCredentialsStore/store');
 
 const mockedStore = 'MOCKED_STORE' as any as LruLocationCredentialsStore;
 
