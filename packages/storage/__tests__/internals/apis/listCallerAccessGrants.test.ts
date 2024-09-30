@@ -3,7 +3,7 @@
 
 import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { listCallerAccessGrants } from '../../../src/storageBrowser/apis/listCallerAccessGrants';
+import { listCallerAccessGrants } from '../../../src/internals/apis/listCallerAccessGrants';
 import { listCallerAccessGrants as listCallerAccessGrantsClient } from '../../../src/providers/s3/utils/client/s3control';
 
 jest.mock('../../../src/providers/s3/utils/client/s3control');

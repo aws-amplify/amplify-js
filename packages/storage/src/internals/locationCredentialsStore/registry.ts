@@ -3,7 +3,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import { AWSTemporaryCredentials } from '../../providers/s3/types/options';
-import { CredentialsLocation, GetLocationCredentials } from '../types';
+import {
+	CredentialsLocation,
+	GetLocationCredentials,
+} from '../types/credentials';
 import { assertValidationError } from '../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../errors/types/validation';
 
