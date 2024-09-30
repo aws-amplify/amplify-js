@@ -1,10 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export {
-	AWSTemporaryCredentials,
-	LocationCredentialsProvider,
-} from './types/credentials';
 export { StorageSubpathStrategy } from '../types/options';
 
 export { Permission } from './types/common';
@@ -13,6 +9,7 @@ export { Permission } from './types/common';
 Internal APIs
 */
 export {
+	ExtendInputWithAdvancedOptions,
 	GetDataAccessInput,
 	ListCallerAccessGrantsInput,
 	GetPropertiesInput,
@@ -47,3 +44,5 @@ export {
 	GetLocationCredentialsInput,
 	GetLocationCredentialsOutput,
 } from './types/credentials';
+
+export { AWSTemporaryCredentials } from '../providers/s3/types/options';

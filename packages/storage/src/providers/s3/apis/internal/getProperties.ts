@@ -19,7 +19,7 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
 import { ExtendInputWithAdvancedOptions } from '../../../../internals/types/inputs';
-import { LocationCredentialsProvider } from '../../../../internals';
+import { LocationCredentialsProvider } from '../../types/options';
 
 export const getProperties = async (
 	amplify: AmplifyClassV6,

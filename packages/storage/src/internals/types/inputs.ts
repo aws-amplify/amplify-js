@@ -8,11 +8,7 @@ import {
 } from '../../types/inputs';
 import { GetPropertiesWithPathInput } from '../../providers/s3';
 
-import {
-	ListLocationsInput,
-	LocationCredentialsProvider,
-	TemporaryCredentialsProvider,
-} from './credentials';
+import { CredentialsProvider, ListLocationsInput } from './credentials';
 import { Permission, PrefixType, Privilege } from './common';
 
 /**
@@ -20,7 +16,7 @@ import { Permission, PrefixType, Privilege } from './common';
  */
 export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	accountId: string;
-	credentialsProvider: TemporaryCredentialsProvider;
+	credentialsProvider: CredentialsProvider;
 	region: string;
 }
 
@@ -29,7 +25,7 @@ export interface ListCallerAccessGrantsInput extends ListLocationsInput {
  */
 export interface GetDataAccessInput {
 	accountId: string;
-	credentialsProvider: TemporaryCredentialsProvider;
+	credentialsProvider: CredentialsProvider;
 	durationSeconds?: number;
 	permission: Permission;
 	prefixType?: PrefixType;
@@ -44,7 +40,7 @@ export interface GetDataAccessInput {
 export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
 	GetPropertiesWithPathInput,
 	{
-		locationCredentialsProvider?: LocationCredentialsProvider;
+		locationCredentialsProvider?: CredentialsProvider;
 	}
 >;
 

@@ -15,8 +15,12 @@ import {
 import { StorageError } from '../../../errors/StorageError';
 import { CopyInput, CopyWithPathInput } from '../types';
 import { INVALID_STORAGE_INPUT } from '../../../errors/constants';
-import { BucketInfo, ResolvedS3Config, StorageBucket } from '../types/options';
-import { LocationCredentialsProvider } from '../../../internals';
+import {
+	BucketInfo,
+	LocationCredentialsProvider,
+	ResolvedS3Config,
+	StorageBucket,
+} from '../types/options';
 
 import { DEFAULT_ACCESS_LEVEL, LOCAL_TESTING_S3_ENDPOINT } from './constants';
 

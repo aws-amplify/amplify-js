@@ -10,7 +10,11 @@ import {
 	CopyWithPathInput,
 	CopyWithPathOutput,
 } from '../../types';
-import { ResolvedS3Config, StorageBucket } from '../../types/options';
+import {
+	LocationCredentialsProvider,
+	ResolvedS3Config,
+	StorageBucket,
+} from '../../types/options';
 import {
 	isInputWithPath,
 	resolveS3ConfigAndInput,
@@ -21,6 +25,14 @@ import { assertValidationError } from '../../../../errors/utils/assertValidation
 import { copyObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
+import { ExtendInputWithAdvancedOptions } from '../../../../internals';
+
+type InputWithPathAndAdvancedOptions = ExtendInputWithAdvancedOptions<
+	CopyWithPathInput,
+	{
+		locationCredentialsProvider?: LocationCredentialsProvider;
+	}
+>;
 
 const isCopyInputWithPath = (
 	input: CopyInput | CopyWithPathInput,
@@ -44,7 +56,7 @@ const storageBucketAssertion = (
 
 export const copy = async (
 	amplify: AmplifyClassV6,
-	input: CopyInput | CopyWithPathInput,
+	input: CopyInput | InputWithPathAndAdvancedOptions,
 ): Promise<CopyOutput | CopyWithPathOutput> => {
 	return isCopyInputWithPath(input)
 		? copyWithPath(amplify, input)
@@ -53,7 +65,7 @@ export const copy = async (
 
 const copyWithPath = async (
 	amplify: AmplifyClassV6,
-	input: CopyWithPathInput,
+	input: InputWithPathAndAdvancedOptions,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
 
