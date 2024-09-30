@@ -1,17 +1,37 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-	AWSTemporaryCredentials,
-	LocationCredentialsProvider,
-} from '../../providers/s3/types/options';
+import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 import { LocationType, Permission } from './common';
 
 /**
+ * Async function returning AWS credentials for an API call. This function
+ * is invoked with S3 locations(bucket and path).
+ * If omitted, the global credentials configured in Amplify Auth
+ * would be used.
+ *
  * @internal
  */
-export type CredentialsProvider = LocationCredentialsProvider;
+export type LocationCredentialsProvider = (
+	options?: CredentialsProviderOptions,
+) => Promise<{ credentials: AWSTemporaryCredentials }>;
+
+/**
+ * @internal
+ */
+export type TemporaryCredentialsProvider = LocationCredentialsProvider;
+
+/**
+ * @internal
+ */
+export type AWSTemporaryCredentials = Required<
+	Pick<
+		AWSCredentials,
+		'accessKeyId' | 'secretAccessKey' | 'sessionToken' | 'expiration'
+	>
+>;
 
 export interface CreateLocationCredentialsStoreInput {
 	handler: GetLocationCredentials;

@@ -1,7 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CredentialsProvider, ListLocationsInput } from './credentials';
+import {
+	StorageCopyInputWithPath,
+	StorageOperationInputWithPath,
+	StorageOperationOptionsInput,
+} from '../../types/inputs';
+import { GetPropertiesWithPathInput } from '../../providers/s3';
+
+import {
+	ListLocationsInput,
+	LocationCredentialsProvider,
+	TemporaryCredentialsProvider,
+} from './credentials';
 import { Permission, PrefixType, Privilege } from './common';
 
 /**
@@ -9,7 +20,7 @@ import { Permission, PrefixType, Privilege } from './common';
  */
 export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	accountId: string;
-	credentialsProvider: CredentialsProvider;
+	credentialsProvider: TemporaryCredentialsProvider;
 	region: string;
 }
 
@@ -18,7 +29,7 @@ export interface ListCallerAccessGrantsInput extends ListLocationsInput {
  */
 export interface GetDataAccessInput {
 	accountId: string;
-	credentialsProvider: CredentialsProvider;
+	credentialsProvider: TemporaryCredentialsProvider;
 	durationSeconds?: number;
 	permission: Permission;
 	prefixType?: PrefixType;
@@ -26,3 +37,34 @@ export interface GetDataAccessInput {
 	region: string;
 	scope: string;
 }
+
+/**
+ * @internal
+ */
+export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
+	GetPropertiesWithPathInput,
+	{
+		locationCredentialsProvider?: LocationCredentialsProvider;
+	}
+>;
+
+/**
+ * Generic types that extend the public API input type with extended options. By default the
+ * extended options are locationCredentialsProvider.
+ *
+ * @internal
+ */
+export type ExtendInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
+	InputType extends StorageOperationInputWithPath &
+		StorageOperationOptionsInput<infer O>
+		? {
+				path: InputType['path'];
+				options?: O & ExtendedOptionsType;
+			}
+		: InputType extends StorageCopyInputWithPath
+			? {
+					source: InputType['source'];
+					destination: InputType['destination'];
+					options?: ExtendedOptionsType;
+				}
+			: never;

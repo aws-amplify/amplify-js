@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAccessLevel } from '@aws-amplify/core';
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
-import {
-	CredentialsProviderOptions,
-	SigningOptions,
-} from '@aws-amplify/core/internals/aws-client-utils';
+import { SigningOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { TransferProgressEvent } from '../../../types';
 import {
@@ -14,23 +10,6 @@ import {
 	StorageListPaginateOptions,
 	StorageSubpathStrategy,
 } from '../../../types/options';
-
-/**
- * @internal
- */
-export type AWSTemporaryCredentials = Required<
-	Pick<
-		AWSCredentials,
-		'accessKeyId' | 'secretAccessKey' | 'sessionToken' | 'expiration'
-	>
->;
-
-/**
- * @internal
- */
-export type LocationCredentialsProvider = (
-	options?: CredentialsProviderOptions,
-) => Promise<{ credentials: AWSTemporaryCredentials }>;
 
 export interface BucketInfo {
 	bucketName: string;
@@ -45,13 +24,6 @@ interface CommonOptions {
 	 */
 	useAccelerateEndpoint?: boolean;
 
-	/**
-	 * Async function returning AWS credentials for an API call. This function
-	 * is invoked with S3 locations(bucket and path).
-	 * If omitted, the global credentials configured in Amplify Auth
-	 * would be used.
-	 */
-	locationCredentialsProvider?: LocationCredentialsProvider;
 	bucket?: StorageBucket;
 }
 
