@@ -4,6 +4,26 @@
 export { LocationCredentialsProvider } from '../providers/s3/types/options';
 export { StorageSubpathStrategy } from '../types/options';
 
+export { Permission } from './types/common';
+
+/*
+Internal APIs
+*/
+export {
+	GetDataAccessInput,
+	ListCallerAccessGrantsInput,
+} from './types/inputs';
+export {
+	GetDataAccessOutput,
+	ListCallerAccessGrantsOutput,
+} from './types/outputs';
+
+export { getDataAccess } from './apis/getDataAccess';
+export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
+
+/*
+CredentialsStore exports
+*/
 export { createLocationCredentialsStore } from './locationCredentialsStore';
 export {
 	AuthConfigAdapter,
@@ -20,6 +40,5 @@ export {
 	ListLocationsOutput,
 	GetLocationCredentialsInput,
 	GetLocationCredentialsOutput,
-	Permission,
-} from './types';
+} from './types/credentials';
 export { AWSTemporaryCredentials } from '../providers/s3/types/options';

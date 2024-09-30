@@ -9,8 +9,8 @@ import {
 	fetchNewValue,
 	getCacheValue,
 	initStore,
-} from '../../../src/storageBrowser/locationCredentialsStore/store';
-import { CredentialsLocation } from '../../../src/storageBrowser/types';
+} from '../../../src/internals/locationCredentialsStore/store';
+import { CredentialsLocation } from '../../../src/internals/types/credentials';
 
 const mockCredentials = {
 	expiration: new Date(Date.now() + 60 * 60_1000),

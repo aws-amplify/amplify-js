@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - storage-browser/main
+      - storage-browser/integrity
 
 jobs:
   e2e:
@@ -34,5 +34,5 @@ jobs:
     # The preid should be detected from the branch name recommending feat/{PREID}/whatever as branch naming pattern
     #   if your branch doesn't follow this pattern, you can override it here for your branch.
     with:
-      preid: storage-browser
+      preid: storage-browser-integrity
       # preid: ${{ needs.parse-preid.outputs.preid }}
