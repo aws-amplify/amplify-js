@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 
-import { GetLocationCredentials, ListPaths } from '../types';
+import { GetLocationCredentials, ListPaths } from '../types/credentials';
 import { BucketInfo } from '../../providers/s3/types/options';
 
 interface Location {

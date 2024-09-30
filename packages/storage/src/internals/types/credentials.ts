@@ -72,6 +72,21 @@ export type ListLocations = (
 /**
  * @internal
  */
+export type ListPaths = (input?: ListLocationsInput) => Promise<{
+	locations: {
+		type: 'PREFIX';
+		permission: string[];
+		scope: {
+			bucketName: string;
+			path: string;
+		};
+	}[];
+	nextToken?: string;
+}>;
+
+/**
+ * @internal
+ */
 export interface LocationScope {
 	/**
 	 * Scope of storage location. For S3 service, it's the S3 path of the data to
