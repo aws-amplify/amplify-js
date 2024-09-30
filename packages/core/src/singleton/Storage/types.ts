@@ -27,7 +27,6 @@ export interface S3ProviderConfig {
 		dangerouslyConnectToHttpEndpointForTesting?: string;
 		/** Map of friendly name for bucket to its information  */
 		buckets?: Record<string, BucketInfo>;
-		paths?: any;
 	};
 }
 

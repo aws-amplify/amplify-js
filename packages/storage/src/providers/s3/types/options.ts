@@ -35,6 +35,7 @@ export type LocationCredentialsProvider = (
 export interface BucketInfo {
 	bucketName: string;
 	region: string;
+	paths: Record<string, Record<string, string[]>>;
 }
 
 export type StorageBucket = string | BucketInfo;

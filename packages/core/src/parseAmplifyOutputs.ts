@@ -65,11 +65,6 @@ function parseStorage(
 			bucket: bucket_name,
 			region: aws_region,
 			buckets: buckets && createBucketInfoMap(buckets),
-			paths:
-				buckets &&
-				buckets.map(bucket => ({
-					[bucket.name]: parseAccessRules(bucket.paths),
-				})),
 		},
 	};
 }
@@ -366,6 +361,7 @@ function createBucketInfoMap(
 	return mappedBuckets;
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 const parseAccessRules = (
 	paths: AmplifyOutputsStorageBucketProperties['paths'],
 ): Record<string, any> => {
@@ -379,9 +375,7 @@ const parseAccessRules = (
 			if (role === 'authenticated' || role === 'guest') {
 				output[role].push({ [path]: permissions });
 			} else if (role.startsWith('groups') || role.startsWith('entity')) {
-				if (!path.includes('cognito-identity.amazonaws.com')) {
-					output[role].push({ [path]: permissions });
-				}
+				output[role].push({ [path]: permissions });
 			}
 		}
 	}
