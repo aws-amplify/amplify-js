@@ -18,6 +18,7 @@ import { headObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
+/** FIXME: remove this interface when we move to public advanced APIs */
 import { ExtendInputWithAdvancedOptions } from '../../../../internals/types/inputs';
 import { LocationCredentialsProvider } from '../../types/options';
 

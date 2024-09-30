@@ -52,10 +52,10 @@ export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
  */
 export type ExtendInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
 	InputType extends StorageOperationInputWithPath &
-		StorageOperationOptionsInput<infer O>
+		StorageOperationOptionsInput<infer PublicInputOptionsType>
 		? {
 				path: InputType['path'];
-				options?: O & ExtendedOptionsType;
+				options?: PublicInputOptionsType & ExtendedOptionsType;
 			}
 		: InputType extends StorageCopyInputWithPath
 			? {
