@@ -74,9 +74,9 @@ interface TransferOptions {
 /**
  * Input options type for S3 getProperties API.
  */
-/** @deprecated Use {@link GetPropertiesOptionsWithPath} instead. */
-export type GetPropertiesOptionsWithKey = ReadOptions & CommonOptions;
-export type GetPropertiesOptionsWithPath = CommonOptions;
+/** @deprecated Use {@link GetPropertiesWithPathOptions} instead. */
+export type GetPropertiesWithKeyOptions = ReadOptions & CommonOptions;
+export type GetPropertiesWithPathOptions = CommonOptions;
 
 /**
  * Input options type for S3 getProperties API.
@@ -84,25 +84,25 @@ export type GetPropertiesOptionsWithPath = CommonOptions;
 export type RemoveOptions = WriteOptions & CommonOptions;
 
 /**
- * @deprecated Use {@link ListAllOptionsWithPath} instead.
+ * @deprecated Use {@link ListAllWithPathOptions} instead.
  * Input options type with prefix for S3 list all API.
  */
-export type ListAllOptionsWithPrefix = StorageListAllOptions &
+export type ListAllWithPrefixOptions = StorageListAllOptions &
 	ReadOptions &
 	CommonOptions;
 
 /**
- * @deprecated Use {@link ListPaginateOptionsWithPath} instead.
+ * @deprecated Use {@link ListPaginateWithPathOptions} instead.
  * Input options type with prefix for S3 list API to paginate items.
  */
-export type ListPaginateOptionsWithPrefix = StorageListPaginateOptions &
+export type ListPaginateWithPrefixOptions = StorageListPaginateOptions &
 	ReadOptions &
 	CommonOptions;
 
 /**
  * Input options type with path for S3 list all API.
  */
-export type ListAllOptionsWithPath = Omit<
+export type ListAllWithPathOptions = Omit<
 	StorageListAllOptions,
 	'accessLevel'
 > &
@@ -113,7 +113,7 @@ export type ListAllOptionsWithPath = Omit<
 /**
  * Input options type with path for S3 list API to paginate items.
  */
-export type ListPaginateOptionsWithPath = Omit<
+export type ListPaginateWithPathOptions = Omit<
 	StorageListPaginateOptions,
 	'accessLevel'
 > &
@@ -150,9 +150,9 @@ export type GetUrlOptions = CommonOptions & {
 	contentType?: string;
 };
 
-/** @deprecated Use {@link GetUrlOptionsWithPath} instead. */
-export type GetUrlOptionsWithKey = ReadOptions & GetUrlOptions;
-export type GetUrlOptionsWithPath = GetUrlOptions;
+/** @deprecated Use {@link GetUrlWithPathOptions} instead. */
+export type GetUrlWithKeyOptions = ReadOptions & GetUrlOptions;
+export type GetUrlWithPathOptions = GetUrlOptions;
 
 /**
  * Input options type for S3 downloadData API.
@@ -161,9 +161,9 @@ export type DownloadDataOptions = CommonOptions &
 	TransferOptions &
 	BytesRangeOptions;
 
-/** @deprecated Use {@link DownloadDataOptionsWithPath} instead. */
-export type DownloadDataOptionsWithKey = ReadOptions & DownloadDataOptions;
-export type DownloadDataOptionsWithPath = DownloadDataOptions;
+/** @deprecated Use {@link DownloadDataWithPathOptions} instead. */
+export type DownloadDataWithKeyOptions = ReadOptions & DownloadDataOptions;
+export type DownloadDataWithPathOptions = DownloadDataOptions;
 
 export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
@@ -192,19 +192,19 @@ export type UploadDataOptions = CommonOptions &
 		metadata?: Record<string, string>;
 	};
 
-/** @deprecated Use {@link UploadDataOptionsWithPath} instead. */
-export type UploadDataOptionsWithKey = WriteOptions & UploadDataOptions;
-export type UploadDataOptionsWithPath = UploadDataOptions;
+/** @deprecated Use {@link UploadDataWithPathOptions} instead. */
+export type UploadDataWithKeyOptions = WriteOptions & UploadDataOptions;
+export type UploadDataWithPathOptions = UploadDataOptions;
 
 /** @deprecated This may be removed in the next major version. */
-export type CopySourceOptionsWithKey = ReadOptions & {
+export type CopySourceWithKeyOptions = ReadOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 	bucket?: StorageBucket;
 };
 
 /** @deprecated This may be removed in the next major version. */
-export type CopyDestinationOptionsWithKey = WriteOptions & {
+export type CopyDestinationWithKeyOptions = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 	bucket?: StorageBucket;
