@@ -15,3 +15,12 @@ export {
 	AmplifyServer,
 	CookieStorage,
 } from '@aws-amplify/core/internals/adapter-core';
+export {
+	generateState,
+	getRedirectUrl,
+	generateCodeVerifier,
+	validateState,
+	createKeysForAuthStorage,
+	AUTH_KEY_PREFIX,
+} from '@aws-amplify/auth/cognito';
+export { DEFAULT_COOKIE_EXPIRY } from './constants';

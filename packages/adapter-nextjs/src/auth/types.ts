@@ -81,6 +81,7 @@ export type CreateOAuthRouteHandlersFactory = (
 
 interface HandleAuthApiRouteRequestInputBase {
 	handlerInput: CreateAuthRoutesHandlersInput;
+	userPoolClientId: string;
 	oAuthConfig: OAuthConfig;
 	setCookieOptions: CookieStorage.SetCookieOptions;
 	origin: string;
@@ -100,8 +101,28 @@ interface HandleAuthApiRouteRequestForPagesRouterInput
 
 export type HandleAuthApiRouteRequestForAppRouter = (
 	input: HandleAuthApiRouteRequestForAppRouterInput,
-) => Response;
+) => Promise<Response>;
 
 export type HandleAuthApiRouteRequestForPagesRouter = (
 	input: HandleAuthApiRouteRequestForPagesRouterInput,
-) => void;
+) => Promise<void>;
+
+export interface OAuthTokenResponsePayload {
+	access_token: string;
+	id_token: string;
+	refresh_token: string;
+	token_type: string;
+	expires_in: number;
+}
+
+interface OAuthTokenResponseErrorPayload {
+	error: string;
+}
+
+export type OAuthTokenExchangeResult =
+	| OAuthTokenResponsePayload
+	| OAuthTokenResponseErrorPayload;
+
+export interface OAuthTokenRevocationResult {
+	error?: string;
+}
