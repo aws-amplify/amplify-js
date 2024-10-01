@@ -110,3 +110,10 @@ export type UpdateUserAttributeOutput =
  * Output type for Cognito fetchDevices API.
  */
 export type FetchDevicesOutput = AWSAuthDevice[];
+
+/**
+ * Output type for Cognito associateWebAuthnCredential API.
+ */
+export interface AssociateWebAuthnCredentialOutput {
+	credentialId?: string;
+}

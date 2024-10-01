@@ -33,6 +33,7 @@ export {
 	CodeDeliveryDetails,
 	UserAttributeKey,
 	VerifiableUserAttributeKey,
+	associateWebAuthnCredential,
 } from './providers/cognito';
 
 export {
