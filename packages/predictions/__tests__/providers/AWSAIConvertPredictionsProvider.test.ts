@@ -9,6 +9,7 @@ import {
 	TranslateClient,
 	TranslateTextCommand,
 } from '@aws-sdk/client-translate';
+
 import {
 	PredictionsValidationErrorCode,
 	validationErrorMap,
@@ -46,40 +47,42 @@ const resetTranslateMock = () => {
 const resetPollyMock = () => {
 	PollyClient.prototype.send = jest.fn(command => {
 		if (command instanceof SynthesizeSpeechCommand) {
-			const result = {
+			const mockResult = {
 				AudioStream: {
 					buffer: 'dummyStream',
 				},
 			};
-			return Promise.resolve(result);
+
+			return Promise.resolve(mockResult);
 		}
 	}) as any;
 };
 
-(global as any).Response = jest.fn(stream => {
+(global as any).Response = jest.fn(() => {
 	const response = {
 		arrayBuffer: () => {
 			return 'dummyStream';
 		},
 	};
+
 	return response;
 });
 
-(global as any).WebSocket = jest.fn(url => {
-	let onCloseCallback;
-	let onErrorCallback;
-	let onMsgCallback;
-	let connection = {
-		set onmessage(callback) {
+(global as any).WebSocket = jest.fn(() => {
+	let onCloseCallback: () => void;
+	let onMsgCallback: (arg0: string) => void;
+	const connection = {
+		/* eslint accessor-pairs: 0 */
+		set onmessage(callback: (arg0: string) => void) {
 			onMsgCallback = callback;
 		},
-		set onerror(callback) {
-			onErrorCallback = callback;
+		set onerror(callback: any) {
+			// no-op
 		},
-		set onclose(callback) {
+		set onclose(callback: () => void) {
 			onCloseCallback = callback;
 		},
-		set onopen(callback) {
+		set onopen(callback: () => void) {
 			callback();
 		},
 		send: jest.fn(() => {
@@ -146,7 +149,7 @@ const validTextToSpeechInput: TextToSpeechInput = {
 const validSpeechToTextInput: SpeechToTextInput = {
 	transcription: {
 		source: {
-			bytes: new Buffer([0, 1, 2]),
+			bytes: Buffer.from([0, 1, 2]),
 		},
 	},
 };
@@ -205,11 +208,11 @@ describe('Predictions convert provider test', () => {
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			jest.spyOn(TranslateClient.prototype, 'send').mockImplementation(() => {
-				return Promise.reject('error');
+				return Promise.reject(new Error('error'));
 			});
 			expect(
 				predictionsProvider.convert(validTranslateTextInput),
-			).rejects.toMatch('error');
+			).rejects.toThrow('error');
 		});
 	});
 
@@ -229,7 +232,7 @@ describe('Predictions convert provider test', () => {
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			window.URL.createObjectURL = jest.fn();
-			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
+			jest.spyOn(URL, 'createObjectURL').mockImplementation(() => {
 				return 'dummyURL';
 			});
 			expect(
@@ -270,11 +273,11 @@ describe('Predictions convert provider test', () => {
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			jest.spyOn(PollyClient.prototype, 'send').mockImplementation(() => {
-				return Promise.reject('error');
+				return Promise.reject(new Error('error'));
 			});
 			expect(
 				predictionsProvider.convert(validTextToSpeechInput),
-			).rejects.toMatch('error');
+			).rejects.toThrow('error');
 		});
 	});
 
@@ -426,7 +429,7 @@ describe('Predictions convert provider test', () => {
 			});
 			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
 			window.URL.createObjectURL = jest.fn();
-			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
+			jest.spyOn(URL, 'createObjectURL').mockImplementation(() => {
 				return 'dummyURL';
 			});
 

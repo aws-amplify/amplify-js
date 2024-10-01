@@ -1,6 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
+import { Reachability } from '@aws-amplify/core/internals/utils';
+
+import {
+	CONNECTION_CHANGE,
+	ConnectionStateMonitor,
+} from '../src/utils/ConnectionStateMonitor';
+import { ConnectionState as CS } from '../src';
+
 jest.mock('@aws-amplify/core', () => ({
 	__esModule: true,
 	...jest.requireActual('@aws-amplify/core'),
@@ -12,14 +21,6 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
-import { Reachability } from '@aws-amplify/core/internals/utils';
-import {
-	ConnectionStateMonitor,
-	CONNECTION_CHANGE,
-} from '../src/utils/ConnectionStateMonitor';
-import { ConnectionState as CS } from '../src';
-
 describe('ConnectionStateMonitor', () => {
 	let monitor: ConnectionStateMonitor;
 	let observedStates: CS[];
@@ -27,7 +28,7 @@ describe('ConnectionStateMonitor', () => {
 	let reachabilityObserver: Observer<{ online: boolean }>;
 
 	beforeEach(() => {
-		const spyon = jest
+		jest
 			.spyOn(Reachability.prototype, 'networkMonitor')
 			.mockImplementationOnce(() => {
 				return new Observable(observer => {
