@@ -1,0 +1,28 @@
+name: Check Conventional Commit PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+
+jobs:
+  check-pr-title:
+    runs-on: ubuntu-latest
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Generate Regex and Check PR title
+        working-directory: ./amplify-js
+        run: |
+          regex=$(./scripts/generate-conventional-commit-regex.sh)
+          if [[ $PR_TITLE =~ $regex ]]; then
+            echo "✅ PR title '$PR_TITLE' is valid"
+            exit 0
+          else
+            echo "❌ PR title '$PR_TITLE' is invalid"
+            echo "It should match the pattern: $regex"
+            exit 1
+          fi
