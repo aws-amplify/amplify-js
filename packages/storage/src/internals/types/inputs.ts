@@ -45,8 +45,8 @@ export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
 >;
 
 /**
- * Generic types that extend the public API input type with extended options. By default the
- * extended options are locationCredentialsProvider.
+ * Generic types that extend the public API input type with extended options.
+ * This is a temporary solution to support advanced options from internal APIs.
  *
  * @internal
  */

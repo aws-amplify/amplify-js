@@ -9,7 +9,6 @@ export { Permission } from './types/common';
 Internal APIs
 */
 export {
-	ExtendInputWithAdvancedOptions,
 	GetDataAccessInput,
 	ListCallerAccessGrantsInput,
 	GetPropertiesInput,

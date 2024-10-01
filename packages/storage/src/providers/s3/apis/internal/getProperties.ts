@@ -18,20 +18,20 @@ import { headObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
-/** FIXME: remove this interface when we move to public advanced APIs */
+// TODO: Remove this interface when we move to public advanced APIs.
 import { ExtendInputWithAdvancedOptions } from '../../../../internals/types/inputs';
 import { LocationCredentialsProvider } from '../../types/options';
 
+type InputWithPathAndAdvancedOptions = ExtendInputWithAdvancedOptions<
+	GetPropertiesWithPathInput,
+	{
+		locationCredentialsProvider?: LocationCredentialsProvider;
+	}
+>;
+
 export const getProperties = async (
 	amplify: AmplifyClassV6,
-	input:
-		| GetPropertiesInput
-		| ExtendInputWithAdvancedOptions<
-				GetPropertiesWithPathInput,
-				{
-					locationCredentialsProvider?: LocationCredentialsProvider;
-				}
-		  >,
+	input: GetPropertiesInput | InputWithPathAndAdvancedOptions,
 	action?: StorageAction,
 ): Promise<GetPropertiesOutput | GetPropertiesWithPathOutput> => {
 	const { s3Config, bucket, keyPrefix, identityId } =

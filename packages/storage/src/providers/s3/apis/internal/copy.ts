@@ -25,10 +25,10 @@ import { assertValidationError } from '../../../../errors/utils/assertValidation
 import { copyObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
-/** FIXME: remove this interface when we move to public advanced APIs */
-import { ExtendInputWithAdvancedOptions } from '../../../../internals';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { ExtendInputWithAdvancedOptions } from '../../../../internals/types/inputs';
 
-/** FIXME: change this interface back to CopyWithPathInput when we move to public advanced APIs */
+// TODO: Change this interface back to CopyWithPathInput when we move to public advanced APIs.
 type InputWithPathAndAdvancedOptions = ExtendInputWithAdvancedOptions<
 	CopyWithPathInput,
 	{
