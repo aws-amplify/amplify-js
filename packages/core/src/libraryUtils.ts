@@ -78,6 +78,7 @@ export {
 	getAmplifyUserAgent,
 } from './Platform';
 export {
+	AiAction,
 	ApiAction,
 	AuthAction,
 	AnalyticsAction,
