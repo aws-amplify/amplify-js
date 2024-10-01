@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { CredentialsProvider, ListLocations } from '../types';
+import { CredentialsProvider, ListLocations } from '../types/credentials';
 import { listCallerAccessGrants } from '../apis/listCallerAccessGrants';
 
 interface CreateListLocationsHandlerInput {

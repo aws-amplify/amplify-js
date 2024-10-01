@@ -4,7 +4,7 @@ import {
 	CredentialsProvider,
 	GetLocationCredentials,
 	ListLocations,
-} from '../types';
+} from '../types/credentials';
 
 import { createListLocationsHandler } from './createListLocationsHandler';
 import { createLocationCredentialsHandler } from './createLocationCredentialsHandler';

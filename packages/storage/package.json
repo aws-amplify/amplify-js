@@ -40,15 +40,15 @@
 			"s3": [
 				"./dist/esm/providers/s3/index.d.ts"
 			],
+			"internals": [
+				"./dist/esm/internals/index.d.ts"
+			],
 			"server": [
 				"./dist/esm/server.d.ts"
 			],
 			"s3/server": [
 				"./dist/esm/providers/s3/server.d.ts"
-			],
-			"storage-browser": [
-        "./dist/esm/storageBrowser/index.d.ts"
-      ]
+			]
 		}
 	},
 	"repository": {
@@ -64,6 +64,7 @@
 	"files": [
 		"dist/cjs",
 		"dist/esm",
+		"internals",
 		"src",
 		"server",
 		"s3"
@@ -83,6 +84,11 @@
 			"require": "./dist/cjs/index.js",
 			"react-native": "./src/index.ts"
 		},
+		"./internals": {
+			"types": "./dist/esm/internals/index.d.ts",
+			"import": "./dist/esm/internals/index.mjs",
+			"require": "./dist/cjs/internals/index.js"
+		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
 			"import": "./dist/esm/server.mjs",
@@ -98,11 +104,6 @@
 			"types": "./dist/esm/providers/s3/server.d.ts",
 			"import": "./dist/esm/providers/s3/server.mjs",
 			"require": "./dist/cjs/providers/s3/server.js"
-		},
-		"./storage-browser": {
-			"types": "./dist/esm/storageBrowser/index.d.ts",
-			"import": "./dist/esm/storageBrowser/index.mjs",
-			"require": "./dist/cjs/storageBrowser/index.js"
 		},
 		"./package.json": "./package.json"
 	},

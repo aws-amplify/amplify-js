@@ -6,7 +6,7 @@ import {
 	CredentialsProvider,
 	GetLocationCredentials,
 	GetLocationCredentialsInput,
-} from '../types';
+} from '../types/credentials';
 
 interface CreateLocationCredentialsHandlerInput {
 	accountId: string;

@@ -3,9 +3,9 @@
 
 import { CredentialsProviderOptions } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { getDataAccess } from '../../../src/storageBrowser/apis/getDataAccess';
+import { getDataAccess } from '../../../src/internals/apis/getDataAccess';
 import { getDataAccess as getDataAccessClient } from '../../../src/providers/s3/utils/client/s3control';
-import { GetDataAccessInput } from '../../../src/storageBrowser/apis/types';
+import { GetDataAccessInput } from '../../../src/internals/types/inputs';
 
 jest.mock('../../../src/providers/s3/utils/client/s3control');
 

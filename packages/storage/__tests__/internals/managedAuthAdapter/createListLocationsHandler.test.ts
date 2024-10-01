@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createListLocationsHandler } from '../../../src/storageBrowser/managedAuthConfigAdapter/createListLocationsHandler';
-import { listCallerAccessGrants } from '../../../src/storageBrowser/apis/listCallerAccessGrants';
+import { createListLocationsHandler } from '../../../src/internals/managedAuthConfigAdapter/createListLocationsHandler';
+import { listCallerAccessGrants } from '../../../src/internals/apis/listCallerAccessGrants';
 
-jest.mock('../../../src/storageBrowser/apis/listCallerAccessGrants');
+jest.mock('../../../src/internals/apis/listCallerAccessGrants');
 
 jest.mocked(listCallerAccessGrants).mockResolvedValue({
 	locations: [],
