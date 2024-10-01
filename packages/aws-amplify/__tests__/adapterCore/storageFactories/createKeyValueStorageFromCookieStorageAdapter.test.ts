@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { createKeyValueStorageFromCookieStorageAdapter } from '../../../src/adapter-core';
+import {
+	CookieStorage,
+	createKeyValueStorageFromCookieStorageAdapter,
+} from '../../../src/adapter-core';
 import { defaultSetCookieOptions } from '../../../src/adapter-core/storageFactories/createKeyValueStorageFromCookieStorageAdapter';
 
 const mockCookiesStorageAdapter = {
@@ -12,6 +15,13 @@ const mockCookiesStorageAdapter = {
 };
 
 describe('keyValueStorage', () => {
+	afterEach(() => {
+		mockCookiesStorageAdapter.delete.mockClear();
+		mockCookiesStorageAdapter.get.mockClear();
+		mockCookiesStorageAdapter.set.mockClear();
+		mockCookiesStorageAdapter.getAll.mockClear();
+	});
+
 	describe('createKeyValueStorageFromCookiesStorageAdapter', () => {
 		it('should return a key value storage', () => {
 			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
@@ -97,6 +107,31 @@ describe('keyValueStorage', () => {
 				expect(() => {
 					keyValueStorage.clear();
 				}).toThrow('This method has not implemented.');
+			});
+		});
+
+		describe('passing setCookieOptions parameter', () => {
+			const testSetCookieOptions: CookieStorage.SetCookieOptions = {
+				httpOnly: true,
+				sameSite: 'strict',
+				expires: new Date('2024-09-05'),
+			};
+			const keyValueStorage = createKeyValueStorageFromCookieStorageAdapter(
+				mockCookiesStorageAdapter,
+				undefined,
+				testSetCookieOptions,
+			);
+
+			it('sets item with specified setCookieOptions', async () => {
+				keyValueStorage.setItem('testKey', 'testValue');
+				expect(mockCookiesStorageAdapter.set).toHaveBeenCalledWith(
+					'testKey',
+					'testValue',
+					{
+						...defaultSetCookieOptions,
+						...testSetCookieOptions,
+					},
+				);
 			});
 		});
 

@@ -5,7 +5,10 @@ import { GetServerSidePropsContext as NextGetServerSidePropsContext } from 'next
 import { NextRequest, NextResponse } from 'next/server.js';
 import { cookies } from 'next/headers.js';
 import { AmplifyOutputs, LegacyConfig } from 'aws-amplify/adapter-core';
-import { AmplifyServer } from '@aws-amplify/core/internals/adapter-core';
+import {
+	AmplifyServer,
+	CookieStorage,
+} from '@aws-amplify/core/internals/adapter-core';
 import { ResourcesConfig } from '@aws-amplify/core';
 
 export declare namespace NextServer {
@@ -73,8 +76,16 @@ export declare namespace NextServer {
 		input: RunWithContextInput<OperationResult>,
 	) => Promise<OperationResult>;
 
+	export interface CreateServerRunnerRuntimeOptions {
+		cookies?: Pick<
+			CookieStorage.SetCookieOptions,
+			'domain' | 'expires' | 'sameSite'
+		>;
+	}
+
 	export interface CreateServerRunnerInput {
 		config: ResourcesConfig | LegacyConfig | AmplifyOutputs;
+		runtimeOptions?: CreateServerRunnerRuntimeOptions;
 	}
 
 	export interface CreateServerRunnerOutput {

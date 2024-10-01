@@ -24,12 +24,22 @@ const mockAmplifyConfig: ResourcesConfig = {
 jest.mock(
 	'../src/utils/createCookieStorageAdapterFromNextServerContext',
 	() => ({
-		createCookieStorageAdapterFromNextServerContext: jest.fn(),
+		createCookieStorageAdapterFromNextServerContext: jest.fn(() => ({
+			get: jest.fn(),
+			set: jest.fn(),
+			delete: jest.fn(),
+			getAll: jest.fn(),
+		})),
 	}),
 );
 
+jest.mock('../src/utils/createTokenValidator', () => ({
+	createTokenValidator: jest.fn(() => ({
+		getItem: jest.fn(),
+	})),
+}));
 describe('createServerRunner', () => {
-	let createServerRunner: any;
+	let createServerRunner: NextServer.CreateServerRunner;
 
 	const mockParseAmplifyConfig = jest.fn();
 	const mockCreateAWSCredentialsAndIdentityIdProvider = jest.fn();
@@ -124,26 +134,28 @@ describe('createServerRunner', () => {
 			});
 
 			describe('when nextServerContext is not null', () => {
+				const mockNextServerContext = {
+					req: {
+						headers: {
+							cookie: 'cookie',
+						},
+					},
+					res: {
+						setHeader: jest.fn(),
+					},
+				};
+				const mockCookieStorageAdapter = {
+					get: jest.fn(),
+					set: jest.fn(),
+					remove: jest.fn(),
+				};
+
 				it('should create auth providers with cookie storage adapter', () => {
 					const operation = jest.fn();
-					const mockCookieStorageAdapter = {
-						get: jest.fn(),
-						set: jest.fn(),
-						remove: jest.fn(),
-					};
+
 					mockCreateKeyValueStorageFromCookieStorageAdapter.mockReturnValueOnce(
 						mockCookieStorageAdapter,
 					);
-					const mockNextServerContext = {
-						req: {
-							headers: {
-								cookie: 'cookie',
-							},
-						},
-						res: {
-							setHeader: jest.fn(),
-						},
-					};
 					const { runWithAmplifyServerContext } = createServerRunner({
 						config: mockAmplifyConfig,
 					});
@@ -162,6 +174,54 @@ describe('createServerRunner', () => {
 						mockAmplifyConfig.Auth,
 						mockCookieStorageAdapter,
 					);
+				});
+
+				it('should call createKeyValueStorageFromCookieStorageAdapter with specified runtimeOptions.cookies', () => {
+					const testCookiesOptions: NextServer.CreateServerRunnerRuntimeOptions['cookies'] =
+						{
+							domain: '.example.com',
+							sameSite: 'lax',
+							expires: new Date('2024-09-05'),
+						};
+					mockCreateKeyValueStorageFromCookieStorageAdapter.mockReturnValueOnce(
+						mockCookieStorageAdapter,
+					);
+
+					const { runWithAmplifyServerContext } = createServerRunner({
+						config: mockAmplifyConfig,
+						runtimeOptions: {
+							cookies: testCookiesOptions,
+						},
+					});
+
+					runWithAmplifyServerContext({
+						nextServerContext:
+							mockNextServerContext as unknown as NextServer.Context,
+						operation: jest.fn(),
+					});
+
+					expect(
+						mockCreateKeyValueStorageFromCookieStorageAdapter,
+					).toHaveBeenCalledWith(
+						expect.any(Object),
+						expect.any(Object),
+						testCookiesOptions,
+					);
+
+					// modify by reference should not affect the original configuration
+					testCookiesOptions.sameSite = 'strict';
+					runWithAmplifyServerContext({
+						nextServerContext:
+							mockNextServerContext as unknown as NextServer.Context,
+						operation: jest.fn(),
+					});
+
+					expect(
+						mockCreateKeyValueStorageFromCookieStorageAdapter,
+					).toHaveBeenCalledWith(expect.any(Object), expect.any(Object), {
+						...testCookiesOptions,
+						sameSite: 'lax',
+					});
 				});
 			});
 		});
