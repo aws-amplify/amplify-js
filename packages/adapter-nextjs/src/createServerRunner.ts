@@ -6,6 +6,7 @@ import { parseAmplifyConfig } from '@aws-amplify/core/internals/utils';
 
 import { createRunWithAmplifyServerContext } from './utils';
 import { NextServer } from './types';
+import { createAuthRouteHandlersFactory } from './auth';
 
 /**
  * Creates the `runWithAmplifyServerContext` function to run Amplify server side APIs in an isolated request context.
@@ -33,6 +34,10 @@ export const createServerRunner: NextServer.CreateServerRunner = ({
 
 	return {
 		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
+			config: amplifyConfig,
+			runtimeOptions,
+		}),
+		createAuthRouteHandlers: createAuthRouteHandlersFactory({
 			config: amplifyConfig,
 			runtimeOptions,
 		}),
