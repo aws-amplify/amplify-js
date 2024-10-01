@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.6...@aws-amplify/storage@6.6.7) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.5...@aws-amplify/storage@6.6.6) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.4...@aws-amplify/storage@6.6.5) (2024-09-04)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.3...@aws-amplify/storage@6.6.4) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.2...@aws-amplify/storage@6.6.3) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.1...@aws-amplify/storage@6.6.2) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 ## [6.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.0...@aws-amplify/storage@6.6.1) (2024-08-15)
 
 **Note:** Version bump only for package @aws-amplify/storage

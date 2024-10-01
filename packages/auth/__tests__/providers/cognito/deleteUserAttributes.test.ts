@@ -7,7 +7,8 @@ import { decodeJWT } from '@aws-amplify/core/internals/utils';
 import { AuthError } from '../../../src/errors/AuthError';
 import { deleteUserAttributes } from '../../../src/providers/cognito';
 import { DeleteUserAttributesException } from '../../../src/providers/cognito/types/errors';
-import { deleteUserAttributes as providerDeleteUserAttributes } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
+import { createDeleteUserAttributesClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
@@ -21,13 +22,20 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	isBrowser: jest.fn(() => false),
 }));
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
+jest.mock('../../../src/providers/cognito/factories');
 
 describe('deleteUserAttributes', () => {
 	// assert mocks
 	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-	const mockDeleteUserAttributes = providerDeleteUserAttributes as jest.Mock;
+	const mockDeleteUserAttributes = jest.fn();
+	const mockCreateDeleteUserAttributesClient = jest.mocked(
+		createDeleteUserAttributesClient,
+	);
+	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
+		createCognitoUserPoolEndpointResolver,
+	);
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -38,11 +46,15 @@ describe('deleteUserAttributes', () => {
 
 	beforeEach(() => {
 		mockDeleteUserAttributes.mockResolvedValue({ $metadata: {} });
+		mockCreateDeleteUserAttributesClient.mockReturnValueOnce(
+			mockDeleteUserAttributes,
+		);
 	});
 
 	afterEach(() => {
 		mockDeleteUserAttributes.mockReset();
 		mockFetchAuthSession.mockClear();
+		mockCreateDeleteUserAttributesClient.mockClear();
 	});
 
 	it('should delete user attributes', async () => {
@@ -58,6 +70,27 @@ describe('deleteUserAttributes', () => {
 			}),
 		);
 		expect(mockDeleteUserAttributes).toHaveBeenCalledTimes(1);
+	});
+
+	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
+		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					userPoolEndpoint: expectedUserPoolEndpoint,
+				},
+			},
+		});
+		await deleteUserAttributes({
+			userAttributeKeys: ['given_name', 'address'],
+		});
+
+		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
+			endpointOverride: expectedUserPoolEndpoint,
+		});
 	});
 
 	it('should throw an error when service returns an error response', async () => {

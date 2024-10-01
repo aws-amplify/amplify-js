@@ -11,8 +11,8 @@ import {
 	parseMetadata,
 	presignUrl,
 } from '@aws-amplify/core/internals/aws-client-utils';
-import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
+import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
 import {
 	CONTENT_SHA256_HEADER,
@@ -22,14 +22,17 @@ import {
 	deserializeNumber,
 	deserializeTimestamp,
 	map,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
 import { validateObjectUrl } from '../../validateObjectUrl';
 
-import { S3EndpointResolverOptions, defaultConfig } from './base';
+import {
+	S3EndpointResolverOptions,
+	defaultConfig,
+	parseXmlError,
+} from './base';
 import type {
 	CompatibleHttpResponse,
 	GetObjectCommandInput,

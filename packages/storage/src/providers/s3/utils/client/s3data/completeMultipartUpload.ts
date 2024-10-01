@@ -20,8 +20,6 @@ import {
 	buildStorageServiceError,
 	map,
 	parseXmlBody,
-	parseXmlError,
-	retryDecider,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
@@ -29,7 +27,7 @@ import {
 import { validateObjectUrl } from '../../validateObjectUrl';
 import { validateMultipartUploadXML } from '../../validateMultipartUploadXML';
 
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError, retryDecider } from './base';
 import type {
 	CompleteMultipartUploadCommandInput,
 	CompleteMultipartUploadCommandOutput,
