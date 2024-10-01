@@ -22,3 +22,5 @@ export interface AmplifyWebBrowser {
 		prefersEphemeralSession?: boolean,
 	): Promise<string | null>;
 }
+
+export type Extra = string;
