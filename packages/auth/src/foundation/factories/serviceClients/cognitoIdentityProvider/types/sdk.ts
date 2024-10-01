@@ -1732,3 +1732,44 @@ export interface DeleteUserAttributesRequest {
  */
 export type DeleteUserAttributesResponse = Record<never, never>;
 export {};
+
+/**
+ * <p>The request to retrieve WebAuthN registration options.</p>
+ */
+export interface GetWebAuthnRegistrationOptionsRequest {
+	AccessToken?: string;
+}
+/**
+ * <p>The response containing WebAuthN registration options.</p>
+ */
+export interface GetWebAuthnRegistrationOptionsResponse {
+	CredentialCreationOptions?: string;
+}
+
+export type GetWebAuthnRegistrationOptionsCommandInput =
+	GetWebAuthnRegistrationOptionsRequest;
+
+export interface GetWebAuthnRegistrationOptionsCommandOutput
+	extends GetWebAuthnRegistrationOptionsResponse,
+		__MetadataBearer {}
+
+/**
+ * <p>The request to verify a WebAuthN credential.</p>
+ */
+export interface VerifyWebAuthnRegistrationResultRequest {
+	AccessToken?: string;
+	Credential?: string;
+}
+/**
+ * <p>The response from WebAuthN credential verification.</p>
+ */
+export interface VerifyWebAuthnRegistrationResultResponse {
+	CredentialId: string;
+}
+
+export type VerifyWebAuthnRegistrationResultCommandInput =
+	VerifyWebAuthnRegistrationResultRequest;
+
+export interface VerifyWebAuthnRegistrationResultCommandOutput
+	extends VerifyWebAuthnRegistrationResultResponse,
+		__MetadataBearer {}

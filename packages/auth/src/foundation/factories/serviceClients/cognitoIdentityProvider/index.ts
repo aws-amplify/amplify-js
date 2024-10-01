@@ -24,3 +24,5 @@ export { createVerifyUserAttributeClient } from './createVerifyUserAttributeClie
 export { createUpdateDeviceStatusClient } from './createUpdateDeviceStatusClient';
 export { createListDevicesClient } from './createListDevicesClient';
 export { createDeleteUserAttributesClient } from './createDeleteUserAttributesClient';
+export { createGetWebAuthnRegistrationOptionsClient } from './createGetWebAuthnRegistrationOptionsClient';
+export { createVerifyWebAuthnRegistrationResultClient } from './createVerifyWebAuthnRegistrationResultClient';
