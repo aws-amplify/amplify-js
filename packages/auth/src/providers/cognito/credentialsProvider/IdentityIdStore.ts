@@ -23,6 +23,8 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 	// Used as in-memory storage
 	_primaryIdentityId: string | undefined;
 	_authKeys: AuthKeys<string> = {};
+	_hasGuestIdentityId = false;
+
 	setAuthConfig(authConfigParam: AuthConfig) {
 		assertIdentityPoolIdConfig(authConfigParam.Cognito);
 		this.authConfig = authConfigParam;
@@ -48,7 +50,10 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 				const storedIdentityId = await this.keyValueStorage.getItem(
 					this._authKeys.identityId,
 				);
+
 				if (storedIdentityId) {
+					this._hasGuestIdentityId = true;
+
 					return {
 						id: storedIdentityId,
 						type: 'guest',
@@ -71,10 +76,14 @@ export class DefaultIdentityIdStore implements IdentityIdStore {
 			this.keyValueStorage.setItem(this._authKeys.identityId, identity.id);
 			// Clear in-memory storage of primary identityId
 			this._primaryIdentityId = undefined;
+			this._hasGuestIdentityId = true;
 		} else {
 			this._primaryIdentityId = identity.id;
 			// Clear locally stored guest id
-			this.keyValueStorage.removeItem(this._authKeys.identityId);
+			if (this._hasGuestIdentityId) {
+				this.keyValueStorage.removeItem(this._authKeys.identityId);
+				this._hasGuestIdentityId = false;
+			}
 		}
 	}
 

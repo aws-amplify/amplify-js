@@ -30,7 +30,6 @@ describe('local sign-in state management tests', () => {
 
 	beforeEach(() => {
 		cognitoUserPoolsTokenProvider.setAuthConfig(authConfig);
-		signInStore.dispatch({ type: 'RESET_STATE' });
 	});
 
 	test('local state management should return state after signIn returns a ChallengeName', async () => {
