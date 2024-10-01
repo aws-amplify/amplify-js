@@ -8,7 +8,7 @@ import { getProperties as getPropertiesInternal } from '../../../src/providers/s
 jest.mock('../../../src/providers/s3/apis/internal/getProperties');
 const mockedGetPropertiesInternal = jest.mocked(getPropertiesInternal);
 
-describe('advancedGetProperties', () => {
+describe('getProperties (internal)', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockedGetPropertiesInternal.mockResolvedValue({
