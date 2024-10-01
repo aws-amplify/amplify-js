@@ -62,6 +62,8 @@ const mockIsNextRequest = jest.mocked(isNextRequest);
 const mockIsAuthRoutesHandlersContext = jest.mocked(
 	isAuthRoutesHandlersContext,
 );
+const mockRunWithAmplifyServerContext =
+	jest.fn() as jest.MockedFunction<NextServer.RunOperationWithContext>;
 
 describe('createAuthRoutesHandlersFactory', () => {
 	const existingProcessEnvVars = { ...process.env };
@@ -84,6 +86,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 			createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
 				runtimeOptions: mockRuntimeOptions,
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			}),
 		).toThrow('Could not find the AMPLIFY_APP_ORIGIN environment variable.');
 	});
@@ -92,6 +95,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 		createAuthRouteHandlersFactory({
 			config: mockAmplifyConfig,
 			runtimeOptions: mockRuntimeOptions,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(mockAssertTokenProviderConfig).toHaveBeenCalledWith(
@@ -106,6 +110,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 		const testCreateAuthRoutesHandlersFactoryInput = {
 			config: mockAmplifyConfig,
 			runtimeOptions: mockRuntimeOptions,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		};
 		const testCreateAuthRoutesHandlersInput: CreateAuthRoutesHandlersInput = {
 			customState: 'random-state',
@@ -151,6 +156,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				setCookieOptions: mockRuntimeOptions.cookies,
 				origin: 'https://example.com',
 				userPoolClientId: 'def',
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
 		});
 
@@ -172,6 +178,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				setCookieOptions: mockRuntimeOptions.cookies,
 				origin: 'https://example.com',
 				userPoolClientId: 'def',
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
 		});
 
@@ -192,6 +199,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 			const createAuthRoutesHandlers = createAuthRouteHandlersFactory({
 				config: mockAmplifyConfig,
 				runtimeOptions: undefined,
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
 			const handlerWithDefaultParamValues =
 				createAuthRoutesHandlers(/* undefined */);
@@ -214,6 +222,7 @@ describe('createAuthRoutesHandlersFactory', () => {
 				setCookieOptions: {},
 				origin: 'https://example.com',
 				userPoolClientId: 'def',
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
 		});
 	});

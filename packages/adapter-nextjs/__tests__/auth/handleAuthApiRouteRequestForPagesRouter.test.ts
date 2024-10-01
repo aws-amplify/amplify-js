@@ -9,10 +9,16 @@ import {
 	handleSignOutCallbackRequestForPagesRouter,
 	handleSignOutRequestForPagesRouter,
 } from '../../src/auth/handlers';
+import { NextServer } from '../../src';
+import {
+	hasUserSignedInWithPagesRouter,
+	isSupportedAuthApiRoutePath,
+} from '../../src/auth/utils';
 
 import { createMockNextApiResponse } from './testUtils';
 
 jest.mock('../../src/auth/handlers');
+jest.mock('../../src/auth/utils');
 
 const mockHandleSignInSignUpRequestForPagesRouter = jest.mocked(
 	handleSignInSignUpRequestForPagesRouter,
@@ -26,6 +32,14 @@ const mockHandleSignInCallbackRequestForPagesRouter = jest.mocked(
 const mockHandleSignOutCallbackRequestForPagesRouter = jest.mocked(
 	handleSignOutCallbackRequestForPagesRouter,
 );
+const mockIsSupportedAuthApiRoutePath = jest.mocked(
+	isSupportedAuthApiRoutePath,
+);
+const mockHasUserSignedInWithPagesRouter = jest.mocked(
+	hasUserSignedInWithPagesRouter,
+);
+const mockRunWithAmplifyServerContext =
+	jest.fn() as jest.MockedFunction<NextServer.RunOperationWithContext>;
 
 describe('handleAuthApiRouteRequestForPagesRouter', () => {
 	const testOrigin = 'https://example.com';
@@ -50,6 +64,11 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 		mockResponse,
 	} = createMockNextApiResponse();
 
+	beforeAll(() => {
+		mockHasUserSignedInWithPagesRouter.mockResolvedValue(false);
+		mockIsSupportedAuthApiRoutePath.mockReturnValue(true);
+	});
+
 	afterEach(() => {
 		mockResponseAppendHeader.mockClear();
 		mockResponseEnd.mockClear();
@@ -69,6 +88,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: testSetCookieOptions,
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(mockResponseStatus).toHaveBeenCalledWith(405);
@@ -86,6 +106,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: testSetCookieOptions,
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(mockResponseStatus).toHaveBeenCalledWith(400);
@@ -98,6 +119,8 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 			query: { slug: 'exchange-token' },
 		} as any;
 
+		mockIsSupportedAuthApiRoutePath.mockReturnValueOnce(false);
+
 		handleAuthApiRouteRequestForPagesRouter({
 			request: mockRequest,
 			response: mockResponse,
@@ -106,6 +129,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: testSetCookieOptions,
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(mockResponseStatus).toHaveBeenCalledWith(404);
@@ -132,6 +156,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 				oAuthConfig: testOAuthConfig,
 				setCookieOptions: {},
 				origin: testOrigin,
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			});
 
 			expect(mockHandleSignInSignUpRequestForPagesRouter).toHaveBeenCalledWith({
@@ -144,6 +169,34 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 				setCookieOptions: {},
 				type: expectedType,
 			});
+		},
+	);
+
+	test.each([['sign-in'], ['sign-up']])(
+		`calls hasUserSignedInWithPagesRouter with correct params when handlerContext.params.slug is %s, and when it returns true, the handler returns a 302 response`,
+		async slug => {
+			mockHasUserSignedInWithPagesRouter.mockResolvedValueOnce(true);
+			const mockRequest = {
+				url: 'https://example.com/api/auth/sign-in',
+				method: 'GET',
+				query: { slug },
+			} as unknown as NextApiRequest;
+
+			await handleAuthApiRouteRequestForPagesRouter({
+				request: mockRequest,
+				response: mockResponse,
+				handlerInput: {
+					...testHandlerInput,
+					redirectOnSignInComplete: undefined,
+				},
+				userPoolClientId: 'userPoolClientId',
+				oAuthConfig: testOAuthConfig,
+				setCookieOptions: {},
+				origin: testOrigin,
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+			});
+
+			expect(mockResponseRedirect).toHaveBeenCalledWith(302, '/');
 		},
 	);
 
@@ -162,6 +215,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(mockHandleSignOutRequestForPagesRouter).toHaveBeenCalledWith({
@@ -188,6 +242,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(mockHandleSignInCallbackRequestForPagesRouter).toHaveBeenCalledWith({
@@ -216,6 +271,7 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: {},
 			origin: testOrigin,
+			runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 		});
 
 		expect(mockHandleSignOutCallbackRequestForPagesRouter).toHaveBeenCalledWith(
