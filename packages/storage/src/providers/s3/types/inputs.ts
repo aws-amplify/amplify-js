@@ -27,13 +27,9 @@ import {
 	GetPropertiesWithPathOptions,
 	GetUrlWithKeyOptions,
 	GetUrlWithPathOptions,
-	ListAllOutput,
 	ListAllWithPathOptions,
-	ListAllWithPathOutput,
 	ListAllWithPrefixOptions,
-	ListPaginateOutput,
 	ListPaginateWithPathOptions,
-	ListPaginateWithPathOutput,
 	ListPaginateWithPrefixOptions,
 	RemoveOptions,
 	UploadDataWithKeyOptions,
@@ -108,6 +104,15 @@ export type ListPaginateInput =
 	StorageListInputWithPrefix<ListPaginateWithPrefixOptions>;
 
 /**
+ * @internal convinience types.
+ */
+export type ListAPIInput =
+	| ListAllInput
+	| ListPaginateInput
+	| ListAllWithPathInput
+	| ListPaginateWithPathInput;
+
+/**
  * @deprecated Use {@link RemoveWithPathInput} instead.
  * Input type with key for S3 remove API.
  */
@@ -145,21 +150,3 @@ export type UploadDataInput =
  */
 export type UploadDataWithPathInput =
 	StorageUploadDataInputWithPath<UploadDataWithPathOptions>;
-
-/**
- * @internal convinience types.
- */
-export type ListAPIInput =
-	| ListAllInput
-	| ListPaginateInput
-	| ListAllWithPathInput
-	| ListPaginateWithPathInput;
-
-/**
- * @internal convinience types.
- */
-export type ListAPIOutput =
-	| ListAllOutput
-	| ListPaginateOutput
-	| ListAllWithPathOutput
-	| ListPaginateWithPathOutput;
