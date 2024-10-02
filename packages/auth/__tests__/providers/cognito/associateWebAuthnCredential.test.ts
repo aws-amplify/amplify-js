@@ -16,6 +16,7 @@ import {
 } from '../../mockData';
 import { serializePkcToJson } from '../../../src/utils/passkey/serde';
 import * as utils from '../../../src/utils';
+import { getIsPasskeySupported } from '../../../src/utils/passkey/getIsPasskeySupported';
 
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
 import { mockAccessToken } from './testUtils/data';
@@ -33,6 +34,8 @@ jest.mock(
 );
 jest.mock('../../../src/providers/cognito/factories');
 
+jest.mock('../../../src/utils/passkey/getIsPasskeySupported');
+
 Object.assign(navigator, {
 	credentials: {
 		create: jest.fn(),
@@ -47,6 +50,8 @@ describe('associateWebAuthnCredential', () => {
 	const registerPasskeySpy = jest.spyOn(utils, 'registerPasskey');
 
 	const mockFetchAuthSession = jest.mocked(fetchAuthSession);
+
+	const mockGetIsPasskeySupported = jest.mocked(getIsPasskeySupported);
 
 	const mockGetWebAuthnRegistrationOptions = jest.fn();
 	const mockCreateGetWebAuthnRegistrationOptionsClient = jest.mocked(
@@ -74,6 +79,8 @@ describe('associateWebAuthnCredential', () => {
 		}));
 
 		navigatorCredentialsCreateSpy.mockResolvedValue(passkeyRegistrationResult);
+
+		mockGetIsPasskeySupported.mockReturnValue(true);
 	});
 
 	afterEach(() => {
@@ -149,6 +156,23 @@ describe('associateWebAuthnCredential', () => {
 			expect(error.name).toBe(
 				PasskeyErrorCode.InvalidCredentialCreationOptions,
 			);
+		}
+	});
+
+	it('should throw an error when passkeys are not supported', async () => {
+		expect.assertions(2);
+
+		mockGetWebAuthnRegistrationOptions.mockImplementation(() => ({
+			CredentialCreationOptions: passkeyCredentialCreateOptions,
+		}));
+
+		mockGetIsPasskeySupported.mockReturnValue(false);
+
+		try {
+			await associateWebAuthnCredential();
+		} catch (error: any) {
+			expect(error).toBeInstanceOf(PasskeyError);
+			expect(error.name).toBe(PasskeyErrorCode.PasskeyNotSupported);
 		}
 	});
 });

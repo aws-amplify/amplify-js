@@ -8,6 +8,6 @@ import { isBrowser } from '@aws-amplify/core/internals/utils';
  * Will return false if executed in non-secure context
  * @returns boolean
  */
-export function getIsPasskeySupported(): boolean {
+export const getIsPasskeySupported = (): boolean => {
 	return isBrowser() && window.isSecureContext && 'credentials' in navigator;
-}
+};
