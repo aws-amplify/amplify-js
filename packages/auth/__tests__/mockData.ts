@@ -1,3 +1,10 @@
+import {
+	PasskeyCreateOptions,
+	PasskeyCreateOptionsJson,
+	PasskeyCreateResult,
+	PasskeyCreateResultJson,
+} from '../src/utils/passkey/types';
+
 // device tracking mock device data
 export const mockDeviceArray = [
 	{
@@ -178,5 +185,92 @@ export const mockAuthConfigWithOAuth = {
 				},
 			},
 		},
+	},
+};
+
+export const passkeyCredentialCreateOptions =
+	'{"rp":{"id":"localhost","name":"localhost"},"user":{"id":"M2M0NjMyMGItYzYwZS00YTIxLTlkNjQtNTgyOWJmZWRlMWM0","name":"james","displayName":""},"challenge":"zsBch6DlNLUb6SgRdzHysw","pubKeyCredParams":[{"type":"public-key","alg":-7},{"type":"public-key","alg":-257}],"timeout":60000,"excludeCredentials":[{"type":"public-key","id":"VWxodmRFMUtjbEJZVWs1NE9IaHhOblZUTTBsUVJWSXRTbWhhUkdwZldHaDBSbVpmUmxKamFWRm5XUQ"},{"type":"public-key","id":"WDJnM1RrMWxaSGc0Y1ZWQmVsOTVTRXRvWjBoME56UlFNbFZ5VkZWZmNXTkNORjlVYjFWTWVqRXlUUQ"}],"authenticatorSelection":{"requireResidentKey":true,"residentKey":"required","userVerification":"required"}}';
+
+export const passkeyRegistrationResultJson: PasskeyCreateResultJson = {
+	type: 'public-key',
+	id: 'vJCit9S2cglAvvW3txQ-OWRBb-NyhxaLOvRRisnr1aE',
+	rawId: 'vJCit9S2cglAvvW3txQ-OQ',
+	response: {
+		clientDataJSON: 'vJCit9S2cglAvvW3txQ-OQ',
+		attestationObject: 'vJCit9S2cglAvvW3txQ-OQ',
+	},
+};
+export const passkeyRegistrationResult: PasskeyCreateResult = {
+	type: 'public-key',
+	id: 'vJCit9S2cglAvvW3txQ-OWRBb-NyhxaLOvRRisnr1aE',
+	rawId: new Uint8Array([
+		188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+	]),
+	response: {
+		clientDataJSON: new Uint8Array([
+			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+		]),
+		attestationObject: new Uint8Array([
+			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+		]),
+	},
+};
+
+export const passkeyRegistrationRequest: PasskeyCreateOptions = {
+	rp: { id: 'localhost', name: 'localhost' },
+	user: {
+		id: new Uint8Array([
+			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+		]),
+		name: 'james',
+		displayName: '',
+	},
+	challenge: new Uint8Array([
+		188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+	]),
+	pubKeyCredParams: [
+		{ type: 'public-key' as any, alg: -7 },
+		{ type: 'public-key' as any, alg: -257 },
+	],
+	timeout: 60000,
+	excludeCredentials: [
+		{
+			type: 'public-key' as any,
+			id: new Uint8Array([
+				188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
+				57,
+			]),
+		},
+	],
+	authenticatorSelection: {
+		requireResidentKey: true,
+		residentKey: 'required' as any,
+		userVerification: 'required' as any,
+	},
+};
+
+export const passkeyRegistrationRequestJson: PasskeyCreateOptionsJson = {
+	rp: { id: 'localhost', name: 'localhost' },
+	user: {
+		id: 'vJCit9S2cglAvvW3txQ-OQ',
+		name: 'james',
+		displayName: '',
+	},
+	challenge: 'vJCit9S2cglAvvW3txQ-OQ',
+	pubKeyCredParams: [
+		{ type: 'public-key', alg: -7 },
+		{ type: 'public-key', alg: -257 },
+	],
+	timeout: 60000,
+	excludeCredentials: [
+		{
+			type: 'public-key',
+			id: 'vJCit9S2cglAvvW3txQ-OQ',
+		},
+	],
+	authenticatorSelection: {
+		requireResidentKey: true,
+		residentKey: 'required',
+		userVerification: 'required',
 	},
 };

@@ -179,6 +179,7 @@ describe('aws-amplify Exports', () => {
 					'autoSignIn',
 					'fetchAuthSession',
 					'decodeJWT',
+					'associateWebAuthnCredential',
 				].sort(),
 			);
 		});
@@ -220,6 +221,7 @@ describe('aws-amplify Exports', () => {
 					'DefaultTokenStore',
 					'refreshAuthTokens',
 					'refreshAuthTokensWithoutDedupe',
+					'associateWebAuthnCredential',
 				].sort(),
 			);
 		});
