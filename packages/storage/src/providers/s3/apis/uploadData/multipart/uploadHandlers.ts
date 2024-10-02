@@ -154,9 +154,12 @@ export const getMultipartUploadHandlers = (
 			crc32: string | undefined,
 		) => {
 			inProgressUpload?.completedParts.push({
-				PartNumber: partNumber,
-				ETag: eTag,
-				ChecksumCRC32: crc32,
+				...{
+					PartNumber: partNumber,
+					ETag: eTag,
+				},
+				// TODO: crc32 can always be added once RN also has an implementation
+				...(crc32 ? { ChecksumCRC32: crc32 } : {}),
 			});
 		};
 		const concurrentUploadsProgressTracker =
