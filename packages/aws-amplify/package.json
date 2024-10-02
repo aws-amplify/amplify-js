@@ -458,6 +458,12 @@
 			"limit": "21.66 kB"
 		},
 		{
+			"name": "[Auth] Associate WebAuthN Credential (Cognito)",
+			"path": "./dist/esm/auth/index.mjs",
+			"import": "{ associateWebAuthnCredential }",
+			"limit": "12.34 kB"
+		},
+		{
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
