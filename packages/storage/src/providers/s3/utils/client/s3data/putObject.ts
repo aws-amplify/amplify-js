@@ -14,7 +14,6 @@ import {
 	assignStringVariables,
 	buildStorageServiceError,
 	map,
-	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
@@ -22,7 +21,7 @@ import {
 } from '../utils';
 import { validateObjectUrl } from '../../validateObjectUrl';
 
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 
 export type PutObjectInput = Pick<

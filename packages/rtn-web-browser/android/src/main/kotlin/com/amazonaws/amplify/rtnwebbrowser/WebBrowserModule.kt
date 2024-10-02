@@ -44,6 +44,7 @@ class WebBrowserModule(
             getCustomTabsPackageName(reactApplicationContext)?.let {
                 val customTabsIntent = CustomTabsIntent.Builder(connection?.getSession()).build()
                 customTabsIntent.intent.setPackage(it).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                customTabsIntent.intent.setPackage(it).addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
                 customTabsIntent.launchUrl(reactApplicationContext, Uri.parse(uriStr))
             } ?: run {
                 promise.reject(Throwable("No eligible browser found on device"))

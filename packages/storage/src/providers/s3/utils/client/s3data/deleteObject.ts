@@ -14,7 +14,6 @@ import {
 	buildStorageServiceError,
 	deserializeBoolean,
 	map,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
@@ -25,7 +24,7 @@ import type {
 	DeleteObjectCommandInput,
 	DeleteObjectCommandOutput,
 } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type DeleteObjectInput = Pick<
 	DeleteObjectCommandInput,

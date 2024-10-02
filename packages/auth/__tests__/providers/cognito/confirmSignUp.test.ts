@@ -4,15 +4,21 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { confirmSignUp } from '../../../src/providers/cognito';
-import { confirmSignUp as providerConfirmSignUp } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { AuthError } from '../../../src/errors/AuthError';
 import { ConfirmSignUpException } from '../../../src/providers/cognito/types/errors';
-import { ConfirmSignUpCommandOutput } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider/types';
+import { createConfirmSignUpClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
+import { ConfirmSignUpCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
+
+jest.mock(
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
+);
+jest.mock('../../../src/providers/cognito/factories');
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -22,15 +28,16 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
 	isBrowser: jest.fn(() => false),
 }));
-jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
-);
 
 describe('confirmSignUp', () => {
 	const { user1 } = authAPITestParams;
 	const confirmationCode = '123456';
 	// assert mocks
-	const mockConfirmSignUp = providerConfirmSignUp as jest.Mock;
+	const mockConfirmSignUp = jest.fn();
+	const mockCreateConfirmSignUpClient = jest.mocked(createConfirmSignUpClient);
+	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
+		createCognitoUserPoolEndpointResolver,
+	);
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
@@ -38,10 +45,13 @@ describe('confirmSignUp', () => {
 
 	beforeEach(() => {
 		mockConfirmSignUp.mockResolvedValue({} as ConfirmSignUpCommandOutput);
+		mockCreateConfirmSignUpClient.mockReturnValueOnce(mockConfirmSignUp);
 	});
 
 	afterEach(() => {
 		mockConfirmSignUp.mockReset();
+		mockCreateConfirmSignUpClient.mockClear();
+		mockCreateCognitoUserPoolEndpointResolver.mockClear();
 	});
 
 	it('should call confirmSignUp and return a SignUpResult', async () => {
@@ -66,6 +76,29 @@ describe('confirmSignUp', () => {
 			},
 		);
 		expect(mockConfirmSignUp).toHaveBeenCalledTimes(1);
+	});
+
+	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
+		const expectedUserPoolEndpoint = 'https://my-custom-endpoint.com';
+		jest.mocked(Amplify.getConfig).mockReturnValueOnce({
+			Auth: {
+				Cognito: {
+					userPoolClientId: '111111-aaaaa-42d8-891d-ee81a1549398',
+					userPoolId: 'us-west-2_zzzzz',
+					identityPoolId: 'us-west-2:xxxxxx',
+					userPoolEndpoint: expectedUserPoolEndpoint,
+				},
+			},
+		});
+
+		await confirmSignUp({
+			username: user1.username,
+			confirmationCode,
+		});
+
+		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
+			endpointOverride: expectedUserPoolEndpoint,
+		});
 	});
 
 	it('should contain force alias creation', async () => {

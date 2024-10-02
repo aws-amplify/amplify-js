@@ -19,25 +19,25 @@ import {
 } from '../../../types';
 import { StorageOperationOptionsInput } from '../../../types/inputs';
 import {
-	CopyDestinationOptionsWithKey,
-	CopySourceOptionsWithKey,
-	DownloadDataOptionsWithKey,
-	DownloadDataOptionsWithPath,
-	GetPropertiesOptionsWithKey,
-	GetPropertiesOptionsWithPath,
-	GetUrlOptionsWithKey,
-	GetUrlOptionsWithPath,
-	ListAllOptionsWithPath,
-	ListAllOptionsWithPrefix,
+	CopyDestinationWithKeyOptions,
+	CopySourceWithKeyOptions,
+	DownloadDataWithKeyOptions,
+	DownloadDataWithPathOptions,
+	GetPropertiesWithKeyOptions,
+	GetPropertiesWithPathOptions,
+	GetUrlWithKeyOptions,
+	GetUrlWithPathOptions,
 	ListAllOutput,
+	ListAllWithPathOptions,
 	ListAllWithPathOutput,
-	ListPaginateOptionsWithPath,
-	ListPaginateOptionsWithPrefix,
+	ListAllWithPrefixOptions,
 	ListPaginateOutput,
+	ListPaginateWithPathOptions,
 	ListPaginateWithPathOutput,
+	ListPaginateWithPrefixOptions,
 	RemoveOptions,
-	UploadDataOptionsWithKey,
-	UploadDataOptionsWithPath,
+	UploadDataWithKeyOptions,
+	UploadDataWithPathOptions,
 } from '../types';
 
 import { LocationCredentialsProvider } from './options';
@@ -48,8 +48,8 @@ import { LocationCredentialsProvider } from './options';
  * Input type for S3 copy API.
  */
 export type CopyInput = StorageCopyInputWithKey<
-	CopySourceOptionsWithKey,
-	CopyDestinationOptionsWithKey
+	CopySourceWithKeyOptions,
+	CopyDestinationWithKeyOptions
 >;
 /**
  * Input type with path for S3 copy API.
@@ -64,48 +64,48 @@ export type CopyWithPathInput = StorageCopyInputWithPath &
  * Input type for S3 getProperties API.
  */
 export type GetPropertiesInput =
-	StorageGetPropertiesInputWithKey<GetPropertiesOptionsWithKey>;
+	StorageGetPropertiesInputWithKey<GetPropertiesWithKeyOptions>;
 /**
  * Input type with for S3 getProperties API.
  */
 export type GetPropertiesWithPathInput =
-	StorageGetPropertiesInputWithPath<GetPropertiesOptionsWithPath>;
+	StorageGetPropertiesInputWithPath<GetPropertiesWithPathOptions>;
 
 /**
  * @deprecated Use {@link GetUrlWithPathInput} instead.
  * Input type for S3 getUrl API.
  */
-export type GetUrlInput = StorageGetUrlInputWithKey<GetUrlOptionsWithKey>;
+export type GetUrlInput = StorageGetUrlInputWithKey<GetUrlWithKeyOptions>;
 /**
  * Input type with path for S3 getUrl API.
  */
 export type GetUrlWithPathInput =
-	StorageGetUrlInputWithPath<GetUrlOptionsWithPath>;
+	StorageGetUrlInputWithPath<GetUrlWithPathOptions>;
 
 /**
  * Input type with path for S3 list API. Lists all bucket objects.
  */
 export type ListAllWithPathInput =
-	StorageListInputWithPath<ListAllOptionsWithPath>;
+	StorageListInputWithPath<ListAllWithPathOptions>;
 
 /**
  * Input type with path for S3 list API. Lists bucket objects with pagination.
  */
 export type ListPaginateWithPathInput =
-	StorageListInputWithPath<ListPaginateOptionsWithPath>;
+	StorageListInputWithPath<ListPaginateWithPathOptions>;
 
 /**
  * @deprecated Use {@link ListAllWithPathInput} instead.
  * Input type for S3 list API. Lists all bucket objects.
  */
-export type ListAllInput = StorageListInputWithPrefix<ListAllOptionsWithPrefix>;
+export type ListAllInput = StorageListInputWithPrefix<ListAllWithPrefixOptions>;
 
 /**
  * @deprecated Use {@link ListPaginateWithPathInput} instead.
  * Input type for S3 list API. Lists bucket objects with pagination.
  */
 export type ListPaginateInput =
-	StorageListInputWithPrefix<ListPaginateOptionsWithPrefix>;
+	StorageListInputWithPrefix<ListPaginateWithPrefixOptions>;
 
 /**
  * @deprecated Use {@link RemoveWithPathInput} instead.
@@ -125,33 +125,39 @@ export type RemoveWithPathInput = StorageRemoveInputWithPath<
  * Input type for S3 downloadData API.
  */
 export type DownloadDataInput =
-	StorageDownloadDataInputWithKey<DownloadDataOptionsWithKey>;
+	StorageDownloadDataInputWithKey<DownloadDataWithKeyOptions>;
 
 /**
  * Input type with path for S3 downloadData API.
  */
 export type DownloadDataWithPathInput =
-	StorageDownloadDataInputWithPath<DownloadDataOptionsWithPath>;
+	StorageDownloadDataInputWithPath<DownloadDataWithPathOptions>;
 
 /**
  * @deprecated Use {@link UploadDataWithPathInput} instead.
  * Input type for S3 uploadData API.
  */
 export type UploadDataInput =
-	StorageUploadDataInputWithKey<UploadDataOptionsWithKey>;
+	StorageUploadDataInputWithKey<UploadDataWithKeyOptions>;
 
 /**
  * Input type with path for S3 uploadData API.
  */
 export type UploadDataWithPathInput =
-	StorageUploadDataInputWithPath<UploadDataOptionsWithPath>;
+	StorageUploadDataInputWithPath<UploadDataWithPathOptions>;
 
+/**
+ * @internal convinience types.
+ */
 export type ListAPIInput =
 	| ListAllInput
 	| ListPaginateInput
 	| ListAllWithPathInput
 	| ListPaginateWithPathInput;
 
+/**
+ * @internal convinience types.
+ */
 export type ListAPIOutput =
 	| ListAllOutput
 	| ListPaginateOutput

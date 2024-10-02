@@ -412,6 +412,41 @@ describe('createCookieStorageAdapterFromNextServerContext', () => {
 				'key3=;Expires=Thu, 01 Jan 1970 00:00:00 GMT',
 			]);
 		});
+
+		it('does not add duplicate cookies when the cookies are defined in the response Set-Cookie headers', () => {
+			const mockExistingSetCookieValues = [
+				'CognitoIdentityServiceProvider.1234.accessToken=1234;Path=/',
+				'CognitoIdentityServiceProvider.1234.refreshToken=1234;Path=/',
+				'CognitoIdentityServiceProvider.1234.identityId=;Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+			];
+
+			const request = new IncomingMessage(new Socket());
+			const response = new ServerResponse(request);
+			const appendHeaderSpy = jest.spyOn(response, 'appendHeader');
+			const getHeaderSpy = jest.spyOn(response, 'getHeader');
+
+			Object.defineProperty(request, 'cookies', {
+				get() {
+					return {};
+				},
+			});
+
+			getHeaderSpy.mockReturnValue(mockExistingSetCookieValues);
+
+			const result = createCookieStorageAdapterFromNextServerContext({
+				request: request as any,
+				response,
+			});
+
+			result.set('CognitoIdentityServiceProvider.1234.accessToken', '5678');
+			expect(appendHeaderSpy).not.toHaveBeenCalled();
+
+			result.set('CognitoIdentityServiceProvider.1234.refreshToken', '5678');
+			expect(appendHeaderSpy).not.toHaveBeenCalled();
+
+			result.delete('CognitoIdentityServiceProvider.1234.identityId');
+			expect(appendHeaderSpy).not.toHaveBeenCalled();
+		});
 	});
 
 	it('should throw error when no cookie storage adapter is created from the context', () => {

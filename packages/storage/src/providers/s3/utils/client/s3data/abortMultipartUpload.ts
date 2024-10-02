@@ -16,7 +16,6 @@ import { MetadataBearer } from '@aws-sdk/types';
 
 import {
 	buildStorageServiceError,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
@@ -24,7 +23,7 @@ import {
 import { validateObjectUrl } from '../../validateObjectUrl';
 
 import type { AbortMultipartUploadCommandInput } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type AbortMultipartUploadInput = Pick<
 	AbortMultipartUploadCommandInput,

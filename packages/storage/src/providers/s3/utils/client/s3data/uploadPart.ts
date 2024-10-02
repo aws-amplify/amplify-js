@@ -17,14 +17,13 @@ import {
 	assignStringVariables,
 	buildStorageServiceError,
 	map,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
 import { validateObjectUrl } from '../../validateObjectUrl';
 
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
 
 // Content-length is ignored here because it's forbidden header

@@ -6,9 +6,9 @@ import { Amplify } from '@aws-amplify/core';
 import { AuthError } from '../../../src/errors/AuthError';
 import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { getCurrentUser, signIn } from '../../../src/providers/cognito';
-import { initiateAuth } from '../../../src/providers/cognito/utils/clients/CognitoIdentityProvider';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
+import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
@@ -24,16 +24,21 @@ jest.mock('@aws-amplify/core/internals/utils', () => ({
 }));
 jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock(
-	'../../../src/providers/cognito/utils/clients/CognitoIdentityProvider',
+	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
 
 describe('signIn API error path cases:', () => {
 	// assert mocks
-	const mockInitiateAuth = initiateAuth as jest.Mock;
+	const mockCreateInitiateAuthClient = jest.mocked(createInitiateAuthClient);
+	const mockInitiateAuth = jest.fn();
 	const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
+	});
+
+	beforeEach(() => {
+		mockCreateInitiateAuthClient.mockReturnValueOnce(mockInitiateAuth);
 	});
 
 	afterEach(() => {

@@ -171,20 +171,44 @@ const createCookieStorageAdapterFromGetServerSidePropsContext = (
 			return allCookies;
 		},
 		set(name, value, options) {
+			const encodedName = ensureEncodedForJSCookie(name);
+
+			const existingValues = getExistingSetCookieValues(
+				response.getHeader('Set-Cookie'),
+			);
+
+			// if the cookies have already been set, we don't need to set them again.
+			if (
+				existingValues.findIndex(
+					cookieValue =>
+						cookieValue.startsWith(`${encodedName}=`) &&
+						!cookieValue.startsWith(`${encodedName}=;`),
+				) > -1
+			) {
+				return;
+			}
+
 			response.appendHeader(
 				'Set-Cookie',
-				`${ensureEncodedForJSCookie(name)}=${value};${
+				`${encodedName}=${value};${
 					options ? serializeSetCookieOptions(options) : ''
 				}`,
 			);
 		},
 		delete(name) {
-			response.appendHeader(
-				'Set-Cookie',
-				`${ensureEncodedForJSCookie(
-					name,
-				)}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`,
+			const encodedName = ensureEncodedForJSCookie(name);
+			const setCookieValue = `${encodedName}=;Expires=${DATE_IN_THE_PAST.toUTCString()}`;
+			const existingValues = getExistingSetCookieValues(
+				response.getHeader('Set-Cookie'),
 			);
+
+			// if the value for cookie deletion is already in the Set-Cookie header, we
+			// don't need to add the deletion value again.
+			if (existingValues.includes(setCookieValue)) {
+				return;
+			}
+
+			response.appendHeader('Set-Cookie', setCookieValue);
 		},
 	};
 };
@@ -250,3 +274,8 @@ const serializeSetCookieOptions = (
 // we are not using those chars in the auth keys.
 const ensureEncodedForJSCookie = (name: string): string =>
 	encodeURIComponent(name).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent);
+
+const getExistingSetCookieValues = (
+	values: number | string | string[] | undefined,
+): string[] =>
+	values === undefined ? [] : Array.isArray(values) ? values : [String(values)];

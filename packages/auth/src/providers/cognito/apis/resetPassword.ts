@@ -12,11 +12,12 @@ import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthDeliveryMedium } from '../../../types';
 import { ResetPasswordInput, ResetPasswordOutput } from '../types';
-import { forgotPassword } from '../utils/clients/CognitoIdentityProvider';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { ForgotPasswordException } from '../../cognito/types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getUserContextData } from '../utils/userContextData';
+import { createForgotPasswordClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 /**
  * Resets a user's password.
@@ -39,7 +40,7 @@ export async function resetPassword(
 	);
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
-	const { userPoolClientId, userPoolId } = authConfig;
+	const { userPoolClientId, userPoolId, userPoolEndpoint } = authConfig;
 	const clientMetadata = input.options?.clientMetadata;
 
 	const UserContextData = getUserContextData({
@@ -48,15 +49,20 @@ export async function resetPassword(
 		userPoolClientId,
 	});
 
+	const forgotPassword = createForgotPasswordClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	const res = await forgotPassword(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ResetPassword),
 		},
 		{
 			Username: username,
 			ClientMetadata: clientMetadata,
-			ClientId: authConfig.userPoolClientId,
+			ClientId: userPoolClientId,
 			UserContextData,
 		},
 	);

@@ -15,7 +15,6 @@ import {
 	bothNilOrEqual,
 	buildStorageServiceError,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
@@ -25,7 +24,7 @@ import { IntegrityError } from '../../../../../errors/IntegrityError';
 import { validateObjectUrl } from '../../validateObjectUrl';
 
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type CopyObjectInput = Pick<
 	CopyObjectCommandInput,

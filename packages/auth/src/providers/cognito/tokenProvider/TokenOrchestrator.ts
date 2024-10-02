@@ -25,6 +25,7 @@ import {
 	AuthTokenStore,
 	CognitoAuthTokens,
 	DeviceMetadata,
+	OAuthMetadata,
 	TokenRefresher,
 } from './types';
 
@@ -202,5 +203,13 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	clearDeviceMetadata(username?: string): Promise<void> {
 		return this.getTokenStore().clearDeviceMetadata(username);
+	}
+
+	setOAuthMetadata(metadata: OAuthMetadata): Promise<void> {
+		return this.getTokenStore().setOAuthMetadata(metadata);
+	}
+
+	getOAuthMetadata(): Promise<OAuthMetadata | null> {
+		return this.getTokenStore().getOAuthMetadata();
 	}
 }
