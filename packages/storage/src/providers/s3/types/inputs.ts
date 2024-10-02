@@ -29,8 +29,12 @@ import {
 	GetUrlOptionsWithPath,
 	ListAllOptionsWithPath,
 	ListAllOptionsWithPrefix,
+	ListAllOutput,
+	ListAllWithPathOutput,
 	ListPaginateOptionsWithPath,
 	ListPaginateOptionsWithPrefix,
+	ListPaginateOutput,
+	ListPaginateWithPathOutput,
 	RemoveOptions,
 	UploadDataOptionsWithKey,
 	UploadDataOptionsWithPath,
@@ -141,3 +145,15 @@ export type UploadDataInput =
  */
 export type UploadDataWithPathInput =
 	StorageUploadDataInputWithPath<UploadDataOptionsWithPath>;
+
+export type ListAPIInput =
+	| ListAllInput
+	| ListPaginateInput
+	| ListAllWithPathInput
+	| ListPaginateWithPathInput;
+
+export type ListAPIOutput =
+	| ListAllOutput
+	| ListPaginateOutput
+	| ListAllWithPathOutput
+	| ListPaginateWithPathOutput;

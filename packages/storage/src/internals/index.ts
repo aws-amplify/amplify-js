@@ -20,6 +20,7 @@ export {
 
 export { getDataAccess } from './apis/getDataAccess';
 export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
+export { list } from './apis/list';
 
 /*
 CredentialsStore exports

@@ -5,15 +5,11 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
-	ListAllInput,
 	ListAllOutput,
-	ListAllWithPathInput,
 	ListAllWithPathOutput,
 	ListOutputItem,
 	ListOutputItemWithPath,
-	ListPaginateInput,
 	ListPaginateOutput,
-	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
 } from '../../types';
 import {
@@ -35,6 +31,8 @@ import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/s3data/types';
 import { IntegrityError } from '../../../../errors/IntegrityError';
+import { ListAPIInput, ListAPIOutput } from '../../types/inputs';
+import { ListAdvancedAPIInput } from '../../../../internals/types/inputs';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -46,17 +44,8 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input:
-		| ListAllInput
-		| ListPaginateInput
-		| ListAllWithPathInput
-		| ListPaginateWithPathInput,
-): Promise<
-	| ListAllOutput
-	| ListPaginateOutput
-	| ListAllWithPathOutput
-	| ListPaginateWithPathOutput
-> => {
+	input: ListAPIInput | ListAdvancedAPIInput,
+): Promise<ListAPIOutput> => {
 	const { options = {} } = input;
 	const {
 		s3Config,
