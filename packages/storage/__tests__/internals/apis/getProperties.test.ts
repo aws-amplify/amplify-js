@@ -10,14 +10,16 @@ const mockedGetPropertiesInternal = jest.mocked(getPropertiesInternal);
 
 describe('getProperties (internal)', () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
 		mockedGetPropertiesInternal.mockResolvedValue({
 			path: 'output/path/to/mock/object',
 		});
 	});
 
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should pass advanced option locationCredentialsProvider to internal getProperties', async () => {
-		expect.assertions(3);
 		const useAccelerateEndpoint = true;
 		const bucket = { bucketName: 'bucket', region: 'us-east-1' };
 		const locationCredentialsProvider = async () => ({

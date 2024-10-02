@@ -10,11 +10,7 @@ import {
 	CopyWithPathInput,
 	CopyWithPathOutput,
 } from '../../types';
-import {
-	LocationCredentialsProvider,
-	ResolvedS3Config,
-	StorageBucket,
-} from '../../types/options';
+import { ResolvedS3Config, StorageBucket } from '../../types/options';
 import {
 	isInputWithPath,
 	resolveS3ConfigAndInput,
@@ -26,15 +22,7 @@ import { copyObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 // TODO: Remove this interface when we move to public advanced APIs.
-import { ExtendInputWithAdvancedOptions } from '../../../../internals/types/inputs';
-
-// TODO: Change this interface back to CopyWithPathInput when we move to public advanced APIs.
-type InputWithPathAndAdvancedOptions = ExtendInputWithAdvancedOptions<
-	CopyWithPathInput,
-	{
-		locationCredentialsProvider?: LocationCredentialsProvider;
-	}
->;
+import { CopyInput as CopyWithPathInputWithAdvancedOptions } from '../../../../internals';
 
 const isCopyInputWithPath = (
 	input: CopyInput | CopyWithPathInput,
@@ -58,7 +46,7 @@ const storageBucketAssertion = (
 
 export const copy = async (
 	amplify: AmplifyClassV6,
-	input: CopyInput | InputWithPathAndAdvancedOptions,
+	input: CopyInput | CopyWithPathInputWithAdvancedOptions,
 ): Promise<CopyOutput | CopyWithPathOutput> => {
 	return isCopyInputWithPath(input)
 		? copyWithPath(amplify, input)
@@ -67,7 +55,7 @@ export const copy = async (
 
 const copyWithPath = async (
 	amplify: AmplifyClassV6,
-	input: InputWithPathAndAdvancedOptions,
+	input: CopyWithPathInputWithAdvancedOptions,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
 
