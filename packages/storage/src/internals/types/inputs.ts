@@ -2,9 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	StorageCopyInputWithPath,
 	StorageOperationInputWithPath,
 	StorageOperationOptionsInput,
 } from '../../types/inputs';
+import {
+	CopyWithPathInput,
+	GetPropertiesWithPathInput,
+} from '../../providers/s3';
 import { ListAPIInput } from '../../providers/s3/types/inputs';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
@@ -43,17 +48,45 @@ export type ListAdvancedAPIInput = ExtendInputWithAdvancedOptions<
 	}
 >;
 
+export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
+	GetPropertiesWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
 /**
- * Generic types that extend the public API input type with extended options.
- * This is a temporary solution to support advanced options from internal APIs.
- *
  * @internal
  */
-export type ExtendInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
+export type CopyInput = ExtendCopyInputWithAdvancedOptions<
+	CopyWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
+/**
+ * Generic types that extend the public non-copy API input types with extended
+ * options. This is a temporary solution to support advanced options from internal APIs.
+ */
+type ExtendInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
 	InputType extends StorageOperationInputWithPath &
 		StorageOperationOptionsInput<infer PublicInputOptionsType>
 		? {
 				path: InputType['path'];
 				options?: PublicInputOptionsType & ExtendedOptionsType;
+			}
+		: never;
+
+/**
+ * Generic types that extend the public copy API input type with extended options.
+ * This is a temporary solution to support advanced options from internal APIs.
+ */
+type ExtendCopyInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
+	InputType extends StorageCopyInputWithPath
+		? {
+				source: InputType['source'];
+				destination: InputType['destination'];
+				options?: ExtendedOptionsType;
 			}
 		: never;

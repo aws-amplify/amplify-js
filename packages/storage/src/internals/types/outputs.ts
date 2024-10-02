@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { GetPropertiesWithPathOutput } from '../../providers/s3/types';
+
 import { ListLocationsOutput, LocationCredentials } from './credentials';
 
 /**
@@ -12,3 +14,8 @@ export type ListCallerAccessGrantsOutput = ListLocationsOutput;
  * @internal
  */
 export type GetDataAccessOutput = LocationCredentials;
+
+/**
+ * @internal
+ */
+export type GetPropertiesOutput = GetPropertiesWithPathOutput;
