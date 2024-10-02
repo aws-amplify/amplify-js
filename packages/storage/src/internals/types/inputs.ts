@@ -9,6 +9,7 @@ import {
 import {
 	CopyWithPathInput,
 	GetPropertiesWithPathInput,
+	RemoveWithPathInput,
 } from '../../providers/s3';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
@@ -36,6 +37,16 @@ export interface GetDataAccessInput {
 	region: string;
 	scope: string;
 }
+
+/**
+ * @internal
+ */
+export type RemoveInput = ExtendInputWithAdvancedOptions<
+	RemoveWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
 
 /**
  * @internal

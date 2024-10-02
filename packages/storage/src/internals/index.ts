@@ -13,16 +13,19 @@ export {
 	ListCallerAccessGrantsInput,
 	GetPropertiesInput,
 	CopyInput,
+	RemoveInput,
 } from './types/inputs';
 export {
 	GetDataAccessOutput,
 	ListCallerAccessGrantsOutput,
 	GetPropertiesOutput,
+	RemoveOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';
 export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
 export { getProperties } from './apis/getProperties';
+export { remove } from './apis/remove';
 
 /*
 CredentialsStore exports
