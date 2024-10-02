@@ -96,6 +96,10 @@ const parseBuckets = ({
 
 	for (const [, bucketInfo] of Object.entries(buckets)) {
 		const { bucketName, paths } = bucketInfo;
+		if (!paths) {
+			// Todo: Verify behavior
+			return locations;
+		}
 		for (const [path, accessRules] of Object.entries(paths)) {
 			// eslint-disable-next-line no-template-curly-in-string
 			if (tokens && path.includes('${cognito-identity.amazonaws.com:sub}')) {

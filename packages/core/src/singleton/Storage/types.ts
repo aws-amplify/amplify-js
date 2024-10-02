@@ -13,7 +13,7 @@ export interface BucketInfo {
 	/** Region of the bucket */
 	region: string;
 	/** Path to object provisioned */
-	paths: Record<string, Record<string, string[]>>;
+	paths?: Record<string, Record<string, string[]>>;
 }
 export interface S3ProviderConfig {
 	S3: {
