@@ -4,11 +4,16 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { list as listInternal } from '../../providers/s3/apis/internal/list';
-import { ListAdvancedAPIInput } from '../types/inputs';
+import { ListInternalInput } from '../types/inputs';
 
 /**
  * @internal
+ * List all or paginate files from S3 for a given `path`.
+ * @param input - The `ListInternalInput` object.
+ * @returns A list of all objects with path and metadata
+ * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
+ * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
-export function list(input?: ListAdvancedAPIInput) {
+export function list(input?: ListInternalInput) {
 	return listInternal(Amplify, input ?? {});
 }

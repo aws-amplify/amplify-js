@@ -100,7 +100,7 @@ export type ListPaginateInput =
 /**
  * @internal convinience types.
  */
-export type ListAPIInput =
+export type ListInput =
 	| ListAllInput
 	| ListPaginateInput
 	| ListAllWithPathInput

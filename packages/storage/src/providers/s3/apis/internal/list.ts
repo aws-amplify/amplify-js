@@ -31,9 +31,9 @@ import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/s3data/types';
 import { IntegrityError } from '../../../../errors/IntegrityError';
-import { ListAPIInput } from '../../types/inputs';
-import { ListAdvancedAPIInput } from '../../../../internals/types/inputs';
-import { ListAPIOutput } from '../../types/outputs';
+import { ListInput } from '../../types/inputs';
+import { ListInternalInput } from '../../../../internals/types/inputs';
+import { ListOutput } from '../../types/outputs';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -45,8 +45,8 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input: ListAPIInput | ListAdvancedAPIInput,
-): Promise<ListAPIOutput> => {
+	input: ListInput | ListInternalInput,
+): Promise<ListOutput> => {
 	const { options = {} } = input;
 	const {
 		s3Config,

@@ -126,7 +126,7 @@ export type ListPaginateWithPathOutput =
 /**
  * @internal convinience types.
  */
-export type ListAPIOutput =
+export type ListOutput =
 	| ListAllOutput
 	| ListPaginateOutput
 	| ListAllWithPathOutput
