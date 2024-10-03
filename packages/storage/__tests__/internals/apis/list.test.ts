@@ -13,13 +13,11 @@ describe('list (internals)', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockedListInternal.mockResolvedValue({
-			path: 'output/path/to/mock/object',
 			items: [],
 		} as ListAllWithPathOutput);
 	});
 
 	it('should pass advanced option locationCredentialsProvider to internal list', async () => {
-		expect.assertions(3);
 		const useAccelerateEndpoint = true;
 		const bucket = { bucketName: 'bucket', region: 'us-east-1' };
 		const locationCredentialsProvider = async () => ({
@@ -51,7 +49,6 @@ describe('list (internals)', () => {
 			},
 		);
 		expect(result).toEqual({
-			path: 'output/path/to/mock/object',
 			items: [],
 		});
 	});

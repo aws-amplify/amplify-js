@@ -124,15 +124,6 @@ export type ListPaginateWithPathOutput =
 	};
 
 /**
- * @internal convinience types.
- */
-export type ListOutput =
-	| ListAllOutput
-	| ListPaginateOutput
-	| ListAllWithPathOutput
-	| ListPaginateWithPathOutput;
-
-/**
  *  Output type with path for S3 copy API.
  * @deprecated Use {@link CopyWithPathOutput} instead.
  */

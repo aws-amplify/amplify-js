@@ -10,7 +10,10 @@ import {
 	CopyWithPathInput,
 	GetPropertiesWithPathInput,
 } from '../../providers/s3';
-import { ListInput } from '../../providers/s3/types/inputs';
+import {
+	ListAllWithPathInput,
+	ListPaginateWithPathInput,
+} from '../../providers/s3/types/inputs';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
 import { Permission, PrefixType, Privilege } from './common';
@@ -41,12 +44,13 @@ export interface GetDataAccessInput {
 /**
  * @internal
  */
-export type ListInternalInput = ExtendInputWithAdvancedOptions<
-	ListInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
->;
+export type ListWithPathInputAndAdvancedOptions =
+	ExtendInputWithAdvancedOptions<
+		ListAllWithPathInput | ListPaginateWithPathInput,
+		{
+			locationCredentialsProvider?: CredentialsProvider;
+		}
+	>;
 
 export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
 	GetPropertiesWithPathInput,

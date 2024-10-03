@@ -98,15 +98,6 @@ export type ListPaginateInput =
 	StorageListInputWithPrefix<ListPaginateWithPrefixOptions>;
 
 /**
- * @internal convinience types.
- */
-export type ListInput =
-	| ListAllInput
-	| ListPaginateInput
-	| ListAllWithPathInput
-	| ListPaginateWithPathInput;
-
-/**
  * @deprecated Use {@link RemoveWithPathInput} instead.
  * Input type with key for S3 remove API.
  */

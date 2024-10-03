@@ -13,6 +13,7 @@ export {
 	ListCallerAccessGrantsInput,
 	GetPropertiesInput,
 	CopyInput,
+	ListWithPathInputAndAdvancedOptions,
 } from './types/inputs';
 export {
 	GetDataAccessOutput,
