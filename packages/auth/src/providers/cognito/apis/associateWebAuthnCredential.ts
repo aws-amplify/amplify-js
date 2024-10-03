@@ -16,10 +16,14 @@ import {
 	createVerifyWebAuthnRegistrationResultClient,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import {
+	// eslint-disable-next-line unused-imports/no-unused-imports
+	PasskeyError,
 	PasskeyErrorCode,
 	assertPasskeyError,
 } from '../../../utils/passkey/errors';
 import { AssociateWebAuthnCredentialOutput } from '../types/outputs';
+// eslint-disable-next-line unused-imports/no-unused-imports
+import { AuthError } from '../../../errors/AuthError';
 
 /**
  * Registers a new passkey for an authenticated user
@@ -35,7 +39,7 @@ export async function associateWebAuthnCredential(): Promise<AssociateWebAuthnCr
 
 	const { userPoolEndpoint, userPoolId } = authConfig;
 
-	const { tokens } = await fetchAuthSession({ forceRefresh: false });
+	const { tokens } = await fetchAuthSession();
 
 	assertAuthTokens(tokens);
 

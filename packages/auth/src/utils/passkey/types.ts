@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 type PasskeyTransport = 'ble' | 'hybrid' | 'internal' | 'nfc' | 'usb';
-
+type UserVerificationRequirement = 'discouraged' | 'preferred' | 'required';
 export interface PasskeyCreateOptionsJson {
 	challenge: string;
 	rp: {
@@ -26,8 +26,8 @@ export interface PasskeyCreateOptionsJson {
 	}[];
 	authenticatorSelection: {
 		requireResidentKey: boolean;
-		residentKey: 'discouraged' | 'preferred' | 'required';
-		userVerification: 'discouraged' | 'preferred' | 'required';
+		residentKey: UserVerificationRequirement;
+		userVerification: UserVerificationRequirement;
 	};
 }
 
@@ -54,8 +54,8 @@ export interface PasskeyCreateOptions {
 	}[];
 	authenticatorSelection: {
 		requireResidentKey: boolean;
-		residentKey: 'discouraged' | 'preferred' | 'required';
-		userVerification: 'discouraged' | 'preferred' | 'required';
+		residentKey: UserVerificationRequirement;
+		userVerification: UserVerificationRequirement;
 	};
 }
 

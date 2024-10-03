@@ -1,6 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+	base64Decoder,
+	base64Encoder,
+} from '@aws-amplify/core/internals/utils';
+
 // https://datatracker.ietf.org/doc/html/rfc4648#page-7
 
 /**
@@ -11,9 +16,10 @@
 export const convertBase64UrlToArrayBuffer = (
 	base64url: string,
 ): ArrayBuffer => {
-	const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-
-	return Uint8Array.from(atob(base64), x => x.charCodeAt(0)).buffer;
+	return Uint8Array.from(
+		base64Decoder.convert(base64url.replace(/-/g, '+').replace(/_/g, '/')),
+		x => x.charCodeAt(0),
+	).buffer;
 };
 
 /**
@@ -22,8 +28,8 @@ export const convertBase64UrlToArrayBuffer = (
  * @returns string - a base64url encoded string
  */
 export const convertArrayBufferToBase64Url = (buffer: ArrayBuffer): string => {
-	return btoa(String.fromCharCode(...new Uint8Array(buffer)))
-		.replace(/\+/g, '-')
-		.replace(/\//g, '_')
-		.replace(/=+$/, '');
+	return base64Encoder.convert(new Uint8Array(buffer), {
+		urlSafe: true,
+		skipPadding: true,
+	});
 };
