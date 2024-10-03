@@ -6,7 +6,7 @@ import {
 	LocationCredentialsProvider,
 } from '../../providers/s3/types/options';
 
-import { LocationType, Permission } from './common';
+import { LocationType, Permission, StorageAccess } from './common';
 
 /**
  * @internal
@@ -72,21 +72,6 @@ export type ListLocations = (
 /**
  * @internal
  */
-export type ListPaths = (input?: ListLocationsInput) => Promise<{
-	locations: {
-		type: 'PREFIX';
-		permission: string[];
-		scope: {
-			bucketName: string;
-			path: string;
-		};
-	}[];
-	nextToken?: string;
-}>;
-
-/**
- * @internal
- */
 export interface LocationScope {
 	/**
 	 * Scope of storage location. For S3 service, it's the S3 path of the data to
@@ -122,3 +107,37 @@ export interface LocationAccess extends CredentialsLocation {
 	 */
 	readonly type: LocationType;
 }
+
+/**
+ * @internal
+ */
+export interface PathAccess {
+	/** The Amplify backend mandates that all paths conclude with '/*',
+	 * which means the only applicable type in this context is 'PREFIX'. */
+	type: 'PREFIX';
+	permission: StorageAccess[];
+	scope: {
+		bucketName: string;
+		path: string;
+	};
+}
+/**
+ * @internal
+ */
+export interface ListPathsInput {
+	pageSize?: number;
+	nextToken?: string;
+}
+
+/**
+ * @internal
+ */
+export interface ListPathsOutput {
+	locations: PathAccess[];
+	nextToken?: string;
+}
+
+/**
+ * @internal
+ */
+export type ListPaths = (input?: ListPathsInput) => Promise<ListPathsOutput>;

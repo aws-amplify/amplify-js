@@ -50,6 +50,7 @@ export interface AmplifyOutputsStorageBucketProperties {
 	bucket_name: string;
 	/** Region for the bucket */
 	aws_region: string;
+	/** Paths to object with access permissions */
 	paths?: Record<string, Record<string, string[]>>;
 }
 export interface AmplifyOutputsStorageProperties {
