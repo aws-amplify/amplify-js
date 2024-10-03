@@ -9,6 +9,7 @@ import {
 import {
 	CopyWithPathInput,
 	GetPropertiesWithPathInput,
+	GetUrlWithPathInput,
 	RemoveWithPathInput,
 } from '../../providers/s3';
 
@@ -53,6 +54,16 @@ export type RemoveInput = ExtendInputWithAdvancedOptions<
  */
 export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
 	GetPropertiesWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
+/**
+ * @internal
+ */
+export type GetUrlInput = ExtendInputWithAdvancedOptions<
+	GetUrlWithPathInput,
 	{
 		locationCredentialsProvider?: CredentialsProvider;
 	}

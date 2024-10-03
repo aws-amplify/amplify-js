@@ -12,6 +12,7 @@ export {
 	GetDataAccessInput,
 	ListCallerAccessGrantsInput,
 	GetPropertiesInput,
+	GetUrlInput,
 	CopyInput,
 	RemoveInput,
 } from './types/inputs';
@@ -19,12 +20,14 @@ export {
 	GetDataAccessOutput,
 	ListCallerAccessGrantsOutput,
 	GetPropertiesOutput,
+	GetUrlOutput,
 	RemoveOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';
 export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
 export { getProperties } from './apis/getProperties';
+export { getUrl } from './apis/getUrl';
 export { remove } from './apis/remove';
 
 /*
