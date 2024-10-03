@@ -4,7 +4,7 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { list as listInternal } from '../../providers/s3/apis/internal/list';
-import { ListWithPathInputAndAdvancedOptions } from '../types/inputs';
+import { ListInputWithPath } from '../types/inputs';
 
 /**
  * @internal
@@ -14,6 +14,6 @@ import { ListWithPathInputAndAdvancedOptions } from '../types/inputs';
  * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
  * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
-export function list(input?: ListWithPathInputAndAdvancedOptions) {
+export function list(input?: ListInputWithPath) {
 	return listInternal(Amplify, input ?? {});
 }

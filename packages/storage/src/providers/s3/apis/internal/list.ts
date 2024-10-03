@@ -32,7 +32,8 @@ import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/s3data/types';
 import { IntegrityError } from '../../../../errors/IntegrityError';
 import { ListAllInput, ListPaginateInput } from '../../types/inputs';
-import { ListWithPathInputAndAdvancedOptions } from '../../../../internals/types/inputs';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { ListInputWithPath as ListWithPathInputAndAdvancedOptions } from '../../../../internals/types/inputs';
 
 const MAX_PAGE_SIZE = 1000;
 

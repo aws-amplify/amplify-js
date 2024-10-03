@@ -14,7 +14,7 @@ export {
 	GetPropertiesInput,
 	GetUrlInput,
 	CopyInput,
-	ListWithPathInputAndAdvancedOptions,
+	ListInputWithPath,
 	RemoveInput,
 } from './types/inputs';
 export {
