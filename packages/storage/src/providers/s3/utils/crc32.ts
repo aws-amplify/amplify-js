@@ -3,6 +3,8 @@
 
 import crc32 from 'crc-32';
 
+import { hexToArrayBuffer, hexToBase64 } from './hexUtils';
+
 export interface CRC32Checksum {
 	checksumArrayBuffer: ArrayBuffer;
 	checksum: string;
@@ -37,15 +39,3 @@ export const calculateContentCRC32 = async (
 		seed: internalSeed,
 	};
 };
-
-export const hexToArrayBuffer = (hexString: string) =>
-	new Uint8Array((hexString.match(/\w{2}/g)! ?? []).map(h => parseInt(h, 16)))
-		.buffer;
-
-export const hexToBase64 = (hexString: string) =>
-	btoa(
-		hexString
-			.match(/\w{2}/g)!
-			.map((a: string) => String.fromCharCode(parseInt(a, 16)))
-			.join(''),
-	);

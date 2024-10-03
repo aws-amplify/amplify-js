@@ -20,7 +20,10 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
-import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
+import {
+	CHECKSUM_ALGORITHM_CRC32,
+	UPLOADS_STORAGE_KEY,
+} from '../../../../../src/providers/s3/utils/constants';
 import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
@@ -294,7 +297,7 @@ describe('getMultipartUploadHandlers with key', () => {
 					key: defaultKey,
 					data: twoPartsPayload,
 					options: {
-						checksumAlgorithm: 'crc-32',
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 					},
 				});
 				await multipartUploadJob();
@@ -379,7 +382,7 @@ describe('getMultipartUploadHandlers with key', () => {
 					key: defaultKey,
 					data: file,
 					options: {
-						checksumAlgorithm: 'crc-32',
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 					},
 				},
 				file.size,
@@ -952,7 +955,7 @@ describe('getMultipartUploadHandlers with path', () => {
 					path: testPath,
 					data: twoPartsPayload,
 					options: {
-						checksumAlgorithm: 'crc-32',
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 					},
 				});
 				await multipartUploadJob();
@@ -1037,7 +1040,7 @@ describe('getMultipartUploadHandlers with path', () => {
 					path: testPath,
 					data: file,
 					options: {
-						checksumAlgorithm: 'crc-32',
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 					},
 				},
 				file.size,

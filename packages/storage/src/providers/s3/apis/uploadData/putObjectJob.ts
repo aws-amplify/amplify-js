@@ -13,7 +13,10 @@ import {
 import { ItemWithKey, ItemWithPath } from '../../types/outputs';
 import { putObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
-import { STORAGE_INPUT_KEY } from '../../utils/constants';
+import {
+	CHECKSUM_ALGORITHM_CRC32,
+	STORAGE_INPUT_KEY,
+} from '../../utils/constants';
 import { calculateContentCRC32 } from '../../utils/crc32';
 import { constructContentDisposition } from '../../utils/constructContentDisposition';
 
@@ -52,7 +55,7 @@ export const putObjectJob =
 		} = uploadDataOptions ?? {};
 
 		const checksumCRC32 =
-			checksumAlgorithm === 'crc-32'
+			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
 				? await calculateContentCRC32(data)
 				: undefined;
 

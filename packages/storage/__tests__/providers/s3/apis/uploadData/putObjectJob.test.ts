@@ -16,6 +16,7 @@ import * as CRC32 from '../../../../../src/providers/s3/utils/crc32';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
 import '../testUtils';
 import { UploadDataChecksumAlgorithm } from '../../../../../src/providers/s3/types/options';
+import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../src/providers/s3/utils/constants';
 
 global.Blob = BlobPolyfill as any;
 global.File = FilePolyfill as any;
@@ -81,7 +82,7 @@ describe('putObjectJob with key', () => {
 	});
 
 	it.each<{ checksumAlgorithm: UploadDataChecksumAlgorithm | undefined }>([
-		{ checksumAlgorithm: 'crc-32' },
+		{ checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32 },
 		{ checksumAlgorithm: undefined },
 	])(
 		'should supply the correct parameters to putObject API handler with checksumAlgorithm as $checksumAlgorithm',
@@ -140,7 +141,9 @@ describe('putObjectJob with key', () => {
 					ContentEncoding: contentEncoding,
 					Metadata: mockMetadata,
 					ChecksumCRC32:
-						checksumAlgorithm === 'crc-32' ? 'rfPzYw==' : undefined,
+						checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
+							? 'rfPzYw=='
+							: undefined,
 				},
 			);
 		},
@@ -247,7 +250,7 @@ describe('putObjectJob with path', () => {
 	});
 
 	it.each<{ checksumAlgorithm: UploadDataChecksumAlgorithm | undefined }>([
-		{ checksumAlgorithm: 'crc-32' },
+		{ checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32 },
 		{ checksumAlgorithm: undefined },
 	]);
 
@@ -259,12 +262,12 @@ describe('putObjectJob with path', () => {
 		{
 			path: testPath,
 			expectedKey: testPath,
-			checksumAlgorithm: 'crc-32',
+			checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 		},
 		{
 			path: () => testPath,
 			expectedKey: testPath,
-			checksumAlgorithm: 'crc-32',
+			checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 		},
 		{
 			path: testPath,
@@ -332,7 +335,9 @@ describe('putObjectJob with path', () => {
 					ContentEncoding: contentEncoding,
 					Metadata: mockMetadata,
 					ChecksumCRC32:
-						checksumAlgorithm === 'crc-32' ? 'rfPzYw==' : undefined,
+						checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
+							? 'rfPzYw=='
+							: undefined,
 				},
 			);
 		},

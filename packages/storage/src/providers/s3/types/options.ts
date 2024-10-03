@@ -227,8 +227,8 @@ export type UploadDataOptions = CommonOptions &
 		 */
 		preventOverwrite?: boolean;
 		/**
-		 * Indicates the algorithm used to create the checksum for the object.
-		 * This checksum can be used as a data integrity check to verify that the data received is the same data that was originally sent.
+		 * The algorithm used to compute a checksum for the object. Used to verify that the data received by S3
+		 * matches what was originally sent. Disabled by default.
 		 * @default undefined
 		 */
 		checksumAlgorithm?: UploadDataChecksumAlgorithm;

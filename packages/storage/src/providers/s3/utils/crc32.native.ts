@@ -3,7 +3,7 @@
 
 import crc32 from 'crc-32';
 
-import { hexToArrayBuffer, hexToBase64 } from './crc32';
+import { hexToArrayBuffer, hexToBase64 } from './hexUtils';
 
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 

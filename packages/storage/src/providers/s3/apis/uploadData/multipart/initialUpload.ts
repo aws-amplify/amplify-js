@@ -13,6 +13,7 @@ import { Part, createMultipartUpload } from '../../../utils/client/s3data';
 import { logger } from '../../../../../utils';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 import { getCombinedCrc32 } from '../../../utils/getCombinedCrc32';
+import { CHECKSUM_ALGORITHM_CRC32 } from '../../../utils/constants';
 
 import {
 	cacheMultipartUpload,
@@ -108,7 +109,7 @@ export const loadOrCreateMultipartUpload = async ({
 		};
 	} else {
 		const finalCrc32 =
-			checksumAlgorithm === 'crc-32'
+			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
 				? await getCombinedCrc32(data, size)
 				: undefined;
 
