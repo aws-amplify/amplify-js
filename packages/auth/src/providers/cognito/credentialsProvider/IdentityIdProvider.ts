@@ -1,12 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AuthTokens, ConsoleLogger, Identity, getId } from '@aws-amplify/core';
+import {
+	AuthTokens,
+	ConsoleLogger,
+	Identity,
+	createGetIdClient,
+} from '@aws-amplify/core';
 import { CognitoIdentityPoolConfig } from '@aws-amplify/core/internals/utils';
 
 import { AuthError } from '../../../errors/AuthError';
 import { getRegionFromIdentityPoolId } from '../../../foundation/parsers';
 import { GetIdException } from '../types/errors';
+import { createCognitoIdentityPoolEndpointResolver } from '../factories';
 
 import { IdentityIdStore } from './types';
 import { formLoginsMap } from './utils';
@@ -82,10 +88,16 @@ async function generateIdentityId(
 	const identityPoolId = authConfig?.identityPoolId;
 	const region = getRegionFromIdentityPoolId(identityPoolId);
 
+	const getId = createGetIdClient({
+		endpointResolver: createCognitoIdentityPoolEndpointResolver({
+			endpointOverride: authConfig.identityPoolEndpoint,
+		}),
+	});
+
 	// IdentityId is absent so get it using IdentityPoolId with Cognito's GetId API
 	const idResult =
 		// for a first-time user, this will return a brand new identity
-		// for a returning user, this will retrieve the previous identity assocaited with the logins
+		// for a returning user, this will retrieve the previous identity associated with the logins
 		(
 			await getId(
 				{
