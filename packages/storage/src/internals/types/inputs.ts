@@ -9,6 +9,8 @@ import {
 import {
 	CopyWithPathInput,
 	GetPropertiesWithPathInput,
+	GetUrlWithPathInput,
+	RemoveWithPathInput,
 } from '../../providers/s3';
 import {
 	ListAllWithPathInput,
@@ -52,8 +54,31 @@ export type ListWithPathInputAndAdvancedOptions =
 		}
 	>;
 
+/**
+ * @internal
+ */
+export type RemoveInput = ExtendInputWithAdvancedOptions<
+	RemoveWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
+/**
+ * @internal
+ */
 export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
 	GetPropertiesWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
+/**
+ * @internal
+ */
+export type GetUrlInput = ExtendInputWithAdvancedOptions<
+	GetUrlWithPathInput,
 	{
 		locationCredentialsProvider?: CredentialsProvider;
 	}

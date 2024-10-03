@@ -12,19 +12,25 @@ export {
 	GetDataAccessInput,
 	ListCallerAccessGrantsInput,
 	GetPropertiesInput,
+	GetUrlInput,
 	CopyInput,
 	ListWithPathInputAndAdvancedOptions,
+	RemoveInput,
 } from './types/inputs';
 export {
 	GetDataAccessOutput,
 	ListCallerAccessGrantsOutput,
 	GetPropertiesOutput,
+	GetUrlOutput,
+	RemoveOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';
 export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
 export { list } from './apis/list';
 export { getProperties } from './apis/getProperties';
+export { getUrl } from './apis/getUrl';
+export { remove } from './apis/remove';
 
 /*
 CredentialsStore exports
