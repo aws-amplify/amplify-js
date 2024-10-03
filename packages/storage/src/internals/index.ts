@@ -12,17 +12,20 @@ export {
 	GetDataAccessInput,
 	ListCallerAccessGrantsInput,
 	GetPropertiesInput,
+	GetUrlInput,
 	CopyInput,
 } from './types/inputs';
 export {
 	GetDataAccessOutput,
 	ListCallerAccessGrantsOutput,
 	GetPropertiesOutput,
+	GetUrlOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';
 export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
 export { getProperties } from './apis/getProperties';
+export { getUrl } from './apis/getUrl';
 
 /*
 CredentialsStore exports

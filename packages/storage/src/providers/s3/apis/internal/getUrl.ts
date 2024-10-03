@@ -4,12 +4,7 @@
 import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import {
-	GetUrlInput,
-	GetUrlOutput,
-	GetUrlWithPathInput,
-	GetUrlWithPathOutput,
-} from '../../types';
+import { GetUrlInput, GetUrlOutput, GetUrlWithPathOutput } from '../../types';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
 import { getPresignedGetObjectUrl } from '../../utils/client/s3data';
 import {
@@ -23,12 +18,14 @@ import {
 	STORAGE_INPUT_KEY,
 } from '../../utils/constants';
 import { constructContentDisposition } from '../../utils/constructContentDisposition';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { GetUrlInput as GetUrlWithPathInputWithAdvancedOptions } from '../../../../internals';
 
 import { getProperties } from './getProperties';
 
 export const getUrl = async (
 	amplify: AmplifyClassV6,
-	input: GetUrlInput | GetUrlWithPathInput,
+	input: GetUrlInput | GetUrlWithPathInputWithAdvancedOptions,
 ): Promise<GetUrlOutput | GetUrlWithPathOutput> => {
 	const { options: getUrlOptions } = input;
 	const { s3Config, keyPrefix, bucket, identityId } =

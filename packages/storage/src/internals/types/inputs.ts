@@ -9,6 +9,7 @@ import {
 import {
 	CopyWithPathInput,
 	GetPropertiesWithPathInput,
+	GetUrlWithPathInput,
 } from '../../providers/s3';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
@@ -42,6 +43,16 @@ export interface GetDataAccessInput {
  */
 export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
 	GetPropertiesWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
+/**
+ * @internal
+ */
+export type GetUrlInput = ExtendInputWithAdvancedOptions<
+	GetUrlWithPathInput,
 	{
 		locationCredentialsProvider?: CredentialsProvider;
 	}
