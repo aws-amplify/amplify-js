@@ -4,6 +4,7 @@
 import {
 	GetPropertiesWithPathOutput,
 	GetUrlWithPathOutput,
+	RemoveWithPathOutput,
 } from '../../providers/s3/types';
 
 import { ListLocationsOutput, LocationCredentials } from './credentials';
@@ -27,3 +28,8 @@ export type GetPropertiesOutput = GetPropertiesWithPathOutput;
  * @internal
  */
 export type GetUrlOutput = GetUrlWithPathOutput;
+
+/**
+ * @internal
+ */
+export type RemoveOutput = RemoveWithPathOutput;
