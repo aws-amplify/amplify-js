@@ -1,0 +1,1 @@
+export { associateWebAuthnCredential } from './associateWebAuthnCredential';

@@ -33,7 +33,6 @@ export {
 	CodeDeliveryDetails,
 	UserAttributeKey,
 	VerifiableUserAttributeKey,
-	associateWebAuthnCredential,
 } from './providers/cognito';
 
 export {
@@ -88,3 +87,6 @@ export {
 	AuthTokens,
 	JWT,
 } from '@aws-amplify/core';
+
+export { associateWebAuthnCredential } from './client/apis';
+export { AssociateWebAuthnCredentialOutput } from './client/types';

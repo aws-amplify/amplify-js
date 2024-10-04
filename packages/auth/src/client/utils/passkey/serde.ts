@@ -4,7 +4,8 @@
 import {
 	convertArrayBufferToBase64Url,
 	convertBase64UrlToArrayBuffer,
-} from './base64Url';
+} from '../../../foundation/convert';
+
 import {
 	PasskeyCreateOptions,
 	PasskeyCreateOptionsJson,

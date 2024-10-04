@@ -3,7 +3,7 @@ import {
 	PasskeyCreateOptionsJson,
 	PasskeyCreateResult,
 	PasskeyCreateResultJson,
-} from '../src/utils/passkey/types';
+} from '../src/client/utils/passkey/types';
 
 // device tracking mock device data
 export const mockDeviceArray = [

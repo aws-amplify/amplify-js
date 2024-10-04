@@ -8,18 +8,17 @@ import {
 import {
 	PasskeyError,
 	PasskeyErrorCode,
-} from '../../../src/utils/passkey/errors';
-import { associateWebAuthnCredential } from '../../../src/providers/cognito/apis/associateWebAuthnCredential';
+} from '../../../src/client/utils/passkey/errors';
+import { associateWebAuthnCredential } from '../../../src/client/apis/associateWebAuthnCredential';
 import {
 	passkeyCredentialCreateOptions,
 	passkeyRegistrationResult,
 } from '../../mockData';
-import { serializePkcToJson } from '../../../src/utils/passkey/serde';
-import * as utils from '../../../src/utils';
-import { getIsPasskeySupported } from '../../../src/utils/passkey/getIsPasskeySupported';
-
-import { setUpGetConfig } from './testUtils/setUpGetConfig';
-import { mockAccessToken } from './testUtils/data';
+import { serializePkcToJson } from '../../../src/client/utils/passkey/serde';
+import * as utils from '../../../src/client/utils';
+import { getIsPasskeySupported } from '../../../src/client/utils/passkey/getIsPasskeySupported';
+import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
+import { mockAccessToken } from '../../providers/cognito/testUtils/data';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -34,7 +33,7 @@ jest.mock(
 );
 jest.mock('../../../src/providers/cognito/factories');
 
-jest.mock('../../../src/utils/passkey/getIsPasskeySupported');
+jest.mock('../../../src/client/utils/passkey/getIsPasskeySupported');
 
 Object.assign(navigator, {
 	credentials: {

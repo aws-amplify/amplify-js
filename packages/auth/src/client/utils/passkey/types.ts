@@ -3,6 +3,7 @@
 
 type PasskeyTransport = 'ble' | 'hybrid' | 'internal' | 'nfc' | 'usb';
 type UserVerificationRequirement = 'discouraged' | 'preferred' | 'required';
+
 export interface PasskeyCreateOptionsJson {
 	challenge: string;
 	rp: {

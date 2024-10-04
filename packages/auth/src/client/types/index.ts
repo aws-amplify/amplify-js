@@ -1,0 +1,1 @@
+export { AssociateWebAuthnCredentialOutput } from './outputs';

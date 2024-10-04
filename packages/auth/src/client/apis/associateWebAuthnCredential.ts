@@ -7,23 +7,24 @@ import {
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 
-import { assertAuthTokens } from '../utils/types';
-import { createCognitoUserPoolEndpointResolver } from '../factories';
-import { getRegionFromUserPoolId } from '../../../foundation/parsers';
-import { getAuthUserAgentValue, registerPasskey } from '../../../utils';
+import { assertAuthTokens } from '../../providers/cognito/utils/types';
+import { createCognitoUserPoolEndpointResolver } from '../../providers/cognito/factories';
+import { getRegionFromUserPoolId } from '../../foundation/parsers';
+import { getAuthUserAgentValue } from '../../utils';
+import { registerPasskey } from '../utils';
 import {
 	createGetWebAuthnRegistrationOptionsClient,
 	createVerifyWebAuthnRegistrationResultClient,
-} from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+} from '../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import {
 	// eslint-disable-next-line unused-imports/no-unused-imports
 	PasskeyError,
 	PasskeyErrorCode,
 	assertPasskeyError,
-} from '../../../utils/passkey/errors';
-import { AssociateWebAuthnCredentialOutput } from '../types/outputs';
+} from '../utils/passkey/errors';
+import { AssociateWebAuthnCredentialOutput } from '../types';
 // eslint-disable-next-line unused-imports/no-unused-imports
-import { AuthError } from '../../../errors/AuthError';
+import { AuthError } from '../../errors/AuthError';
 
 /**
  * Registers a new passkey for an authenticated user
