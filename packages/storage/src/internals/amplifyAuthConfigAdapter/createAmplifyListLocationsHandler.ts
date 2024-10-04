@@ -3,12 +3,15 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 
-import { ListPaths } from '../types/credentials';
+import { ListPaths, ListPathsOutput } from '../types/credentials';
 
 import { generateLocationsFromPaths } from './generateLocationsFromPaths';
 
 export const createAmplifyListLocationsHandler = (): ListPaths => {
 	const { buckets } = Amplify.getConfig().Storage!.S3!;
+	// eslint-disable-next-line no-debugger
+	debugger;
+	let cachedResult: Record<string, ListPathsOutput> | null = null;
 
 	return async function listLocations() {
 		if (!buckets) {
@@ -17,6 +20,11 @@ export const createAmplifyListLocationsHandler = (): ListPaths => {
 
 		const { tokens, identityId } = await fetchAuthSession();
 		const userGroups = tokens?.accessToken.payload['cognito:groups'];
+		const cacheKey = JSON.stringify({ identityId, userGroups }) + `${!!tokens}`;
+
+		if (cachedResult && cachedResult[cacheKey]) return cachedResult[cacheKey];
+
+		cachedResult = {};
 
 		const locations = generateLocationsFromPaths({
 			buckets,
@@ -25,6 +33,8 @@ export const createAmplifyListLocationsHandler = (): ListPaths => {
 			userGroup: userGroups && (userGroups as any)[0], // TODO: fix this edge case
 		});
 
-		return { locations };
+		cachedResult[cacheKey] = { locations };
+
+		return cachedResult[cacheKey];
 	};
 };
