@@ -30,7 +30,7 @@ const createAmplifyListLocationsHandler = (): ListPaths => {
 		const locations = generateLocationsFromPaths({
 			buckets,
 			tokens: !!tokens,
-			identityId: identityId!,
+			identityId,
 			userGroup: (userGroups as any)[0], // TODO: fix this edge case
 		});
 

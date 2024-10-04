@@ -16,14 +16,12 @@ const resolvePermissions = (
 		};
 	}
 	if (groups) {
-		const selectedKey = Object.keys(accessRule).find(access =>
-			access.includes(groups),
+		const selectedKey = Object.keys(accessRule).find(
+			access => access.includes(groups) || access.includes('authenticated'),
 		);
 
 		return {
-			permission: selectedKey
-				? accessRule[selectedKey]
-				: accessRule.authenticated,
+			permission: selectedKey ? accessRule[selectedKey] : undefined,
 		};
 	}
 
@@ -40,8 +38,8 @@ export const generateLocationsFromPaths = ({
 }: {
 	buckets: Record<string, BucketInfo>;
 	tokens: boolean;
-	identityId: string;
-	userGroup: string;
+	identityId?: string;
+	userGroup?: string;
 }): PathAccess[] => {
 	const locations: PathAccess[] = [];
 
@@ -52,7 +50,7 @@ export const generateLocationsFromPaths = ({
 			return locations;
 		}
 		for (const [path, accessRules] of Object.entries(paths)) {
-			if (tokens && path.includes(ENTITY_IDENTITY_URL)) {
+			if (tokens && identityId && path.includes(ENTITY_IDENTITY_URL)) {
 				locations.push({
 					type: 'PREFIX',
 					permission: accessRules.entityidentity as StorageAccess[],
