@@ -7,6 +7,7 @@ export const loadAmplifyWebBrowser = () => {
 	try {
 		// metro bundler requires static string for loading module.
 		// See: https://facebook.github.io/metro/docs/configuration/#dynamicdepsinpackages
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		const module = require('@aws-amplify/rtn-web-browser')?.module;
 		if (module) {
 			return module as WebBrowserModule;
