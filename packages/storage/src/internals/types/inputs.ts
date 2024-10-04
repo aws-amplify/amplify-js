@@ -8,6 +8,7 @@ import {
 } from '../../types/inputs';
 import {
 	CopyWithPathInput,
+	DownloadDataWithPathInput,
 	GetPropertiesWithPathInput,
 	RemoveWithPathInput,
 } from '../../providers/s3';
@@ -63,6 +64,16 @@ export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
  */
 export type CopyInput = ExtendCopyInputWithAdvancedOptions<
 	CopyWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
+/**
+ * @internal
+ */
+export type DownloadDataInput = ExtendInputWithAdvancedOptions<
+	DownloadDataWithPathInput,
 	{
 		locationCredentialsProvider?: CredentialsProvider;
 	}

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {
+	DownloadDataWithPathOutput,
 	GetPropertiesWithPathOutput,
 	RemoveWithPathOutput,
 } from '../../providers/s3/types';
@@ -27,3 +28,8 @@ export type GetPropertiesOutput = GetPropertiesWithPathOutput;
  * @internal
  */
 export type RemoveOutput = RemoveWithPathOutput;
+
+/**
+ * @internal
+ */
+export type DownloadDataOutput = DownloadDataWithPathOutput;
