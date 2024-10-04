@@ -163,7 +163,7 @@ export interface AuthVerifyTOTPSetupInput<
  * @param newPassword - new password to be used for `signIn`
  */
 export interface AuthUpdatePasswordInput {
-	oldPassword: string;
+	oldPassword?: string;
 	newPassword: string;
 }
 

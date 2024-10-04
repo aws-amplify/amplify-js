@@ -56,7 +56,7 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 		message: 'code is required to verifyTotpSetup',
 	},
 	[AuthValidationErrorCode.EmptyUpdatePassword]: {
-		message: 'oldPassword and newPassword are required to changePassword',
+		message: 'newPassword is required to changePassword',
 	},
 	[AuthValidationErrorCode.EmptyConfirmUserAttributeCode]: {
 		message: 'confirmation code is required to confirmUserAttribute',

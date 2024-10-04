@@ -32,10 +32,10 @@ export async function updatePassword(
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { oldPassword, newPassword } = input;
-	assertValidationError(
-		!!oldPassword,
-		AuthValidationErrorCode.EmptyUpdatePassword,
-	);
+	// assertValidationError(
+	// 	!!oldPassword,
+	// 	AuthValidationErrorCode.EmptyUpdatePassword,
+	// );
 
 	assertValidationError(
 		!!newPassword,
