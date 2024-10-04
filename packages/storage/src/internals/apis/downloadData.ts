@@ -47,6 +47,6 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput =>
 			bytesRange: input?.options?.bytesRange,
 			onProgress: input?.options?.onProgress,
 		},
-		// Type casting is necessary because `removeInternal` supports both Gen1 and Gen2 signatures, but here
+		// Type casting is necessary because `downloadDataInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
 	}) as DownloadDataOutput;

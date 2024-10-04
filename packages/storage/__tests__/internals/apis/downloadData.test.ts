@@ -7,7 +7,7 @@ import { downloadData as downloadDataInternal } from '../../../src/providers/s3/
 jest.mock('../../../src/providers/s3/apis/internal/downloadData');
 const mockedDownloadDataInternal = jest.mocked(downloadDataInternal);
 
-describe('remove (internal)', () => {
+describe('downloadData (internal)', () => {
 	beforeEach(() => {
 		mockedDownloadDataInternal.mockReturnValue({
 			result: Promise.resolve({
