@@ -11,6 +11,7 @@ import {
 	GetPropertiesWithPathInput,
 	GetUrlWithPathInput,
 	RemoveWithPathInput,
+	UploadDataWithPathInput,
 } from '../../providers/s3';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
@@ -79,6 +80,13 @@ export type CopyInput = ExtendCopyInputWithAdvancedOptions<
 	}
 >;
 
+export type UploadDataInput = ExtendInputWithAdvancedOptions<
+	UploadDataWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
 /**
  * Generic types that extend the public non-copy API input types with extended
  * options. This is a temporary solution to support advanced options from internal APIs.
@@ -86,8 +94,7 @@ export type CopyInput = ExtendCopyInputWithAdvancedOptions<
 type ExtendInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
 	InputType extends StorageOperationInputWithPath &
 		StorageOperationOptionsInput<infer PublicInputOptionsType>
-		? {
-				path: InputType['path'];
+		? InputType & {
 				options?: PublicInputOptionsType & ExtendedOptionsType;
 			}
 		: never;

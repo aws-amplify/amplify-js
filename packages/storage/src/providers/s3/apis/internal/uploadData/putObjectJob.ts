@@ -4,18 +4,18 @@
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput, UploadDataWithPathInput } from '../../types';
+import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
 import {
 	calculateContentMd5,
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
-} from '../../utils';
-import { ItemWithKey, ItemWithPath } from '../../types/outputs';
-import { putObject } from '../../utils/client/s3data';
-import { getStorageUserAgentValue } from '../../utils/userAgent';
-import { STORAGE_INPUT_KEY } from '../../utils/constants';
-import { calculateContentCRC32 } from '../../utils/crc32';
-import { constructContentDisposition } from '../../utils/constructContentDisposition';
+} from '../../../utils';
+import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
+import { putObject } from '../../../utils/client/s3data';
+import { getStorageUserAgentValue } from '../../../utils/userAgent';
+import { STORAGE_INPUT_KEY } from '../../../utils/constants';
+import { calculateContentCRC32 } from '../../../utils/crc32';
+import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 
 import { validateObjectNotExists } from './validateObjectNotExists';
 

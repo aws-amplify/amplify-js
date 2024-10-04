@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { TransferProgressEvent } from '../../../../../types';
-import { ResolvedS3Config } from '../../../types/options';
-import { uploadPart } from '../../../utils/client/s3data';
-import { logger } from '../../../../../utils';
-import { CRC32Checksum, calculateContentCRC32 } from '../../../utils/crc32';
-import { calculateContentMd5 } from '../../../utils';
+import { TransferProgressEvent } from '../../../../../../types';
+import { ResolvedS3Config } from '../../../../types/options';
+import { uploadPart } from '../../../../utils/client/s3data';
+import { logger } from '../../../../../../utils';
+import { CRC32Checksum, calculateContentCRC32 } from '../../../../utils/crc32';
+import { calculateContentMd5 } from '../../../../utils';
 
 import { PartToUpload } from './getDataChunker';
 
