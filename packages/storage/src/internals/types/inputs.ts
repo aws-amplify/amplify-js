@@ -12,6 +12,10 @@ import {
 	GetUrlWithPathInput,
 	RemoveWithPathInput,
 } from '../../providers/s3';
+import {
+	ListAllWithPathInput,
+	ListPaginateWithPathInput,
+} from '../../providers/s3/types/inputs';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
 import { Permission, PrefixType, Privilege } from './common';
@@ -38,6 +42,16 @@ export interface GetDataAccessInput {
 	region: string;
 	scope: string;
 }
+
+/**
+ * @internal
+ */
+export type ListInputWithPath = ExtendInputWithAdvancedOptions<
+	ListAllWithPathInput | ListPaginateWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
 
 /**
  * @internal

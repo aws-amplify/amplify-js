@@ -14,6 +14,7 @@ export {
 	GetPropertiesInput,
 	GetUrlInput,
 	CopyInput,
+	ListInputWithPath,
 	RemoveInput,
 } from './types/inputs';
 export {
@@ -26,6 +27,7 @@ export {
 
 export { getDataAccess } from './apis/getDataAccess';
 export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
+export { list } from './apis/list';
 export { getProperties } from './apis/getProperties';
 export { getUrl } from './apis/getUrl';
 export { remove } from './apis/remove';
