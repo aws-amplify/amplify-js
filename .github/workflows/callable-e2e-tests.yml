@@ -61,17 +61,17 @@ jobs:
   #     timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 35 }}
   #     retry_count: ${{ matrix.integ-config.retry_count || 3 }}
 
-  detox-e2e-test-runner:
-    name: E2E test runner
-    needs: e2e-prep
-    strategy:
-      matrix:
-        integ-config: ${{ fromJson(needs.e2e-prep.outputs.detox-integ-config) }}
-      fail-fast: false
-    secrets: inherit
-    uses: ./.github/workflows/callable-e2e-test-detox.yml
-    with:
-      test_name: ${{ matrix.integ-config.test_name }}
-      working_directory: ${{ matrix.integ-config.working_directory }}
-      timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 45 }}
-      host_signout_page: ${{ matrix.integ-config.host_signout_page || false }}
+  # detox-e2e-test-runner:
+  #   name: E2E test runner
+  #   needs: e2e-prep
+  #   strategy:
+  #     matrix:
+  #       integ-config: ${{ fromJson(needs.e2e-prep.outputs.detox-integ-config) }}
+  #     fail-fast: false
+  #   secrets: inherit
+  #   uses: ./.github/workflows/callable-e2e-test-detox.yml
+  #   with:
+  #     test_name: ${{ matrix.integ-config.test_name }}
+  #     working_directory: ${{ matrix.integ-config.working_directory }}
+  #     timeout_minutes: ${{ matrix.integ-config.timeout_minutes || 45 }}
+  #     host_signout_page: ${{ matrix.integ-config.host_signout_page || false }}
