@@ -34,6 +34,7 @@ export { getProperties } from './apis/getProperties';
 export { getUrl } from './apis/getUrl';
 export { remove } from './apis/remove';
 export { downloadData } from './apis/downloadData';
+export { copy } from './apis/copy';
 
 /*
 CredentialsStore exports

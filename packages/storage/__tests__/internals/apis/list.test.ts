@@ -4,7 +4,6 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { list as advancedList } from '../../../src/internals';
 import { list as listInternal } from '../../../src/providers/s3/apis/internal/list';
-import { ListAllWithPathOutput } from '../../../src';
 
 jest.mock('../../../src/providers/s3/apis/internal/list');
 const mockedListInternal = jest.mocked(listInternal);
@@ -14,7 +13,7 @@ describe('list (internals)', () => {
 		jest.clearAllMocks();
 		mockedListInternal.mockResolvedValue({
 			items: [],
-		} as ListAllWithPathOutput);
+		});
 	});
 
 	it('should pass advanced option locationCredentialsProvider to internal list', async () => {
