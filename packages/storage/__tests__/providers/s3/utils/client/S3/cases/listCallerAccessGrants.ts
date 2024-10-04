@@ -149,12 +149,14 @@ const listCallerAccessGrantsErrorCase: ApiFunctionalTestCase<
 		headers: DEFAULT_RESPONSE_HEADERS,
 		body: `
 		<?xml version="1.0" encoding="UTF-8"?>
-		<Error>
-			<Code>AccessDenied</Code>
-			<Message>Access Denied</Message>
+		<ErrorResponse>
+			<Error>
+				<Code>AccessDenied</Code>
+				<Message>Access Denied</Message>
+			</Error>
 			<RequestId>656c76696e6727732072657175657374</RequestId>
 			<HostId>Uuag1LuByRx9e6j5Onimru9pO4ZVKnJ2Qz7/C1NPcfTWAtRPfTaOFg==</HostId>
-		</Error>
+		</ErrorResponse>
 		`,
 	},
 	{

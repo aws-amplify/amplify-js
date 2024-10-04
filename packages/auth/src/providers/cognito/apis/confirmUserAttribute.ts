@@ -9,12 +9,13 @@ import {
 
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
-import { verifyUserAttribute } from '../utils/clients/CognitoIdentityProvider';
 import { VerifyUserAttributeException } from '../types/errors';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { assertAuthTokens } from '../utils/types';
 import { ConfirmUserAttributeInput } from '../types';
 import { getAuthUserAgentValue } from '../../../utils';
+import { createVerifyUserAttributeClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 /**
  * Confirms a user attribute with the confirmation code.
@@ -30,6 +31,7 @@ export async function confirmUserAttribute(
 ): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
+	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { confirmationCode, userAttributeKey } = input;
 	assertValidationError(
 		!!confirmationCode,
@@ -37,9 +39,14 @@ export async function confirmUserAttribute(
 	);
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
+	const verifyUserAttribute = createVerifyUserAttributeClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	await verifyUserAttribute(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmUserAttribute),
 		},
 		{

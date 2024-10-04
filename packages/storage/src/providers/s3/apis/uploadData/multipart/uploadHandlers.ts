@@ -17,7 +17,7 @@ import {
 } from '../../../utils/constants';
 import {
 	ResolvedS3Config,
-	UploadDataOptionsWithKey,
+	UploadDataWithKeyOptions,
 } from '../../../types/options';
 import { StorageError } from '../../../../../errors/StorageError';
 import { CanceledError } from '../../../../../errors/CanceledError';
@@ -102,7 +102,7 @@ export const getMultipartUploadHandlers = (
 
 		// Resolve "key" specific options
 		if (inputType === STORAGE_INPUT_KEY) {
-			const accessLevel = (uploadDataOptions as UploadDataOptionsWithKey)
+			const accessLevel = (uploadDataOptions as UploadDataWithKeyOptions)
 				?.accessLevel;
 
 			resolvedKeyPrefix = resolvedS3Options.keyPrefix;
@@ -156,7 +156,8 @@ export const getMultipartUploadHandlers = (
 			inProgressUpload?.completedParts.push({
 				PartNumber: partNumber,
 				ETag: eTag,
-				ChecksumCRC32: crc32,
+				// TODO: crc32 can always be added once RN also has an implementation
+				...(crc32 ? { ChecksumCRC32: crc32 } : {}),
 			});
 		};
 		const concurrentUploadsProgressTracker =

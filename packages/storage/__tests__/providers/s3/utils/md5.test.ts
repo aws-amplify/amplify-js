@@ -46,23 +46,23 @@ describe('calculateContentMd5', () => {
 		mockMd5.mockReset();
 	});
 
-	it('calculates MD5 for content type: string', async () => {
-		await calculateContentMd5(stringContent);
+	it.each([
+		{ type: 'string', content: stringContent },
+		{ type: 'ArrayBuffer view', content: new Uint8Array() },
+		{ type: 'ArrayBuffer', content: new ArrayBuffer(8) },
+	])('calculates MD5 for content type: $type', async ({ content }) => {
+		await calculateContentMd5(content);
 		const [mockMd5Instance] = mockMd5.mock.instances;
-		expect(mockMd5Instance.update.mock.calls[0][0]).toBe(stringContent);
+		expect(mockMd5Instance.update.mock.calls[0][0]).toBe(content);
 		expect(mockToBase64).toHaveBeenCalled();
 	});
 
-	it.each([
-		{ type: 'ArrayBuffer view', content: new Uint8Array() },
-		{ type: 'ArrayBuffer', content: new ArrayBuffer(8) },
-		{ type: 'Blob', content: new Blob([stringContent]) },
-	])('calculates MD5 for content type: $type', async ({ content }) => {
+	it('calculates MD5 for content type: blob', async () => {
 		Object.defineProperty(global, 'FileReader', {
 			writable: true,
 			value: jest.fn(() => mockSuccessfulFileReader),
 		});
-		await calculateContentMd5(content);
+		await calculateContentMd5(new Blob([stringContent]));
 		const [mockMd5Instance] = mockMd5.mock.instances;
 		expect(mockMd5Instance.update.mock.calls[0][0]).toBe(fileReaderResult);
 		expect(mockSuccessfulFileReader.readAsArrayBuffer).toHaveBeenCalled();

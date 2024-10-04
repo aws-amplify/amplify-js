@@ -13,11 +13,12 @@ import {
 	SendUserAttributeVerificationCodeInput,
 	SendUserAttributeVerificationCodeOutput,
 } from '../types';
-import { getUserAttributeVerificationCode } from '../utils/clients/CognitoIdentityProvider';
 import { assertAuthTokens } from '../utils/types';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { GetUserAttributeVerificationException } from '../types/errors';
 import { getAuthUserAgentValue } from '../../../utils';
+import { createGetUserAttributeVerificationCodeClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 /**
  * Resends user's confirmation code when updating attributes while authenticated.
@@ -34,11 +35,18 @@ export const sendUserAttributeVerificationCode = async (
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	const clientMetadata = options?.clientMetadata;
 	assertTokenProviderConfig(authConfig);
+	const { userPoolEndpoint, userPoolId } = authConfig;
 	const { tokens } = await fetchAuthSession({ forceRefresh: false });
 	assertAuthTokens(tokens);
+	const getUserAttributeVerificationCode =
+		createGetUserAttributeVerificationCodeClient({
+			endpointResolver: createCognitoUserPoolEndpointResolver({
+				endpointOverride: userPoolEndpoint,
+			}),
+		});
 	const { CodeDeliveryDetails } = await getUserAttributeVerificationCode(
 		{
-			region: getRegion(authConfig.userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(
 				AuthAction.SendUserAttributeVerificationCode,
 			),
