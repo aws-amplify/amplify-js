@@ -221,7 +221,6 @@ describe('aws-amplify Exports', () => {
 					'DefaultTokenStore',
 					'refreshAuthTokens',
 					'refreshAuthTokensWithoutDedupe',
-					'associateWebAuthnCredential',
 				].sort(),
 			);
 		});
