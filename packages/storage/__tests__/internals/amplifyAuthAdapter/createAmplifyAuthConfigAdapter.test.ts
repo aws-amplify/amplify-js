@@ -15,6 +15,7 @@ jest.mock('@aws-amplify/core', () => ({
 			fetchAuthSession: jest.fn(),
 		},
 	},
+	fetchAuthSession: jest.fn(),
 }));
 jest.mock(
 	'../../../src/internals/amplifyAuthConfigAdapter/generateLocationsFromPaths',
@@ -54,16 +55,17 @@ describe('createAmplifyAuthConfigAdapter', () => {
 	mockFetchAuthSession.mockResolvedValue({
 		credentials,
 		identityId,
-		token: {},
+		tokens: {
+			accessToken: { payload: {} },
+		},
 	});
 
-	it.only('should return an AuthConfigAdapter with listLocations function', async () => {
+	it('should return an AuthConfigAdapter with listLocations function', async () => {
 		const adapter = createAmplifyAuthConfigAdapter();
 		expect(adapter).toHaveProperty('listLocations');
 		const { listLocations } = adapter;
-		const locations = await listLocations();
-		console.log(locations);
-		// expect(mockFetchAuthSession).toHaveBeenCalled();
+		await listLocations();
+		expect(mockFetchAuthSession).toHaveBeenCalled();
 	});
 
 	it('should return empty locations when buckets are not defined', async () => {
@@ -75,7 +77,7 @@ describe('createAmplifyAuthConfigAdapter', () => {
 		expect(result).toEqual({ locations: [] });
 	});
 
-	it.skip('should generate locations correctly when buckets are defined', async () => {
+	it('should generate locations correctly when buckets are defined', async () => {
 		const mockBuckets = {
 			bucket1: {
 				bucketName: 'bucket1',

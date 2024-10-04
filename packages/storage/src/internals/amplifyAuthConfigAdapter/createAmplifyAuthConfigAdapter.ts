@@ -31,7 +31,7 @@ const createAmplifyListLocationsHandler = (): ListPaths => {
 			buckets,
 			tokens: !!tokens,
 			identityId,
-			userGroup: (userGroups as any)[0], // TODO: fix this edge case
+			userGroup: userGroups && (userGroups as any)[0], // TODO: fix this edge case
 		});
 
 		return { locations };
