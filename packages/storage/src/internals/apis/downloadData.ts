@@ -8,7 +8,7 @@ import { DownloadDataOutput } from '../types/outputs';
 /**
  * Download S3 object data to memory
  *
- * @param input - The `DownloadDataWithPathInput` object.
+ * @param input - The `DownloadDataInput` object.
  * @returns A cancelable task exposing result promise from `result` property.
  * @throws service: `S3Exception` - thrown when checking for existence of the object
  * @throws validation: `StorageValidationErrorCode` - Validation errors
