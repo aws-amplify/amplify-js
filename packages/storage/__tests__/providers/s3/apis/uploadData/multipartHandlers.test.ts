@@ -118,7 +118,7 @@ const mockMultipartUploadSuccess = (disableAssertion?: boolean) => {
 			totalBytes: body.byteLength,
 		});
 
-		totalSize += byteLength(input.Body)!;
+		totalSize += byteLength(input.Body!)!;
 
 		return {
 			Etag: `etag-${input.PartNumber}`,
@@ -244,11 +244,14 @@ describe('getMultipartUploadHandlers with key', () => {
 				`should upload a %s type body that splits in 2 parts using ${accessLevelMsg} accessLevel`,
 				async (_, twoPartsPayload) => {
 					mockMultipartUploadSuccess();
-					const { multipartUploadJob } = getMultipartUploadHandlers({
-						key: defaultKey,
-						data: twoPartsPayload,
-						options: options as StorageOptions,
-					});
+					const { multipartUploadJob } = getMultipartUploadHandlers(
+						{
+							key: defaultKey,
+							data: twoPartsPayload,
+							options: options as StorageOptions,
+						},
+						byteLength(twoPartsPayload),
+					);
 					const result = await multipartUploadJob();
 					await expect(
 						mockCreateMultipartUpload,
@@ -288,10 +291,13 @@ describe('getMultipartUploadHandlers with key', () => {
 			`should create crc32 for %s type body`,
 			async (_, twoPartsPayload, expectedCrc32) => {
 				mockMultipartUploadSuccess();
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					key: defaultKey,
-					data: twoPartsPayload,
-				});
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						key: defaultKey,
+						data: twoPartsPayload,
+					},
+					byteLength(twoPartsPayload),
+				);
 				await multipartUploadJob();
 
 				/**
@@ -327,10 +333,13 @@ describe('getMultipartUploadHandlers with key', () => {
 					},
 				},
 			};
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				key: defaultKey,
-				data: new Uint8Array(8 * MB),
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new Uint8Array(8 * MB),
+				},
+				8 * MB,
+			);
 			await multipartUploadJob();
 			expect(calculateContentCRC32).toHaveBeenCalledTimes(1); // (final crc32 calculation = 1 undefined)
 			expect(calculateContentMd5).toHaveBeenCalledTimes(2);
@@ -463,13 +472,16 @@ describe('getMultipartUploadHandlers with key', () => {
 				const mockBucket = 'bucket-1';
 				const mockRegion = 'region-1';
 				mockMultipartUploadSuccess();
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					key: 'key',
-					data: mockData,
-					options: {
-						bucket: { bucketName: mockBucket, region: mockRegion },
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						key: 'key',
+						data: mockData,
+						options: {
+							bucket: { bucketName: mockBucket, region: mockRegion },
+						},
 					},
-				});
+					byteLength(mockData),
+				);
 				await multipartUploadJob();
 				await expect(
 					mockCreateMultipartUpload,
@@ -489,13 +501,16 @@ describe('getMultipartUploadHandlers with key', () => {
 
 			it('should override bucket in putObject call when bucket as string', async () => {
 				mockMultipartUploadSuccess();
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					key: 'key',
-					data: mockData,
-					options: {
-						bucket: 'default-bucket',
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						key: 'key',
+						data: mockData,
+						options: {
+							bucket: 'default-bucket',
+						},
 					},
-				});
+					byteLength(mockData),
+				);
 				await multipartUploadJob();
 				await expect(
 					mockCreateMultipartUpload,
@@ -511,6 +526,55 @@ describe('getMultipartUploadHandlers with key', () => {
 						ContentType: defaultContentType,
 					}),
 				);
+			});
+		});
+
+		describe('cache validation', () => {
+			it.each([
+				{
+					name: 'wrong part count',
+					parts: [{ PartNumber: 1 }, { PartNumber: 2 }, { PartNumber: 3 }],
+				},
+				{
+					name: 'wrong part numbers',
+					parts: [{ PartNumber: 1 }, { PartNumber: 1 }],
+				},
+			])('should throw with $name', async ({ parts }) => {
+				mockMultipartUploadSuccess();
+
+				const mockDefaultStorage = defaultStorage as jest.Mocked<
+					typeof defaultStorage
+				>;
+				mockDefaultStorage.getItem.mockResolvedValue(
+					JSON.stringify({
+						[defaultCacheKey]: {
+							uploadId: 'uploadId',
+							bucket,
+							key: defaultKey,
+							finalCrc32: 'mock-crc32',
+						},
+					}),
+				);
+				mockListParts.mockResolvedValue({
+					Parts: parts,
+					$metadata: {},
+				});
+
+				const onProgress = jest.fn();
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						key: defaultKey,
+						data: new ArrayBuffer(8 * MB),
+						options: {
+							onProgress,
+						},
+					},
+					8 * MB,
+				);
+				await expect(multipartUploadJob()).rejects.toThrow({
+					name: 'Unknown',
+					message: 'An unknown error has occurred.',
+				});
 			});
 		});
 	});
@@ -733,10 +797,13 @@ describe('getMultipartUploadHandlers with key', () => {
 			});
 
 			const { multipartUploadJob, onPause, onResume } =
-				getMultipartUploadHandlers({
-					key: defaultKey,
-					data: new ArrayBuffer(8 * MB),
-				});
+				getMultipartUploadHandlers(
+					{
+						key: defaultKey,
+						data: new ArrayBuffer(8 * MB),
+					},
+					8 * MB,
+				);
 			let partCount = 0;
 			mockMultipartUploadCancellation(() => {
 				partCount++;
@@ -896,10 +963,13 @@ describe('getMultipartUploadHandlers with path', () => {
 				`should upload a %s type body that splits into 2 parts to path ${expectedKey}`,
 				async (_, twoPartsPayload) => {
 					mockMultipartUploadSuccess();
-					const { multipartUploadJob } = getMultipartUploadHandlers({
-						path: inputPath,
-						data: twoPartsPayload,
-					});
+					const { multipartUploadJob } = getMultipartUploadHandlers(
+						{
+							path: inputPath,
+							data: twoPartsPayload,
+						},
+						byteLength(twoPartsPayload),
+					);
 					const result = await multipartUploadJob();
 					await expect(
 						mockCreateMultipartUpload,
@@ -939,10 +1009,13 @@ describe('getMultipartUploadHandlers with path', () => {
 			`should create crc32 for %s type body`,
 			async (_, twoPartsPayload, expectedCrc32) => {
 				mockMultipartUploadSuccess();
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					path: testPath,
-					data: twoPartsPayload,
-				});
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						path: testPath,
+						data: twoPartsPayload,
+					},
+					byteLength(twoPartsPayload),
+				);
 				await multipartUploadJob();
 
 				/**
@@ -978,10 +1051,13 @@ describe('getMultipartUploadHandlers with path', () => {
 					},
 				},
 			};
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				path: testPath,
-				data: new Uint8Array(8 * MB),
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new Uint8Array(8 * MB),
+				},
+				8 * MB,
+			);
 			await multipartUploadJob();
 			expect(calculateContentCRC32).toHaveBeenCalledTimes(1); // (final crc32 calculation = 1 undefined)
 			expect(calculateContentMd5).toHaveBeenCalledTimes(2);
@@ -1121,16 +1197,19 @@ describe('getMultipartUploadHandlers with path', () => {
 				mockHeadObject.mockRejectedValueOnce(notFoundError);
 				mockMultipartUploadSuccess();
 
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					path: testPath,
-					data: new ArrayBuffer(8 * MB),
-					options: { preventOverwrite: true },
-				});
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						path: testPath,
+						data: new ArrayBuffer(8 * MB),
+						options: { preventOverwrite: true },
+					},
+					8 * MB,
+				);
 				await multipartUploadJob();
 
 				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockHeadObject).toHaveBeenCalledTimes(1);
+				expect(mockHeadObject).toHaveBeenCalledTimes(2);
 				await expect(mockHeadObject).toBeLastCalledWithConfigAndInput(
 					expect.objectContaining({
 						credentials,
@@ -1192,13 +1271,16 @@ describe('getMultipartUploadHandlers with path', () => {
 				const mockBucket = 'bucket-1';
 				const mockRegion = 'region-1';
 				mockMultipartUploadSuccess();
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					path: 'path/',
-					data: mockData,
-					options: {
-						bucket: { bucketName: mockBucket, region: mockRegion },
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						path: 'path/',
+						data: mockData,
+						options: {
+							bucket: { bucketName: mockBucket, region: mockRegion },
+						},
 					},
-				});
+					byteLength(mockData),
+				);
 				await multipartUploadJob();
 				await expect(
 					mockCreateMultipartUpload,
@@ -1220,13 +1302,16 @@ describe('getMultipartUploadHandlers with path', () => {
 			});
 			it('should override bucket in putObject call when bucket as string', async () => {
 				mockMultipartUploadSuccess();
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					path: 'path/',
-					data: mockData,
-					options: {
-						bucket: 'default-bucket',
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						path: 'path/',
+						data: mockData,
+						options: {
+							bucket: 'default-bucket',
+						},
 					},
-				});
+					byteLength(mockData),
+				);
 				await multipartUploadJob();
 				await expect(
 					mockCreateMultipartUpload,
@@ -1467,10 +1552,13 @@ describe('getMultipartUploadHandlers with path', () => {
 			});
 
 			const { multipartUploadJob, onPause, onResume } =
-				getMultipartUploadHandlers({
-					path: testPath,
-					data: new ArrayBuffer(8 * MB),
-				});
+				getMultipartUploadHandlers(
+					{
+						path: testPath,
+						data: new ArrayBuffer(8 * MB),
+					},
+					8 * MB,
+				);
 			let partCount = 0;
 			mockMultipartUploadCancellation(() => {
 				partCount++;
