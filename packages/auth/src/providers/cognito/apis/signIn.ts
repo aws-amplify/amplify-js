@@ -13,6 +13,7 @@ import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
+import { signInWithUserAuth } from './signInWithUserAuth';
 
 /**
  * Signs a user in
@@ -37,6 +38,8 @@ export async function signIn(input: SignInInput): Promise<SignInOutput> {
 			return signInWithCustomAuth(input);
 		case 'CUSTOM_WITH_SRP':
 			return signInWithCustomSRPAuth(input);
+		case 'USER_AUTH':
+			return signInWithUserAuth(input);
 		default:
 			return signInWithSRP(input);
 	}

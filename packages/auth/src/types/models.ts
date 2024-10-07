@@ -217,6 +217,16 @@ export interface DoneSignInStep {
 	signInStep: 'DONE';
 }
 
+// New interfaces for USER_AUTH flow
+export interface ContinueSignInWithSelectChallenge {
+	signInStep: 'CONTINUE_SIGN_IN_WITH_SELECT_CHALLENGE';
+	availableChallenges: string[];
+}
+
+export interface ContinueSignInWithPassword {
+	signInStep: 'CONTINUE_SIGN_IN_WITH_PASSWORD';
+}
+
 export type AuthNextSignInStep<
 	UserAttributeKey extends AuthUserAttributeKey = AuthUserAttributeKey,
 > =
@@ -229,6 +239,7 @@ export type AuthNextSignInStep<
 	| ContinueSignInWithTOTPSetup
 	| ContinueSignInWithEmailSetup
 	| ContinueSignInWithMFASetupSelection
+	| ContinueSignInWithSelectChallenge
 	| ConfirmSignUpStep
 	| ResetPasswordStep
 	| DoneSignInStep;

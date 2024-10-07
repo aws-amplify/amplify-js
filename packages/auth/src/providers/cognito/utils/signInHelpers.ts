@@ -483,6 +483,42 @@ export async function handleUserSRPAuthFlow(
 	);
 }
 
+export async function handleUserAuthFlow(
+	username: string,
+	clientMetadata: Record<string, string> | undefined,
+	config: CognitoUserPoolConfig,
+) {
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
+
+	const UserContextData = getUserContextData({
+		username,
+		userPoolId,
+		userPoolClientId,
+	});
+
+	const jsonReq: InitiateAuthCommandInput = {
+		AuthFlow: 'USER_AUTH',
+		AuthParameters: { USERNAME: username },
+		ClientMetadata: clientMetadata,
+		ClientId: userPoolClientId,
+		UserContextData,
+	};
+
+	const initiateAuth = createInitiateAuthClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
+
+	return initiateAuth(
+		{
+			region: getRegionFromUserPoolId(userPoolId),
+			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
+		},
+		jsonReq,
+	);
+}
+
 export async function handleCustomAuthFlowWithoutSRP(
 	username: string,
 	clientMetadata: ClientMetadata | undefined,
@@ -932,6 +968,14 @@ export async function getSignInResult(params: {
 							challengeParameters.CODE_DELIVERY_DELIVERY_MEDIUM as AuthDeliveryMedium,
 						destination: challengeParameters.CODE_DELIVERY_DESTINATION,
 					},
+				},
+			};
+		case 'SELECT_CHALLENGE':
+			return {
+				isSignedIn: false,
+				nextStep: {
+					signInStep: 'CONTINUE_SIGN_IN_WITH_SELECT_CHALLENGE',
+					availableChallenges: challengeParameters.availableChallenges || [],
 				},
 			};
 		case 'ADMIN_NO_SRP_AUTH':

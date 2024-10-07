@@ -20,6 +20,7 @@ import { SignUpOutput } from './outputs';
  * Cognito supported AuthFlowTypes that may be passed as part of the Sign In request.
  */
 export type AuthFlowType =
+	| 'USER_AUTH'
 	| 'USER_SRP_AUTH'
 	| 'CUSTOM_WITH_SRP'
 	| 'CUSTOM_WITHOUT_SRP'

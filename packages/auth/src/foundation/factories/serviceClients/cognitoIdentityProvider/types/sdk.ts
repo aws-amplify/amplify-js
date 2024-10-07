@@ -7,10 +7,14 @@ import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 
 export type ChallengeName =
 	| 'SMS_MFA'
+	| 'SMS_OTP'
 	| 'SOFTWARE_TOKEN_MFA'
 	| 'EMAIL_OTP'
 	| 'SELECT_MFA_TYPE'
+	| 'SELECT_CHALLENGE'
 	| 'MFA_SETUP'
+	| 'PASSWORD'
+	| 'PASSWORD_SRP'
 	| 'PASSWORD_VERIFIER'
 	| 'CUSTOM_CHALLENGE'
 	| 'DEVICE_SRP_AUTH'
@@ -27,6 +31,7 @@ export type ChallengeParameters = {
 	PASSWORD_CLAIM_SIGNATURE?: string;
 	MFAS_CAN_CHOOSE?: string;
 	MFAS_CAN_SETUP?: string;
+	availableChallenges?: string[];
 } & Record<string, unknown>;
 
 export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | 'EMAIL_OTP';
