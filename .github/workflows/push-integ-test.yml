@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - fix/maybe-geo-issue
 
 jobs:
   e2e:
