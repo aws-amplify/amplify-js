@@ -51,6 +51,10 @@ import {
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { handleWebAuthnSignInResult } from '../../../client/flows/userAuth/handleWebAuthnSignInResult';
+import { handlePasswordSRP } from '../../../client/flows/shared/handlePasswordSRP';
+import { initiateSelectedChallenge } from '../../../client/flows/userAuth/handleSelectChallenge';
+import { handleSelectChallengeWithPassword } from '../../../client/flows/userAuth/handleSelectChallengeWithPassword';
+import { handleSelectChallengeWithPasswordSRP } from '../../../client/flows/userAuth/handleSelectChallengeWithPasswordSRP';
 
 import { signInStore } from './signInStore';
 import { assertDeviceMetadata } from './types';
@@ -434,60 +438,14 @@ export async function handleUserSRPAuthFlow(
 	config: CognitoUserPoolConfig,
 	tokenOrchestrator: AuthTokenOrchestrator,
 ): Promise<RespondToAuthChallengeCommandOutput> {
-	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
-	const userPoolName = userPoolId?.split('_')[1] || '';
-	const authenticationHelper = await getAuthenticationHelper(userPoolName);
-
-	const authParameters: Record<string, string> = {
-		USERNAME: username,
-		SRP_A: authenticationHelper.A.toString(16),
-	};
-
-	const UserContextData = getUserContextData({
+	return handlePasswordSRP({
 		username,
-		userPoolId,
-		userPoolClientId,
-	});
-
-	const jsonReq: InitiateAuthCommandInput = {
-		AuthFlow: 'USER_SRP_AUTH',
-		AuthParameters: authParameters,
-		ClientMetadata: clientMetadata,
-		ClientId: userPoolClientId,
-		UserContextData,
-	};
-
-	const initiateAuth = createInitiateAuthClient({
-		endpointResolver: createCognitoUserPoolEndpointResolver({
-			endpointOverride: userPoolEndpoint,
-		}),
-	});
-
-	const resp = await initiateAuth(
-		{
-			region: getRegionFromUserPoolId(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
-		},
-		jsonReq,
-	);
-	const { ChallengeParameters: challengeParameters, Session: session } = resp;
-	const activeUsername = challengeParameters?.USERNAME ?? username;
-	setActiveSignInUsername(activeUsername);
-
-	return retryOnResourceNotFoundException(
-		handlePasswordVerifierChallenge,
-		[
-			password,
-			challengeParameters as ChallengeParameters,
-			clientMetadata,
-			session,
-			authenticationHelper,
-			config,
-			tokenOrchestrator,
-		],
-		activeUsername,
+		password,
+		clientMetadata,
+		config,
 		tokenOrchestrator,
-	);
+		authFlow: 'USER_SRP_AUTH',
+	});
 }
 
 export async function handleCustomAuthFlowWithoutSRP(
@@ -813,8 +771,9 @@ export async function handlePasswordVerifierChallenge(
 export async function getSignInResult(params: {
 	challengeName: ChallengeName;
 	challengeParameters: ChallengeParameters;
+	availableChallenges?: ChallengeName[];
 }): Promise<AuthSignInOutput> {
-	const { challengeName, challengeParameters } = params;
+	const { challengeName, challengeParameters, availableChallenges } = params;
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 
@@ -944,6 +903,22 @@ export async function getSignInResult(params: {
 
 		case 'WEB_AUTHN':
 			return handleWebAuthnSignInResult(challengeParameters);
+		case 'PASSWORD':
+		case 'PASSWORD_SRP':
+			return {
+				isSignedIn: false,
+				nextStep: {
+					signInStep: 'CONFIRM_SIGN_IN_WITH_PASSWORD',
+				},
+			};
+		case 'SELECT_CHALLENGE':
+			return {
+				isSignedIn: false,
+				nextStep: {
+					signInStep: 'CONTINUE_SIGN_IN_WITH_FIRST_FACTOR_SELECTION',
+					availableChallenges,
+				},
+			};
 		case 'ADMIN_NO_SRP_AUTH':
 			break;
 		case 'DEVICE_PASSWORD_VERIFIER':
@@ -1031,6 +1006,26 @@ export async function handleChallengeName(
 	const deviceName = options?.friendlyDeviceName;
 
 	switch (challengeName) {
+		case 'WEB_AUTHN':
+		case 'SELECT_CHALLENGE':
+			if (
+				challengeResponse === 'PASSWORD_SRP' ||
+				challengeResponse === 'PASSWORD'
+			) {
+				return {
+					ChallengeName: challengeResponse,
+					Session: session,
+					$metadata: {},
+				};
+			}
+
+			return initiateSelectedChallenge({
+				username,
+				session,
+				selectedChallenge: challengeResponse,
+				config,
+				clientMetadata,
+			});
 		case 'SELECT_MFA_TYPE':
 			return handleSelectMFATypeChallenge({
 				challengeResponse,
@@ -1075,6 +1070,7 @@ export async function handleChallengeName(
 			);
 		case 'SMS_MFA':
 		case 'SOFTWARE_TOKEN_MFA':
+		case 'SMS_OTP':
 		case 'EMAIL_OTP':
 			return handleMFAChallenge({
 				challengeName,
@@ -1084,6 +1080,23 @@ export async function handleChallengeName(
 				username,
 				config,
 			});
+		case 'PASSWORD':
+			return handleSelectChallengeWithPassword(
+				username,
+				challengeResponse,
+				clientMetadata,
+				config,
+				session,
+			);
+		case 'PASSWORD_SRP':
+			return handleSelectChallengeWithPasswordSRP(
+				username,
+				challengeResponse, // This is the actual password
+				clientMetadata,
+				config,
+				session,
+				tokenOrchestrator,
+			);
 	}
 	// TODO: remove this error message for production apps
 	throw new AuthError({
@@ -1264,7 +1277,7 @@ export async function handleMFAChallenge({
 }: HandleAuthChallengeRequest & {
 	challengeName: Extract<
 		ChallengeName,
-		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
+		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | 'SMS_OTP'
 	>;
 }) {
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
@@ -1279,6 +1292,10 @@ export async function handleMFAChallenge({
 
 	if (challengeName === 'SMS_MFA') {
 		challengeResponses.SMS_MFA_CODE = challengeResponse;
+	}
+
+	if (challengeName === 'SMS_OTP') {
+		challengeResponses.SMS_OTP_CODE = challengeResponse;
 	}
 
 	if (challengeName === 'SOFTWARE_TOKEN_MFA') {

@@ -25,7 +25,7 @@ import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
-} from '../../../providers/cognito/utils/signInStore';
+} from '../../../client/utils/store';
 import { AuthSignInOutput } from '../../../types';
 import { getAuthUserAgentValue } from '../../../utils';
 import { getPasskey } from '../../utils/passkey';

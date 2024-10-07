@@ -1,6 +1,6 @@
 import { Amplify } from '@aws-amplify/core';
 
-import { signInStore } from '../../../../../src/providers/cognito/utils/signInStore';
+import { signInStore } from '../../../../../src/client/utils/store';
 import { authAPITestParams } from '../../testUtils/authApiTestParams';
 import { setUpGetConfig } from '../../testUtils/setUpGetConfig';
 import { createRespondToAuthChallengeClient } from '../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
@@ -24,7 +24,7 @@ jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
 	Amplify: { getConfig: jest.fn(() => ({})) },
 }));
-jest.mock('../../../../../src/providers/cognito/utils/signInStore');
+jest.mock('../../../../../src/client/utils/store');
 jest.mock(
 	'../../../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );

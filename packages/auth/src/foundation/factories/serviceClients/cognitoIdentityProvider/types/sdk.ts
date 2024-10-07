@@ -7,10 +7,14 @@ import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 
 export type ChallengeName =
 	| 'SMS_MFA'
+	| 'SMS_OTP'
 	| 'SOFTWARE_TOKEN_MFA'
 	| 'EMAIL_OTP'
 	| 'SELECT_MFA_TYPE'
+	| 'SELECT_CHALLENGE'
 	| 'MFA_SETUP'
+	| 'PASSWORD'
+	| 'PASSWORD_SRP'
 	| 'PASSWORD_VERIFIER'
 	| 'CUSTOM_CHALLENGE'
 	| 'DEVICE_SRP_AUTH'
@@ -58,6 +62,10 @@ declare enum ChallengeNameType {
 	SELECT_MFA_TYPE = 'SELECT_MFA_TYPE',
 	SMS_MFA = 'SMS_MFA',
 	SOFTWARE_TOKEN_MFA = 'SOFTWARE_TOKEN_MFA',
+	PASSWORD = 'PASSWORD',
+	PASSWORD_SRP = 'PASSWORD_SRP',
+	WEB_AUTHN = 'WEB_AUTHN',
+	SMS_OTP = 'SMS_OTP',
 	EMAIL_OTP = 'EMAIL_OTP',
 }
 declare enum DeliveryMediumType {
@@ -1135,8 +1143,10 @@ export interface InitiateAuthResponse {
 	 */
 	ChallengeName?: ChallengeNameType | string;
 	/**
-	 * <p>The session that should pass both ways in challenge-response calls to the service. If the caller must pass another challenge, they return a session with other challenge parameters. This session
-	 *             should be passed as it is to the next <code>RespondToAuthChallenge</code> API call.</p>
+	 * <p>The session that should pass both ways in challenge-response calls to the service. If
+	 *             the caller must pass another challenge, they return a session with other challenge
+	 *             parameters. Include this session identifier in a <code>RespondToAuthChallenge</code> API
+	 *             request.</p>
 	 */
 	Session?: string;
 	/**
@@ -1147,9 +1157,15 @@ export interface InitiateAuthResponse {
 	ChallengeParameters?: Record<string, string>;
 	/**
 	 * <p>The result of the authentication response. This result is only returned if the caller doesn't need to pass another challenge. If the caller does need to pass another challenge before it gets
-	 *             tokens, <code>ChallengeName</code>, <code>ChallengeParameters</code>, and <code>Session</code> are returned.</p>
+	 *             tokens, <code>ChallengeName</code>, <code>ChallengeParameters</code>, <code>AvailableChallenges</code>, and <code>Session</code> are returned.</p>
 	 */
 	AuthenticationResult?: AuthenticationResultType;
+	/**
+	 * <p>This response parameter prompts a user to select from multiple available challenges
+	 *             that they can complete authentication with. For example, they might be able to continue
+	 *             with passwordless authentication or with a one-time password from an SMS message.</p>
+	 */
+	AvailableChallenges?: ChallengeNameType[];
 }
 export type ListDevicesCommandInput = ListDevicesRequest;
 export interface ListDevicesCommandOutput
