@@ -5,7 +5,6 @@ export const loadGetRandomValues = () => {
 	try {
 		// metro bundler requires static string for loading module.
 		// See: https://facebook.github.io/metro/docs/configuration/#dynamicdepsinpackages
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		require('react-native-get-random-values');
 	} catch (e) {
 		// The error parsing logic cannot be extract as with metro the `require`

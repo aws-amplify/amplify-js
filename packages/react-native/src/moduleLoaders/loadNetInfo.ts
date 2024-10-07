@@ -9,7 +9,6 @@ export const loadNetInfo = (): NetInfoModule => {
 	try {
 		// metro bundler requires static string for loading module.
 		// See: https://facebook.github.io/metro/docs/configuration/#dynamicdepsinpackages
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		const module = require('@react-native-community/netinfo')
 			?.default as NetInfoModule;
 		if (module) {
