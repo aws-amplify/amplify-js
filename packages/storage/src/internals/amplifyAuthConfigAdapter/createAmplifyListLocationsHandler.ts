@@ -36,7 +36,7 @@ export const createAmplifyListLocationsHandler = (): ListPaths => {
 			buckets,
 			tokens: !!tokens,
 			identityId,
-			userGroup: userGroups && (userGroups as any)[0], // TODO: fix this edge case
+			userGroup: userGroups as any, // TODO: fix this edge case
 		});
 
 		cachedResult[cacheKey] = { locations };

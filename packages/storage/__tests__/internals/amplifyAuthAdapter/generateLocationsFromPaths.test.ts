@@ -37,7 +37,7 @@ describe('generateLocationsFromPaths', () => {
 			buckets: mockBuckets,
 			tokens: true,
 			identityId: '12345',
-			userGroup: 'admin',
+			userGroup: ['admin'],
 		});
 
 		expect(result).toEqual([
@@ -68,12 +68,48 @@ describe('generateLocationsFromPaths', () => {
 		]);
 	});
 
+	it('should generate locations correctly when tokens are true and usergroup order is given', () => {
+		const result = generateLocationsFromPaths({
+			buckets: mockBuckets,
+			tokens: true,
+			identityId: '12345',
+			userGroup: ['editor', 'auditor'],
+		});
+
+		expect(result).toEqual([
+			{
+				type: 'PREFIX',
+				permission: ['get', 'list', 'write'],
+				scope: {
+					bucketName: 'bucket1',
+					path: 'path1/*',
+				},
+			},
+			{
+				type: 'PREFIX',
+				permission: ['get', 'list'],
+				scope: {
+					bucketName: 'bucket1',
+					path: 'path2/*',
+				},
+			},
+			{
+				type: 'PREFIX',
+				permission: ['get', 'list', 'write', 'delete'],
+				scope: {
+					bucketName: 'bucket1',
+					path: 'profile-pictures/12345/*',
+				},
+			},
+		]);
+	});
+
 	it('should generate locations correctly when tokens are true & bad userGroup', () => {
 		const result = generateLocationsFromPaths({
 			buckets: mockBuckets,
 			tokens: true,
 			identityId: '12345',
-			userGroup: 'editor',
+			userGroup: ['editor'],
 		});
 
 		expect(result).toEqual([
@@ -107,7 +143,7 @@ describe('generateLocationsFromPaths', () => {
 			},
 			tokens: true,
 			identityId: '12345',
-			userGroup: 'admin',
+			userGroup: ['admin'],
 		});
 
 		expect(result).toEqual([]);

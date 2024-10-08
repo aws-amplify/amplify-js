@@ -8,26 +8,26 @@ import { StorageAccess } from '../types/common';
 const resolvePermissions = (
 	accessRule: Record<string, string[]>,
 	token: boolean,
-	groups?: string,
+	groups: string[] = [],
 ) => {
 	if (!token) {
-		return {
-			permission: accessRule.guest,
-		};
+		return { permission: accessRule.guest };
 	}
-	if (groups) {
+
+	const matchingGroup = groups.find(group =>
+		Object.keys(accessRule).some(key => key.includes(group)),
+	);
+
+	if (matchingGroup) {
 		const selectedKey = Object.keys(accessRule).find(
-			access => access.includes(groups) || access.includes('authenticated'),
+			access =>
+				access.includes(matchingGroup) || access.includes('authenticated'),
 		);
 
-		return {
-			permission: selectedKey ? accessRule[selectedKey] : undefined,
-		};
+		return { permission: selectedKey ? accessRule[selectedKey] : undefined };
 	}
 
-	return {
-		permission: accessRule.authenticated,
-	};
+	return { permission: accessRule.authenticated };
 };
 
 export const generateLocationsFromPaths = ({
@@ -39,7 +39,7 @@ export const generateLocationsFromPaths = ({
 	buckets: Record<string, BucketInfo>;
 	tokens: boolean;
 	identityId?: string;
-	userGroup?: string;
+	userGroup?: string[];
 }): PathAccess[] => {
 	const locations: PathAccess[] = [];
 
