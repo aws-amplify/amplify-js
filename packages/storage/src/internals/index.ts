@@ -14,7 +14,8 @@ export {
 	GetPropertiesInput,
 	GetUrlInput,
 	CopyInput,
-	ListInputWithPath,
+	ListAllInput,
+	ListPaginateInput,
 	RemoveInput,
 	DownloadDataInput,
 } from './types/inputs';
@@ -25,6 +26,9 @@ export {
 	GetUrlOutput,
 	RemoveOutput,
 	DownloadDataOutput,
+	ListAllOutput,
+	ListPaginateOutput,
+	CopyOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';

@@ -33,7 +33,10 @@ import { CommonPrefix } from '../../utils/client/s3data/types';
 import { IntegrityError } from '../../../../errors/IntegrityError';
 import { ListAllInput, ListPaginateInput } from '../../types/inputs';
 // TODO: Remove this interface when we move to public advanced APIs.
-import { ListInputWithPath as ListWithPathInputAndAdvancedOptions } from '../../../../internals/types/inputs';
+import {
+	ListAllInput as ListAllWithPathInputAndAdvancedOptions,
+	ListPaginateInput as ListPaginateWithPathInputAndAdvancedOptions,
+} from '../../../../internals/types/inputs';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -45,7 +48,11 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input: ListAllInput | ListPaginateInput | ListWithPathInputAndAdvancedOptions,
+	input:
+		| ListAllInput
+		| ListPaginateInput
+		| ListAllWithPathInputAndAdvancedOptions
+		| ListPaginateWithPathInputAndAdvancedOptions,
 ): Promise<
 	| ListAllOutput
 	| ListPaginateOutput

@@ -3,8 +3,11 @@
 
 import {
 	DownloadDataWithPathOutput,
+	CopyWithPathOutput,
 	GetPropertiesWithPathOutput,
 	GetUrlWithPathOutput,
+	ListAllWithPathOutput,
+	ListPaginateWithPathOutput,
 	RemoveWithPathOutput,
 } from '../../providers/s3/types';
 
@@ -39,3 +42,18 @@ export type RemoveOutput = RemoveWithPathOutput;
  * @internal
  */
 export type DownloadDataOutput = DownloadDataWithPathOutput;
+
+/**
+ * @internal
+ */
+export type ListAllOutput = ListAllWithPathOutput;
+
+/**
+ * @internal
+ */
+export type ListPaginateOutput = ListPaginateWithPathOutput;
+
+/**
+ * @internal
+ */
+export type CopyOutput = CopyWithPathOutput;
