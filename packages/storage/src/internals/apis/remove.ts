@@ -9,7 +9,7 @@ import { RemoveOutput } from '../types/outputs';
 
 /**
  * Remove a file from your S3 bucket.
- * @param input - The `RemoveWithPathInput` object.
+ * @param input - The `RemoveInput` object.
  * @return Output containing the removed object path.
  * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
  * @throws validation: `StorageValidationErrorCode` - Validation errors thrown

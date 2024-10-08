@@ -16,6 +16,7 @@ export {
 	CopyInput,
 	ListInputWithPath,
 	RemoveInput,
+	DownloadDataInput,
 } from './types/inputs';
 export {
 	GetDataAccessOutput,
@@ -23,6 +24,7 @@ export {
 	GetPropertiesOutput,
 	GetUrlOutput,
 	RemoveOutput,
+	DownloadDataOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';
@@ -31,6 +33,7 @@ export { list } from './apis/list';
 export { getProperties } from './apis/getProperties';
 export { getUrl } from './apis/getUrl';
 export { remove } from './apis/remove';
+export { downloadData } from './apis/downloadData';
 
 /*
 CredentialsStore exports
