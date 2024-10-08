@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.9.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.14...@aws-amplify/storage@5.9.15) (2024-10-03)
+
+### Bug Fixes
+
+- **storage:** browser module resoltuion is not picked up by metro web ([#13881](https://github.com/aws-amplify/amplify-js/issues/13881)) ([d49b5b1](https://github.com/aws-amplify/amplify-js/commit/d49b5b1247302a434a91c61753cc6fab24c8930f))
+
 ## [5.9.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@5.9.13...@aws-amplify/storage@5.9.14) (2024-08-08)
 
 **Note:** Version bump only for package @aws-amplify/storage
