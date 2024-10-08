@@ -18,7 +18,7 @@ jobs:
         working-directory: ./amplify-js
         run: |
           regex=$(./scripts/generate-conventional-commit-regex.sh)
-          if [[ $PR_TITLE =~ $regex ]]; then
+          if [[ "$PR_TITLE" =~ $regex ]]; then
             echo "✅ PR title '$PR_TITLE' is valid"
             exit 0
           else
