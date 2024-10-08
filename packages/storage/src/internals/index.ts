@@ -14,8 +14,10 @@ export {
 	GetPropertiesInput,
 	GetUrlInput,
 	CopyInput,
+	ListInputWithPath,
 	RemoveInput,
 	UploadDataInput,
+	DownloadDataInput,
 } from './types/inputs';
 export {
 	GetDataAccessOutput,
@@ -24,14 +26,17 @@ export {
 	GetUrlOutput,
 	RemoveOutput,
 	UploadDataOutput,
+	DownloadDataOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';
 export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
+export { list } from './apis/list';
 export { getProperties } from './apis/getProperties';
 export { getUrl } from './apis/getUrl';
 export { remove } from './apis/remove';
 export { uploadData } from './apis/uploadData';
+export { downloadData } from './apis/downloadData';
 
 /*
 CredentialsStore exports
