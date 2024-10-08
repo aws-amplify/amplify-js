@@ -12,6 +12,7 @@ import {
 	callback,
 	authHelperMock,
 	netRequestMockSuccess,
+	netRequestWithRetryMockSuccess,
 } from '../__mocks__/mocks';
 
 import {
@@ -1609,7 +1610,7 @@ describe('refreshSession()', () => {
 	});
 
 	test('happy path for refresh session ', () => {
-		netRequestMockSuccess(true, {
+		netRequestWithRetryMockSuccess(true, {
 			AuthenticationResult: { RefreshToken: null },
 		});
 		cognitoUser.refreshSession(...refreshSessionDefaults);
@@ -1618,7 +1619,7 @@ describe('refreshSession()', () => {
 		);
 	});
 	test('client throws an error ', () => {
-		netRequestMockSuccess(false);
+		netRequestWithRetryMockSuccess(false);
 		cognitoUser.refreshSession(...refreshSessionDefaults);
 		expect(callback.mock.calls[0][0]).toMatchObject(new Error('Network Error'));
 	});

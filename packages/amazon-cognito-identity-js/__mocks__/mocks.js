@@ -30,6 +30,28 @@ export function netRequestMockSuccess(success, data = {}) {
 }
 
 /**
+ * Mock a single network request to be either successful or fail with an optional data object
+ * @param {boolean} success defines if a network request is successful
+ * @param {object?} optional data to return onSuccess, some tests requires specific object values
+ * @param {string?} optional operationName to provide clarity inside the testing function
+ */
+export function netRequestWithRetryMockSuccess(success, data = {}) {
+	if (success) {
+		jest
+			.spyOn(Client.prototype, 'requestWithRetry')
+			.mockImplementationOnce((...[, , callback]) => {
+				callback(null, data);
+			});
+	} else {
+		jest
+			.spyOn(Client.prototype, 'requestWithRetry')
+			.mockImplementationOnce((...[, , callback]) => {
+				callback(networkError, null);
+			});
+	}
+}
+
+/**
  *
  * @param {string} fnName function name within the AuthenticationHelper class
  * @returns mockImplemntation of the fnName or throw error
