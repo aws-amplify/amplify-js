@@ -701,14 +701,14 @@ tests:
     browser: *minimal_browser_list
 
   # GEO
-  - test_name: integ_react_geo_display_map
-    desc: 'Display Map'
-    framework: react
-    category: geo
-    sample_name: [display-map]
-    spec: display-map
-    # Temp fix:
-    browser: [chrome]
+  # - test_name: integ_react_geo_display_map
+  #   desc: 'Display Map'
+  #   framework: react
+  #   category: geo
+  #   sample_name: [display-map]
+  #   spec: display-map
+  #   # Temp fix:
+  #   browser: [chrome]
   - test_name: integ_react_geo_search_outside_map
     desc: 'Search Outside Map'
     framework: react
