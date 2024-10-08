@@ -5,7 +5,7 @@ import { Amplify } from '@aws-amplify/core';
 
 import { copy as copyInternal } from '../../providers/s3/apis/internal/copy';
 import { CopyInput } from '../types/inputs';
-import { CopyWithPathOutput } from '../../providers/s3';
+import { CopyOutput } from '../types/outputs';
 
 /**
  * @internal
@@ -27,5 +27,5 @@ export function copy(input: CopyInput) {
 		},
 		// Type casting is necessary because `copyInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
-	}) as Promise<CopyWithPathOutput>;
+	}) as Promise<CopyOutput>;
 }
