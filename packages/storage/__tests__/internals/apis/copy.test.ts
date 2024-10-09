@@ -28,9 +28,13 @@ describe('copy (internals)', () => {
 		const copyInputWithAdvancedOptions = {
 			source: {
 				path: 'path/to/object',
+				bucket: 'bucket',
+				eTag: 'eTag',
+				notModifiedSince: new Date(),
 			},
 			destination: {
 				path: 'path/to/object',
+				bucket: 'bucket',
 			},
 			options: {
 				locationCredentialsProvider,

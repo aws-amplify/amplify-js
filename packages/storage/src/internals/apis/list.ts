@@ -4,35 +4,14 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { list as listInternal } from '../../providers/s3/apis/internal/list';
-import { ListAllInput, ListPaginateInput } from '../types/inputs';
-import { ListAllOutput, ListPaginateOutput } from '../types/outputs';
+import { ListInput } from '../types/inputs';
+import { ListPaginateWithPathInput } from '../../providers/s3';
+import { ListOutput } from '../types/outputs';
 
 /**
  * @internal
- * List all or paginate files from S3 for a given `path`.
- * @param input - The `ListWithPathInputAndAdvancedOptions` object.
- * @returns A list of all objects with path and metadata
- * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
- * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
-export function list(input?: ListPaginateInput | ListAllInput) {
-	if (!input) return listInternal(Amplify, {});
-	if (isListAllInputWithPath(input))
-		return listInternal(Amplify, {
-			path: input.path,
-			options: {
-				bucket: input.options?.bucket,
-				subpathStrategy: input.options?.subpathStrategy,
-				useAccelerateEndpoint: input.options?.useAccelerateEndpoint,
-				listAll: input.options?.listAll,
-
-				// Advanced options
-				locationCredentialsProvider: input.options?.locationCredentialsProvider,
-			},
-			// Type casting is necessary because `copyInternal` supports both Gen1 and Gen2 signatures, but here
-			// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
-		} as ListAllInput) as Promise<ListAllOutput>;
-
+export function list(input: ListInput): Promise<ListOutput> {
 	return listInternal(Amplify, {
 		path: input.path,
 		options: {
@@ -42,19 +21,12 @@ export function list(input?: ListPaginateInput | ListAllInput) {
 			listAll: input.options?.listAll,
 
 			// Pagination options
-			nextToken: input.options?.nextToken,
-			pageSize: input.options?.pageSize,
-
+			nextToken: (input as ListPaginateWithPathInput).options?.nextToken,
+			pageSize: (input as ListPaginateWithPathInput).options?.pageSize,
 			// Advanced options
 			locationCredentialsProvider: input.options?.locationCredentialsProvider,
 		},
-		// Type casting is necessary because `copyInternal` supports both Gen1 and Gen2 signatures, but here
+		// Type casting is necessary because `listInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
-	} as ListPaginateInput) as Promise<ListPaginateOutput>;
-}
-
-function isListAllInputWithPath(
-	input?: ListPaginateInput | ListAllInput,
-): input is ListAllInput {
-	return !!input;
+	} as ListInput) as Promise<ListOutput>;
 }

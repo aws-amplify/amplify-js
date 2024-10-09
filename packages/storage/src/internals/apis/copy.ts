@@ -9,18 +9,19 @@ import { CopyOutput } from '../types/outputs';
 
 /**
  * @internal
- * Copy an object from a source to a destination object within the same bucket.
- *
- * @param input - The `CopyInput` object.
- * @returns Output containing the destination object path.
- * @throws service: `S3Exception` - Thrown when checking for existence of the object
- * @throws validation: `StorageValidationErrorCode` - Thrown when
- * source or destination path is not defined.
  */
-export function copy(input: CopyInput) {
-	return copyInternal(Amplify, {
-		source: input.source,
-		destination: input.destination,
+export const copy = (input: CopyInput) =>
+	copyInternal(Amplify, {
+		source: {
+			path: input.source.path,
+			bucket: input.source.bucket,
+			eTag: input.source.eTag,
+			notModifiedSince: input.source.notModifiedSince,
+		},
+		destination: {
+			path: input.destination.path,
+			bucket: input.destination.bucket,
+		},
 		options: {
 			// Advanced options
 			locationCredentialsProvider: input.options?.locationCredentialsProvider,
@@ -28,4 +29,3 @@ export function copy(input: CopyInput) {
 		// Type casting is necessary because `copyInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
 	}) as Promise<CopyOutput>;
-}
