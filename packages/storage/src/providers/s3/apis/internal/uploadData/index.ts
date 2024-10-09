@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { UploadDataInput } from '../../../types';
+// TODO: Remove this interface when we move to public advanced APIs.
 import { UploadDataInput as UploadDataWithPathInputWithAdvancedOptions } from '../../../../../internals/types/inputs';
 import { createUploadTask } from '../../../utils';
 import { assertValidationError } from '../../../../../errors/utils/assertValidationError';
