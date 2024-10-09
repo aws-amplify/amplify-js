@@ -192,6 +192,8 @@ export type DownloadDataOptions = CommonOptions &
 export type DownloadDataWithKeyOptions = ReadOptions & DownloadDataOptions;
 export type DownloadDataWithPathOptions = DownloadDataOptions;
 
+export type UploadDataChecksumAlgorithm = 'crc-32';
+
 export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
@@ -222,6 +224,12 @@ export type UploadDataOptions = CommonOptions &
 		 * @default false
 		 */
 		preventOverwrite?: boolean;
+		/**
+		 * The algorithm used to compute a checksum for the object. Used to verify that the data received by S3
+		 * matches what was originally sent. Disabled by default.
+		 * @default undefined
+		 */
+		checksumAlgorithm?: UploadDataChecksumAlgorithm;
 	};
 
 /** @deprecated Use {@link UploadDataWithPathOptions} instead. */
