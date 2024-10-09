@@ -11,7 +11,7 @@ import { getCustomUserAgent } from './customUserAgent';
 const BASE_USER_AGENT = `aws-amplify`;
 
 class PlatformBuilder {
-	userAgent = `${BASE_USER_AGENT}/${version}`;
+	userAgent = `${BASE_USER_AGENT}/${version.replace(/\+.*/, '')}`;
 	get framework() {
 		return detectFramework();
 	}

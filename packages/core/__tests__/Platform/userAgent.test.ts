@@ -3,7 +3,6 @@ import {
 	getAmplifyUserAgent,
 	getAmplifyUserAgentObject,
 } from '../../src/Platform';
-import { version } from '../../src/Platform/version';
 import { AuthAction, Category, Framework } from '../../src/Platform/types';
 import {
 	clearCache,
@@ -13,6 +12,7 @@ import * as detection from '../../src/Platform/detection';
 import { getCustomUserAgent } from '../../src/Platform/customUserAgent';
 
 jest.mock('../../src/Platform/customUserAgent');
+const version = '6.0.0';
 
 describe('Platform test', () => {
 	const mockGetCustomUserAgent = getCustomUserAgent as jest.Mock;
@@ -38,6 +38,13 @@ describe('Platform test', () => {
 
 	describe('getAmplifyUserAgentObject test', () => {
 		test('without customUserAgentDetails', () => {
+			expect(getAmplifyUserAgentObject()).toStrictEqual([
+				['aws-amplify', version],
+				['framework', Framework.WebUnknown],
+			]);
+		});
+
+		test('should remove value after special char + in version', () => {
 			expect(getAmplifyUserAgentObject()).toStrictEqual([
 				['aws-amplify', version],
 				['framework', Framework.WebUnknown],
