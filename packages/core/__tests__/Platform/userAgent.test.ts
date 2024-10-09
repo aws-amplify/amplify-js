@@ -10,9 +10,10 @@ import {
 } from '../../src/Platform/detectFramework';
 import * as detection from '../../src/Platform/detection';
 import { getCustomUserAgent } from '../../src/Platform/customUserAgent';
+import { version } from '../../src/Platform/version';
 
 jest.mock('../../src/Platform/customUserAgent');
-const version = '6.0.0';
+const expectedVersion = version.replace(/\+.*/, '');
 
 describe('Platform test', () => {
 	const mockGetCustomUserAgent = getCustomUserAgent as jest.Mock;
@@ -39,14 +40,14 @@ describe('Platform test', () => {
 	describe('getAmplifyUserAgentObject test', () => {
 		test('without customUserAgentDetails', () => {
 			expect(getAmplifyUserAgentObject()).toStrictEqual([
-				['aws-amplify', version],
+				['aws-amplify', expectedVersion],
 				['framework', Framework.WebUnknown],
 			]);
 		});
 
 		test('should remove value after special char + in version', () => {
 			expect(getAmplifyUserAgentObject()).toStrictEqual([
-				['aws-amplify', version],
+				['aws-amplify', expectedVersion],
 				['framework', Framework.WebUnknown],
 			]);
 		});
@@ -58,7 +59,7 @@ describe('Platform test', () => {
 					action: AuthAction.ConfirmSignIn,
 				}),
 			).toStrictEqual([
-				['aws-amplify', version],
+				['aws-amplify', expectedVersion],
 				[Category.Auth, AuthAction.ConfirmSignIn],
 				['framework', Framework.WebUnknown],
 			]);
@@ -75,7 +76,7 @@ describe('Platform test', () => {
 					action: AuthAction.ConfirmSignIn,
 				}),
 			).toStrictEqual([
-				['aws-amplify', version],
+				['aws-amplify', expectedVersion],
 				[Category.Auth, AuthAction.ConfirmSignIn],
 				['framework', Framework.WebUnknown],
 				['uiversion', '1.0.0'],
