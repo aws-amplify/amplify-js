@@ -9,6 +9,7 @@ import {
 	ListAllWithPathOutput,
 	ListPaginateWithPathOutput,
 	RemoveWithPathOutput,
+	UploadDataWithPathOutput,
 } from '../../providers/s3/types';
 
 import { ListLocationsOutput, LocationCredentials } from './credentials';
@@ -47,6 +48,11 @@ export type RemoveOutput = RemoveWithPathOutput;
  * @internal
  */
 export type ListOutput = ListAllWithPathOutput | ListPaginateWithPathOutput;
+
+/**
+ * @internal
+ */
+export type UploadDataOutput = UploadDataWithPathOutput;
 
 /**
  * @internal

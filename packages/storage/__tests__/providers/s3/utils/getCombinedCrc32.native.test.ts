@@ -9,7 +9,7 @@ import {
 } from 'node:util';
 
 import { getCombinedCrc32 } from '../../../../src/providers/s3/utils/getCombinedCrc32.native';
-import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
+import { byteLength } from '../../../../src/providers/s3/apis/internal/uploadData/byteLength';
 
 global.Blob = BlobPolyfill as any;
 global.File = FilePolyfill as any;

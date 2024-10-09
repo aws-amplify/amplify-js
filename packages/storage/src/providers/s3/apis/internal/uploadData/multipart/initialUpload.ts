@@ -7,13 +7,13 @@ import {
 	ContentDisposition,
 	ResolvedS3Config,
 	UploadDataChecksumAlgorithm,
-} from '../../../types/options';
-import { StorageUploadDataPayload } from '../../../../../types';
-import { Part, createMultipartUpload } from '../../../utils/client/s3data';
-import { logger } from '../../../../../utils';
-import { constructContentDisposition } from '../../../utils/constructContentDisposition';
-import { getCombinedCrc32 } from '../../../utils/getCombinedCrc32';
-import { CHECKSUM_ALGORITHM_CRC32 } from '../../../utils/constants';
+} from '../../../../types/options';
+import { StorageUploadDataPayload } from '../../../../../../types';
+import { Part, createMultipartUpload } from '../../../../utils/client/s3data';
+import { logger } from '../../../../../../utils';
+import { constructContentDisposition } from '../../../../utils/constructContentDisposition';
+import { getCombinedCrc32 } from '../../../../utils/getCombinedCrc32';
+import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../utils/constants';
 
 import {
 	cacheMultipartUpload,

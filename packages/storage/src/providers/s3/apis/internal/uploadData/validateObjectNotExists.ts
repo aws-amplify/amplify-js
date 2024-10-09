@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageError } from '../../../../errors/StorageError';
-import { ResolvedS3Config } from '../../types/options';
-import { HeadObjectInput, headObject } from '../../utils/client/s3data';
+import { StorageError } from '../../../../../errors/StorageError';
+import { ResolvedS3Config } from '../../../types/options';
+import { HeadObjectInput, headObject } from '../../../utils/client/s3data';
 
 export const validateObjectNotExists = async (
 	s3Config: ResolvedS3Config,

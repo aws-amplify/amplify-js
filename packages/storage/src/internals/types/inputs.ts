@@ -12,6 +12,7 @@ import {
 	GetPropertiesWithPathInput,
 	GetUrlWithPathInput,
 	RemoveWithPathInput,
+	UploadDataWithPathInput,
 } from '../../providers/s3';
 import {
 	ListAllWithPathInput,
@@ -94,6 +95,13 @@ export type CopyInput = ExtendCopyInputWithAdvancedOptions<
 	}
 >;
 
+export type UploadDataInput = ExtendInputWithAdvancedOptions<
+	UploadDataWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
 /**
  * @internal
  */
@@ -111,8 +119,7 @@ export type DownloadDataInput = ExtendInputWithAdvancedOptions<
 type ExtendInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
 	InputType extends StorageOperationInputWithPath &
 		StorageOperationOptionsInput<infer PublicInputOptionsType>
-		? {
-				path: InputType['path'];
+		? InputType & {
 				options?: PublicInputOptionsType & ExtendedOptionsType;
 			}
 		: never;

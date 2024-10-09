@@ -13,7 +13,7 @@ import {
 } from '../../../../../src/providers/s3/utils/client/s3data';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import * as CRC32 from '../../../../../src/providers/s3/utils/crc32';
-import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
+import { putObjectJob } from '../../../../../src/providers/s3/apis/internal/uploadData/putObjectJob';
 import '../testUtils';
 import { UploadDataChecksumAlgorithm } from '../../../../../src/providers/s3/types/options';
 import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../src/providers/s3/utils/constants';

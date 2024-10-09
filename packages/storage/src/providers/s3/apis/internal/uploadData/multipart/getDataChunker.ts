@@ -1,12 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageUploadDataPayload } from '../../../../../types';
+import { StorageUploadDataPayload } from '../../../../../../types';
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
-} from '../../../../../errors/types/validation';
-import { StorageError } from '../../../../../errors/StorageError';
+} from '../../../../../../errors/types/validation';
+import { StorageError } from '../../../../../../errors/StorageError';
 
 import { calculatePartSize } from './calculatePartSize';
 
