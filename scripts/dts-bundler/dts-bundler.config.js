@@ -13,8 +13,7 @@ const baseTsConfigPath = join(
 	__dirname,
 	'..',
 	'..',
-	'packages',
-	'tsconfig.base.json',
+	'tsconfig.json',
 );
 const corePackageSrcClientsPath = join(
 	__dirname,
@@ -87,7 +86,7 @@ const config = {
 			filePath: './cognito-identity-provider.d.ts',
 			outFile: join(
 				authPackageSrcClientsPath,
-				'Sdk.ts',
+				'sdk.ts',
 			),
 			libraries: {
 				inlinedLibraries: ['@aws-sdk/client-cognito-identity-provider'],
