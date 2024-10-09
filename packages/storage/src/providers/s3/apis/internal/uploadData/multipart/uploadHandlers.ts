@@ -30,6 +30,7 @@ import {
 import { getStorageUserAgentValue } from '../../../../utils/userAgent';
 import { logger } from '../../../../../../utils';
 import { validateObjectNotExists } from '../validateObjectNotExists';
+import { calculateContentCRC32 } from '../../../../utils/crc32';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
@@ -110,6 +111,10 @@ export const getMultipartUploadHandlers = (
 			resolvedAccessLevel = resolveAccessLevel(accessLevel);
 		}
 
+		const optionsHash = (
+			await calculateContentCRC32(JSON.stringify(uploadDataOptions))
+		).checksum;
+
 		if (!inProgressUpload) {
 			const { uploadId, cachedParts, finalCrc32 } =
 				await loadOrCreateMultipartUpload({
@@ -125,6 +130,8 @@ export const getMultipartUploadHandlers = (
 					data,
 					size,
 					abortSignal: abortController.signal,
+					checksumAlgorithm: uploadDataOptions?.checksumAlgorithm,
+					optionsHash,
 				});
 			inProgressUpload = {
 				uploadId,
@@ -141,6 +148,7 @@ export const getMultipartUploadHandlers = (
 					bucket: resolvedBucket!,
 					size,
 					key: objectKey,
+					optionsHash,
 				})
 			: undefined;
 
