@@ -6,7 +6,12 @@ import type { V6Client } from '@aws-amplify/api-graphql';
 export { GraphQLQuery, GraphQLSubscription, SelectionSet } from './types';
 export { generateClient } from './API';
 
-export { GraphQLAuthError, ConnectionState } from '@aws-amplify/api-graphql';
+export {
+	GraphQLAuthError,
+	ConnectionState,
+	EventsChannel,
+	EventsOptions,
+} from '@aws-amplify/api-graphql';
 
 export type {
 	GraphQLResult,

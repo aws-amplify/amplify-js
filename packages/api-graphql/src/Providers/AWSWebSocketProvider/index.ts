@@ -466,6 +466,11 @@ export abstract class AWSWebSocketProvider {
 		}
 	}
 
+	protected abstract _unsubscribeMessage(subscriptionId: string): {
+		id: string;
+		type: string;
+	};
+
 	private _sendUnsubscriptionMessage(subscriptionId: string) {
 		try {
 			if (
@@ -474,10 +479,7 @@ export abstract class AWSWebSocketProvider {
 				this.socketStatus === SOCKET_STATUS.READY
 			) {
 				// Preparing unsubscribe message to stop receiving messages for that subscription
-				const unsubscribeMessage = {
-					id: subscriptionId,
-					type: MESSAGE_TYPES.GQL_STOP,
-				};
+				const unsubscribeMessage = this._unsubscribeMessage(subscriptionId);
 				const stringToAWSRealTime = JSON.stringify(unsubscribeMessage);
 				this.awsRealTimeSocket.send(stringToAWSRealTime);
 			}

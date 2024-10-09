@@ -1,78 +1,33 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { Amplify } from '@aws-amplify/core';
-import {
-	DocumentType,
-	GraphQLAuthMode,
-} from '@aws-amplify/core/internals/utils';
+import { DocumentType } from '@aws-amplify/core/internals/utils';
 
 import { AWSAppSyncEventProvider } from '../../Providers/AWSAppSyncEventsProvider';
 
 import { appsyncRequest } from './appsyncRequest';
-
-type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
-interface EventsOptions {
-	authMode?: GraphQLAuthMode;
-	authToken?: string;
-}
+import { configure, normalizeAuth } from './utils';
+import type {
+	EventsChannel,
+	EventsOptions,
+	PublishResponse,
+	PublishedEvent,
+	SubscriptionObserver,
+} from './types';
 
 const eventProvider = new AWSAppSyncEventProvider();
-
-const normalizeAuth = (
-	explicitAuthMode: GraphQLAuthMode | undefined,
-	defaultAuthMode: ResolvedGraphQLAuthModes,
-): ResolvedGraphQLAuthModes => {
-	if (!explicitAuthMode) {
-		return defaultAuthMode;
-	}
-
-	if (explicitAuthMode === 'identityPool') {
-		return 'iam';
-	}
-
-	return explicitAuthMode;
-};
-
-const configure = () => {
-	const config = Amplify.getConfig() as any;
-
-	// TODO - get this correct
-	const eventsConfig = config.API?.GraphQL?.events ?? config.data?.events;
-
-	if (!eventsConfig) {
-		throw new Error(
-			'Amplify configuration is missing. Have you called Amplify.configure()',
-		);
-	}
-
-	const configAuthMode = normalizeAuth(
-		eventsConfig.defaultAuthMode ?? eventsConfig.default_authorization_type,
-		'apiKey',
-	);
-
-	const options = {
-		appSyncGraphqlEndpoint: eventsConfig.url,
-		region: eventsConfig.region ?? eventsConfig.aws_region,
-		authenticationType: configAuthMode,
-		apiKey: eventsConfig.apiKey ?? eventsConfig.api_key,
-	};
-
-	return options;
-};
-
-interface SubscriptionObserver<T> {
-	next(value: T): void;
-	error(errorValue: any): void;
-}
 
 /**
  *
  * @param channelName
  * @param options
  */
-async function connect(channelName: string, options?: EventsOptions) {
+async function connect(
+	channelName: string,
+	options?: EventsOptions,
+): Promise<EventsChannel> {
 	const providerOptions = configure();
 
 	providerOptions.authenticationType = normalizeAuth(
@@ -82,20 +37,23 @@ async function connect(channelName: string, options?: EventsOptions) {
 
 	await eventProvider.connect(providerOptions);
 
+	let _subscription: Subscription;
+
 	const sub = (
 		observer: SubscriptionObserver<any>,
 		subOptions?: EventsOptions,
-	): Observable<any> => {
+	): Subscription => {
 		const subscribeOptions = { ...providerOptions, query: channelName };
 		subscribeOptions.authenticationType = normalizeAuth(
 			subOptions?.authMode,
 			subscribeOptions.authenticationType,
 		);
 
-		const _sub = eventProvider.subscribe(subscribeOptions);
-		_sub.subscribe(observer);
+		_subscription = eventProvider
+			.subscribe(subscribeOptions)
+			.subscribe(observer);
 
-		return _sub;
+		return _subscription;
 	};
 
 	// WS publish is not enabled in the service yet. It will be a follow up feature
@@ -116,20 +74,16 @@ async function connect(channelName: string, options?: EventsOptions) {
 		return eventProvider.publish(publishOptions);
 	};
 
+	const close = () => {
+		_subscription && _subscription.unsubscribe();
+	};
+
 	return {
 		// WS publish is not enabled in the service yet, will be a follow up feature
 		// publish: pub,
 		subscribe: sub,
+		close,
 	};
-}
-
-interface PublishedEvent {
-	identifier: string;
-	index: number;
-}
-interface PublishResponse {
-	failed: PublishedEvent[];
-	successful: PublishedEvent[];
 }
 
 /**

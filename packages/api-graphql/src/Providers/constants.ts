@@ -79,6 +79,16 @@ export enum MESSAGE_TYPES {
 	 * Server acknowledges successful publish
 	 */
 	EVENT_PUBLISH_ACK = 'publish_success',
+	/**
+	 * Client -> Server message.
+	 * This message type is for unregister subscriptions with AWS AppSync RealTime
+	 */
+	EVENT_STOP = 'unsubscribe',
+	/**
+	 * Server -> Client message.
+	 * This is the ack response from AWS AppSync Events to EVENT_STOP message
+	 */
+	EVENT_COMPLETE = 'unsubscribe_success',
 }
 
 export enum SUBSCRIPTION_STATUS {

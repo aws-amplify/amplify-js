@@ -148,4 +148,14 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 
 		return [false, { id, type, payload }];
 	}
+
+	protected _unsubscribeMessage(subscriptionId: string): {
+		id: string;
+		type: string;
+	} {
+		return {
+			id: subscriptionId,
+			type: MESSAGE_TYPES.GQL_STOP,
+		};
+	}
 }
