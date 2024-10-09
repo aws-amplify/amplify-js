@@ -13,6 +13,9 @@ const MiB = 1024 * 1024;
 const GiB = 1024 * MiB;
 const TiB = 1024 * GiB;
 
+/**
+ * Default part size in MB that is used to determine if an upload task is single part or multi part.
+ */
 export const DEFAULT_PART_SIZE = 5 * MiB;
 export const MAX_OBJECT_SIZE = 5 * TiB;
 export const MAX_PARTS_COUNT = 10000;

@@ -29,6 +29,9 @@ export class CanceledError extends RestApiError {
  *
  * @note This function works **ONLY** for errors thrown by REST API. For GraphQL APIs, use `client.isCancelError(error)`
  *   instead. `client` is generated from  `generateClient()` API from `aws-amplify/api`.
+ *
+ * @param {unknown} error The unknown exception to be checked.
+ * @returns - A boolean indicating if the error was from an upload cancellation
  */
 export const isCancelError = (error: unknown): error is CanceledError =>
 	!!error && error instanceof CanceledError;

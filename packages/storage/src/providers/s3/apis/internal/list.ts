@@ -5,15 +5,11 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
-	ListAllInput,
 	ListAllOutput,
-	ListAllWithPathInput,
 	ListAllWithPathOutput,
 	ListOutputItem,
 	ListOutputItemWithPath,
-	ListPaginateInput,
 	ListPaginateOutput,
-	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
 } from '../../types';
 import {
@@ -21,8 +17,8 @@ import {
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
 import {
-	ListAllOptionsWithPath,
-	ListPaginateOptionsWithPath,
+	ListAllWithPathOptions,
+	ListPaginateWithPathOptions,
 	ResolvedS3Config,
 } from '../../types/options';
 import {
@@ -35,6 +31,9 @@ import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/s3data/types';
 import { IntegrityError } from '../../../../errors/IntegrityError';
+import { ListAllInput, ListPaginateInput } from '../../types/inputs';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { ListInputWithPath as ListWithPathInputAndAdvancedOptions } from '../../../../internals/types/inputs';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -46,11 +45,7 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input:
-		| ListAllInput
-		| ListPaginateInput
-		| ListAllWithPathInput
-		| ListPaginateWithPathInput,
+	input: ListAllInput | ListPaginateInput | ListWithPathInputAndAdvancedOptions,
 ): Promise<
 	| ListAllOutput
 	| ListPaginateOutput
@@ -274,7 +269,7 @@ const mapCommonPrefixesToExcludedSubpaths = (
 };
 
 const getDelimiter = (
-	options?: ListAllOptionsWithPath | ListPaginateOptionsWithPath,
+	options?: ListAllWithPathOptions | ListPaginateWithPathOptions,
 ): string | undefined => {
 	if (options?.subpathStrategy?.strategy === 'exclude') {
 		return options?.subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;

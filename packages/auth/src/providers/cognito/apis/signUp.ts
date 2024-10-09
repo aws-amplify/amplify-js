@@ -10,11 +10,10 @@ import {
 
 import { AuthDeliveryMedium } from '../../../types';
 import { SignInInput, SignUpInput, SignUpOutput } from '../types';
-import { signUp as signUpClient } from '../utils/clients/CognitoIdentityProvider';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 import { SignUpException } from '../types/errors';
-import { getRegion } from '../utils/clients/CognitoIdentityProvider/utils';
+import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { toAttributeType } from '../utils/apiHelpers';
 import {
 	autoSignInUserConfirmed,
@@ -27,6 +26,8 @@ import {
 } from '../utils/signUpHelpers';
 import { getUserContextData } from '../utils/userContextData';
 import { getAuthUserAgentValue } from '../../../utils';
+import { createSignUpClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
+import { createCognitoUserPoolEndpointResolver } from '../factories';
 
 import { setAutoSignIn } from './autoSignIn';
 
@@ -72,11 +73,15 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		setAutoSignInStarted(true);
 	}
 
-	const { userPoolId, userPoolClientId } = authConfig;
-
+	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig;
+	const signUpClient = createSignUpClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 	const clientOutput = await signUpClient(
 		{
-			region: getRegion(userPoolId),
+			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignUp),
 		},
 		{

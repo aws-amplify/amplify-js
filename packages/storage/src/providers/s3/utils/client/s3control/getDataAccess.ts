@@ -7,11 +7,11 @@ import {
 	HttpResponse,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 import {
 	AmplifyUrl,
 	AmplifyUrlSearchParams,
 } from '@aws-amplify/core/internals/utils';
-import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
 	assignStringVariables,
@@ -19,7 +19,6 @@ import {
 	deserializeTimestamp,
 	map,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
 } from '../utils';
 
@@ -27,7 +26,7 @@ import type {
 	GetDataAccessCommandInput,
 	GetDataAccessCommandOutput,
 } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type GetDataAccessInput = GetDataAccessCommandInput;
 

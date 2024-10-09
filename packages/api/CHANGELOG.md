@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.51](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.50...@aws-amplify/api@6.0.51) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.0.50](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.49...@aws-amplify/api@6.0.50) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.0.49](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.48...@aws-amplify/api@6.0.49) (2024-09-04)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.0.48](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.47...@aws-amplify/api@6.0.48) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.0.47](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.46...@aws-amplify/api@6.0.47) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [6.0.46](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.45...@aws-amplify/api@6.0.46) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/api
+
 ## [6.0.45](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@6.0.44...@aws-amplify/api@6.0.45) (2024-08-15)
 
 **Note:** Version bump only for package @aws-amplify/api

@@ -19,14 +19,13 @@ import {
 	emptyArrayGuard,
 	map,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
 
 import type { ListPartsCommandInput, ListPartsCommandOutput } from './types';
-import { defaultConfig } from './base';
+import { defaultConfig, parseXmlError } from './base';
 
 export type ListPartsInput = Pick<
 	ListPartsCommandInput,

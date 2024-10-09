@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/storage",
-	"version": "6.6.1",
+	"version": "6.6.7",
 	"description": "Storage category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -40,15 +40,15 @@
 			"s3": [
 				"./dist/esm/providers/s3/index.d.ts"
 			],
+			"internals": [
+				"./dist/esm/internals/index.d.ts"
+			],
 			"server": [
 				"./dist/esm/server.d.ts"
 			],
 			"s3/server": [
 				"./dist/esm/providers/s3/server.d.ts"
-			],
-			"storage-browser": [
-        "./dist/esm/storageBrowser/index.d.ts"
-      ]
+			]
 		}
 	},
 	"repository": {
@@ -64,6 +64,7 @@
 	"files": [
 		"dist/cjs",
 		"dist/esm",
+		"internals",
 		"src",
 		"server",
 		"s3"
@@ -72,7 +73,7 @@
 		"@aws-sdk/types": "3.398.0",
 		"@smithy/md5-js": "2.0.7",
 		"buffer": "4.9.2",
-		"crc-32": "^1.2.2",
+		"crc-32": "1.2.2",
 		"fast-xml-parser": "^4.4.1",
 		"tslib": "^2.5.0"
 	},
@@ -82,6 +83,11 @@
 			"import": "./dist/esm/index.mjs",
 			"require": "./dist/cjs/index.js",
 			"react-native": "./src/index.ts"
+		},
+		"./internals": {
+			"types": "./dist/esm/internals/index.d.ts",
+			"import": "./dist/esm/internals/index.mjs",
+			"require": "./dist/cjs/internals/index.js"
 		},
 		"./server": {
 			"types": "./dist/esm/server.d.ts",
@@ -99,20 +105,15 @@
 			"import": "./dist/esm/providers/s3/server.mjs",
 			"require": "./dist/cjs/providers/s3/server.js"
 		},
-		"./storage-browser": {
-			"types": "./dist/esm/storageBrowser/index.d.ts",
-			"import": "./dist/esm/storageBrowser/index.mjs",
-			"require": "./dist/cjs/storageBrowser/index.js"
-		},
 		"./package.json": "./package.json"
 	},
 	"peerDependencies": {
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@types/node": "20.14.12",
-		"@aws-amplify/core": "6.3.10",
-		"@aws-amplify/react-native": "1.1.4",
+		"@aws-amplify/core": "6.4.2",
+    "@types/node": "20.14.12",
+    "@aws-amplify/react-native": "1.1.5",
 		"typescript": "5.0.2"
 	}
 }
