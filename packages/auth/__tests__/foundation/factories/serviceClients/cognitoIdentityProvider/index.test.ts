@@ -24,7 +24,6 @@ describe('service clients', () => {
 	test.each(serviceClientFactories)(
 		'factory `%s` should invoke composeServiceApi with expected parameters',
 		serviceClientFactory => {
-			// eslint-disable-next-line import/namespace
 			serviceClients[serviceClientFactory](mockServiceClientAPIConfig);
 
 			expect(mockComposeServiceApi).toHaveBeenCalledWith(

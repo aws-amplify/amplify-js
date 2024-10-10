@@ -422,6 +422,7 @@ const initSchema = (userSchema: Schema) => {
 		const result = new Map<string, string[]>();
 
 		let count = 1000;
+		// eslint-disable-next-line no-constant-binary-expression
 		while (true && count > 0) {
 			if (modelAssociations.size === 0) {
 				break;
