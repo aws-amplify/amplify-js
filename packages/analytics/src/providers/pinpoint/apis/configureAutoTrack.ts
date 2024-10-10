@@ -36,6 +36,7 @@ const emitTrackingEvent = (
  * configured events are detected within your application. This can include: DOM element events (via the `event`
  * tracker), session events (via the `session` tracker), and page view events (via the `pageView` tracker).
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/more-features/analytics/auto-track-sessions/}
  * @remark Only session tracking is currently supported on React Native.
  *
  * @param {ConfigureAutoTrackInput} params The input object to configure auto track behavior.

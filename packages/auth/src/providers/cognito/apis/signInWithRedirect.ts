@@ -29,6 +29,7 @@ import { listenForOAuthFlowCancellation } from '../utils/oauth/cancelOAuthFlow';
 /**
  * Signs in a user with OAuth. Redirects the application to an Identity Provider.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/add-social-provider/#redirect-urls}
  * @param input - The SignInWithRedirectInput object, if empty it will redirect to Cognito HostedUI
  *
  * @throws AuthTokenConfigException - Thrown when the user pool config is invalid.

@@ -20,6 +20,7 @@ const initialAutoSignIn: AutoSignInCallback =
 /**
  * Signs a user in automatically after finishing the sign-up process.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/enable-sign-up/#auto-sign-in}
  * This API will automatically sign a user in if the autoSignIn flow has been completed in the following cases:
  * - User confirmed their account with a verification code sent to their phone or email (default option).
  * - User confirmed their account with a verification link sent to their phone or email. In order to

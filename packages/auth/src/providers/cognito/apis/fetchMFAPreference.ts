@@ -19,6 +19,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 /**
  * Fetches the preferred MFA setting and enabled MFA settings for the user.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-mfa/#fetch-the-current-users-mfa-preferences}
  * @returns FetchMFAPreferenceOutput
  * @throws  -{@link GetUserException} : error thrown when the service fails to fetch MFA preference
  * and settings.

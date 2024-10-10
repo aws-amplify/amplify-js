@@ -11,6 +11,7 @@ import { getCurrentUser as getCurrentUserInternal } from './internal/getCurrentU
 /**
  * Gets the current user from the idToken.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-user-session/#retrieve-your-current-authenticated-user}
  * @param input -  The GetCurrentUserInput object.
  * @returns GetCurrentUserOutput
  * @throws - {@link InitiateAuthException} - Thrown when the service fails to refresh the tokens.

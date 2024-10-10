@@ -20,6 +20,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 /**
  * Updates user's password while authenticated.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-passwords/#update-password}
  * @param input - The UpdatePasswordInput object.
  * @throws - {@link ChangePasswordException} - Cognito service errors thrown when updating a password.
  * @throws - {@link AuthValidationErrorCode} - Validation errors thrown when oldPassword or newPassword are empty.
