@@ -2,6 +2,7 @@ import {
 	Platform,
 	getAmplifyUserAgent,
 	getAmplifyUserAgentObject,
+	sanitizeAmplifyVersion,
 } from '../../src/Platform';
 import { AuthAction, Category, Framework } from '../../src/Platform/types';
 import {
@@ -34,6 +35,18 @@ describe('Platform test', () => {
 	describe('isReactNative test', () => {
 		test('happy case', () => {
 			expect(Platform.isReactNative).toBe(false);
+		});
+	});
+
+	describe('sanitizeAmplifyVersion', () => {
+		test('happy case with no special char', () => {
+			expect(sanitizeAmplifyVersion('6.6.0')).toEqual('6.6.0');
+		});
+
+		test('happy case with no special char +', () => {
+			expect(
+				sanitizeAmplifyVersion('6.6.4-unstable.ffa8a24.0+ffa8a24'),
+			).toEqual('6.6.4-unstable.ffa8a24.0');
 		});
 	});
 
@@ -132,7 +145,7 @@ describe('Platform test', () => {
 });
 
 describe('detectFramework observers', () => {
-	let module;
+	let module: any;
 
 	beforeAll(() => {
 		jest.resetModules();
