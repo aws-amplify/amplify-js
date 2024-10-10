@@ -9,10 +9,10 @@
 	},
 	"dependencies": {
 		"aws-jwt-verify": "^4.0.1",
-		"cookie": "0.7.0"
+		"cookie": "^0.7.0"
 	},
 	"devDependencies": {
-		"@types/cookie": "0.5.1",
+		"@types/cookie": "^0.5.1",
 		"@types/node": "^20.3.1",
 		"@types/react": "^18.2.13",
 		"@types/react-dom": "^18.2.6",
