@@ -270,6 +270,7 @@ export interface CopyWithPathDestinationOptions {
 export interface ResolvedS3Config
 	extends Pick<SigningOptions, 'credentials' | 'region'> {
 	customEndpoint?: string;
+	baseEndpoint?: string;
 	forcePathStyle?: boolean;
 	useAccelerateEndpoint?: boolean;
 }
