@@ -4,7 +4,9 @@
 import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
+import { UploadDataInput } from '../../../types';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { UploadDataInput as UploadDataWithPathInputWithAdvancedOptions } from '../../../../../internals/types/inputs';
 import {
 	calculateContentMd5,
 	resolveS3ConfigAndInput,
@@ -23,13 +25,24 @@ import { constructContentDisposition } from '../../../utils/constructContentDisp
 import { validateObjectNotExists } from './validateObjectNotExists';
 
 /**
+ * The input interface for UploadData API with only the options needed for single part upload.
+ * It supports both legacy Gen 1 input with key and Gen2 input with path. It also support additional
+ * advanced options for StorageBrowser.
+ *
+ * @internal
+ */
+export type SinglePartUploadDataInput =
+	| UploadDataInput
+	| UploadDataWithPathInputWithAdvancedOptions;
+
+/**
  * Get a function the returns a promise to call putObject API to S3.
  *
  * @internal
  */
 export const putObjectJob =
 	(
-		uploadDataInput: UploadDataInput | UploadDataWithPathInput,
+		uploadDataInput: SinglePartUploadDataInput,
 		abortSignal: AbortSignal,
 		totalLength?: number,
 	) =>

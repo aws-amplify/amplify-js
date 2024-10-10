@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { defaultStorage } from '@aws-amplify/core';
+
 import { uploadData } from '../../../../../src/providers/s3/apis';
 import { MAX_OBJECT_SIZE } from '../../../../../src/providers/s3/utils/constants';
 import { createUploadTask } from '../../../../../src/providers/s3/utils';
@@ -174,7 +176,7 @@ describe('uploadData with path', () => {
 				uploadData(testInput);
 
 				expect(mockPutObjectJob).toHaveBeenCalledWith(
-					testInput,
+					expect.objectContaining(testInput),
 					expect.any(AbortSignal),
 					expect.any(Number),
 				);
@@ -214,7 +216,12 @@ describe('uploadData with path', () => {
 
 			expect(mockPutObjectJob).not.toHaveBeenCalled();
 			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(
-				testInput,
+				expect.objectContaining({
+					...testInput,
+					options: {
+						resumableUploadsCache: defaultStorage,
+					},
+				}),
 				expect.any(Number),
 			);
 		});

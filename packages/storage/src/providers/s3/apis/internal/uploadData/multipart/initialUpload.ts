@@ -1,7 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { StorageAccessLevel } from '@aws-amplify/core';
+import {
+	KeyValueStorageInterface,
+	StorageAccessLevel,
+} from '@aws-amplify/core';
 
 import {
 	ContentDisposition,
@@ -25,6 +28,7 @@ interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
 	data: StorageUploadDataPayload;
 	bucket: string;
+	optionsHash: string;
 	accessLevel?: StorageAccessLevel;
 	keyPrefix?: string;
 	key: string;
@@ -35,7 +39,7 @@ interface LoadOrCreateMultipartUploadOptions {
 	size?: number;
 	abortSignal?: AbortSignal;
 	checksumAlgorithm?: UploadDataChecksumAlgorithm;
-	optionsHash: string;
+	resumableUploadsCache?: KeyValueStorageInterface;
 }
 
 interface LoadOrCreateMultipartUploadResult {
@@ -56,6 +60,7 @@ export const loadOrCreateMultipartUpload = async ({
 	size,
 	contentType,
 	bucket,
+	optionsHash,
 	accessLevel,
 	keyPrefix,
 	key,
@@ -64,7 +69,7 @@ export const loadOrCreateMultipartUpload = async ({
 	metadata,
 	abortSignal,
 	checksumAlgorithm,
-	optionsHash,
+	resumableUploadsCache,
 }: LoadOrCreateMultipartUploadOptions): Promise<LoadOrCreateMultipartUploadResult> => {
 	const finalKey = keyPrefix !== undefined ? keyPrefix + key : key;
 
@@ -76,8 +81,11 @@ export const loadOrCreateMultipartUpload = async ({
 				finalCrc32?: string;
 		  }
 		| undefined;
-	if (size === undefined) {
-		logger.debug('uploaded data size cannot be determined, skipping cache.');
+
+	if (size === undefined || !resumableUploadsCache) {
+		logger.debug(
+			'uploaded data size or cache instance cannot be determined, skipping cache.',
+		);
 		cachedUpload = undefined;
 	} else {
 		const uploadCacheKey = getUploadsCacheKey({
@@ -95,6 +103,7 @@ export const loadOrCreateMultipartUpload = async ({
 			cacheKey: uploadCacheKey,
 			bucket,
 			finalKey,
+			resumableUploadsCache,
 		});
 		cachedUpload = cachedUploadParts
 			? { ...cachedUploadParts, uploadCacheKey }
@@ -129,8 +138,10 @@ export const loadOrCreateMultipartUpload = async ({
 			},
 		);
 
-		if (size === undefined) {
-			logger.debug('uploaded data size cannot be determined, skipping cache.');
+		if (size === undefined || !resumableUploadsCache) {
+			logger.debug(
+				'uploaded data size or cache instance cannot be determined, skipping cache.',
+			);
 
 			return {
 				uploadId: UploadId!,
@@ -147,7 +158,7 @@ export const loadOrCreateMultipartUpload = async ({
 			key,
 			optionsHash,
 		});
-		await cacheMultipartUpload(uploadCacheKey, {
+		await cacheMultipartUpload(resumableUploadsCache, uploadCacheKey, {
 			uploadId: UploadId!,
 			bucket,
 			key,

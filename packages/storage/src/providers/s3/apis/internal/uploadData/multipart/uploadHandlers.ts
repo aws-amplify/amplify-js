@@ -1,10 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
+import {
+	Amplify,
+	KeyValueStorageInterface,
+	StorageAccessLevel,
+} from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput, UploadDataWithPathInput } from '../../../../types';
+import { UploadDataInput } from '../../../../types';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { UploadDataInput as UploadDataWithPathInputWithAdvancedOptions } from '../../../../../../internals/types/inputs';
 import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
@@ -31,12 +37,30 @@ import { getStorageUserAgentValue } from '../../../../utils/userAgent';
 import { logger } from '../../../../../../utils';
 import { validateObjectNotExists } from '../validateObjectNotExists';
 import { calculateContentCRC32 } from '../../../../utils/crc32';
+import { StorageOperationOptionsInput } from '../../../../../../types/inputs';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { getConcurrentUploadsProgressTracker } from './progressTracker';
 import { loadOrCreateMultipartUpload } from './initialUpload';
 import { getDataChunker } from './getDataChunker';
+
+type WithResumableCacheConfig<Input extends StorageOperationOptionsInput<any>> =
+	Input & {
+		options?: Input['options'] & {
+			resumableUploadsCache?: KeyValueStorageInterface;
+		};
+	};
+
+/**
+ * The input interface for UploadData API with the options needed for multi-part upload.
+ * It supports both legacy Gen 1 input with key and Gen2 input with path. It also support additional
+ * advanced options for StorageBrowser.
+ * @internal
+ */
+export type MultipartUploadDataInput = WithResumableCacheConfig<
+	UploadDataInput | UploadDataWithPathInputWithAdvancedOptions
+>;
 
 /**
  * Create closure hiding the multipart upload implementation details and expose the upload job and control functions(
@@ -45,7 +69,7 @@ import { getDataChunker } from './getDataChunker';
  * @internal
  */
 export const getMultipartUploadHandlers = (
-	uploadDataInput: UploadDataInput | UploadDataWithPathInput,
+	uploadDataInput: MultipartUploadDataInput,
 	size?: number,
 ) => {
 	let resolveCallback:
@@ -71,6 +95,8 @@ export const getMultipartUploadHandlers = (
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
 	let isAbortSignalFromPause = false;
+
+	const { resumableUploadsCache } = uploadDataInput.options ?? {};
 
 	const startUpload = async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
@@ -132,6 +158,7 @@ export const getMultipartUploadHandlers = (
 					abortSignal: abortController.signal,
 					checksumAlgorithm: uploadDataOptions?.checksumAlgorithm,
 					optionsHash,
+					resumableUploadsCache,
 				});
 			inProgressUpload = {
 				uploadId,
@@ -237,8 +264,8 @@ export const getMultipartUploadHandlers = (
 			}
 		}
 
-		if (uploadCacheKey) {
-			await removeCachedUpload(uploadCacheKey);
+		if (resumableUploadsCache && uploadCacheKey) {
+			await removeCachedUpload(resumableUploadsCache, uploadCacheKey);
 		}
 
 		const result = {
@@ -284,8 +311,8 @@ export const getMultipartUploadHandlers = (
 
 		const cancelUpload = async () => {
 			// 2. clear upload cache.
-			if (uploadCacheKey) {
-				await removeCachedUpload(uploadCacheKey);
+			if (uploadCacheKey && resumableUploadsCache) {
+				await removeCachedUpload(resumableUploadsCache, uploadCacheKey);
 			}
 			// 3. clear multipart upload on server side.
 			await abortMultipartUpload(resolvedS3Config!, {
