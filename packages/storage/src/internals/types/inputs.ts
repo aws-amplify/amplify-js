@@ -44,14 +44,17 @@ export interface GetDataAccessInput {
 	scope: string;
 }
 
+export interface AdvancedOptions {
+	locationCredentialsProvider?: CredentialsProvider;
+	baseEndpoint?: string;
+}
+
 /**
  * @internal
  */
 export type ListInputWithPath = ExtendInputWithAdvancedOptions<
 	ListAllWithPathInput | ListPaginateWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -59,9 +62,7 @@ export type ListInputWithPath = ExtendInputWithAdvancedOptions<
  */
 export type RemoveInput = ExtendInputWithAdvancedOptions<
 	RemoveWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -69,9 +70,7 @@ export type RemoveInput = ExtendInputWithAdvancedOptions<
  */
 export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
 	GetPropertiesWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -79,9 +78,7 @@ export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
  */
 export type GetUrlInput = ExtendInputWithAdvancedOptions<
 	GetUrlWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -89,9 +86,7 @@ export type GetUrlInput = ExtendInputWithAdvancedOptions<
  */
 export type CopyInput = ExtendCopyInputWithAdvancedOptions<
 	CopyWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -99,9 +94,7 @@ export type CopyInput = ExtendCopyInputWithAdvancedOptions<
  */
 export type DownloadDataInput = ExtendInputWithAdvancedOptions<
 	DownloadDataWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
