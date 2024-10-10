@@ -32,12 +32,18 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
 	 * Whether to use the S3 Transfer Acceleration endpoint.
 	 */
 	useAccelerateEndpoint?: boolean;
+
 	/**
 	 * Fully qualified custom endpoint for S3. If this is set, this endpoint will be used regardless of region or
 	 * useAccelerateEndpoint config.
 	 * The path of this endpoint
 	 */
 	customEndpoint?: string;
+
+	/**
+	 *	Prepends a custom endpoint with information dependent on endpoint type (e.g., https://[account-id].s3-control-fips.us-west-2.amazonaws.com)
+	 */
+	baseEndpoint?: string;
 
 	/**
 	 * Whether to force path style URLs for S3 objects (e.g., https://s3.amazonaws.com/<bucketName>/<key> instead of
@@ -54,12 +60,23 @@ const endpointResolver = (
 	options: S3EndpointResolverOptions,
 	apiInput?: { Bucket?: string },
 ) => {
-	const { region, useAccelerateEndpoint, customEndpoint, forcePathStyle } =
-		options;
+	const {
+		region,
+		useAccelerateEndpoint,
+		customEndpoint,
+		baseEndpoint,
+		forcePathStyle,
+	} = options;
 	let endpoint: URL;
 	// 1. get base endpoint
 	if (customEndpoint) {
-		endpoint = new AmplifyUrl(customEndpoint);
+		if (baseEndpoint) {
+			endpoint = new AmplifyUrl(
+				`https://${baseEndpoint}.${customEndpoint.replace('https://', '')}`,
+			);
+		} else {
+			endpoint = new AmplifyUrl(customEndpoint);
+		}
 	} else if (useAccelerateEndpoint) {
 		if (forcePathStyle) {
 			throw new Error(
