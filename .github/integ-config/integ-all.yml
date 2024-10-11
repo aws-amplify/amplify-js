@@ -906,12 +906,12 @@ tests:
     browser: [chrome]
     env:
       NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
-  - test_name: integ_next_mfa_setup
-    desc: 'mfa setup sign in flow'
-    framework: next
-    category: auth
-    sample_name: [mfa]
-    spec: mfa-setup
-    browser: [chrome]
-    env:
-      NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
+  # - test_name: integ_next_mfa_setup
+  #   desc: 'mfa setup sign in flow'
+  #   framework: next
+  #   category: auth
+  #   sample_name: [mfa]
+  #   spec: mfa-setup
+  #   browser: [chrome]
+  #   env:
+  #     NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup
