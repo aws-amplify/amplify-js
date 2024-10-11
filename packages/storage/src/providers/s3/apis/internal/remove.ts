@@ -7,6 +7,7 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 import { RemoveInput, RemoveOutput, RemoveWithPathOutput } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../utils';
 import { deleteObject } from '../../utils/client/s3data';
@@ -27,7 +28,13 @@ export const remove = async (
 		input,
 		identityId,
 	);
-
+	const { expectedBucketOwner } = {
+		...(input.options?.expectedBucketOwner && {
+			expectedBucketOwner: validateBucketOwnerID(
+				input.options?.expectedBucketOwner,
+			)?.accountID,
+		}),
+	};
 	let finalKey;
 	if (inputType === STORAGE_INPUT_KEY) {
 		finalKey = `${keyPrefix}${objectKey}`;
@@ -45,6 +52,7 @@ export const remove = async (
 		{
 			Bucket: bucket,
 			Key: finalKey,
+			ExpectedBucketOwner: expectedBucketOwner,
 		},
 	);
 

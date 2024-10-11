@@ -5,7 +5,11 @@ import { Amplify } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import { resolveS3ConfigAndInput } from '../../utils/resolveS3ConfigAndInput';
-import { createDownloadTask, validateStorageOperationInput } from '../../utils';
+import {
+	createDownloadTask,
+	validateBucketOwnerID,
+	validateStorageOperationInput,
+} from '../../utils';
 import { getObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
@@ -48,6 +52,13 @@ const downloadDataJob =
 			downloadDataInput,
 			identityId,
 		);
+		const { expectedBucketOwner } = {
+			...(downloadDataOptions?.expectedBucketOwner && {
+				expectedBucketOwner: validateBucketOwnerID(
+					downloadDataOptions.expectedBucketOwner,
+				)?.accountID,
+			}),
+		};
 		const finalKey =
 			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 		logger.debug(`download ${objectKey} from ${finalKey}.`);
@@ -72,6 +83,7 @@ const downloadDataJob =
 				...(downloadDataOptions?.bytesRange && {
 					Range: `bytes=${downloadDataOptions.bytesRange.start}-${downloadDataOptions.bytesRange.end}`,
 				}),
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 		const result = {

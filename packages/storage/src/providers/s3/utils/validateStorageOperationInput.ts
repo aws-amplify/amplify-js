@@ -41,3 +41,15 @@ export const validateStorageOperationInput = (
 		return { inputType: STORAGE_INPUT_KEY, objectKey: input.key };
 	}
 };
+
+export const validateBucketOwnerID = (accountID: string) => {
+	const validAWSAccountIDPattern = /^\d{12}/;
+	assertValidationError(
+		validAWSAccountIDPattern.test(accountID),
+		StorageValidationErrorCode.InvalidAWSAccountID,
+	);
+
+	return {
+		accountID,
+	};
+};

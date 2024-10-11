@@ -48,6 +48,7 @@ export const putObjectJob =
 			preventOverwrite,
 			metadata,
 			onProgress,
+			expectedBucketOwner,
 		} = uploadDataOptions ?? {};
 
 		const checksumCRC32 = await calculateContentCRC32(data);
@@ -81,6 +82,7 @@ export const putObjectJob =
 				Metadata: metadata,
 				ContentMD5: contentMD5,
 				ChecksumCRC32: checksumCRC32?.checksum,
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 
