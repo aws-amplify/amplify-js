@@ -11,6 +11,7 @@ import {
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../utils';
 import { headObject } from '../../utils/client/s3data';
@@ -31,6 +32,13 @@ export const getProperties = async (
 		input,
 		identityId,
 	);
+	const { expectedBucketOwner } = {
+		...(input.options?.expectedBucketOwner && {
+			expectedBucketOwner: validateBucketOwnerID(
+				input.options.expectedBucketOwner,
+			)?.accountID,
+		}),
+	};
 	const finalKey =
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
@@ -45,6 +53,7 @@ export const getProperties = async (
 		{
 			Bucket: bucket,
 			Key: finalKey,
+			ExpectedBucketOwner: expectedBucketOwner,
 		},
 	);
 

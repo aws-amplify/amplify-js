@@ -30,6 +30,7 @@ interface S3ApiOptions {
 	useAccelerateEndpoint?: boolean;
 	locationCredentialsProvider?: LocationCredentialsProvider;
 	bucket?: StorageBucket;
+	expectedBucketOwner?: string;
 }
 
 interface ResolvedS3ConfigAndInput {
@@ -38,6 +39,7 @@ interface ResolvedS3ConfigAndInput {
 	keyPrefix: string;
 	isObjectLockEnabled?: boolean;
 	identityId?: string;
+	expectedBucketOwner?: string;
 }
 export type DeprecatedStorageInput =
 	| StorageOperationInputWithKey

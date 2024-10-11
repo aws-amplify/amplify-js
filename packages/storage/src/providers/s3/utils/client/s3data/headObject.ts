@@ -25,7 +25,10 @@ import { validateObjectUrl } from '../../validateObjectUrl';
 import { defaultConfig, parseXmlError } from './base';
 import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 
-export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
+export type HeadObjectInput = Pick<
+	HeadObjectCommandInput,
+	'Bucket' | 'Key' | 'ExpectedBucketOwner'
+>;
 
 export type HeadObjectOutput = Pick<
 	HeadObjectCommandOutput,
@@ -53,7 +56,11 @@ const headObjectSerializer = async (
 
 	return {
 		method: 'HEAD',
-		headers: {},
+		headers: {
+			...(input.ExpectedBucketOwner && {
+				'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			}),
+		},
 		url,
 	};
 };

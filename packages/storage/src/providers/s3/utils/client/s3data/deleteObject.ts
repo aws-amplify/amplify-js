@@ -28,7 +28,7 @@ import { defaultConfig, parseXmlError } from './base';
 
 export type DeleteObjectInput = Pick<
 	DeleteObjectCommandInput,
-	'Bucket' | 'Key'
+	'Bucket' | 'Key' | 'ExpectedBucketOwner'
 >;
 
 export type DeleteObjectOutput = DeleteObjectCommandOutput;
@@ -48,7 +48,11 @@ const deleteObjectSerializer = (
 
 	return {
 		method: 'DELETE',
-		headers: {},
+		headers: {
+			...(input.ExpectedBucketOwner && {
+				'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			}),
+		},
 		url,
 	};
 };

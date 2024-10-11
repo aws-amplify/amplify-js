@@ -48,6 +48,7 @@ export type GetObjectInput = Pick<
 	| 'Range'
 	| 'ResponseContentDisposition'
 	| 'ResponseContentType'
+	| 'ExpectedBucketOwner'
 >;
 
 export type GetObjectOutput = GetObjectCommandOutput;
@@ -69,6 +70,9 @@ const getObjectSerializer = async (
 		method: 'GET',
 		headers: {
 			...(input.Range && { Range: input.Range }),
+			...(input.ExpectedBucketOwner && {
+				'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			}),
 		},
 		url,
 	};

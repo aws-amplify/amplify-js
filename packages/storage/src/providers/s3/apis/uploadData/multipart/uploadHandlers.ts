@@ -96,6 +96,7 @@ export const getMultipartUploadHandlers = (
 			metadata,
 			preventOverwrite,
 			onProgress,
+			expectedBucketOwner,
 		} = uploadDataOptions ?? {};
 
 		finalKey = objectKey;
@@ -125,6 +126,7 @@ export const getMultipartUploadHandlers = (
 					data,
 					size,
 					abortSignal: abortController.signal,
+					expectedBucketOwner,
 				});
 			inProgressUpload = {
 				uploadId,
@@ -181,6 +183,7 @@ export const getMultipartUploadHandlers = (
 					onProgress: concurrentUploadsProgressTracker.getOnProgressListener(),
 					isObjectLockEnabled: resolvedS3Options.isObjectLockEnabled,
 					useCRC32Checksum: Boolean(inProgressUpload.finalCrc32),
+					expectedBucketOwner,
 				}),
 			);
 		}
@@ -210,6 +213,7 @@ export const getMultipartUploadHandlers = (
 						(partA, partB) => partA.PartNumber! - partB.PartNumber!,
 					),
 				},
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 
@@ -219,6 +223,7 @@ export const getMultipartUploadHandlers = (
 				{
 					Bucket: resolvedBucket,
 					Key: finalKey,
+					ExpectedBucketOwner: expectedBucketOwner,
 				},
 			);
 			if (uploadedObjectSize && uploadedObjectSize !== size) {

@@ -26,6 +26,7 @@ interface UploadPartExecutorOptions {
 		crc32: string | undefined,
 	): void;
 	onProgress?(event: TransferProgressEvent): void;
+	expectedBucketOwner?: string;
 }
 
 export const uploadPartExecutor = async ({
@@ -40,6 +41,7 @@ export const uploadPartExecutor = async ({
 	onProgress,
 	isObjectLockEnabled,
 	useCRC32Checksum,
+	expectedBucketOwner,
 }: UploadPartExecutorOptions) => {
 	let transferredBytes = 0;
 	for (const { data, partNumber, size } of dataChunkerGenerator) {
@@ -85,6 +87,7 @@ export const uploadPartExecutor = async ({
 					PartNumber: partNumber,
 					ChecksumCRC32: checksumCRC32?.checksum,
 					ContentMD5: contentMD5,
+					ExpectedBucketOwner: expectedBucketOwner,
 				},
 			);
 			transferredBytes += size;
