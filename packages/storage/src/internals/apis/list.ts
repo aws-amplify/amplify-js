@@ -4,16 +4,29 @@
 import { Amplify } from '@aws-amplify/core';
 
 import { list as listInternal } from '../../providers/s3/apis/internal/list';
-import { ListInputWithPath } from '../types/inputs';
+import { ListInput } from '../types/inputs';
+import { ListPaginateWithPathInput } from '../../providers/s3';
+import { ListOutput } from '../types/outputs';
 
 /**
  * @internal
- * List all or paginate files from S3 for a given `path`.
- * @param input - The `ListWithPathInputAndAdvancedOptions` object.
- * @returns A list of all objects with path and metadata
- * @throws service: `S3Exception` - S3 service errors thrown when checking for existence of bucket
- * @throws validation: `StorageValidationErrorCode`  - thrown when there are issues with credentials
  */
-export function list(input?: ListInputWithPath) {
-	return listInternal(Amplify, input ?? {});
+export function list(input: ListInput): Promise<ListOutput> {
+	return listInternal(Amplify, {
+		path: input.path,
+		options: {
+			bucket: input.options?.bucket,
+			subpathStrategy: input.options?.subpathStrategy,
+			useAccelerateEndpoint: input.options?.useAccelerateEndpoint,
+			listAll: input.options?.listAll,
+
+			// Pagination options
+			nextToken: (input as ListPaginateWithPathInput).options?.nextToken,
+			pageSize: (input as ListPaginateWithPathInput).options?.pageSize,
+			// Advanced options
+			locationCredentialsProvider: input.options?.locationCredentialsProvider,
+		},
+		// Type casting is necessary because `listInternal` supports both Gen1 and Gen2 signatures, but here
+		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.
+	} as ListInput) as Promise<ListOutput>;
 }

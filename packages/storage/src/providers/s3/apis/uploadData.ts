@@ -6,15 +6,9 @@ import {
 	UploadDataOutput,
 	UploadDataWithPathInput,
 	UploadDataWithPathOutput,
-} from '../../types';
-import { createUploadTask } from '../../utils';
-import { assertValidationError } from '../../../../errors/utils/assertValidationError';
-import { StorageValidationErrorCode } from '../../../../errors/types/validation';
-import { DEFAULT_PART_SIZE, MAX_OBJECT_SIZE } from '../../utils/constants';
+} from '../types';
 
-import { byteLength } from './byteLength';
-import { putObjectJob } from './putObjectJob';
-import { getMultipartUploadHandlers } from './multipart';
+import { uploadData as uploadDataInternal } from './internal/uploadData';
 
 /**
  * Upload data to the specified S3 object path. By default uses single PUT operation to upload if the payload is less than 5MB.
@@ -127,38 +121,5 @@ export function uploadData(
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	const { data } = input;
-
-	const dataByteLength = byteLength(data);
-	assertValidationError(
-		dataByteLength === undefined || dataByteLength <= MAX_OBJECT_SIZE,
-		StorageValidationErrorCode.ObjectIsTooLarge,
-	);
-
-	if (dataByteLength && dataByteLength <= DEFAULT_PART_SIZE) {
-		// Single part upload
-		const abortController = new AbortController();
-
-		return createUploadTask({
-			isMultipartUpload: false,
-			job: putObjectJob(input, abortController.signal, dataByteLength),
-			onCancel: (message?: string) => {
-				abortController.abort(message);
-			},
-		});
-	} else {
-		// Multipart upload
-		const { multipartUploadJob, onPause, onResume, onCancel } =
-			getMultipartUploadHandlers(input, dataByteLength);
-
-		return createUploadTask({
-			isMultipartUpload: true,
-			job: multipartUploadJob,
-			onCancel: (message?: string) => {
-				onCancel(message);
-			},
-			onPause,
-			onResume,
-		});
-	}
+	return uploadDataInternal(input);
 }
