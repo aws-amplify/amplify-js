@@ -98,6 +98,7 @@ export {
 	AuthUserAgentInput,
 	InAppMessagingUserAgentInput,
 	GeoUserAgentInput,
+	AiUserAgentInput,
 } from './Platform/types';
 export { setCustomUserAgent } from './Platform/customUserAgent';
 
