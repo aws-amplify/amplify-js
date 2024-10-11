@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/storage",
-	"version": "6.6.7",
+	"version": "6.6.8",
 	"description": "Storage category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -111,9 +111,9 @@
 		"@aws-amplify/core": "^6.1.0"
 	},
 	"devDependencies": {
-		"@aws-amplify/core": "6.4.2",
-    "@types/node": "20.14.12",
-    "@aws-amplify/react-native": "1.1.5",
+		"@aws-amplify/core": "6.4.3",
+		"@types/node": "20.14.12",
+		"@aws-amplify/react-native": "1.1.6",
 		"typescript": "5.0.2"
 	}
 }
