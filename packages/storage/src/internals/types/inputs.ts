@@ -48,12 +48,27 @@ export interface GetDataAccessInput {
 /**
  * @internal
  */
-export type ListInput = ExtendInputWithAdvancedOptions<
-	ListAllWithPathInput | ListPaginateWithPathInput,
+export type ListAllInput = ExtendInputWithAdvancedOptions<
+	ListAllWithPathInput,
 	{
 		locationCredentialsProvider?: CredentialsProvider;
 	}
 >;
+
+/**
+ * @internal
+ */
+export type ListPaginateInput = ExtendInputWithAdvancedOptions<
+	ListPaginateWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
+/**
+ * @internal
+ */
+export type ListInput = ListAllInput | ListPaginateInput;
 
 /**
  * @internal
