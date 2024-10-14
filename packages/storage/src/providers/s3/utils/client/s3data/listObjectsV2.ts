@@ -40,7 +40,6 @@ const listObjectsV2Serializer = (
 	input: ListObjectsV2Input,
 	endpoint: Endpoint,
 ): HttpRequest => {
-	console.log(input);
 	const headers = assignStringVariables({
 		'x-amz-request-payer': input.RequestPayer,
 		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,

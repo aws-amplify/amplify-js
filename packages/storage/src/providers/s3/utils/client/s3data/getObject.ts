@@ -16,6 +16,7 @@ import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
 import {
 	CONTENT_SHA256_HEADER,
+	assignStringVariables,
 	buildStorageServiceError,
 	deserializeBoolean,
 	deserializeMetadata,
@@ -70,7 +71,7 @@ const getObjectSerializer = async (
 		method: 'GET',
 		headers: {
 			...(input.Range && { Range: input.Range }),
-			...(input.ExpectedBucketOwner && {
+			...assignStringVariables({
 				'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 			}),
 		},

@@ -84,7 +84,7 @@ export const list = async (
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 		Delimiter: getDelimiter(options),
-		expectedBucketOwner: options?.expectedBucketOwner,
+		ExpectedBucketOwner: options?.expectedBucketOwner,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 

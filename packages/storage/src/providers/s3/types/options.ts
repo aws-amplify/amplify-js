@@ -53,7 +53,7 @@ interface CommonOptions {
 	bucket?: StorageBucket;
 
 	/**
-	 * The expected owner (i.e. account) of the requested object.
+	 * The expected owner of the target bucket.
 	 */
 	expectedBucketOwner?: string;
 }

@@ -50,9 +50,9 @@ const uploadPartSerializer = async (
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
-		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
-		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
 		...assignStringVariables({
+			'x-amz-checksum-crc32': input.ChecksumCRC32,
+			'content-md5': input.ContentMD5,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 		'content-type': 'application/octet-stream',
