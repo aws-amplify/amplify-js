@@ -16,6 +16,8 @@ export {
 	GetUrlInput,
 	CopyInput,
 	ListInput,
+	ListAllInput,
+	ListPaginateInput,
 	RemoveInput,
 	UploadDataInput,
 	DownloadDataInput,
