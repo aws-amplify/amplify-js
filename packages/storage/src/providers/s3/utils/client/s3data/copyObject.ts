@@ -60,11 +60,7 @@ const copyObjectSerializer = async (
 			'x-amz-copy-source-if-match': input.CopySourceIfMatch,
 			'x-amz-copy-source-if-unmodified-since':
 				input.CopySourceIfUnmodifiedSince?.toISOString(),
-		}),
-		...(input.ExpectedSourceBucketOwner && {
 			'x-amz-source-expected-bucket-owner': input.ExpectedSourceBucketOwner,
-		}),
-		...(input.ExpectedBucketOwner && {
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 	};

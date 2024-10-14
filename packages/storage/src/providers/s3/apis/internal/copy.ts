@@ -98,19 +98,8 @@ const copyWithPath = async (
 		destination,
 		identityId,
 	);
-	const { expectedSourceBucketOwner, expectedBucketOwner } = {
-		...(source.expectedBucketOwner && {
-			expectedSourceBucketOwner: validateBucketOwnerID(
-				source.expectedBucketOwner,
-			)?.accountID,
-		}),
-		...(destination.expectedBucketOwner && {
-			expectedBucketOwner: validateBucketOwnerID(
-				destination.expectedBucketOwner,
-			)?.accountID,
-		}),
-	};
-
+	validateBucketOwnerID(source.expectedBucketOwner);
+	validateBucketOwnerID(destination.expectedBucketOwner);
 	const finalCopySource = `${sourceBucket}/${sourcePath}`;
 	const finalCopyDestination = destinationPath;
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
@@ -122,8 +111,8 @@ const copyWithPath = async (
 		s3Config,
 		notModifiedSince: input.source.notModifiedSince,
 		eTag: input.source.eTag,
-		expectedSourceBucketOwner,
-		expectedBucketOwner,
+		expectedSourceBucketOwner: input.source?.expectedBucketOwner,
+		expectedBucketOwner: input.destination?.expectedBucketOwner,
 	});
 
 	return { path: finalCopyDestination };
@@ -143,18 +132,8 @@ export const copyWithKey = async (
 		!!destination.key,
 		StorageValidationErrorCode.NoDestinationKey,
 	);
-	const { expectedSourceBucketOwner, expectedBucketOwner } = {
-		...(source.expectedBucketOwner && {
-			expectedSourceBucketOwner: validateBucketOwnerID(
-				source.expectedBucketOwner,
-			)?.accountID,
-		}),
-		...(destination.expectedBucketOwner && {
-			expectedBucketOwner: validateBucketOwnerID(
-				destination.expectedBucketOwner,
-			)?.accountID,
-		}),
-	};
+	validateBucketOwnerID(source.expectedBucketOwner);
+	validateBucketOwnerID(destination.expectedBucketOwner);
 
 	const { bucket: sourceBucket, keyPrefix: sourceKeyPrefix } =
 		await resolveS3ConfigAndInput(amplify, {
@@ -195,8 +174,8 @@ export const copyWithKey = async (
 		s3Config,
 		notModifiedSince: input.source.notModifiedSince,
 		eTag: input.source.eTag,
-		expectedSourceBucketOwner,
-		expectedBucketOwner,
+		expectedSourceBucketOwner: input.source?.expectedBucketOwner,
+		expectedBucketOwner: input.destination?.expectedBucketOwner,
 	});
 
 	return {

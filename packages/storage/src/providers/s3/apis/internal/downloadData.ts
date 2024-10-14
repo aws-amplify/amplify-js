@@ -52,13 +52,7 @@ const downloadDataJob =
 			downloadDataInput,
 			identityId,
 		);
-		const { expectedBucketOwner } = {
-			...(downloadDataOptions?.expectedBucketOwner && {
-				expectedBucketOwner: validateBucketOwnerID(
-					downloadDataOptions.expectedBucketOwner,
-				)?.accountID,
-			}),
-		};
+		validateBucketOwnerID(downloadDataOptions?.expectedBucketOwner);
 		const finalKey =
 			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 		logger.debug(`download ${objectKey} from ${finalKey}.`);
@@ -83,7 +77,7 @@ const downloadDataJob =
 				...(downloadDataOptions?.bytesRange && {
 					Range: `bytes=${downloadDataOptions.bytesRange.start}-${downloadDataOptions.bytesRange.end}`,
 				}),
-				ExpectedBucketOwner: expectedBucketOwner,
+				ExpectedBucketOwner: downloadDataOptions?.expectedBucketOwner,
 			},
 		);
 		const result = {

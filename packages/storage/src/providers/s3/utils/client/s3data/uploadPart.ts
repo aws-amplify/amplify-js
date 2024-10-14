@@ -52,7 +52,7 @@ const uploadPartSerializer = async (
 	const headers = {
 		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
-		...(input.ExpectedBucketOwner && {
+		...assignStringVariables({
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 		'content-type': 'application/octet-stream',

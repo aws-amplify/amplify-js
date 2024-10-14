@@ -47,8 +47,6 @@ const createMultipartUploadSerializer = async (
 		...(await serializeObjectConfigsToHeaders(input)),
 		...assignStringVariables({
 			'x-amz-checksum-algorithm': input.ChecksumAlgorithm,
-		}),
-		...(input.ExpectedBucketOwner && {
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 	};

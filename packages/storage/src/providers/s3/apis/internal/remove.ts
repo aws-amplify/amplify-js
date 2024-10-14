@@ -28,13 +28,8 @@ export const remove = async (
 		input,
 		identityId,
 	);
-	const { expectedBucketOwner } = {
-		...(input.options?.expectedBucketOwner && {
-			expectedBucketOwner: validateBucketOwnerID(
-				input.options?.expectedBucketOwner,
-			)?.accountID,
-		}),
-	};
+	validateBucketOwnerID(input.options?.expectedBucketOwner);
+
 	let finalKey;
 	if (inputType === STORAGE_INPUT_KEY) {
 		finalKey = `${keyPrefix}${objectKey}`;
@@ -52,7 +47,7 @@ export const remove = async (
 		{
 			Bucket: bucket,
 			Key: finalKey,
-			ExpectedBucketOwner: expectedBucketOwner,
+			ExpectedBucketOwner: input.options?.expectedBucketOwner,
 		},
 	);
 

@@ -59,8 +59,8 @@ const completeMultipartUploadSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = {
 		'content-type': 'application/xml',
-		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
-		...(input.ExpectedBucketOwner && {
+		...assignStringVariables({
+			'x-amz-checksum-crc32': input.ChecksumCRC32,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 	};

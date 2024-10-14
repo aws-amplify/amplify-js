@@ -32,13 +32,9 @@ export const getProperties = async (
 		input,
 		identityId,
 	);
-	const { expectedBucketOwner } = {
-		...(input.options?.expectedBucketOwner && {
-			expectedBucketOwner: validateBucketOwnerID(
-				input.options.expectedBucketOwner,
-			)?.accountID,
-		}),
-	};
+
+	validateBucketOwnerID(input.options?.expectedBucketOwner);
+
 	const finalKey =
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
@@ -53,7 +49,7 @@ export const getProperties = async (
 		{
 			Bucket: bucket,
 			Key: finalKey,
-			ExpectedBucketOwner: expectedBucketOwner,
+			ExpectedBucketOwner: input.options?.expectedBucketOwner,
 		},
 	);
 

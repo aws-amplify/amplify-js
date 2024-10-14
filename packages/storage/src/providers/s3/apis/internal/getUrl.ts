@@ -35,13 +35,8 @@ export const getUrl = async (
 		input,
 		identityId,
 	);
-	const { expectedBucketOwner } = {
-		...(getUrlOptions?.expectedBucketOwner && {
-			expectedBucketOwner: validateBucketOwnerID(
-				getUrlOptions.expectedBucketOwner,
-			)?.accountID,
-		}),
-	};
+	validateBucketOwnerID(getUrlOptions?.expectedBucketOwner);
+
 	const finalKey =
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
@@ -87,7 +82,7 @@ export const getUrl = async (
 				...(getUrlOptions?.contentType && {
 					ResponseContentType: getUrlOptions.contentType,
 				}),
-				ExpectedBucketOwner: expectedBucketOwner,
+				ExpectedBucketOwner: getUrlOptions?.expectedBucketOwner,
 			},
 		),
 		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),

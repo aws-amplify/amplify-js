@@ -60,7 +60,7 @@ const putObjectSerializer = async (
 		})),
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
 		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
-		...(input.ExpectedBucketOwner && {
+		...assignStringVariables({
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 	};

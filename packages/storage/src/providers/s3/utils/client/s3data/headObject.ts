@@ -11,6 +11,7 @@ import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	deserializeMetadata,
 	deserializeNumber,
@@ -53,14 +54,13 @@ const headObjectSerializer = async (
 		key: input.Key,
 		objectURL: url,
 	});
+	const headers = assignStringVariables({
+		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+	});
 
 	return {
 		method: 'HEAD',
-		headers: {
-			...(input.ExpectedBucketOwner && {
-				'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
-			}),
-		},
+		headers,
 		url,
 	};
 };

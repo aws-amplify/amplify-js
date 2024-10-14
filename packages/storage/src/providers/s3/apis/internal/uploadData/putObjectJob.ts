@@ -8,6 +8,7 @@ import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
 import {
 	calculateContentMd5,
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../../utils';
 import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
@@ -38,6 +39,7 @@ export const putObjectJob =
 			uploadDataInput,
 			identityId,
 		);
+		validateBucketOwnerID(uploadDataOptions?.expectedBucketOwner);
 
 		const finalKey =
 			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
