@@ -314,7 +314,11 @@ export function parseAmplifyOutputs(
 	}
 
 	if (amplifyOutputs.custom) {
-		resourcesConfig.API = parseCustom(amplifyOutputs.custom);
+		const customConfig = parseCustom(amplifyOutputs.custom);
+
+		if (customConfig && 'Events' in customConfig) {
+			resourcesConfig.API = { ...resourcesConfig.API, ...customConfig };
+		}
 	}
 
 	if (amplifyOutputs.notifications) {

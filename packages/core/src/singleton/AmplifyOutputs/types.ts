@@ -102,6 +102,7 @@ export interface AmplifyOutputsCustomProperties {
 		default_authorization_type: string;
 		api_key?: string;
 	};
+	[key: string]: any;
 }
 
 export interface AmplifyOutputsNotificationsProperties {

@@ -7,11 +7,7 @@ import {
 	GraphQLAuthMode,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
-import {
-	// cancel as cancelREST,
-	post,
-	// updateRequestToBeCancellable,
-} from '@aws-amplify/api-rest/internals';
+import { post } from '@aws-amplify/api-rest/internals';
 import {
 	CustomHeaders,
 	RequestOptions,

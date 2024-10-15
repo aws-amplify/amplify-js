@@ -5,10 +5,10 @@ import { Subscription } from 'rxjs';
 import { Amplify } from '@aws-amplify/core';
 import { DocumentType } from '@aws-amplify/core/internals/utils';
 
-import { AWSAppSyncEventProvider } from '../../Providers/AWSAppSyncEventsProvider';
+import { AppSyncEventProvider as eventProvider } from '../../Providers/AWSAppSyncEventsProvider';
 
 import { appsyncRequest } from './appsyncRequest';
-import { configure, normalizeAuth } from './utils';
+import { configure, normalizeAuth, serializeEvents } from './utils';
 import type {
 	EventsChannel,
 	EventsOptions,
@@ -17,12 +17,9 @@ import type {
 	SubscriptionObserver,
 } from './types';
 
-const eventProvider = new AWSAppSyncEventProvider();
-
 /**
+ * Establish a WebSocket connection to an Events channel
  *
- * @param channelName
- * @param options
  */
 async function connect(
 	channelName: string,
@@ -79,42 +76,20 @@ async function connect(
 	};
 
 	return {
-		// WS publish is not enabled in the service yet, will be a follow up feature
-		// publish: pub,
+		/**
+		 * Subscribe to incoming events
+		 */
 		subscribe: sub,
+		/**
+		 * Close channel and any active subscriptions
+		 */
 		close,
+		// publish: pub,
 	};
 }
 
 /**
- * Event API expects and array of JSON strings
- *
- * @param events - JSON-serializable value or an array of values
- * @returns array of JSON strings
- */
-const serializeEvents = (events: DocumentType | DocumentType[]): string[] => {
-	if (Array.isArray(events)) {
-		return events.map((ev, idx) => {
-			const eventJson = JSON.stringify(ev);
-			if (eventJson === undefined) {
-				throw new Error(
-					`Event must be a valid JSON value. Received ${ev} at index ${idx}`,
-				);
-			}
-
-			return eventJson;
-		});
-	}
-
-	const eventJson = JSON.stringify(events);
-	if (eventJson === undefined) {
-		throw new Error(`Event must be a valid JSON value. Received ${events}`);
-	}
-
-	return [eventJson];
-};
-
-/**
+ * Publish events to a channel via REST request
  *
  * @param channelName - publish destination
  * @param event - JSON-serializable value or an array of values

@@ -12,6 +12,7 @@ import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 import { MESSAGE_TYPES } from '../constants';
 import { AWSWebSocketProvider } from '../AWSWebSocketProvider';
 import { awsRealTimeHeaderBasedAuth } from '../AWSWebSocketProvider/authHeaders';
+
 // resolved/actual AuthMode values. identityPool gets resolves to IAM upstream in InternalGraphQLAPI._graphqlSubscribe
 type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
 
@@ -42,7 +43,7 @@ interface DataResponse {
 
 const PROVIDER_NAME = 'AWSAppSyncEventsProvider';
 
-export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
+class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	constructor() {
 		super(PROVIDER_NAME);
 	}
@@ -182,3 +183,5 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		};
 	}
 }
+
+export const AppSyncEventProvider = new AWSAppSyncEventProvider();

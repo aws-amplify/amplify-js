@@ -21,7 +21,7 @@ jest.mock('@aws-amplify/core/internals/aws-client-utils', () => {
 	);
 	return {
 		...original,
-		signRequest: (_request, _options) => {
+		signRequest: (_request: any, _options: any) => {
 			return {
 				method: 'test',
 				headers: { test: 'test' },
@@ -47,7 +47,7 @@ jest.mock('@aws-amplify/core', () => {
 	};
 	return {
 		...original,
-		fetchAuthSession: (_request, _options) => {
+		fetchAuthSession: (_request: any, _options: any) => {
 			return Promise.resolve(session);
 		},
 		Amplify: {
@@ -628,7 +628,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 				});
 
 				test('subscription observer error is triggered when a connection is formed and a non-retriable connection_error data message is received', async () => {
-					expect.assertions(2);
+					expect.assertions(3);
 
 					const socketCloseSpy = jest.spyOn(
 						fakeWebSocketInterface.webSocket,
@@ -675,8 +675,9 @@ describe('AWSAppSyncRealTimeProvider', () => {
 						}),
 					);
 
-					// TODO: this method is getting called (validated via breakpoint) but test fails
-					// expect(socketCloseSpy).toHaveBeenCalledWith(3001);
+					await delay(1);
+
+					expect(socketCloseSpy).toHaveBeenCalledWith(3001);
 				});
 
 				test('subscription observer error is triggered when a connection is formed', async () => {
@@ -1180,7 +1181,7 @@ describe('AWSAppSyncRealTimeProvider', () => {
 					});
 
 					test('authenticating with AWS_LAMBDA/custom w/ custom header function that accepts request options', async () => {
-						expect.assertions(3); // TODO: check this; should be 2
+						expect.assertions(3);
 
 						provider
 							.subscribe({
