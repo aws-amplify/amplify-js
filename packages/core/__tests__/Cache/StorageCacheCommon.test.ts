@@ -587,13 +587,24 @@ describe('StorageCacheCommon', () => {
 		const cache = getStorageCache(config);
 
 		it('clears the cache, including the currentSizeKey', async () => {
-			mockGetAllCacheKeys.mockReturnValue([
+			const initialKeys = [
 				currentSizeKey,
 				`${keyPrefix}some-key`,
-			]);
+				`${keyPrefix}another-key`,
+			];
+			mockGetAllCacheKeys.mockResolvedValue(initialKeys);
+
 			await cache.clear();
+
 			expect(loggerSpy.debug).toHaveBeenCalledWith('Clear Cache');
-			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(2);
+			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(
+				initialKeys.length,
+			);
+			mockKeyValueStorageGetItem.mockResolvedValue(null);
+			mockGetAllCacheKeys.mockResolvedValue([]);
+			expect(await cache.getCurrentCacheSize()).toBe(0);
+			expect(await cache.getItem('some-key')).toBeNull();
+			expect(mockGetAllCacheKeys).toHaveBeenCalledTimes(1);
 		});
 	});
 
