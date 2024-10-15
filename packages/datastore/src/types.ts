@@ -646,7 +646,7 @@ export type MetadataReadOnlyFields<
 // This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
 export type ModelInitBase<
 	T extends PersistentModel,
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	M extends PersistentModelMetaData<T> = {},
 > = Omit<
 	T,
@@ -661,7 +661,7 @@ export type ModelInitBase<
 
 export type ModelInit<
 	T extends PersistentModel,
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	M extends PersistentModelMetaData<T> = {},
 > = {
 	[P in keyof OmitOptionalRelatives<ModelInitBase<T, M>>]: SettableFieldType<
@@ -687,7 +687,7 @@ type DeepWritable<T> = {
 
 export type MutableModel<
 	T extends PersistentModel,
-	// eslint-disable-next-line @typescript-eslint/ban-types
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	M extends PersistentModelMetaData<T> = {},
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
