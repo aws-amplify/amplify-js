@@ -66,6 +66,7 @@ export const getMultipartUploadHandlers = (
 	let resolvedIdentityId: string | undefined;
 	let uploadCacheKey: string | undefined;
 	let finalKey: string;
+	let expectedBucketOwner: string | undefined;
 	// Special flag that differentiates HTTP requests abort error caused by pause() from ones caused by cancel().
 	// The former one should NOT cause the upload job to throw, but cancels any pending HTTP requests.
 	// This should be replaced by a special abort reason. However,the support of this API is lagged behind.
@@ -83,6 +84,7 @@ export const getMultipartUploadHandlers = (
 		resolvedS3Config = resolvedS3Options.s3Config;
 		resolvedBucket = resolvedS3Options.bucket;
 		resolvedIdentityId = resolvedS3Options.identityId;
+		expectedBucketOwner = uploadDataOptions?.expectedBucketOwner;
 
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
@@ -125,6 +127,7 @@ export const getMultipartUploadHandlers = (
 					data,
 					size,
 					abortSignal: abortController.signal,
+					expectedBucketOwner,
 				});
 			inProgressUpload = {
 				uploadId,
@@ -181,6 +184,7 @@ export const getMultipartUploadHandlers = (
 					onProgress: concurrentUploadsProgressTracker.getOnProgressListener(),
 					isObjectLockEnabled: resolvedS3Options.isObjectLockEnabled,
 					useCRC32Checksum: Boolean(inProgressUpload.finalCrc32),
+					expectedBucketOwner,
 				}),
 			);
 		}
@@ -210,6 +214,7 @@ export const getMultipartUploadHandlers = (
 						(partA, partB) => partA.PartNumber! - partB.PartNumber!,
 					),
 				},
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 
@@ -219,6 +224,7 @@ export const getMultipartUploadHandlers = (
 				{
 					Bucket: resolvedBucket,
 					Key: finalKey,
+					ExpectedBucketOwner: expectedBucketOwner,
 				},
 			);
 			if (uploadedObjectSize && uploadedObjectSize !== size) {
@@ -284,6 +290,7 @@ export const getMultipartUploadHandlers = (
 				Bucket: resolvedBucket,
 				Key: finalKey,
 				UploadId: inProgressUpload?.uploadId,
+				ExpectedBucketOwner: expectedBucketOwner,
 			});
 		};
 		cancelUpload().catch(e => {

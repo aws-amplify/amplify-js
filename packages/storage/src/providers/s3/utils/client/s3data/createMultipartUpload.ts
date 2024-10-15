@@ -47,6 +47,7 @@ const createMultipartUploadSerializer = async (
 		...(await serializeObjectConfigsToHeaders(input)),
 		...assignStringVariables({
 			'x-amz-checksum-algorithm': input.ChecksumAlgorithm,
+			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());

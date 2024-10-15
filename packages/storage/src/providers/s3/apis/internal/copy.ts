@@ -14,6 +14,7 @@ import { ResolvedS3Config, StorageBucket } from '../../types/options';
 import {
 	isInputWithPath,
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
@@ -97,7 +98,8 @@ const copyWithPath = async (
 		destination,
 		identityId,
 	);
-
+	validateBucketOwnerID(source.expectedBucketOwner);
+	validateBucketOwnerID(destination.expectedBucketOwner);
 	const finalCopySource = `${sourceBucket}/${sourcePath}`;
 	const finalCopyDestination = destinationPath;
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
@@ -109,6 +111,8 @@ const copyWithPath = async (
 		s3Config,
 		notModifiedSince: input.source.notModifiedSince,
 		eTag: input.source.eTag,
+		expectedSourceBucketOwner: input.source?.expectedBucketOwner,
+		expectedBucketOwner: input.destination?.expectedBucketOwner,
 	});
 
 	return { path: finalCopyDestination };
@@ -128,6 +132,8 @@ export const copyWithKey = async (
 		!!destination.key,
 		StorageValidationErrorCode.NoDestinationKey,
 	);
+	validateBucketOwnerID(source.expectedBucketOwner);
+	validateBucketOwnerID(destination.expectedBucketOwner);
 
 	const { bucket: sourceBucket, keyPrefix: sourceKeyPrefix } =
 		await resolveS3ConfigAndInput(amplify, {
@@ -168,6 +174,8 @@ export const copyWithKey = async (
 		s3Config,
 		notModifiedSince: input.source.notModifiedSince,
 		eTag: input.source.eTag,
+		expectedSourceBucketOwner: input.source?.expectedBucketOwner,
+		expectedBucketOwner: input.destination?.expectedBucketOwner,
 	});
 
 	return {
@@ -182,6 +190,8 @@ const serviceCopy = async ({
 	s3Config,
 	notModifiedSince,
 	eTag,
+	expectedSourceBucketOwner,
+	expectedBucketOwner,
 }: {
 	source: string;
 	destination: string;
@@ -189,6 +199,8 @@ const serviceCopy = async ({
 	s3Config: ResolvedS3Config;
 	notModifiedSince?: Date;
 	eTag?: string;
+	expectedSourceBucketOwner?: string;
+	expectedBucketOwner?: string;
 }) => {
 	await copyObject(
 		{
@@ -202,6 +214,8 @@ const serviceCopy = async ({
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
 			CopySourceIfMatch: eTag,
 			CopySourceIfUnmodifiedSince: notModifiedSince,
+			ExpectedSourceBucketOwner: expectedSourceBucketOwner,
+			ExpectedBucketOwner: expectedBucketOwner,
 		},
 	);
 };
