@@ -600,8 +600,6 @@ describe('StorageCacheCommon', () => {
 			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(
 				initialKeys.length,
 			);
-			mockKeyValueStorageGetItem.mockResolvedValue(null);
-			mockGetAllCacheKeys.mockResolvedValue([]);
 			expect(await cache.getCurrentCacheSize()).toBe(0);
 			expect(await cache.getItem('some-key')).toBeNull();
 			expect(mockGetAllCacheKeys).toHaveBeenCalledTimes(1);
