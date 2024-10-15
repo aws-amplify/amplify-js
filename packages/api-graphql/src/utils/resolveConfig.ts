@@ -45,25 +45,25 @@ export const resolveConfig = (amplify: AmplifyClassV6) => {
 	};
 };
 
-/**
- * @internal
- */
-export const resolveEventsConfig = (amplify: AmplifyClassV6) => {
-	const config = amplify.getConfig();
+// /**
+//  * @internal
+//  */
+// export const resolveEventsConfig = (amplify: AmplifyClassV6) => {
+// 	const config = amplify.getConfig();
 
-	if (!config.API?.GraphQL?.events) {
-		logger.warn(
-			'The Events configuration is missing. This is likely due to Amplify.configure() not being called prior to using events.connect() or events.post().',
-		);
-	}
+// 	if (!config.API?.Events) {
+// 		logger.warn(
+// 			'The Events configuration is missing. This is likely due to Amplify.configure() not being called prior to using events.connect() or events.post().',
+// 		);
+// 	}
 
-	const { apiKey, url, defaultAuthMode, region } =
-		config.API?.GraphQL?.events ?? {};
+// 	const { apiKey, endpoint, defaultAuthMode, region } =
+// 		config.API?.Events ?? {};
 
-	return {
-		apiKey,
-		defaultAuthMode,
-		appSyncGraphqlEndpoint: url,
-		region,
-	};
-};
+// 	return {
+// 		apiKey,
+// 		defaultAuthMode,
+// 		appSyncGraphqlEndpoint: endpoint,
+// 		region,
+// 	};
+// };

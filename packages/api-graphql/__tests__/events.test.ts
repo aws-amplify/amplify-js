@@ -15,6 +15,14 @@ import { AWSAppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvid
 import { events } from '../src/';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
+/**
+ * TODO:
+ * 1. gen2 config
+ * 2. manual config
+ * 3. all auth modes
+ * 4. ensure auth works as expected for all modes/locations
+ */
+
 test('no configure()', async () => {
 	await expect(events.connect('/')).rejects.toThrow(
 		'Amplify configuration is missing. Have you called Amplify.configure()?',
@@ -24,8 +32,7 @@ test('no configure()', async () => {
 describe('Events Client', () => {
 	beforeEach(() => {
 		Amplify.configure({
-			// @ts-ignore
-			data: {
+			custom: {
 				events: {
 					url: 'https://not-a-real.ddpg-api.us-west-2.amazonaws.com/event',
 					aws_region: 'us-west-2',
@@ -46,12 +53,6 @@ describe('Events Client', () => {
 		'none',
 	];
 
-	/**
-	 * 1. Ensure auth works as expected for all modes/locations
-	 * 		-
-	 *
-	 * 2. Client-side validation for channel `/`
-	 */
 	describe('channel', () => {
 		test('happy connect', async () => {
 			const channel = await events.connect('/');

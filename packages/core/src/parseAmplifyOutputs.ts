@@ -5,10 +5,10 @@
 /* eslint-disable camelcase */
 
 /* Does not like exhaustive checks */
-/* eslint-disable no-case-declarations */
 
 import {
 	APIConfig,
+	APIEventsConfig,
 	APIGraphQLConfig,
 	GraphQLAuthMode,
 	ModelIntrospectionSchema,
@@ -22,6 +22,7 @@ import {
 	AmplifyOutputs,
 	AmplifyOutputsAnalyticsProperties,
 	AmplifyOutputsAuthProperties,
+	AmplifyOutputsCustomProperties,
 	AmplifyOutputsDataProperties,
 	AmplifyOutputsGeoProperties,
 	AmplifyOutputsNotificationsProperties,
@@ -208,7 +209,6 @@ function parseData(
 		url,
 		api_key,
 		model_introspection,
-		events,
 	} = amplifyOutputsDataProperties;
 
 	const GraphQL: APIGraphQLConfig = {
@@ -217,22 +217,32 @@ function parseData(
 		region: aws_region,
 		apiKey: api_key,
 		modelIntrospection: model_introspection as ModelIntrospectionSchema,
-		// TODO: clean up
-		events:
-			events === undefined
-				? undefined
-				: {
-						url: events.url,
-						region: events.aws_region,
-						apiKey: events.api_key,
-						defaultAuthMode: getGraphQLAuthMode(
-							events.default_authorization_type,
-						),
-					},
 	};
 
 	return {
 		GraphQL,
+	};
+}
+
+function parseCustom(
+	amplifyOutputsCustomProperties?: AmplifyOutputsCustomProperties,
+) {
+	if (!amplifyOutputsCustomProperties?.events) {
+		return undefined;
+	}
+
+	const { url, aws_region, api_key, default_authorization_type } =
+		amplifyOutputsCustomProperties.events;
+
+	const Events: APIEventsConfig = {
+		endpoint: url,
+		defaultAuthMode: getGraphQLAuthMode(default_authorization_type),
+		region: aws_region,
+		apiKey: api_key,
+	};
+
+	return {
+		Events,
 	};
 }
 
@@ -301,6 +311,10 @@ export function parseAmplifyOutputs(
 
 	if (amplifyOutputs.data) {
 		resourcesConfig.API = parseData(amplifyOutputs.data);
+	}
+
+	if (amplifyOutputs.custom) {
+		resourcesConfig.API = parseCustom(amplifyOutputs.custom);
 	}
 
 	if (amplifyOutputs.notifications) {

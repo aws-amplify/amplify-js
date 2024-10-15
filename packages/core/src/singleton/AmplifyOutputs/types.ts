@@ -92,6 +92,9 @@ export interface AmplifyOutputsDataProperties {
 	model_introspection?: object;
 	api_key?: string;
 	conflict_resolution_mode?: string;
+}
+
+export interface AmplifyOutputsCustomProperties {
 	// @experimental
 	events?: {
 		url: string;
@@ -114,5 +117,6 @@ export interface AmplifyOutputs {
 	analytics?: AmplifyOutputsAnalyticsProperties;
 	geo?: AmplifyOutputsGeoProperties;
 	data?: AmplifyOutputsDataProperties;
+	custom?: AmplifyOutputsCustomProperties;
 	notifications?: AmplifyOutputsNotificationsProperties;
 }

@@ -24,10 +24,9 @@ export const normalizeAuth = (
 };
 
 export const configure = () => {
-	const config = Amplify.getConfig() as any;
+	const config = Amplify.getConfig();
 
-	// TODO - get this correct
-	const eventsConfig = config.API?.GraphQL?.events ?? config.data?.events;
+	const eventsConfig = config.API?.Events;
 
 	if (!eventsConfig) {
 		throw new Error(
@@ -35,16 +34,13 @@ export const configure = () => {
 		);
 	}
 
-	const configAuthMode = normalizeAuth(
-		eventsConfig.defaultAuthMode ?? eventsConfig.default_authorization_type,
-		'apiKey',
-	);
+	const configAuthMode = normalizeAuth(eventsConfig.defaultAuthMode, 'apiKey');
 
 	const options = {
-		appSyncGraphqlEndpoint: eventsConfig.url,
-		region: eventsConfig.region ?? eventsConfig.aws_region,
+		appSyncGraphqlEndpoint: eventsConfig.endpoint,
+		region: eventsConfig.region,
 		authenticationType: configAuthMode,
-		apiKey: eventsConfig.apiKey ?? eventsConfig.api_key,
+		apiKey: eventsConfig.apiKey,
 	};
 
 	return options;

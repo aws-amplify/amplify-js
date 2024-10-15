@@ -25,8 +25,8 @@ import { isGraphQLResponseWithErrors } from '../utils/runtimeTypeGuards/isGraphQ
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 interface GqlRequestOptions {
-	apiKey: string | undefined;
-	region: string;
+	apiKey?: string;
+	region?: string;
 	appSyncGraphqlEndpoint: string;
 	authenticationType: GraphQLAuthMode;
 	query: string;
