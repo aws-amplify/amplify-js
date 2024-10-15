@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.3.14](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@6.3.13...amazon-cognito-identity-js@6.3.14) (2024-10-15)
+
+### Bug Fixes
+
+- **auth:** request initiateAuth with retry ([#13854](https://github.com/aws-amplify/amplify-js/issues/13854)) ([33640c4](https://github.com/aws-amplify/amplify-js/commit/33640c488b75b76ddd3c5b13889e9a1f736c842a))
+
 ## 6.3.13 (2024-03-21)
 
 ### Bug Fixes
