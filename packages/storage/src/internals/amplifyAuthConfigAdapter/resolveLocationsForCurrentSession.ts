@@ -54,16 +54,15 @@ export const resolveLocationsForCurrentSession = ({
 				locations.push({
 					type: 'PREFIX',
 					permission: accessRules.entityidentity as StorageAccess[],
-					scope: {
-						bucketName,
-						path: path.replace(ENTITY_IDENTITY_URL, identityId),
-					},
+					bucket: bucketName,
+					prefix: path.replace(ENTITY_IDENTITY_URL, identityId),
 				});
 			}
 			const location = {
 				type: 'PREFIX',
 				...resolvePermissions(accessRules, isAuthenticated, userGroup),
-				scope: { bucketName, path },
+				bucket: bucketName,
+				prefix: path,
 			};
 			if (location.permission) locations.push(location as PathAccess);
 		}

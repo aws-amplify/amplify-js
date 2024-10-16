@@ -44,26 +44,20 @@ describe('resolveLocationsForCurrentSession', () => {
 			{
 				type: 'PREFIX',
 				permission: ['get', 'list', 'write'],
-				scope: {
-					bucketName: 'bucket1',
-					path: 'path1/*',
-				},
+				bucket: 'bucket1',
+				prefix: 'path1/*',
 			},
 			{
 				type: 'PREFIX',
 				permission: ['get', 'list', 'write', 'delete'],
-				scope: {
-					bucketName: 'bucket1',
-					path: 'path2/*',
-				},
+				bucket: 'bucket1',
+				prefix: 'path2/*',
 			},
 			{
 				type: 'PREFIX',
 				permission: ['get', 'list', 'write', 'delete'],
-				scope: {
-					bucketName: 'bucket1',
-					path: 'profile-pictures/12345/*',
-				},
+				bucket: 'bucket1',
+				prefix: 'profile-pictures/12345/*',
 			},
 		]);
 	});
@@ -80,18 +74,14 @@ describe('resolveLocationsForCurrentSession', () => {
 			{
 				type: 'PREFIX',
 				permission: ['get', 'list', 'write'],
-				scope: {
-					bucketName: 'bucket1',
-					path: 'path1/*',
-				},
+				bucket: 'bucket1',
+				prefix: 'path1/*',
 			},
 			{
 				type: 'PREFIX',
 				permission: ['get', 'list', 'write', 'delete'],
-				scope: {
-					bucketName: 'bucket1',
-					path: 'profile-pictures/12345/*',
-				},
+				bucket: 'bucket1',
+				prefix: 'profile-pictures/12345/*',
 			},
 		]);
 	});
@@ -124,7 +114,8 @@ describe('resolveLocationsForCurrentSession', () => {
 			{
 				type: 'PREFIX',
 				permission: ['get', 'list', 'write'],
-				scope: { bucketName: 'bucket1', path: 'path1/*' },
+				bucket: 'bucket1',
+				prefix: 'path1/*',
 			},
 		]);
 	});
@@ -139,18 +130,14 @@ describe('resolveLocationsForCurrentSession', () => {
 			{
 				type: 'PREFIX',
 				permission: ['get', 'list'],
-				scope: {
-					bucketName: 'bucket1',
-					path: 'path1/*',
-				},
+				bucket: 'bucket1',
+				prefix: 'path1/*',
 			},
 			{
 				type: 'PREFIX',
 				permission: ['read'],
-				scope: {
-					bucketName: 'bucket2',
-					path: 'path3/*',
-				},
+				bucket: 'bucket2',
+				prefix: 'path3/*',
 			},
 		]);
 	});
