@@ -51,6 +51,11 @@ interface CommonOptions {
 	useAccelerateEndpoint?: boolean;
 
 	bucket?: StorageBucket;
+
+	/**
+	 * The expected owner of the target bucket.
+	 */
+	expectedBucketOwner?: string;
 }
 
 /**
@@ -192,8 +197,6 @@ export type DownloadDataOptions = CommonOptions &
 export type DownloadDataWithKeyOptions = ReadOptions & DownloadDataOptions;
 export type DownloadDataWithPathOptions = DownloadDataOptions;
 
-export type UploadDataChecksumAlgorithm = 'crc-32';
-
 export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
@@ -224,12 +227,6 @@ export type UploadDataOptions = CommonOptions &
 		 * @default false
 		 */
 		preventOverwrite?: boolean;
-		/**
-		 * The algorithm used to compute a checksum for the object. Used to verify that the data received by S3
-		 * matches what was originally sent. Disabled by default.
-		 * @default undefined
-		 */
-		checksumAlgorithm?: UploadDataChecksumAlgorithm;
 	};
 
 /** @deprecated Use {@link UploadDataWithPathOptions} instead. */
@@ -243,6 +240,7 @@ export type CopySourceWithKeyOptions = ReadOptions & {
 	bucket?: StorageBucket;
 	notModifiedSince?: Date;
 	eTag?: string;
+	expectedBucketOwner?: string;
 };
 
 /** @deprecated This may be removed in the next major version. */
@@ -250,16 +248,19 @@ export type CopyDestinationWithKeyOptions = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 	bucket?: StorageBucket;
+	expectedBucketOwner?: string;
 };
 
 export interface CopyWithPathSourceOptions {
 	bucket?: StorageBucket;
 	notModifiedSince?: Date;
 	eTag?: string;
+	expectedBucketOwner?: string;
 }
 
 export interface CopyWithPathDestinationOptions {
 	bucket?: StorageBucket;
+	expectedBucketOwner?: string;
 }
 
 /**

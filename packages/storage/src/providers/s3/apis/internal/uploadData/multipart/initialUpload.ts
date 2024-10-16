@@ -9,26 +9,24 @@ import {
 import {
 	ContentDisposition,
 	ResolvedS3Config,
-	UploadDataChecksumAlgorithm,
 } from '../../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../../types';
 import { Part, createMultipartUpload } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
+import { calculateContentCRC32 } from '../../../../utils/crc32';
 import { constructContentDisposition } from '../../../../utils/constructContentDisposition';
-import { getCombinedCrc32 } from '../../../../utils/getCombinedCrc32';
-import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../utils/constants';
 
 import {
 	cacheMultipartUpload,
 	findCachedUploadParts,
 	getUploadsCacheKey,
 } from './uploadCache';
+import { getDataChunker } from './getDataChunker';
 
 interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
 	data: StorageUploadDataPayload;
 	bucket: string;
-	optionsHash: string;
 	accessLevel?: StorageAccessLevel;
 	keyPrefix?: string;
 	key: string;
@@ -38,8 +36,8 @@ interface LoadOrCreateMultipartUploadOptions {
 	metadata?: Record<string, string>;
 	size?: number;
 	abortSignal?: AbortSignal;
-	checksumAlgorithm?: UploadDataChecksumAlgorithm;
 	resumableUploadsCache?: KeyValueStorageInterface;
+	expectedBucketOwner?: string;
 }
 
 interface LoadOrCreateMultipartUploadResult {
@@ -60,7 +58,6 @@ export const loadOrCreateMultipartUpload = async ({
 	size,
 	contentType,
 	bucket,
-	optionsHash,
 	accessLevel,
 	keyPrefix,
 	key,
@@ -68,8 +65,8 @@ export const loadOrCreateMultipartUpload = async ({
 	contentEncoding,
 	metadata,
 	abortSignal,
-	checksumAlgorithm,
 	resumableUploadsCache,
+	expectedBucketOwner,
 }: LoadOrCreateMultipartUploadOptions): Promise<LoadOrCreateMultipartUploadResult> => {
 	const finalKey = keyPrefix !== undefined ? keyPrefix + key : key;
 
@@ -95,7 +92,6 @@ export const loadOrCreateMultipartUpload = async ({
 			bucket,
 			accessLevel,
 			key,
-			optionsHash,
 		});
 
 		const cachedUploadParts = await findCachedUploadParts({
@@ -117,10 +113,7 @@ export const loadOrCreateMultipartUpload = async ({
 			finalCrc32: cachedUpload.finalCrc32,
 		};
 	} else {
-		const finalCrc32 =
-			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await getCombinedCrc32(data, size)
-				: undefined;
+		const finalCrc32 = await getCombinedCrc32(data, size);
 
 		const { UploadId } = await createMultipartUpload(
 			{
@@ -135,6 +128,7 @@ export const loadOrCreateMultipartUpload = async ({
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
 				ChecksumAlgorithm: finalCrc32 ? 'CRC32' : undefined,
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 
@@ -156,7 +150,6 @@ export const loadOrCreateMultipartUpload = async ({
 			bucket,
 			accessLevel,
 			key,
-			optionsHash,
 		});
 		await cacheMultipartUpload(resumableUploadsCache, uploadCacheKey, {
 			uploadId: UploadId!,
@@ -172,4 +165,21 @@ export const loadOrCreateMultipartUpload = async ({
 			finalCrc32,
 		};
 	}
+};
+
+const getCombinedCrc32 = async (
+	data: StorageUploadDataPayload,
+	size: number | undefined,
+) => {
+	const crc32List: ArrayBuffer[] = [];
+	const dataChunker = getDataChunker(data, size);
+	for (const { data: checkData } of dataChunker) {
+		const checksumArrayBuffer = (await calculateContentCRC32(checkData))
+			?.checksumArrayBuffer;
+		if (checksumArrayBuffer === undefined) return undefined;
+
+		crc32List.push(checksumArrayBuffer);
+	}
+
+	return `${(await calculateContentCRC32(new Blob(crc32List)))?.checksum}-${crc32List.length}`;
 };

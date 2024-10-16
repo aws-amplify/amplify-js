@@ -34,6 +34,7 @@ const inputKey = 'key';
 const bucket = 'bucket';
 const region = 'region';
 const defaultIdentityId = 'defaultIdentityId';
+const validBucketOwner = '111122223333';
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -161,6 +162,28 @@ describe('remove API', () => {
 					);
 				});
 			});
+			describe('ExpectedBucketOwner passed in options', () => {
+				it('should include expectedBucketOwner in headers when provided', async () => {
+					const mockKey = 'test-path';
+					const mockBucket = 'bucket-1';
+					const mockRegion = 'region-1';
+					await removeWrapper({
+						key: mockKey,
+						options: {
+							bucket: { bucketName: mockBucket, region: mockRegion },
+							expectedBucketOwner: validBucketOwner,
+						},
+					});
+					expect(deleteObject).toHaveBeenCalledTimes(1);
+					expect(deleteObject).toHaveBeenNthCalledWithConfigAndInput(
+						1,
+						expect.any(Object),
+						expect.objectContaining({
+							ExpectedBucketOwner: validBucketOwner,
+						}),
+					);
+				});
+			});
 		});
 		describe('With Path', () => {
 			const removeWrapper = (
@@ -245,6 +268,28 @@ describe('remove API', () => {
 							Bucket: bucket,
 							Key: 'path/',
 						},
+					);
+				});
+			});
+			describe('ExpectedBucketOwner passed in options', () => {
+				it('should include expectedBucketOwner in headers when provided', async () => {
+					const mockPath = 'public/test-path';
+					const mockBucket = 'bucket-1';
+					const mockRegion = 'region-1';
+					await removeWrapper({
+						path: mockPath,
+						options: {
+							bucket: { bucketName: mockBucket, region: mockRegion },
+							expectedBucketOwner: validBucketOwner,
+						},
+					});
+					expect(deleteObject).toHaveBeenCalledTimes(1);
+					expect(deleteObject).toHaveBeenNthCalledWithConfigAndInput(
+						1,
+						expect.any(Object),
+						expect.objectContaining({
+							ExpectedBucketOwner: validBucketOwner,
+						}),
 					);
 				});
 			});

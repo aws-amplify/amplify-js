@@ -10,15 +10,13 @@ import { UploadDataInput as UploadDataWithPathInputWithAdvancedOptions } from '.
 import {
 	calculateContentMd5,
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../../utils';
 import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
 import { putObject } from '../../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
-import {
-	CHECKSUM_ALGORITHM_CRC32,
-	STORAGE_INPUT_KEY,
-} from '../../../utils/constants';
+import { STORAGE_INPUT_KEY } from '../../../utils/constants';
 import { calculateContentCRC32 } from '../../../utils/crc32';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 
@@ -54,6 +52,7 @@ export const putObjectJob =
 			uploadDataInput,
 			identityId,
 		);
+		validateBucketOwnerID(uploadDataOptions?.expectedBucketOwner);
 
 		const finalKey =
 			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
@@ -63,15 +62,11 @@ export const putObjectJob =
 			contentType = 'application/octet-stream',
 			preventOverwrite,
 			metadata,
-			checksumAlgorithm,
 			onProgress,
+			expectedBucketOwner,
 		} = uploadDataOptions ?? {};
 
-		const checksumCRC32 =
-			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await calculateContentCRC32(data)
-				: undefined;
-
+		const checksumCRC32 = await calculateContentCRC32(data);
 		const contentMD5 =
 			// check if checksum exists. ex: should not exist in react native
 			!checksumCRC32 && isObjectLockEnabled
@@ -102,6 +97,7 @@ export const putObjectJob =
 				Metadata: metadata,
 				ContentMD5: contentMD5,
 				ChecksumCRC32: checksumCRC32?.checksum,
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 

@@ -26,6 +26,7 @@ export const getProperties = (
 			useAccelerateEndpoint: input?.options?.useAccelerateEndpoint,
 			bucket: input?.options?.bucket,
 			locationCredentialsProvider: input?.options?.locationCredentialsProvider,
+			expectedBucketOwner: input?.options?.expectedBucketOwner,
 		},
 		// Type casting is necessary because `getPropertiesInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.

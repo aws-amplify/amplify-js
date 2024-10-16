@@ -6,6 +6,8 @@ import * as typedQueries from './fixtures/with-types/queries';
 import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import { expectGet } from './utils/expects';
 import { InternalGraphQLAPIClass } from '../src/internals/InternalGraphQLAPI';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+import { INTERNAL_USER_AGENT_OVERRIDE } from '@aws-amplify/data-schema/runtime';
 
 import {
 	__amplify,
@@ -1613,5 +1615,59 @@ describe('API test', () => {
 		expect(spyon_appsync_realtime).toHaveBeenCalledTimes(1);
 		const subscribeOptions = spyon_appsync_realtime.mock.calls[0][0];
 		expect(subscribeOptions).toBe(resolvedUrl);
+	});
+	test('graphql method handles INTERNAL_USER_AGENT_OVERRIDE correctly', async () => {
+		Amplify.configure({
+			API: {
+				GraphQL: {
+					defaultAuthMode: 'apiKey',
+					apiKey: 'FAKE-KEY',
+					endpoint: 'https://localhost/graphql',
+					region: 'local-host-h4x',
+				},
+			},
+		});
+
+		const mockPost = jest.fn().mockResolvedValue({
+			body: {
+				json: () => ({ data: { test: 'result' } }),
+			},
+		});
+		(raw.GraphQLAPI as any)._api.post = mockPost;
+
+		const graphqlOptions = {
+			query: 'query TestQuery { test }',
+			variables: { id: 'some-id' },
+			authMode: 'apiKey' as GraphQLAuthMode,
+			[INTERNAL_USER_AGENT_OVERRIDE]: {
+				category: 'CustomCategory',
+				action: 'CustomAction',
+			},
+		};
+
+		await client.graphql(graphqlOptions);
+
+		// Check if the INTERNAL_USER_AGENT_OVERRIDE was properly handled
+		expect(mockPost).toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				options: expect.objectContaining({
+					headers: expect.objectContaining({
+						'x-amz-user-agent': expect.stringContaining(
+							'CustomCategory/CustomAction',
+						),
+					}),
+				}),
+			}),
+		);
+		// Ensure the INTERNAL_USER_AGENT_OVERRIDE was not passed along in the options
+		expect(mockPost).not.toHaveBeenCalledWith(
+			expect.anything(),
+			expect.objectContaining({
+				options: expect.objectContaining({
+					[INTERNAL_USER_AGENT_OVERRIDE]: expect.anything(),
+				}),
+			}),
+		);
 	});
 });
