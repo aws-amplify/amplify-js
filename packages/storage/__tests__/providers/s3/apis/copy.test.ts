@@ -39,6 +39,8 @@ const bucket = 'bucket';
 const region = 'region';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+const validBucketOwner = '111122223333';
+const validBucketOwner2 = '123456789012';
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -264,6 +266,31 @@ describe('copy API', () => {
 					}),
 				);
 			});
+
+			describe('ExpectedBucketOwner passed in options', () => {
+				it('should include expectedBucketOwner in headers when provided', async () => {
+					const mockEtag = 'mock-etag';
+					await copyWrapper({
+						source: {
+							key: 'sourceKey',
+							eTag: mockEtag,
+							expectedBucketOwner: validBucketOwner,
+						},
+						destination: {
+							key: 'destinationKey',
+							expectedBucketOwner: validBucketOwner2,
+						},
+					});
+					expect(copyObject).toHaveBeenCalledTimes(1);
+					expect(copyObject).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							ExpectedSourceBucketOwner: validBucketOwner,
+							ExpectedBucketOwner: validBucketOwner2,
+						}),
+					);
+				});
+			});
 		});
 
 		describe('With path', () => {
@@ -381,6 +408,30 @@ describe('copy API', () => {
 						CopySourceIfMatch: mockEtag,
 					}),
 				);
+			});
+			describe('ExpectedBucketOwner passed in options', () => {
+				it('should include expectedBucketOwner in headers when provided', async () => {
+					const mockEtag = 'mock-etag';
+					await copyWrapper({
+						source: {
+							path: 'public/sourceKey',
+							eTag: mockEtag,
+							expectedBucketOwner: validBucketOwner,
+						},
+						destination: {
+							path: 'public/destinationKey',
+							expectedBucketOwner: validBucketOwner2,
+						},
+					});
+					expect(copyObject).toHaveBeenCalledTimes(1);
+					expect(copyObject).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							ExpectedSourceBucketOwner: validBucketOwner,
+							ExpectedBucketOwner: validBucketOwner2,
+						}),
+					);
+				});
 			});
 		});
 	});

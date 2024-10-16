@@ -85,7 +85,7 @@ export const validCoordinates4: Coordinates = [
 	-123.14909934997559, 49.29132171993048,
 ];
 export const validCoordinates5: Coordinates = [
-	// eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+	// eslint-disable-next-line no-loss-of-precision
 	-123.14695358276361, 49.290090146520431,
 ];
 
