@@ -3,6 +3,7 @@ import { defaultConfig } from '../../src/Cache/constants';
 import { StorageCacheCommon } from '../../src/Cache/StorageCacheCommon';
 import { KeyValueStorageInterface } from '../../src/types';
 import { ConsoleLogger } from '../../src/Logger';
+import { StorageCache } from '../../src/Cache/StorageCache';
 import {
 	getByteLength,
 	getCurrentSizeKey,
@@ -584,25 +585,20 @@ describe('StorageCacheCommon', () => {
 	});
 
 	describe('clear()', () => {
-		const cache = getStorageCache(config);
+		const cache = new StorageCache(config);
 
 		it('clears the cache, including the currentSizeKey', async () => {
-			const initialKeys = [
-				currentSizeKey,
-				`${keyPrefix}some-key`,
-				`${keyPrefix}another-key`,
-			];
-			mockGetAllCacheKeys.mockResolvedValue(initialKeys);
+			await cache.setItem('key1', 'value1');
+			await cache.setItem('key2', 'value2');
+
+			expect(await cache.getItem('key1')).toBe('value1');
+			expect(await cache.getItem('key2')).toBe('value2');
 
 			await cache.clear();
 
-			expect(loggerSpy.debug).toHaveBeenCalledWith('Clear Cache');
-			expect(mockKeyValueStorageRemoveItem).toHaveBeenCalledTimes(
-				initialKeys.length,
-			);
+			expect(await cache.getItem('key1')).toBeNull();
+			expect(await cache.getItem('key2')).toBeNull();
 			expect(await cache.getCurrentCacheSize()).toBe(0);
-			expect(await cache.getItem('some-key')).toBeNull();
-			expect(mockGetAllCacheKeys).toHaveBeenCalledTimes(1);
 		});
 	});
 
