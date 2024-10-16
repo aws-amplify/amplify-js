@@ -29,8 +29,14 @@ export const putObjectJob =
 	) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
-		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
-			await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
+		const {
+			bucket,
+			keyPrefix,
+			s3Config,
+			isObjectLockEnabled,
+			identityId,
+			expectedBucketOwner,
+		} = await resolveS3ConfigAndInput(Amplify, uploadDataOptions);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
 			identityId,
@@ -64,6 +70,7 @@ export const putObjectJob =
 				ContentMD5: isObjectLockEnabled
 					? await calculateContentMd5(data)
 					: undefined,
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 
