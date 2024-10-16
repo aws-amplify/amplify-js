@@ -8,6 +8,7 @@ import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
 import {
 	calculateContentMd5,
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../../utils';
 import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
@@ -38,6 +39,7 @@ export const putObjectJob =
 			uploadDataInput,
 			identityId,
 		);
+		validateBucketOwnerID(uploadDataOptions?.expectedBucketOwner);
 
 		const finalKey =
 			inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
@@ -48,6 +50,7 @@ export const putObjectJob =
 			preventOverwrite,
 			metadata,
 			onProgress,
+			expectedBucketOwner,
 		} = uploadDataOptions ?? {};
 
 		const checksumCRC32 = await calculateContentCRC32(data);
@@ -81,6 +84,7 @@ export const putObjectJob =
 				Metadata: metadata,
 				ContentMD5: contentMD5,
 				ChecksumCRC32: checksumCRC32?.checksum,
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 

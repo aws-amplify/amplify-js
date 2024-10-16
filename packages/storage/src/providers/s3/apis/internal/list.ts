@@ -14,6 +14,7 @@ import {
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
 import {
@@ -64,6 +65,7 @@ export const list = async (
 		input,
 		identityId,
 	);
+	validateBucketOwnerID(options.expectedBucketOwner);
 	const isInputWithPrefix = inputType === STORAGE_INPUT_PREFIX;
 
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
@@ -82,6 +84,7 @@ export const list = async (
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 		Delimiter: getDelimiter(options),
+		ExpectedBucketOwner: options?.expectedBucketOwner,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 

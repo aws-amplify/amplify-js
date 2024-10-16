@@ -33,6 +33,7 @@ interface LoadOrCreateMultipartUploadOptions {
 	metadata?: Record<string, string>;
 	size?: number;
 	abortSignal?: AbortSignal;
+	expectedBucketOwner?: string;
 }
 
 interface LoadOrCreateMultipartUploadResult {
@@ -60,6 +61,7 @@ export const loadOrCreateMultipartUpload = async ({
 	contentEncoding,
 	metadata,
 	abortSignal,
+	expectedBucketOwner,
 }: LoadOrCreateMultipartUploadOptions): Promise<LoadOrCreateMultipartUploadResult> => {
 	const finalKey = keyPrefix !== undefined ? keyPrefix + key : key;
 
@@ -117,6 +119,7 @@ export const loadOrCreateMultipartUpload = async ({
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
 				ChecksumAlgorithm: finalCrc32 ? 'CRC32' : undefined,
+				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);
 

@@ -19,6 +19,7 @@ jest.mock(
 jest.mock('../../../../../src/providers/s3/apis/internal/uploadData/multipart');
 
 const testPath = 'testPath/object';
+const validBucketOwner = '111122223333';
 const mockCreateUploadTask = createUploadTask as jest.Mock;
 const mockPutObjectJob = putObjectJob as jest.Mock;
 const mockGetMultipartUploadHandlers = (
@@ -251,6 +252,52 @@ describe('uploadData with path', () => {
 					isMultipartUpload: true,
 				}),
 			);
+		});
+	});
+
+	describe('ExpectedBucketOwner passed in options', () => {
+		it('should include expectedBucketOwner in headers when provided for singlepartUpload', async () => {
+			mockPutObjectJob.mockReturnValueOnce('putObjectJob');
+			const smallData = 'smallData';
+			uploadData({
+				path: testPath,
+				data: smallData,
+				options: {
+					expectedBucketOwner: validBucketOwner,
+				},
+			});
+			expect(mockPutObjectJob).toHaveBeenCalledWith(
+				expect.objectContaining({
+					path: 'testPath/object',
+					data: 'smallData',
+					options: expect.objectContaining({
+						expectedBucketOwner: '111122223333',
+					}),
+				}),
+				expect.any(Object),
+				expect.any(Number),
+			);
+
+			expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
+		});
+		it('should include expectedBucketOwner in headers when provided for multipartUpload', async () => {
+			const biggerData = { size: 5 * 1024 * 1024 + 1 } as any;
+			const testInput = {
+				path: testPath,
+				data: biggerData,
+				options: {
+					expectedBucketOwner: validBucketOwner,
+				},
+			};
+			uploadData(testInput);
+			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(
+				expect.objectContaining({
+					...testInput,
+				}),
+				expect.any(Number),
+			);
+
+			expect(mockPutObjectJob).not.toHaveBeenCalled();
 		});
 	});
 });
