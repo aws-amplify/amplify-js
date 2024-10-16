@@ -11,6 +11,7 @@ import { fetchUserAttributes as fetchUserAttributesInternal } from './internal/f
 /**
  * Fetches the current user attributes while authenticated.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-user-profile/#retrieve-user-attributes}
  * @throws - {@link GetUserException} - Cognito service errors thrown when the service is not able to get the user.
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */

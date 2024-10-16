@@ -19,6 +19,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 /**
  * Forget a remembered device while authenticated.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/remember-device/#forget-device}
  * @param input - The ForgetDeviceInput object.
  * @throws - {@link ForgetDeviceException} - Cognito service errors thrown when
  * forgetting device with invalid device key

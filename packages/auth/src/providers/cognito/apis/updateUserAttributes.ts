@@ -28,6 +28,8 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 /**
  * Updates user's attributes while authenticated.
  *
+ * Update User Attributes {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-user-profile/#update-user-attributes}
+ * Adding Admin Actions {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/admin-actions/#adding-admin-actions}
  * @param input - The UpdateUserAttributesInput object
  * @returns UpdateUserAttributesOutput
  * @throws - {@link UpdateUserAttributesException}

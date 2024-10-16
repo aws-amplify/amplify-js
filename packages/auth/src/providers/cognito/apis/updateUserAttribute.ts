@@ -9,6 +9,7 @@ import { updateUserAttributes } from './updateUserAttributes';
 /**
  * Updates user's attribute while authenticated.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-user-profile/#update-user-attribute}
  * @param input - The UpdateUserAttributeInput object
  * @returns UpdateUserAttributeOutput
  * @throws - {@link UpdateUserAttributesException}
