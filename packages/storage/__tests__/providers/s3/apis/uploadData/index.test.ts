@@ -72,6 +72,22 @@ describe('uploadData with key', () => {
 			expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
 		});
 
+		it('should use putObject for 0 bytes data (e.g. create a folder)', () => {
+			const testInput = {
+				key: 'key',
+				data: '', // 0 bytes
+			};
+
+			uploadData(testInput);
+
+			expect(mockPutObjectJob).toHaveBeenCalledWith(
+				expect.objectContaining(testInput),
+				expect.any(AbortSignal),
+				expect.any(Number),
+			);
+			expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
+		});
+
 		it('should use uploadTask', async () => {
 			mockPutObjectJob.mockReturnValueOnce('putObjectJob');
 			mockCreateUploadTask.mockReturnValueOnce('uploadTask');
@@ -194,7 +210,7 @@ describe('uploadData with path', () => {
 			uploadData(testInput);
 
 			expect(mockPutObjectJob).toHaveBeenCalledWith(
-				testInput,
+				expect.objectContaining(testInput),
 				expect.any(AbortSignal),
 				expect.any(Number),
 			);
