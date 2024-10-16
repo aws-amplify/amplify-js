@@ -5,7 +5,7 @@ import {
 	getRetryDecider as getDefaultRetryDecider,
 } from '@aws-amplify/core/internals/aws-client-utils';
 
-import { createRetryDecider } from '../../../../../../../src/providers/s3/utils/client/utils';
+import { createRetryDecider } from '../../../../../../src/providers/s3/utils/client/utils';
 
 jest.mock('@aws-amplify/core/internals/aws-client-utils');
 

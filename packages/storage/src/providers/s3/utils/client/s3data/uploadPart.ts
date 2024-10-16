@@ -21,6 +21,7 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import { defaultConfig, parseXmlError } from './base';
 import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
@@ -61,6 +62,11 @@ const uploadPartSerializer = async (
 		partNumber: input.PartNumber + '',
 		uploadId: input.UploadId,
 	}).toString();
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
 
 	return {
 		method: 'PUT',

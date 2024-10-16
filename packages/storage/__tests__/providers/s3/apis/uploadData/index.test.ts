@@ -8,13 +8,15 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
-import { putObjectJob } from '../../../../../src/providers/s3/apis/uploadData/putObjectJob';
-import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
+import { putObjectJob } from '../../../../../src/providers/s3/apis/internal/uploadData/putObjectJob';
+import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/internal/uploadData/multipart';
 import { UploadDataInput, UploadDataWithPathInput } from '../../../../../src';
 
 jest.mock('../../../../../src/providers/s3/utils/');
-jest.mock('../../../../../src/providers/s3/apis/uploadData/putObjectJob');
-jest.mock('../../../../../src/providers/s3/apis/uploadData/multipart');
+jest.mock(
+	'../../../../../src/providers/s3/apis/internal/uploadData/putObjectJob',
+);
+jest.mock('../../../../../src/providers/s3/apis/internal/uploadData/multipart');
 
 const testPath = 'testPath/object';
 const mockCreateUploadTask = createUploadTask as jest.Mock;

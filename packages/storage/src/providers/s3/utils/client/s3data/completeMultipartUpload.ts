@@ -24,14 +24,16 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
+import { validateMultipartUploadXML } from '../../validateMultipartUploadXML';
 
+import { defaultConfig, parseXmlError, retryDecider } from './base';
 import type {
 	CompleteMultipartUploadCommandInput,
 	CompleteMultipartUploadCommandOutput,
 	CompletedMultipartUpload,
 	CompletedPart,
 } from './types';
-import { defaultConfig, parseXmlError, retryDecider } from './base';
 
 const INVALID_PARAMETER_ERROR_MSG =
 	'Invalid parameter for ComplteMultipartUpload API';
@@ -62,14 +64,20 @@ const completeMultipartUploadSerializer = async (
 		uploadId: input.UploadId,
 	}).toString();
 	validateS3RequiredParameter(!!input.MultipartUpload, 'MultipartUpload');
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
+
+	const xml = serializeCompletedMultipartUpload(input.MultipartUpload);
+	validateMultipartUploadXML(input.MultipartUpload, xml);
 
 	return {
 		method: 'POST',
 		headers,
 		url,
-		body:
-			'<?xml version="1.0" encoding="UTF-8"?>' +
-			serializeCompletedMultipartUpload(input.MultipartUpload),
+		body: '<?xml version="1.0" encoding="UTF-8"?>' + xml,
 	};
 };
 

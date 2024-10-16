@@ -4,31 +4,31 @@
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
-import { UploadDataInput, UploadDataWithPathInput } from '../../../types';
+import { UploadDataInput, UploadDataWithPathInput } from '../../../../types';
 import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
-} from '../../../utils';
-import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
+} from '../../../../utils';
+import { ItemWithKey, ItemWithPath } from '../../../../types/outputs';
 import {
 	DEFAULT_ACCESS_LEVEL,
 	DEFAULT_QUEUE_SIZE,
 	STORAGE_INPUT_KEY,
-} from '../../../utils/constants';
+} from '../../../../utils/constants';
 import {
 	ResolvedS3Config,
 	UploadDataWithKeyOptions,
-} from '../../../types/options';
-import { StorageError } from '../../../../../errors/StorageError';
-import { CanceledError } from '../../../../../errors/CanceledError';
+} from '../../../../types/options';
+import { StorageError } from '../../../../../../errors/StorageError';
+import { CanceledError } from '../../../../../../errors/CanceledError';
 import {
 	Part,
 	abortMultipartUpload,
 	completeMultipartUpload,
 	headObject,
-} from '../../../utils/client/s3data';
-import { getStorageUserAgentValue } from '../../../utils/userAgent';
-import { logger } from '../../../../../utils';
+} from '../../../../utils/client/s3data';
+import { getStorageUserAgentValue } from '../../../../utils/userAgent';
+import { logger } from '../../../../../../utils';
 import { validateObjectNotExists } from '../validateObjectNotExists';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
@@ -156,7 +156,8 @@ export const getMultipartUploadHandlers = (
 			inProgressUpload?.completedParts.push({
 				PartNumber: partNumber,
 				ETag: eTag,
-				ChecksumCRC32: crc32,
+				// TODO: crc32 can always be added once RN also has an implementation
+				...(crc32 ? { ChecksumCRC32: crc32 } : {}),
 			});
 		};
 		const concurrentUploadsProgressTracker =

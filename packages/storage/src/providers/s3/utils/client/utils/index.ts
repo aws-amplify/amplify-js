@@ -13,6 +13,7 @@ export {
 export {
 	buildStorageServiceError,
 	deserializeBoolean,
+	deserializeCompletedPartList,
 	deserializeMetadata,
 	deserializeNumber,
 	deserializeTimestamp,
@@ -26,3 +27,4 @@ export {
 	validateS3RequiredParameter,
 } from './serializeHelpers';
 export { createRetryDecider } from './createRetryDecider';
+export { bothNilOrEqual } from './integrityHelpers';
