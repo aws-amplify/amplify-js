@@ -6,7 +6,7 @@ import { ENTITY_IDENTITY_URL } from '../utils/constants';
 import { StorageAccess } from '../types/common';
 
 const resolvePermissions = (
-	accessRule: Record<string, string[]>,
+	accessRule: Record<string, string[] | undefined>,
 	isAuthenticated: boolean,
 	groups?: string,
 ) => {
