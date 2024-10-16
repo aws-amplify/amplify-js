@@ -7,10 +7,10 @@ import { StorageAccess } from '../types/common';
 
 const resolvePermissions = (
 	accessRule: Record<string, string[]>,
-	token: boolean,
+	isAuthenticated: boolean,
 	groups?: string,
 ) => {
-	if (!token) {
+	if (!isAuthenticated) {
 		return {
 			permission: accessRule.guest,
 		};
@@ -30,14 +30,14 @@ const resolvePermissions = (
 	};
 };
 
-export const generateLocationsFromPaths = ({
+export const resolveLocationsForCurrentSession = ({
 	buckets,
-	tokens,
+	isAuthenticated,
 	identityId,
 	userGroup,
 }: {
 	buckets: Record<string, BucketInfo>;
-	tokens: boolean;
+	isAuthenticated: boolean;
 	identityId?: string;
 	userGroup?: string;
 }): PathAccess[] => {
@@ -46,11 +46,11 @@ export const generateLocationsFromPaths = ({
 	for (const [, bucketInfo] of Object.entries(buckets)) {
 		const { bucketName, paths } = bucketInfo;
 		if (!paths) {
-			// Todo: Verify behavior
-			return locations;
+			continue;
 		}
+
 		for (const [path, accessRules] of Object.entries(paths)) {
-			if (tokens && identityId && path.includes(ENTITY_IDENTITY_URL)) {
+			if (path.includes(ENTITY_IDENTITY_URL) && isAuthenticated && identityId) {
 				locations.push({
 					type: 'PREFIX',
 					permission: accessRules.entityidentity as StorageAccess[],
@@ -62,7 +62,7 @@ export const generateLocationsFromPaths = ({
 			}
 			const location = {
 				type: 'PREFIX',
-				...resolvePermissions(accessRules, tokens, userGroup),
+				...resolvePermissions(accessRules, isAuthenticated, userGroup),
 				scope: { bucketName, path },
 			};
 			if (location.permission) locations.push(location as PathAccess);

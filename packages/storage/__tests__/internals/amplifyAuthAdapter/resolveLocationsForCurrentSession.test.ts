@@ -1,7 +1,7 @@
-import { generateLocationsFromPaths } from '../../../src/internals/amplifyAuthConfigAdapter/generateLocationsFromPaths';
+import { resolveLocationsForCurrentSession } from '../../../src/internals/amplifyAuthConfigAdapter/resolveLocationsForCurrentSession';
 import { BucketInfo } from '../../../src/providers/s3/types/options';
 
-describe('generateLocationsFromPaths', () => {
+describe('resolveLocationsForCurrentSession', () => {
 	const mockBuckets: Record<string, BucketInfo> = {
 		bucket1: {
 			bucketName: 'bucket1',
@@ -33,9 +33,9 @@ describe('generateLocationsFromPaths', () => {
 	};
 
 	it('should generate locations correctly when tokens are true', () => {
-		const result = generateLocationsFromPaths({
+		const result = resolveLocationsForCurrentSession({
 			buckets: mockBuckets,
-			tokens: true,
+			isAuthenticated: true,
 			identityId: '12345',
 			userGroup: 'admin',
 		});
@@ -69,9 +69,9 @@ describe('generateLocationsFromPaths', () => {
 	});
 
 	it('should generate locations correctly when tokens are true & bad userGroup', () => {
-		const result = generateLocationsFromPaths({
+		const result = resolveLocationsForCurrentSession({
 			buckets: mockBuckets,
-			tokens: true,
+			isAuthenticated: true,
 			identityId: '12345',
 			userGroup: 'editor',
 		});
@@ -96,27 +96,43 @@ describe('generateLocationsFromPaths', () => {
 		]);
 	});
 
-	it('should return empty array when paths are not defined', () => {
-		const result = generateLocationsFromPaths({
+	it('should continue to next bucket when paths are not defined', () => {
+		const result = resolveLocationsForCurrentSession({
 			buckets: {
 				bucket1: {
 					bucketName: 'bucket1',
 					region: 'region1',
 					paths: undefined,
 				},
+				bucket2: {
+					bucketName: 'bucket1',
+					region: 'region1',
+					paths: {
+						'path1/*': {
+							guest: ['get', 'list'],
+							authenticated: ['get', 'list', 'write'],
+						},
+					},
+				},
 			},
-			tokens: true,
+			isAuthenticated: true,
 			identityId: '12345',
 			userGroup: 'admin',
 		});
 
-		expect(result).toEqual([]);
+		expect(result).toEqual([
+			{
+				type: 'PREFIX',
+				permission: ['get', 'list', 'write'],
+				scope: { bucketName: 'bucket1', path: 'path1/*' },
+			},
+		]);
 	});
 
 	it('should generate locations correctly when tokens are false', () => {
-		const result = generateLocationsFromPaths({
+		const result = resolveLocationsForCurrentSession({
 			buckets: mockBuckets,
-			tokens: false,
+			isAuthenticated: false,
 		});
 
 		expect(result).toEqual([

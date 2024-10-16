@@ -5,7 +5,7 @@ import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 
 import { ListPaths } from '../types/credentials';
 
-import { generateLocationsFromPaths } from './generateLocationsFromPaths';
+import { resolveLocationsForCurrentSession } from './resolveLocationsForCurrentSession';
 
 export const createAmplifyListLocationsHandler = (): ListPaths => {
 	const { buckets } = Amplify.getConfig().Storage!.S3!;
@@ -18,9 +18,9 @@ export const createAmplifyListLocationsHandler = (): ListPaths => {
 		const { tokens, identityId } = await fetchAuthSession();
 		const userGroups = tokens?.accessToken.payload['cognito:groups'];
 
-		const locations = generateLocationsFromPaths({
+		const locations = resolveLocationsForCurrentSession({
 			buckets,
-			tokens: !!tokens,
+			isAuthenticated: !!tokens,
 			identityId,
 			userGroup: userGroups && (userGroups as any)[0], // TODO: fix this edge case
 		});
