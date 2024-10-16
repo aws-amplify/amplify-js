@@ -14,15 +14,15 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { MetadataBearer } from '@aws-sdk/types';
 
-import type { AbortMultipartUploadCommandInput } from './types';
-import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import type { AbortMultipartUploadCommandInput } from './types';
+import { defaultConfig, parseXmlError } from './base';
 
 export type AbortMultipartUploadInput = Pick<
 	AbortMultipartUploadCommandInput,

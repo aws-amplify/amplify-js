@@ -133,6 +133,8 @@ export enum StorageAction {
 	Remove = '5',
 	GetProperties = '6',
 	GetUrl = '7',
+	GetDataAccess = '8',
+	ListCallerAccessGrants = '9',
 }
 
 interface ActionMap {

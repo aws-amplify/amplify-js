@@ -10,18 +10,18 @@ import {
 import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import { defaultConfig } from './base';
-import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 import {
 	assignStringVariables,
 	buildStorageServiceError,
 	map,
-	parseXmlError,
 	s3TransferHandler,
 	serializeObjectConfigsToHeaders,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import { defaultConfig, parseXmlError } from './base';
+import type { PutObjectCommandInput, PutObjectCommandOutput } from './types';
 
 export type PutObjectInput = Pick<
 	PutObjectCommandInput,
@@ -37,6 +37,7 @@ export type PutObjectInput = Pick<
 	| 'Expires'
 	| 'Metadata'
 	| 'Tagging'
+	| 'ChecksumCRC32'
 >;
 
 export type PutObjectOutput = Pick<
@@ -56,6 +57,7 @@ const putObjectSerializer = async (
 			ContentType: input.ContentType ?? 'application/octet-stream',
 		})),
 		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
+		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');

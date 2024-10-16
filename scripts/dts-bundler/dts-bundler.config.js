@@ -76,7 +76,7 @@ const config = {
 		},
 		{
 			filePath: './s3.d.ts',
-			outFile: join(storagePackageSrcClientsPath, 'client', 'types.ts'),
+			outFile: join(storagePackageSrcClientsPath, 'client', 's3data', 'types.ts'),
 			libraries: {
 				inlinedLibraries: ['@aws-sdk/client-s3'],
 			},

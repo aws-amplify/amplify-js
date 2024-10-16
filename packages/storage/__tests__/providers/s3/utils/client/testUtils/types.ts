@@ -3,7 +3,7 @@
 
 import { HttpRequest } from '@aws-amplify/core/internals/aws-client-utils';
 
-interface MockFetchResponse {
+export interface MockFetchResponse {
 	body: BodyInit;
 	headers: HeadersInit;
 	status: number;

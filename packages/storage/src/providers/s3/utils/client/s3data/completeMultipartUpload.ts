@@ -5,6 +5,8 @@ import {
 	Endpoint,
 	HttpRequest,
 	HttpResponse,
+	MiddlewareContext,
+	RetryDeciderOutput,
 	parseMetadata,
 } from '@aws-amplify/core/internals/aws-client-utils';
 import {
@@ -13,29 +15,30 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
+import {
+	assignStringVariables,
+	buildStorageServiceError,
+	map,
+	parseXmlBody,
+	s3TransferHandler,
+	serializePathnameObjectKey,
+	validateS3RequiredParameter,
+} from '../utils';
+
 import type {
 	CompleteMultipartUploadCommandInput,
 	CompleteMultipartUploadCommandOutput,
 	CompletedMultipartUpload,
 	CompletedPart,
 } from './types';
-import { defaultConfig } from './base';
-import {
-	buildStorageServiceError,
-	map,
-	parseXmlBody,
-	parseXmlError,
-	s3TransferHandler,
-	serializePathnameObjectKey,
-	validateS3RequiredParameter,
-} from './utils';
+import { defaultConfig, parseXmlError, retryDecider } from './base';
 
 const INVALID_PARAMETER_ERROR_MSG =
 	'Invalid parameter for ComplteMultipartUpload API';
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
-	'Bucket' | 'Key' | 'UploadId' | 'MultipartUpload'
+	'Bucket' | 'Key' | 'UploadId' | 'MultipartUpload' | 'ChecksumCRC32'
 >;
 
 export type CompleteMultipartUploadOutput = Pick<
@@ -49,6 +52,7 @@ const completeMultipartUploadSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = {
 		'content-type': 'application/xml',
+		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
@@ -86,7 +90,13 @@ const serializeCompletedPartList = (input: CompletedPart): string => {
 		throw new Error(`${INVALID_PARAMETER_ERROR_MSG}: ${input}`);
 	}
 
-	return `<Part><ETag>${input.ETag}</ETag><PartNumber>${input.PartNumber}</PartNumber></Part>`;
+	const eTag = `<ETag>${input.ETag}</ETag>`;
+	const partNumber = `<PartNumber>${input.PartNumber}</PartNumber>`;
+	const checksumCRC32 = input.ChecksumCRC32
+		? `<ChecksumCRC32>${input.ChecksumCRC32}</ChecksumCRC32>`
+		: '';
+
+	return `<Part>${eTag}${partNumber}${checksumCRC32}</Part>`;
 };
 
 /**
@@ -135,25 +145,24 @@ const completeMultipartUploadDeserializer = async (
 const retryWhenErrorWith200StatusCode = async (
 	response?: HttpResponse,
 	error?: unknown,
-): Promise<boolean> => {
+	middlewareContext?: MiddlewareContext,
+): Promise<RetryDeciderOutput> => {
 	if (!response) {
-		return false;
+		return { retryable: false };
 	}
 	if (response.statusCode === 200) {
 		if (!response.body) {
-			return true;
+			return { retryable: true };
 		}
 		const parsed = await parseXmlBody(response);
 		if (parsed.Code !== undefined && parsed.Message !== undefined) {
-			return true;
+			return { retryable: true };
 		}
 
-		return false;
+		return { retryable: false };
 	}
 
-	const defaultRetryDecider = defaultConfig.retryDecider;
-
-	return defaultRetryDecider(response, error);
+	return retryDecider(response, error, middlewareContext);
 };
 
 export const completeMultipartUpload = composeServiceApi(

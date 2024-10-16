@@ -14,7 +14,7 @@ import {
 	resolveS3ConfigAndInput,
 	validateStorageOperationInput,
 } from '../../utils';
-import { headObject } from '../../utils/client';
+import { headObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
@@ -24,9 +24,8 @@ export const getProperties = async (
 	input: GetPropertiesInput | GetPropertiesWithPathInput,
 	action?: StorageAction,
 ): Promise<GetPropertiesOutput | GetPropertiesWithPathOutput> => {
-	const { options: getPropertiesOptions } = input;
 	const { s3Config, bucket, keyPrefix, identityId } =
-		await resolveS3ConfigAndInput(amplify, getPropertiesOptions);
+		await resolveS3ConfigAndInput(amplify, input);
 	const { inputType, objectKey } = validateStorageOperationInput(
 		input,
 		identityId,

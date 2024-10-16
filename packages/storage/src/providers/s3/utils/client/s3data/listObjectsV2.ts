@@ -13,11 +13,6 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type {
-	ListObjectsV2CommandInput,
-	ListObjectsV2CommandOutput,
-} from './types';
-import { defaultConfig } from './base';
 import {
 	assignStringVariables,
 	buildStorageServiceError,
@@ -27,9 +22,14 @@ import {
 	emptyArrayGuard,
 	map,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
-} from './utils';
+} from '../utils';
+
+import type {
+	ListObjectsV2CommandInput,
+	ListObjectsV2CommandOutput,
+} from './types';
+import { defaultConfig, parseXmlError } from './base';
 
 export type ListObjectsV2Input = ListObjectsV2CommandInput;
 

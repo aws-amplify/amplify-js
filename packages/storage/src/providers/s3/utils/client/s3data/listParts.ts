@@ -13,23 +13,23 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
-import type {
-	CompletedPart,
-	ListPartsCommandInput,
-	ListPartsCommandOutput,
-} from './types';
-import { defaultConfig } from './base';
 import {
 	buildStorageServiceError,
 	deserializeNumber,
 	emptyArrayGuard,
 	map,
 	parseXmlBody,
-	parseXmlError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
-} from './utils';
+} from '../utils';
+
+import type {
+	CompletedPart,
+	ListPartsCommandInput,
+	ListPartsCommandOutput,
+} from './types';
+import { defaultConfig, parseXmlError } from './base';
 
 export type ListPartsInput = Pick<
 	ListPartsCommandInput,
@@ -90,6 +90,7 @@ const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
 			PartNumber: ['PartNumber', deserializeNumber],
 			ETag: 'ETag',
 			Size: ['Size', deserializeNumber],
+			ChecksumCRC32: 'ChecksumCRC32',
 		}),
 	);
 

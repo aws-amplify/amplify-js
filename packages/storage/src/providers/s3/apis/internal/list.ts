@@ -29,11 +29,11 @@ import {
 	ListObjectsV2Input,
 	ListObjectsV2Output,
 	listObjectsV2,
-} from '../../utils/client';
+} from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
-import { CommonPrefix } from '../../utils/client/types';
+import { CommonPrefix } from '../../utils/client/s3data/types';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -62,7 +62,7 @@ export const list = async (
 		bucket,
 		keyPrefix: generatedPrefix,
 		identityId,
-	} = await resolveS3ConfigAndInput(amplify, options);
+	} = await resolveS3ConfigAndInput(amplify, input);
 
 	const { inputType, objectKey } = validateStorageOperationInputWithPrefix(
 		input,
