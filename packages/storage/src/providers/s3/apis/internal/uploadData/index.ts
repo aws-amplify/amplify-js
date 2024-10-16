@@ -24,7 +24,7 @@ export const uploadData = (
 		StorageValidationErrorCode.ObjectIsTooLarge,
 	);
 
-	if (dataByteLength && dataByteLength <= DEFAULT_PART_SIZE) {
+	if (dataByteLength !== undefined && dataByteLength <= DEFAULT_PART_SIZE) {
 		// Single part upload
 		const abortController = new AbortController();
 
