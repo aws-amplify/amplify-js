@@ -593,7 +593,6 @@ describe('getMultipartUploadHandlers with key', () => {
 		});
 
 		it('should cache the upload with file including file lastModified property', async () => {
-			// mockCalculateContentCRC32Mock();
 			mockMultipartUploadSuccess();
 			mockListParts.mockResolvedValueOnce({ Parts: [], $metadata: {} });
 			const size = 8 * MB;

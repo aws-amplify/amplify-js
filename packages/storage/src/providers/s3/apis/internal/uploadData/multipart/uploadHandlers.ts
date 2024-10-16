@@ -47,6 +47,16 @@ import { getDataChunker } from './getDataChunker';
 type WithResumableCacheConfig<Input extends StorageOperationOptionsInput<any>> =
 	Input & {
 		options?: Input['options'] & {
+			/**
+			 * The cache instance to store the in-progress multipart uploads so they can be resumed
+			 * after page refresh. By default the library caches the uploaded file name,
+			 * last modified, final checksum, size, bucket, key, and corresponded in-progress
+			 * multipart upload ID from S3. If the library detects the same input corresponds to a
+			 * previously in-progress upload from within 1 hour ago, it will continue
+			 * the upload from where it left.
+			 *
+			 * By default, this option is not set. The upload caching is disabled.
+			 */
 			resumableUploadsCache?: KeyValueStorageInterface;
 		};
 	};
@@ -55,6 +65,7 @@ type WithResumableCacheConfig<Input extends StorageOperationOptionsInput<any>> =
  * The input interface for UploadData API with the options needed for multi-part upload.
  * It supports both legacy Gen 1 input with key and Gen2 input with path. It also support additional
  * advanced options for StorageBrowser.
+ *
  * @internal
  */
 export type MultipartUploadDataInput = WithResumableCacheConfig<

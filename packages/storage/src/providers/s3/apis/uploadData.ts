@@ -9,7 +9,6 @@ import {
 	UploadDataWithPathInput,
 	UploadDataWithPathOutput,
 } from '../types';
-// import { isDeprecatedInput } from '../utils/isDeprecatedInput';
 
 import { uploadData as uploadDataInternal } from './internal/uploadData';
 
@@ -128,6 +127,8 @@ export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
 		...input,
 		options: {
 			...input?.options,
+			// This option enables caching in-progress multipart uploads.
+			// It's ONLY needed for client-side API.
 			resumableUploadsCache: defaultStorage,
 		},
 	});

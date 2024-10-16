@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO: Remove this interface when we move to public advanced APIs.
 import { createUploadTask } from '../../../utils';
 import { assertValidationError } from '../../../../../errors/utils/assertValidationError';
 import { StorageValidationErrorCode } from '../../../../../errors/types/validation';
