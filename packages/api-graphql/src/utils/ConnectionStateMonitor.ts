@@ -17,18 +17,7 @@ interface LinkedConnectionStates {
 	keepAliveState: LinkedHealthState;
 }
 
-export const CONNECTION_CHANGE: {
-	[key in
-		| 'KEEP_ALIVE_MISSED'
-		| 'KEEP_ALIVE'
-		| 'CONNECTION_ESTABLISHED'
-		| 'CONNECTION_FAILED'
-		| 'CLOSING_CONNECTION'
-		| 'OPENING_CONNECTION'
-		| 'CLOSED'
-		| 'ONLINE'
-		| 'OFFLINE']: Partial<LinkedConnectionStates>;
-} = {
+export const CONNECTION_CHANGE = {
 	KEEP_ALIVE_MISSED: { keepAliveState: 'unhealthy' },
 	KEEP_ALIVE: { keepAliveState: 'healthy' },
 	CONNECTION_ESTABLISHED: { connectionState: 'connected' },
@@ -44,7 +33,7 @@ export const CONNECTION_CHANGE: {
 	CLOSED: { connectionState: 'disconnected' },
 	ONLINE: { networkState: 'connected' },
 	OFFLINE: { networkState: 'disconnected' },
-};
+} as const;
 
 export class ConnectionStateMonitor {
 	/**

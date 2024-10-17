@@ -5,9 +5,9 @@ import { Amplify as AmplifyCore } from '@aws-amplify/core';
 import * as typedQueries from './fixtures/with-types/queries';
 import * as typedSubscriptions from './fixtures/with-types/subscriptions';
 import { expectGet } from './utils/expects';
-import { InternalGraphQLAPIClass } from '../src/internals/InternalGraphQLAPI';
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 import { INTERNAL_USER_AGENT_OVERRIDE } from '@aws-amplify/data-schema/runtime';
+import * as graphqlAuth from '../src/internals/graphqlAuth';
 
 import {
 	__amplify,
@@ -1489,10 +1489,7 @@ describe('API test', () => {
 				},
 			};
 
-			const spy = jest.spyOn(
-				InternalGraphQLAPIClass.prototype as any,
-				'_headerBasedAuth',
-			);
+			const spy = jest.spyOn(graphqlAuth, 'headerBasedAuth');
 
 			const spy2 = jest
 				.spyOn((raw.GraphQLAPI as any)._api, 'post')
@@ -1515,6 +1512,7 @@ describe('API test', () => {
 					getConfig: expect.any(Function),
 				}),
 				'iam',
+				'FAKE-KEY',
 				{},
 			);
 		});
@@ -1579,7 +1577,7 @@ describe('API test', () => {
 		const spyon_appsync_realtime = jest
 			.spyOn(
 				AWSAppSyncRealTimeProvider.prototype as any,
-				'_initializeRetryableHandshake',
+				'_establishRetryableConnection',
 			)
 			.mockImplementation(
 				jest.fn(() => {

@@ -47,6 +47,37 @@ export interface APIGraphQLConfig {
 	modelIntrospection?: ModelIntrospectionSchema;
 }
 
+/**
+ * @experimental
+ */
+export interface APIEventsConfig {
+	/**
+	 * Required GraphQL endpoint, must be a valid URL string.
+	 */
+	endpoint: string;
+	/**
+	 * Optional region string used to sign the request. Required only if the auth mode is 'iam'.
+	 */
+	region?: string;
+	/**
+	 * Optional API key string. Required only if the auth mode is 'apiKey'.
+	 */
+	apiKey?: string;
+	/**
+	 * Custom domain endpoint for GraphQL API.
+	 */
+	customEndpoint?: string;
+	/**
+	 * Optional region string used to sign the request to `customEndpoint`. Effective only if `customEndpoint` is
+	 * specified, and the auth mode is 'iam'.
+	 */
+	customEndpointRegion?: string;
+	/**
+	 * Default auth mode for all the API calls to given service.
+	 */
+	defaultAuthMode: GraphQLAuthMode;
+}
+
 export interface APIRestConfig {
 	/**
 	 * Required REST endpoint, must be a valid URL string.
@@ -75,7 +106,13 @@ export interface GraphQLProviderConfig {
 	GraphQL: APIGraphQLConfig;
 }
 
-export type APIConfig = AtLeastOne<RESTProviderConfig & GraphQLProviderConfig>;
+export interface EventsProviderConfig {
+	Events: APIEventsConfig;
+}
+
+export type APIConfig = AtLeastOne<
+	RESTProviderConfig & GraphQLProviderConfig & EventsProviderConfig
+>;
 
 export type GraphQLAuthMode =
 	| 'apiKey'
