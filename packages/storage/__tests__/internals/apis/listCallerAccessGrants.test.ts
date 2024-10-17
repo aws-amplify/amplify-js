@@ -50,6 +50,7 @@ describe('listCallerAccessGrants', () => {
 				AccountId: mockAccountId,
 				NextToken: mockNextToken,
 				MaxResults: mockPageSize,
+				AllowedByApplication: true,
 			}),
 		);
 		const inputCredentialsProvider = jest.mocked(listCallerAccessGrantsClient)

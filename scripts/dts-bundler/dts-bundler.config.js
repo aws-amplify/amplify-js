@@ -83,6 +83,14 @@ const config = {
 			output: outputConfig,
 		},
 		{
+			filePath: './s3-control.d.ts',
+			outFile: join(storagePackageSrcClientsPath, 'client', 's3control', 'types.ts'),
+			libraries: {
+				inlinedLibraries: ['@aws-sdk/client-s3-control'],
+			},
+			output: outputConfig,
+		},
+		{
 			filePath: './cognito-identity-provider.d.ts',
 			outFile: join(
 				authPackageSrcClientsPath,
