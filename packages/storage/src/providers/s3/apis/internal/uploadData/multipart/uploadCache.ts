@@ -4,7 +4,6 @@
 import {
 	KeyValueStorageInterface,
 	StorageAccessLevel,
-	defaultStorage,
 } from '@aws-amplify/core';
 
 import { UPLOADS_STORAGE_KEY } from '../../../../utils/constants';
@@ -19,6 +18,7 @@ interface FindCachedUploadPartsOptions {
 	s3Config: ResolvedS3Config;
 	bucket: string;
 	finalKey: string;
+	resumableUploadsCache: KeyValueStorageInterface;
 }
 
 /**
@@ -26,6 +26,7 @@ interface FindCachedUploadPartsOptions {
  * with ListParts API. If the cached upload is expired(1 hour), return null.
  */
 export const findCachedUploadParts = async ({
+	resumableUploadsCache,
 	cacheKey,
 	s3Config,
 	bucket,
@@ -35,7 +36,7 @@ export const findCachedUploadParts = async ({
 	uploadId: string;
 	finalCrc32?: string;
 } | null> => {
-	const cachedUploads = await listCachedUploadTasks(defaultStorage);
+	const cachedUploads = await listCachedUploadTasks(resumableUploadsCache);
 	if (
 		!cachedUploads[cacheKey] ||
 		cachedUploads[cacheKey].lastTouched < Date.now() - ONE_HOUR // Uploads are cached for 1 hour
@@ -46,7 +47,7 @@ export const findCachedUploadParts = async ({
 	const cachedUpload = cachedUploads[cacheKey];
 	cachedUpload.lastTouched = Date.now();
 
-	await defaultStorage.setItem(
+	await resumableUploadsCache.setItem(
 		UPLOADS_STORAGE_KEY,
 		JSON.stringify(cachedUploads),
 	);
@@ -65,7 +66,7 @@ export const findCachedUploadParts = async ({
 		};
 	} catch (e) {
 		logger.debug('failed to list cached parts, removing cached upload.');
-		await removeCachedUpload(cacheKey);
+		await removeCachedUpload(resumableUploadsCache, cacheKey);
 
 		return null;
 	}
@@ -82,10 +83,12 @@ interface FileMetadata {
 }
 
 const listCachedUploadTasks = async (
-	kvStorage: KeyValueStorageInterface,
+	resumableUploadsCache: KeyValueStorageInterface,
 ): Promise<Record<string, FileMetadata>> => {
 	try {
-		return JSON.parse((await kvStorage.getItem(UPLOADS_STORAGE_KEY)) ?? '{}');
+		return JSON.parse(
+			(await resumableUploadsCache.getItem(UPLOADS_STORAGE_KEY)) ?? '{}',
+		);
 	} catch (e) {
 		logger.debug('failed to parse cached uploads record.');
 
@@ -136,24 +139,28 @@ export const getUploadsCacheKey = ({
 };
 
 export const cacheMultipartUpload = async (
+	resumableUploadsCache: KeyValueStorageInterface,
 	cacheKey: string,
 	fileMetadata: Omit<FileMetadata, 'lastTouched'>,
 ): Promise<void> => {
-	const cachedUploads = await listCachedUploadTasks(defaultStorage);
+	const cachedUploads = await listCachedUploadTasks(resumableUploadsCache);
 	cachedUploads[cacheKey] = {
 		...fileMetadata,
 		lastTouched: Date.now(),
 	};
-	await defaultStorage.setItem(
+	await resumableUploadsCache.setItem(
 		UPLOADS_STORAGE_KEY,
 		JSON.stringify(cachedUploads),
 	);
 };
 
-export const removeCachedUpload = async (cacheKey: string): Promise<void> => {
-	const cachedUploads = await listCachedUploadTasks(defaultStorage);
+export const removeCachedUpload = async (
+	resumableUploadsCache: KeyValueStorageInterface,
+	cacheKey: string,
+): Promise<void> => {
+	const cachedUploads = await listCachedUploadTasks(resumableUploadsCache);
 	delete cachedUploads[cacheKey];
-	await defaultStorage.setItem(
+	await resumableUploadsCache.setItem(
 		UPLOADS_STORAGE_KEY,
 		JSON.stringify(cachedUploads),
 	);

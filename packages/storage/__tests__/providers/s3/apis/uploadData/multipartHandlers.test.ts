@@ -524,6 +524,23 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockDefaultStorage.setItem.mockReset();
 		});
 
+		it('should disable upload caching if resumableUploadsCache option is not set', async () => {
+			mockMultipartUploadSuccess();
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size,
+			);
+			await multipartUploadJob();
+			expect(mockDefaultStorage.getItem).not.toHaveBeenCalled();
+			expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
+			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+			expect(mockListParts).not.toHaveBeenCalled();
+		});
+
 		it('should send createMultipartUpload request if the upload task is not cached', async () => {
 			mockMultipartUploadSuccess();
 			const size = 8 * MB;
@@ -531,6 +548,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -559,6 +579,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -577,6 +600,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new File([new ArrayBuffer(size)], 'someName'),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -612,6 +638,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -630,6 +659,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -657,6 +689,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -679,6 +714,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -795,9 +833,7 @@ describe('getMultipartUploadHandlers with key', () => {
 		it('should send progress for cached upload parts', async () => {
 			mockMultipartUploadSuccess();
 
-			const mockDefaultStorage = defaultStorage as jest.Mocked<
-				typeof defaultStorage
-			>;
+			const mockDefaultStorage = jest.mocked(defaultStorage);
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {
@@ -819,6 +855,7 @@ describe('getMultipartUploadHandlers with key', () => {
 					data: new ArrayBuffer(8 * MB),
 					options: {
 						onProgress,
+						resumableUploadsCache: mockDefaultStorage,
 					},
 				},
 				8 * MB,
@@ -1258,6 +1295,23 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockDefaultStorage.setItem.mockReset();
 		});
 
+		it('should disable upload caching if resumableUploadsCache option is not set', async () => {
+			mockMultipartUploadSuccess();
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size,
+			);
+			await multipartUploadJob();
+			expect(mockDefaultStorage.getItem).not.toHaveBeenCalled();
+			expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
+			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+			expect(mockListParts).not.toHaveBeenCalled();
+		});
+
 		it('should send createMultipartUpload request if the upload task is not cached', async () => {
 			mockMultipartUploadSuccess();
 			const size = 8 * MB;
@@ -1265,6 +1319,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1293,6 +1350,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1311,6 +1371,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new File([new ArrayBuffer(size)], 'someName'),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1321,12 +1384,10 @@ describe('getMultipartUploadHandlers with path', () => {
 				mockDefaultStorage.setItem.mock.calls[0][1],
 			);
 
-			// \d{13} is the file lastModified property of a file
-			const lastModifiedRegex = /someName_\d{13}_/;
-
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
-					new RegExp(lastModifiedRegex.source + testPathCacheKey),
+					// \d{13} is the file lastModified property of a file
+					new RegExp('someName_\\d{13}_' + testPathCacheKey),
 				),
 			]);
 		});
@@ -1349,6 +1410,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1367,6 +1431,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1392,6 +1459,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1414,6 +1484,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1530,9 +1603,8 @@ describe('getMultipartUploadHandlers with path', () => {
 		it('should send progress for cached upload parts', async () => {
 			mockMultipartUploadSuccess();
 
-			const mockDefaultStorage = defaultStorage as jest.Mocked<
-				typeof defaultStorage
-			>;
+			const mockDefaultStorage = jest.mocked(defaultStorage);
+
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[testPathCacheKey]: {
@@ -1554,6 +1626,7 @@ describe('getMultipartUploadHandlers with path', () => {
 					data: new ArrayBuffer(8 * MB),
 					options: {
 						onProgress,
+						resumableUploadsCache: mockDefaultStorage,
 					},
 				},
 				8 * MB,

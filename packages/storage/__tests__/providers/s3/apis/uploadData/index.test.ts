@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { defaultStorage } from '@aws-amplify/core';
+
 import { uploadData } from '../../../../../src/providers/s3/apis';
 import { MAX_OBJECT_SIZE } from '../../../../../src/providers/s3/utils/constants';
 import { createUploadTask } from '../../../../../src/providers/s3/utils';
@@ -67,6 +69,22 @@ describe('uploadData with key', () => {
 				data: smallData,
 			});
 			expect(mockPutObjectJob).toHaveBeenCalled();
+			expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
+		});
+
+		it('should use putObject for 0 bytes data (e.g. create a folder)', () => {
+			const testInput = {
+				key: 'key',
+				data: '', // 0 bytes
+			};
+
+			uploadData(testInput);
+
+			expect(mockPutObjectJob).toHaveBeenCalledWith(
+				expect.objectContaining(testInput),
+				expect.any(AbortSignal),
+				expect.any(Number),
+			);
 			expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
 		});
 
@@ -175,7 +193,7 @@ describe('uploadData with path', () => {
 				uploadData(testInput);
 
 				expect(mockPutObjectJob).toHaveBeenCalledWith(
-					testInput,
+					expect.objectContaining(testInput),
 					expect.any(AbortSignal),
 					expect.any(Number),
 				);
@@ -192,7 +210,7 @@ describe('uploadData with path', () => {
 			uploadData(testInput);
 
 			expect(mockPutObjectJob).toHaveBeenCalledWith(
-				testInput,
+				expect.objectContaining(testInput),
 				expect.any(AbortSignal),
 				expect.any(Number),
 			);
@@ -231,7 +249,12 @@ describe('uploadData with path', () => {
 
 			expect(mockPutObjectJob).not.toHaveBeenCalled();
 			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(
-				testInput,
+				expect.objectContaining({
+					...testInput,
+					options: {
+						resumableUploadsCache: defaultStorage,
+					},
+				}),
 				expect.any(Number),
 			);
 		});
@@ -291,9 +314,10 @@ describe('uploadData with path', () => {
 			};
 			uploadData(testInput);
 			expect(mockGetMultipartUploadHandlers).toHaveBeenCalledWith(
-				expect.objectContaining({
+				{
 					...testInput,
-				}),
+					options: expect.objectContaining(testInput.options),
+				},
 				expect.any(Number),
 			);
 

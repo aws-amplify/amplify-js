@@ -11,13 +11,11 @@ import {
 	DownloadDataWithPathInput,
 	GetPropertiesWithPathInput,
 	GetUrlWithPathInput,
+	ListAllWithPathInput,
+	ListPaginateWithPathInput,
 	RemoveWithPathInput,
 	UploadDataWithPathInput,
 } from '../../providers/s3';
-import {
-	ListAllWithPathInput,
-	ListPaginateWithPathInput,
-} from '../../providers/s3/types/inputs';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
 import { Permission, PrefixType, Privilege } from './common';

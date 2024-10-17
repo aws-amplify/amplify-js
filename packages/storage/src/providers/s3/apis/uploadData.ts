@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { defaultStorage } from '@aws-amplify/core';
+
 import {
 	UploadDataInput,
 	UploadDataOutput,
@@ -121,5 +123,13 @@ export function uploadData(
 export function uploadData(input: UploadDataInput): UploadDataOutput;
 
 export function uploadData(input: UploadDataInput | UploadDataWithPathInput) {
-	return uploadDataInternal(input);
+	return uploadDataInternal({
+		...input,
+		options: {
+			...input?.options,
+			// This option enables caching in-progress multipart uploads.
+			// It's ONLY needed for client-side API.
+			resumableUploadsCache: defaultStorage,
+		},
+	});
 }
