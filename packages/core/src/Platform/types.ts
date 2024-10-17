@@ -26,6 +26,7 @@ export enum Framework {
 }
 
 export enum Category {
+	AI = 'ai',
 	API = 'api',
 	Auth = 'auth',
 	Analytics = 'analytics',
@@ -37,6 +38,18 @@ export enum Category {
 	PubSub = 'pubsub',
 	PushNotification = 'pushnotification',
 	Storage = 'storage',
+}
+
+export enum AiAction {
+	CreateConversation = '1',
+	GetConversation = '2',
+	ListConversations = '3',
+	DeleteConversation = '4',
+	SendMessage = '5',
+	ListMessages = '6',
+	OnMessage = '7',
+	Generation = '8',
+	UpdateConversation = '9',
 }
 
 export enum AnalyticsAction {
@@ -123,6 +136,7 @@ export enum StorageAction {
 }
 
 interface ActionMap {
+	[Category.AI]: AiAction;
 	[Category.Auth]: AuthAction;
 	[Category.API]: ApiAction;
 	[Category.Analytics]: AnalyticsAction;
@@ -148,6 +162,7 @@ interface CustomUserAgentDetailsBase {
 
 export type CustomUserAgentDetails =
 	| (CustomUserAgentDetailsBase & { category?: never; action?: never })
+	| UserAgentDetailsWithCategory<Category.AI>
 	| UserAgentDetailsWithCategory<Category.API>
 	| UserAgentDetailsWithCategory<Category.Auth>
 	| UserAgentDetailsWithCategory<Category.Analytics>
@@ -180,6 +195,12 @@ export interface StorageUserAgentInput {
 	additionalDetails: AdditionalDetails;
 }
 
+export interface AiUserAgentInput {
+	category: Category.AI;
+	apis: AiAction[];
+	additionalDetails: AdditionalDetails;
+}
+
 export interface AuthUserAgentInput {
 	category: Category.Auth;
 	apis: AuthAction[];
@@ -202,4 +223,5 @@ export type SetCustomUserAgentInput =
 	| StorageUserAgentInput
 	| AuthUserAgentInput
 	| InAppMessagingUserAgentInput
-	| GeoUserAgentInput;
+	| GeoUserAgentInput
+	| AiUserAgentInput;

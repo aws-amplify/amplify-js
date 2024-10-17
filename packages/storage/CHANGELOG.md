@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.9...@aws-amplify/storage@6.6.10) (2024-10-15)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.8...@aws-amplify/storage@6.6.9) (2024-10-05)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.7...@aws-amplify/storage@6.6.8) (2024-09-30)
+
+### Bug Fixes
+
+- **storage:** md5 calculation for react native ([#13836](https://github.com/aws-amplify/amplify-js/issues/13836)) ([63bceab](https://github.com/aws-amplify/amplify-js/commit/63bceabcaf0085fa46aa2d5c976fed709c63ef9d))
+
+## [6.6.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.6...@aws-amplify/storage@6.6.7) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [6.6.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.5...@aws-amplify/storage@6.6.6) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
 ## [6.6.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.4...@aws-amplify/storage@6.6.5) (2024-09-04)
 
 **Note:** Version bump only for package @aws-amplify/storage

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.4...@aws-amplify/core@6.4.5) (2024-10-15)
+
+### Bug Fixes
+
+- Update useragent string with npm version ([#13903](https://github.com/aws-amplify/amplify-js/issues/13903)) ([541e463](https://github.com/aws-amplify/amplify-js/commit/541e46347ba10cd1cfc0bf080c9a45281cf0be4e))
+
+## [6.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.3...@aws-amplify/core@6.4.4) (2024-10-05)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.2...@aws-amplify/core@6.4.3) (2024-09-30)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+## [6.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.1...@aws-amplify/core@6.4.2) (2024-09-17)
+
+### Reverts
+
+- Revert "Reapply "feat(core): resolve webcrypto from node:crypto for Node18 (#13599)" (#13775)" ([953d578](https://github.com/aws-amplify/amplify-js/commit/953d578fabd69ab8eb7bf494a50c5a15ebf0b74c)), closes [#13599](https://github.com/aws-amplify/amplify-js/issues/13599) [#13775](https://github.com/aws-amplify/amplify-js/issues/13775)
+
+## [6.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.0...@aws-amplify/core@6.4.1) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/core
+
 # [6.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.3.13...@aws-amplify/core@6.4.0) (2024-09-04)
 
 ### Features
