@@ -31,10 +31,12 @@ describe('copy (internals)', () => {
 				bucket: 'bucket',
 				eTag: 'eTag',
 				notModifiedSince: new Date(),
+				expectedBucketOwner: '012345678901',
 			},
 			destination: {
 				path: 'path/to/object',
 				bucket: 'bucket',
+				expectedBucketOwner: '212345678901',
 			},
 			options: {
 				locationCredentialsProvider,

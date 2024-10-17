@@ -27,6 +27,7 @@ describe('getUrl (internal)', () => {
 	it('should pass through advanced options to the internal getUrl', async () => {
 		const useAccelerateEndpoint = true;
 		const validateObjectExistence = false;
+		const expectedBucketOwner = '012345678901';
 		const expiresIn = 300; // seconds
 		const contentDisposition = 'inline; filename="example.jpg"';
 		const contentType = 'image/jpeg';
@@ -48,6 +49,7 @@ describe('getUrl (internal)', () => {
 				expiresIn,
 				contentDisposition,
 				contentType,
+				expectedBucketOwner,
 				locationCredentialsProvider,
 			},
 		});
@@ -63,6 +65,7 @@ describe('getUrl (internal)', () => {
 					expiresIn,
 					contentDisposition,
 					contentType,
+					expectedBucketOwner,
 					locationCredentialsProvider,
 				},
 			},

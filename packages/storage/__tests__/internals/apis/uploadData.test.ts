@@ -19,6 +19,7 @@ describe('uploadData (internal)', () => {
 
 	it('should pass advanced option locationCredentialsProvider to internal remove', async () => {
 		const useAccelerateEndpoint = true;
+		const expectedBucketOwner = '012345678901';
 		const bucket = { bucketName: 'bucket', region: 'us-east-1' };
 		const locationCredentialsProvider = async () => ({
 			credentials: {
@@ -44,6 +45,7 @@ describe('uploadData (internal)', () => {
 				contentType: 'text/html',
 				onProgress,
 				metadata,
+				expectedBucketOwner,
 			},
 		});
 
@@ -60,6 +62,7 @@ describe('uploadData (internal)', () => {
 				contentType: 'text/html',
 				onProgress,
 				metadata,
+				expectedBucketOwner,
 			},
 		});
 		expect(result).toEqual(mockedUploadTask);

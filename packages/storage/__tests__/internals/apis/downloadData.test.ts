@@ -29,6 +29,7 @@ describe('downloadData (internal)', () => {
 
 	it('should pass advanced option locationCredentialsProvider to internal downloadData', async () => {
 		const useAccelerateEndpoint = true;
+		const expectedBucketOwner = '012345678901';
 		const bucket = { bucketName: 'bucket', region: 'us-east-1' };
 		const locationCredentialsProvider = async () => ({
 			credentials: {
@@ -49,6 +50,7 @@ describe('downloadData (internal)', () => {
 				locationCredentialsProvider,
 				onProgress,
 				bytesRange,
+				expectedBucketOwner,
 			},
 		});
 
@@ -61,6 +63,7 @@ describe('downloadData (internal)', () => {
 				locationCredentialsProvider,
 				onProgress,
 				bytesRange,
+				expectedBucketOwner,
 			},
 		});
 

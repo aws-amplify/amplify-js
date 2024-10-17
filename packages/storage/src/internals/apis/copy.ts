@@ -17,10 +17,12 @@ export const copy = (input: CopyInput) =>
 			bucket: input.source.bucket,
 			eTag: input.source.eTag,
 			notModifiedSince: input.source.notModifiedSince,
+			expectedBucketOwner: input.source.expectedBucketOwner,
 		},
 		destination: {
 			path: input.destination.path,
 			bucket: input.destination.bucket,
+			expectedBucketOwner: input.destination.expectedBucketOwner,
 		},
 		options: {
 			// Advanced options
