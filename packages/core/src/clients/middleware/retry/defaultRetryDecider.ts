@@ -23,7 +23,7 @@ export const getRetryDecider =
 			isConnectionError(error) ||
 			isThrottlingError(statusCode, errorCode) ||
 			isClockSkewError(errorCode) ||
-			isServerSideError(statusCode, errorCode)
+			isServerSideTimeoutError(errorCode)
 		);
 	};
 
@@ -57,6 +57,5 @@ const isThrottlingError = (statusCode?: number, errorCode?: string) =>
 const isConnectionError = (error?: unknown) =>
 	(error as Error)?.name === 'Network error';
 
-const isServerSideError = (statusCode?: number, errorCode?: string) =>
-	(!!statusCode && [500, 502, 503, 504].includes(statusCode)) ||
-	(!!errorCode && TIMEOUT_ERROR_CODES.includes(errorCode));
+const isServerSideTimeoutError = (errorCode?: string) =>
+	!!errorCode && TIMEOUT_ERROR_CODES.includes(errorCode);
