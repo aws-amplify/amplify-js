@@ -15,18 +15,20 @@ import {
 import { MetadataBearer } from '@aws-sdk/types';
 
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import type { AbortMultipartUploadCommandInput } from './types';
 import { defaultConfig, parseXmlError } from './base';
 
 export type AbortMultipartUploadInput = Pick<
 	AbortMultipartUploadCommandInput,
-	'Bucket' | 'Key' | 'UploadId'
+	'Bucket' | 'Key' | 'UploadId' | 'ExpectedBucketOwner'
 >;
 
 export type AbortMultipartUploadOutput = MetadataBearer;
@@ -42,10 +44,20 @@ const abortMultipartUploadSerializer = (
 	url.search = new AmplifyUrlSearchParams({
 		uploadId: input.UploadId,
 	}).toString();
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
+	const headers = {
+		...assignStringVariables({
+			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+		}),
+	};
 
 	return {
 		method: 'DELETE',
-		headers: {},
+		headers,
 		url,
 	};
 };

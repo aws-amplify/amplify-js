@@ -12,14 +12,37 @@ Internal APIs
 export {
 	GetDataAccessInput,
 	ListCallerAccessGrantsInput,
+	GetPropertiesInput,
+	GetUrlInput,
+	CopyInput,
+	ListInput,
+	ListAllInput,
+	ListPaginateInput,
+	RemoveInput,
+	UploadDataInput,
+	DownloadDataInput,
 } from './types/inputs';
 export {
 	GetDataAccessOutput,
 	ListCallerAccessGrantsOutput,
+	GetPropertiesOutput,
+	GetUrlOutput,
+	RemoveOutput,
+	UploadDataOutput,
+	DownloadDataOutput,
+	ListOutput,
+	CopyOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';
 export { listCallerAccessGrants } from './apis/listCallerAccessGrants';
+export { list } from './apis/list';
+export { getProperties } from './apis/getProperties';
+export { getUrl } from './apis/getUrl';
+export { remove } from './apis/remove';
+export { uploadData } from './apis/uploadData';
+export { downloadData } from './apis/downloadData';
+export { copy } from './apis/copy';
 
 /*
 CredentialsStore exports

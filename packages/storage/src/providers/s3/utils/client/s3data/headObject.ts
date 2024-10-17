@@ -11,6 +11,7 @@ import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	deserializeMetadata,
 	deserializeNumber,
@@ -20,11 +21,15 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import { defaultConfig, parseXmlError } from './base';
 import type { HeadObjectCommandInput, HeadObjectCommandOutput } from './types';
 
-export type HeadObjectInput = Pick<HeadObjectCommandInput, 'Bucket' | 'Key'>;
+export type HeadObjectInput = Pick<
+	HeadObjectCommandInput,
+	'Bucket' | 'Key' | 'ExpectedBucketOwner'
+>;
 
 export type HeadObjectOutput = Pick<
 	HeadObjectCommandOutput,
@@ -44,10 +49,18 @@ const headObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
+	const headers = assignStringVariables({
+		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+	});
 
 	return {
 		method: 'HEAD',
-		headers: {},
+		headers,
 		url,
 	};
 };

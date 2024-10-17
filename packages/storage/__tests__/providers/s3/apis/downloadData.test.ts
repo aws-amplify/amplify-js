@@ -50,6 +50,7 @@ const bucket = 'bucket';
 const region = 'region';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+const validBucketOwner = '111122223333';
 const mockDownloadResultBase = {
 	body: 'body',
 	lastModified: 'lastModified',
@@ -286,6 +287,29 @@ describe('downloadData with key', () => {
 			);
 		});
 	});
+
+	describe('ExpectedBucketOwner passed in options', () => {
+		it('should include expectedBucketOwner in headers when provided', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			downloadData({
+				key: inputKey,
+				options: {
+					expectedBucketOwner: validBucketOwner,
+				},
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				expect.any(Object),
+				expect.objectContaining({
+					ExpectedBucketOwner: validBucketOwner,
+				}),
+			);
+		});
+	});
 });
 
 describe('downloadData with path', () => {
@@ -494,6 +518,29 @@ describe('downloadData with path', () => {
 					Bucket: bucket,
 					Key: inputPath,
 				},
+			);
+		});
+	});
+
+	describe('ExpectedBucketOwner passed in options', () => {
+		it('should include expectedBucketOwner in headers when provided', async () => {
+			(getObject as jest.Mock).mockResolvedValueOnce({ Body: 'body' });
+			downloadData({
+				path: inputKey,
+				options: {
+					expectedBucketOwner: validBucketOwner,
+				},
+			});
+
+			const { job } = mockCreateDownloadTask.mock.calls[0][0];
+			await job();
+
+			expect(getObject).toHaveBeenCalledTimes(1);
+			await expect(getObject).toBeLastCalledWithConfigAndInput(
+				expect.any(Object),
+				expect.objectContaining({
+					ExpectedBucketOwner: validBucketOwner,
+				}),
 			);
 		});
 	});

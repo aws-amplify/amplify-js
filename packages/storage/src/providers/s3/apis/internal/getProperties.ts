@@ -7,21 +7,23 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 import {
 	GetPropertiesInput,
 	GetPropertiesOutput,
-	GetPropertiesWithPathInput,
 	GetPropertiesWithPathOutput,
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../utils';
 import { headObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { STORAGE_INPUT_KEY } from '../../utils/constants';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { GetPropertiesInput as GetPropertiesWithPathInputWithAdvancedOptions } from '../../../../internals';
 
 export const getProperties = async (
 	amplify: AmplifyClassV6,
-	input: GetPropertiesInput | GetPropertiesWithPathInput,
+	input: GetPropertiesInput | GetPropertiesWithPathInputWithAdvancedOptions,
 	action?: StorageAction,
 ): Promise<GetPropertiesOutput | GetPropertiesWithPathOutput> => {
 	const { s3Config, bucket, keyPrefix, identityId } =
@@ -30,6 +32,9 @@ export const getProperties = async (
 		input,
 		identityId,
 	);
+
+	validateBucketOwnerID(input.options?.expectedBucketOwner);
+
 	const finalKey =
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
 
@@ -44,6 +49,7 @@ export const getProperties = async (
 		{
 			Bucket: bucket,
 			Key: finalKey,
+			ExpectedBucketOwner: input.options?.expectedBucketOwner,
 		},
 	);
 

@@ -39,6 +39,8 @@ const bucket = 'bucket';
 const region = 'region';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+const validBucketOwner = '111122223333';
+const validBucketOwner2 = '123456789012';
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -228,6 +230,67 @@ describe('copy API', () => {
 					},
 				);
 			});
+
+			it('should pass notModifiedSince to copyObject', async () => {
+				const mockDate = 'mock-date' as any;
+				await copyWrapper({
+					source: {
+						key: 'sourceKey',
+						notModifiedSince: mockDate,
+					},
+					destination: { key: 'destinationKey' },
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						CopySourceIfUnmodifiedSince: mockDate,
+					}),
+				);
+			});
+
+			it('should pass eTag to copyObject', async () => {
+				const mockEtag = 'mock-etag';
+				await copyWrapper({
+					source: {
+						key: 'sourceKey',
+						eTag: mockEtag,
+					},
+					destination: { key: 'destinationKey' },
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						CopySourceIfMatch: mockEtag,
+					}),
+				);
+			});
+
+			describe('ExpectedBucketOwner passed in options', () => {
+				it('should include expectedBucketOwner in headers when provided', async () => {
+					const mockEtag = 'mock-etag';
+					await copyWrapper({
+						source: {
+							key: 'sourceKey',
+							eTag: mockEtag,
+							expectedBucketOwner: validBucketOwner,
+						},
+						destination: {
+							key: 'destinationKey',
+							expectedBucketOwner: validBucketOwner2,
+						},
+					});
+					expect(copyObject).toHaveBeenCalledTimes(1);
+					expect(copyObject).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							ExpectedSourceBucketOwner: validBucketOwner,
+							ExpectedBucketOwner: validBucketOwner2,
+						}),
+					);
+				});
+			});
 		});
 
 		describe('With path', () => {
@@ -309,6 +372,66 @@ describe('copy API', () => {
 						Key: 'destinationPath',
 					},
 				);
+			});
+
+			it('should pass notModifiedSince to copyObject', async () => {
+				const mockDate = 'mock-date' as any;
+				await copyWrapper({
+					source: {
+						path: 'sourcePath',
+						notModifiedSince: mockDate,
+					},
+					destination: { path: 'destinationPath' },
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						CopySourceIfUnmodifiedSince: mockDate,
+					}),
+				);
+			});
+
+			it('should pass eTag to copyObject', async () => {
+				const mockEtag = 'mock-etag';
+				await copyWrapper({
+					source: {
+						path: 'sourcePath',
+						eTag: mockEtag,
+					},
+					destination: { path: 'destinationPath' },
+				});
+				expect(copyObject).toHaveBeenCalledTimes(1);
+				expect(copyObject).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({
+						CopySourceIfMatch: mockEtag,
+					}),
+				);
+			});
+			describe('ExpectedBucketOwner passed in options', () => {
+				it('should include expectedBucketOwner in headers when provided', async () => {
+					const mockEtag = 'mock-etag';
+					await copyWrapper({
+						source: {
+							path: 'public/sourceKey',
+							eTag: mockEtag,
+							expectedBucketOwner: validBucketOwner,
+						},
+						destination: {
+							path: 'public/destinationKey',
+							expectedBucketOwner: validBucketOwner2,
+						},
+					});
+					expect(copyObject).toHaveBeenCalledTimes(1);
+					expect(copyObject).toHaveBeenCalledWith(
+						expect.anything(),
+						expect.objectContaining({
+							ExpectedSourceBucketOwner: validBucketOwner,
+							ExpectedBucketOwner: validBucketOwner2,
+						}),
+					);
+				});
 			});
 		});
 	});

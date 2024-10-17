@@ -48,3 +48,5 @@ export {
 	GetUrlOutput,
 	GetUrlWithPathOutput,
 } from './types/outputs';
+
+export { DEFAULT_PART_SIZE } from './utils/constants';

@@ -14,6 +14,7 @@ import { ResolvedS3Config, StorageBucket } from '../../types/options';
 import {
 	isInputWithPath,
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../utils';
 import { StorageValidationErrorCode } from '../../../../errors/types/validation';
@@ -21,6 +22,8 @@ import { assertValidationError } from '../../../../errors/utils/assertValidation
 import { copyObject } from '../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { CopyInput as CopyWithPathInputWithAdvancedOptions } from '../../../../internals';
 
 const isCopyInputWithPath = (
 	input: CopyInput | CopyWithPathInput,
@@ -44,7 +47,7 @@ const storageBucketAssertion = (
 
 export const copy = async (
 	amplify: AmplifyClassV6,
-	input: CopyInput | CopyWithPathInput,
+	input: CopyInput | CopyWithPathInputWithAdvancedOptions,
 ): Promise<CopyOutput | CopyWithPathOutput> => {
 	return isCopyInputWithPath(input)
 		? copyWithPath(amplify, input)
@@ -53,7 +56,7 @@ export const copy = async (
 
 const copyWithPath = async (
 	amplify: AmplifyClassV6,
-	input: CopyWithPathInput,
+	input: CopyWithPathInputWithAdvancedOptions,
 ): Promise<CopyWithPathOutput> => {
 	const { source, destination } = input;
 
@@ -95,7 +98,8 @@ const copyWithPath = async (
 		destination,
 		identityId,
 	);
-
+	validateBucketOwnerID(source.expectedBucketOwner);
+	validateBucketOwnerID(destination.expectedBucketOwner);
 	const finalCopySource = `${sourceBucket}/${sourcePath}`;
 	const finalCopyDestination = destinationPath;
 	logger.debug(`copying "${finalCopySource}" to "${finalCopyDestination}".`);
@@ -105,6 +109,10 @@ const copyWithPath = async (
 		destination: finalCopyDestination,
 		bucket: destBucket,
 		s3Config,
+		notModifiedSince: input.source.notModifiedSince,
+		eTag: input.source.eTag,
+		expectedSourceBucketOwner: input.source?.expectedBucketOwner,
+		expectedBucketOwner: input.destination?.expectedBucketOwner,
 	});
 
 	return { path: finalCopyDestination };
@@ -124,6 +132,8 @@ export const copyWithKey = async (
 		!!destination.key,
 		StorageValidationErrorCode.NoDestinationKey,
 	);
+	validateBucketOwnerID(source.expectedBucketOwner);
+	validateBucketOwnerID(destination.expectedBucketOwner);
 
 	const { bucket: sourceBucket, keyPrefix: sourceKeyPrefix } =
 		await resolveS3ConfigAndInput(amplify, {
@@ -162,6 +172,10 @@ export const copyWithKey = async (
 		destination: finalCopyDestination,
 		bucket: destBucket,
 		s3Config,
+		notModifiedSince: input.source.notModifiedSince,
+		eTag: input.source.eTag,
+		expectedSourceBucketOwner: input.source?.expectedBucketOwner,
+		expectedBucketOwner: input.destination?.expectedBucketOwner,
 	});
 
 	return {
@@ -174,11 +188,19 @@ const serviceCopy = async ({
 	destination,
 	bucket,
 	s3Config,
+	notModifiedSince,
+	eTag,
+	expectedSourceBucketOwner,
+	expectedBucketOwner,
 }: {
 	source: string;
 	destination: string;
 	bucket: string;
 	s3Config: ResolvedS3Config;
+	notModifiedSince?: Date;
+	eTag?: string;
+	expectedSourceBucketOwner?: string;
+	expectedBucketOwner?: string;
 }) => {
 	await copyObject(
 		{
@@ -190,6 +212,10 @@ const serviceCopy = async ({
 			CopySource: source,
 			Key: destination,
 			MetadataDirective: 'COPY', // Copies over metadata like contentType as well
+			CopySourceIfMatch: eTag,
+			CopySourceIfUnmodifiedSince: notModifiedSince,
+			ExpectedSourceBucketOwner: expectedSourceBucketOwner,
+			ExpectedBucketOwner: expectedBucketOwner,
 		},
 	);
 };
