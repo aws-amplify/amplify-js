@@ -53,6 +53,7 @@ export {
 	createManagedAuthConfigAdapter,
 	CreateManagedAuthConfigAdapterInput,
 } from './managedAuthConfigAdapter';
+export { createAmplifyAuthConfigAdapter } from './amplifyAuthConfigAdapter/createAmplifyAuthConfigAdapter';
 export {
 	GetLocationCredentials,
 	ListLocations,
