@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KeyValueStorageMethodValidator } from '@aws-amplify/core/internals/adapter-core';
+import { CognitoJwtVerifier } from 'aws-jwt-verify';
+
+import { TokenVerifierMap } from '../types';
 
 import { isValidCognitoToken } from './isValidCognitoToken';
 
@@ -9,6 +12,7 @@ interface CreateTokenValidatorInput {
 	userPoolId?: string;
 	userPoolClientId?: string;
 }
+
 /**
  * Creates a validator object for validating methods in a KeyValueStorage.
  */
@@ -16,23 +20,35 @@ export const createTokenValidator = ({
 	userPoolId,
 	userPoolClientId: clientId,
 }: CreateTokenValidatorInput): KeyValueStorageMethodValidator => {
+	const verifierMap: TokenVerifierMap = {};
+	if (userPoolId && clientId) {
+		verifierMap.id = CognitoJwtVerifier.create({
+			userPoolId,
+			tokenUse: 'id',
+			clientId,
+		});
+		verifierMap.access = CognitoJwtVerifier.create({
+			userPoolId,
+			tokenUse: 'access',
+			clientId,
+		});
+	}
+
 	return {
 		// validate access, id tokens
 		getItem: async (key: string, value: string): Promise<boolean> => {
-			const tokenType = key.includes('.accessToken')
-				? 'access'
+			const verifier = key.includes('.accessToken')
+				? verifierMap.access
 				: key.includes('.idToken')
-					? 'id'
+					? verifierMap.id
 					: null;
-			if (!tokenType) return true;
 
+			if (!verifier) return true;
 			if (!userPoolId || !clientId) return false;
 
 			return isValidCognitoToken({
-				clientId,
-				userPoolId,
-				tokenType,
 				token: value,
+				verifier,
 			});
 		},
 	};
