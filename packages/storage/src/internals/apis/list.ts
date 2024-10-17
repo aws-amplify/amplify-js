@@ -32,6 +32,7 @@ export function list(input: ListInput): Promise<ListOutput> {
 			subpathStrategy: input.options?.subpathStrategy,
 			useAccelerateEndpoint: input.options?.useAccelerateEndpoint,
 			listAll: input.options?.listAll,
+			expectedBucketOwner: input.options?.expectedBucketOwner,
 
 			// Pagination options
 			nextToken: (input as ListPaginateInput).options?.nextToken,

@@ -20,6 +20,7 @@ export const getUrl = (input: GetUrlInput) =>
 			expiresIn: input?.options?.expiresIn,
 			contentDisposition: input?.options?.contentDisposition,
 			contentType: input?.options?.contentType,
+			expectedBucketOwner: input?.options?.expectedBucketOwner,
 
 			// Advanced options
 			locationCredentialsProvider: input?.options?.locationCredentialsProvider,

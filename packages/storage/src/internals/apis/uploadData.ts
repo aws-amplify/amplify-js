@@ -23,6 +23,7 @@ export const uploadData = (input: UploadDataInput) => {
 			contentType: options?.contentType,
 			metadata: options?.metadata,
 			preventOverwrite: options?.preventOverwrite,
+			expectedBucketOwner: options?.expectedBucketOwner,
 
 			// Advanced options
 			locationCredentialsProvider: options?.locationCredentialsProvider,
