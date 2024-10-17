@@ -1,5 +1,6 @@
 {
 	"name": "api-extract-aws-clients",
+	"private": true,
 	"devDependencies": {
 		"@aws-sdk/client-pinpoint": "3.335.1",
 		"@aws-sdk/client-cognito-identity": "3.335.0",

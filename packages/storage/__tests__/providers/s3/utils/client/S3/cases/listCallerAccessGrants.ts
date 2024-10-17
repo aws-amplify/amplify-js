@@ -29,10 +29,11 @@ const listCallerAccessGrantsHappyCaseSingleGrant: ApiFunctionalTestCase<
 		GrantScope: 's3://my-bucket/path/to/',
 		MaxResults: 50,
 		NextToken: 'mockToken',
+		AllowedByApplication: true,
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/caller/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&maxResults=50&nextToken=mockToken',
+			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/caller/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&maxResults=50&nextToken=mockToken&allowedByApplication=true',
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({
@@ -83,10 +84,11 @@ const listCallerAccessGrantsHappyCaseMultipleGrants: ApiFunctionalTestCase<
 		GrantScope: 's3://my-bucket/path/to/',
 		MaxResults: 50,
 		NextToken: 'mockToken',
+		AllowedByApplication: true,
 	},
 	expect.objectContaining({
 		url: expect.objectContaining({
-			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/caller/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&maxResults=50&nextToken=mockToken',
+			href: 'https://accountid.s3-control.us-east-1.amazonaws.com/v20180820/accessgrantsinstance/caller/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F&maxResults=50&nextToken=mockToken&allowedByApplication=true',
 		}),
 		method: 'GET',
 		headers: expect.objectContaining({

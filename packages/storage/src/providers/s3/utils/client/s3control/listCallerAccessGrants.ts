@@ -51,7 +51,7 @@ const listCallerAccessGrantsSerializer = (
 		grantscope: input.GrantScope,
 		maxResults: input.MaxResults,
 		nextToken: input.NextToken,
-		allowedByApplication: input.AllowedByApplication
+		allowedByApplication: input.AllowedByApplication,
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();

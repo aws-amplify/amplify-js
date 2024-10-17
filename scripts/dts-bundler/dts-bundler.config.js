@@ -58,22 +58,22 @@ const config = {
 		preferredConfigPath: baseTsConfigPath,
 	},
 	entries: [
-		// {
-		// 	filePath: './pinpoint.d.ts',
-		// 	outFile: join(corePackageSrcClientsPath, 'Pinpoint', 'types.ts'),
-		// 	libraries: {
-		// 		inlinedLibraries: ['@aws-sdk/client-pinpoint'],
-		// 	},
-		// 	output: outputConfig,
-		// },
-		// {
-		// 	filePath: './cognito-identity.d.ts',
-		// 	outFile: join(corePackageSrcClientsPath, 'CognitoIdentity', 'types.ts'),
-		// 	libraries: {
-		// 		inlinedLibraries: ['@aws-sdk/client-cognito-identity'],
-		// 	},
-		// 	output: outputConfig,
-		// },
+		{
+			filePath: './pinpoint.d.ts',
+			outFile: join(corePackageSrcClientsPath, 'Pinpoint', 'types.ts'),
+			libraries: {
+				inlinedLibraries: ['@aws-sdk/client-pinpoint'],
+			},
+			output: outputConfig,
+		},
+		{
+			filePath: './cognito-identity.d.ts',
+			outFile: join(corePackageSrcClientsPath, 'CognitoIdentity', 'types.ts'),
+			libraries: {
+				inlinedLibraries: ['@aws-sdk/client-cognito-identity'],
+			},
+			output: outputConfig,
+		},
 		{
 			filePath: './s3.d.ts',
 			outFile: join(storagePackageSrcClientsPath, 'client', 's3data', 'types.ts'),
@@ -90,17 +90,17 @@ const config = {
 			},
 			output: outputConfig,
 		},
-		// {
-		// 	filePath: './cognito-identity-provider.d.ts',
-		// 	outFile: join(
-		// 		authPackageSrcClientsPath,
-		// 		'sdk.ts',
-		// 	),
-		// 	libraries: {
-		// 		inlinedLibraries: ['@aws-sdk/client-cognito-identity-provider'],
-		// 	},
-		// 	output: outputConfig,
-		// },
+		{
+			filePath: './cognito-identity-provider.d.ts',
+			outFile: join(
+				authPackageSrcClientsPath,
+				'sdk.ts',
+			),
+			libraries: {
+				inlinedLibraries: ['@aws-sdk/client-cognito-identity-provider'],
+			},
+			output: outputConfig,
+		},
 	],
 };
 
