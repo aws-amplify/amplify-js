@@ -35,4 +35,34 @@ describe('DefaultStorage', () => {
 		await defaultStorage.clear();
 		expect(defaultStorage.getItem(key)).resolves.toBeNull();
 	});
+
+	it('should fall back to alternative storage when localStorage is not accessible', async () => {
+		// Mock window.localStorage to throw an error
+		const originalLocalStorage = window.localStorage;
+		Object.defineProperty(window, 'localStorage', {
+			get: () => {
+				throw new Error('localStorage is not accessible');
+			},
+		});
+
+		console.error = jest.fn(); // Mock console.error
+
+		// Create a new DefaultStorage instance to trigger the fallback
+		const fallbackStorage = new DefaultStorage();
+
+		// Verify that the storage still works as expected
+		await fallbackStorage.setItem(key, value);
+		expect(await fallbackStorage.getItem(key)).toEqual(value);
+
+		// Verify that the error was logged
+		expect(console.error).toHaveBeenCalledWith(
+			'LocalStorage access failed:',
+			expect.any(Error),
+		);
+
+		// Restore the original localStorage
+		Object.defineProperty(window, 'localStorage', {
+			value: originalLocalStorage,
+		});
+	});
 });
