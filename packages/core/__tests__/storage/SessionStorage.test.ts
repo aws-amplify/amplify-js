@@ -3,7 +3,7 @@ import { SessionStorage } from '../../src/storage/SessionStorage';
 const key = 'k';
 const value = 'value';
 
-describe('sessionStorage', () => {
+describe('SessionStorage', () => {
 	let sessionStorage: SessionStorage;
 
 	beforeEach(() => {
@@ -36,5 +36,35 @@ describe('sessionStorage', () => {
 	it('should clear out storage', async () => {
 		await sessionStorage.clear();
 		expect(await sessionStorage.getItem(key)).toBeNull();
+	});
+
+	it('should fall back to alternative storage when sessionStorage is not accessible', async () => {
+		// Mock window.sessionStorage to throw an error
+		const originalSessionStorage = window.sessionStorage;
+		Object.defineProperty(window, 'sessionStorage', {
+			get: () => {
+				throw new Error('sessionStorage is not accessible');
+			},
+		});
+
+		console.error = jest.fn(); // Mock console.error
+
+		// Create a new SessionStorage instance to trigger the fallback
+		const fallbackStorage = new SessionStorage();
+
+		// Verify that the storage still works as expected
+		await fallbackStorage.setItem(key, value);
+		expect(await fallbackStorage.getItem(key)).toEqual(value);
+
+		// Verify that the error was logged
+		expect(console.error).toHaveBeenCalledWith(
+			'SessionStorage access failed:',
+			expect.any(Error),
+		);
+
+		// Restore the original sessionStorage
+		Object.defineProperty(window, 'sessionStorage', {
+			value: originalSessionStorage,
+		});
 	});
 });
