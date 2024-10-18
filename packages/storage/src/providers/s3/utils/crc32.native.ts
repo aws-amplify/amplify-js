@@ -4,6 +4,7 @@
 import crc32 from 'crc-32';
 
 import { hexToArrayBuffer, hexToBase64 } from './hexUtils';
+import { readFile } from './readFile';
 
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
 
@@ -52,13 +53,7 @@ export const calculateContentCRC32 = async (
 		while (offset < blob.size) {
 			const end = Math.min(offset + CHUNK_SIZE, blob.size);
 			const chunk = blob.slice(offset, end);
-			const arrayBuffer = await new Promise<ArrayBuffer>(resolve => {
-				const reader = new FileReader();
-				reader.onload = () => {
-					resolve(reader.result as ArrayBuffer);
-				};
-				reader.readAsArrayBuffer(chunk);
-			});
+			const arrayBuffer = await readFile(chunk);
 			const uint8Array = new Uint8Array(arrayBuffer);
 
 			internalSeed = crc32.buf(uint8Array, internalSeed) >>> 0;

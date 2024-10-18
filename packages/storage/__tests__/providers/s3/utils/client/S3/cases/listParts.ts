@@ -38,11 +38,13 @@ const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 			'<PartNumber>1</PartNumber>' +
 			'<ETag>etag1</ETag>' +
 			'<Size>5242880</Size>' +
+			'<ChecksumCRC32>checksum1</ChecksumCRC32>' +
 			'</Part>' +
 			'<Part>' +
 			'<PartNumber>2</PartNumber>' +
 			'<ETag>etag2</ETag>' +
 			'<Size>1024</Size>' +
+			'<ChecksumCRC32>checksum2</ChecksumCRC32>' +
 			'</Part>' +
 			'</ListPartsResult>',
 	},
@@ -53,12 +55,12 @@ const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 			{
 				PartNumber: 1,
 				ETag: 'etag1',
-				Size: 5242880,
+				ChecksumCRC32: 'checksum1',
 			},
 			{
 				PartNumber: 2,
 				ETag: 'etag2',
-				Size: 1024,
+				ChecksumCRC32: 'checksum2',
 			},
 		],
 	},
