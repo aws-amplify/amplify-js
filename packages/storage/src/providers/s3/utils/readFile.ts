@@ -3,6 +3,9 @@
 
 import { Buffer } from 'buffer';
 
+// The FileReader in React Native 0.71 did not support `readAsArrayBuffer`. This native implementation accommodates this
+// by attempting to use `readAsArrayBuffer` and changing the file reading strategy if it throws an error.
+// TODO: This file should be removable when we drop support for React Native 0.71
 export const readFile = (file: Blob): Promise<ArrayBuffer> =>
 	new Promise((resolve, reject) => {
 		const reader = new FileReader();
