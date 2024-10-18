@@ -4,18 +4,18 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { deleteObject } from '../../../../src/providers/s3/utils/client/s3data';
-import { remove } from '../../../../src/providers/s3/apis';
-import { StorageValidationErrorCode } from '../../../../src/errors/types/validation';
+import { deleteObject } from '../../../../../src/providers/s3/utils/client/s3data';
+import { remove } from '../../../../../src/providers/s3/apis/internal/remove';
+import { StorageValidationErrorCode } from '../../../../../src/errors/types/validation';
 import {
 	RemoveInput,
 	RemoveOutput,
 	RemoveWithPathInput,
 	RemoveWithPathOutput,
-} from '../../../../src/providers/s3/types';
+} from '../../../../../src/providers/s3/types';
 import './testUtils';
 
-jest.mock('../../../../src/providers/s3/utils/client/s3data');
+jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };
@@ -64,8 +64,7 @@ describe('remove API', () => {
 	});
 	describe('Happy Cases', () => {
 		describe('With Key', () => {
-			const removeWrapper = (input: RemoveInput): Promise<RemoveOutput> =>
-				remove(input);
+			const removeWrapper = (input: RemoveInput) => remove(Amplify, input);
 
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
@@ -102,10 +101,10 @@ describe('remove API', () => {
 				const accessLevel = options?.accessLevel ?? 'default';
 
 				it(`should remove object with ${accessLevel} accessLevel`, async () => {
-					const { key } = await removeWrapper({
+					const { key } = (await removeWrapper({
 						key: inputKey,
 						options,
-					});
+					})) as RemoveOutput;
 					expect(key).toEqual(inputKey);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
@@ -186,9 +185,8 @@ describe('remove API', () => {
 			});
 		});
 		describe('With Path', () => {
-			const removeWrapper = (
-				input: RemoveWithPathInput,
-			): Promise<RemoveWithPathOutput> => remove(input);
+			const removeWrapper = (input: RemoveWithPathInput) =>
+				remove(Amplify, input);
 			beforeEach(() => {
 				mockDeleteObject.mockImplementation(() => {
 					return {
@@ -214,7 +212,9 @@ describe('remove API', () => {
 						: inputPath({ identityId: defaultIdentityId });
 
 				it(`should remove object for the given path`, async () => {
-					const { path } = await removeWrapper({ path: inputPath });
+					const { path } = (await removeWrapper({
+						path: inputPath,
+					})) as RemoveWithPathOutput;
 					expect(path).toEqual(resolvedPath);
 					expect(deleteObject).toHaveBeenCalledTimes(1);
 					await expect(deleteObject).toBeLastCalledWithConfigAndInput(
@@ -310,7 +310,7 @@ describe('remove API', () => {
 			expect.assertions(3);
 			const key = 'wrongKey';
 			try {
-				await remove({ key });
+				await remove(Amplify, { key });
 			} catch (error: any) {
 				expect(deleteObject).toHaveBeenCalledTimes(1);
 				await expect(deleteObject).toBeLastCalledWithConfigAndInput(
@@ -326,7 +326,7 @@ describe('remove API', () => {
 		it('should throw InvalidStorageOperationInput error when the path is empty', async () => {
 			expect.assertions(1);
 			try {
-				await remove({ path: '' });
+				await remove(Amplify, { path: '' });
 			} catch (error: any) {
 				expect(error.name).toBe(
 					StorageValidationErrorCode.InvalidStorageOperationInput,

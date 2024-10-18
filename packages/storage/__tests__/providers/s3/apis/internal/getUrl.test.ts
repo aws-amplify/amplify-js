@@ -4,21 +4,19 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { getUrl } from '../../../../src/providers/s3/apis';
+import { getUrl } from '../../../../../src/providers/s3/apis/internal/getUrl';
 import {
 	getPresignedGetObjectUrl,
 	headObject,
-} from '../../../../src/providers/s3/utils/client/s3data';
+} from '../../../../../src/providers/s3/utils/client/s3data';
 import {
 	GetUrlInput,
-	GetUrlOutput,
 	GetUrlWithPathInput,
-	GetUrlWithPathOutput,
-} from '../../../../src/providers/s3/types';
+} from '../../../../../src/providers/s3/types';
 import './testUtils';
-import { BucketInfo } from '../../../../src/providers/s3/types/options';
+import { BucketInfo } from '../../../../../src/providers/s3/types/options';
 
-jest.mock('../../../../src/providers/s3/utils/client/s3data');
+jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };
@@ -47,8 +45,7 @@ const validBucketOwner = '111122223333';
 const invalidBucketOwner = '123';
 
 describe('getUrl test with key', () => {
-	const getUrlWrapper = (input: GetUrlInput): Promise<GetUrlOutput> =>
-		getUrl(input);
+	const getUrlWrapper = (input: GetUrlInput) => getUrl(Amplify, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -212,9 +209,7 @@ describe('getUrl test with key', () => {
 });
 
 describe('getUrl test with path', () => {
-	const getUrlWrapper = (
-		input: GetUrlWithPathInput,
-	): Promise<GetUrlWithPathOutput> => getUrl(input);
+	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(Amplify, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -492,9 +487,7 @@ describe('getUrl test with path', () => {
 });
 
 describe(`getURL with path and Expected Bucket Owner`, () => {
-	const getUrlWrapper = (
-		input: GetUrlWithPathInput,
-	): Promise<GetUrlWithPathOutput> => getUrl(input);
+	const getUrlWrapper = (input: GetUrlWithPathInput) => getUrl(Amplify, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,

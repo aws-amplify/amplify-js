@@ -4,22 +4,21 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { listObjectsV2 } from '../../../../src/providers/s3/utils/client/s3data';
-import { list } from '../../../../src/providers/s3';
+import { listObjectsV2 } from '../../../../../src/providers/s3/utils/client/s3data';
+import { list } from '../../../../../src/providers/s3/apis/internal/list';
 import {
 	ListAllInput,
-	ListAllOutput,
 	ListAllWithPathInput,
 	ListAllWithPathOutput,
 	ListPaginateInput,
 	ListPaginateOutput,
 	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
-} from '../../../../src/providers/s3/types';
+} from '../../../../../src/providers/s3/types';
 import './testUtils';
-import { ListObjectsV2CommandInput } from '../../../../src/providers/s3/utils/client/s3data/types';
+import { ListObjectsV2CommandInput } from '../../../../../src/providers/s3/utils/client/s3data/types';
 
-jest.mock('../../../../src/providers/s3/utils/client/s3data');
+jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };
@@ -109,11 +108,9 @@ describe('list API', () => {
 		});
 	});
 	describe('Prefix: Happy Cases:', () => {
-		const listAllWrapper = (input: ListAllInput): Promise<ListAllOutput> =>
-			list(input);
-		const listPaginatedWrapper = (
-			input: ListPaginateInput,
-		): Promise<ListPaginateOutput> => list(input);
+		const listAllWrapper = (input: ListAllInput) => list(Amplify, input);
+		const listPaginatedWrapper = (input: ListPaginateInput) =>
+			list(Amplify, input);
 		afterEach(() => {
 			jest.clearAllMocks();
 		});
@@ -173,10 +170,10 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				const response = await listPaginatedWrapper({
+				const response = (await listPaginatedWrapper({
 					prefix,
 					options,
-				});
+				})) as ListPaginateOutput;
 				const { key, eTag, size, lastModified } = response.items[0];
 				expect(response.items).toHaveLength(1);
 				expect({ key, eTag, size, lastModified }).toEqual({
@@ -211,14 +208,14 @@ describe('list API', () => {
 					};
 				});
 				const customPageSize = 5;
-				const response = await listPaginatedWrapper({
+				const response = (await listPaginatedWrapper({
 					prefix,
 					options: {
 						...options,
 						pageSize: customPageSize,
 						nextToken,
 					},
-				});
+				})) as ListPaginateOutput;
 				const { key, eTag, size, lastModified } = response.items[0];
 				expect(response.items).toHaveLength(1);
 				expect({ key, eTag, size, lastModified }).toEqual({
@@ -253,10 +250,10 @@ describe('list API', () => {
 						KeyCount: 0,
 					};
 				});
-				const response = await listPaginatedWrapper({
+				const response = (await listPaginatedWrapper({
 					prefix,
 					options,
-				});
+				})) as ListPaginateOutput;
 				expect(response.items).toEqual([]);
 
 				expect(response.nextToken).toEqual(undefined);
@@ -281,10 +278,10 @@ describe('list API', () => {
 					: '';
 				it(`should list all objects having three pages with ${pathMsg} path, ${accessLevelMsg} accessLevel ${targetIdentityIdMsg}`, async () => {
 					mockListObjectsV2ApiWithPages(3);
-					const result = await listAllWrapper({
+					const result = (await listAllWrapper({
 						prefix: inputPrefix,
 						options: { ...options, listAll: true },
-					});
+					})) as ListPaginateOutput;
 					const { key, eTag, lastModified, size } = result.items[0];
 					expect(result.items).toHaveLength(3);
 					expect({ key, eTag, lastModified, size }).toEqual({
@@ -396,12 +393,10 @@ describe('list API', () => {
 	});
 
 	describe('Path: Happy Cases:', () => {
-		const listAllWrapper = (
-			input: ListAllWithPathInput,
-		): Promise<ListAllWithPathOutput> => list(input);
-		const listPaginatedWrapper = (
-			input: ListPaginateWithPathInput,
-		): Promise<ListPaginateWithPathOutput> => list(input);
+		const listAllWrapper = (input: ListAllWithPathInput) =>
+			list(Amplify, input);
+		const listPaginatedWrapper = (input: ListPaginateWithPathInput) =>
+			list(Amplify, input);
 		const resolvePath = (
 			path: string | (({ identityId }: { identityId: string }) => string),
 		) =>
@@ -436,9 +431,9 @@ describe('list API', () => {
 						NextContinuationToken: nextToken,
 					};
 				});
-				const response = await listPaginatedWrapper({
+				const response = (await listPaginatedWrapper({
 					path: resolvedPath,
-				});
+				})) as ListPaginateWithPathOutput;
 				const { path, eTag, lastModified, size } = response.items[0];
 				expect(response.items).toHaveLength(1);
 				expect({ path, eTag, lastModified, size }).toEqual({
@@ -475,13 +470,13 @@ describe('list API', () => {
 					};
 				});
 				const customPageSize = 5;
-				const response = await listPaginatedWrapper({
+				const response = (await listPaginatedWrapper({
 					path: resolvedPath,
 					options: {
 						pageSize: customPageSize,
 						nextToken,
 					},
-				});
+				})) as ListPaginateWithPathOutput;
 				const { path, eTag, lastModified, size } = response.items[0];
 				expect(response.items).toHaveLength(1);
 				expect({ path, eTag, lastModified, size }).toEqual({
@@ -512,9 +507,9 @@ describe('list API', () => {
 						KeyCount: 0,
 					};
 				});
-				const response = await listPaginatedWrapper({
+				const response = (await listPaginatedWrapper({
 					path: resolvePath(path),
-				});
+				})) as ListPaginateWithPathOutput;
 				expect(response.items).toEqual([]);
 
 				expect(response.nextToken).toEqual(undefined);
@@ -535,10 +530,10 @@ describe('list API', () => {
 			async ({ path: inputPath }) => {
 				const resolvedPath = resolvePath(inputPath);
 				mockListObjectsV2ApiWithPages(3);
-				const result = await listAllWrapper({
+				const result = (await listAllWrapper({
 					path: resolvedPath,
 					options: { listAll: true },
-				});
+				})) as ListPaginateWithPathOutput;
 
 				const listResult = {
 					path: resolvedPath,
@@ -663,7 +658,7 @@ describe('list API', () => {
 				}),
 			);
 			try {
-				await list({});
+				await list(Amplify, {});
 			} catch (error: any) {
 				expect.assertions(3);
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -682,11 +677,11 @@ describe('list API', () => {
 		describe.each([
 			{
 				type: 'Prefix',
-				mockListFunction: () => list({ prefix: 'test/' }),
+				mockListFunction: () => list(Amplify, { prefix: 'test/' }),
 			},
 			{
 				type: 'Path',
-				mockListFunction: () => list({ path: 'test/' }),
+				mockListFunction: () => list(Amplify, { path: 'test/' }),
 			},
 		])('$type response validation check', ({ mockListFunction }) => {
 			it.each([
@@ -765,12 +760,13 @@ describe('list API', () => {
 		});
 
 		it('should return excludedSubpaths when "exclude" strategy is passed in the request', async () => {
-			const { items, excludedSubpaths } = await list({
+			const { items, excludedSubpaths } = (await list(Amplify, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: { strategy: 'exclude' },
 				},
-			});
+			})) as ListPaginateWithPathOutput;
+
 			expect(items).toHaveLength(3);
 			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -798,13 +794,13 @@ describe('list API', () => {
 				};
 			});
 
-			const { items, excludedSubpaths } = await list({
+			const { items, excludedSubpaths } = (await list(Amplify, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: { strategy: 'exclude' },
 					listAll: true,
 				},
-			});
+			})) as ListAllWithPathOutput;
 			expect(items).toHaveLength(3);
 			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -820,13 +816,13 @@ describe('list API', () => {
 		});
 
 		it('should return excludedSubpaths when "exclude" strategy and pageSize are passed in the request', async () => {
-			const { items, excludedSubpaths } = await list({
+			const { items, excludedSubpaths } = (await list(Amplify, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: { strategy: 'exclude' },
 					pageSize: 3,
 				},
-			});
+			})) as ListPaginateWithPathOutput;
 			expect(items).toHaveLength(3);
 			expect(excludedSubpaths).toEqual(expectedExcludedSubpaths);
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -842,7 +838,7 @@ describe('list API', () => {
 		});
 
 		it('should listObjectsV2 contain a custom Delimiter when "exclude" with delimiter is passed', async () => {
-			await list({
+			(await list(Amplify, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: {
@@ -850,7 +846,7 @@ describe('list API', () => {
 						delimiter: '-',
 					},
 				},
-			});
+			})) as ListPaginateWithPathOutput;
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
@@ -864,7 +860,7 @@ describe('list API', () => {
 		});
 
 		it('should listObjectsV2 contain an undefined Delimiter when "include" strategy is passed', async () => {
-			await list({
+			await list(Amplify, {
 				path: mockedPath,
 				options: {
 					subpathStrategy: {
@@ -885,7 +881,7 @@ describe('list API', () => {
 		});
 
 		it('should listObjectsV2 contain an undefined Delimiter when no options are passed', async () => {
-			await list({
+			await list(Amplify, {
 				path: mockedPath,
 			});
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
@@ -903,11 +899,9 @@ describe('list API', () => {
 
 	describe(`List with path and Expected Bucket Owner`, () => {
 		describe(`v1`, () => {
-			const listAllWrapper = (input: ListAllInput): Promise<ListAllOutput> =>
-				list(input);
-			const listPaginatedWrapper = (
-				input: ListPaginateInput,
-			): Promise<ListPaginateOutput> => list(input);
+			const listAllWrapper = (input: ListAllInput) => list(Amplify, input);
+			const listPaginatedWrapper = (input: ListPaginateInput) =>
+				list(Amplify, input);
 			const resolvePath = (
 				path: string | (({ identityId }: { identityId: string }) => string),
 			) =>
@@ -965,12 +959,10 @@ describe('list API', () => {
 		});
 
 		describe(`v2`, () => {
-			const listAllWrapper = (
-				input: ListAllWithPathInput,
-			): Promise<ListAllWithPathOutput> => list(input);
-			const listPaginatedWrapper = (
-				input: ListPaginateWithPathInput,
-			): Promise<ListPaginateWithPathOutput> => list(input);
+			const listAllWrapper = (input: ListAllWithPathInput) =>
+				list(Amplify, input);
+			const listPaginatedWrapper = (input: ListPaginateWithPathInput) =>
+				list(Amplify, input);
 			const resolvePath = (
 				path: string | (({ identityId }: { identityId: string }) => string),
 			) =>

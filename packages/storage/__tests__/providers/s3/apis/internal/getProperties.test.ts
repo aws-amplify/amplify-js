@@ -4,18 +4,18 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, StorageAccessLevel } from '@aws-amplify/core';
 
-import { headObject } from '../../../../src/providers/s3/utils/client/s3data';
-import { getProperties } from '../../../../src/providers/s3';
+import { headObject } from '../../../../../src/providers/s3/utils/client/s3data';
+import { getProperties } from '../../../../../src/providers/s3/apis/internal/getProperties';
 import {
 	GetPropertiesInput,
 	GetPropertiesOutput,
 	GetPropertiesWithPathInput,
 	GetPropertiesWithPathOutput,
-} from '../../../../src/providers/s3/types';
+} from '../../../../../src/providers/s3/types';
 import './testUtils';
-import { BucketInfo } from '../../../../src/providers/s3/types/options';
+import { BucketInfo } from '../../../../../src/providers/s3/types/options';
 
-jest.mock('../../../../src/providers/s3/utils/client/s3data');
+jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('@aws-amplify/core', () => ({
 	ConsoleLogger: jest.fn().mockImplementation(function ConsoleLogger() {
 		return { debug: jest.fn() };
@@ -55,9 +55,8 @@ const expectedResult = {
 };
 
 describe('getProperties with key', () => {
-	const getPropertiesWrapper = (
-		input: GetPropertiesInput,
-	): Promise<GetPropertiesOutput> => getProperties(input);
+	const getPropertiesWrapper = (input: GetPropertiesInput) =>
+		getProperties(Amplify, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -134,10 +133,10 @@ describe('getProperties with key', () => {
 					metadata,
 					size,
 					versionId,
-				} = await getPropertiesWrapper({
+				} = (await getPropertiesWrapper({
 					key: inputKey,
 					options,
-				});
+				})) as GetPropertiesOutput;
 				expect({
 					key,
 					contentType,
@@ -243,9 +242,8 @@ describe('getProperties with key', () => {
 });
 
 describe('Happy cases: With path', () => {
-	const getPropertiesWrapper = (
-		input: GetPropertiesWithPathInput,
-	): Promise<GetPropertiesWithPathOutput> => getProperties(input);
+	const getPropertiesWrapper = (input: GetPropertiesWithPathInput) =>
+		getProperties(Amplify, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
@@ -306,12 +304,12 @@ describe('Happy cases: With path', () => {
 					metadata,
 					size,
 					versionId,
-				} = await getPropertiesWrapper({
+				} = (await getPropertiesWrapper({
 					path: testPath,
 					options: {
 						useAccelerateEndpoint: true,
 					},
-				});
+				})) as GetPropertiesWithPathOutput;
 				expect({
 					path,
 					contentType,
@@ -416,9 +414,8 @@ describe('Happy cases: With path', () => {
 });
 
 describe(`getProperties with path and Expected Bucket Owner`, () => {
-	const getPropertiesWrapper = (
-		input: GetPropertiesWithPathInput,
-	): Promise<GetPropertiesWithPathOutput> => getProperties(input);
+	const getPropertiesWrapper = (input: GetPropertiesWithPathInput) =>
+		getProperties(Amplify, input);
 	beforeAll(() => {
 		mockFetchAuthSession.mockResolvedValue({
 			credentials,
