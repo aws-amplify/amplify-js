@@ -100,6 +100,9 @@
     "testPathIgnorePatterns": [
       "__tests__/helpers.ts"
     ],
+    "moduleNameMapper": {
+			"universal-cookie": "<rootDir>/../../node_modules/universal-cookie/cjs/index.js"
+	   	},
     "moduleFileExtensions": [
       "ts",
       "tsx",
