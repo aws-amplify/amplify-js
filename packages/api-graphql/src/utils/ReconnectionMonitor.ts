@@ -11,7 +11,7 @@ export enum ReconnectEvent {
 
 /**
  * Captures the reconnect event logic used to determine when to reconnect to PubSub providers.
- *   Reconnnect attempts are delayed by 5 seconds to let the interface settle.
+ *   Reconnect attempts are delayed by 5 seconds to let the interface settle.
  *   Attempting to reconnect only once creates unrecoverable states when the network state isn't
  *   supported by the browser, so this keeps retrying every minute until halted.
  */
