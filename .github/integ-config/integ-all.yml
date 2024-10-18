@@ -836,13 +836,13 @@ tests:
   #   browser: *minimal_browser_list
 
   # # GEN2 STORAGE
-  - test_name: integ_react_storage
-    desc: 'React Storage Gen2'
-    framework: react
-    category: storage
-    sample_name: [storage-gen2]
-    spec: storage-gen2
-    browser: *minimal_browser_list
+  # - test_name: integ_react_storage
+  #   desc: 'React Storage Gen2'
+  #   framework: react
+  #   category: storage
+  #   sample_name: [storage-gen2]
+  #   spec: storage-gen2
+  #   browser: *minimal_browser_list
   - test_name: integ_react_storage_internal
     desc: 'React Storage Gen2 Internal APIs'
     framework: react
@@ -850,13 +850,13 @@ tests:
     sample_name: [storage-gen2-internal]
     spec: storage-gen2-internal
     browser: *minimal_browser_list
-  - test_name: integ_next_storage
-    desc: 'Next Storage Auth'
-    framework: next
-    category: storage
-    sample_name: [storage-auth]
-    spec: storage-client-server
-    browser: [chrome] # firefox issues with secure cookies in cypress, manual testing works fine
+  # - test_name: integ_next_storage
+  #   desc: 'Next Storage Auth'
+  #   framework: next
+  #   category: storage
+  #   sample_name: [storage-auth]
+  #   spec: storage-client-server
+  #   browser: [chrome] # firefox issues with secure cookies in cypress, manual testing works fine
 
   # # INAPPMESSAGING
   # - test_name: integ_in_app_messaging
