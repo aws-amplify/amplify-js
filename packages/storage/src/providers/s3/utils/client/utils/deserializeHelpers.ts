@@ -214,7 +214,6 @@ export const deserializeCompletedPartList = (input: any[]): CompletedPart[] =>
 		map(item, {
 			PartNumber: ['PartNumber', deserializeNumber],
 			ETag: 'ETag',
-			Size: ['Size', deserializeNumber],
 			ChecksumCRC32: 'ChecksumCRC32',
 		}),
 	);
