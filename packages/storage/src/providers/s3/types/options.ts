@@ -51,6 +51,11 @@ interface CommonOptions {
 	useAccelerateEndpoint?: boolean;
 
 	bucket?: StorageBucket;
+
+	/**
+	 * The expected owner of the target bucket.
+	 */
+	expectedBucketOwner?: string;
 }
 
 /**
@@ -243,6 +248,7 @@ export type CopySourceWithKeyOptions = ReadOptions & {
 	bucket?: StorageBucket;
 	notModifiedSince?: Date;
 	eTag?: string;
+	expectedBucketOwner?: string;
 };
 
 /** @deprecated This may be removed in the next major version. */
@@ -250,16 +256,19 @@ export type CopyDestinationWithKeyOptions = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 	bucket?: StorageBucket;
+	expectedBucketOwner?: string;
 };
 
 export interface CopyWithPathSourceOptions {
 	bucket?: StorageBucket;
 	notModifiedSince?: Date;
 	eTag?: string;
+	expectedBucketOwner?: string;
 }
 
 export interface CopyWithPathDestinationOptions {
 	bucket?: StorageBucket;
+	expectedBucketOwner?: string;
 }
 
 /**

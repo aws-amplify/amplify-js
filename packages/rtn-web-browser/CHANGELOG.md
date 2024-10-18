@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.1.0...@aws-amplify/rtn-web-browser@1.1.1) (2024-09-30)
+
+### Bug Fixes
+
+- **rtn-web-browser:** prevent CustomTab to show in recent used app ([#13847](https://github.com/aws-amplify/amplify-js/issues/13847)) ([c586b7b](https://github.com/aws-amplify/amplify-js/commit/c586b7b1d243df4cdaf5a4fe15deeac545639b24))
+
 # [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-web-browser@1.0.31...@aws-amplify/rtn-web-browser@1.1.0) (2024-09-04)
 
 ### Features

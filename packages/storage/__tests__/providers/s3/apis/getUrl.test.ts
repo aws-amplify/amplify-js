@@ -43,6 +43,8 @@ const credentials: AWSCredentials = {
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
 const mockURL = new URL('https://google.com');
+const validBucketOwner = '111122223333';
+const invalidBucketOwner = '123';
 
 describe('getUrl test with key', () => {
 	const getUrlWrapper = (input: GetUrlInput): Promise<GetUrlOutput> =>
@@ -486,5 +488,95 @@ describe('getUrl test with path', () => {
 				expect(error.$metadata?.httpStatusCode).toBe(404);
 			}
 		});
+	});
+});
+
+describe(`getURL with path and Expected Bucket Owner`, () => {
+	const getUrlWrapper = (
+		input: GetUrlWithPathInput,
+	): Promise<GetUrlWithPathOutput> => getUrl(input);
+	beforeAll(() => {
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId: defaultIdentityId,
+		});
+		mockGetConfig.mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
+				},
+			},
+		});
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('should pass expectedBucketOwner to getPresignedGetObjectUrl', async () => {
+		const path = 'public/expectedbucketowner_test';
+
+		await getUrlWrapper({
+			path,
+			options: {
+				expiresIn: 300,
+				expectedBucketOwner: validBucketOwner,
+			},
+		});
+
+		expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+		await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+			{
+				credentials,
+				region,
+				expiration: expect.any(Number),
+			},
+			{
+				Bucket: bucket,
+				ExpectedBucketOwner: validBucketOwner,
+				Key: path,
+			},
+		);
+	});
+
+	it('getPresignedGetObjectUrl should not expose expectedBucketOwner when not provided', async () => {
+		const path = 'public/expectedbucketowner_test';
+
+		await getUrlWrapper({
+			path,
+			options: {
+				expiresIn: 300,
+			},
+		});
+
+		expect(getPresignedGetObjectUrl).toHaveBeenCalledTimes(1);
+		await expect(getPresignedGetObjectUrl).toBeLastCalledWithConfigAndInput(
+			{
+				credentials,
+				region,
+				expiration: expect.any(Number),
+			},
+			{
+				Bucket: bucket,
+				Key: path,
+			},
+		);
+	});
+
+	it('should throw error on invalid bucket owner id', async () => {
+		const path = 'public/expectedbucketowner_test';
+
+		await expect(
+			getUrlWrapper({
+				path,
+				options: {
+					expectedBucketOwner: invalidBucketOwner,
+				},
+			}),
+		).rejects.toThrow('Invalid AWS account ID was provided.');
+
+		expect(getPresignedGetObjectUrl).not.toHaveBeenCalled();
 	});
 });

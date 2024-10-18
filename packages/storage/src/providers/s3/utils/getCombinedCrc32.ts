@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageUploadDataPayload } from '../../../types';
-import { getDataChunker } from '../apis/uploadData/multipart/getDataChunker';
+import { getDataChunker } from '../apis/internal/uploadData/multipart/getDataChunker';
 
 import { calculateContentCRC32 } from './crc32';
 

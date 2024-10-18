@@ -7,6 +7,7 @@ import { StorageAction } from '@aws-amplify/core/internals/utils';
 import { RemoveInput, RemoveOutput, RemoveWithPathOutput } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../utils';
 import { deleteObject } from '../../utils/client/s3data';
@@ -27,6 +28,7 @@ export const remove = async (
 		input,
 		identityId,
 	);
+	validateBucketOwnerID(input.options?.expectedBucketOwner);
 
 	let finalKey;
 	if (inputType === STORAGE_INPUT_KEY) {
@@ -45,6 +47,7 @@ export const remove = async (
 		{
 			Bucket: bucket,
 			Key: finalKey,
+			ExpectedBucketOwner: input.options?.expectedBucketOwner,
 		},
 	);
 

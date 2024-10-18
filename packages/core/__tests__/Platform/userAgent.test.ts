@@ -2,8 +2,8 @@ import {
 	Platform,
 	getAmplifyUserAgent,
 	getAmplifyUserAgentObject,
+	sanitizeAmplifyVersion,
 } from '../../src/Platform';
-import { version } from '../../src/Platform/version';
 import { AuthAction, Category, Framework } from '../../src/Platform/types';
 import {
 	clearCache,
@@ -11,8 +11,10 @@ import {
 } from '../../src/Platform/detectFramework';
 import * as detection from '../../src/Platform/detection';
 import { getCustomUserAgent } from '../../src/Platform/customUserAgent';
+import { version } from '../../src/Platform/version';
 
 jest.mock('../../src/Platform/customUserAgent');
+const expectedVersion = version.replace(/\+.*/, '');
 
 describe('Platform test', () => {
 	const mockGetCustomUserAgent = getCustomUserAgent as jest.Mock;
@@ -36,10 +38,29 @@ describe('Platform test', () => {
 		});
 	});
 
+	describe('sanitizeAmplifyVersion', () => {
+		test('happy case with no special char', () => {
+			expect(sanitizeAmplifyVersion('6.6.0')).toEqual('6.6.0');
+		});
+
+		test('happy case with no special char +', () => {
+			expect(
+				sanitizeAmplifyVersion('6.6.4-unstable.ffa8a24.0+ffa8a24'),
+			).toEqual('6.6.4-unstable.ffa8a24.0');
+		});
+	});
+
 	describe('getAmplifyUserAgentObject test', () => {
 		test('without customUserAgentDetails', () => {
 			expect(getAmplifyUserAgentObject()).toStrictEqual([
-				['aws-amplify', version],
+				['aws-amplify', expectedVersion],
+				['framework', Framework.WebUnknown],
+			]);
+		});
+
+		test('should remove value after special char + in version', () => {
+			expect(getAmplifyUserAgentObject()).toStrictEqual([
+				['aws-amplify', expectedVersion],
 				['framework', Framework.WebUnknown],
 			]);
 		});
@@ -51,7 +72,7 @@ describe('Platform test', () => {
 					action: AuthAction.ConfirmSignIn,
 				}),
 			).toStrictEqual([
-				['aws-amplify', version],
+				['aws-amplify', expectedVersion],
 				[Category.Auth, AuthAction.ConfirmSignIn],
 				['framework', Framework.WebUnknown],
 			]);
@@ -68,7 +89,7 @@ describe('Platform test', () => {
 					action: AuthAction.ConfirmSignIn,
 				}),
 			).toStrictEqual([
-				['aws-amplify', version],
+				['aws-amplify', expectedVersion],
 				[Category.Auth, AuthAction.ConfirmSignIn],
 				['framework', Framework.WebUnknown],
 				['uiversion', '1.0.0'],
@@ -124,7 +145,7 @@ describe('Platform test', () => {
 });
 
 describe('detectFramework observers', () => {
-	let module;
+	let module: any;
 
 	beforeAll(() => {
 		jest.resetModules();
