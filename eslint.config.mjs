@@ -45,7 +45,6 @@ export default [
 			'packages/interactions/__tests__',
 			'packages/predictions/__tests__',
 			'packages/pubsub/__tests__',
-			'scripts',
 			...customClientDtsFiles,
 		],
 	},
