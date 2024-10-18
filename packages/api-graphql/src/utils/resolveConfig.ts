@@ -44,26 +44,3 @@ export const resolveConfig = (amplify: AmplifyClassV6) => {
 		region,
 	};
 };
-
-// /**
-//  * @internal
-//  */
-// export const resolveEventsConfig = (amplify: AmplifyClassV6) => {
-// 	const config = amplify.getConfig();
-
-// 	if (!config.API?.Events) {
-// 		logger.warn(
-// 			'The Events configuration is missing. This is likely due to Amplify.configure() not being called prior to using events.connect() or events.post().',
-// 		);
-// 	}
-
-// 	const { apiKey, endpoint, defaultAuthMode, region } =
-// 		config.API?.Events ?? {};
-
-// 	return {
-// 		apiKey,
-// 		defaultAuthMode,
-// 		appSyncGraphqlEndpoint: endpoint,
-// 		region,
-// 	};
-// };
