@@ -5,19 +5,16 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import { StorageAction } from '@aws-amplify/core/internals/utils';
 
 import {
-	ListAllInput,
 	ListAllOutput,
-	ListAllWithPathInput,
 	ListAllWithPathOutput,
 	ListOutputItem,
 	ListOutputItemWithPath,
-	ListPaginateInput,
 	ListPaginateOutput,
-	ListPaginateWithPathInput,
 	ListPaginateWithPathOutput,
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
 import {
@@ -34,6 +31,10 @@ import { getStorageUserAgentValue } from '../../utils/userAgent';
 import { logger } from '../../../../utils';
 import { DEFAULT_DELIMITER, STORAGE_INPUT_PREFIX } from '../../utils/constants';
 import { CommonPrefix } from '../../utils/client/s3data/types';
+import { IntegrityError } from '../../../../errors/IntegrityError';
+import { ListAllInput, ListPaginateInput } from '../../types/inputs';
+// TODO: Remove this interface when we move to public advanced APIs.
+import { ListInput as ListWithPathInputAndAdvancedOptions } from '../../../../internals/types/inputs';
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -45,11 +46,7 @@ interface ListInputArgs {
 
 export const list = async (
 	amplify: AmplifyClassV6,
-	input:
-		| ListAllInput
-		| ListPaginateInput
-		| ListAllWithPathInput
-		| ListPaginateWithPathInput,
+	input: ListAllInput | ListPaginateInput | ListWithPathInputAndAdvancedOptions,
 ): Promise<
 	| ListAllOutput
 	| ListPaginateOutput
@@ -68,6 +65,7 @@ export const list = async (
 		input,
 		identityId,
 	);
+	validateBucketOwnerID(options.expectedBucketOwner);
 	const isInputWithPrefix = inputType === STORAGE_INPUT_PREFIX;
 
 	// @ts-expect-error pageSize and nextToken should not coexist with listAll
@@ -86,6 +84,7 @@ export const list = async (
 		MaxKeys: options?.listAll ? undefined : options?.pageSize,
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 		Delimiter: getDelimiter(options),
+		ExpectedBucketOwner: options?.expectedBucketOwner,
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -160,6 +159,8 @@ const _listWithPrefix = async ({
 		listParamsClone,
 	);
 
+	validateEchoedElements(listParamsClone, response);
+
 	if (!response?.Contents) {
 		return {
 			items: [],
@@ -220,17 +221,21 @@ const _listWithPath = async ({
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
 	}
 
-	const {
-		Contents: contents,
-		NextContinuationToken: nextContinuationToken,
-		CommonPrefixes: commonPrefixes,
-	}: ListObjectsV2Output = await listObjectsV2(
+	const listOutput = await listObjectsV2(
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
 		},
 		listParamsClone,
 	);
+
+	validateEchoedElements(listParamsClone, listOutput);
+
+	const {
+		Contents: contents,
+		NextContinuationToken: nextContinuationToken,
+		CommonPrefixes: commonPrefixes,
+	}: ListObjectsV2Output = listOutput;
 
 	const excludedSubpaths =
 		commonPrefixes && mapCommonPrefixesToExcludedSubpaths(commonPrefixes);
@@ -271,5 +276,21 @@ const getDelimiter = (
 ): string | undefined => {
 	if (options?.subpathStrategy?.strategy === 'exclude') {
 		return options?.subpathStrategy?.delimiter ?? DEFAULT_DELIMITER;
+	}
+};
+
+const validateEchoedElements = (
+	listInput: ListObjectsV2Input,
+	listOutput: ListObjectsV2Output,
+) => {
+	const validEchoedParameters =
+		listInput.Bucket === listOutput.Name &&
+		listInput.Delimiter === listOutput.Delimiter &&
+		listInput.MaxKeys === listOutput.MaxKeys &&
+		listInput.Prefix === listOutput.Prefix &&
+		listInput.ContinuationToken === listOutput.ContinuationToken;
+
+	if (!validEchoedParameters) {
+		throw new IntegrityError();
 	}
 };

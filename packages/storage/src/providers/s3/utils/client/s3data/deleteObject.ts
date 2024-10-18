@@ -11,6 +11,7 @@ import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	deserializeBoolean,
 	map,
@@ -18,6 +19,7 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import type {
 	DeleteObjectCommandInput,
@@ -27,7 +29,7 @@ import { defaultConfig, parseXmlError } from './base';
 
 export type DeleteObjectInput = Pick<
 	DeleteObjectCommandInput,
-	'Bucket' | 'Key'
+	'Bucket' | 'Key' | 'ExpectedBucketOwner'
 >;
 
 export type DeleteObjectOutput = DeleteObjectCommandOutput;
@@ -39,10 +41,18 @@ const deleteObjectSerializer = (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
+	const headers = assignStringVariables({
+		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+	});
 
 	return {
 		method: 'DELETE',
-		headers: {},
+		headers,
 		url,
 	};
 };

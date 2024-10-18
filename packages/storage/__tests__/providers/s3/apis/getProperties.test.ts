@@ -42,6 +42,8 @@ const inputKey = 'key';
 const inputPath = 'path';
 const targetIdentityId = 'targetIdentityId';
 const defaultIdentityId = 'defaultIdentityId';
+const validBucketOwner = '111122223333';
+const invalidBucketOwner = '123';
 
 const expectedResult = {
 	size: 100,
@@ -410,5 +412,92 @@ describe('Happy cases: With path', () => {
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});
+	});
+});
+
+describe(`getProperties with path and Expected Bucket Owner`, () => {
+	const getPropertiesWrapper = (
+		input: GetPropertiesWithPathInput,
+	): Promise<GetPropertiesWithPathOutput> => getProperties(input);
+	beforeAll(() => {
+		mockFetchAuthSession.mockResolvedValue({
+			credentials,
+			identityId: defaultIdentityId,
+		});
+		mockGetConfig.mockReturnValue({
+			Storage: {
+				S3: {
+					bucket,
+					region,
+					buckets: { 'default-bucket': { bucketName: bucket, region } },
+				},
+			},
+		});
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('should pass expectedBucketOwner to headObject', async () => {
+		const path = 'public/expectedbucketowner_test';
+
+		await getPropertiesWrapper({
+			path,
+			options: {
+				expectedBucketOwner: validBucketOwner,
+			},
+		});
+
+		expect(headObject).toHaveBeenCalledTimes(1);
+		await expect(headObject).toBeLastCalledWithConfigAndInput(
+			{
+				credentials,
+				region,
+				userAgentValue: expect.any(String),
+			},
+			{
+				Bucket: bucket,
+				ExpectedBucketOwner: validBucketOwner,
+				Key: path,
+			},
+		);
+	});
+
+	it('headObject should not expose expectedBucketOwner when not provided', async () => {
+		const path = 'public/expectedbucketowner_test';
+
+		await getPropertiesWrapper({
+			path,
+			options: {},
+		});
+
+		expect(headObject).toHaveBeenCalledTimes(1);
+		await expect(headObject).toBeLastCalledWithConfigAndInput(
+			{
+				credentials,
+				region,
+				userAgentValue: expect.any(String),
+			},
+			{
+				Bucket: bucket,
+				Key: path,
+			},
+		);
+	});
+
+	it('should throw error on invalid bucket owner id', async () => {
+		const path = 'public/expectedbucketowner_test';
+
+		await expect(
+			getPropertiesWrapper({
+				path,
+				options: {
+					expectedBucketOwner: invalidBucketOwner,
+				},
+			}),
+		).rejects.toThrow('Invalid AWS account ID was provided.');
+
+		expect(headObject).not.toHaveBeenCalled();
 	});
 });

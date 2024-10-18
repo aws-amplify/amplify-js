@@ -49,6 +49,7 @@ export const listCallerAccessGrants = async (
 				AccountId: accountId,
 				NextToken: nextToken,
 				MaxResults: pageSize ?? MAX_PAGE_SIZE,
+				AllowedByApplication: true,
 			},
 		);
 

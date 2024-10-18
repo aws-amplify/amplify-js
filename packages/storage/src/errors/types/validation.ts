@@ -17,6 +17,7 @@ export enum StorageValidationErrorCode {
 	InvalidCopyOperationStorageBucket = 'InvalidCopyOperationStorageBucket',
 	InvalidStorageOperationPrefixInput = 'InvalidStorageOperationPrefixInput',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
+	InvalidAWSAccountID = 'InvalidAWSAccountID',
 	InvalidStoragePathInput = 'InvalidStoragePathInput',
 	InvalidUploadSource = 'InvalidUploadSource',
 	ObjectIsTooLarge = 'ObjectIsTooLarge',
@@ -68,6 +69,9 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.InvalidStorageOperationInput]: {
 		message:
 			'Path or key parameter must be specified in the input. Both can not be specified at the same time.',
+	},
+	[StorageValidationErrorCode.InvalidAWSAccountID]: {
+		message: 'Invalid AWS account ID was provided.',
 	},
 	[StorageValidationErrorCode.InvalidStorageOperationPrefixInput]: {
 		message: 'Both path and prefix can not be specified at the same time.',

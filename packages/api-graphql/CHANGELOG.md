@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.4.0...@aws-amplify/api-graphql@4.4.1) (2024-10-15)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.3.3...@aws-amplify/api-graphql@4.4.0) (2024-10-05)
+
+### Features
+
+- Add ability to override api user agent with granular actions ([d95573e](https://github.com/aws-amplify/amplify-js/commit/d95573e071870cd824268082ad0e0730d6699a36))
+
 ## [4.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.3.2...@aws-amplify/api-graphql@4.3.3) (2024-09-30)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

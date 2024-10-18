@@ -29,7 +29,14 @@ import type {
 } from './types';
 import { defaultConfig, parseXmlError } from './base';
 
-export type ListCallerAccessGrantsInput = ListCallerAccessGrantsCommandInput;
+export type ListCallerAccessGrantsInput = Pick<
+	ListCallerAccessGrantsCommandInput,
+	| 'AccountId'
+	| 'AllowedByApplication'
+	| 'GrantScope'
+	| 'NextToken'
+	| 'MaxResults'
+>;
 
 export type ListCallerAccessGrantsOutput = ListCallerAccessGrantsCommandOutput;
 
@@ -44,11 +51,12 @@ const listCallerAccessGrantsSerializer = (
 		grantscope: input.GrantScope,
 		maxResults: input.MaxResults,
 		nextToken: input.NextToken,
+		allowedByApplication: input.AllowedByApplication,
 	});
 	const url = new AmplifyUrl(endpoint.url.toString());
 	url.search = new AmplifyUrlSearchParams(query).toString();
 
-	// Ref: NA
+	// Ref: https://docs.aws.amazon.com/AmazonS3/latest/API/API_control_ListCallerAccessGrants.html
 	url.pathname = '/v20180820/accessgrantsinstance/caller/grants';
 
 	return {

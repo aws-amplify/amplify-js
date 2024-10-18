@@ -16,6 +16,7 @@ import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 
 import {
 	CONTENT_SHA256_HEADER,
+	assignStringVariables,
 	buildStorageServiceError,
 	deserializeBoolean,
 	deserializeMetadata,
@@ -26,6 +27,7 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import {
 	S3EndpointResolverOptions,
@@ -47,6 +49,7 @@ export type GetObjectInput = Pick<
 	| 'Range'
 	| 'ResponseContentDisposition'
 	| 'ResponseContentType'
+	| 'ExpectedBucketOwner'
 >;
 
 export type GetObjectOutput = GetObjectCommandOutput;
@@ -58,11 +61,19 @@ const getObjectSerializer = async (
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
 
 	return {
 		method: 'GET',
 		headers: {
 			...(input.Range && { Range: input.Range }),
+			...assignStringVariables({
+				'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			}),
 		},
 		url,
 	};
