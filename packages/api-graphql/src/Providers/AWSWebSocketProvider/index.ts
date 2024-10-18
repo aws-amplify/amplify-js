@@ -70,6 +70,11 @@ interface ParsedMessagePayload {
 	};
 }
 
+interface AWSWebSocketProviderArgs {
+	providerName: string;
+	wsProtocolName: string;
+}
+
 export abstract class AWSWebSocketProvider {
 	protected logger: ConsoleLogger;
 	protected subscriptionObserverMap = new Map<string, ObserverQuery>();
@@ -84,9 +89,11 @@ export abstract class AWSWebSocketProvider {
 	private readonly connectionStateMonitor = new ConnectionStateMonitor();
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionStateMonitorSubscription: SubscriptionLike;
+	private readonly wsProtocolName: string;
 
-	constructor(providerName: string) {
-		this.logger = new ConsoleLogger(providerName);
+	constructor(args: AWSWebSocketProviderArgs) {
+		this.logger = new ConsoleLogger(args.providerName);
+		this.wsProtocolName = args.wsProtocolName;
 
 		this.connectionStateMonitorSubscription =
 			this._startConnectionStateMonitoring();
@@ -774,7 +781,7 @@ export abstract class AWSWebSocketProvider {
 	private async _openConnection(awsRealTimeUrl: string, subprotocol: string) {
 		return new Promise<void>((resolve, reject) => {
 			const newSocket = this._getNewWebSocket(awsRealTimeUrl, [
-				'graphql-ws',
+				this.wsProtocolName,
 				subprotocol,
 			]);
 

@@ -41,11 +41,15 @@ interface DataPayload {
 }
 
 const PROVIDER_NAME = 'AWSAppSyncRealTimeProvider';
+const WS_PROTOCOL_NAME = 'graphql-ws';
 
-// get rid of generic. Just map the options from Gogi-specific to general
 export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 	constructor() {
-		super(PROVIDER_NAME);
+		super({ providerName: PROVIDER_NAME, wsProtocolName: WS_PROTOCOL_NAME });
+	}
+
+	getProviderName() {
+		return PROVIDER_NAME;
 	}
 
 	public subscribe(
@@ -53,10 +57,6 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 		customUserAgentDetails?: CustomUserAgentDetails,
 	) {
 		return super.subscribe(options, customUserAgentDetails);
-	}
-
-	getProviderName() {
-		return PROVIDER_NAME;
 	}
 
 	protected async _prepareSubscriptionPayload({

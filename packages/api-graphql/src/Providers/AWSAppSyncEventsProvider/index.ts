@@ -42,10 +42,15 @@ interface DataResponse {
 }
 
 const PROVIDER_NAME = 'AWSAppSyncEventsProvider';
+const WS_PROTOCOL_NAME = 'aws-appsync-event-ws';
 
 class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	constructor() {
-		super(PROVIDER_NAME);
+		super({ providerName: PROVIDER_NAME, wsProtocolName: WS_PROTOCOL_NAME });
+	}
+
+	getProviderName() {
+		return PROVIDER_NAME;
 	}
 
 	public async connect(options: AWSAppSyncEventProviderOptions) {
