@@ -40,6 +40,7 @@ export type PutObjectInput = Pick<
 	| 'Tagging'
 	| 'ChecksumCRC32'
 	| 'ExpectedBucketOwner'
+	| 'IfNoneMatch'
 >;
 
 export type PutObjectOutput = Pick<
@@ -62,6 +63,7 @@ const putObjectSerializer = async (
 			'content-md5': input.ContentMD5,
 			'x-amz-checksum-crc32': input.ChecksumCRC32,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			'If-None-Match': input.IfNoneMatch,
 		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());

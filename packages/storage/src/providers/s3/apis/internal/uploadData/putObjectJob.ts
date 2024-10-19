@@ -23,8 +23,6 @@ import {
 import { calculateContentCRC32 } from '../../../utils/crc32';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 
-import { validateObjectNotExists } from './validateObjectNotExists';
-
 /**
  * The input interface for UploadData API with only the options needed for single part upload.
  * It supports both legacy Gen 1 input with key and Gen2 input with path. It also support additional
@@ -81,13 +79,6 @@ export const putObjectJob =
 				? await calculateContentMd5(data)
 				: undefined;
 
-		if (preventOverwrite) {
-			await validateObjectNotExists(s3Config, {
-				Bucket: bucket,
-				Key: finalKey,
-			});
-		}
-
 		const { ETag: eTag, VersionId: versionId } = await putObject(
 			{
 				...s3Config,
@@ -106,6 +97,7 @@ export const putObjectJob =
 				ContentMD5: contentMD5,
 				ChecksumCRC32: checksumCRC32?.checksum,
 				ExpectedBucketOwner: expectedBucketOwner,
+				IfNoneMatch: preventOverwrite ? '*' : undefined,
 			},
 		);
 
