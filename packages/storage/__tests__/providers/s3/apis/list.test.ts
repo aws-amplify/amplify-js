@@ -507,6 +507,47 @@ describe('list API', () => {
 		);
 
 		it.each(pathTestCases)(
+			'should list objects with CommonPrefix and nextToken in results with custom path: $path',
+			async ({ path }) => {
+				mockListObject.mockImplementationOnce(() => {
+					return {
+						CommonPrefixes: [
+							{ Prefix: 'photos/2023/' },
+							{ Prefix: 'photos/2024/' },
+							{ Prefix: 'photos/2025/' },
+							{ Prefix: 'photos/2026/' },
+							{ Prefix: 'photos/2027/' },
+							{ Prefix: 'photos/time-traveling/' },
+						],
+						NextContinuationToken: 'yup_there_is_more',
+					};
+				});
+				const response = await listPaginatedWrapper({
+					path: resolvePath(path),
+				});
+				expect(response.excludedSubpaths).toEqual([
+					'photos/2023/',
+					'photos/2024/',
+					'photos/2025/',
+					'photos/2026/',
+					'photos/2027/',
+					'photos/time-traveling/',
+				]);
+
+				expect(response.nextToken).toEqual('yup_there_is_more');
+				expect(listObjectsV2).toHaveBeenCalledTimes(1);
+				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					listObjectClientConfig,
+					{
+						Bucket: bucket,
+						MaxKeys: 1000,
+						Prefix: resolvePath(path),
+					},
+				);
+			},
+		);
+
+		it.each(pathTestCases)(
 			'should list all objects having three pages with custom path: $path',
 			async ({ path: inputPath }) => {
 				const resolvedPath = resolvePath(inputPath);

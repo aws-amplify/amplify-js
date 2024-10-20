@@ -588,7 +588,8 @@ export abstract class StorageCacheCommon {
 		try {
 			const keys = await this.getAllKeys();
 			for (const key of keys) {
-				await this.getStorage().removeItem(key);
+				const prefixedKey = `${this.config.keyPrefix}${key}`;
+				await this.getStorage().removeItem(prefixedKey);
 			}
 		} catch (e) {
 			logger.warn(`clear failed! ${e}`);
