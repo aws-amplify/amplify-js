@@ -94,7 +94,7 @@ const config = {
 			filePath: './cognito-identity-provider.d.ts',
 			outFile: join(
 				authPackageSrcClientsPath,
-				'Sdk.ts',
+				'sdk.ts',
 			),
 			libraries: {
 				inlinedLibraries: ['@aws-sdk/client-cognito-identity-provider'],
