@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AmplifyErrorCode } from '../../../types';
 import { ErrorParser, HttpResponse } from '../../types';
 
 import { isClockSkewError } from './isClockSkewError';
@@ -55,7 +56,11 @@ const isThrottlingError = (statusCode?: number, errorCode?: string) =>
 	(!!errorCode && THROTTLING_ERROR_CODES.includes(errorCode));
 
 const isConnectionError = (error?: unknown) =>
-	(error as Error)?.name === 'Network error';
+	[
+		AmplifyErrorCode.NetworkError,
+		// TODO(vNext): unify the error code `ERR_NETWORK` used by the Storage XHR handler
+		'ERR_NETWORK',
+	].includes((error as Error)?.name);
 
 const isServerSideError = (statusCode?: number, errorCode?: string) =>
 	(!!statusCode && [500, 502, 503, 504].includes(statusCode)) ||

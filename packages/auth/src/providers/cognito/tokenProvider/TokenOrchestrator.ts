@@ -9,6 +9,7 @@ import {
 } from '@aws-amplify/core';
 import {
 	AMPLIFY_SYMBOL,
+	AmplifyErrorCode,
 	assertTokenProviderConfig,
 	isBrowser,
 	isTokenExpired,
@@ -169,7 +170,7 @@ export class TokenOrchestrator implements AuthTokenOrchestrator {
 
 	private handleErrors(err: unknown) {
 		assertServiceError(err);
-		if (err.message !== 'Network error') {
+		if (err.name !== AmplifyErrorCode.NetworkError) {
 			// TODO(v6): Check errors on client
 			this.clearTokens();
 		}
