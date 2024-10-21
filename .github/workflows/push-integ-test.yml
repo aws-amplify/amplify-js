@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - replace-with-your-branch
+      - opt-in-checksum-zheallan
 
 jobs:
   e2e:
