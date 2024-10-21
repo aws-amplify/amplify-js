@@ -8,7 +8,7 @@ concurrency:
 on:
   push:
     branches:
-      - test/email-mfa-integ
+      - feat/email-mfa
 
 jobs:
   e2e:
