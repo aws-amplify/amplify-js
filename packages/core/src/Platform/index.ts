@@ -10,8 +10,12 @@ import { getCustomUserAgent } from './customUserAgent';
 
 const BASE_USER_AGENT = `aws-amplify`;
 
+/** Sanitize Amplify version string be removing special character + and character post the special character  */
+export const sanitizeAmplifyVersion = (amplifyVersion: string) =>
+	amplifyVersion.replace(/\+.*/, '');
+
 class PlatformBuilder {
-	userAgent = `${BASE_USER_AGENT}/${version}`;
+	userAgent = `${BASE_USER_AGENT}/${sanitizeAmplifyVersion(version)}`;
 	get framework() {
 		return detectFramework();
 	}
@@ -34,7 +38,10 @@ export const getAmplifyUserAgentObject = ({
 	category,
 	action,
 }: CustomUserAgentDetails = {}): AWSUserAgent => {
-	const userAgent: AWSUserAgent = [[BASE_USER_AGENT, version]];
+	const userAgent: AWSUserAgent = [
+		[BASE_USER_AGENT, sanitizeAmplifyVersion(version)],
+	];
+
 	if (category) {
 		userAgent.push([category, action]);
 	}

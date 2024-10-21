@@ -180,6 +180,22 @@ describe('uploadData with path', () => {
 			},
 		);
 
+		it('should use putObject for 0 bytes data (e.g. create a folder)', () => {
+			const testInput = {
+				path: 'test-path',
+				data: '', // 0 bytes
+			};
+
+			uploadData(testInput);
+
+			expect(mockPutObjectJob).toHaveBeenCalledWith(
+				testInput,
+				expect.any(AbortSignal),
+				expect.any(Number),
+			);
+			expect(mockGetMultipartUploadHandlers).not.toHaveBeenCalled();
+		});
+
 		it('should use uploadTask', async () => {
 			mockPutObjectJob.mockReturnValueOnce('putObjectJob');
 			mockCreateUploadTask.mockReturnValueOnce('uploadTask');
