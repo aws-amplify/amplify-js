@@ -1,9 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
-import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
-
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
@@ -17,10 +14,6 @@ import { putObjectJob } from '../../../../../src/providers/s3/apis/internal/uplo
 import '../testUtils';
 import { UploadDataChecksumAlgorithm } from '../../../../../src/providers/s3/types/options';
 import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../src/providers/s3/utils/constants';
-
-global.Blob = BlobPolyfill as any;
-global.File = FilePolyfill as any;
-global.WritableStream = WritableStreamPolyfill as any;
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../src/providers/s3/utils', () => {
@@ -140,6 +133,8 @@ describe('putObjectJob with key', () => {
 					ContentDisposition: contentDisposition,
 					ContentEncoding: contentEncoding,
 					Metadata: mockMetadata,
+
+					// ChecksumCRC32 is set when putObjectJob() is called with checksumAlgorithm: 'crc-32'
 					ChecksumCRC32:
 						checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
 							? 'rfPzYw=='
@@ -334,6 +329,8 @@ describe('putObjectJob with path', () => {
 					ContentDisposition: contentDisposition,
 					ContentEncoding: contentEncoding,
 					Metadata: mockMetadata,
+
+					// ChecksumCRC32 is set when putObjectJob() is called with checksumAlgorithm: 'crc-32'
 					ChecksumCRC32:
 						checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
 							? 'rfPzYw=='
