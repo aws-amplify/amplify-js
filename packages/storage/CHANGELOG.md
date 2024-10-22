@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.10...@aws-amplify/storage@6.6.11) (2024-10-21)
+
+### Bug Fixes
+
+- **storage:** multipart upload is firing on 0 bytes data ([#13927](https://github.com/aws-amplify/amplify-js/issues/13927)) ([952f64b](https://github.com/aws-amplify/amplify-js/commit/952f64bd874b6a481a754ebfb15eaa42a272d027))
+- **storage:** nextToken is not surfaced when list result contain only CommonPrefix ([#13933](https://github.com/aws-amplify/amplify-js/issues/13933)) ([bf58ebc](https://github.com/aws-amplify/amplify-js/commit/bf58ebc391dacf529aa1127e737c51b64d2fb96e))
+
 ## [6.6.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@6.6.9...@aws-amplify/storage@6.6.10) (2024-10-15)
 
 **Note:** Version bump only for package @aws-amplify/storage
