@@ -17,7 +17,7 @@ module.exports = {
 	},
 	moduleNameMapper: {
 		'universal-cookie':
-			'<rootDir>/../../node_modules/universal-cookie/cjs/index.js',
+		'<rootDir>/../../node_modules/universal-cookie/cjs/index.js',
 	},
 	coveragePathIgnorePatterns: ['/node_modules/', 'dist', 'lib', 'lib-esm'],
 };
