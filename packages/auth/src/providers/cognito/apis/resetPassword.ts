@@ -22,6 +22,7 @@ import { createCognitoUserPoolEndpointResolver } from '../factories';
 /**
  * Resets a user's password.
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/auth/manage-passwords/#reset-password}
  * @param input -  The ResetPasswordInput object.
  * @returns ResetPasswordOutput
  * @throws -{@link ForgotPasswordException }

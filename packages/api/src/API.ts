@@ -7,6 +7,7 @@ import { Amplify } from '@aws-amplify/core';
 /**
  * Generates an API client that can work with models or raw GraphQL
  *
+ * {@link https://docs.amplify.aws/gen1/react/build-a-backend/graphqlapi/set-up-graphql-api/#add-your-first-record}
  * @returns {@link V6Client}
  * @throws {@link Error} - Throws error when client cannot be generated due to configuration issues.
  */
