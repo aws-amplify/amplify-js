@@ -66,12 +66,13 @@
       "name": "API (GraphQL client)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, GraphQLAPI }",
-      "limit": "96.50 kB"
+      "limit": "97.00 kB"
     }
   ],
   "jest": {
     "moduleNameMapper": {
-      "axios": "axios/dist/node/axios.cjs"
+      "axios": "axios/dist/node/axios.cjs",
+      "universal-cookie": "<rootDir>/../../node_modules/universal-cookie/cjs/index.js"
     },
     "globals": {
       "ts-jest": {

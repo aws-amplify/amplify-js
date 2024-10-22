@@ -5,6 +5,10 @@ module.exports = {
 		'^.+\\.(ts|tsx)$': 'ts-jest',
 	},
 	testMatch: ['**/__tests__/**/*.native.+(test|spec).[jt]s'],
+	moduleNameMapper: {
+		'universal-cookie':
+		'<rootDir>/../../node_modules/universal-cookie/cjs/index.js',
+	},
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 	testEnvironment: 'jsdom',
 	collectCoverageFrom: ['**/src/**/*.native.*'],

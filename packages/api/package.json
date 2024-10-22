@@ -68,12 +68,13 @@
 			"name": "API (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, API }",
-			"limit": "97.28 kB"
+			"limit": "97.75 kB"
 		}
 	],
 	"jest": {
 		"moduleNameMapper": {
-			"axios": "axios/dist/node/axios.cjs"
+			"axios": "axios/dist/node/axios.cjs",
+			"universal-cookie": "<rootDir>/../../node_modules/universal-cookie/cjs/index.js"
 		},
 		"globals": {
 			"ts-jest": {

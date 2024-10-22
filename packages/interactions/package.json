@@ -82,6 +82,9 @@
 			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
 		},
 		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"moduleNameMapper": {
+			"universal-cookie": "<rootDir>/../../node_modules/universal-cookie/cjs/index.js"
+		},
 		"moduleFileExtensions": [
 			"ts",
 			"tsx",

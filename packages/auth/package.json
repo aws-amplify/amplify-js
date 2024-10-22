@@ -60,7 +60,7 @@
       "name": "Auth (top-level class)",
       "path": "./lib-esm/index.js",
       "import": "{ Amplify, Auth }",
-      "limit": "55.25 kB"
+      "limit": "55.80 kB"
     }
   ],
   "jest": {
@@ -84,6 +84,9 @@
     },
     "preset": "ts-jest",
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleNameMapper": {
+      "universal-cookie": "<rootDir>/../../node_modules/universal-cookie/cjs/index.js"
+    },
     "moduleFileExtensions": [
       "ts",
       "tsx",
