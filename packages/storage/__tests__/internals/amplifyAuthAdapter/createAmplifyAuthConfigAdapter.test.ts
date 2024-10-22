@@ -3,7 +3,7 @@
 
 import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 
-import { generateLocationsFromPaths } from '../../../src/internals/amplifyAuthConfigAdapter/generateLocationsFromPaths';
+import { resolveLocationsForCurrentSession } from '../../../src/internals/amplifyAuthConfigAdapter/resolveLocationsForCurrentSession';
 import { createAmplifyAuthConfigAdapter } from '../../../src/internals';
 
 jest.mock('@aws-amplify/core', () => ({
@@ -18,7 +18,7 @@ jest.mock('@aws-amplify/core', () => ({
 	fetchAuthSession: jest.fn(),
 }));
 jest.mock(
-	'../../../src/internals/amplifyAuthConfigAdapter/generateLocationsFromPaths',
+	'../../../src/internals/amplifyAuthConfigAdapter/resolveLocationsForCurrentSession',
 );
 
 const credentials = {
@@ -30,7 +30,8 @@ const identityId = 'identityId';
 
 const mockGetConfig = jest.mocked(Amplify.getConfig);
 const mockFetchAuthSession = fetchAuthSession as jest.Mock;
-const mockGenerateLocationsFromPaths = generateLocationsFromPaths as jest.Mock;
+const mockResolveLocationsFromCurrentSession =
+	resolveLocationsForCurrentSession as jest.Mock;
 
 describe('createAmplifyAuthConfigAdapter', () => {
 	beforeEach(() => {
@@ -94,7 +95,7 @@ describe('createAmplifyAuthConfigAdapter', () => {
 		mockGetConfig.mockReturnValue({
 			Storage: { S3: { buckets: mockBuckets } },
 		});
-		mockGenerateLocationsFromPaths.mockReturnValue([
+		mockResolveLocationsFromCurrentSession.mockReturnValue([
 			{
 				type: 'PREFIX',
 				permission: ['read', 'write'],

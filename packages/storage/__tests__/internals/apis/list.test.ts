@@ -4,7 +4,6 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 
 import { list as advancedList } from '../../../src/internals';
 import { list as listInternal } from '../../../src/providers/s3/apis/internal/list';
-import { ListAllWithPathOutput } from '../../../src';
 
 jest.mock('../../../src/providers/s3/apis/internal/list');
 const mockedListInternal = jest.mocked(listInternal);
@@ -14,11 +13,12 @@ describe('list (internals)', () => {
 		jest.clearAllMocks();
 		mockedListInternal.mockResolvedValue({
 			items: [],
-		} as ListAllWithPathOutput);
+		});
 	});
 
 	it('should pass advanced option locationCredentialsProvider to internal list', async () => {
 		const useAccelerateEndpoint = true;
+		const expectedBucketOwner = '012345678901';
 		const bucket = { bucketName: 'bucket', region: 'us-east-1' };
 		const locationCredentialsProvider = async () => ({
 			credentials: {
@@ -33,6 +33,7 @@ describe('list (internals)', () => {
 			options: {
 				useAccelerateEndpoint,
 				bucket,
+				expectedBucketOwner,
 				locationCredentialsProvider,
 			},
 		});
@@ -44,6 +45,7 @@ describe('list (internals)', () => {
 				options: {
 					useAccelerateEndpoint,
 					bucket,
+					expectedBucketOwner,
 					locationCredentialsProvider,
 				},
 			},

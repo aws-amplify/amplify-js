@@ -9,6 +9,7 @@ import { StorageValidationErrorCode } from '../../../../errors/types/validation'
 import { getPresignedGetObjectUrl } from '../../utils/client/s3data';
 import {
 	resolveS3ConfigAndInput,
+	validateBucketOwnerID,
 	validateStorageOperationInput,
 } from '../../utils';
 import { assertValidationError } from '../../../../errors/utils/assertValidationError';
@@ -34,6 +35,7 @@ export const getUrl = async (
 		input,
 		identityId,
 	);
+	validateBucketOwnerID(getUrlOptions?.expectedBucketOwner);
 
 	const finalKey =
 		inputType === STORAGE_INPUT_KEY ? keyPrefix + objectKey : objectKey;
@@ -80,6 +82,7 @@ export const getUrl = async (
 				...(getUrlOptions?.contentType && {
 					ResponseContentType: getUrlOptions.contentType,
 				}),
+				ExpectedBucketOwner: getUrlOptions?.expectedBucketOwner,
 			},
 		),
 		expiresAt: new Date(Date.now() + urlExpirationInSec * 1000),

@@ -11,6 +11,7 @@ import { AmplifyUrl } from '@aws-amplify/core/internals/utils';
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	deserializeBoolean,
 	map,
@@ -28,7 +29,7 @@ import { defaultConfig, parseXmlError } from './base';
 
 export type DeleteObjectInput = Pick<
 	DeleteObjectCommandInput,
-	'Bucket' | 'Key'
+	'Bucket' | 'Key' | 'ExpectedBucketOwner'
 >;
 
 export type DeleteObjectOutput = DeleteObjectCommandOutput;
@@ -45,10 +46,13 @@ const deleteObjectSerializer = (
 		key: input.Key,
 		objectURL: url,
 	});
+	const headers = assignStringVariables({
+		'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+	});
 
 	return {
 		method: 'DELETE',
-		headers: {},
+		headers,
 		url,
 	};
 };

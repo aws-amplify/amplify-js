@@ -5,8 +5,8 @@ import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 
 import { ListPaths, PathAccess } from '../types/credentials';
 
-import { generateLocationsFromPaths } from './generateLocationsFromPaths';
 import { getPaginatedLocations } from './getPaginatedLocations';
+import { resolveLocationsForCurrentSession } from './resolveLocationsForCurrentSession';
 
 export const createAmplifyListLocationsHandler = (): ListPaths => {
 	const { buckets } = Amplify.getConfig().Storage!.S3!;
@@ -32,9 +32,9 @@ export const createAmplifyListLocationsHandler = (): ListPaths => {
 
 		cachedResult = {};
 
-		const locations = generateLocationsFromPaths({
+		const locations = resolveLocationsForCurrentSession({
 			buckets,
-			tokens: !!tokens,
+			isAuthenticated: !!tokens,
 			identityId,
 			userGroup: userGroups as any, // TODO: fix this edge case
 		});

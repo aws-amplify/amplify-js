@@ -116,11 +116,10 @@ export interface PathAccess {
 	 * which means the only applicable type in this context is 'PREFIX'. */
 	type: 'PREFIX';
 	permission: StorageAccess[];
-	scope: {
-		bucketName: string;
-		path: string;
-	};
+	bucket: string;
+	prefix: string;
 }
+
 /**
  * @internal
  */
