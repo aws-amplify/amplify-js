@@ -1,10 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export { LocationCredentialsProvider } from '../providers/s3/types/options';
 export { StorageSubpathStrategy } from '../types/options';
 
-export { Permission } from './types/common';
+export { Permission, LocationType } from './types/common';
 
 /*
 Internal APIs
@@ -47,22 +46,31 @@ export { copy } from './apis/copy';
 /*
 CredentialsStore exports
 */
-export { createLocationCredentialsStore } from './locationCredentialsStore';
-export {
-	AuthConfigAdapter,
-	createManagedAuthConfigAdapter,
-	CreateManagedAuthConfigAdapterInput,
-} from './managedAuthConfigAdapter';
 export { createAmplifyAuthConfigAdapter } from './amplifyAuthConfigAdapter/createAmplifyAuthConfigAdapter';
 export {
-	GetLocationCredentials,
+	CredentialsLocation,
 	ListLocations,
-	LocationCredentialsStore,
-	CreateLocationCredentialsStoreInput,
+	LocationAccess,
 	LocationCredentials,
 	ListLocationsInput,
 	ListLocationsOutput,
-	GetLocationCredentialsInput,
-	GetLocationCredentialsOutput,
+	CredentialsProvider,
 } from './types/credentials';
-export { AWSTemporaryCredentials } from '../providers/s3/types/options';
+
+export {
+	AWSTemporaryCredentials,
+	LocationCredentialsProvider,
+} from '../providers/s3/types/options';
+
+/**
+ * Internal util functions
+ */
+export { assertValidationError } from '../errors/utils/assertValidationError';
+
+/**
+ * Utility types
+ */
+export {
+	StorageValidationErrorCode,
+	validationErrorMap,
+} from '../errors/types/validation';
