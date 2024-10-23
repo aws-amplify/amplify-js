@@ -94,6 +94,17 @@ export interface AmplifyOutputsDataProperties {
 	conflict_resolution_mode?: string;
 }
 
+export interface AmplifyOutputsCustomProperties {
+	// @experimental
+	events?: {
+		url: string;
+		aws_region: string;
+		default_authorization_type: string;
+		api_key?: string;
+	};
+	[key: string]: any;
+}
+
 export interface AmplifyOutputsNotificationsProperties {
 	aws_region: string;
 	amazon_pinpoint_app_id: string;
@@ -107,5 +118,6 @@ export interface AmplifyOutputs {
 	analytics?: AmplifyOutputsAnalyticsProperties;
 	geo?: AmplifyOutputsGeoProperties;
 	data?: AmplifyOutputsDataProperties;
+	custom?: AmplifyOutputsCustomProperties;
 	notifications?: AmplifyOutputsNotificationsProperties;
 }
