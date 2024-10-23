@@ -1,9 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
-import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
-
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, defaultStorage } from '@aws-amplify/core';
 
@@ -20,17 +17,16 @@ import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
-import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
-import { byteLength } from '../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
+import {
+	CHECKSUM_ALGORITHM_CRC32,
+	UPLOADS_STORAGE_KEY,
+} from '../../../../../src/providers/s3/utils/constants';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
 import '../testUtils';
 import { calculateContentCRC32 } from '../../../../../src/providers/s3/utils/crc32';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
-
-global.Blob = BlobPolyfill as any;
-global.File = FilePolyfill as any;
-global.WritableStream = WritableStreamPolyfill as any;
+import { byteLength } from '../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
@@ -47,9 +43,10 @@ const bucket = 'bucket';
 const region = 'region';
 const defaultKey = 'key';
 const defaultContentType = 'application/octet-stream';
-const defaultCacheKey = '8388608_application/octet-stream_bucket_public_key';
+const defaultCacheKey =
+	'Jz3O2w==_8388608_application/octet-stream_bucket_public_key';
 const testPath = 'testPath/object';
-const testPathCacheKey = `8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
+const testPathCacheKey = `Jz3O2w==_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
 
 const mockCreateMultipartUpload = jest.mocked(createMultipartUpload);
 const mockUploadPart = jest.mocked(uploadPart);
@@ -82,10 +79,6 @@ const mockCalculateContentCRC32Mock = () => {
 		checksum: 'mockChecksum',
 		seed: 0,
 	});
-};
-const mockCalculateContentCRC32Undefined = () => {
-	mockCalculateContentCRC32.mockReset();
-	mockCalculateContentCRC32.mockResolvedValue(undefined);
 };
 const mockCalculateContentCRC32Reset = () => {
 	mockCalculateContentCRC32.mockReset();
@@ -291,6 +284,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				const { multipartUploadJob } = getMultipartUploadHandlers({
 					key: defaultKey,
 					data: twoPartsPayload,
+					options: {
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+					},
 				});
 				await multipartUploadJob();
 
@@ -301,9 +297,11 @@ describe('getMultipartUploadHandlers with key', () => {
 				 *
 				 * uploading each part calls calculateContentCRC32 1 time each
 				 *
-				 * these steps results in 5 calls in total
+				 * 1 time for optionsHash
+				 *
+				 * these steps results in 6 calls in total
 				 */
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(5);
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(6);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -317,8 +315,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			},
 		);
 
-		it('should use md5 if crc32 is returning undefined', async () => {
-			mockCalculateContentCRC32Undefined();
+		it('should use md5 if no using crc32', async () => {
 			mockMultipartUploadSuccess();
 			Amplify.libraryOptions = {
 				Storage: {
@@ -372,6 +369,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: file,
+					options: {
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+					},
 				},
 				file.size,
 			);
@@ -615,7 +615,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					// \d{13} is the file lastModified property of a file
-					/someName_\d{13}_8388608_application\/octet-stream_bucket_public_key/,
+					/someName_\d{13}_Jz3O2w==_8388608_application\/octet-stream_bucket_public_key/,
 				),
 			]);
 		});
@@ -979,6 +979,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				const { multipartUploadJob } = getMultipartUploadHandlers({
 					path: testPath,
 					data: twoPartsPayload,
+					options: {
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+					},
 				});
 				await multipartUploadJob();
 
@@ -989,9 +992,11 @@ describe('getMultipartUploadHandlers with path', () => {
 				 *
 				 * uploading each part calls calculateContentCRC32 1 time each
 				 *
-				 * these steps results in 5 calls in total
+				 * 1 time for optionsHash
+				 *
+				 * these steps results in 6 calls in total
 				 */
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(5);
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(6);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -1005,8 +1010,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			},
 		);
 
-		it('should use md5 if crc32 is returning undefined', async () => {
-			mockCalculateContentCRC32Undefined();
+		it('should use md5 if no using crc32', async () => {
 			mockMultipartUploadSuccess();
 			Amplify.libraryOptions = {
 				Storage: {
@@ -1060,6 +1064,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: file,
+					options: {
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+					},
 				},
 				file.size,
 			);

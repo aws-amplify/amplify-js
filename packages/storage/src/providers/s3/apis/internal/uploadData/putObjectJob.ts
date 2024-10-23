@@ -16,7 +16,10 @@ import {
 import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
 import { putObject } from '../../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
-import { STORAGE_INPUT_KEY } from '../../../utils/constants';
+import {
+	CHECKSUM_ALGORITHM_CRC32,
+	STORAGE_INPUT_KEY,
+} from '../../../utils/constants';
 import { calculateContentCRC32 } from '../../../utils/crc32';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 
@@ -62,11 +65,16 @@ export const putObjectJob =
 			contentType = 'application/octet-stream',
 			preventOverwrite,
 			metadata,
+			checksumAlgorithm,
 			onProgress,
 			expectedBucketOwner,
 		} = uploadDataOptions ?? {};
 
-		const checksumCRC32 = await calculateContentCRC32(data);
+		const checksumCRC32 =
+			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
+				? await calculateContentCRC32(data)
+				: undefined;
+
 		const contentMD5 =
 			// check if checksum exists. ex: should not exist in react native
 			!checksumCRC32 && isObjectLockEnabled

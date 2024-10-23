@@ -1,9 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
-import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
-
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
@@ -15,10 +12,8 @@ import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import * as CRC32 from '../../../../../src/providers/s3/utils/crc32';
 import { putObjectJob } from '../../../../../src/providers/s3/apis/internal/uploadData/putObjectJob';
 import '../testUtils';
-
-global.Blob = BlobPolyfill as any;
-global.File = FilePolyfill as any;
-global.WritableStream = WritableStreamPolyfill as any;
+import { UploadDataChecksumAlgorithm } from '../../../../../src/providers/s3/types/options';
+import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../src/providers/s3/utils/constants';
 
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../src/providers/s3/utils', () => {
@@ -75,66 +70,79 @@ mockPutObject.mockResolvedValue({
 /* TODO Remove suite when `key` parameter is removed */
 describe('putObjectJob with key', () => {
 	beforeEach(() => {
+		mockPutObject.mockClear();
 		jest.spyOn(CRC32, 'calculateContentCRC32').mockRestore();
 	});
 
-	it('should supply the correct parameters to putObject API handler', async () => {
-		const abortController = new AbortController();
-		const inputKey = 'key';
-		const data = 'data';
-		const mockContentType = 'contentType';
-		const contentDisposition = 'contentDisposition';
-		const contentEncoding = 'contentEncoding';
-		const mockMetadata = { key: 'value' };
-		const onProgress = jest.fn();
-		const useAccelerateEndpoint = true;
+	it.each<{ checksumAlgorithm: UploadDataChecksumAlgorithm | undefined }>([
+		{ checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32 },
+		{ checksumAlgorithm: undefined },
+	])(
+		'should supply the correct parameters to putObject API handler with checksumAlgorithm as $checksumAlgorithm',
+		async ({ checksumAlgorithm }) => {
+			const abortController = new AbortController();
+			const inputKey = 'key';
+			const data = 'data';
+			const mockContentType = 'contentType';
+			const contentDisposition = 'contentDisposition';
+			const contentEncoding = 'contentEncoding';
+			const mockMetadata = { key: 'value' };
+			const onProgress = jest.fn();
+			const useAccelerateEndpoint = true;
 
-		const job = putObjectJob(
-			{
-				key: inputKey,
-				data,
-				options: {
-					contentDisposition,
-					contentEncoding,
-					contentType: mockContentType,
-					metadata: mockMetadata,
-					onProgress,
-					useAccelerateEndpoint,
+			const job = putObjectJob(
+				{
+					key: inputKey,
+					data,
+					options: {
+						contentDisposition,
+						contentEncoding,
+						contentType: mockContentType,
+						metadata: mockMetadata,
+						onProgress,
+						useAccelerateEndpoint,
+						checksumAlgorithm,
+					},
 				},
-			},
-			abortController.signal,
-		);
-		const result = await job();
-		expect(result).toEqual({
-			key: inputKey,
-			eTag: 'eTag',
-			versionId: 'versionId',
-			contentType: 'contentType',
-			metadata: { key: 'value' },
-			size: undefined,
-		});
-		expect(mockPutObject).toHaveBeenCalledTimes(1);
-		await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
-			{
-				credentials,
-				region,
-				abortSignal: abortController.signal,
-				onUploadProgress: expect.any(Function),
-				useAccelerateEndpoint: true,
-				userAgentValue: expect.any(String),
-			},
-			{
-				Bucket: bucket,
-				Key: `public/${inputKey}`,
-				Body: data,
-				ContentType: mockContentType,
-				ContentDisposition: contentDisposition,
-				ContentEncoding: contentEncoding,
-				Metadata: mockMetadata,
-				ChecksumCRC32: 'rfPzYw==',
-			},
-		);
-	});
+				abortController.signal,
+			);
+			const result = await job();
+			expect(result).toEqual({
+				key: inputKey,
+				eTag: 'eTag',
+				versionId: 'versionId',
+				contentType: 'contentType',
+				metadata: { key: 'value' },
+				size: undefined,
+			});
+			expect(mockPutObject).toHaveBeenCalledTimes(1);
+			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
+				{
+					credentials,
+					region,
+					abortSignal: abortController.signal,
+					onUploadProgress: expect.any(Function),
+					useAccelerateEndpoint: true,
+					userAgentValue: expect.any(String),
+				},
+				{
+					Bucket: bucket,
+					Key: `public/${inputKey}`,
+					Body: data,
+					ContentType: mockContentType,
+					ContentDisposition: contentDisposition,
+					ContentEncoding: contentEncoding,
+					Metadata: mockMetadata,
+
+					// ChecksumCRC32 is set when putObjectJob() is called with checksumAlgorithm: 'crc-32'
+					ChecksumCRC32:
+						checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
+							? 'rfPzYw=='
+							: undefined,
+				},
+			);
+		},
+	);
 
 	it('should set ContentMD5 if object lock is enabled', async () => {
 		jest
@@ -193,7 +201,6 @@ describe('putObjectJob with key', () => {
 					Key: 'public/key',
 					Body: data,
 					ContentType: 'application/octet-stream',
-					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -225,7 +232,6 @@ describe('putObjectJob with key', () => {
 					Key: 'public/key',
 					Body: data,
 					ContentType: 'application/octet-stream',
-					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -238,18 +244,39 @@ describe('putObjectJob with path', () => {
 		jest.spyOn(CRC32, 'calculateContentCRC32').mockRestore();
 	});
 
-	test.each([
+	it.each<{ checksumAlgorithm: UploadDataChecksumAlgorithm | undefined }>([
+		{ checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32 },
+		{ checksumAlgorithm: undefined },
+	]);
+
+	test.each<{
+		path: string | (() => string);
+		expectedKey: string;
+		checksumAlgorithm: UploadDataChecksumAlgorithm | undefined;
+	}>([
 		{
 			path: testPath,
 			expectedKey: testPath,
+			checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 		},
 		{
 			path: () => testPath,
 			expectedKey: testPath,
+			checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+		},
+		{
+			path: testPath,
+			expectedKey: testPath,
+			checksumAlgorithm: undefined,
+		},
+		{
+			path: () => testPath,
+			expectedKey: testPath,
+			checksumAlgorithm: undefined,
 		},
 	])(
-		'should supply the correct parameters to putObject API handler when path is $path',
-		async ({ path: inputPath, expectedKey }) => {
+		'should supply the correct parameters to putObject API handler when path is $path and checksumAlgorithm is $checksumAlgorithm',
+		async ({ path: inputPath, expectedKey, checksumAlgorithm }) => {
 			const abortController = new AbortController();
 			const data = 'data';
 			const mockContentType = 'contentType';
@@ -270,6 +297,7 @@ describe('putObjectJob with path', () => {
 						metadata: mockMetadata,
 						onProgress,
 						useAccelerateEndpoint,
+						checksumAlgorithm,
 					},
 				},
 				abortController.signal,
@@ -301,7 +329,12 @@ describe('putObjectJob with path', () => {
 					ContentDisposition: contentDisposition,
 					ContentEncoding: contentEncoding,
 					Metadata: mockMetadata,
-					ChecksumCRC32: 'rfPzYw==',
+
+					// ChecksumCRC32 is set when putObjectJob() is called with checksumAlgorithm: 'crc-32'
+					ChecksumCRC32:
+						checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
+							? 'rfPzYw=='
+							: undefined,
 				},
 			);
 		},
@@ -439,7 +472,6 @@ describe('putObjectJob with path', () => {
 					Key: 'path/',
 					Body: data,
 					ContentType: 'application/octet-stream',
-					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});
@@ -471,7 +503,6 @@ describe('putObjectJob with path', () => {
 					Key: 'path/',
 					Body: data,
 					ContentType: 'application/octet-stream',
-					ChecksumCRC32: 'rfPzYw==',
 				},
 			);
 		});

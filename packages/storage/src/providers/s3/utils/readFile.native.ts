@@ -3,25 +3,10 @@
 
 import { Buffer } from 'buffer';
 
-import { Md5 } from '@smithy/md5-js';
-
-import { toBase64 } from './client/utils';
-
-// The FileReader in React Native 0.71 did not support `readAsArrayBuffer`. This native implementation accomodates this
+// The FileReader in React Native 0.71 did not support `readAsArrayBuffer`. This native implementation accommodates this
 // by attempting to use `readAsArrayBuffer` and changing the file reading strategy if it throws an error.
 // TODO: This file should be removable when we drop support for React Native 0.71
-export const calculateContentMd5 = async (
-	content: Blob | string | ArrayBuffer | ArrayBufferView,
-): Promise<string> => {
-	const hasher = new Md5();
-	const buffer = content instanceof Blob ? await readFile(content) : content;
-	hasher.update(buffer);
-	const digest = await hasher.digest();
-
-	return toBase64(digest);
-};
-
-const readFile = (file: Blob): Promise<ArrayBuffer> =>
+export const readFile = (file: Blob): Promise<ArrayBuffer> =>
 	new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = () => {
