@@ -6,17 +6,20 @@ describe('getPaginatedLocations', () => {
 		{
 			type: 'PREFIX',
 			permission: ['read'],
-			scope: { bucketName: 'bucket1', path: 'path1/' },
+			bucket: 'bucket1',
+			prefix: 'path1/',
 		},
 		{
 			type: 'PREFIX',
 			permission: ['write'],
-			scope: { bucketName: 'bucket2', path: 'path2/' },
+			bucket: 'bucket2',
+			prefix: 'path2/',
 		},
 		{
 			type: 'PREFIX',
 			permission: ['read', 'write'],
-			scope: { bucketName: 'bucket3', path: 'path3/' },
+			bucket: 'bucket3',
+			prefix: 'path3/',
 		},
 	];
 
