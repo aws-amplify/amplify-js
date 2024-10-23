@@ -43,13 +43,12 @@ export {
 	clearCredentials,
 } from './singleton';
 
-// AWSClients exports
+// Cognito Identity service client factories
 export {
-	getCredentialsForIdentity,
-	getId,
-	GetCredentialsForIdentityInput,
-	GetCredentialsForIdentityOutput,
-} from './awsClients/cognitoIdentity';
+	createGetCredentialsForIdentityClient,
+	createGetIdClient,
+	cognitoIdentityPoolEndpointResolver,
+} from './foundation/factories/serviceClients/cognitoIdentity';
 
 // Amplify-wide constructs
 export { UserProfile } from './types';

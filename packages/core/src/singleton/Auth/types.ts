@@ -135,12 +135,14 @@ export interface AuthIdentityPoolConfig {
 
 export interface CognitoIdentityPoolConfig {
 	identityPoolId: string;
+	identityPoolEndpoint?: string;
 	allowGuestAccess?: boolean;
 }
 
 export interface AuthUserPoolConfig {
 	Cognito: CognitoUserPoolConfig & {
 		identityPoolId?: never;
+		identityPoolEndpoint?: never;
 		allowGuestAccess?: never;
 	};
 }
