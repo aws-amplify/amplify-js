@@ -22,12 +22,9 @@ describe('client-side copy', () => {
 		const input: CopyInput = {
 			source: {
 				key: 'source-key',
-				bucket: { bucketName: 'source-bucket', region: 'source-region' },
-				expectedBucketOwner: '123',
 			},
 			destination: {
 				key: 'destination-key',
-				expectedBucketOwner: '123',
 			},
 		};
 		expect(copy(input)).toEqual(mockInternalResult);
