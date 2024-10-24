@@ -95,12 +95,12 @@ describe('signIn API error path cases:', () => {
 			throw getMockError(InitiateAuthException.InvalidParameterException);
 		});
 
-		const p = signIn({
+		const signInResultPromise = signIn({
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 		});
 
-		expect(p).rejects.toThrow(
+		expect(signInResultPromise).rejects.toThrow(
 			new AuthError({
 				name: InitiateAuthException.InvalidParameterException,
 				message: 'Error message',
@@ -116,7 +116,7 @@ describe('signIn API error path cases:', () => {
 			$metadata: {},
 		}));
 
-		const p = signIn({
+		const signInResultPromise = signIn({
 			username: authAPITestParams.user1.username,
 			password: authAPITestParams.user1.password,
 			options: {
@@ -124,7 +124,7 @@ describe('signIn API error path cases:', () => {
 			},
 		});
 
-		expect(p).rejects.toThrow(
+		expect(signInResultPromise).rejects.toThrow(
 			new AuthError({
 				name: AuthErrorCodes.SignInException,
 				message: 'Cannot initiate MFA setup from available types: SMS',
