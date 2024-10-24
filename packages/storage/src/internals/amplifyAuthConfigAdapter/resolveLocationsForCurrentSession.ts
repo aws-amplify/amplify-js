@@ -50,12 +50,13 @@ export const resolveLocationsForCurrentSession = ({
 		}
 
 		for (const [path, accessRules] of Object.entries(paths)) {
-			if (
+			const shouldIncludeEntityIdPath =
 				!userGroup &&
 				path.includes(ENTITY_IDENTITY_URL) &&
 				isAuthenticated &&
-				identityId
-			) {
+				identityId;
+
+			if (shouldIncludeEntityIdPath) {
 				locations.push({
 					type: 'PREFIX',
 					permission: accessRules.entityidentity as StorageAccess[],
@@ -63,12 +64,14 @@ export const resolveLocationsForCurrentSession = ({
 					prefix: path.replace(ENTITY_IDENTITY_URL, identityId),
 				});
 			}
+
 			const location = {
 				type: 'PREFIX',
 				...resolvePermissions(accessRules, isAuthenticated, userGroup),
 				bucket: bucketName,
 				prefix: path,
 			};
+
 			if (location.permission) locations.push(location as PathAccess);
 		}
 	}
