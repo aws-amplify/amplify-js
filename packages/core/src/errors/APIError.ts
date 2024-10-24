@@ -42,10 +42,6 @@ export class ApiError extends AmplifyError {
 	constructor(params: ApiErrorParams) {
 		super(params);
 
-		// TODO: Delete the following 2 lines after we change the build target to >= es2015
-		this.constructor = ApiError;
-		Object.setPrototypeOf(this, ApiError.prototype);
-
 		if (params.response) {
 			this._response = params.response;
 		}
