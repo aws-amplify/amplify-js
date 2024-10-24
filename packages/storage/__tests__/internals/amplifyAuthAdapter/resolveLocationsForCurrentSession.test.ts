@@ -37,7 +37,6 @@ describe('resolveLocationsForCurrentSession', () => {
 			buckets: mockBuckets,
 			isAuthenticated: true,
 			identityId: '12345',
-			userGroup: 'admin',
 		});
 
 		expect(result).toEqual([
@@ -46,12 +45,6 @@ describe('resolveLocationsForCurrentSession', () => {
 				permission: ['get', 'list', 'write'],
 				bucket: 'bucket1',
 				prefix: 'path1/*',
-			},
-			{
-				type: 'PREFIX',
-				permission: ['get', 'list', 'write', 'delete'],
-				bucket: 'bucket1',
-				prefix: 'path2/*',
 			},
 			{
 				type: 'PREFIX',
@@ -62,7 +55,25 @@ describe('resolveLocationsForCurrentSession', () => {
 		]);
 	});
 
-	it('should generate locations correctly when tokens are true & bad userGroup', () => {
+	it('should generate locations correctly when tokens are true & userGroup', () => {
+		const result = resolveLocationsForCurrentSession({
+			buckets: mockBuckets,
+			isAuthenticated: true,
+			identityId: '12345',
+			userGroup: 'admin',
+		});
+
+		expect(result).toEqual([
+			{
+				type: 'PREFIX',
+				permission: ['get', 'list', 'write', 'delete'],
+				bucket: 'bucket1',
+				prefix: 'path2/*',
+			},
+		]);
+	});
+
+	it('should return empty locations when tokens are true & bad userGroup', () => {
 		const result = resolveLocationsForCurrentSession({
 			buckets: mockBuckets,
 			isAuthenticated: true,
@@ -70,20 +81,7 @@ describe('resolveLocationsForCurrentSession', () => {
 			userGroup: 'editor',
 		});
 
-		expect(result).toEqual([
-			{
-				type: 'PREFIX',
-				permission: ['get', 'list', 'write'],
-				bucket: 'bucket1',
-				prefix: 'path1/*',
-			},
-			{
-				type: 'PREFIX',
-				permission: ['get', 'list', 'write', 'delete'],
-				bucket: 'bucket1',
-				prefix: 'profile-pictures/12345/*',
-			},
-		]);
+		expect(result).toEqual([]);
 	});
 
 	it('should continue to next bucket when paths are not defined', () => {
@@ -107,7 +105,6 @@ describe('resolveLocationsForCurrentSession', () => {
 			},
 			isAuthenticated: true,
 			identityId: '12345',
-			userGroup: 'admin',
 		});
 
 		expect(result).toEqual([

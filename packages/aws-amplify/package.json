@@ -461,7 +461,7 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "16.05 kB"
+			"limit": "16.08 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
@@ -491,7 +491,7 @@
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "15.50 kB"
+			"limit": "15.52 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",

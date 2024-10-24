@@ -5,7 +5,6 @@
 /* eslint-disable camelcase */
 
 /* Does not like exhaustive checks */
-/* eslint-disable no-case-declarations */
 
 import {
 	APIConfig,
@@ -87,12 +86,14 @@ function parseAuth(
 		oauth,
 		username_attributes,
 		standard_required_attributes,
+		groups,
 	} = amplifyOutputsAuthProperties;
 
 	const authConfig = {
 		Cognito: {
 			userPoolId: user_pool_id,
 			userPoolClientId: user_pool_client_id,
+			groups,
 		},
 	} as AuthConfig;
 
