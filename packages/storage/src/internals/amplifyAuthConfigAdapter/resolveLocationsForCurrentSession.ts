@@ -16,8 +16,8 @@ const resolvePermissions = (
 		};
 	}
 	if (groups) {
-		const selectedKey = Object.keys(accessRule).find(
-			access => access.includes(groups) || access.includes('authenticated'),
+		const selectedKey = Object.keys(accessRule).find(access =>
+			access.includes(groups),
 		);
 
 		return {
@@ -50,7 +50,12 @@ export const resolveLocationsForCurrentSession = ({
 		}
 
 		for (const [path, accessRules] of Object.entries(paths)) {
-			if (path.includes(ENTITY_IDENTITY_URL) && isAuthenticated && identityId) {
+			if (
+				!userGroup &&
+				path.includes(ENTITY_IDENTITY_URL) &&
+				isAuthenticated &&
+				identityId
+			) {
 				locations.push({
 					type: 'PREFIX',
 					permission: accessRules.entityidentity as StorageAccess[],

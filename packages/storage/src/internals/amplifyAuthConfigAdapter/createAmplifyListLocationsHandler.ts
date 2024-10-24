@@ -7,9 +7,11 @@ import { ListPaths, PathAccess } from '../types/credentials';
 
 import { getPaginatedLocations } from './getPaginatedLocations';
 import { resolveLocationsForCurrentSession } from './resolveLocationsForCurrentSession';
+import { getHighestPrecedenceUserGroup } from './getHighestPrecedenceUserGroup';
 
 export const createAmplifyListLocationsHandler = (): ListPaths => {
 	const { buckets } = Amplify.getConfig().Storage!.S3!;
+	const { groups } = Amplify.getConfig().Auth!.Cognito;
 
 	let cachedResult: Record<string, { locations: PathAccess[] }> | null = null;
 
@@ -20,8 +22,17 @@ export const createAmplifyListLocationsHandler = (): ListPaths => {
 		const { pageSize, nextToken } = input;
 
 		const { tokens, identityId } = await fetchAuthSession();
-		const userGroups = tokens?.accessToken.payload['cognito:groups'];
-		const cacheKey = JSON.stringify({ identityId, userGroups }) + `${!!tokens}`;
+		const currentUserGroups = tokens?.accessToken.payload['cognito:groups'] as
+			| string[]
+			| undefined;
+
+		const userGroupToUse = getHighestPrecedenceUserGroup(
+			groups,
+			currentUserGroups,
+		);
+
+		const cacheKey =
+			JSON.stringify({ identityId, userGroup: userGroupToUse }) + `${!!tokens}`;
 
 		if (cachedResult && cachedResult[cacheKey])
 			return getPaginatedLocations({
@@ -36,7 +47,7 @@ export const createAmplifyListLocationsHandler = (): ListPaths => {
 			buckets,
 			isAuthenticated: !!tokens,
 			identityId,
-			userGroup: userGroups as any, // TODO: fix this edge case
+			userGroup: userGroupToUse,
 		});
 
 		cachedResult[cacheKey] = { locations };
