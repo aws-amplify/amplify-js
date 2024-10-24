@@ -14,8 +14,10 @@ import {
 	tokenOrchestrator,
 } from '../../../src/providers/cognito/tokenProvider';
 import {
+	createAssociateSoftwareTokenClient,
 	createInitiateAuthClient,
 	createRespondToAuthChallengeClient,
+	createVerifySoftwareTokenClient,
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { RespondToAuthChallengeCommandOutput } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
@@ -35,7 +37,7 @@ const authConfig = {
 
 //  getCurrentUser is mocked so Hub is able to dispatch a mocked AuthUser
 // before returning an `AuthSignInResult`
-const mockedGetCurrentUser = getCurrentUser as jest.Mock;
+const mockedGetCurrentUser = jest.mocked(getCurrentUser);
 
 describe('confirmSignIn API happy path cases', () => {
 	let handleChallengeNameSpy: jest.SpyInstance;
@@ -135,6 +137,55 @@ describe('confirmSignIn API happy path cases', () => {
 		mockedGetCurrentUser.mockClear();
 	});
 
+	test(`confirmSignIn with EMAIL_OTP ChallengeName`, async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+
+		const handleUserSRPAuthflowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: 'EMAIL_OTP',
+					Session: '1234234232',
+					$metadata: {},
+					ChallengeParameters: {
+						CODE_DELIVERY_DELIVERY_MEDIUM: 'EMAIL',
+						CODE_DELIVERY_DESTINATION: 'j***@a***',
+					},
+				}),
+			);
+
+		const signInResult = await signIn({ username, password });
+
+		expect(signInResult).toEqual({
+			isSignedIn: false,
+			nextStep: {
+				signInStep: 'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
+				codeDeliveryDetails: {
+					deliveryMedium: 'EMAIL',
+					destination: 'j***@a***',
+				},
+			},
+		});
+
+		const confirmSignInResult = await confirmSignIn({
+			challengeResponse: '123456',
+		});
+
+		expect(confirmSignInResult).toEqual({
+			isSignedIn: true,
+			nextStep: {
+				signInStep: 'DONE',
+			},
+		});
+
+		expect(handleChallengeNameSpy).toHaveBeenCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
+
+		handleUserSRPAuthflowSpy.mockClear();
+	});
+
 	test(`confirmSignIn tests MFA_SETUP challengeName`, async () => {
 		Amplify.configure({
 			Auth: authConfig,
@@ -175,7 +226,7 @@ describe('confirmSignIn API happy path cases', () => {
 		handleUserSRPAuthflowSpy.mockClear();
 	});
 
-	test(`confirmSignIn tests SELECT_MFA_TYPE challengeName `, async () => {
+	test(`confirmSignIn with SELECT_MFA_TYPE challengeName and SMS response`, async () => {
 		Amplify.configure({
 			Auth: authConfig,
 		});
@@ -188,7 +239,7 @@ describe('confirmSignIn API happy path cases', () => {
 					Session: '1234234232',
 					$metadata: {},
 					ChallengeParameters: {
-						MFAS_CAN_CHOOSE: '["SMS_MFA","SOFTWARE_TOKEN_MFA"]',
+						MFAS_CAN_CHOOSE: '["SMS_MFA","SOFTWARE_TOKEN_MFA", "EMAIL_OTP"]',
 					},
 				}),
 			);
@@ -217,7 +268,7 @@ describe('confirmSignIn API happy path cases', () => {
 			isSignedIn: false,
 			nextStep: {
 				signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
-				allowedMFATypes: ['SMS', 'TOTP'],
+				allowedMFATypes: ['SMS', 'TOTP', 'EMAIL'],
 			},
 		});
 
@@ -234,6 +285,121 @@ describe('confirmSignIn API happy path cases', () => {
 
 		expect(handleChallengeNameSpy).toHaveBeenCalledTimes(1);
 
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
+
+		handleUserSRPAuthflowSpy.mockClear();
+	});
+
+	test(`confirmSignIn with SELECT_MFA_TYPE challengeName and TOTP response`, async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+
+		const handleUserSRPAuthflowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: 'SELECT_MFA_TYPE',
+					Session: '1234234232',
+					$metadata: {},
+					ChallengeParameters: {
+						MFAS_CAN_CHOOSE: '["SMS_MFA","SOFTWARE_TOKEN_MFA", "EMAIL_OTP"]',
+					},
+				}),
+			);
+
+		handleChallengeNameSpy.mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+				ChallengeName: 'SOFTWARE_TOKEN_MFA',
+				$metadata: {},
+				Session: '123456789',
+				ChallengeParameters: {},
+			}),
+		);
+
+		const signInResult = await signIn({ username, password });
+
+		expect(signInResult).toEqual({
+			isSignedIn: false,
+			nextStep: {
+				signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
+				allowedMFATypes: ['SMS', 'TOTP', 'EMAIL'],
+			},
+		});
+
+		const confirmSignInResult = await confirmSignIn({
+			challengeResponse: 'TOTP',
+		});
+
+		expect(confirmSignInResult).toEqual({
+			isSignedIn: false,
+			nextStep: {
+				signInStep: 'CONFIRM_SIGN_IN_WITH_TOTP_CODE',
+			},
+		});
+
+		expect(handleChallengeNameSpy).toHaveBeenCalledTimes(1);
+		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
+
+		handleUserSRPAuthflowSpy.mockClear();
+	});
+
+	test(`confirmSignIn with SELECT_MFA_TYPE challengeName and EMAIL response`, async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+
+		const handleUserSRPAuthflowSpy = jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+					ChallengeName: 'SELECT_MFA_TYPE',
+					Session: '1234234232',
+					$metadata: {},
+					ChallengeParameters: {
+						MFAS_CAN_CHOOSE: '["SMS_MFA","SOFTWARE_TOKEN_MFA", "EMAIL_OTP"]',
+					},
+				}),
+			);
+
+		handleChallengeNameSpy.mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+				ChallengeName: 'EMAIL_OTP',
+				$metadata: {},
+				Session: '1234234232',
+				ChallengeParameters: {
+					CODE_DELIVERY_DELIVERY_MEDIUM: 'EMAIL',
+					CODE_DELIVERY_DESTINATION: 'j***@a***',
+				},
+			}),
+		);
+
+		const signInResult = await signIn({ username, password });
+
+		expect(signInResult).toEqual({
+			isSignedIn: false,
+			nextStep: {
+				signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION',
+				allowedMFATypes: ['SMS', 'TOTP', 'EMAIL'],
+			},
+		});
+
+		const confirmSignInResult = await confirmSignIn({
+			challengeResponse: 'EMAIL',
+		});
+
+		expect(confirmSignInResult).toEqual({
+			isSignedIn: false,
+			nextStep: {
+				signInStep: 'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
+				codeDeliveryDetails: {
+					deliveryMedium: 'EMAIL',
+					destination: 'j***@a***',
+				},
+			},
+		});
+
+		expect(handleChallengeNameSpy).toHaveBeenCalledTimes(1);
 		expect(handleUserSRPAuthflowSpy).toHaveBeenCalledTimes(1);
 
 		handleUserSRPAuthflowSpy.mockClear();
@@ -531,5 +697,277 @@ describe('Cognito ASF', () => {
 				UserContextData: { EncodedData: 'abcd' },
 			}),
 		);
+	});
+});
+
+describe('confirmSignIn MFA_SETUP challenge happy path cases', () => {
+	const { username, password } = authAPITestParams.user1;
+
+	test('confirmSignIn with multiple MFA_SETUP options using SOFTWARE_TOKEN_MFA', async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+		jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> =>
+					authAPITestParams.RespondToAuthChallengeMultipleMfaSetupOutput,
+			);
+
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe(
+			'CONTINUE_SIGN_IN_WITH_MFA_SETUP_SELECTION',
+		);
+
+		const mockAssociateSoftwareToken = jest.fn();
+
+		jest
+			.mocked(createAssociateSoftwareTokenClient)
+			.mockReturnValue(mockAssociateSoftwareToken);
+
+		mockAssociateSoftwareToken.mockResolvedValueOnce({
+			SecretCode: 'secret-code',
+			Session: '12341234',
+			$metadata: {},
+		});
+
+		const selectMfaToSetupConfirmSignInResult = await confirmSignIn({
+			challengeResponse: 'TOTP',
+		});
+
+		expect(selectMfaToSetupConfirmSignInResult.isSignedIn).toBe(false);
+		expect(selectMfaToSetupConfirmSignInResult.nextStep.signInStep).toBe(
+			'CONTINUE_SIGN_IN_WITH_TOTP_SETUP',
+		);
+
+		const mockVerifySoftwareToken = jest.fn();
+
+		jest
+			.mocked(createVerifySoftwareTokenClient)
+			.mockReturnValue(mockVerifySoftwareToken);
+
+		mockVerifySoftwareToken.mockResolvedValue({
+			Session: '12341234',
+			Status: 'SUCCESS',
+			$metadata: {},
+		});
+
+		const mockRespondToAuthChallenge = jest.fn();
+
+		jest
+			.mocked(createRespondToAuthChallengeClient)
+			.mockReturnValue(mockRespondToAuthChallenge);
+
+		mockRespondToAuthChallenge.mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> =>
+				authAPITestParams.RespondToAuthChallengeCommandOutput,
+		);
+
+		const totpCode = '123456';
+		const confirmSignInResult = await confirmSignIn({
+			challengeResponse: totpCode,
+		});
+
+		expect(mockVerifySoftwareToken).toHaveBeenCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				UserCode: totpCode,
+				Session: '12341234',
+			}),
+		);
+		expect(confirmSignInResult.isSignedIn).toBe(true);
+		expect(confirmSignInResult.nextStep.signInStep).toBe('DONE');
+	});
+
+	test('confirmSignIn with multiple MFA_SETUP options using EMAIL_OTP', async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+
+		jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> =>
+					authAPITestParams.RespondToAuthChallengeMultipleMfaSetupOutput,
+			);
+
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe(
+			'CONTINUE_SIGN_IN_WITH_MFA_SETUP_SELECTION',
+		);
+
+		const selectMfaToSetupConfirmSignInResult = await confirmSignIn({
+			challengeResponse: 'EMAIL',
+		});
+
+		expect(selectMfaToSetupConfirmSignInResult.isSignedIn).toBe(false);
+		expect(selectMfaToSetupConfirmSignInResult.nextStep.signInStep).toBe(
+			'CONTINUE_SIGN_IN_WITH_EMAIL_SETUP',
+		);
+
+		jest.spyOn(signInHelpers, 'handleChallengeName').mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+				ChallengeName: 'EMAIL_OTP',
+				Session: '1234234232',
+				$metadata: {},
+				ChallengeParameters: {
+					CODE_DELIVERY_DELIVERY_MEDIUM: 'EMAIL',
+					CODE_DELIVERY_DESTINATION: 'j***@a***',
+				},
+			}),
+		);
+
+		const setupEmailConfirmSignInResult = await confirmSignIn({
+			challengeResponse: 'j***@a***',
+		});
+
+		expect(setupEmailConfirmSignInResult.nextStep.signInStep).toBe(
+			'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
+		);
+
+		const mockRespondToAuthChallenge = jest.fn();
+
+		jest
+			.mocked(createRespondToAuthChallengeClient)
+			.mockReturnValue(mockRespondToAuthChallenge);
+
+		mockRespondToAuthChallenge.mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> =>
+				authAPITestParams.RespondToAuthChallengeCommandOutput,
+		);
+
+		const confirmSignInResult = await confirmSignIn({
+			challengeResponse: '123456',
+		});
+
+		expect(confirmSignInResult.isSignedIn).toBe(true);
+		expect(confirmSignInResult.nextStep.signInStep).toBe('DONE');
+	});
+
+	test('confirmSignIn with single MFA_SETUP option using EMAIL_OTP', async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+
+		jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> =>
+					authAPITestParams.RespondToAuthChallengeEmailMfaSetupOutput,
+			);
+
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe(
+			'CONTINUE_SIGN_IN_WITH_EMAIL_SETUP',
+		);
+
+		jest.spyOn(signInHelpers, 'handleChallengeName').mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> => ({
+				ChallengeName: 'EMAIL_OTP',
+				Session: '1234234232',
+				$metadata: {},
+				ChallengeParameters: {
+					CODE_DELIVERY_DELIVERY_MEDIUM: 'EMAIL',
+					CODE_DELIVERY_DESTINATION: 'j***@a***',
+				},
+			}),
+		);
+
+		const setupEmailConfirmSignInResult = await confirmSignIn({
+			challengeResponse: 'j***@a***',
+		});
+
+		expect(setupEmailConfirmSignInResult.nextStep.signInStep).toBe(
+			'CONFIRM_SIGN_IN_WITH_EMAIL_CODE',
+		);
+
+		jest
+			.spyOn(signInHelpers, 'handleChallengeName')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> =>
+					authAPITestParams.RespondToAuthChallengeCommandOutput,
+			);
+
+		const confirmSignInResult = await confirmSignIn({
+			challengeResponse: '123456',
+		});
+
+		expect(confirmSignInResult.isSignedIn).toBe(true);
+		expect(confirmSignInResult.nextStep.signInStep).toBe('DONE');
+	});
+
+	test('confirmSignIn with single MFA_SETUP option using SOFTWARE_TOKEN_MFA', async () => {
+		Amplify.configure({
+			Auth: authConfig,
+		});
+		jest
+			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
+			.mockImplementationOnce(
+				async (): Promise<RespondToAuthChallengeCommandOutput> =>
+					authAPITestParams.RespondToAuthChallengeTotpMfaSetupOutput,
+			);
+
+		const mockAssociateSoftwareToken = jest.fn();
+		jest
+			.mocked(createAssociateSoftwareTokenClient)
+			.mockReturnValue(mockAssociateSoftwareToken);
+
+		mockAssociateSoftwareToken.mockResolvedValueOnce({
+			SecretCode: 'secret-code',
+			Session: '12341234',
+			$metadata: {},
+		});
+
+		const result = await signIn({ username, password });
+
+		expect(result.isSignedIn).toBe(false);
+		expect(result.nextStep.signInStep).toBe('CONTINUE_SIGN_IN_WITH_TOTP_SETUP');
+
+		const mockVerifySoftwareToken = jest.fn();
+		jest
+			.mocked(createVerifySoftwareTokenClient)
+			.mockReturnValue(mockVerifySoftwareToken);
+
+		mockVerifySoftwareToken.mockResolvedValueOnce({
+			Session: '12341234',
+			Status: 'SUCCESS',
+			$metadata: {},
+		});
+
+		const mockRespondToAuthChallenge = jest.fn();
+
+		jest
+			.mocked(createRespondToAuthChallengeClient)
+			.mockReturnValue(mockRespondToAuthChallenge);
+
+		mockRespondToAuthChallenge.mockImplementationOnce(
+			async (): Promise<RespondToAuthChallengeCommandOutput> =>
+				authAPITestParams.RespondToAuthChallengeCommandOutput,
+		);
+
+		const totpCode = '123456';
+		const confirmSignInResult = await confirmSignIn({
+			challengeResponse: totpCode,
+		});
+
+		expect(mockVerifySoftwareToken).toHaveBeenCalledWith(
+			expect.objectContaining({
+				region: 'us-west-2',
+			}),
+			expect.objectContaining({
+				UserCode: totpCode,
+				Session: '12341234',
+			}),
+		);
+		expect(confirmSignInResult.isSignedIn).toBe(true);
+		expect(confirmSignInResult.nextStep.signInStep).toBe('DONE');
 	});
 });

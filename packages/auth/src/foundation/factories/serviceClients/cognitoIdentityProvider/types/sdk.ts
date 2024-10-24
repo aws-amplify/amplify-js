@@ -8,6 +8,7 @@ import { MetadataBearer as __MetadataBearer } from '@aws-sdk/types';
 export type ChallengeName =
 	| 'SMS_MFA'
 	| 'SOFTWARE_TOKEN_MFA'
+	| 'EMAIL_OTP'
 	| 'SELECT_MFA_TYPE'
 	| 'MFA_SETUP'
 	| 'PASSWORD_VERIFIER'
@@ -28,7 +29,7 @@ export type ChallengeParameters = {
 	MFAS_CAN_SETUP?: string;
 } & Record<string, unknown>;
 
-export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA';
+export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | 'EMAIL_OTP';
 
 export interface CognitoMFASettings {
 	Enabled?: boolean;
@@ -55,6 +56,7 @@ declare enum ChallengeNameType {
 	SELECT_MFA_TYPE = 'SELECT_MFA_TYPE',
 	SMS_MFA = 'SMS_MFA',
 	SOFTWARE_TOKEN_MFA = 'SOFTWARE_TOKEN_MFA',
+	EMAIL_OTP = 'EMAIL_OTP',
 }
 declare enum DeliveryMediumType {
 	EMAIL = 'EMAIL',
@@ -1431,6 +1433,10 @@ export interface SetUserMFAPreferenceRequest {
 	 */
 	SoftwareTokenMfaSettings?: SoftwareTokenMfaSettingsType;
 	/**
+	 * <p>The email message multi-factor authentication (MFA) settings.</p>
+	 */
+	EmailMfaSettings?: EmailMfaSettingsType;
+	/**
 	 * <p>The access token for the user.</p>
 	 */
 	AccessToken: string | undefined;
@@ -1535,6 +1541,22 @@ export interface SoftwareTokenMfaSettingsType {
 	Enabled?: boolean;
 	/**
 	 * <p>Specifies whether software token MFA is the preferred MFA method.</p>
+	 */
+	PreferredMfa?: boolean;
+}
+/**
+ * <p>The type used for enabling email MFA at the user level. If an MFA type is activated for a user, the user will be prompted for MFA during all sign-in attempts, unless device tracking
+ *             is turned on and the device has been trusted. If you want MFA to be applied selectively based on the assessed risk level of sign-in attempts, deactivate MFA for users and turn on Adaptive
+ *             Authentication for the user pool.</p>
+ */
+export interface EmailMfaSettingsType {
+	/**
+	 * <p>Specifies whether email MFA is activated. If an MFA type is activated for a user, the user will be prompted for MFA during all sign-in attempts, unless device tracking is turned
+	 *             on and the device has been trusted.</p>
+	 */
+	Enabled?: boolean;
+	/**
+	 * <p>Specifies whether email MFA is the preferred MFA method.</p>
 	 */
 	PreferredMfa?: boolean;
 }

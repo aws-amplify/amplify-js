@@ -44,7 +44,7 @@ export interface AuthTOTPSetupDetails {
 	getSetupUri(appName: string, accountName?: string): URL;
 }
 
-export type AuthMFAType = 'SMS' | 'TOTP';
+export type AuthMFAType = 'SMS' | 'TOTP' | 'EMAIL';
 
 export type AuthAllowedMFATypes = AuthMFAType[];
 
@@ -62,6 +62,20 @@ export interface ContinueSignInWithTOTPSetup {
 	 */
 	signInStep: 'CONTINUE_SIGN_IN_WITH_TOTP_SETUP';
 	totpSetupDetails: AuthTOTPSetupDetails;
+}
+export interface ContinueSignInWithEmailSetup {
+	/**
+	 * Auth step requires user to set up EMAIL as multifactor authentication by associating an email address
+	 * and entering the OTP.
+	 *
+	 * @example
+	 * ```typescript
+	 * // Code retrieved from email
+	 * const emailAddress = 'example@example.com';
+	 * await confirmSignIn({challengeResponse: emailAddress });
+	 * ```
+	 */
+	signInStep: 'CONTINUE_SIGN_IN_WITH_EMAIL_SETUP';
 }
 export interface ConfirmSignInWithTOTPCode {
 	/**
@@ -89,6 +103,21 @@ export interface ContinueSignInWithMFASelection {
 	 * ```
 	 */
 	signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SELECTION';
+	allowedMFATypes?: AuthAllowedMFATypes;
+}
+
+export interface ContinueSignInWithMFASetupSelection {
+	/**
+	 * Auth step requires user to select an mfa option (SMS | TOTP) to setup before continuing the sign-in flow.
+	 *
+	 * @example
+	 * ```typescript
+	 * await confirmSignIn({challengeResponse:'TOTP'});
+	 * // OR
+	 * await confirmSignIn({challengeResponse:'EMAIL'});
+	 * ```
+	 */
+	signInStep: 'CONTINUE_SIGN_IN_WITH_MFA_SETUP_SELECTION';
 	allowedMFATypes?: AuthAllowedMFATypes;
 }
 
@@ -146,6 +175,21 @@ export interface ConfirmSignInWithSMSCode {
 	codeDeliveryDetails?: AuthCodeDeliveryDetails;
 }
 
+export interface ConfirmSignInWithEmailCode {
+	/**
+	 * Auth step requires user to use EMAIL as multifactor authentication by retrieving a code sent to inbox.
+	 *
+	 * @example
+	 * ```typescript
+	 * // Code retrieved from email
+	 * const emailCode = '112233'
+	 * await confirmSignIn({challengeResponse: emailCode})
+	 * ```
+	 */
+	signInStep: 'CONFIRM_SIGN_IN_WITH_EMAIL_CODE';
+	codeDeliveryDetails?: AuthCodeDeliveryDetails;
+}
+
 export interface ConfirmSignUpStep {
 	/**
 	 * Auth step requires to confirm user's sign-up.
@@ -181,7 +225,10 @@ export type AuthNextSignInStep<
 	| ConfirmSignInWithNewPasswordRequired<UserAttributeKey>
 	| ConfirmSignInWithSMSCode
 	| ConfirmSignInWithTOTPCode
+	| ConfirmSignInWithEmailCode
 	| ContinueSignInWithTOTPSetup
+	| ContinueSignInWithEmailSetup
+	| ContinueSignInWithMFASetupSelection
 	| ConfirmSignUpStep
 	| ResetPasswordStep
 	| DoneSignInStep;

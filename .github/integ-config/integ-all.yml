@@ -870,3 +870,48 @@ tests:
     spec: ssr-context-isolation
     yarn_script: ci:ssr-context-isolation
     browser: [chrome]
+  - test_name: integ_next_mfa_req_email
+    desc: 'mfa required with email sign in attribute'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-req-email
+    browser: [chrome]
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-email
+  - test_name: integ_next_mfa_req_phone
+    desc: 'mfa required with phone sign in attribute'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-req-phone
+    browser: [chrome]
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-req-phone
+  - test_name: integ_next_mfa_opt_email
+    desc: 'mfa optional with email sign in attribute'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-opt-email
+    browser: [chrome]
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-email
+  - test_name: integ_next_mfa_opt_phone
+    desc: 'mfa optional with phone sign in attribute'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-opt-phone
+    browser: [chrome]
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-opt-phone
+  - test_name: integ_next_mfa_setup
+    desc: 'mfa setup sign in flow'
+    framework: next
+    category: auth
+    sample_name: [mfa]
+    spec: mfa-setup
+    browser: [chrome]
+    env:
+      NEXT_PUBLIC_BACKEND_CONFIG: mfa-setup

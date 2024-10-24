@@ -118,6 +118,7 @@ export type SignUpInput = AuthSignUpInput<SignUpOptions<UserAttributeKey>>;
 export interface UpdateMFAPreferenceInput {
 	sms?: MFAPreference;
 	totp?: MFAPreference;
+	email?: MFAPreference;
 }
 
 /**

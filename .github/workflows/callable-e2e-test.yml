@@ -37,6 +37,9 @@ on:
       yarn_script:
         required: false
         type: string
+      env:
+        required: false
+        type: string
 
 env:
   AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
@@ -84,6 +87,7 @@ jobs:
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
           E2E_YARN_SCRIPT: ${{ inputs.yarn_script }}
+          E2E_ENV: ${{ inputs.env }}
         run: |
           if [ -z "$E2E_YARN_SCRIPT" ]; then
             ../amplify-js/scripts/retry-yarn-script.sh -s \
@@ -95,7 +99,8 @@ jobs:
             $E2E_BROWSER \
             dev \
             $E2E_BACKEND \
-            $E2E_AMPLIFY_JS_DIR" \
+            $E2E_AMPLIFY_JS_DIR \
+            --env $(echo $E2E_ENV | jq -r 'tostring')" \
             $E2E_YARN_SCRIPT \
             -n $E2E_RETRY_COUNT
           else
@@ -115,6 +120,7 @@ jobs:
           E2E_RETRY_COUNT: ${{ inputs.retry_count }}
           E2E_TEST_NAME: ${{ inputs.test_name }}
           E2E_YARN_SCRIPT: ${{ inputs.yarn_script }}
+          E2E_ENV: ${{ inputs.env }}
         run: |
           if [ -z "$E2E_YARN_SCRIPT" ]; then
             ../amplify-js/scripts/retry-yarn-script.sh -s \
@@ -126,7 +132,8 @@ jobs:
             $E2E_BROWSER \
             prod \
             $E2E_BACKEND \
-            $E2E_AMPLIFY_JS_DIR" \
+            $E2E_AMPLIFY_JS_DIR \
+            --env $(echo $E2E_ENV | jq -r 'tostring')" \
             $E2E_YARN_SCRIPT \
             -n $E2E_RETRY_COUNT
           else
