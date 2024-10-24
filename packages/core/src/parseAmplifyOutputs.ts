@@ -342,18 +342,21 @@ function createBucketInfoMap(
 ): Record<string, BucketInfo> {
 	const mappedBuckets: Record<string, BucketInfo> = {};
 
-	buckets.forEach(({ name, bucket_name: bucketName, aws_region: region }) => {
-		if (name in mappedBuckets) {
-			throw new Error(
-				`Duplicate friendly name found: ${name}. Name must be unique.`,
-			);
-		}
+	buckets.forEach(
+		({ name, bucket_name: bucketName, aws_region: region, paths }) => {
+			if (name in mappedBuckets) {
+				throw new Error(
+					`Duplicate friendly name found: ${name}. Name must be unique.`,
+				);
+			}
 
-		mappedBuckets[name] = {
-			bucketName,
-			region,
-		};
-	});
+			mappedBuckets[name] = {
+				bucketName,
+				region,
+				paths,
+			};
+		},
+	);
 
 	return mappedBuckets;
 }
