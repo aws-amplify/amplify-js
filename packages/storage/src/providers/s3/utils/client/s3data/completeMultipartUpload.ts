@@ -24,21 +24,29 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
+import { validateMultipartUploadXML } from '../../validateMultipartUploadXML';
 
+import { defaultConfig, parseXmlError, retryDecider } from './base';
 import type {
 	CompleteMultipartUploadCommandInput,
 	CompleteMultipartUploadCommandOutput,
 	CompletedMultipartUpload,
 	CompletedPart,
 } from './types';
-import { defaultConfig, parseXmlError, retryDecider } from './base';
 
 const INVALID_PARAMETER_ERROR_MSG =
 	'Invalid parameter for ComplteMultipartUpload API';
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
-	'Bucket' | 'Key' | 'UploadId' | 'MultipartUpload' | 'ChecksumCRC32'
+	| 'Bucket'
+	| 'Key'
+	| 'UploadId'
+	| 'MultipartUpload'
+	| 'ChecksumCRC32'
+	| 'ExpectedBucketOwner'
+	| 'IfNoneMatch'
 >;
 
 export type CompleteMultipartUploadOutput = Pick<
@@ -52,7 +60,11 @@ const completeMultipartUploadSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = {
 		'content-type': 'application/xml',
-		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
+		...assignStringVariables({
+			'x-amz-checksum-crc32': input.ChecksumCRC32,
+			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			'If-None-Match': input.IfNoneMatch,
+		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
@@ -62,14 +74,20 @@ const completeMultipartUploadSerializer = async (
 		uploadId: input.UploadId,
 	}).toString();
 	validateS3RequiredParameter(!!input.MultipartUpload, 'MultipartUpload');
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
+
+	const xml = serializeCompletedMultipartUpload(input.MultipartUpload);
+	validateMultipartUploadXML(input.MultipartUpload, xml);
 
 	return {
 		method: 'POST',
 		headers,
 		url,
-		body:
-			'<?xml version="1.0" encoding="UTF-8"?>' +
-			serializeCompletedMultipartUpload(input.MultipartUpload),
+		body: '<?xml version="1.0" encoding="UTF-8"?>' + xml,
 	};
 };
 

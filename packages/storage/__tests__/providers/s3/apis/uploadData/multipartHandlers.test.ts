@@ -1,9 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
-import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
-
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, defaultStorage } from '@aws-amplify/core';
 
@@ -15,22 +12,21 @@ import {
 	listParts,
 	uploadPart,
 } from '../../../../../src/providers/s3/utils/client/s3data';
-import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/uploadData/multipart';
+import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/internal/uploadData/multipart';
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
 } from '../../../../../src/errors/types/validation';
-import { UPLOADS_STORAGE_KEY } from '../../../../../src/providers/s3/utils/constants';
-import { byteLength } from '../../../../../src/providers/s3/apis/uploadData/byteLength';
+import {
+	CHECKSUM_ALGORITHM_CRC32,
+	UPLOADS_STORAGE_KEY,
+} from '../../../../../src/providers/s3/utils/constants';
 import { CanceledError } from '../../../../../src/errors/CanceledError';
 import { StorageOptions } from '../../../../../src/types';
 import '../testUtils';
 import { calculateContentCRC32 } from '../../../../../src/providers/s3/utils/crc32';
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
-
-global.Blob = BlobPolyfill as any;
-global.File = FilePolyfill as any;
-global.WritableStream = WritableStreamPolyfill as any;
+import { byteLength } from '../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
@@ -47,9 +43,10 @@ const bucket = 'bucket';
 const region = 'region';
 const defaultKey = 'key';
 const defaultContentType = 'application/octet-stream';
-const defaultCacheKey = '8388608_application/octet-stream_bucket_public_key';
+const defaultCacheKey =
+	'Jz3O2w==_8388608_application/octet-stream_bucket_public_key';
 const testPath = 'testPath/object';
-const testPathCacheKey = `8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
+const testPathCacheKey = `Jz3O2w==_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
 
 const mockCreateMultipartUpload = jest.mocked(createMultipartUpload);
 const mockUploadPart = jest.mocked(uploadPart);
@@ -82,10 +79,6 @@ const mockCalculateContentCRC32Mock = () => {
 		checksum: 'mockChecksum',
 		seed: 0,
 	});
-};
-const mockCalculateContentCRC32Undefined = () => {
-	mockCalculateContentCRC32.mockReset();
-	mockCalculateContentCRC32.mockResolvedValue(undefined);
 };
 const mockCalculateContentCRC32Reset = () => {
 	mockCalculateContentCRC32.mockReset();
@@ -291,6 +284,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				const { multipartUploadJob } = getMultipartUploadHandlers({
 					key: defaultKey,
 					data: twoPartsPayload,
+					options: {
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+					},
 				});
 				await multipartUploadJob();
 
@@ -301,9 +297,11 @@ describe('getMultipartUploadHandlers with key', () => {
 				 *
 				 * uploading each part calls calculateContentCRC32 1 time each
 				 *
-				 * these steps results in 5 calls in total
+				 * 1 time for optionsHash
+				 *
+				 * these steps results in 6 calls in total
 				 */
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(5);
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(6);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -317,8 +315,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			},
 		);
 
-		it('should use md5 if crc32 is returning undefined', async () => {
-			mockCalculateContentCRC32Undefined();
+		it('should use md5 if no using crc32', async () => {
 			mockMultipartUploadSuccess();
 			Amplify.libraryOptions = {
 				Storage: {
@@ -372,6 +369,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: file,
+					options: {
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+					},
 				},
 				file.size,
 			);
@@ -524,6 +524,23 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockDefaultStorage.setItem.mockReset();
 		});
 
+		it('should disable upload caching if resumableUploadsCache option is not set', async () => {
+			mockMultipartUploadSuccess();
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size,
+			);
+			await multipartUploadJob();
+			expect(mockDefaultStorage.getItem).not.toHaveBeenCalled();
+			expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
+			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+			expect(mockListParts).not.toHaveBeenCalled();
+		});
+
 		it('should send createMultipartUpload request if the upload task is not cached', async () => {
 			mockMultipartUploadSuccess();
 			const size = 8 * MB;
@@ -531,6 +548,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -559,6 +579,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -577,6 +600,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new File([new ArrayBuffer(size)], 'someName'),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -589,7 +615,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
 					// \d{13} is the file lastModified property of a file
-					/someName_\d{13}_8388608_application\/octet-stream_bucket_public_key/,
+					/someName_\d{13}_Jz3O2w==_8388608_application\/octet-stream_bucket_public_key/,
 				),
 			]);
 		});
@@ -612,6 +638,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -630,6 +659,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -657,6 +689,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -679,6 +714,9 @@ describe('getMultipartUploadHandlers with key', () => {
 				{
 					key: defaultKey,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -795,9 +833,7 @@ describe('getMultipartUploadHandlers with key', () => {
 		it('should send progress for cached upload parts', async () => {
 			mockMultipartUploadSuccess();
 
-			const mockDefaultStorage = defaultStorage as jest.Mocked<
-				typeof defaultStorage
-			>;
+			const mockDefaultStorage = jest.mocked(defaultStorage);
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[defaultCacheKey]: {
@@ -819,6 +855,7 @@ describe('getMultipartUploadHandlers with key', () => {
 					data: new ArrayBuffer(8 * MB),
 					options: {
 						onProgress,
+						resumableUploadsCache: mockDefaultStorage,
 					},
 				},
 				8 * MB,
@@ -942,6 +979,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				const { multipartUploadJob } = getMultipartUploadHandlers({
 					path: testPath,
 					data: twoPartsPayload,
+					options: {
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+					},
 				});
 				await multipartUploadJob();
 
@@ -952,9 +992,11 @@ describe('getMultipartUploadHandlers with path', () => {
 				 *
 				 * uploading each part calls calculateContentCRC32 1 time each
 				 *
-				 * these steps results in 5 calls in total
+				 * 1 time for optionsHash
+				 *
+				 * these steps results in 6 calls in total
 				 */
-				expect(calculateContentCRC32).toHaveBeenCalledTimes(5);
+				expect(calculateContentCRC32).toHaveBeenCalledTimes(6);
 				expect(calculateContentMd5).not.toHaveBeenCalled();
 				expect(mockUploadPart).toHaveBeenCalledTimes(2);
 				expect(mockUploadPart).toHaveBeenCalledWith(
@@ -968,8 +1010,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			},
 		);
 
-		it('should use md5 if crc32 is returning undefined', async () => {
-			mockCalculateContentCRC32Undefined();
+		it('should use md5 if no using crc32', async () => {
 			mockMultipartUploadSuccess();
 			Amplify.libraryOptions = {
 				Storage: {
@@ -1023,6 +1064,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: file,
+					options: {
+						checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
+					},
 				},
 				file.size,
 			);
@@ -1109,16 +1153,8 @@ describe('getMultipartUploadHandlers with path', () => {
 		});
 
 		describe('overwrite prevention', () => {
-			beforeEach(() => {
-				mockHeadObject.mockReset();
-				mockUploadPart.mockReset();
-			});
-
-			it('should upload if target key is not found', async () => {
-				expect.assertions(7);
-				const notFoundError = new Error('mock message');
-				notFoundError.name = 'NotFound';
-				mockHeadObject.mockRejectedValueOnce(notFoundError);
+			it('should include if-none-match header in complete request', async () => {
+				expect.assertions(3);
 				mockMultipartUploadSuccess();
 
 				const { multipartUploadJob } = getMultipartUploadHandlers({
@@ -1127,62 +1163,15 @@ describe('getMultipartUploadHandlers with path', () => {
 					options: { preventOverwrite: true },
 				});
 				await multipartUploadJob();
-
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockHeadObject).toHaveBeenCalledTimes(1);
-				await expect(mockHeadObject).toBeLastCalledWithConfigAndInput(
+				expect(mockCompleteMultipartUpload).toBeLastCalledWithConfigAndInput(
 					expect.objectContaining({
 						credentials,
 						region,
 					}),
 					expect.objectContaining({
-						Bucket: bucket,
-						Key: testPath,
+						IfNoneMatch: '*',
 					}),
 				);
-				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
-			});
-
-			it('should not upload if target key already exists', async () => {
-				expect.assertions(6);
-				mockHeadObject.mockResolvedValueOnce({
-					ContentLength: 0,
-					$metadata: {},
-				});
-				mockMultipartUploadSuccess();
-
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					path: testPath,
-					data: new ArrayBuffer(8 * MB),
-					options: { preventOverwrite: true },
-				});
-
-				await expect(multipartUploadJob()).rejects.toThrow(
-					'At least one of the pre-conditions you specified did not hold',
-				);
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
-			});
-
-			it('should not upload if HeadObject fails with other error', async () => {
-				expect.assertions(6);
-				const accessDeniedError = new Error('mock error');
-				accessDeniedError.name = 'AccessDenied';
-				mockHeadObject.mockRejectedValueOnce(accessDeniedError);
-				mockMultipartUploadSuccess();
-
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					path: testPath,
-					data: new ArrayBuffer(8 * MB),
-					options: { preventOverwrite: true },
-				});
-
-				await expect(multipartUploadJob()).rejects.toThrow('mock error');
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
 			});
 		});
 
@@ -1258,6 +1247,23 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockDefaultStorage.setItem.mockReset();
 		});
 
+		it('should disable upload caching if resumableUploadsCache option is not set', async () => {
+			mockMultipartUploadSuccess();
+			const size = 8 * MB;
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(size),
+				},
+				size,
+			);
+			await multipartUploadJob();
+			expect(mockDefaultStorage.getItem).not.toHaveBeenCalled();
+			expect(mockDefaultStorage.setItem).not.toHaveBeenCalled();
+			expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
+			expect(mockListParts).not.toHaveBeenCalled();
+		});
+
 		it('should send createMultipartUpload request if the upload task is not cached', async () => {
 			mockMultipartUploadSuccess();
 			const size = 8 * MB;
@@ -1265,6 +1271,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1293,6 +1302,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1311,6 +1323,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new File([new ArrayBuffer(size)], 'someName'),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1321,12 +1336,10 @@ describe('getMultipartUploadHandlers with path', () => {
 				mockDefaultStorage.setItem.mock.calls[0][1],
 			);
 
-			// \d{13} is the file lastModified property of a file
-			const lastModifiedRegex = /someName_\d{13}_/;
-
 			expect(Object.keys(cacheValue)).toEqual([
 				expect.stringMatching(
-					new RegExp(lastModifiedRegex.source + testPathCacheKey),
+					// \d{13} is the file lastModified property of a file
+					new RegExp('someName_\\d{13}_' + testPathCacheKey),
 				),
 			]);
 		});
@@ -1349,6 +1362,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1367,6 +1383,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1392,6 +1411,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1414,6 +1436,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				{
 					path: testPath,
 					data: new ArrayBuffer(size),
+					options: {
+						resumableUploadsCache: mockDefaultStorage,
+					},
 				},
 				size,
 			);
@@ -1530,9 +1555,8 @@ describe('getMultipartUploadHandlers with path', () => {
 		it('should send progress for cached upload parts', async () => {
 			mockMultipartUploadSuccess();
 
-			const mockDefaultStorage = defaultStorage as jest.Mocked<
-				typeof defaultStorage
-			>;
+			const mockDefaultStorage = jest.mocked(defaultStorage);
+
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
 					[testPathCacheKey]: {
@@ -1554,6 +1578,7 @@ describe('getMultipartUploadHandlers with path', () => {
 					data: new ArrayBuffer(8 * MB),
 					options: {
 						onProgress,
+						resumableUploadsCache: mockDefaultStorage,
 					},
 				},
 				8 * MB,

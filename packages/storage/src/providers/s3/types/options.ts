@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { StorageAccessLevel } from '@aws-amplify/core';
-import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import {
 	CredentialsProviderOptions,
 	SigningOptions,
 } from '@aws-amplify/core/internals/aws-client-utils';
+import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 
 import { TransferProgressEvent } from '../../../types';
 import {
@@ -26,6 +26,11 @@ export type AWSTemporaryCredentials = Required<
 >;
 
 /**
+ * Async function returning AWS credentials for an API call. This function
+ * is invoked with S3 locations(bucket and path).
+ * If omitted, the global credentials configured in Amplify Auth
+ * would be used.
+ *
  * @internal
  */
 export type LocationCredentialsProvider = (
@@ -35,6 +40,7 @@ export type LocationCredentialsProvider = (
 export interface BucketInfo {
 	bucketName: string;
 	region: string;
+	paths?: Record<string, Record<string, string[] | undefined>>;
 }
 
 export type StorageBucket = string | BucketInfo;
@@ -45,14 +51,12 @@ interface CommonOptions {
 	 */
 	useAccelerateEndpoint?: boolean;
 
-	/**
-	 * Async function returning AWS credentials for an API call. This function
-	 * is invoked with S3 locations(bucket and path).
-	 * If omitted, the global credentials configured in Amplify Auth
-	 * would be used.
-	 */
-	locationCredentialsProvider?: LocationCredentialsProvider;
 	bucket?: StorageBucket;
+
+	/**
+	 * The expected owner of the target bucket.
+	 */
+	expectedBucketOwner?: string;
 }
 
 /**
@@ -194,6 +198,8 @@ export type DownloadDataOptions = CommonOptions &
 export type DownloadDataWithKeyOptions = ReadOptions & DownloadDataOptions;
 export type DownloadDataWithPathOptions = DownloadDataOptions;
 
+export type UploadDataChecksumAlgorithm = 'crc-32';
+
 export type UploadDataOptions = CommonOptions &
 	TransferOptions & {
 		/**
@@ -224,6 +230,12 @@ export type UploadDataOptions = CommonOptions &
 		 * @default false
 		 */
 		preventOverwrite?: boolean;
+		/**
+		 * The algorithm used to compute a checksum for the object. Used to verify that the data received by S3
+		 * matches what was originally sent. Disabled by default.
+		 * @default undefined
+		 */
+		checksumAlgorithm?: UploadDataChecksumAlgorithm;
 	};
 
 /** @deprecated Use {@link UploadDataWithPathOptions} instead. */
@@ -235,6 +247,9 @@ export type CopySourceWithKeyOptions = ReadOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 	bucket?: StorageBucket;
+	notModifiedSince?: Date;
+	eTag?: string;
+	expectedBucketOwner?: string;
 };
 
 /** @deprecated This may be removed in the next major version. */
@@ -242,13 +257,19 @@ export type CopyDestinationWithKeyOptions = WriteOptions & {
 	/** @deprecated This may be removed in the next major version. */
 	key: string;
 	bucket?: StorageBucket;
+	expectedBucketOwner?: string;
 };
 
 export interface CopyWithPathSourceOptions {
 	bucket?: StorageBucket;
+	notModifiedSince?: Date;
+	eTag?: string;
+	expectedBucketOwner?: string;
 }
+
 export interface CopyWithPathDestinationOptions {
 	bucket?: StorageBucket;
+	expectedBucketOwner?: string;
 }
 
 /**

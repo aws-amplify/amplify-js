@@ -126,6 +126,16 @@ In your sample project, you can now link specific packages
 yarn link @aws-amplify/auth
 ```
 
+If you are testing with a Vite sample project, such as from the quickstart guide, and your changes to the library are not showing up in your local app when running `yarn run dev`, Vite caching may be the culprit. Try editing this line in your sample project's `package.json`.
+
+```diff
+"scripts": {
+- "dev": "vite",
++ "dev": "vite --force",
+  ...
+}
+```
+
 Passing unit tests are only necessary if you’re looking to contribute a pull request. If you’re just playing locally, you don’t need them. However, if you’re contributing a pull request for anything other than making a change to the documentation, fixing a formatting issue in the code (i.e., white space, missing semi-colons) or another task that does not impact the functionality of the code, you will need to validate your proposed changes with passing unit tests.
 
 #### Verdaccio

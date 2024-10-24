@@ -20,6 +20,7 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import type {
 	CreateMultipartUploadCommandInput,
@@ -46,12 +47,18 @@ const createMultipartUploadSerializer = async (
 		...(await serializeObjectConfigsToHeaders(input)),
 		...assignStringVariables({
 			'x-amz-checksum-algorithm': input.ChecksumAlgorithm,
+			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');
 	url.pathname = serializePathnameObjectKey(url, input.Key);
 	url.search = 'uploads';
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
 
 	return {
 		method: 'POST',

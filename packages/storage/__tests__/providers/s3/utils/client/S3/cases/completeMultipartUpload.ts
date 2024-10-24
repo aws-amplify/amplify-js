@@ -10,6 +10,30 @@ import {
 	expectedMetadata,
 } from './shared';
 
+const defaultExpectedRequest = {
+	url: expect.objectContaining({
+		href: 'https://bucket.s3.us-east-1.amazonaws.com/key?uploadId=uploadId',
+	}),
+	method: 'POST',
+	headers: expect.objectContaining({
+		'content-type': 'application/xml',
+	}),
+	body:
+		'<?xml version="1.0" encoding="UTF-8"?>' +
+		'<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">' +
+		'<Part>' +
+		'<ETag>etag1</ETag>' +
+		'<PartNumber>1</PartNumber>' +
+		'<ChecksumCRC32>test-checksum-1</ChecksumCRC32>' +
+		'</Part>' +
+		'<Part>' +
+		'<ETag>etag2</ETag>' +
+		'<PartNumber>2</PartNumber>' +
+		'<ChecksumCRC32>test-checksum-2</ChecksumCRC32>' +
+		'</Part>' +
+		'</CompleteMultipartUpload>',
+};
+
 // API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
 const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 	typeof completeMultipartUpload
@@ -37,29 +61,7 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 		},
 		UploadId: 'uploadId',
 	},
-	expect.objectContaining({
-		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?uploadId=uploadId',
-		}),
-		method: 'POST',
-		headers: expect.objectContaining({
-			'content-type': 'application/xml',
-		}),
-		body:
-			'<?xml version="1.0" encoding="UTF-8"?>' +
-			'<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">' +
-			'<Part>' +
-			'<ETag>etag1</ETag>' +
-			'<PartNumber>1</PartNumber>' +
-			'<ChecksumCRC32>test-checksum-1</ChecksumCRC32>' +
-			'</Part>' +
-			'<Part>' +
-			'<ETag>etag2</ETag>' +
-			'<PartNumber>2</PartNumber>' +
-			'<ChecksumCRC32>test-checksum-2</ChecksumCRC32>' +
-			'</Part>' +
-			'</CompleteMultipartUpload>',
-	}),
+	expect.objectContaining(defaultExpectedRequest),
 	{
 		status: 200,
 		headers: { ...DEFAULT_RESPONSE_HEADERS },
@@ -77,6 +79,29 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 		Key: 'key',
 		ETag: 'etag',
 	},
+];
+
+// API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
+const completeMultipartUploadHappyCaseIfNoneMatch: ApiFunctionalTestCase<
+	typeof completeMultipartUpload
+> = [
+	'happy case',
+	'completeMultipartUpload - if-none-match',
+	completeMultipartUpload,
+	defaultConfig,
+	{
+		...completeMultipartUploadHappyCase[4],
+		IfNoneMatch: 'mock-if-none-match',
+	},
+	expect.objectContaining({
+		...defaultExpectedRequest,
+		headers: {
+			'content-type': 'application/xml',
+			'If-None-Match': 'mock-if-none-match',
+		},
+	}),
+	completeMultipartUploadHappyCase[6],
+	completeMultipartUploadHappyCase[7],
 ];
 
 // API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
@@ -141,6 +166,7 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 
 export default [
 	completeMultipartUploadHappyCase,
+	completeMultipartUploadHappyCaseIfNoneMatch,
 	completeMultipartUploadErrorCase,
 	completeMultipartUploadErrorWith200CodeCase,
 ];

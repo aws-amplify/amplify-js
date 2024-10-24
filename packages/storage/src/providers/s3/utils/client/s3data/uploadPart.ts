@@ -21,6 +21,7 @@ import {
 	serializePathnameObjectKey,
 	validateS3RequiredParameter,
 } from '../utils';
+import { validateObjectUrl } from '../../validateObjectUrl';
 
 import { defaultConfig, parseXmlError } from './base';
 import type { UploadPartCommandInput, UploadPartCommandOutput } from './types';
@@ -36,6 +37,7 @@ export type UploadPartInput = Pick<
 	| 'Key'
 	| 'ContentMD5'
 	| 'ChecksumCRC32'
+	| 'ExpectedBucketOwner'
 >;
 
 export type UploadPartOutput = Pick<
@@ -48,8 +50,11 @@ const uploadPartSerializer = async (
 	endpoint: Endpoint,
 ): Promise<HttpRequest> => {
 	const headers = {
-		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
-		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
+		...assignStringVariables({
+			'x-amz-checksum-crc32': input.ChecksumCRC32,
+			'content-md5': input.ContentMD5,
+			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+		}),
 		'content-type': 'application/octet-stream',
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
@@ -61,6 +66,11 @@ const uploadPartSerializer = async (
 		partNumber: input.PartNumber + '',
 		uploadId: input.UploadId,
 	}).toString();
+	validateObjectUrl({
+		bucketName: input.Bucket,
+		key: input.Key,
+		objectURL: url,
+	});
 
 	return {
 		method: 'PUT',
