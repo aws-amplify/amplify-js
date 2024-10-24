@@ -155,7 +155,9 @@ export async function handleMFASetupChallenge({
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 
-	if (challengeResponse === 'EMAIL') {
+	const trimmedChallengeResponse = challengeResponse.trim();
+
+	if (trimmedChallengeResponse === 'EMAIL') {
 		return {
 			ChallengeName: 'MFA_SETUP',
 			Session: session,
@@ -166,7 +168,7 @@ export async function handleMFASetupChallenge({
 		};
 	}
 
-	if (challengeResponse === 'TOTP') {
+	if (trimmedChallengeResponse === 'TOTP') {
 		return {
 			ChallengeName: 'MFA_SETUP',
 			Session: session,
@@ -181,7 +183,7 @@ export async function handleMFASetupChallenge({
 		USERNAME: username,
 	};
 
-	const isTOTPCode = /^\d+$/.test(challengeResponse.trim());
+	const isTOTPCode = /^\d+$/.test(trimmedChallengeResponse);
 
 	if (isTOTPCode) {
 		const verifySoftwareToken = createVerifySoftwareTokenClient({
@@ -196,7 +198,7 @@ export async function handleMFASetupChallenge({
 				userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 			},
 			{
-				UserCode: challengeResponse,
+				UserCode: trimmedChallengeResponse,
 				Session: session,
 				FriendlyDeviceName: deviceName,
 			},
@@ -222,15 +224,18 @@ export async function handleMFASetupChallenge({
 		});
 
 		return respondToAuthChallenge(
-			{ region: getRegionFromUserPoolId(userPoolId) },
+			{
+				region: getRegionFromUserPoolId(userPoolId),
+				userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+			},
 			jsonReq,
 		);
 	}
 
-	const isEmail = /^\S+@\S+\.\S+$/.test(challengeResponse.trim());
+	const isEmail = trimmedChallengeResponse.includes('@');
 
 	if (isEmail) {
-		challengeResponses.EMAIL = challengeResponse;
+		challengeResponses.EMAIL = trimmedChallengeResponse;
 
 		const jsonReq: RespondToAuthChallengeCommandInput = {
 			ChallengeName: 'MFA_SETUP',
@@ -247,7 +252,10 @@ export async function handleMFASetupChallenge({
 		});
 
 		return respondToAuthChallenge(
-			{ region: getRegionFromUserPoolId(userPoolId) },
+			{
+				region: getRegionFromUserPoolId(userPoolId),
+				userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
+			},
 			jsonReq,
 		);
 	}
