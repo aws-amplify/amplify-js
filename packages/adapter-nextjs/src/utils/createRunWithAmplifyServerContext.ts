@@ -19,6 +19,14 @@ export const createRunWithAmplifyServerContext = ({
 }: {
 	config: ResourcesConfig;
 }) => {
+	let tokenValidator: ReturnType<typeof createTokenValidator>;
+	if (resourcesConfig?.Auth) {
+		tokenValidator = createTokenValidator({
+			userPoolId: resourcesConfig?.Auth.Cognito?.userPoolId,
+			userPoolClientId: resourcesConfig?.Auth.Cognito?.userPoolClientId,
+		});
+	}
+
 	const runWithAmplifyServerContext: NextServer.RunOperationWithContext =
 		async ({ nextServerContext, operation }) => {
 			// When the Auth config is presented, attempt to create a Amplify server
@@ -35,11 +43,7 @@ export const createRunWithAmplifyServerContext = ({
 								createCookieStorageAdapterFromNextServerContext(
 									nextServerContext,
 								),
-								createTokenValidator({
-									userPoolId: resourcesConfig?.Auth.Cognito?.userPoolId,
-									userPoolClientId:
-										resourcesConfig?.Auth.Cognito?.userPoolClientId,
-								}),
+								tokenValidator,
 							);
 				const credentialsProvider = createAWSCredentialsAndIdentityIdProvider(
 					resourcesConfig.Auth,
