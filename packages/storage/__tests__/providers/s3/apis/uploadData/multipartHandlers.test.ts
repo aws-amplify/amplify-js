@@ -1153,16 +1153,8 @@ describe('getMultipartUploadHandlers with path', () => {
 		});
 
 		describe('overwrite prevention', () => {
-			beforeEach(() => {
-				mockHeadObject.mockReset();
-				mockUploadPart.mockReset();
-			});
-
-			it('should upload if target key is not found', async () => {
-				expect.assertions(7);
-				const notFoundError = new Error('mock message');
-				notFoundError.name = 'NotFound';
-				mockHeadObject.mockRejectedValueOnce(notFoundError);
+			it('should include if-none-match header in complete request', async () => {
+				expect.assertions(3);
 				mockMultipartUploadSuccess();
 
 				const { multipartUploadJob } = getMultipartUploadHandlers({
@@ -1171,62 +1163,15 @@ describe('getMultipartUploadHandlers with path', () => {
 					options: { preventOverwrite: true },
 				});
 				await multipartUploadJob();
-
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockHeadObject).toHaveBeenCalledTimes(1);
-				await expect(mockHeadObject).toBeLastCalledWithConfigAndInput(
+				expect(mockCompleteMultipartUpload).toBeLastCalledWithConfigAndInput(
 					expect.objectContaining({
 						credentials,
 						region,
 					}),
 					expect.objectContaining({
-						Bucket: bucket,
-						Key: testPath,
+						IfNoneMatch: '*',
 					}),
 				);
-				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
-			});
-
-			it('should not upload if target key already exists', async () => {
-				expect.assertions(6);
-				mockHeadObject.mockResolvedValueOnce({
-					ContentLength: 0,
-					$metadata: {},
-				});
-				mockMultipartUploadSuccess();
-
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					path: testPath,
-					data: new ArrayBuffer(8 * MB),
-					options: { preventOverwrite: true },
-				});
-
-				await expect(multipartUploadJob()).rejects.toThrow(
-					'At least one of the pre-conditions you specified did not hold',
-				);
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
-			});
-
-			it('should not upload if HeadObject fails with other error', async () => {
-				expect.assertions(6);
-				const accessDeniedError = new Error('mock error');
-				accessDeniedError.name = 'AccessDenied';
-				mockHeadObject.mockRejectedValueOnce(accessDeniedError);
-				mockMultipartUploadSuccess();
-
-				const { multipartUploadJob } = getMultipartUploadHandlers({
-					path: testPath,
-					data: new ArrayBuffer(8 * MB),
-					options: { preventOverwrite: true },
-				});
-
-				await expect(multipartUploadJob()).rejects.toThrow('mock error');
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
 			});
 		});
 

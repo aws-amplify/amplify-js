@@ -367,6 +367,13 @@ export interface CompleteMultipartUploadRequest {
 	 *     <i>Amazon S3 User Guide</i>.</p>
 	 */
 	SSECustomerKeyMD5?: string;
+	/**
+	 * <p>Uploads the object only if the object key name does not already exist in the bucket specified. Otherwise, Amazon S3 returns a <code>412 Precondition Failed</code> error.</p>
+	 *          <p>If a conflicting operation occurs during the upload S3 returns a <code>409 ConditionalRequestConflict</code> response.  On a 409 failure you should re-initiate the multipart upload with <code>CreateMultipartUpload</code> and re-upload each part.</p>
+	 *          <p>Expects the '*' (asterisk) character.</p>
+	 *          <p>For more information about conditional requests, see <a href="https://tools.ietf.org/html/rfc7232">RFC 7232</a>, or <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-requests.html">Conditional requests</a> in the <i>Amazon S3 User Guide</i>.</p>
+	 */
+	IfNoneMatch?: string;
 }
 /**
  * @public
@@ -2534,6 +2541,13 @@ export interface PutObjectRequest {
 	 * <p>The account ID of the expected bucket owner. If the bucket is owned by a different account, the request fails with the HTTP status code <code>403 Forbidden</code> (access denied).</p>
 	 */
 	ExpectedBucketOwner?: string;
+	/**
+	 * <p>Uploads the object only if the object key name does not already exist in the bucket specified. Otherwise, Amazon S3 returns a <code>412 Precondition Failed</code> error.</p>
+	 *          <p>If a conflicting operation occurs during the upload S3 returns a <code>409 ConditionalRequestConflict</code> response. On a 409 failure you should retry the upload.</p>
+	 *          <p>Expects the '*' (asterisk) character.</p>
+	 *          <p>For more information about conditional requests, see <a href="https://tools.ietf.org/html/rfc7232">RFC 7232</a>, or <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-requests.html">Conditional requests</a> in the <i>Amazon S3 User Guide</i>.</p>
+	 */
+	IfNoneMatch?: string;
 }
 /**
  * This interface extends from `UploadPartRequest` interface. There are more parameters than `Body` defined in {@link UploadPartRequest}

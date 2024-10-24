@@ -46,6 +46,7 @@ export type CompleteMultipartUploadInput = Pick<
 	| 'MultipartUpload'
 	| 'ChecksumCRC32'
 	| 'ExpectedBucketOwner'
+	| 'IfNoneMatch'
 >;
 
 export type CompleteMultipartUploadOutput = Pick<
@@ -62,6 +63,7 @@ const completeMultipartUploadSerializer = async (
 		...assignStringVariables({
 			'x-amz-checksum-crc32': input.ChecksumCRC32,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			'If-None-Match': input.IfNoneMatch,
 		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
