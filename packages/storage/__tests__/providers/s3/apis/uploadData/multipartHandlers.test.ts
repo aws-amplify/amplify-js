@@ -1,9 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
-import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
-
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify, defaultStorage } from '@aws-amplify/core';
 
@@ -31,10 +28,6 @@ import { calculateContentCRC32 } from '../../../../../src/providers/s3/utils/crc
 import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
 import { byteLength } from '../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
 
-global.Blob = BlobPolyfill as any;
-global.File = FilePolyfill as any;
-global.WritableStream = WritableStreamPolyfill as any;
-
 jest.mock('@aws-amplify/core');
 jest.mock('../../../../../src/providers/s3/utils/client/s3data');
 jest.mock('../../../../../src/providers/s3/utils/crc32');
@@ -54,11 +47,6 @@ const defaultCacheKey =
 	'Jz3O2w==_8388608_application/octet-stream_bucket_public_key';
 const testPath = 'testPath/object';
 const testPathCacheKey = `Jz3O2w==_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
-
-const generateTestPathCacheKey = (optionsHash: string) =>
-	`${optionsHash}_8388608_${defaultContentType}_${bucket}_custom_${testPath}`;
-const generateDefaultCacheKey = (optionsHash: string) =>
-	`${optionsHash}_8388608_application/octet-stream_bucket_public_key`;
 
 const mockCreateMultipartUpload = jest.mocked(createMultipartUpload);
 const mockUploadPart = jest.mocked(uploadPart);
@@ -848,7 +836,7 @@ describe('getMultipartUploadHandlers with key', () => {
 			const mockDefaultStorage = jest.mocked(defaultStorage);
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
-					[generateDefaultCacheKey('Jz3O2w==')]: {
+					[defaultCacheKey]: {
 						uploadId: 'uploadId',
 						bucket,
 						key: defaultKey,
@@ -873,7 +861,7 @@ describe('getMultipartUploadHandlers with key', () => {
 				8 * MB,
 			);
 			await multipartUploadJob();
-			// expect(onProgress).toHaveBeenCalledTimes(3);
+			expect(onProgress).toHaveBeenCalledTimes(3);
 			// The first part's 5 MB progress is reported even though no uploadPart call is made.
 			expect(onProgress).toHaveBeenNthCalledWith(1, {
 				totalBytes: 8388608,
@@ -1571,7 +1559,7 @@ describe('getMultipartUploadHandlers with path', () => {
 
 			mockDefaultStorage.getItem.mockResolvedValue(
 				JSON.stringify({
-					[generateTestPathCacheKey('Jz3O2w==')]: {
+					[testPathCacheKey]: {
 						uploadId: 'uploadId',
 						bucket,
 						key: testPath,
