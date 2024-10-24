@@ -8,9 +8,8 @@ import { AuthValidationErrorCode } from '../../../src/errors/types/validation';
 import { getCurrentUser, signIn } from '../../../src/providers/cognito';
 import { InitiateAuthException } from '../../../src/providers/cognito/types/errors';
 import { USER_ALREADY_AUTHENTICATED_EXCEPTION } from '../../../src/errors/constants';
-import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
-import * as signInHelpers from '../../../src/providers/cognito/utils/signInHelpers';
 import { createInitiateAuthClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
+import { AuthErrorCodes } from '../../../src/common/AuthErrorStrings';
 
 import { authAPITestParams } from './testUtils/authApiTestParams';
 import { getMockError } from './testUtils/data';
@@ -28,11 +27,13 @@ jest.mock('../../../src/providers/cognito/apis/getCurrentUser');
 jest.mock(
 	'../../../src/foundation/factories/serviceClients/cognitoIdentityProvider',
 );
+jest.mock('../../../src/providers/cognito/tokenProvider');
 
 describe('signIn API error path cases:', () => {
 	// assert mocks
 	const mockCreateInitiateAuthClient = jest.mocked(createInitiateAuthClient);
 	const mockInitiateAuth = jest.fn();
+
 	const mockedGetCurrentUser = getCurrentUser as jest.Mock;
 
 	beforeAll(() => {
@@ -45,7 +46,7 @@ describe('signIn API error path cases:', () => {
 
 	afterEach(() => {
 		mockedGetCurrentUser.mockReset();
-		mockInitiateAuth.mockClear();
+		mockInitiateAuth.mockReset();
 	});
 
 	it('should throw an error when a user is already signed-in', async () => {
@@ -90,42 +91,44 @@ describe('signIn API error path cases:', () => {
 	});
 
 	it('should throw an error when service returns an error response', async () => {
-		expect.assertions(2);
 		mockInitiateAuth.mockImplementation(() => {
 			throw getMockError(InitiateAuthException.InvalidParameterException);
 		});
-		try {
-			await signIn({
-				username: authAPITestParams.user1.username,
-				password: authAPITestParams.user1.password,
-			});
-		} catch (error: any) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(InitiateAuthException.InvalidParameterException);
-		}
+
+		const p = signIn({
+			username: authAPITestParams.user1.username,
+			password: authAPITestParams.user1.password,
+		});
+
+		expect(p).rejects.toThrow(
+			new AuthError({
+				name: InitiateAuthException.InvalidParameterException,
+				message: 'Error message',
+			}),
+		);
 	});
 	it('should throw an error when sign in step is MFA_SETUP and there are no valid setup options', async () => {
-		expect.assertions(3);
+		mockInitiateAuth.mockImplementation(() => ({
+			ChallengeName: 'MFA_SETUP',
+			ChallengeParameters: {
+				MFAS_CAN_SETUP: '["SMS_MFA"]',
+			},
+			$metadata: {},
+		}));
 
-		jest
-			.spyOn(signInHelpers, 'handleUserSRPAuthFlow')
-			.mockImplementationOnce(async () => ({
-				ChallengeName: 'MFA_SETUP',
-				ChallengeParameters: {
-					MFAS_CAN_SETUP: '["SMS_MFA"]',
-				},
-				$metadata: {},
-			}));
+		const p = signIn({
+			username: authAPITestParams.user1.username,
+			password: authAPITestParams.user1.password,
+			options: {
+				authFlowType: 'USER_PASSWORD_AUTH',
+			},
+		});
 
-		try {
-			await signIn({
-				username: authAPITestParams.user1.username,
-				password: authAPITestParams.user1.password,
-			});
-		} catch (error: any) {
-			expect(error).toBeInstanceOf(AuthError);
-			expect(error.name).toBe(AuthErrorCodes.SignInException);
-			expect(error.message).toContain('SMS');
-		}
+		expect(p).rejects.toThrow(
+			new AuthError({
+				name: AuthErrorCodes.SignInException,
+				message: 'Cannot initiate MFA setup from available types: SMS',
+			}),
+		);
 	});
 });
