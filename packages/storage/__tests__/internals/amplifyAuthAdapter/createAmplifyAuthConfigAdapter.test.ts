@@ -33,12 +33,24 @@ const mockFetchAuthSession = fetchAuthSession as jest.Mock;
 const mockResolveLocationsFromCurrentSession =
 	resolveLocationsForCurrentSession as jest.Mock;
 
+const mockAuthConfig = {
+	Auth: {
+		Cognito: {
+			userPoolClientId: 'userPoolClientId',
+			userPoolId: 'userPoolId',
+			identityPoolId: 'identityPoolId',
+			groups: [{ admin: { precedence: 0 } }],
+		},
+	},
+};
+
 describe('createAmplifyAuthConfigAdapter', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
 	mockGetConfig.mockReturnValue({
+		...mockAuthConfig,
 		Storage: {
 			S3: {
 				bucket: 'bucket1',
@@ -70,7 +82,10 @@ describe('createAmplifyAuthConfigAdapter', () => {
 	});
 
 	it('should return empty locations when buckets are not defined', async () => {
-		mockGetConfig.mockReturnValue({ Storage: { S3: { buckets: undefined } } });
+		mockGetConfig.mockReturnValue({
+			...mockAuthConfig,
+			Storage: { S3: { buckets: undefined } },
+		});
 
 		const adapter = createAmplifyAuthConfigAdapter();
 		const result = await adapter.listLocations();
@@ -93,16 +108,15 @@ describe('createAmplifyAuthConfigAdapter', () => {
 		};
 
 		mockGetConfig.mockReturnValue({
+			...mockAuthConfig,
 			Storage: { S3: { buckets: mockBuckets } },
 		});
 		mockResolveLocationsFromCurrentSession.mockReturnValue([
 			{
 				type: 'PREFIX',
 				permission: ['read', 'write'],
-				scope: {
-					bucketName: 'bucket1',
-					path: '/path1',
-				},
+				bucket: 'bucket1',
+				prefix: '/path1',
 			},
 		]);
 
@@ -114,10 +128,8 @@ describe('createAmplifyAuthConfigAdapter', () => {
 				{
 					type: 'PREFIX',
 					permission: ['read', 'write'],
-					scope: {
-						bucketName: 'bucket1',
-						path: '/path1',
-					},
+					bucket: 'bucket1',
+					prefix: '/path1',
 				},
 			],
 		});
