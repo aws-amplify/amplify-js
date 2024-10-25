@@ -39,6 +39,8 @@ export type PutObjectInput = Pick<
 	| 'Metadata'
 	| 'Tagging'
 	| 'ChecksumCRC32'
+	| 'ExpectedBucketOwner'
+	| 'IfNoneMatch'
 >;
 
 export type PutObjectOutput = Pick<
@@ -57,8 +59,12 @@ const putObjectSerializer = async (
 			...input,
 			ContentType: input.ContentType ?? 'application/octet-stream',
 		})),
-		...assignStringVariables({ 'content-md5': input.ContentMD5 }),
-		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
+		...assignStringVariables({
+			'content-md5': input.ContentMD5,
+			'x-amz-checksum-crc32': input.ChecksumCRC32,
+			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			'If-None-Match': input.IfNoneMatch,
+		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');

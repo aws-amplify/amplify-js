@@ -15,6 +15,7 @@ import {
 import { MetadataBearer } from '@aws-sdk/types';
 
 import {
+	assignStringVariables,
 	buildStorageServiceError,
 	s3TransferHandler,
 	serializePathnameObjectKey,
@@ -27,7 +28,7 @@ import { defaultConfig, parseXmlError } from './base';
 
 export type AbortMultipartUploadInput = Pick<
 	AbortMultipartUploadCommandInput,
-	'Bucket' | 'Key' | 'UploadId'
+	'Bucket' | 'Key' | 'UploadId' | 'ExpectedBucketOwner'
 >;
 
 export type AbortMultipartUploadOutput = MetadataBearer;
@@ -48,10 +49,15 @@ const abortMultipartUploadSerializer = (
 		key: input.Key,
 		objectURL: url,
 	});
+	const headers = {
+		...assignStringVariables({
+			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+		}),
+	};
 
 	return {
 		method: 'DELETE',
-		headers: {},
+		headers,
 		url,
 	};
 };

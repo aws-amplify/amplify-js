@@ -43,6 +43,7 @@ const defaultIdentityId = 'defaultIdentityId';
 const etagValue = 'eTag';
 const lastModifiedValue = 'lastModified';
 const sizeValue = 'size';
+const validBucketOwner = '111122223333';
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -677,6 +678,7 @@ describe('list API', () => {
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
 		});
+
 		describe.each([
 			{
 				type: 'Prefix',
@@ -896,6 +898,138 @@ describe('list API', () => {
 					Delimiter: undefined,
 				},
 			);
+		});
+	});
+
+	describe(`List with path and Expected Bucket Owner`, () => {
+		describe(`v1`, () => {
+			const listAllWrapper = (input: ListAllInput): Promise<ListAllOutput> =>
+				list(input);
+			const listPaginatedWrapper = (
+				input: ListPaginateInput,
+			): Promise<ListPaginateOutput> => list(input);
+			const resolvePath = (
+				path: string | (({ identityId }: { identityId: string }) => string),
+			) =>
+				typeof path === 'string'
+					? path
+					: path({ identityId: defaultIdentityId });
+			const mockPrefix = 'test-path';
+			const mockBucket = 'bucket-1';
+			const mockRegion = 'region-1';
+			afterEach(() => {
+				jest.clearAllMocks();
+				mockListObject.mockClear();
+			});
+			it('should include expectedBucketOwner in headers with listAll call when provided', async () => {
+				const resolvedPath = resolvePath(mockPrefix);
+				mockListObjectsV2ApiWithPages(3);
+				await listAllWrapper({
+					prefix: resolvedPath,
+					options: {
+						bucket: { bucketName: mockBucket, region: mockRegion },
+						listAll: true,
+						expectedBucketOwner: validBucketOwner,
+					},
+				});
+
+				expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
+					1,
+					expect.any(Object),
+					expect.objectContaining({
+						ExpectedBucketOwner: validBucketOwner,
+					}),
+				);
+			});
+			it('should include expectedBucketOwner in headers with paginated call when provided', async () => {
+				const resolvedPath = resolvePath(mockPrefix);
+				mockListObjectsV2ApiWithPages(3);
+				const customPageSize = 5;
+				await listPaginatedWrapper({
+					prefix: resolvedPath,
+					options: {
+						bucket: { bucketName: mockBucket, region: mockRegion },
+						listAll: false,
+						pageSize: customPageSize,
+						expectedBucketOwner: validBucketOwner,
+					},
+				});
+
+				expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					expect.any(Object),
+					expect.objectContaining({
+						ExpectedBucketOwner: validBucketOwner,
+					}),
+				);
+			});
+		});
+
+		describe(`v2`, () => {
+			const listAllWrapper = (
+				input: ListAllWithPathInput,
+			): Promise<ListAllWithPathOutput> => list(input);
+			const listPaginatedWrapper = (
+				input: ListPaginateWithPathInput,
+			): Promise<ListPaginateWithPathOutput> => list(input);
+			const resolvePath = (
+				path: string | (({ identityId }: { identityId: string }) => string),
+			) =>
+				typeof path === 'string'
+					? path
+					: path({ identityId: defaultIdentityId });
+			const mockPath = 'public/test-path';
+			const mockBucket = 'bucket-1';
+			const mockRegion = 'region-1';
+			afterEach(() => {
+				jest.clearAllMocks();
+				mockListObject.mockClear();
+			});
+			it('should include expectedBucketOwner in headers with listAll call when provided', async () => {
+				const resolvedPath = resolvePath(mockPath);
+				mockListObjectsV2ApiWithPages(3);
+				await listAllWrapper({
+					path: resolvedPath,
+					options: {
+						bucket: { bucketName: mockBucket, region: mockRegion },
+						listAll: true,
+						expectedBucketOwner: validBucketOwner,
+					},
+				});
+
+				expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
+					1,
+					expect.any(Object),
+					expect.objectContaining({
+						Bucket: mockBucket,
+						MaxKeys: 1000,
+						Prefix: mockPath,
+						ExpectedBucketOwner: validBucketOwner,
+					}),
+				);
+			});
+			it('should include expectedBucketOwner in headers with paginated call when provided', async () => {
+				const resolvedPath = resolvePath(mockPath);
+				mockListObjectsV2ApiWithPages(3);
+				const customPageSize = 5;
+				await listPaginatedWrapper({
+					path: resolvedPath,
+					options: {
+						bucket: { bucketName: mockBucket, region: mockRegion },
+						listAll: false,
+						pageSize: customPageSize,
+						expectedBucketOwner: validBucketOwner,
+					},
+				});
+
+				expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+					expect.any(Object),
+					expect.objectContaining({
+						Bucket: mockBucket,
+						Prefix: mockPath,
+						ExpectedBucketOwner: validBucketOwner,
+					}),
+				);
+			});
 		});
 	});
 });

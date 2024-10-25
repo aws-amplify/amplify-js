@@ -6,35 +6,6 @@ import { DownloadDataInput } from '../types/inputs';
 import { DownloadDataOutput } from '../types/outputs';
 
 /**
- * Download S3 object data to memory
- *
- * @param input - The `DownloadDataInput` object.
- * @returns A cancelable task exposing result promise from `result` property.
- * @throws service: `S3Exception` - thrown when checking for existence of the object
- * @throws validation: `StorageValidationErrorCode` - Validation errors
- *
- * @example
- * ```ts
- * // Download a file from s3 bucket
- * const { body, eTag } = await downloadData({ path, options: {
- *   onProgress, // Optional progress callback.
- * } }).result;
- * ```
- * @example
- * ```ts
- * // Cancel a task
- * const downloadTask = downloadData({ path });
- * //...
- * downloadTask.cancel();
- * try {
- * 	await downloadTask.result;
- * } catch (error) {
- * 	if(isCancelError(error)) {
- *    // Handle error thrown by task cancelation.
- * 	}
- * }
- *```
- *
  * @internal
  */
 export const downloadData = (input: DownloadDataInput): DownloadDataOutput =>
@@ -46,6 +17,7 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput =>
 			locationCredentialsProvider: input?.options?.locationCredentialsProvider,
 			bytesRange: input?.options?.bytesRange,
 			onProgress: input?.options?.onProgress,
+			expectedBucketOwner: input?.options?.expectedBucketOwner,
 		},
 		// Type casting is necessary because `downloadDataInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.

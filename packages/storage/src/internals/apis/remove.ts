@@ -8,13 +8,6 @@ import { RemoveInput } from '../types/inputs';
 import { RemoveOutput } from '../types/outputs';
 
 /**
- * Remove a file from your S3 bucket.
- * @param input - The `RemoveInput` object.
- * @return Output containing the removed object path.
- * @throws service: `S3Exception` - S3 service errors thrown while while removing the object.
- * @throws validation: `StorageValidationErrorCode` - Validation errors thrown
- * when there is no path or path is empty or path has a leading slash.
- *
  * @internal
  */
 export const remove = (input: RemoveInput): Promise<RemoveOutput> =>
@@ -23,6 +16,7 @@ export const remove = (input: RemoveInput): Promise<RemoveOutput> =>
 		options: {
 			useAccelerateEndpoint: input?.options?.useAccelerateEndpoint,
 			bucket: input?.options?.bucket,
+			expectedBucketOwner: input?.options?.expectedBucketOwner,
 			locationCredentialsProvider: input?.options?.locationCredentialsProvider,
 		},
 		// Type casting is necessary because `removeInternal` supports both Gen1 and Gen2 signatures, but here

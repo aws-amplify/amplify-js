@@ -1,19 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Blob as BlobPolyfill, File as FilePolyfill } from 'node:buffer';
-import { WritableStream as WritableStreamPolyfill } from 'node:stream/web';
 import {
 	TextDecoder as TextDecoderPolyfill,
 	TextEncoder as TextEncoderPolyfill,
 } from 'node:util';
 
 import { getCombinedCrc32 } from '../../../../src/providers/s3/utils/getCombinedCrc32';
-import { byteLength } from '../../../../src/providers/s3/apis/uploadData/byteLength';
+import { byteLength } from '../../../../src/providers/s3/apis/internal/uploadData/byteLength';
 
-global.Blob = BlobPolyfill as any;
-global.File = FilePolyfill as any;
-global.WritableStream = WritableStreamPolyfill as any;
 global.TextEncoder = TextEncoderPolyfill as any;
 global.TextDecoder = TextDecoderPolyfill as any;
 

@@ -40,7 +40,13 @@ const INVALID_PARAMETER_ERROR_MSG =
 
 export type CompleteMultipartUploadInput = Pick<
 	CompleteMultipartUploadCommandInput,
-	'Bucket' | 'Key' | 'UploadId' | 'MultipartUpload' | 'ChecksumCRC32'
+	| 'Bucket'
+	| 'Key'
+	| 'UploadId'
+	| 'MultipartUpload'
+	| 'ChecksumCRC32'
+	| 'ExpectedBucketOwner'
+	| 'IfNoneMatch'
 >;
 
 export type CompleteMultipartUploadOutput = Pick<
@@ -54,7 +60,11 @@ const completeMultipartUploadSerializer = async (
 ): Promise<HttpRequest> => {
 	const headers = {
 		'content-type': 'application/xml',
-		...assignStringVariables({ 'x-amz-checksum-crc32': input.ChecksumCRC32 }),
+		...assignStringVariables({
+			'x-amz-checksum-crc32': input.ChecksumCRC32,
+			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
+			'If-None-Match': input.IfNoneMatch,
+		}),
 	};
 	const url = new AmplifyUrl(endpoint.url.toString());
 	validateS3RequiredParameter(!!input.Key, 'Key');

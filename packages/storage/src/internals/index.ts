@@ -3,7 +3,7 @@
 
 export { StorageSubpathStrategy } from '../types/options';
 
-export { Permission } from './types/common';
+export { Permission, LocationType } from './types/common';
 
 /*
 Internal APIs
@@ -14,8 +14,11 @@ export {
 	GetPropertiesInput,
 	GetUrlInput,
 	CopyInput,
-	ListInputWithPath,
+	ListInput,
+	ListAllInput,
+	ListPaginateInput,
 	RemoveInput,
+	UploadDataInput,
 	DownloadDataInput,
 } from './types/inputs';
 export {
@@ -24,7 +27,10 @@ export {
 	GetPropertiesOutput,
 	GetUrlOutput,
 	RemoveOutput,
+	UploadDataOutput,
 	DownloadDataOutput,
+	ListOutput,
+	CopyOutput,
 } from './types/outputs';
 
 export { getDataAccess } from './apis/getDataAccess';
@@ -33,27 +39,38 @@ export { list } from './apis/list';
 export { getProperties } from './apis/getProperties';
 export { getUrl } from './apis/getUrl';
 export { remove } from './apis/remove';
+export { uploadData } from './apis/uploadData';
 export { downloadData } from './apis/downloadData';
+export { copy } from './apis/copy';
 
 /*
 CredentialsStore exports
 */
-export { createLocationCredentialsStore } from './locationCredentialsStore';
+export { createAmplifyAuthConfigAdapter } from './amplifyAuthConfigAdapter/createAmplifyAuthConfigAdapter';
 export {
-	AuthConfigAdapter,
-	createManagedAuthConfigAdapter,
-	CreateManagedAuthConfigAdapterInput,
-} from './managedAuthConfigAdapter';
-export {
-	GetLocationCredentials,
+	CredentialsLocation,
 	ListLocations,
-	LocationCredentialsStore,
-	CreateLocationCredentialsStoreInput,
+	LocationAccess,
 	LocationCredentials,
 	ListLocationsInput,
 	ListLocationsOutput,
-	GetLocationCredentialsInput,
-	GetLocationCredentialsOutput,
+	CredentialsProvider,
 } from './types/credentials';
 
-export { AWSTemporaryCredentials } from '../providers/s3/types/options';
+export {
+	AWSTemporaryCredentials,
+	LocationCredentialsProvider,
+} from '../providers/s3/types/options';
+
+/**
+ * Internal util functions
+ */
+export { assertValidationError } from '../errors/utils/assertValidationError';
+
+/**
+ * Utility types
+ */
+export {
+	StorageValidationErrorCode,
+	validationErrorMap,
+} from '../errors/types/validation';

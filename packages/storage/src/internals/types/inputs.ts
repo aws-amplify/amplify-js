@@ -11,12 +11,11 @@ import {
 	DownloadDataWithPathInput,
 	GetPropertiesWithPathInput,
 	GetUrlWithPathInput,
-	RemoveWithPathInput,
-} from '../../providers/s3';
-import {
 	ListAllWithPathInput,
 	ListPaginateWithPathInput,
-} from '../../providers/s3/types/inputs';
+	RemoveWithPathInput,
+	UploadDataWithPathInput,
+} from '../../providers/s3';
 
 import { CredentialsProvider, ListLocationsInput } from './credentials';
 import { Permission, PrefixType, Privilege } from './common';
@@ -52,10 +51,23 @@ export interface AdvancedOptions {
 /**
  * @internal
  */
-export type ListInputWithPath = ExtendInputWithAdvancedOptions<
-	ListAllWithPathInput | ListPaginateWithPathInput,
+export type ListAllInput = ExtendInputWithAdvancedOptions<
+	ListAllWithPathInput,
 	AdvancedOptions
 >;
+
+/**
+ * @internal
+ */
+export type ListPaginateInput = ExtendInputWithAdvancedOptions<
+	ListPaginateWithPathInput,
+	AdvancedOptions
+>;
+
+/**
+ * @internal
+ */
+export type ListInput = ListAllInput | ListPaginateInput;
 
 /**
  * @internal
@@ -89,6 +101,13 @@ export type CopyInput = ExtendCopyInputWithAdvancedOptions<
 	AdvancedOptions
 >;
 
+export type UploadDataInput = ExtendInputWithAdvancedOptions<
+	UploadDataWithPathInput,
+	{
+		locationCredentialsProvider?: CredentialsProvider;
+	}
+>;
+
 /**
  * @internal
  */
@@ -104,8 +123,7 @@ export type DownloadDataInput = ExtendInputWithAdvancedOptions<
 type ExtendInputWithAdvancedOptions<InputType, ExtendedOptionsType> =
 	InputType extends StorageOperationInputWithPath &
 		StorageOperationOptionsInput<infer PublicInputOptionsType>
-		? {
-				path: InputType['path'];
+		? InputType & {
 				options?: PublicInputOptionsType & ExtendedOptionsType;
 			}
 		: never;
