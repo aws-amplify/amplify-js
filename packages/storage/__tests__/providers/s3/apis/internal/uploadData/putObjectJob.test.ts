@@ -4,17 +4,17 @@
 import { AWSCredentials } from '@aws-amplify/core/internals/utils';
 import { Amplify } from '@aws-amplify/core';
 
-import { putObject } from '../../../../../src/providers/s3/utils/client/s3data';
-import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
-import * as CRC32 from '../../../../../src/providers/s3/utils/crc32';
-import { putObjectJob } from '../../../../../src/providers/s3/apis/internal/uploadData/putObjectJob';
+import { putObject } from '../../../../../../src/providers/s3/utils/client/s3data';
+import { calculateContentMd5 } from '../../../../../../src/providers/s3/utils';
+import * as CRC32 from '../../../../../../src/providers/s3/utils/crc32';
+import { putObjectJob } from '../../../../../../src/providers/s3/apis/internal/uploadData/putObjectJob';
 import '../testUtils';
-import { UploadDataChecksumAlgorithm } from '../../../../../src/providers/s3/types/options';
-import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../src/providers/s3/utils/constants';
+import { UploadDataChecksumAlgorithm } from '../../../../../../src/providers/s3/types/options';
+import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../../../src/providers/s3/utils/constants';
 
-jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('../../../../../src/providers/s3/utils', () => {
-	const utils = jest.requireActual('../../../../../src/providers/s3/utils');
+jest.mock('../../../../../../src/providers/s3/utils/client/s3data');
+jest.mock('../../../../../../src/providers/s3/utils', () => {
+	const utils = jest.requireActual('../../../../../../src/providers/s3/utils');
 
 	return {
 		...utils,

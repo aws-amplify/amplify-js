@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { byteLength } from '../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
+import { byteLength } from '../../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
 
 describe('byteLength', () => {
 	it('returns 0 for null or undefined', () => {
