@@ -12,7 +12,6 @@ import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	AmplifyUrl,
 	CustomUserAgentDetails,
-	GraphQLAuthMode,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core/internals/utils';
 import { isCancelError as isCancelErrorREST } from '@aws-amplify/api-rest';
@@ -30,17 +29,11 @@ import { AWSAppSyncRealTimeProvider } from '../Providers/AWSAppSyncRealTimeProvi
 import { GraphQLOperation, GraphQLOptions, GraphQLResult } from '../types';
 import { resolveConfig, resolveLibraryOptions } from '../utils';
 import { repackageUnauthorizedError } from '../utils/errors/repackageAuthError';
-import {
-	NO_API_KEY,
-	NO_AUTH_TOKEN_HEADER,
-	NO_ENDPOINT,
-	NO_SIGNED_IN_USER,
-	NO_VALID_AUTH_TOKEN,
-	NO_VALID_CREDENTIALS,
-} from '../utils/errors/constants';
+import { NO_ENDPOINT } from '../utils/errors/constants';
 import { GraphQLApiError, createGraphQLResultWithError } from '../utils/errors';
 
 import { isGraphQLResponseWithErrors } from './utils/runtimeTypeGuards/isGraphQLResponseWithErrors';
+import { headerBasedAuth } from './graphqlAuth';
 
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -70,80 +63,6 @@ export class InternalGraphQLAPIClass {
 
 	public getModuleName() {
 		return 'InternalGraphQLAPI';
-	}
-
-	private async _headerBasedAuth(
-		amplify: AmplifyClassV6,
-		authMode: GraphQLAuthMode,
-		additionalHeaders: Record<string, string> = {},
-	) {
-		const { apiKey } = resolveConfig(amplify);
-
-		let headers = {};
-
-		switch (authMode) {
-			case 'apiKey':
-				if (!apiKey) {
-					throw new GraphQLApiError(NO_API_KEY);
-				}
-				headers = {
-					'X-Api-Key': apiKey,
-				};
-				break;
-			case 'iam': {
-				const session = await amplify.Auth.fetchAuthSession();
-				if (session.credentials === undefined) {
-					throw new GraphQLApiError(NO_VALID_CREDENTIALS);
-				}
-				break;
-			}
-			case 'oidc':
-			case 'userPool': {
-				let token: string | undefined;
-
-				try {
-					token = (
-						await amplify.Auth.fetchAuthSession()
-					).tokens?.accessToken.toString();
-				} catch (e) {
-					// fetchAuthSession failed
-					throw new GraphQLApiError({
-						...NO_SIGNED_IN_USER,
-						underlyingError: e,
-					});
-				}
-
-				// `fetchAuthSession()` succeeded but didn't return `tokens`.
-				// This may happen when unauthenticated access is enabled and there is
-				// no user signed in.
-				if (!token) {
-					throw new GraphQLApiError(NO_VALID_AUTH_TOKEN);
-				}
-
-				headers = {
-					Authorization: token,
-				};
-				break;
-			}
-			case 'lambda':
-				if (
-					typeof additionalHeaders === 'object' &&
-					!additionalHeaders.Authorization
-				) {
-					throw new GraphQLApiError(NO_AUTH_TOKEN_HEADER);
-				}
-
-				headers = {
-					Authorization: additionalHeaders.Authorization,
-				};
-				break;
-			case 'none':
-				break;
-			default:
-				break;
-		}
-
-		return headers;
 	}
 
 	/**
@@ -252,6 +171,7 @@ export class InternalGraphQLAPIClass {
 		authToken?: string,
 	): Promise<GraphQLResult<T>> {
 		const {
+			apiKey,
 			region,
 			endpoint: appSyncGraphqlEndpoint,
 			customEndpoint,
@@ -303,29 +223,22 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		// TODO: Figure what we need to do to remove `!`'s.
+		const authHeaders = await headerBasedAuth(
+			amplify,
+			authMode,
+			apiKey,
+			additionalCustomHeaders,
+		);
+
 		const headers = {
-			...(!customEndpoint &&
-				(await this._headerBasedAuth(
-					amplify,
-					authMode!,
-					additionalCustomHeaders,
-				))),
+			...(!customEndpoint && authHeaders),
 			/**
 			 * Custom endpoint headers.
 			 * If there is both a custom endpoint and custom region present, we get the headers.
 			 * If there is a custom endpoint but no region, we return an empty object.
 			 * If neither are present, we return an empty object.
 			 */
-			...((customEndpoint &&
-				(customEndpointRegion
-					? await this._headerBasedAuth(
-							amplify,
-							authMode!,
-							additionalCustomHeaders,
-						)
-					: {})) ||
-				{}),
+			...((customEndpoint && (customEndpointRegion ? authHeaders : {})) || {}),
 			// Custom headers included in Amplify configuration options:
 			...(customHeaders &&
 				(await customHeaders({
@@ -378,9 +291,9 @@ export class InternalGraphQLAPIClass {
 		let response: any;
 
 		try {
-			// See the inline doc of the REST `post()` API for possible errors to be thrown.
-			// As these errors are catastrophic they should be caught and handled by GraphQL
-			// API consumers.
+			// 	// // See the inline doc of the REST `post()` API for possible errors to be thrown.
+			// 	// // As these errors are catastrophic they should be caught and handled by GraphQL
+			// 	// // API consumers.
 			const { body: responseBody } = await this._api.post(amplify, {
 				url: new AmplifyUrl(endpoint),
 				options: {

@@ -6,14 +6,19 @@ import type { V6Client } from '@aws-amplify/api-graphql';
 export { GraphQLQuery, GraphQLSubscription, SelectionSet } from './types';
 export { generateClient } from './API';
 
-export { GraphQLAuthError, ConnectionState } from '@aws-amplify/api-graphql';
+export {
+	GraphQLAuthError,
+	ConnectionState,
+	EventsChannel,
+	EventsOptions,
+} from '@aws-amplify/api-graphql';
 
 export type {
 	GraphQLResult,
 	GraphQLReturnType,
 } from '@aws-amplify/api-graphql';
 
-export { CONNECTION_STATE_CHANGE } from '@aws-amplify/api-graphql';
+export { CONNECTION_STATE_CHANGE, events } from '@aws-amplify/api-graphql';
 
 // explicitly defaulting to `never` here resolves
 // TS2589: Type instantiation is excessively deep and possibly infinite.
