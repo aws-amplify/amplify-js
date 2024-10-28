@@ -13,7 +13,7 @@ const protocol = 'wss://';
 const standardDomainPattern =
 	/^https:\/\/\w{26}\.appsync-api\.\w{2}(?:(?:-\w{2,})+)-\d\.amazonaws.com(?:\.cn)?\/graphql$/i;
 const eventDomainPattern =
-	/^https:\/\/\w{26}\.ddpg-api\.\w{2}(?:(?:-\w{2,})+)-\d\.amazonaws.com(?:\.cn)?\/event$/i;
+	/^https:\/\/\w{26}\.\w+-api\.\w{2}(?:(?:-\w{2,})+)-\d\.amazonaws.com(?:\.cn)?\/event$/i;
 const customDomainPath = '/realtime';
 
 export const isCustomDomain = (url: string): boolean => {
@@ -31,7 +31,8 @@ export const getRealtimeEndpointUrl = (
 	if (isEventDomain(realtimeEndpoint)) {
 		realtimeEndpoint = realtimeEndpoint
 			.concat(customDomainPath)
-			.replace('ddpg-api', 'grt-gamma');
+			.replace('ddpg-api', 'grt-gamma')
+			.replace('appsync-api', 'appsync-realtime-api');
 	} else if (isCustomDomain(realtimeEndpoint)) {
 		realtimeEndpoint = realtimeEndpoint.concat(customDomainPath);
 	} else {
