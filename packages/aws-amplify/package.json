@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.89 kB"
+			"limit": "15.91 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -485,7 +485,7 @@
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "15.50 kB"
+			"limit": "15.55 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
