@@ -14,11 +14,15 @@ import {
 	passkeyCredentialCreateOptions,
 	passkeyRegistrationResult,
 } from '../../mockData';
-import { serializePkcToJson } from '../../../src/client/utils/passkey/serde';
+import { serializePkcWithAttestationToJson } from '../../../src/client/utils/passkey/serde';
 import * as utils from '../../../src/client/utils';
 import { getIsPasskeySupported } from '../../../src/client/utils/passkey/getIsPasskeySupported';
 import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
+import {
+	assertCredentialIsPkcWithAuthenticatorAssertionResponse,
+	assertCredentialIsPkcWithAuthenticatorAttestationResponse,
+} from '../../../src/client/utils/passkey/types';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -34,6 +38,7 @@ jest.mock(
 jest.mock('../../../src/providers/cognito/factories');
 
 jest.mock('../../../src/client/utils/passkey/getIsPasskeySupported');
+jest.mock('../../../src/client/utils/passkey/types');
 
 Object.assign(navigator, {
 	credentials: {
@@ -62,6 +67,11 @@ describe('associateWebAuthnCredential', () => {
 		createVerifyWebAuthnRegistrationResultClient,
 	);
 
+	const mockAssertCredentialIsPkcWithAuthenticatorAssertionResponse =
+		jest.mocked(assertCredentialIsPkcWithAuthenticatorAssertionResponse);
+	const mockAssertCredentialIsPkcWithAuthenticatorAttestationResponse =
+		jest.mocked(assertCredentialIsPkcWithAuthenticatorAttestationResponse);
+
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
 		mockFetchAuthSession.mockResolvedValue({
@@ -80,6 +90,12 @@ describe('associateWebAuthnCredential', () => {
 		navigatorCredentialsCreateSpy.mockResolvedValue(passkeyRegistrationResult);
 
 		mockGetIsPasskeySupported.mockReturnValue(true);
+		mockAssertCredentialIsPkcWithAuthenticatorAssertionResponse.mockImplementation(
+			() => undefined,
+		);
+		mockAssertCredentialIsPkcWithAuthenticatorAttestationResponse.mockImplementation(
+			() => undefined,
+		);
 	});
 
 	afterEach(() => {
@@ -121,7 +137,7 @@ describe('associateWebAuthnCredential', () => {
 			{
 				AccessToken: mockAccessToken,
 				Credential: JSON.stringify(
-					serializePkcToJson(passkeyRegistrationResult),
+					serializePkcWithAttestationToJson(passkeyRegistrationResult),
 				),
 			},
 		);

@@ -25,7 +25,6 @@ import {
 	PasskeyErrorCode,
 	assertPasskeyError,
 } from '../utils/passkey/errors';
-import { AssociateWebAuthnCredentialOutput } from '../types';
 import { AuthError } from '../../errors/AuthError';
 
 /**
@@ -41,7 +40,7 @@ import { AuthError } from '../../errors/AuthError';
  * @throws - {@link VerifyWebAuthnRegistrationResultException}
  * - Thrown due to a service error when verifying WebAuthn registration result
  */
-export async function associateWebAuthnCredential(): Promise<AssociateWebAuthnCredentialOutput> {
+export async function associateWebAuthnCredential(): Promise<void> {
 	const authConfig = Amplify.getConfig().Auth?.Cognito;
 
 	assertTokenProviderConfig(authConfig);
@@ -98,8 +97,4 @@ export async function associateWebAuthnCredential(): Promise<AssociateWebAuthnCr
 			Credential: JSON.stringify(cred),
 		},
 	);
-
-	return {
-		credentialId: cred.id,
-	};
 }

@@ -7,20 +7,24 @@ import {
 } from '../../../foundation/convert';
 
 import {
-	PasskeyCreateOptions,
 	PasskeyCreateOptionsJson,
-	PasskeyCreateResult,
 	PasskeyCreateResultJson,
+	PasskeyGetOptionsJson,
+	PasskeyGetResultJson,
+	PkcAssertionResponse,
+	PkcAttestationResponse,
+	PkcWithAuthenticatorAssertionResponse,
+	PkcWithAuthenticatorAttestationResponse,
 } from './types';
 
 /**
- * Deserializes Public Key Credential JSON
+ * Deserializes Public Key Credential Creation Options JSON
  * @param input PasskeyCreateOptionsJson
- * @returns PasskeyCreateOptions
+ * @returns PublicKeyCredentialCreationOptions
  */
 export const deserializeJsonToPkcCreationOptions = (
 	input: PasskeyCreateOptionsJson,
-): PasskeyCreateOptions => {
+): PublicKeyCredentialCreationOptions => {
 	const userIdBuffer = convertBase64UrlToArrayBuffer(input.user.id);
 	const challengeBuffer = convertBase64UrlToArrayBuffer(input.challenge);
 	const excludeCredentialsWithBuffer = (input.excludeCredentials || []).map(
@@ -42,24 +46,106 @@ export const deserializeJsonToPkcCreationOptions = (
 };
 
 /**
- * Serializes a Public Key Credential to JSON
+ * Serializes a Public Key Credential With Attestation to JSON
  * @param input PasskeyCreateResult
  * @returns PasskeyCreateResultJson
  */
-export const serializePkcToJson = (
-	input: PasskeyCreateResult,
+export const serializePkcWithAttestationToJson = (
+	input: PkcWithAuthenticatorAttestationResponse,
 ): PasskeyCreateResultJson => {
-	return {
+	const response: PkcAttestationResponse<string> = {
+		clientDataJSON: convertArrayBufferToBase64Url(
+			input.response.clientDataJSON,
+		),
+		attestationObject: convertArrayBufferToBase64Url(
+			input.response.attestationObject,
+		),
+		transports: input.response.getTransports(),
+		publicKeyAlgorithm: input.response.getPublicKeyAlgorithm(),
+		authenticatorData: convertArrayBufferToBase64Url(
+			input.response.getAuthenticatorData(),
+		),
+	};
+
+	const publicKey = input.response.getPublicKey();
+
+	if (publicKey) {
+		response.publicKey = convertArrayBufferToBase64Url(publicKey);
+	}
+
+	const resultJson: PasskeyCreateResultJson = {
 		type: input.type,
 		id: input.id,
 		rawId: convertArrayBufferToBase64Url(input.rawId),
-		response: {
-			clientDataJSON: convertArrayBufferToBase64Url(
-				input.response.clientDataJSON,
-			),
-			attestationObject: convertArrayBufferToBase64Url(
-				input.response.attestationObject,
-			),
-		},
+		clientExtensionResults: input.getClientExtensionResults(),
+		response,
 	};
+
+	if (input.authenticatorAttachment) {
+		resultJson.authenticatorAttachment = input.authenticatorAttachment;
+	}
+
+	return resultJson;
+};
+
+/**
+ * Deserializes Public Key Credential Get Options JSON
+ * @param input PasskeyGetOptionsJson
+ * @returns PublicKeyCredentialRequestOptions
+ */
+export const deserializeJsonToPkcGetOptions = (
+	input: PasskeyGetOptionsJson,
+): PublicKeyCredentialRequestOptions => {
+	const challengeBuffer = convertBase64UrlToArrayBuffer(input.challenge);
+	const allowedCredentialsWithBuffer = (input.allowCredentials || []).map(
+		allowedCred => ({
+			...allowedCred,
+			id: convertBase64UrlToArrayBuffer(allowedCred.id),
+		}),
+	);
+
+	return {
+		...input,
+		challenge: challengeBuffer,
+		allowCredentials: allowedCredentialsWithBuffer,
+	};
+};
+
+/**
+ * Serializes a Public Key Credential With Attestation to JSON
+ * @param input PasskeyGetResult
+ * @returns PasskeyGetResultJson
+ */
+export const serializePkcWithAssertionToJson = (
+	input: PkcWithAuthenticatorAssertionResponse,
+): PasskeyGetResultJson => {
+	const response: PkcAssertionResponse<string> = {
+		clientDataJSON: convertArrayBufferToBase64Url(
+			input.response.clientDataJSON,
+		),
+		authenticatorData: convertArrayBufferToBase64Url(
+			input.response.authenticatorData,
+		),
+		signature: convertArrayBufferToBase64Url(input.response.signature),
+	};
+
+	if (input.response.userHandle) {
+		response.userHandle = convertArrayBufferToBase64Url(
+			input.response.userHandle,
+		);
+	}
+
+	const resultJson: PasskeyGetResultJson = {
+		id: input.id,
+		rawId: convertArrayBufferToBase64Url(input.rawId),
+		type: input.type,
+		clientExtensionResults: input.getClientExtensionResults(),
+		response,
+	};
+
+	if (input.authenticatorAttachment) {
+		resultJson.authenticatorAttachment = input.authenticatorAttachment;
+	}
+
+	return resultJson;
 };

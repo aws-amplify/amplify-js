@@ -50,6 +50,7 @@ import {
 	RespondToAuthChallengeCommandOutput,
 } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
+import { handleWebAuthnSignInResult } from '../../../client/flows/userAuth/handleWebAuthnSignInResult';
 
 import { signInStore } from './signInStore';
 import { assertDeviceMetadata } from './types';
@@ -940,6 +941,9 @@ export async function getSignInResult(params: {
 					},
 				},
 			};
+
+		case 'WEB_AUTHN':
+			return handleWebAuthnSignInResult(challengeParameters);
 		case 'ADMIN_NO_SRP_AUTH':
 			break;
 		case 'DEVICE_PASSWORD_VERIFIER':

@@ -1,17 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { PasskeyCreateOptionsJson, PasskeyCreateResult } from './types';
+import {
+	PasskeyCreateOptionsJson,
+	assertCredentialIsPkcWithAuthenticatorAttestationResponse,
+} from './types';
 import {
 	deserializeJsonToPkcCreationOptions,
-	serializePkcToJson,
+	serializePkcWithAttestationToJson,
 } from './serde';
 import { PasskeyErrorCode, assertPasskeyError } from './errors';
 import { getIsPasskeySupported } from './getIsPasskeySupported';
 
 /**
  * Registers a new passkey for user
- * @param input - PasskeyCreateOptions
+ * @param input - PasskeyCreateOptionsJson
  * @returns serialized PasskeyCreateResult
  */
 export const registerPasskey = async (input: PasskeyCreateOptionsJson) => {
@@ -21,11 +24,11 @@ export const registerPasskey = async (input: PasskeyCreateOptionsJson) => {
 
 	const passkeyCreationOptions = deserializeJsonToPkcCreationOptions(input);
 
-	const credential = (await navigator.credentials.create({
+	const credential = await navigator.credentials.create({
 		publicKey: passkeyCreationOptions,
-	})) as PasskeyCreateResult | null;
+	});
 
-	assertPasskeyError(!!credential, PasskeyErrorCode.PasskeyRegistrationFailed);
+	assertCredentialIsPkcWithAuthenticatorAttestationResponse(credential);
 
-	return serializePkcToJson(credential);
+	return serializePkcWithAttestationToJson(credential);
 };

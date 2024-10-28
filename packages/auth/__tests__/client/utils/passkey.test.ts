@@ -1,6 +1,6 @@
 import {
 	deserializeJsonToPkcCreationOptions,
-	serializePkcToJson,
+	serializePkcWithAttestationToJson,
 } from '../../../src/client/utils/passkey/serde';
 import {
 	passkeyRegistrationRequest,
@@ -11,9 +11,11 @@ import {
 
 describe('passkey', () => {
 	it('serializes pkc into correct json format', () => {
-		expect(JSON.stringify(serializePkcToJson(passkeyRegistrationResult))).toBe(
-			JSON.stringify(passkeyRegistrationResultJson),
-		);
+		expect(
+			JSON.stringify(
+				serializePkcWithAttestationToJson(passkeyRegistrationResult),
+			),
+		).toBe(JSON.stringify(passkeyRegistrationResultJson));
 	});
 
 	it('deserializes json into correct pkc format', () => {

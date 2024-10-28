@@ -1,8 +1,10 @@
 import {
-	PasskeyCreateOptions,
 	PasskeyCreateOptionsJson,
-	PasskeyCreateResult,
 	PasskeyCreateResultJson,
+	PasskeyGetOptionsJson,
+	PasskeyGetResultJson,
+	PkcWithAuthenticatorAssertionResponse,
+	PkcWithAuthenticatorAttestationResponse,
 } from '../src/client/utils/passkey/types';
 
 // device tracking mock device data
@@ -195,28 +197,51 @@ export const passkeyRegistrationResultJson: PasskeyCreateResultJson = {
 	type: 'public-key',
 	id: 'vJCit9S2cglAvvW3txQ-OWRBb-NyhxaLOvRRisnr1aE',
 	rawId: 'vJCit9S2cglAvvW3txQ-OQ',
+	clientExtensionResults: {},
 	response: {
 		clientDataJSON: 'vJCit9S2cglAvvW3txQ-OQ',
 		attestationObject: 'vJCit9S2cglAvvW3txQ-OQ',
+		transports: ['internal'],
+		publicKeyAlgorithm: -7,
+		authenticatorData: 'vJCit9S2cglAvvW3txQ-OQ',
+		publicKey: 'vJCit9S2cglAvvW3txQ-OQ',
 	},
+	authenticatorAttachment: 'platform',
 };
-export const passkeyRegistrationResult: PasskeyCreateResult = {
-	type: 'public-key',
-	id: 'vJCit9S2cglAvvW3txQ-OWRBb-NyhxaLOvRRisnr1aE',
-	rawId: new Uint8Array([
-		188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
-	]),
-	response: {
-		clientDataJSON: new Uint8Array([
+export const passkeyRegistrationResult: PkcWithAuthenticatorAttestationResponse =
+	{
+		type: 'public-key',
+		id: 'vJCit9S2cglAvvW3txQ-OWRBb-NyhxaLOvRRisnr1aE',
+		rawId: new Uint8Array([
 			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
 		]),
-		attestationObject: new Uint8Array([
-			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
-		]),
-	},
-};
+		getClientExtensionResults: () => ({}),
+		authenticatorAttachment: 'platform',
+		response: {
+			clientDataJSON: new Uint8Array([
+				188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
+				57,
+			]),
+			attestationObject: new Uint8Array([
+				188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
+				57,
+			]),
+			getPublicKey: () =>
+				new Uint8Array([
+					188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
+					57,
+				]),
+			getPublicKeyAlgorithm: () => -7,
+			getAuthenticatorData: () =>
+				new Uint8Array([
+					188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
+					57,
+				]),
+			getTransports: () => ['internal'],
+		},
+	};
 
-export const passkeyRegistrationRequest: PasskeyCreateOptions = {
+export const passkeyRegistrationRequest: PublicKeyCredentialCreationOptions = {
 	rp: { id: 'localhost', name: 'localhost' },
 	user: {
 		id: new Uint8Array([
@@ -272,5 +297,77 @@ export const passkeyRegistrationRequestJson: PasskeyCreateOptionsJson = {
 		requireResidentKey: true,
 		residentKey: 'required',
 		userVerification: 'required',
+	},
+};
+
+export const passkeyCredentialRequestOptions =
+	'{"hints":[],"attestation":"none","attestationFormats":[],"challenge":"9DAxgg4vPiaxvAxc-JbMuw","timeout":180000,"rpId":"localhost","allowCredentials":[{"id":"1oG8PrTycHFuWdHAjIelCnsVx7XsrGIL44Whwr_8F8k","type":"public-key"}],"userVerification":"required"}';
+
+export const passkeyGetOptionsJson: PasskeyGetOptionsJson = {
+	challenge: 'vJCit9S2cglAvvW3txQ-OQ',
+	rpId: 'localhost',
+	timeout: 180000,
+	allowCredentials: [
+		{
+			id: 'vJCit9S2cglAvvW3txQ-OQ',
+			type: 'public-key',
+		},
+	],
+	userVerification: 'required',
+};
+
+export const passkeyGetOptions: PublicKeyCredentialRequestOptions = {
+	challenge: new Uint8Array([
+		188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+	]),
+	rpId: 'localhost',
+	timeout: 180000,
+	allowCredentials: [
+		{
+			id: new Uint8Array([
+				188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62,
+				57,
+			]),
+			type: 'public-key',
+		},
+	],
+	userVerification: 'required',
+};
+
+export const passkeyGetResultJson: PasskeyGetResultJson = {
+	id: 'vJCit9S2cglAvvW3txQ-OQ',
+	rawId: 'vJCit9S2cglAvvW3txQ-OQ',
+	type: 'public-key',
+	clientExtensionResults: {},
+	response: {
+		clientDataJSON: 'vJCit9S2cglAvvW3txQ-OQ',
+		authenticatorData: 'vJCit9S2cglAvvW3txQ-OQ',
+		signature: 'vJCit9S2cglAvvW3txQ-OQ',
+		userHandle: 'vJCit9S2cglAvvW3txQ-OQ',
+	},
+	authenticatorAttachment: 'platform',
+};
+
+export const passkeyGetResult: PkcWithAuthenticatorAssertionResponse = {
+	type: 'public-key',
+	id: 'vJCit9S2cglAvvW3txQ-OQ',
+	rawId: new Uint8Array([
+		188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+	]),
+	getClientExtensionResults: () => ({}),
+	authenticatorAttachment: 'platform',
+	response: {
+		authenticatorData: new Uint8Array([
+			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+		]),
+		clientDataJSON: new Uint8Array([
+			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+		]),
+		signature: new Uint8Array([
+			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+		]),
+		userHandle: new Uint8Array([
+			188, 144, 162, 183, 212, 182, 114, 9, 64, 190, 245, 183, 183, 20, 62, 57,
+		]),
 	},
 };

@@ -16,7 +16,8 @@ export type ChallengeName =
 	| 'DEVICE_SRP_AUTH'
 	| 'DEVICE_PASSWORD_VERIFIER'
 	| 'ADMIN_NO_SRP_AUTH'
-	| 'NEW_PASSWORD_REQUIRED';
+	| 'NEW_PASSWORD_REQUIRED'
+	| 'WEB_AUTHN';
 
 export type ChallengeParameters = {
 	CODE_DELIVERY_DESTINATION?: string;
@@ -27,6 +28,7 @@ export type ChallengeParameters = {
 	PASSWORD_CLAIM_SIGNATURE?: string;
 	MFAS_CAN_CHOOSE?: string;
 	MFAS_CAN_SETUP?: string;
+	CREDENTIAL_REQUEST_OPTIONS?: string;
 } & Record<string, unknown>;
 
 export type CognitoMFAType = 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | 'EMAIL_OTP';
@@ -1736,32 +1738,32 @@ export {};
 /**
  * <p>The request to retrieve WebAuthN registration options.</p>
  */
-export interface GetWebAuthnRegistrationOptionsRequest {
-	AccessToken?: string;
+export interface GetWebAuthnRegistrationOptionsInput {
+	AccessToken: string | undefined;
 }
 /**
  * <p>The response containing WebAuthN registration options.</p>
  */
-export interface GetWebAuthnRegistrationOptionsResponse {
-	CredentialCreationOptions?: string;
+export interface GetWebAuthnRegistrationOptionsOutput {
+	CredentialCreationOptions: string | undefined;
 }
 
 export type GetWebAuthnRegistrationOptionsCommandInput =
-	GetWebAuthnRegistrationOptionsRequest;
+	GetWebAuthnRegistrationOptionsInput;
 
 export interface GetWebAuthnRegistrationOptionsCommandOutput
-	extends GetWebAuthnRegistrationOptionsResponse,
+	extends GetWebAuthnRegistrationOptionsOutput,
 		__MetadataBearer {}
 
 /**
  * <p>The request to verify a WebAuthN credential.</p>
  */
-export interface VerifyWebAuthnRegistrationResultRequest {
-	AccessToken?: string;
-	Credential?: string;
+export interface VerifyWebAuthnRegistrationResultInput {
+	AccessToken: string | undefined;
+	Credential: string | undefined;
 }
 
 export type VerifyWebAuthnRegistrationResultCommandInput =
-	VerifyWebAuthnRegistrationResultRequest;
+	VerifyWebAuthnRegistrationResultInput;
 
 export type VerifyWebAuthnRegistrationResultCommandOutput = __MetadataBearer;
