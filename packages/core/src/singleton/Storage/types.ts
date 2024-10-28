@@ -50,6 +50,11 @@ export interface LibraryStorageOptions {
 		 * This is currently used for Storage API signature using key as input parameter.
 		 * */
 		defaultAccessLevel?: StorageAccessLevel;
+		/**
+		 * @deprecated This may be removed in the next major version.
+		 * Uploading to object locked enabled buckets does not require additional
+		 * configurations anymore.
+		 */
 		isObjectLockEnabled?: boolean;
 	};
 }

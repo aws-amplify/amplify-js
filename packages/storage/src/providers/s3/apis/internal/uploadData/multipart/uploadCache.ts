@@ -34,7 +34,7 @@ export const findCachedUploadParts = async ({
 }: FindCachedUploadPartsOptions): Promise<{
 	parts: Part[];
 	uploadId: string;
-	finalCrc32?: string;
+	finalCrc32: string;
 } | null> => {
 	const cachedUploads = await listCachedUploadTasks(resumableUploadsCache);
 	if (
@@ -44,7 +44,13 @@ export const findCachedUploadParts = async ({
 		return null;
 	}
 
+	// The cached upload may be created before crc32 checksum is introduced, we
+	// will omit the staled cache without a crc32 checksum and start a fresh upload.
 	const cachedUpload = cachedUploads[cacheKey];
+	if (!cachedUpload.uploadId || !cachedUpload.finalCrc32) {
+		return null;
+	}
+
 	cachedUpload.lastTouched = Date.now();
 
 	await resumableUploadsCache.setItem(

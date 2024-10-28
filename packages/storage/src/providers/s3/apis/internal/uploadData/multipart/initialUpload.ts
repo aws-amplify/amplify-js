@@ -9,13 +9,11 @@ import {
 import {
 	ContentDisposition,
 	ResolvedS3Config,
-	UploadDataChecksumAlgorithm,
 } from '../../../../types/options';
 import { StorageUploadDataPayload } from '../../../../../../types';
 import { Part, createMultipartUpload } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
 import { constructContentDisposition } from '../../../../utils/constructContentDisposition';
-import { CHECKSUM_ALGORITHM_CRC32 } from '../../../../utils/constants';
 import { getCombinedCrc32 } from '../../../../utils/getCombinedCrc32.native';
 
 import {
@@ -37,7 +35,7 @@ interface LoadOrCreateMultipartUploadOptions {
 	metadata?: Record<string, string>;
 	size?: number;
 	abortSignal?: AbortSignal;
-	checksumAlgorithm?: UploadDataChecksumAlgorithm;
+	// checksumAlgorithm?: UploadDataChecksumAlgorithm;
 	optionsHash: string;
 	resumableUploadsCache?: KeyValueStorageInterface;
 	expectedBucketOwner?: string;
@@ -46,7 +44,7 @@ interface LoadOrCreateMultipartUploadOptions {
 interface LoadOrCreateMultipartUploadResult {
 	uploadId: string;
 	cachedParts: Part[];
-	finalCrc32?: string;
+	finalCrc32: string;
 }
 
 /**
@@ -68,7 +66,6 @@ export const loadOrCreateMultipartUpload = async ({
 	contentEncoding,
 	metadata,
 	abortSignal,
-	checksumAlgorithm,
 	optionsHash,
 	resumableUploadsCache,
 	expectedBucketOwner,
@@ -80,7 +77,7 @@ export const loadOrCreateMultipartUpload = async ({
 				parts: Part[];
 				uploadId: string;
 				uploadCacheKey: string;
-				finalCrc32?: string;
+				finalCrc32: string;
 		  }
 		| undefined;
 
@@ -119,10 +116,7 @@ export const loadOrCreateMultipartUpload = async ({
 			finalCrc32: cachedUpload.finalCrc32,
 		};
 	} else {
-		const finalCrc32 =
-			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await getCombinedCrc32(data, size)
-				: undefined;
+		const finalCrc32 = await getCombinedCrc32(data, size);
 
 		const { UploadId } = await createMultipartUpload(
 			{
@@ -136,7 +130,7 @@ export const loadOrCreateMultipartUpload = async ({
 				ContentDisposition: constructContentDisposition(contentDisposition),
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
-				ChecksumAlgorithm: finalCrc32 ? 'CRC32' : undefined,
+				ChecksumAlgorithm: 'CRC32',
 				ExpectedBucketOwner: expectedBucketOwner,
 			},
 		);

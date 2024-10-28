@@ -28,5 +28,3 @@ export const STORAGE_INPUT_KEY = 'key';
 export const STORAGE_INPUT_PATH = 'path';
 
 export const DEFAULT_DELIMITER = '/';
-
-export const CHECKSUM_ALGORITHM_CRC32 = 'crc-32';

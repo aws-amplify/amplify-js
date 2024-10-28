@@ -90,7 +90,7 @@ export const getMultipartUploadHandlers = (
 		| {
 				uploadId: string;
 				completedParts: Part[];
-				finalCrc32?: string;
+				finalCrc32: string;
 		  }
 		| undefined;
 	let resolvedS3Config: ResolvedS3Config | undefined;
@@ -168,7 +168,6 @@ export const getMultipartUploadHandlers = (
 					data,
 					size,
 					abortSignal: abortController.signal,
-					checksumAlgorithm: uploadDataOptions?.checksumAlgorithm,
 					optionsHash,
 					resumableUploadsCache,
 					expectedBucketOwner,
@@ -204,8 +203,7 @@ export const getMultipartUploadHandlers = (
 			inProgressUpload?.completedParts.push({
 				PartNumber: partNumber,
 				ETag: eTag,
-				// TODO: crc32 can always be added once RN also has an implementation
-				...(crc32 ? { ChecksumCRC32: crc32 } : {}),
+				ChecksumCRC32: crc32,
 			});
 		};
 		const concurrentUploadsProgressTracker =
@@ -227,8 +225,6 @@ export const getMultipartUploadHandlers = (
 					uploadId: inProgressUpload.uploadId,
 					onPartUploadCompletion,
 					onProgress: concurrentUploadsProgressTracker.getOnProgressListener(),
-					isObjectLockEnabled: resolvedS3Options.isObjectLockEnabled,
-					useCRC32Checksum: Boolean(inProgressUpload.finalCrc32),
 					expectedBucketOwner,
 				}),
 			);

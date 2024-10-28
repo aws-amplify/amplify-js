@@ -8,7 +8,6 @@ import { UploadDataInput } from '../../../types';
 // TODO: Remove this interface when we move to public advanced APIs.
 import { UploadDataInput as UploadDataWithPathInputWithAdvancedOptions } from '../../../../../internals/types/inputs';
 import {
-	calculateContentMd5,
 	resolveS3ConfigAndInput,
 	validateBucketOwnerID,
 	validateStorageOperationInput,
@@ -16,10 +15,7 @@ import {
 import { ItemWithKey, ItemWithPath } from '../../../types/outputs';
 import { putObject } from '../../../utils/client/s3data';
 import { getStorageUserAgentValue } from '../../../utils/userAgent';
-import {
-	CHECKSUM_ALGORITHM_CRC32,
-	STORAGE_INPUT_KEY,
-} from '../../../utils/constants';
+import { STORAGE_INPUT_KEY } from '../../../utils/constants';
 import { calculateContentCRC32 } from '../../../utils/crc32';
 import { constructContentDisposition } from '../../../utils/constructContentDisposition';
 
@@ -47,7 +43,7 @@ export const putObjectJob =
 	) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;
-		const { bucket, keyPrefix, s3Config, isObjectLockEnabled, identityId } =
+		const { bucket, keyPrefix, s3Config, identityId } =
 			await resolveS3ConfigAndInput(Amplify, uploadDataInput);
 		const { inputType, objectKey } = validateStorageOperationInput(
 			uploadDataInput,
@@ -63,21 +59,11 @@ export const putObjectJob =
 			contentType = 'application/octet-stream',
 			preventOverwrite,
 			metadata,
-			checksumAlgorithm,
 			onProgress,
 			expectedBucketOwner,
 		} = uploadDataOptions ?? {};
 
-		const checksumCRC32 =
-			checksumAlgorithm === CHECKSUM_ALGORITHM_CRC32
-				? await calculateContentCRC32(data)
-				: undefined;
-
-		const contentMD5 =
-			// check if checksum exists. ex: should not exist in react native
-			!checksumCRC32 && isObjectLockEnabled
-				? await calculateContentMd5(data)
-				: undefined;
+		const checksumCRC32 = await calculateContentCRC32(data);
 
 		const { ETag: eTag, VersionId: versionId } = await putObject(
 			{
@@ -94,7 +80,6 @@ export const putObjectJob =
 				ContentDisposition: constructContentDisposition(contentDisposition),
 				ContentEncoding: contentEncoding,
 				Metadata: metadata,
-				ContentMD5: contentMD5,
 				ChecksumCRC32: checksumCRC32?.checksum,
 				ExpectedBucketOwner: expectedBucketOwner,
 				IfNoneMatch: preventOverwrite ? '*' : undefined,

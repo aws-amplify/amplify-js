@@ -5,8 +5,7 @@ import { TransferProgressEvent } from '../../../../../../types';
 import { ResolvedS3Config } from '../../../../types/options';
 import { uploadPart } from '../../../../utils/client/s3data';
 import { logger } from '../../../../../../utils';
-import { CRC32Checksum, calculateContentCRC32 } from '../../../../utils/crc32';
-import { calculateContentMd5 } from '../../../../utils';
+import { calculateContentCRC32 } from '../../../../utils/crc32';
 
 import { PartToUpload } from './getDataChunker';
 
@@ -18,8 +17,6 @@ interface UploadPartExecutorOptions {
 	bucket: string;
 	finalKey: string;
 	uploadId: string;
-	isObjectLockEnabled?: boolean;
-	useCRC32Checksum?: boolean;
 	onPartUploadCompletion(
 		partNumber: number,
 		eTag: string,
@@ -39,8 +36,6 @@ export const uploadPartExecutor = async ({
 	uploadId,
 	onPartUploadCompletion,
 	onProgress,
-	isObjectLockEnabled,
-	useCRC32Checksum,
 	expectedBucketOwner,
 }: UploadPartExecutorOptions) => {
 	let transferredBytes = 0;
@@ -57,16 +52,7 @@ export const uploadPartExecutor = async ({
 				transferredBytes,
 			});
 		} else {
-			// handle cancel error
-			let checksumCRC32: CRC32Checksum | undefined;
-			if (useCRC32Checksum) {
-				checksumCRC32 = await calculateContentCRC32(data);
-			}
-			const contentMD5 =
-				// check if checksum exists. ex: should not exist in react native
-				!checksumCRC32 && isObjectLockEnabled
-					? await calculateContentMd5(data)
-					: undefined;
+			const checksumCRC32 = await calculateContentCRC32(data);
 
 			const { ETag: eTag } = await uploadPart(
 				{
@@ -85,8 +71,7 @@ export const uploadPartExecutor = async ({
 					UploadId: uploadId,
 					Body: data,
 					PartNumber: partNumber,
-					ChecksumCRC32: checksumCRC32?.checksum,
-					ContentMD5: contentMD5,
+					ChecksumCRC32: checksumCRC32.checksum,
 					ExpectedBucketOwner: expectedBucketOwner,
 				},
 			);
