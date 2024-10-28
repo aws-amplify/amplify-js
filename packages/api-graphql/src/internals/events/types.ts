@@ -10,10 +10,46 @@ export interface SubscriptionObserver<T> {
 }
 
 export interface EventsChannel {
+	/**
+	 * @experimental API may change in future versions
+	 *
+	 * Subscribe to Events
+	 *
+	 * @example
+	 * const channel = await events.connect("default/channel")
+	 *
+	 * channel.subscribe({
+	 *   next: (data) => { console.log(data) },
+	 *   error: (err) => { console.error(err) },
+	 * })
+	 *
+	 * @example // authMode override
+	 * channel.subscribe({
+	 *   next: (data) => { console.log(data) },
+	 *   error: (err) => { console.error(err) },
+	 * }, { authMode: 'userPool' })
+	 *
+	 * @param observer - observer callback handlers
+	 * `{ next: () => {}, error: () => {}}`
+	 *
+	 * @param options - subscribe overrides: `authMode`, `authToken`
+	 *
+	 */
 	subscribe(
 		observer: SubscriptionObserver<any>,
 		subOptions?: EventsOptions,
 	): Subscription;
+	/**
+	 * @experimental API may change in future versions
+	 *
+	 * Close channel and any active subscriptions
+	 *
+	 * @example
+	 * const channel = await events.connect("default/channel")
+	 *
+	 * channel.close()
+	 *
+	 */
 	close(): void;
 }
 
