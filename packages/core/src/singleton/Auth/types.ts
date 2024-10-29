@@ -135,6 +135,9 @@ export interface AuthIdentityPoolConfig {
 
 export interface CognitoIdentityPoolConfig {
 	identityPoolId: string;
+	/**
+	 * Use this field to specify a custom endpoint for the identity pool. Ensure this endpoint is correct and valid.
+	 */
 	identityPoolEndpoint?: string;
 	allowGuestAccess?: boolean;
 }
@@ -152,6 +155,9 @@ export type CognitoUserPoolConfigMfaStatus = 'on' | 'off' | 'optional';
 export interface CognitoUserPoolConfig {
 	userPoolClientId: string;
 	userPoolId: string;
+	/**
+	 * Use this field to specify a custom endpoint for the identity pool. Ensure this endpoint is correct and valid.
+	 */
 	userPoolEndpoint?: string;
 	signUpVerificationMethod?: 'code' | 'link';
 	loginWith?: {

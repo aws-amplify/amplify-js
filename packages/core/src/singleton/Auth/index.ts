@@ -1,5 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { ConsoleLogger } from '../../Logger';
+
 import {
 	AuthConfig,
 	AuthSession,
@@ -8,6 +10,8 @@ import {
 	FetchAuthSessionOptions,
 	LibraryAuthOptions,
 } from './types';
+
+const logger = new ConsoleLogger('Auth');
 
 export function isTokenExpired({
 	expiresAt,
@@ -41,6 +45,16 @@ export class AuthClass {
 	): void {
 		this.authConfig = authResourcesConfig;
 		this.authOptions = authOptions;
+
+		if (authResourcesConfig.Cognito.userPoolEndpoint) {
+			logger.warn(getCustomEndpointWarningMessage('Amazon Cognito User Pool'));
+		}
+
+		if (authResourcesConfig.Cognito.identityPoolEndpoint) {
+			logger.warn(
+				getCustomEndpointWarningMessage('Amazon Cognito Identity Pool'),
+			);
+		}
 	}
 
 	/**
@@ -106,3 +120,6 @@ export class AuthClass {
 		);
 	}
 }
+
+const getCustomEndpointWarningMessage = (target: string): string =>
+	`You are using a custom Amazon ${target} endpoint, ensure the endpoint is correct.`;
