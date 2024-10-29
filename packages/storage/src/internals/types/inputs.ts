@@ -23,7 +23,9 @@ import { Permission, PrefixType, Privilege } from './common';
 /**
  * @internal
  */
-export interface ListCallerAccessGrantsInput extends ListLocationsInput {
+export interface ListCallerAccessGrantsInput
+	extends ListLocationsInput,
+		Pick<AdvancedOptions, 'customEndpoint'> {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
 	region: string;
@@ -32,7 +34,8 @@ export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 /**
  * @internal
  */
-export interface GetDataAccessInput {
+export interface GetDataAccessInput
+	extends Pick<AdvancedOptions, 'customEndpoint'> {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
 	durationSeconds?: number;

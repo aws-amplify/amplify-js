@@ -42,7 +42,10 @@ const endpointResolver = (
 	let endpoint: URL;
 	// 1. get base endpoint
 	if (customEndpoint) {
-		endpoint = new AmplifyUrl(customEndpoint);
+		if (customEndpoint.includes('://')) {
+			throw new Error('Invalid S3 Endpoint.');
+		}
+		endpoint = new AmplifyUrl(`https://${customEndpoint}`);
 	} else if (accountId) {
 		// Control plane operations
 		endpoint = new AmplifyUrl(

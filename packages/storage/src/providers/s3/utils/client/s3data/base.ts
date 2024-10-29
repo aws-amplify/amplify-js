@@ -12,6 +12,7 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { createRetryDecider, createXmlErrorParser } from '../utils';
+import { LOCAL_TESTING_S3_ENDPOINT } from '../../constants';
 
 const DOMAIN_PATTERN = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
 const IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
@@ -41,18 +42,12 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
 	customEndpoint?: string;
 
 	/**
-	 *	Prepends a custom endpoint with information dependent on endpoint type (e.g., https://[account-id].s3-control-fips.us-west-2.amazonaws.com)
-	 */
-	baseEndpoint?: string;
-
-	/**
 	 * Whether to force path style URLs for S3 objects (e.g., https://s3.amazonaws.com/<bucketName>/<key> instead of
 	 * https://<bucketName>.s3.amazonaws.com/<key>
 	 * @default false
 	 */
 	forcePathStyle?: boolean;
 };
-
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region, and input parameters.
  */
@@ -60,22 +55,18 @@ const endpointResolver = (
 	options: S3EndpointResolverOptions,
 	apiInput?: { Bucket?: string },
 ) => {
-	const {
-		region,
-		useAccelerateEndpoint,
-		customEndpoint,
-		baseEndpoint,
-		forcePathStyle,
-	} = options;
+	const { region, useAccelerateEndpoint, customEndpoint, forcePathStyle } =
+		options;
 	let endpoint: URL;
 	// 1. get base endpoint
 	if (customEndpoint) {
-		if (baseEndpoint) {
-			endpoint = new AmplifyUrl(
-				`https://${baseEndpoint}.${customEndpoint.replace('https://', '')}`,
-			);
-		} else {
+		if (customEndpoint === LOCAL_TESTING_S3_ENDPOINT) {
 			endpoint = new AmplifyUrl(customEndpoint);
+		} else {
+			if (customEndpoint.includes('://')) {
+				throw new Error('Invalid S3 Endpoint.');
+			}
+			endpoint = new AmplifyUrl(`https://${customEndpoint}`);
 		}
 	} else if (useAccelerateEndpoint) {
 		if (forcePathStyle) {
