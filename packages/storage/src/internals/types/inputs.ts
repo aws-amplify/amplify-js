@@ -45,7 +45,7 @@ export interface GetDataAccessInput {
 
 export interface AdvancedOptions {
 	locationCredentialsProvider?: CredentialsProvider;
-	baseEndpoint?: string;
+	customEndpoint?: string;
 }
 
 /**
@@ -103,9 +103,7 @@ export type CopyInput = ExtendCopyInputWithAdvancedOptions<
 
 export type UploadDataInput = ExtendInputWithAdvancedOptions<
 	UploadDataWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
