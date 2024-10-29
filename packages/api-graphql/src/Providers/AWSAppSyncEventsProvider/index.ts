@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-
 import {
 	CustomUserAgentDetails,
 	DocumentType,
@@ -17,7 +16,7 @@ import { awsRealTimeHeaderBasedAuth } from '../AWSWebSocketProvider/authHeaders'
 // resolved/actual AuthMode values. identityPool gets resolves to IAM upstream in InternalGraphQLAPI._graphqlSubscribe
 type ResolvedGraphQLAuthModes = Exclude<GraphQLAuthMode, 'identityPool'>;
 
-export interface AWSAppSyncRealTimeProviderOptions {
+interface AWSAppSyncEventProviderOptions {
 	appSyncGraphqlEndpoint?: string;
 	authenticationType?: ResolvedGraphQLAuthModes;
 	query?: string;
@@ -30,20 +29,22 @@ export interface AWSAppSyncRealTimeProviderOptions {
 	authToken?: string;
 }
 
-interface DataObject extends Record<string, unknown> {
-	data: Record<string, unknown>;
-}
-
 interface DataPayload {
 	id: string;
-	payload: DataObject;
+	event: string;
 	type: string;
 }
 
-const PROVIDER_NAME = 'AWSAppSyncRealTimeProvider';
-const WS_PROTOCOL_NAME = 'graphql-ws';
+interface DataResponse {
+	id: string;
+	payload: string;
+	type: string;
+}
 
-export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
+const PROVIDER_NAME = 'AWSAppSyncEventsProvider';
+const WS_PROTOCOL_NAME = 'aws-appsync-event-ws';
+
+export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	constructor() {
 		super({ providerName: PROVIDER_NAME, wsProtocolName: WS_PROTOCOL_NAME });
 	}
@@ -52,11 +53,22 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 		return PROVIDER_NAME;
 	}
 
+	public async connect(options: AWSAppSyncEventProviderOptions) {
+		super.connect(options);
+	}
+
 	public subscribe(
-		options?: AWSAppSyncRealTimeProviderOptions,
+		options?: AWSAppSyncEventProviderOptions,
 		customUserAgentDetails?: CustomUserAgentDetails,
 	) {
-		return super.subscribe(options, customUserAgentDetails);
+		return super.subscribe(options, customUserAgentDetails).pipe();
+	}
+
+	public async publish(
+		options: AWSAppSyncEventProviderOptions,
+		customUserAgentDetails?: CustomUserAgentDetails,
+	) {
+		super.publish(options, customUserAgentDetails);
 	}
 
 	protected async _prepareSubscriptionPayload({
@@ -65,12 +77,14 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 		customUserAgentDetails,
 		additionalCustomHeaders,
 		libraryConfigHeaders,
+		publish,
 	}: {
-		options: AWSAppSyncRealTimeProviderOptions;
+		options: AWSAppSyncEventProviderOptions;
 		subscriptionId: string;
 		customUserAgentDetails: CustomUserAgentDetails | undefined;
 		additionalCustomHeaders: Record<string, string>;
 		libraryConfigHeaders: Record<string, string>;
+		publish?: boolean;
 	}): Promise<string> {
 		const {
 			appSyncGraphqlEndpoint,
@@ -80,11 +94,13 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 			apiKey,
 			region,
 		} = options;
-		const data = {
-			query,
-			variables,
-		};
-		const serializedData = JSON.stringify(data);
+
+		// This will be needed for WS publish
+		// const data = {
+		// 	events: [variables],
+		// };
+
+		const serializedData = JSON.stringify([variables]);
 
 		const headers = {
 			...(await awsRealTimeHeaderBasedAuth({
@@ -101,17 +117,25 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 			[USER_AGENT_HEADER]: getAmplifyUserAgent(customUserAgentDetails),
 		};
 
+		// Commented out code will be needed for WS publish
 		const subscriptionMessage = {
 			id: subscriptionId,
-			payload: {
-				data: serializedData,
-				extensions: {
-					authorization: {
-						...headers,
-					},
-				},
+			channel: query,
+			// events: [JSON.stringify(variables)],
+			authorization: {
+				...headers,
 			},
-			type: MESSAGE_TYPES.GQL_START,
+			// payload: {
+			// 	events: serializedData,
+			// 	extensions: {
+			// 		authorization: {
+			// 			...headers,
+			// 		},
+			// 	},
+			// },
+			type: publish
+				? MESSAGE_TYPES.EVENT_PUBLISH
+				: MESSAGE_TYPES.EVENT_SUBSCRIBE,
 		};
 
 		const serializedSubscriptionMessage = JSON.stringify(subscriptionMessage);
@@ -121,12 +145,16 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 
 	protected _handleSubscriptionData(
 		message: MessageEvent,
-	): [boolean, DataPayload] {
+	): [boolean, DataResponse] {
 		this.logger.debug(
-			`subscription message from AWS AppSync RealTime: ${message.data}`,
+			`subscription message from AWS AppSync Events: ${message.data}`,
 		);
 
-		const { id = '', payload, type } = JSON.parse(String(message.data));
+		const {
+			id = '',
+			event: payload,
+			type,
+		}: DataPayload = JSON.parse(String(message.data));
 
 		const {
 			observer = null,
@@ -136,14 +164,15 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 
 		this.logger.debug({ id, observer, query, variables });
 
-		if (type === MESSAGE_TYPES.DATA && payload && payload.data) {
+		if (type === MESSAGE_TYPES.DATA && payload) {
+			const deserializedEvent = JSON.parse(payload);
 			if (observer) {
-				observer.next(payload);
+				observer.next(deserializedEvent);
 			} else {
 				this.logger.debug(`observer not found for id: ${id}`);
 			}
 
-			return [true, { id, type, payload }];
+			return [true, { id, type, payload: deserializedEvent }];
 		}
 
 		return [false, { id, type, payload }];
@@ -155,26 +184,24 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 	} {
 		return {
 			id: subscriptionId,
-			type: MESSAGE_TYPES.GQL_STOP,
+			type: MESSAGE_TYPES.EVENT_STOP,
 		};
 	}
 
 	protected _extractConnectionTimeout(data: Record<string, any>): number {
-		const {
-			payload: { connectionTimeoutMs = DEFAULT_KEEP_ALIVE_TIMEOUT } = {},
-		} = data;
+		const { connectionTimeoutMs = DEFAULT_KEEP_ALIVE_TIMEOUT } = data;
 
 		return connectionTimeoutMs;
 	}
 
-	protected _extractErrorCodeAndType(data: any): {
+	protected _extractErrorCodeAndType(data: Record<string, any>): {
 		errorCode: number;
 		errorType: string;
 	} {
-		const {
-			payload: { errors: [{ errorType = '', errorCode = 0 } = {}] = [] } = {},
-		} = data;
+		const { errors: [{ errorType = '', errorCode = 0 } = {}] = [] } = data;
 
 		return { errorCode, errorType };
 	}
 }
+
+export const AppSyncEventProvider = new AWSAppSyncEventProvider();
