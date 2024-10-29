@@ -102,14 +102,3 @@ function assertGrantScope(value: unknown): asserts value is string {
 		});
 	}
 }
-
-// 1. Default
-// // `${bucket}.s3.${region}.amazonaws.com`;
-
-// 2. AccelerateEndpoint
-// // `${bucket}.s3-accelerate.${region}.amazonaws.com`;
-
-// 3. AccelerateEndpoint
-// // `${bucket}.s3-accelerate.${region}.amazonaws.com`;
-
-// `https://${AmplifyResolvedBucket}.${CustomEndpointBucket}.s3.${CustomEndpointRegion}.amazonaws.com`;

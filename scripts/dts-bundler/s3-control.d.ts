@@ -1,8 +1,8 @@
 import {
-	GetDataAccessCommandInput,
-	GetDataAccessCommandOutput,
 	ListCallerAccessGrantsCommandInput,
 	ListCallerAccessGrantsCommandOutput,
+	GetDataAccessCommandInput,
+	GetDataAccessCommandOutput,
 } from '@aws-sdk/client-s3-control';
 
 export {

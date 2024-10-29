@@ -176,7 +176,7 @@ const getObjectCustomEndpoint: ApiFunctionalTestCase<typeof getObject> = [
 	getObject,
 	{
 		...defaultConfig,
-		customEndpoint: 'https://custom.endpoint.com',
+		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
 	} as Parameters<typeof getObject>[0],
 	{

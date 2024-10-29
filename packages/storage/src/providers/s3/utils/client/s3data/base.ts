@@ -33,14 +33,12 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
 	 * Whether to use the S3 Transfer Acceleration endpoint.
 	 */
 	useAccelerateEndpoint?: boolean;
-
 	/**
 	 * Fully qualified custom endpoint for S3. If this is set, this endpoint will be used regardless of region or
 	 * useAccelerateEndpoint config.
 	 * The path of this endpoint
 	 */
 	customEndpoint?: string;
-
 	/**
 	 * Whether to force path style URLs for S3 objects (e.g., https://s3.amazonaws.com/<bucketName>/<key> instead of
 	 * https://<bucketName>.s3.amazonaws.com/<key>
@@ -48,6 +46,7 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
 	 */
 	forcePathStyle?: boolean;
 };
+
 /**
  * The endpoint resolver function that returns the endpoint URL for a given region, and input parameters.
  */
