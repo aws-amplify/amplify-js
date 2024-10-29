@@ -30,3 +30,10 @@ export enum ListWebAuthnCredentialsException {
 	InvalidParameterException = 'InvalidParameterException',
 	NotAuthorizedException = 'NotAuthorizedException',
 }
+
+export enum DeleteWebAuthnCredentialException {
+	ForbiddenException = 'ForbiddenException',
+	InternalErrorException = 'InternalErrorException',
+	InvalidParameterException = 'InvalidParameterException',
+	NotAuthorizedException = 'NotAuthorizedException',
+}

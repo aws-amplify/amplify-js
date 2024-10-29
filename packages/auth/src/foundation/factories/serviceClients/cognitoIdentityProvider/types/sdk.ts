@@ -1799,3 +1799,20 @@ export type ListWebAuthnCredentialsCommandInput = ListWebAuthnCredentialsInput;
 export interface ListWebAuthnCredentialsCommandOutput
 	extends ListWebAuthnCredentialsOutput,
 		__MetadataBearer {}
+
+/**
+ * The request to delete a WebAuthN credential.
+ */
+export interface DeleteWebAuthnCredentialInput {
+	AccessToken: string | undefined;
+	CredentialId: string | undefined;
+}
+
+export type DeleteWebAuthnCredentialOutput = Record<never, never>;
+
+export type DeleteWebAuthnCredentialCommandInput =
+	DeleteWebAuthnCredentialInput;
+
+export interface DeleteWebAuthnCredentialCommandOutput
+	extends DeleteWebAuthnCredentialOutput,
+		__MetadataBearer {}

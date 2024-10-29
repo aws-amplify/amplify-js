@@ -182,6 +182,7 @@ describe('aws-amplify Exports', () => {
 					'decodeJWT',
 					'associateWebAuthnCredential',
 					'listWebAuthnCredentials',
+					'deleteWebAuthnCredential',
 				].sort(),
 			);
 		});

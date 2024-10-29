@@ -8,3 +8,7 @@ export interface ListWebAuthnCredentialsInput {
 	pageSize?: number;
 	nextToken?: string;
 }
+
+export interface DeleteWebAuthnCredentialInput {
+	credentialId: string;
+}

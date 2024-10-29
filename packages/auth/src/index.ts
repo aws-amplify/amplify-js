@@ -90,10 +90,14 @@ export {
 
 export { associateWebAuthnCredential } from './client/apis';
 
-export { listWebAuthnCredentials } from './foundation/apis';
+export {
+	listWebAuthnCredentials,
+	deleteWebAuthnCredential,
+} from './foundation/apis';
 
 export {
 	AuthWebAuthnCredential,
+	DeleteWebAuthnCredentialInput,
 	ListWebAuthnCredentialsInput,
 	ListWebAuthnCredentialsOutput,
 } from './foundation/types';

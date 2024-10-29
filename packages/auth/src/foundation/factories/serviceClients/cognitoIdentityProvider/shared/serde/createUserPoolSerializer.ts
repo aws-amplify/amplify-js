@@ -33,7 +33,8 @@ type ClientOperation =
 	| 'RevokeToken'
 	| 'GetWebAuthnRegistrationOptions'
 	| 'VerifyWebAuthnRegistrationResult'
-	| 'ListWebAuthnCredentials';
+	| 'ListWebAuthnCredentials'
+	| 'DeleteWebAuthnCredential';
 
 export const createUserPoolSerializer =
 	<Input>(operation: ClientOperation) =>

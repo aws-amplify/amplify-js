@@ -27,3 +27,4 @@ export { createDeleteUserAttributesClient } from './createDeleteUserAttributesCl
 export { createGetWebAuthnRegistrationOptionsClient } from './createGetWebAuthnRegistrationOptionsClient';
 export { createVerifyWebAuthnRegistrationResultClient } from './createVerifyWebAuthnRegistrationResultClient';
 export { createListWebAuthnCredentialsClient } from './createListWebAuthnCredentialsClient';
+export { createDeleteWebAuthnCredentialClient } from './createDeleteWebAuthnCredentialClient';

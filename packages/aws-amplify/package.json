@@ -470,10 +470,16 @@
 			"limit": "12.00 kB"
 		},
 		{
+			"name": "[Auth] Delete WebAuthN Credential (Cognito)",
+			"path": "./dist/esm/auth/index.mjs",
+			"import": "{ deleteWebAuthnCredential }",
+			"limit": "11.90 kB"
+		},
+		{
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "15.03 kB"
+			"limit": "15.06 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
