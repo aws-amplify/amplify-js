@@ -9,7 +9,7 @@ import {
 } from '@aws-amplify/core/internals/utils';
 import { CustomHeaders } from '@aws-amplify/data-schema/runtime';
 
-import { MESSAGE_TYPES } from '../constants';
+import { DEFAULT_KEEP_ALIVE_TIMEOUT, MESSAGE_TYPES } from '../constants';
 import { AWSWebSocketProvider } from '../AWSWebSocketProvider';
 import { awsRealTimeHeaderBasedAuth } from '../AWSWebSocketProvider/authHeaders';
 
@@ -44,7 +44,7 @@ interface DataResponse {
 const PROVIDER_NAME = 'AWSAppSyncEventsProvider';
 const WS_PROTOCOL_NAME = 'aws-appsync-event-ws';
 
-class AWSAppSyncEventProvider extends AWSWebSocketProvider {
+export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	constructor() {
 		super({ providerName: PROVIDER_NAME, wsProtocolName: WS_PROTOCOL_NAME });
 	}
@@ -186,6 +186,21 @@ class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 			id: subscriptionId,
 			type: MESSAGE_TYPES.EVENT_STOP,
 		};
+	}
+
+	protected _extractConnectionTimeout(data: Record<string, any>): number {
+		const { connectionTimeoutMs = DEFAULT_KEEP_ALIVE_TIMEOUT } = data;
+
+		return connectionTimeoutMs;
+	}
+
+	protected _extractErrorCodeAndType(data: Record<string, any>): {
+		errorCode: number;
+		errorType: string;
+	} {
+		const { errors: [{ errorType = '', errorCode = 0 } = {}] = [] } = data;
+
+		return { errorCode, errorType };
 	}
 }
 

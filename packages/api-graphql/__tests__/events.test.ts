@@ -3,6 +3,7 @@ import { AppSyncEventProvider } from '../src/Providers/AWSAppSyncEventsProvider'
 
 import { events } from '../src/';
 import { appsyncRequest } from '../src/internals/events/appsyncRequest';
+
 import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
 
 const abortController = new AbortController();
@@ -38,7 +39,7 @@ jest.mock('../src/internals/events/appsyncRequest', () => {
  * so we're just sanity checking that the expected auth mode is passed to the provider in this test file.
  */
 
-describe('Events', () => {
+describe('Events client', () => {
 	afterAll(() => {
 		jest.resetAllMocks();
 		jest.clearAllMocks();

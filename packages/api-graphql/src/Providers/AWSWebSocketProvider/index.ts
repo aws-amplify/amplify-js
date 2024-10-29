@@ -27,6 +27,7 @@ import {
 	MAX_DELAY_MS,
 	MESSAGE_TYPES,
 	NON_RETRYABLE_CODES,
+	NON_RETRYABLE_ERROR_TYPES,
 	SOCKET_STATUS,
 	START_ACK_TIMEOUT,
 	SUBSCRIPTION_STATUS,
@@ -546,6 +547,15 @@ export abstract class AWSWebSocketProvider {
 		{ id: string; payload: string | Record<string, unknown>; type: string },
 	];
 
+	protected abstract _extractConnectionTimeout(
+		data: Record<string, any>,
+	): number;
+
+	protected abstract _extractErrorCodeAndType(data: Record<string, any>): {
+		errorCode: number;
+		errorType: string;
+	};
+
 	private _handleIncomingSubscriptionMessage(message: MessageEvent) {
 		if (typeof message.data !== 'string') {
 			return;
@@ -629,14 +639,14 @@ export abstract class AWSWebSocketProvider {
 				});
 
 				this.logger.debug(
-					`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`,
+					`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload ?? data)}`,
 				);
 
 				observer.error({
 					errors: [
 						{
 							...new GraphQLError(
-								`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`,
+								`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload ?? data)}`,
 							),
 						},
 					],
@@ -830,10 +840,10 @@ export abstract class AWSWebSocketProvider {
 				);
 
 				const data = JSON.parse(message.data) as ParsedMessagePayload;
-				const {
-					type,
-					payload: { connectionTimeoutMs = DEFAULT_KEEP_ALIVE_TIMEOUT } = {},
-				} = data;
+
+				const { type } = data;
+
+				const connectionTimeoutMs = this._extractConnectionTimeout(data);
 
 				if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
 					ackOk = true;
@@ -844,11 +854,7 @@ export abstract class AWSWebSocketProvider {
 				}
 
 				if (type === MESSAGE_TYPES.GQL_CONNECTION_ERROR) {
-					const {
-						payload: {
-							errors: [{ errorType = '', errorCode = 0 } = {}] = [],
-						} = {},
-					} = data;
+					const { errorType, errorCode } = this._extractErrorCodeAndType(data);
 
 					// TODO(Eslint): refactor to reject an Error object instead of a plain object
 					// eslint-disable-next-line prefer-promise-reject-errors
@@ -920,7 +926,12 @@ export abstract class AWSWebSocketProvider {
 				errorCode: number;
 			};
 
-			if (NON_RETRYABLE_CODES.includes(errorCode)) {
+			if (
+				NON_RETRYABLE_CODES.includes(errorCode) ||
+				// Event API does not currently return `errorCode`. This may change in the future.
+				// For now fall back to also checking known non-retryable error types
+				NON_RETRYABLE_ERROR_TYPES.includes(errorType)
+			) {
 				throw new NonRetryableError(errorType);
 			} else if (errorType) {
 				throw new Error(errorType);
