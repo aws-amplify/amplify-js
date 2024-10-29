@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { PathAccess } from '../types/credentials';
-import { BucketInfo } from '../../providers/s3/types/options';
-import { ENTITY_IDENTITY_URL } from '../utils/constants';
-import { StorageAccess } from '../types/common';
+import { PathAccess } from '../../types/credentials';
+import { BucketInfo } from '../../../providers/s3/types/options';
+import { ENTITY_IDENTITY_URL } from '../../utils/constants';
+import { StorageAccess } from '../../types/common';
 
 const resolvePermissions = (
 	accessRule: Record<string, string[] | undefined>,
