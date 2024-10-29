@@ -11,26 +11,27 @@ import {
 	headObject,
 	listParts,
 	uploadPart,
-} from '../../../../../src/providers/s3/utils/client/s3data';
-import { getMultipartUploadHandlers } from '../../../../../src/providers/s3/apis/internal/uploadData/multipart';
+} from '../../../../../../src/providers/s3/utils/client/s3data';
+import { getMultipartUploadHandlers } from '../../../../../../src/providers/s3/apis/internal/uploadData/multipart';
 import {
 	StorageValidationErrorCode,
 	validationErrorMap,
-} from '../../../../../src/errors/types/validation';
+} from '../../../../../../src/errors/types/validation';
 import {
 	CHECKSUM_ALGORITHM_CRC32,
 	UPLOADS_STORAGE_KEY,
-} from '../../../../../src/providers/s3/utils/constants';
-import { CanceledError } from '../../../../../src/errors/CanceledError';
-import { StorageOptions } from '../../../../../src/types';
+} from '../../../../../../src/providers/s3/utils/constants';
+import { CanceledError } from '../../../../../../src/errors/CanceledError';
+import { StorageOptions } from '../../../../../../src/types';
+import { calculateContentCRC32 } from '../../../../../../src/providers/s3/utils/crc32';
+import { calculateContentMd5 } from '../../../../../../src/providers/s3/utils';
+import { byteLength } from '../../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
+
 import '../testUtils';
-import { calculateContentCRC32 } from '../../../../../src/providers/s3/utils/crc32';
-import { calculateContentMd5 } from '../../../../../src/providers/s3/utils';
-import { byteLength } from '../../../../../src/providers/s3/apis/internal/uploadData/byteLength';
 
 jest.mock('@aws-amplify/core');
-jest.mock('../../../../../src/providers/s3/utils/client/s3data');
-jest.mock('../../../../../src/providers/s3/utils/crc32');
+jest.mock('../../../../../../src/providers/s3/utils/client/s3data');
+jest.mock('../../../../../../src/providers/s3/utils/crc32');
 
 const credentials: AWSCredentials = {
 	accessKeyId: 'accessKeyId',
@@ -60,8 +61,8 @@ const disableAssertionFlag = true;
 
 const MB = 1024 * 1024;
 
-jest.mock('../../../../../src/providers/s3/utils', () => ({
-	...jest.requireActual('../../../../../src/providers/s3/utils'),
+jest.mock('../../../../../../src/providers/s3/utils', () => ({
+	...jest.requireActual('../../../../../../src/providers/s3/utils'),
 	calculateContentMd5: jest.fn(),
 }));
 
@@ -83,7 +84,7 @@ const mockCalculateContentCRC32Mock = () => {
 const mockCalculateContentCRC32Reset = () => {
 	mockCalculateContentCRC32.mockReset();
 	mockCalculateContentCRC32.mockImplementation(
-		jest.requireActual('../../../../../src/providers/s3/utils/crc32')
+		jest.requireActual('../../../../../../src/providers/s3/utils/crc32')
 			.calculateContentCRC32,
 	);
 };
