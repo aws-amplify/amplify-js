@@ -89,3 +89,11 @@ export {
 } from '@aws-amplify/core';
 
 export { associateWebAuthnCredential } from './client/apis';
+
+export { listWebAuthnCredentials } from './foundation/apis';
+
+export {
+	AuthWebAuthnCredential,
+	ListWebAuthnCredentialsInput,
+	ListWebAuthnCredentialsOutput,
+} from './foundation/types';

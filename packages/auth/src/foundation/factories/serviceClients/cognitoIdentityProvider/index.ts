@@ -26,3 +26,4 @@ export { createListDevicesClient } from './createListDevicesClient';
 export { createDeleteUserAttributesClient } from './createDeleteUserAttributesClient';
 export { createGetWebAuthnRegistrationOptionsClient } from './createGetWebAuthnRegistrationOptionsClient';
 export { createVerifyWebAuthnRegistrationResultClient } from './createVerifyWebAuthnRegistrationResultClient';
+export { createListWebAuthnCredentialsClient } from './createListWebAuthnCredentialsClient';

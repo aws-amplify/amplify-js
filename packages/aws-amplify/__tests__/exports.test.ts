@@ -181,6 +181,7 @@ describe('aws-amplify Exports', () => {
 					'fetchAuthSession',
 					'decodeJWT',
 					'associateWebAuthnCredential',
+					'listWebAuthnCredentials',
 				].sort(),
 			);
 		});

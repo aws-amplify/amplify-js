@@ -464,6 +464,12 @@
 			"limit": "12.95 kB"
 		},
 		{
+			"name": "[Auth] List WebAuthN Credentials (Cognito)",
+			"path": "./dist/esm/auth/index.mjs",
+			"import": "{ listWebAuthnCredentials }",
+			"limit": "12.00 kB"
+		},
+		{
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",

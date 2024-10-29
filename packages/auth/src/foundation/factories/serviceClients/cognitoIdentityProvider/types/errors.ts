@@ -23,3 +23,10 @@ export enum VerifyWebAuthnRegistrationResultException {
 	WebAuthnChallengeMismatchException = 'WebAuthnChallengeMismatchException',
 	WebAuthnRelyingPartyMismatchException = 'WebAuthnRelyingPartyMismatchException',
 }
+
+export enum ListWebAuthnCredentialsException {
+	ForbiddenException = 'ForbiddenException',
+	InternalErrorException = 'InternalErrorException',
+	InvalidParameterException = 'InvalidParameterException',
+	NotAuthorizedException = 'NotAuthorizedException',
+}

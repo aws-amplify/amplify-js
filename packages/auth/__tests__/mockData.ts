@@ -371,3 +371,22 @@ export const passkeyGetResult: PkcWithAuthenticatorAssertionResponse = {
 		]),
 	},
 };
+
+export const mockUserCredentials = [
+	{
+		CredentialId: '12345',
+		FriendlyCredentialName: 'mycred',
+		RelyingPartyId: '11111',
+		AuthenticatorAttachment: 'platform',
+		AuthenticatorTransports: ['usb', 'nfc'],
+		CreatedAt: 1709169825,
+	},
+	{
+		CredentialId: '22345',
+		FriendlyCredentialName: 'mycred2',
+		RelyingPartyId: '11111',
+		AuthenticatorAttachment: 'platform',
+		AuthenticatorTransports: ['usb', 'nfc'],
+		CreatedAt: 1582939425,
+	},
+];

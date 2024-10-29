@@ -1767,3 +1767,35 @@ export type VerifyWebAuthnRegistrationResultCommandInput =
 	VerifyWebAuthnRegistrationResultInput;
 
 export type VerifyWebAuthnRegistrationResultCommandOutput = __MetadataBearer;
+
+/**
+ * <p>The request to list WebAuthN credentials.</p>
+ */
+export interface ListWebAuthnCredentialsInput {
+	AccessToken: string | undefined;
+	NextToken?: string;
+	MaxResults?: number;
+}
+
+export interface WebAuthnCredentialDescription {
+	CredentialId: string | undefined;
+	FriendlyCredentialName: string | undefined;
+	RelyingPartyId: string | undefined;
+	AuthenticatorAttachment?: string;
+	AuthenticatorTransports: string[] | undefined;
+	CreatedAt: number | undefined;
+}
+
+/**
+ * <p>The response containing the list of WebAuthN credentials.</p>
+ */
+export interface ListWebAuthnCredentialsOutput {
+	Credentials: WebAuthnCredentialDescription[] | undefined;
+	NextToken?: string;
+}
+
+export type ListWebAuthnCredentialsCommandInput = ListWebAuthnCredentialsInput;
+
+export interface ListWebAuthnCredentialsCommandOutput
+	extends ListWebAuthnCredentialsOutput,
+		__MetadataBearer {}
