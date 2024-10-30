@@ -23,7 +23,7 @@ describe('getRetryDecider', () => {
 		jest.resetAllMocks();
 	});
 
-	it('should handle network errors', async () => {
+	describe('created retryDecider', () => {
 		const mockNetworkErrorThrownFromFetch = new AmplifyError({
 			name: AmplifyErrorCode.NetworkError,
 			message: 'Network Error',
@@ -35,20 +35,25 @@ describe('getRetryDecider', () => {
 		test.each([
 			[
 				'a network error from the fetch handler',
-				true,
+				{
+					retryable: true,
+				},
 				mockNetworkErrorThrownFromFetch,
 			],
 			[
 				'a network error from the XHR handler defined in Storage',
-				true,
+				{
+					retryable: true,
+				},
 				mockNetworkErrorThrownFromXHRInStorage,
 			],
-		])('when receives %p returns %p', (_, expected, error) => {
+		])('when receives %p returns %p', async (_, expected, error) => {
 			const mockResponse = {} as unknown as HttpResponse;
 			mockErrorParser.mockReturnValueOnce(error);
 			const retryDecider = getRetryDecider(mockErrorParser);
+			const result = await retryDecider(mockResponse, error);
 
-			expect(retryDecider(mockResponse, error)).resolves.toBe(expected);
+			expect(result).toEqual(expected);
 		});
 	});
 
