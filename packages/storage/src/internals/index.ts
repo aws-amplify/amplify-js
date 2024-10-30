@@ -3,7 +3,7 @@
 
 export { StorageSubpathStrategy } from '../types/options';
 
-export { Permission, LocationType } from './types/common';
+export { Permission, LocationType, StorageAccess } from './types/common';
 
 /*
 Internal APIs
@@ -43,10 +43,12 @@ export { uploadData } from './apis/uploadData';
 export { downloadData } from './apis/downloadData';
 export { copy } from './apis/copy';
 
+/** Default Auth exports */
+export { listPaths } from './apis/listPaths';
+
 /*
 CredentialsStore exports
 */
-export { createAmplifyAuthConfigAdapter } from './amplifyAuthConfigAdapter/createAmplifyAuthConfigAdapter';
 export {
 	CredentialsLocation,
 	ListLocations,
@@ -55,6 +57,7 @@ export {
 	ListLocationsInput,
 	ListLocationsOutput,
 	CredentialsProvider,
+	ListPathsOutput,
 } from './types/credentials';
 
 export {

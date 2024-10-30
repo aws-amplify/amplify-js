@@ -1,5 +1,5 @@
-import { resolveLocationsForCurrentSession } from '../../../src/internals/amplifyAuthConfigAdapter/resolveLocationsForCurrentSession';
-import { BucketInfo } from '../../../src/providers/s3/types/options';
+import { resolveLocationsForCurrentSession } from '../../../../src/internals/apis/listPaths/resolveLocationsForCurrentSession';
+import { BucketInfo } from '../../../../src/providers/s3/types/options';
 
 describe('resolveLocationsForCurrentSession', () => {
 	const mockBuckets: Record<string, BucketInfo> = {
