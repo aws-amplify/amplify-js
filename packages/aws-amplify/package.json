@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.42 kB"
+			"limit": "17.55 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.91 kB"
+			"limit": "15.99 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "44.1 kB"
+			"limit": "44.12 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -461,43 +461,43 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "16.08 kB"
+			"limit": "16.15 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "16.40 kB"
+			"limit": "16.48 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "15.65 kB"
+			"limit": "15.72 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "16.90 kB"
+			"limit": "16.98 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "16.35 kB"
+			"limit": "16.45 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "15.52 kB"
+			"limit": "15.59 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "22.54 kB"
+			"limit": "22.56 kB"
 		}
 	]
 }
