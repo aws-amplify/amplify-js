@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.6.5",
+	"version": "6.7.0",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.52",
-		"@aws-amplify/api": "6.0.54",
-		"@aws-amplify/auth": "6.5.2",
-		"@aws-amplify/core": "6.4.5",
-		"@aws-amplify/datastore": "5.0.54",
-		"@aws-amplify/notifications": "2.0.52",
-		"@aws-amplify/storage": "6.6.10",
+		"@aws-amplify/analytics": "7.0.55",
+		"@aws-amplify/api": "6.1.0",
+		"@aws-amplify/auth": "6.5.5",
+		"@aws-amplify/core": "6.5.0",
+		"@aws-amplify/datastore": "5.0.57",
+		"@aws-amplify/notifications": "2.0.55",
+		"@aws-amplify/storage": "6.6.13",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "43.46 kB"
+			"limit": "44.1 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -425,7 +425,7 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "7.99 kB"
+			"limit": "8.09 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
