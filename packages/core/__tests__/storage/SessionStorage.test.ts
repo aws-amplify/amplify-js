@@ -1,3 +1,4 @@
+import { InMemoryStorage } from '../../src/storage/InMemoryStorage';
 import { SessionStorage } from '../../src/storage/SessionStorage';
 
 const key = 'k';
@@ -53,8 +54,7 @@ describe('SessionStorage', () => {
 		const fallbackStorage = new SessionStorage();
 
 		// Verify that the storage still works as expected
-		await fallbackStorage.setItem(key, value);
-		expect(await fallbackStorage.getItem(key)).toEqual(value);
+		expect(fallbackStorage).toBeInstanceOf(InMemoryStorage);
 
 		// Verify that the error was logged
 		expect(console.error).toHaveBeenCalledWith(

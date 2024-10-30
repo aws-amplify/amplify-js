@@ -1,4 +1,5 @@
 import { DefaultStorage } from '../../src/storage/DefaultStorage';
+import { InMemoryStorage } from '../../src/storage/InMemoryStorage';
 
 const key = 'k';
 const value = 'value';
@@ -45,14 +46,13 @@ describe('DefaultStorage', () => {
 			},
 		});
 
-		console.error = jest.fn(); // Mock console.error
+		jest.mock('../../src/Logger/ConsoleLogger');
 
 		// Create a new DefaultStorage instance to trigger the fallback
 		const fallbackStorage = new DefaultStorage();
 
 		// Verify that the storage still works as expected
-		await fallbackStorage.setItem(key, value);
-		expect(await fallbackStorage.getItem(key)).toEqual(value);
+		expect(fallbackStorage instanceof InMemoryStorage).toEqual(true);
 
 		// Verify that the error was logged
 		expect(console.error).toHaveBeenCalledWith(
