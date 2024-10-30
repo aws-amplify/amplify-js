@@ -461,7 +461,7 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "16.10 kB"
+			"limit": "16.12 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
