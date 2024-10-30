@@ -80,6 +80,7 @@ const copyWithPath = async (
 		path: input.destination.path,
 		options: {
 			locationCredentialsProvider: input.options?.locationCredentialsProvider,
+			customEndpoint: input.options?.customEndpoint,
 			...input.destination,
 		},
 	}); // resolveS3ConfigAndInput does not make extra API calls or storage access if called repeatedly.
