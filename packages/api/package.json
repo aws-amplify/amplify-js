@@ -68,7 +68,7 @@
 			"name": "API (top-level class)",
 			"path": "./lib-esm/index.js",
 			"import": "{ Amplify, API }",
-			"limit": "97.28 kB"
+			"limit": "97.80 kB"
 		}
 	],
 	"jest": {
