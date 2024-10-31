@@ -155,9 +155,7 @@ export async function handleMFASetupChallenge({
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 
-	const trimmedChallengeResponse = challengeResponse.trim();
-
-	if (trimmedChallengeResponse === 'EMAIL') {
+	if (challengeResponse === 'EMAIL') {
 		return {
 			ChallengeName: 'MFA_SETUP',
 			Session: session,
@@ -168,7 +166,7 @@ export async function handleMFASetupChallenge({
 		};
 	}
 
-	if (trimmedChallengeResponse === 'TOTP') {
+	if (challengeResponse === 'TOTP') {
 		return {
 			ChallengeName: 'MFA_SETUP',
 			Session: session,
@@ -183,7 +181,7 @@ export async function handleMFASetupChallenge({
 		USERNAME: username,
 	};
 
-	const isTOTPCode = /^\d+$/.test(trimmedChallengeResponse);
+	const isTOTPCode = /^\d+$/.test(challengeResponse);
 
 	if (isTOTPCode) {
 		const verifySoftwareToken = createVerifySoftwareTokenClient({
@@ -198,7 +196,7 @@ export async function handleMFASetupChallenge({
 				userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
 			},
 			{
-				UserCode: trimmedChallengeResponse,
+				UserCode: challengeResponse,
 				Session: session,
 				FriendlyDeviceName: deviceName,
 			},
@@ -232,10 +230,10 @@ export async function handleMFASetupChallenge({
 		);
 	}
 
-	const isEmail = trimmedChallengeResponse.includes('@');
+	const isEmail = challengeResponse.includes('@');
 
 	if (isEmail) {
-		challengeResponses.EMAIL = trimmedChallengeResponse;
+		challengeResponses.EMAIL = challengeResponse;
 
 		const jsonReq: RespondToAuthChallengeCommandInput = {
 			ChallengeName: 'MFA_SETUP',
