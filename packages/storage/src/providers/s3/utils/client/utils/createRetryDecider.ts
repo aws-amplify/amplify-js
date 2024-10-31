@@ -44,8 +44,8 @@ export const createRetryDecider =
 	): Promise<RetryDeciderOutput> => {
 		const defaultRetryDecider = getRetryDecider(errorParser);
 		const defaultRetryDecision = await defaultRetryDecider(response, error);
-		if (!response || response.statusCode < 300) {
-			return { retryable: false };
+		if (!response) {
+			return { retryable: defaultRetryDecision.retryable };
 		}
 		const parsedError = await errorParser(response);
 		const errorCode = parsedError?.name;
