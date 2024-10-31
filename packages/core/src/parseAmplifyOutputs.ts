@@ -5,7 +5,6 @@
 /* eslint-disable camelcase */
 
 /* Does not like exhaustive checks */
-/* eslint-disable no-case-declarations */
 
 import {
 	APIConfig,

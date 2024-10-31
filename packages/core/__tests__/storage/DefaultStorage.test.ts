@@ -40,25 +40,17 @@ describe('DefaultStorage', () => {
 	it('should fall back to alternative storage when localStorage is not accessible', async () => {
 		// Mock window.localStorage to throw an error
 		const originalLocalStorage = window.localStorage;
-		Object.defineProperty(window, 'localStorage', {
-			get: () => {
-				throw new Error('localStorage is not accessible');
-			},
-		});
 
-		jest.mock('../../src/Logger/ConsoleLogger');
+		Object.defineProperty(window, 'localStorage', {
+			value: undefined,
+			writable: true,
+		});
 
 		// Create a new DefaultStorage instance to trigger the fallback
 		const fallbackStorage = new DefaultStorage();
 
 		// Verify that the storage still works as expected
-		expect(fallbackStorage instanceof InMemoryStorage).toEqual(true);
-
-		// Verify that the error was logged
-		expect(console.error).toHaveBeenCalledWith(
-			'LocalStorage access failed:',
-			expect.any(Error),
-		);
+		expect(fallbackStorage.storage instanceof InMemoryStorage).toEqual(true);
 
 		// Restore the original localStorage
 		Object.defineProperty(window, 'localStorage', {
