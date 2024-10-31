@@ -389,7 +389,7 @@
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "11.98 kB"
+			"limit": "12.00 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",

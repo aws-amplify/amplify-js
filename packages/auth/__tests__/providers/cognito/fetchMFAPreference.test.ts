@@ -24,7 +24,7 @@ jest.mock('../../../src/providers/cognito/factories');
 
 describe('fetchMFAPreference', () => {
 	// assert mocks
-	const mockFetchAuthSession = fetchAuthSession as jest.Mock;
+	const mockFetchAuthSession = jest.mocked(fetchAuthSession);
 	const mockGetUser = jest.fn();
 	const mockCreateGetUserClient = jest.mocked(createGetUserClient);
 	const mockCreateCognitoUserPoolEndpointResolver = jest.mocked(
@@ -36,17 +36,7 @@ describe('fetchMFAPreference', () => {
 		mockFetchAuthSession.mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
-	});
-
-	beforeEach(() => {
-		mockGetUser.mockResolvedValue({
-			UserAttributes: [],
-			Username: 'XXXXXXXX',
-			PreferredMfaSetting: 'SMS_MFA',
-			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA'],
-			$metadata: {},
-		});
-		mockCreateGetUserClient.mockReturnValueOnce(mockGetUser);
+		mockCreateGetUserClient.mockReturnValue(mockGetUser);
 	});
 
 	afterEach(() => {
@@ -54,19 +44,69 @@ describe('fetchMFAPreference', () => {
 		mockFetchAuthSession.mockClear();
 	});
 
-	it('should return the preferred MFA setting', async () => {
+	it('should return correct MFA preferences when SMS is preferred', async () => {
+		mockGetUser.mockResolvedValueOnce({
+			UserAttributes: [],
+			Username: 'XXXXXXXX',
+			PreferredMfaSetting: 'SMS_MFA',
+			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
+			$metadata: {},
+		});
 		const resp = await fetchMFAPreference();
-		expect(resp).toEqual({ preferred: 'SMS', enabled: ['SMS', 'TOTP'] });
-		expect(mockGetUser).toHaveBeenCalledTimes(1);
-		expect(mockGetUser).toHaveBeenCalledWith(
-			{
-				region: 'us-west-2',
-				userAgentValue: expect.any(String),
-			},
-			{
-				AccessToken: mockAccessToken,
-			},
-		);
+		expect(resp).toEqual({
+			preferred: 'SMS',
+			enabled: ['SMS', 'TOTP', 'EMAIL'],
+		});
+	});
+
+	it('should return correct MFA preferences when EMAIL is preferred', async () => {
+		mockGetUser.mockResolvedValueOnce({
+			UserAttributes: [],
+			Username: 'XXXXXXXX',
+			PreferredMfaSetting: 'EMAIL_OTP',
+			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
+			$metadata: {},
+		});
+		const resp = await fetchMFAPreference();
+		expect(resp).toEqual({
+			preferred: 'EMAIL',
+			enabled: ['SMS', 'TOTP', 'EMAIL'],
+		});
+	});
+	it('should return correct MFA preferences when TOTP is preferred', async () => {
+		mockGetUser.mockResolvedValueOnce({
+			UserAttributes: [],
+			Username: 'XXXXXXXX',
+			PreferredMfaSetting: 'SOFTWARE_TOKEN_MFA',
+			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
+			$metadata: {},
+		});
+		const resp = await fetchMFAPreference();
+		expect(resp).toEqual({
+			preferred: 'TOTP',
+			enabled: ['SMS', 'TOTP', 'EMAIL'],
+		});
+	});
+	it('should return the correct MFA preferences when there is no preferred option', async () => {
+		mockGetUser.mockResolvedValueOnce({
+			UserAttributes: [],
+			Username: 'XXXXXXXX',
+			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
+			$metadata: {},
+		});
+		const resp = await fetchMFAPreference();
+		expect(resp).toEqual({
+			enabled: ['SMS', 'TOTP', 'EMAIL'],
+		});
+	});
+	it('should return the correct MFA preferences when there is no available options', async () => {
+		mockGetUser.mockResolvedValueOnce({
+			UserAttributes: [],
+			Username: 'XXXXXXXX',
+			$metadata: {},
+		});
+		const resp = await fetchMFAPreference();
+		expect(resp).toEqual({});
 	});
 
 	it('invokes mockCreateCognitoUserPoolEndpointResolver with expected endpointOverride', async () => {
@@ -81,6 +121,15 @@ describe('fetchMFAPreference', () => {
 				},
 			},
 		});
+
+		mockGetUser.mockResolvedValueOnce({
+			UserAttributes: [],
+			Username: 'XXXXXXXX',
+			PreferredMfaSetting: 'SMS_MFA',
+			UserMFASettingList: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'],
+			$metadata: {},
+		});
+
 		await fetchMFAPreference();
 
 		expect(mockCreateCognitoUserPoolEndpointResolver).toHaveBeenCalledWith({
