@@ -4,6 +4,8 @@
 import { HttpResponse } from '../../../../src/clients';
 import { getRetryDecider } from '../../../../src/clients/middleware/retry';
 import { isClockSkewError } from '../../../../src/clients/middleware/retry/isClockSkewError';
+import { AmplifyError } from '../../../../src/errors';
+import { AmplifyErrorCode } from '../../../../src/types';
 
 jest.mock('../../../../src/clients/middleware/retry/isClockSkewError');
 
@@ -21,18 +23,38 @@ describe('getRetryDecider', () => {
 		jest.resetAllMocks();
 	});
 
-	it('should handle network errors', async () => {
-		expect.assertions(2);
-		const retryDecider = getRetryDecider(mockErrorParser);
-		const connectionError = Object.assign(new Error(), {
-			name: 'Network error',
+	describe('created retryDecider', () => {
+		const mockNetworkErrorThrownFromFetch = new AmplifyError({
+			name: AmplifyErrorCode.NetworkError,
+			message: 'Network Error',
 		});
-		const { retryable, isCredentialsExpiredError } = await retryDecider(
-			mockHttpResponse,
-			connectionError,
-		);
-		expect(retryable).toBe(true);
-		expect(isCredentialsExpiredError).toBeFalsy();
+		const mockNetworkErrorThrownFromXHRInStorage = new Error('Network Error');
+		mockNetworkErrorThrownFromXHRInStorage.name = 'ERR_NETWORK';
+		mockNetworkErrorThrownFromXHRInStorage.message = 'Network Error';
+
+		test.each([
+			[
+				'a network error from the fetch handler',
+				{
+					retryable: true,
+				},
+				mockNetworkErrorThrownFromFetch,
+			],
+			[
+				'a network error from the XHR handler defined in Storage',
+				{
+					retryable: true,
+				},
+				mockNetworkErrorThrownFromXHRInStorage,
+			],
+		])('when receives %p returns %p', async (_, expected, error) => {
+			const mockResponse = {} as unknown as HttpResponse;
+			mockErrorParser.mockReturnValueOnce(error);
+			const retryDecider = getRetryDecider(mockErrorParser);
+			const result = await retryDecider(mockResponse, error);
+
+			expect(result).toEqual(expected);
+		});
 	});
 
 	describe('handling throttling errors', () => {

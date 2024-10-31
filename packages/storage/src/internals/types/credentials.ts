@@ -97,20 +97,6 @@ export interface PathAccess {
 /**
  * @internal
  */
-export interface ListPathsInput {
-	pageSize?: number;
-	nextToken?: string;
-}
-
-/**
- * @internal
- */
 export interface ListPathsOutput {
 	locations: PathAccess[];
-	nextToken?: string;
 }
-
-/**
- * @internal
- */
-export type ListPaths = (input?: ListPathsInput) => Promise<ListPathsOutput>;

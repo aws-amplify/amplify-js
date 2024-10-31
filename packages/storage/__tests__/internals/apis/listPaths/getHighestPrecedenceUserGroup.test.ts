@@ -4,7 +4,7 @@
 import {
 	UserGroupConfig,
 	getHighestPrecedenceUserGroup,
-} from '../../../src/internals/amplifyAuthConfigAdapter/getHighestPrecedenceUserGroup';
+} from '../../../../src/internals/apis/listPaths/getHighestPrecedenceUserGroup';
 
 const userGroupsFromConfig: UserGroupConfig = [
 	{
