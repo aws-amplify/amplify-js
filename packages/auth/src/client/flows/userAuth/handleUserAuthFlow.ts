@@ -19,13 +19,14 @@ import { handlePasswordSRP } from '../shared/handlePasswordSRP';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
 
-interface HandleUserAuthFlowInput {
+export interface HandleUserAuthFlowInput {
 	username: string;
 	config: CognitoUserPoolConfig;
 	tokenOrchestrator: AuthTokenOrchestrator;
 	clientMetadata?: Record<string, string>;
 	preferredChallenge?: AuthFactorType;
 	password?: string;
+	session?: string;
 }
 
 /**
@@ -49,6 +50,7 @@ export async function handleUserAuthFlow({
 	tokenOrchestrator,
 	preferredChallenge,
 	password,
+	session,
 }: HandleUserAuthFlowInput) {
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
 	const UserContextData = getUserContextData({
@@ -94,6 +96,10 @@ export async function handleUserAuthFlow({
 		ClientId: userPoolClientId,
 		UserContextData,
 	};
+
+	if (session) {
+		jsonReq.Session = session;
+	}
 
 	const initiateAuth = createInitiateAuthClient({
 		endpointResolver: createCognitoUserPoolEndpointResolver({

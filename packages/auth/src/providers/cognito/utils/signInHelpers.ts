@@ -55,8 +55,8 @@ import { handlePasswordSRP } from '../../../client/flows/shared/handlePasswordSR
 import { initiateSelectedChallenge } from '../../../client/flows/userAuth/handleSelectChallenge';
 import { handleSelectChallengeWithPassword } from '../../../client/flows/userAuth/handleSelectChallengeWithPassword';
 import { handleSelectChallengeWithPasswordSRP } from '../../../client/flows/userAuth/handleSelectChallengeWithPasswordSRP';
+import { signInStore } from '../../../client/utils/store';
 
-import { signInStore } from './signInStore';
 import { assertDeviceMetadata } from './types';
 import {
 	getAuthenticationHelper,

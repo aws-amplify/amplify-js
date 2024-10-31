@@ -18,16 +18,14 @@ import { toAttributeType } from '../utils/apiHelpers';
 import {
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
-	getIsAutoSignInStarted,
 	handleCodeAutoSignIn,
-	setAutoSignInStarted,
-	setUsernameUsedForAutoSignIn,
 } from '../utils/signUpHelpers';
 import { getUserContextData } from '../utils/userContextData';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createSignUpClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
 import { SignUpCommandInput } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { autoSignInStore } from '../../../client/utils/store';
 
 import { setAutoSignIn } from './autoSignIn';
 
@@ -65,8 +63,8 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		signInInput.password = password;
 	}
 	if (signInServiceOptions || autoSignIn === true) {
-		setUsernameUsedForAutoSignIn(username);
-		setAutoSignInStarted(true);
+		autoSignInStore.dispatch({ type: 'START' });
+		autoSignInStore.dispatch({ type: 'SET_USERNAME', value: username });
 	}
 
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig;
@@ -114,7 +112,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	};
 
 	const isSignUpComplete = !!userConfirmed;
-	const isAutoSignInStarted = getIsAutoSignInStarted();
+	const isAutoSignInStarted = autoSignInStore.getState().active;
 
 	// Sign Up Complete
 	// No Confirm Sign In Step Required

@@ -27,13 +27,19 @@ import {
 	SignInWithUserAuthOutput,
 } from '../types';
 import {
+	autoSignInStore,
 	cleanActiveSignInState,
 	setActiveSignInState,
-} from '../utils/signInStore';
+} from '../../../client/utils/store';
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
 import { tokenOrchestrator } from '../tokenProvider';
-import { handleUserAuthFlow } from '../../../client/flows/userAuth/handleUserAuthFlow';
+import {
+	HandleUserAuthFlowInput,
+	handleUserAuthFlow,
+} from '../../../client/flows/userAuth/handleUserAuthFlow';
+
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in through a registered email or phone number without a password by by receiving and entering an OTP.
@@ -65,16 +71,27 @@ export async function signInWithUserAuth(
 	);
 
 	try {
-		const response = await handleUserAuthFlow({
+		const handleUserAuthFlowInput: HandleUserAuthFlowInput = {
 			username,
 			config: authConfig,
 			tokenOrchestrator,
 			clientMetadata: clientMetaData,
 			preferredChallenge,
 			password,
-		});
+		};
+
+		const autoSignInStoreState = autoSignInStore.getState();
+		if (
+			autoSignInStoreState.active &&
+			autoSignInStoreState.username === username
+		) {
+			handleUserAuthFlowInput.session = autoSignInStoreState.session;
+		}
+
+		const response = await handleUserAuthFlow(handleUserAuthFlowInput);
 
 		const activeUsername = getActiveSignInUsername(username);
+
 		setActiveSignInState({
 			signInSession: response.Session,
 			username: activeUsername,
@@ -84,6 +101,8 @@ export async function signInWithUserAuth(
 
 		if (response.AuthenticationResult) {
 			cleanActiveSignInState();
+			autoSignInStore.dispatch({ type: 'RESET' });
+			resetAutoSignIn();
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...response.AuthenticationResult,
@@ -113,6 +132,8 @@ export async function signInWithUserAuth(
 		});
 	} catch (error) {
 		cleanActiveSignInState();
+		autoSignInStore.dispatch({ type: 'RESET' });
+		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

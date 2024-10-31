@@ -10,6 +10,7 @@ import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
+import { autoSignInStore } from '../../../client/utils/store';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
@@ -35,7 +36,7 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 	// This will stop the listener if confirmSignUp is not resolved.
 	const timeOutId = setTimeout(() => {
 		stopHubListener();
-		setAutoSignInStarted(false);
+		autoSignInStore.dispatch({ type: 'RESET' });
 		clearTimeout(timeOutId);
 		resetAutoSignIn();
 	}, MAX_AUTOSIGNIN_POLLING_MS);
@@ -73,7 +74,6 @@ function handleAutoSignInWithLink(
 		const maxTime = MAX_AUTOSIGNIN_POLLING_MS;
 		if (elapsedTime > maxTime) {
 			clearInterval(autoSignInPollingIntervalId);
-			setAutoSignInStarted(false);
 			reject(
 				new AuthError({
 					name: AUTO_SIGN_IN_EXCEPTION,
@@ -83,19 +83,20 @@ function handleAutoSignInWithLink(
 				}),
 			);
 			resetAutoSignIn();
+			autoSignInStore.dispatch({ type: 'RESET' });
 		} else {
 			try {
 				const signInOutput = await signIn(signInInput);
 				if (signInOutput.nextStep.signInStep !== 'CONFIRM_SIGN_UP') {
 					resolve(signInOutput);
 					clearInterval(autoSignInPollingIntervalId);
-					setAutoSignInStarted(false);
+					autoSignInStore.dispatch({ type: 'RESET' });
 					resetAutoSignIn();
 				}
 			} catch (error) {
 				clearInterval(autoSignInPollingIntervalId);
-				setAutoSignInStarted(false);
 				reject(error);
+				autoSignInStore.dispatch({ type: 'RESET' });
 				resetAutoSignIn();
 			}
 		}
@@ -106,27 +107,6 @@ const debouncedAutoSignWithCodeOrUserConfirmed = debounce(
 	handleAutoSignInWithCodeOrUserConfirmed,
 	300,
 );
-
-let autoSignInStarted = false;
-
-let usernameUsedForAutoSignIn: string | undefined;
-
-export function setUsernameUsedForAutoSignIn(username?: string) {
-	usernameUsedForAutoSignIn = username;
-}
-export function getIsAutoSignInUserUsingConfirmSignUp(username: string) {
-	return usernameUsedForAutoSignIn === username;
-}
-
-export function getIsAutoSignInStarted(): boolean {
-	return autoSignInStarted;
-}
-export function setAutoSignInStarted(value: boolean) {
-	if (value === false) {
-		setUsernameUsedForAutoSignIn(undefined);
-	}
-	autoSignInStarted = value;
-}
 
 export function autoSignInWhenUserIsConfirmedWithLink(
 	signInInput: SignInInput,
