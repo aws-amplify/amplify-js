@@ -10,7 +10,6 @@ import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
-import { SignUpCommandOutput } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
@@ -115,11 +114,11 @@ let usernameUsedForAutoSignIn: string | undefined;
 export function setUsernameUsedForAutoSignIn(username?: string) {
 	usernameUsedForAutoSignIn = username;
 }
-export function isAutoSignInUserUsingConfirmSignUp(username: string) {
+export function getIsAutoSignInUserUsingConfirmSignUp(username: string) {
 	return usernameUsedForAutoSignIn === username;
 }
 
-export function isAutoSignInStarted(): boolean {
+export function getIsAutoSignInStarted(): boolean {
 	return autoSignInStarted;
 }
 export function setAutoSignInStarted(value: boolean) {
@@ -127,10 +126,6 @@ export function setAutoSignInStarted(value: boolean) {
 		setUsernameUsedForAutoSignIn(undefined);
 	}
 	autoSignInStarted = value;
-}
-
-export function isSignUpComplete(output: SignUpCommandOutput): boolean {
-	return !!output.UserConfirmed;
 }
 
 export function autoSignInWhenUserIsConfirmedWithLink(

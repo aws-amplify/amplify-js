@@ -15,8 +15,8 @@ import { ConfirmSignUpException } from '../types/errors';
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 import { AutoSignInEventData } from '../types/models';
 import {
-	isAutoSignInStarted,
-	isAutoSignInUserUsingConfirmSignUp,
+	getIsAutoSignInStarted,
+	getIsAutoSignInUserUsingConfirmSignUp,
 	setAutoSignInStarted,
 } from '../utils/signUpHelpers';
 import { getAuthUserAgentValue } from '../../../utils';
@@ -90,8 +90,8 @@ export async function confirmSignUp(
 			};
 
 			if (
-				!isAutoSignInStarted() ||
-				!isAutoSignInUserUsingConfirmSignUp(username)
+				!getIsAutoSignInStarted() ||
+				!getIsAutoSignInUserUsingConfirmSignUp(username)
 			) {
 				resolve(signUpOut);
 

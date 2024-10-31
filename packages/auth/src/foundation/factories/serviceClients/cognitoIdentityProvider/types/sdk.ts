@@ -706,7 +706,15 @@ export interface ConfirmSignUpRequest {
 /**
  * <p>Represents the response from the server for the registration confirmation.</p>
  */
-export type ConfirmSignUpResponse = Record<never, never>;
+export interface ConfirmSignUpResponse {
+	/**
+	 * <p>Your <code>ConfirmSignUp</code> request might produce a challenge that your user must
+	 *             respond to, for example a one-time code. The <code>Session</code> parameter tracks the
+	 *             session in the flow of challenge responses and requests. Include this parameter in
+	 *                 <code>RespondToAuthChallenge</code> API requests.</p>
+	 */
+	Session?: string;
+}
 export type DeleteUserCommandInput = DeleteUserRequest;
 export interface DeleteUserCommandOutput
 	extends DeleteUserResponse,
@@ -1093,6 +1101,13 @@ export interface InitiateAuthRequest {
 	 * <p>Contextual data such as the user's device fingerprint, IP address, or location used for evaluating the risk of an unexpected event by Amazon Cognito advanced security.</p>
 	 */
 	UserContextData?: UserContextDataType;
+
+	/**
+	 * <p>The optional session ID from a <code>ConfirmSignUp</code> API
+	 *             request. You can sign in a user directly from the sign-up process with the
+	 *             <code>USER_AUTH</code> authentication flow.</p>
+	 */
+	Session?: string;
 }
 /**
  * <p>Initiates the authentication response.</p>
@@ -1545,6 +1560,13 @@ export interface SignUpResponse {
 	 * <p>The UUID of the authenticated user. This isn't the same as <code>username</code>.</p>
 	 */
 	UserSub: string | undefined;
+
+	/**
+	 * <p>A session Id that you can pass to <code>ConfirmSignUp</code> when you want to
+	 *         immediately sign in your user with the <code>USER_AUTH</code> flow after they complete
+	 *         sign-up.</p>
+	 */
+	Session?: string;
 }
 /**
  * <p>The type used for enabling software token MFA at the user level. If an MFA type is activated for a user, the user will be prompted for MFA during all sign-in attempts, unless device tracking

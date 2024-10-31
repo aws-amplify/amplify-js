@@ -83,7 +83,7 @@ export interface AuthSignUpInput<
 		AuthSignUpOptions<AuthUserAttributeKey> = AuthSignUpOptions<AuthUserAttributeKey>,
 > {
 	username: string;
-	password: string;
+	password?: string;
 	options?: ServiceOptions;
 }
 
