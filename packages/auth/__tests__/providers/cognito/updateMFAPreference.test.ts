@@ -11,11 +11,14 @@ import {
 import { AuthError } from '../../../src/errors/AuthError';
 import { SetUserMFAPreferenceException } from '../../../src/providers/cognito/types/errors';
 import { getMFASettings } from '../../../src/providers/cognito/apis/updateMFAPreference';
+import { MFAPreference } from '../../../src/providers/cognito/types';
 import { createSetUserMFAPreferenceClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/cognito/factories';
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
+
+type MfaPreferenceValue = MFAPreference | undefined;
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
@@ -30,25 +33,39 @@ jest.mock(
 );
 jest.mock('../../../src/providers/cognito/factories');
 
-const mfaChoices: UpdateMFAPreferenceInput[] = [
-	{ sms: 'DISABLED', totp: 'DISABLED' },
-	{ sms: 'DISABLED', totp: 'ENABLED' },
-	{ sms: 'DISABLED', totp: 'PREFERRED' },
-	{ sms: 'DISABLED', totp: 'NOT_PREFERRED' },
-	{ sms: 'ENABLED', totp: 'DISABLED' },
-	{ sms: 'ENABLED', totp: 'ENABLED' },
-	{ sms: 'ENABLED', totp: 'PREFERRED' },
-	{ sms: 'ENABLED', totp: 'NOT_PREFERRED' },
-	{ sms: 'PREFERRED', totp: 'DISABLED' },
-	{ sms: 'PREFERRED', totp: 'ENABLED' },
-	{ sms: 'PREFERRED', totp: 'PREFERRED' },
-	{ sms: 'PREFERRED', totp: 'NOT_PREFERRED' },
-	{ sms: 'NOT_PREFERRED', totp: 'DISABLED' },
-	{ sms: 'NOT_PREFERRED', totp: 'ENABLED' },
-	{ sms: 'NOT_PREFERRED', totp: 'PREFERRED' },
-	{ sms: 'NOT_PREFERRED', totp: 'NOT_PREFERRED' },
-	{ sms: undefined, totp: undefined },
-];
+// generates all preference permutations
+const generateUpdateMFAPreferenceOptions = () => {
+	const mfaPreferenceTypes: MfaPreferenceValue[] = [
+		'PREFERRED',
+		'NOT_PREFERRED',
+		'ENABLED',
+		'DISABLED',
+		undefined,
+	];
+	const mfaKeys: (keyof UpdateMFAPreferenceInput)[] = ['email', 'sms', 'totp'];
+
+	const generatePermutations = <T>(
+		keys: string[],
+		values: T[],
+	): Record<string, T>[] => {
+		if (!keys.length) return [{}];
+
+		const [curr, ...rest] = keys;
+		const permutations: Record<string, T>[] = [];
+
+		for (const value of values) {
+			for (const perm of generatePermutations(rest, values)) {
+				permutations.push({ ...perm, [curr]: value });
+			}
+		}
+
+		return permutations;
+	};
+
+	return generatePermutations(mfaKeys, mfaPreferenceTypes);
+};
+
+const mfaChoices = generateUpdateMFAPreferenceOptions();
 
 describe('updateMFAPreference', () => {
 	// assert mocks
@@ -82,10 +99,10 @@ describe('updateMFAPreference', () => {
 	});
 
 	it.each(mfaChoices)(
-		'should update with sms $sms and totp $totp',
-		async mfaChoise => {
-			const { totp, sms } = mfaChoise;
-			await updateMFAPreference(mfaChoise);
+		'should update with email $email, sms $sms, and totp $totp',
+		async mfaChoice => {
+			const { totp, sms, email } = mfaChoice;
+			await updateMFAPreference(mfaChoice);
 			expect(mockSetUserMFAPreference).toHaveBeenCalledWith(
 				{
 					region: 'us-west-2',
@@ -95,6 +112,7 @@ describe('updateMFAPreference', () => {
 					AccessToken: mockAccessToken,
 					SMSMfaSettings: getMFASettings(sms),
 					SoftwareTokenMfaSettings: getMFASettings(totp),
+					EmailMfaSettings: getMFASettings(email),
 				},
 			);
 		},
