@@ -66,4 +66,35 @@ const listPartsHappyCase: ApiFunctionalTestCase<typeof listParts> = [
 	},
 ];
 
-export default [listPartsHappyCase];
+const listPartsHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof listParts
+> = [
+	'happy case',
+	'listParts with custom endpoint',
+	listParts,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	} as Parameters<typeof listParts>[0],
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+		UploadId: 'uploadId',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key?uploadId=uploadId',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
+export default [listPartsHappyCase, listPartsHappyCaseCustomEndpoint];

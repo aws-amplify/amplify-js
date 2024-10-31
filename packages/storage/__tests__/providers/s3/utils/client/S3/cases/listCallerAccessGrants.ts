@@ -137,6 +137,37 @@ const listCallerAccessGrantsHappyCaseMultipleGrants: ApiFunctionalTestCase<
 	},
 ];
 
+const listCallerAccessGrantsHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof listCallerAccessGrants
+> = [
+	'happy case',
+	'listCallerAccessGrants with custom endpoint',
+	listCallerAccessGrants,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+	} as Parameters<typeof listCallerAccessGrants>[0],
+	{
+		AccountId: MOCK_ACCOUNT_ID,
+		GrantScope: 's3://my-bucket/path/to/',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://accountid.custom.endpoint.com/v20180820/accessgrantsinstance/caller/grants?grantscope=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2F',
+		}),
+	}),
+	{
+		status: 200,
+		headers: {
+			...DEFAULT_RESPONSE_HEADERS,
+		},
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
 const listCallerAccessGrantsErrorCase: ApiFunctionalTestCase<
 	typeof listCallerAccessGrants
 > = [
@@ -170,5 +201,6 @@ const listCallerAccessGrantsErrorCase: ApiFunctionalTestCase<
 export default [
 	listCallerAccessGrantsHappyCaseSingleGrant,
 	listCallerAccessGrantsHappyCaseMultipleGrants,
+	listCallerAccessGrantsHappyCaseCustomEndpoint,
 	listCallerAccessGrantsErrorCase,
 ];

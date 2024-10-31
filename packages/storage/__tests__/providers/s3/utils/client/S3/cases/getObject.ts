@@ -143,7 +143,9 @@ const getObjectHappyCase: ApiFunctionalTestCase<typeof getObject> = [
 	},
 ];
 
-const getObjectAccelerateEndpoint: ApiFunctionalTestCase<typeof getObject> = [
+const getObjectHappyCaseAccelerateEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
 	'happy case',
 	'getObject with accelerate endpoint',
 	getObject,
@@ -170,7 +172,9 @@ const getObjectAccelerateEndpoint: ApiFunctionalTestCase<typeof getObject> = [
 	}) as any,
 ];
 
-const getObjectCustomEndpoint: ApiFunctionalTestCase<typeof getObject> = [
+const getObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
 	'happy case',
 	'getObject with custom endpoint',
 	getObject,
@@ -200,6 +204,6 @@ const getObjectCustomEndpoint: ApiFunctionalTestCase<typeof getObject> = [
 
 export default [
 	getObjectHappyCase,
-	getObjectAccelerateEndpoint,
-	getObjectCustomEndpoint,
+	getObjectHappyCaseAccelerateEndpoint,
+	getObjectHappyCaseCustomEndpoint,
 ];
