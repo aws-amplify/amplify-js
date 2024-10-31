@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.7.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.6.7...aws-amplify@6.7.0) (2024-10-29)
+
+### Bug Fixes
+
+- **api-graphql:** events url pattern; non-retryable error handling ([#13970](https://github.com/aws-amplify/amplify-js/issues/13970)) ([e0fdeb7](https://github.com/aws-amplify/amplify-js/commit/e0fdeb7bcbb24822607267b08b2919af5e73f2db))
+
+### Features
+
+- **data:** events client ([#13923](https://github.com/aws-amplify/amplify-js/issues/13923)) ([847fb51](https://github.com/aws-amplify/amplify-js/commit/847fb51acee1ee8585503625a6f73d67265217d0))
+
+## [6.6.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.6.6...aws-amplify@6.6.7) (2024-10-25)
+
+**Note:** Version bump only for package aws-amplify
+
 ## [6.6.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.6.5...aws-amplify@6.6.6) (2024-10-21)
 
 **Note:** Version bump only for package aws-amplify

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.54](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.0.53...@aws-amplify/interactions@6.0.54) (2024-10-29)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+## [6.0.53](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.0.52...@aws-amplify/interactions@6.0.53) (2024-10-25)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
 ## [6.0.52](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@6.0.51...@aws-amplify/interactions@6.0.52) (2024-10-21)
 
 **Note:** Version bump only for package @aws-amplify/interactions
