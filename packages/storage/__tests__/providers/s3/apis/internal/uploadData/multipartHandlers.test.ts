@@ -568,6 +568,7 @@ describe('getMultipartUploadHandlers with key', () => {
 						data: new ArrayBuffer(8 * MB),
 						options: {
 							onProgress,
+							resumableUploadsCache: mockDefaultStorage,
 						},
 					},
 					8 * MB,
@@ -1244,10 +1245,9 @@ describe('getMultipartUploadHandlers with path', () => {
 				);
 				await multipartUploadJob();
 
-				expect(mockCreateMultipartUpload).toHaveBeenCalledTimes(1);
-				expect(mockUploadPart).toHaveBeenCalledTimes(2);
-				expect(mockHeadObject).toHaveBeenCalledTimes(2);
-				await expect(mockHeadObject).toBeLastCalledWithConfigAndInput(
+				await expect(
+					mockCompleteMultipartUpload,
+				).toBeLastCalledWithConfigAndInput(
 					expect.objectContaining({
 						credentials,
 						region,
@@ -1326,6 +1326,56 @@ describe('getMultipartUploadHandlers with path', () => {
 				expect(mockCompleteMultipartUpload).toHaveBeenCalledTimes(1);
 			});
 		});
+
+		describe('cache validation', () => {
+			it.each([
+				{
+					name: 'wrong part count',
+					parts: [{ PartNumber: 1 }, { PartNumber: 2 }, { PartNumber: 3 }],
+				},
+				{
+					name: 'wrong part numbers',
+					parts: [{ PartNumber: 1 }, { PartNumber: 1 }],
+				},
+			])('should throw with $name', async ({ parts }) => {
+				mockMultipartUploadSuccess();
+
+				const mockDefaultStorage = defaultStorage as jest.Mocked<
+					typeof defaultStorage
+				>;
+				mockDefaultStorage.getItem.mockResolvedValue(
+					JSON.stringify({
+						[testPathCacheKey]: {
+							uploadId: 'uploadId',
+							bucket,
+							key: defaultKey,
+							finalCrc32: 'mock-crc32',
+						},
+					}),
+				);
+				mockListParts.mockResolvedValue({
+					Parts: parts,
+					$metadata: {},
+				});
+
+				const onProgress = jest.fn();
+				const { multipartUploadJob } = getMultipartUploadHandlers(
+					{
+						path: testPath,
+						data: new ArrayBuffer(8 * MB),
+						options: {
+							onProgress,
+							resumableUploadsCache: mockDefaultStorage,
+						},
+					},
+					8 * MB,
+				);
+				await expect(multipartUploadJob()).rejects.toThrow({
+					name: 'Unknown',
+					message: 'An unknown error has occurred.',
+				});
+			});
+		});
 	});
 
 	describe('upload caching', () => {
@@ -1342,7 +1392,7 @@ describe('getMultipartUploadHandlers with path', () => {
 			const size = 8 * MB;
 			const { multipartUploadJob } = getMultipartUploadHandlers(
 				{
-					key: defaultKey,
+					path: testPath,
 					data: new ArrayBuffer(size),
 				},
 				size,

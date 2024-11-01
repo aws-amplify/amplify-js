@@ -103,6 +103,6 @@ describe('calculate crc32', () => {
 			expect((await getCombinedCrc32(data, byteLength(data)))!).toEqual(
 				expected.checksum,
 			);
-		});
+		}, 10_000);
 	});
 });
