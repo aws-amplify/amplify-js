@@ -17,6 +17,7 @@ import { createCognitoUserPoolEndpointResolver } from '../../../src/providers/co
 
 import { getMockError, mockAccessToken } from './testUtils/data';
 import { setUpGetConfig } from './testUtils/setUpGetConfig';
+import { generatePermutations } from './testUtils/generatePermutations';
 
 type MfaPreferenceValue = MFAPreference | undefined;
 
@@ -33,39 +34,16 @@ jest.mock(
 );
 jest.mock('../../../src/providers/cognito/factories');
 
-// generates all preference permutations
-const generateUpdateMFAPreferenceOptions = () => {
-	const mfaPreferenceTypes: MfaPreferenceValue[] = [
-		'PREFERRED',
-		'NOT_PREFERRED',
-		'ENABLED',
-		'DISABLED',
-		undefined,
-	];
-	const mfaKeys: (keyof UpdateMFAPreferenceInput)[] = ['email', 'sms', 'totp'];
+const mfaPreferenceTypes: MfaPreferenceValue[] = [
+	'PREFERRED',
+	'NOT_PREFERRED',
+	'ENABLED',
+	'DISABLED',
+	undefined,
+];
+const mfaKeys: (keyof UpdateMFAPreferenceInput)[] = ['email', 'sms', 'totp'];
 
-	const generatePermutations = <T>(
-		keys: string[],
-		values: T[],
-	): Record<string, T>[] => {
-		if (!keys.length) return [{}];
-
-		const [curr, ...rest] = keys;
-		const permutations: Record<string, T>[] = [];
-
-		for (const value of values) {
-			for (const perm of generatePermutations(rest, values)) {
-				permutations.push({ ...perm, [curr]: value });
-			}
-		}
-
-		return permutations;
-	};
-
-	return generatePermutations(mfaKeys, mfaPreferenceTypes);
-};
-
-const mfaChoices = generateUpdateMFAPreferenceOptions();
+const mfaChoices = generatePermutations(mfaKeys, mfaPreferenceTypes);
 
 describe('updateMFAPreference', () => {
 	// assert mocks

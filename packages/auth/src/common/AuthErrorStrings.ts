@@ -50,7 +50,7 @@ export const validationErrorMap: AmplifyErrorMap<AuthValidationErrorCode> = {
 		message:
 			'Incorrect MFA method was chosen. It should be either SMS, TOTP, or EMAIL',
 		recoverySuggestion:
-			'Try to pass SMS, TOTP, or EMAIL as the challengeResponse',
+			'Confirm SMS, TOTP, or EMAIL is passed as the challengeResponse',
 	},
 	[AuthValidationErrorCode.EmptyVerifyTOTPSetupCode]: {
 		message: 'code is required to verifyTotpSetup',

@@ -52,7 +52,7 @@ import {
 import { getRegionFromUserPoolId } from '../../../foundation/parsers';
 
 import { signInStore } from './signInStore';
-import { assertDeviceMetadata } from './types';
+import { HandleAuthChallengeRequest, assertDeviceMetadata } from './types';
 import {
 	getAuthenticationHelper,
 	getBytesFromHex,
@@ -62,18 +62,9 @@ import {
 import { BigInteger } from './srp/BigInteger';
 import { AuthenticationHelper } from './srp/AuthenticationHelper';
 import { getUserContextData } from './userContextData';
+import { handleMFAChallenge } from './handleMFAChallenge';
 
 const USER_ATTRIBUTES = 'userAttributes.';
-
-interface HandleAuthChallengeRequest {
-	challengeResponse: string;
-	username: string;
-	clientMetadata?: ClientMetadata;
-	session?: string;
-	deviceName?: string;
-	requiredAttributes?: AuthUserAttributes;
-	config: CognitoUserPoolConfig;
-}
 
 interface HandleDeviceSRPInput {
 	username: string;
@@ -262,7 +253,7 @@ export async function handleMFASetupChallenge({
 		name: AuthErrorCodes.SignInException,
 		message: `Cannot proceed with MFA setup using challengeResponse: ${challengeResponse}`,
 		recoverySuggestion:
-			'Try passing "EMAIL", "TOTP", a valid email, or OTP code as the challengeResponse.',
+			'Confirm "EMAIL", "TOTP", a valid email, or OTP code is passed as the challengeResponse.',
 	});
 }
 
@@ -274,19 +265,22 @@ export async function handleSelectMFATypeChallenge({
 	config,
 }: HandleAuthChallengeRequest): Promise<RespondToAuthChallengeCommandOutput> {
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
+
+	const challengeResponses: Record<string, string> = {
+		USERNAME: username,
+	};
+
+	const selectedMfaType = mapMfaType(challengeResponse);
+
 	assertValidationError(
-		challengeResponse === 'TOTP' ||
-			challengeResponse === 'SMS' ||
-			challengeResponse === 'EMAIL',
+		!!selectedMfaType &&
+			['SMS_MFA', 'SOFTWARE_TOKEN_MFA', 'EMAIL_OTP'].includes(selectedMfaType),
 		AuthValidationErrorCode.IncorrectMFAMethod,
 	);
 
-	const challengeResponses = {
-		USERNAME: username,
-		ANSWER: mapMfaType(challengeResponse),
-	};
+	challengeResponses.ANSWER = selectedMfaType;
 
-	const UserContextData = getUserContextData({
+	const userContextData = getUserContextData({
 		username,
 		userPoolId,
 		userPoolClientId,
@@ -298,7 +292,7 @@ export async function handleSelectMFATypeChallenge({
 		Session: session,
 		ClientMetadata: clientMetadata,
 		ClientId: userPoolClientId,
-		UserContextData,
+		UserContextData: userContextData,
 	};
 
 	const respondToAuthChallenge = createRespondToAuthChallengeClient({
@@ -1089,12 +1083,10 @@ export async function handleChallengeName(
 	});
 }
 
-export function mapMfaType(mfa: string): CognitoMFAType {
-	let mfaType: CognitoMFAType = 'SMS_MFA';
-	if (mfa === 'TOTP') mfaType = 'SOFTWARE_TOKEN_MFA';
-	if (mfa === 'EMAIL') mfaType = 'EMAIL_OTP';
-
-	return mfaType;
+export function mapMfaType(mfa: string): CognitoMFAType | undefined {
+	if (mfa === 'SMS') return 'SMS_MFA';
+	if (mfa === 'TOTP') return 'SOFTWARE_TOKEN_MFA';
+	if (mfa === 'EMAIL') return 'EMAIL_OTP';
 }
 
 export function getMFAType(type?: string): AuthMFAType | undefined {
@@ -1116,8 +1108,8 @@ export function parseMFATypes(mfa?: string): CognitoMFAType[] {
 }
 
 export function getAllowedMfaSetupTypes(availableMfaSetupTypes: AuthMFAType[]) {
-	return availableMfaSetupTypes.filter(
-		authMfaType => authMfaType === 'EMAIL' || authMfaType === 'TOTP',
+	return availableMfaSetupTypes.filter(authMfaType =>
+		['EMAIL', 'TOTP'].includes(authMfaType),
 	);
 }
 
@@ -1248,65 +1240,4 @@ export function getActiveSignInUsername(username: string): string {
 	const state = signInStore.getState();
 
 	return state.username ?? username;
-}
-
-export async function handleMFAChallenge({
-	challengeName,
-	challengeResponse,
-	clientMetadata,
-	session,
-	username,
-	config,
-}: HandleAuthChallengeRequest & {
-	challengeName: Extract<
-		ChallengeName,
-		'EMAIL_OTP' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
-	>;
-}) {
-	const { userPoolId, userPoolClientId, userPoolEndpoint } = config;
-
-	const challengeResponses: Record<string, string> = {
-		USERNAME: username,
-	};
-
-	if (challengeName === 'EMAIL_OTP') {
-		challengeResponses.EMAIL_OTP_CODE = challengeResponse;
-	}
-
-	if (challengeName === 'SMS_MFA') {
-		challengeResponses.SMS_MFA_CODE = challengeResponse;
-	}
-
-	if (challengeName === 'SOFTWARE_TOKEN_MFA') {
-		challengeResponses.SOFTWARE_TOKEN_MFA_CODE = challengeResponse;
-	}
-
-	const userContextData = getUserContextData({
-		username,
-		userPoolId,
-		userPoolClientId,
-	});
-
-	const jsonReq: RespondToAuthChallengeCommandInput = {
-		ChallengeName: challengeName,
-		ChallengeResponses: challengeResponses,
-		Session: session,
-		ClientMetadata: clientMetadata,
-		ClientId: userPoolClientId,
-		UserContextData: userContextData,
-	};
-
-	const respondToAuthChallenge = createRespondToAuthChallengeClient({
-		endpointResolver: createCognitoUserPoolEndpointResolver({
-			endpointOverride: userPoolEndpoint,
-		}),
-	});
-
-	return respondToAuthChallenge(
-		{
-			region: getRegionFromUserPoolId(userPoolId),
-			userAgentValue: getAuthUserAgentValue(AuthAction.ConfirmSignIn),
-		},
-		jsonReq,
-	);
 }

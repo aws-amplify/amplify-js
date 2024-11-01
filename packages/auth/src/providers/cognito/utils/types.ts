@@ -15,6 +15,8 @@ import {
 	TOKEN_REFRESH_EXCEPTION,
 	USER_UNAUTHENTICATED_EXCEPTION,
 } from '../../../errors/constants';
+import { AuthUserAttributes } from '../../../types';
+import { ClientMetadata } from '../types';
 
 export function isTypeUserPoolConfig(
 	authConfig?: AuthConfig,
@@ -139,4 +141,14 @@ function isAuthenticatedWithImplicitOauthFlow(
 	tokens?: CognitoAuthTokens | null,
 ) {
 	return isAuthenticated(tokens) && !tokens?.refreshToken;
+}
+
+export interface HandleAuthChallengeRequest {
+	challengeResponse: string;
+	username: string;
+	clientMetadata?: ClientMetadata;
+	session?: string;
+	deviceName?: string;
+	requiredAttributes?: AuthUserAttributes;
+	config: CognitoUserPoolConfig;
 }
