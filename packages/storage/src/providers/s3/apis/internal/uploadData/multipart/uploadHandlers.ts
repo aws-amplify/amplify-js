@@ -238,7 +238,7 @@ export const getMultipartUploadHandlers = (
 
 		await Promise.all(concurrentUploadPartExecutors);
 
-		validateCompletedParts(inProgressUpload.completedParts, size!);
+		validateCompletedParts(inProgressUpload.completedParts, size);
 
 		const { ETag: eTag } = await completeMultipartUpload(
 			{
