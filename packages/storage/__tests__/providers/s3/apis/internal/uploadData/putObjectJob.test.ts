@@ -43,6 +43,8 @@ const mockFetchAuthSession = jest.mocked(Amplify.Auth.fetchAuthSession);
 const mockPutObject = jest.mocked(putObject);
 const bucket = 'bucket';
 const region = 'region';
+const data = 'data';
+const dataLength = data.length;
 
 mockFetchAuthSession.mockResolvedValue({
 	credentials,
@@ -78,7 +80,6 @@ describe('putObjectJob with key', () => {
 		async ({ checksumAlgorithm }) => {
 			const abortController = new AbortController();
 			const inputKey = 'key';
-			const data = 'data';
 			const mockContentType = 'contentType';
 			const contentDisposition = 'contentDisposition';
 			const contentEncoding = 'contentEncoding';
@@ -101,6 +102,7 @@ describe('putObjectJob with key', () => {
 					},
 				},
 				abortController.signal,
+				dataLength,
 			);
 			const result = await job();
 			expect(result).toEqual({
@@ -109,7 +111,7 @@ describe('putObjectJob with key', () => {
 				versionId: 'versionId',
 				contentType: 'contentType',
 				metadata: { key: 'value' },
-				size: undefined,
+				size: dataLength,
 			});
 			expect(mockPutObject).toHaveBeenCalledTimes(1);
 			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
@@ -158,6 +160,7 @@ describe('putObjectJob with key', () => {
 				data: 'data',
 			},
 			new AbortController().signal,
+			dataLength,
 		);
 		await job();
 		expect(calculateContentMd5).toHaveBeenCalledWith('data');
@@ -166,7 +169,6 @@ describe('putObjectJob with key', () => {
 	describe('bucket passed in options', () => {
 		it('should override bucket in putObject call when bucket as object', async () => {
 			const abortController = new AbortController();
-			const data = 'data';
 			const bucketName = 'bucket-1';
 			const mockRegion = 'region-1';
 
@@ -182,6 +184,7 @@ describe('putObjectJob with key', () => {
 					},
 				},
 				new AbortController().signal,
+				dataLength,
 			);
 			await job();
 
@@ -203,7 +206,6 @@ describe('putObjectJob with key', () => {
 
 		it('should override bucket in putObject call when bucket as string', async () => {
 			const abortController = new AbortController();
-			const data = 'data';
 			const job = putObjectJob(
 				{
 					key: 'key',
@@ -213,6 +215,7 @@ describe('putObjectJob with key', () => {
 					},
 				},
 				new AbortController().signal,
+				dataLength,
 			);
 			await job();
 
@@ -274,7 +277,6 @@ describe('putObjectJob with path', () => {
 		'should supply the correct parameters to putObject API handler when path is $path and checksumAlgorithm is $checksumAlgorithm',
 		async ({ path: inputPath, expectedKey, checksumAlgorithm }) => {
 			const abortController = new AbortController();
-			const data = 'data';
 			const mockContentType = 'contentType';
 			const contentDisposition = 'contentDisposition';
 			const contentEncoding = 'contentEncoding';
@@ -297,6 +299,7 @@ describe('putObjectJob with path', () => {
 					},
 				},
 				abortController.signal,
+				dataLength,
 			);
 			const result = await job();
 			expect(result).toEqual({
@@ -305,7 +308,7 @@ describe('putObjectJob with path', () => {
 				versionId: 'versionId',
 				contentType: 'contentType',
 				metadata: { key: 'value' },
-				size: undefined,
+				size: dataLength,
 			});
 			expect(mockPutObject).toHaveBeenCalledTimes(1);
 			await expect(mockPutObject).toBeLastCalledWithConfigAndInput(
@@ -351,9 +354,10 @@ describe('putObjectJob with path', () => {
 		const job = putObjectJob(
 			{
 				path: testPath,
-				data: 'data',
+				data,
 			},
 			new AbortController().signal,
+			dataLength,
 		);
 		await job();
 		expect(calculateContentMd5).toHaveBeenCalledWith('data');
@@ -364,10 +368,11 @@ describe('putObjectJob with path', () => {
 			const job = putObjectJob(
 				{
 					path: testPath,
-					data: 'data',
+					data,
 					options: { preventOverwrite: true },
 				},
 				new AbortController().signal,
+				dataLength,
 			);
 			await job();
 
@@ -383,7 +388,6 @@ describe('putObjectJob with path', () => {
 	describe('bucket passed in options', () => {
 		it('should override bucket in putObject call when bucket as object', async () => {
 			const abortController = new AbortController();
-			const data = 'data';
 			const bucketName = 'bucket-1';
 			const mockRegion = 'region-1';
 
@@ -399,6 +403,7 @@ describe('putObjectJob with path', () => {
 					},
 				},
 				new AbortController().signal,
+				dataLength,
 			);
 			await job();
 
@@ -420,7 +425,6 @@ describe('putObjectJob with path', () => {
 
 		it('should override bucket in putObject call when bucket as string', async () => {
 			const abortController = new AbortController();
-			const data = 'data';
 			const job = putObjectJob(
 				{
 					path: 'path/',
@@ -430,6 +434,7 @@ describe('putObjectJob with path', () => {
 					},
 				},
 				new AbortController().signal,
+				dataLength,
 			);
 			await job();
 

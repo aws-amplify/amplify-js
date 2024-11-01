@@ -43,7 +43,7 @@ export const putObjectJob =
 	(
 		uploadDataInput: SinglePartUploadDataInput,
 		abortSignal: AbortSignal,
-		totalLength?: number,
+		totalLength: number,
 	) =>
 	async (): Promise<ItemWithKey | ItemWithPath> => {
 		const { options: uploadDataOptions, data } = uploadDataInput;

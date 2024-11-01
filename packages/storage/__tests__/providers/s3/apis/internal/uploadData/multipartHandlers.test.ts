@@ -244,7 +244,7 @@ describe('getMultipartUploadHandlers with key', () => {
 							data: twoPartsPayload,
 							options: options as StorageOptions,
 						},
-						byteLength(twoPartsPayload),
+						byteLength(twoPartsPayload)!,
 					);
 					const result = await multipartUploadJob();
 					await expect(
@@ -293,7 +293,7 @@ describe('getMultipartUploadHandlers with key', () => {
 							checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 						},
 					},
-					byteLength(twoPartsPayload),
+					byteLength(twoPartsPayload)!,
 				);
 				await multipartUploadJob();
 
@@ -346,10 +346,13 @@ describe('getMultipartUploadHandlers with key', () => {
 
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				key: defaultKey,
-				data: 1 as any,
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: 1 as any,
+				},
+				1,
+			);
 			await expect(multipartUploadJob()).rejects.toThrow(
 				expect.objectContaining(
 					validationErrorMap[StorageValidationErrorCode.InvalidUploadSource],
@@ -427,10 +430,13 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockCreateMultipartUpload.mockReset();
 			mockCreateMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				key: defaultKey,
-				data: new ArrayBuffer(8 * MB),
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(8 * MB),
+				},
+				8 * MB,
+			);
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 		});
 
@@ -440,10 +446,13 @@ describe('getMultipartUploadHandlers with key', () => {
 			mockCompleteMultipartUpload.mockReset();
 			mockCompleteMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				key: defaultKey,
-				data: new ArrayBuffer(8 * MB),
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(8 * MB),
+				},
+				8 * MB,
+			);
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 		});
 
@@ -458,10 +467,13 @@ describe('getMultipartUploadHandlers with key', () => {
 			});
 			mockUploadPart.mockRejectedValueOnce(new Error('error'));
 
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				key: defaultKey,
-				data: new ArrayBuffer(8 * MB),
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(8 * MB),
+				},
+				8 * MB,
+			);
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 			expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
@@ -481,7 +493,7 @@ describe('getMultipartUploadHandlers with key', () => {
 							bucket: { bucketName: mockBucket, region: mockRegion },
 						},
 					},
-					byteLength(mockData),
+					byteLength(mockData)!,
 				);
 				await multipartUploadJob();
 				await expect(
@@ -510,7 +522,7 @@ describe('getMultipartUploadHandlers with key', () => {
 							bucket: 'default-bucket',
 						},
 					},
-					byteLength(mockData),
+					byteLength(mockData)!,
 				);
 				await multipartUploadJob();
 				await expect(
@@ -800,10 +812,13 @@ describe('getMultipartUploadHandlers with key', () => {
 
 	describe('cancel()', () => {
 		it('should abort in-flight uploadPart requests and throw if upload is canceled', async () => {
-			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers({
-				key: defaultKey,
-				data: new ArrayBuffer(8 * MB),
-			});
+			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers(
+				{
+					key: defaultKey,
+					data: new ArrayBuffer(8 * MB),
+				},
+				8 * MB,
+			);
 			let partCount = 0;
 			mockMultipartUploadCancellation(() => {
 				partCount++;
@@ -1007,7 +1022,7 @@ describe('getMultipartUploadHandlers with path', () => {
 							path: inputPath,
 							data: twoPartsPayload,
 						},
-						byteLength(twoPartsPayload),
+						byteLength(twoPartsPayload)!,
 					);
 					const result = await multipartUploadJob();
 					await expect(
@@ -1056,7 +1071,7 @@ describe('getMultipartUploadHandlers with path', () => {
 							checksumAlgorithm: CHECKSUM_ALGORITHM_CRC32,
 						},
 					},
-					byteLength(twoPartsPayload),
+					byteLength(twoPartsPayload)!,
 				);
 				await multipartUploadJob();
 
@@ -1109,10 +1124,13 @@ describe('getMultipartUploadHandlers with path', () => {
 
 		it('should throw if unsupported payload type is provided', async () => {
 			mockMultipartUploadSuccess();
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				path: testPath,
-				data: 1 as any,
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: 1 as any,
+				},
+				1,
+			);
 			await expect(multipartUploadJob()).rejects.toThrow(
 				expect.objectContaining(
 					validationErrorMap[StorageValidationErrorCode.InvalidUploadSource],
@@ -1190,10 +1208,13 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockCreateMultipartUpload.mockReset();
 			mockCreateMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				path: testPath,
-				data: new ArrayBuffer(8 * MB),
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new ArrayBuffer(8 * MB),
+				},
+				8 * MB,
+			);
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 		});
 
@@ -1203,10 +1224,13 @@ describe('getMultipartUploadHandlers with path', () => {
 			mockCompleteMultipartUpload.mockReset();
 			mockCompleteMultipartUpload.mockRejectedValueOnce(new Error('error'));
 
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				path: testPath,
-				data: new ArrayBuffer(8 * MB),
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new ArrayBuffer(8 * MB),
+				},
+				8 * MB,
+			);
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 		});
 
@@ -1221,10 +1245,13 @@ describe('getMultipartUploadHandlers with path', () => {
 			});
 			mockUploadPart.mockRejectedValueOnce(new Error('error'));
 
-			const { multipartUploadJob } = getMultipartUploadHandlers({
-				path: testPath,
-				data: new ArrayBuffer(8 * MB),
-			});
+			const { multipartUploadJob } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new ArrayBuffer(8 * MB),
+				},
+				8 * MB,
+			);
 			await expect(multipartUploadJob()).rejects.toThrow('error');
 			expect(mockUploadPart).toHaveBeenCalledTimes(2);
 			expect(mockCompleteMultipartUpload).not.toHaveBeenCalled();
@@ -1273,7 +1300,7 @@ describe('getMultipartUploadHandlers with path', () => {
 							bucket: { bucketName: mockBucket, region: mockRegion },
 						},
 					},
-					byteLength(mockData),
+					byteLength(mockData)!,
 				);
 				await multipartUploadJob();
 				await expect(
@@ -1304,7 +1331,7 @@ describe('getMultipartUploadHandlers with path', () => {
 							bucket: 'default-bucket',
 						},
 					},
-					byteLength(mockData),
+					byteLength(mockData)!,
 				);
 				await multipartUploadJob();
 				await expect(
@@ -1596,10 +1623,13 @@ describe('getMultipartUploadHandlers with path', () => {
 
 	describe('cancel()', () => {
 		it('should abort in-flight uploadPart requests and throw if upload is canceled', async () => {
-			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers({
-				path: testPath,
-				data: new ArrayBuffer(8 * MB),
-			});
+			const { multipartUploadJob, onCancel } = getMultipartUploadHandlers(
+				{
+					path: testPath,
+					data: new ArrayBuffer(8 * MB),
+				},
+				8 * MB,
+			);
 			let partCount = 0;
 			mockMultipartUploadCancellation(() => {
 				partCount++;

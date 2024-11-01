@@ -19,12 +19,18 @@ export const uploadData = (
 	const { data } = input;
 
 	const dataByteLength = byteLength(data);
+	// If the upload source sticks to the suggested types, the byteLength can be
+	// determined here.
 	assertValidationError(
-		dataByteLength === undefined || dataByteLength <= MAX_OBJECT_SIZE,
+		dataByteLength !== undefined,
+		StorageValidationErrorCode.InvalidUploadSource,
+	);
+	assertValidationError(
+		dataByteLength <= MAX_OBJECT_SIZE,
 		StorageValidationErrorCode.ObjectIsTooLarge,
 	);
 
-	if (dataByteLength !== undefined && dataByteLength <= DEFAULT_PART_SIZE) {
+	if (dataByteLength <= DEFAULT_PART_SIZE) {
 		// Single part upload
 		const abortController = new AbortController();
 

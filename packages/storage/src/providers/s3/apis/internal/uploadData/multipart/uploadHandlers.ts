@@ -82,7 +82,7 @@ export type MultipartUploadDataInput = WithResumableCacheConfig<
  */
 export const getMultipartUploadHandlers = (
 	uploadDataInput: MultipartUploadDataInput,
-	size?: number,
+	size: number,
 ) => {
 	let resolveCallback:
 		| ((value: ItemWithKey | ItemWithPath) => void)
