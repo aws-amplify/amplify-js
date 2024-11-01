@@ -61,10 +61,9 @@ const endpointResolver = (
 	if (customEndpoint) {
 		if (customEndpoint === LOCAL_TESTING_S3_ENDPOINT) {
 			endpoint = new AmplifyUrl(customEndpoint);
+		} else if (customEndpoint.includes('://')) {
+			throw new Error('Invalid S3 Endpoint.');
 		} else {
-			if (customEndpoint.includes('://')) {
-				throw new Error('Invalid S3 Endpoint.');
-			}
 			endpoint = new AmplifyUrl(`https://${customEndpoint}`);
 		}
 	} else if (useAccelerateEndpoint) {
