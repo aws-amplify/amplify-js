@@ -12,6 +12,8 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { createRetryDecider, createXmlErrorParser } from '../utils';
+import { assertValidationError } from '../../../../../errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '../../../../../errors/types/validation';
 
 /**
  * The service name used to sign requests if the API requires authentication.
@@ -26,7 +28,6 @@ export const SERVICE_NAME = 's3';
 export type S3EndpointResolverOptions = EndpointResolverOptions & {
 	/**
 	 * Fully qualified custom endpoint for S3. If this is set, this endpoint will be used regardless of region.
-	 * https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_region
 	 *
 	 * A fully qualified custom endpoint for S3. If set, this endpoint will override
 	 * the default S3 control endpoint and be used regardless of the specified region configuration.
@@ -53,13 +54,15 @@ const endpointResolver = (
 	apiInput?: { AccountId: string },
 ) => {
 	const { region, customEndpoint } = options;
+	// TODO(ashwinkumar6): make accountId a required param
 	const { AccountId: accountId } = apiInput ?? {};
 	let endpoint: URL;
 
 	if (customEndpoint) {
-		if (customEndpoint.includes('://')) {
-			throw new Error('Invalid S3 Endpoint.');
-		}
+		assertValidationError(
+			!customEndpoint.includes('://'),
+			StorageValidationErrorCode.InvalidCustomEndpoint,
+		);
 		endpoint = new AmplifyUrl(`https://${accountId}.${customEndpoint}`);
 	} else {
 		endpoint = new AmplifyUrl(

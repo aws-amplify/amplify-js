@@ -76,7 +76,7 @@ const listPartsHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof listParts>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',

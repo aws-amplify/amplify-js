@@ -152,7 +152,7 @@ const getObjectHappyCaseAccelerateEndpoint: ApiFunctionalTestCase<
 	{
 		...defaultConfig,
 		useAccelerateEndpoint: true,
-	} as Parameters<typeof getObject>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',
@@ -182,7 +182,7 @@ const getObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof getObject>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',
@@ -202,8 +202,100 @@ const getObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	}) as any,
 ];
 
+const getObjectErrorCaseAccelerateEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
+	'error case',
+	'getObject with accelerate endpoint and forcePathStyle',
+	getObject,
+	{
+		...defaultConfig,
+		useAccelerateEndpoint: true,
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://bucket.s3-accelerate.amazonaws.com/key',
+		}),
+	}),
+	{
+		status: 400,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: 'mockBody',
+	},
+	{
+		message: 'Path style URLs are not supported with S3 Transfer Acceleration.',
+		name: 'ForcePathStyleEndpointNotSupported',
+	},
+];
+
+const getObjectErrorCaseInvalidCustomEndpoint: ApiFunctionalTestCase<
+	typeof getObject
+> = [
+	'error case',
+	'getObject with invalid custom endpoint',
+	getObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'http://custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key',
+		}),
+	}),
+	{
+		status: 400,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: 'mockBody',
+	},
+	{
+		message: 'Invalid S3 custom endpoint.',
+		name: 'InvalidCustomEndpoint',
+	},
+];
+
+const getObjectErrorCaseInvalidBucketName: ApiFunctionalTestCase<
+	typeof getObject
+> = [
+	'error case',
+	'getObject with incompatible Dns bucket name',
+	getObject,
+	defaultConfig,
+	{
+		Bucket: 'incompatibleDnsCompatibleBucketName',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://incompatibleDnsCompatibleBucketName.s3.us-east-1.amazonaws.com/key',
+		}),
+	}),
+	{
+		status: 400,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: 'mockBody',
+	},
+	{
+		message: 'Invalid bucket name',
+		name: 'InvalidStorageBucketName',
+	},
+];
+
 export default [
 	getObjectHappyCase,
 	getObjectHappyCaseAccelerateEndpoint,
 	getObjectHappyCaseCustomEndpoint,
+	getObjectErrorCaseAccelerateEndpoint,
+	getObjectErrorCaseInvalidCustomEndpoint,
+	getObjectErrorCaseInvalidBucketName,
 ];

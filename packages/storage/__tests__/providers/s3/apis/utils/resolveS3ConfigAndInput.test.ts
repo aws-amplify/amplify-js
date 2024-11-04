@@ -335,7 +335,7 @@ describe('resolveS3ConfigAndInput', () => {
 			});
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(StorageError);
-			expect(error.name).toBe(StorageValidationErrorCode.InvalidStorageBucket);
+			expect(error.name).toBe(StorageValidationErrorCode.StorageBucketNotFound);
 		}
 	});
 });

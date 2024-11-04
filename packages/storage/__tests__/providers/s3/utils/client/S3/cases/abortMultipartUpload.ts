@@ -52,7 +52,7 @@ const abortMultipartUploadHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof abortMultipartUpload>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',

@@ -46,7 +46,7 @@ const deleteObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof deleteObject>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',

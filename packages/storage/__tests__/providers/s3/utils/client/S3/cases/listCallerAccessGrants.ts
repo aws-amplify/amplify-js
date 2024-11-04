@@ -146,7 +146,7 @@ const listCallerAccessGrantsHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	{
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
-	} as Parameters<typeof listCallerAccessGrants>[0],
+	},
 	{
 		AccountId: MOCK_ACCOUNT_ID,
 		GrantScope: 's3://my-bucket/path/to/',

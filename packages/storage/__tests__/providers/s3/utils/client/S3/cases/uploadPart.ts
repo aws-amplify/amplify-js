@@ -54,7 +54,7 @@ const uploadPartHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof uploadPart>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',

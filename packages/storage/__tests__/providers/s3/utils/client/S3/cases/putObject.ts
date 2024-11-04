@@ -78,7 +78,7 @@ const putObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof putObject>[0],
+	},
 	putObjectRequest,
 	expect.objectContaining({
 		url: expect.objectContaining({

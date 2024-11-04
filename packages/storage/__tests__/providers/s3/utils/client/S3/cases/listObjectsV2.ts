@@ -386,7 +386,7 @@ const listObjectsV2HappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof listObjectsV2>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Prefix: 'Prefix',

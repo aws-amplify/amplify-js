@@ -52,7 +52,7 @@ const createMultiPartUploadHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof createMultipartUpload>[0],
+	},
 	putObjectRequest,
 	expect.objectContaining({
 		url: expect.objectContaining({

@@ -58,7 +58,7 @@ const headObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof headObject>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',

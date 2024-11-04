@@ -13,6 +13,8 @@ import {
 
 import { createRetryDecider, createXmlErrorParser } from '../utils';
 import { LOCAL_TESTING_S3_ENDPOINT } from '../../constants';
+import { assertValidationError } from '../../../../../errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '../../../../../errors/types/validation';
 
 const DOMAIN_PATTERN = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
 const IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
@@ -72,26 +74,28 @@ const endpointResolver = (
 	if (customEndpoint) {
 		if (customEndpoint === LOCAL_TESTING_S3_ENDPOINT) {
 			endpoint = new AmplifyUrl(customEndpoint);
-		} else if (customEndpoint.includes('://')) {
-			throw new Error('Invalid S3 Endpoint.');
-		} else {
-			endpoint = new AmplifyUrl(`https://${customEndpoint}`);
 		}
+		assertValidationError(
+			!customEndpoint.includes('://'),
+			StorageValidationErrorCode.InvalidCustomEndpoint,
+		);
+		endpoint = new AmplifyUrl(`https://${customEndpoint}`);
 	} else if (useAccelerateEndpoint) {
-		if (forcePathStyle) {
-			throw new Error(
-				'Path style URLs are not supported with S3 Transfer Acceleration.',
-			);
-		}
+		assertValidationError(
+			!forcePathStyle,
+			StorageValidationErrorCode.ForcePathStyleEndpointNotSupported,
+		);
 		endpoint = new AmplifyUrl(`https://s3-accelerate.${getDnsSuffix(region)}`);
 	} else {
 		endpoint = new AmplifyUrl(`https://s3.${region}.${getDnsSuffix(region)}`);
 	}
 	// 2. inject bucket name
 	if (apiInput?.Bucket) {
-		if (!isDnsCompatibleBucketName(apiInput.Bucket)) {
-			throw new Error(`Invalid bucket name: "${apiInput.Bucket}".`);
-		}
+		assertValidationError(
+			isDnsCompatibleBucketName(apiInput.Bucket),
+			StorageValidationErrorCode.InvalidStorageBucketName,
+		);
+
 		if (forcePathStyle || apiInput.Bucket.includes('.')) {
 			endpoint.pathname = `/${apiInput.Bucket}`;
 		} else {

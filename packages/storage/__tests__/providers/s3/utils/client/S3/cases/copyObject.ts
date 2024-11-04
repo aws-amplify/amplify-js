@@ -68,7 +68,7 @@ const copyObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
 		...defaultConfig,
 		customEndpoint: 'custom.endpoint.com',
 		forcePathStyle: true,
-	} as Parameters<typeof copyObject>[0],
+	},
 	{
 		Bucket: 'bucket',
 		Key: 'key',
