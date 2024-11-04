@@ -13,7 +13,7 @@ import { HttpRequest, HttpResponse } from '../types/http';
  * * A deserializer function
  * * A default config object
  *
- * Here's the internal workflow of the returned service API handler, when it's called:
+ * The returned service API handler, when called, will trigger the following workflow:
  * 1. When calling the service API handler function, the default config object is merged into the input config
  * object to assign the default values of some omitted configs, resulting to a resolved config object.
  * 2. The `endpointResolver` function from the default config object will be invoked with the resolved config object and
@@ -38,6 +38,8 @@ import { HttpRequest, HttpResponse } from '../types/http';
  *  object type is composed with options type of transferHandler, endpointResolver function as well as endpointResolver
  *  function's input options type, region string. The config object property will be marked as optional if it's also
  * 	defined in defaultConfig.
+ *
+ * @internal
  */
 export const composeServiceApi = <
 	TransferHandlerOptions,
