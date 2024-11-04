@@ -34,9 +34,20 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
 	 */
 	useAccelerateEndpoint?: boolean;
 	/**
-	 * Fully qualified custom endpoint for S3. If this is set, this endpoint will be used regardless of region or
-	 * useAccelerateEndpoint config.
-	 * The path of this endpoint
+	 * A fully qualified custom endpoint for S3. If set, this endpoint will override
+	 * the default S3 endpoint and be used regardless of the specified region or
+	 * `useAccelerateEndpoint` configuration.
+	 *
+	 * Refer to AWS documentation for more details on available endpoints:
+	 * https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_region
+	 *
+	 * @example
+	 * ```ts
+	 * // Examples of S3 custom endpoints
+	 * const endpoint1 = "s3.us-east-2.amazonaws.com";
+	 * const endpoint2 = "s3.dualstack.us-east-2.amazonaws.com";
+	 * const endpoint3 = "s3-fips.dualstack.us-east-2.amazonaws.com";
+	 * ```
 	 */
 	customEndpoint?: string;
 	/**
