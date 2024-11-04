@@ -19,8 +19,8 @@ export const uploadData = (
 	const { data } = input;
 
 	const dataByteLength = byteLength(data);
-	// If the upload source sticks to the suggested types, the byteLength can be
-	// determined here.
+	// Using InvalidUploadSource error code because the input data must NOT be any
+	// of permitted Blob, string, ArrayBuffer(View) if byteLength could not be determined.
 	assertValidationError(
 		dataByteLength !== undefined,
 		StorageValidationErrorCode.InvalidUploadSource,
