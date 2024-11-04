@@ -171,6 +171,40 @@ describe('AppSyncEventProvider', () => {
 						'Connection failed: Retriable Test',
 					);
 				});
+
+				test('subscription observer is triggered when a connection is formed and a data message is received after connection ack', async () => {
+					expect.assertions(1);
+					const mockNext = jest.fn();
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const event = JSON.stringify({ some: 'data' });
+
+					observer.subscribe({
+						// Succeed only when the first message comes through
+						next: mockNext,
+						// Closing a hot connection (for cleanup) makes it blow up the test stack
+						error: () => {},
+					});
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.DATA,
+						event,
+					});
+
+					// events callback returns entire message contents
+					expect(mockNext).toHaveBeenCalledWith({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.DATA,
+						event: JSON.parse(event),
+					});
+				});
 			});
 		});
 	});

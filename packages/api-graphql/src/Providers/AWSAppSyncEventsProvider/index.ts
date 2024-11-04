@@ -167,7 +167,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		if (type === MESSAGE_TYPES.DATA && payload) {
 			const deserializedEvent = JSON.parse(payload);
 			if (observer) {
-				observer.next(deserializedEvent);
+				observer.next({ id, type, event: deserializedEvent });
 			} else {
 				this.logger.debug(`observer not found for id: ${id}`);
 			}
