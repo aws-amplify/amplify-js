@@ -23,21 +23,20 @@ import { Permission, PrefixType, Privilege } from './common';
 /**
  * @internal
  */
-export interface ListCallerAccessGrantsInput
-	extends ListLocationsInput,
-		Pick<AdvancedOptions, 'customEndpoint'> {
+export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
+	customEndpoint?: string;
 	region: string;
 }
 
 /**
  * @internal
  */
-export interface GetDataAccessInput
-	extends Pick<AdvancedOptions, 'customEndpoint'> {
+export interface GetDataAccessInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
+	customEndpoint?: string;
 	durationSeconds?: number;
 	permission: Permission;
 	prefixType?: PrefixType;

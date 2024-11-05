@@ -100,15 +100,11 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.InvalidCustomEndpoint]: {
 		message: 'Invalid S3 custom endpoint.',
-		recoverySuggestion:
-			'Refer to AWS documentation for more details on available endpoints: https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_region',
 	},
 	[StorageValidationErrorCode.ForcePathStyleEndpointNotSupported]: {
 		message: 'Path style URLs are not supported with S3 Transfer Acceleration.',
 	},
 	[StorageValidationErrorCode.DnsIncompatibleBucketName]: {
 		message: `The bucket name isn't DNS compatible.`,
-		recoverySuggestion:
-			'Refer to AWS documentation for buckets naming rules: https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html#general-purpose-bucket-names',
 	},
 };
