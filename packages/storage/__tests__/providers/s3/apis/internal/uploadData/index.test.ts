@@ -55,12 +55,17 @@ describe('uploadData with key', () => {
 			);
 		});
 
-		it('should NOT throw if data size is unknown', async () => {
-			uploadData({
-				key: 'key',
-				data: {} as any,
-			});
-			expect(mockCreateUploadTask).toHaveBeenCalled();
+		it('should throw if data size is unknown', async () => {
+			expect(() =>
+				uploadData({
+					key: 'key',
+					data: {} as any,
+				}),
+			).toThrow(
+				expect.objectContaining(
+					validationErrorMap[StorageValidationErrorCode.InvalidUploadSource],
+				),
+			);
 		});
 	});
 
@@ -166,12 +171,17 @@ describe('uploadData with path', () => {
 			);
 		});
 
-		it('should NOT throw if data size is unknown', async () => {
-			uploadData({
-				path: testPath,
-				data: {} as any,
-			});
-			expect(mockCreateUploadTask).toHaveBeenCalled();
+		it('should throw if data size is unknown', async () => {
+			expect(() =>
+				uploadData({
+					path: testPath,
+					data: {} as any,
+				}),
+			).toThrow(
+				expect.objectContaining(
+					validationErrorMap[StorageValidationErrorCode.InvalidUploadSource],
+				),
+			);
 		});
 	});
 

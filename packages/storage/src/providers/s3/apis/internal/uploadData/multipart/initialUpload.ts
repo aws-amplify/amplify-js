@@ -28,6 +28,7 @@ interface LoadOrCreateMultipartUploadOptions {
 	s3Config: ResolvedS3Config;
 	data: StorageUploadDataPayload;
 	bucket: string;
+	size: number;
 	accessLevel?: StorageAccessLevel;
 	keyPrefix?: string;
 	key: string;
@@ -35,7 +36,6 @@ interface LoadOrCreateMultipartUploadOptions {
 	contentDisposition?: string | ContentDisposition;
 	contentEncoding?: string;
 	metadata?: Record<string, string>;
-	size?: number;
 	abortSignal?: AbortSignal;
 	checksumAlgorithm?: UploadDataChecksumAlgorithm;
 	optionsHash: string;
@@ -84,9 +84,9 @@ export const loadOrCreateMultipartUpload = async ({
 		  }
 		| undefined;
 
-	if (size === undefined || !resumableUploadsCache) {
+	if (!resumableUploadsCache) {
 		logger.debug(
-			'uploaded data size or cache instance cannot be determined, skipping cache.',
+			'uploaded cache instance cannot be determined, skipping cache.',
 		);
 		cachedUpload = undefined;
 	} else {
@@ -141,33 +141,24 @@ export const loadOrCreateMultipartUpload = async ({
 			},
 		);
 
-		if (size === undefined || !resumableUploadsCache) {
-			logger.debug(
-				'uploaded data size or cache instance cannot be determined, skipping cache.',
-			);
-
-			return {
+		if (resumableUploadsCache) {
+			const uploadCacheKey = getUploadsCacheKey({
+				size,
+				contentType,
+				file: data instanceof File ? data : undefined,
+				bucket,
+				accessLevel,
+				key,
+				optionsHash,
+			});
+			await cacheMultipartUpload(resumableUploadsCache, uploadCacheKey, {
 				uploadId: UploadId!,
-				cachedParts: [],
+				bucket,
+				key,
 				finalCrc32,
-			};
+				fileName: data instanceof File ? data.name : '',
+			});
 		}
-		const uploadCacheKey = getUploadsCacheKey({
-			size,
-			contentType,
-			file: data instanceof File ? data : undefined,
-			bucket,
-			accessLevel,
-			key,
-			optionsHash,
-		});
-		await cacheMultipartUpload(resumableUploadsCache, uploadCacheKey, {
-			uploadId: UploadId!,
-			bucket,
-			key,
-			finalCrc32,
-			fileName: data instanceof File ? data.name : '',
-		});
 
 		return {
 			uploadId: UploadId!,

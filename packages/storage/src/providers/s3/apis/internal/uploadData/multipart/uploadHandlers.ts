@@ -37,12 +37,14 @@ import { getStorageUserAgentValue } from '../../../../utils/userAgent';
 import { logger } from '../../../../../../utils';
 import { calculateContentCRC32 } from '../../../../utils/crc32';
 import { StorageOperationOptionsInput } from '../../../../../../types/inputs';
+import { IntegrityError } from '../../../../../../errors/IntegrityError';
 
 import { uploadPartExecutor } from './uploadPartExecutor';
 import { getUploadsCacheKey, removeCachedUpload } from './uploadCache';
 import { getConcurrentUploadsProgressTracker } from './progressTracker';
 import { loadOrCreateMultipartUpload } from './initialUpload';
 import { getDataChunker } from './getDataChunker';
+import { calculatePartSize } from './calculatePartSize';
 
 type WithResumableCacheConfig<Input extends StorageOperationOptionsInput<any>> =
 	Input & {
@@ -80,7 +82,7 @@ export type MultipartUploadDataInput = WithResumableCacheConfig<
  */
 export const getMultipartUploadHandlers = (
 	uploadDataInput: MultipartUploadDataInput,
-	size?: number,
+	size: number,
 ) => {
 	let resolveCallback:
 		| ((value: ItemWithKey | ItemWithPath) => void)
@@ -236,6 +238,8 @@ export const getMultipartUploadHandlers = (
 
 		await Promise.all(concurrentUploadPartExecutors);
 
+		validateCompletedParts(inProgressUpload.completedParts, size);
+
 		const { ETag: eTag } = await completeMultipartUpload(
 			{
 				...resolvedS3Config,
@@ -249,9 +253,7 @@ export const getMultipartUploadHandlers = (
 				ChecksumCRC32: inProgressUpload.finalCrc32,
 				IfNoneMatch: preventOverwrite ? '*' : undefined,
 				MultipartUpload: {
-					Parts: inProgressUpload.completedParts.sort(
-						(partA, partB) => partA.PartNumber! - partB.PartNumber!,
-					),
+					Parts: sortUploadParts(inProgressUpload.completedParts),
 				},
 				ExpectedBucketOwner: expectedBucketOwner,
 			},
@@ -355,3 +357,23 @@ const resolveAccessLevel = (accessLevel?: StorageAccessLevel) =>
 	accessLevel ??
 	Amplify.libraryOptions.Storage?.S3?.defaultAccessLevel ??
 	DEFAULT_ACCESS_LEVEL;
+
+const validateCompletedParts = (completedParts: Part[], size: number) => {
+	const partsExpected = Math.ceil(size / calculatePartSize(size));
+	const validPartCount = completedParts.length === partsExpected;
+
+	const sorted = sortUploadParts(completedParts);
+	const validPartNumbers = sorted.every(
+		(part, index) => part.PartNumber === index + 1,
+	);
+
+	if (!validPartCount || !validPartNumbers) {
+		throw new IntegrityError();
+	}
+};
+
+const sortUploadParts = (parts: Part[]) => {
+	return [...parts].sort(
+		(partA, partB) => partA.PartNumber! - partB.PartNumber!,
+	);
+};

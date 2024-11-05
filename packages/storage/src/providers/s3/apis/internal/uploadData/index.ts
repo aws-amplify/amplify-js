@@ -19,12 +19,18 @@ export const uploadData = (
 	const { data } = input;
 
 	const dataByteLength = byteLength(data);
+	// Using InvalidUploadSource error code because the input data must NOT be any
+	// of permitted Blob, string, ArrayBuffer(View) if byteLength could not be determined.
 	assertValidationError(
-		dataByteLength === undefined || dataByteLength <= MAX_OBJECT_SIZE,
+		dataByteLength !== undefined,
+		StorageValidationErrorCode.InvalidUploadSource,
+	);
+	assertValidationError(
+		dataByteLength <= MAX_OBJECT_SIZE,
 		StorageValidationErrorCode.ObjectIsTooLarge,
 	);
 
-	if (dataByteLength !== undefined && dataByteLength <= DEFAULT_PART_SIZE) {
+	if (dataByteLength <= DEFAULT_PART_SIZE) {
 		// Single part upload
 		const abortController = new AbortController();
 
