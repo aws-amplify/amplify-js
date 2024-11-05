@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.6.6",
+	"version": "6.8.0",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.53",
-		"@aws-amplify/api": "6.0.55",
-		"@aws-amplify/auth": "6.5.3",
-		"@aws-amplify/core": "6.4.6",
-		"@aws-amplify/datastore": "5.0.55",
-		"@aws-amplify/notifications": "2.0.53",
-		"@aws-amplify/storage": "6.6.11",
+		"@aws-amplify/analytics": "7.0.56",
+		"@aws-amplify/api": "6.1.1",
+		"@aws-amplify/auth": "6.6.0",
+		"@aws-amplify/core": "6.5.1",
+		"@aws-amplify/datastore": "5.0.58",
+		"@aws-amplify/notifications": "2.0.56",
+		"@aws-amplify/storage": "6.6.14",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.35 kB"
+			"limit": "17.41 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.85 kB"
+			"limit": "15.91 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -335,7 +335,7 @@
 			"name": "[API] generateClient (AppSync)",
 			"path": "./dist/esm/api/index.mjs",
 			"import": "{ generateClient }",
-			"limit": "43.40 kB"
+			"limit": "44.1 kB"
 		},
 		{
 			"name": "[API] REST API handlers",
@@ -389,7 +389,7 @@
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "11.98 kB"
+			"limit": "12.00 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
@@ -425,7 +425,7 @@
 			"name": "[Auth] getCurrentUser (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ getCurrentUser }",
-			"limit": "7.97 kB"
+			"limit": "8.09 kB"
 		},
 		{
 			"name": "[Auth] confirmUserAttribute (Cognito)",
@@ -461,43 +461,43 @@
 			"name": "[Storage] copy (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ copy }",
-			"limit": "14.96 kB"
+			"limit": "15.03 kB"
 		},
 		{
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "15.55 kB"
+			"limit": "15.62 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "14.81 kB"
+			"limit": "14.89 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "16.05 kB"
+			"limit": "16.11 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "15.41 kB"
+			"limit": "15.55 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "14.67 kB"
+			"limit": "14.75 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "20.05 kB"
+			"limit": "20.08 kB"
 		}
 	]
 }

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.5.0...@aws-amplify/core@6.5.1) (2024-10-31)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+# [6.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.7...@aws-amplify/core@6.5.0) (2024-10-29)
+
+### Features
+
+- **data:** events client ([#13923](https://github.com/aws-amplify/amplify-js/issues/13923)) ([847fb51](https://github.com/aws-amplify/amplify-js/commit/847fb51acee1ee8585503625a6f73d67265217d0))
+
+## [6.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.6...@aws-amplify/core@6.4.7) (2024-10-25)
+
+**Note:** Version bump only for package @aws-amplify/core
+
 ## [6.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@6.4.5...@aws-amplify/core@6.4.6) (2024-10-21)
 
 ### Bug Fixes
