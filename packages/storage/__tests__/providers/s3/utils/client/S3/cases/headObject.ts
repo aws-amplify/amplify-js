@@ -48,4 +48,34 @@ const headObjectHappyCase: ApiFunctionalTestCase<typeof headObject> = [
 	},
 ];
 
-export default [headObjectHappyCase];
+const headObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof headObject
+> = [
+	'happy case',
+	'headObject with custom endpoint',
+	headObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
+export default [headObjectHappyCase, headObjectHappyCaseCustomEndpoint];

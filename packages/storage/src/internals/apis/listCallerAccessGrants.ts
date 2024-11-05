@@ -20,7 +20,14 @@ import { MAX_PAGE_SIZE } from '../utils/constants';
 export const listCallerAccessGrants = async (
 	input: ListCallerAccessGrantsInput,
 ): Promise<ListCallerAccessGrantsOutput> => {
-	const { credentialsProvider, accountId, region, nextToken, pageSize } = input;
+	const {
+		credentialsProvider,
+		accountId,
+		region,
+		nextToken,
+		pageSize,
+		customEndpoint,
+	} = input;
 
 	logger.debug(`listing available locations from account ${input.accountId}`);
 
@@ -40,6 +47,7 @@ export const listCallerAccessGrants = async (
 		await listCallerAccessGrantsClient(
 			{
 				credentials: clientCredentialsProvider,
+				customEndpoint,
 				region,
 				userAgentValue: getStorageUserAgentValue(
 					StorageAction.ListCallerAccessGrants,

@@ -25,6 +25,9 @@ export enum StorageValidationErrorCode {
 	InvalidLocationCredentialsCacheSize = 'InvalidLocationCredentialsCacheSize',
 	LocationCredentialsStoreDestroyed = 'LocationCredentialsStoreDestroyed',
 	InvalidS3Uri = 'InvalidS3Uri',
+	InvalidCustomEndpoint = 'InvalidCustomEndpoint',
+	ForcePathStyleEndpointNotSupported = 'ForcePathStyleEndpointNotSupported',
+	DnsIncompatibleBucketName = 'DnsIncompatibleBucketName',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -94,5 +97,14 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.InvalidCopyOperationStorageBucket]: {
 		message: 'Missing bucket option in either source or destination.',
+	},
+	[StorageValidationErrorCode.InvalidCustomEndpoint]: {
+		message: 'Invalid S3 custom endpoint.',
+	},
+	[StorageValidationErrorCode.ForcePathStyleEndpointNotSupported]: {
+		message: 'Path style URLs are not supported with S3 Transfer Acceleration.',
+	},
+	[StorageValidationErrorCode.DnsIncompatibleBucketName]: {
+		message: `The bucket name isn't DNS compatible.`,
 	},
 };

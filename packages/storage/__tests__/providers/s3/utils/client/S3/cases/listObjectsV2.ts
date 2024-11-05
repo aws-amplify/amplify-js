@@ -376,9 +376,54 @@ const listObjectsV2ErrorCaseMissingTruncated: ApiFunctionalTestCase<
 	},
 ];
 
+const listObjectsV2HappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof listObjectsV2
+> = [
+	'happy case',
+	'listObjectsV2 with custom endpoint',
+	listObjectsV2,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Prefix: 'Prefix',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket?list-type=2&prefix=Prefix',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: `<?xml version="1.0" encoding="UTF-8"?>
+		<ListBucketResult>
+		<Name>bucket</Name>
+		<Prefix/>
+		<KeyCount>1</KeyCount>
+		<MaxKeys>1000</MaxKeys>
+		<IsTruncated>false</IsTruncated>
+		<Contents>
+		 <Key>ExampleObject.txt</Key>
+		 <LastModified>2013-09-17T18:07:53.000Z</LastModified>
+		 <ETag>"599bab3ed2c697f1d26842727561fd94"</ETag>
+		 <Size>857</Size>
+		 <StorageClass>REDUCED_REDUNDANCY</StorageClass>
+	    </Contents>
+		</ListBucketResult>`,
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
 export default [
 	listObjectsV2HappyCaseTruncated,
 	listObjectsV2HappyCaseComplete,
+	listObjectsV2HappyCaseCustomEndpoint,
 	listObjectsV2ErrorCaseKeyCount,
 	listObjectsV2ErrorCaseMissingTruncated,
 	listObjectsV2ErrorCaseMissingToken,

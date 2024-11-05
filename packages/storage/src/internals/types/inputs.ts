@@ -26,6 +26,7 @@ import { Permission, PrefixType, Privilege } from './common';
 export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
+	customEndpoint?: string;
 	region: string;
 }
 
@@ -35,6 +36,7 @@ export interface ListCallerAccessGrantsInput extends ListLocationsInput {
 export interface GetDataAccessInput {
 	accountId: string;
 	credentialsProvider: CredentialsProvider;
+	customEndpoint?: string;
 	durationSeconds?: number;
 	permission: Permission;
 	prefixType?: PrefixType;
@@ -43,14 +45,17 @@ export interface GetDataAccessInput {
 	scope: string;
 }
 
+export interface AdvancedOptions {
+	locationCredentialsProvider?: CredentialsProvider;
+	customEndpoint?: string;
+}
+
 /**
  * @internal
  */
 export type ListAllInput = ExtendInputWithAdvancedOptions<
 	ListAllWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -58,9 +63,7 @@ export type ListAllInput = ExtendInputWithAdvancedOptions<
  */
 export type ListPaginateInput = ExtendInputWithAdvancedOptions<
 	ListPaginateWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -73,9 +76,7 @@ export type ListInput = ListAllInput | ListPaginateInput;
  */
 export type RemoveInput = ExtendInputWithAdvancedOptions<
 	RemoveWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -83,9 +84,7 @@ export type RemoveInput = ExtendInputWithAdvancedOptions<
  */
 export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
 	GetPropertiesWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -93,9 +92,7 @@ export type GetPropertiesInput = ExtendInputWithAdvancedOptions<
  */
 export type GetUrlInput = ExtendInputWithAdvancedOptions<
 	GetUrlWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -103,16 +100,12 @@ export type GetUrlInput = ExtendInputWithAdvancedOptions<
  */
 export type CopyInput = ExtendCopyInputWithAdvancedOptions<
 	CopyWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 export type UploadDataInput = ExtendInputWithAdvancedOptions<
 	UploadDataWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**
@@ -120,9 +113,7 @@ export type UploadDataInput = ExtendInputWithAdvancedOptions<
  */
 export type DownloadDataInput = ExtendInputWithAdvancedOptions<
 	DownloadDataWithPathInput,
-	{
-		locationCredentialsProvider?: CredentialsProvider;
-	}
+	AdvancedOptions
 >;
 
 /**

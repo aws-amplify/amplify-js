@@ -29,6 +29,7 @@ interface S3ApiOptions {
 	targetIdentityId?: string;
 	useAccelerateEndpoint?: boolean;
 	locationCredentialsProvider?: LocationCredentialsProvider;
+	customEndpoint?: string;
 	bucket?: StorageBucket;
 }
 
@@ -133,6 +134,9 @@ export const resolveS3ConfigAndInput = async (
 			credentials: credentialsProvider,
 			region,
 			useAccelerateEndpoint: apiOptions?.useAccelerateEndpoint,
+			...(apiOptions?.customEndpoint
+				? { customEndpoint: apiOptions.customEndpoint }
+				: {}),
 			...(dangerouslyConnectToHttpEndpointForTesting
 				? {
 						customEndpoint: LOCAL_TESTING_S3_ENDPOINT,

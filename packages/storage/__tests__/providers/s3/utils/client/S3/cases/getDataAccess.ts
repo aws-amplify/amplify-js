@@ -71,6 +71,38 @@ const getDataAccessHappyCase: ApiFunctionalTestCase<typeof getDataAccess> = [
 	},
 ];
 
+const getDataAccessHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof getDataAccess
+> = [
+	'happy case',
+	'getDataAccess with custom endpoint',
+	getDataAccess,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+	},
+	{
+		AccountId: MOCK_ACCOUNT_ID,
+		Target: 's3://my-bucket/path/to/object.md',
+		Permission: 'READWRITE',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://accountid.custom.endpoint.com/v20180820/accessgrantsinstance/dataaccess?permission=READWRITE&target=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2Fobject.md',
+		}),
+	}),
+	{
+		status: 200,
+		headers: {
+			...DEFAULT_RESPONSE_HEADERS,
+		},
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
 const getDataAccessErrorCase: ApiFunctionalTestCase<typeof getDataAccess> = [
 	'error case',
 	'getDataAccess',
@@ -99,4 +131,42 @@ const getDataAccessErrorCase: ApiFunctionalTestCase<typeof getDataAccess> = [
 	},
 ];
 
-export default [getDataAccessHappyCase, getDataAccessErrorCase];
+const getDataAccessErrorCaseInvalidCustomEndpoint: ApiFunctionalTestCase<
+	typeof getDataAccess
+> = [
+	'error case',
+	'getDataAccess with invalid custom endpoint',
+	getDataAccess,
+	{
+		...defaultConfig,
+		customEndpoint: 'http://custom.endpoint.com',
+	},
+	{
+		AccountId: MOCK_ACCOUNT_ID,
+		Target: 's3://my-bucket/path/to/object.md',
+		Permission: 'READWRITE',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://accountid.custom.endpoint.com/v20180820/accessgrantsinstance/dataaccess?permission=READWRITE&target=s3%3A%2F%2Fmy-bucket%2Fpath%2Fto%2Fobject.md',
+		}),
+	}),
+	{
+		status: 200,
+		headers: {
+			...DEFAULT_RESPONSE_HEADERS,
+		},
+		body: '',
+	},
+	{
+		message: 'Invalid S3 custom endpoint.',
+		name: 'InvalidCustomEndpoint',
+	},
+];
+
+export default [
+	getDataAccessHappyCase,
+	getDataAccessHappyCaseCustomEndpoint,
+	getDataAccessErrorCase,
+	getDataAccessErrorCaseInvalidCustomEndpoint,
+];

@@ -31,6 +31,7 @@ describe('downloadData (internal)', () => {
 		const useAccelerateEndpoint = true;
 		const expectedBucketOwner = '012345678901';
 		const bucket = { bucketName: 'bucket', region: 'us-east-1' };
+		const customEndpoint = 's3.dualstack.us-east-2.amazonaws.com';
 		const locationCredentialsProvider = async () => ({
 			credentials: {
 				accessKeyId: 'akid',
@@ -45,6 +46,7 @@ describe('downloadData (internal)', () => {
 		const output = await advancedDownloadData({
 			path: 'input/path/to/mock/object',
 			options: {
+				customEndpoint,
 				useAccelerateEndpoint,
 				bucket,
 				locationCredentialsProvider,
@@ -58,6 +60,7 @@ describe('downloadData (internal)', () => {
 		expect(mockedDownloadDataInternal).toHaveBeenCalledWith({
 			path: 'input/path/to/mock/object',
 			options: {
+				customEndpoint,
 				useAccelerateEndpoint,
 				bucket,
 				locationCredentialsProvider,

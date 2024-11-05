@@ -32,6 +32,7 @@ describe('getUrl (internal)', () => {
 		const contentDisposition = 'inline; filename="example.jpg"';
 		const contentType = 'image/jpeg';
 		const bucket = { bucketName: 'bucket', region: 'us-east-1' };
+		const customEndpoint = 's3.dualstack.us-east-2.amazonaws.com';
 		const locationCredentialsProvider = async () => ({
 			credentials: {
 				accessKeyId: 'akid',
@@ -43,6 +44,7 @@ describe('getUrl (internal)', () => {
 		const result = await advancedGetUrl({
 			path: 'input/path/to/mock/object',
 			options: {
+				customEndpoint,
 				useAccelerateEndpoint,
 				bucket,
 				validateObjectExistence,
@@ -59,6 +61,7 @@ describe('getUrl (internal)', () => {
 			{
 				path: 'input/path/to/mock/object',
 				options: {
+					customEndpoint,
 					useAccelerateEndpoint,
 					bucket,
 					validateObjectExistence,

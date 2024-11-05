@@ -33,6 +33,7 @@ export const getDataAccess = async (
 	const result = await getDataAccessClient(
 		{
 			credentials: clientCredentialsProvider,
+			customEndpoint: input.customEndpoint,
 			region: input.region,
 			userAgentValue: getStorageUserAgentValue(StorageAction.GetDataAccess),
 		},

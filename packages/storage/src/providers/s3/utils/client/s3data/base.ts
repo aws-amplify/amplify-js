@@ -12,6 +12,9 @@ import {
 } from '@aws-amplify/core/internals/aws-client-utils';
 
 import { createRetryDecider, createXmlErrorParser } from '../utils';
+import { LOCAL_TESTING_S3_ENDPOINT } from '../../constants';
+import { assertValidationError } from '../../../../../errors/utils/assertValidationError';
+import { StorageValidationErrorCode } from '../../../../../errors/types/validation';
 
 const DOMAIN_PATTERN = /^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/;
 const IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
@@ -33,12 +36,22 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
 	 */
 	useAccelerateEndpoint?: boolean;
 	/**
-	 * Fully qualified custom endpoint for S3. If this is set, this endpoint will be used regardless of region or
-	 * useAccelerateEndpoint config.
-	 * The path of this endpoint
+	 * A fully qualified custom endpoint for S3. If set, this endpoint will override
+	 * the default S3 endpoint and be used regardless of the specified region or
+	 * `useAccelerateEndpoint` configuration.
+	 *
+	 * Refer to AWS documentation for more details on available endpoints:
+	 * https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_region
+	 *
+	 * @example
+	 * ```ts
+	 * // Examples of S3 custom endpoints
+	 * const endpoint1 = "s3.us-east-2.amazonaws.com";
+	 * const endpoint2 = "s3.dualstack.us-east-2.amazonaws.com";
+	 * const endpoint3 = "s3-fips.dualstack.us-east-2.amazonaws.com";
+	 * ```
 	 */
 	customEndpoint?: string;
-
 	/**
 	 * Whether to force path style URLs for S3 objects (e.g., https://s3.amazonaws.com/<bucketName>/<key> instead of
 	 * https://<bucketName>.s3.amazonaws.com/<key>
@@ -59,22 +72,31 @@ const endpointResolver = (
 	let endpoint: URL;
 	// 1. get base endpoint
 	if (customEndpoint) {
-		endpoint = new AmplifyUrl(customEndpoint);
-	} else if (useAccelerateEndpoint) {
-		if (forcePathStyle) {
-			throw new Error(
-				'Path style URLs are not supported with S3 Transfer Acceleration.',
-			);
+		if (customEndpoint === LOCAL_TESTING_S3_ENDPOINT) {
+			endpoint = new AmplifyUrl(customEndpoint);
 		}
+		assertValidationError(
+			!customEndpoint.includes('://'),
+			StorageValidationErrorCode.InvalidCustomEndpoint,
+		);
+		endpoint = new AmplifyUrl(`https://${customEndpoint}`);
+	} else if (useAccelerateEndpoint) {
+		// this ErrorCode isn't expose yet since forcePathStyle param isn't publicly exposed
+		assertValidationError(
+			!forcePathStyle,
+			StorageValidationErrorCode.ForcePathStyleEndpointNotSupported,
+		);
 		endpoint = new AmplifyUrl(`https://s3-accelerate.${getDnsSuffix(region)}`);
 	} else {
 		endpoint = new AmplifyUrl(`https://s3.${region}.${getDnsSuffix(region)}`);
 	}
 	// 2. inject bucket name
 	if (apiInput?.Bucket) {
-		if (!isDnsCompatibleBucketName(apiInput.Bucket)) {
-			throw new Error(`Invalid bucket name: "${apiInput.Bucket}".`);
-		}
+		assertValidationError(
+			isDnsCompatibleBucketName(apiInput.Bucket),
+			StorageValidationErrorCode.DnsIncompatibleBucketName,
+		);
+
 		if (forcePathStyle || apiInput.Bucket.includes('.')) {
 			endpoint.pathname = `/${apiInput.Bucket}`;
 		} else {

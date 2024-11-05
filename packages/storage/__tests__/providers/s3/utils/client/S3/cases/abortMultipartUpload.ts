@@ -42,4 +42,38 @@ const abortMultipartUploadHappyCase: ApiFunctionalTestCase<
 	},
 ];
 
-export default [abortMultipartUploadHappyCase];
+const abortMultipartUploadHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof abortMultipartUpload
+> = [
+	'happy case',
+	'abortMultipartUpload with custom endpoint',
+	abortMultipartUpload,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+		UploadId: 'uploadId',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key?uploadId=uploadId',
+		}),
+	}),
+	{
+		status: 204,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
+export default [
+	abortMultipartUploadHappyCase,
+	abortMultipartUploadHappyCaseCustomEndpoint,
+];

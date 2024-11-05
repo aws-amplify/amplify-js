@@ -21,6 +21,7 @@ const mockCredentialsProvider = jest
 	.mockResolvedValue({ credentials: mockCredentials });
 const mockNextToken = '123';
 const mockPageSize = 123;
+const mockCustomEndpoint = 's3-accesspoint.dualstack.us-east-2.amazonaws.com';
 
 describe('listCallerAccessGrants', () => {
 	afterEach(() => {
@@ -36,6 +37,7 @@ describe('listCallerAccessGrants', () => {
 		});
 		await listCallerAccessGrants({
 			accountId: mockAccountId,
+			customEndpoint: mockCustomEndpoint,
 			region: mockRegion,
 			credentialsProvider: mockCredentialsProvider,
 			nextToken: mockNextToken,
@@ -45,6 +47,7 @@ describe('listCallerAccessGrants', () => {
 			expect.objectContaining({
 				region: mockRegion,
 				credentials: expect.any(Function),
+				customEndpoint: mockCustomEndpoint,
 			}),
 			expect.objectContaining({
 				AccountId: mockAccountId,

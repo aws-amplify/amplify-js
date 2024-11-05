@@ -58,4 +58,34 @@ const copyObjectHappyCase: ApiFunctionalTestCase<typeof copyObject> = [
 	},
 ];
 
-export default [copyObjectHappyCase];
+const copyObjectHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof copyObject
+> = [
+	'happy case',
+	'getObject with custom endpoint',
+	copyObject,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+		CopySource: 'sourceBucket/sourceKey',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key',
+		}),
+	}),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+export default [copyObjectHappyCase, copyObjectHappyCaseCustomEndpoint];

@@ -18,6 +18,7 @@ export const downloadData = (input: DownloadDataInput): DownloadDataOutput =>
 			bytesRange: input?.options?.bytesRange,
 			onProgress: input?.options?.onProgress,
 			expectedBucketOwner: input?.options?.expectedBucketOwner,
+			customEndpoint: input?.options?.customEndpoint,
 		},
 		// Type casting is necessary because `downloadDataInternal` supports both Gen1 and Gen2 signatures, but here
 		// given in input can only be Gen2 signature, the return can only ben Gen2 signature.

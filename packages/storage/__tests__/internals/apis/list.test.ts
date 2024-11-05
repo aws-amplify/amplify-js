@@ -20,6 +20,7 @@ describe('list (internals)', () => {
 		const useAccelerateEndpoint = true;
 		const expectedBucketOwner = '012345678901';
 		const bucket = { bucketName: 'bucket', region: 'us-east-1' };
+		const customEndpoint = 's3.dualstack.us-east-2.amazonaws.com';
 		const locationCredentialsProvider = async () => ({
 			credentials: {
 				accessKeyId: 'akid',
@@ -31,6 +32,7 @@ describe('list (internals)', () => {
 		const result = await advancedList({
 			path: 'input/path/to/mock/object',
 			options: {
+				customEndpoint,
 				useAccelerateEndpoint,
 				bucket,
 				expectedBucketOwner,
@@ -43,6 +45,7 @@ describe('list (internals)', () => {
 			{
 				path: 'input/path/to/mock/object',
 				options: {
+					customEndpoint,
 					useAccelerateEndpoint,
 					bucket,
 					expectedBucketOwner,
