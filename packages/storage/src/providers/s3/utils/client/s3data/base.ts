@@ -81,6 +81,7 @@ const endpointResolver = (
 		);
 		endpoint = new AmplifyUrl(`https://${customEndpoint}`);
 	} else if (useAccelerateEndpoint) {
+		// this ErrorCode isn't expose yet since forcePathStyle param isn't publicly exposed
 		assertValidationError(
 			!forcePathStyle,
 			StorageValidationErrorCode.ForcePathStyleEndpointNotSupported,
