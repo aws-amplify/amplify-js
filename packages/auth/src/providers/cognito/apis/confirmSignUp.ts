@@ -99,9 +99,7 @@ export async function confirmSignUp(
 				return;
 			}
 
-			if (session) {
-				autoSignInStore.dispatch({ type: 'SET_SESSION', value: session });
-			}
+			autoSignInStore.dispatch({ type: 'SET_SESSION', value: session });
 
 			const stopListener = HubInternal.listen<AutoSignInEventData>(
 				'auth-internal',
