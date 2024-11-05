@@ -69,7 +69,7 @@ describe('listCallerAccessGrants', () => {
 		});
 	});
 
-	it.skip('should set a default page size', async () => {
+	it('should set a default page size', async () => {
 		expect.assertions(1);
 		jest.mocked(listCallerAccessGrantsClient).mockResolvedValue({
 			NextToken: undefined,
@@ -89,7 +89,7 @@ describe('listCallerAccessGrants', () => {
 		);
 	});
 
-	it.skip('should set response location type correctly', async () => {
+	it('should set response location type correctly', async () => {
 		expect.assertions(2);
 		jest.mocked(listCallerAccessGrantsClient).mockResolvedValue({
 			NextToken: undefined,
