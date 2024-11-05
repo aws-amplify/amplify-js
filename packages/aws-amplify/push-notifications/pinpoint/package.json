@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/push-notifications/pinpoint",
+	"main": "../../dist/cjs/push-notifications/pinpoint/index.js",
+	"react-native": "../../src/push-notifications/pinpoint/index.ts",
+	"browser": "../../dist/esm/push-notifications/pinpoint/index.mjs",
+	"module": "../../dist/esm/push-notifications/pinpoint/index.mjs",
+	"typings": "../../dist/esm/push-notifications/pinpoint/index.d.ts"
+}

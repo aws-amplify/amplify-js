@@ -28,29 +28,29 @@ describe('Custom Identifier', () => {
 			myId: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CustomIdentifierDefaultRO.copyOf({} as CustomIdentifierDefaultRO, d => {
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.myId;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.myId = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 	});
@@ -76,29 +76,29 @@ describe('Custom Identifier', () => {
 			myId: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CustomIdentifierCustomRO.copyOf({} as CustomIdentifierCustomRO, d => {
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.myId;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.myId = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 	});

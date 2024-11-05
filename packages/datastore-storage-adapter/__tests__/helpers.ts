@@ -22,7 +22,7 @@ export declare class Model {
 
 	static copyOf(
 		src: Model,
-		mutator: (draft: MutableModel<Model>) => void | Model
+		mutator: (draft: MutableModel<Model>) => void | Model,
 	): Model;
 }
 export declare class Metadata {
@@ -931,7 +931,7 @@ export class InnerSQLiteDatabase {
 		statement,
 		params: any[] = [],
 		callback: ((...args) => Promise<any>) | undefined = undefined,
-		logger = undefined
+		logger = undefined,
 	) {
 		this.sqlog.push(`${statement}; ${JSON.stringify(params)}`);
 		if (statement.trim().toLowerCase().startsWith('select')) {
@@ -958,7 +958,7 @@ export class InnerSQLiteDatabase {
 					},
 					() => {
 						resolve([resultSet]);
-					}
+					},
 				);
 
 				if (typeof callback === 'function') await callback(this, resultSet);

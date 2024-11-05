@@ -1,8 +1,8 @@
 var config = require('./webpack.config.js');
 
 var entry = {
-	'aws-amplify-datastore-storage-adapter': './lib-esm/index.js',
+	'aws-amplify-datastore-storage-adapter': './dist/esm/index.mjs',
 	'aws-amplify-datastore-sqlite-adapter-expo':
-		'./lib-esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.js',
+		'./dist/esm/ExpoSQLiteAdapter/ExpoSQLiteAdapter.mjs',
 };
 module.exports = Object.assign(config, { entry, mode: 'development' });

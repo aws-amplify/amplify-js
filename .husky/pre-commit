@@ -1,0 +1,2 @@
+# Run `eslint --fix` against staged files
+yarn lint-staged

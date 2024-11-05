@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { ZenObservable } from 'zen-observable-ts';
+import { Observable, Observer } from 'rxjs';
 
 export interface SubscriptionObserver<T> {
 	closed: boolean;
@@ -53,6 +53,30 @@ export enum ConnectionState {
 	ConnectedPendingKeepAlive = 'ConnectedPendingKeepAlive',
 }
 
-export type PubSubContent = Record<string, unknown> | string;
-export type PubSubContentObserver =
-	ZenObservable.SubscriptionObserver<PubSubContent>;
+export type PubSubContent = Record<string | symbol, unknown>;
+export type PubSubContentObserver = Observer<PubSubContent>;
+
+export interface PubSubOptions {
+	[key: string]: any;
+	provider?: string | symbol;
+}
+
+export interface PubSubBase {
+	// configure your provider
+	configure(config: Record<string, unknown>): Record<string, unknown>;
+
+	publish(input: PublishInput): void;
+
+	subscribe(input: SubscribeInput): Observable<PubSubContent>;
+}
+
+export interface PublishInput {
+	topics: string[] | string;
+	message: PubSubContent;
+	options?: PubSubOptions;
+}
+
+export interface SubscribeInput {
+	topics: string[] | string;
+	options?: PubSubOptions;
+}

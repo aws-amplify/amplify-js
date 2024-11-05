@@ -1,50 +1,59 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { InternalAPI } from '@aws-amplify/api/internals';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
-	isAWSDate,
-	isAWSTime,
-	isAWSDateTime,
-	isAWSTimestamp,
-	isAWSEmail,
-	isAWSJSON,
-	isAWSURL,
-	isAWSPhone,
-	isAWSIPAddress,
 	NAMESPACES,
 	extractPrimaryKeyFieldNames,
+	isAWSDate,
+	isAWSDateTime,
+	isAWSEmail,
+	isAWSIPAddress,
+	isAWSJSON,
+	isAWSPhone,
+	isAWSTime,
+	isAWSTimestamp,
+	isAWSURL,
 } from './util';
 import { PredicateAll } from './predicates';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
-import { Auth } from '@aws-amplify/auth';
-import { API } from '@aws-amplify/api';
-import { Cache } from '@aws-amplify/cache';
 import { Adapter } from './storage/adapter';
 
-export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
+export type Scalar<T> = T extends (infer InnerType)[] ? InnerType : T;
 
-//#region Schema types
-export type Schema = UserSchema & {
+// #region Schema types
+/**
+ * @deprecated If you intended to use the Schema for `generateClient`, then you've imported the wrong Schema type.
+ * Use `import { type Schema } from '../amplify/data/resource' instead. If you intended to import the type for DataStore
+ * Schemas, then import "DataStoreSchema" instead.
+ */
+export type Schema = DataStoreSchema;
+
+export type DataStoreSchema = UserSchema & {
 	version: string;
 	codegenVersion: string;
 };
-export type UserSchema = {
+
+export interface UserSchema {
 	models: SchemaModels;
 	nonModels?: SchemaNonModels;
 	relationships?: RelationshipType;
 	keys?: ModelKeys;
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;
-};
-export type InternalSchema = {
+}
+export interface InternalSchema {
 	namespaces: SchemaNamespaces;
 	version: string;
 	codegenVersion: string;
-};
+}
 export type SchemaNamespaces = Record<string, SchemaNamespace>;
 export type SchemaNamespace = UserSchema & {
 	name: string;
 };
 export type SchemaModels = Record<string, SchemaModel>;
-export type SchemaModel = {
+export interface SchemaModel {
 	name: string;
 	pluralName: string;
 	attributes?: ModelAttributes;
@@ -60,71 +69,101 @@ export type SchemaModel = {
 	allFields?: ModelFields;
 
 	syncable?: boolean;
-};
-
-export function isSchemaModel(obj: any): obj is SchemaModel {
-	return obj && (<SchemaModel>obj).pluralName !== undefined;
 }
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given object likely represents a model in a schema.
+ */
+export function isSchemaModel(obj: any): obj is SchemaModel {
+	return obj && (obj as SchemaModel).pluralName !== undefined;
+}
+
+/**
+ * @private
+ * @param m
+ * @returns `true` if the given schema entry defines Schema Model attributes.
+ */
 export function isSchemaModelWithAttributes(
-	m: SchemaModel | SchemaNonModel
+	m: SchemaModel | SchemaNonModel,
 ): m is SchemaModel {
 	return isSchemaModel(m) && (m as SchemaModel).attributes !== undefined;
 }
 
 export type SchemaNonModels = Record<string, SchemaNonModel>;
-export type SchemaNonModel = {
+export interface SchemaNonModel {
 	name: string;
 	fields: ModelFields;
-};
+}
 type SchemaEnums = Record<string, SchemaEnum>;
-type SchemaEnum = {
+interface SchemaEnum {
 	name: string;
 	values: string[];
-};
-export type ModelMeta<T extends PersistentModel> = {
+}
+export interface ModelMeta<T extends PersistentModel> {
 	builder: PersistentModelConstructor<T>;
 	schema: SchemaModel;
 	pkField: string[];
-};
+}
 export type ModelAssociation = AssociatedWith | TargetNameAssociation;
-type AssociatedWith = {
+interface AssociatedWith {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
 	associatedWith: string | string[];
 	targetName?: string;
 	targetNames?: string[];
-};
+}
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the object is an `AssociatedWith` definition.
+ */
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
 }
 
-type TargetNameAssociation = {
+interface TargetNameAssociation {
 	connectionType: 'BELONGS_TO';
 	targetName?: string;
 	targetNames?: string[];
-};
+}
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given object specifies either `targetName` or `targetNames`.
+ */
 export function isTargetNameAssociation(
-	obj: any
+	obj: any,
 ): obj is TargetNameAssociation {
 	return obj?.targetName || obj?.targetNames;
 }
 
-type FieldAssociation = {
+interface FieldAssociation {
 	connectionType: 'HAS_ONE' | 'BELONGS_TO' | 'HAS_MANY';
-};
+}
+
+/**
+ * @private
+ * @param obj
+ * @param fieldName
+ * @returns Truthy if the object has a `FieldAssociation` for the given `fieldName`.
+ */
 export function isFieldAssociation(
 	obj: any,
-	fieldName: string
+	fieldName: string,
 ): obj is FieldAssociation {
 	return obj?.fields[fieldName]?.association?.connectionType;
 }
 
 export type ModelAttributes = ModelAttribute[];
-export type ModelAttribute = { type: string; properties?: Record<string, any> };
+export interface ModelAttribute {
+	type: string;
+	properties?: Record<string, any>;
+}
 
-export type ModelAuthRule = {
+export interface ModelAuthRule {
 	allow: string;
 	provider?: string;
 	operations?: string[];
@@ -133,17 +172,22 @@ export type ModelAuthRule = {
 	groups?: string[];
 	groupClaim?: string;
 	groupsField?: string;
-};
+}
 
-export type ModelAttributeAuth = {
+export interface ModelAttributeAuth {
 	type: 'auth';
 	properties: {
 		rules: ModelAuthRule[];
 	};
-};
+}
 
+/**
+ * @private
+ * @param attr
+ * @returns `true` if the given attribute is an auth attribute with rules.
+ */
 export function isModelAttributeAuth(
-	attr: ModelAttribute
+	attr: ModelAttribute,
 ): attr is ModelAttributeAuth {
 	return (
 		attr.type === 'auth' &&
@@ -153,32 +197,37 @@ export function isModelAttributeAuth(
 	);
 }
 
-type ModelAttributeKey = {
+interface ModelAttributeKey {
 	type: 'key';
 	properties: {
 		name?: string;
 		fields: string[];
 	};
-};
+}
 
-type ModelAttributePrimaryKey = {
+interface ModelAttributePrimaryKey {
 	type: 'key';
 	properties: {
 		name: never;
 		fields: string[];
 	};
-};
+}
 
-type ModelAttributeCompositeKey = {
+interface ModelAttributeCompositeKey {
 	type: 'key';
 	properties: {
 		name: string;
 		fields: [string, string, string, string?, string?];
 	};
-};
+}
 
+/**
+ * @private
+ * @param attr
+ * @returns `true` if the given attribute is a key field.
+ */
 export function isModelAttributeKey(
-	attr: ModelAttribute
+	attr: ModelAttribute,
 ): attr is ModelAttributeKey {
 	return (
 		attr.type === 'key' &&
@@ -188,14 +237,24 @@ export function isModelAttributeKey(
 	);
 }
 
+/**
+ * @private
+ * @param attr
+ * @returns `true` if the given attribute is a primary key, indicated by the key being unnamed.
+ */
 export function isModelAttributePrimaryKey(
-	attr: ModelAttribute
+	attr: ModelAttribute,
 ): attr is ModelAttributePrimaryKey {
 	return isModelAttributeKey(attr) && attr.properties.name === undefined;
 }
 
+/**
+ * @private
+ * @param attr
+ * @returns `true` if the given attribute represents a composite key with multiple fields.
+ */
 export function isModelAttributeCompositeKey(
-	attr: ModelAttribute
+	attr: ModelAttribute,
 ): attr is ModelAttributeCompositeKey {
 	return (
 		isModelAttributeKey(attr) &&
@@ -204,7 +263,7 @@ export function isModelAttributeCompositeKey(
 	);
 }
 
-export type ModelAttributeAuthProperty = {
+export interface ModelAttributeAuthProperty {
 	allow: ModelAttributeAuthAllow;
 	identityClaim?: string;
 	groupClaim?: string;
@@ -212,7 +271,7 @@ export type ModelAttributeAuthProperty = {
 	operations?: string[];
 	ownerField?: string;
 	provider?: ModelAttributeAuthProvider;
-};
+}
 
 export enum ModelAttributeAuthAllow {
 	CUSTOM = 'custom',
@@ -248,12 +307,13 @@ export enum GraphQLScalarType {
 	AWSIPAddress,
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace GraphQLScalarType {
 	export function getJSType(
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
-		>
+		>,
 	) {
 		switch (scalar) {
 			case 'Boolean':
@@ -283,7 +343,7 @@ export namespace GraphQLScalarType {
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
-		>
+		>,
 	): ((val: string) => boolean) | ((val: number) => boolean) | undefined {
 		switch (scalar) {
 			case 'AWSDate':
@@ -310,7 +370,7 @@ export namespace GraphQLScalarType {
 	}
 }
 
-export type AuthorizationRule = {
+export interface AuthorizationRule {
 	identityClaim: string;
 	ownerField: string;
 	provider: 'userPools' | 'oidc' | 'iam' | 'apiKey';
@@ -319,10 +379,14 @@ export type AuthorizationRule = {
 	groupsField: string;
 	authStrategy: 'owner' | 'groups' | 'private' | 'public';
 	areSubscriptionsPublic: boolean;
-};
+}
 
+/**
+ * @private
+ * @returns `true` if the given field specifies a scalar type.
+ */
 export function isGraphQLScalarType(
-	obj: any
+	obj: any,
 ): obj is keyof Omit<
 	typeof GraphQLScalarType,
 	'getJSType' | 'getValidationFunction'
@@ -330,12 +394,18 @@ export function isGraphQLScalarType(
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
-export type ModelFieldType = {
+export interface ModelFieldType {
 	model: string;
 	modelConstructor?: ModelMeta<PersistentModel>;
-};
-export function isModelFieldType<T extends PersistentModel>(
-	obj: any
+}
+
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given field specifies a Model.
+ */
+export function isModelFieldType<_ extends PersistentModel>(
+	obj: any,
 ): obj is ModelFieldType {
 	const modelField: keyof ModelFieldType = 'model';
 	if (obj && obj[modelField]) return true;
@@ -343,7 +413,15 @@ export function isModelFieldType<T extends PersistentModel>(
 	return false;
 }
 
-export type NonModelFieldType = { nonModel: string };
+export interface NonModelFieldType {
+	nonModel: string;
+}
+
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given field specifies a custom non-model type.
+ */
 export function isNonModelFieldType(obj: any): obj is NonModelFieldType {
 	const typeField: keyof NonModelFieldType = 'nonModel';
 	if (obj && obj[typeField]) return true;
@@ -351,7 +429,15 @@ export function isNonModelFieldType(obj: any): obj is NonModelFieldType {
 	return false;
 }
 
-type EnumFieldType = { enum: string };
+interface EnumFieldType {
+	enum: string;
+}
+
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the object is an `EnumFieldType`.
+ */
 export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	const modelField: keyof EnumFieldType = 'enum';
 	if (obj && obj[modelField]) return true;
@@ -359,7 +445,7 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	return false;
 }
 
-export type ModelField = {
+export interface ModelField {
 	name: string;
 	type:
 		| keyof Omit<
@@ -375,22 +461,20 @@ export type ModelField = {
 	isArrayNullable?: boolean;
 	association?: ModelAssociation;
 	attributes?: ModelAttributes[];
-};
-//#endregion
+}
+// #endregion
 
-//#region Model definition
-export type NonModelTypeConstructor<T> = {
-	new (init: T): T;
-};
+// #region Model definition
+export type NonModelTypeConstructor<T> = new (init: T) => T;
 
 // Class for model
-export type PersistentModelConstructor<T extends PersistentModel> = {
+export interface PersistentModelConstructor<T extends PersistentModel> {
 	new (init: ModelInit<T, PersistentModelMetaData<T>>): T;
 	copyOf(
 		src: T,
-		mutator: (draft: MutableModel<T, PersistentModelMetaData<T>>) => void
+		mutator: (draft: MutableModel<T, PersistentModelMetaData<T>>) => void,
 	): T;
-};
+}
 
 /**
  * @private
@@ -435,7 +519,7 @@ export type OptionallyManagedIdentifier<T, F extends keyof T> = IdentifierBrand<
 >;
 
 // You provide the values
-export type CompositeIdentifier<T, K extends Array<keyof T>> = IdentifierBrand<
+export type CompositeIdentifier<T, K extends (keyof T)[]> = IdentifierBrand<
 	{ fields: K; type: T },
 	'CompositeIdentifier'
 >;
@@ -454,64 +538,65 @@ export type Identifier<T> =
 
 export type IdentifierFields<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = never
+	M extends PersistentModelMetaData<T> = never,
 > = (MetadataOrDefault<T, M>['identifier'] extends
 	| ManagedIdentifier<any, any>
 	| OptionallyManagedIdentifier<any, any>
 	? MetadataOrDefault<T, M>['identifier']['field']
 	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<
-			T,
-			infer B
-	  >
-	? B[number] // B[number]
-	: MetadataOrDefault<T, M>['identifier']['field']) &
+				T,
+				infer B
+		  >
+		? B[number] // B[number]
+		: MetadataOrDefault<T, M>['identifier']['field']) &
 	string;
 
 export type IdentifierFieldsForInit<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
+	M extends PersistentModelMetaData<T>,
 > = MetadataOrDefault<T, M>['identifier'] extends
 	| DefaultPersistentModelMetaData
 	| ManagedIdentifier<T, any>
 	? never
 	: MetadataOrDefault<T, M>['identifier'] extends OptionallyManagedIdentifier<
-			T,
-			any
-	  >
-	? IdentifierFields<T, M>
-	: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
-	? IdentifierFields<T, M>
-	: never;
+				T,
+				any
+		  >
+		? IdentifierFields<T, M>
+		: MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
+			? IdentifierFields<T, M>
+			: never;
 
 // Instance of model
 export declare const __modelMeta__: unique symbol;
 
-export type PersistentModelMetaData<T> = {
+export interface PersistentModelMetaData<T> {
 	identifier?: Identifier<T>;
 	readOnlyFields?: string;
-};
+}
 
 export interface AsyncCollection<T> extends AsyncIterable<T> {
 	toArray(options?: { max?: number }): Promise<T[]>;
 }
 
-export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
-	? undefined extends InnerPromiseType
-		? InnerPromiseType | null
-		: InnerPromiseType
-	: T extends AsyncCollection<infer InnerCollectionType>
-	? InnerCollectionType[] | undefined
-	: undefined extends T
-	? T | null
-	: T;
+export type SettableFieldType<T> =
+	T extends Promise<infer InnerPromiseType>
+		? undefined extends InnerPromiseType
+			? InnerPromiseType | null
+			: InnerPromiseType
+		: T extends AsyncCollection<infer InnerCollectionType>
+			? InnerCollectionType[] | undefined
+			: undefined extends T
+				? T | null
+				: T;
 
 export type PredicateFieldType<T> = NonNullable<
 	Scalar<
 		T extends Promise<infer InnerPromiseType>
 			? InnerPromiseType
 			: T extends AsyncCollection<infer InnerCollectionType>
-			? InnerCollectionType
-			: T
+				? InnerCollectionType
+				: T
 	>
 >;
 
@@ -529,23 +614,15 @@ type OptionalRelativesOf<T> =
 
 type OmitOptionalRelatives<T> = Omit<T, OptionalRelativesOf<T>>;
 type PickOptionalRelatives<T> = Pick<T, OptionalRelativesOf<T>>;
-type OmitOptionalFields<T> = Omit<
-	T,
-	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
->;
-type PickOptionalFields<T> = Pick<
-	T,
-	KeysOfSuperType<T, undefined> | OptionalRelativesOf<T>
->;
 
-export type DefaultPersistentModelMetaData = {
+export interface DefaultPersistentModelMetaData {
 	identifier: ManagedIdentifier<{ id: string }, 'id'>;
 	readOnlyFields: never;
-};
+}
 
 export type MetadataOrDefault<
 	T extends PersistentModel,
-	_ extends PersistentModelMetaData<T> = never
+	_ extends PersistentModelMetaData<T> = never,
 > = T extends {
 	[__modelMeta__]: PersistentModelMetaData<T>;
 }
@@ -556,7 +633,7 @@ export type PersistentModel = Readonly<Record<string, any>>;
 
 export type MetadataReadOnlyFields<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
+	M extends PersistentModelMetaData<T>,
 > = Extract<
 	MetadataOrDefault<T, M>['readOnlyFields'] | M['readOnlyFields'],
 	keyof T
@@ -569,7 +646,8 @@ export type MetadataReadOnlyFields<
 // This type makes optional some identifiers in the constructor init object (e.g. OptionallyManagedIdentifier)
 export type ModelInitBase<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+	M extends PersistentModelMetaData<T> = {},
 > = Omit<
 	T,
 	typeof __modelMeta__ | IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>
@@ -583,7 +661,8 @@ export type ModelInitBase<
 
 export type ModelInit<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+	M extends PersistentModelMetaData<T> = {},
 > = {
 	[P in keyof OmitOptionalRelatives<ModelInitBase<T, M>>]: SettableFieldType<
 		ModelInitBase<T, M>[P]
@@ -598,17 +677,18 @@ type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
 		: T[P] extends Promise<infer InnerPromiseType>
-		? undefined extends InnerPromiseType
-			? InnerPromiseType | null
-			: InnerPromiseType
-		: T[P] extends AsyncCollection<infer InnerCollectionType>
-		? InnerCollectionType[] | undefined | null
-		: DeepWritable<T[P]>;
+			? undefined extends InnerPromiseType
+				? InnerPromiseType | null
+				: InnerPromiseType
+			: T[P] extends AsyncCollection<infer InnerCollectionType>
+				? InnerCollectionType[] | undefined | null
+				: DeepWritable<T[P]>;
 };
 
 export type MutableModel<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T> = {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+	M extends PersistentModelMetaData<T> = {},
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = DeepWritable<
@@ -616,29 +696,36 @@ export type MutableModel<
 > &
 	Readonly<Pick<T, IdentifierFields<T, M> | MetadataReadOnlyFields<T, M>>>;
 
-export type ModelInstanceMetadata = {
+export interface ModelInstanceMetadata {
 	_version: number;
 	_lastChangedAt: number;
 	_deleted: boolean;
-};
+}
 
 export type IdentifierFieldValue<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
-> = MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
-	? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
-		? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
-		: never
-	: T[MetadataOrDefault<T, M>['identifier']['field']];
+	M extends PersistentModelMetaData<T>,
+> =
+	MetadataOrDefault<T, M>['identifier'] extends CompositeIdentifier<T, any>
+		? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
+			? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
+			: never
+		: T[MetadataOrDefault<T, M>['identifier']['field']];
 
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
-	M extends PersistentModelMetaData<T>
+	M extends PersistentModelMetaData<T>,
 > = Pick<T, IdentifierFields<T, M>> | IdentifierFieldValue<T, M>;
 
+/**
+ * @private
+ * @param obj
+ * @param modelDefinition
+ * @returns `true` if the given item is an object that has all identifier fields populated.
+ */
 export function isIdentifierObject<T extends PersistentModel>(
 	obj: any,
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
 ): obj is IdentifierFields<T extends PersistentModel ? T : never, any> {
 	const keys = extractPrimaryKeyFieldNames(modelDefinition);
 
@@ -646,9 +733,9 @@ export function isIdentifierObject<T extends PersistentModel>(
 		typeof obj === 'object' && obj && keys.every(k => obj[k] !== undefined)
 	);
 }
-//#endregion
+// #endregion
 
-//#region Subscription messages
+// #region Subscription messages
 export enum OpType {
 	INSERT = 'INSERT',
 	UPDATE = 'UPDATE',
@@ -660,37 +747,35 @@ export type SubscriptionMessage<T extends PersistentModel> = Pick<
 	'opType' | 'element' | 'model' | 'condition'
 >;
 
-export type InternalSubscriptionMessage<T extends PersistentModel> = {
+export interface InternalSubscriptionMessage<T extends PersistentModel> {
 	opType: OpType;
 	element: T;
 	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
 	savedElement?: T;
-};
+}
 
-export type DataStoreSnapshot<T extends PersistentModel> = {
+export interface DataStoreSnapshot<T extends PersistentModel> {
 	items: T[];
 	isSynced: boolean;
-};
-//#endregion
+}
+// #endregion
 
-//#region Predicates
+// #region Predicates
 
-export type PredicateExpression<
-	M extends PersistentModel,
-	FT
-> = TypeName<FT> extends keyof MapTypeToOperands<FT>
-	? (
-			operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
-			// make the operand type match the type they're trying to filter on
-			operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<FT>[TypeName<FT>]]
-	  ) => ModelPredicate<M>
-	: never;
+export type PredicateExpression<M extends PersistentModel, FT> =
+	TypeName<FT> extends keyof MapTypeToOperands<FT>
+		? (
+				operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
+				// make the operand type match the type they're trying to filter on
+				operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<FT>[TypeName<FT>]],
+			) => ModelPredicate<M>
+		: never;
 
-type EqualityOperators<T> = {
+interface EqualityOperators<T> {
 	ne: T;
 	eq: T;
-};
+}
 type ScalarNumberOperators<T> = EqualityOperators<T> & {
 	le: T;
 	lt: T;
@@ -706,89 +791,98 @@ type StringOperators<T> = ScalarNumberOperators<T> & {
 	notContains: T;
 };
 type BooleanOperators<T> = EqualityOperators<T>;
-type ArrayOperators<T> = {
+interface ArrayOperators<T> {
 	contains: T;
 	notContains: T;
-};
+}
 export type AllOperators = NumberOperators<any> &
 	StringOperators<any> &
 	ArrayOperators<any>;
 
-type MapTypeToOperands<T> = {
+interface MapTypeToOperands<T> {
 	number: NumberOperators<NonNullable<T>>;
 	string: StringOperators<NonNullable<T>>;
 	boolean: BooleanOperators<NonNullable<T>>;
 	'number[]': ArrayOperators<number>;
 	'string[]': ArrayOperators<string>;
 	'boolean[]': ArrayOperators<boolean>;
-};
+}
 
 type TypeName<T> = T extends string
 	? 'string'
 	: T extends number
-	? 'number'
-	: T extends boolean
-	? 'boolean'
-	: T extends string[]
-	? 'string[]'
-	: T extends number[]
-	? 'number[]'
-	: T extends boolean[]
-	? 'boolean[]'
-	: never;
+		? 'number'
+		: T extends boolean
+			? 'boolean'
+			: T extends string[]
+				? 'string[]'
+				: T extends number[]
+					? 'number[]'
+					: T extends boolean[]
+						? 'boolean[]'
+						: never;
 
-export type PredicateGroups<T extends PersistentModel> = {
-	and: (
-		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
-	) => ModelPredicate<T>;
-	or: (
-		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
-	) => ModelPredicate<T>;
-	not: (
-		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>
-	) => ModelPredicate<T>;
-};
+export interface PredicateGroups<T extends PersistentModel> {
+	and(
+		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>,
+	): ModelPredicate<T>;
+	or(
+		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>,
+	): ModelPredicate<T>;
+	not(
+		predicate: (predicate: ModelPredicate<T>) => ModelPredicate<T>,
+	): ModelPredicate<T>;
+}
 
 export type ModelPredicate<M extends PersistentModel> = {
 	[K in keyof M]-?: PredicateExpression<M, NonNullable<M[K]>>;
 } & PredicateGroups<M>;
 
 export type ProducerModelPredicate<M extends PersistentModel> = (
-	condition: ModelPredicate<M>
+	condition: ModelPredicate<M>,
 ) => ModelPredicate<M>;
 
-export type PredicatesGroup<T extends PersistentModel> = {
+export interface PredicatesGroup<T extends PersistentModel> {
 	type: keyof PredicateGroups<T>;
 	predicates: (PredicateObject<T> | PredicatesGroup<T>)[];
-};
+}
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given predicate field object, specifying an [in-]equality test against a field.
+ */
 export function isPredicateObj<T extends PersistentModel>(
-	obj: any
+	obj: any,
 ): obj is PredicateObject<T> {
-	return obj && (<PredicateObject<T>>obj).field !== undefined;
+	return obj && (obj as PredicateObject<T>).field !== undefined;
 }
 
+/**
+ * @private
+ * @param obj
+ * @returns `true` if the given predicate object is a "group" like "and", "or", or "not".
+ */
 export function isPredicateGroup<T extends PersistentModel>(
-	obj: any
+	obj: any,
 ): obj is PredicatesGroup<T> {
-	return obj && (<PredicatesGroup<T>>obj).type !== undefined;
+	return obj && (obj as PredicatesGroup<T>).type !== undefined;
 }
 
-export type PredicateObject<T extends PersistentModel> = {
+export interface PredicateObject<T extends PersistentModel> {
 	field: keyof T;
 	operator: keyof AllOperators;
 	operand: any;
-};
+}
 
 export enum QueryOne {
 	FIRST,
 	LAST,
 }
-export type GraphQLField = {
-	[field: string]: {
-		[operator: string]: string | number | [number, number];
-	};
-};
+export type GraphQLField = Record<
+	string,
+	Record<string, string | number | [number, number]>
+>;
 
 export type GraphQLCondition = Partial<
 	| GraphQLField
@@ -812,41 +906,39 @@ export type GraphQLFilter = Partial<
 	  }
 >;
 
-//#endregion
+// #endregion
 
-//#region Pagination
+// #region Pagination
 
-export type ProducerPaginationInput<T extends PersistentModel> = {
+export interface ProducerPaginationInput<T extends PersistentModel> {
 	sort?: ProducerSortPredicate<T>;
 	limit?: number;
 	page?: number;
-};
+}
 
 export type ObserveQueryOptions<T extends PersistentModel> = Pick<
 	ProducerPaginationInput<T>,
 	'sort'
 >;
 
-export type PaginationInput<T extends PersistentModel> = {
+export interface PaginationInput<T extends PersistentModel> {
 	sort?: SortPredicate<T>;
 	limit?: number;
 	page?: number;
-};
+}
 
 export type ProducerSortPredicate<M extends PersistentModel> = (
-	condition: SortPredicate<M>
+	condition: SortPredicate<M>,
 ) => SortPredicate<M>;
 
 export type SortPredicate<T extends PersistentModel> = {
 	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
 };
 
-export type SortPredicateExpression<
-	M extends PersistentModel,
-	FT
-> = TypeName<FT> extends keyof MapTypeToOperands<FT>
-	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
-	: never;
+export type SortPredicateExpression<M extends PersistentModel, FT> =
+	TypeName<FT> extends keyof MapTypeToOperands<FT>
+		? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
+		: never;
 
 export enum SortDirection {
 	ASCENDING = 'ASCENDING',
@@ -856,82 +948,81 @@ export enum SortDirection {
 export type SortPredicatesGroup<T extends PersistentModel> =
 	SortPredicateObject<T>[];
 
-export type SortPredicateObject<T extends PersistentModel> = {
+export interface SortPredicateObject<T extends PersistentModel> {
 	field: keyof T;
 	sortDirection: keyof typeof SortDirection;
-};
+}
 
-//#endregion
+// #endregion
 
-//#region System Components
+// #region System Components
 
-export type SystemComponent = {
+export interface SystemComponent {
 	setUp(
 		schema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
 		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
 			namsespaceName: NAMESPACES,
-			modelName: string
+			modelName: string,
 		) => PersistentModelConstructor<any>,
-		appId?: string
+		appId?: string,
 	): Promise<void>;
-};
+}
 
 export type NamespaceResolver = (
-	modelConstructor: PersistentModelConstructor<any>
+	modelConstructor: PersistentModelConstructor<any>,
 ) => string;
 
-export type ControlMessageType<T> = {
+export interface ControlMessageType<T> {
 	type: T;
 	data?: any;
-};
+}
 
-//#endregion
+// #endregion
 
-//#region Relationship types
-export type RelationType = {
+// #region Relationship types
+export interface RelationType {
 	fieldName: string;
 	modelName: string;
 	relationType: 'HAS_ONE' | 'HAS_MANY' | 'BELONGS_TO';
 	targetName?: string;
 	targetNames?: string[];
 	associatedWith?: string | string[];
-};
+}
 
-type IndexOptions = {
+interface IndexOptions {
 	unique?: boolean;
-};
+}
 
-export type IndexesType = Array<[string, string[], IndexOptions?]>;
+export type IndexesType = [string, string[], IndexOptions?][];
 
-export type RelationshipType = {
-	[modelName: string]: {
+export type RelationshipType = Record<
+	string,
+	{
 		indexes: IndexesType;
 		relationTypes: RelationType[];
-	};
-};
+	}
+>;
 
-//#endregion
+// #endregion
 
-//#region Key type
-export type KeyType = {
+// #region Key type
+export interface KeyType {
 	primaryKey?: string[];
 	compositeKeys?: Set<string>[];
-};
+}
 
-export type ModelKeys = {
-	[modelName: string]: KeyType;
-};
+export type ModelKeys = Record<string, KeyType>;
 
-//#endregion
+// #endregion
 
-//#region DataStore config types
-export type DataStoreConfig = {
+// #region DataStore config types
+export interface DataStoreConfig {
 	DataStore?: {
 		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-		errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
+		errorHandler?(error: SyncError<PersistentModel>): void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
@@ -941,18 +1032,18 @@ export type DataStoreConfig = {
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
-	errorHandler?: (error: SyncError<PersistentModel>) => void; // default : logger.warn
+	errorHandler?(error: SyncError<PersistentModel>): void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
 	authProviders?: AuthProviders;
 	storageAdapter?: Adapter;
-};
+}
 
-export type AuthProviders = {
-	functionAuthProvider: () => { token: string } | Promise<{ token: string }>;
-};
+export interface AuthProviders {
+	functionAuthProvider(): { token: string } | Promise<{ token: string }>;
+}
 
 export enum AuthModeStrategyType {
 	DEFAULT = 'DEFAULT',
@@ -960,19 +1051,19 @@ export enum AuthModeStrategyType {
 }
 
 export type AuthModeStrategyReturn =
-	| GRAPHQL_AUTH_MODE
-	| GRAPHQL_AUTH_MODE[]
+	| GraphQLAuthMode
+	| GraphQLAuthMode[]
 	| undefined
 	| null;
 
-export type AuthModeStrategyParams = {
+export interface AuthModeStrategyParams {
 	schema: InternalSchema;
 	modelName: string;
 	operation: ModelOperation;
-};
+}
 
 export type AuthModeStrategy = (
-	authModeStrategyParams: AuthModeStrategyParams
+	authModeStrategyParams: AuthModeStrategyParams,
 ) => AuthModeStrategyReturn | Promise<AuthModeStrategyReturn>;
 
 export enum ModelOperation {
@@ -985,13 +1076,13 @@ export enum ModelOperation {
 export type ModelAuthModes = Record<
 	string,
 	{
-		[Property in ModelOperation]: GRAPHQL_AUTH_MODE[];
+		[Property in ModelOperation]: GraphQLAuthMode[];
 	}
 >;
 
 export type SyncExpression = Promise<{
 	modelConstructor: any;
-	conditionProducer: (c?: any) => any;
+	conditionProducer(c?: any): any;
 }>;
 
 /*
@@ -1013,25 +1104,53 @@ type Option0 = [];
 type Option1<T extends PersistentModel> = [V5ModelPredicate<T> | undefined];
 type Option<T extends PersistentModel> = Option0 | Option1<T>;
 
-type Lookup<T extends PersistentModel> = {
+interface Lookup<T extends PersistentModel> {
 	0:
 		| ModelPredicateExtender<T>
 		| Promise<ModelPredicateExtender<T>>
 		| typeof PredicateAll
 		| Promise<typeof PredicateAll | symbol>;
 	1: PredicateInternalsKey | undefined;
-};
+}
 
 type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
 	...args: A
 ) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
 
+/**
+ * Build an expression that can be used to filter which items of a given Model
+ * are synchronized down from the GraphQL service. E.g.,
+ *
+ * ```ts
+ * import { DataStore, syncExpression } from 'aws-amplify/datastore';
+ * import { Post, Comment } from './models';
+ *
+ *
+ * DataStore.configure({
+ * 	syncExpressions: [
+ * 		syncExpression(Post, () => {
+ * 			return (post) => post.rating.gt(5);
+ * 		}),
+ * 		syncExpression(Comment, () => {
+ * 			return (comment) => comment.status.eq('active');
+ * 		})
+ * 	]
+ * });
+ * ```
+ *
+ * When DataStore starts syncing, only Posts with `rating > 5` and Comments with
+ * `status === 'active'` will be synced down to the user's local store.
+ *
+ * @param modelConstructor The Model from the schema.
+ * @param conditionProducer A function that builds a condition object that can describe how to filter the model.
+ * @returns An sync expression object that can be attached to the DataStore `syncExpressions` configuration property.
+ */
 export async function syncExpression<
 	T extends PersistentModel,
-	A extends Option<T>
+	A extends Option<T>,
 >(
 	modelConstructor: PersistentModelConstructor<T>,
-	conditionProducer: ConditionProducer<T, A>
+	conditionProducer: ConditionProducer<T, A>,
 ): Promise<{
 	modelConstructor: PersistentModelConstructor<T>;
 	conditionProducer: ConditionProducer<T, A>;
@@ -1042,15 +1161,15 @@ export async function syncExpression<
 	};
 }
 
-export type SyncConflict = {
+export interface SyncConflict {
 	modelConstructor: PersistentModelConstructor<any>;
 	localModel: PersistentModel;
 	remoteModel: PersistentModel;
 	operation: OpType;
 	attempts: number;
-};
+}
 
-export type SyncError<T extends PersistentModel> = {
+export interface SyncError<T extends PersistentModel> {
 	message: string;
 	errorType: ErrorType;
 	errorInfo?: string;
@@ -1061,7 +1180,7 @@ export type SyncError<T extends PersistentModel> = {
 	process: ProcessName;
 	operation: string;
 	cause?: Error;
-};
+}
 
 export type ErrorType =
 	| 'ConfigError'
@@ -1080,30 +1199,28 @@ export enum ProcessName {
 export const DISCARD = Symbol('DISCARD');
 
 export type ConflictHandler = (
-	conflict: SyncConflict
+	conflict: SyncConflict,
 ) =>
 	| Promise<PersistentModel | typeof DISCARD>
 	| PersistentModel
 	| typeof DISCARD;
 export type ErrorHandler = (error: SyncError<PersistentModel>) => void;
 
-export type DeferredCallbackResolverOptions = {
-	callback: () => void;
+export interface DeferredCallbackResolverOptions {
+	callback(): void;
 	maxInterval?: number;
-	errorHandler?: (error: string) => void;
-};
+	errorHandler?(error: string): void;
+}
 
 export enum LimitTimerRaceResolvedValues {
 	LIMIT = 'LIMIT',
 	TIMER = 'TIMER',
 }
-//#endregion
+// #endregion
 
-export type AmplifyContext = {
-	Auth: typeof Auth;
-	API: typeof API;
-	Cache: typeof Cache;
-};
+export interface AmplifyContext {
+	InternalAPI: typeof InternalAPI;
+}
 
 // #region V5 predicate types
 
@@ -1147,19 +1264,19 @@ export type WithoutNevers<T> = Pick<T, NonNeverKeys<T>>;
  * ```
  */
 export type RecursiveModelPredicateExtender<RT extends PersistentModel> = (
-	lambda: RecursiveModelPredicate<RT>
+	lambda: RecursiveModelPredicate<RT>,
 ) => PredicateInternalsKey;
 
 export type RecursiveModelPredicateAggregateExtender<
-	RT extends PersistentModel
+	RT extends PersistentModel,
 > = (lambda: RecursiveModelPredicate<RT>) => PredicateInternalsKey[];
 
 export type RecursiveModelPredicateOperator<RT extends PersistentModel> = (
-	predicates: RecursiveModelPredicateAggregateExtender<RT>
+	predicates: RecursiveModelPredicateAggregateExtender<RT>,
 ) => PredicateInternalsKey;
 
 export type RecursiveModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: RecursiveModelPredicateExtender<RT>
+	predicate: RecursiveModelPredicateExtender<RT>,
 ) => PredicateInternalsKey;
 
 export type RecursiveModelPredicate<RT extends PersistentModel> = {
@@ -1194,22 +1311,22 @@ export type RecursiveModelPredicate<RT extends PersistentModel> = {
  * ```
  */
 export type ModelPredicateExtender<RT extends PersistentModel> = (
-	lambda: V5ModelPredicate<RT>
+	lambda: V5ModelPredicate<RT>,
 ) => PredicateInternalsKey;
 
 export type ModelPredicateAggregateExtender<RT extends PersistentModel> = (
-	lambda: V5ModelPredicate<RT>
+	lambda: V5ModelPredicate<RT>,
 ) => PredicateInternalsKey[];
 
 export type ValuePredicate<
-	RT extends PersistentModel,
-	MT extends MatchableTypes
+	_RT extends PersistentModel,
+	MT extends MatchableTypes,
 > = {
 	[K in AllFieldOperators]: K extends 'between'
 		? (
 				inclusiveLowerBound: Scalar<MT>,
-				inclusiveUpperBound: Scalar<MT>
-		  ) => PredicateInternalsKey
+				inclusiveUpperBound: Scalar<MT>,
+			) => PredicateInternalsKey
 		: (operand: Scalar<MT>) => PredicateInternalsKey;
 };
 
@@ -1224,11 +1341,11 @@ export type V5ModelPredicate<RT extends PersistentModel> = WithoutNevers<{
 } & PredicateInternalsKey;
 
 export type ModelPredicateOperator<RT extends PersistentModel> = (
-	predicates: ModelPredicateAggregateExtender<RT>
+	predicates: ModelPredicateAggregateExtender<RT>,
 ) => PredicateInternalsKey;
 
 export type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: ModelPredicateExtender<RT>
+	predicate: ModelPredicateExtender<RT>,
 ) => PredicateInternalsKey;
 
 /**
@@ -1236,7 +1353,7 @@ export type ModelPredicateNegation<RT extends PersistentModel> = (
  * that should not be exposed on public customer interfaces.
  */
 export class PredicateInternalsKey {
-	private __isPredicateInternalsKeySentinel: boolean = true;
+	private __isPredicateInternalsKeySentinel = true;
 }
 
 // #endregion

@@ -3,6 +3,150 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.30...@aws-amplify/rtn-push-notification@1.2.31) (2024-07-19)
+
+### Bug Fixes
+
+- **rtn-push-notification:** wrong completion handler key ([#13604](https://github.com/aws-amplify/amplify-js/issues/13604)) ([af46e39](https://github.com/aws-amplify/amplify-js/commit/af46e3929ffc0dab4c88848fcc2dfc3ecbb5046f))
+
+## [1.2.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.29...@aws-amplify/rtn-push-notification@1.2.30) (2024-07-08)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## [1.2.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.2.28...@aws-amplify/rtn-push-notification@1.2.29) (2024-05-07)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.28 (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.27 (2024-04-01)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.26 (2024-03-30)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.25 (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.24 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.23 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.22 (2024-03-19)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.21 (2024-03-18)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.20 (2024-03-11)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.19 (2024-03-05)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.18 (2024-02-27)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.17 (2024-02-19)
+
+### Reverts
+
+- Revert "chore(release): Publish" (#13027) ([f6f4f42](https://github.com/aws-amplify/amplify-js/commit/f6f4f42befa04ed3c1502fa0adf17c6700abfddf)), closes [#13027](https://github.com/aws-amplify/amplify-js/issues/13027)
+
+## 1.2.16 (2024-02-09)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.15 (2024-02-06)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.14 (2024-02-01)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.13 (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.12 (2024-01-12)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.11 (2024-01-10)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.10 (2024-01-04)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.9 (2023-12-22)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.8 (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.7 (2023-12-12)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.6 (2023-12-05)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.5 (2023-11-22)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.4 (2023-11-20)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.3 (2023-11-16)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.2.2 (2023-11-13)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.1.6 (2023-08-23)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.1.5 (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.1.4 (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## 1.1.3 (2023-08-10)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
+## [1.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.1.1...@aws-amplify/rtn-push-notification@1.1.2) (2023-07-13)
+
+**Note:** Version bump only for package @aws-amplify/rtn-push-notification
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/rtn-push-notification@1.1.0...@aws-amplify/rtn-push-notification@1.1.1) (2023-04-18)
 
 ### Bug Fixes

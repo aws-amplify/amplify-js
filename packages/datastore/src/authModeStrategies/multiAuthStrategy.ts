@@ -1,15 +1,18 @@
-import { Auth } from '@aws-amplify/auth';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { fetchAuthSession } from '@aws-amplify/core';
+import { GraphQLAuthMode } from '@aws-amplify/core/internals/utils';
+
 import {
+	AmplifyContext,
 	AuthModeStrategy,
+	ModelAttributeAuthAllow,
 	ModelAttributeAuthProperty,
 	ModelAttributeAuthProvider,
-	ModelAttributeAuthAllow,
-	AmplifyContext,
 } from '../types';
 
 function getProviderFromRule(
-	rule: ModelAttributeAuthProperty
+	rule: ModelAttributeAuthProperty,
 ): ModelAttributeAuthProvider {
 	// private with no provider means userPools
 	if (rule.allow === 'private' && !rule.provider) {
@@ -19,6 +22,7 @@ function getProviderFromRule(
 	if (rule.allow === 'public' && !rule.provider) {
 		return ModelAttributeAuthProvider.API_KEY;
 	}
+
 	return rule.provider!;
 }
 
@@ -46,10 +50,11 @@ function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
 					providerSortPriority.indexOf(getProviderFromRule(b))
 				);
 			}
+
 			return (
 				allowSortPriority.indexOf(a.allow) - allowSortPriority.indexOf(b.allow)
 			);
-		}
+		},
 	);
 }
 
@@ -61,7 +66,7 @@ function getAuthRules({
 	currentUser: unknown;
 }) {
 	// Using Set to ensure uniqueness
-	const authModes = new Set<GRAPHQL_AUTH_MODE>();
+	const authModes = new Set<GraphQLAuthMode>();
 
 	rules.forEach(rule => {
 		switch (rule.allow) {
@@ -71,7 +76,7 @@ function getAuthRules({
 					!rule.provider ||
 					rule.provider === ModelAttributeAuthProvider.FUNCTION
 				) {
-					authModes.add(GRAPHQL_AUTH_MODE.AWS_LAMBDA);
+					authModes.add('lambda');
 				}
 				break;
 			case ModelAttributeAuthAllow.GROUPS:
@@ -79,9 +84,9 @@ function getAuthRules({
 				// We shouldn't attempt User Pool or OIDC if there isn't an authenticated user
 				if (currentUser) {
 					if (rule.provider === ModelAttributeAuthProvider.USER_POOLS) {
-						authModes.add(GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS);
+						authModes.add('userPool');
 					} else if (rule.provider === ModelAttributeAuthProvider.OIDC) {
-						authModes.add(GRAPHQL_AUTH_MODE.OPENID_CONNECT);
+						authModes.add('oidc');
 					}
 				}
 				break;
@@ -94,9 +99,9 @@ function getAuthRules({
 						!rule.provider ||
 						rule.provider === ModelAttributeAuthProvider.USER_POOLS
 					) {
-						authModes.add(GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS);
+						authModes.add('userPool');
 					} else if (rule.provider === ModelAttributeAuthProvider.IAM) {
-						authModes.add(GRAPHQL_AUTH_MODE.AWS_IAM);
+						authModes.add('iam');
 					}
 				}
 
@@ -104,13 +109,13 @@ function getAuthRules({
 			}
 			case ModelAttributeAuthAllow.PUBLIC: {
 				if (rule.provider === ModelAttributeAuthProvider.IAM) {
-					authModes.add(GRAPHQL_AUTH_MODE.AWS_IAM);
+					authModes.add('iam');
 				} else if (
 					!rule.provider ||
 					rule.provider === ModelAttributeAuthProvider.API_KEY
 				) {
 					// public with no provider means apiKey
-					authModes.add(GRAPHQL_AUTH_MODE.API_KEY);
+					authModes.add('apiKey');
 				}
 				break;
 			}
@@ -134,14 +139,17 @@ function getAuthRules({
  * @returns A sorted array of auth modes to attempt.
  */
 export const multiAuthStrategy: (
-	amplifyContext: AmplifyContext
+	amplifyContext: AmplifyContext,
 ) => AuthModeStrategy =
-	(amplifyContext: AmplifyContext) =>
+	() =>
 	async ({ schema, modelName }) => {
-		amplifyContext.Auth = amplifyContext.Auth || Auth;
 		let currentUser;
 		try {
-			currentUser = await amplifyContext.Auth.currentAuthenticatedUser();
+			const authSession = await fetchAuthSession();
+			if (authSession.tokens.accessToken) {
+				// the user is authenticated
+				currentUser = authSession;
+			}
 		} catch (e) {
 			// No current user
 		}
@@ -153,11 +161,12 @@ export const multiAuthStrategy: (
 
 			if (authAttribute?.properties?.rules) {
 				const sortedRules = sortAuthRulesWithPriority(
-					authAttribute.properties.rules
+					authAttribute.properties.rules,
 				);
 
 				return getAuthRules({ currentUser, rules: sortedRules });
 			}
 		}
+
 		return [];
 	};

@@ -1,0 +1,51 @@
+name: Setup Amplify Integration Test Package
+description: Checks out "amplify-js-samples-staging" and builds the package with caching
+
+inputs:
+  GH_TOKEN_STAGING_READ:
+    description: The token that grants read access to the sample staging repo
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Create cache
+      uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+      id: cache-samples-staging-build
+      with:
+        key: aws-amplify-js-samples-staging-build-${{ github.sha }}
+        path: |
+          ./amplify-js-samples-staging/node_modules
+          /home/runner/.cache/Cypress
+      env:
+        SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+    - name: Checkout staging repo
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        repository: ${{ github.repository_owner }}/amplify-js-samples-staging
+        path: amplify-js-samples-staging
+        token: ${{ inputs.GH_TOKEN_STAGING_READ }}
+
+    # We test on the staging branch that corresponds to the amplify-js branch
+    #   when it exists and test on the default branch `main` otherwise
+    - name: Staging repo branch selection
+      shell: bash
+      working-directory: ./amplify-js-samples-staging
+      env:
+        BRANCH: ${{ github.ref_name }}
+      run: |
+        if git ls-remote --exit-code --heads origin refs/heads/$BRANCH; then
+            # Corresponding branch on sample repo exists, check it out
+            git fetch origin $BRANCH
+            git checkout $BRANCH
+            echo "Checked out branch: $BRANCH"
+        else
+            # Corresponding branch doesn't exist, default to main
+            echo "Branch '$BRANCH' does not exist"
+        fi
+
+    - name: Install
+      run: |
+        yarn
+      shell: bash
+      working-directory: ./amplify-js-samples-staging

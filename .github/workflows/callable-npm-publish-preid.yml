@@ -1,0 +1,48 @@
+name: Publish package to npm and create release on github
+
+on:
+  workflow_call:
+    inputs:
+      preid:
+        required: false
+        type: string
+      allow-protected-preid:
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  deploy:
+    name: Publish to Amplify Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Forbidden and protected preid protection
+        # Protection for npm tags that we want to protect from accidental use
+        env:
+          ALLOW_PROTECTED_PREIDS: ${{ inputs.allow-protected-preid }}
+          PREID: ${{ inputs.preid }}
+          FORBIDDEN_PREIDS: latest
+          PROTECTED_PREIDS: next unstable stable-5 stable-4
+        run: |
+          echo "Testing to see if $PREID is in the forbidden list ($FORBIDDEN_PREIDS)"
+          for e in $FORBIDDEN_PREIDS; do [[ $PREID == $e ]] && echo "$PREID is forbidden from preid release" && exit 1; done
+          [[ $ALLOW_PROTECTED_PREIDS == 'false' ]] && echo "Testing to see if $PREID is in the protected list ($PROTECTED_PREIDS)"
+          [[ $ALLOW_PROTECTED_PREIDS == 'false' ]] && for e in $PROTECTED_PREIDS; do [[ $PREID == $e ]] && echo "$PREID is protected from preid release" && exit 1; done
+          echo "$PREID is allowed for preid release"
+
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Run npm publish
+        uses: ./amplify-js/.github/actions/npm-publish
+        with:
+          target: preid
+          preid: ${{ inputs.preid }}
+          npm_token: ${{ secrets.NPM_TOKEN }}
+          github_user: ${{ vars.GH_USER}}
+          github_email: ${{ vars.GH_EMAIL}}

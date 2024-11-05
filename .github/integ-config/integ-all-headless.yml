@@ -1,0 +1,7 @@
+tests:
+  []
+  # integ_auth_test_cypress_no_ui
+  # - test_name: 'Token revocation'
+  #   category: 'auth'
+  #   spec: 'token-revocation'
+  #   is_headless: true

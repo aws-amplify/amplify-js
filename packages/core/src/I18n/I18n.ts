@@ -1,39 +1,36 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { I18nOptions } from './types';
-import { ConsoleLogger as Logger } from '../Logger';
+import { ConsoleLogger } from '../Logger';
 
-const logger = new Logger('I18n');
+import { I18nConfig } from './types';
+
+const logger = new ConsoleLogger('I18n');
 
 /**
- * Language transition class
+ * Language translation utility.
  */
 export class I18n {
 	/**
 	 * @private
 	 */
-	_options: I18nOptions = null;
+	_options: I18nConfig | null = null;
 
 	/**
 	 * @private
 	 */
-	_lang = null;
+	_lang?: string | null = null;
 
 	/**
 	 * @private
 	 */
-	_dict = {};
+	_dict: Record<string, any> = {};
 
 	/**
-	 * @constructor
-	 * Initialize with configurations
-	 * @param {Object} options
+	 * Sets the default language from the configuration when required.
 	 */
-	constructor(options: I18nOptions) {
-		this._options = Object.assign({}, options);
-		this._lang = this._options.language;
-
+	setDefaultLanguage() {
+		// Default to window language if not set in instance
 		if (
 			!this._lang &&
 			typeof window !== 'undefined' &&
@@ -61,7 +58,9 @@ export class I18n {
 	 * @param {String} key
 	 * @param {String} defVal - Default value
 	 */
-	get(key, defVal = undefined) {
+	get(key: string, defVal: string | undefined = undefined) {
+		this.setDefaultLanguage();
+
 		if (!this._lang) {
 			return typeof defVal !== 'undefined' ? defVal : key;
 		}
@@ -89,17 +88,17 @@ export class I18n {
 	 * @param {String} language - Specified langurage to be used
 	 * @param {String} defVal - Default value
 	 */
-	getByLanguage(key, language, defVal = null) {
+	getByLanguage(key: string, language: string, defVal: string | null = null) {
 		if (!language) {
 			return defVal;
 		}
 
-		const lang_dict = this._dict[language];
-		if (!lang_dict) {
+		const langDict = this._dict[language];
+		if (!langDict) {
 			return defVal;
 		}
 
-		return lang_dict[key];
+		return langDict[key];
 	}
 
 	/**
@@ -108,12 +107,15 @@ export class I18n {
 	 * @param {String} language - Language of the dictionary
 	 * @param {Object} vocabularies - Object that has key-value as dictionary entry
 	 */
-	putVocabulariesForLanguage(language, vocabularies) {
-		let lang_dict = this._dict[language];
-		if (!lang_dict) {
-			lang_dict = this._dict[language] = {};
+	putVocabulariesForLanguage(
+		language: string,
+		vocabularies: Record<string, any>,
+	) {
+		let langDict = this._dict[language];
+		if (!langDict) {
+			langDict = this._dict[language] = {};
 		}
-		this._dict[language] = { ...lang_dict, ...vocabularies };
+		this._dict[language] = { ...langDict, ...vocabularies };
 	}
 
 	/**
@@ -122,8 +124,8 @@ export class I18n {
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
 	 */
-	putVocabularies(vocabularies) {
-		Object.keys(vocabularies).map(key => {
+	putVocabularies(vocabularies: Record<string, Record<string, string>>) {
+		Object.keys(vocabularies).forEach(key => {
 			this.putVocabulariesForLanguage(key, vocabularies[key]);
 		});
 	}

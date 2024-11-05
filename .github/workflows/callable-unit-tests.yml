@@ -1,0 +1,48 @@
+name: Unit Tests
+
+on: workflow_call
+
+jobs:
+  get-package-list:
+    uses: ./.github/workflows/callable-get-package-list.yml
+  unit_test:
+    name: Unit Test - ${{ matrix.package.name }}
+    runs-on: ubuntu-latest
+    needs: get-package-list
+    strategy:
+      matrix:
+        package: ${{ fromJSON(needs.get-package-list.outputs.packages) }}
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+      - name: Run tests
+        working-directory: ./amplify-js
+        env:
+          TEST_PACKAGE: ${{ matrix.package.name }}
+        run: npx lerna exec --scope $TEST_PACKAGE yarn test
+  # disable temporarily
+  #   - name: Check coverage report existence
+  #     id: check-report
+  #     env:
+  #       PACKAGE_PATH: ${{ matrix.package.path }}
+  #     run: |
+  #       if [ -f ./amplify-js/$PACKAGE_PATH/coverage/coverage-final.json ]; then
+  #         echo "SHOULD_UPLOAD_REPORT=true" >> $GITHUB_OUTPUT;
+  #       fi
+  #   - name: Get coverage report flag
+  #     if: steps.check-report.outputs.SHOULD_UPLOAD_REPORT == 'true'
+  #     env:
+  #       PACKAGE_PATH: ${{ matrix.package.path }}
+  #     id: split-path
+  #     run: echo "REPORT_FLAG=${PACKAGE_PATH##*/}" >> $GITHUB_OUTPUT
+  #   - name: Upload coverage report
+  #     if: steps.check-report.outputs.SHOULD_UPLOAD_REPORT == 'true'
+  #     uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+  #     with:
+  #       files: ./amplify-js/${{ matrix.package.path }}/coverage/coverage-final.json
+  #       flags: ${{ steps.split-path.outputs.REPORT_FLAG }}

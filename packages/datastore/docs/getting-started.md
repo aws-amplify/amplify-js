@@ -16,7 +16,7 @@
 6. While interacting with your app, examine the IndexedDB tables (Application > IndexedDB within Chrome dev tools):
     1. Check out the different stores in IDB that get created for your schema. Note the internal stores prefixed with sync_, and the stores corresponding to your models prefixed with user_.
     2. Familiarize yourself with how actions taken in the UI affect the data stored in IDB. This may be easier to do while throttling the network connection. You'll be able to see how outgoing mutations first get persisted into the corresponding store, then added to the mutation queue / outbox (sync_MutationEvent), and then updated in the store with data from AppSync.
-7. Turn on DEBUG logging (`Amplify.Logger.LOG_LEVEL = "DEBUG";`) at the root of your project, and inspect the logs in the console while using your app. Additionally, [enable hub events](https://docs.amplify.aws/lib/datastore/datastore-events/q/platform/js#usage) for DataStore.
+7. Turn on DEBUG logging (`ConsoleLogger.LOG_LEVEL = "DEBUG";`) at the root of your project, and inspect the logs in the console while using your app. Additionally, [enable hub events](https://docs.amplify.aws/lib/datastore/datastore-events/q/platform/js#usage) for DataStore.
 8. The best way to understand DataStore events is to place several debuggers or breakpoints throughout DataStore.
     - With logging / Hub events enabled, you can see what operations DataStore is performing (i.e. start, sync, etc.) as you step through with the debugger.
 9. Testing offline scenerios / concurrent user sessions is a useful way to test the full functionality of DataStore, and to fully understand how the sync process actually works.

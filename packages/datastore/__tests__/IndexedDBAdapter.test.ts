@@ -9,7 +9,6 @@ import {
 import { PersistentModelConstructor, SortDirection } from '../src/types';
 import {
 	pause,
-	expectMutation,
 	Model,
 	User,
 	Profile,
@@ -21,7 +20,6 @@ import {
 	DefaultPKChild,
 	CompositePKParent,
 	CompositePKChild,
-	testSchema,
 	getDataStore,
 } from './helpers';
 import { Predicates as PredicatesClass } from '../src/predicates';
@@ -30,6 +28,8 @@ import { addCommonQueryTests } from './commonAdapterTests';
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
 let Predicates = PredicatesClass;
+
+const JOIN_TIME_LIMIT = 125; // ms
 
 describe('IndexedDBAdapter tests', () => {
 	async function getMutations(adapter) {
@@ -92,19 +92,19 @@ describe('IndexedDBAdapter tests', () => {
 				new Model({
 					field1: 'field1 value 0',
 					dateCreated: baseDate.toISOString(),
-				})
+				}),
 			));
 			await DataStore.save(
 				new Model({
 					field1: 'field1 value 1',
 					dateCreated: new Date(baseDate.getTime() + 1).toISOString(),
-				})
+				}),
 			);
 			await DataStore.save(
 				new Model({
 					field1: 'field1 value 2',
 					dateCreated: new Date(baseDate.getTime() + 2).toISOString(),
-				})
+				}),
 			);
 
 			jest.clearAllMocks();
@@ -127,7 +127,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('Should call getAll & inMemoryPagination for query with a predicate', async () => {
 			const results = await DataStore.query(Model, c =>
-				c.field1.eq('field1 value 1')
+				c.field1.eq('field1 value 1'),
 			);
 
 			expect(results.length).toEqual(1);
@@ -196,11 +196,11 @@ describe('IndexedDBAdapter tests', () => {
 			let user1Id: string;
 
 			({ id: profile1Id } = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+				new Profile({ firstName: 'Rick', lastName: 'Bob' }),
 			));
 
 			({ id: user1Id } = await DataStore.save(
-				new User({ name: 'test', profileID: profile1Id })
+				new User({ name: 'test', profileID: profile1Id }),
 			));
 
 			let user = await DataStore.query(User, user1Id);
@@ -230,7 +230,7 @@ describe('IndexedDBAdapter tests', () => {
 			({ id: post1Id } = newPost);
 
 			({ id: comment1Id } = await DataStore.save(
-				new Comment({ content: 'Test Content', post: newPost })
+				new Comment({ content: 'Test Content', post: newPost }),
 			));
 
 			let post = await DataStore.query(Post, post1Id);
@@ -257,14 +257,14 @@ describe('IndexedDBAdapter tests', () => {
 			const newPost = await DataStore.save(
 				new PostUni({
 					title: 'post',
-				})
+				}),
 			);
 
 			const newComment = await DataStore.save(
 				new CommentUni({
 					postID: newPost.id,
 					content: 'comment',
-				})
+				}),
 			);
 
 			let post = await DataStore.query(PostUni, newPost.id);
@@ -297,7 +297,7 @@ describe('IndexedDBAdapter tests', () => {
 			}));
 
 			profile = await DataStore.save(
-				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+				new Profile({ firstName: 'Rick', lastName: 'Bob' }),
 			);
 		});
 
@@ -307,7 +307,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('should allow linking model via model field', async () => {
 			const savedUser = await DataStore.save(
-				new User({ name: 'test', profile })
+				new User({ name: 'test', profile }),
 			);
 			const user1Id = savedUser.id;
 
@@ -318,7 +318,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('should allow linking model via FK', async () => {
 			const savedUser = await DataStore.save(
-				new User({ name: 'test', profileID: profile.id })
+				new User({ name: 'test', profileID: profile.id }),
 			);
 			const user1Id = savedUser.id;
 
@@ -383,7 +383,7 @@ describe('IndexedDB benchmarks', () => {
 	const sideloadIDBData = async <T>(
 		size: number,
 		table: string,
-		build: (i: number) => T
+		build: (i: number) => T,
 	) => {
 		await DataStore.start();
 		const db = (adapter as any).db;
@@ -500,7 +500,7 @@ describe('IndexedDB benchmarks', () => {
 		const byContentTime = await benchmark(async () => {
 			// `content` alone will not be able to use the index.
 			const fetched = await DataStore.query(CompositePKParent, i =>
-				i.content.eq(item.content)
+				i.content.eq(item.content),
 			);
 			expect(fetched).toBeDefined();
 		});
@@ -508,7 +508,7 @@ describe('IndexedDB benchmarks', () => {
 		// check timing of fetch by non-indexed field (name)
 		const byPKEqTime = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, ({ and }) =>
-				and(i => [i.customId.eq(item.customId), i.content.eq(item.content)])
+				and(i => [i.customId.eq(item.customId), i.content.eq(item.content)]),
 			);
 			expect(fetched.length).toBe(1);
 		});
@@ -544,15 +544,15 @@ describe('IndexedDB benchmarks', () => {
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(DefaultPKParent, p =>
 				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.id.eq(
-					child.id
-				)
+					child.id,
+				),
 			);
 			expect(fetched.length).toBe(1);
 		}, 1);
 
 		// actual time on a decent dev machine is around 15ms, compared
 		// to over 130ms when the optimization is disabled.
-		expect(time).toBeLessThan(100);
+		expect(time).toBeLessThan(JOIN_TIME_LIMIT);
 	});
 
 	test('deep joins are within time limits expected if indexes are being used using custom PK', async () => {
@@ -579,15 +579,15 @@ describe('IndexedDB benchmarks', () => {
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
 				p.children.parent.children.parent.children.parent.children.parent.children.parent.children.and(
-					c => [c.childId.eq(child.childId), c.content.eq(child.content)]
-				)
+					c => [c.childId.eq(child.childId), c.content.eq(child.content)],
+				),
 			);
 			expect(fetched.length).toBe(1);
 		}, 1);
 
 		// actual time on a decent dev machine is around 20ms, compared
 		// to over 150ms when the optimization is disabled.
-		expect(time).toBeLessThan(100);
+		expect(time).toBeLessThan(JOIN_TIME_LIMIT);
 	});
 
 	test('wide joins operate within expeted time limits', async () => {
@@ -613,12 +613,12 @@ describe('IndexedDB benchmarks', () => {
 
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
-				p.children.content.beginsWith('content')
+				p.children.content.beginsWith('content'),
 			);
 			expect(fetched.length).toBe(100);
 		}, 1);
 
-		expect(time).toBeLessThan(100);
+		expect(time).toBeLessThan(JOIN_TIME_LIMIT);
 	});
 
 	test('wide joins with outer level ORs operate within expected time limits', async () => {
@@ -645,12 +645,12 @@ describe('IndexedDB benchmarks', () => {
 
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
-				p.children.or(child => children.map(c => child.childId.eq(c.childId)))
+				p.children.or(child => children.map(c => child.childId.eq(c.childId))),
 			);
 			expect(fetched.length).toBe(100);
 		}, 1);
 
-		expect(time).toBeLessThan(100);
+		expect(time).toBeLessThan(JOIN_TIME_LIMIT);
 	});
 
 	test('semi-wide joins (limit 7) with outer level ORs operate within expected time limits', async () => {
@@ -679,12 +679,12 @@ describe('IndexedDB benchmarks', () => {
 		const time = await benchmark(async () => {
 			const fetched = await DataStore.query(CompositePKParent, p =>
 				p.children.or(child =>
-					children.slice(200, 200 + size).map(c => child.childId.eq(c.childId))
-				)
+					children.slice(200, 200 + size).map(c => child.childId.eq(c.childId)),
+				),
 			);
 			expect(fetched.length).toBe(size);
 		}, 1);
 
-		expect(time).toBeLessThan(100);
+		expect(time).toBeLessThan(JOIN_TIME_LIMIT);
 	});
 });

@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/notifications/in-app-messaging",
+	"main": "../dist/cjs/inAppMessaging/index.js",
+	"browser": "../dist/esm/inAppMessaging/index.mjs",
+	"module": "../dist/esm/inAppMessaging/index.mjs",
+	"react-native": "../src/inAppMessaging/index.ts",
+	"typings": "../dist/esm/inAppMessaging/index.d.ts"
+}

@@ -1,0 +1,40 @@
+/*
+This document contains styles that modify the default TypeDoc theme.
+*/
+
+/* Handle OS theme selection */
+@media (prefers-color-scheme: light) {
+	html:not([data-theme="dark"]) body {
+		background: white;
+	}
+
+	html:not([data-theme="dark"]) .tsd-page-toolbar {
+		background: white;
+		box-shadow: 0 1px 3px rgba(0,0,0,.1);
+		border: none;
+	}
+
+	html:not([data-theme="dark"]) .tsd-navigation a.current, .tsd-page-navigation a.current {
+		background: #eeeeee;
+	}
+}
+
+/* Handle manual theme selection */
+html[data-theme="light"] body {
+	background: white;
+}
+
+html[data-theme="light"] .tsd-page-toolbar {
+	background: white;
+	box-shadow: 0 1px 3px rgba(0,0,0,.1);
+	border: none;
+}
+
+html[data-theme="light"] .tsd-navigation a.current, .tsd-page-navigation a.current {
+	background: #eeeeee;
+}
+
+.tsd-page-toolbar a.title {
+	font-weight: 400;
+	font-size: 1.2em;
+}

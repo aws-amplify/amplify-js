@@ -32,83 +32,83 @@ describe('Composite Identifier', () => {
 			dob: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CompositeDefaultRO.copyOf({} as CompositeDefaultRO, d => {
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.tenant;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.tenant = '';
 			d.dob;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.dob = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 
 		// Query
-		// @ts-expect-error
+		// TODO: Uncomment below and update test
 		// await DataStore.query(CompositeDefaultRO, 'someid');
-		// @ts-expect-error
+		// TODO: Uncomment below and update test
 		// await DataStore.query(CompositeDefaultRO, { id: 'someid' });
 
 		expectType<CompositeDefaultRO | undefined>(
-			await DataStore.query(CompositeDefaultRO, { tenant: '', dob: '' })
+			await DataStore.query(CompositeDefaultRO, { tenant: '', dob: '' }),
 		);
 		expectType<CompositeDefaultRO[]>(await DataStore.query(CompositeDefaultRO));
 		expectType<CompositeDefaultRO[]>(
-			await DataStore.query(CompositeDefaultRO, Predicates.ALL)
+			await DataStore.query(CompositeDefaultRO, Predicates.ALL),
 		);
 		expectType<CompositeDefaultRO[]>(
-			await DataStore.query(CompositeDefaultRO, c => c.createdAt.ge('2019'))
+			await DataStore.query(CompositeDefaultRO, c => c.createdAt.ge('2019')),
 		);
 
 		// Save
 		expectType<CompositeDefaultRO>(
-			await DataStore.save(dummyInstance<CompositeDefaultRO>())
+			await DataStore.save(dummyInstance<CompositeDefaultRO>()),
 		);
 		expectType<CompositeDefaultRO>(
 			await DataStore.save(dummyInstance<CompositeDefaultRO>(), c =>
-				c.createdAt.ge('2019')
-			)
+				c.createdAt.ge('2019'),
+			),
 		);
 
 		// Delete
 
-		// @ts-expect-error
+		// TODO: Uncomment below and update test
 		// await DataStore.delete(CompositeDefaultRO, '')
 
 		expectType<CompositeDefaultRO[]>(
-			await DataStore.delete(CompositeDefaultRO, { tenant: '', dob: '' })
+			await DataStore.delete(CompositeDefaultRO, { tenant: '', dob: '' }),
 		);
 		expectType<CompositeDefaultRO>(
-			await DataStore.delete(dummyInstance<CompositeDefaultRO>())
+			await DataStore.delete(dummyInstance<CompositeDefaultRO>()),
 		);
 		expectType<CompositeDefaultRO>(
 			await DataStore.delete(dummyInstance<CompositeDefaultRO>(), c =>
-				c.description.contains('something')
-			)
+				c.description.contains('something'),
+			),
 		);
 		expectType<CompositeDefaultRO[]>(
-			await DataStore.delete(CompositeDefaultRO, Predicates.ALL)
+			await DataStore.delete(CompositeDefaultRO, Predicates.ALL),
 		);
 		expectType<CompositeDefaultRO[]>(
-			await DataStore.delete(CompositeDefaultRO, c => c.createdAt.le('2019'))
+			await DataStore.delete(CompositeDefaultRO, c => c.createdAt.le('2019')),
 		);
 
 		// Observe
@@ -117,7 +117,7 @@ describe('Composite Identifier', () => {
 			expectType<CompositeDefaultRO>(element);
 		});
 		DataStore.observe(CompositeDefaultRO, c =>
-			c.description.beginsWith('something')
+			c.description.beginsWith('something'),
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<CompositeDefaultRO>>(model);
 			expectType<CompositeDefaultRO>(element);
@@ -128,14 +128,14 @@ describe('Composite Identifier', () => {
 			expectType<CompositeDefaultRO[]>(items);
 		});
 		DataStore.observeQuery(CompositeDefaultRO, c =>
-			c.description.notContains('something')
+			c.description.notContains('something'),
 		).subscribe(({ items }) => {
 			expectType<CompositeDefaultRO[]>(items);
 		});
 		DataStore.observeQuery(
 			CompositeDefaultRO,
 			c => c.description.notContains('something'),
-			{ sort: c => c.createdAt('ASCENDING') }
+			{ sort: c => c.createdAt('ASCENDING') },
 		).subscribe(({ items }) => {
 			expectType<CompositeDefaultRO[]>(items);
 		});
@@ -158,32 +158,32 @@ describe('Composite Identifier', () => {
 			dob: '',
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		CompositeCustomRO.copyOf({} as CompositeCustomRO, d => {
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.tenant;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.tenant = '';
 			d.dob;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.dob = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 	});

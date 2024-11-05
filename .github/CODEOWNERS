@@ -2,7 +2,6 @@
 /packages/api @aws-amplify/amplify-js @aws-amplify/amplify-data
 /packages/api-graphql @aws-amplify/amplify-data
 /packages/api-rest @aws-amplify/amplify-js @aws-amplify/amplify-data
-/packages/aws-amplify-react-native @aws-amplify/amplify-js @aws-amplify/amplify-ui
 /packages/core @aws-amplify/amplify-js @aws-amplify/amplify-data
 /packages/datastore @aws-amplify/amplify-data
 /packages/datastore-storage-adapter @aws-amplify/amplify-data
@@ -11,3 +10,27 @@
 /packages/aws-amplify/package.json @aws-amplify/amplify-js-admins
 /.circleci/ @aws-amplify/amplify-js @aws-amplify/amplify-devops
 /.github/ @aws-amplify/amplify-js-admins
+
+# The following paths involve server-side use cases, token/user session management.
+# Changes made to these paths requires additional reviews and approvals.
+/packages/auth @haverchuck @cshfang @HuiSF @pranavosu
+/packages/aws-amplify/src/adapter-core @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/adapterCore @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/singleton @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/convert @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/WordArray.ts @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/storage @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/generateRandomString.ts @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/globalHelpers @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/utils/urlSafeDecode.ts @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/awsClients/cognitoIdentity @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/clients/internal @haverchuck @cshfang @HuiSF @pranavosu
+/packages/core/src/Hub @haverchuck @cshfang @HuiSF @pranavosu
+/packages/adapter-nextjs @haverchuck @cshfang @HuiSF @pranavosu
+/packages/rtn-web-browser @haverchuck @cshfang @HuiSF @pranavosu
+/packages/storage/src/providers/s3/apis/internal @haverchuck @cshfang @HuiSF @pranavosu
+/packages/storage/src/providers/s3/apis/server @haverchuck @cshfang @HuiSF @pranavosu
+/packages/api-rest/src/apis/server.ts @haverchuck @cshfang @HuiSF @pranavosu
+/packages/api-rest/src/apis/common/internalPost.ts @haverchuck @cshfang @HuiSF @pranavosu
+/packages/api-graphql/src/server @haverchuck @cshfang @HuiSF @pranavosu
+/packages/api-graphql/src/internals/server @haverchuck @cshfang @HuiSF @pranavosu

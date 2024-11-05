@@ -1,0 +1,149 @@
+name: 'Canary E2E Tests'
+
+on:
+  workflow_call:
+    inputs:
+      test_name:
+        required: true
+        type: string
+      framework:
+        required: true
+        type: string
+      category:
+        required: true
+        type: string
+      sample_name:
+        required: true
+        type: string
+      spec:
+        required: false
+        type: string
+      browser:
+        required: false
+        type: string
+      amplifyjs_dir:
+        required: false
+        type: boolean
+        default: false
+      timeout_minutes:
+        required: true
+        type: number
+      retry_count:
+        required: true
+        type: number
+
+env:
+  AMPLIFY_DIR: /home/runner/work/amplify-js/amplify-js/amplify-js
+  CYPRESS_GOOGLE_CLIENTID: ${{ secrets.CYPRESS_GOOGLE_CLIENTID }}
+  CYPRESS_GOOGLE_CLIENT_SECRET: ${{ secrets.CYPRESS_GOOGLE_CLIENT_SECRET }}
+  CYPRESS_GOOGLE_REFRESH_TOKEN: ${{ secrets.CYPRESS_GOOGLE_REFRESH_TOKEN }}
+
+jobs:
+  canary-e2e-test:
+    name: 'E2E: ${{ inputs.test_name }}'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser:
+          - ${{ fromJson(inputs.browser) }}
+        sample_name:
+          - ${{ fromJson(inputs.sample_name) }}
+      fail-fast: false
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          # Minimal depth 2 so we can checkout the commit before possible merge commit.
+          fetch-depth: 2
+          path: amplify-js
+      - name: Setup Node.js 18
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        with:
+          node-version: 18
+        env:
+          SEGMENT_DOWNLOAD_TIMEOUT_MINS: 2
+
+      - name: Install
+        run: yarn
+        shell: bash
+        working-directory: ./amplify-js
+      - name: Bootstrap
+        run: yarn bootstrap
+        shell: bash
+        working-directory: ./amplify-js
+      - name: Build packages
+        run: yarn build
+        shell: bash
+        working-directory: ./amplify-js
+      - name: Setup samples staging repository
+        uses: ./amplify-js/.github/actions/setup-samples-staging
+        with:
+          GH_TOKEN_STAGING_READ: ${{ secrets.GH_TOKEN_STAGING_READ }}
+      - name: Modify package.json to run against aws-amplify latest
+        env:
+          E2E_FRAMEWORK: ${{ inputs.framework }}
+          E2E_CATEGORY: ${{ inputs.category }}
+          E2E_SAMPLE_NAME: ${{ matrix.sample_name }}
+        run: |
+          tmpfile=$(mktemp)
+          cp samples/$E2E_FRAMEWORK/$E2E_CATEGORY/$E2E_SAMPLE_NAME/package.json "$tmpfile" &&
+          jq 'select(.dependencies) |= with_entries(select(.key | startswith("aws-amplify")).value = "latest")' samples/$E2E_FRAMEWORK/$E2E_CATEGORY/$E2E_SAMPLE_NAME/package.json "$tmpfile" > samples/$E2E_FRAMEWORK/$E2E_CATEGORY/$E2E_SAMPLE_NAME/package.json && rm -f -- "$tmpfile"
+        working-directory: amplify-js-samples-staging
+      - name: Run cypress tests for ${{ inputs.test_name }} dev
+        env:
+          E2E_FRAMEWORK: ${{ inputs.framework }}
+          E2E_CATEGORY: ${{ inputs.category }}
+          E2E_SAMPLE_NAME: ${{ matrix.sample_name }}
+          E2E_SPEC: ${{ inputs.spec }}
+          E2E_BROWSER: ${{ matrix.browser }}
+          E2E_AMPLIFY_JS_DIR: ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}
+          E2E_RETRY_COUNT: ${{ inputs.retry_count }}
+          E2E_TEST_NAME: ${{ inputs.test_name }}
+        run: |
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          $E2E_FRAMEWORK \
+          $E2E_CATEGORY \
+          $E2E_SAMPLE_NAME \
+          $E2E_SPEC \
+          $E2E_BROWSER \
+          dev \
+          $E2E_AMPLIFY_JS_DIR" \
+          -n $E2E_RETRY_COUNT
+        working-directory: amplify-js-samples-staging
+        shell: bash
+      - name: Run cypress tests for ${{ inputs.test_name }} prod
+        env:
+          E2E_FRAMEWORK: ${{ inputs.framework }}
+          E2E_CATEGORY: ${{ inputs.category }}
+          E2E_SAMPLE_NAME: ${{ matrix.sample_name }}
+          E2E_SPEC: ${{ inputs.spec }}
+          E2E_BROWSER: ${{ matrix.browser }}
+          E2E_AMPLIFY_JS_DIR: ${{ inputs.amplifyjs_dir == true && env.AMPLIFY_DIR || ''}}
+          E2E_RETRY_COUNT: ${{ inputs.retry_count }}
+          E2E_TEST_NAME: ${{ inputs.test_name }}
+        run: |
+          ../amplify-js/scripts/retry-yarn-script.sh -s \
+          "ci:test \
+          $E2E_FRAMEWORK \
+          $E2E_CATEGORY \
+          $E2E_SAMPLE_NAME \
+          $E2E_SPEC \
+          $E2E_BROWSER \
+          prod \
+          $E2E_AMPLIFY_JS_DIR" \
+          -n $E2E_RETRY_COUNT
+        working-directory: amplify-js-samples-staging
+        shell: bash
+      - name: Upload artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2 https://github.com/actions/upload-artifact/commit/0b7f8abb1508181956e8e162db84b466c27e18ce
+        if: failure()
+        with:
+          name: ${{ inputs.test_name }}
+          if-no-files-found: ignore
+          path: |
+            amplify-js-samples-staging/cypress/videos
+            amplify-js-samples-staging/cypress/screenshots
+          retention-days: 14

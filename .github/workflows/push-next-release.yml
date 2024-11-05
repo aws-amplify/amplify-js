@@ -1,0 +1,24 @@
+name: Push - release from next/release to next
+
+concurrency:
+  # group name unique for push to push-main-release
+  group: push-release-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - next/release
+
+jobs:
+  e2e:
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
+  next-release:
+    needs:
+      - e2e
+    secrets: inherit
+    uses: ./.github/workflows/callable-npm-publish-preid.yml
+    with:
+      preid: next
+      allow-protected-preid: true

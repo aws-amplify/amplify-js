@@ -34,7 +34,7 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
@@ -46,88 +46,88 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		OptionallyManagedDefaultRO.copyOf({} as OptionallyManagedDefaultRO, d => {
 			d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdAt = '';
 
 			d.updatedAt;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedAt = '';
 		});
 
 		// Query
 		expectType<OptionallyManagedDefaultRO | undefined>(
-			await DataStore.query(OptionallyManagedDefaultRO, 'someid')
+			await DataStore.query(OptionallyManagedDefaultRO, 'someid'),
 		);
 		expectType<OptionallyManagedDefaultRO | undefined>(
-			await DataStore.query(OptionallyManagedDefaultRO, { id: 'someid' })
+			await DataStore.query(OptionallyManagedDefaultRO, { id: 'someid' }),
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
-			await DataStore.query(OptionallyManagedDefaultRO)
+			await DataStore.query(OptionallyManagedDefaultRO),
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
-			await DataStore.query(OptionallyManagedDefaultRO, Predicates.ALL)
+			await DataStore.query(OptionallyManagedDefaultRO, Predicates.ALL),
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
 			await DataStore.query(OptionallyManagedDefaultRO, c =>
-				c.createdAt.ge('2019')
-			)
+				c.createdAt.ge('2019'),
+			),
 		);
 
 		// Save
 		expectType<OptionallyManagedDefaultRO>(
-			await DataStore.save(dummyInstance<OptionallyManagedDefaultRO>())
+			await DataStore.save(dummyInstance<OptionallyManagedDefaultRO>()),
 		);
 		expectType<OptionallyManagedDefaultRO>(
 			await DataStore.save(dummyInstance<OptionallyManagedDefaultRO>(), c =>
-				c.createdAt.ge('2019')
-			)
+				c.createdAt.ge('2019'),
+			),
 		);
 
 		// Delete
 		expectType<OptionallyManagedDefaultRO[]>(
-			await DataStore.delete(OptionallyManagedDefaultRO, '')
+			await DataStore.delete(OptionallyManagedDefaultRO, ''),
 		);
 		expectType<OptionallyManagedDefaultRO>(
-			await DataStore.delete(dummyInstance<OptionallyManagedDefaultRO>())
+			await DataStore.delete(dummyInstance<OptionallyManagedDefaultRO>()),
 		);
 		expectType<OptionallyManagedDefaultRO>(
 			await DataStore.delete(dummyInstance<OptionallyManagedDefaultRO>(), c =>
-				c.description.contains('something')
-			)
+				c.description.contains('something'),
+			),
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
-			await DataStore.delete(OptionallyManagedDefaultRO, Predicates.ALL)
+			await DataStore.delete(OptionallyManagedDefaultRO, Predicates.ALL),
 		);
 		expectType<OptionallyManagedDefaultRO[]>(
 			await DataStore.delete(OptionallyManagedDefaultRO, c =>
-				c.createdAt.le('2019')
-			)
+				c.createdAt.le('2019'),
+			),
 		);
 
 		// Observe
 		DataStore.observe(OptionallyManagedDefaultRO).subscribe(
 			({ model, element }) => {
 				expectType<PersistentModelConstructor<OptionallyManagedDefaultRO>>(
-					model
+					model,
 				);
 				expectType<OptionallyManagedDefaultRO>(element);
-			}
+			},
 		);
 		DataStore.observe(OptionallyManagedDefaultRO, c =>
-			c.description.beginsWith('something')
+			c.description.beginsWith('something'),
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<OptionallyManagedDefaultRO>>(model);
 			expectType<OptionallyManagedDefaultRO>(element);
@@ -135,27 +135,27 @@ describe('Optionally Managed Identifier', () => {
 		DataStore.observe(dummyInstance<OptionallyManagedDefaultRO>()).subscribe(
 			({ model, element }) => {
 				expectType<PersistentModelConstructor<OptionallyManagedDefaultRO>>(
-					model
+					model,
 				);
 				expectType<OptionallyManagedDefaultRO>(element);
-			}
+			},
 		);
 
 		// Observe query
 		DataStore.observeQuery(OptionallyManagedDefaultRO).subscribe(
 			({ items }) => {
 				expectType<OptionallyManagedDefaultRO[]>(items);
-			}
+			},
 		);
 		DataStore.observeQuery(OptionallyManagedDefaultRO, c =>
-			c.description.notContains('something')
+			c.description.notContains('something'),
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedDefaultRO[]>(items);
 		});
 		DataStore.observeQuery(
 			OptionallyManagedDefaultRO,
 			c => c.description.notContains('something'),
-			{ sort: c => c.createdAt('ASCENDING') }
+			{ sort: c => c.createdAt('ASCENDING') },
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedDefaultRO[]>(items);
 		});
@@ -186,7 +186,7 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
@@ -198,88 +198,88 @@ describe('Optionally Managed Identifier', () => {
 		>({
 			name: '',
 			description: '',
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// x: 234,
 		});
 
 		OptionallyManagedCustomRO.copyOf({} as OptionallyManagedCustomRO, d => {
 			d.id;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.id = '';
 
 			d.name = '';
 			d.description = '';
 
 			d.createdOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.createdOn = '';
 
 			d.updatedOn;
-			// @ts-expect-error
+			// TODO: Uncomment below and update test
 			// d.updatedOn = '';
 		});
 
 		// Query
 		expectType<OptionallyManagedCustomRO | undefined>(
-			await DataStore.query(OptionallyManagedCustomRO, 'someid')
+			await DataStore.query(OptionallyManagedCustomRO, 'someid'),
 		);
 		expectType<OptionallyManagedCustomRO | undefined>(
-			await DataStore.query(OptionallyManagedCustomRO, { id: 'someid' })
+			await DataStore.query(OptionallyManagedCustomRO, { id: 'someid' }),
 		);
 		expectType<OptionallyManagedCustomRO[]>(
-			await DataStore.query(OptionallyManagedCustomRO)
+			await DataStore.query(OptionallyManagedCustomRO),
 		);
 		expectType<OptionallyManagedCustomRO[]>(
-			await DataStore.query(OptionallyManagedCustomRO, Predicates.ALL)
+			await DataStore.query(OptionallyManagedCustomRO, Predicates.ALL),
 		);
 		expectType<OptionallyManagedCustomRO[]>(
 			await DataStore.query(OptionallyManagedCustomRO, c =>
-				c.createdOn.ge('2019')
-			)
+				c.createdOn.ge('2019'),
+			),
 		);
 
 		// Save
 		expectType<OptionallyManagedCustomRO>(
-			await DataStore.save(dummyInstance<OptionallyManagedCustomRO>())
+			await DataStore.save(dummyInstance<OptionallyManagedCustomRO>()),
 		);
 		expectType<OptionallyManagedCustomRO>(
 			await DataStore.save(dummyInstance<OptionallyManagedCustomRO>(), c =>
-				c.createdOn.ge('2019')
-			)
+				c.createdOn.ge('2019'),
+			),
 		);
 
 		// Delete
 		expectType<OptionallyManagedCustomRO[]>(
-			await DataStore.delete(OptionallyManagedCustomRO, '')
+			await DataStore.delete(OptionallyManagedCustomRO, ''),
 		);
 		expectType<OptionallyManagedCustomRO>(
-			await DataStore.delete(dummyInstance<OptionallyManagedCustomRO>())
+			await DataStore.delete(dummyInstance<OptionallyManagedCustomRO>()),
 		);
 		expectType<OptionallyManagedCustomRO>(
 			await DataStore.delete(dummyInstance<OptionallyManagedCustomRO>(), c =>
-				c.description.contains('something')
-			)
+				c.description.contains('something'),
+			),
 		);
 		expectType<OptionallyManagedCustomRO[]>(
-			await DataStore.delete(OptionallyManagedCustomRO, Predicates.ALL)
+			await DataStore.delete(OptionallyManagedCustomRO, Predicates.ALL),
 		);
 		expectType<OptionallyManagedCustomRO[]>(
 			await DataStore.delete(OptionallyManagedCustomRO, c =>
-				c.createdOn.le('2019')
-			)
+				c.createdOn.le('2019'),
+			),
 		);
 
 		// Observe
 		DataStore.observe(OptionallyManagedCustomRO).subscribe(
 			({ model, element }) => {
 				expectType<PersistentModelConstructor<OptionallyManagedCustomRO>>(
-					model
+					model,
 				);
 				expectType<OptionallyManagedCustomRO>(element);
-			}
+			},
 		);
 		DataStore.observe(OptionallyManagedCustomRO, c =>
-			c.description.beginsWith('something')
+			c.description.beginsWith('something'),
 		).subscribe(({ model, element }) => {
 			expectType<PersistentModelConstructor<OptionallyManagedCustomRO>>(model);
 			expectType<OptionallyManagedCustomRO>(element);
@@ -287,10 +287,10 @@ describe('Optionally Managed Identifier', () => {
 		DataStore.observe(dummyInstance<OptionallyManagedCustomRO>()).subscribe(
 			({ model, element }) => {
 				expectType<PersistentModelConstructor<OptionallyManagedCustomRO>>(
-					model
+					model,
 				);
 				expectType<OptionallyManagedCustomRO>(element);
-			}
+			},
 		);
 
 		// Observe query
@@ -298,14 +298,14 @@ describe('Optionally Managed Identifier', () => {
 			expectType<OptionallyManagedCustomRO[]>(items);
 		});
 		DataStore.observeQuery(OptionallyManagedCustomRO, c =>
-			c.description.notContains('something')
+			c.description.notContains('something'),
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedCustomRO[]>(items);
 		});
 		DataStore.observeQuery(
 			OptionallyManagedCustomRO,
 			c => c.description.notContains('something'),
-			{ sort: c => c.createdOn('ASCENDING') }
+			{ sort: c => c.createdOn('ASCENDING') },
 		).subscribe(({ items }) => {
 			expectType<OptionallyManagedCustomRO[]>(items);
 		});

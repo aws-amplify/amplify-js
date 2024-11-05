@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/api-rest/internals/server",
+	"types": "../../dist/esm/internals/server.d.ts",
+	"main": "../../dist/cjs/internals/server.js",
+	"module": "../../dist/esm/internals/server.mjs",
+	"sideEffects": false
+}

@@ -1,0 +1,10 @@
+{
+	"name": "@aws-amplify/geo",
+	"extends": ["../../typedoc.base.json"],
+	"entryPointStrategy": "resolve",
+	"entryPoints": [
+		"src/index.ts",
+		"src/providers/location-service/AmazonLocationServiceProvider.ts"
+	],
+	"readme": "README.md",
+}

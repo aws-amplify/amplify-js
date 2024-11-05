@@ -1,0 +1,11 @@
+{
+	"name": "@aws-amplify/datastore-storage-adapter",
+	"extends": ["../../typedoc.base.json"],
+	"entryPointStrategy": "resolve",
+	"entryPoints": [
+		"src/index.ts",
+		"src/SQLiteAdapter/SQLiteAdapter.ts",
+		"src/ExpoSQLiteAdapter/ExpoSQLiteAdapter.ts"
+	],
+	"readme": "README.md",
+}

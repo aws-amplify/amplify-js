@@ -48,12 +48,12 @@ Our work is done directly on Github and PR's are sent to the GitHub repo by core
 
 ## Setting up for local development
 
+This section should get you running with **Amplify JS** and get you familiar with the basics of the codebase. You will need [Node.js](https://nodejs.org/en/) on your system and developing locally also requires `yarn` workspaces. You can install it [here](https://classic.yarnpkg.com/en/docs/install#mac-stable).
+
 The recommended version of Node JS to work with this project is [`16.19.0`](https://nodejs.org/en/blog/release/v16.19.0/) with Yarn version [`1.22.x`](https://github.com/yarnpkg/yarn/blob/master/CHANGELOG.md).
 
 > Note: newer versions of Yarn (2+) remove support for lerna's `--mutex` flag
 > so be sure to use Yarn v1.22.x
-
-This section should get you running with **Amplify JS** and get you familiar with the basics of the codebase. You will need the latest version of [Node.js](https://nodejs.org/en/) on your system and developing locally also requires `yarn` workspaces. You can install it [here](https://classic.yarnpkg.com/en/docs/install#mac-stable).
 
 Start by [forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the main branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
 
@@ -103,11 +103,13 @@ yarn run test --scope @aws-amplify/auth
 **Yarn Linking**
 The best way to develop locally and test is to link the individual package you’re working on and run lerna in watch mode.
 
+Note: to test using the react-native framework you will need to use [Verdaccio](#verdaccio)
+
 Run watch mode while editing (auth for example):
 
 ```
 npx lerna exec --scope @aws-amplify/auth yarn link
-npx lerna exec --scope @aws-amplify/auth yarn build:esm:watch
+npx lerna exec --scope @aws-amplify/auth yarn build:watch
 ```
 
 Or run the whole library in watch mode if you are working on multiple packages
@@ -115,7 +117,7 @@ Or run the whole library in watch mode if you are working on multiple packages
 ```
 yarn build # Build the whole library
 yarn link-all # Make all the packages available to link
-yarn build:esm:watch # All packages are building ES6 modules in watch mode
+yarn build:watch # All packages are building in watch mode
 ```
 
 In your sample project, you can now link specific packages
@@ -124,50 +126,17 @@ In your sample project, you can now link specific packages
 yarn link @aws-amplify/auth
 ```
 
+If you are testing with a Vite sample project, such as from the quickstart guide, and your changes to the library are not showing up in your local app when running `yarn run dev`, Vite caching may be the culprit. Try editing this line in your sample project's `package.json`.
+
+```diff
+"scripts": {
+- "dev": "vite",
++ "dev": "vite --force",
+  ...
+}
+```
+
 Passing unit tests are only necessary if you’re looking to contribute a pull request. If you’re just playing locally, you don’t need them. However, if you’re contributing a pull request for anything other than making a change to the documentation, fixing a formatting issue in the code (i.e., white space, missing semi-colons) or another task that does not impact the functionality of the code, you will need to validate your proposed changes with passing unit tests.
-
-**Using the setup-dev:react-native script to work with React-Native apps**
-
-> Note: All the below commands to be run from the local amplify-js library root
-
-To develop locally alongside a React-Native app, make sure to,
-
-1. Finish the build steps mentioned in the section: `Setting up for local development` to set up your local `amplify-js` repository for development.
-
-   > Note: To set up a sample React-Native app -- configure your [development environment](https://reactnative.dev/docs/environment-setup) and [create an app](https://reactnative.dev/docs/environment-setup#creating-a-new-application). Note the path to the app as it is required in the next step.
-
-2. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
-   > Make sure to have [watchman](https://facebook.github.io/watchman/docs/install.html) installed before running the command below
-
-```
-npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
-```
-
-> Note: This script runs a continuous job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
-
-The options `--packages` is used to specify single or multiple package names and the `--target` option is used to specify the path to your sample React-Native app.
-Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
-
-> All scoped packages must be prefixed by `@aws-amplify/` . For example: `@aws-amplify/auth`
-
-To develop multiple/all packages, provide the package names separated by a comma or the flag `--all` or `-a`:
-
-```
-npm run setup-dev:react-native -- --packages @aws-amplify/auth,aws-amplify-react-native --target ~/path/to/your/rn/app/root
-npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
-```
-
-> Note: `--` right after the script name is important to provide the flags with their values.
-
-**Debugging problems with the `setup-dev:react-native` script**
-
-- If the WML command does not do anything after adding the links, watch its src file using watchman. Run the below from the root of this repository:
-
-  ```
-  watchman watch node_modules/wml/src
-  ```
-
-- When using VScode, for the script to open a new terminal and tabs you will need to provide the editor accessiblity permissions.
 
 #### Verdaccio
 
@@ -177,7 +146,7 @@ To publish in Verdaccio, start a Verdaccio instance and then,
 
 ```
 yarn config set registry http://localhost:4873/
-yarn lerna publish --no-git-tag-version --no-push --force-publish
+yarn publish:verdaccio
 ```
 
 To publish a local version of a specific package,
@@ -259,7 +228,7 @@ _[Skip step 1 to 3 if you have already done this]_
      - revert: Reverts a previous commit
    - Use slashes to separate parts of branch names
    - Hyphenate well-defined branch name
-5. Once your work is committed and you're ready to share, run test `yarn test`.
+5. Be sure to write tests to cover any added or modified code. Be especially vigilant when testing changes that affect shared code resources in order to catch problems such as race conditions. Once your work is committed and you're ready to share, run test `yarn test` on root-level package.
 
    **Note:** Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
 

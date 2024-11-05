@@ -1,25 +1,28 @@
 import {
+	BatchDeleteGeofenceCommand,
 	BatchPutGeofenceCommand,
 	GetGeofenceCommand,
 	ListGeofencesCommand,
-	BatchDeleteGeofenceCommand,
 } from '@aws-sdk/client-location';
 
-import { validPolygon, validGeometry } from './testData';
+import { Geofence } from '../src/types';
+
+import { validGeometry, validPolygon } from './testData';
 
 export function createGeofenceInputArray(numberOfGeofences) {
-	const geofences = [];
+	const geofences: Geofence[] = [];
 	for (let i = 0; i < numberOfGeofences; i++) {
 		geofences.push({
 			geofenceId: `validGeofenceId${i}`,
 			geometry: validGeometry,
 		});
 	}
+
 	return geofences;
 }
 
 export function createGeofenceOutputArray(numberOfGeofences) {
-	const geofences = [];
+	const geofences: any[] = [];
 	for (let i = 0; i < numberOfGeofences; i++) {
 		geofences.push({
 			GeofenceId: `validGeofenceId${i}`,
@@ -31,13 +34,14 @@ export function createGeofenceOutputArray(numberOfGeofences) {
 			UpdateTime: '2020-04-01T21:00:00.000Z',
 		});
 	}
+
 	return geofences;
 }
 
 export function mockBatchPutGeofenceCommand(command) {
 	if (command instanceof BatchPutGeofenceCommand) {
 		return {
-			Successes: command.input.Entries.map(geofence => {
+			Successes: command.input.Entries!.map(geofence => {
 				return {
 					CreateTime: '2020-04-01T21:00:00.000Z',
 					UpdateTime: '2020-04-01T21:00:00.000Z',
@@ -75,6 +79,7 @@ export function mockListGeofencesCommand(command) {
 				NextToken: 'THIS IS YOUR SECOND TOKEN',
 			};
 		}
+
 		return {
 			Entries: geofences.slice(0, 100),
 			NextToken: 'THIS IS YOUR TOKEN',

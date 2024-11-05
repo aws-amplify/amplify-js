@@ -1,0 +1,29 @@
+{
+	"name": "Amplify JS API Documentation",
+	"entryPointStrategy": "packages",
+    "entryPoints": [
+		"packages/aws-amplify",
+		"packages/geo",
+		"packages/interactions",
+		"packages/predictions",
+		"packages/pubsub",
+		"packages/adapter-nextjs",
+		"packages/datastore-storage-adapter",
+	],
+    "out": "docs/api",
+	"readme": "docs/README.md",
+	"sortEntryPoints": false,
+	"includeVersion": false,
+	"hideGenerator": true,
+	"navigationLinks": {
+		"Library Documentation": "https://docs.amplify.aws/",
+		"NPM": "https://www.npmjs.com/package/aws-amplify",
+		"GitHub": "https://github.com/aws-amplify/amplify-js"
+	},
+	"customCss": "./docs/theme/styles.css",
+	"favicon": "./docs/theme/favicon.ico",
+	"plugin": [
+		"typedoc-plugin-missing-exports",
+		"typedoc-plugin-extras"
+	],
+}

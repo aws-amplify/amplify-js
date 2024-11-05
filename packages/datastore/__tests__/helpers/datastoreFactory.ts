@@ -1,13 +1,15 @@
+import { Observable, Observer } from 'rxjs';
 import {
 	CONTROL_MSG as PUBSUB_CONTROL_MSG,
 	CONNECTION_STATE_CHANGE as PUBSUB_CONNECTION_STATE_CHANGE,
 	ConnectionState,
-} from '@aws-amplify/pubsub';
+} from '@aws-amplify/api-graphql';
 import { PersistentModelConstructor } from '../../src';
 import {
 	initSchema as _initSchema,
 	DataStore as DataStoreInstance,
 } from '../../src/datastore/datastore';
+import { SyncError } from '../../src/types';
 import { FakeGraphQLService, FakeDataStoreConnectivity } from './fakes';
 import {
 	testSchema,
@@ -45,6 +47,7 @@ import {
 	ModelWithMultipleCustomOwner,
 	ModelWithIndexes,
 } from './schemas';
+import { MergeStrategy } from './fakes/graphqlService';
 
 type initSchemaType = typeof _initSchema;
 type DataStoreType = typeof DataStoreInstance;
@@ -60,12 +63,18 @@ export function getDataStore({
 	online = false,
 	isNode = true,
 	storageAdapterFactory = () => undefined as any,
+	mergeStrategy = 'Automerge',
+}: {
+	online?: boolean;
+	isNode?: boolean;
+	storageAdapterFactory?: () => any;
+	mergeStrategy?: MergeStrategy;
 } = {}) {
 	jest.clearAllMocks();
 	jest.resetModules();
 
 	const connectivityMonitor = new FakeDataStoreConnectivity();
-	const graphqlService = new FakeGraphQLService(testSchema());
+	const graphqlService = new FakeGraphQLService(testSchema(), mergeStrategy);
 
 	/**
 	 * Simulates the (re)connection of all returned fakes/mocks that
@@ -135,7 +144,7 @@ export function getDataStore({
 					connectionState: ConnectionState.ConnectionDisrupted,
 				},
 			},
-			'PubSub'
+			'PubSub',
 		);
 
 		if (log) console.log('done simulated disruption.');
@@ -164,7 +173,7 @@ export function getDataStore({
 					connectionState: ConnectionState.Connecting,
 				},
 			},
-			'PubSub'
+			'PubSub',
 		);
 		Hub.dispatch(
 			'api',
@@ -174,27 +183,16 @@ export function getDataStore({
 					connectionState: ConnectionState.Connected,
 				},
 			},
-			'PubSub'
+			'PubSub',
 		);
 		if (log) console.log('done simulated disruption end.');
 	}
 
-	jest.mock('@aws-amplify/core', () => {
-		const actual = jest.requireActual('@aws-amplify/core');
+	jest.mock('@aws-amplify/core/internals/utils', () => {
+		const actual = jest.requireActual('@aws-amplify/core/internals/utils');
 		return {
 			...actual,
-			browserOrNode: () => ({
-				isBrowser: !isNode,
-				isNode,
-			}),
-			JS: {
-				...actual.JS,
-				browserOrNode: () => {
-					throw new Error(
-						'amplify/core::JS.browserOrNode() does not exist anymore'
-					);
-				},
-			},
+			isBrowser: () => !isNode,
 		};
 	});
 
@@ -206,13 +204,26 @@ export function getDataStore({
 		DataStore: DataStoreType;
 	} = require('../../src/datastore/datastore');
 
+	let errorHandlerSubscriber: Observer<SyncError<any>> | null = null;
+
+	const errorHandler = new Observable<SyncError<any>>(subscriber => {
+		errorHandlerSubscriber = subscriber;
+	});
+
+	const _errorHandler: (error: SyncError<any>) => void = error => {
+		if (errorHandlerSubscriber) {
+			errorHandlerSubscriber.next(error);
+		}
+	};
+
 	DataStore.configure({
 		storageAdapter: storageAdapterFactory(),
+		errorHandler: _errorHandler,
 	});
 
 	// private, test-only DI's.
 	if (online) {
-		(DataStore as any).amplifyContext.API = graphqlService;
+		(DataStore as any).amplifyContext.InternalAPI = graphqlService;
 		(DataStore as any).connectivityMonitor = connectivityMonitor;
 		(DataStore as any).amplifyConfig.aws_appsync_graphqlEndpoint =
 			'https://0.0.0.0/graphql';
@@ -293,6 +304,7 @@ export function getDataStore({
 
 	return {
 		DataStore,
+		errorHandler,
 		schema,
 		connectivityMonitor,
 		graphqlService,

@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/storage/s3",
+	"main": "../../dist/cjs/storage/s3/index.js",
+	"react-native": "../../src/storage/s3/index.ts",
+	"browser": "../../dist/esm/storage/s3/index.mjs",
+	"module": "../../dist/esm/storage/s3/index.mjs",
+	"typings": "../../dist/esm/storage/s3/index.d.ts"
+}

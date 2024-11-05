@@ -1,0 +1,7 @@
+{
+	"name": "@aws-amplify/adapter-nextjs/api",
+	"main": "../dist/cjs/api/index.js",
+	"browser": "../dist/esm/api/index.mjs",
+	"module": "../dist/esm/api/index.mjs",
+	"typings": "../dist/esm/api/index.d.ts"
+}

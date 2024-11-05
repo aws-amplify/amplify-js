@@ -1,15 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { ConsoleLogger } from '../Logger';
+
 import { I18n as I18nClass } from './I18n';
+import { I18nConfig } from './types';
+import { I18nErrorCode, assert } from './errorHelpers';
 
-import { ConsoleLogger as Logger } from '../Logger';
-import { Amplify } from '../Amplify';
+const logger = new ConsoleLogger('I18n');
 
-const logger = new Logger('I18n');
-
-let _config = null;
-let _i18n = null;
+let _config: I18nConfig = { language: null };
+let _i18n: I18nClass | null = null;
 
 /**
  * Export I18n APIs
@@ -21,7 +22,7 @@ export class I18n {
 	 * Configure I18n part
 	 * @param {Object} config - Configuration of the I18n
 	 */
-	static configure(config) {
+	static configure(config: Record<string, any>) {
 		logger.debug('configure I18n');
 		if (!config) {
 			return _config;
@@ -48,7 +49,7 @@ export class I18n {
 		if (_i18n) {
 			return;
 		}
-		_i18n = new I18nClass(_config);
+		_i18n = new I18nClass();
 	}
 
 	/**
@@ -56,10 +57,11 @@ export class I18n {
 	 * Explicitly setting language
 	 * @param {String} lang
 	 */
-	static setLanguage(lang) {
+	static setLanguage(lang: string) {
 		I18n.checkConfig();
+		assert(!!_i18n, I18nErrorCode.NotConfigured);
 
-		return _i18n.setLanguage(lang);
+		_i18n.setLanguage(lang);
 	}
 
 	/**
@@ -68,10 +70,11 @@ export class I18n {
 	 * @param {String} key
 	 * @param {String} defVal - Default value
 	 */
-	static get(key, defVal?) {
+	static get(key: string, defVal?: string) {
 		if (!I18n.checkConfig()) {
 			return typeof defVal === 'undefined' ? key : defVal;
 		}
+		assert(!!_i18n, I18nErrorCode.NotConfigured);
 
 		return _i18n.get(key, defVal);
 	}
@@ -80,13 +83,17 @@ export class I18n {
 	 * @static
 	 * @method
 	 * Add vocabularies for one language
-	 * @param {String} langurage - Language of the dictionary
+	 * @param {String} language - Language of the dictionary
 	 * @param {Object} vocabularies - Object that has key-value as dictionary entry
 	 */
-	static putVocabulariesForLanguage(language, vocabularies) {
+	static putVocabulariesForLanguage(
+		language: string,
+		vocabularies: Record<string, string>,
+	) {
 		I18n.checkConfig();
+		assert(!!_i18n, I18nErrorCode.NotConfigured);
 
-		return _i18n.putVocabulariesForLanguage(language, vocabularies);
+		_i18n.putVocabulariesForLanguage(language, vocabularies);
 	}
 
 	/**
@@ -96,19 +103,21 @@ export class I18n {
 	 * @param {Object} vocabularies - Object that has language as key,
 	 *                                vocabularies of each language as value
 	 */
-	static putVocabularies(vocabularies) {
+	static putVocabularies(vocabularies: Record<string, Record<string, string>>) {
 		I18n.checkConfig();
+		assert(!!_i18n, I18nErrorCode.NotConfigured);
 
-		return _i18n.putVocabularies(vocabularies);
+		_i18n.putVocabularies(vocabularies);
 	}
 
 	public static checkConfig() {
 		if (!_i18n) {
-			_i18n = new I18nClass(_config);
+			I18n.createInstance();
 		}
 
 		return true;
 	}
 }
 
-Amplify.register(I18n);
+// Create an instance of I18n in the static class
+I18n.createInstance();

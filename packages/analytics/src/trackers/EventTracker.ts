@@ -1,115 +1,136 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { delegate } from '../vendor/dom-utils';
-import { EventTrackOpts } from '../types';
-import { ConsoleLogger as Logger, browserOrNode } from '@aws-amplify/core';
+import { ConsoleLogger } from '@aws-amplify/core';
+import { isBrowser } from '@aws-amplify/core/internals/utils';
 
-const logger = new Logger('EventTracker');
+import {
+	DOMEvent,
+	EventTrackingOptions,
+	TrackerEventRecorder,
+	TrackerInterface,
+} from '../types/trackers';
 
-const defaultOpts: EventTrackOpts = {
-	enable: false,
-	events: ['click'],
-	selectorPrefix: 'data-amplify-analytics-',
-	provider: 'AWSPinpoint',
-};
+const DEFAULT_EVENTS = ['click'] as DOMEvent[];
+const DEFAULT_SELECTOR_PREFIX = 'data-amplify-analytics-';
+const DEFAULT_EVENT_NAME = 'event'; // Default event name as sent to the analytics provider
 
-export class EventTracker {
-	private _tracker;
-	private _config: EventTrackOpts;
-	private _delegates;
+const logger = new ConsoleLogger('EventTracker');
 
-	constructor(tracker, opts) {
-		if (!browserOrNode().isBrowser || !window.addEventListener) {
-			logger.debug('not in the supported web environment');
+export class EventTracker implements TrackerInterface {
+	private trackerActive: boolean;
+	private options: EventTrackingOptions;
+	private eventRecorder: TrackerEventRecorder;
+
+	constructor(
+		eventRecorder: TrackerEventRecorder,
+		options?: EventTrackingOptions,
+	) {
+		this.options = {};
+		this.trackerActive = false;
+		this.eventRecorder = eventRecorder;
+		this.handleDocEvent = this.handleDocEvent.bind(this);
+
+		this.configure(eventRecorder, options);
+	}
+
+	public configure(
+		eventRecorder: TrackerEventRecorder,
+		options?: EventTrackingOptions,
+	) {
+		this.eventRecorder = eventRecorder;
+
+		// Clean up any existing listeners
+		this.cleanup();
+
+		// Apply defaults
+		this.options = {
+			attributes: options?.attributes ?? undefined,
+			events: options?.events ?? DEFAULT_EVENTS,
+			selectorPrefix: options?.selectorPrefix ?? DEFAULT_SELECTOR_PREFIX,
+		};
+
+		// Register event listeners
+		if (isBrowser()) {
+			this.options.events?.forEach(targetEvent => {
+				document.addEventListener(targetEvent, this.handleDocEvent, {
+					capture: true,
+				});
+			});
+
+			this.trackerActive = true;
+		}
+	}
+
+	public cleanup() {
+		// No-op if document listener is not active
+		if (!this.trackerActive) {
 			return;
 		}
 
-		this._config = Object.assign({}, defaultOpts, opts);
-		this._tracker = tracker;
-		this._delegates = {};
-		this._trackFunc = this._trackFunc.bind(this);
-
-		logger.debug('initialize pageview tracker with opts', this._config);
-
-		this.configure(this._config);
-	}
-
-	configure(opts?: EventTrackOpts) {
-		Object.assign(this._config, opts);
-
-		if (!this._config.enable) {
-			Object.keys(this._delegates).forEach(key => {
-				if (typeof this._delegates[key].destroy === 'function')
-					this._delegates[key].destroy();
+		// Clean up event listeners
+		this.options.events?.forEach(targetEvent => {
+			document.removeEventListener(targetEvent, this.handleDocEvent, {
+				capture: true,
 			});
-			this._delegates = {};
-		} else if (
-			this._config.enable &&
-			Object.keys(this._delegates).length === 0
-		) {
-			const selector = '[' + this._config.selectorPrefix + 'on]';
-			this._config.events.forEach(evt => {
-				this._delegates[evt] = delegate(
-					document,
-					evt,
-					selector,
-					this._trackFunc,
-					{ composed: true, useCapture: true }
-				);
-			});
-		}
-
-		return this._config;
-	}
-
-	private async _trackFunc(event, element) {
-		// the events specifed in 'amplify-analytics-on' selector
-		const customAttrs = {};
-		const events = element
-			.getAttribute(this._config.selectorPrefix + 'on')
-			.split(/\s*,\s*/);
-		const eventName = element.getAttribute(
-			this._config.selectorPrefix + 'name'
-		);
-
-		const attrs = element.getAttribute(this._config.selectorPrefix + 'attrs');
-		if (attrs) {
-			attrs.split(/\s*,\s*/).forEach(attr => {
-				const tmp = attr.trim().split(/\s*:\s*/);
-				customAttrs[tmp[0]] = tmp[1];
-			});
-		}
-
-		const defaultAttrs =
-			typeof this._config.attributes === 'function'
-				? await this._config.attributes()
-				: this._config.attributes;
-
-		const attributes = Object.assign(
-			{
-				type: event.type,
-				target: `${event.target.localName} with id ${event.target.id}`,
-			},
-			defaultAttrs,
-			customAttrs
-		);
-
-		logger.debug('events needed to be recorded', events);
-		logger.debug('attributes needed to be attached', customAttrs);
-		if (events.indexOf(event.type) < 0) {
-			logger.debug(`event ${event.type} is not selected to be recorded`);
-			return;
-		}
-
-		this._tracker(
-			{
-				name: eventName || 'event',
-				attributes,
-			},
-			this._config.provider
-		).catch(e => {
-			logger.debug(`Failed to record the ${event.type} event', ${e}`);
 		});
+	}
+
+	private handleDocEvent(event: Event) {
+		/**
+		 * Example DOM element:
+		 *
+		 * ```
+		 * <button
+		 *   data-amplify-analytics-on="click"
+		 *   data-amplify-analytics-name="click"
+		 *   data-amplify-analytics-attrs="attr1:attr1_value,attr2:attr2_value"
+		 * />
+		 * ```
+		 */
+		const triggerSelector = `[${this.options.selectorPrefix}on]`;
+		const attrSelector = `${this.options.selectorPrefix}attrs`;
+		const eventNameSelector = `${this.options.selectorPrefix}name`;
+		const eventSource = event.target;
+
+		// Validate that the triggering event type is being tracked
+		if (!this.options.events?.includes(event.type as DOMEvent)) {
+			return;
+		}
+
+		if (eventSource instanceof HTMLElement) {
+			const target = eventSource.closest(triggerSelector);
+
+			if (target) {
+				// Parse event name from the element
+				const eventName =
+					target.getAttribute(eventNameSelector) || DEFAULT_EVENT_NAME;
+
+				// Parse attributes from the element
+				const elementAttributes: Record<string, string> = {};
+				const rawElementAttributes = target.getAttribute(attrSelector);
+				rawElementAttributes?.split(/\s*,\s*/).forEach(attr => {
+					const tmp = attr.trim().split(/\s*:\s*/);
+					elementAttributes[tmp[0]] = tmp[1];
+				});
+
+				// Assemble final list of attributes
+				const attributes = Object.assign(
+					{
+						type: event.type,
+						target: `${target.localName} with id ${target.id}`,
+					},
+					this.options.attributes,
+					elementAttributes,
+				);
+
+				logger.debug('Recording automatically tracked DOM event', {
+					eventName,
+					attributes,
+				});
+
+				this.eventRecorder(eventName, attributes);
+			}
+		}
 	}
 }

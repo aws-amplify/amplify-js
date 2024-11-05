@@ -1,46 +1,53 @@
-import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { Auth } from '@aws-amplify/auth';
-import { Cache } from '@aws-amplify/cache';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+import { GraphQLResult } from '@aws-amplify/api';
+import { InternalAPI } from '@aws-amplify/api/internals';
 import {
-	ConsoleLogger as Logger,
+	ConsoleLogger,
 	Hub,
 	HubCapsule,
-	BackgroundProcessManager,
+	fetchAuthSession,
 } from '@aws-amplify/core';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
-import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
-	InternalSchema,
-	PersistentModel,
-	SchemaModel,
-	SchemaNamespace,
-	PredicatesGroup,
-	ModelPredicate,
+	BackgroundProcessManager,
+	Category,
+	CustomUserAgentDetails,
+	DataStoreAction,
+	GraphQLAuthMode,
+	JwtPayload,
+} from '@aws-amplify/core/internals/utils';
+import { Observable, Observer, SubscriptionLike } from 'rxjs';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/api-graphql';
+
+import {
+	AmplifyContext,
 	AuthModeStrategy,
 	ErrorHandler,
+	InternalSchema,
+	ModelPredicate,
+	PersistentModel,
+	PredicatesGroup,
 	ProcessName,
-	AmplifyContext,
+	SchemaModel,
+	SchemaNamespace,
 } from '../../types';
 import {
+	RTFError,
+	TransformerMutationType,
 	buildSubscriptionGraphQLOperation,
+	generateRTFRemediation,
 	getAuthorizationRules,
 	getModelAuthModes,
-	getUserGroupsFromToken,
-	TransformerMutationType,
 	getTokenForCustomAuth,
+	getUserGroupsFromToken,
 	predicateToGraphQLFilter,
-	dynamicAuthFields,
-	filterFields,
-	repeatedFieldInGroup,
-	countFilterCombinations,
-	RTFError,
-	generateRTFRemediation,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
-import { validatePredicate, USER_AGENT_SUFFIX_DATASTORE } from '../../util';
+import { validatePredicate } from '../../util';
+
 import { getSubscriptionErrorType } from './errorMaps';
 
-const logger = new Logger('DataStore');
+const logger = new ConsoleLogger('DataStore');
 
 export enum CONTROL_MSG {
 	CONNECTED = 'CONNECTED',
@@ -52,21 +59,23 @@ export enum USER_CREDENTIALS {
 	'auth',
 }
 
-type AuthorizationInfo = {
-	authMode: GRAPHQL_AUTH_MODE;
+interface AuthorizationInfo {
+	authMode: GraphQLAuthMode;
 	isOwner: boolean;
 	ownerField?: string;
 	ownerValue?: string;
-};
+}
 
 class SubscriptionProcessor {
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
+
 	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
 		[];
-	private dataObserver!: ZenObservable.Observer<any>;
+
+	private dataObserver!: Observer<any>;
 
 	private runningProcesses = new BackgroundProcessManager();
 
@@ -79,7 +88,9 @@ class SubscriptionProcessor {
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly errorHandler: ErrorHandler,
-		private readonly amplifyContext: AmplifyContext = { Auth, API, Cache }
+		private readonly amplifyContext: AmplifyContext = {
+			InternalAPI,
+		},
 	) {}
 
 	private buildSubscription(
@@ -87,15 +98,14 @@ class SubscriptionProcessor {
 		model: SchemaModel,
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
-		cognitoTokenPayload: { [field: string]: any } | undefined,
-		oidcTokenPayload: { [field: string]: any } | undefined,
-		authMode: GRAPHQL_AUTH_MODE,
-		filterArg: boolean = false
+		oidcTokenPayload: JwtPayload | undefined,
+		authMode: GraphQLAuthMode,
+		filterArg = false,
 	): {
 		opType: TransformerMutationType;
 		opName: string;
 		query: string;
-		authMode: GRAPHQL_AUTH_MODE;
+		authMode: GraphQLAuthMode;
 		isOwner: boolean;
 		ownerField?: string;
 		ownerValue?: string;
@@ -106,9 +116,8 @@ class SubscriptionProcessor {
 				model,
 				userCredentials,
 				aws_appsync_authenticationType,
-				cognitoTokenPayload,
 				oidcTokenPayload,
-				authMode
+				authMode,
 			) || {};
 
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
@@ -117,26 +126,25 @@ class SubscriptionProcessor {
 			transformerMutationType,
 			isOwner,
 			ownerField!,
-			filterArg
+			filterArg,
 		);
+
 		return { authMode, opType, opName, query, isOwner, ownerField, ownerValue };
 	}
 
 	private getAuthorizationInfo(
 		model: SchemaModel,
 		userCredentials: USER_CREDENTIALS,
-		defaultAuthType: GRAPHQL_AUTH_MODE,
-		cognitoTokenPayload: { [field: string]: any } = {},
-		oidcTokenPayload: { [field: string]: any } = {},
-		authMode: GRAPHQL_AUTH_MODE
+		defaultAuthType: GraphQLAuthMode,
+		oidcTokenPayload: JwtPayload | undefined,
+		authMode: GraphQLAuthMode,
 	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
-
 		// Return null if user doesn't have proper credentials for private API with IAM auth
 		const iamPrivateAuth =
-			authMode === GRAPHQL_AUTH_MODE.AWS_IAM &&
+			authMode === 'iam' &&
 			rules.find(
-				rule => rule.authStrategy === 'private' && rule.provider === 'iam'
+				rule => rule.authStrategy === 'private' && rule.provider === 'iam',
 			);
 
 		if (iamPrivateAuth && userCredentials === USER_CREDENTIALS.unauth) {
@@ -150,26 +158,24 @@ class SubscriptionProcessor {
 		const groupAuthRules = rules.filter(
 			rule =>
 				rule.authStrategy === 'groups' &&
-				['userPools', 'oidc'].includes(rule.provider)
+				['userPools', 'oidc'].includes(rule.provider),
 		);
 
 		const validGroup =
-			(authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS ||
-				authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT) &&
+			(authMode === 'oidc' || authMode === 'userPool') &&
+			// eslint-disable-next-line array-callback-return
 			groupAuthRules.find(groupAuthRule => {
 				// validate token against groupClaim
-				const cognitoUserGroups = getUserGroupsFromToken(
-					cognitoTokenPayload,
-					groupAuthRule
-				);
-				const oidcUserGroups = getUserGroupsFromToken(
-					oidcTokenPayload,
-					groupAuthRule
-				);
+				if (oidcTokenPayload) {
+					const oidcUserGroups = getUserGroupsFromToken(
+						oidcTokenPayload,
+						groupAuthRule,
+					);
 
-				return [...cognitoUserGroups, ...oidcUserGroups].find(userGroup => {
-					return groupAuthRule.groups.find(group => group === userGroup);
-				});
+					return [...oidcUserGroups].find(userGroup => {
+						return groupAuthRule.groups.find(group => group === userGroup);
+					});
+				}
 			});
 
 		if (validGroup) {
@@ -179,38 +185,7 @@ class SubscriptionProcessor {
 			};
 		}
 
-		// Owner auth needs additional values to be returned in order to create the subscription with
-		// the correct parameters so we are getting the owner value from the Cognito token via the
-		// identityClaim from the auth rule.
-		const cognitoOwnerAuthRules =
-			authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
-				? rules.filter(
-						rule =>
-							rule.authStrategy === 'owner' && rule.provider === 'userPools'
-				  )
-				: [];
-
 		let ownerAuthInfo: AuthorizationInfo;
-		cognitoOwnerAuthRules.forEach(ownerAuthRule => {
-			const ownerValue = cognitoTokenPayload[ownerAuthRule.identityClaim];
-
-			// AuthZ for "list of owners" is handled dynamically in the subscription auth request
-			// resolver. It doesn't rely on a subscription arg.
-			// Only pass a subscription arg for single owner auth
-			const singleOwner =
-				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
-			const isOwnerArgRequired =
-				singleOwner && !ownerAuthRule.areSubscriptionsPublic;
-
-			if (ownerValue) {
-				ownerAuthInfo = {
-					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					isOwner: isOwnerArgRequired,
-					ownerField: ownerAuthRule.ownerField,
-					ownerValue,
-				};
-			}
-		});
 
 		if (ownerAuthInfo!) {
 			return ownerAuthInfo!;
@@ -219,16 +194,18 @@ class SubscriptionProcessor {
 		// Owner auth needs additional values to be returned in order to create the subscription with
 		// the correct parameters so we are getting the owner value from the OIDC token via the
 		// identityClaim from the auth rule.
+
 		const oidcOwnerAuthRules =
-			authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT
+			authMode === 'oidc' || authMode === 'userPool'
 				? rules.filter(
-						rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
-				  )
+						rule =>
+							rule.authStrategy === 'owner' &&
+							(rule.provider === 'oidc' || rule.provider === 'userPools'),
+					)
 				: [];
 
 		oidcOwnerAuthRules.forEach(ownerAuthRule => {
-			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
-
+			const ownerValue = oidcTokenPayload?.[ownerAuthRule.identityClaim];
 			const singleOwner =
 				model.fields[ownerAuthRule.ownerField]?.isArray !== true;
 			const isOwnerArgRequired =
@@ -236,10 +213,10 @@ class SubscriptionProcessor {
 
 			if (ownerValue) {
 				ownerAuthInfo = {
-					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
+					authMode,
 					isOwner: isOwnerArgRequired,
 					ownerField: ownerAuthRule.ownerField,
-					ownerValue,
+					ownerValue: String(ownerValue),
 				};
 			}
 		});
@@ -255,7 +232,10 @@ class SubscriptionProcessor {
 		};
 	}
 
-	private hubQueryCompletionListener(completed: Function, capsule: HubCapsule) {
+	private hubQueryCompletionListener(
+		completed: () => void,
+		capsule: HubCapsule<'datastore', { event: string }>,
+	) {
 		const {
 			payload: { event },
 		} = capsule;
@@ -267,7 +247,7 @@ class SubscriptionProcessor {
 
 	start(): [
 		Observable<CONTROL_MSG>,
-		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>
+		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>,
 	] {
 		this.runningProcesses =
 			this.runningProcesses || new BackgroundProcessManager();
@@ -277,22 +257,21 @@ class SubscriptionProcessor {
 
 			// Creating subs for each model/operation combo so they can be unsubscribed
 			// independently, since the auth retry behavior is asynchronous.
-			let subscriptions: {
-				[modelName: string]: {
-					[TransformerMutationType.CREATE]: ZenObservable.Subscription[];
-					[TransformerMutationType.UPDATE]: ZenObservable.Subscription[];
-					[TransformerMutationType.DELETE]: ZenObservable.Subscription[];
-				};
-			} = {};
-			let cognitoTokenPayload: { [field: string]: any },
-				oidcTokenPayload: { [field: string]: any };
+			let subscriptions: Record<
+				string,
+				{
+					[TransformerMutationType.CREATE]: SubscriptionLike[];
+					[TransformerMutationType.UPDATE]: SubscriptionLike[];
+					[TransformerMutationType.DELETE]: SubscriptionLike[];
+				}
+			> = {};
+			let oidcTokenPayload: JwtPayload | undefined;
 			let userCredentials = USER_CREDENTIALS.none;
 			this.runningProcesses.add(async () => {
 				try {
 					// retrieving current AWS Credentials
-					const credentials =
-						await this.amplifyContext.Auth.currentCredentials();
-					userCredentials = credentials.authenticated
+					const credentials = (await fetchAuthSession()).tokens?.accessToken;
+					userCredentials = credentials
 						? USER_CREDENTIALS.auth
 						: USER_CREDENTIALS.unauth;
 				} catch (err) {
@@ -301,45 +280,10 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
-					const session = await this.amplifyContext.Auth.currentSession();
-					cognitoTokenPayload = session.getIdToken().decodePayload();
+					const session = await fetchAuthSession();
+					oidcTokenPayload = session.tokens?.idToken?.payload;
 				} catch (err) {
 					// best effort to get jwt from Cognito
-				}
-
-				try {
-					// Checking for the Cognito region in config to see if Auth is configured
-					// before attempting to get federated token. We're using the Cognito region
-					// because it will be there regardless of user/identity pool being present.
-					const { aws_cognito_region, Auth: AuthConfig } = this.amplifyConfig;
-					if (!aws_cognito_region || (AuthConfig && !AuthConfig.region)) {
-						throw 'Auth is not configured';
-					}
-
-					let token;
-					// backwards compatibility
-					const federatedInfo = await this.amplifyContext.Cache.getItem(
-						'federatedInfo'
-					);
-					if (federatedInfo) {
-						token = federatedInfo.token;
-					} else {
-						const currentUser =
-							await this.amplifyContext.Auth.currentAuthenticatedUser();
-						if (currentUser) {
-							token = currentUser.token;
-						}
-					}
-
-					if (token) {
-						const payload = token.split('.')[1];
-						oidcTokenPayload = JSON.parse(
-							Buffer.from(payload, 'base64').toString('utf8')
-						);
-					}
-				} catch (err) {
-					logger.debug('error getting OIDC JWT', err);
-					// best effort to get oidc jwt
 				}
 
 				Object.values(this.schema.namespaces).forEach(namespace => {
@@ -383,7 +327,7 @@ class SubscriptionProcessor {
 
 									const predicatesGroup = ModelPredicateCreator.getPredicates(
 										this.syncPredicates.get(modelDefinition)!,
-										false
+										false,
 									);
 
 									const addFilterArg = predicatesGroup !== undefined;
@@ -393,7 +337,7 @@ class SubscriptionProcessor {
 									// 2. RTF error - retry without sending filter arg. (filtering will fall back to clientside)
 									const subscriptionRetry = async (
 										operation,
-										addFilter = addFilterArg
+										addFilter = addFilterArg,
 									) => {
 										const {
 											opType: transformerMutationType,
@@ -408,29 +352,34 @@ class SubscriptionProcessor {
 											modelDefinition,
 											operation,
 											userCredentials,
-											cognitoTokenPayload,
 											oidcTokenPayload,
 											readAuthModes[operationAuthModeAttempts[operation]],
-											addFilter
+											addFilter,
 										);
 
 										const authToken = await getTokenForCustomAuth(
 											authMode,
-											this.amplifyConfig
+											this.amplifyConfig,
 										);
 
 										const variables = {};
 
+										const customUserAgentDetails: CustomUserAgentDetails = {
+											category: Category.DataStore,
+											action: DataStoreAction.Subscribe,
+										};
+
 										if (addFilter && predicatesGroup) {
-											variables['filter'] =
+											(variables as any).filter =
 												predicateToGraphQLFilter(predicatesGroup);
 										}
 
 										if (isOwner) {
 											if (!ownerValue) {
 												observer.error(
-													'Owner field required, sign in is needed in order to perform this operation'
+													'Owner field required, sign in is needed in order to perform this operation',
 												);
+
 												return;
 											}
 
@@ -440,225 +389,225 @@ class SubscriptionProcessor {
 										logger.debug(
 											`Attempting ${operation} subscription with authMode: ${
 												readAuthModes[operationAuthModeAttempts[operation]]
-											}`
+											}`,
 										);
 
-										const userAgentSuffix = USER_AGENT_SUFFIX_DATASTORE;
+										const queryObservable =
+											this.amplifyContext.InternalAPI.graphql(
+												{
+													query,
+													variables,
+													...{ authMode },
+													authToken,
+												},
+												undefined,
+												customUserAgentDetails,
+											) as unknown as Observable<
+												GraphQLResult<Record<string, PersistentModel>>
+											>;
 
-										const queryObservable = <
-											Observable<{
-												value: GraphQLResult<Record<string, PersistentModel>>;
-											}>
-										>(<unknown>this.amplifyContext.API.graphql({
-											query,
-											variables,
-											...{ authMode },
-											authToken,
-											userAgentSuffix,
-										}));
-
-										let subscriptionReadyCallback: () => void;
+										let subscriptionReadyCallback: (param?: unknown) => void;
 
 										// TODO: consider onTerminate.then(() => API.cancel(...))
 
 										subscriptions[modelDefinition.name][
 											transformerMutationType
 										].push(
-											queryObservable
-												.map(({ value }) => {
-													return value;
-												})
-												.subscribe({
-													next: ({ data, errors }) => {
-														if (Array.isArray(errors) && errors.length > 0) {
-															const messages = (<
-																{
-																	message: string;
-																}[]
-															>errors).map(({ message }) => message);
+											queryObservable.subscribe({
+												next: result => {
+													const { data, errors } = result;
+													if (Array.isArray(errors) && errors.length > 0) {
+														const messages = (
+															errors as {
+																message: string;
+															}[]
+														).map(({ message }) => message);
 
-															logger.warn(
-																`Skipping incoming subscription. Messages: ${messages.join(
-																	'\n'
-																)}`
-															);
+														logger.warn(
+															`Skipping incoming subscription. Messages: ${messages.join(
+																'\n',
+															)}`,
+														);
 
-															this.drainBuffer();
-															return;
-														}
-
-														const predicatesGroup =
-															ModelPredicateCreator.getPredicates(
-																this.syncPredicates.get(modelDefinition)!,
-																false
-															);
-
-														// @ts-ignore
-														const { [opName]: record } = data;
-
-														// checking incoming subscription against syncPredicate.
-														// once AppSync implements filters on subscriptions, we'll be
-														// able to set these when establishing the subscription instead.
-														// Until then, we'll need to filter inbound
-														if (
-															this.passesPredicateValidation(
-																record,
-																predicatesGroup!
-															)
-														) {
-															this.pushToBuffer(
-																transformerMutationType,
-																modelDefinition,
-																record
-															);
-														}
 														this.drainBuffer();
-													},
-													error: async subscriptionError => {
-														const {
-															error: { errors: [{ message = '' } = {}] } = {
-																errors: [],
-															},
-														} = subscriptionError;
 
-														const isRTFError =
-															// only attempt catch if a filter variable was added to the subscription query
-															addFilter &&
-															this.catchRTFError(
-																message,
-																modelDefinition,
-																predicatesGroup
+														return;
+													}
+
+													const resolvedPredicatesGroup =
+														ModelPredicateCreator.getPredicates(
+															this.syncPredicates.get(modelDefinition)!,
+															false,
+														);
+
+													const { [opName]: record } = data;
+
+													// checking incoming subscription against syncPredicate.
+													// once AppSync implements filters on subscriptions, we'll be
+													// able to set these when establishing the subscription instead.
+													// Until then, we'll need to filter inbound
+													if (
+														this.passesPredicateValidation(
+															record,
+															resolvedPredicatesGroup!,
+														)
+													) {
+														this.pushToBuffer(
+															transformerMutationType,
+															modelDefinition,
+															record,
+														);
+													}
+													this.drainBuffer();
+												},
+												error: async subscriptionError => {
+													const {
+														errors: [{ message = '' } = {}],
+													} = ({
+														// eslint-disable-next-line no-empty-pattern
+														errors: [],
+													} = subscriptionError);
+
+													const isRTFError =
+														// only attempt catch if a filter variable was added to the subscription query
+														addFilter &&
+														this.catchRTFError(
+															message,
+															modelDefinition,
+															predicatesGroup,
+														);
+
+													// Catch RTF errors
+													if (isRTFError) {
+														// Unsubscribe and clear subscription array for model/operation
+														subscriptions[modelDefinition.name][
+															transformerMutationType
+														].forEach(subscription =>
+															subscription.unsubscribe(),
+														);
+
+														subscriptions[modelDefinition.name][
+															transformerMutationType
+														] = [];
+
+														// retry subscription connection without filter
+														subscriptionRetry(operation, false);
+
+														return;
+													}
+
+													if (
+														message.includes(
+															PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR,
+														) ||
+														message.includes(
+															PUBSUB_CONTROL_MSG.CONNECTION_FAILED,
+														)
+													) {
+														// Unsubscribe and clear subscription array for model/operation
+														subscriptions[modelDefinition.name][
+															transformerMutationType
+														].forEach(subscription =>
+															subscription.unsubscribe(),
+														);
+														subscriptions[modelDefinition.name][
+															transformerMutationType
+														] = [];
+
+														operationAuthModeAttempts[operation]++;
+														if (
+															operationAuthModeAttempts[operation] >=
+															readAuthModes.length
+														) {
+															// last auth mode retry. Continue with error
+															logger.debug(
+																`${operation} subscription failed with authMode: ${
+																	readAuthModes[
+																		operationAuthModeAttempts[operation] - 1
+																	]
+																}`,
 															);
-
-														// Catch RTF errors
-														if (isRTFError) {
-															// Unsubscribe and clear subscription array for model/operation
-															subscriptions[modelDefinition.name][
-																transformerMutationType
-															].forEach(subscription =>
-																subscription.unsubscribe()
+														} else {
+															// retry with different auth mode. Do not trigger
+															// observer error or error handler
+															logger.debug(
+																`${operation} subscription failed with authMode: ${
+																	readAuthModes[
+																		operationAuthModeAttempts[operation] - 1
+																	]
+																}. Retrying with authMode: ${
+																	readAuthModes[
+																		operationAuthModeAttempts[operation]
+																	]
+																}`,
 															);
+															subscriptionRetry(operation);
 
-															subscriptions[modelDefinition.name][
-																transformerMutationType
-															] = [];
-
-															// retry subscription connection without filter
-															subscriptionRetry(operation, false);
 															return;
 														}
+													}
 
-														if (
-															message.includes(
-																PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
-															) ||
-															message.includes(
-																PUBSUB_CONTROL_MSG.CONNECTION_FAILED
-															)
-														) {
-															// Unsubscribe and clear subscription array for model/operation
-															subscriptions[modelDefinition.name][
-																transformerMutationType
-															].forEach(subscription =>
-																subscription.unsubscribe()
-															);
-															subscriptions[modelDefinition.name][
-																transformerMutationType
-															] = [];
+													logger.warn('subscriptionError', message);
 
-															operationAuthModeAttempts[operation]++;
-															if (
-																operationAuthModeAttempts[operation] >=
-																readAuthModes.length
-															) {
-																// last auth mode retry. Continue with error
-																logger.debug(
-																	`${operation} subscription failed with authMode: ${
-																		readAuthModes[
-																			operationAuthModeAttempts[operation] - 1
-																		]
-																	}`
-																);
-															} else {
-																// retry with different auth mode. Do not trigger
-																// observer error or error handler
-																logger.debug(
-																	`${operation} subscription failed with authMode: ${
-																		readAuthModes[
-																			operationAuthModeAttempts[operation] - 1
-																		]
-																	}. Retrying with authMode: ${
-																		readAuthModes[
-																			operationAuthModeAttempts[operation]
-																		]
-																	}`
-																);
-																subscriptionRetry(operation);
-																return;
-															}
-														}
+													try {
+														// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+														await this.errorHandler({
+															recoverySuggestion:
+																'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
+															localModel: null!,
+															message,
+															model: modelDefinition.name,
+															operation,
+															errorType:
+																getSubscriptionErrorType(subscriptionError),
+															process: ProcessName.subscribe,
+															remoteModel: null!,
+															cause: subscriptionError,
+														});
+													} catch (e) {
+														logger.error(
+															'Subscription error handler failed with:',
+															e,
+														);
+													}
 
-														logger.warn('subscriptionError', message);
+													if (typeof subscriptionReadyCallback === 'function') {
+														subscriptionReadyCallback();
+													}
 
-														try {
-															await this.errorHandler({
-																recoverySuggestion:
-																	'Ensure app code is up to date, auth directives exist and are correct on each model, and that server-side data has not been invalidated by a schema change. If the problem persists, search for or create an issue: https://github.com/aws-amplify/amplify-js/issues',
-																localModel: null!,
-																message,
-																model: modelDefinition.name,
-																operation,
-																errorType:
-																	getSubscriptionErrorType(subscriptionError),
-																process: ProcessName.subscribe,
-																remoteModel: null!,
-																cause: subscriptionError,
-															});
-														} catch (e) {
-															logger.error(
-																'Subscription error handler failed with:',
-																e
-															);
-														}
-
-														if (
-															typeof subscriptionReadyCallback === 'function'
-														) {
-															subscriptionReadyCallback();
-														}
-
-														if (
-															message.includes('"errorType":"Unauthorized"') ||
-															message.includes(
-																'"errorType":"OperationDisabled"'
-															)
-														) {
-															return;
-														}
-														observer.error(message);
-													},
-												})
+													if (
+														message.includes('"errorType":"Unauthorized"') ||
+														message.includes('"errorType":"OperationDisabled"')
+													) {
+														return;
+													}
+													observer.error(message);
+												},
+											}),
 										);
 
 										promises.push(
 											(async () => {
 												let boundFunction: any;
-
-												await new Promise(res => {
-													subscriptionReadyCallback = res;
+												let removeBoundFunctionListener: () => void;
+												await new Promise(resolve => {
+													subscriptionReadyCallback = resolve;
 													boundFunction = this.hubQueryCompletionListener.bind(
 														this,
-														res
+														resolve,
 													);
-													Hub.listen('api', boundFunction);
+													removeBoundFunctionListener = Hub.listen(
+														'api',
+														boundFunction,
+													);
 												});
-												Hub.remove('api', boundFunction);
-											})()
+												removeBoundFunctionListener();
+											})(),
 										);
 									};
 
 									operations.forEach(op => subscriptionRetry(op));
-								})
+								}),
 						);
 				});
 
@@ -666,20 +615,26 @@ class SubscriptionProcessor {
 					this.runningProcesses.add(() =>
 						Promise.all(promises).then(() => {
 							observer.next(CONTROL_MSG.CONNECTED);
-						})
+						}),
 					);
 			}, 'subscription processor new subscriber');
 
 			return this.runningProcesses.addCleaner(async () => {
 				Object.keys(subscriptions).forEach(modelName => {
 					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
-						subscription => subscription.unsubscribe()
+						subscription => {
+							subscription.unsubscribe();
+						},
 					);
 					subscriptions[modelName][TransformerMutationType.UPDATE].forEach(
-						subscription => subscription.unsubscribe()
+						subscription => {
+							subscription.unsubscribe();
+						},
 					);
 					subscriptions[modelName][TransformerMutationType.DELETE].forEach(
-						subscription => subscription.unsubscribe()
+						subscription => {
+							subscription.unsubscribe();
+						},
 					);
 				});
 			});
@@ -706,7 +661,7 @@ class SubscriptionProcessor {
 
 	private passesPredicateValidation(
 		record: PersistentModel,
-		predicatesGroup: PredicatesGroup<any>
+		predicatesGroup: PredicatesGroup<any>,
 	): boolean {
 		if (!predicatesGroup) {
 			return true;
@@ -720,14 +675,16 @@ class SubscriptionProcessor {
 	private pushToBuffer(
 		transformerMutationType: TransformerMutationType,
 		modelDefinition: SchemaModel,
-		data: PersistentModel
+		data: PersistentModel,
 	) {
 		this.buffer.push([transformerMutationType, modelDefinition, data]);
 	}
 
 	private drainBuffer() {
 		if (this.dataObserver) {
-			this.buffer.forEach(data => this.dataObserver.next!(data));
+			this.buffer.forEach(data => {
+				this.dataObserver.next!(data);
+			});
 			this.buffer = [];
 		}
 	}
@@ -740,7 +697,7 @@ class SubscriptionProcessor {
 	private catchRTFError(
 		message: string,
 		modelDefinition: SchemaModel,
-		predicatesGroup: PredicatesGroup<any> | undefined
+		predicatesGroup: PredicatesGroup<any> | undefined,
 	): boolean {
 		const header =
 			'Backend subscriptions filtering error.\n' +
@@ -758,17 +715,18 @@ class SubscriptionProcessor {
 
 		const [_errorMsg, errorType] =
 			Object.entries(messageErrorTypeMap).find(([errorMsg]) =>
-				message.includes(errorMsg)
+				message.includes(errorMsg),
 			) || [];
 
 		if (errorType !== undefined) {
 			const remediationMessage = generateRTFRemediation(
 				errorType,
 				modelDefinition,
-				predicatesGroup
+				predicatesGroup,
 			);
 
 			logger.warn(`${header}\n${message}\n${remediationMessage}`);
+
 			return true;
 		}
 

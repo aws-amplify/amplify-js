@@ -1,0 +1,17 @@
+name: Test Github Actions
+on: workflow_call
+
+jobs:
+  license_tests:
+    name: Github Action format test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+      - name: Run GithubAction tests
+        working-directory: ./amplify-js
+        run: yarn test:github-actions

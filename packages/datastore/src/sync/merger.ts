@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { Storage } from '../storage/storage';
 import {
 	ModelInstanceMetadata,
@@ -5,6 +7,7 @@ import {
 	PersistentModelConstructor,
 	SchemaModel,
 } from '../types';
+
 import { MutationEventOutbox } from './outbox';
 import { getIdentifierValue } from './utils';
 
@@ -12,7 +15,7 @@ import { getIdentifierValue } from './utils';
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
-		private readonly ownSymbol: Symbol
+		private readonly ownSymbol: symbol,
 	) {}
 
 	/**
@@ -24,13 +27,13 @@ class ModelMerger {
 	public async merge<T extends ModelInstanceMetadata>(
 		storage: Storage,
 		model: T,
-		modelDefinition: SchemaModel
+		modelDefinition: SchemaModel,
 	): Promise<OpType> {
 		let result: OpType;
 		const mutationsForModel = await this.outbox.getForModel(
 			storage,
 			model,
-			modelDefinition
+			modelDefinition,
 		);
 
 		const isDelete = model._deleted;
@@ -51,9 +54,9 @@ class ModelMerger {
 		storage: Storage,
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[],
-		modelDefinition: SchemaModel
+		modelDefinition: SchemaModel,
 	): Promise<[ModelInstanceMetadata, OpType][]> {
-		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
+		const itemsMap = new Map<string, ModelInstanceMetadata>();
 
 		for (const item of items) {
 			// merge items by model id. Latest record for a given id remains.
@@ -64,7 +67,7 @@ class ModelMerger {
 
 		const page = [...itemsMap.values()];
 
-		return await storage.batchSave(modelConstructor, page, this.ownSymbol);
+		return storage.batchSave(modelConstructor, page, this.ownSymbol);
 	}
 }
 

@@ -1,0 +1,11 @@
+{
+	"name": "@aws-amplify/pubsub",
+	"extends": ["../../typedoc.base.json"],
+	"entryPointStrategy": "resolve",
+	"entryPoints": [
+		"src/index.ts",
+		"src/clients/iot.ts",
+		"src/clients/mqtt.ts"
+	],
+	"readme": "README.md",
+}

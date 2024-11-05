@@ -25,7 +25,7 @@ export declare class Model {
 
 	static copyOf(
 		src: Model,
-		mutator: (draft: MutableModel<Model>) => void | Model
+		mutator: (draft: MutableModel<Model>) => void | Model,
 	): Model;
 }
 
@@ -54,7 +54,7 @@ export declare class Blog {
 
 	static copyOf(
 		src: Blog,
-		mutator: (draft: MutableModel<Blog>) => void | Blog
+		mutator: (draft: MutableModel<Blog>) => void | Blog,
 	): Blog;
 }
 
@@ -70,7 +70,7 @@ export declare class Post {
 
 	static copyOf(
 		src: Post,
-		mutator: (draft: MutableModel<Post>) => void | Post
+		mutator: (draft: MutableModel<Post>) => void | Post,
 	): Post;
 }
 
@@ -84,7 +84,7 @@ export declare class Comment {
 
 	static copyOf(
 		src: Comment,
-		mutator: (draft: MutableModel<Comment>) => void | Comment
+		mutator: (draft: MutableModel<Comment>) => void | Comment,
 	): Comment;
 }
 export declare class PostUni {
@@ -98,7 +98,7 @@ export declare class PostUni {
 
 	static copyOf(
 		src: Post,
-		mutator: (draft: MutableModel<Post>) => void | Post
+		mutator: (draft: MutableModel<Post>) => void | Post,
 	): Post;
 }
 
@@ -111,7 +111,7 @@ export declare class CommentUni {
 
 	static copyOf(
 		src: Comment,
-		mutator: (draft: MutableModel<Comment>) => void | Comment
+		mutator: (draft: MutableModel<Comment>) => void | Comment,
 	): Comment;
 }
 
@@ -125,7 +125,7 @@ export declare class User {
 
 	static copyOf(
 		src: User,
-		mutator: (draft: MutableModel<User>) => void | User
+		mutator: (draft: MutableModel<User>) => void | User,
 	): User;
 }
 export declare class Profile {
@@ -137,7 +137,7 @@ export declare class Profile {
 
 	static copyOf(
 		src: Profile,
-		mutator: (draft: MutableModel<Profile>) => void | Profile
+		mutator: (draft: MutableModel<Profile>) => void | Profile,
 	): Profile;
 }
 
@@ -152,7 +152,7 @@ export declare class PostComposite {
 
 	static copyOf(
 		src: PostComposite,
-		mutator: (draft: MutableModel<PostComposite>) => void | PostComposite
+		mutator: (draft: MutableModel<PostComposite>) => void | PostComposite,
 	): PostComposite;
 }
 
@@ -173,7 +173,7 @@ export declare class PostCustomPK {
 
 	static copyOf(
 		src: PostCustomPK,
-		mutator: (draft: MutableModel<PostCustomPK>) => void | PostCustomPK
+		mutator: (draft: MutableModel<PostCustomPK>) => void | PostCustomPK,
 	): PostCustomPK;
 }
 
@@ -190,7 +190,7 @@ export declare class PostCustomPKSort {
 
 	static copyOf(
 		src: PostCustomPKSort,
-		mutator: (draft: MutableModel<PostCustomPKSort>) => void | PostCustomPKSort
+		mutator: (draft: MutableModel<PostCustomPKSort>) => void | PostCustomPKSort,
 	): PostCustomPKSort;
 }
 
@@ -209,8 +209,8 @@ export declare class PostCustomPKComposite {
 	static copyOf(
 		src: PostCustomPKComposite,
 		mutator: (
-			draft: MutableModel<PostCustomPKComposite>
-		) => void | PostCustomPKComposite
+			draft: MutableModel<PostCustomPKComposite>,
+		) => void | PostCustomPKComposite,
 	): PostCustomPKComposite;
 }
 
@@ -227,8 +227,8 @@ export declare class BasicModel {
 	static copyOf(
 		source: BasicModel,
 		mutator: (
-			draft: MutableModel<BasicModel>
-		) => MutableModel<BasicModel> | void
+			draft: MutableModel<BasicModel>,
+		) => MutableModel<BasicModel> | void,
 	): BasicModel;
 }
 
@@ -245,8 +245,8 @@ export declare class BasicModelWritableTS {
 	static copyOf(
 		source: BasicModelWritableTS,
 		mutator: (
-			draft: MutableModel<BasicModelWritableTS>
-		) => MutableModel<BasicModelWritableTS> | void
+			draft: MutableModel<BasicModelWritableTS>,
+		) => MutableModel<BasicModelWritableTS> | void,
 	): BasicModelWritableTS;
 }
 
@@ -263,8 +263,8 @@ export declare class BasicModelRequiredTS {
 	static copyOf(
 		source: BasicModelRequiredTS,
 		mutator: (
-			draft: MutableModel<BasicModelRequiredTS>
-		) => MutableModel<BasicModelRequiredTS> | void
+			draft: MutableModel<BasicModelRequiredTS>,
+		) => MutableModel<BasicModelRequiredTS> | void,
 	): BasicModelRequiredTS;
 }
 
@@ -282,8 +282,8 @@ export declare class HasOneParent {
 	static copyOf(
 		source: HasOneParent,
 		mutator: (
-			draft: MutableModel<HasOneParent>
-		) => MutableModel<HasOneParent> | void
+			draft: MutableModel<HasOneParent>,
+		) => MutableModel<HasOneParent> | void,
 	): HasOneParent;
 }
 
@@ -300,8 +300,8 @@ export declare class HasOneChild {
 	static copyOf(
 		source: HasOneChild,
 		mutator: (
-			draft: MutableModel<HasOneChild>
-		) => MutableModel<HasOneChild> | void
+			draft: MutableModel<HasOneChild>,
+		) => MutableModel<HasOneChild> | void,
 	): HasOneChild;
 }
 
@@ -319,7 +319,7 @@ export declare class MtmLeft {
 	constructor(init: ModelInit<MtmLeft>);
 	static copyOf(
 		source: MtmLeft,
-		mutator: (draft: MutableModel<MtmLeft>) => MutableModel<MtmLeft> | void
+		mutator: (draft: MutableModel<MtmLeft>) => MutableModel<MtmLeft> | void,
 	): MtmLeft;
 }
 
@@ -337,7 +337,7 @@ export declare class MtmRight {
 	constructor(init: ModelInit<MtmRight>);
 	static copyOf(
 		source: MtmRight,
-		mutator: (draft: MutableModel<MtmRight>) => MutableModel<MtmRight> | void
+		mutator: (draft: MutableModel<MtmRight>) => MutableModel<MtmRight> | void,
 	): MtmRight;
 }
 
@@ -357,7 +357,7 @@ export declare class MtmJoin {
 	constructor(init: ModelInit<MtmJoin>);
 	static copyOf(
 		source: MtmJoin,
-		mutator: (draft: MutableModel<MtmJoin>) => MutableModel<MtmJoin> | void
+		mutator: (draft: MutableModel<MtmJoin>) => MutableModel<MtmJoin> | void,
 	): MtmJoin;
 }
 
@@ -375,8 +375,8 @@ export declare class DefaultPKParent {
 	static copyOf(
 		source: DefaultPKParent,
 		mutator: (
-			draft: MutableModel<DefaultPKParent>
-		) => MutableModel<DefaultPKParent> | void
+			draft: MutableModel<DefaultPKParent>,
+		) => MutableModel<DefaultPKParent> | void,
 	): DefaultPKParent;
 }
 
@@ -395,8 +395,8 @@ export declare class DefaultPKChild {
 	static copyOf(
 		source: DefaultPKChild,
 		mutator: (
-			draft: MutableModel<DefaultPKChild>
-		) => MutableModel<DefaultPKChild> | void
+			draft: MutableModel<DefaultPKChild>,
+		) => MutableModel<DefaultPKChild> | void,
 	): DefaultPKChild;
 }
 
@@ -410,8 +410,8 @@ export declare class DefaultPKHasOneParent {
 	static copyOf(
 		source: DefaultPKHasOneParent,
 		mutator: (
-			draft: MutableModel<DefaultPKHasOneParent>
-		) => MutableModel<DefaultPKHasOneParent> | void
+			draft: MutableModel<DefaultPKHasOneParent>,
+		) => MutableModel<DefaultPKHasOneParent> | void,
 	): DefaultPKHasOneParent;
 }
 
@@ -425,8 +425,8 @@ export declare class DefaultPKHasOneChild {
 	static copyOf(
 		source: DefaultPKHasOneChild,
 		mutator: (
-			draft: MutableModel<DefaultPKHasOneChild>
-		) => MutableModel<DefaultPKHasOneChild> | void
+			draft: MutableModel<DefaultPKHasOneChild>,
+		) => MutableModel<DefaultPKHasOneChild> | void,
 	): DefaultPKHasOneChild;
 }
 
@@ -450,8 +450,8 @@ export declare class CompositePKParent {
 	static copyOf(
 		source: CompositePKParent,
 		mutator: (
-			draft: MutableModel<CompositePKParent>
-		) => MutableModel<CompositePKParent> | void
+			draft: MutableModel<CompositePKParent>,
+		) => MutableModel<CompositePKParent> | void,
 	): CompositePKParent;
 }
 
@@ -471,8 +471,8 @@ export declare class CompositePKChild {
 	static copyOf(
 		source: CompositePKChild,
 		mutator: (
-			draft: MutableModel<CompositePKChild>
-		) => MutableModel<CompositePKChild> | void
+			draft: MutableModel<CompositePKChild>,
+		) => MutableModel<CompositePKChild> | void,
 	): CompositePKChild;
 }
 
@@ -492,8 +492,8 @@ export declare class ImplicitChild {
 	static copyOf(
 		source: ImplicitChild,
 		mutator: (
-			draft: MutableModel<ImplicitChild>
-		) => MutableModel<ImplicitChild> | void
+			draft: MutableModel<ImplicitChild>,
+		) => MutableModel<ImplicitChild> | void,
 	): ImplicitChild;
 }
 
@@ -516,8 +516,8 @@ export declare class StrangeExplicitChild {
 	static copyOf(
 		source: StrangeExplicitChild,
 		mutator: (
-			draft: MutableModel<StrangeExplicitChild>
-		) => MutableModel<StrangeExplicitChild> | void
+			draft: MutableModel<StrangeExplicitChild>,
+		) => MutableModel<StrangeExplicitChild> | void,
 	): StrangeExplicitChild;
 }
 
@@ -536,8 +536,8 @@ export declare class ChildSansBelongsTo {
 	static copyOf(
 		source: ChildSansBelongsTo,
 		mutator: (
-			draft: MutableModel<ChildSansBelongsTo>
-		) => MutableModel<ChildSansBelongsTo> | void
+			draft: MutableModel<ChildSansBelongsTo>,
+		) => MutableModel<ChildSansBelongsTo> | void,
 	): ChildSansBelongsTo;
 }
 
@@ -563,8 +563,8 @@ export declare class LegacyJSONBlog {
 	static copyOf(
 		source: LegacyJSONBlog,
 		mutator: (
-			draft: MutableModel<LegacyJSONBlog, LegacyJSONBlogMetaData>
-		) => MutableModel<LegacyJSONBlog, LegacyJSONBlogMetaData> | void
+			draft: MutableModel<LegacyJSONBlog, LegacyJSONBlogMetaData>,
+		) => MutableModel<LegacyJSONBlog, LegacyJSONBlogMetaData> | void,
 	): LegacyJSONBlog;
 }
 
@@ -579,8 +579,8 @@ export declare class LegacyJSONPost {
 	static copyOf(
 		source: LegacyJSONPost,
 		mutator: (
-			draft: MutableModel<LegacyJSONPost, LegacyJSONPostMetaData>
-		) => MutableModel<LegacyJSONPost, LegacyJSONPostMetaData> | void
+			draft: MutableModel<LegacyJSONPost, LegacyJSONPostMetaData>,
+		) => MutableModel<LegacyJSONPost, LegacyJSONPostMetaData> | void,
 	): LegacyJSONPost;
 }
 
@@ -594,8 +594,8 @@ export declare class LegacyJSONComment {
 	static copyOf(
 		source: LegacyJSONComment,
 		mutator: (
-			draft: MutableModel<LegacyJSONComment, LegacyJSONCommentMetaData>
-		) => MutableModel<LegacyJSONComment, LegacyJSONCommentMetaData> | void
+			draft: MutableModel<LegacyJSONComment, LegacyJSONCommentMetaData>,
+		) => MutableModel<LegacyJSONComment, LegacyJSONCommentMetaData> | void,
 	): LegacyJSONComment;
 }
 
@@ -609,7 +609,7 @@ export declare class ModelWithBoolean {
 
 	static copyOf(
 		src: ModelWithBoolean,
-		mutator: (draft: MutableModel<ModelWithBoolean>) => void | ModelWithBoolean
+		mutator: (draft: MutableModel<ModelWithBoolean>) => void | ModelWithBoolean,
 	): ModelWithBoolean;
 }
 
@@ -627,8 +627,8 @@ export declare class ModelWithExplicitOwner {
 	static copyOf(
 		source: ModelWithExplicitOwner,
 		mutator: (
-			draft: MutableModel<ModelWithExplicitOwner>
-		) => MutableModel<ModelWithExplicitOwner> | void
+			draft: MutableModel<ModelWithExplicitOwner>,
+		) => MutableModel<ModelWithExplicitOwner> | void,
 	): ModelWithExplicitOwner;
 }
 
@@ -646,8 +646,8 @@ export declare class ModelWithExplicitCustomOwner {
 	static copyOf(
 		source: ModelWithExplicitCustomOwner,
 		mutator: (
-			draft: MutableModel<ModelWithExplicitCustomOwner>
-		) => MutableModel<ModelWithExplicitCustomOwner> | void
+			draft: MutableModel<ModelWithExplicitCustomOwner>,
+		) => MutableModel<ModelWithExplicitCustomOwner> | void,
 	): ModelWithExplicitCustomOwner;
 }
 
@@ -666,8 +666,8 @@ export declare class ModelWithMultipleCustomOwner {
 	static copyOf(
 		source: ModelWithMultipleCustomOwner,
 		mutator: (
-			draft: MutableModel<ModelWithMultipleCustomOwner>
-		) => MutableModel<ModelWithMultipleCustomOwner> | void
+			draft: MutableModel<ModelWithMultipleCustomOwner>,
+		) => MutableModel<ModelWithMultipleCustomOwner> | void,
 	): ModelWithMultipleCustomOwner;
 }
 
@@ -683,7 +683,7 @@ export declare class ModelWithIndexes {
 
 	static copyOf(
 		src: ModelWithIndexes,
-		mutator: (draft: MutableModel<ModelWithIndexes>) => void | ModelWithIndexes
+		mutator: (draft: MutableModel<ModelWithIndexes>) => void | ModelWithIndexes,
 	): ModelWithIndexes;
 }
 

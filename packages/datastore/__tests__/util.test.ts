@@ -27,36 +27,36 @@ import { testSchema } from './helpers';
 describe('datastore util', () => {
 	test('validatePredicateField', () => {
 		expect(validatePredicateField(undefined, 'contains', 'test')).toEqual(
-			false
+			false,
 		);
 		expect(validatePredicateField(null, 'contains', 'test')).toEqual(false);
 		expect(validatePredicateField('some test', 'contains', 'test')).toEqual(
-			true
+			true,
 		);
 
 		expect(validatePredicateField(undefined, 'beginsWith', 'test')).toEqual(
-			false
+			false,
 		);
 		expect(validatePredicateField(null, 'beginsWith', 'test')).toEqual(false);
 		expect(validatePredicateField('some test', 'beginsWith', 'test')).toEqual(
-			false
+			false,
 		);
 		expect(validatePredicateField('testing', 'beginsWith', 'test')).toEqual(
-			true
+			true,
 		);
 
 		expect(validatePredicateField(undefined, 'notContains', 'test')).toEqual(
-			true
+			true,
 		);
 		expect(validatePredicateField(null, 'notContains', 'test')).toEqual(true);
 		expect(validatePredicateField('abcdef', 'notContains', 'test')).toEqual(
-			true
+			true,
 		);
 		expect(validatePredicateField('test', 'notContains', 'test')).toEqual(
-			false
+			false,
 		);
 		expect(validatePredicateField('testing', 'notContains', 'test')).toEqual(
-			false
+			false,
 		);
 	});
 
@@ -69,14 +69,14 @@ describe('datastore util', () => {
 		expect(valuesEqual({ a: 1 }, { a: 1 })).toEqual(true);
 		expect(valuesEqual({ a: 1 }, { a: 2 })).toEqual(false);
 		expect(
-			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
+			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] }),
 		).toEqual(true);
 		expect(
-			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
+			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] }),
 		).toEqual(false);
 		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
 		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
-			false
+			false,
 		);
 
 		const map1 = new Map();
@@ -94,7 +94,7 @@ describe('datastore util', () => {
 		expect(valuesEqual({ a: 1 }, { a: 1, b: null }, true)).toEqual(true);
 		expect(valuesEqual({ a: 1 }, { a: 1, b: 2 }, true)).toEqual(false);
 		expect(
-			valuesEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)
+			valuesEqual({ a: 1, b: null }, { a: 1, b: undefined }, true),
 		).toEqual(true);
 		expect(valuesEqual({ a: 1, b: false }, { a: 1 }, true)).toEqual(false);
 
@@ -114,7 +114,7 @@ describe('datastore util', () => {
 		expect(valuesEqual([null], [undefined], true)).toEqual(true);
 		expect(valuesEqual([undefined], [null], true)).toEqual(true);
 		expect(valuesEqual(new Set([null]), new Set([undefined]), true)).toEqual(
-			true
+			true,
 		);
 
 		// empty list [] should not equal [null]
@@ -125,7 +125,7 @@ describe('datastore util', () => {
 		expect(valuesEqual([null], [undefined], false)).toEqual(false);
 		expect(valuesEqual(new Set([null]), new Set([]), false)).toEqual(false);
 		expect(valuesEqual(new Set([null]), new Set([undefined]), false)).toEqual(
-			false
+			false,
 		);
 
 		// primitive types
@@ -620,7 +620,7 @@ describe('datastore util', () => {
 				},
 				patches => {
 					patchesAB = patches;
-				}
+				},
 			);
 			const modelC = produce(
 				modelB,
@@ -629,7 +629,7 @@ describe('datastore util', () => {
 				},
 				patches => {
 					patchesBC = patches;
-				}
+				},
 			);
 
 			const mergedPatches = mergePatches(modelA, patchesAB, patchesBC);
@@ -661,7 +661,7 @@ describe('datastore util', () => {
 				},
 				patches => {
 					patchesAB = patches;
-				}
+				},
 			);
 			const modelC = produce(
 				modelB,
@@ -670,7 +670,7 @@ describe('datastore util', () => {
 				},
 				patches => {
 					patchesBC = patches;
-				}
+				},
 			);
 
 			const mergedPatches = mergePatches(modelA, patchesAB, patchesBC);
@@ -700,7 +700,7 @@ describe('datastore util', () => {
 				},
 				patches => {
 					patchesAB = patches;
-				}
+				},
 			);
 			const modelC = produce(
 				modelB,
@@ -709,7 +709,7 @@ describe('datastore util', () => {
 				},
 				patches => {
 					patchesBC = patches;
-				}
+				},
 			);
 
 			const mergedPatches = mergePatches(modelA, patchesAB, patchesBC);
@@ -738,7 +738,7 @@ describe('datastore util', () => {
 			});
 			test('model definition with custom pk + sk', () => {
 				const result = extractKeyIfExists(
-					testUserSchema.models.PostCustomPKSort
+					testUserSchema.models.PostCustomPKSort,
 				)!;
 				expect(result.properties!.fields.length).toBe(2);
 				expect(result.properties!.fields[0]).toBe('id');
@@ -754,14 +754,14 @@ describe('datastore util', () => {
 			const testUserSchema = testSchema();
 			test('model definition with custom pk', () => {
 				const result = extractPrimaryKeyFieldNames(
-					testUserSchema.models.PostCustomPK
+					testUserSchema.models.PostCustomPK,
 				);
 				expect(result.length).toBe(1);
 				expect(result[0]).toBe('postId');
 			});
 			test('model definition with custom pk + sk', () => {
 				const result = extractPrimaryKeyFieldNames(
-					testUserSchema.models.PostCustomPKSort
+					testUserSchema.models.PostCustomPKSort,
 				);
 				expect(result.length).toBe(2);
 				expect(result[0]).toBe('id');
@@ -783,7 +783,7 @@ describe('datastore util', () => {
 						description: 'Desc',
 						sort: 1,
 					},
-					['id', 'postId', 'sort']
+					['id', 'postId', 'sort'],
 				);
 				expect(result).toEqual(['abcdef', '100', 1]);
 			});
@@ -804,7 +804,7 @@ describe('datastore util', () => {
 			test('should return `false` for model with custom primary key', () => {
 				const testUserSchema = testSchema();
 				const result = isIdOptionallyManaged(
-					testUserSchema.models.PostCustomPK
+					testUserSchema.models.PostCustomPK,
 				);
 				expect(result).toBeFalsy();
 			});

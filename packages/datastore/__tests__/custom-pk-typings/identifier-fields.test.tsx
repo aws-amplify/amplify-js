@@ -20,28 +20,28 @@ describe('IdentifierFields', () => {
 			undefined! as IdentifierFields<
 				ManagedCustomRO,
 				ManagedCustomRO[typeof __modelMeta__]
-			>
+			>,
 		);
 
 		expectType<'id'>(
 			undefined! as IdentifierFields<
 				OptionallyManagedCustomRO,
 				OptionallyManagedCustomRO[typeof __modelMeta__]
-			>
+			>,
 		);
 
 		expectType<'myId'>(
 			undefined! as IdentifierFields<
 				CustomIdentifierCustomRO,
 				CustomIdentifierCustomRO[typeof __modelMeta__]
-			>
+			>,
 		);
 
 		expectType<'tenant' | 'dob'>(
 			undefined! as IdentifierFields<
 				CompositeCustomRO,
 				CompositeCustomRO[typeof __modelMeta__]
-			>
+			>,
 		);
 	});
 });

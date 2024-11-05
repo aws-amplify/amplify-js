@@ -1,35 +1,36 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
-import { Credentials } from '@aws-amplify/core';
+import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import {
-	LocationClient,
-	SearchPlaceIndexForTextCommand,
-	SearchPlaceIndexForSuggestionsCommand,
-	SearchPlaceIndexForPositionCommand,
 	GetPlaceCommand,
+	LocationClient,
+	SearchPlaceIndexForPositionCommand,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForTextCommand,
 } from '@aws-sdk/client-location';
 import camelcaseKeys from 'camelcase-keys';
 
 import { GeoClass } from '../src/Geo';
-import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
+import { AmazonLocationServiceProvider } from '../src/providers/location-service/AmazonLocationServiceProvider';
 import {
+	AmazonLocationServiceMapStyle,
 	Coordinates,
 	SearchByCoordinatesOptions,
 	SearchByTextOptions,
 } from '../src/types';
 
 import {
-	credentials,
-	awsConfig,
 	TestPlacePascalCase,
-	testPlaceCamelCase,
-	validGeometry,
-	validGeofences,
-	validGeofence1,
-	singleGeofenceCamelcaseResults,
+	awsConfig,
+	awsConfigGeoV4,
 	batchGeofencesCamelcaseResults,
+	credentials,
+	singleGeofenceCamelcaseResults,
+	testPlaceCamelCase,
+	validGeofence1,
+	validGeofences,
+	validGeometry,
 } from './testData';
-
 import {
 	mockBatchPutGeofenceCommand,
 	mockGetGeofenceCommand,
@@ -69,19 +70,26 @@ LocationClient.prototype.send = jest.fn(async command => {
 	}
 });
 
+jest.mock('@aws-amplify/core', () => {
+	const originalModule = jest.requireActual('@aws-amplify/core');
+
+	return {
+		...originalModule,
+		fetchAuthSession: jest.fn(),
+		Amplify: {
+			getConfig: jest.fn(),
+		},
+	};
+});
+
 describe('Geo', () => {
 	afterEach(() => {
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
 	});
 
-	describe('constructor', () => {
-		test('happy case', () => {
-			const geo = new GeoClass();
-		});
-	});
-
 	describe('getModuleName', () => {
+		(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 		const geo = new GeoClass();
 		const moduleName = geo.getModuleName();
 
@@ -90,124 +98,127 @@ describe('Geo', () => {
 
 	describe('pluggables', () => {
 		test('getPluggable', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
 			const provider = new AmazonLocationServiceProvider();
 			geo.addPluggable(provider);
 
 			expect(geo.getPluggable(provider.getProviderName())).toBeInstanceOf(
-				AmazonLocationServiceProvider
+				AmazonLocationServiceProvider,
 			);
 		});
 
 		test('removePluggable', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
 			const provider = new AmazonLocationServiceProvider();
 			geo.addPluggable(provider);
 			geo.removePluggable(provider.getProviderName());
 
 			expect(() => geo.getPluggable(provider.getProviderName())).toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
 
 	describe('AmazonLocationService is used as default provider', () => {
 		test('creates the proper default provider', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			expect(geo.getPluggable('AmazonLocationService')).toBeInstanceOf(
-				AmazonLocationServiceProvider
+				AmazonLocationServiceProvider,
 			);
-		});
-	});
-
-	describe('configure', () => {
-		test('configure with aws-exports file', () => {
-			const geo = new GeoClass();
-			const config = geo.configure(awsConfig);
-			const expected = {
-				...awsConfig,
-				AmazonLocationService: awsConfig.geo.amazon_location_service,
-			};
-			expect(config).toEqual(expected);
 		});
 	});
 
 	describe('get map resources', () => {
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			expect(() => geo.getAvailableMaps()).toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 			expect(() => geo.getDefaultMap()).toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 
 		test('should tell you if there are no available map resources', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue({
+				Geo: { LocationService: {} },
+			});
 			const geo = new GeoClass();
-			geo.configure({});
 
 			expect(() => geo.getAvailableMaps()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
 		test('should get all available map resources', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
-			const maps = [];
+			const maps: AmazonLocationServiceMapStyle[] = [];
 			const availableMaps = awsConfig.geo.amazon_location_service.maps.items;
-			const region = awsConfig.geo.amazon_location_service.region;
+			const { region } = awsConfig.geo.amazon_location_service;
 
 			for (const mapName in availableMaps) {
-				const style = availableMaps[mapName].style;
+				const { style } = availableMaps[mapName];
 				maps.push({ mapName, style, region });
 			}
 
 			expect(geo.getAvailableMaps()).toEqual(maps);
 		});
 
-		test('should tell you if there is no map resources when running getDefaultMap', () => {
+		test('should fail gracefully if no config is found', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue({});
 			const geo = new GeoClass();
-			geo.configure({});
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No Geo configuration found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
+			);
+		});
+
+		test('should tell you if there is no map resources when running getDefaultMap', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue({
+				Geo: { LocationService: {} },
+			});
+			const geo = new GeoClass();
+
+			expect(() => geo.getDefaultMap()).toThrow(
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
 		test('should tell you if there is no default map resources (but there are maps) when running getDefaultMap', () => {
-			const geo = new GeoClass();
-			geo.configure({
-				geo: {
-					amazon_location_service: {
+			(Amplify.getConfig as jest.Mock).mockReturnValue({
+				Geo: {
+					LocationService: {
 						maps: { items: { testMap: { style: 'teststyle' } } },
 					},
 				},
-			});
+			} as any);
+			const geo = new GeoClass();
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after",
 			);
 		});
 
 		test('should get the default map resource', () => {
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const mapName = awsConfig.geo.amazon_location_service.maps.default;
-			const style =
-				awsConfig.geo.amazon_location_service.maps.items[mapName].style;
-			const region = awsConfig.geo.amazon_location_service.region;
+			const { style } =
+				awsConfig.geo.amazon_location_service.maps.items[mapName];
+			const { region } = awsConfig.geo.amazon_location_service;
 			const testMap = { mapName, style, region };
 
 			const defaultMapsResource = geo.getDefaultMap();
@@ -219,18 +230,18 @@ describe('Geo', () => {
 		const testString = 'star';
 
 		test('should search with just text input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const results = await geo.searchByText(testString);
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -238,40 +249,42 @@ describe('Geo', () => {
 		});
 
 		test('should search using given options with biasPosition', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				biasPosition: [12345, 67890],
 				countries: ['USA'],
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
+				language: 'en',
 			};
 			const results = await geo.searchByText(testString, searchOptions);
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
 				BiasPosition: searchOptions.biasPosition,
 				FilterCountries: searchOptions.countries,
 				MaxResults: searchOptions.maxResults,
+				Language: searchOptions.language,
 			});
 		});
 
 		test('should search using given options with searchAreaConstraints', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				searchAreaConstraints: [123, 456, 789, 321],
@@ -283,7 +296,7 @@ describe('Geo', () => {
 			expect(results).toEqual([testPlaceCamelCase]);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -294,12 +307,12 @@ describe('Geo', () => {
 		});
 
 		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
@@ -310,21 +323,21 @@ describe('Geo', () => {
 			};
 
 			await expect(geo.searchByText(testString, searchOptions)).rejects.toThrow(
-				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object',
 			);
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByText(testString)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -334,18 +347,18 @@ describe('Geo', () => {
 		const testResults = camelcaseKeys(TestPlacePascalCase, { deep: true });
 
 		test('should search with PlaceId as input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const results = await geo.searchByPlaceId(testPlaceId);
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				PlaceId: testPlaceId,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -353,16 +366,16 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByPlaceId(testPlaceId)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -380,18 +393,18 @@ describe('Geo', () => {
 		];
 
 		test('should search with just text input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const results = await geo.searchForSuggestions(testString);
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -399,12 +412,12 @@ describe('Geo', () => {
 		});
 
 		test('should search using given options with biasPosition', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				biasPosition: [12345, 67890],
@@ -416,7 +429,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -427,12 +440,12 @@ describe('Geo', () => {
 		});
 
 		test('should search using given options with searchAreaConstraints', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				searchAreaConstraints: [123, 456, 789, 321],
@@ -444,7 +457,7 @@ describe('Geo', () => {
 			expect(results).toEqual(testResults);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Text: testString,
 				IndexName: searchOptions.searchIndexName,
@@ -455,12 +468,12 @@ describe('Geo', () => {
 		});
 
 		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
@@ -471,23 +484,23 @@ describe('Geo', () => {
 			};
 
 			await expect(
-				geo.searchForSuggestions(testString, searchOptions)
+				geo.searchForSuggestions(testString, searchOptions),
 			).rejects.toThrow(
-				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object',
 			);
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchForSuggestions(testString)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
@@ -496,18 +509,18 @@ describe('Geo', () => {
 		const testCoordinates: Coordinates = [45, 90];
 
 		test('should search with just coordinate input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const results = await geo.searchByCoordinates(testCoordinates);
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Position: testCoordinates,
 				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
@@ -515,12 +528,12 @@ describe('Geo', () => {
 		});
 
 		test('should search using options when given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			const searchOptions: SearchByCoordinatesOptions = {
 				maxResults: 40,
@@ -528,12 +541,12 @@ describe('Geo', () => {
 			};
 			const results = await geo.searchByCoordinates(
 				testCoordinates,
-				searchOptions
+				searchOptions,
 			);
 			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			expect(input).toEqual({
 				Position: testCoordinates,
 				IndexName: searchOptions.searchIndexName,
@@ -542,32 +555,32 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByCoordinates(testCoordinates)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
 
 	describe('saveGeofences', () => {
 		test('saveGeofences with a single geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
 				.fn()
 				.mockImplementationOnce(mockBatchPutGeofenceCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 			const results = await geo.saveGeofences(validGeofence1);
@@ -575,7 +588,7 @@ describe('Geo', () => {
 
 			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			const output = {
 				Entries: [
 					{
@@ -591,16 +604,16 @@ describe('Geo', () => {
 		});
 
 		test('saveGeofences with multiple geofences', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
 				.fn()
 				.mockImplementation(mockBatchPutGeofenceCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 			const results = await geo.saveGeofences(validGeofences);
@@ -609,37 +622,37 @@ describe('Geo', () => {
 			// Expect that the API was called the right amount of times
 			const expectedNumberOfCalls = Math.floor(validGeofences.length / 10) + 1;
 			expect(LocationClient.prototype.send).toHaveBeenCalledTimes(
-				expectedNumberOfCalls
+				expectedNumberOfCalls,
 			);
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.saveGeofences(validGeofence1)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
+				'No plugin found in Geo for the provider',
 			);
 		});
 	});
 
 	describe('getGeofence', () => {
 		test('getGeofence returns the right geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
 				.fn()
 				.mockImplementationOnce(mockGetGeofenceCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 			const results = await geo.getGeofence('testGeofenceId');
@@ -654,7 +667,7 @@ describe('Geo', () => {
 
 			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			const { input } = spyon.mock.calls[0][0];
 			const output = {
 				GeofenceId: 'testGeofenceId',
 				CollectionName: 'geofenceCollectionExample',
@@ -665,16 +678,16 @@ describe('Geo', () => {
 
 	describe('listGeofences', () => {
 		test('listGeofences gets the first 100 geofences when no arguments are given', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
 				.fn()
 				.mockImplementationOnce(mockListGeofencesCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 			const results = await geo.listGeofences();
@@ -682,16 +695,16 @@ describe('Geo', () => {
 		});
 
 		test('listGeofences gets the second 100 geofences when nextToken is passed', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
+			(fetchAuthSession as jest.Mock).mockImplementationOnce(() => {
+				return Promise.resolve({ credentials });
 			});
 
 			LocationClient.prototype.send = jest
 				.fn()
 				.mockImplementation(mockListGeofencesCommand);
 
+			(Amplify.getConfig as jest.Mock).mockReturnValue(awsConfigGeoV4);
 			const geo = new GeoClass();
-			geo.configure(awsConfig);
 
 			// Check that results are what's expected
 
@@ -703,10 +716,10 @@ describe('Geo', () => {
 
 			expect(second100Geofences.entries.length).toEqual(100);
 			expect(second100Geofences.entries[0].geofenceId).toEqual(
-				'validGeofenceId100'
+				'validGeofenceId100',
 			);
 			expect(second100Geofences.entries[99].geofenceId).toEqual(
-				'validGeofenceId199'
+				'validGeofenceId199',
 			);
 		});
 	});

@@ -1,12 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import camelcaseKeys from 'camelcase-keys';
+import { GeoConfig } from '@aws-amplify/core';
+import { parseAWSExports } from '@aws-amplify/core/internals/utils';
 
 import {
 	Coordinates,
-	LinearRing,
-	GeofencePolygon,
+	Geofence,
 	GeofenceInput,
+	GeofencePolygon,
+	LinearRing,
 	PolygonGeometry,
 } from '../src/types';
 
@@ -19,6 +22,7 @@ export const credentials = {
 };
 
 export const awsConfig = {
+	aws_project_region: 'us-east-2',
 	geo: {
 		amazon_location_service: {
 			maps: {
@@ -45,6 +49,8 @@ export const awsConfig = {
 	},
 	credentials,
 };
+
+export const awsConfigGeoV4 = parseAWSExports(awsConfig) as GeoConfig;
 
 export const TestPlacePascalCase = {
 	AddressNumber: '123',
@@ -80,6 +86,7 @@ export const validCoordinates4: Coordinates = [
 	-123.14909934997559, 49.29132171993048,
 ];
 export const validCoordinates5: Coordinates = [
+	// eslint-disable-next-line no-loss-of-precision
 	-123.14695358276361, 49.290090146520431,
 ];
 
@@ -200,7 +207,7 @@ export const geofenceWithTooManyVertices: GeofenceInput = {
 	geometry: { polygon: polygonTooManyVertices },
 };
 
-export const validGeofences = [];
+export const validGeofences: Geofence[] = [];
 for (let i = 0; i < 132; i++) {
 	validGeofences.push({
 		geofenceId: `validGeofenceId${i}`,
@@ -234,7 +241,7 @@ export const singleGeofenceCamelcaseResults = {
 };
 
 export const batchGeofencesCamelcaseResults = {
-	successes: validGeofences.map(({ geofenceId }, i) => {
+	successes: validGeofences.map(({ geofenceId }) => {
 		return {
 			createTime: '2020-04-01T21:00:00.000Z',
 			updateTime: '2020-04-01T21:00:00.000Z',

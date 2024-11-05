@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/analytics",
+	"main": "../dist/cjs/analytics/index.js",
+	"react-native": "../src/analytics/index.ts",
+	"browser": "../dist/esm/analytics/index.mjs",
+	"module": "../dist/esm/analytics/index.mjs",
+	"typings": "../dist/esm/analytics/index.d.ts"
+}

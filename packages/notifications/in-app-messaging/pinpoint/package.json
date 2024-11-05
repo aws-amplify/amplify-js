@@ -1,0 +1,8 @@
+{
+	"name": "@aws-amplify/notifications/in-app-messaging/pinpoint",
+	"main": "../../dist/cjs/inAppMessaging/providers/pinpoint/index.js",
+	"browser": "../../dist/esm/inAppMessaging/providers/pinpoint/index.mjs",
+	"module": "../../dist/esm/inAppMessaging/providers/pinpoint/index.mjs",
+	"react-native": "../../src/inAppMessaging/providers/pinpoint/index.ts",
+	"typings": "../../dist/esm/inAppMessaging/providers/pinpoint/index.d.ts"
+}

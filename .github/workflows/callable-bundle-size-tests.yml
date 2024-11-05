@@ -1,0 +1,18 @@
+name: Bundle size tests
+
+on: workflow_call
+
+jobs:
+  bundle_size_tests:
+    name: Bundle size tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+      - name: Run Bundle Size Tests
+        working-directory: ./amplify-js
+        run: yarn test:size

@@ -14,7 +14,7 @@ import { Schema } from '../src/types';
 const DB_VERSION = 3;
 
 let db: idb.IDBPDatabase;
-const indexedDB = require('fake-indexeddb');
+const { indexedDB } = require('fake-indexeddb');
 const IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
 Dexie.dependencies.indexedDB = indexedDB;
 Dexie.dependencies.IDBKeyRange = IDBKeyRange;
@@ -61,7 +61,7 @@ declare class BlogModel {
 	constructor(init: ModelInit<BlogModel>);
 	static copyOf(
 		source: BlogModel,
-		mutator: (draft: MutableModel<BlogModel>) => MutableModel<BlogModel> | void
+		mutator: (draft: MutableModel<BlogModel>) => MutableModel<BlogModel> | void,
 	): BlogModel;
 }
 
@@ -82,7 +82,7 @@ describe('DB versions migration with destructive schema change', () => {
 
 		const blob = new Blob([JSON.stringify(v1Data)], {
 			type: 'application/json',
-		});
+		} as any);
 
 		// Import V1
 		(await Dexie.import(blob)).close();
@@ -92,7 +92,7 @@ describe('DB versions migration with destructive schema change', () => {
 
 		const blogRes = await DataStore.query(Blog);
 		const expectedCount = v1Data.data.tables.find(
-			t => t.name === 'user_Blog'
+			t => t.name === 'user_Blog',
 		).rowCount;
 
 		expect(blogRes.length).toEqual(expectedCount);

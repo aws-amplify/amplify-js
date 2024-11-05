@@ -1,3 +1,7 @@
+> INTERNAL USE ONLY
+
+This package contains the AWS Amplify DataStore category and is intended for internal use only. To integrate Amplify into your app, please use [aws-amplify](https://www.npmjs.com/package/aws-amplify).
+
 # AWS Amplify DataStore Docs
 
 [Amplify DataStore](https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js/) provides a programming model for leveraging shared and distributed data without writing additional code for offline and online scenarios, which makes working with distributed, cross-user data just as simple as working with local-only data.

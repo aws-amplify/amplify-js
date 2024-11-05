@@ -1,18 +1,14 @@
-/**
- * Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
-import { ConsoleLogger as Logger } from '../Logger';
-import { browserOrNode } from '../JS';
-import { Amplify } from '../Amplify';
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import { ConsoleLogger } from '../Logger';
+import { isBrowser } from '../utils';
+import { AmplifyError } from '../errors';
+import { record } from '../providers/pinpoint';
+import { Amplify, fetchAuthSession } from '../singleton';
+
+import { ServiceWorkerErrorCode, assert } from './errorHelpers';
+
 /**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.
@@ -27,27 +23,30 @@ import { Amplify } from '../Amplify';
  */
 export class ServiceWorkerClass {
 	// The active service worker will be set once it is registered
-	private _serviceWorker: ServiceWorker;
+	private _serviceWorker?: ServiceWorker;
 
 	// The service worker registration object
-	private _registration: ServiceWorkerRegistration;
+	private _registration?: ServiceWorkerRegistration;
 
 	// The application server public key for Push
 	// https://web-push-codelab.glitch.me/
-	private _publicKey: string;
+	private _publicKey?: string;
 
 	// push subscription
-	private _subscription: PushSubscription;
+	private _subscription?: PushSubscription;
 
 	// The AWS Amplify logger
-	private _logger: Logger = new Logger('ServiceWorker');
-
-	constructor() {}
+	private _logger: ConsoleLogger = new ConsoleLogger('ServiceWorker');
 
 	/**
 	 * Get the currently active service worker
 	 */
 	get serviceWorker(): ServiceWorker {
+		assert(
+			this._serviceWorker !== undefined,
+			ServiceWorkerErrorCode.UndefinedInstance,
+		);
+
 		return this._serviceWorker;
 	}
 
@@ -56,16 +55,17 @@ export class ServiceWorkerClass {
 	 * Make sure the service-worker.js is part of the build
 	 * for example with Angular, modify the angular-cli.json file
 	 * and add to "assets" array "service-worker.js"
-	 * @param {string} - (optional) Service worker file. Defaults to "/service-worker.js"
-	 * @param {string} - (optional) The service worker scope. Defaults to "/"
+	 * @param {string} filePath Service worker file. Defaults to "/service-worker.js"
+	 * @param {string} scope The service worker scope. Defaults to "/"
 	 *  - API Doc: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
 	 * @returns {Promise}
 	 *	- resolve(ServiceWorkerRegistration)
 	 *	- reject(Error)
 	 **/
-	register(filePath: string = '/service-worker.js', scope: string = '/') {
+	register(filePath = '/service-worker.js', scope = '/') {
 		this._logger.debug(`registering ${filePath}`);
 		this._logger.debug(`registering service worker with scope ${scope}`);
+
 		return new Promise((resolve, reject) => {
 			if (navigator && 'serviceWorker' in navigator) {
 				navigator.serviceWorker
@@ -83,16 +83,29 @@ export class ServiceWorkerClass {
 						this._registration = registration;
 						this._setupListeners();
 						this._logger.debug(
-							`Service Worker Registration Success: ${registration}`
+							`Service Worker Registration Success: ${registration}`,
 						);
-						return resolve(registration);
+
+						resolve(registration);
 					})
 					.catch(error => {
 						this._logger.debug(`Service Worker Registration Failed ${error}`);
-						return reject(error);
+
+						reject(
+							new AmplifyError({
+								name: ServiceWorkerErrorCode.Unavailable,
+								message: 'Service Worker not available',
+								underlyingError: error,
+							}),
+						);
 					});
 			} else {
-				return reject(new Error('Service Worker not available'));
+				reject(
+					new AmplifyError({
+						name: ServiceWorkerErrorCode.Unavailable,
+						message: 'Service Worker not available',
+					}),
+				);
 			}
 		});
 	}
@@ -109,30 +122,38 @@ export class ServiceWorkerClass {
 	 *  - reject(Error)
 	 */
 	enablePush(publicKey: string) {
-		if (!this._registration) throw new Error('Service Worker not registered');
+		assert(
+			this._registration !== undefined,
+			ServiceWorkerErrorCode.UndefinedRegistration,
+		);
 		this._publicKey = publicKey;
+
 		return new Promise((resolve, reject) => {
-			if (browserOrNode().isBrowser) {
+			if (isBrowser()) {
+				assert(
+					this._registration !== undefined,
+					ServiceWorkerErrorCode.UndefinedRegistration,
+				);
 				this._registration.pushManager.getSubscription().then(subscription => {
 					if (subscription) {
 						this._subscription = subscription;
 						this._logger.debug(
-							`User is subscribed to push: ${JSON.stringify(subscription)}`
+							`User is subscribed to push: ${JSON.stringify(subscription)}`,
 						);
 						resolve(subscription);
 					} else {
 						this._logger.debug(`User is NOT subscribed to push`);
-						return this._registration.pushManager
-							.subscribe({
-								userVisibleOnly: true,
-								applicationServerKey: this._urlB64ToUint8Array(publicKey),
-							})
-							.then(subscription => {
-								this._subscription = subscription;
+
+						return this._registration!.pushManager.subscribe({
+							userVisibleOnly: true,
+							applicationServerKey: this._urlB64ToUint8Array(publicKey),
+						})
+							.then(pushManagerSubscription => {
+								this._subscription = pushManagerSubscription;
 								this._logger.debug(
-									`User subscribed: ${JSON.stringify(subscription)}`
+									`User subscribed: ${JSON.stringify(pushManagerSubscription)}`,
 								);
-								resolve(subscription);
+								resolve(pushManagerSubscription);
 							})
 							.catch(error => {
 								this._logger.error(error);
@@ -140,7 +161,12 @@ export class ServiceWorkerClass {
 					}
 				});
 			} else {
-				return reject(new Error('Service Worker not available'));
+				reject(
+					new AmplifyError({
+						name: ServiceWorkerErrorCode.Unavailable,
+						message: 'Service Worker not available',
+					}),
+				);
 			}
 		});
 	}
@@ -152,7 +178,7 @@ export class ServiceWorkerClass {
 	private _urlB64ToUint8Array(base64String: string) {
 		const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 		const base64 = (base64String + padding)
-			.replace(/\-/g, '+')
+			.replace(/-/g, '+')
 			.replace(/_/g, '/');
 
 		const rawData = window.atob(base64);
@@ -161,6 +187,7 @@ export class ServiceWorkerClass {
 		for (let i = 0; i < rawData.length; ++i) {
 			outputArray[i] = rawData.charCodeAt(i);
 		}
+
 		return outputArray;
 	}
 
@@ -168,14 +195,14 @@ export class ServiceWorkerClass {
 	 * Send a message to the service worker. The service worker needs
 	 * to implement `self.addEventListener('message') to handle the
 	 * message. This ***currently*** does not work in Safari or IE.
-	 * @param {object | string} - An arbitrary JSON object or string message to send to the service worker
+	 * @param {object | string} message An arbitrary JSON object or string message to send to the service worker
 	 *	- see: https://developer.mozilla.org/en-US/docs/Web/API/Transferable
 	 * @returns {Promise}
 	 **/
 	send(message: object | string) {
 		if (this._serviceWorker) {
 			this._serviceWorker.postMessage(
-				typeof message === 'object' ? JSON.stringify(message) : message
+				typeof message === 'object' ? JSON.stringify(message) : message,
 			);
 		}
 	}
@@ -185,19 +212,41 @@ export class ServiceWorkerClass {
 	 * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state
 	 **/
 	_setupListeners() {
-		this._serviceWorker.addEventListener('statechange', event => {
-			const currentState = this._serviceWorker.state;
+		this.serviceWorker.addEventListener('statechange', async () => {
+			const currentState = this.serviceWorker.state;
 			this._logger.debug(`ServiceWorker statechange: ${currentState}`);
-			if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
-				Amplify.Analytics.record({
-					name: 'ServiceWorker',
-					attributes: {
-						state: currentState,
+
+			const {
+				appId,
+				region,
+				bufferSize,
+				flushInterval,
+				flushSize,
+				resendLimit,
+			} = Amplify.getConfig().Analytics?.Pinpoint ?? {};
+			const { credentials } = await fetchAuthSession();
+
+			if (appId && region && credentials) {
+				// Pinpoint is configured, record an event
+				record({
+					appId,
+					region,
+					category: 'Core',
+					credentials,
+					bufferSize,
+					flushInterval,
+					flushSize,
+					resendLimit,
+					event: {
+						name: 'ServiceWorker',
+						attributes: {
+							state: currentState,
+						},
 					},
 				});
 			}
 		});
-		this._serviceWorker.addEventListener('message', event => {
+		this.serviceWorker.addEventListener('message', event => {
 			this._logger.debug(`ServiceWorker message event: ${event}`);
 		});
 	}

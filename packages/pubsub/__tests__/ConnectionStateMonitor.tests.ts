@@ -12,8 +12,8 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-import Observable from 'zen-observable-ts';
-import { Reachability } from '@aws-amplify/core';
+import { Observable, Observer, SubscriptionLike as Subscription } from 'rxjs';
+import { Reachability } from '@aws-amplify/core/internals/utils';
 import {
 	ConnectionStateMonitor,
 	CONNECTION_CHANGE,
@@ -23,8 +23,8 @@ import { ConnectionState as CS } from '../src';
 describe('ConnectionStateMonitor', () => {
 	let monitor: ConnectionStateMonitor;
 	let observedStates: CS[];
-	let subscription: ZenObservable.Subscription;
-	let reachabilityObserver: ZenObservable.Observer<{ online: boolean }>;
+	let subscription: Subscription;
+	let reachabilityObserver: Observer<{ online: boolean }>;
 
 	beforeEach(() => {
 		const spyon = jest

@@ -1,0 +1,8 @@
+{
+  "name": "@aws-amplify/geo/location-service",
+  "main": "../dist/cjs/providers/location-service/AmazonLocationServiceProvider.js",
+  "browser": "../dist/esm/providers/location-service/AmazonLocationServiceProvider.mjs",
+  "module": "../dist/esm/providers/location-service/AmazonLocationServiceProvider.mjs",
+  "react-native": "../src/providers/location-service/AmazonLocationServiceProvider.ts",
+  "typings": "../dist/esm/providers/location-service/AmazonLocationServiceProvider.d.ts"
+}

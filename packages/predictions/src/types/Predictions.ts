@@ -1,28 +1,17 @@
-/* tslint:disable:max-line-length */
-
-/**
- * Base types
- */
-export interface PredictionsOptions {
-	[key: string]: any;
-}
-
-export interface ProviderOptions {
-	providerName?: string;
-}
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 
 /**
  * Convert types
  */
 
-export enum InterpretTextCategories {
-	ALL = 'ALL',
-	LANGUAGE = 'LANGUAGE',
-	ENTITIES = 'ENTITIES',
-	SENTIMENT = 'SENTIMENT',
-	SYNTAX = 'SYNTAX',
-	KEY_PHRASES = 'KEY_PHRASES',
-}
+export type InterpretTextCategories =
+	| 'all'
+	| 'language'
+	| 'entities'
+	| 'sentiment'
+	| 'syntax'
+	| 'keyPhrases';
 
 export interface InterpretTextInput {
 	text: InterpretTextInputLanguage | InterpretTextOthers | InterpretTextAll;
@@ -32,7 +21,7 @@ export interface InterpretTextInputLanguage {
 	source: {
 		text: string;
 	};
-	type: InterpretTextCategories.LANGUAGE;
+	type: Extract<InterpretTextCategories, 'language'>;
 }
 
 export interface InterpretTextOthers {
@@ -40,27 +29,27 @@ export interface InterpretTextOthers {
 		text: string;
 		language: string;
 	};
-	type:
-		| InterpretTextCategories.ENTITIES
-		| InterpretTextCategories.SENTIMENT
-		| InterpretTextCategories.SYNTAX
-		| InterpretTextCategories.KEY_PHRASES;
+	type: Extract<
+		InterpretTextCategories,
+		'entities' | 'sentiment' | 'syntax' | 'keyPhrases'
+	>;
 }
 
 export interface InterpretTextAll {
 	source: {
 		text: string;
 	};
-	type: InterpretTextCategories.ALL;
+	type: Extract<InterpretTextCategories, 'all'>;
 }
 
 export interface TextEntities {
-	type: string;
-	text: string;
+	type?: string;
+	text?: string;
 }
 
-export interface KeyPhrases {
-	text: string;
+export type KeyPhrases = KeyPhrase[];
+export interface KeyPhrase {
+	text?: string;
 }
 
 export interface TextSyntax {
@@ -76,13 +65,18 @@ export interface TextSentiment {
 	mixed: number;
 }
 
+export interface DetectParams {
+	Text: string;
+	LanguageCode: string;
+}
+
 export interface InterpretTextOutput {
 	textInterpretation: {
 		language?: string;
-		textEntities?: Array<TextEntities>;
-		keyPhrases?: Array<KeyPhrases>;
+		textEntities?: TextEntities[];
+		keyPhrases?: KeyPhrases;
 		sentiment?: TextSentiment;
-		syntax?: Array<TextSyntax>;
+		syntax?: TextSyntax[];
 	};
 }
 
@@ -119,7 +113,7 @@ export interface TextToSpeechOutput {
 
 export interface StorageSource {
 	key: string;
-	level?: 'public' | 'private' | 'protected';
+	level?: 'guest' | 'private' | 'protected';
 	identityId?: string;
 }
 
@@ -127,15 +121,24 @@ export interface FileSource {
 	file: File;
 }
 
-export interface BytesSource {
-	bytes: Buffer | ArrayBuffer | Blob | string;
+export type ConvertBytes = Buffer | ArrayBuffer | string;
+export type IdentifyBytes = ConvertBytes | Blob;
+
+export interface BytesSource<T> {
+	bytes: T;
 }
 
 export interface SpeechToTextInput {
 	transcription: {
-		source: BytesSource;
+		source: BytesSource<ConvertBytes>;
 		language?: string;
 	};
+}
+
+export interface TranscribeData {
+	connection: WebSocket;
+	raw: ConvertBytes;
+	languageCode: string;
 }
 
 export interface SpeechToTextOutput {
@@ -144,7 +147,10 @@ export interface SpeechToTextOutput {
 	};
 }
 
-export type IdentifySource = StorageSource | FileSource | BytesSource;
+export type IdentifySource =
+	| StorageSource
+	| FileSource
+	| BytesSource<IdentifyBytes>;
 
 export interface IdentifyTextInput {
 	text: {
@@ -174,8 +180,8 @@ export interface Content {
 export interface TableCell extends Content {
 	boundingBox?: BoundingBox;
 	polygon?: Polygon;
-	rowSpan?: Number;
-	columnSpan?: Number;
+	rowSpan?: number;
+	columnSpan?: number;
 }
 
 export interface Table {
@@ -184,15 +190,15 @@ export interface Table {
 		columns: number;
 	};
 	table: TableCell[][];
-	polygon: Polygon;
-	boundingBox: BoundingBox;
+	polygon?: Polygon;
+	boundingBox?: BoundingBox;
 }
 
 export interface KeyValue {
 	key: string;
 	value: Content;
-	polygon: Polygon;
-	boundingBox: BoundingBox;
+	polygon?: Polygon;
+	boundingBox?: BoundingBox;
 }
 
 export interface IdentifyTextOutput {
@@ -205,8 +211,8 @@ export interface IdentifyTextOutput {
 		tables?: Table[];
 		selections?: {
 			selected: boolean;
-			polygon: Polygon;
-			boundingBox: BoundingBox;
+			polygon?: Polygon;
+			boundingBox?: BoundingBox;
 		}[];
 	};
 }
@@ -219,24 +225,24 @@ export interface IdentifyLabelsInput {
 }
 
 export interface Point {
-	x?: Number;
-	y?: Number;
+	x?: number;
+	y?: number;
 }
 
-export type Polygon = Array<Point> | Iterable<Point>;
+export type Polygon = Point[] | Iterable<Point>;
 
 export interface BoundingBox {
-	width?: Number;
-	height?: Number;
-	left?: Number;
-	top?: Number;
+	width?: number;
+	height?: number;
+	left?: number;
+	top?: number;
 }
 
 export interface IdentifyLabelsOutput {
 	labels?: {
-		name: string;
-		boundingBoxes: BoundingBox[];
-		metadata?: Object;
+		name?: string;
+		boundingBoxes?: (BoundingBox | undefined)[];
+		metadata?: object;
 	}[];
 	unsafe?: 'YES' | 'NO' | 'UNKNOWN';
 }
@@ -270,89 +276,161 @@ export interface FaceAttributes {
 	mustache?: boolean;
 	eyesOpen?: boolean;
 	mouthOpen?: boolean;
-	emotions?: string[];
+	emotions?: (string | undefined)[];
+}
+
+export interface EntityAgeRange {
+	low?: number;
+	high?: number;
+}
+
+export interface EntityLandmark {
+	type?: string;
+	x?: number;
+	y?: number;
+}
+
+export interface EntityMetadata {
+	id?: string;
+	name?: string;
+	pose?: {
+		roll?: number;
+		yaw?: number;
+		pitch?: number;
+	};
+	urls?: string[];
+	externalImageId?: string;
+	similarity?: number;
+	confidence?: number;
+}
+
+export interface IdentifyEntity {
+	boundingBox?: BoundingBox;
+	ageRange?: EntityAgeRange;
+	landmarks?: (EntityLandmark | undefined)[];
+	attributes?: FaceAttributes;
+	metadata?: EntityMetadata;
 }
 
 export interface IdentifyEntitiesOutput {
-	entities: {
-		boundingBox?: BoundingBox;
-		ageRange?: {
-			low?: Number;
-			high?: Number;
-		};
-		landmarks?: {
-			type?: string;
-			x?: number;
-			y?: number;
-		}[];
-		attributes?: FaceAttributes;
-		metadata?: object;
-	}[];
+	entities: IdentifyEntity[];
+}
+
+export function isValidConvertInput(obj: any) {
+	return (
+		isTranslateTextInput(obj) ||
+		isTextToSpeechInput(obj) ||
+		isSpeechToTextInput(obj)
+	);
+}
+
+export function isValidIdentifyInput(obj: any) {
+	return (
+		isIdentifyTextInput(obj) ||
+		isIdentifyLabelsInput(obj) ||
+		isIdentifyEntitiesInput(obj)
+	);
+}
+
+export function isValidInterpretInput(obj: any) {
+	return isInterpretTextInput(obj);
 }
 
 export function isIdentifyFromCollection(
-	obj: any
+	obj: any,
 ): obj is IdentifyFromCollection {
 	const key: keyof IdentifyFromCollection = 'collection';
 	const keyId: keyof IdentifyFromCollection = 'collectionId';
-	return obj && (obj.hasOwnProperty(key) || obj.hasOwnProperty(keyId));
+
+	return (
+		obj &&
+		(Object.prototype.hasOwnProperty.call(obj, key) ||
+			Object.prototype.hasOwnProperty.call(obj, keyId))
+	);
 }
 
 export function isIdentifyCelebrities(obj: any): obj is IdentifyCelebrities {
 	const key: keyof IdentifyCelebrities = 'celebrityDetection';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isTranslateTextInput(obj: any): obj is TranslateTextInput {
 	const key: keyof TranslateTextInput = 'translateText';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isTextToSpeechInput(obj: any): obj is TextToSpeechInput {
 	const key: keyof TextToSpeechInput = 'textToSpeech';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isSpeechToTextInput(obj: any): obj is SpeechToTextInput {
 	const key: keyof SpeechToTextInput = 'transcription';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isStorageSource(obj: any): obj is StorageSource {
 	const key: keyof StorageSource = 'key';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isFileSource(obj: any): obj is FileSource {
 	const key: keyof FileSource = 'file';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
-export function isBytesSource(obj: any): obj is BytesSource {
-	const key: keyof BytesSource = 'bytes';
-	return obj && obj.hasOwnProperty(key);
+export function isConvertBytesSource(
+	obj: any,
+): obj is BytesSource<ConvertBytes> {
+	const key: keyof BytesSource<ConvertBytes> = 'bytes';
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
+}
+
+export function isIdentifyBytesSource(
+	obj: any,
+): obj is BytesSource<IdentifyBytes> {
+	const key: keyof BytesSource<IdentifyBytes> = 'bytes';
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
 	const key: keyof IdentifyTextInput = 'text';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyLabelsInput(obj: any): obj is IdentifyLabelsInput {
 	const key: keyof IdentifyLabelsInput = 'labels';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isIdentifyEntitiesInput(
-	obj: any
+	obj: any,
 ): obj is IdentifyEntitiesInput {
 	const key: keyof IdentifyEntitiesInput = 'entities';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
 }
 
 export function isInterpretTextInput(obj: any): obj is InterpretTextInput {
 	const key: keyof InterpretTextInput = 'text';
-	return obj && obj.hasOwnProperty(key);
+
+	return obj && Object.prototype.hasOwnProperty.call(obj, key);
+}
+
+export function isInterpretTextOthers(
+	text: InterpretTextInput['text'],
+): text is InterpretTextOthers {
+	return (text as InterpretTextOthers).source.language !== undefined;
 }
 
 export interface Geometry {
@@ -364,7 +442,7 @@ export interface Geometry {
 	/**
 	 * <p>Within the bounding box, a fine-grained polygon around the detected text.</p>
 	 */
-	Polygon?: Array<Point> | Iterable<Point>;
+	Polygon?: Point[] | Iterable<Point>;
 }
 
 export interface Relationship {
@@ -376,7 +454,7 @@ export interface Relationship {
 	/**
 	 * <p>An array of IDs for related blocks. You can get the type of the relationship from the <code>Type</code> element.</p>
 	 */
-	Ids?: Array<string> | Iterable<string>;
+	Ids?: string[] | Iterable<string>;
 }
 
 export type FeatureType = 'TABLES' | 'FORMS' | string;

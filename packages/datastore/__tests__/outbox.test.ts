@@ -33,7 +33,7 @@ let Model: PersistentModelConstructor<ModelType>;
 const schema: InternalSchema = internalTestSchema();
 
 const getModelDefinition = (
-	modelConstructor: PersistentModelConstructor<any>
+	modelConstructor: PersistentModelConstructor<any>,
 ): SchemaModel => {
 	const modelDefinition = schema.namespaces[USER].models[modelConstructor.name];
 	return modelDefinition;
@@ -82,11 +82,29 @@ describe('Outbox tests', () => {
 			await processMutationResponse(
 				s,
 				response,
-				TransformerMutationType.CREATE
+				TransformerMutationType.CREATE,
 			);
 
 			head = await outbox.peek(s);
 			expect(head).toBeFalsy();
+		});
+	});
+
+	it('Should not throw errors when Outbox.dequeue is called on an empty outbox', async () => {
+		const modelData: ModelType = JSON.parse('{}');
+		const response = {
+			...modelData,
+			_version: 1,
+			_lastChangedAt: Date.now(),
+			_deleted: false,
+		};
+
+		await Storage.runExclusive(async s => {
+			const head = await outbox.peek(s);
+
+			expect(head).toBeFalsy();
+			await expect(outbox.dequeue(s, response, TransformerMutationType.CREATE))
+				.resolves;
 		});
 	});
 
@@ -117,7 +135,7 @@ describe('Outbox tests', () => {
 			const mutationsForModel = await outbox.getForModel(
 				s,
 				last,
-				modelDefinition
+				modelDefinition,
 			);
 			expect(mutationsForModel.length).toEqual(1);
 		});
@@ -144,7 +162,7 @@ describe('Outbox tests', () => {
 		const mutationsForModel = await outbox.getForModel(
 			Storage,
 			last,
-			modelDefinition
+			modelDefinition,
 		);
 		expect(mutationsForModel.length).toEqual(2);
 
@@ -170,7 +188,7 @@ describe('Outbox tests', () => {
 			await processMutationResponse(
 				s,
 				response,
-				TransformerMutationType.UPDATE
+				TransformerMutationType.UPDATE,
 			);
 
 			const inProgress = await outbox.peek(s);
@@ -193,7 +211,7 @@ describe('Outbox tests', () => {
 			await processMutationResponse(
 				s,
 				response2,
-				TransformerMutationType.UPDATE
+				TransformerMutationType.UPDATE,
 			);
 
 			const head = await outbox.peek(s);
@@ -229,7 +247,7 @@ describe('Outbox tests', () => {
 			const mutationsForModel = await outbox.getForModel(
 				s,
 				last,
-				modelDefinition
+				modelDefinition,
 			);
 			expect(mutationsForModel.length).toEqual(1);
 		});
@@ -247,7 +265,7 @@ describe('Outbox tests', () => {
 		const mutationsForModel = await outbox.getForModel(
 			Storage,
 			last,
-			modelDefinition
+			modelDefinition,
 		);
 		expect(mutationsForModel.length).toEqual(2);
 
@@ -272,7 +290,7 @@ describe('Outbox tests', () => {
 			await processMutationResponse(
 				s,
 				response,
-				TransformerMutationType.UPDATE
+				TransformerMutationType.UPDATE,
 			);
 
 			const inProgress = await outbox.peek(s);
@@ -289,7 +307,7 @@ describe('Outbox tests', () => {
 			await processMutationResponse(
 				s,
 				response,
-				TransformerMutationType.UPDATE
+				TransformerMutationType.UPDATE,
 			);
 
 			const head = await outbox.peek(s);
@@ -361,7 +379,7 @@ async function instantiateOutbox(): Promise<void> {
 		schema,
 		MutationEvent,
 		modelInstanceCreator,
-		ownSymbol
+		ownSymbol,
 	);
 	merger = new ModelMerger(outbox, ownSymbol);
 }
@@ -384,14 +402,14 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 		originalElement,
 		{},
 		MutationEventConstructor,
-		modelInstanceCreator
+		modelInstanceCreator,
 	);
 }
 
 async function processMutationResponse(
 	storage,
 	record,
-	recordOp
+	recordOp,
 ): Promise<void> {
 	await outbox.dequeue(storage, record, recordOp);
 

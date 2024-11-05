@@ -3,6 +3,329 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.1.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.30...@aws-amplify/pubsub@6.1.31) (2024-10-31)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.29...@aws-amplify/pubsub@6.1.30) (2024-10-29)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.28...@aws-amplify/pubsub@6.1.29) (2024-10-25)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.27...@aws-amplify/pubsub@6.1.28) (2024-10-21)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.26...@aws-amplify/pubsub@6.1.27) (2024-10-15)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.25...@aws-amplify/pubsub@6.1.26) (2024-10-05)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.24...@aws-amplify/pubsub@6.1.25) (2024-09-30)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.23...@aws-amplify/pubsub@6.1.24) (2024-09-17)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.22...@aws-amplify/pubsub@6.1.23) (2024-09-16)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.21...@aws-amplify/pubsub@6.1.22) (2024-09-04)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.20...@aws-amplify/pubsub@6.1.21) (2024-09-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.19...@aws-amplify/pubsub@6.1.20) (2024-08-26)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.18...@aws-amplify/pubsub@6.1.19) (2024-08-21)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.17...@aws-amplify/pubsub@6.1.18) (2024-08-15)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.16...@aws-amplify/pubsub@6.1.17) (2024-08-07)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.15...@aws-amplify/pubsub@6.1.16) (2024-08-05)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.14...@aws-amplify/pubsub@6.1.15) (2024-07-23)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.13...@aws-amplify/pubsub@6.1.14) (2024-07-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.12...@aws-amplify/pubsub@6.1.13) (2024-07-19)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.11...@aws-amplify/pubsub@6.1.12) (2024-07-08)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.10...@aws-amplify/pubsub@6.1.11) (2024-06-24)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.9...@aws-amplify/pubsub@6.1.10) (2024-06-18)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.8...@aws-amplify/pubsub@6.1.9) (2024-06-07)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.7...@aws-amplify/pubsub@6.1.8) (2024-05-23)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.6...@aws-amplify/pubsub@6.1.7) (2024-05-23)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.5...@aws-amplify/pubsub@6.1.6) (2024-05-16)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.4...@aws-amplify/pubsub@6.1.5) (2024-05-13)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.3...@aws-amplify/pubsub@6.1.4) (2024-05-07)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.1.2...@aws-amplify/pubsub@6.1.3) (2024-04-29)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.0.29...@aws-amplify/pubsub@6.1.2) (2024-04-26)
+
+### Bug Fixes
+
+- bump package versions ([#13254](https://github.com/aws-amplify/amplify-js/issues/13254)) ([aa490b9](https://github.com/aws-amplify/amplify-js/commit/aa490b9bcbd2a442d9726937cfa59ef8b7859306))
+
+## [6.0.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.0.28...@aws-amplify/pubsub@6.0.29) (2024-04-24)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [6.0.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@6.0.27...@aws-amplify/pubsub@6.0.28) (2024-04-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.27 (2024-04-02)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.26 (2024-04-01)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.25 (2024-03-30)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.24 (2024-03-29)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.23 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.22 (2024-03-25)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.21 (2024-03-19)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.20 (2024-03-11)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.19 (2024-03-05)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.18 (2024-02-27)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.17 (2024-02-19)
+
+### Reverts
+
+- Revert "chore(release): Publish" (#13027) ([f6f4f42](https://github.com/aws-amplify/amplify-js/commit/f6f4f42befa04ed3c1502fa0adf17c6700abfddf)), closes [#13027](https://github.com/aws-amplify/amplify-js/issues/13027)
+
+## 6.0.16 (2024-02-09)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.15 (2024-02-06)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.14 (2024-02-01)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.13 (2024-01-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.12 (2024-01-12)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.11 (2024-01-10)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.10 (2024-01-04)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.9 (2023-12-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.8 (2023-12-18)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.7 (2023-12-12)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.6 (2023-12-05)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.5 (2023-11-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.4 (2023-11-20)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.3 (2023-11-16)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 6.0.2 (2023-11-13)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 5.5.4 (2023-08-23)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 5.5.3 (2023-08-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 5.5.2 (2023-08-17)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## 5.5.1 (2023-08-10)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+# [5.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.4.1...@aws-amplify/pubsub@5.5.0) (2023-07-31)
+
+### Features
+
+- custom user agent Geo changes for UI handoff ([#11632](https://github.com/aws-amplify/amplify-js/issues/11632)) ([01bfa8f](https://github.com/aws-amplify/amplify-js/commit/01bfa8f692737bd14422f7dc2eae11ed00c19048))
+- custom user agent InAppMessaging changes for UI handoff ([#11639](https://github.com/aws-amplify/amplify-js/issues/11639)) ([4d389da](https://github.com/aws-amplify/amplify-js/commit/4d389da22c9f39d5a5d7cd6df9116327a9d6a04e))
+
+## [5.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.4.0...@aws-amplify/pubsub@5.4.1) (2023-07-20)
+
+### Bug Fixes
+
+- duplicate entry in connection states ([#11579](https://github.com/aws-amplify/amplify-js/issues/11579)) ([88a74e7](https://github.com/aws-amplify/amplify-js/commit/88a74e71c0875cc2baae3f7f99bffb9a9be2bcd0))
+
+# [5.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.3...@aws-amplify/pubsub@5.4.0) (2023-07-13)
+
+### Features
+
+- **s3:** omit double encoding of path for S3 when signing ([#11538](https://github.com/aws-amplify/amplify-js/issues/11538)) ([d46d2d1](https://github.com/aws-amplify/amplify-js/commit/d46d2d1d4263e3b8bcfc03af473d7445af12e5b7))
+
+## [5.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.2...@aws-amplify/pubsub@5.3.3) (2023-06-28)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [5.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.1...@aws-amplify/pubsub@5.3.2) (2023-06-27)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [5.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.3.0...@aws-amplify/pubsub@5.3.1) (2023-06-21)
+
+### Bug Fixes
+
+- Update getAmplifyUserAgent to retain original interface ([#11535](https://github.com/aws-amplify/amplify-js/issues/11535)) ([dc84cc8](https://github.com/aws-amplify/amplify-js/commit/dc84cc8bfa7811b5f4f8ac2f7e5ea1b5edc54fe1))
+
+# [5.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.2.1...@aws-amplify/pubsub@5.3.0) (2023-06-20)
+
+### Features
+
+- **core:** API detection for 8 framework targets ([#11384](https://github.com/aws-amplify/amplify-js/issues/11384)) ([388f207](https://github.com/aws-amplify/amplify-js/commit/388f2074db0640f2d22aa7cd1a44d8eb8f2301d2))
+- user agent enhancements - cross-category api>api-graphql>pubsub ([#11368](https://github.com/aws-amplify/amplify-js/issues/11368)) ([a88dda2](https://github.com/aws-amplify/amplify-js/commit/a88dda202919aa1d4dc2af48f33c3533d8626261))
+
+## [5.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.2.0...@aws-amplify/pubsub@5.2.1) (2023-06-14)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.16...@aws-amplify/pubsub@5.2.0) (2023-06-05)
+
+### Features
+
+- **clients:** cognito identity client ([#11213](https://github.com/aws-amplify/amplify-js/issues/11213)) ([67e4017](https://github.com/aws-amplify/amplify-js/commit/67e40171385f02d0c9448fdc3e036d63e009ea34))
+- **clients:** support CN partition by adding DNS suffix resolver ([#11311](https://github.com/aws-amplify/amplify-js/issues/11311)) ([9de2975](https://github.com/aws-amplify/amplify-js/commit/9de297519fdbaaf1e9b4ae98f12aed4137400222))
+
+## [5.1.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.15...@aws-amplify/pubsub@5.1.16) (2023-05-27)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [5.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.14...@aws-amplify/pubsub@5.1.15) (2023-05-12)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [5.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.13...@aws-amplify/pubsub@5.1.14) (2023-05-04)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [5.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.12...@aws-amplify/pubsub@5.1.13) (2023-04-27)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+## [5.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.11...@aws-amplify/pubsub@5.1.12) (2023-04-20)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
 ## [5.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@5.1.10...@aws-amplify/pubsub@5.1.11) (2023-04-18)
 
 **Note:** Version bump only for package @aws-amplify/pubsub

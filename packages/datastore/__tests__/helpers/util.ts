@@ -1,23 +1,10 @@
-import Observable, { ZenObservable } from 'zen-observable-ts';
-import {
-	ModelInit,
-	Schema,
-	InternalSchema,
-	__modelMeta__,
-} from '../../src/types';
-import {
-	MutableModel,
-	DataStore as DS,
-	CompositeIdentifier,
-	CustomIdentifier,
-	ManagedIdentifier,
-	PersistentModel,
-	OptionallyManagedIdentifier,
-	PersistentModelConstructor,
-} from '../../src';
+import { __modelMeta__ } from '../../src/types';
+import { PersistentModel, PersistentModelConstructor } from '../../src';
 import { initSchema as _initSchema } from '../../src/datastore/datastore';
 import * as schemas from './schemas';
 import { getDataStore } from './datastoreFactory';
+import { FakeGraphQLService } from './fakes';
+import { jitteredExponentialRetry } from '@aws-amplify/core/internals/utils';
 
 /**
  * Convenience function to wait for a number of ms.
@@ -60,7 +47,7 @@ export function expectMutation(mutation, values) {
 	];
 	if (errors.length > 0) {
 		throw new Error(
-			`Bad mutation: ${JSON.stringify(data, null, 2)}\n${errors.join('\n')}`
+			`Bad mutation: ${JSON.stringify(data, null, 2)}\n${errors.join('\n')}`,
 		);
 	}
 }
@@ -81,7 +68,7 @@ export function dummyInstance<T extends PersistentModel>(): T {
  */
 export function errorsFrom<T extends Object>(
 	data: T,
-	matchers: Record<string, any>
+	matchers: Record<string, any>,
 ) {
 	return Object.entries(matchers).reduce((errors, [property, matcher]) => {
 		const value = data[property];
@@ -95,7 +82,7 @@ export function errorsFrom<T extends Object>(
 			)
 		) {
 			errors.push(
-				`Property '${property}' value "${value}" does not match "${matcher}"` as never
+				`Property '${property}' value "${value}" does not match "${matcher}"` as never,
 			);
 		}
 		return errors;
@@ -323,7 +310,7 @@ export async function expectIsolation(
 		cycle: number;
 	}) => Promise<any>,
 	cycles = 5,
-	focusedLogging = false
+	focusedLogging = false,
 ) {
 	try {
 		warpTime();
@@ -364,20 +351,20 @@ export async function expectIsolation(
 			// act
 			try {
 				log(
-					`start cycle:   "${expect.getState().currentTestName}" cycle ${cycle}`
+					`start cycle:   "${expect.getState().currentTestName}" cycle ${cycle}`,
 				);
 				await script({ DataStore, Post, cycle });
 				log(
-					`end cycle:     "${expect.getState().currentTestName}" cycle ${cycle}`
+					`end cycle:     "${expect.getState().currentTestName}" cycle ${cycle}`,
 				);
 			} finally {
 				// clean up
 				log(
-					`before clear: "${expect.getState().currentTestName}" cycle ${cycle}`
+					`before clear: "${expect.getState().currentTestName}" cycle ${cycle}`,
 				);
 				await DataStore.clear();
 				log(
-					`after clear:  "${expect.getState().currentTestName}" cycle ${cycle}`
+					`after clear:  "${expect.getState().currentTestName}" cycle ${cycle}`,
 				);
 			}
 
@@ -398,10 +385,12 @@ export async function expectIsolation(
 /**
  * Watches Hub events until an outBoxStatus with isEmpty is received.
  *
+ * NOTICE: If the outbox is *already* empty, this will not resolve.
+ *
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForEmptyOutbox(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
@@ -409,48 +398,188 @@ export async function waitForEmptyOutbox(verbose = false) {
 				message.payload.event === 'outboxStatus' &&
 				message.payload.data.isEmpty
 			) {
-				Hub.remove('datastore', hubCallback);
+				removeListener();
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
 
 /**
  * Watches Hub events until ready event is received
  *
+ * NOTICE: If DataStore is *already* ready, this will not resolve.
+ *
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForDataStoreReady(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
 			if (message.payload.event === 'ready') {
-				Hub.remove('datastore', hubCallback);
+				removeListener();
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
 
 /**
  * Watches Hub events until syncQueriesReady is received
  *
+ * NOTICE: If sync queries have already completed, this will not resolve.
+ *
  * @param verbose Whether to log hub events until empty
  */
 export async function waitForSyncQueriesReady(verbose = false) {
-	return new Promise(resolve => {
+	return new Promise<void>(resolve => {
 		const { Hub } = require('@aws-amplify/core');
 		const hubCallback = message => {
 			if (verbose) console.log('hub event', message);
 			if (message.payload.event === 'syncQueriesReady') {
-				Hub.remove('datastore', hubCallback);
+				removeListener;
 				resolve();
 			}
 		};
-		Hub.listen('datastore', hubCallback);
+		const removeListener = Hub.listen('datastore', hubCallback);
 	});
 }
+
+/**
+ * Used for monitoring the fake GraphQL service. Will validate if it has
+ * received and finished processing all updates / sent all subscription
+ * messages for a specific model.
+ * @param fakeService - the fake GraphQL service
+ * @param expectedNumberOfUpdates - the number of updates we expect to have been received for the model
+ * @param externalNumberOfUpdates - the number of external updates we expect to receive
+ * @param modelName - the name of the model we are updating
+ */
+type GraphQLServiceSettledParams = {
+	graphqlService: any;
+	expectedUpdateCallCount: number;
+	expectedUpdateSubscriptionMessageCount: number;
+	expectedUpdateErrorCount: number;
+	modelName: string;
+};
+
+/**
+ * Given a service fake, an expected call count and a modelName, this function observes the number
+ * of calls against the fake service and raises an error if the expected result isn't observed after
+ * 5 seconds of trying.
+ *
+ * @param inputs: Tells us the service fake, expected call count and model to observe
+ */
+export async function waitForExpectModelUpdateGraphqlEventCount({
+	graphqlService,
+	expectedUpdateCallCount,
+	expectedUpdateSubscriptionMessageCount,
+	expectedUpdateErrorCount,
+	modelName,
+}: GraphQLServiceSettledParams) {
+	/**
+	 * Note: Even though we've marked running mutations / subscriptions as complete
+	 * in the service, it still takes a moment to receive the updates.
+	 * This pause avoids unnecessary retries.
+	 */
+	await pause(1);
+
+	// Keep track of the observed count for each retry so we can tell the developer what was observed last
+	let lastObservedUpdateCount: number | undefined = undefined;
+	let lastObservedSubscriptionCount: number | undefined = undefined;
+	let lastObservedUpdateErrorCount: number | undefined = undefined;
+
+	/**
+	 * Due to the addition of artificial latencies, the service may not be
+	 * done, so we retry:
+	 */
+	try {
+		await jitteredExponentialRetry(
+			() => {
+				// The test should fail if we haven't ended the simulated disruption:
+				const subscriptionMessagesNotStopped =
+					!graphqlService.stopSubscriptionMessages;
+
+				lastObservedUpdateCount = graphqlService.requests.filter(
+					({ operation, type, tableName }) =>
+						operation === 'mutation' &&
+						type === 'update' &&
+						tableName === modelName,
+				).length;
+
+				// Ensure the service has received all expected requests:
+				const allUpdatesSent =
+					lastObservedUpdateCount === expectedUpdateCallCount;
+
+				// Ensure all mutations are complete:
+				const allRunningMutationsComplete =
+					graphqlService.runningMutations.size === 0;
+
+				// Ensure we've notified subscribers:
+				lastObservedSubscriptionCount =
+					graphqlService.subscriptionMessagesSent.filter(
+						([observerMessageName, message]) => {
+							return observerMessageName === `onUpdate${modelName}`;
+						},
+					).length;
+				const allSubscriptionsSent =
+					lastObservedSubscriptionCount ===
+					expectedUpdateSubscriptionMessageCount;
+
+				lastObservedUpdateErrorCount =
+					graphqlService.errors
+						.get('update')
+						?.filter(([observerMessageName, _message]) => {
+							return observerMessageName === `update${modelName}`;
+						})?.length ?? 0;
+				const allErrorsReceived =
+					lastObservedUpdateErrorCount === expectedUpdateErrorCount;
+
+				if (
+					allUpdatesSent &&
+					allRunningMutationsComplete &&
+					allSubscriptionsSent &&
+					allErrorsReceived &&
+					subscriptionMessagesNotStopped
+				) {
+					return true;
+				} else {
+					throw new Error(
+						'Fake GraphQL Service did not receive and/or process all updates and/or subscriptions',
+					);
+				}
+			},
+			[null],
+			// Only retry up to 5 seconds
+			5_000,
+			undefined,
+		);
+	} catch {
+		// If the expected call count isn't observed after 5 seconds, raise an error describing the discrepency
+		throw new Error(
+			`Expected ${expectedUpdateCallCount} update calls for ${modelName}, but received ${
+				lastObservedUpdateCount ?? 'unknown'
+			}. Expected ${expectedUpdateSubscriptionMessageCount} subscription messages for ${modelName}, but received ${
+				lastObservedSubscriptionCount ?? 'unknown'
+			}. Expected ${expectedUpdateErrorCount} update errors for ${modelName}, but received ${
+				lastObservedUpdateErrorCount ?? 'unknown'
+			}`,
+		);
+	}
+}
+
+/**
+ * A matcher that matches the error raised when OCC merge doesn't have matched versions
+ */
+export const occRejectionError = expect.objectContaining({
+	data: {
+		updatePost: null,
+	},
+	errors: [
+		expect.objectContaining({
+			message: 'Conflict resolver rejects mutation.',
+		}),
+	],
+});

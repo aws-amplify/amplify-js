@@ -1,0 +1,113 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+import {
+	AmplifyError,
+	AmplifyErrorCode,
+} from '@aws-amplify/core/internals/utils';
+
+import { tokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider';
+import { CognitoAuthTokens } from '../../../../src/providers/cognito/tokenProvider/types';
+import { oAuthStore } from '../../../../src/providers/cognito/utils/oauth/oAuthStore';
+
+jest.mock('@aws-amplify/core', () => ({
+	...jest.requireActual('@aws-amplify/core'),
+	Hub: {
+		dispatch: jest.fn(),
+	},
+}));
+jest.mock('../../../../src/providers/cognito/utils/oauth/oAuthStore');
+
+describe('tokenOrchestrator', () => {
+	const mockTokenRefresher = jest.fn();
+	const mockTokenStore = {
+		storeTokens: jest.fn(),
+		getLastAuthUser: jest.fn(),
+		loadTokens: jest.fn(),
+		clearTokens: jest.fn(),
+		setKeyValueStorage: jest.fn(),
+		getDeviceMetadata: jest.fn(),
+		clearDeviceMetadata: jest.fn(),
+		getOAuthMetadata: jest.fn(),
+		setOAuthMetadata: jest.fn(),
+	};
+
+	beforeAll(() => {
+		tokenOrchestrator.waitForInflightOAuth = jest.fn();
+		tokenOrchestrator.setTokenRefresher(mockTokenRefresher);
+		tokenOrchestrator.setAuthTokenStore(mockTokenStore);
+	});
+
+	beforeEach(() => {
+		(oAuthStore.loadOAuthInFlight as jest.Mock).mockResolvedValue(
+			Promise.resolve(false),
+		);
+	});
+
+	afterEach(() => {
+		(oAuthStore.loadOAuthInFlight as jest.Mock).mockClear();
+	});
+
+	describe('refreshTokens method', () => {
+		it('calls the set tokenRefresher, tokenStore and Hub while refreshing tokens', async () => {
+			const testUsername = 'username';
+			const testSignInDetails = {
+				authFlowType: 'CUSTOM_WITHOUT_SRP',
+				loginId: testUsername,
+			} as const;
+			const testInputTokens = {
+				accessToken: {
+					payload: {},
+				},
+				clockDrift: 400000,
+				username: testUsername,
+				signInDetails: testSignInDetails,
+			};
+			// mock tokens should not include signInDetails
+			const mockTokens: CognitoAuthTokens = {
+				accessToken: {
+					payload: {},
+				},
+				clockDrift: 300,
+				username: testUsername,
+			};
+			mockTokenRefresher.mockResolvedValueOnce(mockTokens);
+			mockTokenStore.storeTokens.mockResolvedValue(undefined);
+			const newTokens = await (tokenOrchestrator as any).refreshTokens({
+				tokens: testInputTokens,
+				username: testUsername,
+			});
+
+			// ensure the underlying async operations to be completed
+			// async #1
+			expect(mockTokenRefresher).toHaveBeenCalledWith(
+				expect.objectContaining({
+					tokens: testInputTokens,
+					username: testUsername,
+				}),
+			);
+			// async #2
+			expect(mockTokenStore.storeTokens).toHaveBeenCalledWith(mockTokens);
+
+			// ensure the result is correct
+			expect(newTokens).toEqual(mockTokens);
+			expect(newTokens?.signInDetails).toEqual(testSignInDetails);
+		});
+	});
+
+	describe('handleErrors method', () => {
+		it('does not call clearTokens() if the error is a network error thrown from fetch handler', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: AmplifyErrorCode.NetworkError,
+				message: 'Network Error',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).not.toHaveBeenCalled();
+		});
+	});
+});

@@ -1,63 +1,123 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+import { DocumentType } from '@aws-amplify/core/internals/utils';
+
+export type GetInput = ApiInput<RestApiOptionsBase>;
+export type PostInput = ApiInput<RestApiOptionsBase>;
+export type PutInput = ApiInput<RestApiOptionsBase>;
+export type PatchInput = ApiInput<RestApiOptionsBase>;
+export type DeleteInput = ApiInput<Omit<RestApiOptionsBase, 'body'>>;
+export type HeadInput = ApiInput<Omit<RestApiOptionsBase, 'body'>>;
+
+export type GetOperation = Operation<RestApiResponse>;
+export type PostOperation = Operation<RestApiResponse>;
+export type PutOperation = Operation<RestApiResponse>;
+export type PatchOperation = Operation<RestApiResponse>;
+export type DeleteOperation = Operation<Omit<RestApiResponse, 'body'>>;
+export type HeadOperation = Operation<Omit<RestApiResponse, 'body'>>;
 
 /**
- * RestClient instance options
+ * @internal
  */
-export class RestClientOptions {
-	/** AWS credentials */
-	credentials: AWSCredentials;
-
+export interface RestApiOptionsBase {
+	headers?: Headers;
+	queryParams?: Record<string, string>;
+	body?: DocumentType | FormData;
 	/**
-	 * Lookup key of AWS credentials.
-	 * If credentials not provided then lookup from sessionStorage.
-	 * Default 'awsCredentials'
+	 * Option controls whether or not cross-site Access-Control requests should be made using credentials
+	 * such as cookies, authorization headers or TLS client certificates. It has no effect on same-origin requests.
+	 * If set to `true`, the request will include credentials such as cookies, authorization headers, TLS
+	 * client certificates, and so on. Moreover the response cookies will also be set.
+	 * If set to `false`, the cross-site request will not include credentials, and the response cookies from a different
+	 * domain will be ignored.
+	 *
+	 * @default false
+	 * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials}
 	 */
-	credentials_key: string;
+	withCredentials?: boolean;
+}
 
-	/** Additional headers for all requests send by this client. e.g. user-agent */
-	headers: object;
+type Headers = Record<string, string>;
 
-	constructor() {
-		this.credentials_key = 'awsCredentials';
-		this.headers = {};
-	}
+/**
+ * Type representing an operation that can be canceled.
+ *
+ * @internal
+ */
+export interface Operation<Response> {
+	response: Promise<Response>;
+	cancel(abortMessage?: string): void;
+}
+
+interface ResponsePayload {
+	blob(): Promise<Blob>;
+	json(): Promise<DocumentType>;
+	text(): Promise<string>;
 }
 
 /**
- * AWS credentials needed for RestClient
+ * Basic response type of REST API.
+ *
+ * @internal
  */
-export class AWSCredentials {
-	/**
-	 * Secret Access Key
-	 *
-	 * [Access Key ID and Secret Access Key]
-	 * (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
-	 */
-	secretAccessKey: string;
-
-	/**
-	 * Access Key ID
-	 *
-	 * [Access Key ID and Secret Access Key]
-	 * (http://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
-	 */
-	accessKeyId: string;
-
-	/** Access Token of current session */
-	sessionToken: string;
+export interface RestApiResponse {
+	body: ResponsePayload;
+	statusCode: number;
+	headers: Headers;
 }
 
-// TODO: remove this once unauth creds are figured out
-export interface apiOptions {
-	headers: object;
-	endpoints: object;
-	credentials?: object;
+/**
+ * @internal
+ */
+export interface ApiInput<Options> {
+	/**
+	 * Name of the REST API configured in Amplify singleton.
+	 */
+	apiName: string;
+	/**
+	 * Path of the REST API.
+	 */
+	path: string;
+	/**
+	 * Options to overwrite the REST API call behavior.
+	 */
+	options?: Options;
 }
 
-export type ApiInfo = {
-	endpoint: string;
-	region?: string;
+/**
+ * Input type to invoke REST POST API from GraphQl client.
+ * @internal
+ */
+export interface InternalPostInput {
+	// Resolved GraphQl endpoint url
+	url: URL;
+	options?: RestApiOptionsBase & {
+		/**
+		 * Internal-only option for GraphQL client to provide the IAM signing service and region.
+		 * * If auth mode is 'iam', you MUST set this value.
+		 * * If auth mode is 'none', you MUST NOT set this value;
+		 * * If auth mode is 'apiKey' or 'oidc' or 'lambda' or 'userPool' because associated
+		 *   headers are provided, this value is ignored.
+		 */
+		signingServiceInfo?: {
+			service?: string;
+			region?: string;
+		};
+	};
+	/**
+	 * The abort controller to cancel the in-flight POST request.
+	 * Required if you want to make the internal post request cancellable. To make the internal post cancellable, you
+	 * must also call `updateRequestToBeCancellable()` with the promise from internal post call and the abort
+	 * controller.
+	 */
+	abortController?: AbortController;
+}
+
+/**
+ * Type for signingServiceInfo which enable IAM auth as well as overwrite the IAM signing info.
+ * @internal
+ */
+export interface SigningServiceInfo {
 	service?: string;
-	custom_header?: () => { [key: string]: string };
-};
+	region?: string;
+}

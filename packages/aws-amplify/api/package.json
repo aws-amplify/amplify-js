@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/api",
+	"main": "../dist/cjs/api/index.js",
+	"react-native": "../src/api/index.ts",
+	"browser": "../dist/esm/api/index.mjs",
+	"module": "../dist/esm/api/index.mjs",
+	"typings": "../dist/esm/api/index.d.ts"
+}

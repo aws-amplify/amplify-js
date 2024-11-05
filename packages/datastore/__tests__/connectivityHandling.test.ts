@@ -1,14 +1,32 @@
-import { Observable } from 'zen-observable-ts';
-import { parse } from 'graphql';
+import { Observable } from 'rxjs';
 import {
 	pause,
 	getDataStore,
 	waitForEmptyOutbox,
 	waitForDataStoreReady,
 	waitForSyncQueriesReady,
+	warpTime,
+	unwarpTime,
 } from './helpers';
 import { Predicates } from '../src/predicates';
 import { syncExpression } from '../src/types';
+import { isNode } from '../src/datastore/utils';
+
+/**
+ * When DataStore starts, DataStore will send Control Messages based on the
+ * environment that tell it what to do. In this testing environment, both
+ * `isNode` and `isBrowser` incorrectly evaluate to `true`. Here we set `isNode`
+ * to `false`, without mocking the other utils.
+ */
+jest.mock('../src/datastore/utils', () => {
+	const originalModule = jest.requireActual('../src/datastore/utils');
+
+	return {
+		__esModule: true,
+		...originalModule,
+		isNode: () => false,
+	};
+});
 
 /**
  * Surfaces errors sooner and outputs them more clearly if/when
@@ -26,10 +44,26 @@ async function waitForEmptyOutboxOrError(service) {
 	return await Promise.race([waitForEmptyOutbox(), pendingError]);
 }
 
+/**
+ * Creates a promise to wait for the next subscription message and
+ * returns it when it arrives.
+ *
+ * @param observable Any `Observable`
+ */
+function waitForNextMessage<T>(observable: Observable<T>) {
+	return new Promise(resolve => {
+		const subscription = observable.subscribe(message => {
+			subscription.unsubscribe();
+			resolve(message);
+		});
+	});
+}
+
 describe('DataStore sync engine', () => {
 	// establish types :)
 	let {
 		DataStore,
+		errorHandler,
 		schema,
 		connectivityMonitor,
 		Model,
@@ -39,6 +73,7 @@ describe('DataStore sync engine', () => {
 		BasicModel,
 		BasicModelWritableTS,
 		LegacyJSONPost,
+		LegacyJSONComment,
 		Post,
 		Comment,
 		HasOneParent,
@@ -59,6 +94,7 @@ describe('DataStore sync engine', () => {
 
 		({
 			DataStore,
+			errorHandler,
 			schema,
 			connectivityMonitor,
 			Model,
@@ -68,6 +104,7 @@ describe('DataStore sync engine', () => {
 			BasicModel,
 			BasicModelWritableTS,
 			LegacyJSONPost,
+			LegacyJSONComment,
 			Post,
 			Comment,
 			Model,
@@ -110,7 +147,7 @@ describe('DataStore sync engine', () => {
 			const m = await DataStore.save(
 				new BasicModel({
 					body: 'whatever and ever',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -130,7 +167,7 @@ describe('DataStore sync engine', () => {
 				new Model({
 					field1: 'whatever and ever',
 					dateCreated: new Date().toISOString(),
-				})
+				}),
 			);
 
 			const omitted_optional_fields = [
@@ -164,7 +201,7 @@ describe('DataStore sync engine', () => {
 					field1: 'whatever and ever',
 					dateCreated: new Date().toISOString(),
 					metadata: null,
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -187,14 +224,14 @@ describe('DataStore sync engine', () => {
 				new Model({
 					field1: 'whatever and ever',
 					dateCreated: new Date().toISOString(),
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
 			const retrieved = (await DataStore.query(Model, saved.id))!;
 
 			const updated = await DataStore.save(
-				Model.copyOf(retrieved, d => (d.optionalField1 = 'new value'))
+				Model.copyOf(retrieved, d => (d.optionalField1 = 'new value')),
 			);
 
 			const omitted_fields = ['field1', 'emails', 'ips', 'logins', 'metadata'];
@@ -222,14 +259,14 @@ describe('DataStore sync engine', () => {
 					field1: 'whatever and ever',
 					dateCreated: new Date().toISOString(),
 					optionalField1: 'something',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
 			const retrieved = (await DataStore.query(Model, saved.id))!;
 
 			await DataStore.save(
-				Model.copyOf(retrieved, d => (d.optionalField1 = null))
+				Model.copyOf(retrieved, d => (d.optionalField1 = null)),
 			);
 
 			await waitForEmptyOutbox();
@@ -249,7 +286,7 @@ describe('DataStore sync engine', () => {
 				new ModelWithExplicitOwner({
 					title: 'very clever title',
 					owner: null,
-				})
+				}),
 			);
 
 			await waitForEmptyOutboxOrError(graphqlService);
@@ -266,7 +303,7 @@ describe('DataStore sync engine', () => {
 				new ModelWithExplicitOwner({
 					title: 'very clever title',
 					owner: undefined,
-				})
+				}),
 			);
 
 			await waitForEmptyOutboxOrError(graphqlService);
@@ -283,7 +320,7 @@ describe('DataStore sync engine', () => {
 				new ModelWithExplicitCustomOwner({
 					title: 'very clever title',
 					customowner: null,
-				})
+				}),
 			);
 
 			await waitForEmptyOutboxOrError(graphqlService);
@@ -300,7 +337,7 @@ describe('DataStore sync engine', () => {
 				new ModelWithExplicitCustomOwner({
 					title: 'very clever title',
 					customowner: undefined,
-				})
+				}),
 			);
 
 			await waitForEmptyOutboxOrError(graphqlService);
@@ -318,7 +355,7 @@ describe('DataStore sync engine', () => {
 					title: 'very clever title',
 					customownerOne: undefined,
 					customownerTwo: undefined,
-				})
+				}),
 			);
 
 			await waitForEmptyOutboxOrError(graphqlService);
@@ -336,7 +373,7 @@ describe('DataStore sync engine', () => {
 					title: 'very clever title',
 					customownerOne: undefined,
 					customownerTwo: 'bob',
-				})
+				}),
 			);
 
 			await waitForEmptyOutboxOrError(graphqlService);
@@ -354,7 +391,7 @@ describe('DataStore sync engine', () => {
 					title: 'very clever title',
 					customownerOne: 'bob',
 					customownerTwo: undefined,
-				})
+				}),
 			);
 
 			await waitForEmptyOutboxOrError(graphqlService);
@@ -369,13 +406,13 @@ describe('DataStore sync engine', () => {
 		test('includes timestamp fields in mutation events when NOT readonly', async () => {
 			// make sure our test model still meets requirements to make this test valid.
 			expect(
-				schema.models.BasicModelWritableTS.fields.createdAt.isReadOnly
+				schema.models.BasicModelWritableTS.fields.createdAt.isReadOnly,
 			).toBe(false);
 
 			const m = await DataStore.save(
 				new BasicModelWritableTS({
 					body: 'whatever else',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -407,7 +444,7 @@ describe('DataStore sync engine', () => {
 			const updated = await DataStore.save(
 				Post.copyOf(retrieved!, draft => {
 					draft.title = 'updated title';
-				})
+				}),
 			);
 			await waitForEmptyOutbox();
 
@@ -424,15 +461,15 @@ describe('DataStore sync engine', () => {
 					field1: 'field 1 value',
 					dateCreated: new Date().toISOString(),
 					optionalField1: 'optional field value',
-				})
+				}),
 			);
 			await waitForEmptyOutbox();
 
 			const updated = await DataStore.save(
 				Model.copyOf(
 					(await DataStore.query(Model, original.id))!,
-					m => (m.optionalField1 = undefined)
-				)
+					m => (m.optionalField1 = undefined),
+				),
 			);
 			const retrievedBeforeMutate = await DataStore.query(Model, original.id);
 			await waitForEmptyOutbox();
@@ -470,7 +507,7 @@ describe('DataStore sync engine', () => {
 			const retrieved = await DataStore.query(Post, post.id);
 
 			const deleted = await DataStore.delete(retrieved!, p =>
-				p.title.eq('post title')
+				p.title.eq('post title'),
 			);
 			await waitForEmptyOutbox();
 
@@ -485,17 +522,17 @@ describe('DataStore sync engine', () => {
 		[null, undefined].forEach(value => {
 			test(`model field can be set to ${value} to remove connection hasOne parent`, async () => {
 				const child = await DataStore.save(
-					new HasOneChild({ content: 'child content' })
+					new HasOneChild({ content: 'child content' }),
 				);
 				const parent = await DataStore.save(
 					new HasOneParent({
 						child,
-					})
+					}),
 				);
 				await waitForEmptyOutboxOrError(graphqlService);
 				const parentTable = graphqlService.tables.get('HasOneParent')!;
 				const savedParentWithChild = parentTable.get(
-					JSON.stringify([parent.id])
+					JSON.stringify([parent.id]),
 				) as any;
 				expect(savedParentWithChild.hasOneParentChildId).toEqual(child.id);
 
@@ -503,14 +540,14 @@ describe('DataStore sync engine', () => {
 					(await DataStore.query(HasOneParent, parent.id))!,
 					draft => {
 						draft.child = value;
-					}
+					},
 				);
 				await DataStore.save(parentWithoutChild);
 
 				await waitForEmptyOutboxOrError(graphqlService);
 
 				const savedParentWithoutChild = parentTable.get(
-					JSON.stringify([parent.id])
+					JSON.stringify([parent.id]),
 				) as any;
 				expect(savedParentWithoutChild.hasOneParentChildId).toEqual(null);
 			});
@@ -520,7 +557,7 @@ describe('DataStore sync engine', () => {
 					new CompositePKParent({
 						customId: 'customId',
 						content: 'content',
-					})
+					}),
 				);
 
 				const child = await DataStore.save(
@@ -528,13 +565,13 @@ describe('DataStore sync engine', () => {
 						childId: 'childId',
 						content: 'content',
 						parent,
-					})
+					}),
 				);
 
 				await waitForEmptyOutboxOrError(graphqlService);
 				const childTable = graphqlService.tables.get('CompositePKChild')!;
 				const savedChildWithParent = childTable.get(
-					JSON.stringify([child.childId, child.content])
+					JSON.stringify([child.childId, child.content]),
 				) as any;
 				expect(savedChildWithParent.parentId).toEqual(parent.customId);
 				expect(savedChildWithParent.parentTitle).toEqual(parent.content);
@@ -546,14 +583,14 @@ describe('DataStore sync engine', () => {
 					}))!,
 					draft => {
 						draft.parent = value;
-					}
+					},
 				);
 				await DataStore.save(childWithoutParent);
 
 				await waitForEmptyOutboxOrError(graphqlService);
 
 				const savedChildWithoutParent = childTable.get(
-					JSON.stringify([child.childId, child.content])
+					JSON.stringify([child.childId, child.content]),
 				) as any;
 				expect(savedChildWithoutParent.parentId).toEqual(null);
 				expect(savedChildWithoutParent.parentTitle).toEqual(null);
@@ -562,11 +599,19 @@ describe('DataStore sync engine', () => {
 	});
 
 	describe('connection state change handling', () => {
+		beforeEach(async () => {
+			warpTime();
+		});
+
+		afterEach(async () => {
+			unwarpTime();
+		});
+
 		test('survives online -> offline -> online cycle', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -577,7 +622,7 @@ describe('DataStore sync engine', () => {
 			const anotherPost = await DataStore.save(
 				new Post({
 					title: 'another title',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -589,7 +634,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudPost.title).toEqual('a title');
 
 			const cloudAnotherPost = table.get(
-				JSON.stringify([anotherPost.id])
+				JSON.stringify([anotherPost.id]),
 			) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
@@ -598,7 +643,7 @@ describe('DataStore sync engine', () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -608,7 +653,7 @@ describe('DataStore sync engine', () => {
 			const anotherPost = await DataStore.save(
 				new Post({
 					title: 'another title',
-				})
+				}),
 			);
 
 			// In this scenario, we want to test the case where the offline
@@ -625,7 +670,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudPost.title).toEqual('a title');
 
 			const cloudAnotherPost = table.get(
-				JSON.stringify([anotherPost.id])
+				JSON.stringify([anotherPost.id]),
 			) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
@@ -634,7 +679,7 @@ describe('DataStore sync engine', () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -645,7 +690,7 @@ describe('DataStore sync engine', () => {
 			const anotherPost = await DataStore.save(
 				new Post({
 					title: 'another title',
-				})
+				}),
 			);
 
 			// NO PAUSE: Simulate reconnect IMMEDIATELY, causing a race
@@ -661,7 +706,7 @@ describe('DataStore sync engine', () => {
 			expect(cloudPost.title).toEqual('a title');
 
 			const cloudAnotherPost = table.get(
-				JSON.stringify([anotherPost.id])
+				JSON.stringify([anotherPost.id]),
 			) as any;
 			expect(cloudAnotherPost.title).toEqual('another title');
 		});
@@ -670,7 +715,7 @@ describe('DataStore sync engine', () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -680,7 +725,7 @@ describe('DataStore sync engine', () => {
 
 			const retrieved = await DataStore.query(Post, post.id);
 			await DataStore.save(
-				Post.copyOf(retrieved!, updated => (updated.title = 'new title'))
+				Post.copyOf(retrieved!, updated => (updated.title = 'new title')),
 			);
 
 			// NO PAUSE: Simulate reconnect IMMEDIATELY, causing a race
@@ -700,7 +745,7 @@ describe('DataStore sync engine', () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -725,11 +770,11 @@ describe('DataStore sync engine', () => {
 			expect(cloudPost._deleted).toEqual(true);
 		});
 
-		test('survives online -> connection disruption -> online cycle and triggers full sync', async () => {
+		test('survives online -> connection disruption -> online cycle and triggers re-sync', async () => {
 			const post = await DataStore.save(
 				new Post({
 					title: 'a title',
-				})
+				}),
 			);
 
 			await waitForEmptyOutbox();
@@ -764,6 +809,7 @@ describe('DataStore sync engine', () => {
 			// wait for subscription message if connection were not disrupted
 			// next DataStore.query(Post) would have length of 2 if not disrupted
 			await pause(1);
+
 			// DataStore has not received new subscription message
 			expect((await DataStore.query(Post)).length).toEqual(1);
 
@@ -773,13 +819,13 @@ describe('DataStore sync engine', () => {
 			expect((await DataStore.query(Post)).length).toEqual(2);
 			expect((await DataStore.query(Post, post.id))!.title).toEqual('a title');
 			expect((await DataStore.query(Post, secondPostId))!.title).toEqual(
-				'a title 2'
+				'a title 2',
 			);
 
 			const thirdPost = await DataStore.save(
 				new Post({
 					title: 'a title 3',
-				})
+				}),
 			);
 
 			expect((await DataStore.query(Post)).length).toEqual(3);
@@ -800,22 +846,34 @@ describe('DataStore sync engine', () => {
 		});
 
 		test('does not error when disruption before sync queries start', async () => {
-			const post = DataStore.save(
+			const postPromise = DataStore.save(
 				new Post({
 					title: 'a title',
-				})
+				}),
 			);
 			const errorLog = jest.spyOn(console, 'error');
 			await simulateDisruption();
 			await simulateDisruptionEnd();
+
 			await waitForSyncQueriesReady();
 			expect(errorLog).not.toHaveBeenCalled();
 			await waitForEmptyOutbox();
 			const table = graphqlService.tables.get('Post')!;
 			expect(table.size).toEqual(1);
 
-			const cloudPost = table.get(JSON.stringify([(await post).id])) as any;
+			const cloudPost = table.get(
+				JSON.stringify([(await postPromise).id]),
+			) as any;
 			expect(cloudPost.title).toEqual('a title');
+
+			/**
+			 * TODO: See if we can remove this. This was added to get the test
+			 * working again after introducing latency to the fake GraphQL
+			 * service. It seems like sync queries are going out and are not
+			 * playing well with `DataStore.clear()` (which happens in
+			 * `afterEach`), resulting in the test hanging indefinitely.
+			 */
+			await waitForSyncQueriesReady();
 		});
 	});
 
@@ -833,7 +891,7 @@ describe('DataStore sync engine', () => {
 				await DataStore.save(
 					new Post({
 						title,
-					})
+					}),
 				);
 			}
 		};
@@ -906,7 +964,7 @@ describe('DataStore sync engine', () => {
 			await resyncWith([
 				syncExpression(
 					Post,
-					async () => post => post.title.contains('cleaning')
+					async () => post => post.title.contains('cleaning'),
 				),
 			]);
 
@@ -931,7 +989,7 @@ describe('DataStore sync engine', () => {
 
 			await resyncWith([
 				syncExpression(LegacyJSONPost, p =>
-					p?.title.eq("whatever, it doesn't matter.")
+					p?.title.eq("whatever, it doesn't matter."),
 				),
 			]);
 
@@ -952,7 +1010,7 @@ describe('DataStore sync engine', () => {
 			await resyncWith([
 				syncExpression(
 					Post,
-					async () => post => post.title.contains('cleaning')
+					async () => post => post.title.contains('cleaning'),
 				),
 			]);
 
@@ -993,7 +1051,7 @@ describe('DataStore sync engine', () => {
 								]),
 								and.emails.ne('-'),
 							]),
-						])
+						]),
 				),
 			]);
 
@@ -1005,40 +1063,40 @@ describe('DataStore sync engine', () => {
 			expect(onCreate).toEqual(onUpdate);
 			expect(onCreate).toEqual(onDelete);
 			expect(onCreate).toMatchInlineSnapshot(`
-			Object {
-			  "or": Array [
-			    Object {
-			      "and": Array [
-			        Object {
-			          "field1": Object {
+			{
+			  "or": [
+			    {
+			      "and": [
+			        {
+			          "field1": {
 			            "eq": "field",
 			          },
 			        },
-			        Object {
-			          "createdAt": Object {
+			        {
+			          "createdAt": {
 			            "gt": "1/1/2023",
 			          },
 			        },
 			      ],
 			    },
-			    Object {
-			      "and": Array [
-			        Object {
-			          "or": Array [
-			            Object {
-			              "optionalField1": Object {
+			    {
+			      "and": [
+			        {
+			          "or": [
+			            {
+			              "optionalField1": {
 			                "beginsWith": "a",
 			              },
 			            },
-			            Object {
-			              "optionalField1": Object {
+			            {
+			              "optionalField1": {
 			                "notContains": "z",
 			              },
 			            },
 			          ],
 			        },
-			        Object {
-			          "emails": Object {
+			        {
+			          "emails": {
 			            "ne": "-",
 			          },
 			        },
@@ -1047,6 +1105,80 @@ describe('DataStore sync engine', () => {
 			  ],
 			}
 		`);
+		});
+	});
+
+	describe('error handling', () => {
+		/**
+		 * NOTE that some of these tests mock sync responses, which are initiated
+		 * in the `beforeEach` one `describe` level up. This should still allow us
+		 * time to intercept sync and subscription queries. If we find that these
+		 * tests are *racing* the sync process, either move this describe block out
+		 * and only `DataStore.start()` in the individual tests, or instantiate
+		 * `errorHandler` listeners up a level.
+		 */
+
+		// Individual unauthorized error with `null` items indicates that AppSync
+		// recognizes the auth, but the resolver rejected with $util.unauthorized()
+		// in the request mapper.
+		test('request mapper $util.unauthorized error on sync', async () => {
+			graphqlService.intercept = (request, next) => {
+				if (request.query.includes('syncLegacyJSONComments')) {
+					throw {
+						data: { syncLegacyJSONComments: null },
+						errors: [
+							{
+								path: ['syncLegacyJSONComments'],
+								data: null,
+								errorType: 'Unauthorized',
+								errorInfo: null,
+								locations: [{ line: 2, column: 3, sourceName: null }],
+								message:
+									'Not Authorized to access syncLegacyJSONComments on type Query',
+							},
+						],
+					};
+				} else {
+					return next();
+				}
+			};
+
+			const error: any = await waitForNextMessage(errorHandler);
+			expect(error.errorType).toBe('Unauthorized');
+		});
+
+		// Individual unauthorized error with `null` items indicates that AppSync
+		// recognizes the auth, but the resolver rejected with $util.unauthorized()
+		// in the request mapper.
+		test('request mapper $util.unauthorized error on mutate', async () => {
+			graphqlService.intercept = (request, next) => {
+				if (request.query.includes('createLegacyJSONComment')) {
+					throw {
+						data: { createLegacyJSONComment: null },
+						errors: [
+							{
+								path: ['createLegacyJSONComment'],
+								data: null,
+								errorType: 'Unauthorized',
+								errorInfo: null,
+								locations: [{ line: 2, column: 3, sourceName: null }],
+								message:
+									'Not Authorized to access createLegacyJSONComment on type Mutation',
+							},
+						],
+					};
+				} else {
+					return next();
+				}
+			};
+			DataStore.save(
+				new LegacyJSONComment({
+					content: 'test content',
+				}),
+			);
+
+			const error: any = await waitForNextMessage(errorHandler);
+			expect(error.errorType).toBe('Unauthorized');
 		});
 	});
 });

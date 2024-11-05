@@ -1,0 +1,20 @@
+name: Push - release from release to latest
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  e2e:
+    # Skip the release workflow if the head commit in the triggering branch contains [skip release]
+    if: ${{ !contains(github.event.head_commit.message, '[skip release]') }}
+    secrets: inherit
+    uses: ./.github/workflows/callable-release-verification.yml
+  release:
+    needs:
+      - e2e
+    permissions:
+      contents: write
+    secrets: inherit
+    uses: ./.github/workflows/callable-npm-publish-release.yml

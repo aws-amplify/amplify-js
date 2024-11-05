@@ -1,19 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, Observer, SubscriptionLike, filter, map } from 'rxjs';
+
 import { ConnectionState } from '../types/PubSub';
+
 import { ReachabilityMonitor } from './ReachabilityMonitor';
 
 // Internal types for tracking different connection states
 type LinkedConnectionState = 'connected' | 'disconnected';
 type LinkedHealthState = 'healthy' | 'unhealthy';
-type LinkedConnectionStates = {
+interface LinkedConnectionStates {
 	networkState: LinkedConnectionState;
 	connectionState: LinkedConnectionState | 'connecting';
 	intendedConnectionState: LinkedConnectionState;
 	keepAliveState: LinkedHealthState;
-};
+}
 
 export const CONNECTION_CHANGE: {
 	[key in
@@ -50,9 +52,9 @@ export class ConnectionStateMonitor {
 	 */
 	private _linkedConnectionState: LinkedConnectionStates;
 	private _linkedConnectionStateObservable: Observable<LinkedConnectionStates>;
-	private _linkedConnectionStateObserver: ZenObservable.SubscriptionObserver<LinkedConnectionStates>;
-	private _networkMonitoringSubscription?: ZenObservable.Subscription;
-	private _initialNetworkStateSubscription?: ZenObservable.Subscription;
+	private _linkedConnectionStateObserver?: Observer<LinkedConnectionStates>;
+	private _networkMonitoringSubscription?: SubscriptionLike;
+	private _initialNetworkStateSubscription?: SubscriptionLike;
 
 	constructor() {
 		this._networkMonitoringSubscription = undefined;
@@ -67,10 +69,10 @@ export class ConnectionStateMonitor {
 		this._initialNetworkStateSubscription = ReachabilityMonitor().subscribe(
 			({ online }) => {
 				this.record(
-					online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
+					online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE,
 				);
 				this._initialNetworkStateSubscription?.unsubscribe();
-			}
+			},
 		);
 
 		this._linkedConnectionStateObservable =
@@ -92,9 +94,9 @@ export class ConnectionStateMonitor {
 			this._networkMonitoringSubscription = ReachabilityMonitor().subscribe(
 				({ online }) => {
 					this.record(
-						online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE
+						online ? CONNECTION_CHANGE.ONLINE : CONNECTION_CHANGE.OFFLINE,
 					);
-				}
+				},
 			);
 		}
 	}
@@ -121,14 +123,19 @@ export class ConnectionStateMonitor {
 
 		// After translating from linked states to ConnectionState, then remove any duplicates
 		return this._linkedConnectionStateObservable
-			.map(value => {
-				return this.connectionStatesTranslator(value);
-			})
-			.filter(current => {
-				const toInclude = current !== previous;
-				previous = current;
-				return toInclude;
-			});
+			.pipe(
+				map(value => {
+					return this.connectionStatesTranslator(value);
+				}),
+			)
+			.pipe(
+				filter(current => {
+					const toInclude = current !== previous;
+					previous = current;
+
+					return toInclude;
+				}),
+			);
 	}
 
 	/*
@@ -150,7 +157,7 @@ export class ConnectionStateMonitor {
 
 		this._linkedConnectionState = { ...newSocketStatus };
 
-		this._linkedConnectionStateObserver.next(this._linkedConnectionState);
+		this._linkedConnectionStateObserver?.next(this._linkedConnectionState);
 	}
 
 	/*
@@ -190,6 +197,7 @@ export class ConnectionStateMonitor {
 		// All remaining states directly correspond to the connection state
 		if (connectionState === 'connecting') return ConnectionState.Connecting;
 		if (connectionState === 'disconnected') return ConnectionState.Disconnected;
+
 		return ConnectionState.Connected;
 	}
 }

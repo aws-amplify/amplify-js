@@ -1,0 +1,22 @@
+name: Prebuild Amplify
+
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        required: true
+        type: string
+
+jobs:
+  prebuild:
+    name: Prebuild on ${{ inputs.runs_on }}
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+        with:
+          is-prebuild: true

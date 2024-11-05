@@ -1,4 +1,4 @@
-name: 'Lock Threads'
+name: Lock Threads
 
 on:
   schedule:
@@ -8,7 +8,7 @@ jobs:
   lock:
     runs-on: ubuntu-latest
     steps:
-      - uses: dessant/lock-threads@v2
+      - uses: dessant/lock-threads@f1a42f0f44eb83361d617a014663e1a76cf282d2 # v2 https://github.com/dessant/lock-threads/commit/f1a42f0f44eb83361d617a014663e1a76cf282d2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           issue-lock-inactive-days: '365'

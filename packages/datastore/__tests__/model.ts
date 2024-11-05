@@ -16,7 +16,7 @@ declare class BlogModel {
 	constructor(init: ModelInit<BlogModel>);
 	static copyOf(
 		source: BlogModel,
-		mutator: (draft: MutableModel<BlogModel>) => MutableModel<BlogModel> | void
+		mutator: (draft: MutableModel<BlogModel>) => MutableModel<BlogModel> | void,
 	): BlogModel;
 }
 
@@ -31,7 +31,7 @@ declare class PostModel {
 	constructor(init: ModelInit<PostModel>);
 	static copyOf(
 		source: PostModel,
-		mutator: (draft: MutableModel<PostModel>) => MutableModel<PostModel> | void
+		mutator: (draft: MutableModel<PostModel>) => MutableModel<PostModel> | void,
 	): PostModel;
 }
 
@@ -44,8 +44,8 @@ declare class ProjectModel {
 	static copyOf(
 		source: ProjectModel,
 		mutator: (
-			draft: MutableModel<ProjectModel>
-		) => MutableModel<ProjectModel> | void
+			draft: MutableModel<ProjectModel>,
+		) => MutableModel<ProjectModel> | void,
 	): ProjectModel;
 }
 
@@ -55,7 +55,7 @@ declare class TeamModel {
 	constructor(init: ModelInit<TeamModel>);
 	static copyOf(
 		source: TeamModel,
-		mutator: (draft: MutableModel<TeamModel>) => MutableModel<TeamModel> | void
+		mutator: (draft: MutableModel<TeamModel>) => MutableModel<TeamModel> | void,
 	): TeamModel;
 }
 
@@ -79,8 +79,8 @@ declare class CommentModel {
 	static copyOf(
 		source: CommentModel,
 		mutator: (
-			draft: MutableModel<CommentModel>
-		) => MutableModel<CommentModel> | void
+			draft: MutableModel<CommentModel>,
+		) => MutableModel<CommentModel> | void,
 	): CommentModel;
 }
 
@@ -92,8 +92,8 @@ declare class PostAuthorJoinModel {
 	static copyOf(
 		source: PostAuthorJoinModel,
 		mutator: (
-			draft: MutableModel<PostAuthorJoinModel>
-		) => MutableModel<PostAuthorJoinModel> | void
+			draft: MutableModel<PostAuthorJoinModel>,
+		) => MutableModel<PostAuthorJoinModel> | void,
 	): PostAuthorJoinModel;
 }
 
@@ -105,8 +105,8 @@ declare class ForumModel {
 	static copyOf(
 		source: ForumModel,
 		mutator: (
-			draft: MutableModel<ForumModel>
-		) => MutableModel<ForumModel> | void
+			draft: MutableModel<ForumModel>,
+		) => MutableModel<ForumModel> | void,
 	): ForumModel;
 }
 
@@ -118,8 +118,8 @@ declare class ForumEditorJoinModel {
 	static copyOf(
 		source: ForumEditorJoinModel,
 		mutator: (
-			draft: MutableModel<ForumEditorJoinModel>
-		) => MutableModel<ForumEditorJoinModel> | void
+			draft: MutableModel<ForumEditorJoinModel>,
+		) => MutableModel<ForumEditorJoinModel> | void,
 	): ForumEditorJoinModel;
 }
 
@@ -131,8 +131,8 @@ declare class EditorModel {
 	static copyOf(
 		source: EditorModel,
 		mutator: (
-			draft: MutableModel<EditorModel>
-		) => MutableModel<EditorModel> | void
+			draft: MutableModel<EditorModel>,
+		) => MutableModel<EditorModel> | void,
 	): EditorModel;
 }
 
@@ -164,8 +164,8 @@ declare class AuthorModel {
 	static copyOf(
 		source: AuthorModel,
 		mutator: (
-			draft: MutableModel<AuthorModel>
-		) => MutableModel<AuthorModel> | void
+			draft: MutableModel<AuthorModel>,
+		) => MutableModel<AuthorModel> | void,
 	): AuthorModel;
 }
 
@@ -177,8 +177,8 @@ declare class BlogOwnerModel {
 	static copyOf(
 		source: BlogOwnerModel,
 		mutator: (
-			draft: MutableModel<BlogOwnerModel>
-		) => MutableModel<BlogOwnerModel> | void
+			draft: MutableModel<BlogOwnerModel>,
+		) => MutableModel<BlogOwnerModel> | void,
 	): BlogOwnerModel;
 }
 
@@ -192,8 +192,8 @@ declare class PersonModel {
 	static copyOf(
 		source: PersonModel,
 		mutator: (
-			draft: MutableModel<PersonModel>
-		) => MutableModel<PersonModel> | void
+			draft: MutableModel<PersonModel>,
+		) => MutableModel<PersonModel> | void,
 	): PersonModel;
 }
 
@@ -206,7 +206,7 @@ declare class SongModel {
 	constructor(init: ModelInit<SongModel>);
 	static copyOf(
 		source: SongModel,
-		mutator: (draft: MutableModel<SongModel>) => MutableModel<SongModel> | void
+		mutator: (draft: MutableModel<SongModel>) => MutableModel<SongModel> | void,
 	): SongModel;
 }
 
@@ -220,8 +220,8 @@ declare class AlbumModel {
 	static copyOf(
 		source: AlbumModel,
 		mutator: (
-			draft: MutableModel<AlbumModel>
-		) => MutableModel<AlbumModel> | void
+			draft: MutableModel<AlbumModel>,
+		) => MutableModel<AlbumModel> | void,
 	): AlbumModel;
 }
 

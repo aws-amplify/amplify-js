@@ -1,4 +1,7 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
 import { ErrorType } from '../../types';
+import { resolveServiceErrorStatusCode } from '../utils';
 
 export type ErrorMap = Partial<{
 	[key in ErrorType]: (error: Error) => boolean;
@@ -7,13 +10,13 @@ export type ErrorMap = Partial<{
 const connectionTimeout = error =>
 	/^Connection failed: Connection Timeout/.test(error.message);
 
-const serverError = error =>
-	/^Error: Request failed with status code 5\d\d/.test(error.message);
+const serverError = error => resolveServiceErrorStatusCode(error) >= 500;
 
 export const mutationErrorMap: ErrorMap = {
 	BadModel: () => false,
 	BadRecord: error => {
 		const { message } = error;
+
 		return (
 			/^Cannot return \w+ for [\w-_]+ type/.test(message) ||
 			/^Variable '.+' has coerced Null value for NonNull type/.test(message)
@@ -22,7 +25,8 @@ export const mutationErrorMap: ErrorMap = {
 	ConfigError: () => false,
 	Transient: error => connectionTimeout(error) || serverError(error),
 	Unauthorized: error =>
-		/^Request failed with status code 401/.test(error.message),
+		error.message === 'Unauthorized' ||
+		resolveServiceErrorStatusCode(error) === 401,
 };
 
 export const subscriptionErrorMap: ErrorMap = {
@@ -31,10 +35,12 @@ export const subscriptionErrorMap: ErrorMap = {
 	ConfigError: () => false,
 	Transient: observableError => {
 		const error = unwrapObservableError(observableError);
+
 		return connectionTimeout(error) || serverError(error);
 	},
 	Unauthorized: observableError => {
 		const error = unwrapObservableError(observableError);
+
 		return /Connection failed.+Unauthorized/.test(error.message);
 	},
 };
@@ -44,7 +50,7 @@ export const syncErrorMap: ErrorMap = {
 	BadRecord: error => /^Cannot return \w+ for [\w-_]+ type/.test(error.message),
 	ConfigError: () => false,
 	Transient: error => connectionTimeout(error) || serverError(error),
-	Unauthorized: () => false,
+	Unauthorized: error => (error as any).errorType === 'Unauthorized',
 };
 
 /**
@@ -55,10 +61,11 @@ export const syncErrorMap: ErrorMap = {
  */
 function unwrapObservableError(observableError: any) {
 	const {
-		error: { errors: [error] } = {
-			errors: [],
-		},
-	} = observableError;
+		errors: [error],
+	} = ({
+		// eslint-disable-next-line no-empty-pattern
+		errors: [],
+	} = observableError);
 
 	return error;
 }
@@ -89,5 +96,6 @@ export function mapErrorToType(errorMap: ErrorMap, error: Error): ErrorType {
 			return errorType;
 		}
 	}
+
 	return 'Unknown';
 }

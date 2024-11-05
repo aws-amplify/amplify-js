@@ -1,23 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 // configuration shape for the Geo class
-export interface GeoConfig {
-	region?: string;
-	AmazonLocationService?: {
-		maps?: {
-			items: {};
-			default: string;
-		};
-		search_indices?: {
-			items: string[];
-			default: string;
-		};
-		geofenceCollections?: {
-			items: string[];
-			default: string;
-		};
-	};
-}
+export { GeoConfig } from '@aws-amplify/core';
 
 // Data held about maps in aws-exports
 export interface MapStyle {
@@ -48,6 +32,7 @@ export interface SearchByTextOptionsBase {
 	maxResults?: number;
 	searchIndexName?: string;
 	providerName?: string;
+	language?: string;
 }
 
 // SearchByText options with a bias position
@@ -68,20 +53,20 @@ export type SearchByTextOptions =
 	| SearchByTextOptionsWithSearchAreaConstraints;
 
 // Options object for searchByCoordinates
-export type SearchByCoordinatesOptions = {
+export interface SearchByCoordinatesOptions {
 	maxResults?: number;
 	searchIndexName?: string;
 	providerName?: string;
-};
+}
 
-export type searchByPlaceIdOptions = {
+export interface searchByPlaceIdOptions {
 	searchIndexName?: string;
-};
+}
 
 // Geometry object for Place points
-export type PlaceGeometry = {
+export interface PlaceGeometry {
 	point: Coordinates;
-};
+}
 
 // Place object with locality information
 export interface Place {
@@ -104,38 +89,38 @@ export type LinearRing = Coordinates[];
 export type GeofencePolygon = LinearRing[];
 
 // Geometry object for Polygon
-export type PolygonGeometry = {
+export interface PolygonGeometry {
 	polygon: GeofencePolygon;
-};
+}
 
 export type GeofenceId = string;
 
 // Geofence object used as input for saveGeofences
-export type GeofenceInput = {
+export interface GeofenceInput {
 	geofenceId: GeofenceId;
 	geometry: PolygonGeometry;
-};
+}
 
 // Options object for saveGeofences
-export type GeofenceOptions = {
+export interface GeofenceOptions {
 	providerName?: string;
-};
+}
 
 // Error type for errors related to Geofence API calls
-export type GeofenceError = {
+export interface GeofenceError {
 	error: {
 		code: string;
 		message: string;
 	};
 	geofenceId: GeofenceId;
-};
+}
 
 // Base geofence object
-type GeofenceBase = {
+interface GeofenceBase {
 	geofenceId: GeofenceId;
 	createTime?: Date;
 	updateTime?: Date;
-};
+}
 
 // Results object for getGeofence
 export type Geofence = GeofenceBase & {
@@ -143,10 +128,10 @@ export type Geofence = GeofenceBase & {
 };
 
 // Results object for saveGeofences
-export type SaveGeofencesResults = {
+export interface SaveGeofencesResults {
 	successes: GeofenceBase[];
 	errors: GeofenceError[];
-};
+}
 
 // Options object for listGeofence
 export type ListGeofenceOptions = GeofenceOptions & {
@@ -154,21 +139,21 @@ export type ListGeofenceOptions = GeofenceOptions & {
 };
 
 // Results options for listGeofence
-export type ListGeofenceResults = {
+export interface ListGeofenceResults {
 	entries: Geofence[];
 	nextToken: string | undefined;
-};
+}
 
 // Results object for deleteGeofence
-export type DeleteGeofencesResults = {
+export interface DeleteGeofencesResults {
 	successes: GeofenceId[];
 	errors: GeofenceError[];
-};
+}
 
 // Return type for searchForSuggestions
 export type SearchForSuggestionsResults = SearchForSuggestionsResult[];
 
-export type SearchForSuggestionsResult = {
+export interface SearchForSuggestionsResult {
 	text: string;
 	placeId?: string;
-};
+}

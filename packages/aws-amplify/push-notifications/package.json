@@ -1,0 +1,8 @@
+{
+	"name": "aws-amplify/push-notifications",
+	"main": "../dist/cjs/push-notifications/index.js",
+	"react-native": "../src/push-notifications/index.ts",
+	"browser": "../dist/esm/push-notifications/index.mjs",
+	"module": "../dist/esm/push-notifications/index.mjs",
+	"typings": "../dist/esm/push-notifications/index.d.ts"
+}

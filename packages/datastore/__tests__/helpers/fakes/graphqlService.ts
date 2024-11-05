@@ -1,4 +1,4 @@
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import { Observable, Subscriber } from 'rxjs';
 import { parse } from 'graphql';
 import {
 	Schema,
@@ -9,15 +9,67 @@ import {
 import { validatePredicate, getTimestampFields } from '../../../src/util';
 import { ModelPredicateCreator } from '../../../src/predicates';
 import { initSchema as _initSchema } from '../../../src/datastore/datastore';
+import { pause } from '../util';
+
+type GraphQLRequest = {
+	query: string;
+	variables: Record<string, any>;
+	authMode: string | undefined | null;
+	authToken: string | undefined | null;
+};
 
 /**
- * Statefully pretends to be AppSync, with minimal built-in asertions with
+ * Artificial latencies to introduce to the imagined network boundaries.
+ * @property request: The time it takes a request will take to reach the cloud.
+ * @property response: After request processing, the time it takes for the client to receive a response.
+ * @property subscriber: After request processing, the time it takes for each relevant subscriber to receive an event.
+ * @property jitter: The max amount to randomly to +/- from each latency.
+ */
+type FakeLatencies = {
+	request: number;
+	response: number;
+	subscriber: number;
+	jitter: number;
+};
+
+const defaultLatencies: FakeLatencies = {
+	request: 15,
+	response: 15,
+	subscriber: 15,
+	jitter: 5,
+};
+
+/**
+ * Fake mirrors logic from multiple merge strategies
+ * https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html#automerge
+ */
+export type MergeStrategy = 'Automerge' | 'OptimisticConcurrency';
+
+/**
+ * Keep a list of all subscription delivery promises where each promise
+ * resolves after the related message is delivered to all subscribers.
+ *
+ * This helps us track that all messages are delivered before proceeding
+ * with tests. The lists should be cleared between tests.
+ */
+export let subscriptionDeliveryPromiseList: Promise<void>[] = [];
+
+/**
+ * Clear the subscription delivery promise list
+ */
+export function clearSubscriptionDeliveryPromiseList() {
+	subscriptionDeliveryPromiseList = [];
+}
+
+/**
+ * Statefully pretends to be AppSync, with minimal built-in assertions with
  * error callbacks and settings to help simulate various conditions.
  */
 export class FakeGraphQLService {
 	public isConnected = true;
 	public log: (channel: string, ...etc: any) => void = s => undefined;
 	public requests = [] as any[];
+	public errors = new Map<string, any[]>();
 	public tables = new Map<string, Map<string, any[]>>();
 	public tableDefinitions = new Map<string, SchemaModel>();
 	public PKFields = new Map<string, string[]>();
@@ -26,16 +78,52 @@ export class FakeGraphQLService {
 		string,
 		{ createdAt: string; updatedAt: string }
 	>();
-	public observers = new Map<
-		string,
-		ZenObservable.SubscriptionObserver<any>[]
-	>();
+	public observers = new Map<string, Subscriber<any>[]>();
+	/**
+	 * All in-flight mutations. Used solely for observability in tests.
+	 * When dealing with concurrent mutations or increased latency,
+	 * we should always first verify that there are no in-flight
+	 * mutations prior to making final test assertions.
+	 */
+	public runningMutations = new Map<string, string>();
 
-	constructor(public schema: Schema) {
+	/**
+	 * Number of subscription messages sent. Used solely for observability
+	 * in tests. When dealing with concurrent mutations or increased latency,
+	 * we should always first verify that the number of subscription messages
+	 * sent for a given model is what we expect prior to making final test
+	 * assertions.
+	 */
+	public subscriptionMessagesSent = [] as any[];
+
+	/**
+	 * Singleton middleware, basically.
+	 */
+	public intercept: (request: GraphQLRequest, next: () => any) => any = (
+		request,
+		next,
+	) => next();
+
+	/**
+	 * Artificial latencies to introduce to the imagined network boundaries.
+	 */
+	public latencies: FakeLatencies = defaultLatencies;
+
+	/**
+	 * The merge strategy used for conflict resolution in the fake service
+	 */
+	public mergeStrategy: MergeStrategy;
+
+	constructor(
+		public schema: Schema,
+		mergeStrategy: MergeStrategy = 'Automerge',
+	) {
 		for (const model of Object.values(schema.models)) {
 			this.tables.set(model.name, new Map<string, any[]>());
 			this.tableDefinitions.set(model.name, model);
+			this.mergeStrategy = mergeStrategy;
 			let CPKFound = false;
+
 			for (const attribute of model.attributes || []) {
 				if (isModelAttributePrimaryKey(attribute)) {
 					this.PKFields.set(model.name, attribute!.properties!.fields);
@@ -54,13 +142,41 @@ export class FakeGraphQLService {
 	}
 
 	/**
+	 * NOTE: don't forget to reset these values at the end of your test!
+	 * @param latencies new values for fake latencies
+	 * @returns updated values for fake latencies
+	 */
+	public setLatencies(latencies: Partial<FakeLatencies>): FakeLatencies {
+		return (this.latencies = { ...this.latencies, ...latencies });
+	}
+
+	/**
+	 * Helpful for debugging tests that update latencies
+	 * @returns current values for fake latencies
+	 */
+	public getLatencies(): FakeLatencies {
+		return this.latencies;
+	}
+
+	private async jitteredPause(ms) {
+		/**
+		 * "Materialized" jitter from -jitter to +jitter.
+		 */
+		const jitter = Math.floor(
+			Math.random() * this.latencies.jitter * 2 - this.latencies.jitter,
+		);
+		const jitteredMs = Math.max(ms + jitter, 0);
+		return pause(jitteredMs);
+	}
+
+	/**
 	 * Given the plural name of a model, find the singular name
 	 * @param pluralName plural name of model (e.g. "Todos")
 	 * @returns singular name of model (e.g. "Todo")
 	 */
 	private findSingularName(pluralName: string): string {
 		const model = Object.values(this.schema.models).find(
-			m => m.pluralName === pluralName
+			m => m.pluralName === pluralName,
 		);
 		if (!model) throw new Error(`No model found for plural name ${pluralName}`);
 		return model.name;
@@ -76,7 +192,7 @@ export class FakeGraphQLService {
 		const selections = q.selectionSet.selections[0];
 		const selection = selections.name.value;
 		const type = selection.match(
-			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+			/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/,
 		)[1];
 
 		let table;
@@ -84,20 +200,20 @@ export class FakeGraphQLService {
 		if (type === 'sync' || type === 'list') {
 			// e.g. `Models`
 			const pluralName = selection.match(
-				/^(create|sync|get|list)([A-Za-z]+)$/
+				/^(create|sync|get|list)([A-Za-z]+)$/,
 			)[2];
 			table = this.findSingularName(pluralName);
 		} else {
 			table = selection.match(
-				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/
+				/^(create|update|delete|sync|get|list|onCreate|onUpdate|onDelete)(\w+)$/,
 			)[2];
 		}
 
 		const items =
 			operation === 'query'
 				? selections?.selectionSet?.selections[0]?.selectionSet?.selections?.map(
-						i => i.name.value
-				  )
+						i => i.name.value,
+					)
 				: selections?.selectionSet?.selections?.map(i => i.name.value);
 
 		return { operation, name, selection, type, table, items };
@@ -113,7 +229,7 @@ export class FakeGraphQLService {
 		if (!condition) {
 			this.log(
 				'checking satisfiesCondition',
-				'matches all for `null` conditions'
+				'matches all for `null` conditions',
 			);
 			return true;
 		}
@@ -121,7 +237,7 @@ export class FakeGraphQLService {
 		const modelDefinition = this.schema.models[tableName];
 		const predicate = ModelPredicateCreator.createFromAST(
 			modelDefinition,
-			condition
+			condition,
 		);
 		const isMatch = validatePredicate(item, 'and', [
 			ModelPredicateCreator.getPredicates(predicate)!,
@@ -129,7 +245,7 @@ export class FakeGraphQLService {
 
 		this.log('satisfiesCondition result', {
 			effectivePredicate: JSON.stringify(
-				ModelPredicateCreator.getPredicates(predicate)
+				ModelPredicateCreator.getPredicates(predicate),
 			),
 			isMatch,
 		});
@@ -158,7 +274,7 @@ export class FakeGraphQLService {
 		return JSON.stringify(values);
 	}
 
-	private makeConditionalUpateFailedError(selection) {
+	private makeConditionalUpdateFailedError(selection) {
 		// Reponse taken from AppSync console trying to create already existing model.
 		return {
 			path: [selection],
@@ -174,6 +290,22 @@ export class FakeGraphQLService {
 			],
 			message:
 				'The conditional request failed (Service: DynamoDb, Status Code: 400, Request ID: 123456789123456789012345678901234567890)',
+		};
+	}
+
+	private makeOCCConflictUnhandeled(existingObject, call) {
+		return {
+			data: existingObject,
+			errorType: 'ConflictUnhandled',
+			message: 'Conflict resolver rejects mutation.',
+			locations: [
+				{
+					line: 2,
+					column: 3,
+					sourceName: null,
+				},
+			],
+			path: [call],
 		};
 	}
 
@@ -214,7 +346,7 @@ export class FakeGraphQLService {
 
 	private makeExtraFieldInputError(tableName, operation, fields) {
 		const properOperationName = `${operation[0].toUpperCase()}${operation.substring(
-			1
+			1,
 		)}`;
 		const inputName = `${properOperationName}${tableName}Input`;
 		return {
@@ -269,7 +401,7 @@ export class FakeGraphQLService {
 	private writeableFields(tableName) {
 		const def = this.tableDefinitions.get(tableName)!;
 		return Object.keys(def.fields).filter(
-			field => !def.fields[field]?.isReadOnly
+			field => !def.fields[field]?.isReadOnly,
 		);
 	}
 
@@ -296,13 +428,13 @@ export class FakeGraphQLService {
 			case 'update':
 				const unexpectedFields = this.identifyExtraValues(
 					[...writeableFields, '_version'],
-					Object.keys(record)
+					Object.keys(record),
 				);
 				if (unexpectedFields.length > 0) {
 					error = this.makeExtraFieldInputError(
 						tableName,
 						operation,
-						unexpectedFields
+						unexpectedFields,
 					);
 				}
 				for (const ownerField of this.ownerFields(tableName)) {
@@ -332,7 +464,7 @@ export class FakeGraphQLService {
 
 	private populatedFields(record) {
 		return Object.fromEntries(
-			Object.entries(record).filter(([key, value]) => value !== undefined)
+			Object.entries(record).filter(([key, value]) => value !== undefined),
 		);
 	}
 
@@ -354,8 +486,30 @@ export class FakeGraphQLService {
 				_lastChangedAt: new Date().getTime(),
 			};
 		}
-		this.log('automerge', { existing, updated, merged });
+		this.log('auto-merge', { existing, updated, merged });
 		return merged;
+	}
+
+	private occMerge(selection, existing, updated) {
+		let errors: any[] = [];
+		let merged: any = null;
+		if (updated._version === existing._version) {
+			merged = {
+				...this.populatedFields(existing),
+				...this.populatedFields(updated),
+				_version: updated._version + 1,
+				_lastChangedAt: new Date().getTime(),
+				updatedAt: new Date().toISOString(),
+			};
+		} else {
+			errors = [this.makeOCCConflictUnhandeled(existing, selection)];
+		}
+		const data = {
+			[selection]: merged,
+		};
+
+		this.log('occ merged', { existing, updated, merged, errors });
+		return [data, errors];
 	}
 
 	public simulateDisconnect() {
@@ -378,15 +532,76 @@ export class FakeGraphQLService {
 	}
 
 	/**
-	 * SYNC EXPRESSIONS NOT YET SUPPORTED.
+	 * Sends out graphql subscription messages to all subscribers of a table-operation.
 	 *
-	 * @param param0
+	 * @param tableName The table name subscribers are looking at.
+	 * @param type The operation type. (Create, Update, Delete).
+	 * @param data The data to send out.
+	 * @param selection The function/selection name, like "onCreateTodo".
+	 * @param ignoreLatency Used for exact control of the timing of the request / response, while still
+	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
+	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
 	 */
-	public graphql({ query, variables, authMode, authToken }) {
-		return this.request({ query, variables, authMode, authToken });
+	public async notifySubscribers(
+		tableName,
+		type,
+		data,
+		selection,
+		ignoreLatency = false,
+	) {
+		const deliveryPromise = new Promise<void>(async resolve => {
+			!ignoreLatency && (await this.jitteredPause(this.latencies.subscriber));
+			const observers = this.getObservers(tableName, type);
+			const typeName = {
+				create: 'Create',
+				update: 'Update',
+				delete: 'Delete',
+			}[type];
+			const observerMessageName = `on${typeName}${tableName}`;
+			observers.forEach(observer => {
+				const message = {
+					data: {
+						[observerMessageName]: data[selection],
+					},
+				};
+				if (!this.stopSubscriptionMessages) {
+					this.log('API subscription message', {
+						observerMessageName,
+						message,
+					});
+					this.subscriptionMessagesSent.push([observerMessageName, message]);
+					observer.next(message);
+				}
+			});
+			resolve();
+		});
+		subscriptionDeliveryPromiseList.push(deliveryPromise);
 	}
 
-	public request({ query, variables, authMode, authToken }) {
+	public graphql(request: GraphQLRequest, ignoreLatency: boolean = false) {
+		return this.intercept(request, () => this.request(request, ignoreLatency));
+	}
+
+	/**
+	 * For making direct calls to the service without DataStore (e.g. simulating requests from external clients).
+	 * Wrapping `this.graphql` offers a quick and easy way to quickly debug tests that makes external calls
+	 * without having to filter out all calls to `this.graphql`.
+	 * @param request the GraphQL request
+	 * @param ignoreLatency Used for exact control of the timing of the request / response, while still
+	 * maintaining the artificial latencies of all other in-flight requests. When simulating a request from
+	 * an external client, we want the response back ASAP in order to accurately test outbox merging consistently.
+	 */
+	public externalGraphql(request: GraphQLRequest, ignoreLatency = false) {
+		this.log('External request', {
+			request,
+		});
+		return this.graphql(request, ignoreLatency);
+	}
+
+	public request(
+		{ query, variables, authMode, authToken },
+		ignoreLatency = false,
+	) {
 		this.log('API Request', {
 			query,
 			variables: JSON.stringify(variables, null, 2),
@@ -417,150 +632,11 @@ export class FakeGraphQLService {
 
 		const table = this.getTable(tableName);
 
-		if (operation === 'query') {
-			if (type === 'get') {
-				const record = table.get(this.getPK(tableName, variables.input));
-				data = { [selection]: record };
-			} else if (type === 'list' || type === 'sync') {
-				data = {
-					[selection]: {
-						items: [...table.values()].filter(item =>
-							this.satisfiesCondition(tableName, item, variables.filter)
-						),
-						nextToken: null,
-						startedAt: new Date().getTime(),
-					},
-				};
-			}
-		} else if (operation === 'mutation') {
-			const record = variables.input;
-			const timestampFields = this.timestampFields.get(tableName);
-
-			if (type === 'create') {
-				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'create', record);
-
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (existing) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeConditionalUpateFailedError(selection)];
-				} else {
-					data = {
-						[selection]: {
-							...record,
-							_deleted: false,
-							_version: 1,
-							_lastChangedAt: new Date().getTime(),
-							// TODO: update test expected values and re-enable
-							// [timestampFields!.createdAt]: new Date().toISOString(),
-							// [timestampFields!.updatedAt]: new Date().toISOString(),
-						},
-					};
-					table.set(this.getPK(tableName, record), data[selection]);
-				}
-			} else if (type === 'update') {
-				// Simulate update using the default (AUTO_MERGE) for now.
-				// NOTE: We're not doing list/set merging. :o
-				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'update', record);
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (!existing) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeMissingUpdateTarget(selection)];
-				} else {
-					const updated = this.autoMerge(existing, record);
-					data = {
-						[selection]: updated,
-					};
-					table.set(this.getPK(tableName, record), updated);
-				}
-			} else if (type === 'delete') {
-				const existing = table.get(this.getPK(tableName, record));
-				const validationError = this.validate(tableName, 'delete', record);
-				this.log('delete looking for existing', { existing });
-
-				if (validationError) {
-					data = {
-						[selection]: null,
-					};
-					errors = [validationError];
-				} else if (!existing) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeMissingUpdateTarget(selection)];
-				} else if (record._version === undefined) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeMissingVersion(existing, selection)];
-				} else if (existing._version !== record._version) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeConditionalUpateFailedError(selection)];
-				} else if (
-					!this.satisfiesCondition(tableName, existing, variables.condition)
-				) {
-					data = {
-						[selection]: null,
-					};
-					errors = [this.makeConditionalUpateFailedError(selection)];
-				} else {
-					data = {
-						[selection]: {
-							...existing,
-							...record,
-							_deleted: true,
-							_version: existing._version + 1,
-							_lastChangedAt: new Date().getTime(),
-							// TODO: update test expected values and re-enable
-							// [timestampFields!.updatedAt]: new Date().toISOString(),
-						},
-					};
-					table.set(this.getPK(tableName, record), data[selection]);
-					this.log('delete applying to table', { data });
-				}
-			}
-
-			this.log('API Response', { data, errors });
-
-			const observers = this.getObservers(tableName, type);
-			const typeName = {
-				create: 'Create',
-				update: 'Update',
-				delete: 'Delete',
-			}[type];
-			const observerMessageName = `on${typeName}${tableName}`;
-			observers.forEach(observer => {
-				const message = {
-					value: {
-						data: {
-							[observerMessageName]: data[selection],
-						},
-					},
-				};
-				if (!this.stopSubscriptionMessages) {
-					this.log('API subscription message', {
-						observerMessageName,
-						message,
-					});
-					observer.next(message);
-				}
-			});
-		} else if (operation === 'subscription') {
+		// API returns immediately if the operation is a subscription.
+		// if the subscription fails or is delayed, that will simply manifest as either
+		// errors or missed messages, respective -- neither of which we're testing yet.
+		// TBD how we simulate that.
+		if (operation === 'subscription') {
 			return new Observable(observer => {
 				this.log('API subscription created', { tableName, type });
 				this.subscribe(tableName, type, observer);
@@ -568,10 +644,182 @@ export class FakeGraphQLService {
 			});
 		}
 
-		return Promise.resolve({
-			data,
-			errors,
-			extensions: {},
+		return new Promise(async (resolve, reject) => {
+			!ignoreLatency && (await this.jitteredPause(this.latencies.request));
+
+			if (operation === 'query') {
+				if (type === 'get') {
+					const record = table.get(this.getPK(tableName, variables.input));
+					data = { [selection]: record };
+				} else if (type === 'list' || type === 'sync') {
+					data = {
+						[selection]: {
+							items: [...table.values()].filter(item =>
+								this.satisfiesCondition(tableName, item, variables.filter),
+							),
+							nextToken: null,
+							startedAt: new Date().getTime(),
+						},
+					};
+				}
+			} else if (operation === 'mutation') {
+				this.runningMutations.set(variables.input.id, type);
+
+				const record = variables.input;
+				// TODO: update test expected values and re-enable (currently unused)
+				// const timestampFields = this.timestampFields.get(tableName);
+
+				if (type === 'create') {
+					const existing = table.get(this.getPK(tableName, record));
+					const validationError = this.validate(tableName, 'create', record);
+
+					if (validationError) {
+						data = {
+							[selection]: null,
+						};
+						errors = [validationError];
+					} else if (existing) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeConditionalUpdateFailedError(selection)];
+					} else {
+						data = {
+							[selection]: {
+								...record,
+								_deleted: false,
+								_version: 1,
+								_lastChangedAt: new Date().getTime(),
+								// TODO: update test expected values and re-enable
+								// [timestampFields!.createdAt]: new Date().toISOString(),
+								// [timestampFields!.updatedAt]: new Date().toISOString(),
+							},
+						};
+						table.set(this.getPK(tableName, record), data[selection]);
+					}
+				} else if (type === 'update') {
+					// Simulate update using the default (AUTO_MERGE) for now.
+					// NOTE: We're not doing list/set merging. :o
+					const existing = table.get(this.getPK(tableName, record));
+					const validationError = this.validate(tableName, 'update', record);
+					if (validationError) {
+						data = {
+							[selection]: null,
+						};
+						errors = [validationError];
+					} else if (!existing) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeMissingUpdateTarget(selection)];
+					} else {
+						if (this.mergeStrategy === 'OptimisticConcurrency') {
+							[data, errors] = this.occMerge(selection, existing, record);
+							if (data[selection]) {
+								table.set(this.getPK(tableName, record), data[selection]);
+							}
+						} else {
+							const updated = this.autoMerge(existing, record);
+							data = {
+								[selection]: updated,
+							};
+							table.set(this.getPK(tableName, record), updated);
+						}
+					}
+				} else if (type === 'delete') {
+					const existing = table.get(this.getPK(tableName, record));
+					const validationError = this.validate(tableName, 'delete', record);
+					this.log('delete looking for existing', { existing });
+
+					if (validationError) {
+						data = {
+							[selection]: null,
+						};
+						errors = [validationError];
+					} else if (!existing) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeMissingUpdateTarget(selection)];
+					} else if (record._version === undefined) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeMissingVersion(existing, selection)];
+					} else if (existing._version !== record._version) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeConditionalUpdateFailedError(selection)];
+					} else if (
+						!this.satisfiesCondition(tableName, existing, variables.condition)
+					) {
+						data = {
+							[selection]: null,
+						};
+						errors = [this.makeConditionalUpdateFailedError(selection)];
+					} else {
+						data = {
+							[selection]: {
+								...existing,
+								...record,
+								_deleted: true,
+								_version: existing._version + 1,
+								_lastChangedAt: new Date().getTime(),
+								// TODO: update test expected values and re-enable
+								// [timestampFields!.updatedAt]: new Date().toISOString(),
+							},
+						};
+						table.set(this.getPK(tableName, record), data[selection]);
+						this.log('delete applying to table', { data });
+					}
+				}
+
+				// Only notify subscribers when the change was made without errors
+				if (errors.length === 0) {
+					this.notifySubscribers(
+						tableName,
+						type,
+						data,
+						selection,
+						ignoreLatency,
+					);
+				} else {
+					if (!Array.isArray(this.errors.get(type))) {
+						this.errors.set(type, []);
+					}
+					this.errors.get(type)?.push([selection, errors]);
+				}
+
+				!ignoreLatency && (await this.jitteredPause(this.latencies.response));
+
+				this.log('API Response', { data, errors });
+
+				const response = {
+					data,
+					errors,
+					extensions: {},
+				};
+
+				// Resolve unless there are errors, in which case reject/throw
+				if (response.errors && response.errors.length) {
+					reject(response);
+				} else {
+					resolve(response);
+				}
+			}
+
+			!ignoreLatency && (await this.jitteredPause(this.latencies.response));
+
+			// Mutation is complete, remove from in-flight mutations
+			this.runningMutations.delete(variables?.input?.id);
+
+			this.log('API Response', { data, errors });
+			resolve({
+				data,
+				errors,
+				extensions: {},
+			});
 		});
 	}
 }

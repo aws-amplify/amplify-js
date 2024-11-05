@@ -1,0 +1,54 @@
+name: Release LTS version to npm and update repository
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    name: Publish to Amplify Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          path: amplify-js
+          token: ${{ secrets.GH_TOKEN_AMPLIFY_JS_WRITE }}
+          # Minimal depth 0 so we can fetch all git tags.
+          fetch-depth: 0
+
+      - name: Setup node and build the repository
+        uses: ./amplify-js/.github/actions/node-and-build
+
+      - name: Run npm publish
+        uses: ./amplify-js/.github/actions/npm-publish
+        with:
+          target: ${{ inputs.target }}
+          npm_token: ${{ secrets.NPM_TOKEN }}
+          github_user: ${{ vars.GH_USER}}
+          github_email: ${{ vars.GH_EMAIL}}
+
+      - name: Set github commit user
+        env:
+          GITHUB_EMAIL: ${{ vars.GH_EMAIL }}
+          GITHUB_USER: ${{ vars.GH_USER }}
+        run: |
+          git config --global user.email $GITHUB_EMAIL
+          git config --global user.name $GITHUB_USER
+
+      - name: Update API documentation
+        working-directory: ./amplify-js
+        run: |
+          yarn run docs
+          git add ./docs/api/
+          git commit -m "chore(release): update API docs [ci skip]"
+
+      - name: Push post release changes
+        working-directory: ./amplify-js
+        env:
+          TARGET_BRANCH: ${{ inputs.target }}
+        run: |
+          git push origin $TARGET_BRANCH

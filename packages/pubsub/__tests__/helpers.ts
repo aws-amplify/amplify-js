@@ -1,8 +1,8 @@
 import { Hub } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import { Observable } from 'rxjs';
 import { ConnectionState as CS, CONNECTION_STATE_CHANGE } from '../src';
 import * as constants from '../src/Providers/constants';
-
+import { Observer as RxObserver } from 'rxjs';
 export function delay(timeout) {
 	return new Promise(resolve => {
 		setTimeout(() => {
@@ -14,13 +14,11 @@ export function delay(timeout) {
 export class HubConnectionListener {
 	teardownHubListener: () => void;
 	observedConnectionStates: CS[] = [];
-	currentConnectionState: CS;
+	currentConnectionState!: CS;
 
-	private connectionStateObservers: ZenObservable.Observer<CS>[] = [];
+	private connectionStateObservers: RxObserver<CS>[] = [];
 
 	constructor(channel: string) {
-		let closeResolver: (value: PromiseLike<any>) => void;
-
 		this.teardownHubListener = Hub.listen(channel, (data: any) => {
 			const { payload } = data;
 			if (payload.event === CONNECTION_STATE_CHANGE) {
@@ -86,12 +84,12 @@ export class HubConnectionListener {
 }
 
 export class FakeWebSocketInterface {
-	webSocket: FakeWebSocket;
-	readyForUse: Promise<void>;
-	hasClosed: Promise<undefined>;
-	hubConnectionListener: HubConnectionListener;
+	webSocket!: FakeWebSocket;
+	readyForUse!: Promise<void>;
+	hasClosed!: Promise<undefined>;
+	hubConnectionListener!: HubConnectionListener;
 
-	private readyResolve: (value: PromiseLike<any>) => void;
+	private readyResolve!: (value: PromiseLike<any>) => void;
 
 	constructor() {
 		this.hubConnectionListener = new HubConnectionListener('api');
@@ -198,7 +196,7 @@ export class FakeWebSocketInterface {
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_ACK,
 					payload: payload,
 				}),
-			})
+			}),
 		);
 	}
 
@@ -212,7 +210,7 @@ export class FakeWebSocketInterface {
 					type: constants.MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE,
 					payload: payload,
 				}),
-			})
+			}),
 		);
 	}
 
@@ -224,7 +222,7 @@ export class FakeWebSocketInterface {
 					payload: payload,
 					id: this.webSocket.subscriptionId,
 				}),
-			})
+			}),
 		);
 	}
 
@@ -238,7 +236,7 @@ export class FakeWebSocketInterface {
 					...data,
 					id: this.webSocket.subscriptionId,
 				}),
-			})
+			}),
 		);
 	}
 
@@ -285,7 +283,7 @@ export class FakeWebSocketInterface {
 	 */
 	async waitUntilConnectionStateIn(connectionStates: CS[]) {
 		return this.hubConnectionListener.waitUntilConnectionStateIn(
-			connectionStates
+			connectionStates,
 		);
 	}
 }
@@ -294,16 +292,16 @@ class FakeWebSocket implements WebSocket {
 	subscriptionId: string | undefined;
 	closeResolverFcn: () => (value: PromiseLike<any>) => void;
 
-	binaryType: BinaryType;
-	bufferedAmount: number;
-	extensions: string;
-	onclose: (this: WebSocket, ev: CloseEvent) => any;
-	onerror: (this: WebSocket, ev: Event) => any;
-	onmessage: (this: WebSocket, ev: MessageEvent<any>) => any;
-	onopen: (this: WebSocket, ev: Event) => any;
-	protocol: string;
-	readyState: number;
-	url: string;
+	binaryType!: BinaryType;
+	bufferedAmount!: number;
+	extensions!: string;
+	onclose!: (this: WebSocket, ev: CloseEvent) => any;
+	onerror!: (this: WebSocket, ev: Event) => any;
+	onmessage!: (this: WebSocket, ev: MessageEvent<any>) => any;
+	onopen!: (this: WebSocket, ev: Event) => any;
+	protocol!: string;
+	readyState!: number;
+	url!: string;
 	close(code?: number, reason?: string): void {
 		const closeResolver = this.closeResolverFcn();
 		if (closeResolver) closeResolver(Promise.resolve(undefined));
@@ -312,19 +310,19 @@ class FakeWebSocket implements WebSocket {
 		const parsedInput = JSON.parse(String(data));
 		this.subscriptionId = parsedInput.id;
 	}
-	CLOSED: number;
-	CLOSING: number;
-	CONNECTING: number;
-	OPEN: number;
+	CONNECTING: 0 = 0;
+	OPEN: 1 = 1;
+	CLOSING: 2 = 2;
+	CLOSED: 3 = 3;
 	addEventListener<K extends keyof WebSocketEventMap>(
 		type: K,
 		listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
-		options?: boolean | AddEventListenerOptions
+		options?: boolean | AddEventListenerOptions,
 	): void;
 	addEventListener(
 		type: string,
 		listener: EventListenerOrEventListenerObject,
-		options?: boolean | AddEventListenerOptions
+		options?: boolean | AddEventListenerOptions,
 	): void;
 	addEventListener(type: unknown, listener: unknown, options?: unknown): void {
 		throw new Error('Method not implemented addEventListener.');
@@ -332,17 +330,17 @@ class FakeWebSocket implements WebSocket {
 	removeEventListener<K extends keyof WebSocketEventMap>(
 		type: K,
 		listener: (this: WebSocket, ev: WebSocketEventMap[K]) => any,
-		options?: boolean | EventListenerOptions
+		options?: boolean | EventListenerOptions,
 	): void;
 	removeEventListener(
 		type: string,
 		listener: EventListenerOrEventListenerObject,
-		options?: boolean | EventListenerOptions
+		options?: boolean | EventListenerOptions,
 	): void;
 	removeEventListener(
 		type: unknown,
 		listener: unknown,
-		options?: unknown
+		options?: unknown,
 	): void {
 		throw new Error('Method not implemented removeEventListener.');
 	}
@@ -358,7 +356,7 @@ class FakeWebSocket implements WebSocket {
 export async function replaceConstant(
 	name: string,
 	replacementValue: any,
-	testFn: () => Promise<void>
+	testFn: () => Promise<void>,
 ) {
 	const initialValue = constants[name];
 	Object.defineProperty(constants, name, {

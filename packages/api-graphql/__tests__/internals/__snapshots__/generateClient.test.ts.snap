@@ -1,0 +1,470 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generateClient basic model operations with Amplify configuration options headers config & client headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "some-id",
+          },
+        },
+        "headers": {
+          "Authorization": "amplify-config-auth-token",
+          "X-Api-Key": "FAKE-KEY",
+          "client-header": "should exist",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient basic model operations with Amplify configuration options headers custom client headers should not overwrite library config headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "some-id",
+          },
+        },
+        "headers": {
+          "Authorization": "client-level-header",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient basic model operations with Amplify configuration options headers custom request headers should not overwrite library config headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "some-id",
+          },
+        },
+        "headers": {
+          "Authorization": "request-level-header",
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom client and request headers CRUD with custom client header functions 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "a1",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "client-header-function": "should return this header",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom client and request headers CRUD with custom client header functions that pass requestOptions 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "a1",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "rq-method": "POST",
+          "rq-qs": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "rq-url": "https://localhost/graphql",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom client and request headers CRUD with custom client headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "a1",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "client-header": "should exist",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom client and request headers CRUD with custom request header function 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "a1",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "request-header-function": "should return this header",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom client and request headers CRUD with custom request header function that accept requestOptions 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "a1",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "rq-method": "POST",
+          "rq-qs": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "rq-url": "https://localhost/graphql",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient custom client and request headers CRUD with custom request headers 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "a1",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "request-header": "should exist",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient graphql default auth default iam produces expected signingInfo 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "{
+  listTodos {
+    __typename
+    id
+    owner
+    createdAt
+    updatedAt
+    name
+    description
+  }
+}
+",
+          "variables": {},
+        },
+        "headers": {
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": {
+          "region": "us-west-1",
+          "service": "appsync",
+        },
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient model operation happy path Can Get 1`] = `
+[
+  [
+    "AmplifyClassV6",
+    {
+      "abortController": AbortController {},
+      "options": {
+        "body": {
+          "query": "query ($id: ID!) {
+  getTodo(id: $id) {
+    id
+    name
+    description
+    status
+    tags
+    createdAt
+    updatedAt
+    todoMetaId
+    owner
+  }
+}
+",
+          "variables": {
+            "id": "a1",
+          },
+        },
+        "headers": {
+          "X-Api-Key": "FAKE-KEY",
+          "x-amz-user-agent": "aws-amplify/latest api/latest framework/latest",
+        },
+        "signingServiceInfo": undefined,
+        "withCredentials": undefined,
+      },
+      "url": "https://localhost/graphql",
+    },
+  ],
+]
+`;
+
+exports[`generateClient model operation happy path Can Subscribe 1`] = `[]`;
