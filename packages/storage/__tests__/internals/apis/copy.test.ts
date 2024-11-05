@@ -17,6 +17,7 @@ describe('copy (internals)', () => {
 	});
 
 	it('should pass advanced option locationCredentialsProvider to internal list', async () => {
+		const customEndpoint = 's3.dualstack.us-east-2.amazonaws.com';
 		const locationCredentialsProvider = async () => ({
 			credentials: {
 				accessKeyId: 'akid',
@@ -40,6 +41,7 @@ describe('copy (internals)', () => {
 			},
 			options: {
 				locationCredentialsProvider,
+				customEndpoint,
 			},
 		};
 		const result = await advancedCopy(copyInputWithAdvancedOptions);

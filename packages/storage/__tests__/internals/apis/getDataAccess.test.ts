@@ -31,10 +31,11 @@ const MOCK_ACCESS_CREDENTIALS = {
 	SessionToken: MOCK_SESSION_TOKEN,
 	Expiration: MOCK_EXPIRATION_DATE,
 };
+const MOCK_CUSTOM_ENDPOINT = 's3-accesspoint.dualstack.us-east-2.amazonaws.com';
 const MOCK_CREDENTIAL_PROVIDER = jest.fn().mockResolvedValue(MOCK_CREDENTIALS);
-
 const sharedGetDataAccessParams: GetDataAccessInput = {
 	accountId: MOCK_ACCOUNT_ID,
+	customEndpoint: MOCK_CUSTOM_ENDPOINT,
 	credentialsProvider: MOCK_CREDENTIAL_PROVIDER,
 	durationSeconds: 900,
 	permission: 'READWRITE',
@@ -62,6 +63,7 @@ describe('getDataAccess', () => {
 		expect(getDataAccessClientMock).toHaveBeenCalledWith(
 			expect.objectContaining({
 				credentials: expect.any(Function),
+				customEndpoint: MOCK_CUSTOM_ENDPOINT,
 				region: MOCK_REGION,
 				userAgentValue: expect.stringContaining('storage/8'),
 			}),
