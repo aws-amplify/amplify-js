@@ -13,8 +13,7 @@ export enum StorageValidationErrorCode {
 	NoDestinationPath = 'NoDestinationPath',
 	NoBucket = 'NoBucket',
 	NoRegion = 'NoRegion',
-	StorageBucketNotFound = 'StorageBucketNotFound',
-	InvalidStorageBucketName = 'InvalidStorageBucketName',
+	InvalidStorageBucket = 'InvalidStorageBucket',
 	InvalidCopyOperationStorageBucket = 'InvalidCopyOperationStorageBucket',
 	InvalidStorageOperationPrefixInput = 'InvalidStorageOperationPrefixInput',
 	InvalidStorageOperationInput = 'InvalidStorageOperationInput',
@@ -28,6 +27,7 @@ export enum StorageValidationErrorCode {
 	InvalidS3Uri = 'InvalidS3Uri',
 	InvalidCustomEndpoint = 'InvalidCustomEndpoint',
 	ForcePathStyleEndpointNotSupported = 'ForcePathStyleEndpointNotSupported',
+	DnsIncompatibleBucketName = 'DnsIncompatibleBucketName',
 }
 
 export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
@@ -91,10 +91,7 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	[StorageValidationErrorCode.InvalidS3Uri]: {
 		message: 'Invalid S3 URI.',
 	},
-	[StorageValidationErrorCode.InvalidStorageBucketName]: {
-		message: 'Invalid bucket name',
-	},
-	[StorageValidationErrorCode.StorageBucketNotFound]: {
+	[StorageValidationErrorCode.InvalidStorageBucket]: {
 		message:
 			'Unable to lookup bucket from provided name in Amplify configuration.',
 	},
@@ -108,5 +105,10 @@ export const validationErrorMap: AmplifyErrorMap<StorageValidationErrorCode> = {
 	},
 	[StorageValidationErrorCode.ForcePathStyleEndpointNotSupported]: {
 		message: 'Path style URLs are not supported with S3 Transfer Acceleration.',
+	},
+	[StorageValidationErrorCode.DnsIncompatibleBucketName]: {
+		message: `The bucket name isn't DNS compatible.`,
+		recoverySuggestion:
+			'Refer to AWS documentation for buckets naming rules: https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html#general-purpose-bucket-names',
 	},
 };

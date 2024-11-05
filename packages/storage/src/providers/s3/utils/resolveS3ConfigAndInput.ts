@@ -218,7 +218,7 @@ const resolveBucketConfig = (
 		const bucketConfig = buckets?.[apiOptions.bucket];
 		assertValidationError(
 			!!bucketConfig,
-			StorageValidationErrorCode.StorageBucketNotFound,
+			StorageValidationErrorCode.InvalidStorageBucket,
 		);
 
 		return { bucket: bucketConfig.bucketName, region: bucketConfig.region };

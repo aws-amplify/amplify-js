@@ -93,7 +93,7 @@ const endpointResolver = (
 	if (apiInput?.Bucket) {
 		assertValidationError(
 			isDnsCompatibleBucketName(apiInput.Bucket),
-			StorageValidationErrorCode.InvalidStorageBucketName,
+			StorageValidationErrorCode.DnsIncompatibleBucketName,
 		);
 
 		if (forcePathStyle || apiInput.Bucket.includes('.')) {

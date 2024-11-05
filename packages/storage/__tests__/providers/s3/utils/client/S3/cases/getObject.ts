@@ -286,8 +286,8 @@ const getObjectErrorCaseInvalidBucketName: ApiFunctionalTestCase<
 		body: 'mockBody',
 	},
 	{
-		message: 'Invalid bucket name',
-		name: 'InvalidStorageBucketName',
+		message: `The bucket name isn't DNS compatible.`,
+		name: 'DnsIncompatibleBucketName',
 	},
 ];
 
