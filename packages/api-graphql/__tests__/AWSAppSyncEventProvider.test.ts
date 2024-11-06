@@ -205,6 +205,43 @@ describe('AppSyncEventProvider', () => {
 						event: JSON.parse(event),
 					});
 				});
+
+				test('socket is disconnected after .close() is called', async () => {
+					expect.assertions(2);
+					const mockNext = jest.fn();
+
+					const observer = provider.subscribe({
+						appSyncGraphqlEndpoint: 'ws://localhost:8080',
+					});
+
+					const event = JSON.stringify({ some: 'data' });
+
+					observer.subscribe({
+						next: mockNext,
+						error: () => {},
+					});
+
+					await fakeWebSocketInterface?.standardConnectionHandshake();
+					await fakeWebSocketInterface?.startAckMessage({
+						connectionTimeoutMs: 100,
+					});
+					await fakeWebSocketInterface?.sendDataMessage({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.DATA,
+						event,
+					});
+
+					// events callback returns entire message contents
+					expect(mockNext).toHaveBeenCalledWith({
+						id: fakeWebSocketInterface?.webSocket.subscriptionId,
+						type: MESSAGE_TYPES.DATA,
+						event: JSON.parse(event),
+					});
+
+					await provider.close();
+
+					expect(fakeWebSocketInterface.hasClosed).resolves.toBeUndefined();
+				});
 			});
 		});
 	});
