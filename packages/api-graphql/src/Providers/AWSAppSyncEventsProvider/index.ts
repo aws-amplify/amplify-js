@@ -53,27 +53,6 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		return PROVIDER_NAME;
 	}
 
-	close() {
-		return new Promise<void>((resolve, reject) => {
-			super.close();
-			if (this.awsRealTimeSocket) {
-				this.awsRealTimeSocket.onclose = (_: CloseEvent) => {
-					this.subscriptionObserverMap = new Map();
-					this.awsRealTimeSocket = undefined;
-					resolve();
-				};
-
-				this.awsRealTimeSocket.onerror = (err: any) => {
-					reject(err);
-				};
-
-				this.awsRealTimeSocket.close();
-			} else {
-				resolve();
-			}
-		});
-	}
-
 	public async connect(options: AWSAppSyncEventProviderOptions) {
 		super.connect(options);
 	}

@@ -112,6 +112,24 @@ export abstract class AWSWebSocketProvider {
 		this.connectionStateMonitorSubscription.unsubscribe();
 		// Complete all reconnect observers
 		this.reconnectionMonitor.close();
+
+		return new Promise<void>((resolve, reject) => {
+			if (this.awsRealTimeSocket) {
+				this.awsRealTimeSocket.onclose = (_: CloseEvent) => {
+					this.subscriptionObserverMap = new Map();
+					this.awsRealTimeSocket = undefined;
+					resolve();
+				};
+
+				this.awsRealTimeSocket.onerror = (err: any) => {
+					reject(err);
+				};
+
+				this.awsRealTimeSocket.close();
+			} else {
+				resolve();
+			}
+		});
 	}
 
 	subscribe(
