@@ -62,10 +62,6 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
 		signInInput.password = password;
 	}
-	if (signInServiceOptions || autoSignIn === true) {
-		autoSignInStore.dispatch({ type: 'START' });
-		autoSignInStore.dispatch({ type: 'SET_USERNAME', value: username });
-	}
 
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig;
 	const signUpClient = createSignUpClient({
@@ -97,6 +93,7 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		UserSub: userId,
 		CodeDeliveryDetails: cdd,
 		UserConfirmed: userConfirmed,
+		Session: session,
 	} = await signUpClient(
 		{
 			region: getRegionFromUserPoolId(userPoolId),
@@ -104,6 +101,12 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		},
 		signUpClientInput,
 	);
+
+	if (signInServiceOptions || autoSignIn === true) {
+		autoSignInStore.dispatch({ type: 'START' });
+		autoSignInStore.dispatch({ type: 'SET_USERNAME', value: username });
+		autoSignInStore.dispatch({ type: 'SET_SESSION', value: session });
+	}
 
 	const codeDeliveryDetails = {
 		destination: cdd?.Destination,

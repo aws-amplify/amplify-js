@@ -6,7 +6,7 @@ import { Reducer, Store } from './types';
 type AutoSignInAction =
 	| { type: 'START' }
 	| { type: 'SET_USERNAME'; value: string }
-	| { type: 'SET_SESSION'; value: string }
+	| { type: 'SET_SESSION'; value?: string }
 	| { type: 'RESET' };
 
 interface AutoSignInState {

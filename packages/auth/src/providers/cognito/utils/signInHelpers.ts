@@ -869,6 +869,7 @@ export async function getSignInResult(params: {
 					),
 				},
 			};
+		case 'SMS_OTP':
 		case 'SMS_MFA':
 			return {
 				isSignedIn: false,
