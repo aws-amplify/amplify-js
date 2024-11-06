@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.41 kB"
+			"limit": "17.46 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.91 kB"
+			"limit": "15.95 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -353,13 +353,13 @@
 			"name": "[Auth] resetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resetPassword }",
-			"limit": "12.57 kB"
+			"limit": "12.61 kB"
 		},
 		{
 			"name": "[Auth] confirmResetPassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmResetPassword }",
-			"limit": "12.51 kB"
+			"limit": "12.56 kB"
 		},
 		{
 			"name": "[Auth] signIn (Cognito)",
@@ -371,7 +371,7 @@
 			"name": "[Auth] resendSignUpCode (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ resendSignUpCode }",
-			"limit": "12.53 kB"
+			"limit": "12.58 kB"
 		},
 		{
 			"name": "[Auth] confirmSignUp (Cognito)",
@@ -389,7 +389,7 @@
 			"name": "[Auth] updateMFAPreference (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateMFAPreference }",
-			"limit": "12.00 kB"
+			"limit": "12.04 kB"
 		},
 		{
 			"name": "[Auth] fetchMFAPreference (Cognito)",
@@ -401,13 +401,13 @@
 			"name": "[Auth] verifyTOTPSetup (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ verifyTOTPSetup }",
-			"limit": "12.86 kB"
+			"limit": "12.91 kB"
 		},
 		{
 			"name": "[Auth] updatePassword (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updatePassword }",
-			"limit": "12.87 kB"
+			"limit": "12.92 kB"
 		},
 		{
 			"name": "[Auth] setUpTOTP (Cognito)",
@@ -419,7 +419,7 @@
 			"name": "[Auth] updateUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ updateUserAttributes }",
-			"limit": "12.1 kB"
+			"limit": "12.14 kB"
 		},
 		{
 			"name": "[Auth] getCurrentUser (Cognito)",
@@ -431,7 +431,7 @@
 			"name": "[Auth] confirmUserAttribute (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ confirmUserAttribute }",
-			"limit": "12.86 kB"
+			"limit": "12.91 kB"
 		},
 		{
 			"name": "[Auth] signInWithRedirect (Cognito)",
@@ -443,7 +443,7 @@
 			"name": "[Auth] fetchUserAttributes (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ fetchUserAttributes }",
-			"limit": "11.93 kB"
+			"limit": "11.97 kB"
 		},
 		{
 			"name": "[Auth] Basic Auth Flow (Cognito)",
@@ -461,19 +461,19 @@
 			"name": "[Auth] Associate WebAuthN Credential (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ associateWebAuthnCredential }",
-			"limit": "12.95 kB"
+			"limit": "13.05 kB"
 		},
 		{
 			"name": "[Auth] List WebAuthN Credentials (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ listWebAuthnCredentials }",
-			"limit": "12.00 kB"
+			"limit": "12.10 kB"
 		},
 		{
 			"name": "[Auth] Delete WebAuthN Credential (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ deleteWebAuthnCredential }",
-			"limit": "11.90 kB"
+			"limit": "11.95 kB"
 		},
 		{
 			"name": "[Storage] copy (S3)",
@@ -485,37 +485,37 @@
 			"name": "[Storage] downloadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ downloadData }",
-			"limit": "15.62 kB"
+			"limit": "15.66 kB"
 		},
 		{
 			"name": "[Storage] getProperties (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getProperties }",
-			"limit": "14.89 kB"
+			"limit": "14.95 kB"
 		},
 		{
 			"name": "[Storage] getUrl (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ getUrl }",
-			"limit": "16.11 kB"
+			"limit": "16.15 kB"
 		},
 		{
 			"name": "[Storage] list (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ list }",
-			"limit": "15.55 kB"
+			"limit": "15.60 kB"
 		},
 		{
 			"name": "[Storage] remove (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ remove }",
-			"limit": "14.75 kB"
+			"limit": "14.80 kB"
 		},
 		{
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "20.08 kB"
+			"limit": "20.15 kB"
 		}
 	]
 }
