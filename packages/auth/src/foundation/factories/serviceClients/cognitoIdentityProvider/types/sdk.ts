@@ -1773,38 +1773,52 @@ export interface DeleteUserAttributesRequest {
 export type DeleteUserAttributesResponse = Record<never, never>;
 export {};
 
-/**
- * <p>The request to retrieve WebAuthN registration options.</p>
- */
-export interface GetWebAuthnRegistrationOptionsInput {
+export interface StartWebAuthnRegistrationRequest {
+	/**
+	 * A valid access token that Amazon Cognito issued to the user whose passkey metadata you want to
+	 *             generate.
+	 */
 	AccessToken: string | undefined;
 }
-/**
- * <p>The response containing WebAuthN registration options.</p>
- */
-export interface GetWebAuthnRegistrationOptionsOutput {
-	CredentialCreationOptions: string | undefined;
+
+export interface StartWebAuthnRegistrationResponse {
+	/**
+	 * The information that a user can provide in their request to register with their
+	 *             passkey provider.
+	 */
+	CredentialCreationOptions: Record<never, never> | undefined;
 }
 
-export type GetWebAuthnRegistrationOptionsCommandInput =
-	GetWebAuthnRegistrationOptionsInput;
+export type StartWebAuthnRegistrationCommandInput =
+	StartWebAuthnRegistrationRequest;
 
-export interface GetWebAuthnRegistrationOptionsCommandOutput
-	extends GetWebAuthnRegistrationOptionsOutput,
+export interface StartWebAuthnRegistrationCommandOutput
+	extends StartWebAuthnRegistrationResponse,
 		__MetadataBearer {}
 
-/**
- * <p>The request to verify a WebAuthN credential.</p>
- */
-export interface VerifyWebAuthnRegistrationResultInput {
+export interface CompleteWebAuthnRegistrationRequest {
+	/**
+	 * A valid access token that Amazon Cognito issued to the user whose passkey registration you want
+	 *             to verify. This information informs your user pool of the details of the user's
+	 *             successful registration with their passkey provider.
+	 */
 	AccessToken: string | undefined;
-	Credential: string | undefined;
+
+	/**
+	 * A <a href="https://www.w3.org/TR/webauthn-3/#dictdef-registrationresponsejson">RegistrationResponseJSON</a> public-key credential response from the
+	 *             user's passkey provider.
+	 */
+	Credential: Record<never, never> | undefined;
 }
 
-export type VerifyWebAuthnRegistrationResultCommandInput =
-	VerifyWebAuthnRegistrationResultInput;
+export type CompleteWebAuthnRegistrationResponse = Record<never, never>;
 
-export type VerifyWebAuthnRegistrationResultCommandOutput = __MetadataBearer;
+export type CompleteWebAuthnRegistrationCommandInput =
+	CompleteWebAuthnRegistrationRequest;
+
+export interface CompleteWebAuthnRegistrationCommandOutput
+	extends CompleteWebAuthnRegistrationResponse,
+		__MetadataBearer {}
 
 /**
  * <p>The request to list WebAuthN credentials.</p>

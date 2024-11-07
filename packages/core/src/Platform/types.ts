@@ -90,8 +90,8 @@ export enum AuthAction {
 	FetchDevices = '34',
 	SendUserAttributeVerificationCode = '35',
 	SignInWithRedirect = '36',
-	GetWebAuthnRegistrationOptions = '37',
-	VerifyWebAuthnRegistrationResult = '38',
+	StartWebAuthnRegistration = '37',
+	CompleteWebAuthnRegistration = '38',
 	ListWebAuthnCredentials = '39',
 	DeleteWebAuthnCredential = '40',
 }

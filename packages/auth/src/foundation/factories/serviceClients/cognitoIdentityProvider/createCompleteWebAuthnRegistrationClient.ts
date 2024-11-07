@@ -4,9 +4,9 @@
 import { composeServiceApi } from '@aws-amplify/core/internals/aws-client-utils/composers';
 
 import {
+	CompleteWebAuthnRegistrationCommandInput,
+	CompleteWebAuthnRegistrationCommandOutput,
 	ServiceClientFactoryInput,
-	VerifyWebAuthnRegistrationResultCommandInput,
-	VerifyWebAuthnRegistrationResultCommandOutput,
 } from './types';
 import { cognitoUserPoolTransferHandler } from './shared/handler';
 import {
@@ -15,15 +15,15 @@ import {
 } from './shared/serde';
 import { DEFAULT_SERVICE_CLIENT_API_CONFIG } from './constants';
 
-export const createVerifyWebAuthnRegistrationResultClient = (
+export const createCompleteWebAuthnRegistrationClient = (
 	config: ServiceClientFactoryInput,
 ) =>
 	composeServiceApi(
 		cognitoUserPoolTransferHandler,
-		createUserPoolSerializer<VerifyWebAuthnRegistrationResultCommandInput>(
-			'VerifyWebAuthnRegistrationResult',
+		createUserPoolSerializer<CompleteWebAuthnRegistrationCommandInput>(
+			'CompleteWebAuthnRegistration',
 		),
-		createUserPoolDeserializer<VerifyWebAuthnRegistrationResultCommandOutput>(),
+		createUserPoolDeserializer<CompleteWebAuthnRegistrationCommandOutput>(),
 		{
 			...DEFAULT_SERVICE_CLIENT_API_CONFIG,
 			...config,

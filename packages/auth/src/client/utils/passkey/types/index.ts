@@ -11,6 +11,7 @@ export {
 	PkcAttestationResponse,
 	PasskeyCreateOptionsJson,
 	PasskeyCreateResultJson,
+	assertValidCredentialCreationOptions,
 } from './shared';
 
 export type PkcWithAuthenticatorAttestationResponse = Omit<

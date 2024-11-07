@@ -31,8 +31,8 @@ type ClientOperation =
 	| 'UpdateDeviceStatus'
 	| 'ListDevices'
 	| 'RevokeToken'
-	| 'GetWebAuthnRegistrationOptions'
-	| 'VerifyWebAuthnRegistrationResult'
+	| 'StartWebAuthnRegistration'
+	| 'CompleteWebAuthnRegistration'
 	| 'ListWebAuthnCredentials'
 	| 'DeleteWebAuthnCredential';
 

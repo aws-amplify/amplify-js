@@ -17,15 +17,12 @@ import { getRegionFromUserPoolId } from '../../foundation/parsers';
 import { getAuthUserAgentValue } from '../../utils';
 import { registerPasskey } from '../utils';
 import {
-	createGetWebAuthnRegistrationOptionsClient,
-	createVerifyWebAuthnRegistrationResultClient,
+	createCompleteWebAuthnRegistrationClient,
+	createStartWebAuthnRegistrationClient,
 } from '../../foundation/factories/serviceClients/cognitoIdentityProvider';
-import {
-	PasskeyError,
-	PasskeyErrorCode,
-	assertPasskeyError,
-} from '../utils/passkey/errors';
+import { PasskeyError } from '../utils/passkey/errors';
 import { AuthError } from '../../errors/AuthError';
+import { assertValidCredentialCreationOptions } from '../utils/passkey/types';
 
 /**
  * Registers a new passkey for an authenticated user
@@ -51,19 +48,18 @@ export async function associateWebAuthnCredential(): Promise<void> {
 
 	assertAuthTokens(tokens);
 
-	const getWebAuthnRegistrationOptions =
-		createGetWebAuthnRegistrationOptionsClient({
-			endpointResolver: createCognitoUserPoolEndpointResolver({
-				endpointOverride: userPoolEndpoint,
-			}),
-		});
+	const startWebAuthnRegistration = createStartWebAuthnRegistrationClient({
+		endpointResolver: createCognitoUserPoolEndpointResolver({
+			endpointOverride: userPoolEndpoint,
+		}),
+	});
 
 	const { CredentialCreationOptions: credentialCreationOptions } =
-		await getWebAuthnRegistrationOptions(
+		await startWebAuthnRegistration(
 			{
 				region: getRegionFromUserPoolId(userPoolId),
 				userAgentValue: getAuthUserAgentValue(
-					AuthAction.GetWebAuthnRegistrationOptions,
+					AuthAction.StartWebAuthnRegistration,
 				),
 			},
 			{
@@ -71,30 +67,28 @@ export async function associateWebAuthnCredential(): Promise<void> {
 			},
 		);
 
-	assertPasskeyError(
-		!!credentialCreationOptions,
-		PasskeyErrorCode.InvalidCredentialCreationOptions,
-	);
+	assertValidCredentialCreationOptions(credentialCreationOptions);
 
-	const cred = await registerPasskey(JSON.parse(credentialCreationOptions));
+	const cred = await registerPasskey(credentialCreationOptions);
 
-	const verifyWebAuthnRegistrationResult =
-		createVerifyWebAuthnRegistrationResultClient({
+	const completeWebAuthnRegistration = createCompleteWebAuthnRegistrationClient(
+		{
 			endpointResolver: createCognitoUserPoolEndpointResolver({
 				endpointOverride: userPoolEndpoint,
 			}),
-		});
+		},
+	);
 
-	await verifyWebAuthnRegistrationResult(
+	await completeWebAuthnRegistration(
 		{
 			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(
-				AuthAction.VerifyWebAuthnRegistrationResult,
+				AuthAction.CompleteWebAuthnRegistration,
 			),
 		},
 		{
 			AccessToken: tokens.accessToken.toString(),
-			Credential: JSON.stringify(cred),
+			Credential: cred,
 		},
 	);
 }

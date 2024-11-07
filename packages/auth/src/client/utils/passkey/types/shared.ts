@@ -1,8 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { PasskeyErrorCode, assertPasskeyError } from '../errors';
+
 type PasskeyTransport = 'ble' | 'hybrid' | 'internal' | 'nfc' | 'usb';
 type UserVerificationRequirement = 'discouraged' | 'preferred' | 'required';
+type AttestationConveyancePreference =
+	| 'direct'
+	| 'enterprise'
+	| 'indirect'
+	| 'none';
 
 interface PkcDescriptor<T> {
 	type: 'public-key';
@@ -28,12 +35,18 @@ export interface PasskeyCreateOptionsJson {
 		alg: number;
 		type: 'public-key';
 	}[];
-	timeout: number;
-	excludeCredentials: PkcDescriptor<string>[];
-	authenticatorSelection: {
+	timeout?: number;
+	excludeCredentials?: PkcDescriptor<string>[];
+	authenticatorSelection?: {
 		requireResidentKey: boolean;
 		residentKey: UserVerificationRequirement;
 		userVerification: UserVerificationRequirement;
+	};
+	attestation?: AttestationConveyancePreference;
+	extensions?: {
+		appid?: string;
+		appidExclude?: string;
+		credProps?: boolean;
 	};
 }
 
@@ -63,6 +76,20 @@ export interface PasskeyCreateResultJson {
 	};
 	authenticatorAttachment?: string;
 	response: PkcAttestationResponse<string>;
+}
+
+export function assertValidCredentialCreationOptions(
+	credentialCreationOptions: any,
+): asserts credentialCreationOptions is PasskeyCreateOptionsJson {
+	assertPasskeyError(
+		[
+			!!credentialCreationOptions,
+			!!credentialCreationOptions?.user,
+			!!credentialCreationOptions?.rp,
+			!!credentialCreationOptions?.pubKeyCredParams,
+		].every(Boolean),
+		PasskeyErrorCode.InvalidCredentialCreationOptions,
+	);
 }
 
 /**

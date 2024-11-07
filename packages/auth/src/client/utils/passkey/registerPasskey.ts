@@ -3,6 +3,7 @@
 
 import {
 	PasskeyCreateOptionsJson,
+	PasskeyCreateResultJson,
 	assertCredentialIsPkcWithAuthenticatorAttestationResponse,
 } from './types';
 import {
@@ -17,7 +18,9 @@ import { getIsPasskeySupported } from './getIsPasskeySupported';
  * @param input - PasskeyCreateOptionsJson
  * @returns serialized PasskeyCreateResult
  */
-export const registerPasskey = async (input: PasskeyCreateOptionsJson) => {
+export const registerPasskey = async (
+	input: PasskeyCreateOptionsJson,
+): Promise<PasskeyCreateResultJson> => {
 	const isPasskeySupported = getIsPasskeySupported();
 
 	assertPasskeyError(isPasskeySupported, PasskeyErrorCode.PasskeyNotSupported);

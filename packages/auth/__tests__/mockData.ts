@@ -190,8 +190,35 @@ export const mockAuthConfigWithOAuth = {
 	},
 };
 
-export const passkeyCredentialCreateOptions =
-	'{"rp":{"id":"localhost","name":"localhost"},"user":{"id":"M2M0NjMyMGItYzYwZS00YTIxLTlkNjQtNTgyOWJmZWRlMWM0","name":"james","displayName":""},"challenge":"zsBch6DlNLUb6SgRdzHysw","pubKeyCredParams":[{"type":"public-key","alg":-7},{"type":"public-key","alg":-257}],"timeout":60000,"excludeCredentials":[{"type":"public-key","id":"VWxodmRFMUtjbEJZVWs1NE9IaHhOblZUTTBsUVJWSXRTbWhhUkdwZldHaDBSbVpmUmxKamFWRm5XUQ"},{"type":"public-key","id":"WDJnM1RrMWxaSGc0Y1ZWQmVsOTVTRXRvWjBoME56UlFNbFZ5VkZWZmNXTkNORjlVYjFWTWVqRXlUUQ"}],"authenticatorSelection":{"requireResidentKey":true,"residentKey":"required","userVerification":"required"}}';
+export const passkeyCredentialCreateOptions = {
+	rp: { id: 'localhost', name: 'localhost' },
+	user: {
+		id: 'M2M0NjMyMGItYzYwZS00YTIxLTlkNjQtNTgyOWJmZWRlMWM0',
+		name: 'james',
+		displayName: '',
+	},
+	challenge: 'zsBch6DlNLUb6SgRdzHysw',
+	pubKeyCredParams: [
+		{ type: 'public-key', alg: -7 },
+		{ type: 'public-key', alg: -257 },
+	],
+	timeout: 60000,
+	excludeCredentials: [
+		{
+			type: 'public-key',
+			id: 'VWxodmRFMUtjbEJZVWs1NE9IaHhOblZUTTBsUVJWSXRTbWhhUkdwZldHaDBSbVpmUmxKamFWRm5XUQ',
+		},
+		{
+			type: 'public-key',
+			id: 'WDJnM1RrMWxaSGc0Y1ZWQmVsOTVTRXRvWjBoME56UlFNbFZ5VkZWZmNXTkNORjlVYjFWTWVqRXlUUQ',
+		},
+	],
+	authenticatorSelection: {
+		requireResidentKey: true,
+		residentKey: 'required',
+		userVerification: 'required',
+	},
+};
 
 export const passkeyRegistrationResultJson: PasskeyCreateResultJson = {
 	type: 'public-key',

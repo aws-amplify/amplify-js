@@ -2,8 +2,8 @@ import { Amplify, fetchAuthSession } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import {
-	createGetWebAuthnRegistrationOptionsClient,
-	createVerifyWebAuthnRegistrationResultClient,
+	createCompleteWebAuthnRegistrationClient,
+	createStartWebAuthnRegistrationClient,
 } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
 import {
 	PasskeyError,
@@ -38,7 +38,11 @@ jest.mock(
 jest.mock('../../../src/providers/cognito/factories');
 
 jest.mock('../../../src/client/utils/passkey/getIsPasskeySupported');
-jest.mock('../../../src/client/utils/passkey/types');
+jest.mock('../../../src/client/utils/passkey/types', () => ({
+	...jest.requireActual('../../../src/client/utils/passkey/types'),
+	assertCredentialIsPkcWithAuthenticatorAssertionResponse: jest.fn(),
+	assertCredentialIsPkcWithAuthenticatorAttestationResponse: jest.fn(),
+}));
 
 Object.assign(navigator, {
 	credentials: {
@@ -57,14 +61,14 @@ describe('associateWebAuthnCredential', () => {
 
 	const mockGetIsPasskeySupported = jest.mocked(getIsPasskeySupported);
 
-	const mockGetWebAuthnRegistrationOptions = jest.fn();
-	const mockCreateGetWebAuthnRegistrationOptionsClient = jest.mocked(
-		createGetWebAuthnRegistrationOptionsClient,
+	const mockStartWebAuthnRegistration = jest.fn();
+	const mockCreateStartWebAuthnRegistrationClient = jest.mocked(
+		createStartWebAuthnRegistrationClient,
 	);
 
-	const mockVerifyWebAuthnRegistrationResult = jest.fn();
-	const mockCreateVerifyWebAuthnRegistrationResultClient = jest.mocked(
-		createVerifyWebAuthnRegistrationResultClient,
+	const mockCompleteWebAuthnRegistration = jest.fn();
+	const mockCreateCompleteWebAuthnRegistrationClient = jest.mocked(
+		createCompleteWebAuthnRegistrationClient,
 	);
 
 	const mockAssertCredentialIsPkcWithAuthenticatorAssertionResponse =
@@ -77,13 +81,13 @@ describe('associateWebAuthnCredential', () => {
 		mockFetchAuthSession.mockResolvedValue({
 			tokens: { accessToken: decodeJWT(mockAccessToken) },
 		});
-		mockCreateGetWebAuthnRegistrationOptionsClient.mockReturnValue(
-			mockGetWebAuthnRegistrationOptions,
+		mockCreateStartWebAuthnRegistrationClient.mockReturnValue(
+			mockStartWebAuthnRegistration,
 		);
-		mockCreateVerifyWebAuthnRegistrationResultClient.mockReturnValue(
-			mockVerifyWebAuthnRegistrationResult,
+		mockCreateCompleteWebAuthnRegistrationClient.mockReturnValue(
+			mockCompleteWebAuthnRegistration,
 		);
-		mockVerifyWebAuthnRegistrationResult.mockImplementation(() => ({
+		mockCompleteWebAuthnRegistration.mockImplementation(() => ({
 			CredentialId: '12345',
 		}));
 
@@ -100,18 +104,18 @@ describe('associateWebAuthnCredential', () => {
 
 	afterEach(() => {
 		mockFetchAuthSession.mockClear();
-		mockGetWebAuthnRegistrationOptions.mockReset();
+		mockStartWebAuthnRegistration.mockClear();
 		navigatorCredentialsCreateSpy.mockClear();
 	});
 
 	it('should pass the correct service options when retrieving credential creation options', async () => {
-		mockGetWebAuthnRegistrationOptions.mockImplementation(() => ({
+		mockStartWebAuthnRegistration.mockImplementation(() => ({
 			CredentialCreationOptions: passkeyCredentialCreateOptions,
 		}));
 
 		await associateWebAuthnCredential();
 
-		expect(mockGetWebAuthnRegistrationOptions).toHaveBeenCalledWith(
+		expect(mockStartWebAuthnRegistration).toHaveBeenCalledWith(
 			{
 				region: 'us-west-2',
 				userAgentValue: expect.any(String),
@@ -123,35 +127,35 @@ describe('associateWebAuthnCredential', () => {
 	});
 
 	it('should pass the correct service options when verifying a credential', async () => {
-		mockGetWebAuthnRegistrationOptions.mockImplementation(() => ({
+		mockStartWebAuthnRegistration.mockImplementation(() => ({
 			CredentialCreationOptions: passkeyCredentialCreateOptions,
 		}));
 
 		await associateWebAuthnCredential();
 
-		expect(mockVerifyWebAuthnRegistrationResult).toHaveBeenCalledWith(
+		expect(mockCompleteWebAuthnRegistration).toHaveBeenCalledWith(
 			{
 				region: 'us-west-2',
 				userAgentValue: expect.any(String),
 			},
 			{
 				AccessToken: mockAccessToken,
-				Credential: JSON.stringify(
-					serializePkcWithAttestationToJson(passkeyRegistrationResult),
+				Credential: serializePkcWithAttestationToJson(
+					passkeyRegistrationResult,
 				),
 			},
 		);
 	});
 
 	it('should call the registerPasskey function with correct input', async () => {
-		mockGetWebAuthnRegistrationOptions.mockImplementation(() => ({
+		mockStartWebAuthnRegistration.mockImplementation(() => ({
 			CredentialCreationOptions: passkeyCredentialCreateOptions,
 		}));
 
 		await associateWebAuthnCredential();
 
 		expect(registerPasskeySpy).toHaveBeenCalledWith(
-			JSON.parse(passkeyCredentialCreateOptions),
+			passkeyCredentialCreateOptions,
 		);
 
 		expect(navigatorCredentialsCreateSpy).toHaveBeenCalled();
@@ -160,7 +164,7 @@ describe('associateWebAuthnCredential', () => {
 	it('should throw an error when service returns empty credential creation options', async () => {
 		expect.assertions(2);
 
-		mockGetWebAuthnRegistrationOptions.mockImplementation(() => ({
+		mockStartWebAuthnRegistration.mockImplementation(() => ({
 			CredentialCreationOptions: undefined,
 		}));
 
@@ -177,7 +181,7 @@ describe('associateWebAuthnCredential', () => {
 	it('should throw an error when passkeys are not supported', async () => {
 		expect.assertions(2);
 
-		mockGetWebAuthnRegistrationOptions.mockImplementation(() => ({
+		mockStartWebAuthnRegistration.mockImplementation(() => ({
 			CredentialCreationOptions: passkeyCredentialCreateOptions,
 		}));
 

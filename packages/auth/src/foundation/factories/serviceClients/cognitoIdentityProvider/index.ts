@@ -24,7 +24,7 @@ export { createVerifyUserAttributeClient } from './createVerifyUserAttributeClie
 export { createUpdateDeviceStatusClient } from './createUpdateDeviceStatusClient';
 export { createListDevicesClient } from './createListDevicesClient';
 export { createDeleteUserAttributesClient } from './createDeleteUserAttributesClient';
-export { createGetWebAuthnRegistrationOptionsClient } from './createGetWebAuthnRegistrationOptionsClient';
-export { createVerifyWebAuthnRegistrationResultClient } from './createVerifyWebAuthnRegistrationResultClient';
+export { createStartWebAuthnRegistrationClient } from './createStartWebAuthnRegistrationClient';
+export { createCompleteWebAuthnRegistrationClient } from './createCompleteWebAuthnRegistrationClient';
 export { createListWebAuthnCredentialsClient } from './createListWebAuthnCredentialsClient';
 export { createDeleteWebAuthnCredentialClient } from './createDeleteWebAuthnCredentialClient';
