@@ -20,7 +20,7 @@ export const getLocalStorageWithFallback = (): Storage => {
 		}
 	} catch (e) {
 		// Handle any errors related to localStorage access
-		console.error('LocalStorage access failed:', e);
+		logger.error('LocalStorage access failed:', e);
 	}
 
 	// Return in-memory storage as a fallback if localStorage is not accessible
