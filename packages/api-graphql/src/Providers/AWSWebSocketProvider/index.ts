@@ -80,7 +80,7 @@ export abstract class AWSWebSocketProvider {
 	protected logger: ConsoleLogger;
 	protected subscriptionObserverMap = new Map<string, ObserverQuery>();
 
-	private awsRealTimeSocket?: WebSocket;
+	protected awsRealTimeSocket?: WebSocket;
 	private socketStatus: SOCKET_STATUS = SOCKET_STATUS.CLOSED;
 	private keepAliveTimeoutId?: ReturnType<typeof setTimeout>;
 	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
@@ -112,6 +112,24 @@ export abstract class AWSWebSocketProvider {
 		this.connectionStateMonitorSubscription.unsubscribe();
 		// Complete all reconnect observers
 		this.reconnectionMonitor.close();
+
+		return new Promise<void>((resolve, reject) => {
+			if (this.awsRealTimeSocket) {
+				this.awsRealTimeSocket.onclose = (_: CloseEvent) => {
+					this.subscriptionObserverMap = new Map();
+					this.awsRealTimeSocket = undefined;
+					resolve();
+				};
+
+				this.awsRealTimeSocket.onerror = (err: any) => {
+					reject(err);
+				};
+
+				this.awsRealTimeSocket.close();
+			} else {
+				resolve();
+			}
+		});
 	}
 
 	subscribe(
