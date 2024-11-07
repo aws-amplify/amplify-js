@@ -51,11 +51,10 @@ export type S3EndpointResolverOptions = EndpointResolverOptions & {
  */
 const endpointResolver = (
 	options: S3EndpointResolverOptions,
-	apiInput?: { AccountId: string },
+	apiInput: { AccountId: string },
 ) => {
 	const { region, customEndpoint } = options;
-	// TODO(ashwinkumar6): make accountId a required param
-	const { AccountId: accountId } = apiInput ?? {};
+	const { AccountId: accountId } = apiInput;
 	let endpoint: URL;
 
 	if (customEndpoint) {
