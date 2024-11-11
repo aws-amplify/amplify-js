@@ -22,7 +22,6 @@ import {
 } from '../utils';
 import { IntegrityError } from '../../../../../errors/IntegrityError';
 import { validateObjectUrl } from '../../validateObjectUrl';
-import { serializeCopySource } from '../utils/serializeHelpers';
 
 import type { CopyObjectCommandInput, CopyObjectCommandOutput } from './types';
 import { defaultConfig, parseXmlError } from './base';
@@ -56,7 +55,7 @@ const copyObjectSerializer = async (
 	const headers = {
 		...(await serializeObjectConfigsToHeaders(input)),
 		...assignStringVariables({
-			'x-amz-copy-source': serializeCopySource(input.CopySource),
+			'x-amz-copy-source': input.CopySource,
 			'x-amz-metadata-directive': input.MetadataDirective,
 			'x-amz-copy-source-if-match': input.CopySourceIfMatch,
 			'x-amz-copy-source-if-unmodified-since':
@@ -87,10 +86,7 @@ export const validateCopyObjectHeaders = (
 	headers: Record<string, string>,
 ) => {
 	const validations: boolean[] = [
-		bothNilOrEqual(
-			serializeCopySource(input.CopySource),
-			headers['x-amz-copy-source'],
-		),
+		headers['x-amz-copy-source'] === input.CopySource,
 		bothNilOrEqual(
 			input.MetadataDirective,
 			headers['x-amz-metadata-directive'],
