@@ -49,6 +49,7 @@ describe('uploadData (internal)', () => {
 				onProgress,
 				metadata,
 				expectedBucketOwner,
+				checksumAlgorithm: 'crc-32',
 			},
 		});
 
@@ -67,6 +68,7 @@ describe('uploadData (internal)', () => {
 				onProgress,
 				metadata,
 				expectedBucketOwner,
+				checksumAlgorithm: 'crc-32',
 			},
 		});
 		expect(result).toEqual(mockedUploadTask);
