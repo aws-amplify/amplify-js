@@ -94,3 +94,11 @@ export function validateS3RequiredParameter(
 		});
 	}
 }
+
+export const serializeCopySource = (
+	copySource?: string,
+): string | undefined => {
+	// S3 copy source is required to be URI encoded. use the extendedEncodeURIComponent()
+	// to encode the special characters in object keys like /?&!'()*
+	return copySource?.split('/').map(extendedEncodeURIComponent).join('/');
+};

@@ -89,6 +89,46 @@ describe('copyObjectSerializer', () => {
 			}),
 		).rejects.toThrow(integrityError);
 	});
+
+	it.each([
+		{
+			copySource: 'bucket/pathWith☺️',
+			expectedCopySource: 'bucket/pathWith%E2%98%BA%EF%B8%8F',
+		},
+		{
+			copySource: 'bucket/pathWith%20', // Should double encode
+			expectedCopySource: 'bucket/pathWith%2520',
+		},
+		{
+			copySource: 'bucket/pathWith&$@=;:+,?', // URI encoding characters
+			expectedCopySource: 'bucket/pathWith%26%24%40%3D%3B%3A%2B%2C%3F',
+		},
+		{
+			copySource: "bucket/pathWith()!'*", // Extended encoding characters
+			expectedCopySource: 'bucket/pathWith%28%29%21%27%2A',
+		},
+	])(
+		'should encode copy source',
+		async ({ copySource, expectedCopySource }) => {
+			expect.assertions(1);
+			mockS3TransferHandler.mockResolvedValue(
+				mockBinaryResponse(copyObjectSuccessResponse),
+			);
+			await copyObject(defaultConfig, {
+				CopySource: copySource,
+				Bucket: 'bucket',
+				Key: 'key',
+			});
+			expect(mockS3TransferHandler).toHaveBeenCalledWith(
+				expect.objectContaining({
+					headers: expect.objectContaining({
+						'x-amz-copy-source': expectedCopySource,
+					}),
+				}),
+				expect.anything(),
+			);
+		},
+	);
 });
 
 describe('validateCopyObjectHeaders', () => {
