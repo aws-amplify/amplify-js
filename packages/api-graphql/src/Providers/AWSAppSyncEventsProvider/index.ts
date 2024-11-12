@@ -47,7 +47,11 @@ const CONNECT_URI = ''; // events does not expect a connect uri
 
 export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	constructor() {
-		super({ providerName: PROVIDER_NAME, wsProtocolName: WS_PROTOCOL_NAME });
+		super({
+			providerName: PROVIDER_NAME,
+			wsProtocolName: WS_PROTOCOL_NAME,
+			connectUri: CONNECT_URI,
+		});
 	}
 
 	getProviderName() {
@@ -202,10 +206,6 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		const { errors: [{ errorType = '', errorCode = 0 } = {}] = [] } = data;
 
 		return { errorCode, errorType };
-	}
-
-	protected _getConnectUri(): string {
-		return CONNECT_URI;
 	}
 }
 

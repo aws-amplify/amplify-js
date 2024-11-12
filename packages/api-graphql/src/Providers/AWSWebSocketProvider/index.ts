@@ -74,6 +74,7 @@ interface ParsedMessagePayload {
 interface AWSWebSocketProviderArgs {
 	providerName: string;
 	wsProtocolName: string;
+	connectUri: string;
 }
 
 export abstract class AWSWebSocketProvider {
@@ -91,10 +92,12 @@ export abstract class AWSWebSocketProvider {
 	private readonly reconnectionMonitor = new ReconnectionMonitor();
 	private connectionStateMonitorSubscription: SubscriptionLike;
 	private readonly wsProtocolName: string;
+	private readonly wsConnectUri: string;
 
 	constructor(args: AWSWebSocketProviderArgs) {
 		this.logger = new ConsoleLogger(args.providerName);
 		this.wsProtocolName = args.wsProtocolName;
+		this.wsConnectUri = args.connectUri;
 
 		this.connectionStateMonitorSubscription =
 			this._startConnectionStateMonitoring();
@@ -574,8 +577,6 @@ export abstract class AWSWebSocketProvider {
 		errorType: string;
 	};
 
-	protected abstract _getConnectUri(): string;
-
 	private _handleIncomingSubscriptionMessage(message: MessageEvent) {
 		if (typeof message.data !== 'string') {
 			return;
@@ -741,7 +742,7 @@ export abstract class AWSWebSocketProvider {
 					const authHeader = await awsRealTimeHeaderBasedAuth({
 						authenticationType,
 						payload: payloadString,
-						canonicalUri: this._getConnectUri(),
+						canonicalUri: this.wsConnectUri,
 						apiKey,
 						appSyncGraphqlEndpoint,
 						region,

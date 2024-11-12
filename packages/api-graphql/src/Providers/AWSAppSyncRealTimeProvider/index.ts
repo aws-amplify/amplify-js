@@ -46,7 +46,11 @@ const CONNECT_URI = '/connect';
 
 export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 	constructor() {
-		super({ providerName: PROVIDER_NAME, wsProtocolName: WS_PROTOCOL_NAME });
+		super({
+			providerName: PROVIDER_NAME,
+			wsProtocolName: WS_PROTOCOL_NAME,
+			connectUri: CONNECT_URI,
+		});
 	}
 
 	getProviderName() {
@@ -177,9 +181,5 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 		} = data;
 
 		return { errorCode, errorType };
-	}
-
-	protected _getConnectUri(): string {
-		return CONNECT_URI;
 	}
 }
