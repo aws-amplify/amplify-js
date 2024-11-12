@@ -574,6 +574,8 @@ export abstract class AWSWebSocketProvider {
 		errorType: string;
 	};
 
+	protected abstract _getConnectUri(): string;
+
 	private _handleIncomingSubscriptionMessage(message: MessageEvent) {
 		if (typeof message.data !== 'string') {
 			return;
@@ -739,7 +741,7 @@ export abstract class AWSWebSocketProvider {
 					const authHeader = await awsRealTimeHeaderBasedAuth({
 						authenticationType,
 						payload: payloadString,
-						canonicalUri: '/connect',
+						canonicalUri: this._getConnectUri(),
 						apiKey,
 						appSyncGraphqlEndpoint,
 						region,

@@ -43,6 +43,7 @@ interface DataResponse {
 
 const PROVIDER_NAME = 'AWSAppSyncEventsProvider';
 const WS_PROTOCOL_NAME = 'aws-appsync-event-ws';
+const CONNECT_URI = ''; // events does not expect a connect uri
 
 export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 	constructor() {
@@ -90,7 +91,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 			appSyncGraphqlEndpoint,
 			authenticationType,
 			query,
-			variables,
+			// variables,
 			apiKey,
 			region,
 		} = options;
@@ -100,7 +101,7 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		// 	events: [variables],
 		// };
 
-		const serializedData = JSON.stringify([variables]);
+		const serializedData = JSON.stringify({ channel: query });
 
 		const headers = {
 			...(await awsRealTimeHeaderBasedAuth({
@@ -201,6 +202,10 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 		const { errors: [{ errorType = '', errorCode = 0 } = {}] = [] } = data;
 
 		return { errorCode, errorType };
+	}
+
+	protected _getConnectUri(): string {
+		return CONNECT_URI;
 	}
 }
 

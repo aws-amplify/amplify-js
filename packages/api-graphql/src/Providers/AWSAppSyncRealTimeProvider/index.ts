@@ -42,6 +42,7 @@ interface DataPayload {
 
 const PROVIDER_NAME = 'AWSAppSyncRealTimeProvider';
 const WS_PROTOCOL_NAME = 'graphql-ws';
+const CONNECT_URI = '/connect';
 
 export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 	constructor() {
@@ -176,5 +177,9 @@ export class AWSAppSyncRealTimeProvider extends AWSWebSocketProvider {
 		} = data;
 
 		return { errorCode, errorType };
+	}
+
+	protected _getConnectUri(): string {
+		return CONNECT_URI;
 	}
 }
