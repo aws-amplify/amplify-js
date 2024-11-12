@@ -8,8 +8,8 @@ import {
 } from '@aws-amplify/core/internals/utils';
 
 import {
-	GetWebAuthnRegistrationOptionsException,
-	VerifyWebAuthnRegistrationResultException,
+	CompleteWebAuthnRegistrationException,
+	StartWebAuthnRegistrationException,
 } from '../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
 import { assertAuthTokens } from '../../providers/cognito/utils/types';
 import { createCognitoUserPoolEndpointResolver } from '../../providers/cognito/factories';
@@ -32,9 +32,9 @@ import { assertValidCredentialCreationOptions } from '../utils/passkey/types';
  * - Thrown when intermediate state is invalid
  * @throws - {@link AuthError}:
  * - Thrown when user is unauthenticated
- * @throws - {@link GetWebAuthnRegistrationOptionsException}
+ * @throws - {@link StartWebAuthnRegistrationException}
  * - Thrown due to a service error retrieving WebAuthn registration options
- * @throws - {@link VerifyWebAuthnRegistrationResultException}
+ * @throws - {@link CompleteWebAuthnRegistrationException}
  * - Thrown due to a service error when verifying WebAuthn registration result
  */
 export async function associateWebAuthnCredential(): Promise<void> {

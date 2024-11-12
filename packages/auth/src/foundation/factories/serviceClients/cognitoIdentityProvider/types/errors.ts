@@ -1,27 +1,30 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-export enum GetWebAuthnRegistrationOptionsException {
+export enum StartWebAuthnRegistrationException {
 	ForbiddenException = 'ForbiddenException',
 	InternalErrorException = 'InternalErrorException',
 	InvalidParameterException = 'InvalidParameterException',
-	InvalidWebAuthnConfigurationException = 'InvalidWebAuthnConfigurationException',
 	LimitExceededException = 'LimitExceededException',
 	NotAuthorizedException = 'NotAuthorizedException',
 	TooManyRequestsException = 'TooManyRequestsException',
 	WebAuthnNotEnabledException = 'WebAuthnNotEnabledException',
+	WebAuthnConfigurationMissingException = 'WebAuthnConfigurationMissingException',
 }
 
-export enum VerifyWebAuthnRegistrationResultException {
-	CredentialAlreadyExistsException = 'CredentialAlreadyExistsException',
+export enum CompleteWebAuthnRegistrationException {
 	ForbiddenException = 'ForbiddenException',
 	InternalErrorException = 'InternalErrorException',
 	InvalidParameterException = 'InvalidParameterException',
+	LimitExceededException = 'LimitExceededException',
 	NotAuthorizedException = 'NotAuthorizedException',
 	TooManyRequestsException = 'TooManyRequestsException',
-	WebAuthnAuthenticatorSelectionMismatchException = 'WebAuthnAuthenticatorSelectionMismatchException',
-	WebAuthnChallengeMismatchException = 'WebAuthnChallengeMismatchException',
+	WebAuthnNotEnabledException = 'WebAuthnNotEnabledException',
+	WebAuthnChallengeNotFoundException = 'WebAuthnChallengeNotFoundException',
 	WebAuthnRelyingPartyMismatchException = 'WebAuthnRelyingPartyMismatchException',
+	WebAuthnClientMismatchException = 'WebAuthnClientMismatchException',
+	WebAuthnOriginNotAllowedException = 'WebAuthnOriginNotAllowedException',
+	WebAuthnCredentialNotSupportedException = 'WebAuthnCredentialNotSupportedException',
 }
 
 export enum ListWebAuthnCredentialsException {
@@ -36,4 +39,5 @@ export enum DeleteWebAuthnCredentialException {
 	InternalErrorException = 'InternalErrorException',
 	InvalidParameterException = 'InvalidParameterException',
 	NotAuthorizedException = 'NotAuthorizedException',
+	ResourceNotFoundException = 'ResourceNotFoundException',
 }
