@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.8.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.8.0...aws-amplify@6.8.1) (2024-11-12)
+
+### Bug Fixes
+
+- **core:** Check for storage initialization errors ([#13938](https://github.com/aws-amplify/amplify-js/issues/13938)) ([0f50917](https://github.com/aws-amplify/amplify-js/commit/0f5091780046b9556b98300c29fb970a0358bd70))
+
 # [6.8.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@6.7.0...aws-amplify@6.8.0) (2024-10-31)
 
 ### Features
