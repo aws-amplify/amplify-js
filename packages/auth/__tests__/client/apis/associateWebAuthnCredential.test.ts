@@ -173,7 +173,7 @@ describe('associateWebAuthnCredential', () => {
 		} catch (error: any) {
 			expect(error).toBeInstanceOf(PasskeyError);
 			expect(error.name).toBe(
-				PasskeyErrorCode.InvalidCredentialCreationOptions,
+				PasskeyErrorCode.InvalidPasskeyRegistrationOptions,
 			);
 		}
 	});

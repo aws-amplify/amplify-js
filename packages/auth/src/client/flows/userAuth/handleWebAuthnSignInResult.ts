@@ -55,7 +55,7 @@ export async function handleWebAuthnSignInResult(
 
 	assertPasskeyError(
 		!!credentialRequestOptions,
-		PasskeyErrorCode.InvalidCredentialRequestOptions,
+		PasskeyErrorCode.InvalidPasskeyAuthenticationOptions,
 	);
 
 	const cred = await getPasskey(JSON.parse(credentialRequestOptions));

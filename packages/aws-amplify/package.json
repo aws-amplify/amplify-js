@@ -449,7 +449,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.23 kB"
+			"limit": "30.34 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",
@@ -461,7 +461,7 @@
 			"name": "[Auth] Associate WebAuthN Credential (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ associateWebAuthnCredential }",
-			"limit": "13.07 kB"
+			"limit": "13.50 kB"
 		},
 		{
 			"name": "[Auth] List WebAuthN Credentials (Cognito)",

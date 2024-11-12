@@ -10,7 +10,11 @@ import {
 	deserializeJsonToPkcCreationOptions,
 	serializePkcWithAttestationToJson,
 } from './serde';
-import { PasskeyErrorCode, assertPasskeyError } from './errors';
+import {
+	PasskeyErrorCode,
+	assertPasskeyError,
+	handlePasskeyRegistrationError,
+} from './errors';
 import { getIsPasskeySupported } from './getIsPasskeySupported';
 
 /**
@@ -21,17 +25,24 @@ import { getIsPasskeySupported } from './getIsPasskeySupported';
 export const registerPasskey = async (
 	input: PasskeyCreateOptionsJson,
 ): Promise<PasskeyCreateResultJson> => {
-	const isPasskeySupported = getIsPasskeySupported();
+	try {
+		const isPasskeySupported = getIsPasskeySupported();
 
-	assertPasskeyError(isPasskeySupported, PasskeyErrorCode.PasskeyNotSupported);
+		assertPasskeyError(
+			isPasskeySupported,
+			PasskeyErrorCode.PasskeyNotSupported,
+		);
 
-	const passkeyCreationOptions = deserializeJsonToPkcCreationOptions(input);
+		const passkeyCreationOptions = deserializeJsonToPkcCreationOptions(input);
 
-	const credential = await navigator.credentials.create({
-		publicKey: passkeyCreationOptions,
-	});
+		const credential = await navigator.credentials.create({
+			publicKey: passkeyCreationOptions,
+		});
 
-	assertCredentialIsPkcWithAuthenticatorAttestationResponse(credential);
+		assertCredentialIsPkcWithAuthenticatorAttestationResponse(credential);
 
-	return serializePkcWithAttestationToJson(credential);
+		return serializePkcWithAttestationToJson(credential);
+	} catch (err) {
+		throw handlePasskeyRegistrationError(err);
+	}
 };

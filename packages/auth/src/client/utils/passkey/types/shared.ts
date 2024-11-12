@@ -88,7 +88,7 @@ export function assertValidCredentialCreationOptions(
 			!!credentialCreationOptions?.rp,
 			!!credentialCreationOptions?.pubKeyCredParams,
 		].every(Boolean),
-		PasskeyErrorCode.InvalidCredentialCreationOptions,
+		PasskeyErrorCode.InvalidPasskeyRegistrationOptions,
 	);
 }
 
