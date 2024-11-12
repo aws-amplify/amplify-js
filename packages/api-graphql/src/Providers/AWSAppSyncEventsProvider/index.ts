@@ -95,7 +95,6 @@ export class AWSAppSyncEventProvider extends AWSWebSocketProvider {
 			appSyncGraphqlEndpoint,
 			authenticationType,
 			query,
-			// variables,
 			apiKey,
 			region,
 		} = options;
