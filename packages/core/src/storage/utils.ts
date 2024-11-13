@@ -20,7 +20,9 @@ export const getLocalStorageWithFallback = (): Storage => {
 		}
 	} catch (e) {
 		// Handle any errors related to localStorage access
-		logger.error('LocalStorage access failed:', e);
+		logger.info(
+			'localStorage not found. InMemoryStorage is used as a fallback.',
+		);
 	}
 
 	// Return in-memory storage as a fallback if localStorage is not accessible
@@ -44,7 +46,9 @@ export const getSessionStorageWithFallback = (): Storage => {
 		throw new Error('sessionStorage is not defined');
 	} catch (e) {
 		// Handle any errors related to sessionStorage access
-		logger.error('SessionStorage access failed:', e);
+		logger.info(
+			'sessionStorage not found. InMemoryStorage is used as a fallback.',
+		);
 
 		return new InMemoryStorage();
 	}
