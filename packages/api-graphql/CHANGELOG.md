@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.5.1...@aws-amplify/api-graphql@4.6.0) (2024-11-12)
+
+### Bug Fixes
+
+- **api-graphql:** close WS on events.closeAll ([#13989](https://github.com/aws-amplify/amplify-js/issues/13989)) ([168ecff](https://github.com/aws-amplify/amplify-js/commit/168ecff80ede7c92a2a443471061237f250b1fcd))
+- **api-graphql:** events ws connect sig ([#14003](https://github.com/aws-amplify/amplify-js/issues/14003)) ([4606279](https://github.com/aws-amplify/amplify-js/commit/460627966350c67db890dd908e882885e93624a7))
+
+### Features
+
+- **api-graphql:** return entire payload in callback ([#13980](https://github.com/aws-amplify/amplify-js/issues/13980)) ([d6eede3](https://github.com/aws-amplify/amplify-js/commit/d6eede3a68df1e6c49927e62ce0b73d6db615a8a))
+
 ## [4.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@4.5.0...@aws-amplify/api-graphql@4.5.1) (2024-10-31)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

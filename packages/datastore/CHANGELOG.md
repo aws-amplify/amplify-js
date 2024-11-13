@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.59](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.58...@aws-amplify/datastore@5.0.59) (2024-11-12)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
 ## [5.0.58](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@5.0.57...@aws-amplify/datastore@5.0.58) (2024-10-31)
 
 **Note:** Version bump only for package @aws-amplify/datastore
