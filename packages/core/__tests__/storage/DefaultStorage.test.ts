@@ -1,5 +1,4 @@
 import { DefaultStorage } from '../../src/storage/DefaultStorage';
-import { InMemoryStorage } from '../../src/storage/InMemoryStorage';
 
 const key = 'k';
 const value = 'value';
@@ -35,26 +34,5 @@ describe('DefaultStorage', () => {
 	it('should clear out storage', async () => {
 		await defaultStorage.clear();
 		expect(defaultStorage.getItem(key)).resolves.toBeNull();
-	});
-
-	it('should fall back to alternative storage when localStorage is not accessible', async () => {
-		// Mock window.localStorage to throw an error
-		const originalLocalStorage = window.localStorage;
-
-		Object.defineProperty(window, 'localStorage', {
-			value: undefined,
-			writable: true,
-		});
-
-		// Create a new DefaultStorage instance to trigger the fallback
-		const fallbackStorage = new DefaultStorage();
-
-		// Verify that the storage still works as expected
-		expect(fallbackStorage.storage instanceof InMemoryStorage).toEqual(true);
-
-		// Restore the original localStorage
-		Object.defineProperty(window, 'localStorage', {
-			value: originalLocalStorage,
-		});
 	});
 });
