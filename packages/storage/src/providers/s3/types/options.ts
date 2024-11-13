@@ -57,6 +57,14 @@ interface CommonOptions {
 	 * The expected owner of the target bucket.
 	 */
 	expectedBucketOwner?: string;
+
+	/**
+	 * Specifies the encoding used for response elements that contain
+	 * special characters. By setting this to 'url', special characters
+	 * in object keys are URL-encoded in the response using the
+	 * `application/x-www-form-urlencoded` encoding.
+	 */
+	encodingType?: 'url';
 }
 
 /**

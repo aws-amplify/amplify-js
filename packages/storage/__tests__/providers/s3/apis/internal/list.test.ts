@@ -1024,4 +1024,35 @@ describe('list API', () => {
 			});
 		});
 	});
+
+	describe.only.each([
+		{
+			type: 'Prefix',
+			listFunction: (options?: any) =>
+				list(Amplify, { prefix: 'test/', options }),
+		},
+		{
+			type: 'Path',
+			listFunction: (options?: any) =>
+				list(Amplify, { path: 'test/', options }),
+		},
+	])('Encoding for List with $type', ({ listFunction }) => {
+		afterEach(() => {
+			mockListObject.mockClear();
+		});
+		it('should include encoding type', async () => {
+			mockListObjectsV2ApiWithPages(1);
+
+			await listFunction({
+				encodingType: 'url',
+			});
+			expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
+				expect.any(Object),
+				expect.objectContaining({
+					Bucket: bucket,
+					EncodingType: 'url',
+				}),
+			);
+		});
+	});
 });
