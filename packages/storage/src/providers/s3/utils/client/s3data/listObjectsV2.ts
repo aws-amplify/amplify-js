@@ -98,6 +98,7 @@ const listObjectsV2Deserializer = async (
 			$metadata: parseMetadata(response),
 			...contents,
 		};
+
 		validateCorroboratingElements(output);
 
 		return output;

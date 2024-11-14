@@ -14,6 +14,7 @@ import {
 } from '../../types';
 import {
 	resolveS3ConfigAndInput,
+	urlDecode,
 	validateBucketOwnerID,
 	validateStorageOperationInputWithPrefix,
 } from '../../utils';
@@ -85,6 +86,7 @@ export const list = async (
 		ContinuationToken: options?.listAll ? undefined : options?.nextToken,
 		Delimiter: getDelimiter(options),
 		ExpectedBucketOwner: options?.expectedBucketOwner,
+		EncodingType: 'url',
 	};
 	logger.debug(`listing items from "${listParams.Prefix}"`);
 
@@ -159,16 +161,18 @@ const _listWithPrefix = async ({
 		listParamsClone,
 	);
 
-	validateEchoedElements(listParamsClone, response);
+	const listOutput = decodeEncodedElements(response);
 
-	if (!response?.Contents) {
+	validateEchoedElements(listParamsClone, listOutput);
+
+	if (!listOutput?.Contents) {
 		return {
 			items: [],
 		};
 	}
 
 	return {
-		items: response.Contents.map(item => ({
+		items: listOutput.Contents.map(item => ({
 			key: generatedPrefix
 				? item.Key!.substring(generatedPrefix.length)
 				: item.Key!,
@@ -176,7 +180,7 @@ const _listWithPrefix = async ({
 			lastModified: item.LastModified,
 			size: item.Size,
 		})),
-		nextToken: response.NextContinuationToken,
+		nextToken: listOutput.NextContinuationToken,
 	};
 };
 
@@ -221,13 +225,15 @@ const _listWithPath = async ({
 		listParamsClone.MaxKeys = MAX_PAGE_SIZE;
 	}
 
-	const listOutput = await listObjectsV2(
+	const response = await listObjectsV2(
 		{
 			...s3Config,
 			userAgentValue: getStorageUserAgentValue(StorageAction.List),
 		},
 		listParamsClone,
 	);
+
+	const listOutput = decodeEncodedElements(response);
 
 	validateEchoedElements(listParamsClone, listOutput);
 
@@ -294,4 +300,46 @@ const validateEchoedElements = (
 	if (!validEchoedParameters) {
 		throw new IntegrityError();
 	}
+};
+
+/**
+ * Decodes URL-encoded elements in the S3 `ListObjectsV2Output` response when `EncodingType` is `'url'`.
+ * Applies to values for 'Delimiter', 'Prefix', 'StartAfter' and 'Key' in the response.
+ */
+const decodeEncodedElements = (
+	listOutput: ListObjectsV2Output,
+): ListObjectsV2Output => {
+	if (listOutput.EncodingType !== 'url') {
+		return listOutput;
+	}
+
+	const decodedListOutput = { ...listOutput };
+
+	// Decode top-level properties
+	(['Delimiter', 'Prefix', 'StartAfter'] as const).forEach(prop => {
+		const value = listOutput[prop];
+		if (typeof value === 'string') {
+			decodedListOutput[prop] = urlDecode(value);
+		}
+	});
+
+	// Decode 'Key' in each item of 'Contents', if it exists
+	if (listOutput.Contents) {
+		decodedListOutput.Contents = listOutput.Contents.map(content => ({
+			...content,
+			Key: content.Key ? urlDecode(content.Key) : content.Key,
+		}));
+	}
+
+	// Decode 'Prefix' in each item of 'CommonPrefixes', if it exists
+	if (listOutput.CommonPrefixes) {
+		decodedListOutput.CommonPrefixes = listOutput.CommonPrefixes.map(
+			content => ({
+				...content,
+				Prefix: content.Prefix ? urlDecode(content.Prefix) : content.Prefix,
+			}),
+		);
+	}
+
+	return decodedListOutput;
 };

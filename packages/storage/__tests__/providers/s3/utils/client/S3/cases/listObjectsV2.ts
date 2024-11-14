@@ -217,7 +217,7 @@ const listObjectsV2ErrorCase403: ApiFunctionalTestCase<typeof listObjectsV2> = [
 		<Error>
 			<Code>NoSuchKey</Code>
 			<Message>The resource you requested does not exist</Message>
-			<Resource>/mybucket/myfoto.jpg</Resource> 
+			<Resource>/mybucket/myfoto.jpg</Resource>
 			<RequestId>4442587FB7D0A2F9</RequestId>
 		</Error>`,
 	},
@@ -420,6 +420,175 @@ const listObjectsV2HappyCaseCustomEndpoint: ApiFunctionalTestCase<
 	}) as any,
 ];
 
+const listObjectsV2HappyCaseWithEncoding: ApiFunctionalTestCase<
+	typeof listObjectsV2
+> = [
+	'happy case',
+	'listObjectsV2 unicode values with encoding',
+	listObjectsV2,
+	{
+		...defaultConfig,
+	},
+	{
+		Bucket: 'bucket',
+		Prefix: 'Prefix',
+		EncodingType: 'url',
+	},
+	expect.any(Object),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: `<?xml version="1.0" encoding="UTF-8"?>
+	<ListBucketResult
+	xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+	<Name>bucket</Name>
+	<Prefix>some%20folder%20with%20%00%20unprintable%20unicode%2F</Prefix>
+		<Delimiter>bad%08key</Delimiter>
+	<StartAfter>bad%01key</StartAfter>
+	<KeyCount>6</KeyCount>
+	<MaxKeys>101</MaxKeys>
+	<EncodingType>url</EncodingType>
+	<IsTruncated>false</IsTruncated>
+	<Contents>
+		<Key>public/bad%3Cdiv%3Ekey</Key>
+		<LastModified>2024-11-05T18:13:11.000Z</LastModified>
+		<ETag>&quot;c0e066cc5238dd7937e464fe7572b71a&quot;</ETag>
+		<Size>5455</Size>
+		<StorageClass>STANDARD</StorageClass>
+	</Contents>
+		<Contents>
+		<Key>bad%00key</Key>
+		<LastModified>2024-11-05T18:13:11.000Z</LastModified>
+		<ETag>&quot;c0e066cc5238dd7937e464fe7572b71a&quot;</ETag>
+		<Size>5455</Size>
+		<StorageClass>STANDARD</StorageClass>
+	</Contents>
+		<Contents>
+		<Key>public/bad%7Fkey</Key>
+		<LastModified>2024-11-05T18:13:11.000Z</LastModified>
+		<ETag>&quot;c0e066cc5238dd7937e464fe7572b71a&quot;</ETag>
+		<Size>5455</Size>
+		<StorageClass>STANDARD</StorageClass>
+	</Contents>
+	<CommonPrefixes>
+		<Prefix>public/some%20folder%20with%20spaces%2F</Prefix>
+	</CommonPrefixes>
+	<CommonPrefixes>
+		<Prefix>public/real%0A%0A%0A%0A%0A%0A%0A%0A%0Afunny%0A%0A%0A%0A%0A%0A%0A%0A%0Abiz%2F</Prefix>
+	</CommonPrefixes>
+	<CommonPrefixes>
+		<Prefix>public/some%20folder%20with%20%E3%81%8A%E3%81%AF%E3%82%88%E3%81%86%20multibyte%20unicode%2F</Prefix>
+	</CommonPrefixes>
+</ListBucketResult>`,
+	},
+	expect.objectContaining({
+		CommonPrefixes: [
+			{
+				Prefix: 'public/some%20folder%20with%20spaces%2F',
+			},
+			{
+				Prefix:
+					'public/real%0A%0A%0A%0A%0A%0A%0A%0A%0Afunny%0A%0A%0A%0A%0A%0A%0A%0A%0Abiz%2F',
+			},
+			{
+				Prefix:
+					'public/some%20folder%20with%20%E3%81%8A%E3%81%AF%E3%82%88%E3%81%86%20multibyte%20unicode%2F',
+			},
+		],
+		Contents: [
+			{
+				Key: 'public/bad%3Cdiv%3Ekey',
+				LastModified: new Date('2024-11-05T18:13:11.000Z'),
+				ETag: '"c0e066cc5238dd7937e464fe7572b71a"',
+				Size: 5455,
+				StorageClass: 'STANDARD',
+			},
+			{
+				Key: 'bad%00key',
+				LastModified: new Date('2024-11-05T18:13:11.000Z'),
+				ETag: '"c0e066cc5238dd7937e464fe7572b71a"',
+				Size: 5455,
+				StorageClass: 'STANDARD',
+			},
+			{
+				Key: 'public/bad%7Fkey',
+				LastModified: new Date('2024-11-05T18:13:11.000Z'),
+				ETag: '"c0e066cc5238dd7937e464fe7572b71a"',
+				Size: 5455,
+				StorageClass: 'STANDARD',
+			},
+		],
+		Prefix: 'some%20folder%20with%20%00%20unprintable%20unicode%2F',
+		Delimiter: 'bad%08key',
+		StartAfter: 'bad%01key',
+		EncodingType: 'url',
+		Name: 'bucket',
+	}) as any,
+];
+
+const listObjectsV2ErrorCaseNoEncoding: ApiFunctionalTestCase<
+	typeof listObjectsV2
+> = [
+	'error case',
+	'listObjectsV2 unicode values without encoding',
+	listObjectsV2,
+	{
+		...defaultConfig,
+	},
+	{
+		Bucket: 'bucket',
+		Prefix: 'Prefix',
+		EncodingType: undefined,
+	},
+	expect.any(Object),
+	{
+		status: 200,
+		headers: DEFAULT_RESPONSE_HEADERS,
+		body: `<?xml version="1.0" encoding="UTF-8"?>
+	<ListBucketResult
+	xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+	<Name>badname</Name>
+	<Prefix>bad\x01key</Prefix>
+	<KeyCount>5</KeyCount>
+	<MaxKeys>101</MaxKeys>
+	<Delimiter>bad\x08key</Delimiter>
+	<IsTruncated>false</IsTruncated>
+	<StartAfter>おはよう multibyte unicode</StartAfter>
+	<Contents>
+		<Key>public/bad<div>key</Key>
+		<LastModified>2024-11-05T18:13:11.000Z</LastModified>
+		<ETag>&quot;c0e066cc5238dd7937e464fe7572b71a&quot;</ETag>
+		<Size>5455</Size>
+		<StorageClass>STANDARD</StorageClass>
+	</Contents>
+		<Contents>
+		<Key>bad\x00key</Key>
+		<LastModified>2024-11-05T18:13:11.000Z</LastModified>
+		<ETag>&quot;c0e066cc5238dd7937e464fe7572b71a&quot;</ETag>
+		<Size>5455</Size>
+		<StorageClass>STANDARD</StorageClass>
+	</Contents>
+		<Contents>
+		<Key>public/bad\x7fkey</Key>
+		<LastModified>2024-11-05T18:13:11.000Z</LastModified>
+		<ETag>&quot;c0e066cc5238dd7937e464fe7572b71a&quot;</ETag>
+		<Size>5455</Size>
+		<StorageClass>STANDARD</StorageClass>
+	</Contents>
+	<CommonPrefixes>
+		<Prefix>public/some folder with spaces/</Prefix>
+	</CommonPrefixes>
+	<CommonPrefixes>
+		<Prefix>public/some folder with \x00 unprintable unicode/</Prefix>
+	</CommonPrefixes>
+</ListBucketResult>`,
+	},
+	{
+		message: 'An unknown error has occurred.',
+		name: 'Unknown',
+	},
+];
+
 export default [
 	listObjectsV2HappyCaseTruncated,
 	listObjectsV2HappyCaseComplete,
@@ -428,4 +597,6 @@ export default [
 	listObjectsV2ErrorCaseMissingTruncated,
 	listObjectsV2ErrorCaseMissingToken,
 	listObjectsV2ErrorCase403,
+	listObjectsV2HappyCaseWithEncoding,
+	listObjectsV2ErrorCaseNoEncoding,
 ];
