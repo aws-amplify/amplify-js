@@ -484,41 +484,43 @@ const listObjectsV2HappyCaseWithEncoding: ApiFunctionalTestCase<
 	expect.objectContaining({
 		CommonPrefixes: [
 			{
-				Prefix: 'public/some folder with spaces/',
+				Prefix: 'public/some%20folder%20with%20spaces%2F',
 			},
 			{
-				Prefix: 'public/real\n\n\n\n\n\n\n\n\nfunny\n\n\n\n\n\n\n\n\nbiz/',
+				Prefix:
+					'public/real%0A%0A%0A%0A%0A%0A%0A%0A%0Afunny%0A%0A%0A%0A%0A%0A%0A%0A%0Abiz%2F',
 			},
 			{
-				Prefix: 'public/some folder with おはよう multibyte unicode/',
+				Prefix:
+					'public/some%20folder%20with%20%E3%81%8A%E3%81%AF%E3%82%88%E3%81%86%20multibyte%20unicode%2F',
 			},
 		],
 		Contents: [
 			{
-				Key: 'public/bad<div>key',
+				Key: 'public/bad%3Cdiv%3Ekey',
 				LastModified: new Date('2024-11-05T18:13:11.000Z'),
 				ETag: '"c0e066cc5238dd7937e464fe7572b71a"',
 				Size: 5455,
 				StorageClass: 'STANDARD',
 			},
 			{
-				Key: 'bad\x00key',
+				Key: 'bad%00key',
 				LastModified: new Date('2024-11-05T18:13:11.000Z'),
 				ETag: '"c0e066cc5238dd7937e464fe7572b71a"',
 				Size: 5455,
 				StorageClass: 'STANDARD',
 			},
 			{
-				Key: 'public/badkey',
+				Key: 'public/bad%7Fkey',
 				LastModified: new Date('2024-11-05T18:13:11.000Z'),
 				ETag: '"c0e066cc5238dd7937e464fe7572b71a"',
 				Size: 5455,
 				StorageClass: 'STANDARD',
 			},
 		],
-		Prefix: 'some folder with \u0000 unprintable unicode/',
-		Delimiter: 'bad\x08key',
-		StartAfter: 'bad\x01key',
+		Prefix: 'some%20folder%20with%20%00%20unprintable%20unicode%2F',
+		Delimiter: 'bad%08key',
+		StartAfter: 'bad%01key',
 		EncodingType: 'url',
 		Name: 'bucket',
 	}) as any,

@@ -25,7 +25,6 @@ import {
 	s3TransferHandler,
 } from '../utils';
 import { IntegrityError } from '../../../../../errors/IntegrityError';
-import { urlDecode } from '../../urlDecoder';
 
 import type {
 	ListObjectsV2CommandInput,
@@ -95,10 +94,10 @@ const listObjectsV2Deserializer = async (
 			StartAfter: 'StartAfter',
 		});
 
-		const output = decodeEncodedElements({
+		const output = {
 			$metadata: parseMetadata(response),
 			...contents,
-		});
+		};
 
 		validateCorroboratingElements(output);
 
@@ -155,48 +154,6 @@ const validateCorroboratingElements = (response: ListObjectsV2Output) => {
 	if (!validTruncation || !validNumberOfKeysReturned) {
 		throw new IntegrityError();
 	}
-};
-
-/**
- * Decodes URL-encoded elements in the S3 `ListObjectsV2Output` response when `EncodingType` is `'url'`.
- * Applies to values for 'Delimiter', 'Prefix', 'StartAfter' and 'Key' in the response.
- */
-const decodeEncodedElements = (
-	listOutput: ListObjectsV2Output,
-): ListObjectsV2Output => {
-	if (listOutput.EncodingType !== 'url') {
-		return listOutput;
-	}
-
-	const decodedListOutput = { ...listOutput };
-
-	// Decode top-level properties
-	(['Delimiter', 'Prefix', 'StartAfter'] as const).forEach(prop => {
-		const value = listOutput[prop];
-		if (typeof value === 'string') {
-			decodedListOutput[prop] = urlDecode(value);
-		}
-	});
-
-	// Decode 'Key' in each item of 'Contents', if it exists
-	if (listOutput.Contents) {
-		decodedListOutput.Contents = listOutput.Contents.map(content => ({
-			...content,
-			Key: content.Key ? urlDecode(content.Key) : content.Key,
-		}));
-	}
-
-	// Decode 'Prefix' in each item of 'CommonPrefixes', if it exists
-	if (listOutput.CommonPrefixes) {
-		decodedListOutput.CommonPrefixes = listOutput.CommonPrefixes.map(
-			content => ({
-				...content,
-				Prefix: content.Prefix ? urlDecode(content.Prefix) : content.Prefix,
-			}),
-		);
-	}
-
-	return decodedListOutput;
 };
 
 export const listObjectsV2 = composeServiceApi(

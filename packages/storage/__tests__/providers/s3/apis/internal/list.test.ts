@@ -184,11 +184,11 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						MaxKeys: 1000,
 						Prefix: expectedKey,
-					},
+					}),
 				);
 			});
 		});
@@ -226,12 +226,12 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						Prefix: expectedKey,
 						ContinuationToken: nextToken,
 						MaxKeys: customPageSize,
-					},
+					}),
 				);
 			});
 		});
@@ -260,11 +260,11 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						MaxKeys: 1000,
 						Prefix: expectedKey,
-					},
+					}),
 				);
 			});
 		});
@@ -297,23 +297,23 @@ describe('list API', () => {
 					await expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
 						1,
 						listObjectClientConfig,
-						{
+						expect.objectContaining({
 							Bucket: bucket,
 							Prefix: expectedKey,
 							MaxKeys: 1000,
 							ContinuationToken: undefined,
-						},
+						}),
 					);
 					// last input receives TEST_TOKEN as the Continuation Token
 					await expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
 						3,
 						listObjectClientConfig,
-						{
+						expect.objectContaining({
 							Bucket: bucket,
 							Prefix: expectedKey,
 							MaxKeys: 1000,
 							ContinuationToken: nextToken,
-						},
+						}),
 					);
 				});
 			},
@@ -348,11 +348,11 @@ describe('list API', () => {
 						region: mockRegion,
 						userAgentValue: expect.any(String),
 					},
-					{
+					expect.objectContaining({
 						Bucket: mockBucketName,
 						MaxKeys: 1000,
 						Prefix: `public/${inputKey}`,
-					},
+					}),
 				);
 			});
 
@@ -382,11 +382,11 @@ describe('list API', () => {
 						region,
 						userAgentValue: expect.any(String),
 					},
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						MaxKeys: 1000,
 						Prefix: `public/${inputKey}`,
-					},
+					}),
 				);
 			});
 		});
@@ -444,11 +444,11 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						MaxKeys: 1000,
 						Prefix: resolvePath(inputPath),
-					},
+					}),
 				);
 			},
 		);
@@ -487,12 +487,12 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						Prefix: resolvePath(inputPath),
 						ContinuationToken: nextToken,
 						MaxKeys: customPageSize,
-					},
+					}),
 				);
 			},
 		);
@@ -516,11 +516,11 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						MaxKeys: 1000,
 						Prefix: resolvePath(path),
-					},
+					}),
 				);
 			},
 		);
@@ -552,23 +552,23 @@ describe('list API', () => {
 				await expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
 					1,
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						Prefix: resolvedPath,
 						MaxKeys: 1000,
 						ContinuationToken: undefined,
-					},
+					}),
 				);
 				// last input receives TEST_TOKEN as the Continuation Token
 				await expect(listObjectsV2).toHaveBeenNthCalledWithConfigAndInput(
 					3,
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						Prefix: resolvedPath,
 						MaxKeys: 1000,
 						ContinuationToken: nextToken,
-					},
+					}),
 				);
 			},
 		);
@@ -602,11 +602,11 @@ describe('list API', () => {
 						region: mockRegion,
 						userAgentValue: expect.any(String),
 					},
-					{
+					expect.objectContaining({
 						Bucket: mockBucketName,
 						MaxKeys: 1000,
 						Prefix: 'path/',
-					},
+					}),
 				);
 			});
 
@@ -636,11 +636,11 @@ describe('list API', () => {
 						region,
 						userAgentValue: expect.any(String),
 					},
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						MaxKeys: 1000,
 						Prefix: 'path/',
-					},
+					}),
 				);
 			});
 		});
@@ -664,11 +664,11 @@ describe('list API', () => {
 				expect(listObjectsV2).toHaveBeenCalledTimes(1);
 				await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 					listObjectClientConfig,
-					{
+					expect.objectContaining({
 						Bucket: bucket,
 						MaxKeys: 1000,
 						Prefix: 'public/',
-					},
+					}),
 				);
 				expect(error.$metadata.httpStatusCode).toBe(404);
 			}
@@ -772,12 +772,12 @@ describe('list API', () => {
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
-				{
+				expect.objectContaining({
 					Bucket: bucket,
 					MaxKeys: 1000,
 					Prefix: mockedPath,
 					Delimiter: '/',
-				},
+				}),
 			);
 		});
 
@@ -806,12 +806,12 @@ describe('list API', () => {
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
-				{
+				expect.objectContaining({
 					Bucket: bucket,
 					MaxKeys: 1000,
 					Prefix: mockedPath,
 					Delimiter: '/',
-				},
+				}),
 			);
 		});
 
@@ -828,12 +828,12 @@ describe('list API', () => {
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
-				{
+				expect.objectContaining({
 					Bucket: bucket,
 					MaxKeys: 3,
 					Prefix: mockedPath,
 					Delimiter: '/',
-				},
+				}),
 			);
 		});
 
@@ -850,12 +850,12 @@ describe('list API', () => {
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
-				{
+				expect.objectContaining({
 					Bucket: bucket,
 					MaxKeys: 1000,
 					Prefix: mockedPath,
 					Delimiter: '-',
-				},
+				}),
 			);
 		});
 
@@ -871,12 +871,12 @@ describe('list API', () => {
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
-				{
+				expect.objectContaining({
 					Bucket: bucket,
 					MaxKeys: 1000,
 					Prefix: mockedPath,
 					Delimiter: undefined,
-				},
+				}),
 			);
 		});
 
@@ -887,12 +887,12 @@ describe('list API', () => {
 			expect(listObjectsV2).toHaveBeenCalledTimes(1);
 			await expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				listObjectClientConfig,
-				{
+				expect.objectContaining({
 					Bucket: bucket,
 					MaxKeys: 1000,
 					Prefix: mockedPath,
 					Delimiter: undefined,
-				},
+				}),
 			);
 		});
 	});
@@ -1025,27 +1025,56 @@ describe('list API', () => {
 		});
 	});
 
-	describe.only.each([
+	describe.each([
 		{
 			type: 'Prefix',
 			listFunction: (options?: any) =>
-				list(Amplify, { prefix: 'test/', options }),
+				list(Amplify, {
+					prefix: 'some folder with  unprintable unicode/',
+					options,
+				}),
+			key: 'key',
 		},
 		{
 			type: 'Path',
 			listFunction: (options?: any) =>
-				list(Amplify, { path: 'test/', options }),
+				list(Amplify, {
+					path: 'public/some folder with  unprintable unicode/',
+					options,
+				}),
+			key: 'path',
 		},
-	])('Encoding for List with $type', ({ listFunction }) => {
+	])('Encoding for List with $type', ({ listFunction, key }) => {
 		afterEach(() => {
 			mockListObject.mockClear();
 		});
-		it('should include encoding type', async () => {
-			mockListObjectsV2ApiWithPages(1);
+		it('should decode encoded list output', async () => {
+			const encodedBadKeys = [
+				'some+folder+with+spaces/',
+				'real%0A%0A%0A%0A%0A%0A%0A%0A%0Afunny%0A%0A%0A%0A%0A%0A%0A%0A%0Abiz',
+				'some+folder+with+%E3%81%8A%E3%81%AF%E3%82%88%E3%81%86+multibyte+unicode/',
+				'bad%3Cdiv%3Ekey',
+				'bad%00key',
+				'bad%01key',
+			];
 
-			await listFunction({
-				encodingType: 'url',
+			mockListObject.mockReturnValueOnce({
+				Name: bucket,
+				Prefix: 'public/some+folder+with++unprintable+unicode/',
+				Delimiter: 'bad%08key',
+				MaxKeys: 1000,
+				StartAfter: 'bad%7Fbiz/',
+				EncodingType: 'url',
+				Contents: encodedBadKeys.map(badKey => ({
+					...listObjectClientBaseResultItem,
+					Key: key === 'key' ? `public/${badKey}` : badKey,
+				})),
 			});
+
+			const result = await listFunction({
+				subpathStrategy: { strategy: 'exclude', delimiter: 'bad\x08key' },
+			});
+
 			expect(listObjectsV2).toBeLastCalledWithConfigAndInput(
 				expect.any(Object),
 				expect.objectContaining({
@@ -1053,6 +1082,26 @@ describe('list API', () => {
 					EncodingType: 'url',
 				}),
 			);
+
+			const decodedKeys = [
+				'some folder with spaces/',
+				'real\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0afunny\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0abiz',
+				'some folder with おはよう multibyte unicode/',
+				'bad<div>key',
+				'bad\x00key',
+				'bad\x01key',
+			];
+
+			const expectedResult = {
+				items: decodedKeys.map(decodedKey => ({
+					[key]: decodedKey,
+					eTag: 'eTag',
+					lastModified: 'lastModified',
+					size: 'size',
+				})),
+				nextToken: undefined,
+			};
+			expect(result).toEqual(expectedResult);
 		});
 	});
 });
