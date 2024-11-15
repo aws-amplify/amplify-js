@@ -238,6 +238,7 @@ const _listWithPath = async ({
 	if (!contents) {
 		return {
 			items: [],
+			nextToken: nextContinuationToken,
 			excludedSubpaths,
 		};
 	}

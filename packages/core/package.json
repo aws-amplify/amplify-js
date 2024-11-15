@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "6.4.3",
+	"version": "6.5.3",
 	"description": "Core category of aws-amplify",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -106,7 +106,7 @@
 			"name": "Cache (default browser storage)",
 			"path": "./dist/esm/index.mjs",
 			"import": "{ Cache }",
-			"limit": "3.3 kB"
+			"limit": "3.4 kB"
 		}
 	],
 	"exports": {

@@ -5,10 +5,10 @@
 /* eslint-disable camelcase */
 
 /* Does not like exhaustive checks */
-/* eslint-disable no-case-declarations */
 
 import {
 	APIConfig,
+	APIEventsConfig,
 	APIGraphQLConfig,
 	GraphQLAuthMode,
 	ModelIntrospectionSchema,
@@ -22,6 +22,7 @@ import {
 	AmplifyOutputs,
 	AmplifyOutputsAnalyticsProperties,
 	AmplifyOutputsAuthProperties,
+	AmplifyOutputsCustomProperties,
 	AmplifyOutputsDataProperties,
 	AmplifyOutputsGeoProperties,
 	AmplifyOutputsNotificationsProperties,
@@ -223,6 +224,28 @@ function parseData(
 	};
 }
 
+function parseCustom(
+	amplifyOutputsCustomProperties?: AmplifyOutputsCustomProperties,
+) {
+	if (!amplifyOutputsCustomProperties?.events) {
+		return undefined;
+	}
+
+	const { url, aws_region, api_key, default_authorization_type } =
+		amplifyOutputsCustomProperties.events;
+
+	const Events: APIEventsConfig = {
+		endpoint: url,
+		defaultAuthMode: getGraphQLAuthMode(default_authorization_type),
+		region: aws_region,
+		apiKey: api_key,
+	};
+
+	return {
+		Events,
+	};
+}
+
 function parseNotifications(
 	amplifyOutputsNotificationsProperties?: AmplifyOutputsNotificationsProperties,
 ): NotificationsConfig | undefined {
@@ -288,6 +311,14 @@ export function parseAmplifyOutputs(
 
 	if (amplifyOutputs.data) {
 		resourcesConfig.API = parseData(amplifyOutputs.data);
+	}
+
+	if (amplifyOutputs.custom) {
+		const customConfig = parseCustom(amplifyOutputs.custom);
+
+		if (customConfig && 'Events' in customConfig) {
+			resourcesConfig.API = { ...resourcesConfig.API, ...customConfig };
+		}
 	}
 
 	if (amplifyOutputs.notifications) {

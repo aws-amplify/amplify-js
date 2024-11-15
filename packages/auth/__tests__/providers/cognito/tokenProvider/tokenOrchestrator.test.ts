@@ -1,11 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import {
+	AmplifyError,
+	AmplifyErrorCode,
+} from '@aws-amplify/core/internals/utils';
+
 import { tokenOrchestrator } from '../../../../src/providers/cognito/tokenProvider';
 import { CognitoAuthTokens } from '../../../../src/providers/cognito/tokenProvider/types';
 import { oAuthStore } from '../../../../src/providers/cognito/utils/oauth/oAuthStore';
 
-jest.mock('@aws-amplify/core/internals/utils');
 jest.mock('@aws-amplify/core', () => ({
 	...jest.requireActual('@aws-amplify/core'),
 	Hub: {
@@ -88,6 +92,22 @@ describe('tokenOrchestrator', () => {
 			// ensure the result is correct
 			expect(newTokens).toEqual(mockTokens);
 			expect(newTokens?.signInDetails).toEqual(testSignInDetails);
+		});
+	});
+
+	describe('handleErrors method', () => {
+		it('does not call clearTokens() if the error is a network error thrown from fetch handler', () => {
+			const clearTokensSpy = jest.spyOn(tokenOrchestrator, 'clearTokens');
+			const error = new AmplifyError({
+				name: AmplifyErrorCode.NetworkError,
+				message: 'Network Error',
+			});
+
+			expect(() => {
+				(tokenOrchestrator as any).handleErrors(error);
+			}).toThrow(error);
+
+			expect(clearTokensSpy).not.toHaveBeenCalled();
 		});
 	});
 });

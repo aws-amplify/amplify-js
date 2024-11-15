@@ -258,9 +258,8 @@ export class FakeWebSocketInterface {
 	/**
 	 * Run a command and resolve to allow internal behavior to execute
 	 */
-	async runAndResolve(fn) {
+	async runAndResolve(fn: Function) {
 		await fn();
-		await Promise.resolve();
 	}
 
 	/**
@@ -310,6 +309,10 @@ class FakeWebSocket implements WebSocket {
 	close(code?: number, reason?: string): void {
 		const closeResolver = this.closeResolverFcn();
 		if (closeResolver) closeResolver(Promise.resolve(undefined));
+
+		try {
+			this.onclose(new CloseEvent('', {}));
+		} catch {}
 	}
 	send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
 		const parsedInput = JSON.parse(String(data));

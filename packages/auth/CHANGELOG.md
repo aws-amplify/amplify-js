@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.6.1...@aws-amplify/auth@6.6.2) (2024-11-13)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.6.0...@aws-amplify/auth@6.6.1) (2024-11-12)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [6.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.5...@aws-amplify/auth@6.6.0) (2024-10-31)
+
+### Features
+
+- **auth:** add support for Email MFA ([#13945](https://github.com/aws-amplify/amplify-js/issues/13945)) ([42db720](https://github.com/aws-amplify/amplify-js/commit/42db720ac46d8c1bbd307cd21924b934e7b1b270)), closes [#13720](https://github.com/aws-amplify/amplify-js/issues/13720) [#13745](https://github.com/aws-amplify/amplify-js/issues/13745)
+
+## [6.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.4...@aws-amplify/auth@6.5.5) (2024-10-29)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.3...@aws-amplify/auth@6.5.4) (2024-10-25)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.2...@aws-amplify/auth@6.5.3) (2024-10-21)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.1...@aws-amplify/auth@6.5.2) (2024-10-15)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+## [6.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.5.0...@aws-amplify/auth@6.5.1) (2024-10-05)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
 # [6.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@6.4.2...@aws-amplify/auth@6.5.0) (2024-09-30)
 
 ### Bug Fixes
