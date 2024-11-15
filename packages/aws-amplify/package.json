@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify",
-	"version": "6.8.0",
+	"version": "6.8.2",
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.mjs",
@@ -276,13 +276,13 @@
 		"utils"
 	],
 	"dependencies": {
-		"@aws-amplify/analytics": "7.0.56",
-		"@aws-amplify/api": "6.1.1",
-		"@aws-amplify/auth": "6.6.0",
-		"@aws-amplify/core": "6.5.1",
-		"@aws-amplify/datastore": "5.0.58",
-		"@aws-amplify/notifications": "2.0.56",
-		"@aws-amplify/storage": "6.6.14",
+		"@aws-amplify/analytics": "7.0.58",
+		"@aws-amplify/api": "6.1.3",
+		"@aws-amplify/auth": "6.6.2",
+		"@aws-amplify/core": "6.5.3",
+		"@aws-amplify/datastore": "5.0.60",
+		"@aws-amplify/notifications": "2.0.58",
+		"@aws-amplify/storage": "6.6.16",
 		"tslib": "^2.5.0"
 	},
 	"devDependencies": {
@@ -293,7 +293,7 @@
 			"name": "[Analytics] record (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ record }",
-			"limit": "17.41 kB"
+			"limit": "17.5 kB"
 		},
 		{
 			"name": "[Analytics] record (Kinesis)",
@@ -317,7 +317,7 @@
 			"name": "[Analytics] identifyUser (Pinpoint)",
 			"path": "./dist/esm/analytics/index.mjs",
 			"import": "{ identifyUser }",
-			"limit": "15.91 kB"
+			"limit": "15.97 kB"
 		},
 		{
 			"name": "[Analytics] enable",
@@ -497,7 +497,7 @@
 			"name": "[Storage] uploadData (S3)",
 			"path": "./dist/esm/storage/index.mjs",
 			"import": "{ uploadData }",
-			"limit": "20.08 kB"
+			"limit": "20.17 kB"
 		}
 	]
 }
