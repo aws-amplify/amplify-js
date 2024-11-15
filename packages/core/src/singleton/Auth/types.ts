@@ -194,7 +194,6 @@ export type OAuthScope =
 	| 'email'
 	| 'openid'
 	| 'phone'
-	| 'email'
 	| 'profile'
 	| 'aws.cognito.signin.user.admin'
 	| CustomScope;
