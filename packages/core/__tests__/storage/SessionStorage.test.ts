@@ -1,9 +1,10 @@
+import { InMemoryStorage } from '../../src/storage/InMemoryStorage';
 import { SessionStorage } from '../../src/storage/SessionStorage';
 
 const key = 'k';
 const value = 'value';
 
-describe('sessionStorage', () => {
+describe('SessionStorage', () => {
 	let sessionStorage: SessionStorage;
 
 	beforeEach(() => {
@@ -36,5 +37,26 @@ describe('sessionStorage', () => {
 	it('should clear out storage', async () => {
 		await sessionStorage.clear();
 		expect(await sessionStorage.getItem(key)).toBeNull();
+	});
+
+	it('should fall back to alternative storage when sessionStorage is not accessible', async () => {
+		// Mock window.sessionStorage to throw an error
+		const originalSessionStorage = window.sessionStorage;
+
+		Object.defineProperty(window, 'sessionStorage', {
+			value: undefined,
+			writable: true,
+		});
+
+		// Create a new SessionStorage instance to trigger the fallback
+		const fallbackStorage = new SessionStorage();
+
+		// Verify that the storage still works as expected
+		expect(fallbackStorage.storage instanceof InMemoryStorage).toEqual(true);
+
+		// Restore the original sessionStorage
+		Object.defineProperty(window, 'sessionStorage', {
+			value: originalSessionStorage,
+		});
 	});
 });
