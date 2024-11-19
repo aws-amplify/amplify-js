@@ -1,13 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { AmplifyClassV6 } from '@aws-amplify/core';
 import {
 	AuthAction,
 	assertTokenProviderConfig,
 } from '@aws-amplify/core/internals/utils';
 
-import { ListWebAuthnCredentialsException } from '../factories/serviceClients/cognitoIdentityProvider/types';
 import { assertAuthTokens } from '../../providers/cognito/utils/types';
 import { createCognitoUserPoolEndpointResolver } from '../../providers/cognito/factories';
 import { getRegionFromUserPoolId } from '../parsers';
@@ -18,24 +17,16 @@ import {
 	ListWebAuthnCredentialsInput,
 	ListWebAuthnCredentialsOutput,
 } from '../types';
-import { AuthError } from '../../errors/AuthError';
 
-/**
- * Lists registered credentials for an authenticated user
- *
- * @returns Promise<ListWebAuthnCredentialsOutput>
- * @throws - {@link AuthError}:
- * - Thrown when user is unauthenticated
- * @throws - {@link ListWebAuthnCredentialsException}
- * - Thrown due to a service error when listing WebAuthn credentials
- */
 export async function listWebAuthnCredentials(
+	amplify: AmplifyClassV6,
 	input?: ListWebAuthnCredentialsInput,
 ): Promise<ListWebAuthnCredentialsOutput> {
-	const authConfig = Amplify.getConfig().Auth?.Cognito;
+	const authConfig = amplify.getConfig().Auth?.Cognito;
 	assertTokenProviderConfig(authConfig);
 	const { userPoolEndpoint, userPoolId } = authConfig;
-	const { tokens } = await fetchAuthSession();
+
+	const { tokens } = await amplify.Auth.fetchAuthSession();
 	assertAuthTokens(tokens);
 
 	const listWebAuthnCredentialsResult = createListWebAuthnCredentialsClient({

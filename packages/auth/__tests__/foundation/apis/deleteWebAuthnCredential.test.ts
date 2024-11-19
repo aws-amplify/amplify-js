@@ -1,17 +1,22 @@
-import { Amplify, fetchAuthSession } from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { decodeJWT } from '@aws-amplify/core/internals/utils';
 
 import { createDeleteWebAuthnCredentialClient } from '../../../src/foundation/factories/serviceClients/cognitoIdentityProvider';
-import {
-	DeleteWebAuthnCredentialInput,
-	deleteWebAuthnCredential,
-} from '../../../src/';
+import { DeleteWebAuthnCredentialInput } from '../../../src';
 import { setUpGetConfig } from '../../providers/cognito/testUtils/setUpGetConfig';
 import { mockAccessToken } from '../../providers/cognito/testUtils/data';
+import { deleteWebAuthnCredential } from '../../../src/foundation/apis';
 
 jest.mock('@aws-amplify/core', () => ({
 	...(jest.createMockFromModule('@aws-amplify/core') as object),
-	Amplify: { getConfig: jest.fn(() => ({})) },
+	Amplify: {
+		getConfig: jest.fn(),
+		Auth: {
+			fetchAuthSession: jest.fn(() => ({
+				tokens: { accessToken: decodeJWT(mockAccessToken) },
+			})),
+		},
+	},
 }));
 jest.mock('@aws-amplify/core/internals/utils', () => ({
 	...jest.requireActual('@aws-amplify/core/internals/utils'),
@@ -23,8 +28,6 @@ jest.mock(
 jest.mock('../../../src/providers/cognito/factories');
 
 describe('deleteWebAuthnCredential', () => {
-	const mockFetchAuthSession = jest.mocked(fetchAuthSession);
-
 	const mockDeleteWebAuthnCredential = jest.fn();
 	const mockCreateDeleteWebAuthnCredentialClient = jest.mocked(
 		createDeleteWebAuthnCredentialClient,
@@ -32,16 +35,10 @@ describe('deleteWebAuthnCredential', () => {
 
 	beforeAll(() => {
 		setUpGetConfig(Amplify);
-		mockFetchAuthSession.mockResolvedValue({
-			tokens: { accessToken: decodeJWT(mockAccessToken) },
-		});
+
 		mockCreateDeleteWebAuthnCredentialClient.mockReturnValue(
 			mockDeleteWebAuthnCredential,
 		);
-	});
-
-	afterEach(() => {
-		mockFetchAuthSession.mockClear();
 	});
 
 	it('should pass correct service options when deleting a credential', async () => {
@@ -49,7 +46,7 @@ describe('deleteWebAuthnCredential', () => {
 			credentialId: 'dummyId',
 		};
 
-		await deleteWebAuthnCredential(input);
+		await deleteWebAuthnCredential(Amplify, input);
 
 		expect(mockDeleteWebAuthnCredential).toHaveBeenCalledWith(
 			{

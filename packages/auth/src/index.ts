@@ -93,7 +93,7 @@ export { associateWebAuthnCredential } from './client/apis';
 export {
 	listWebAuthnCredentials,
 	deleteWebAuthnCredential,
-} from './foundation/apis';
+} from './client/apis';
 
 export {
 	AuthWebAuthnCredential,
