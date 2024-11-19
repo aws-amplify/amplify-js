@@ -8,6 +8,7 @@ import {
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInInput, SignInOutput } from '../types';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
+import { autoSignInStore } from '../../../client/utils/store';
 
 import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
@@ -27,6 +28,7 @@ import { signInWithUserAuth } from './signInWithUserAuth';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signIn(input: SignInInput): Promise<SignInOutput> {
+	autoSignInStore.dispatch({ type: 'RESET' });
 	const authFlowType = input.options?.authFlowType;
 	await assertUserNotAuthenticated();
 	switch (authFlowType) {

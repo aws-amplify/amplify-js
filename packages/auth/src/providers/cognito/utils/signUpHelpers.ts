@@ -11,6 +11,7 @@ import { AuthError } from '../../../errors/AuthError';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
 import { autoSignInStore } from '../../../client/utils/store';
+import { signInWithUserAuth } from '../apis/signInWithUserAuth';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
 
@@ -123,7 +124,11 @@ async function handleAutoSignInWithCodeOrUserConfirmed(
 	reject: (reason?: any) => void,
 ) {
 	try {
-		const output = await signIn(signInInput);
+		const output =
+			signInInput?.options?.authFlowType === 'USER_AUTH'
+				? await signInWithUserAuth(signInInput)
+				: await signIn(signInInput);
+
 		resolve(output);
 		resetAutoSignIn();
 	} catch (error) {
