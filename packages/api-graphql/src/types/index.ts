@@ -31,6 +31,7 @@ export { CommonPublicClientOptions } from '../internals/types';
  */
 export interface GraphQLOptions {
 	query: string | DocumentNode;
+	endpoint?: string;
 	variables?: Record<string, DocumentType>;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
@@ -214,6 +215,7 @@ export interface GraphQLOptionsV6<
 	TYPED_GQL_STRING extends string = string,
 > {
 	query: TYPED_GQL_STRING | DocumentNode;
+	endpoint?: string;
 	variables?: GraphQLVariablesV6<FALLBACK_TYPES, TYPED_GQL_STRING>;
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
@@ -370,6 +372,7 @@ export const __amplify = Symbol('amplify');
 export const __authMode = Symbol('authMode');
 export const __authToken = Symbol('authToken');
 export const __headers = Symbol('headers');
+export const __endpoint = Symbol('endpoint');
 
 export function getInternals(client: BaseClient): ClientInternals {
 	const c = client as any;
@@ -378,6 +381,7 @@ export function getInternals(client: BaseClient): ClientInternals {
 		amplify: c[__amplify],
 		authMode: c[__authMode],
 		authToken: c[__authToken],
+		endpoint: c[__endpoint],
 		headers: c[__headers],
 	} as any;
 }

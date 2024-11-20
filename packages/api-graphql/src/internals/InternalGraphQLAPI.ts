@@ -88,7 +88,13 @@ export class InternalGraphQLAPIClass {
 		amplify:
 			| AmplifyClassV6
 			| ((fn: (amplify: any) => Promise<any>) => Promise<AmplifyClassV6>),
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+		{
+			query: paramQuery,
+			variables = {},
+			authMode: givenAuthMode,
+			authToken,
+			endpoint,
+		}: GraphQLOptions,
 		additionalHeaders?: CustomHeaders,
 		customUserAgentDetails?: CustomUserAgentDetails,
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
@@ -105,6 +111,11 @@ export class InternalGraphQLAPIClass {
 
 		const headers = additionalHeaders || {};
 
+		// If a custom endpoint is provided, we don't want to inadvertently expose
+		// any auth tokens, keys, etc. to a third party. However, if a customer
+		// sets `authMode` explicitly, we will respect it.
+		const authMode = endpoint && !givenAuthMode ? 'none' : givenAuthMode;
+
 		switch (operationType) {
 			case 'query':
 			case 'mutation': {
@@ -115,7 +126,7 @@ export class InternalGraphQLAPIClass {
 				if (isAmplifyInstance(amplify)) {
 					responsePromise = this._graphql<T>(
 						amplify,
-						{ query, variables, authMode },
+						{ query, variables, authMode, endpoint },
 						headers,
 						abortController,
 						customUserAgentDetails,
@@ -127,7 +138,7 @@ export class InternalGraphQLAPIClass {
 					const wrapper = async (amplifyInstance: AmplifyClassV6) => {
 						const result = await this._graphql<T>(
 							amplifyInstance,
-							{ query, variables, authMode },
+							{ query, variables, authMode, endpoint },
 							headers,
 							abortController,
 							customUserAgentDetails,
@@ -152,7 +163,7 @@ export class InternalGraphQLAPIClass {
 			case 'subscription':
 				return this._graphqlSubscribe(
 					amplify as AmplifyClassV6,
-					{ query, variables, authMode },
+					{ query, variables, authMode, endpoint },
 					headers,
 					customUserAgentDetails,
 					authToken,
@@ -164,7 +175,12 @@ export class InternalGraphQLAPIClass {
 
 	private async _graphql<T = any>(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
+		{
+			query,
+			variables,
+			authMode: explicitAuthMode,
+			endpoint: endpointOverride,
+		}: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		abortController: AbortController,
 		customUserAgentDetails?: CustomUserAgentDetails,
@@ -205,7 +221,7 @@ export class InternalGraphQLAPIClass {
 			const requestOptions: RequestOptions = {
 				method: 'POST',
 				url: new AmplifyUrl(
-					customEndpoint || appSyncGraphqlEndpoint || '',
+					endpointOverride || customEndpoint || appSyncGraphqlEndpoint || '',
 				).toString(),
 				queryString: print(query as DocumentNode),
 			};
@@ -282,7 +298,8 @@ export class InternalGraphQLAPIClass {
 			};
 		}
 
-		const endpoint = customEndpoint || appSyncGraphqlEndpoint;
+		const endpoint =
+			endpointOverride || customEndpoint || appSyncGraphqlEndpoint;
 
 		if (!endpoint) {
 			throw createGraphQLResultWithError<T>(new GraphQLApiError(NO_ENDPOINT));
@@ -341,7 +358,7 @@ export class InternalGraphQLAPIClass {
 
 	private _graphqlSubscribe(
 		amplify: AmplifyClassV6,
-		{ query, variables, authMode: explicitAuthMode }: GraphQLOptions,
+		{ query, variables, authMode: explicitAuthMode, endpoint }: GraphQLOptions,
 		additionalHeaders: CustomHeaders = {},
 		customUserAgentDetails?: CustomUserAgentDetails,
 		authToken?: string,
@@ -369,7 +386,7 @@ export class InternalGraphQLAPIClass {
 				{
 					query: print(query as DocumentNode),
 					variables,
-					appSyncGraphqlEndpoint: config?.endpoint,
+					appSyncGraphqlEndpoint: endpoint ?? config?.endpoint,
 					region: config?.region,
 					authenticationType: authMode,
 					apiKey: config?.apiKey,

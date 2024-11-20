@@ -20,4 +20,5 @@ export interface CommonPublicClientOptions {
 	authMode?: GraphQLAuthMode;
 	authToken?: string;
 	headers?: CustomHeaders;
+	endpoint?: string;
 }
