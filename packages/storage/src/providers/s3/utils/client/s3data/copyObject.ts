@@ -59,7 +59,7 @@ const copyObjectSerializer = async (
 			'x-amz-metadata-directive': input.MetadataDirective,
 			'x-amz-copy-source-if-match': input.CopySourceIfMatch,
 			'x-amz-copy-source-if-unmodified-since':
-				input.CopySourceIfUnmodifiedSince?.toISOString(),
+				input.CopySourceIfUnmodifiedSince?.toUTCString(),
 			'x-amz-source-expected-bucket-owner': input.ExpectedSourceBucketOwner,
 			'x-amz-expected-bucket-owner': input.ExpectedBucketOwner,
 		}),
@@ -96,7 +96,7 @@ export const validateCopyObjectHeaders = (
 			headers['x-amz-copy-source-if-match'],
 		),
 		bothNilOrEqual(
-			input.CopySourceIfUnmodifiedSince?.toISOString(),
+			input.CopySourceIfUnmodifiedSince?.toUTCString(),
 			headers['x-amz-copy-source-if-unmodified-since'],
 		),
 	];
