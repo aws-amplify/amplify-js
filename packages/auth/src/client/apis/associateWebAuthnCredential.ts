@@ -27,7 +27,7 @@ import { assertValidCredentialCreationOptions } from '../utils/passkey/types';
 /**
  * Registers a new passkey for an authenticated user
  *
- * @returns Promise<AssociateWebAuthnCredentialOutput>
+ * @returns Promise<void>
  * @throws - {@link PasskeyError}:
  * - Thrown when intermediate state is invalid
  * @throws - {@link AuthError}:

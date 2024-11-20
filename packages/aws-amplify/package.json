@@ -449,7 +449,7 @@
 			"name": "[Auth] Basic Auth Flow (Cognito)",
 			"path": "./dist/esm/auth/index.mjs",
 			"import": "{ signIn, signOut, fetchAuthSession, confirmSignIn }",
-			"limit": "30.34 kB"
+			"limit": "30.35 kB"
 		},
 		{
 			"name": "[Auth] OAuth Auth Flow (Cognito)",

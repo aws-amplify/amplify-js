@@ -44,7 +44,7 @@ const notSupportedRecoverySuggestion =
 const abortOrCancelRecoverySuggestion =
 	'User may have canceled the ceremony or another interruption has occurred. Check underlying error for details.';
 const misconfigurationRecoverySuggestion =
-	'Ensure your user pool configured to support the WEB_AUTHN as an authentication factor.';
+	'Ensure your user pool is configured to support the WEB_AUTHN as an authentication factor.';
 
 const passkeyErrorMap: AmplifyErrorMap<PasskeyErrorCode> = {
 	[PasskeyErrorCode.PasskeyNotSupported]: {

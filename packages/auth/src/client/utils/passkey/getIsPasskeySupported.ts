@@ -9,5 +9,10 @@ import { isBrowser } from '@aws-amplify/core/internals/utils';
  * @returns boolean
  */
 export const getIsPasskeySupported = (): boolean => {
-	return isBrowser() && window.isSecureContext && 'credentials' in navigator;
+	return (
+		isBrowser() &&
+		window.isSecureContext &&
+		'credentials' in navigator &&
+		typeof window.PublicKeyCredential === 'function'
+	);
 };

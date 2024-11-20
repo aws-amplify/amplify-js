@@ -84,6 +84,7 @@ export function assertValidCredentialCreationOptions(
 	assertPasskeyError(
 		[
 			!!credentialCreationOptions,
+			!!credentialCreationOptions?.challenge,
 			!!credentialCreationOptions?.user,
 			!!credentialCreationOptions?.rp,
 			!!credentialCreationOptions?.pubKeyCredParams,
