@@ -1618,7 +1618,12 @@ describe('API test', () => {
 				const thread: GetThreadQuery['getThread'] = result.data?.getThread;
 				const errors = result.errors;
 
-				expectGet(spy, 'getThread', graphqlVariables);
+				expectGet(spy, 'getThread', graphqlVariables, {
+					endpoint: 'https://some-custom-endpoint.local/path/to/graphql',
+					headers: {
+						'x-amz-user-agent': expect.any(String),
+					},
+				});
 				expect(errors).toBe(undefined);
 				expect(thread).toEqual(graphqlResponse.data.getThread);
 			});
