@@ -4,6 +4,7 @@
 export {
 	Middleware,
 	MiddlewareHandler,
+	MiddlewareContext,
 	Request,
 	Response,
 	TransferHandler,
