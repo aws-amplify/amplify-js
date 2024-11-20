@@ -9,6 +9,7 @@ import { assertValidationError } from '../../../errors/utils/assertValidationErr
 import { StorageValidationErrorCode } from '../../../errors/types/validation';
 
 import { STORAGE_INPUT_PATH, STORAGE_INPUT_PREFIX } from './constants';
+import { resolveIdentityId } from './resolveIdentityId';
 
 // Local assertion function with StorageOperationInputWithPrefixPath as Input
 const _isInputWithPath = (
@@ -28,7 +29,10 @@ export const validateStorageOperationInputWithPrefix = (
 	);
 	if (_isInputWithPath(input)) {
 		const { path } = input;
-		const objectKey = typeof path === 'string' ? path : path({ identityId });
+		const objectKey =
+			typeof path === 'string'
+				? path
+				: path({ identityId: resolveIdentityId(identityId) });
 
 		// Assert on no leading slash in the path parameter
 		assertValidationError(
