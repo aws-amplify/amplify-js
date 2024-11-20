@@ -114,7 +114,8 @@ describe('validateCopyObjectHeaders', () => {
 				...baseHeaders,
 				'x-amz-metadata-directive': 'mock-metadata',
 				'x-amz-copy-source-if-match': 'mock-etag',
-				'x-amz-copy-source-if-unmodified-since': '1970-01-01T00:00:00.000Z',
+				'x-amz-copy-source-if-unmodified-since':
+					'Thu, 01 Jan 1970 00:00:00 GMT',
 			},
 			expectPass: true,
 		},
@@ -125,7 +126,8 @@ describe('validateCopyObjectHeaders', () => {
 				...baseHeaders,
 				'x-amz-metadata-directive': 'mock-metadata',
 				'x-amz-copy-source-if-match': 'mock-etag',
-				'x-amz-copy-source-if-unmodified-since': '1970-01-01T00:00:00.000Z',
+				'x-amz-copy-source-if-unmodified-since':
+					'Thu, 01 Jan 1970 00:00:00 GMT',
 			},
 			expectPass: false,
 		},
