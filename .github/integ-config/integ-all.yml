@@ -827,6 +827,13 @@ tests:
     sample_name: [multi-part-copy]
     spec: multi-part-copy
     browser: *minimal_browser_list
+  - test_name: integ_react_storage_browser
+    desc: 'React Storage Browser'
+    framework: vite
+    category: storage
+    sample_name: [storage-browser]
+    spec: storage-browser
+    browser: *minimal_browser_list
 
   # GEN2 STORAGE
   - test_name: integ_react_storage
@@ -835,6 +842,13 @@ tests:
     category: storage
     sample_name: [storage-gen2]
     spec: storage-gen2
+    browser: *minimal_browser_list
+  - test_name: integ_react_storage_internal
+    desc: 'React Storage Gen2 Internal APIs'
+    framework: react
+    category: storage
+    sample_name: [storage-gen2-internal]
+    spec: storage-gen2-internal
     browser: *minimal_browser_list
   - test_name: integ_next_storage
     desc: 'Next Storage Auth'

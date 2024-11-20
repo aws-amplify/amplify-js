@@ -12,6 +12,8 @@ import copyObjectCases from './copyObject';
 import deleteObjectCases from './deleteObject';
 import getObjectCases from './getObject';
 import headObjectCases from './headObject';
+import getDataAccess from './getDataAccess';
+import listCallerAccessGrants from './listCallerAccessGrants';
 
 export default [
 	...listObjectsV2Cases,
@@ -25,4 +27,6 @@ export default [
 	...deleteObjectCases,
 	...getObjectCases,
 	...headObjectCases,
+	...listCallerAccessGrants,
+	...getDataAccess,
 ];

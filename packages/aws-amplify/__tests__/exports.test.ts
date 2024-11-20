@@ -242,6 +242,7 @@ describe('aws-amplify Exports', () => {
 					'getUrl',
 					'isCancelError',
 					'StorageError',
+					'DEFAULT_PART_SIZE',
 				].sort(),
 			);
 		});
@@ -256,6 +257,7 @@ describe('aws-amplify Exports', () => {
 					'getProperties',
 					'copy',
 					'getUrl',
+					'DEFAULT_PART_SIZE',
 				].sort(),
 			);
 		});

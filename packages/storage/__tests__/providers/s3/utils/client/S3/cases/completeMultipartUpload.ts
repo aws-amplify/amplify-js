@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { completeMultipartUpload } from '../../../../../../../src/providers/s3/utils/client';
+import { completeMultipartUpload } from '../../../../../../../src/providers/s3/utils/client/s3data';
 import { ApiFunctionalTestCase } from '../../testUtils/types';
 
 import {
@@ -9,6 +9,30 @@ import {
 	defaultConfig,
 	expectedMetadata,
 } from './shared';
+
+const defaultExpectedRequest = {
+	url: expect.objectContaining({
+		href: 'https://bucket.s3.us-east-1.amazonaws.com/key?uploadId=uploadId',
+	}),
+	method: 'POST',
+	headers: expect.objectContaining({
+		'content-type': 'application/xml',
+	}),
+	body:
+		'<?xml version="1.0" encoding="UTF-8"?>' +
+		'<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">' +
+		'<Part>' +
+		'<ETag>etag1</ETag>' +
+		'<PartNumber>1</PartNumber>' +
+		'<ChecksumCRC32>test-checksum-1</ChecksumCRC32>' +
+		'</Part>' +
+		'<Part>' +
+		'<ETag>etag2</ETag>' +
+		'<PartNumber>2</PartNumber>' +
+		'<ChecksumCRC32>test-checksum-2</ChecksumCRC32>' +
+		'</Part>' +
+		'</CompleteMultipartUpload>',
+};
 
 // API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
 const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
@@ -26,36 +50,18 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 				{
 					ETag: 'etag1',
 					PartNumber: 1,
+					ChecksumCRC32: 'test-checksum-1',
 				},
 				{
 					ETag: 'etag2',
 					PartNumber: 2,
+					ChecksumCRC32: 'test-checksum-2',
 				},
 			],
 		},
 		UploadId: 'uploadId',
 	},
-	expect.objectContaining({
-		url: expect.objectContaining({
-			href: 'https://bucket.s3.us-east-1.amazonaws.com/key?uploadId=uploadId',
-		}),
-		method: 'POST',
-		headers: expect.objectContaining({
-			'content-type': 'application/xml',
-		}),
-		body:
-			'<?xml version="1.0" encoding="UTF-8"?>' +
-			'<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">' +
-			'<Part>' +
-			'<ETag>etag1</ETag>' +
-			'<PartNumber>1</PartNumber>' +
-			'</Part>' +
-			'<Part>' +
-			'<ETag>etag2</ETag>' +
-			'<PartNumber>2</PartNumber>' +
-			'</Part>' +
-			'</CompleteMultipartUpload>',
-	}),
+	expect.objectContaining(defaultExpectedRequest),
 	{
 		status: 200,
 		headers: { ...DEFAULT_RESPONSE_HEADERS },
@@ -75,7 +81,68 @@ const completeMultipartUploadHappyCase: ApiFunctionalTestCase<
 	},
 ];
 
-// API reference: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
+const completeMultipartUploadHappyCaseIfNoneMatch: ApiFunctionalTestCase<
+	typeof completeMultipartUpload
+> = [
+	'happy case',
+	'completeMultipartUpload - if-none-match',
+	completeMultipartUpload,
+	defaultConfig,
+	{
+		...completeMultipartUploadHappyCase[4],
+		IfNoneMatch: 'mock-if-none-match',
+	},
+	expect.objectContaining({
+		...defaultExpectedRequest,
+		headers: {
+			'content-type': 'application/xml',
+			'If-None-Match': 'mock-if-none-match',
+		},
+	}),
+	completeMultipartUploadHappyCase[6],
+	completeMultipartUploadHappyCase[7],
+];
+
+const completeMultipartUploadHappyCaseCustomEndpoint: ApiFunctionalTestCase<
+	typeof completeMultipartUpload
+> = [
+	'happy case',
+	'completeMultipartUpload with custom endpoint',
+	completeMultipartUpload,
+	{
+		...defaultConfig,
+		customEndpoint: 'custom.endpoint.com',
+		forcePathStyle: true,
+	},
+	{
+		Bucket: 'bucket',
+		Key: 'key',
+		MultipartUpload: {
+			Parts: [
+				{
+					ETag: 'etag1',
+					PartNumber: 1,
+					ChecksumCRC32: 'test-checksum-1',
+				},
+			],
+		},
+		UploadId: 'uploadId',
+	},
+	expect.objectContaining({
+		url: expect.objectContaining({
+			href: 'https://custom.endpoint.com/bucket/key?uploadId=uploadId',
+		}),
+	}),
+	{
+		status: 200,
+		headers: { ...DEFAULT_RESPONSE_HEADERS },
+		body: '',
+	},
+	expect.objectContaining({
+		/**	skip validating response */
+	}) as any,
+];
+
 const completeMultipartUploadErrorCase: ApiFunctionalTestCase<
 	typeof completeMultipartUpload
 > = [
@@ -109,7 +176,12 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 	'error case',
 	'completeMultipartUpload with 200 status',
 	completeMultipartUpload,
-	{ ...defaultConfig, retryDecider: async () => false }, // disable retry
+	{
+		...defaultConfig,
+		retryDecider: async () => ({
+			retryable: false,
+		}),
+	}, // disable retry
 	completeMultipartUploadHappyCase[4],
 	completeMultipartUploadHappyCase[5],
 	{
@@ -132,6 +204,8 @@ const completeMultipartUploadErrorWith200CodeCase: ApiFunctionalTestCase<
 
 export default [
 	completeMultipartUploadHappyCase,
+	completeMultipartUploadHappyCaseIfNoneMatch,
+	completeMultipartUploadHappyCaseCustomEndpoint,
 	completeMultipartUploadErrorCase,
 	completeMultipartUploadErrorWith200CodeCase,
 ];

@@ -68,11 +68,11 @@ describe('S3 APIs functional test', () => {
 						expect.anything(),
 					);
 				} else {
-					fail(`${name} ${caseType} should fail`);
+					throw new Error(`${name} ${caseType} should fail`);
 				}
 			} catch (e) {
 				if (caseType === 'happy case') {
-					fail(`${name} ${caseType} should succeed: ${e}`);
+					throw new Error(`${name} ${caseType} should succeed: ${e}`);
 				} else {
 					expect(e).toBeInstanceOf(StorageError);
 					expect(e).toEqual(expect.objectContaining(outputOrError));

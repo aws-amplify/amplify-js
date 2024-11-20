@@ -154,8 +154,19 @@ async function post(
 	}
 }
 
-function closeAll(): void {
-	eventProvider.close();
+/**
+ * @experimental API may change in future versions
+ *
+ * Close WebSocket connection, disconnect listeners and reconnect observers
+ *
+ * @example
+ * await events.closeAll()
+ *
+ * @returns void on success
+ * @throws on error
+ */
+async function closeAll(): Promise<void> {
+	await eventProvider.close();
 }
 
 export { connect, post, closeAll };
