@@ -11,9 +11,9 @@ import { AmplifyServerContextError } from '@aws-amplify/core/internals/adapter-c
 
 import {
 	AuthRoutesHandlerContext,
-	CreateAuthRouteHandlers,
 	CreateAuthRouteHandlersFactoryInput,
 	CreateAuthRoutesHandlersInput,
+	InternalCreateAuthRouteHandlers,
 } from './types';
 import {
 	isAuthRoutesHandlersContext,
@@ -28,7 +28,7 @@ export const createAuthRouteHandlersFactory = ({
 	config: resourcesConfig,
 	runtimeOptions = {},
 	runWithAmplifyServerContext,
-}: CreateAuthRouteHandlersFactoryInput): CreateAuthRouteHandlers => {
+}: CreateAuthRouteHandlersFactoryInput): InternalCreateAuthRouteHandlers => {
 	const origin = process.env.AMPLIFY_APP_ORIGIN;
 	if (!origin)
 		throw new AmplifyServerContextError({
