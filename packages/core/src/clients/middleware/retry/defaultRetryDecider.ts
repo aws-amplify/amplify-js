@@ -5,6 +5,7 @@ import { AmplifyErrorCode } from '../../../types';
 import { ErrorParser, HttpResponse } from '../../types';
 
 import { isClockSkewError } from './isClockSkewError';
+import { RetryDeciderOutput } from './types';
 
 /**
  * Get retry decider function
@@ -12,7 +13,10 @@ import { isClockSkewError } from './isClockSkewError';
  */
 export const getRetryDecider =
 	(errorParser: ErrorParser) =>
-	async (response?: HttpResponse, error?: unknown): Promise<boolean> => {
+	async (
+		response?: HttpResponse,
+		error?: unknown,
+	): Promise<RetryDeciderOutput> => {
 		const parsedError =
 			(error as Error & { code: string }) ??
 			(await errorParser(response)) ??
@@ -20,12 +24,15 @@ export const getRetryDecider =
 		const errorCode = parsedError?.code || parsedError?.name;
 		const statusCode = response?.statusCode;
 
-		return (
+		const isRetryable =
 			isConnectionError(error) ||
 			isThrottlingError(statusCode, errorCode) ||
 			isClockSkewError(errorCode) ||
-			isServerSideError(statusCode, errorCode)
-		);
+			isServerSideError(statusCode, errorCode);
+
+		return {
+			retryable: isRetryable,
+		};
 	};
 
 // reference: https://github.com/aws/aws-sdk-js-v3/blob/ab0e7be36e7e7f8a0c04834357aaad643c7912c3/packages/service-error-classification/src/constants.ts#L22-L37
