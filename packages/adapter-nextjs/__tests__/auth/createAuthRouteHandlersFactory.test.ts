@@ -17,6 +17,7 @@ import {
 	isNextApiRequest,
 	isNextApiResponse,
 	isNextRequest,
+	isValidOrigin,
 } from '../../src/auth/utils';
 
 jest.mock('@aws-amplify/core/internals/utils');
@@ -62,6 +63,7 @@ const mockIsNextRequest = jest.mocked(isNextRequest);
 const mockIsAuthRoutesHandlersContext = jest.mocked(
 	isAuthRoutesHandlersContext,
 );
+const mockIsValidOrigin = jest.mocked(isValidOrigin);
 const mockRunWithAmplifyServerContext =
 	jest.fn() as jest.MockedFunction<NextServer.RunOperationWithContext>;
 
@@ -71,6 +73,10 @@ describe('createAuthRoutesHandlersFactory', () => {
 		...process.env,
 		AMPLIFY_APP_ORIGIN: 'https://example.com',
 	};
+
+	beforeAll(() => {
+		mockIsValidOrigin.mockReturnValue(true);
+	});
 
 	beforeEach(() => {
 		process.env = modifiedProcessEnvVars;
@@ -89,6 +95,19 @@ describe('createAuthRoutesHandlersFactory', () => {
 				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
 			}),
 		).toThrow('Could not find the AMPLIFY_APP_ORIGIN environment variable.');
+	});
+
+	it('throws an error if the AMPLIFY_APP_ORIGIN environment variable is invalid', () => {
+		mockIsValidOrigin.mockReturnValueOnce(false);
+		expect(() =>
+			createAuthRouteHandlersFactory({
+				config: mockAmplifyConfig,
+				runtimeOptions: mockRuntimeOptions,
+				runWithAmplifyServerContext: mockRunWithAmplifyServerContext,
+			}),
+		).toThrow(
+			'AMPLIFY_APP_ORIGIN environment variable contains an invalid origin string.',
+		);
 	});
 
 	it('calls config assertion functions to validate the Auth configuration', () => {

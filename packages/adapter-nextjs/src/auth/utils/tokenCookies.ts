@@ -56,11 +56,12 @@ export const createTokenRemoveCookies = (keys: string[]) =>
 
 export const createTokenCookiesSetOptions = (
 	setCookieOptions: CookieStorage.SetCookieOptions,
+	overrides?: Pick<CookieStorage.SetCookieOptions, 'secure'>,
 ) => ({
 	domain: setCookieOptions?.domain,
 	path: '/',
 	httpOnly: true,
-	secure: true,
+	secure: overrides?.secure ?? true,
 	sameSite: setCookieOptions.sameSite ?? 'strict',
 	expires:
 		setCookieOptions?.expires ?? new Date(Date.now() + DEFAULT_COOKIE_EXPIRY),
