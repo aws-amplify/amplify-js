@@ -1,7 +1,31 @@
 import { OAuthConfig } from '@aws-amplify/core';
+import { NextApiRequest } from 'next';
 
 import { handleAuthApiRouteRequestForPagesRouter } from '../../src/auth/handleAuthApiRouteRequestForPagesRouter';
 import { CreateAuthRoutesHandlersInput } from '../../src/auth/types';
+import {
+	handleSignInCallbackRequestForPagesRouter,
+	handleSignInSignUpRequestForPagesRouter,
+	handleSignOutCallbackRequestForPagesRouter,
+	handleSignOutRequestForPagesRouter,
+} from '../../src/auth/handlers';
+
+import { createMockNextApiResponse } from './testUtils';
+
+jest.mock('../../src/auth/handlers');
+
+const mockHandleSignInSignUpRequestForPagesRouter = jest.mocked(
+	handleSignInSignUpRequestForPagesRouter,
+);
+const mockHandleSignOutRequestForPagesRouter = jest.mocked(
+	handleSignOutRequestForPagesRouter,
+);
+const mockHandleSignInCallbackRequestForPagesRouter = jest.mocked(
+	handleSignInCallbackRequestForPagesRouter,
+);
+const mockHandleSignOutCallbackRequestForPagesRouter = jest.mocked(
+	handleSignOutCallbackRequestForPagesRouter,
+);
 
 describe('handleAuthApiRouteRequestForPagesRouter', () => {
 	const testOrigin = 'https://example.com';
@@ -17,87 +41,192 @@ describe('handleAuthApiRouteRequestForPagesRouter', () => {
 		scopes: ['openid', 'email'],
 	};
 	const testSetCookieOptions = {};
+	const {
+		mockResponseAppendHeader,
+		mockResponseEnd,
+		mockResponseStatus,
+		mockResponseSend,
+		mockResponseRedirect,
+		mockResponse,
+	} = createMockNextApiResponse();
+
+	afterEach(() => {
+		mockResponseAppendHeader.mockClear();
+		mockResponseEnd.mockClear();
+		mockResponseStatus.mockClear();
+		mockResponseSend.mockClear();
+		mockResponseRedirect.mockClear();
+	});
 
 	it('sets response.status(405) when request has an unsupported method', () => {
-		const mockEnd = jest.fn();
-		const mockStatus = jest.fn(() => ({ end: mockEnd }));
 		const mockRequest = { method: 'POST' } as any;
-		const mockResponse = { status: mockStatus } as any;
 
 		handleAuthApiRouteRequestForPagesRouter({
 			request: mockRequest,
 			response: mockResponse,
 			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: testSetCookieOptions,
 			origin: testOrigin,
 		});
 
-		expect(mockStatus).toHaveBeenCalledWith(405);
-		expect(mockEnd).toHaveBeenCalled();
+		expect(mockResponseStatus).toHaveBeenCalledWith(405);
+		expect(mockResponseEnd).toHaveBeenCalled();
 	});
 
 	it('sets response.status(400) when request.query.slug is undefined', () => {
-		const mockEnd = jest.fn();
-		const mockStatus = jest.fn(() => ({ end: mockEnd }));
 		const mockRequest = { method: 'GET', query: {} } as any;
-		const mockResponse = { status: mockStatus } as any;
 
 		handleAuthApiRouteRequestForPagesRouter({
 			request: mockRequest,
 			response: mockResponse,
+			userPoolClientId: 'userPoolClientId',
 			handlerInput: testHandlerInput,
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: testSetCookieOptions,
 			origin: testOrigin,
 		});
 
-		expect(mockStatus).toHaveBeenCalledWith(400);
-		expect(mockEnd).toHaveBeenCalled();
+		expect(mockResponseStatus).toHaveBeenCalledWith(400);
+		expect(mockResponseEnd).toHaveBeenCalled();
 	});
 
 	it('sets response.status(404) when request.query.slug is is not a supported path', () => {
-		const mockEnd = jest.fn();
-		const mockStatus = jest.fn(() => ({ end: mockEnd }));
 		const mockRequest = {
 			method: 'GET',
 			query: { slug: 'exchange-token' },
 		} as any;
-		const mockResponse = { status: mockStatus } as any;
 
 		handleAuthApiRouteRequestForPagesRouter({
 			request: mockRequest,
 			response: mockResponse,
 			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
 			oAuthConfig: testOAuthConfig,
 			setCookieOptions: testSetCookieOptions,
 			origin: testOrigin,
 		});
 
-		expect(mockStatus).toHaveBeenCalledWith(404);
-		expect(mockEnd).toHaveBeenCalled();
+		expect(mockResponseStatus).toHaveBeenCalledWith(404);
+		expect(mockResponseEnd).toHaveBeenCalled();
 	});
 
-	// TODO(HuiSF): add use cases tests for each supported path when implemented
-	it('sets response.status(501) when handlerContext.params.slug is a supported path', () => {
-		const mockEnd = jest.fn();
-		const mockStatus = jest.fn(() => ({ end: mockEnd }));
-		const mockRequest = {
-			method: 'GET',
-			query: { slug: 'sign-in' },
-		} as any;
-		const mockResponse = { status: mockStatus } as any;
+	test.each([
+		['sign-in', 'signIn'],
+		['sign-up', 'signUp'],
+	])(
+		`calls handleSignInSignUpRequestForPagesRouter with correct params when handlerContext.params.slug is %s`,
+		async (slug, expectedType) => {
+			const mockRequest = {
+				url: 'https://example.com/api/auth/sign-in',
+				method: 'GET',
+				query: { slug },
+			} as unknown as NextApiRequest;
 
-		handleAuthApiRouteRequestForPagesRouter({
+			await handleAuthApiRouteRequestForPagesRouter({
+				request: mockRequest,
+				response: mockResponse,
+				handlerInput: testHandlerInput,
+				userPoolClientId: 'userPoolClientId',
+				oAuthConfig: testOAuthConfig,
+				setCookieOptions: {},
+				origin: testOrigin,
+			});
+
+			expect(mockHandleSignInSignUpRequestForPagesRouter).toHaveBeenCalledWith({
+				request: mockRequest,
+				response: mockResponse,
+				userPoolClientId: 'userPoolClientId',
+				oAuthConfig: testOAuthConfig,
+				customState: testHandlerInput.customState,
+				origin: testOrigin,
+				setCookieOptions: {},
+				type: expectedType,
+			});
+		},
+	);
+
+	it('calls handleSignOutRequest with correct params when handlerContext.params.slug is sign-out', async () => {
+		const mockRequest = {
+			url: 'https://example.com/api/auth/sign-in',
+			method: 'GET',
+			query: { slug: 'sign-out' },
+		} as unknown as NextApiRequest;
+
+		await handleAuthApiRouteRequestForPagesRouter({
+			request: mockRequest,
+			response: mockResponse,
+			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
+			oAuthConfig: testOAuthConfig,
+			setCookieOptions: {},
+			origin: testOrigin,
+		});
+
+		expect(mockHandleSignOutRequestForPagesRouter).toHaveBeenCalledWith({
+			response: mockResponse,
+			userPoolClientId: 'userPoolClientId',
+			oAuthConfig: testOAuthConfig,
+			origin: testOrigin,
+			setCookieOptions: {},
+		});
+	});
+
+	it('calls handleSignInCallbackRequest with correct params when handlerContext.params.slug is sign-in-callback', async () => {
+		const mockRequest = {
+			url: 'https://example.com/api/auth/sign-in',
+			method: 'GET',
+			query: { slug: 'sign-in-callback' },
+		} as unknown as NextApiRequest;
+
+		await handleAuthApiRouteRequestForPagesRouter({
+			request: mockRequest,
+			response: mockResponse,
+			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
+			oAuthConfig: testOAuthConfig,
+			setCookieOptions: {},
+			origin: testOrigin,
+		});
+
+		expect(mockHandleSignInCallbackRequestForPagesRouter).toHaveBeenCalledWith({
 			request: mockRequest,
 			response: mockResponse,
 			handlerInput: testHandlerInput,
 			oAuthConfig: testOAuthConfig,
-			setCookieOptions: testSetCookieOptions,
+			origin: testOrigin,
+			setCookieOptions: {},
+			userPoolClientId: 'userPoolClientId',
+		});
+	});
+
+	it('calls handleSignOutCallbackRequest with correct params when handlerContext.params.slug is sign-out-callback', async () => {
+		const mockRequest = {
+			url: 'https://example.com/api/auth/sign-in',
+			method: 'GET',
+			query: { slug: 'sign-out-callback' },
+		} as unknown as NextApiRequest;
+
+		await handleAuthApiRouteRequestForPagesRouter({
+			request: mockRequest,
+			response: mockResponse,
+			handlerInput: testHandlerInput,
+			userPoolClientId: 'userPoolClientId',
+			oAuthConfig: testOAuthConfig,
+			setCookieOptions: {},
 			origin: testOrigin,
 		});
 
-		expect(mockStatus).toHaveBeenCalledWith(501);
-		expect(mockEnd).toHaveBeenCalled();
+		expect(mockHandleSignOutCallbackRequestForPagesRouter).toHaveBeenCalledWith(
+			{
+				request: mockRequest,
+				response: mockResponse,
+				handlerInput: testHandlerInput,
+				oAuthConfig: testOAuthConfig,
+				setCookieOptions: {},
+				userPoolClientId: 'userPoolClientId',
+			},
+		);
 	});
 });

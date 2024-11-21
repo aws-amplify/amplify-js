@@ -41,6 +41,7 @@ export const createAuthRouteHandlersFactory = ({
 
 	const {
 		Cognito: {
+			userPoolClientId,
 			loginWith: { oauth: oAuthConfig },
 		},
 	} = resourcesConfig.Auth;
@@ -50,12 +51,17 @@ export const createAuthRouteHandlersFactory = ({
 		request: NextRequest | NextApiRequest,
 		contextOrResponse: AuthRoutesHandlerContext | NextApiResponse,
 		handlerInput: CreateAuthRoutesHandlersInput,
-	) => {
+	): Promise<Response | undefined> => {
 		if (isNextApiRequest(request) && isNextApiResponse(contextOrResponse)) {
-			handleAuthApiRouteRequestForPagesRouter({
+			// In pages router the response is sent via calling `response.end()` or
+			// `response.send()`. The response is not returned from the handler.
+			// To ensure these two methods are called before the handler returns,
+			// we use `await` here.
+			await handleAuthApiRouteRequestForPagesRouter({
 				request,
 				response: contextOrResponse,
 				handlerInput,
+				userPoolClientId,
 				oAuthConfig,
 				setCookieOptions,
 				origin,
@@ -74,6 +80,7 @@ export const createAuthRouteHandlersFactory = ({
 				request,
 				handlerContext: contextOrResponse,
 				handlerInput,
+				userPoolClientId,
 				oAuthConfig,
 				setCookieOptions,
 				origin,
