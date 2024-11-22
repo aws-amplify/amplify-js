@@ -8,13 +8,13 @@ import {
 import { assertUserNotAuthenticated } from '../utils/signInHelpers';
 import { SignInInput, SignInOutput } from '../types';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
-import { autoSignInStore } from '../../../client/utils/store';
 
 import { signInWithCustomAuth } from './signInWithCustomAuth';
 import { signInWithCustomSRPAuth } from './signInWithCustomSRPAuth';
 import { signInWithSRP } from './signInWithSRP';
 import { signInWithUserPassword } from './signInWithUserPassword';
 import { signInWithUserAuth } from './signInWithUserAuth';
+import { resetAutoSignIn } from './autoSignIn';
 
 /**
  * Signs a user in
@@ -28,7 +28,12 @@ import { signInWithUserAuth } from './signInWithUserAuth';
  * @throws AuthTokenConfigException - Thrown when the token provider config is invalid.
  */
 export async function signIn(input: SignInInput): Promise<SignInOutput> {
-	autoSignInStore.dispatch({ type: 'RESET' });
+	// Here we want to reset the store but not reassign the callback.
+	// The callback is reset when the underlying promise resolves or rejects.
+	// With the advent of session based sign in, this guarantees that the signIn API initiates a new auth flow,
+	// regardless of whether it is called for a user currently engaged in an active auto sign in session.
+	resetAutoSignIn(false);
+
 	const authFlowType = input.options?.authFlowType;
 	await assertUserNotAuthenticated();
 	switch (authFlowType) {

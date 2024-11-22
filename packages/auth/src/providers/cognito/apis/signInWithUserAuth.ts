@@ -101,8 +101,6 @@ export async function signInWithUserAuth(
 
 		if (response.AuthenticationResult) {
 			cleanActiveSignInState();
-			autoSignInStore.dispatch({ type: 'RESET' });
-			resetAutoSignIn();
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...response.AuthenticationResult,
@@ -115,6 +113,8 @@ export async function signInWithUserAuth(
 				signInDetails,
 			});
 			await dispatchSignedInHubEvent();
+
+			resetAutoSignIn();
 
 			return {
 				isSignedIn: true,
@@ -132,7 +132,6 @@ export async function signInWithUserAuth(
 		});
 	} catch (error) {
 		cleanActiveSignInState();
-		autoSignInStore.dispatch({ type: 'RESET' });
 		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);

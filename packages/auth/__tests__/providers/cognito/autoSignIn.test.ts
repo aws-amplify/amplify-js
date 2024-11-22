@@ -84,7 +84,6 @@ describe('autoSignIn()', () => {
 			mockCreateSignUpClient.mockClear();
 			handleUserSRPAuthFlowSpy.mockClear();
 
-			autoSignInStore.dispatch({ type: 'RESET' });
 			resetAutoSignIn();
 		});
 
@@ -164,7 +163,6 @@ describe('autoSignIn()', () => {
 			mockHandleUserAuthFlow.mockClear();
 			mockCreateConfirmSignUpClient.mockClear();
 
-			autoSignInStore.dispatch({ type: 'RESET' });
 			resetAutoSignIn();
 		});
 

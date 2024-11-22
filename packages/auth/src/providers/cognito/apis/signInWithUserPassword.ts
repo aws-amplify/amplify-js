@@ -26,7 +26,6 @@ import {
 	SignInWithUserPasswordOutput,
 } from '../types';
 import {
-	autoSignInStore,
 	cleanActiveSignInState,
 	setActiveSignInState,
 } from '../../../client/utils/store';
@@ -87,6 +86,7 @@ export async function signInWithUserPassword(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
+			cleanActiveSignInState();
 			await cacheCognitoTokens({
 				...AuthenticationResult,
 				username: activeUsername,
@@ -98,11 +98,10 @@ export async function signInWithUserPassword(
 				}),
 				signInDetails,
 			});
-			cleanActiveSignInState();
-			autoSignInStore.dispatch({ type: 'RESET' });
-			resetAutoSignIn();
 
 			await dispatchSignedInHubEvent();
+
+			resetAutoSignIn();
 
 			return {
 				isSignedIn: true,
@@ -116,7 +115,6 @@ export async function signInWithUserPassword(
 		});
 	} catch (error) {
 		cleanActiveSignInState();
-		autoSignInStore.dispatch({ type: 'RESET' });
 		resetAutoSignIn();
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);

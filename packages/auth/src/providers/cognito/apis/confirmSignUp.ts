@@ -93,7 +93,6 @@ export async function confirmSignUp(
 				autoSignInStoreState.username !== username
 			) {
 				resolve(signUpOut);
-				autoSignInStore.dispatch({ type: 'RESET' });
 				resetAutoSignIn();
 
 				return;

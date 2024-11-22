@@ -10,7 +10,6 @@ import { AutoSignInCallback } from '../../../types/models';
 import { AuthError } from '../../../errors/AuthError';
 import { resetAutoSignIn, setAutoSignIn } from '../apis/autoSignIn';
 import { AUTO_SIGN_IN_EXCEPTION } from '../../../errors/constants';
-import { autoSignInStore } from '../../../client/utils/store';
 import { signInWithUserAuth } from '../apis/signInWithUserAuth';
 
 const MAX_AUTOSIGNIN_POLLING_MS = 3 * 60 * 1000;
@@ -37,7 +36,6 @@ export function handleCodeAutoSignIn(signInInput: SignInInput) {
 	// This will stop the listener if confirmSignUp is not resolved.
 	const timeOutId = setTimeout(() => {
 		stopHubListener();
-		autoSignInStore.dispatch({ type: 'RESET' });
 		clearTimeout(timeOutId);
 		resetAutoSignIn();
 	}, MAX_AUTOSIGNIN_POLLING_MS);
@@ -84,20 +82,17 @@ function handleAutoSignInWithLink(
 				}),
 			);
 			resetAutoSignIn();
-			autoSignInStore.dispatch({ type: 'RESET' });
 		} else {
 			try {
 				const signInOutput = await signIn(signInInput);
 				if (signInOutput.nextStep.signInStep !== 'CONFIRM_SIGN_UP') {
 					resolve(signInOutput);
 					clearInterval(autoSignInPollingIntervalId);
-					autoSignInStore.dispatch({ type: 'RESET' });
 					resetAutoSignIn();
 				}
 			} catch (error) {
 				clearInterval(autoSignInPollingIntervalId);
 				reject(error);
-				autoSignInStore.dispatch({ type: 'RESET' });
 				resetAutoSignIn();
 			}
 		}
