@@ -18,6 +18,7 @@ import { getAuthUserAgentValue } from '../../../utils';
 import { handlePasswordSRP } from '../shared/handlePasswordSRP';
 import { assertValidationError } from '../../../errors/utils/assertValidationError';
 import { AuthValidationErrorCode } from '../../../errors/types/validation';
+import { setActiveSignInUsername } from '../../../providers/cognito/utils/signInHelpers';
 
 export interface HandleUserAuthFlowInput {
 	username: string;
@@ -107,11 +108,18 @@ export async function handleUserAuthFlow({
 		}),
 	});
 
-	return initiateAuth(
+	const response = await initiateAuth(
 		{
 			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignIn),
 		},
 		jsonReq,
 	);
+
+	// Set the active username immediately after successful authentication attempt
+	// If a user starts a new sign-in while another sign-in is incomplete,
+	// this ensures we're tracking the correct user for subsequent auth challenges.
+	setActiveSignInUsername(username);
+
+	return response;
 }
