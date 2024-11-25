@@ -19,15 +19,13 @@ import {
 	autoSignInUserConfirmed,
 	autoSignInWhenUserIsConfirmedWithLink,
 	handleCodeAutoSignIn,
-	isAutoSignInStarted,
-	isSignUpComplete,
-	setAutoSignInStarted,
-	setUsernameUsedForAutoSignIn,
 } from '../utils/signUpHelpers';
 import { getUserContextData } from '../utils/userContextData';
 import { getAuthUserAgentValue } from '../../../utils';
 import { createSignUpClient } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider';
 import { createCognitoUserPoolEndpointResolver } from '../factories';
+import { SignUpCommandInput } from '../../../foundation/factories/serviceClients/cognitoIdentityProvider/types';
+import { autoSignInStore } from '../../../client/utils/store';
 
 import { setAutoSignIn } from './autoSignIn';
 
@@ -52,10 +50,6 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 		!!username,
 		AuthValidationErrorCode.EmptySignUpUsername,
 	);
-	assertValidationError(
-		!!password,
-		AuthValidationErrorCode.EmptySignUpPassword,
-	);
 
 	const signInServiceOptions =
 		typeof autoSignIn !== 'boolean' ? autoSignIn : undefined;
@@ -68,10 +62,6 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 	if (signInServiceOptions?.authFlowType !== 'CUSTOM_WITHOUT_SRP') {
 		signInInput.password = password;
 	}
-	if (signInServiceOptions || autoSignIn === true) {
-		setUsernameUsedForAutoSignIn(username);
-		setAutoSignInStarted(true);
-	}
 
 	const { userPoolId, userPoolClientId, userPoolEndpoint } = authConfig;
 	const signUpClient = createSignUpClient({
@@ -79,87 +69,106 @@ export async function signUp(input: SignUpInput): Promise<SignUpOutput> {
 			endpointOverride: userPoolEndpoint,
 		}),
 	});
-	const clientOutput = await signUpClient(
+
+	const signUpClientInput: SignUpCommandInput = {
+		Username: username,
+		Password: undefined,
+		UserAttributes:
+			options?.userAttributes && toAttributeType(options?.userAttributes),
+		ClientMetadata: clientMetadata,
+		ValidationData: validationData && toAttributeType(validationData),
+		ClientId: userPoolClientId,
+		UserContextData: getUserContextData({
+			username,
+			userPoolId,
+			userPoolClientId,
+		}),
+	};
+
+	if (password) {
+		signUpClientInput.Password = password;
+	}
+
+	const {
+		UserSub: userId,
+		CodeDeliveryDetails: cdd,
+		UserConfirmed: userConfirmed,
+		Session: session,
+	} = await signUpClient(
 		{
 			region: getRegionFromUserPoolId(userPoolId),
 			userAgentValue: getAuthUserAgentValue(AuthAction.SignUp),
 		},
-		{
-			Username: username,
-			Password: password,
-			UserAttributes:
-				options?.userAttributes && toAttributeType(options?.userAttributes),
-			ClientMetadata: clientMetadata,
-			ValidationData: validationData && toAttributeType(validationData),
-			ClientId: userPoolClientId,
-			UserContextData: getUserContextData({
-				username,
-				userPoolId,
-				userPoolClientId,
-			}),
-		},
+		signUpClientInput,
 	);
-	const { UserSub, CodeDeliveryDetails } = clientOutput;
 
-	if (isSignUpComplete(clientOutput) && isAutoSignInStarted()) {
-		setAutoSignIn(autoSignInUserConfirmed(signInInput));
+	if (signInServiceOptions || autoSignIn === true) {
+		autoSignInStore.dispatch({ type: 'START' });
+		autoSignInStore.dispatch({ type: 'SET_USERNAME', value: username });
+		autoSignInStore.dispatch({ type: 'SET_SESSION', value: session });
+	}
 
-		return {
-			isSignUpComplete: true,
-			nextStep: {
-				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
-			},
-			userId: UserSub,
-		};
-	} else if (isSignUpComplete(clientOutput) && !isAutoSignInStarted()) {
+	const codeDeliveryDetails = {
+		destination: cdd?.Destination,
+		deliveryMedium: cdd?.DeliveryMedium as AuthDeliveryMedium,
+		attributeName: cdd?.AttributeName as AuthVerifiableAttributeKey,
+	};
+
+	const isSignUpComplete = !!userConfirmed;
+	const isAutoSignInStarted = autoSignInStore.getState().active;
+
+	// Sign Up Complete
+	// No Confirm Sign In Step Required
+	if (isSignUpComplete) {
+		if (isAutoSignInStarted) {
+			setAutoSignIn(autoSignInUserConfirmed(signInInput));
+
+			return {
+				isSignUpComplete: true,
+				nextStep: {
+					signUpStep: 'COMPLETE_AUTO_SIGN_IN',
+				},
+				userId,
+			};
+		}
+
 		return {
 			isSignUpComplete: true,
 			nextStep: {
 				signUpStep: 'DONE',
 			},
-			userId: UserSub,
+			userId,
 		};
-	} else if (
-		!isSignUpComplete(clientOutput) &&
-		isAutoSignInStarted() &&
-		signUpVerificationMethod === 'code'
-	) {
-		handleCodeAutoSignIn(signInInput);
-	} else if (
-		!isSignUpComplete(clientOutput) &&
-		isAutoSignInStarted() &&
-		signUpVerificationMethod === 'link'
-	) {
-		setAutoSignIn(autoSignInWhenUserIsConfirmedWithLink(signInInput));
+	}
 
-		return {
-			isSignUpComplete: false,
-			nextStep: {
-				signUpStep: 'COMPLETE_AUTO_SIGN_IN',
-				codeDeliveryDetails: {
-					deliveryMedium:
-						CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
-					destination: CodeDeliveryDetails?.Destination as string,
-					attributeName:
-						CodeDeliveryDetails?.AttributeName as AuthVerifiableAttributeKey,
+	// Sign Up Not Complete
+	// Confirm Sign Up Step Required
+	if (isAutoSignInStarted) {
+		// Confirmation Via Link Occurs In Separate Context
+		// AutoSignIn Fn Will Initiate Polling Once Executed
+		if (signUpVerificationMethod === 'link') {
+			setAutoSignIn(autoSignInWhenUserIsConfirmedWithLink(signInInput));
+
+			return {
+				isSignUpComplete: false,
+				nextStep: {
+					signUpStep: 'COMPLETE_AUTO_SIGN_IN',
+					codeDeliveryDetails,
 				},
-			},
-			userId: UserSub,
-		};
+				userId,
+			};
+		}
+		// Confirmation Via Code Occurs In Same Context
+		// AutoSignIn Next Step Will Be Returned From Confirm Sign Up
+		handleCodeAutoSignIn(signInInput);
 	}
 
 	return {
 		isSignUpComplete: false,
 		nextStep: {
 			signUpStep: 'CONFIRM_SIGN_UP',
-			codeDeliveryDetails: {
-				deliveryMedium:
-					CodeDeliveryDetails?.DeliveryMedium as AuthDeliveryMedium,
-				destination: CodeDeliveryDetails?.Destination as string,
-				attributeName:
-					CodeDeliveryDetails?.AttributeName as AuthVerifiableAttributeKey,
-			},
+			codeDeliveryDetails,
 		},
-		userId: UserSub,
+		userId,
 	};
 }
