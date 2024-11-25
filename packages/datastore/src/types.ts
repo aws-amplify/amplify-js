@@ -548,7 +548,7 @@ export type IdentifierFields<
 				infer B
 		  >
 		? B[number] // B[number]
-		: MetadataOrDefault<T, M>['identifier']['field']) &
+		: MetadataOrDefault<any, M>['identifier']['field']) &
 	string;
 
 export type IdentifierFieldsForInit<
@@ -710,7 +710,7 @@ export type IdentifierFieldValue<
 		? MetadataOrDefault<T, M>['identifier']['fields'] extends [any]
 			? T[MetadataOrDefault<T, M>['identifier']['fields'][0]]
 			: never
-		: T[MetadataOrDefault<T, M>['identifier']['field']];
+		: T[MetadataOrDefault<any, M>['identifier']['field']];
 
 export type IdentifierFieldOrIdentifierObject<
 	T extends PersistentModel,
