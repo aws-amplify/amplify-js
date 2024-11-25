@@ -27,12 +27,14 @@ import { NextServer } from './types';
  */
 export const createServerRunner: NextServer.CreateServerRunner = ({
 	config,
+	runtimeOptions,
 }) => {
 	const amplifyConfig = parseAmplifyConfig(config);
 
 	return {
 		runWithAmplifyServerContext: createRunWithAmplifyServerContext({
 			config: amplifyConfig,
+			runtimeOptions,
 		}),
 	};
 };
