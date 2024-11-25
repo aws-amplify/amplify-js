@@ -24,7 +24,9 @@ describe('service clients', () => {
 	test.each(serviceClientFactories)(
 		'factory `%s` should invoke composeServiceApi with expected parameters',
 		serviceClientFactory => {
-			serviceClients[serviceClientFactory](mockServiceClientAPIConfig);
+			serviceClients[serviceClientFactory as keyof typeof serviceClients](
+				mockServiceClientAPIConfig,
+			);
 
 			expect(mockComposeServiceApi).toHaveBeenCalledWith(
 				expect.any(Function),

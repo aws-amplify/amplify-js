@@ -259,6 +259,7 @@ interface AWSAuthSignInDetails {
  * @deprecated
  */
 type AuthFlowType =
+	| 'USER_AUTH'
 	| 'USER_SRP_AUTH'
 	| 'CUSTOM_WITH_SRP'
 	| 'CUSTOM_WITHOUT_SRP'
