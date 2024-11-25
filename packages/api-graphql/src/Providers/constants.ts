@@ -5,6 +5,10 @@ export { AMPLIFY_SYMBOL } from '@aws-amplify/core/internals/utils';
 export const MAX_DELAY_MS = 5000;
 
 export const NON_RETRYABLE_CODES = [400, 401, 403];
+export const NON_RETRYABLE_ERROR_TYPES = [
+	'BadRequestException',
+	'UnauthorizedException',
+];
 
 export const CONNECTION_STATE_CHANGE = 'ConnectionStateChange';
 

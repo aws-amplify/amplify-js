@@ -18,11 +18,27 @@ import type {
 } from './types';
 
 /**
+ * @experimental API may change in future versions
+ *
  * Establish a WebSocket connection to an Events channel
+ *
+ * @example
+ * const channel = await events.connect("default/channel")
+ *
+ * channel.subscribe({
+ *   next: (data) => { console.log(data) },
+ *   error: (err) => { console.error(err) },
+ * })
+ *
+ * @example // authMode override
+ * const channel = await events.connect("default/channel", { authMode: "userPool" })
+ *
+ * @param channel - channel path; `<namespace>/<channel>`
+ * @param options - request overrides: `authMode`, `authToken`
  *
  */
 async function connect(
-	channelName: string,
+	channel: string,
 	options?: EventsOptions,
 ): Promise<EventsChannel> {
 	const providerOptions = configure();
@@ -40,7 +56,7 @@ async function connect(
 		observer: SubscriptionObserver<any>,
 		subOptions?: EventsOptions,
 	): Subscription => {
-		const subscribeOptions = { ...providerOptions, query: channelName };
+		const subscribeOptions = { ...providerOptions, query: channel };
 		subscribeOptions.authenticationType = normalizeAuth(
 			subOptions?.authMode,
 			subscribeOptions.authenticationType,
@@ -60,7 +76,7 @@ async function connect(
 	): Promise<any> => {
 		const publishOptions = {
 			...providerOptions,
-			query: channelName,
+			query: channel,
 			variables: event,
 		};
 		publishOptions.authenticationType = normalizeAuth(
@@ -76,27 +92,35 @@ async function connect(
 	};
 
 	return {
-		/**
-		 * Subscribe to incoming events
-		 */
 		subscribe: sub,
-		/**
-		 * Close channel and any active subscriptions
-		 */
 		close,
 		// publish: pub,
 	};
 }
 
 /**
- * Publish events to a channel via REST request
+ * @experimental API may change in future versions
  *
- * @param channelName - publish destination
+ * Publish events to a channel via HTTP request
+ *
+ * @example
+ * await events.post("default/channel", { some: "event" })
+ *
+ * @example // event batching
+ * await events.post("default/channel", [{ some: "event" }, { some: "event2" }])
+ *
+ * @example // authMode override
+ * await events.post("default/channel", { some: "event" }, { authMode: "userPool" })
+ *
+ * @param channel - channel path; `<namespace>/<channel>`
  * @param event - JSON-serializable value or an array of values
- * @param options
+ * @param options - request overrides: `authMode`, `authToken`
+ *
+ * @returns void on success
+ * @throws on error
  */
 async function post(
-	channelName: string,
+	channel: string,
 	event: DocumentType | DocumentType[],
 	options?: EventsOptions,
 ): Promise<void | PublishedEvent[]> {
@@ -107,8 +131,7 @@ async function post(
 	);
 
 	// trailing slash required in publish
-	const normalizedChannelName =
-		channelName[0] === '/' ? channelName : `/${channelName}`;
+	const normalizedChannelName = channel[0] === '/' ? channel : `/${channel}`;
 
 	const publishOptions = {
 		...providerOptions,
@@ -131,8 +154,19 @@ async function post(
 	}
 }
 
-function closeAll(): void {
-	eventProvider.close();
+/**
+ * @experimental API may change in future versions
+ *
+ * Close WebSocket connection, disconnect listeners and reconnect observers
+ *
+ * @example
+ * await events.closeAll()
+ *
+ * @returns void on success
+ * @throws on error
+ */
+async function closeAll(): Promise<void> {
+	await eventProvider.close();
 }
 
 export { connect, post, closeAll };

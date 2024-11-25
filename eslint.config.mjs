@@ -12,6 +12,8 @@ import tsParser from '@typescript-eslint/parser';
 import js from '@eslint/js';
 import { FlatCompat } from '@eslint/eslintrc';
 
+import customClientDtsBundlerConfig from './scripts/dts-bundler/dts-bundler.config.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
@@ -19,6 +21,10 @@ const compat = new FlatCompat({
 	recommendedConfig: js.configs.recommended,
 	allConfig: js.configs.all,
 });
+const customClientDtsFiles = customClientDtsBundlerConfig.entries
+	.map(clientBundlerConfig => clientBundlerConfig.outFile)
+	.filter(outFile => outFile?.length > 0)
+	.map(outFile => outFile.replace(__dirname + path.sep, '')) // Convert absolute path to relative path
 
 export default [
 	{
@@ -39,6 +45,7 @@ export default [
 			'packages/interactions/__tests__',
 			'packages/predictions/__tests__',
 			'packages/pubsub/__tests__',
+			...customClientDtsFiles,
 		],
 	},
 	...fixupConfigRules(

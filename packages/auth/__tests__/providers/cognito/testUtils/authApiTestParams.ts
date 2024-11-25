@@ -112,6 +112,30 @@ export const authAPITestParams = {
 		Session: 'aaabbbcccddd',
 		$metadata: {},
 	},
+	RespondToAuthChallengeMultipleMfaSetupOutput: {
+		ChallengeName: 'MFA_SETUP',
+		Session: '1234234232',
+		$metadata: {},
+		ChallengeParameters: {
+			MFAS_CAN_SETUP: '["SMS_MFA","SOFTWARE_TOKEN_MFA", "EMAIL_OTP"]',
+		},
+	},
+	RespondToAuthChallengeEmailMfaSetupOutput: {
+		ChallengeName: 'MFA_SETUP',
+		Session: '1234234232',
+		$metadata: {},
+		ChallengeParameters: {
+			MFAS_CAN_SETUP: '["SMS_MFA", "EMAIL_OTP"]',
+		},
+	},
+	RespondToAuthChallengeTotpMfaSetupOutput: {
+		ChallengeName: 'MFA_SETUP',
+		Session: '1234234232',
+		$metadata: {},
+		ChallengeParameters: {
+			MFAS_CAN_SETUP: '["SMS_MFA", "SOFTWARE_TOKEN_MFA"]',
+		},
+	},
 	CustomChallengeResponse: {
 		ChallengeName: 'CUSTOM_CHALLENGE',
 		AuthenticationResult: undefined,
@@ -199,7 +223,6 @@ export const authAPITestParams = {
 	},
 	GuestIdentityId: { id: 'guest-identity-id', type: 'guest' },
 	PrimaryIdentityId: { id: 'primary-identity-id', type: 'primary' },
-
 	signInResultWithCustomAuth: () => {
 		return {
 			isSignedIn: false,
