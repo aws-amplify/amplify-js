@@ -27,10 +27,14 @@ import {
 	SignInWithSRPInput,
 	SignInWithSRPOutput,
 } from '../types';
+<<<<<<< HEAD
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 } from '../../../client/utils/store';
+=======
+import { setActiveSignInState, signInStore } from '../utils/signInStore';
+>>>>>>> joonwonc/auth-resumable-signin
 import { cacheCognitoTokens } from '../tokenProvider/cacheTokens';
 import { tokenOrchestrator } from '../tokenProvider';
 import { dispatchSignedInHubEvent } from '../utils/dispatchSignedInHubEvent';
@@ -91,7 +95,7 @@ export async function signInWithSRP(
 			signInDetails,
 		});
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
+			signInStore.dispatch({ type: 'RESET_STATE' });
 			await cacheCognitoTokens({
 				username: activeUsername,
 				...AuthenticationResult,
@@ -119,8 +123,12 @@ export async function signInWithSRP(
 			challengeParameters: handledChallengeParameters as ChallengeParameters,
 		});
 	} catch (error) {
+<<<<<<< HEAD
 		cleanActiveSignInState();
 		resetAutoSignIn();
+=======
+		signInStore.dispatch({ type: 'RESET_STATE' });
+>>>>>>> joonwonc/auth-resumable-signin
 		assertServiceError(error);
 		const result = getSignInResultFromError(error.name);
 		if (result) return result;

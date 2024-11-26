@@ -10,11 +10,15 @@ import {
 	VerifySoftwareTokenException,
 } from '../types/errors';
 import { ConfirmSignInInput, ConfirmSignInOutput } from '../types';
+<<<<<<< HEAD
 import {
 	cleanActiveSignInState,
 	setActiveSignInState,
 	signInStore,
 } from '../../../client/utils/store';
+=======
+import { setActiveSignInState, signInStore } from '../utils/signInStore';
+>>>>>>> joonwonc/auth-resumable-signin
 import { AuthError } from '../../../errors/AuthError';
 import {
 	getNewDeviceMetadata,
@@ -109,7 +113,8 @@ export async function confirmSignIn(
 		});
 
 		if (AuthenticationResult) {
-			cleanActiveSignInState();
+			signInStore.dispatch({ type: 'RESET_STATE' });
+
 			await cacheCognitoTokens({
 				username,
 				...AuthenticationResult,
